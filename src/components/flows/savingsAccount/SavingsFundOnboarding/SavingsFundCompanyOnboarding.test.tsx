@@ -213,6 +213,21 @@ describe('SavingsFundCompanyOnboarding', () => {
     });
   });
 
+  it('does not show the confirmations error until the user tries to continue', async () => {
+    await navigateToStep2();
+    await advanceToConfirmations();
+
+    // Ticking only the first confirmation must not surface the "confirm all" error yet
+    const estoniaCheckbox = screen.getByRole('checkbox', { name: /operates only in Estonia/i });
+    userEvent.click(estoniaCheckbox);
+    await waitFor(() => expect(estoniaCheckbox).toBeChecked());
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+
+    // The error appears only when the user tries to continue with boxes unchecked
+    userEvent.click(continueButton());
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+  });
+
   it('shows the on-behalf-of-company confirmation text on the terms step', async () => {
     await navigateToStep2();
     await advanceToTerms();
@@ -332,4 +347,15 @@ const completeStepsThroughTerms = async () => {
   await advanceToTerms();
   // Step 7: Terms
   userEvent.click(screen.getByRole('checkbox'));
+};
+
+// Advances from step 2 to the confirmations step (6/7) without ticking any box.
+const advanceToConfirmations = async () => {
+  expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+  await advanceToStep(3);
+  await advanceToStep(4);
+  userEvent.click(screen.getByRole('radio', { name: 'Long-term growth of company assets' }));
+  await advanceToStep(5);
+  userEvent.click(screen.getByRole('radio', { name: '€20,001–€40,000' }));
+  await advanceToStep(6);
 };

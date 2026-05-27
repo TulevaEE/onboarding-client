@@ -45,7 +45,10 @@ export const SavingsFundCompanyOnboarding = () => {
   }, [onboardingStatus]);
 
   const { control, trigger, handleSubmit, watch } = useForm<CompanyOnboardingFormData>({
-    mode: 'onChange',
+    // Validate on submit (each "Continue" triggers validation explicitly), so a
+    // half-filled confirmations step doesn't flash an error after the first
+    // checkbox; reValidateMode then clears the error as the user ticks the rest.
+    mode: 'onSubmit',
     defaultValues: {
       registryLookup: undefined,
       companyValidatedData: undefined,
