@@ -84,6 +84,12 @@ export const SavingsFundPayment: FC = () => {
         <h1 className="m-0 text-center">
           <FormattedMessage id="savingsFund.payment.title" />
         </h1>
+        <p className="m-0 text-center fs-3 fw-medium">
+          <FormattedMessage
+            id="savingsFund.payment.accountOwner"
+            values={{ accountOwner: user.role.name }}
+          />
+        </p>
       </div>
 
       <PaymentTypeSelection paymentType={paymentType} setPaymentType={setPaymentType} />

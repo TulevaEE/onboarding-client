@@ -413,6 +413,11 @@ describe(SavingsFundPayment, () => {
     });
   });
 
+  it('shows the personal account the deposit will go to', async () => {
+    expect(await findPageHeading()).toBeInTheDocument();
+    expect(screen.getByText('Deposit to: John Doe')).toBeInTheDocument();
+  });
+
   describe('when acting as a company', () => {
     beforeEach(async () => {
       cleanup();
@@ -422,6 +427,11 @@ describe(SavingsFundPayment, () => {
 
       initApp();
       history.push('/savings-fund/payment');
+    });
+
+    it('shows the company account the deposit will go to', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      expect(screen.getByText('Deposit to: Test Company OÜ')).toBeInTheDocument();
     });
 
     it('shows registry code in other bank payment details', async () => {
