@@ -36,9 +36,6 @@ const TermsStepWrapper = ({ showError = false }: { showError?: boolean }) => {
       email: '',
       phoneNumber: '',
       pepSelfDeclaration: null,
-      investmentGoals: null,
-      investableAssets: null,
-      sourceOfIncome: [],
       termsAccepted: false,
     },
   });

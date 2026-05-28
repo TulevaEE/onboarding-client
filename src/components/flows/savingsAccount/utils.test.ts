@@ -14,9 +14,11 @@ const buildOnboardingFormData = (
   phoneNumber: '+37255555555',
   pepSelfDeclaration: 'IS_NOT_PEP',
   investmentIntent: 'SELF',
-  investmentGoals: { type: 'OPTION', value: 'LONG_TERM' },
-  investableAssets: 'LESS_THAN_20K',
-  sourceOfIncome: [{ type: 'OPTION', value: 'SALARY' }],
+  personalInvestmentProfile: {
+    investmentGoals: { type: 'OPTION', value: 'LONG_TERM' },
+    investableAssets: 'LESS_THAN_20K',
+    sourceOfIncome: [{ type: 'OPTION', value: 'SALARY' }],
+  },
   termsAccepted: true,
   ...overrides,
 });
@@ -140,14 +142,14 @@ describe('transformFormDataToOnboardingSurveryCommand', () => {
     );
   });
 
-  it('omits the personal profile items for a company-only intent even if they were filled earlier', () => {
+  it('omits the personal profile items when the group is null (ONLY_VIA_COMPANY)', () => {
+    // The wizard clears `personalInvestmentProfile` to `null` on intent flip,
+    // so the transform need not gate on intent — the absence of the group is
+    // the gate.
     const result = transformFormDataToOnboardingSurveryCommand(
       buildOnboardingFormData({
         investmentIntent: 'ONLY_VIA_COMPANY',
-        // simulate stale answers from a previous SELF/BOTH selection
-        investmentGoals: { type: 'OPTION', value: 'LONG_TERM' },
-        investableAssets: 'LESS_THAN_20K',
-        sourceOfIncome: [{ type: 'OPTION', value: 'SALARY' }],
+        personalInvestmentProfile: null,
       }),
     );
 
@@ -155,7 +157,6 @@ describe('transformFormDataToOnboardingSurveryCommand', () => {
     expect(types).not.toContain('INVESTMENT_GOALS');
     expect(types).not.toContain('INVESTABLE_ASSETS');
     expect(types).not.toContain('SOURCE_OF_INCOME');
-    // identity items are still present
     expect(types).toEqual(
       expect.arrayContaining(['CITIZENSHIP', 'ADDRESS', 'EMAIL', 'PEP_SELF_DECLARATION']),
     );

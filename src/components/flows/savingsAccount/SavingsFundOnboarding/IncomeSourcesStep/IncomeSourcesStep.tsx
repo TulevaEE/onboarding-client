@@ -1,21 +1,23 @@
-import { FC, useEffect, useRef, useState } from 'react';
-import { Control, Controller, useWatch } from 'react-hook-form';
+import { useEffect, useRef, useState } from 'react';
+import { Control, Controller, FieldPath, FieldValues, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import type { SourceOfIncomeOption } from '../types.api';
-import { OnboardingFormData } from '../types';
+import type { SourceOfIncomeOption, SourceOfIncomeSurveyItem } from '../types.api';
 
-type IncomeSourcesStepProps = {
-  control: Control<OnboardingFormData>;
+type SourceOfIncomeValue = SourceOfIncomeSurveyItem['value'];
+
+type IncomeSourcesStepProps<T extends FieldValues> = {
+  control: Control<T>;
+  name: FieldPath<T>;
 };
 
 const generateCheckboxOptions = (
   isChecked: (option: SourceOfIncomeOption) => boolean,
   handleCheckboxChange: (
-    fieldOnChange: (value: OnboardingFormData['sourceOfIncome']) => void,
+    fieldOnChange: (value: SourceOfIncomeValue) => void,
     option: SourceOfIncomeOption,
     checked: boolean,
   ) => void,
-  fieldOnChange: (value: OnboardingFormData['sourceOfIncome']) => void,
+  fieldOnChange: (value: SourceOfIncomeValue) => void,
 ) =>
   [
     {
@@ -63,9 +65,13 @@ const generateCheckboxOptions = (
     </div>
   ));
 
-export const IncomeSourcesStep: FC<IncomeSourcesStepProps> = ({ control }) => {
+export const IncomeSourcesStep = <T extends FieldValues>({
+  control,
+  name,
+}: IncomeSourcesStepProps<T>) => {
   const intl = useIntl();
-  const sourceOfIncome = useWatch({ control, name: 'sourceOfIncome' });
+  const rawSourceOfIncome = useWatch({ control, name });
+  const sourceOfIncome: SourceOfIncomeValue = (rawSourceOfIncome ?? []) as SourceOfIncomeValue;
   const [isOtherSelected, setIsOtherSelected] = useState(
     sourceOfIncome.some((item) => item.type === 'TEXT'),
   );
@@ -81,7 +87,7 @@ export const IncomeSourcesStep: FC<IncomeSourcesStepProps> = ({ control }) => {
   }, [isOtherSelected]);
 
   const handleCheckboxChange = (
-    fieldOnChange: (value: OnboardingFormData['sourceOfIncome']) => void,
+    fieldOnChange: (value: SourceOfIncomeValue) => void,
     option: SourceOfIncomeOption,
     checked: boolean,
   ) => {
@@ -116,9 +122,10 @@ export const IncomeSourcesStep: FC<IncomeSourcesStepProps> = ({ control }) => {
       <div className="section-content d-flex flex-column gap-4">
         <Controller
           control={control}
-          name="sourceOfIncome"
+          name={name}
           rules={{
-            validate: (value) => {
+            validate: (raw) => {
+              const value: SourceOfIncomeValue = (raw ?? []) as SourceOfIncomeValue;
               const hasOption = value.some((item) => item.type === 'OPTION');
               const textItem = value.find((item) => item.type === 'TEXT');
               const hasValidText = textItem && textItem.value.trim().length > 0;
@@ -138,63 +145,66 @@ export const IncomeSourcesStep: FC<IncomeSourcesStepProps> = ({ control }) => {
               return true;
             },
           }}
-          render={({ field, fieldState: { error } }) => (
-            <div className="selection-group d-flex flex-column gap-2">
-              {generateCheckboxOptions(isChecked, handleCheckboxChange, field.onChange)}
-              <div className="form-check m-0 lead">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="income-other"
-                  checked={isOtherSelected}
-                  onChange={(event) => {
-                    const { checked } = event.target;
-                    setIsOtherSelected(checked);
-                    if (checked) {
-                      const currentOptions = sourceOfIncome.filter(
-                        (item) => item.type === 'OPTION',
-                      );
-                      field.onChange([...currentOptions, { type: 'TEXT', value: otherValue }]);
-                    } else {
-                      setOtherValue('');
-                      field.onChange(sourceOfIncome.filter((item) => item.type !== 'TEXT'));
-                    }
-                  }}
-                />
-                <label
-                  className="form-check-label w-100"
-                  htmlFor="income-other"
-                  id="income-other-label"
-                >
-                  <FormattedMessage id="flows.savingsFundOnboarding.incomeSourcesStep.other" />
-                </label>
-                {isOtherSelected ? (
+          render={({ field, fieldState: { error } }) => {
+            const onChange = field.onChange as (value: SourceOfIncomeValue) => void;
+            return (
+              <div className="selection-group d-flex flex-column gap-2">
+                {generateCheckboxOptions(isChecked, handleCheckboxChange, onChange)}
+                <div className="form-check m-0 lead">
                   <input
-                    ref={inputRef}
-                    type="text"
-                    className="form-control form-control-lg mt-2"
-                    aria-labelledby="income-other-label"
-                    placeholder={intl.formatMessage({
-                      id: 'flows.savingsFundOnboarding.incomeSourcesStep.otherPlaceholder',
-                    })}
-                    value={otherValue}
-                    onChange={(e) => {
-                      setOtherValue(e.target.value);
-                      const currentOptions = sourceOfIncome.filter(
-                        (item) => item.type === 'OPTION',
-                      );
-                      field.onChange([...currentOptions, { type: 'TEXT', value: e.target.value }]);
+                    className="form-check-input"
+                    type="checkbox"
+                    id="income-other"
+                    checked={isOtherSelected}
+                    onChange={(event) => {
+                      const { checked } = event.target;
+                      setIsOtherSelected(checked);
+                      if (checked) {
+                        const currentOptions = sourceOfIncome.filter(
+                          (item) => item.type === 'OPTION',
+                        );
+                        onChange([...currentOptions, { type: 'TEXT', value: otherValue }]);
+                      } else {
+                        setOtherValue('');
+                        onChange(sourceOfIncome.filter((item) => item.type !== 'TEXT'));
+                      }
                     }}
                   />
+                  <label
+                    className="form-check-label w-100"
+                    htmlFor="income-other"
+                    id="income-other-label"
+                  >
+                    <FormattedMessage id="flows.savingsFundOnboarding.incomeSourcesStep.other" />
+                  </label>
+                  {isOtherSelected ? (
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      className="form-control form-control-lg mt-2"
+                      aria-labelledby="income-other-label"
+                      placeholder={intl.formatMessage({
+                        id: 'flows.savingsFundOnboarding.incomeSourcesStep.otherPlaceholder',
+                      })}
+                      value={otherValue}
+                      onChange={(e) => {
+                        setOtherValue(e.target.value);
+                        const currentOptions = sourceOfIncome.filter(
+                          (item) => item.type === 'OPTION',
+                        );
+                        onChange([...currentOptions, { type: 'TEXT', value: e.target.value }]);
+                      }}
+                    />
+                  ) : null}
+                </div>
+                {error && error.message ? (
+                  <p className="m-0 text-danger fs-base" role="alert">
+                    {error.message}
+                  </p>
                 ) : null}
               </div>
-              {error && error.message ? (
-                <p className="m-0 text-danger fs-base" role="alert">
-                  {error.message}
-                </p>
-              ) : null}
-            </div>
-          )}
+            );
+          }}
         />
       </div>
     </section>

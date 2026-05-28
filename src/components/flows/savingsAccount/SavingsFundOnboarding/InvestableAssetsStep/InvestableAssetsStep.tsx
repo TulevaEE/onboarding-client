@@ -1,12 +1,12 @@
-import { Control, Controller, Path } from 'react-hook-form';
+import { Control, Controller, FieldPath, FieldValues } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { SharedOnboardingFields } from '../types';
 import { InvestableAssetsOption } from '../types.api';
 import { TranslationKey } from '../../../../translations';
 import { Radio } from '../../../../common';
 
-type InvestableAssetsStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> = {
+type InvestableAssetsStepProps<T extends FieldValues> = {
   control: Control<T>;
+  name: FieldPath<T>;
   options: { value: InvestableAssetsOption; labelId: TranslationKey }[];
   titleId: TranslationKey;
 };
@@ -38,8 +38,9 @@ const generateRadioOptions = (
     );
   });
 
-export const InvestableAssetsStep = <T extends SharedOnboardingFields = SharedOnboardingFields>({
+export const InvestableAssetsStep = <T extends FieldValues>({
   control,
+  name,
   options,
   titleId,
 }: InvestableAssetsStepProps<T>) => {
@@ -57,7 +58,7 @@ export const InvestableAssetsStep = <T extends SharedOnboardingFields = SharedOn
       <div className="section-content d-flex flex-column gap-4">
         <Controller
           control={control}
-          name={'investableAssets' as Path<T>}
+          name={name}
           rules={{
             required: {
               value: true,

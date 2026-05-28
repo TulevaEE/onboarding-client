@@ -18,9 +18,6 @@ const ResidencyStepWrapper = ({ defaultCountryCode = 'FI' }: { defaultCountryCod
       },
       email: '',
       pepSelfDeclaration: null,
-      investmentGoals: null,
-      investableAssets: null,
-      sourceOfIncome: [],
       termsAccepted: false,
     },
   });
