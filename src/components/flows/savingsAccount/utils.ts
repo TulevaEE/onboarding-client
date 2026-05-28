@@ -66,12 +66,16 @@ export const transformFormDataToOnboardingSurveryCommand = (
     });
   }
 
-  // The personal-profile group is null for ONLY_VIA_COMPANY (cleared on intent
-  // flip in the wizard) and fully populated at submit time for SELF/BOTH. The
-  // type guard collapses the intent check + per-field truthiness checks into a
-  // single boundary — adding a fourth profile field is one line, not a
-  // separate `if (!isCompanyOnly && data.X)` branch that's easy to forget.
-  if (isPopulatedPersonalProfile(data.personalInvestmentProfile)) {
+  // Belt-and-suspenders: the wizard clears the profile group when intent flips
+  // to ONLY_VIA_COMPANY, so isPopulatedPersonalProfile alone would already do
+  // the right thing today. But keeping the intent gate at the data boundary
+  // means the "company-only never sends a profile" invariant doesn't rely on
+  // a UI effect to stay correct — even if a future change accidentally lets a
+  // populated group through, the transform still omits the profile items.
+  if (
+    data.investmentIntent !== 'ONLY_VIA_COMPANY' &&
+    isPopulatedPersonalProfile(data.personalInvestmentProfile)
+  ) {
     const { investmentGoals, investableAssets, sourceOfIncome } = data.personalInvestmentProfile;
     answers.push(
       { type: 'INVESTMENT_GOALS', value: investmentGoals },
