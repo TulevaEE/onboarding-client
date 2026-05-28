@@ -142,10 +142,33 @@ describe('transformFormDataToOnboardingSurveryCommand', () => {
     );
   });
 
+  it('omits the personal profile items for ONLY_VIA_COMPANY intent even if the group is populated', () => {
+    // The wizard clears the group on intent flip, so in practice it would be
+    // empty here — but the data boundary must enforce the invariant on its
+    // own. This test simulates a stale populated group reaching the transform
+    // (UI bug, race condition, future regression) and asserts the profile
+    // items are still omitted from the KYC payload.
+    const result = transformFormDataToOnboardingSurveryCommand(
+      buildOnboardingFormData({
+        investmentIntent: 'ONLY_VIA_COMPANY',
+        personalInvestmentProfile: {
+          investmentGoals: { type: 'OPTION', value: 'LONG_TERM' },
+          investableAssets: 'LESS_THAN_20K',
+          sourceOfIncome: [{ type: 'OPTION', value: 'SALARY' }],
+        },
+      }),
+    );
+
+    const types = result.answers.map((a) => a.type);
+    expect(types).not.toContain('INVESTMENT_GOALS');
+    expect(types).not.toContain('INVESTABLE_ASSETS');
+    expect(types).not.toContain('SOURCE_OF_INCOME');
+    expect(types).toEqual(
+      expect.arrayContaining(['CITIZENSHIP', 'ADDRESS', 'EMAIL', 'PEP_SELF_DECLARATION']),
+    );
+  });
+
   it('omits the personal profile items when the group is null (ONLY_VIA_COMPANY)', () => {
-    // The wizard clears `personalInvestmentProfile` to `null` on intent flip,
-    // so the transform need not gate on intent — the absence of the group is
-    // the gate.
     const result = transformFormDataToOnboardingSurveryCommand(
       buildOnboardingFormData({
         investmentIntent: 'ONLY_VIA_COMPANY',
@@ -157,8 +180,5 @@ describe('transformFormDataToOnboardingSurveryCommand', () => {
     expect(types).not.toContain('INVESTMENT_GOALS');
     expect(types).not.toContain('INVESTABLE_ASSETS');
     expect(types).not.toContain('SOURCE_OF_INCOME');
-    expect(types).toEqual(
-      expect.arrayContaining(['CITIZENSHIP', 'ADDRESS', 'EMAIL', 'PEP_SELF_DECLARATION']),
-    );
   });
 });

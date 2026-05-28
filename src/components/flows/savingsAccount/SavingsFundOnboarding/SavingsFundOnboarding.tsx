@@ -198,28 +198,29 @@ export const SavingsFundOnboarding: FC = () => {
   } = useSavingsFundOnboardingStatus();
   const { data: user } = useMe();
 
-  const { control, setValue, watch, handleSubmit, trigger } = useForm<OnboardingFormData>({
-    mode: 'onChange',
-    defaultValues: {
-      citizenship: [],
-      address: {
-        countryCode: 'EE',
-        street: '',
-        city: '',
-        postalCode: '',
+  const { control, setValue, getValues, watch, handleSubmit, trigger } =
+    useForm<OnboardingFormData>({
+      mode: 'onChange',
+      defaultValues: {
+        citizenship: [],
+        address: {
+          countryCode: 'EE',
+          street: '',
+          city: '',
+          postalCode: '',
+        },
+        email: '',
+        phoneNumber: '',
+        pepSelfDeclaration: null,
+        investmentIntent: null,
+        personalInvestmentProfile: {
+          investmentGoals: undefined,
+          investableAssets: undefined,
+          sourceOfIncome: [],
+        },
+        termsAccepted: false,
       },
-      email: '',
-      phoneNumber: '',
-      pepSelfDeclaration: null,
-      investmentIntent: null,
-      personalInvestmentProfile: {
-        investmentGoals: undefined,
-        investableAssets: undefined,
-        sourceOfIncome: [],
-      },
-      termsAccepted: false,
-    },
-  });
+    });
 
   const citizenship = watch('citizenship');
   const residencyCountry = watch('address.countryCode');
@@ -248,19 +249,20 @@ export const SavingsFundOnboarding: FC = () => {
 
   // Clear the personal-profile group when intent becomes ONLY_VIA_COMPANY, so
   // any partially-filled profile answers from an earlier SELF/BOTH choice
-  // can't leak into the KYC payload. The transform then doesn't need to gate
-  // on intent — the presence of the group object is the gate.
+  // can't leak into the KYC payload. The transform also gates on intent at the
+  // data boundary (belt-and-suspenders), but clearing the group here keeps
+  // form state consistent with the intent.
   useEffect(() => {
     if (investmentIntent === 'ONLY_VIA_COMPANY') {
       setValue('personalInvestmentProfile', null);
-    } else if (investmentIntent && watch('personalInvestmentProfile') === null) {
+    } else if (investmentIntent && getValues('personalInvestmentProfile') === null) {
       setValue('personalInvestmentProfile', {
         investmentGoals: undefined,
         investableAssets: undefined,
         sourceOfIncome: [],
       });
     }
-  }, [investmentIntent, setValue, watch]);
+  }, [investmentIntent, setValue, getValues]);
 
   useEffect(() => {
     if (user?.email) {
