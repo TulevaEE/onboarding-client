@@ -35,9 +35,11 @@ const InvestableAssetsStepWrapper = () => {
       email: '',
       phoneNumber: '',
       pepSelfDeclaration: null,
-      investmentGoals: null,
-      investableAssets: null,
-      sourceOfIncome: [],
+      personalInvestmentProfile: {
+        investmentGoals: undefined,
+        investableAssets: undefined,
+        sourceOfIncome: [],
+      },
       termsAccepted: false,
     },
   });
@@ -47,10 +49,11 @@ const InvestableAssetsStepWrapper = () => {
       <form>
         <InvestableAssetsStep
           control={control}
+          name="personalInvestmentProfile.investableAssets"
           options={OPTIONS}
           titleId="flows.savingsFundOnboarding.investableAssetsStep.title"
         />
-        <button type="button" onClick={() => trigger('investableAssets')}>
+        <button type="button" onClick={() => trigger('personalInvestmentProfile.investableAssets')}>
           Validate
         </button>
       </form>
@@ -81,6 +84,7 @@ const CompanyInvestableAssetsStepWrapper = () => {
       <form>
         <InvestableAssetsStep
           control={control}
+          name="investableAssets"
           options={OPTIONS}
           titleId="flows.savingsFundOnboarding.investableAssetsStep.titleCompany"
         />

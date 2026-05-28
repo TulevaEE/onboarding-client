@@ -20,9 +20,6 @@ const CitizenshipStepWrapper = ({ onSubmit = jest.fn() }: { onSubmit?: jest.Mock
       },
       email: '',
       pepSelfDeclaration: null,
-      investmentGoals: null,
-      investableAssets: null,
-      sourceOfIncome: [],
       termsAccepted: false,
     },
   });

@@ -21,9 +21,6 @@ const ContactDetailsStepWrapper = () => {
       email: '',
       phoneNumber: '',
       pepSelfDeclaration: null,
-      investmentGoals: null,
-      investableAssets: null,
-      sourceOfIncome: [],
       termsAccepted: false,
     },
   });

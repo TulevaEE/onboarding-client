@@ -1,4 +1,8 @@
-import { CompanyOnboardingFormData, OnboardingFormData } from './SavingsFundOnboarding/types';
+import {
+  CompanyOnboardingFormData,
+  OnboardingFormData,
+  PersonalInvestmentProfile,
+} from './SavingsFundOnboarding/types';
 import {
   Address,
   CompanyOnboardingSurveyCommand,
@@ -6,6 +10,14 @@ import {
   ISO2CountryCode,
   OnboardingSurveyCommand,
 } from './SavingsFundOnboarding/types.api';
+
+const isPopulatedPersonalProfile = (
+  profile: OnboardingFormData['personalInvestmentProfile'],
+): profile is PersonalInvestmentProfile =>
+  profile !== null &&
+  !!profile.investmentGoals &&
+  !!profile.investableAssets &&
+  (profile.sourceOfIncome?.length ?? 0) > 0;
 
 export const transformFormDataToOnboardingSurveryCommand = (
   data: OnboardingFormData,
@@ -54,34 +66,18 @@ export const transformFormDataToOnboardingSurveryCommand = (
     });
   }
 
-  // Company-only applicants never answer the personal profile questions, so
-  // those items are deliberately omitted from the KYC payload. Gating on the
-  // intent (not just on emptiness) keeps the payload correct even if the user
-  // filled in profile answers earlier and then switched to company-only.
-  const isCompanyOnly = data.investmentIntent === 'ONLY_VIA_COMPANY';
-
-  if (!isCompanyOnly && data.investmentGoals) {
-    answers.push({
-      type: 'INVESTMENT_GOALS',
-      value: data.investmentGoals,
-    });
-  }
-
-  if (!isCompanyOnly && data.investableAssets) {
-    answers.push({
-      type: 'INVESTABLE_ASSETS',
-      value: {
-        type: 'OPTION',
-        value: data.investableAssets,
-      },
-    });
-  }
-
-  if (!isCompanyOnly && data.sourceOfIncome.length > 0) {
-    answers.push({
-      type: 'SOURCE_OF_INCOME',
-      value: data.sourceOfIncome,
-    });
+  // The personal-profile group is null for ONLY_VIA_COMPANY (cleared on intent
+  // flip in the wizard) and fully populated at submit time for SELF/BOTH. The
+  // type guard collapses the intent check + per-field truthiness checks into a
+  // single boundary — adding a fourth profile field is one line, not a
+  // separate `if (!isCompanyOnly && data.X)` branch that's easy to forget.
+  if (isPopulatedPersonalProfile(data.personalInvestmentProfile)) {
+    const { investmentGoals, investableAssets, sourceOfIncome } = data.personalInvestmentProfile;
+    answers.push(
+      { type: 'INVESTMENT_GOALS', value: investmentGoals },
+      { type: 'INVESTABLE_ASSETS', value: { type: 'OPTION', value: investableAssets } },
+      { type: 'SOURCE_OF_INCOME', value: sourceOfIncome },
+    );
   }
 
   return { answers };
