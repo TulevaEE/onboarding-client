@@ -54,6 +54,7 @@ const CompanyInvestmentGoalStepWrapper = ({ options }: { options: StepOption[] }
       <form>
         <InvestmentGoalStep
           control={control}
+          name="investmentGoals"
           options={options}
           titleId="flows.savingsFundOnboarding.investmentGoalStep.titleCompany"
         />

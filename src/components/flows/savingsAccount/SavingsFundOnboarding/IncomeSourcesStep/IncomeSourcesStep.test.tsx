@@ -21,9 +21,11 @@ const IncomeSourcesStepWrapper = () => {
       email: '',
       phoneNumber: '',
       pepSelfDeclaration: null,
-      investmentGoals: null,
-      investableAssets: null,
-      sourceOfIncome: [],
+      personalInvestmentProfile: {
+        investmentGoals: undefined,
+        investableAssets: undefined,
+        sourceOfIncome: [],
+      },
       termsAccepted: false,
     },
   });
@@ -31,8 +33,8 @@ const IncomeSourcesStepWrapper = () => {
   return (
     <IntlProvider locale="en" messages={translations.en}>
       <form>
-        <IncomeSourcesStep control={control} />
-        <button type="button" onClick={() => trigger('sourceOfIncome')}>
+        <IncomeSourcesStep control={control} name="personalInvestmentProfile.sourceOfIncome" />
+        <button type="button" onClick={() => trigger('personalInvestmentProfile.sourceOfIncome')}>
           Validate
         </button>
       </form>

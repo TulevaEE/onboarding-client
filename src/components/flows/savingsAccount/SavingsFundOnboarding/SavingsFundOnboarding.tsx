@@ -74,6 +74,7 @@ const buildSteps = (
         <InvestmentGoalStep
           key="investment-goal"
           control={control}
+          name="personalInvestmentProfile.investmentGoals"
           titleId="flows.savingsFundOnboarding.investmentGoalStep.title"
           options={[
             {
@@ -95,13 +96,14 @@ const buildSteps = (
           ]}
         />
       ),
-      fields: ['investmentGoals'],
+      fields: ['personalInvestmentProfile.investmentGoals'],
     },
     {
       component: (
         <InvestableAssetsStep
           key="investable-assets"
           control={control}
+          name="personalInvestmentProfile.investableAssets"
           titleId="flows.savingsFundOnboarding.investableAssetsStep.title"
           options={[
             {
@@ -123,11 +125,17 @@ const buildSteps = (
           ]}
         />
       ),
-      fields: ['investableAssets'],
+      fields: ['personalInvestmentProfile.investableAssets'],
     },
     {
-      component: <IncomeSourcesStep key="income-sources" control={control} />,
-      fields: ['sourceOfIncome'],
+      component: (
+        <IncomeSourcesStep
+          key="income-sources"
+          control={control}
+          name="personalInvestmentProfile.sourceOfIncome"
+        />
+      ),
+      fields: ['personalInvestmentProfile.sourceOfIncome'],
     },
     {
       component: (
@@ -204,9 +212,11 @@ export const SavingsFundOnboarding: FC = () => {
       phoneNumber: '',
       pepSelfDeclaration: null,
       investmentIntent: null,
-      investmentGoals: null,
-      investableAssets: null,
-      sourceOfIncome: [],
+      personalInvestmentProfile: {
+        investmentGoals: undefined,
+        investableAssets: undefined,
+        sourceOfIncome: [],
+      },
       termsAccepted: false,
     },
   });
@@ -235,6 +245,22 @@ export const SavingsFundOnboarding: FC = () => {
       setValue('address.countryCode', citizenship[0]);
     }
   }, [citizenship, setValue]);
+
+  // Clear the personal-profile group when intent becomes ONLY_VIA_COMPANY, so
+  // any partially-filled profile answers from an earlier SELF/BOTH choice
+  // can't leak into the KYC payload. The transform then doesn't need to gate
+  // on intent — the presence of the group object is the gate.
+  useEffect(() => {
+    if (investmentIntent === 'ONLY_VIA_COMPANY') {
+      setValue('personalInvestmentProfile', null);
+    } else if (investmentIntent && watch('personalInvestmentProfile') === null) {
+      setValue('personalInvestmentProfile', {
+        investmentGoals: undefined,
+        investableAssets: undefined,
+        sourceOfIncome: [],
+      });
+    }
+  }, [investmentIntent, setValue, watch]);
 
   useEffect(() => {
     if (user?.email) {

@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { Control, Controller, Path, useController } from 'react-hook-form';
+import { Control, Controller, FieldPath, FieldValues, useController } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { SharedOnboardingFields } from '../types';
+import { InvestmentGoalsValue } from '../types';
 import { InvestmentGoalOption } from '../types.api';
 import { TranslationKey } from '../../../../translations';
 import Radio from '../../../../common/radio';
 
-type InvestmentGoalStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> = {
+type InvestmentGoalStepProps<T extends FieldValues> = {
   control: Control<T>;
+  name: FieldPath<T>;
   options: { value: InvestmentGoalOption; labelId: TranslationKey }[];
   titleId: TranslationKey;
 };
@@ -17,7 +18,7 @@ const optionRadioId = (value: InvestmentGoalOption) =>
 
 const generateRadioOptions = (
   fieldName: string,
-  fieldValue: SharedOnboardingFields['investmentGoals'],
+  fieldValue: InvestmentGoalsValue | null | undefined,
   onChange: (value: { type: 'OPTION'; value: string }) => void,
   setIsOtherSelected: (value: boolean) => void,
   options: { value: InvestmentGoalOption; labelId: TranslationKey }[],
@@ -43,17 +44,18 @@ const generateRadioOptions = (
     );
   });
 
-export const InvestmentGoalStep = <T extends SharedOnboardingFields = SharedOnboardingFields>({
+export const InvestmentGoalStep = <T extends FieldValues>({
   control,
+  name,
   options,
   titleId,
 }: InvestmentGoalStepProps<T>) => {
   const intl = useIntl();
   const { field: investmentGoalsField } = useController({
     control,
-    name: 'investmentGoals' as Path<T>,
+    name,
   });
-  const fieldValue = investmentGoalsField.value as SharedOnboardingFields['investmentGoals'];
+  const fieldValue = investmentGoalsField.value as InvestmentGoalsValue | null | undefined;
   const [isOtherSelected, setIsOtherSelected] = useState(fieldValue?.type === 'TEXT');
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -77,10 +79,10 @@ export const InvestmentGoalStep = <T extends SharedOnboardingFields = SharedOnbo
       <div className="section-content d-flex flex-column gap-4">
         <Controller
           control={control}
-          name={'investmentGoals' as Path<T>}
+          name={name}
           rules={{
             validate: (raw) => {
-              const value = raw as SharedOnboardingFields['investmentGoals'];
+              const value = raw as InvestmentGoalsValue | null | undefined;
               if (!value) {
                 return intl.formatMessage({
                   id: 'flows.savingsFundOnboarding.investmentGoalStep.required',
@@ -95,7 +97,7 @@ export const InvestmentGoalStep = <T extends SharedOnboardingFields = SharedOnbo
             },
           }}
           render={({ field, fieldState: { error } }) => {
-            const value = field.value as SharedOnboardingFields['investmentGoals'];
+            const value = field.value as InvestmentGoalsValue | null | undefined;
             return (
               <div className="selection-group d-flex flex-column gap-2">
                 {generateRadioOptions(

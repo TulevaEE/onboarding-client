@@ -53,6 +53,8 @@ export const SavingsFundCompanyOnboarding = () => {
       registryLookup: undefined,
       companyValidatedData: undefined,
       companyAddress: { reuseBackendAddress: true },
+      investmentGoals: null,
+      investableAssets: null,
       sourceOfCompanyIncome: {
         ONLY_ACTIVE_IN_ESTONIA: false,
         NOT_SANCTIONED_NOT_PROFITING_FROM_SANCTIONED_COUNTRIES: false,
@@ -100,6 +102,7 @@ export const SavingsFundCompanyOnboarding = () => {
         <InvestmentGoalStep
           key="investmentGoal"
           control={control}
+          name="investmentGoals"
           titleId="flows.savingsFundOnboarding.investmentGoalStep.titleCompany"
           options={[
             {
@@ -124,6 +127,7 @@ export const SavingsFundCompanyOnboarding = () => {
         <InvestableAssetsStep
           key="investableAssets"
           control={control}
+          name="investableAssets"
           titleId="flows.savingsFundOnboarding.investableAssetsStep.titleCompany"
           options={[
             {
