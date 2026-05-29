@@ -15,6 +15,7 @@ import { OnboardingWizardLayout } from './OnboardingWizardLayout';
 import {
   useSavingsFundCompanyOnboardingStatus,
   useSubmitSavingsFundCompanyOnboardingSurvey,
+  useSwitchRole,
 } from '../../../common/apiHooks';
 import { transformCompanyFormDataToSurveyCommand } from '../utils';
 
@@ -37,11 +38,32 @@ export const SavingsFundCompanyOnboarding = () => {
   const { data: onboardingStatus } = useSavingsFundCompanyOnboardingStatus(submittedRegistryCode);
   const { mutateAsync: submitSurvey, isPending: submittingSurvey } =
     useSubmitSavingsFundCompanyOnboardingSurvey();
+  const switchRole = useSwitchRole();
 
   useEffect(() => {
-    if (onboardingStatus) {
-      history.push('/savings-fund/onboarding/pending');
+    if (!onboardingStatus) {
+      return;
     }
+    if (onboardingStatus.status === 'COMPLETED' && submittedRegistryCode) {
+      // KYB passed — switch to the new company account and open its deposit
+      // view directly. The standalone company path skips the account chooser
+      // (cf. AccountChoiceStep, used by the both-flow) and lands on the
+      // company's payment view so the deposit is unambiguously to the company
+      // (TKF #67 F7).
+      const openCompanyAccount = async () => {
+        try {
+          await switchRole.mutateAsync({ type: 'LEGAL_ENTITY', code: submittedRegistryCode });
+          history.push('/savings-fund/payment');
+        } catch {
+          setSubmitError(true);
+        }
+      };
+      openCompanyAccount();
+      return;
+    }
+    // REJECTED — legal entities never receive PENDING. Show the generic
+    // "we'll review it" outcome rather than surfacing a hard rejection.
+    history.push('/savings-fund/onboarding/pending');
   }, [onboardingStatus]);
 
   const { control, trigger, handleSubmit, watch } = useForm<CompanyOnboardingFormData>({
