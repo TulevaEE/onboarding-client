@@ -110,7 +110,8 @@ describe('SavingsFundCompanyOnboarding', () => {
     expect(await screen.findByText('2/7')).toBeInTheDocument();
   });
 
-  it('submits survey on the last step and redirects to success', async () => {
+  it('switches to the company account and opens the deposit view when KYB completes', async () => {
+    const switchBackend = switchRoleBackend(server);
     const history = createMemoryHistory();
     renderWrapped(<SavingsFundCompanyOnboarding />, history);
     await selectCompany();
@@ -126,12 +127,39 @@ describe('SavingsFundCompanyOnboarding', () => {
 
     userEvent.click(continueButton());
 
+    // A completed company KYB lands directly on the company's deposit view
+    // (no account chooser for the standalone path), not the "in review" page.
+    await waitFor(() => {
+      expect(switchBackend.switchedRole).toEqual({ type: 'LEGAL_ENTITY', code: '12345678' });
+    });
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/payment');
+    });
+  });
+
+  it('shows the pending page when the company KYB is rejected', async () => {
+    const history = createMemoryHistory();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history);
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
+        res(ctx.json({ status: 'REJECTED' })),
+      ),
+    );
+
+    userEvent.click(continueButton());
+
     await waitFor(() => {
       expect(history.location.pathname).toBe('/savings-fund/onboarding/pending');
     });
   });
 
   it('includes registry code as query parameter in survey POST', async () => {
+    switchRoleBackend(server);
     await navigateToStep2();
     await completeStepsThroughTerms();
 
@@ -154,6 +182,7 @@ describe('SavingsFundCompanyOnboarding', () => {
   });
 
   it('POSTs survey data to /v1/kyb/surveys on the last step', async () => {
+    switchRoleBackend(server);
     await navigateToStep2();
     await completeStepsThroughTerms();
 
@@ -198,6 +227,7 @@ describe('SavingsFundCompanyOnboarding', () => {
   });
 
   it('disables the continue button while survey is being submitted', async () => {
+    switchRoleBackend(server);
     await navigateToStep2();
     await completeStepsThroughTerms();
 
