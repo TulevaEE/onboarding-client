@@ -25,8 +25,8 @@ export const AmlPage = ({ save, updateUserSuccess, createAmlChecksSuccess, locat
     </p>
     <UpdateUserForm onSubmit={save}>
       <OccupationAgreement className="mt-3" />
-      <PoliticallyExposedPersonAgreement className="mt-3" />
-      <ResidencyAgreement className="mt-3 mb-4" />
+      <ResidencyAgreement className="mt-3" />
+      <PoliticallyExposedPersonAgreement className="mt-3 mb-4" />
     </UpdateUserForm>
   </div>
 );
