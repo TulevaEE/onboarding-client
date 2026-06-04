@@ -132,6 +132,10 @@ export const SavingsFundCompanyOnboarding = () => {
               labelId: 'flows.savingsFundOnboarding.investmentGoalStep.longTermCompany',
             },
             {
+              value: 'ASSET_MANAGEMENT',
+              labelId: 'flows.savingsFundOnboarding.investmentGoalStep.assetManagementCompany',
+            },
+            {
               value: 'SPECIFIC_GOAL',
               labelId: 'flows.savingsFundOnboarding.investmentGoalStep.specificGoalCompany',
             },

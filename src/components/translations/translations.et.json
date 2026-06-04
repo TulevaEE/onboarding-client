@@ -1404,7 +1404,7 @@
   "flows.savingsFundOnboarding.investmentGoalStep.longTerm": "Pikaajaline investeerimine, sh pension",
   "flows.savingsFundOnboarding.investmentGoalStep.specificGoal": "Konkreetne eesmärk (kodu, haridus jms)",
   "flows.savingsFundOnboarding.investmentGoalStep.childFuture": "Lapse tuleviku tarbeks kogumine",
-  "flows.savingsFundOnboarding.investmentGoalStep.activeTrading": "Aktiivne sh igapäevane kauplemine",
+  "flows.savingsFundOnboarding.investmentGoalStep.activeTrading": "Aktiivne kauplemine",
   "flows.savingsFundOnboarding.investmentGoalStep.other": "Muu…",
   "flows.savingsFundOnboarding.investmentGoalStep.otherPlaceholder": "Sisesta investeerimise eesmärk",
   "flows.savingsFundOnboarding.investmentGoalStep.required": "Jätkamiseks tee valik.",
@@ -1412,6 +1412,7 @@
   "flows.savingsFundOnboarding.investmentGoalStep.longTermCompany": "Osaühingu varade pikaajaline kasvatamine",
   "flows.savingsFundOnboarding.investmentGoalStep.specificGoalCompany": "Konkreetne eesmärk (nt seadmed, kinnisvara, laienemine)",
   "flows.savingsFundOnboarding.investmentGoalStep.titleCompany": "Mis on sinu osaühingu investeerimise eesmärk?",
+  "flows.savingsFundOnboarding.investmentGoalStep.assetManagementCompany": "Vaba raha paigutamine (varahaldus)",
 
   "flows.savingsFundOnboarding.investableAssetsStep.title": "Kui palju on sul investeeritavat vara?",
   "flows.savingsFundOnboarding.investableAssetsStep.description": "Investeeritavad varad on kohe kasutatav raha ja investeeringud, mida saad kiiresti müüa – näiteks pangakontol või hoiusel olev raha ning aktsiad, võlakirjad ja fondid.",
