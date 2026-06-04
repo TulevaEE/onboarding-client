@@ -14,13 +14,26 @@ import { PaymentBankButtons } from './PaymentBankButtons';
 import { RecurringPaymentDetails } from './RecurringPaymentDetails';
 import { PaymentSubmitSection } from './PaymentSubmitSection';
 
+const DEFAULT_PAYMENT_AMOUNTS: Record<AvailablePaymentType, string> = {
+  SINGLE: '1000',
+  RECURRING: '200',
+};
+
 export const Payment: React.FunctionComponent = () => {
   useIntl();
 
   const [paymentType, setPaymentType] = useState<AvailablePaymentType>('SINGLE');
-  const [paymentAmount, setPaymentAmount] = useState<string>('');
+  const [paymentAmount, setPaymentAmount] = useState<string>(DEFAULT_PAYMENT_AMOUNTS.SINGLE);
+  const [amountEdited, setAmountEdited] = useState<boolean>(false);
   const [paymentBank, setPaymentBank] = useState<BankKey | 'other' | null>(null);
   const [error, setError] = useState<boolean>(false);
+
+  const handlePaymentTypeChange = (type: AvailablePaymentType) => {
+    setPaymentType(type);
+    if (!amountEdited) {
+      setPaymentAmount(DEFAULT_PAYMENT_AMOUNTS[type]);
+    }
+  };
 
   const { data: user } = useMe();
 
@@ -66,7 +79,7 @@ export const Payment: React.FunctionComponent = () => {
           <FormattedMessage id="thirdPillarPayment.errorGeneratingLink" />
         </div>
       )}
-      <PaymentTypeSelection paymentType={paymentType} setPaymentType={setPaymentType} />
+      <PaymentTypeSelection paymentType={paymentType} setPaymentType={handlePaymentTypeChange} />
       <>
         <PaymentAmountInput
           paymentType={paymentType}
@@ -77,6 +90,7 @@ export const Payment: React.FunctionComponent = () => {
 
             if (value === '' || euroRegex.test(value)) {
               setPaymentAmount(value);
+              setAmountEdited(true);
             }
           }}
           onWheel={(event) => event.currentTarget.blur()}
