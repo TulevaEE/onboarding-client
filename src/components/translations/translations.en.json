@@ -1314,7 +1314,7 @@
   "flows.savingsFundOnboarding.investmentGoalStep.longTerm": "Long-term investment, including pension",
   "flows.savingsFundOnboarding.investmentGoalStep.specificGoal": "Specific goal (home, education, etc.)",
   "flows.savingsFundOnboarding.investmentGoalStep.childFuture": "Saving for child's future",
-  "flows.savingsFundOnboarding.investmentGoalStep.activeTrading": "Active trading, including daily trading",
+  "flows.savingsFundOnboarding.investmentGoalStep.activeTrading": "Active trading",
   "flows.savingsFundOnboarding.investmentGoalStep.other": "Other…",
   "flows.savingsFundOnboarding.investmentGoalStep.otherPlaceholder": "Enter investment goal",
   "flows.savingsFundOnboarding.investmentGoalStep.required": "Select an option to continue.",
@@ -1322,6 +1322,7 @@
   "flows.savingsFundOnboarding.investmentGoalStep.longTermCompany": "Long-term growth of company assets",
   "flows.savingsFundOnboarding.investmentGoalStep.specificGoalCompany": "Specific goal (e.g. equipment, property, expansion)",
   "flows.savingsFundOnboarding.investmentGoalStep.titleCompany": "What is your company's investment goal?",
+  "flows.savingsFundOnboarding.investmentGoalStep.assetManagementCompany": "Investing surplus cash (asset management)",
 
   "flows.savingsFundOnboarding.investableAssetsStep.title": "How much investable assets do you have?",
   "flows.savingsFundOnboarding.investableAssetsStep.description": "Investable assets are immediately available money and investments that you can sell quickly – for example, money in a bank account or deposit, and stocks, bonds, and funds.",

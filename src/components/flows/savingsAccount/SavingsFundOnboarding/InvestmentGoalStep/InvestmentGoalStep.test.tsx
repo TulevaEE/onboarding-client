@@ -25,6 +25,10 @@ const COMPANY_OPTIONS: StepOption[] = [
     labelId: 'flows.savingsFundOnboarding.investmentGoalStep.longTermCompany',
   },
   {
+    value: 'ASSET_MANAGEMENT',
+    labelId: 'flows.savingsFundOnboarding.investmentGoalStep.assetManagementCompany',
+  },
+  {
     value: 'SPECIFIC_GOAL',
     labelId: 'flows.savingsFundOnboarding.investmentGoalStep.specificGoalCompany',
   },
@@ -76,10 +80,11 @@ describe('InvestmentGoalStep', () => {
     renderWrapped(<CompanyInvestmentGoalStepWrapper options={COMPANY_OPTIONS} />);
 
     expect(screen.getByText('Long-term growth of company assets')).toBeInTheDocument();
+    expect(screen.getByText('Investing surplus cash (asset management)')).toBeInTheDocument();
     expect(
       screen.getByText('Specific goal (e.g. equipment, property, expansion)'),
     ).toBeInTheDocument();
-    expect(screen.getByText('Active trading, including daily trading')).toBeInTheDocument();
+    expect(screen.getByText('Active trading')).toBeInTheDocument();
     expect(screen.getByText('Other…')).toBeInTheDocument();
     expect(screen.queryByText("Saving for child's future")).not.toBeInTheDocument();
     expect(screen.queryByText('Long-term investment, including pension')).not.toBeInTheDocument();
@@ -91,7 +96,7 @@ describe('InvestmentGoalStep', () => {
     expect(screen.getByText('Long-term investment, including pension')).toBeInTheDocument();
     expect(screen.getByText('Specific goal (home, education, etc.)')).toBeInTheDocument();
     expect(screen.getByText("Saving for child's future")).toBeInTheDocument();
-    expect(screen.getByText('Active trading, including daily trading')).toBeInTheDocument();
+    expect(screen.getByText('Active trading')).toBeInTheDocument();
     expect(screen.getByText('Other…')).toBeInTheDocument();
   });
 });

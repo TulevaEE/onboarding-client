@@ -211,6 +211,80 @@ describe('SavingsFundCompanyOnboarding', () => {
     );
   });
 
+  it('submits an ASSET_MANAGEMENT option when the asset-management goal is chosen', async () => {
+    switchRoleBackend(server);
+    renderWrapped(<SavingsFundCompanyOnboarding />);
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTermsWithGoal(() =>
+      userEvent.click(
+        screen.getByRole('radio', { name: 'Investing surplus cash (asset management)' }),
+      ),
+    );
+
+    let surveyRequestBody: Record<string, unknown> | null = null;
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (req, res, ctx) => {
+        surveyRequestBody = req.body as Record<string, unknown>;
+        return res(ctx.status(200));
+      }),
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
+        res(ctx.json({ status: 'COMPLETED' })),
+      ),
+    );
+
+    userEvent.click(continueButton());
+
+    await waitFor(() => {
+      expect(surveyRequestBody).not.toBeNull();
+    });
+    expect(surveyRequestBody).toEqual(
+      expect.objectContaining({
+        answers: expect.arrayContaining([
+          { type: 'INVESTMENT_GOALS', value: { type: 'OPTION', value: 'ASSET_MANAGEMENT' } },
+        ]),
+      }),
+    );
+  });
+
+  it('submits free text when "Other" is chosen as the company investment goal', async () => {
+    switchRoleBackend(server);
+    renderWrapped(<SavingsFundCompanyOnboarding />);
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTermsWithGoal(() => {
+      userEvent.click(screen.getByRole('radio', { name: /Other/ }));
+      userEvent.type(screen.getByRole('textbox'), 'Soovin investeerida kinnisvarasse');
+    });
+
+    let surveyRequestBody: Record<string, unknown> | null = null;
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (req, res, ctx) => {
+        surveyRequestBody = req.body as Record<string, unknown>;
+        return res(ctx.status(200));
+      }),
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
+        res(ctx.json({ status: 'COMPLETED' })),
+      ),
+    );
+
+    userEvent.click(continueButton());
+
+    await waitFor(() => {
+      expect(surveyRequestBody).not.toBeNull();
+    });
+    expect(surveyRequestBody).toEqual(
+      expect.objectContaining({
+        answers: expect.arrayContaining([
+          {
+            type: 'INVESTMENT_GOALS',
+            value: { type: 'TEXT', value: 'Soovin investeerida kinnisvarasse' },
+          },
+        ]),
+      }),
+    );
+  });
+
   it('displays an error when survey submission fails', async () => {
     await navigateToStep2();
     await completeStepsThroughTerms();
@@ -380,6 +454,25 @@ const advanceToTerms = async () => {
 const completeStepsThroughTerms = async () => {
   await advanceToTerms();
   // Step 7: Terms
+  userEvent.click(screen.getByRole('checkbox'));
+};
+
+// Like completeStepsThroughTerms, but the investment goal at step 4 is chosen
+// by the provided callback instead of defaulting to the long-term option.
+const completeStepsThroughTermsWithGoal = async (pickGoal: () => void) => {
+  expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+  await advanceToStep(3);
+  await advanceToStep(4);
+  pickGoal();
+  await advanceToStep(5);
+  userEvent.click(screen.getByRole('radio', { name: '€20,001–€40,000' }));
+  await advanceToStep(6);
+  userEvent.click(screen.getByRole('checkbox', { name: /operates only in Estonia/i }));
+  userEvent.click(
+    screen.getByRole('checkbox', { name: /not sanctioned and does not do business/i }),
+  );
+  userEvent.click(screen.getByRole('checkbox', { name: /not involved in cryptocurrency/i }));
+  await advanceToStep(7);
   userEvent.click(screen.getByRole('checkbox'));
 };
 

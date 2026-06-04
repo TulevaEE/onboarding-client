@@ -27,7 +27,12 @@ type Letter =
   | 'Z';
 export type ISO2CountryCode = `${Letter}${Letter}`;
 export type PepSelfDeclaration = 'IS_PEP' | 'IS_NOT_PEP';
-export type InvestmentGoalOption = 'LONG_TERM' | 'SPECIFIC_GOAL' | 'CHILD' | 'TRADING';
+export type InvestmentGoalOption =
+  | 'LONG_TERM'
+  | 'ASSET_MANAGEMENT'
+  | 'SPECIFIC_GOAL'
+  | 'CHILD'
+  | 'TRADING';
 export type InvestableAssetsOption =
   | 'LESS_THAN_20K'
   | 'RANGE_20K_40K'
