@@ -49,6 +49,7 @@ describe('When a user is making a third pillar payment', () => {
 
   test('can fill in amount', async () => {
     const input = await amountInput();
+    userEvent.clear(input);
     userEvent.type(input, '23');
     expect(input.value).toBe('23');
   });
@@ -63,6 +64,7 @@ describe('When a user is making a third pillar payment', () => {
     const amount = await amountInput();
     const lhvBank = await lhvButton();
     const makePayment = await makePaymentButton();
+    userEvent.clear(amount);
     userEvent.type(amount, '23');
     userEvent.click(lhvBank);
     userEvent.click(makePayment);
@@ -75,11 +77,37 @@ describe('When a user is making a third pillar payment', () => {
     expect(windowLocation).toHaveBeenCalledTimes(1);
   });
 
+  test('prefills the suggested single payment amount', async () => {
+    const amount = await amountInput();
+    expect(amount.value).toBe('1000');
+  });
+
+  test('prefills the suggested recurring amount when switching to recurring', async () => {
+    const recurringPayment = await recurringPaymentOption();
+    userEvent.click(recurringPayment);
+    await waitFor(() => expect(screen.getByRole('textbox')).toHaveValue('200'));
+  });
+
+  test('can start a one time payment without changing the prefilled amount', async () => {
+    const lhvBank = await lhvButton();
+    const makePayment = await makePaymentButton();
+    userEvent.click(lhvBank);
+    userEvent.click(makePayment);
+
+    await waitFor(() =>
+      expect(windowLocation).toHaveBeenCalledWith(
+        'https://sandbox-payments.montonio.com?payment_token=example.jwt.token.with.1000.EUR.LHV',
+      ),
+    );
+    expect(windowLocation).toHaveBeenCalledTimes(1);
+  });
+
   test('can start a recurring payment', async () => {
     const recurringPayment = await recurringPaymentOption();
     const amount = await amountInput();
     const lhvBank = await lhvButton();
     userEvent.click(recurringPayment);
+    userEvent.clear(amount);
     userEvent.type(amount, '34');
     userEvent.click(lhvBank);
 
