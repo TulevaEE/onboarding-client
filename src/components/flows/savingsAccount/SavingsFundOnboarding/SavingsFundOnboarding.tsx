@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react';
 import { useForm, FieldPath, Control } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Redirect } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { captureException } from '@sentry/browser';
 import { usePageTitle } from '../../../common/usePageTitle';
@@ -24,17 +24,20 @@ import { ErrorResponse } from '../../../common/apiModels';
 import { OnboardingWizardLayout } from './OnboardingWizardLayout';
 
 // Pre-launch preview (TKF #67). The investment-intent step and the company (KYB)
-// branching are reachable ONLY on this unlisted URL until the 15 June 2026 launch.
-// The public /savings-fund/onboarding route keeps the original personal-only flow.
+// branching are reachable ONLY when companyOnboardingEnabled is set, which the
+// router passes solely on the unlisted /savings-fund/onboarding/uus route until
+// the 15 June 2026 launch. The prop is read from the route (not derived from the
+// live pathname) so a mid-flow history.push can't flip it false before unmount
+// and crash the wizard. The public /savings-fund/onboarding route renders this
+// component without the prop, keeping the original personal-only flow.
 //
 // Going live on 2026-06-15 is a pure code change — the public URL stays the same,
 // we just stop hiding the new flow. No feature flag / config / env toggle:
-//   1. Make `companyOnboardingEnabled` always true (see below) — the public
-//      /savings-fund/onboarding then renders the intent flow.
+//   1. Pass companyOnboardingEnabled on the public route too (or default it true)
+//      so /savings-fund/onboarding renders the intent flow.
 //   2. Delete the now-dead personal-only branch in buildSteps (the
-//      `if (!companyOnboardingEnabled)` early return) and this constant + its uses.
-//   3. Land the separate role-switcher "Lisan ettevõtte" PR.
-const COMPANY_ONBOARDING_PREVIEW_PATH = '/savings-fund/onboarding/uus';
+//      `if (!companyOnboardingEnabled)` early return).
+//   3. Remove the /uus route and land the role-switcher "Lisan ettevõtte" PR.
 
 type OnboardingStep = {
   component: JSX.Element;
@@ -173,15 +176,12 @@ const buildSteps = (
     : [...identitySteps, intentStep, ...profileSteps];
 };
 
-export const SavingsFundOnboarding: FC = () => {
+export const SavingsFundOnboarding: FC<{ companyOnboardingEnabled?: boolean }> = ({
+  companyOnboardingEnabled = false,
+}) => {
   usePageTitle('pageTitle.savingsFundOnboarding');
 
   const history = useHistory();
-
-  // TODO(2026-06-15) go-live: replace with `const companyOnboardingEnabled = true;`
-  // (then remove COMPANY_ONBOARDING_PREVIEW_PATH and the dead branch in buildSteps).
-  // Until then the intent + company flow is reachable only on the unlisted preview URL.
-  const companyOnboardingEnabled = history.location.pathname === COMPANY_ONBOARDING_PREVIEW_PATH;
 
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState<ErrorResponse | null>(null);
@@ -294,6 +294,9 @@ export const SavingsFundOnboarding: FC = () => {
   };
 
   const showNextSection = async () => {
+    if (!steps[activeSection]) {
+      return;
+    }
     const fieldsToValidate = steps[activeSection].fields;
     const isStepValid = await trigger(fieldsToValidate);
 
@@ -332,6 +335,18 @@ export const SavingsFundOnboarding: FC = () => {
     setActiveSection((current) => Math.min(current + 1, totalSections - 1));
   };
 
+  // Fail closed: a topology change must never dereference past the array and
+  // white-screen the wizard. The route-level prop fixes the known cause; this
+  // guards any future one — surface it to Sentry and fall back to a known route
+  // rather than crashing the React tree.
+  const currentStep = steps[activeSection];
+  if (!currentStep) {
+    captureException(
+      new Error(`SavingsFundOnboarding: no step at ${activeSection}/${steps.length}`),
+    );
+    return <Redirect to="/savings-fund/onboarding" />;
+  }
+
   return (
     <div className="col-12 col-md-10 col-lg-7 mx-auto">
       <OnboardingWizardLayout
@@ -342,7 +357,7 @@ export const SavingsFundOnboarding: FC = () => {
         loading={!onboardingStatus && loadingOnboardingStatus}
         submitting={submittingSurvey}
       >
-        {steps[activeSection].component}
+        {currentStep.component}
 
         {submitError ? (
           <div className="alert alert-danger" role="alert">

@@ -336,6 +336,14 @@ describe('SavingsFundOnboarding', () => {
     expect((history.location.state as { fromBothFlow?: boolean } | undefined)?.fromBothFlow).toBe(
       true,
     );
+
+    // The KYB destination must actually render. Before the fix the wizard
+    // crashed on this transition (white screen), so asserting only the pathname
+    // was a false green — assert the company step's UI is on screen.
+    expect(
+      await screen.findByRole('heading', { level: 2, name: "Enter your company's name" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('1/7')).toBeInTheDocument();
   });
 
   it('allows navigation back through steps', async () => {
