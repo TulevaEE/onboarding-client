@@ -123,7 +123,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
             <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.error.notFitting" />
             <ul className="m-0">
               {collectValidationErrors(data).map((validationError) => (
-                <li key={String(validationError)}>{String(validationError)}</li>
+                <li key={validationError}>{validationError}</li>
               ))}
             </ul>
           </div>
