@@ -3,7 +3,7 @@ import {
   ValidationError,
 } from '../../../../common/apiModels/company-onboarding';
 
-const errorMessage = (error: ValidationError): string =>
+export const errorMessage = (error: ValidationError): string =>
   typeof error === 'string' ? error : error.message;
 
 export const collectValidationErrors = (data: BusinessRegistryValidatedData): string[] =>

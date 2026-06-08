@@ -1274,6 +1274,11 @@
   "flows.savingsFundOnboarding.businessValidationStep.error.notBoardMember": "You are not a board member of this company. Only board members can proceed with onboarding.",
   "flows.savingsFundOnboarding.businessValidationStep.error.notFitting": "Your company does not currently meet our rules",
   "flows.savingsFundOnboarding.businessValidationStep.error.unexpectedError": "An unexpected error occurred. Please try again later.",
+  "flows.savingsFundOnboarding.businessValidationStep.relatedPerson": "Connected person",
+  "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.title": "Identity verification needed",
+  "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.description": "Before this company can open an account, everyone connected to it must open a personal Tuleva account and complete identity verification.",
+  "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.selfCta": "Complete my identity verification",
+  "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.shareInstruction": "Share this link with the connected people above so they can complete it:",
 
   "flows.savingsFundOnboarding.companyAddressStep.title": "Where does your company operate?",
   "flows.savingsFundOnboarding.companyAddressStep.description": "If the information here is incorrect, the data must be updated in the business registry.",
