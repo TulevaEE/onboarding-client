@@ -3,9 +3,9 @@ import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { useForm } from 'react-hook-form';
-import { createMemoryHistory } from 'history';
-import { companyValidationBackend, userBackend } from '../../../../../test/backend';
+import { companyValidationBackend } from '../../../../../test/backend';
 import { mockValidatedCompany } from '../../../../../test/backend-responses';
+import { ValidationError } from '../../../../common/apiModels/company-onboarding';
 import { initializeConfiguration } from '../../../../config/config';
 import { renderWrapped } from '../../../../../test/utils';
 import { CompanyOnboardingFormData } from '../types';
@@ -17,19 +17,28 @@ beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 beforeEach(() => {
   initializeConfiguration();
   companyValidationBackend(server);
-  userBackend(server);
 });
 
-// Backend signals an unverified related person as an error on the relatedPersons
-// field (it does not expose which specific person, only that some are incomplete).
-const relatedPersonIdentityIncomplete = () =>
+// The backend marks unverified connected people with dedicated codes on the
+// relatedPersons field: USER_KYC means the logged-in user is one of them,
+// OTHER_RELATED_PERSONS_KYC means someone else is. It does not expose which
+// specific person via the code.
+const USER_KYC_ERROR: ValidationError = {
+  code: 'USER_KYC',
+  message: 'Sinu isikusamasuse tuvastamine on lõpetamata',
+};
+const OTHER_PERSONS_KYC_ERROR: ValidationError = {
+  code: 'OTHER_RELATED_PERSONS_KYC',
+  message: 'Isikusamasuse tuvastamine on lõpetamata: Person McPerson',
+};
+const relatedPersonsError = (...errors: ValidationError[]) =>
   rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
     res(
       ctx.json({
         ...mockValidatedCompany,
         relatedPersons: {
           value: mockValidatedCompany.relatedPersons.value,
-          errors: ['Seotud isikute isikusamasuse tuvastamine on lõpetamata'],
+          errors,
         },
       }),
     ),
@@ -156,7 +165,10 @@ describe('RequirementsCheckStep', () => {
         res(
           ctx.json({
             ...mockValidatedCompany,
-            status: { value: 'INVALID', errors: ['INVALID_STATUS'] },
+            status: {
+              value: 'INVALID',
+              errors: [{ code: 'COMPANY_ACTIVE', message: 'Company status is invalid' }],
+            },
           }),
         ),
       ),
@@ -345,27 +357,6 @@ describe('RequirementsCheckStep', () => {
         res(
           ctx.json({
             ...mockValidatedCompany,
-            status: { value: 'INVALID', errors: ['Company status is invalid'] },
-          }),
-        ),
-      ),
-    );
-
-    renderWrapped(
-      <RequirementsCheckStepWrapper
-        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
-      />,
-    );
-
-    expect(await screen.findByText('Company status is invalid')).toBeInTheDocument();
-  });
-
-  it('displays the message of structured { code, message } validation errors', async () => {
-    server.use(
-      rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
-        res(
-          ctx.json({
-            ...mockValidatedCompany,
             status: {
               value: 'INVALID',
               errors: [{ code: 'COMPANY_ACTIVE', message: 'Company status is invalid' }],
@@ -395,8 +386,8 @@ describe('RequirementsCheckStep', () => {
     expect(screen.getByText('40404049996')).toBeInTheDocument();
   });
 
-  it('shows an identity-verification dead-end when a related person is unverified', async () => {
-    server.use(relatedPersonIdentityIncomplete());
+  it('shows an identity-verification dead-end when a connected person is unverified', async () => {
+    server.use(relatedPersonsError(OTHER_PERSONS_KYC_ERROR));
 
     renderWrapped(
       <RequirementsCheckStepWrapper
@@ -407,34 +398,42 @@ describe('RequirementsCheckStep', () => {
     expect(
       await screen.findByText(/everyone connected to it must open a personal Tuleva account/i),
     ).toBeInTheDocument();
-    // The raw backend error string must not leak into the UI as a bullet.
-    expect(
-      screen.queryByText('Seotud isikute isikusamasuse tuvastamine on lõpetamata'),
-    ).not.toBeInTheDocument();
+    // The raw backend KYC message must not leak into the UI as a bullet.
+    expect(screen.queryByText(/Isikusamasuse tuvastamine on lõpetamata/)).not.toBeInTheDocument();
   });
 
-  it('offers a personal identity CTA to the logged-in related person and routes to personal onboarding', async () => {
-    server.use(relatedPersonIdentityIncomplete());
-    userBackend(server, { personalCode: '40404049996' }); // matches Person McPerson
-    const history = createMemoryHistory();
+  it('offers a personal identity verification link that opens personal onboarding in a new tab when the logged-in user is unverified (USER_KYC)', async () => {
+    server.use(relatedPersonsError(USER_KYC_ERROR));
 
     renderWrapped(
       <RequirementsCheckStepWrapper
         defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
       />,
-      history,
     );
 
-    userEvent.click(
-      await screen.findByRole('button', { name: 'Complete my identity verification' }),
-    );
-
-    expect(history.location.pathname).toBe('/savings-fund/onboarding');
+    const cta = await screen.findByRole('link', { name: 'Complete my identity verification' });
+    expect(cta).toHaveAttribute('href', 'http://localhost/savings-fund/onboarding');
+    expect(cta).toHaveAttribute('target', '_blank');
+    expect(cta).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
-  it('shows only the shareable link, no personal CTA, when the user is not a related person', async () => {
-    server.use(relatedPersonIdentityIncomplete());
-    userBackend(server, { personalCode: '38888888888' }); // not among related persons
+  it('shows no shareable link when only the logged-in user is unverified', async () => {
+    server.use(relatedPersonsError(USER_KYC_ERROR));
+
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(
+      await screen.findByRole('link', { name: 'Complete my identity verification' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Share this link/i)).not.toBeInTheDocument();
+  });
+
+  it('shows only the shareable link (opening in a new tab), no personal CTA, when only other people are unverified (OTHER_RELATED_PERSONS_KYC)', async () => {
+    server.use(relatedPersonsError(OTHER_PERSONS_KYC_ERROR));
 
     renderWrapped(
       <RequirementsCheckStepWrapper
@@ -446,7 +445,35 @@ describe('RequirementsCheckStep', () => {
       await screen.findByText(/Share this link with the connected people above/i),
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole('button', { name: 'Complete my identity verification' }),
+      screen.getByRole('link', { name: 'http://localhost/savings-fund/onboarding' }),
+    ).toHaveAttribute('target', '_blank');
+    expect(
+      screen.queryByRole('link', { name: 'Complete my identity verification' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('treats a non-identity relatedPersons error as a generic requirement failure, not an identity dead-end', async () => {
+    server.use(
+      relatedPersonsError({
+        code: 'COMPANY_STRUCTURE',
+        message: 'Ettevõtte omandistruktuur ei ole toetatud',
+      }),
+    );
+
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(
+      await screen.findByText('Ettevõtte omandistruktuur ei ole toetatud'),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText(/everyone connected to it must open a personal Tuleva account/i),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('link', { name: 'Complete my identity verification' }),
     ).not.toBeInTheDocument();
   });
 

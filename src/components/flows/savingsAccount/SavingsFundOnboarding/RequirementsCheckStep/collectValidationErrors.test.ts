@@ -6,19 +6,7 @@ describe('collectValidationErrors', () => {
     expect(collectValidationErrors(mockValidatedCompany)).toEqual([]);
   });
 
-  it('returns errors from fields that have them', () => {
-    const data = {
-      ...mockValidatedCompany,
-      status: { value: 'INVALID', errors: ['Company status is invalid'] },
-      naceCode: { value: '', errors: ['NACE code is not allowed'] },
-    };
-    expect(collectValidationErrors(data)).toEqual([
-      'Company status is invalid',
-      'NACE code is not allowed',
-    ]);
-  });
-
-  it('returns the message from structured { code, message } errors', () => {
+  it('returns the messages from fields that have errors', () => {
     const data = {
       ...mockValidatedCompany,
       status: {
