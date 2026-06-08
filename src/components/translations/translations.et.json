@@ -1364,6 +1364,11 @@
   "flows.savingsFundOnboarding.businessValidationStep.error.notBoardMember": "Sa ei ole selle osaühingu juhatuse liige. Ainult juhatuse liikmed saavad jätkata.",
   "flows.savingsFundOnboarding.businessValidationStep.error.notFitting": "Sinu osaühing ei vasta hetkel meie reeglitele",
   "flows.savingsFundOnboarding.businessValidationStep.error.unexpectedError": "Ilmnes ootamatu viga. Palun proovi hiljem uuesti.",
+  "flows.savingsFundOnboarding.businessValidationStep.relatedPerson": "Seotud isik",
+  "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.title": "Vaja on isikutuvastust",
+  "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.description": "Enne kui ettevõte saab konto avada, peavad kõik sellega seotud isikud avama isikliku Tuleva konto ja läbima isikutuvastuse.",
+  "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.selfCta": "Lõpeta minu isikutuvastus",
+  "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.shareInstruction": "Jaga seda linki ülaltoodud seotud isikutega, et nad saaksid isikutuvastuse läbida:",
 
   "flows.savingsFundOnboarding.companyAddressStep.title": "Kus sinu osaühing tegutseb?",
   "flows.savingsFundOnboarding.companyAddressStep.description": "Kui siinne info ei vasta tõele, tuleb andmeid uuendada äriregistris.",
