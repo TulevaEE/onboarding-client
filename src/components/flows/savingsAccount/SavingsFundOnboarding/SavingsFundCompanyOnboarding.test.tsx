@@ -8,6 +8,7 @@ import {
   companyValidationBackend,
   rolesBackend,
   switchRoleBackend,
+  userBackend,
 } from '../../../../test/backend';
 import { mockValidatedCompany } from '../../../../test/backend-responses';
 import { initializeConfiguration } from '../../../config/config';
@@ -32,6 +33,7 @@ beforeEach(() => {
   initializeConfiguration();
   businessRegistryBackend(server, [{ company_id: 123, name: 'Acme Corp', reg_code: '12345678' }]);
   companyValidationBackend(server);
+  userBackend(server);
 });
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
@@ -319,6 +321,23 @@ describe('SavingsFundCompanyOnboarding', () => {
     await waitFor(() => {
       expect(continueButton()).toBeDisabled();
     });
+  });
+
+  it('disables Continue on the requirements step while the company fails validation', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
+        res(
+          ctx.json({
+            ...mockValidatedCompany,
+            status: { value: 'DELETED', errors: ['Company status is invalid'] },
+          }),
+        ),
+      ),
+    );
+    await navigateToStep2();
+
+    expect(await screen.findByText('Company status is invalid')).toBeInTheDocument();
+    expect(continueButton()).toBeDisabled();
   });
 
   it('does not show the confirmations error until the user tries to continue', async () => {

@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import { CompanyOnboardingFormData } from './types';
 import { BusinessRegistryStep } from './BusinessRegistryStep';
 import { RequirementsCheckStep } from './RequirementsCheckStep';
+import { hasNoValidationErrors } from './RequirementsCheckStep/hasNoValidationErrors';
 import { CompanyAddressStep } from './CompanyAddressStep';
 import { InvestmentGoalStep } from './InvestmentGoalStep';
 import { InvestableAssetsStep } from './InvestableAssetsStep';
@@ -87,6 +88,7 @@ export const SavingsFundCompanyOnboarding = () => {
   });
 
   const termsAccepted = watch('termsAccepted');
+  const companyValidatedData = watch('companyValidatedData');
 
   const submitForm = handleSubmit(async (data) => {
     const registryCode = data.registryLookup?.registryNumber ?? '';
@@ -210,6 +212,13 @@ export const SavingsFundCompanyOnboarding = () => {
   const totalSections = steps.length;
   const currentSection = activeSection + 1;
   const isTermsStep = activeSection === totalSections - 1;
+  // The requirements step (index 1) cannot be passed while the company fails
+  // validation, so disable Continue with the reason on screen instead of letting
+  // the click silently no-op.
+  const requirementsStepBlocked =
+    activeSection === 1 &&
+    companyValidatedData != null &&
+    !hasNoValidationErrors(companyValidatedData);
 
   const showPreviousSection = () => {
     if (activeSection === 0) {
@@ -261,7 +270,7 @@ export const SavingsFundCompanyOnboarding = () => {
         onBack={showPreviousSection}
         onNext={showNextSection}
         submitting={submittingSurvey}
-        nextDisabled={isTermsStep && !termsAccepted}
+        nextDisabled={(isTermsStep && !termsAccepted) || requirementsStepBlocked}
       >
         {steps[activeSection].component}
 

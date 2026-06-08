@@ -3,7 +3,8 @@ import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { useForm } from 'react-hook-form';
-import { companyValidationBackend } from '../../../../../test/backend';
+import { createMemoryHistory } from 'history';
+import { companyValidationBackend, userBackend } from '../../../../../test/backend';
 import { mockValidatedCompany } from '../../../../../test/backend-responses';
 import { initializeConfiguration } from '../../../../config/config';
 import { renderWrapped } from '../../../../../test/utils';
@@ -16,7 +17,23 @@ beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 beforeEach(() => {
   initializeConfiguration();
   companyValidationBackend(server);
+  userBackend(server);
 });
+
+// Backend signals an unverified related person as an error on the relatedPersons
+// field (it does not expose which specific person, only that some are incomplete).
+const relatedPersonIdentityIncomplete = () =>
+  rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
+    res(
+      ctx.json({
+        ...mockValidatedCompany,
+        relatedPersons: {
+          value: mockValidatedCompany.relatedPersons.value,
+          errors: ['Seotud isikute isikusamasuse tuvastamine on lõpetamata'],
+        },
+      }),
+    ),
+  );
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
@@ -376,6 +393,61 @@ describe('RequirementsCheckStep', () => {
 
     expect(await screen.findByText('Person McPerson')).toBeInTheDocument();
     expect(screen.getByText('40404049996')).toBeInTheDocument();
+  });
+
+  it('shows an identity-verification dead-end when a related person is unverified', async () => {
+    server.use(relatedPersonIdentityIncomplete());
+
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(
+      await screen.findByText(/everyone connected to it must open a personal Tuleva account/i),
+    ).toBeInTheDocument();
+    // The raw backend error string must not leak into the UI as a bullet.
+    expect(
+      screen.queryByText('Seotud isikute isikusamasuse tuvastamine on lõpetamata'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('offers a personal identity CTA to the logged-in related person and routes to personal onboarding', async () => {
+    server.use(relatedPersonIdentityIncomplete());
+    userBackend(server, { personalCode: '40404049996' }); // matches Person McPerson
+    const history = createMemoryHistory();
+
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+      history,
+    );
+
+    userEvent.click(
+      await screen.findByRole('button', { name: 'Complete my identity verification' }),
+    );
+
+    expect(history.location.pathname).toBe('/savings-fund/onboarding');
+  });
+
+  it('shows only the shareable link, no personal CTA, when the user is not a related person', async () => {
+    server.use(relatedPersonIdentityIncomplete());
+    userBackend(server, { personalCode: '38888888888' }); // not among related persons
+
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(
+      await screen.findByText(/Share this link with the connected people above/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Complete my identity verification' }),
+    ).not.toBeInTheDocument();
   });
 
   it('displays error when backend returns 501 UNEXPECTED_ERROR', async () => {
