@@ -17,4 +17,22 @@ describe('collectValidationErrors', () => {
       'NACE code is not allowed',
     ]);
   });
+
+  it('returns the message from structured { code, message } errors', () => {
+    const data = {
+      ...mockValidatedCompany,
+      status: {
+        value: 'INVALID',
+        errors: [{ code: 'COMPANY_ACTIVE', message: 'Company status is invalid' }],
+      },
+      naceCode: {
+        value: '',
+        errors: [{ code: 'HIGH_RISK_NACE', message: 'NACE code is not allowed' }],
+      },
+    };
+    expect(collectValidationErrors(data)).toEqual([
+      'Company status is invalid',
+      'NACE code is not allowed',
+    ]);
+  });
 });
