@@ -1,9 +1,15 @@
+// A field validation error from the KYB initial-validation endpoint. Historically a
+// plain localized string; the backend is moving to a { code, message } pair so the
+// machine-readable code can drive behaviour without parsing copy. We accept both shapes
+// so the client tolerates either backend version during rollout.
+export type ValidationError = string | { code: string; message: string };
+
 export type BusinessRegistryValidatedData = {
-  name: { value: string; errors: unknown[] };
-  registryCode: { value: string; errors: unknown[] };
+  name: { value: string; errors: ValidationError[] };
+  registryCode: { value: string; errors: ValidationError[] };
   status: {
     value: string; // enum
-    errors: unknown[];
+    errors: ValidationError[];
   };
   address: {
     value: {
@@ -13,23 +19,23 @@ export type BusinessRegistryValidatedData = {
       postalCode: string;
       countryCode: string | null;
     };
-    errors: unknown[];
+    errors: ValidationError[];
   };
   businessActivity: {
     value: string; // enum
-    errors: unknown[];
+    errors: ValidationError[];
   };
   legalForm: {
     value: string;
-    errors: unknown[];
+    errors: ValidationError[];
   };
   naceCode: {
     value: string;
-    errors: unknown[];
+    errors: ValidationError[];
   };
   foundingDate: {
     value: string;
-    errors: unknown[];
+    errors: ValidationError[];
   };
   relatedPersons: {
     value: [
@@ -38,6 +44,6 @@ export type BusinessRegistryValidatedData = {
         name: string;
       },
     ];
-    errors: unknown[];
+    errors: ValidationError[];
   };
 };
