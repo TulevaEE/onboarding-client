@@ -2,13 +2,19 @@ import './RequirementsCheckStep.scss';
 import { FC, useEffect } from 'react';
 import { Control, useController, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { useHistory } from 'react-router-dom';
-import { useCompanyBusinessRegistryValidation, useMe } from '../../../../common/apiHooks';
+import { useCompanyBusinessRegistryValidation } from '../../../../common/apiHooks';
 import { formatDateYear } from '../../../../common/dateFormatter';
 import { Shimmer } from '../../../../common/shimmer/Shimmer';
 import { CompanyOnboardingFormData } from '../types';
-import { errorMessage } from './collectValidationErrors';
+import { errorCode, errorMessage } from './collectValidationErrors';
 import { hasNoValidationErrors } from './hasNoValidationErrors';
+
+// Identity-verification codes the backend sets on the relatedPersons field.
+// USER_KYC: the logged-in user themselves is unverified (we can offer a direct CTA).
+// OTHER_RELATED_PERSONS_KYC: someone else connected to the company is (offer a link).
+const USER_KYC_CODE = 'USER_KYC';
+const OTHER_RELATED_PERSONS_KYC_CODE = 'OTHER_RELATED_PERSONS_KYC';
+const IDENTITY_KYC_CODES = [USER_KYC_CODE, OTHER_RELATED_PERSONS_KYC_CODE];
 
 type RequirementsCheckStepProps = {
   control: Control<CompanyOnboardingFormData>;
@@ -48,26 +54,27 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
     field.onChange(data);
   }, [isSuccess, data]);
 
-  const history = useHistory();
-  const { data: user } = useMe();
-
-  // The backend flags incomplete identity verification as an error on the
-  // relatedPersons field. It does not tell us which related person is unverified
-  // (only that some are), so we degrade to a generic call to action plus a
-  // shareable link, and offer a direct CTA only when the logged-in user is one
-  // of the connected people and can act on it themselves.
-  const identityIncomplete = isSuccess && !!data && data.relatedPersons.errors.length > 0;
-  const currentUserIsRelatedPerson =
-    !!data &&
-    data.relatedPersons.value.some((person) => person.personalCode === user?.personalCode);
+  // The backend marks unverified connected people with dedicated identity codes on
+  // the relatedPersons field. USER_KYC means the logged-in user is one of them, so
+  // we offer a direct CTA; OTHER_RELATED_PERSONS_KYC means someone else is, so we
+  // offer a shareable link. It does not expose which specific person, so the copy
+  // stays generic. Any other relatedPersons error (e.g. ownership structure) is a
+  // genuine "company does not fit" reason and flows to the generic list below.
+  const relatedPersonErrorCodes = (data?.relatedPersons.errors ?? []).map(errorCode);
+  const userIdentityIncomplete = relatedPersonErrorCodes.includes(USER_KYC_CODE);
+  const otherPersonsIdentityIncomplete = relatedPersonErrorCodes.includes(
+    OTHER_RELATED_PERSONS_KYC_CODE,
+  );
+  const identityIncomplete =
+    isSuccess && (userIdentityIncomplete || otherPersonsIdentityIncomplete);
   const identityVerificationUrl = `${window.location.origin}/savings-fund/onboarding`;
 
-  // Errors on every field except relatedPersons (which has its own dedicated
-  // identity dead-end block) — these are genuine "company does not fit" reasons.
+  // Every validation error except the identity-KYC ones (which have their own
+  // dedicated dead-end block) — these are genuine "company does not fit" reasons.
   const otherRequirementErrors = data
-    ? Object.entries(data)
-        .filter(([fieldName]) => fieldName !== 'relatedPersons')
-        .flatMap(([, validatedField]) => validatedField.errors)
+    ? Object.values(data)
+        .flatMap((validatedField) => validatedField.errors)
+        .filter((validationError) => !IDENTITY_KYC_CODES.includes(errorCode(validationError)))
         .map(errorMessage)
     : [];
 
@@ -167,21 +174,26 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
                 <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.description" />
               </span>
             </div>
-            {currentUserIsRelatedPerson && (
-              <button
-                type="button"
+            {userIdentityIncomplete && (
+              <a
                 className="btn btn-primary"
-                onClick={() => history.push('/savings-fund/onboarding')}
+                href={identityVerificationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.selfCta" />
-              </button>
+              </a>
             )}
-            <div className="d-flex flex-column gap-1">
-              <span>
-                <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.shareInstruction" />
-              </span>
-              <a href={identityVerificationUrl}>{identityVerificationUrl}</a>
-            </div>
+            {otherPersonsIdentityIncomplete && (
+              <div className="d-flex flex-column gap-1">
+                <span>
+                  <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.shareInstruction" />
+                </span>
+                <a href={identityVerificationUrl} target="_blank" rel="noopener noreferrer">
+                  {identityVerificationUrl}
+                </a>
+              </div>
+            )}
           </div>
         )}
         {isNotBoardMember && (

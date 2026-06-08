@@ -1,8 +1,7 @@
-// A field validation error from the KYB initial-validation endpoint. Historically a
-// plain localized string; the backend is moving to a { code, message } pair so the
-// machine-readable code can drive behaviour without parsing copy. We accept both shapes
-// so the client tolerates either backend version during rollout.
-export type ValidationError = string | { code: string; message: string };
+// A field validation error from the KYB initial-validation endpoint: a machine-readable
+// code plus a localized human message. The code drives client behaviour (e.g. the
+// identity-verification dead-end) without parsing copy.
+export type ValidationError = { code: string; message: string };
 
 export type BusinessRegistryValidatedData = {
   name: { value: string; errors: ValidationError[] };

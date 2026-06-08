@@ -99,7 +99,10 @@ describe('SavingsFundCompanyOnboarding', () => {
         res(
           ctx.json({
             ...mockValidatedCompany,
-            status: { value: 'INVALID', errors: ['INVALID_STATUS'] },
+            status: {
+              value: 'INVALID',
+              errors: [{ code: 'COMPANY_ACTIVE', message: 'Company status is invalid' }],
+            },
           }),
         ),
       ),
@@ -329,7 +332,10 @@ describe('SavingsFundCompanyOnboarding', () => {
         res(
           ctx.json({
             ...mockValidatedCompany,
-            status: { value: 'DELETED', errors: ['Company status is invalid'] },
+            status: {
+              value: 'DELETED',
+              errors: [{ code: 'COMPANY_ACTIVE', message: 'Company status is invalid' }],
+            },
           }),
         ),
       ),
