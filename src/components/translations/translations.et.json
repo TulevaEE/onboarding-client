@@ -1,5 +1,5 @@
 {
-  "login.title": "Sisene oma pensionikontole",
+  "login.title": "Sisene oma kontole",
   "login.subtitle": "Sisse logida saab igaüks. Ka siis, kui veel Tulevas ei kogu.",
   "login.title.thirdPillar.withExchange": "Soovid oma III samba fondiosakud vahetada ning teha III sambasse sissemakse {monthlyContribution} eurot kuus",
   "login.title.thirdPillar.withoutExchange": "Soovid valida III samba pensionifondi ning teha III sambasse sissemakse {monthlyContribution} eurot kuus",
