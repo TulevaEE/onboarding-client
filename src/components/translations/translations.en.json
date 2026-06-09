@@ -1246,7 +1246,7 @@
   "savingsFund.recurring.copyCard.recipientIban": "Recipient account (IBAN)",
   "savingsFund.recurring.copyCard.description": "Description",
   "savingsFund.recurring.copyCard.amount": "Amount",
-  "savingsFund.recurring.help": "Need help? Write to <email>tuleva@tuleva.ee</email> or call <phone>+372 644 5100</phone>.",
+  "savingsFund.recurring.help": "Need help? Write to <email>tuleva@tuleva.ee</email> or call <phone>644 5100</phone>.",
 
   "flows.savingsFundOnboarding.title": "Opening an Additional Savings Fund",
   "flows.savingsFundOnboarding.currentStep": "Step {currentStep} / {totalSteps}",

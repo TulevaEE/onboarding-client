@@ -1336,7 +1336,7 @@
   "savingsFund.recurring.copyCard.recipientIban": "Kontonumber",
   "savingsFund.recurring.copyCard.description": "Selgitus",
   "savingsFund.recurring.copyCard.amount": "Summa",
-  "savingsFund.recurring.help": "Vajad abi? Kirjuta <email>tuleva@tuleva.ee</email> või helista <phone>+372 644 5100</phone>.",
+  "savingsFund.recurring.help": "Vajad abi? Kirjuta <email>tuleva@tuleva.ee</email> või helista <phone>644 5100</phone>.",
 
   "flows.savingsFundOnboarding.title": "Täiendava Kogumisfondi avamine",
   "flows.savingsFundOnboarding.currentStep": "Samm {currentStep} / {totalSteps}",
