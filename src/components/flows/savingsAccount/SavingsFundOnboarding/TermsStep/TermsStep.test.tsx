@@ -89,6 +89,28 @@ describe('TermsStep', () => {
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Review fund documents');
   });
 
+  test('renders the fund summary as plain bullet points', () => {
+    renderWrapped(<TermsStepWrapper />);
+
+    expect(screen.getByRole('heading', { name: 'Fund in brief' })).toBeInTheDocument();
+    expect(screen.getAllByRole('listitem')).toHaveLength(4);
+
+    expect(screen.getByText('Fee 0.28% per year, no additional fees')).toBeInTheDocument();
+    expect(
+      screen.getByText('A broad-based index fund investing in global equities'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'The value can fluctuate from year to year, so it is best suited for long-term investing',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Flexible withdrawals – money reaches your account within three business days',
+      ),
+    ).toBeInTheDocument();
+  });
+
   test('renders links to all fund documents', () => {
     renderWrapped(<TermsStepWrapper />);
 
