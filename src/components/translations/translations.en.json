@@ -349,6 +349,7 @@
   "update.user.thanks": "Thanks!",
   "update.user.success.message": "Your details have been updated.",
   "account.second.pillar.missing": "You have not joined the II pillar. What are your options? 1. Those born 1970 or later can join again II pillar from 01.01.2020 onwards. 2. Start saving into Tuleva III Pillar Pension Fund.",
+  "account.legalEntity.greeting": "Hi, {name} representative",
   "pension.registry.connection.exception": "Couldn’t connect to the Estonian Pension Registry, please try again.",
   "change.my.pension.fund": "Change II pillar fund",
   "change.my.pension.fund.third.pillar": "Change III pillar fund",
