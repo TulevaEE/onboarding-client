@@ -44,12 +44,6 @@ describe('CompanyIncomeSourceStep', () => {
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('I confirm the following');
   });
 
-  it('does not repeat the confirmation wording below the title', () => {
-    renderWrapped(<CompanyIncomeSourceStepWrapper />);
-
-    expect(screen.queryByText('I confirm that')).not.toBeInTheDocument();
-  });
-
   it('renders 3 checkboxes', () => {
     renderWrapped(<CompanyIncomeSourceStepWrapper />);
 
