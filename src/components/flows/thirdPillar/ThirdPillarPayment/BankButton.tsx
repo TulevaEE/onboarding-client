@@ -14,7 +14,7 @@ export const BankButton = ({ bankKey, paymentBank, setPaymentBank, disabled = fa
 
   const getBankName = (key: Props['bankKey']) => {
     if (key === 'other') {
-      return formatMessage({ id: 'thirdPillarPayment.otherBank' });
+      return formatMessage({ id: 'thirdPillarPayment.paymentInfo' });
     }
 
     return bankKeyToBankNameMap[key];

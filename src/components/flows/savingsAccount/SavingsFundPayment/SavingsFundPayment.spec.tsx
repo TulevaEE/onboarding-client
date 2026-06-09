@@ -98,8 +98,8 @@ describe(SavingsFundPayment, () => {
   it('does not show investment account reminder when "Other bank" is selected', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
 
-    const otherBankRadio = screen.getByRole('radio', { name: 'Other bank' });
-    userEvent.click(otherBankRadio);
+    const paymentInfoRadio = screen.getByRole('radio', { name: 'Payment info' });
+    userEvent.click(paymentInfoRadio);
 
     expect(await screen.findByText('Did you make the payment?')).toBeInTheDocument();
     expect(
@@ -142,9 +142,9 @@ describe(SavingsFundPayment, () => {
   it('shows "Other bank" option and displays payment details when selected', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
 
-    const otherBankRadio = screen.getByRole('radio', { name: 'Other bank' });
-    userEvent.click(otherBankRadio);
-    expect(otherBankRadio).toBeChecked();
+    const paymentInfoRadio = screen.getByRole('radio', { name: 'Payment info' });
+    userEvent.click(paymentInfoRadio);
+    expect(paymentInfoRadio).toBeChecked();
 
     expect(await screen.findByText('Make a deposit from another bank')).toBeInTheDocument();
     expect(screen.getByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
@@ -155,8 +155,8 @@ describe(SavingsFundPayment, () => {
   it('shows "Back to account page" link when "Other bank" is selected', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
 
-    const otherBankRadio = screen.getByRole('radio', { name: 'Other bank' });
-    userEvent.click(otherBankRadio);
+    const paymentInfoRadio = screen.getByRole('radio', { name: 'Payment info' });
+    userEvent.click(paymentInfoRadio);
 
     expect(await screen.findByText('Did you make the payment?')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Back to account page' })).toHaveAttribute(
@@ -172,8 +172,8 @@ describe(SavingsFundPayment, () => {
     const amountInput = screen.getByRole('textbox', { name: 'Amount' });
     userEvent.type(amountInput, '250');
 
-    const otherBankRadio = screen.getByRole('radio', { name: 'Other bank' });
-    userEvent.click(otherBankRadio);
+    const paymentInfoRadio = screen.getByRole('radio', { name: 'Payment info' });
+    userEvent.click(paymentInfoRadio);
 
     expect(await screen.findByText('250.00 EUR')).toBeInTheDocument();
   });
@@ -185,7 +185,7 @@ describe(SavingsFundPayment, () => {
     userEvent.type(amountInput, '15000');
 
     expect(screen.queryByRole('radio', { name: 'LHV' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('radio', { name: 'Other bank' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('radio', { name: 'Payment info' })).not.toBeInTheDocument();
 
     expect(await screen.findByText('Make a deposit via bank transfer')).toBeInTheDocument();
     expect(screen.getByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
@@ -214,7 +214,7 @@ describe(SavingsFundPayment, () => {
     userEvent.type(amountInput, '14999');
 
     expect(screen.getByRole('radio', { name: 'LHV' })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: 'Other bank' })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Payment info' })).toBeInTheDocument();
     expect(screen.queryByText('Make a deposit from another bank')).not.toBeInTheDocument();
   });
 
@@ -308,7 +308,7 @@ describe(SavingsFundPayment, () => {
       expect(await findPageHeading()).toBeInTheDocument();
       userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '50');
       selectRecurring();
-      userEvent.click(screen.getByRole('radio', { name: 'Other bank' }));
+      userEvent.click(screen.getByRole('radio', { name: 'Payment info' }));
 
       expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
       expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
@@ -319,7 +319,7 @@ describe(SavingsFundPayment, () => {
       expect(await findPageHeading()).toBeInTheDocument();
       userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '50');
       selectRecurring();
-      userEvent.click(screen.getByRole('radio', { name: 'Other bank' }));
+      userEvent.click(screen.getByRole('radio', { name: 'Payment info' }));
 
       expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
       expect(screen.queryByRole('link', { name: 'Continue' })).not.toBeInTheDocument();
@@ -437,8 +437,8 @@ describe(SavingsFundPayment, () => {
     it('shows registry code in other bank payment details', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
 
-      const otherBankRadio = screen.getByRole('radio', { name: 'Other bank' });
-      userEvent.click(otherBankRadio);
+      const paymentInfoRadio = screen.getByRole('radio', { name: 'Payment info' });
+      userEvent.click(paymentInfoRadio);
 
       expect(await screen.findByText('Make a deposit from another bank')).toBeInTheDocument();
       expect(screen.getByText('12345678')).toBeInTheDocument();
