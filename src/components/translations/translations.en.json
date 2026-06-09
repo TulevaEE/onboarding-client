@@ -1285,7 +1285,6 @@
   "flows.savingsFundOnboarding.companyAddressStep.reUseAddress": "Same address as in business registry",
 
   "flows.savingsFundOnboarding.companyIncomeSourceStep.title": "I confirm the following",
-  "flows.savingsFundOnboarding.companyIncomeSourceStep.description": "I confirm that",
   "flows.savingsFundOnboarding.companyIncomeSourceStep.onlyActiveInEstonia": "The company operates only in Estonia",
   "flows.savingsFundOnboarding.companyIncomeSourceStep.onlyActiveInEstonia.tooltip": "The company has no permanent place of business abroad. Selling goods and services abroad is allowed.",
   "flows.savingsFundOnboarding.companyIncomeSourceStep.notSanctioned": "The company is not sanctioned and does not do business with sanctioned countries or persons",

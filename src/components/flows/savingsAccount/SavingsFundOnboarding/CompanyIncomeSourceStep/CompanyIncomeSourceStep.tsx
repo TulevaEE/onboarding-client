@@ -39,9 +39,6 @@ export const CompanyIncomeSourceStep: FC<CompanyIncomeSourceStepProps> = ({ cont
         <h2 className="m-0">
           <FormattedMessage id="flows.savingsFundOnboarding.companyIncomeSourceStep.title" />
         </h2>
-        <p className="m-0">
-          <FormattedMessage id="flows.savingsFundOnboarding.companyIncomeSourceStep.description" />
-        </p>
       </div>
       <Controller
         control={control}
