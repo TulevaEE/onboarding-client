@@ -51,8 +51,8 @@ describe('RepresentedPartyAccountPage', () => {
     history.push('/account');
   });
 
-  test('renders a greeting with company name', async () => {
-    expect(await screen.findByText(/Hi, Acme OÜ/)).toBeInTheDocument();
+  test('greets the company representative', async () => {
+    expect(await screen.findByText('Hi, Acme OÜ representative')).toBeInTheDocument();
   });
 
   test('renders savings fund overview with deposit and withdraw links', async () => {

@@ -14,7 +14,7 @@ export function RepresentedPartyAccountPage() {
     <section aria-label="represented-party-account">
       {user && (
         <p className="my-5 m-0 lead">
-          <FormattedMessage id="account.greeting" />, {user.role.name}
+          <FormattedMessage id="account.legalEntity.greeting" values={{ name: user.role.name }} />
         </p>
       )}
 
