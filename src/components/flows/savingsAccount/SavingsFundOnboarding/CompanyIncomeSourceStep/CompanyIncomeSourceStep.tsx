@@ -13,6 +13,7 @@ const CHECKBOX_OPTIONS: ReadonlyArray<{
   {
     key: 'ONLY_ACTIVE_IN_ESTONIA',
     labelId: 'flows.savingsFundOnboarding.companyIncomeSourceStep.onlyActiveInEstonia',
+    tooltipId: 'flows.savingsFundOnboarding.companyIncomeSourceStep.onlyActiveInEstonia.tooltip',
   },
   {
     key: 'NOT_SANCTIONED_NOT_PROFITING_FROM_SANCTIONED_COUNTRIES',
