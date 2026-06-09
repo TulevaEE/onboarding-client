@@ -80,10 +80,10 @@ describe('When a user is making a third pillar gift', () => {
   test('can see Other bank payment details', async () => {
     const personalCode = await personalCodeInput();
     const amount = await amountInput();
-    const otherBank = await otherBankButton();
+    const paymentInfo = await paymentInfoButton();
     userEvent.type(personalCode, '49001011238');
     userEvent.type(amount, '23');
-    userEvent.click(otherBank);
+    userEvent.click(paymentInfo);
 
     expect(await screen.findByText('Pay to:')).toBeInTheDocument();
     expect(screen.getByText('AS Pensionikeskus')).toBeInTheDocument();
@@ -107,8 +107,8 @@ describe('When a user is making a third pillar gift', () => {
     userEvent.type(personalCode, '49001011238');
     const amount = await amountInput();
     userEvent.type(amount, '34');
-    const otherBank = await otherBankButton();
-    userEvent.click(otherBank);
+    const paymentInfo = await paymentInfoButton();
+    userEvent.click(paymentInfo);
     const backToAccountPage = await backToAccountPageButton();
     userEvent.click(backToAccountPage);
 
@@ -125,7 +125,7 @@ describe('When a user is making a third pillar gift', () => {
     });
   const lhvButton: () => Promise<HTMLInputElement> = async () => screen.findByLabelText('LHV');
 
-  const otherBankButton = async () => screen.findByLabelText('Other bank');
+  const paymentInfoButton = async () => screen.findByLabelText('Payment info');
 
   const makePaymentButton = async () => screen.findByRole('button', { name: 'Start payment' });
 

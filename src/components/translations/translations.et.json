@@ -496,7 +496,6 @@
   "thirdPillarPayment.paymentType": "Millist tüüpi makset soovid teha?",
   "thirdPillarPayment.singlePaymentBank": "Vali pank, kust soovid makset teha:",
   "thirdPillarPayment.recurringPaymentBank": "Vali pank, kust soovid püsimakset teha:",
-  "thirdPillarPayment.otherBank": "Muu pank",
   "thirdPillarPayment.singlePaymentHowMuch": "Kui palju peaksin sisse maksma? Arvuta meie tulumaksukalkulaatoriga",
   "thirdPillarPayment.recurringPaymentHowMuch": "Kui palju peaksin igakuiselt sisse maksma? Arvuta meie tulumaksukalkulaatoriga",
   "thirdPillarPayment.recurringPaymentHowTo": "Kuidas püsikorralduse lepingut sõlmida?",
@@ -526,6 +525,7 @@
   "thirdPillarPayment.EMPLOYER.rtkNavigationGuide": "Mine: Isikuandmed → Esita avaldus → III samba sissemaksed otse palgast",
   "thirdPillarPayment.EMPLOYER.rtkFormFields": "Vajalik info avalduse täitmiseks:",
   "thirdPillarPayment.EMPLOYER.rtkDigitalSignature": "Kinnita avaldus RTK portaalis digiallkirjaga.",
+  "thirdPillarPayment.paymentInfo": "Makseinfo",
 
   "thirdPillarSuccess.done": "Sissemakse tehtud",
   "thirdPillarSuccess.message": "Makse jõuab fondi 2 tööpäeva jooksul.",
