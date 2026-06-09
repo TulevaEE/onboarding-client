@@ -66,6 +66,14 @@ describe('CompanyIncomeSourceStep', () => {
     ).toBeInTheDocument();
   });
 
+  it('explains the only-active-in-Estonia statement in a tooltip', () => {
+    renderWrapped(<CompanyIncomeSourceStepWrapper />);
+
+    expect(
+      screen.getByText(/The company has no permanent place of business abroad/i),
+    ).toBeInTheDocument();
+  });
+
   it('explains what counts as crypto business in a tooltip', () => {
     renderWrapped(<CompanyIncomeSourceStepWrapper />);
 
