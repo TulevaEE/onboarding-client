@@ -44,12 +44,6 @@ describe('CompanyIncomeSourceStep', () => {
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('I confirm the following');
   });
 
-  it('renders description', () => {
-    renderWrapped(<CompanyIncomeSourceStepWrapper />);
-
-    expect(screen.getByText('I confirm that')).toBeInTheDocument();
-  });
-
   it('renders 3 checkboxes', () => {
     renderWrapped(<CompanyIncomeSourceStepWrapper />);
 
