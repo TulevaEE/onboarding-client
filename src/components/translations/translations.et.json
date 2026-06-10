@@ -1449,6 +1449,12 @@
   "flows.savingsFundOnboarding.termsStep.confirmText": "Kinnitan, et olen dokumentidega tutvunud ja mõistan, et investeering võib ajas nii kasvada kui kahaneda",
   "flows.savingsFundOnboarding.termsStep.error": "Jätkamiseks pead dokumentidega tutvuma.",
   "flows.savingsFundOnboarding.termsStep.confirmTextCompany": "Kinnitan ettevõtte nimel, et olen dokumentidega tutvunud ja mõistan, et investeering võib ajas nii kasvada kui kahaneda",
+  "flows.savingsFundOnboarding.termsStep.summary.title": "Lühidalt Täiendavast Kogumisfondist",
+  "flows.savingsFundOnboarding.termsStep.summary.fee": "Tasu 0,28% aastas, lisatasudeta",
+  "flows.savingsFundOnboarding.termsStep.summary.strategy": "Laiapõhjaline indeksfond, mis investeerib maailma aktsiatesse",
+  "flows.savingsFundOnboarding.termsStep.summary.risk": "Fondi väärtus võib aastati kõikuda, seega sobib pikaajaliseks investeerimiseks",
+  "flows.savingsFundOnboarding.termsStep.summary.withdrawals": "Paindlikud väljamaksed – raha laekub kontole kolme tööpäeva jooksul",
+
   "flows.savingsFundOnboarding.investmentIntentStep.title": "Kuidas soovid investeerida?",
   "flows.savingsFundOnboarding.investmentIntentStep.description": "See määrab, milliseid küsimusi järgmisena küsime.",
   "flows.savingsFundOnboarding.investmentIntentStep.self": "Ainult isiklikult",

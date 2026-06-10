@@ -11,6 +11,13 @@ type TermsStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> =
   confirmTextId?: TranslationKey;
 };
 
+const SUMMARY_BULLETS: TranslationKey[] = [
+  'flows.savingsFundOnboarding.termsStep.summary.fee',
+  'flows.savingsFundOnboarding.termsStep.summary.strategy',
+  'flows.savingsFundOnboarding.termsStep.summary.risk',
+  'flows.savingsFundOnboarding.termsStep.summary.withdrawals',
+];
+
 export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFields>({
   control,
   documents,
@@ -26,6 +33,18 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
         </h2>
       </div>
       <div className="section-content d-flex flex-column gap-5">
+        <div className="d-flex flex-column gap-3 bg-light border border-gray-2 rounded-3 p-3 p-sm-4">
+          <h3 className="m-0 fs-5 fw-bold">
+            <FormattedMessage id="flows.savingsFundOnboarding.termsStep.summary.title" />
+          </h3>
+          <ul className="m-0 ps-3 d-flex flex-column gap-2">
+            {SUMMARY_BULLETS.map((id) => (
+              <li key={id}>
+                <FormattedMessage id={id} />
+              </li>
+            ))}
+          </ul>
+        </div>
         <div className="d-flex flex-column gap-3">
           {documents.map(({ href, labelId }) => (
             <DocumentLink key={href} href={href}>
