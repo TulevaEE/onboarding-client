@@ -63,6 +63,11 @@ export const SavingsFundRecurringDetails: FC<Props> = ({
   isLegalEntity,
 }) => {
   const meta = BANK_META[bank];
+  // Swedbank only pre-fills the private standing-order form. Legal entities are
+  // sent to the business page, which has no pre-fill, so they copy the fields
+  // manually like any other LANDING bank.
+  const linkBehavior: LinkBehavior =
+    bank === 'SWEDBANK' && isLegalEntity ? 'LANDING' : meta.linkBehavior;
   const hasAmount = Number.isFinite(amount) && (amount ?? 0) >= 1;
   const { data, isLoading, isFetching, isError } = useQuery<PaymentLink>({
     queryKey: ['paymentLink', 'SAVINGS_RECURRING', meta.channel ?? null, amount, personalCode],
@@ -103,7 +108,7 @@ export const SavingsFundRecurringDetails: FC<Props> = ({
           </h3>
 
           <PaymentStep number={1}>
-            {meta.linkBehavior === 'MANUAL' ? (
+            {linkBehavior === 'MANUAL' ? (
               <FormattedMessage id="savingsFund.recurring.step.openBank.generic" />
             ) : (
               <FormattedMessage
@@ -114,7 +119,7 @@ export const SavingsFundRecurringDetails: FC<Props> = ({
           </PaymentStep>
 
           <PaymentStep number={2}>
-            {meta.linkBehavior === 'PREFILLED' ? (
+            {linkBehavior === 'PREFILLED' ? (
               <>
                 <FormattedMessage id="savingsFund.recurring.step.review" />
                 <div className="mt-3 p-3 p-md-4 payment-details-table">
@@ -183,7 +188,7 @@ export const SavingsFundRecurringDetails: FC<Props> = ({
         <Link to="/account" className="btn btn-outline-primary">
           <FormattedMessage id="savingsFund.payment.form.cancel.label" />
         </Link>
-        {meta.linkBehavior !== 'MANUAL' && bankUrl && !isFetching && (
+        {linkBehavior !== 'MANUAL' && bankUrl && !isFetching && (
           <a
             href={bankUrl}
             target="_blank"

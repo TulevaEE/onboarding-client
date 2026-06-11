@@ -495,5 +495,20 @@ describe(SavingsFundPayment, () => {
       expect(screen.queryByText(/paying from an/i)).not.toBeInTheDocument();
       expect(screen.queryByText(/investment account/i)).not.toBeInTheDocument();
     });
+
+    it('shows a copy-card for Swedbank recurring because the business page has no pre-fill', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '50');
+      userEvent.click(screen.getByRole('radio', { name: 'Recurring payment' }));
+      userEvent.click(screen.getByRole('radio', { name: 'Swedbank' }));
+
+      expect(
+        await screen.findByRole('heading', { name: 'Set up the recurring payment in Swedbank' }),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Copy these details into your bank')).toBeInTheDocument();
+      expect(screen.queryByText('Check the details')).not.toBeInTheDocument();
+      expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
+      expect(screen.getByText('12345678')).toBeInTheDocument();
+    });
   });
 });
