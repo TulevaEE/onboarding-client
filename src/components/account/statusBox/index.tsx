@@ -13,16 +13,20 @@ interface Props {
   conversion?: UserConversion;
   secondPillarFunds?: SourceFund[];
   thirdPillarFunds?: SourceFund[];
+  loading?: boolean;
 }
 
 export const StatusBoxComponent: React.FunctionComponent<Props> = ({
   conversion,
   secondPillarFunds,
   thirdPillarFunds,
+  loading = false,
 }) => {
   useSavingsFundOnboardingStatus();
 
-  if (!conversion || !secondPillarFunds || !thirdPillarFunds) {
+  // `loading` covers refreshes over stale data — e.g. a role switch refetches
+  // everything, and the previous role's data must not flash wrong statuses.
+  if (loading || !conversion || !secondPillarFunds || !thirdPillarFunds) {
     return <StatusBoxLoader />;
   }
   return (
@@ -43,15 +47,20 @@ export const StatusBoxComponent: React.FunctionComponent<Props> = ({
 type State = {
   login: {
     userConversion: UserConversion;
+    loadingUserConversion: boolean;
   };
-  exchange: { sourceFunds: SourceFund[] };
-  thirdPillar: { sourceFunds: SourceFund[] };
+  exchange: { sourceFunds: SourceFund[]; loadingSourceFunds: boolean };
+  thirdPillar: { sourceFunds: SourceFund[]; loadingSourceFunds: boolean };
 };
 
 const mapStateToProps = (state: State) => ({
   conversion: state.login.userConversion,
   secondPillarFunds: state.exchange.sourceFunds,
   thirdPillarFunds: state.thirdPillar.sourceFunds,
+  loading:
+    state.login.loadingUserConversion ||
+    state.exchange.loadingSourceFunds ||
+    state.thirdPillar.loadingSourceFunds,
 });
 
 export const StatusBox = connect(mapStateToProps)(StatusBoxComponent);

@@ -21,6 +21,13 @@ exports[`StatusBoxLoader renders correctly 1`] = `
       />
     </div>
     <div
+      className="d-flex p-3 status-box-row tv-table__row"
+    >
+      <Shimmer
+        height={76}
+      />
+    </div>
+    <div
       className="d-flex p-3 status-box-row"
     >
       <Shimmer

@@ -22,4 +22,10 @@ describe('Status Box', () => {
     component.setProps({ conversion: undefined });
     expect(component).toMatchSnapshot();
   });
+
+  it('shows only a loader while the state is refreshing, even when stale data is present', () => {
+    component.setProps({ loading: true });
+    expect(component.find('StatusBoxLoader')).toHaveLength(1);
+    expect(component.find('ThirdPillarStatusBox')).toHaveLength(0);
+  });
 });
