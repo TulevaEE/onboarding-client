@@ -6,13 +6,28 @@ import { setupServer } from 'msw/node';
 import {
   businessRegistryBackend,
   companyValidationBackend,
+  kycIdentityBackend,
+  savingsFundOnboardingSurveyBackend,
   switchRoleBackend,
   userBackend,
 } from '../../../../test/backend';
-import { mockValidatedCompany } from '../../../../test/backend-responses';
+import {
+  mockCompleteKycIdentity,
+  mockContactOnlyKycIdentity,
+  mockValidatedCompany,
+} from '../../../../test/backend-responses';
 import { initializeConfiguration } from '../../../config/config';
 import { renderWrapped } from '../../../../test/utils';
 import { SavingsFundCompanyOnboarding } from './SavingsFundCompanyOnboarding';
+import {
+  fillCitizenshipStep,
+  fillContactDetailsStep,
+  fillPepStep,
+  fillResidencyStep,
+  mockInAadress,
+} from '../../../../test/identityStepFills';
+
+mockInAadress();
 
 const server = setupServer();
 
@@ -22,20 +37,13 @@ beforeEach(() => {
   businessRegistryBackend(server, [{ company_id: 123, name: 'Acme Corp', reg_code: '12345678' }]);
   companyValidationBackend(server);
   userBackend(server);
+  kycIdentityBackend(server, mockCompleteKycIdentity);
+  savingsFundOnboardingSurveyBackend(server);
 });
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 describe('SavingsFundCompanyOnboarding', () => {
-  it('renders the business registry step with progress showing 1/7', () => {
-    renderWrapped(<SavingsFundCompanyOnboarding />);
-
-    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
-      "Enter your company's name",
-    );
-    expect(screen.getByText('1/7')).toBeInTheDocument();
-  });
-
   it('does not fetch onboarding status before form is submitted', async () => {
     let statusRequested = false;
     server.use(
@@ -51,17 +59,17 @@ describe('SavingsFundCompanyOnboarding', () => {
     expect(statusRequested).toBe(false);
   });
 
-  it('has Continue and Back buttons', () => {
+  it('has Continue and Back buttons', async () => {
     renderWrapped(<SavingsFundCompanyOnboarding />);
 
-    expect(continueButton()).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: /continue/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /back/i })).toBeInTheDocument();
   });
 
   it('does not advance past step 1 when no company is selected', async () => {
     renderWrapped(<SavingsFundCompanyOnboarding />);
 
-    userEvent.click(continueButton());
+    userEvent.click(await screen.findByRole('button', { name: /continue/i }));
 
     expect(await screen.findByText('1/7')).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
@@ -69,14 +77,14 @@ describe('SavingsFundCompanyOnboarding', () => {
     );
   });
 
-  it('goes back to the previous page when Back is clicked on the first step', () => {
+  it('goes back to the previous page when Back is clicked on the first step', async () => {
     const history = createMemoryHistory({
       initialEntries: ['/savings-fund/onboarding', '/savings-fund/onboarding/company'],
       initialIndex: 1,
     });
     renderWrapped(<SavingsFundCompanyOnboarding />, history);
 
-    userEvent.click(screen.getByRole('button', { name: /back/i }));
+    userEvent.click(await screen.findByRole('button', { name: /back/i }));
 
     expect(history.location.pathname).toBe('/savings-fund/onboarding');
   });
@@ -370,12 +378,115 @@ describe('SavingsFundCompanyOnboarding', () => {
       expect(continueButton()).toBeEnabled();
     });
   });
+
+  it('refreshes the requirements check when Check again is clicked', async () => {
+    let validationCalls = 0;
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) => {
+        validationCalls += 1;
+        if (validationCalls === 1) {
+          return res(
+            ctx.json({
+              ...mockValidatedCompany,
+              relatedPersons: {
+                ...mockValidatedCompany.relatedPersons,
+                errors: [
+                  {
+                    code: 'OTHER_RELATED_PERSONS_KYC',
+                    message: 'Related persons are not identified',
+                  },
+                ],
+              },
+            }),
+          );
+        }
+        return res(ctx.json(mockValidatedCompany));
+      }),
+    );
+    await navigateToStep2();
+
+    expect(await screen.findByRole('button', { name: 'Check again' })).toBeInTheDocument();
+    expect(continueButton()).toBeDisabled();
+
+    userEvent.click(screen.getByRole('button', { name: 'Check again' }));
+
+    await waitFor(() => {
+      expect(continueButton()).toBeEnabled();
+    });
+    expect(screen.queryByRole('button', { name: 'Check again' })).not.toBeInTheDocument();
+  });
+
+  it('collects identity before the company steps when it is not on file', async () => {
+    kycIdentityBackend(server, mockContactOnlyKycIdentity);
+    let captured: { purpose?: string; answers: { type: string }[] } | null = null;
+    savingsFundOnboardingSurveyBackend(server, (body) => {
+      captured = body;
+    });
+
+    renderWrapped(<SavingsFundCompanyOnboarding />);
+
+    expect(await screen.findByText('1/11')).toBeInTheDocument();
+
+    await fillCitizenshipStep();
+    await fillResidencyStep();
+    await fillContactDetailsStep();
+    await fillPepStep();
+
+    expect(
+      await screen.findByRole('heading', { level: 2, name: "Enter your company's name" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('5/11')).toBeInTheDocument();
+
+    const capturedBody = captured as unknown as {
+      purpose?: string;
+      answers: { type: string }[];
+    } | null;
+    expect(capturedBody).not.toBeNull();
+    expect(capturedBody?.purpose).toBe('IDENTITY_ONLY');
+    const types = (capturedBody?.answers ?? []).map((answer) => answer.type);
+    expect(types).toEqual(
+      expect.arrayContaining(['CITIZENSHIP', 'ADDRESS', 'EMAIL', 'PEP_SELF_DECLARATION']),
+    );
+    expect(types).not.toContain('INVESTMENT_GOALS');
+    expect(types).not.toContain('SOURCE_OF_INCOME');
+  });
+
+  it('starts directly at the registry step when identity is on file', async () => {
+    renderWrapped(<SavingsFundCompanyOnboarding />);
+
+    expect(
+      await screen.findByRole('heading', { level: 2, name: "Enter your company's name" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('1/7')).toBeInTheDocument();
+  });
+
+  it('stays on the identity steps and shows an error when the identity submission fails', async () => {
+    kycIdentityBackend(server, mockContactOnlyKycIdentity);
+    server.use(
+      rest.post('http://localhost/v1/kyc/surveys', (_req, res, ctx) => res(ctx.status(500))),
+    );
+
+    renderWrapped(<SavingsFundCompanyOnboarding />);
+
+    expect(await screen.findByText('1/11')).toBeInTheDocument();
+
+    await fillCitizenshipStep();
+    await fillResidencyStep();
+    await fillContactDetailsStep();
+    await fillPepStep();
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Are you a politically exposed person?', level: 2 }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('4/11')).toBeInTheDocument();
+  });
 });
 
 const continueButton = () => screen.getByRole('button', { name: /continue/i });
 
 const selectCompany = async () => {
-  userEvent.type(screen.getByPlaceholderText('Search...'), 'Acme');
+  userEvent.type(await screen.findByPlaceholderText('Search...'), 'Acme');
   userEvent.click(await screen.findByRole('option', { name: /Acme Corp/ }));
 };
 

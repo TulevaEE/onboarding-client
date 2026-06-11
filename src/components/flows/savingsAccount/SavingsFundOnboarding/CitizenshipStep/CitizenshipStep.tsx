@@ -3,10 +3,10 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Control, Controller } from 'react-hook-form';
 import { mapCountriesToGroupedOptions } from '../../../../common/countries';
 import { MultiSelect, MultiSelectOptionGroup } from '../../../../common/MultiSelect/MultiSelect';
-import { OnboardingFormData } from '../types';
+import { IdentityFormFields } from '../types';
 
 type CitizenshipStepProps = {
-  control: Control<OnboardingFormData>;
+  control: Control<IdentityFormFields>;
 };
 
 export const CitizenshipStep: FC<CitizenshipStepProps> = ({ control }) => {

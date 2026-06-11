@@ -23,7 +23,7 @@ type RequirementsCheckStepProps = {
 export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control }) => {
   const registryCode = useWatch({ control, name: 'registryLookup.registryNumber' });
   const registryName = useWatch({ control, name: 'registryLookup.registryName' });
-  const { data, isSuccess, isLoading, isError, error } =
+  const { data, isSuccess, isLoading, isError, error, refetch, isFetching } =
     useCompanyBusinessRegistryValidation(registryCode);
   const isNotBoardMember =
     isError && (error as { body?: { error?: string } })?.body?.error === 'NOT_BOARD_MEMBER';
@@ -194,6 +194,14 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
                 </a>
               </div>
             )}
+            <button
+              type="button"
+              className="btn btn-outline-primary"
+              onClick={() => refetch()}
+              disabled={isFetching}
+            >
+              <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.checkAgain" />
+            </button>
           </div>
         )}
         {isNotBoardMember && (

@@ -3,11 +3,11 @@ import { useForm } from 'react-hook-form';
 import { IntlProvider } from 'react-intl';
 import { renderWrapped } from '../../../../../test/utils';
 import { ResidencyStep } from './ResidencyStep';
-import { OnboardingFormData } from '../types';
+import { IdentityFormFields } from '../types';
 import translations from '../../../../translations';
 
 const ResidencyStepWrapper = ({ defaultCountryCode = 'FI' }: { defaultCountryCode?: string }) => {
-  const { control } = useForm<OnboardingFormData>({
+  const { control } = useForm<IdentityFormFields>({
     defaultValues: {
       citizenship: [],
       address: {
@@ -18,7 +18,6 @@ const ResidencyStepWrapper = ({ defaultCountryCode = 'FI' }: { defaultCountryCod
       },
       email: '',
       pepSelfDeclaration: null,
-      termsAccepted: false,
     },
   });
 

@@ -5,7 +5,12 @@ import { setupServer } from 'msw/node';
 import { Route } from 'react-router-dom';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import { initializeConfiguration } from '../../../config/config';
-import { savingsFundOnboardingStatusBackend, useTestBackends } from '../../../../test/backend';
+import {
+  kycIdentityBackend,
+  savingsFundOnboardingStatusBackend,
+  useTestBackends,
+} from '../../../../test/backend';
+import { mockCompleteKycIdentity } from '../../../../test/backend-responses';
 import LoggedInApp from '../../../LoggedInApp';
 
 describe('SavingsFundOnboardingChooser', () => {
@@ -102,6 +107,7 @@ describe('SavingsFundOnboardingChooser', () => {
   });
 
   it('renders the company flow on the company route', async () => {
+    kycIdentityBackend(server, mockCompleteKycIdentity);
     history.push('/savings-fund/onboarding/company');
 
     expect(

@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Control, useController } from 'react-hook-form';
 
-import { OnboardingFormData } from '../../types';
+import { IdentityFormFields } from '../../types';
 
 import './EstonianAddressForm.scss';
 
@@ -41,7 +41,7 @@ const isMaaAmetAddress = (address: unknown): address is MaaAmetAddress => {
 };
 
 type EstonianAddressFormProps = {
-  control: Control<OnboardingFormData>;
+  control: Control<IdentityFormFields>;
 };
 
 export const EstonianAddressForm: FC<EstonianAddressFormProps> = ({ control }) => {

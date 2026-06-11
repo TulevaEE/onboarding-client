@@ -263,6 +263,21 @@ small {
   user-select: none;
 }
 
+// The text-color utilities above are !important, which would otherwise beat
+// the dropdown's interaction states and leave low-contrast text on the blue
+// active background — inside a dropdown, the state color must win.
+.dropdown-item {
+  &:hover,
+  &:focus {
+    color: var(--bs-dropdown-link-hover-color) !important;
+  }
+
+  &:active,
+  &.active {
+    color: var(--bs-dropdown-link-active-color) !important;
+  }
+}
+
 .text-balance {
   text-wrap: balance;
 }

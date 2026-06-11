@@ -4,11 +4,11 @@ import { useForm } from 'react-hook-form';
 import { IntlProvider } from 'react-intl';
 import { renderWrapped, selectCountryOptionInTomSelect } from '../../../../../test/utils';
 import { CitizenshipStep } from './CitizenshipStep';
-import { OnboardingFormData } from '../types';
+import { IdentityFormFields } from '../types';
 import translations from '../../../../translations';
 
 const CitizenshipStepWrapper = ({ onSubmit = jest.fn() }: { onSubmit?: jest.Mock } = {}) => {
-  const { control, handleSubmit, trigger } = useForm<OnboardingFormData>({
+  const { control, handleSubmit, trigger } = useForm<IdentityFormFields>({
     mode: 'onBlur',
     defaultValues: {
       citizenship: [],
@@ -20,7 +20,6 @@ const CitizenshipStepWrapper = ({ onSubmit = jest.fn() }: { onSubmit?: jest.Mock
       },
       email: '',
       pepSelfDeclaration: null,
-      termsAccepted: false,
     },
   });
 

@@ -101,8 +101,23 @@ const featureIcons: Record<string, ReactNode> = {
   ),
 };
 
+const usersIcon = (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    fill="currentColor"
+    viewBox="0 0 256 256"
+    aria-hidden="true"
+  >
+    <path d="M125.18,156.94a64,64,0,1,0-82.36,0,100.23,100.23,0,0,0-39.49,32,12,12,0,0,0,19.35,14.2,76,76,0,0,1,122.64,0,12,12,0,0,0,19.36-14.2A100.33,100.33,0,0,0,125.18,156.94ZM44,108a40,40,0,1,1,40,40A40,40,0,0,1,44,108Zm206.1,97.67a12,12,0,0,1-16.78-2.57A76.31,76.31,0,0,0,172,172a12,12,0,0,1,0-24,40,40,0,1,0-10.3-78.67,12,12,0,1,1-6.16-23.19,64,64,0,0,1,57.64,110.8,100.23,100.23,0,0,1,39.49,32A12,12,0,0,1,250.1,205.67Z" />
+  </svg>
+);
+
 // Condensed from the terms step's "Fund in brief" summary — short enough for
 // one line on desktop, two on mobile.
+featureIcons.users = usersIcon;
+
 const optionFeatures = {
   person: [
     { icon: 'globe', messageId: 'flows.savingsFundOnboarding.chooser.person.feature1' },
@@ -112,7 +127,7 @@ const optionFeatures = {
   company: [
     { icon: 'chart', messageId: 'flows.savingsFundOnboarding.chooser.company.feature1' },
     { icon: 'percent', messageId: 'flows.savingsFundOnboarding.chooser.company.feature2' },
-    { icon: 'money', messageId: 'flows.savingsFundOnboarding.chooser.company.feature3' },
+    { icon: 'users', messageId: 'flows.savingsFundOnboarding.chooser.company.feature3' },
   ],
   child: [],
 } as const;

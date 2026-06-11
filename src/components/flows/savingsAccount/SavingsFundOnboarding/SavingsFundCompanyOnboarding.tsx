@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useForm, FieldPath } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { CompanyOnboardingFormData } from './types';
@@ -15,9 +15,19 @@ import { OnboardingFlowLayout } from './OnboardingFlowLayout';
 import {
   useSavingsFundCompanyOnboardingStatus,
   useSubmitSavingsFundCompanyOnboardingSurvey,
+  useSubmitSavingsFundOnboardingSurvey,
   useSwitchRole,
 } from '../../../common/apiHooks';
-import { transformCompanyFormDataToSurveyCommand } from '../utils';
+import {
+  transformCompanyFormDataToSurveyCommand,
+  transformIdentityToOnboardingSurveyCommand,
+} from '../utils';
+import {
+  IdentityLoadError,
+  OnboardingStep,
+  buildIdentitySteps,
+  useIdentityOnFile,
+} from './identitySteps';
 
 export const SavingsFundCompanyOnboarding = () => {
   const history = useHistory();
@@ -28,6 +38,8 @@ export const SavingsFundCompanyOnboarding = () => {
   const { data: onboardingStatus } = useSavingsFundCompanyOnboardingStatus(submittedRegistryCode);
   const { mutateAsync: submitSurvey, isPending: submittingSurvey } =
     useSubmitSavingsFundCompanyOnboardingSurvey();
+  const { mutateAsync: submitIdentitySurvey, isPending: submittingIdentity } =
+    useSubmitSavingsFundOnboardingSurvey();
   const switchRole = useSwitchRole();
 
   useEffect(() => {
@@ -54,28 +66,44 @@ export const SavingsFundCompanyOnboarding = () => {
     history.push('/savings-fund/onboarding/pending');
   }, [onboardingStatus]);
 
-  const { control, trigger, handleSubmit, watch } = useForm<CompanyOnboardingFormData>({
-    // Validate on submit (each "Continue" triggers validation explicitly), so a
-    // half-filled confirmations step doesn't flash an error after the first
-    // checkbox; reValidateMode then clears the error as the user ticks the rest.
-    mode: 'onSubmit',
-    defaultValues: {
-      registryLookup: undefined,
-      companyValidatedData: undefined,
-      companyAddress: { reuseBackendAddress: true },
-      investmentGoals: null,
-      investableAssets: null,
-      sourceOfCompanyIncome: {
-        ONLY_ACTIVE_IN_ESTONIA: false,
-        NOT_SANCTIONED_NOT_PROFITING_FROM_SANCTIONED_COUNTRIES: false,
-        NOT_IN_CRYPTO: false,
+  const { control, trigger, handleSubmit, watch, setValue, getValues } =
+    useForm<CompanyOnboardingFormData>({
+      // Validate on submit (each "Continue" triggers validation explicitly), so a
+      // half-filled confirmations step doesn't flash an error after the first
+      // checkbox; reValidateMode then clears the error as the user ticks the rest.
+      mode: 'onSubmit',
+      defaultValues: {
+        citizenship: [],
+        address: {
+          countryCode: 'EE',
+          street: '',
+          city: '',
+          postalCode: '',
+        },
+        email: '',
+        phoneNumber: '',
+        pepSelfDeclaration: null,
+        registryLookup: undefined,
+        companyValidatedData: undefined,
+        companyAddress: { reuseBackendAddress: true },
+        investmentGoals: null,
+        investableAssets: null,
+        sourceOfCompanyIncome: {
+          ONLY_ACTIVE_IN_ESTONIA: false,
+          NOT_SANCTIONED_NOT_PROFITING_FROM_SANCTIONED_COUNTRIES: false,
+          NOT_IN_CRYPTO: false,
+        },
+        termsAccepted: false,
       },
-      termsAccepted: false,
-    },
-  });
+    });
 
   const termsAccepted = watch('termsAccepted');
   const companyValidatedData = watch('companyValidatedData');
+
+  // A company-first applicant may not be identified yet: collect the identity
+  // steps inline and submit them as IDENTITY_ONLY before the KYB steps — the
+  // screening runs without touching the person's own onboarding status.
+  const { identityOnFile, identityLoadFailed, retryIdentityLoad } = useIdentityOnFile(setValue);
 
   const submitForm = handleSubmit(async (data) => {
     const registryCode = data.registryLookup?.registryNumber ?? '';
@@ -86,10 +114,10 @@ export const SavingsFundCompanyOnboarding = () => {
     setSubmittedRegistryCode(registryCode);
   });
 
-  const steps: Array<{
-    component: JSX.Element;
-    fields: FieldPath<CompanyOnboardingFormData>[];
-  }> = [
+  const identitySteps =
+    identityOnFile === true ? [] : buildIdentitySteps<CompanyOnboardingFormData>(control);
+
+  const companySteps: OnboardingStep<CompanyOnboardingFormData>[] = [
     {
       component: <BusinessRegistryStep key="registry" control={control} />,
       fields: ['registryLookup'],
@@ -190,14 +218,18 @@ export const SavingsFundCompanyOnboarding = () => {
     },
   ];
 
+  const steps = [...identitySteps, ...companySteps];
+  const identityStepCount = identitySteps.length;
+  const isLastIdentityStep = identityStepCount > 0 && activeSection === identityStepCount - 1;
+
   const totalSections = steps.length;
   const currentSection = activeSection + 1;
   const isTermsStep = activeSection === totalSections - 1;
-  // The requirements step (index 1) cannot be passed while the company fails
-  // validation, so disable Continue with the reason on screen instead of letting
-  // the click silently no-op.
+  // The requirements step cannot be passed while the company fails validation,
+  // so disable Continue with the reason on screen instead of letting the click
+  // silently no-op.
   const requirementsStepBlocked =
-    activeSection === 1 &&
+    activeSection === identityStepCount + 1 &&
     companyValidatedData != null &&
     !hasNoValidationErrors(companyValidatedData);
 
@@ -228,8 +260,23 @@ export const SavingsFundCompanyOnboarding = () => {
       }
       return;
     }
+    if (isLastIdentityStep) {
+      // Crossing from identity into KYB: persist the identity first and wait —
+      // the KYB requirements check reads the screening this submission creates.
+      try {
+        setSubmitError(false);
+        await submitIdentitySurvey(transformIdentityToOnboardingSurveyCommand(getValues()));
+      } catch (e) {
+        setSubmitError(true);
+        return;
+      }
+    }
     setActiveSection((current) => Math.min(current + 1, totalSections - 1));
   };
+
+  if (identityLoadFailed) {
+    return <IdentityLoadError onRetry={retryIdentityLoad} />;
+  }
 
   return (
     <div className="col-12 col-md-10 col-lg-7 mx-auto">
@@ -238,7 +285,8 @@ export const SavingsFundCompanyOnboarding = () => {
         totalSteps={totalSections}
         onBack={showPreviousSection}
         onNext={showNextSection}
-        submitting={submittingSurvey}
+        loading={identityOnFile === null}
+        submitting={submittingSurvey || submittingIdentity}
         nextDisabled={(isTermsStep && !termsAccepted) || requirementsStepBlocked}
       >
         {steps[activeSection].component}

@@ -9,10 +9,14 @@ import { InvestableAssetsStep } from './InvestableAssetsStep';
 import { IncomeSourcesStep } from './IncomeSourcesStep';
 import { TermsStep } from './TermsStep';
 import { OnboardingFormData } from './types';
-import { OnboardingStep, buildIdentitySteps, applyIdentityToForm } from './identitySteps';
+import {
+  IdentityLoadError,
+  OnboardingStep,
+  buildIdentitySteps,
+  useIdentityOnFile,
+} from './identitySteps';
 import { isCompanyOnboardingEnabled } from './onboardingFlows';
 import {
-  useKycIdentity,
   useSavingsFundOnboardingStatus,
   useSubmitSavingsFundOnboardingSurvey,
 } from '../../../common/apiHooks';
@@ -23,9 +27,9 @@ import { OnboardingFlowLayout } from './OnboardingFlowLayout';
 const buildSteps = (
   control: Control<OnboardingFormData>,
   identityOnFile: boolean,
-): OnboardingStep[] => {
+): OnboardingStep<OnboardingFormData>[] => {
   const identitySteps = identityOnFile ? [] : buildIdentitySteps(control);
-  const profileSteps: OnboardingStep[] = [
+  const profileSteps: OnboardingStep<OnboardingFormData>[] = [
     {
       component: (
         <InvestmentGoalStep
@@ -140,14 +144,6 @@ export const SavingsFundOnboarding: FC = () => {
     isLoading: loadingOnboardingStatus,
     refetch: refetchOnboardingStatus,
   } = useSavingsFundOnboardingStatus();
-  const {
-    data: identity,
-    isError: identityLoadFailed,
-    isFetchedAfterMount: identityFreshlyFetched,
-    refetch: refetchIdentity,
-  } = useKycIdentity();
-
-  const [identityOnFile, setIdentityOnFile] = useState<boolean | null>(null);
 
   const { control, setValue, watch, handleSubmit, trigger } = useForm<OnboardingFormData>({
     mode: 'onChange',
@@ -195,14 +191,7 @@ export const SavingsFundOnboarding: FC = () => {
     }
   }, [citizenship, setValue]);
 
-  // Freeze the flow's shape once, and only from a post-mount fetch — React
-  // Query first serves stale cached data from an earlier visit while refetching.
-  useEffect(() => {
-    if (identity && identityFreshlyFetched && identityOnFile === null) {
-      applyIdentityToForm(identity, setValue);
-      setIdentityOnFile(identity.complete);
-    }
-  }, [identity, identityFreshlyFetched, identityOnFile, setValue]);
+  const { identityOnFile, identityLoadFailed, retryIdentityLoad } = useIdentityOnFile(setValue);
 
   const steps = buildSteps(control, identityOnFile === true);
 
@@ -252,25 +241,8 @@ export const SavingsFundOnboarding: FC = () => {
     setActiveSection((current) => Math.min(current + 1, totalSections - 1));
   };
 
-  // Block only the initial identity load — once the shape is frozen, a failing
-  // background refetch changes nothing and must not interrupt the flow.
-  if (identityLoadFailed && identityOnFile === null) {
-    return (
-      <div className="col-12 col-md-10 col-lg-7 mx-auto">
-        <div className="d-flex flex-column gap-4 align-items-start">
-          <div className="alert alert-danger m-0 w-100" role="alert">
-            <FormattedMessage id="flows.savingsFundOnboarding.identityError" />
-          </div>
-          <button
-            type="button"
-            className="btn btn-lg btn-primary"
-            onClick={() => refetchIdentity()}
-          >
-            <FormattedMessage id="flows.savingsFundOnboarding.identityError.retry" />
-          </button>
-        </div>
-      </div>
-    );
+  if (identityLoadFailed) {
+    return <IdentityLoadError onRetry={retryIdentityLoad} />;
   }
 
   // Fail closed: a topology change must never dereference past the array and

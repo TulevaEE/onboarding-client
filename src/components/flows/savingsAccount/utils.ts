@@ -1,5 +1,6 @@
 import {
   CompanyOnboardingFormData,
+  IdentityFormFields,
   OnboardingFormData,
   PersonalInvestmentProfile,
 } from './SavingsFundOnboarding/types';
@@ -18,9 +19,7 @@ const isPopulatedPersonalProfile = (
   !!profile.investableAssets &&
   (profile.sourceOfIncome?.length ?? 0) > 0;
 
-export const transformFormDataToOnboardingSurveryCommand = (
-  data: OnboardingFormData,
-): OnboardingSurveyCommand => {
+const identityAnswers = (data: IdentityFormFields): OnboardingSurveyCommand['answers'] => {
   const answers: OnboardingSurveyCommand['answers'] = [
     {
       type: 'CITIZENSHIP',
@@ -65,6 +64,21 @@ export const transformFormDataToOnboardingSurveryCommand = (
     });
   }
 
+  return answers;
+};
+
+export const transformIdentityToOnboardingSurveyCommand = (
+  data: IdentityFormFields,
+): OnboardingSurveyCommand => ({
+  purpose: 'IDENTITY_ONLY',
+  answers: identityAnswers(data),
+});
+
+export const transformFormDataToOnboardingSurveryCommand = (
+  data: OnboardingFormData,
+): OnboardingSurveyCommand => {
+  const answers = identityAnswers(data);
+
   if (isPopulatedPersonalProfile(data.personalInvestmentProfile)) {
     const { investmentGoals, investableAssets, sourceOfIncome } = data.personalInvestmentProfile;
     answers.push(
@@ -74,7 +88,7 @@ export const transformFormDataToOnboardingSurveryCommand = (
     );
   }
 
-  return { answers };
+  return { purpose: 'PERSONAL_ONBOARDING', answers };
 };
 
 export const transformCompanyFormDataToSurveyCommand = (

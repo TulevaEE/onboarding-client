@@ -132,7 +132,13 @@ type OnboardingSurveyItem =
   | InvestableAssetsSurveyItem
   | SourceOfIncomeSurveyItem;
 
+// Mirrors the backend's KycSurveyPurpose: only PERSONAL_ONBOARDING submissions
+// may complete the person's savings-fund onboarding; IDENTITY_ONLY runs the
+// identity screening and nothing else.
+export type OnboardingSurveyPurpose = 'IDENTITY_ONLY' | 'PERSONAL_ONBOARDING';
+
 export type OnboardingSurveyCommand = {
+  purpose: OnboardingSurveyPurpose;
   answers: OnboardingSurveyItem[];
 };
 

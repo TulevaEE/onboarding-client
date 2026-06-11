@@ -4,11 +4,11 @@ import { useForm } from 'react-hook-form';
 import { IntlProvider } from 'react-intl';
 import { renderWrapped } from '../../../../../test/utils';
 import { ContactDetailsStep } from './ContactDetailsStep';
-import { OnboardingFormData } from '../types';
+import { IdentityFormFields } from '../types';
 import translations from '../../../../translations';
 
 const ContactDetailsStepWrapper = () => {
-  const { control, trigger } = useForm<OnboardingFormData>({
+  const { control, trigger } = useForm<IdentityFormFields>({
     mode: 'onBlur',
     defaultValues: {
       citizenship: [],
@@ -21,7 +21,6 @@ const ContactDetailsStepWrapper = () => {
       email: '',
       phoneNumber: '',
       pepSelfDeclaration: null,
-      termsAccepted: false,
     },
   });
 

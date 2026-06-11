@@ -1,6 +1,7 @@
 import {
   transformCompanyFormDataToSurveyCommand,
   transformFormDataToOnboardingSurveryCommand,
+  transformIdentityToOnboardingSurveyCommand,
 } from './utils';
 import { CompanyOnboardingFormData, OnboardingFormData } from './SavingsFundOnboarding/types';
 import { mockValidatedCompany } from '../../../test/backend-responses';
@@ -25,6 +26,11 @@ const buildOnboardingFormData = (
 const buildCompanyFormData = (
   overrides: Partial<CompanyOnboardingFormData> = {},
 ): CompanyOnboardingFormData => ({
+  citizenship: ['EE'],
+  address: { street: 'Foo 1', city: 'Tallinn', postalCode: '10115', countryCode: 'EE' },
+  email: 'test@example.com',
+  phoneNumber: '+37255555555',
+  pepSelfDeclaration: 'IS_NOT_PEP',
   registryLookup: { registryNumber: '12345678', registryName: 'Acme Corp' },
   companyValidatedData: mockValidatedCompany,
   companyAddress: { reuseBackendAddress: true },
@@ -130,6 +136,12 @@ describe('transformCompanyFormDataToSurveyCommand', () => {
 });
 
 describe('transformFormDataToOnboardingSurveryCommand', () => {
+  it('marks the submission as a personal onboarding', () => {
+    const result = transformFormDataToOnboardingSurveryCommand(buildOnboardingFormData());
+
+    expect(result.purpose).toBe('PERSONAL_ONBOARDING');
+  });
+
   it('includes the personal profile items when the group is populated', () => {
     const result = transformFormDataToOnboardingSurveryCommand(buildOnboardingFormData());
 
@@ -150,5 +162,28 @@ describe('transformFormDataToOnboardingSurveryCommand', () => {
     expect(types).not.toContain('INVESTMENT_GOALS');
     expect(types).not.toContain('INVESTABLE_ASSETS');
     expect(types).not.toContain('SOURCE_OF_INCOME');
+  });
+});
+
+describe('transformIdentityToOnboardingSurveyCommand', () => {
+  it('builds an identity-only submission with no profile items', () => {
+    const result = transformIdentityToOnboardingSurveyCommand(buildOnboardingFormData());
+
+    expect(result.purpose).toBe('IDENTITY_ONLY');
+    expect(result.answers.map((answer) => answer.type)).toEqual([
+      'CITIZENSHIP',
+      'ADDRESS',
+      'EMAIL',
+      'PHONE_NUMBER',
+      'PEP_SELF_DECLARATION',
+    ]);
+  });
+
+  it('omits the optional phone number when absent', () => {
+    const result = transformIdentityToOnboardingSurveyCommand(
+      buildOnboardingFormData({ phoneNumber: undefined }),
+    );
+
+    expect(result.answers.map((answer) => answer.type)).not.toContain('PHONE_NUMBER');
   });
 });

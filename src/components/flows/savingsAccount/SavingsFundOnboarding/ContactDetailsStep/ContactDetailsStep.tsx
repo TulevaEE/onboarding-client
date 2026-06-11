@@ -1,10 +1,10 @@
 import { FC } from 'react';
 import { Control, Controller } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { OnboardingFormData } from '../types';
+import { IdentityFormFields } from '../types';
 
 type ContactDetailsStepProps = {
-  control: Control<OnboardingFormData>;
+  control: Control<IdentityFormFields>;
 };
 export const ContactDetailsStep: FC<ContactDetailsStepProps> = ({ control }) => {
   const intl = useIntl();

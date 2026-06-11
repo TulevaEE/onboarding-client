@@ -1,14 +1,14 @@
 import { FC, useMemo, useState, useEffect } from 'react';
 import { Control, Controller, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { OnboardingFormData } from '../types';
+import { IdentityFormFields } from '../types';
 import { EstonianAddressForm } from './EstonianAddressForm';
 import Select from '../../../../account/ComparisonCalculator/select';
 import { mapCountriesToGroupedOptions } from '../../../../common/countries';
 import { AddressForm } from './AddressForm';
 
 type ResidencyStepProps = {
-  control: Control<OnboardingFormData>;
+  control: Control<IdentityFormFields>;
 };
 
 export const ResidencyStep: FC<ResidencyStepProps> = ({ control }) => {

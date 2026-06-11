@@ -17,6 +17,16 @@ export interface SharedOnboardingFields {
   termsAccepted: boolean;
 }
 
+// The 4 identity (KYC) steps' fields — collected once per person and shared by
+// the personal and company flows (see identitySteps.tsx).
+export interface IdentityFormFields {
+  citizenship: ISO2CountryCode[];
+  address: Address;
+  email: string;
+  phoneNumber?: string;
+  pepSelfDeclaration: PepSelfDeclaration | null;
+}
+
 // Grouped so that "the user gave personal-profile answers" is one fact in the
 // type, not three coordinated nullables. The form populates the group field by
 // field as the user moves through steps, then the transform turns a fully
@@ -27,18 +37,13 @@ export interface PersonalInvestmentProfile {
   sourceOfIncome: SourceOfIncomeSurveyItem['value'];
 }
 
-export interface OnboardingFormData extends SharedOnboardingFields {
-  citizenship: ISO2CountryCode[];
-  address: Address;
-  email: string;
-  phoneNumber?: string;
-  pepSelfDeclaration: PepSelfDeclaration | null;
+export interface OnboardingFormData extends SharedOnboardingFields, IdentityFormFields {
   // Partial during the flow (fields filled one step at a time); at submit
   // time the flow guarantees full population.
   personalInvestmentProfile: Partial<PersonalInvestmentProfile>;
 }
 
-export interface CompanyOnboardingFormData extends SharedOnboardingFields {
+export interface CompanyOnboardingFormData extends SharedOnboardingFields, IdentityFormFields {
   registryLookup?: {
     registryNumber: string;
     registryName: string;
