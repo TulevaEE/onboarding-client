@@ -66,7 +66,7 @@ export const transformFormDataToOnboardingSurveryCommand = (
     });
   }
 
-  // Belt-and-suspenders: the wizard clears the profile group when intent flips
+  // Belt-and-suspenders: the flow clears the profile group when intent flips
   // to ONLY_VIA_COMPANY, so isPopulatedPersonalProfile alone would already do
   // the right thing today. But keeping the intent gate at the data boundary
   // means the "company-only never sends a profile" invariant doesn't rely on

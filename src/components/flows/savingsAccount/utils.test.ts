@@ -143,7 +143,7 @@ describe('transformFormDataToOnboardingSurveryCommand', () => {
   });
 
   it('omits the personal profile items for ONLY_VIA_COMPANY intent even if the group is populated', () => {
-    // The wizard clears the group on intent flip, so in practice it would be
+    // The flow clears the group on intent flip, so in practice it would be
     // empty here — but the data boundary must enforce the invariant on its
     // own. This test simulates a stale populated group reaching the transform
     // (UI bug, race condition, future regression) and asserts the profile

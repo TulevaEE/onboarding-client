@@ -1342,6 +1342,8 @@
   "flows.savingsFundOnboarding.title": "Täiendava Kogumisfondi avamine",
   "flows.savingsFundOnboarding.currentStep": "Samm {currentStep} / {totalSteps}",
   "flows.savingsFundOnboarding.error": "Avalduse esitamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee",
+  "flows.savingsFundOnboarding.identityError": "Sinu andmete laadimine ebaõnnestus. Palun proovi uuesti.",
+  "flows.savingsFundOnboarding.identityError.retry": "Proovi uuesti",
 
   "flows.savingsFundOnboarding.citizenshipStep.input.ariaLabel": "Vali kõik riigid, mille kodanik sa oled",
   "flows.savingsFundOnboarding.citizenshipStep.title": "Mis riigi kodanik sa oled?",

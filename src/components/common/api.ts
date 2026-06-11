@@ -66,6 +66,7 @@ import { SavingsFundWithdrawal } from './apiModels/savings-fund';
 import { BusinessRegistryValidatedData } from './apiModels/company-onboarding';
 import {
   CompanyOnboardingSurveyCommand,
+  KycIdentity,
   OnboardingSurveyCommand,
 } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 
@@ -251,6 +252,10 @@ export function getSavingsFundOnboardingStatus(): Promise<SavingsFundOnboardingS
 
 export function postSavingsFundOnboardingSurvey(command: OnboardingSurveyCommand): Promise<void> {
   return postWithAuthentication(getEndpoint('/v1/kyc/surveys'), command);
+}
+
+export function getKycIdentity(): Promise<KycIdentity> {
+  return getWithAuthentication(getEndpoint('/v1/kyc/identity'));
 }
 
 export function getSavingsFundCompanyOnboardingStatus(

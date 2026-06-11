@@ -12,7 +12,7 @@ import { InvestableAssetsStep } from './InvestableAssetsStep';
 import { CompanyIncomeSourceStep } from './CompanyIncomeSourceStep';
 import { TermsStep } from './TermsStep';
 import { AccountChoiceStep } from './AccountChoiceStep';
-import { OnboardingWizardLayout } from './OnboardingWizardLayout';
+import { OnboardingFlowLayout } from './OnboardingFlowLayout';
 import {
   useSavingsFundCompanyOnboardingStatus,
   useSubmitSavingsFundCompanyOnboardingSurvey,
@@ -264,7 +264,7 @@ export const SavingsFundCompanyOnboarding = () => {
 
   return (
     <div className="col-12 col-md-10 col-lg-7 mx-auto">
-      <OnboardingWizardLayout
+      <OnboardingFlowLayout
         currentStep={currentSection}
         totalSteps={totalSections}
         onBack={showPreviousSection}
@@ -279,7 +279,7 @@ export const SavingsFundCompanyOnboarding = () => {
             <FormattedMessage id="flows.savingsFundOnboarding.error" />
           </div>
         ) : null}
-      </OnboardingWizardLayout>
+      </OnboardingFlowLayout>
     </div>
   );
 };

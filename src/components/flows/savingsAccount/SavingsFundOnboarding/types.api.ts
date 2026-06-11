@@ -136,6 +136,17 @@ export type OnboardingSurveyCommand = {
   answers: OnboardingSurveyItem[];
 };
 
+// GET /v1/kyc/identity — `complete` means all identity steps can be skipped.
+export type KycIdentity = {
+  citizenship?: ISO2CountryCode[];
+  address?: Address;
+  email?: string;
+  phoneNumber?: string;
+  pepSelfDeclaration?: PepSelfDeclaration;
+  complete: boolean;
+  updatedAt?: string;
+};
+
 type CompanyOnboardingSurveyItem =
   | BusinessRegistryNumberSurveyItem
   | CompanyAddressSurveyItem

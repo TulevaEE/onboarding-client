@@ -1252,6 +1252,8 @@
   "flows.savingsFundOnboarding.title": "Opening an Additional Savings Fund",
   "flows.savingsFundOnboarding.currentStep": "Step {currentStep} / {totalSteps}",
   "flows.savingsFundOnboarding.error": "There was an error while submitting your application. Please try again later or contact us: tuleva@tuleva.ee",
+  "flows.savingsFundOnboarding.identityError": "We couldn't load your details. Please try again.",
+  "flows.savingsFundOnboarding.identityError.retry": "Try again",
 
   "flows.savingsFundOnboarding.citizenshipStep.input.ariaLabel": "Choose all countries of citizenship",
   "flows.savingsFundOnboarding.citizenshipStep.title": "What is your citizenship?",

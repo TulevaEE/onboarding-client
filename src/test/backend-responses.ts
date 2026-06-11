@@ -11,6 +11,7 @@ import {
   User,
 } from '../components/common/apiModels';
 import { BusinessRegistryValidatedData } from '../components/common/apiModels/company-onboarding';
+import { KycIdentity } from '../components/flows/savingsAccount/SavingsFundOnboarding/types.api';
 import { SecondPillarPaymentRateChangeMandate } from '../components/flows/secondPillarPaymentRate/types';
 
 export const authErrorResponse = {
@@ -188,6 +189,27 @@ export const capitalRowsResponse: CapitalRow[] = [
     unitCount: 1,
   },
 ];
+
+export const mockCompleteKycIdentity: KycIdentity = {
+  citizenship: ['FI'],
+  address: {
+    street: 'Mannerheimintie 1',
+    city: 'Helsinki',
+    postalCode: '00100',
+    countryCode: 'FI',
+  },
+  email: 'onfile@example.com',
+  phoneNumber: '+358501234567',
+  pepSelfDeclaration: 'IS_NOT_PEP',
+  complete: true,
+  updatedAt: '2026-06-01T10:00:00Z',
+};
+
+export const mockContactOnlyKycIdentity: KycIdentity = {
+  email: 'onfile@example.com',
+  phoneNumber: '+372555555',
+  complete: false,
+};
 
 export const mockValidatedCompany: BusinessRegistryValidatedData = {
   name: { value: 'Acme Corp', errors: [] },

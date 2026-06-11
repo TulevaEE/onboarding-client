@@ -1,34 +1,31 @@
 import { FC, useEffect, useState } from 'react';
-import { useForm, FieldPath, Control } from 'react-hook-form';
+import { useForm, Control } from 'react-hook-form';
 import { useHistory, Redirect } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { captureException } from '@sentry/browser';
 import { usePageTitle } from '../../../common/usePageTitle';
-import { CitizenshipStep } from './CitizenshipStep';
-import { ResidencyStep } from './ResidencyStep';
-import { ContactDetailsStep } from './ContactDetailsStep';
-import { PepStep } from './PepStep';
 import { InvestmentIntentStep } from './InvestmentIntentStep';
 import { InvestmentGoalStep } from './InvestmentGoalStep';
 import { InvestableAssetsStep } from './InvestableAssetsStep';
 import { IncomeSourcesStep } from './IncomeSourcesStep';
 import { TermsStep } from './TermsStep';
 import { OnboardingFormData, InvestmentIntent } from './types';
+import { OnboardingStep, buildIdentitySteps, applyIdentityToForm } from './identitySteps';
 import {
-  useMe,
+  useKycIdentity,
   useSavingsFundOnboardingStatus,
   useSubmitSavingsFundOnboardingSurvey,
 } from '../../../common/apiHooks';
 import { transformFormDataToOnboardingSurveryCommand } from '../utils';
 import { ErrorResponse } from '../../../common/apiModels';
-import { OnboardingWizardLayout } from './OnboardingWizardLayout';
+import { OnboardingFlowLayout } from './OnboardingFlowLayout';
 
 // Pre-launch preview (TKF #67). The investment-intent step and the company (KYB)
 // branching are reachable ONLY when companyOnboardingEnabled is set, which the
 // router passes solely on the unlisted /savings-fund/onboarding/uus route until
 // the 15 June 2026 launch. The prop is read from the route (not derived from the
 // live pathname) so a mid-flow history.push can't flip it false before unmount
-// and crash the wizard. The public /savings-fund/onboarding route renders this
+// and crash the flow. The public /savings-fund/onboarding route renders this
 // component without the prop, keeping the original personal-only flow.
 //
 // Going live on 2026-06-15 is a pure code change — the public URL stays the same,
@@ -39,34 +36,13 @@ import { OnboardingWizardLayout } from './OnboardingWizardLayout';
 //      `if (!companyOnboardingEnabled)` early return).
 //   3. Remove the /uus route and land the role-switcher "Lisan ettevõtte" PR.
 
-type OnboardingStep = {
-  component: JSX.Element;
-  fields: FieldPath<OnboardingFormData>[];
-};
-
 const buildSteps = (
   control: Control<OnboardingFormData>,
   investmentIntent: InvestmentIntent | null,
   companyOnboardingEnabled: boolean,
+  identityOnFile: boolean,
 ): OnboardingStep[] => {
-  const identitySteps: OnboardingStep[] = [
-    {
-      component: <CitizenshipStep key="citizenship" control={control} />,
-      fields: ['citizenship'],
-    },
-    {
-      component: <ResidencyStep key="residency" control={control} />,
-      fields: ['address.countryCode', 'address.street', 'address.city', 'address.postalCode'],
-    },
-    {
-      component: <ContactDetailsStep key="contact-details" control={control} />,
-      fields: ['email'],
-    },
-    {
-      component: <PepStep key="pep" control={control} />,
-      fields: ['pepSelfDeclaration'],
-    },
-  ];
+  const identitySteps = identityOnFile ? [] : buildIdentitySteps(control);
   const intentStep: OnboardingStep = {
     component: <InvestmentIntentStep key="investment-intent" control={control} />,
     fields: ['investmentIntent'],
@@ -196,7 +172,14 @@ export const SavingsFundOnboarding: FC<{ companyOnboardingEnabled?: boolean }> =
     isLoading: loadingOnboardingStatus,
     refetch: refetchOnboardingStatus,
   } = useSavingsFundOnboardingStatus();
-  const { data: user } = useMe();
+  const {
+    data: identity,
+    isError: identityLoadFailed,
+    isFetchedAfterMount: identityFreshlyFetched,
+    refetch: refetchIdentity,
+  } = useKycIdentity();
+
+  const [identityOnFile, setIdentityOnFile] = useState<boolean | null>(null);
 
   const { control, setValue, getValues, watch, handleSubmit, trigger } =
     useForm<OnboardingFormData>({
@@ -264,17 +247,21 @@ export const SavingsFundOnboarding: FC<{ companyOnboardingEnabled?: boolean }> =
     }
   }, [investmentIntent, setValue, getValues]);
 
+  // Freeze the flow's shape once, and only from a post-mount fetch — React
+  // Query first serves stale cached data from an earlier visit while refetching.
   useEffect(() => {
-    if (user?.email) {
-      setValue('email', user.email);
+    if (identity && identityFreshlyFetched && identityOnFile === null) {
+      applyIdentityToForm(identity, setValue);
+      setIdentityOnFile(identity.complete);
     }
+  }, [identity, identityFreshlyFetched, identityOnFile, setValue]);
 
-    if (user?.phoneNumber) {
-      setValue('phoneNumber', user.phoneNumber);
-    }
-  }, [user, setValue]);
-
-  const steps = buildSteps(control, investmentIntent, companyOnboardingEnabled);
+  const steps = buildSteps(
+    control,
+    investmentIntent,
+    companyOnboardingEnabled,
+    identityOnFile === true,
+  );
 
   const totalSections = steps.length;
   const currentSection = activeSection + 1;
@@ -335,8 +322,29 @@ export const SavingsFundOnboarding: FC<{ companyOnboardingEnabled?: boolean }> =
     setActiveSection((current) => Math.min(current + 1, totalSections - 1));
   };
 
+  // Block only the initial identity load — once the shape is frozen, a failing
+  // background refetch changes nothing and must not interrupt the flow.
+  if (identityLoadFailed && identityOnFile === null) {
+    return (
+      <div className="col-12 col-md-10 col-lg-7 mx-auto">
+        <div className="d-flex flex-column gap-4 align-items-start">
+          <div className="alert alert-danger m-0 w-100" role="alert">
+            <FormattedMessage id="flows.savingsFundOnboarding.identityError" />
+          </div>
+          <button
+            type="button"
+            className="btn btn-lg btn-primary"
+            onClick={() => refetchIdentity()}
+          >
+            <FormattedMessage id="flows.savingsFundOnboarding.identityError.retry" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   // Fail closed: a topology change must never dereference past the array and
-  // white-screen the wizard. The route-level prop fixes the known cause; this
+  // white-screen the flow. The route-level prop fixes the known cause; this
   // guards any future one — surface it to Sentry and fall back to a known route
   // rather than crashing the React tree.
   const currentStep = steps[activeSection];
@@ -349,12 +357,12 @@ export const SavingsFundOnboarding: FC<{ companyOnboardingEnabled?: boolean }> =
 
   return (
     <div className="col-12 col-md-10 col-lg-7 mx-auto">
-      <OnboardingWizardLayout
+      <OnboardingFlowLayout
         currentStep={currentSection}
         totalSteps={totalSections}
         onBack={showPreviousSection}
         onNext={showNextSection}
-        loading={!onboardingStatus && loadingOnboardingStatus}
+        loading={(!onboardingStatus && loadingOnboardingStatus) || identityOnFile === null}
         submitting={submittingSurvey}
       >
         {currentStep.component}
@@ -364,7 +372,7 @@ export const SavingsFundOnboarding: FC<{ companyOnboardingEnabled?: boolean }> =
             <FormattedMessage id="flows.savingsFundOnboarding.error" />
           </div>
         ) : null}
-      </OnboardingWizardLayout>
+      </OnboardingFlowLayout>
     </div>
   );
 };

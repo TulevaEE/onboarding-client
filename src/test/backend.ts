@@ -45,6 +45,7 @@ import {
   CreateCapitalTransferDto,
   UpdateCapitalTransferContractDto,
 } from '../components/common/apiModels/capital-transfer';
+import { KycIdentity } from '../components/flows/savingsAccount/SavingsFundOnboarding/types.api';
 
 export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
@@ -935,6 +936,47 @@ export function savingsFundOnboardingStatusBackend(
   );
 }
 
+export function delayedSavingsFundOnboardingStatusBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
+      res(ctx.delay('infinite')),
+    ),
+  );
+}
+
+export function failingKycIdentityBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/kyc/identity', (req, res, ctx) =>
+      res(ctx.status(500), ctx.json({})),
+    ),
+  );
+}
+
+export function savingsFundOnboardingSurveyBackend(
+  server: SetupServerApi,
+  captureBody?: (body: { answers: { type: string }[] }) => void,
+): void {
+  server.use(
+    rest.post('http://localhost/v1/kyc/surveys', (req, res, ctx) => {
+      captureBody?.(req.body as { answers: { type: string }[] });
+      return res(ctx.status(200));
+    }),
+  );
+}
+
+export function kycIdentityBackend(
+  server: SetupServerApi,
+  identity: KycIdentity = {
+    email: mockUser.email,
+    phoneNumber: mockUser.phoneNumber,
+    complete: false,
+  },
+): void {
+  server.use(
+    rest.get('http://localhost/v1/kyc/identity', (req, res, ctx) => res(ctx.json(identity))),
+  );
+}
+
 export function savingsAccountStatementBackend(
   server: SetupServerApi,
   statement: FundBalance | null = null,
@@ -997,6 +1039,7 @@ const TEST_BACKENDS = {
   contributions: contributionsBackend,
   businessRegistry: businessRegistryBackend,
   companyValidation: companyValidationBackend,
+  kycIdentity: kycIdentityBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

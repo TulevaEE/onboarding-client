@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWrapped } from '../../../../test/utils';
-import { OnboardingWizardLayout } from './OnboardingWizardLayout';
+import { OnboardingFlowLayout } from './OnboardingFlowLayout';
 
 const defaultProps = {
   currentStep: 3,
@@ -12,12 +12,12 @@ const defaultProps = {
 
 const renderLayout = (props = {}) =>
   renderWrapped(
-    <OnboardingWizardLayout {...defaultProps} {...props}>
+    <OnboardingFlowLayout {...defaultProps} {...props}>
       <div>Step content</div>
-    </OnboardingWizardLayout>,
+    </OnboardingFlowLayout>,
   );
 
-describe('OnboardingWizardLayout', () => {
+describe('OnboardingFlowLayout', () => {
   it('renders progress bar with correct width percentage', () => {
     renderLayout();
 

@@ -41,9 +41,9 @@ export interface OnboardingFormData extends SharedOnboardingFields {
   // contains. Never sent to the backend — "company-only" is inferred from
   // the absence of profile answers (see TKF #67).
   investmentIntent: InvestmentIntent | null;
-  // Partial during the wizard (fields filled one step at a time), null when
+  // Partial during the flow (fields filled one step at a time), null when
   // intent is ONLY_VIA_COMPANY (cleared on intent flip). At submit time the
-  // wizard guarantees full population for SELF/BOTH.
+  // flow guarantees full population for SELF/BOTH.
   personalInvestmentProfile: Partial<PersonalInvestmentProfile> | null;
 }
 

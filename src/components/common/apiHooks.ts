@@ -22,6 +22,7 @@ import {
   getCompanyBusinessRegistryValidation,
   getContributions,
   getFundPensionStatus,
+  getKycIdentity,
   getFunds,
   getMandateDeadlines,
   getMemberCapitalListingCount,
@@ -84,6 +85,7 @@ import {
 import { BusinessRegistryValidatedData } from './apiModels/company-onboarding';
 import {
   CompanyOnboardingSurveyCommand,
+  KycIdentity,
   OnboardingSurveyCommand,
 } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 
@@ -203,6 +205,16 @@ export function useSavingsFundOnboardingStatus(): UseQueryResult<SavingsFundOnbo
   return useQuery({
     queryKey: ['savingsFundOnboardingStatus'],
     queryFn: () => getSavingsFundOnboardingStatus(),
+  });
+}
+
+export function useKycIdentity(): UseQueryResult<KycIdentity> {
+  // The onboarding flow blocks on this query with an explicit retry button,
+  // so fail fast instead of stalling behind silent automatic retries.
+  return useQuery({
+    queryKey: ['kycIdentity'],
+    queryFn: () => getKycIdentity(),
+    retry: false,
   });
 }
 

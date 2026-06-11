@@ -2,7 +2,7 @@ import { FC, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Loader } from '../../../common';
 
-interface OnboardingWizardLayoutProps {
+interface OnboardingFlowLayoutProps {
   currentStep: number;
   totalSteps: number;
   onBack: () => void;
@@ -13,7 +13,7 @@ interface OnboardingWizardLayoutProps {
   children: ReactNode;
 }
 
-export const OnboardingWizardLayout: FC<OnboardingWizardLayoutProps> = ({
+export const OnboardingFlowLayout: FC<OnboardingFlowLayoutProps> = ({
   currentStep,
   totalSteps,
   onBack,
