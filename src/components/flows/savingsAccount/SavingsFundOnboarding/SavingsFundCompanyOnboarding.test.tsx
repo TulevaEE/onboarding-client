@@ -6,25 +6,13 @@ import { setupServer } from 'msw/node';
 import {
   businessRegistryBackend,
   companyValidationBackend,
-  rolesBackend,
   switchRoleBackend,
   userBackend,
 } from '../../../../test/backend';
 import { mockValidatedCompany } from '../../../../test/backend-responses';
 import { initializeConfiguration } from '../../../config/config';
 import { renderWrapped } from '../../../../test/utils';
-import { Role } from '../../../common/apiModels';
 import { SavingsFundCompanyOnboarding } from './SavingsFundCompanyOnboarding';
-
-const personalRole: Role = { type: 'PERSON', code: '39001011234', name: 'John Doe' };
-const companyRole: Role = { type: 'LEGAL_ENTITY', code: '12345678', name: 'Acme Corp' };
-
-const bothFlowHistory = () =>
-  createMemoryHistory({
-    initialEntries: [
-      { pathname: '/savings-fund/company/onboarding', state: { fromBothFlow: true } },
-    ],
-  });
 
 const server = setupServer();
 
@@ -81,16 +69,16 @@ describe('SavingsFundCompanyOnboarding', () => {
     );
   });
 
-  it('goes back to the previous page (the KYC flow) when Back is clicked on the first step', () => {
+  it('goes back to the previous page when Back is clicked on the first step', () => {
     const history = createMemoryHistory({
-      initialEntries: ['/savings-fund/onboarding/uus', '/savings-fund/company/onboarding'],
+      initialEntries: ['/savings-fund/onboarding', '/savings-fund/onboarding/company'],
       initialIndex: 1,
     });
     renderWrapped(<SavingsFundCompanyOnboarding />, history);
 
     userEvent.click(screen.getByRole('button', { name: /back/i }));
 
-    expect(history.location.pathname).toBe('/savings-fund/onboarding/uus');
+    expect(history.location.pathname).toBe('/savings-fund/onboarding');
   });
 
   it('does not advance past step 2 when backend validation fails', async () => {
@@ -380,53 +368,6 @@ describe('SavingsFundCompanyOnboarding', () => {
 
     await waitFor(() => {
       expect(continueButton()).toBeEnabled();
-    });
-  });
-
-  it('shows the account chooser after KYB submission when arriving via the both-flow', async () => {
-    rolesBackend(server, [personalRole, companyRole]);
-    const history = bothFlowHistory();
-    renderWrapped(<SavingsFundCompanyOnboarding />, history);
-    await selectCompany();
-    await advanceToStep(2);
-    await completeStepsThroughTerms();
-
-    server.use(
-      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
-    );
-
-    userEvent.click(continueButton());
-
-    expect(await screen.findByRole('heading', { name: /All set/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Acme Corp account/i })).toBeInTheDocument();
-    // Choosing is required — no automatic redirect to the pending page
-    expect(history.location.pathname).toBe('/savings-fund/company/onboarding');
-  });
-
-  it('switches to the company role and opens the deposit view when the company option is chosen', async () => {
-    rolesBackend(server, [personalRole, companyRole]);
-    const switchBackend = switchRoleBackend(server);
-    const history = bothFlowHistory();
-    renderWrapped(<SavingsFundCompanyOnboarding />, history);
-    await selectCompany();
-    await advanceToStep(2);
-    await completeStepsThroughTerms();
-
-    server.use(
-      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
-    );
-
-    userEvent.click(continueButton());
-
-    userEvent.click(await screen.findByRole('button', { name: /Acme Corp account/i }));
-
-    await waitFor(() => {
-      expect(switchBackend.switchedRole).toEqual({ type: 'LEGAL_ENTITY', code: '12345678' });
-    });
-    // Lands on the deposit view (not the generic account page) so the user
-    // can immediately deposit to the company account (TKF #67 F7).
-    await waitFor(() => {
-      expect(history.location.pathname).toBe('/savings-fund/payment');
     });
   });
 });

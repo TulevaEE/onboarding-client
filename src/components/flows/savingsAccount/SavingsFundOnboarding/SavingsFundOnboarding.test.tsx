@@ -90,19 +90,6 @@ const fillPepStep = async () => {
   clickContinue();
 };
 
-// Fills citizenship, residency, contact and PEP, leaving the flow on the
-// investment-intent step (step 5).
-const fillKycIdentitySteps = async () => {
-  await fillCitizenshipStep();
-  await fillResidencyStep();
-  await fillContactDetailsStep();
-  await fillPepStep();
-
-  expect(
-    await screen.findByRole('heading', { name: 'How do you want to invest?', level: 2 }),
-  ).toBeInTheDocument();
-};
-
 // Fills goals, assets and income, and ticks the terms checkbox. The final
 // Continue (the submit) stays in the test, so it can swap handlers first.
 const fillPersonalProfileSteps = async () => {
@@ -143,7 +130,7 @@ describe('SavingsFundOnboarding', () => {
   };
 
   const openOnboardingFlow = () => {
-    history.push('/savings-fund/onboarding');
+    history.push('/savings-fund/onboarding/person');
   };
 
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -196,79 +183,6 @@ describe('SavingsFundOnboarding', () => {
     });
   });
 
-  it('skips profile and personal terms steps for company-only intent, omits profile items, and routes to company onboarding', async () => {
-    savingsFundOnboardingStatusBackend(server);
-
-    let capturedAnswerTypes: string[] | null = null;
-    savingsFundOnboardingSurveyBackend(server, (body) => {
-      capturedAnswerTypes = body.answers.map((answer) => answer.type);
-    });
-    history.push('/savings-fund/onboarding/uus');
-
-    await fillKycIdentitySteps();
-
-    // Step 5: Investment Intent - choose company-only
-    userEvent.click(screen.getByRole('radio', { name: 'Only through my company' }));
-
-    // Intent becomes the final step: profile + personal terms steps are skipped
-    expect(await screen.findByText('5/5')).toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', { name: 'What is your investment goal?' }),
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', { name: 'Review fund documents' }),
-    ).not.toBeInTheDocument();
-
-    clickContinue();
-
-    await waitFor(() => {
-      expect(capturedAnswerTypes).not.toBeNull();
-    });
-    expect(capturedAnswerTypes).not.toContain('INVESTMENT_GOALS');
-    expect(capturedAnswerTypes).not.toContain('INVESTABLE_ASSETS');
-    expect(capturedAnswerTypes).not.toContain('SOURCE_OF_INCOME');
-    expect(capturedAnswerTypes).toEqual(
-      expect.arrayContaining(['CITIZENSHIP', 'ADDRESS', 'EMAIL', 'PEP_SELF_DECLARATION']),
-    );
-
-    // Company-only continues into the KYB flow, without the both-flow context
-    await waitFor(() => {
-      expect(history.location.pathname).toBe('/savings-fund/company/onboarding');
-    });
-    expect((history.location.state as { fromBothFlow?: boolean } | undefined)?.fromBothFlow).toBe(
-      false,
-    );
-  });
-
-  it('routes to company onboarding with both-flow context after a personal + company KYC submission', async () => {
-    savingsFundOnboardingStatusBackend(server);
-    history.push('/savings-fund/onboarding/uus');
-
-    await fillKycIdentitySteps();
-
-    // Step 5: Investment Intent - choose both personal and company
-    userEvent.click(screen.getByRole('radio', { name: 'Both personally and through my company' }));
-    clickContinue();
-
-    await fillPersonalProfileSteps();
-    clickContinue();
-
-    await waitFor(() => {
-      expect(history.location.pathname).toBe('/savings-fund/company/onboarding');
-    });
-    expect((history.location.state as { fromBothFlow?: boolean } | undefined)?.fromBothFlow).toBe(
-      true,
-    );
-
-    // The KYB destination must actually render. Before the fix the flow
-    // crashed on this transition (white screen), so asserting only the pathname
-    // was a false green — assert the company step's UI is on screen.
-    expect(
-      await screen.findByRole('heading', { level: 2, name: "Enter your company's name" }),
-    ).toBeInTheDocument();
-    expect(screen.getByText('1/7')).toBeInTheDocument();
-  });
-
   it('allows navigation back through steps', async () => {
     savingsFundOnboardingStatusBackend(server);
     openOnboardingFlow();
@@ -286,7 +200,8 @@ describe('SavingsFundOnboarding', () => {
     userEvent.click(screen.getByRole('button', { name: 'Back' }));
     expect(screen.getByText('1/8')).toBeInTheDocument();
 
-    // Go back from first step should navigate to /account
+    // Go back from first step should navigate to the account page until the
+    // chooser is live
     userEvent.click(screen.getByRole('button', { name: 'Back' }));
     expect(history.location.pathname).toBe('/account');
   });
@@ -300,6 +215,24 @@ describe('SavingsFundOnboarding', () => {
     });
 
     expect(screen.getByRole('heading', { name: 'Application under review' })).toBeInTheDocument();
+  });
+
+  it('renders the personal flow at the root onboarding path before the company launch', async () => {
+    savingsFundOnboardingStatusBackend(server);
+    history.push('/savings-fund/onboarding');
+
+    expect(await screen.findByText('1/8')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Who are you opening the account for?' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('redirects the company route to the root personal flow before the company launch', async () => {
+    savingsFundOnboardingStatusBackend(server);
+    history.push('/savings-fund/onboarding/company');
+
+    expect(await screen.findByText('1/8')).toBeInTheDocument();
+    expect(history.location.pathname).toBe('/savings-fund/onboarding');
   });
 
   it('hides navigation buttons while loading onboarding status', async () => {

@@ -54,9 +54,11 @@ import { CreateCapitalTransfer } from '../listings/transfer/create/CreateCapital
 import {
   SavingsFundCompanyOnboarding,
   SavingsFundOnboarding,
+  SavingsFundOnboardingChooser,
   SavingsFundOnboardingPending,
   SavingsFundOnboardingSuccess,
 } from '../flows/savingsAccount/SavingsFundOnboarding';
+import { isCompanyOnboardingEnabled } from '../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
 import { SavingsFundPayment } from '../flows/savingsAccount/SavingsFundPayment';
 import SavingsFundPaymentSuccess from '../flows/savingsAccount/SavingsFundPayment/SavingsFundPaymentSuccess';
 import SavingsFundPaymentCancellation from '../flows/savingsAccount/SavingsFundPayment/SavingsFundPaymentCancellation';
@@ -164,14 +166,29 @@ export class LoggedInApp extends PureComponent {
               path="/savings-fund/onboarding/pending"
               component={SavingsFundOnboardingPending}
             />
+            <Route exact path="/savings-fund/onboarding/person" component={SavingsFundOnboarding} />
             <Route
-              path="/savings-fund/onboarding/uus"
-              render={() => <SavingsFundOnboarding companyOnboardingEnabled />}
+              exact
+              path="/savings-fund/onboarding/company"
+              render={() =>
+                isCompanyOnboardingEnabled() ? (
+                  <SavingsFundCompanyOnboarding />
+                ) : (
+                  <Redirect to="/savings-fund/onboarding" />
+                )
+              }
             />
-            <Route exact path="/savings-fund/onboarding" component={SavingsFundOnboarding} />
+            <Redirect exact path="/savings-fund/onboarding/child" to="/savings-fund/onboarding" />
             <Route
-              path="/savings-fund/company/onboarding"
-              component={SavingsFundCompanyOnboarding}
+              exact
+              path="/savings-fund/onboarding"
+              render={() =>
+                isCompanyOnboardingEnabled() ? (
+                  <SavingsFundOnboardingChooser />
+                ) : (
+                  <SavingsFundOnboarding />
+                )
+              }
             />
             <Route path="/partner/3rd-pillar-flow-success" component={BackToPartner} />
             <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />

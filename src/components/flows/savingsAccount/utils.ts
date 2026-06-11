@@ -14,7 +14,6 @@ import {
 const isPopulatedPersonalProfile = (
   profile: OnboardingFormData['personalInvestmentProfile'],
 ): profile is PersonalInvestmentProfile =>
-  profile !== null &&
   !!profile.investmentGoals &&
   !!profile.investableAssets &&
   (profile.sourceOfIncome?.length ?? 0) > 0;
@@ -66,16 +65,7 @@ export const transformFormDataToOnboardingSurveryCommand = (
     });
   }
 
-  // Belt-and-suspenders: the flow clears the profile group when intent flips
-  // to ONLY_VIA_COMPANY, so isPopulatedPersonalProfile alone would already do
-  // the right thing today. But keeping the intent gate at the data boundary
-  // means the "company-only never sends a profile" invariant doesn't rely on
-  // a UI effect to stay correct — even if a future change accidentally lets a
-  // populated group through, the transform still omits the profile items.
-  if (
-    data.investmentIntent !== 'ONLY_VIA_COMPANY' &&
-    isPopulatedPersonalProfile(data.personalInvestmentProfile)
-  ) {
+  if (isPopulatedPersonalProfile(data.personalInvestmentProfile)) {
     const { investmentGoals, investableAssets, sourceOfIncome } = data.personalInvestmentProfile;
     answers.push(
       { type: 'INVESTMENT_GOALS', value: investmentGoals },

@@ -1040,6 +1040,7 @@ const TEST_BACKENDS = {
   businessRegistry: businessRegistryBackend,
   companyValidation: companyValidationBackend,
   kycIdentity: kycIdentityBackend,
+  savingsFundOnboardingStatus: savingsFundOnboardingStatusBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

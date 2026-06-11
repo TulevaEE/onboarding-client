@@ -4,13 +4,13 @@ import { useHistory, Redirect } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { captureException } from '@sentry/browser';
 import { usePageTitle } from '../../../common/usePageTitle';
-import { InvestmentIntentStep } from './InvestmentIntentStep';
 import { InvestmentGoalStep } from './InvestmentGoalStep';
 import { InvestableAssetsStep } from './InvestableAssetsStep';
 import { IncomeSourcesStep } from './IncomeSourcesStep';
 import { TermsStep } from './TermsStep';
-import { OnboardingFormData, InvestmentIntent } from './types';
+import { OnboardingFormData } from './types';
 import { OnboardingStep, buildIdentitySteps, applyIdentityToForm } from './identitySteps';
+import { isCompanyOnboardingEnabled } from './onboardingFlows';
 import {
   useKycIdentity,
   useSavingsFundOnboardingStatus,
@@ -20,33 +20,11 @@ import { transformFormDataToOnboardingSurveryCommand } from '../utils';
 import { ErrorResponse } from '../../../common/apiModels';
 import { OnboardingFlowLayout } from './OnboardingFlowLayout';
 
-// Pre-launch preview (TKF #67). The investment-intent step and the company (KYB)
-// branching are reachable ONLY when companyOnboardingEnabled is set, which the
-// router passes solely on the unlisted /savings-fund/onboarding/uus route until
-// the 15 June 2026 launch. The prop is read from the route (not derived from the
-// live pathname) so a mid-flow history.push can't flip it false before unmount
-// and crash the flow. The public /savings-fund/onboarding route renders this
-// component without the prop, keeping the original personal-only flow.
-//
-// Going live on 2026-06-15 is a pure code change — the public URL stays the same,
-// we just stop hiding the new flow. No feature flag / config / env toggle:
-//   1. Pass companyOnboardingEnabled on the public route too (or default it true)
-//      so /savings-fund/onboarding renders the intent flow.
-//   2. Delete the now-dead personal-only branch in buildSteps (the
-//      `if (!companyOnboardingEnabled)` early return).
-//   3. Remove the /uus route and land the role-switcher "Lisan ettevõtte" PR.
-
 const buildSteps = (
   control: Control<OnboardingFormData>,
-  investmentIntent: InvestmentIntent | null,
-  companyOnboardingEnabled: boolean,
   identityOnFile: boolean,
 ): OnboardingStep[] => {
   const identitySteps = identityOnFile ? [] : buildIdentitySteps(control);
-  const intentStep: OnboardingStep = {
-    component: <InvestmentIntentStep key="investment-intent" control={control} />,
-    fields: ['investmentIntent'],
-  };
   const profileSteps: OnboardingStep[] = [
     {
       component: (
@@ -141,20 +119,10 @@ const buildSteps = (
     },
   ];
 
-  if (!companyOnboardingEnabled) {
-    // Current public flow: original personal-only onboarding, no intent step.
-    // Remove this branch at the 2026-06-15 go-live (see COMPANY_ONBOARDING_PREVIEW_PATH).
-    return [...identitySteps, ...profileSteps];
-  }
-
-  return investmentIntent === 'ONLY_VIA_COMPANY'
-    ? [...identitySteps, intentStep]
-    : [...identitySteps, intentStep, ...profileSteps];
+  return [...identitySteps, ...profileSteps];
 };
 
-export const SavingsFundOnboarding: FC<{ companyOnboardingEnabled?: boolean }> = ({
-  companyOnboardingEnabled = false,
-}) => {
+export const SavingsFundOnboarding: FC = () => {
   usePageTitle('pageTitle.savingsFundOnboarding');
 
   const history = useHistory();
@@ -181,33 +149,30 @@ export const SavingsFundOnboarding: FC<{ companyOnboardingEnabled?: boolean }> =
 
   const [identityOnFile, setIdentityOnFile] = useState<boolean | null>(null);
 
-  const { control, setValue, getValues, watch, handleSubmit, trigger } =
-    useForm<OnboardingFormData>({
-      mode: 'onChange',
-      defaultValues: {
-        citizenship: [],
-        address: {
-          countryCode: 'EE',
-          street: '',
-          city: '',
-          postalCode: '',
-        },
-        email: '',
-        phoneNumber: '',
-        pepSelfDeclaration: null,
-        investmentIntent: null,
-        personalInvestmentProfile: {
-          investmentGoals: undefined,
-          investableAssets: undefined,
-          sourceOfIncome: [],
-        },
-        termsAccepted: false,
+  const { control, setValue, watch, handleSubmit, trigger } = useForm<OnboardingFormData>({
+    mode: 'onChange',
+    defaultValues: {
+      citizenship: [],
+      address: {
+        countryCode: 'EE',
+        street: '',
+        city: '',
+        postalCode: '',
       },
-    });
+      email: '',
+      phoneNumber: '',
+      pepSelfDeclaration: null,
+      personalInvestmentProfile: {
+        investmentGoals: undefined,
+        investableAssets: undefined,
+        sourceOfIncome: [],
+      },
+      termsAccepted: false,
+    },
+  });
 
   const citizenship = watch('citizenship');
   const residencyCountry = watch('address.countryCode');
-  const investmentIntent = watch('investmentIntent');
 
   const submitForm = handleSubmit(async (data) => {
     await submitSurvey(transformFormDataToOnboardingSurveryCommand(data));
@@ -230,23 +195,6 @@ export const SavingsFundOnboarding: FC<{ companyOnboardingEnabled?: boolean }> =
     }
   }, [citizenship, setValue]);
 
-  // Clear the personal-profile group when intent becomes ONLY_VIA_COMPANY, so
-  // any partially-filled profile answers from an earlier SELF/BOTH choice
-  // can't leak into the KYC payload. The transform also gates on intent at the
-  // data boundary (belt-and-suspenders), but clearing the group here keeps
-  // form state consistent with the intent.
-  useEffect(() => {
-    if (investmentIntent === 'ONLY_VIA_COMPANY') {
-      setValue('personalInvestmentProfile', null);
-    } else if (investmentIntent && getValues('personalInvestmentProfile') === null) {
-      setValue('personalInvestmentProfile', {
-        investmentGoals: undefined,
-        investableAssets: undefined,
-        sourceOfIncome: [],
-      });
-    }
-  }, [investmentIntent, setValue, getValues]);
-
   // Freeze the flow's shape once, and only from a post-mount fetch — React
   // Query first serves stale cached data from an earlier visit while refetching.
   useEffect(() => {
@@ -256,12 +204,7 @@ export const SavingsFundOnboarding: FC<{ companyOnboardingEnabled?: boolean }> =
     }
   }, [identity, identityFreshlyFetched, identityOnFile, setValue]);
 
-  const steps = buildSteps(
-    control,
-    investmentIntent,
-    companyOnboardingEnabled,
-    identityOnFile === true,
-  );
+  const steps = buildSteps(control, identityOnFile === true);
 
   const totalSections = steps.length;
   const currentSection = activeSection + 1;
@@ -273,7 +216,9 @@ export const SavingsFundOnboarding: FC<{ companyOnboardingEnabled?: boolean }> =
 
   const showPreviousSection = () => {
     if (isFirstSection) {
-      history.push('/account');
+      // Back to the chooser once it is live; until then the root path renders
+      // this same flow, so going there would just loop.
+      history.push(isCompanyOnboardingEnabled() ? '/savings-fund/onboarding' : '/account');
       return;
     }
 
@@ -295,21 +240,6 @@ export const SavingsFundOnboarding: FC<{ companyOnboardingEnabled?: boolean }> =
       try {
         setSubmitError(null);
         await submitForm();
-
-        // Company-only and both-flow applicants continue into the company (KYB)
-        // flow. Whether the user also invested personally (BOTH) is passed only
-        // through in-memory router state, so separate tabs can't overwrite each
-        // other's context; if it is missing (reload, direct link, role-switcher
-        // entry) the KYB flow safely falls back to direct company onboarding.
-        if (
-          companyOnboardingEnabled &&
-          (investmentIntent === 'ONLY_VIA_COMPANY' || investmentIntent === 'BOTH')
-        ) {
-          history.push('/savings-fund/company/onboarding', {
-            fromBothFlow: investmentIntent === 'BOTH',
-          });
-          return;
-        }
 
         await refetchOnboardingStatus();
       } catch (e) {

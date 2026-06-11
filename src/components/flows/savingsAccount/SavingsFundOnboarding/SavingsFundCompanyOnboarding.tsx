@@ -11,7 +11,6 @@ import { InvestmentGoalStep } from './InvestmentGoalStep';
 import { InvestableAssetsStep } from './InvestableAssetsStep';
 import { CompanyIncomeSourceStep } from './CompanyIncomeSourceStep';
 import { TermsStep } from './TermsStep';
-import { AccountChoiceStep } from './AccountChoiceStep';
 import { OnboardingFlowLayout } from './OnboardingFlowLayout';
 import {
   useSavingsFundCompanyOnboardingStatus,
@@ -25,16 +24,6 @@ export const SavingsFundCompanyOnboarding = () => {
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState(false);
   const [submittedRegistryCode, setSubmittedRegistryCode] = useState<string | undefined>(undefined);
-  const [completedCompany, setCompletedCompany] = useState<{ code: string; name: string } | null>(
-    null,
-  );
-
-  // Whether the user reached the company flow from the "both personal and
-  // company" KYC path. Carried only in in-memory router state, so reloads or
-  // direct entry (e.g. the role-switcher) fall back to direct company
-  // onboarding without an account chooser.
-  const locationState = history.location.state as { fromBothFlow?: boolean } | undefined;
-  const fromBothFlow = locationState?.fromBothFlow === true;
 
   const { data: onboardingStatus } = useSavingsFundCompanyOnboardingStatus(submittedRegistryCode);
   const { mutateAsync: submitSurvey, isPending: submittingSurvey } =
@@ -47,9 +36,7 @@ export const SavingsFundCompanyOnboarding = () => {
     }
     if (onboardingStatus.status === 'COMPLETED' && submittedRegistryCode) {
       // KYB passed — switch to the new company account and open its deposit
-      // view directly. The standalone company path skips the account chooser
-      // (cf. AccountChoiceStep, used by the both-flow) and lands on the
-      // company's payment view so the deposit is unambiguously to the company
+      // view directly, so the deposit is unambiguously to the company
       // (TKF #67 F7).
       const openCompanyAccount = async () => {
         try {
@@ -96,13 +83,7 @@ export const SavingsFundCompanyOnboarding = () => {
       command: transformCompanyFormDataToSurveyCommand(data),
       registryCode,
     });
-    if (fromBothFlow) {
-      // Personal account already exists from the KYC step — let the user pick
-      // which account to open next.
-      setCompletedCompany({ code: registryCode, name: data.registryLookup?.registryName ?? '' });
-    } else {
-      setSubmittedRegistryCode(registryCode);
-    }
+    setSubmittedRegistryCode(registryCode);
   });
 
   const steps: Array<{
@@ -222,8 +203,7 @@ export const SavingsFundCompanyOnboarding = () => {
 
   const showPreviousSection = () => {
     if (activeSection === 0) {
-      // First step: go back to wherever the user came from — the KYC flow when
-      // they were chained here as one continuous flow — instead of a dead Back.
+      // First step: back to wherever the user came from (normally the chooser).
       history.goBack();
       return;
     }
@@ -250,17 +230,6 @@ export const SavingsFundCompanyOnboarding = () => {
     }
     setActiveSection((current) => Math.min(current + 1, totalSections - 1));
   };
-
-  if (completedCompany) {
-    return (
-      <div className="col-12 col-md-10 col-lg-7 mx-auto">
-        <AccountChoiceStep
-          companyCode={completedCompany.code}
-          companyName={completedCompany.name}
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="col-12 col-md-10 col-lg-7 mx-auto">

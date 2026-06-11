@@ -13,7 +13,6 @@ const buildOnboardingFormData = (
   email: 'test@example.com',
   phoneNumber: '+37255555555',
   pepSelfDeclaration: 'IS_NOT_PEP',
-  investmentIntent: 'SELF',
   personalInvestmentProfile: {
     investmentGoals: { type: 'OPTION', value: 'LONG_TERM' },
     investableAssets: 'LESS_THAN_20K',
@@ -131,10 +130,8 @@ describe('transformCompanyFormDataToSurveyCommand', () => {
 });
 
 describe('transformFormDataToOnboardingSurveryCommand', () => {
-  it('includes the personal profile items for a personal (SELF) intent', () => {
-    const result = transformFormDataToOnboardingSurveryCommand(
-      buildOnboardingFormData({ investmentIntent: 'SELF' }),
-    );
+  it('includes the personal profile items when the group is populated', () => {
+    const result = transformFormDataToOnboardingSurveryCommand(buildOnboardingFormData());
 
     const types = result.answers.map((a) => a.type);
     expect(types).toEqual(
@@ -142,37 +139,10 @@ describe('transformFormDataToOnboardingSurveryCommand', () => {
     );
   });
 
-  it('omits the personal profile items for ONLY_VIA_COMPANY intent even if the group is populated', () => {
-    // The flow clears the group on intent flip, so in practice it would be
-    // empty here — but the data boundary must enforce the invariant on its
-    // own. This test simulates a stale populated group reaching the transform
-    // (UI bug, race condition, future regression) and asserts the profile
-    // items are still omitted from the KYC payload.
+  it('omits the personal profile items when the group is not fully populated', () => {
     const result = transformFormDataToOnboardingSurveryCommand(
       buildOnboardingFormData({
-        investmentIntent: 'ONLY_VIA_COMPANY',
-        personalInvestmentProfile: {
-          investmentGoals: { type: 'OPTION', value: 'LONG_TERM' },
-          investableAssets: 'LESS_THAN_20K',
-          sourceOfIncome: [{ type: 'OPTION', value: 'SALARY' }],
-        },
-      }),
-    );
-
-    const types = result.answers.map((a) => a.type);
-    expect(types).not.toContain('INVESTMENT_GOALS');
-    expect(types).not.toContain('INVESTABLE_ASSETS');
-    expect(types).not.toContain('SOURCE_OF_INCOME');
-    expect(types).toEqual(
-      expect.arrayContaining(['CITIZENSHIP', 'ADDRESS', 'EMAIL', 'PEP_SELF_DECLARATION']),
-    );
-  });
-
-  it('omits the personal profile items when the group is null (ONLY_VIA_COMPANY)', () => {
-    const result = transformFormDataToOnboardingSurveryCommand(
-      buildOnboardingFormData({
-        investmentIntent: 'ONLY_VIA_COMPANY',
-        personalInvestmentProfile: null,
+        personalInvestmentProfile: { investableAssets: 'LESS_THAN_20K' },
       }),
     );
 
