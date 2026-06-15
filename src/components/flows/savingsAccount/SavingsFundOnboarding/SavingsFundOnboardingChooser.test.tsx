@@ -8,6 +8,7 @@ import { initializeConfiguration } from '../../../config/config';
 import {
   kycIdentityBackend,
   savingsFundOnboardingStatusBackend,
+  savingsFundPersonOnboardingStatusBackend,
   useTestBackends,
 } from '../../../../test/backend';
 import { mockCompleteKycIdentity } from '../../../../test/backend-responses';
@@ -60,7 +61,7 @@ describe('SavingsFundOnboardingChooser', () => {
   });
 
   it('does not redirect away from the chooser when onboarding is already completed', async () => {
-    savingsFundOnboardingStatusBackend(server, 'COMPLETED');
+    savingsFundPersonOnboardingStatusBackend(server, 'COMPLETED');
     openChooser();
 
     expect(
@@ -70,7 +71,7 @@ describe('SavingsFundOnboardingChooser', () => {
   });
 
   it('marks the personal option as opened and gates Continue on it when onboarding is completed', async () => {
-    savingsFundOnboardingStatusBackend(server, 'COMPLETED');
+    savingsFundPersonOnboardingStatusBackend(server, 'COMPLETED');
     openChooser();
 
     expect(await screen.findByText('Opened')).toBeInTheDocument();
@@ -83,6 +84,21 @@ describe('SavingsFundOnboardingChooser', () => {
 
     expect(screen.getByRole('button', { name: /For myself/, pressed: true })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Continue' })).toBeDisabled();
+  });
+
+  it('does not mark the personal option as opened when only the acting company has onboarded', async () => {
+    // Acting as a company whose own onboarding is COMPLETED: the role-sensitive
+    // status endpoint says COMPLETED, but the natural person has not onboarded —
+    // the personal option must stay open for selection without the Opened tag.
+    savingsFundOnboardingStatusBackend(server, 'COMPLETED');
+    savingsFundPersonOnboardingStatusBackend(server, null);
+    openChooser();
+
+    expect(
+      await screen.findByRole('heading', { name: 'Who are you opening the account for?' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Opened')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /For myself/, pressed: true })).toBeInTheDocument();
   });
 
   it('continues to the personal flow with the preselected option', async () => {
@@ -114,6 +130,18 @@ describe('SavingsFundOnboardingChooser', () => {
       await screen.findByRole('heading', { name: "Enter your company's name", level: 2 }),
     ).toBeInTheDocument();
     expect(screen.getByText('1/7')).toBeInTheDocument();
+  });
+
+  it('shows the company success page with a deposit CTA on the company success route', async () => {
+    history.push('/savings-fund/onboarding/success/company');
+
+    expect(
+      await screen.findByRole('heading', { name: 'All set! The company account is open' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Add money' })).toHaveAttribute(
+      'href',
+      '/savings-fund/payment',
+    );
   });
 
   it('redirects the reserved child route back to the chooser', async () => {

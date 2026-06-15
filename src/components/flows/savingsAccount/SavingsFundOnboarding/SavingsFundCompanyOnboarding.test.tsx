@@ -1,3 +1,4 @@
+import { QueryClient } from '@tanstack/react-query';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
@@ -59,6 +60,20 @@ describe('SavingsFundCompanyOnboarding', () => {
     expect(statusRequested).toBe(false);
   });
 
+  it('stays on the first step when a previous company onboarding left a completed status in the cache', async () => {
+    // Onboarding a second company in the same session: the previous company's
+    // COMPLETED status is still in the query cache, but it must not be mistaken
+    // for this onboarding's outcome.
+    const queryClient = new QueryClient();
+    queryClient.setQueryData(['savingsFundCompanyOnboardingStatus'], { status: 'COMPLETED' });
+    const history = createMemoryHistory();
+
+    renderWrapped(<SavingsFundCompanyOnboarding />, history, undefined, queryClient);
+
+    expect(await screen.findByText('1/7')).toBeInTheDocument();
+    expect(history.location.pathname).not.toBe('/savings-fund/onboarding/pending');
+  });
+
   it('has Continue and Back buttons', async () => {
     renderWrapped(<SavingsFundCompanyOnboarding />);
 
@@ -111,7 +126,7 @@ describe('SavingsFundCompanyOnboarding', () => {
     expect(await screen.findByText('2/7')).toBeInTheDocument();
   });
 
-  it('switches to the company account and opens the deposit view when KYB completes', async () => {
+  it('switches to the company account and shows the company success page when KYB completes', async () => {
     const switchBackend = switchRoleBackend(server);
     const history = createMemoryHistory();
     renderWrapped(<SavingsFundCompanyOnboarding />, history);
@@ -128,13 +143,14 @@ describe('SavingsFundCompanyOnboarding', () => {
 
     userEvent.click(continueButton());
 
-    // A completed company KYB lands directly on the company's deposit view
-    // (no account chooser for the standalone path), not the "in review" page.
+    // A completed company KYB switches to the company role first, so the
+    // success page's deposit CTA opens the company's deposit view (#67 F7),
+    // and confirms the account is open instead of jumping straight to payment.
     await waitFor(() => {
       expect(switchBackend.switchedRole).toEqual({ type: 'LEGAL_ENTITY', code: '12345678' });
     });
     await waitFor(() => {
-      expect(history.location.pathname).toBe('/savings-fund/payment');
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/success/company');
     });
   });
 

@@ -250,6 +250,10 @@ export function getSavingsFundOnboardingStatus(): Promise<SavingsFundOnboardingS
   return getWithAuthentication(getEndpoint('/v1/savings/onboarding/status'));
 }
 
+export function getSavingsFundPersonOnboardingStatus(): Promise<SavingsFundOnboardingStatus> {
+  return getWithAuthentication(getEndpoint('/v1/savings/onboarding/status/person'));
+}
+
 export function postSavingsFundOnboardingSurvey(command: OnboardingSurveyCommand): Promise<void> {
   return postWithAuthentication(getEndpoint('/v1/kyc/surveys'), command);
 }

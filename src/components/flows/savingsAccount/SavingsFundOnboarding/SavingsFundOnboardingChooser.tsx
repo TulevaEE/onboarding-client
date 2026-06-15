@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import { Loader } from '../../../common';
 import { usePageTitle } from '../../../common/usePageTitle';
-import { useSavingsFundOnboardingStatus } from '../../../common/apiHooks';
+import { useSavingsFundPersonOnboardingStatus } from '../../../common/apiHooks';
 import { OnboardingFlowOption, getOnboardingFlowOptions } from './onboardingFlows';
 import { TranslationKey } from '../../../translations';
 import checkImage from '../../common/SuccessNotice/success.svg';
@@ -197,7 +197,7 @@ export const SavingsFundOnboardingChooser: FC = () => {
   usePageTitle('pageTitle.savingsFundOnboarding');
 
   const history = useHistory();
-  const { data: onboardingStatus } = useSavingsFundOnboardingStatus();
+  const { data: onboardingStatus } = useSavingsFundPersonOnboardingStatus();
   const personOnboardingCompleted = onboardingStatus?.status === 'COMPLETED';
   const options = getOnboardingFlowOptions();
 

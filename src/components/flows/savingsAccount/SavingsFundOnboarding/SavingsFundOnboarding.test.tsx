@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory, History } from 'history';
 import { setupServer } from 'msw/node';
@@ -6,11 +6,14 @@ import { Route } from 'react-router-dom';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import { initializeConfiguration } from '../../../config/config';
 import {
-  delayedSavingsFundOnboardingStatusBackend,
+  delayedSavingsFundPersonOnboardingStatusBackend,
   failingKycIdentityBackend,
   kycIdentityBackend,
   savingsFundOnboardingStatusBackend,
   savingsFundOnboardingSurveyBackend,
+  savingsFundPersonOnboardingStatusBackend,
+  switchRoleBackend,
+  userBackend,
   useTestBackends,
 } from '../../../../test/backend';
 import {
@@ -63,7 +66,7 @@ describe('SavingsFundOnboarding', () => {
   });
 
   it('allows completing the full happy flow', async () => {
-    savingsFundOnboardingStatusBackend(server);
+    savingsFundPersonOnboardingStatusBackend(server);
     openOnboardingFlow();
 
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
@@ -94,7 +97,7 @@ describe('SavingsFundOnboarding', () => {
       'https://tuleva.ee/wp-content/uploads/2026/02/Tuleva.eurofond.tingimused.02.02.2026.pdf',
     );
 
-    savingsFundOnboardingStatusBackend(server, 'COMPLETED');
+    savingsFundPersonOnboardingStatusBackend(server, 'COMPLETED');
     clickContinue();
 
     await waitFor(() => {
@@ -102,8 +105,20 @@ describe('SavingsFundOnboarding', () => {
     });
   });
 
+  it('stays in the flow when only the acting company has onboarded', async () => {
+    // Acting as a company whose own onboarding is COMPLETED: the role-sensitive
+    // status says COMPLETED, but the natural person has not onboarded — entering
+    // the personal flow must not bounce them to the success page.
+    savingsFundOnboardingStatusBackend(server, 'COMPLETED');
+    savingsFundPersonOnboardingStatusBackend(server, null);
+    openOnboardingFlow();
+
+    expect(await screen.findByText('1/8')).toBeInTheDocument();
+    expect(history.location.pathname).not.toBe('/savings-fund/onboarding/success');
+  });
+
   it('allows navigation back through steps', async () => {
-    savingsFundOnboardingStatusBackend(server);
+    savingsFundPersonOnboardingStatusBackend(server);
     openOnboardingFlow();
 
     expect(screen.getByText('1/8')).toBeInTheDocument();
@@ -126,7 +141,7 @@ describe('SavingsFundOnboarding', () => {
   });
 
   it('shows pending outcome when onboarding status is pending', async () => {
-    savingsFundOnboardingStatusBackend(server, 'PENDING');
+    savingsFundPersonOnboardingStatusBackend(server, 'PENDING');
     openOnboardingFlow();
 
     await waitFor(() => {
@@ -137,7 +152,7 @@ describe('SavingsFundOnboarding', () => {
   });
 
   it('renders the personal flow at the root onboarding path before the company launch', async () => {
-    savingsFundOnboardingStatusBackend(server);
+    savingsFundPersonOnboardingStatusBackend(server);
     history.push('/savings-fund/onboarding');
 
     expect(await screen.findByText('1/8')).toBeInTheDocument();
@@ -147,7 +162,7 @@ describe('SavingsFundOnboarding', () => {
   });
 
   it('redirects the company route to the root personal flow before the company launch', async () => {
-    savingsFundOnboardingStatusBackend(server);
+    savingsFundPersonOnboardingStatusBackend(server);
     history.push('/savings-fund/onboarding/company');
 
     expect(await screen.findByText('1/8')).toBeInTheDocument();
@@ -155,15 +170,41 @@ describe('SavingsFundOnboarding', () => {
   });
 
   it('hides navigation buttons while loading onboarding status', async () => {
-    delayedSavingsFundOnboardingStatusBackend(server);
+    delayedSavingsFundPersonOnboardingStatusBackend(server);
     openOnboardingFlow();
 
     expect(screen.queryByRole('button', { name: /back/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /continue/i })).not.toBeInTheDocument();
   });
 
+  it('switches back to the personal role before the success page when acting as a company', async () => {
+    // An acting-as-company user can open a personal account from the chooser.
+    // The success page's deposit CTA must then target the person's account,
+    // not the company the session happened to be acting as (#67 F7 mirror).
+    // The acting role must be mocked before the app mounts, so remount with it.
+    cleanup();
+    const switchBackend = switchRoleBackend(server);
+    userBackend(server, { role: { type: 'LEGAL_ENTITY', code: '12345678', name: 'Acme OÜ' } });
+    savingsFundPersonOnboardingStatusBackend(server);
+    kycIdentityBackend(server, mockCompleteKycIdentity);
+    initApp();
+    openOnboardingFlow();
+
+    expect(
+      await screen.findByRole('heading', { name: 'What is your investment goal?', level: 2 }),
+    ).toBeInTheDocument();
+    await fillPersonalProfileSteps();
+    savingsFundPersonOnboardingStatusBackend(server, 'COMPLETED');
+    clickContinue();
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/success');
+    });
+    expect(switchBackend.switchedRole).toEqual({ type: 'PERSON', code: '39001011234' });
+  });
+
   it('skips identity steps and submits the identity on file when identity is complete', async () => {
-    savingsFundOnboardingStatusBackend(server);
+    savingsFundPersonOnboardingStatusBackend(server);
     kycIdentityBackend(server, mockCompleteKycIdentity);
 
     let capturedAnswers: unknown[] | null = null;
@@ -178,7 +219,7 @@ describe('SavingsFundOnboarding', () => {
     expect(screen.getByText('1/4')).toBeInTheDocument();
 
     await fillPersonalProfileSteps();
-    savingsFundOnboardingStatusBackend(server, 'COMPLETED');
+    savingsFundPersonOnboardingStatusBackend(server, 'COMPLETED');
     clickContinue();
 
     await waitFor(() => {
@@ -212,7 +253,7 @@ describe('SavingsFundOnboarding', () => {
   });
 
   it('prefills contact details from the identity on file', async () => {
-    savingsFundOnboardingStatusBackend(server);
+    savingsFundPersonOnboardingStatusBackend(server);
     kycIdentityBackend(server, mockContactOnlyKycIdentity);
     openOnboardingFlow();
 
@@ -229,7 +270,7 @@ describe('SavingsFundOnboarding', () => {
   });
 
   it('resolves the flow shape from a fresh fetch, not the cached identity, on re-entry', async () => {
-    savingsFundOnboardingStatusBackend(server);
+    savingsFundPersonOnboardingStatusBackend(server);
     openOnboardingFlow();
 
     expect(await screen.findByText('1/8')).toBeInTheDocument();
@@ -243,7 +284,7 @@ describe('SavingsFundOnboarding', () => {
   });
 
   it('blocks the flow and offers retry when loading the identity fails', async () => {
-    savingsFundOnboardingStatusBackend(server);
+    savingsFundPersonOnboardingStatusBackend(server);
     failingKycIdentityBackend(server);
     openOnboardingFlow();
 

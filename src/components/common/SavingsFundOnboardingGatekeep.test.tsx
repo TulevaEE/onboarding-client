@@ -59,6 +59,33 @@ describe('SavingsFundOnboardingGatekeep', () => {
     ).toBeInTheDocument();
   });
 
+  it('waits for a fresh status instead of redirecting on a stale cached one after a role switch', async () => {
+    // Completing company onboarding switches the session to the company role and
+    // opens the deposit view. The status cached before the switch belongs to the
+    // person and says "not completed" — the gatekeep must wait for the refetched
+    // company status instead of bouncing back to the chooser on the stale value.
+    server.use(onboardingStatusHandler.notCompleted());
+    initializeComponent();
+    history.push('/savings-fund/payment');
+    // The first visit settles a "not completed" status in the query cache and
+    // bounces to the chooser — exactly the state a pre-switch session is in.
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding');
+    });
+
+    server.use(onboardingStatusHandler.completed());
+    history.push('/savings-fund/payment');
+
+    expect(
+      await screen.findByRole(
+        'heading',
+        { name: 'Deposit to Additional Savings Fund' },
+        { timeout: 5_000 },
+      ),
+    ).toBeInTheDocument();
+    expect(history.location.pathname).toBe('/savings-fund/payment');
+  });
+
   it('redirects /savings-fund/withdraw to /savings-fund/onboarding when onboarding is not completed', async () => {
     server.use(onboardingStatusHandler.notCompleted());
     initializeComponent();

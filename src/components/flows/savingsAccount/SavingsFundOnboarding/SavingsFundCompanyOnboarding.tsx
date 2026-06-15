@@ -43,17 +43,19 @@ export const SavingsFundCompanyOnboarding = () => {
   const switchRole = useSwitchRole();
 
   useEffect(() => {
-    if (!onboardingStatus) {
+    // Only this onboarding's own outcome may navigate away — a status another
+    // company's onboarding left in the query cache must be ignored.
+    if (!onboardingStatus || !submittedRegistryCode) {
       return;
     }
-    if (onboardingStatus.status === 'COMPLETED' && submittedRegistryCode) {
-      // KYB passed — switch to the new company account and open its deposit
-      // view directly, so the deposit is unambiguously to the company
-      // (TKF #67 F7).
+    if (onboardingStatus.status === 'COMPLETED') {
+      // KYB passed — switch to the new company account first, so the success
+      // page's deposit CTA opens the company's deposit view and the deposit is
+      // unambiguously to the company (TKF #67 F7).
       const openCompanyAccount = async () => {
         try {
           await switchRole.mutateAsync({ type: 'LEGAL_ENTITY', code: submittedRegistryCode });
-          history.push('/savings-fund/payment');
+          history.push('/savings-fund/onboarding/success/company');
         } catch {
           setSubmitError(true);
         }

@@ -1199,6 +1199,9 @@
   "savingsFund.onboarding.success.pageTitle": "Fond avatud",
   "savingsFund.onboarding.success.title": "Korras! Üks samm veel…",
   "savingsFund.onboarding.success.description": "Suuna oma raha kohe tootlust teenima ja tee Täiendavasse Kogumisfondi sissemakse. Alusta kasvõi ühest eurost.",
+  "savingsFund.onboarding.success.company.pageTitle": "Ettevõtte konto avatud",
+  "savingsFund.onboarding.success.company.title": "Korras! Ettevõtte konto on avatud",
+  "savingsFund.onboarding.success.company.description": "Oled nüüd ettevõtte vaates. Suuna ettevõtte raha tootlust teenima ja tee sissemakse ettevõtte pangakontolt. Alusta kasvõi ühest eurost.",
   "savingsFund.onboarding.success.primaryButton.label": "Teen sissemakse",
   "savingsFund.onboarding.success.secondaryButton.label": "Mitte praegu",
 
@@ -1389,8 +1392,9 @@
   "flows.savingsFundOnboarding.businessValidationStep.relatedPerson": "Seotud isik",
   "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.title": "Vaja on isikutuvastust",
   "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.description": "Enne kui ettevõte saab konto avada, peavad kõik sellega seotud isikud avama isikliku Tuleva konto ja läbima isikutuvastuse.",
+  "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.self.title": "Sinu isikutuvastus on läbivaatamisel",
+  "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.self.description": "Vaatame su andmed läbi nädala jooksul ja teavitame sind otsusest meiliga. Seni ei saa ettevõttele kontot avada.",
   "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.checkAgain": "Kontrolli uuesti",
-  "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.selfCta": "Lõpeta minu isikutuvastus",
   "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.shareInstruction": "Jaga seda linki ülaltoodud seotud isikutega, et nad saaksid isikutuvastuse läbida:",
 
   "flows.savingsFundOnboarding.companyAddressStep.title": "Kus sinu osaühing tegutseb?",
