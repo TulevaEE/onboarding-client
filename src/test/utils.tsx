@@ -23,6 +23,7 @@ export function renderWrapped(
   children: React.ReactNode,
   history = createMemoryHistory(),
   store = createDefaultStore(history as any),
+  queryClient = new QueryClient(),
 ): RenderResult {
   const wrapper = (component: React.ReactNode) => (
     <IntlProvider
@@ -37,7 +38,7 @@ export function renderWrapped(
       }}
     >
       <ReduxProvider store={store}>
-        <QueryClientProvider client={new QueryClient()}>
+        <QueryClientProvider client={queryClient}>
           <ConnectedRouter history={history}>{component}</ConnectedRouter>
         </QueryClientProvider>
       </ReduxProvider>

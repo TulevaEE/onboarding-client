@@ -402,22 +402,7 @@ describe('RequirementsCheckStep', () => {
     expect(screen.queryByText(/Isikusamasuse tuvastamine on lõpetamata/)).not.toBeInTheDocument();
   });
 
-  it('offers a personal identity verification link that opens personal onboarding in a new tab when the logged-in user is unverified (USER_KYC)', async () => {
-    server.use(relatedPersonsError(USER_KYC_ERROR));
-
-    renderWrapped(
-      <RequirementsCheckStepWrapper
-        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
-      />,
-    );
-
-    const cta = await screen.findByRole('link', { name: 'Complete my identity verification' });
-    expect(cta).toHaveAttribute('href', 'http://localhost/savings-fund/onboarding');
-    expect(cta).toHaveAttribute('target', '_blank');
-    expect(cta).toHaveAttribute('rel', 'noopener noreferrer');
-  });
-
-  it('shows no shareable link when only the logged-in user is unverified', async () => {
+  it('shows an under-review notice without any call to action when the logged-in user is unverified (USER_KYC)', async () => {
     server.use(relatedPersonsError(USER_KYC_ERROR));
 
     renderWrapped(
@@ -427,12 +412,21 @@ describe('RequirementsCheckStep', () => {
     );
 
     expect(
-      await screen.findByRole('link', { name: 'Complete my identity verification' }),
+      await screen.findByText('Your identity verification is under review'),
     ).toBeInTheDocument();
+    expect(
+      screen.getByText(/will review your details within a week and notify you/i),
+    ).toBeInTheDocument();
+    // The flow already collected identity, so re-doing the form cannot change the
+    // outcome — there must be no self-service identity link, only "Check again".
+    expect(
+      screen.queryByRole('link', { name: 'Complete my identity verification' }),
+    ).not.toBeInTheDocument();
     expect(screen.queryByText(/Share this link/i)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Check again' })).toBeInTheDocument();
   });
 
-  it('shows only the shareable link (opening in a new tab), no personal CTA, when only other people are unverified (OTHER_RELATED_PERSONS_KYC)', async () => {
+  it('shows only the shareable link (opening in a new tab), no under-review notice, when only other people are unverified (OTHER_RELATED_PERSONS_KYC)', async () => {
     server.use(relatedPersonsError(OTHER_PERSONS_KYC_ERROR));
 
     renderWrapped(
@@ -448,8 +442,26 @@ describe('RequirementsCheckStep', () => {
       screen.getByRole('link', { name: 'http://localhost/savings-fund/onboarding' }),
     ).toHaveAttribute('target', '_blank');
     expect(
-      screen.queryByRole('link', { name: 'Complete my identity verification' }),
+      screen.queryByText('Your identity verification is under review'),
     ).not.toBeInTheDocument();
+  });
+
+  it('shows both the under-review notice and the shareable link when the user and other people are unverified', async () => {
+    server.use(relatedPersonsError(USER_KYC_ERROR, OTHER_PERSONS_KYC_ERROR));
+
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(
+      await screen.findByText('Your identity verification is under review'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/Share this link with the connected people above/i),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Check again' })).toHaveLength(1);
   });
 
   it('treats a non-identity relatedPersons error as a generic requirement failure, not an identity dead-end', async () => {
@@ -473,7 +485,7 @@ describe('RequirementsCheckStep', () => {
       screen.queryByText(/everyone connected to it must open a personal Tuleva account/i),
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole('link', { name: 'Complete my identity verification' }),
+      screen.queryByText('Your identity verification is under review'),
     ).not.toBeInTheDocument();
   });
 

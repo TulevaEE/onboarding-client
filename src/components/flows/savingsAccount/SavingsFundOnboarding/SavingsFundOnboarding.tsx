@@ -17,8 +17,10 @@ import {
 } from './identitySteps';
 import { isCompanyOnboardingEnabled } from './onboardingFlows';
 import {
-  useSavingsFundOnboardingStatus,
+  useMe,
+  useSavingsFundPersonOnboardingStatus,
   useSubmitSavingsFundOnboardingSurvey,
+  useSwitchRole,
 } from '../../../common/apiHooks';
 import { transformFormDataToOnboardingSurveryCommand } from '../utils';
 import { ErrorResponse } from '../../../common/apiModels';
@@ -143,7 +145,9 @@ export const SavingsFundOnboarding: FC = () => {
     data: onboardingStatus,
     isLoading: loadingOnboardingStatus,
     refetch: refetchOnboardingStatus,
-  } = useSavingsFundOnboardingStatus();
+  } = useSavingsFundPersonOnboardingStatus();
+  const { data: user } = useMe();
+  const { mutateAsync: switchRole } = useSwitchRole();
 
   const { control, setValue, watch, handleSubmit, trigger } = useForm<OnboardingFormData>({
     mode: 'onChange',
@@ -176,13 +180,28 @@ export const SavingsFundOnboarding: FC = () => {
 
   useEffect(() => {
     if (onboardingStatus?.status === 'REJECTED' || onboardingStatus?.status === 'PENDING') {
-      redirectToOutcome('pending');
+      history.push('/savings-fund/onboarding/pending');
+      return;
     }
 
-    if (onboardingStatus?.status === 'COMPLETED') {
-      redirectToOutcome('success');
+    if (onboardingStatus?.status !== 'COMPLETED' || !user) {
+      return;
     }
-  }, [onboardingStatus]);
+    // The success page's deposit CTA must target the person's account — a
+    // session acting as a company switches back to the personal role first,
+    // mirroring how the company flow switches to the company (#67 F7).
+    const openPersonalAccount = async () => {
+      try {
+        if (user.role && user.role.type !== 'PERSON') {
+          await switchRole({ type: 'PERSON', code: user.personalCode });
+        }
+        history.push('/savings-fund/onboarding/success');
+      } catch (e) {
+        setSubmitError(e as ErrorResponse);
+      }
+    };
+    openPersonalAccount();
+  }, [onboardingStatus, user, switchRole, history]);
 
   // Auto-set residency country to first citizenship
   useEffect(() => {
@@ -198,10 +217,6 @@ export const SavingsFundOnboarding: FC = () => {
   const totalSections = steps.length;
   const currentSection = activeSection + 1;
   const isFirstSection = activeSection === 0;
-
-  const redirectToOutcome = (outcome: 'pending' | 'success') => {
-    history.push(`/savings-fund/onboarding/${outcome}`);
-  };
 
   const showPreviousSection = () => {
     if (isFirstSection) {

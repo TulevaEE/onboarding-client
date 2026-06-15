@@ -33,6 +33,7 @@ import {
   getSavingsFundBankAccounts,
   getSavingsFundCompanyOnboardingStatus,
   getSavingsFundOnboardingStatus,
+  getSavingsFundPersonOnboardingStatus,
   getSecondPillarAssets,
   getSourceFunds,
   getTransactions,
@@ -202,9 +203,23 @@ export function useCompanyBusinessRegistryValidation(
 }
 
 export function useSavingsFundOnboardingStatus(): UseQueryResult<SavingsFundOnboardingStatus> {
+  const { data: user } = useMe();
+  // The endpoint resolves to the acting party's status, so key the cache by the
+  // acting party. A role switch then lands on a fresh entry instead of serving
+  // the previous role's status — which would otherwise leak a completed
+  // company's access to a not-yet-onboarded person, and vice versa.
   return useQuery({
-    queryKey: ['savingsFundOnboardingStatus'],
+    queryKey: ['savingsFundOnboardingStatus', user?.role?.code],
     queryFn: () => getSavingsFundOnboardingStatus(),
+  });
+}
+
+// The natural person's own onboarding status, independent of the acting role —
+// use this wherever the question is about the person, not the acting party.
+export function useSavingsFundPersonOnboardingStatus(): UseQueryResult<SavingsFundOnboardingStatus> {
+  return useQuery({
+    queryKey: ['savingsFundPersonOnboardingStatus'],
+    queryFn: () => getSavingsFundPersonOnboardingStatus(),
   });
 }
 
@@ -304,7 +319,7 @@ export function useSavingsFundCompanyOnboardingStatus(
   registryCode: string | undefined,
 ): UseQueryResult<SavingsFundOnboardingStatus> {
   return useQuery({
-    queryKey: ['savingsFundCompanyOnboardingStatus'],
+    queryKey: ['savingsFundCompanyOnboardingStatus', registryCode],
     queryFn: () => getSavingsFundCompanyOnboardingStatus(registryCode ?? ''),
     enabled: Boolean(registryCode),
   });

@@ -936,9 +936,28 @@ export function savingsFundOnboardingStatusBackend(
   );
 }
 
+export function savingsFundPersonOnboardingStatusBackend(
+  server: SetupServerApi,
+  status: string | null = null,
+): void {
+  server.use(
+    rest.get('http://localhost/v1/savings/onboarding/status/person', (req, res, ctx) =>
+      res(ctx.json({ status })),
+    ),
+  );
+}
+
 export function delayedSavingsFundOnboardingStatusBackend(server: SetupServerApi): void {
   server.use(
     rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
+      res(ctx.delay('infinite')),
+    ),
+  );
+}
+
+export function delayedSavingsFundPersonOnboardingStatusBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('http://localhost/v1/savings/onboarding/status/person', (req, res, ctx) =>
       res(ctx.delay('infinite')),
     ),
   );
@@ -1041,6 +1060,7 @@ const TEST_BACKENDS = {
   companyValidation: companyValidationBackend,
   kycIdentity: kycIdentityBackend,
   savingsFundOnboardingStatus: savingsFundOnboardingStatusBackend,
+  savingsFundPersonOnboardingStatus: savingsFundPersonOnboardingStatusBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

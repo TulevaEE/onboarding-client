@@ -10,8 +10,10 @@ import { errorCode, errorMessage } from './collectValidationErrors';
 import { hasNoValidationErrors } from './hasNoValidationErrors';
 
 // Identity-verification codes the backend sets on the relatedPersons field.
-// USER_KYC: the logged-in user themselves is unverified (we can offer a direct CTA).
-// OTHER_RELATED_PERSONS_KYC: someone else connected to the company is (offer a link).
+// USER_KYC: the logged-in user's own verification did not pass automatically — the
+// flow has already collected their identity, so this is a manual-review dead end.
+// OTHER_RELATED_PERSONS_KYC: someone else connected to the company is unverified
+// (offer a shareable link).
 const USER_KYC_CODE = 'USER_KYC';
 const OTHER_RELATED_PERSONS_KYC_CODE = 'OTHER_RELATED_PERSONS_KYC';
 const IDENTITY_KYC_CODES = [USER_KYC_CODE, OTHER_RELATED_PERSONS_KYC_CODE];
@@ -55,11 +57,13 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
   }, [isSuccess, data]);
 
   // The backend marks unverified connected people with dedicated identity codes on
-  // the relatedPersons field. USER_KYC means the logged-in user is one of them, so
-  // we offer a direct CTA; OTHER_RELATED_PERSONS_KYC means someone else is, so we
-  // offer a shareable link. It does not expose which specific person, so the copy
-  // stays generic. Any other relatedPersons error (e.g. ownership structure) is a
-  // genuine "company does not fit" reason and flows to the generic list below.
+  // the relatedPersons field. USER_KYC means the logged-in user's own verification
+  // needs manual review (the flow has already collected their identity, so there is
+  // nothing for them to redo); OTHER_RELATED_PERSONS_KYC means someone else is
+  // unverified, so we offer a shareable link. It does not expose which specific
+  // person, so the copy stays generic. Any other relatedPersons error (e.g.
+  // ownership structure) is a genuine "company does not fit" reason and flows to
+  // the generic list below.
   const relatedPersonErrorCodes = (data?.relatedPersons.errors ?? []).map(errorCode);
   const userIdentityIncomplete = relatedPersonErrorCodes.includes(USER_KYC_CODE);
   const otherPersonsIdentityIncomplete = relatedPersonErrorCodes.includes(
@@ -166,33 +170,35 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
             className="alert alert-warning m-0 d-flex flex-column gap-3 align-items-start"
             role="alert"
           >
-            <div className="d-flex flex-column gap-1">
-              <strong>
-                <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.title" />
-              </strong>
-              <span>
-                <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.description" />
-              </span>
-            </div>
             {userIdentityIncomplete && (
-              <a
-                className="btn btn-primary"
-                href={identityVerificationUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.selfCta" />
-              </a>
+              <div className="d-flex flex-column gap-1">
+                <strong>
+                  <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.self.title" />
+                </strong>
+                <span>
+                  <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.self.description" />
+                </span>
+              </div>
             )}
             {otherPersonsIdentityIncomplete && (
-              <div className="d-flex flex-column gap-1">
-                <span>
-                  <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.shareInstruction" />
-                </span>
-                <a href={identityVerificationUrl} target="_blank" rel="noopener noreferrer">
-                  {identityVerificationUrl}
-                </a>
-              </div>
+              <>
+                <div className="d-flex flex-column gap-1">
+                  <strong>
+                    <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.title" />
+                  </strong>
+                  <span>
+                    <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.description" />
+                  </span>
+                </div>
+                <div className="d-flex flex-column gap-1">
+                  <span>
+                    <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.shareInstruction" />
+                  </span>
+                  <a href={identityVerificationUrl} target="_blank" rel="noopener noreferrer">
+                    {identityVerificationUrl}
+                  </a>
+                </div>
+              </>
             )}
             <button
               type="button"
