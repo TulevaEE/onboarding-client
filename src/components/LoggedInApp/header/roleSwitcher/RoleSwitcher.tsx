@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { useMe, useRoles, useSwitchRole } from '../../../common/apiHooks';
@@ -10,11 +10,78 @@ type Props = {
   onRoleSwitch?: () => void;
 };
 
+const dropdownItemsOf = (container: HTMLElement | null): HTMLElement[] =>
+  Array.from(container?.querySelectorAll<HTMLElement>('.dropdown-item') ?? []);
+
 export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
   const { data: roles } = useRoles();
   const { data: user } = useMe();
   const switchRole = useSwitchRole();
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLSpanElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const pendingItemFocus = useRef<'first' | 'last' | null>(null);
+
+  useEffect(() => {
+    if (!open) {
+      return undefined;
+    }
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open || !pendingItemFocus.current) {
+      return;
+    }
+    const items = dropdownItemsOf(containerRef.current);
+    if (items.length > 0) {
+      (pendingItemFocus.current === 'last' ? items[items.length - 1] : items[0]).focus();
+    }
+    pendingItemFocus.current = null;
+  }, [open]);
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      if (open) {
+        setOpen(false);
+        toggleRef.current?.focus();
+      }
+      return;
+    }
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') {
+      return;
+    }
+    event.preventDefault();
+    const forward = event.key === 'ArrowDown';
+    if (!open) {
+      pendingItemFocus.current = forward ? 'first' : 'last';
+      setOpen(true);
+      return;
+    }
+    const items = dropdownItemsOf(containerRef.current);
+    if (items.length === 0) {
+      return;
+    }
+    const currentIndex = items.indexOf(document.activeElement as HTMLElement);
+    const delta = forward ? 1 : -1;
+    const fallbackIndex = forward ? 0 : items.length - 1;
+    const nextIndex =
+      currentIndex === -1 ? fallbackIndex : (currentIndex + delta + items.length) % items.length;
+    items[nextIndex].focus();
+  };
+
+  const handleBlur = (event: React.FocusEvent) => {
+    const nextFocused = event.relatedTarget;
+    if (nextFocused && !containerRef.current?.contains(nextFocused)) {
+      setOpen(false);
+    }
+  };
 
   const displayName = user?.role?.name ?? userName;
   const companyOnboardingEnabled = isCompanyOnboardingEnabled();
@@ -32,12 +99,14 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
   };
 
   return (
-    <span className="dropdown d-inline-block">
+    <span className="dropdown d-inline-block" ref={containerRef} onBlur={handleBlur}>
       <button
+        ref={toggleRef}
         type="button"
         className="btn btn-link p-0 border-0 d-inline-flex align-items-center gap-1"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
+        onKeyDown={handleKeyDown}
       >
         {displayName}
         <svg
@@ -61,6 +130,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
               type="button"
               className="dropdown-item"
               onClick={() => handleRoleClick({ type: role.type, code: role.code })}
+              onKeyDown={handleKeyDown}
             >
               {role.name}
             </button>
@@ -72,6 +142,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
                 className="dropdown-item d-flex align-items-center gap-2 link-primary fw-medium"
                 to="/savings-fund/onboarding"
                 onClick={() => setOpen(false)}
+                onKeyDown={handleKeyDown}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

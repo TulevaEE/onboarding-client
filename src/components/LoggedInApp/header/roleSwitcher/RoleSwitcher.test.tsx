@@ -24,6 +24,10 @@ function renderRoleSwitcher(onRoleSwitch?: () => void) {
   renderWrapped(<RoleSwitcher userName="John Doe" onRoleSwitch={onRoleSwitch} />);
 }
 
+function dropdownItems() {
+  return screen.queryAllByRole('button').filter((btn) => btn.classList.contains('dropdown-item'));
+}
+
 async function openDropdownAndGetCompanyItem() {
   const toggle = await screen.findByRole('button', { name: /John Doe/i });
   userEvent.click(toggle);
@@ -77,6 +81,20 @@ describe('RoleSwitcher', () => {
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
       expect(screen.getByRole('link', { name: 'Open a new account' })).toBeInTheDocument();
+    });
+
+    it('reaches the open-new-account link with arrow keys', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      const toggle = await screen.findByRole('button', { name: /John Doe/i });
+      toggle.focus();
+      userEvent.type(toggle, '{arrowup}', { skipClick: true });
+
+      await waitFor(() =>
+        expect(screen.getByRole('link', { name: 'Open a new account' })).toHaveFocus(),
+      );
     });
   });
 
@@ -132,10 +150,118 @@ describe('RoleSwitcher', () => {
     const companyItem = await openDropdownAndGetCompanyItem();
     userEvent.click(companyItem);
 
-    const dropdownItems = screen
-      .queryAllByRole('button')
-      .filter((btn) => btn.classList.contains('dropdown-item'));
-    expect(dropdownItems).toHaveLength(0);
+    expect(dropdownItems()).toHaveLength(0);
+  });
+
+  it('closes the dropdown when clicking outside', async () => {
+    setupSwitchFlow();
+
+    renderRoleSwitcher();
+
+    const toggle = await screen.findByRole('button', { name: /John Doe/i });
+    userEvent.click(toggle);
+
+    await waitFor(() => expect(dropdownItems()).not.toHaveLength(0));
+
+    userEvent.click(document.body);
+
+    await waitFor(() => expect(dropdownItems()).toHaveLength(0));
+  });
+
+  it('closes the dropdown when pressing Escape', async () => {
+    setupSwitchFlow();
+
+    renderRoleSwitcher();
+
+    const toggle = await screen.findByRole('button', { name: /John Doe/i });
+    userEvent.click(toggle);
+
+    await waitFor(() => expect(dropdownItems()).not.toHaveLength(0));
+
+    userEvent.type(toggle, '{esc}', { skipClick: true });
+
+    await waitFor(() => expect(dropdownItems()).toHaveLength(0));
+  });
+
+  it('opens the dropdown and focuses the first item on ArrowDown', async () => {
+    setupSwitchFlow();
+
+    renderRoleSwitcher();
+
+    const toggle = await screen.findByRole('button', { name: /John Doe/i });
+    toggle.focus();
+    userEvent.type(toggle, '{arrowdown}', { skipClick: true });
+
+    await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
+  });
+
+  it('opens the dropdown and focuses the last item on ArrowUp', async () => {
+    setupSwitchFlow();
+
+    renderRoleSwitcher();
+
+    const toggle = await screen.findByRole('button', { name: /John Doe/i });
+    toggle.focus();
+    userEvent.type(toggle, '{arrowup}', { skipClick: true });
+
+    await waitFor(() => {
+      const items = dropdownItems();
+      expect(items[items.length - 1]).toHaveFocus();
+    });
+  });
+
+  it('moves focus between items with arrow keys and wraps around', async () => {
+    setupSwitchFlow();
+
+    renderRoleSwitcher();
+
+    const toggle = await screen.findByRole('button', { name: /John Doe/i });
+    toggle.focus();
+    userEvent.type(toggle, '{arrowdown}', { skipClick: true });
+    await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
+
+    userEvent.type(dropdownItems()[0], '{arrowdown}', { skipClick: true });
+    await waitFor(() => expect(dropdownItems()[1]).toHaveFocus());
+
+    userEvent.type(dropdownItems()[1], '{arrowdown}', { skipClick: true });
+    await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
+  });
+
+  it('returns focus to the toggle when closing with Escape', async () => {
+    setupSwitchFlow();
+
+    renderRoleSwitcher();
+
+    const toggle = await screen.findByRole('button', { name: /John Doe/i });
+    toggle.focus();
+    userEvent.type(toggle, '{arrowdown}', { skipClick: true });
+    await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
+
+    userEvent.type(dropdownItems()[0], '{esc}', { skipClick: true });
+
+    await waitFor(() => expect(dropdownItems()).toHaveLength(0));
+    expect(toggle).toHaveFocus();
+  });
+
+  it('closes the dropdown when focus leaves via Tab', async () => {
+    setupSwitchFlow();
+
+    renderWrapped(
+      <>
+        <RoleSwitcher userName="John Doe" />
+        <button type="button">outside</button>
+      </>,
+    );
+
+    const toggle = await screen.findByRole('button', { name: /John Doe/i });
+    toggle.focus();
+    userEvent.type(toggle, '{arrowdown}', { skipClick: true });
+    await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
+
+    userEvent.tab();
+    userEvent.tab();
+
+    await waitFor(() => expect(dropdownItems()).toHaveLength(0));
   });
 
   it('updates the displayed name after switching role', async () => {
