@@ -232,7 +232,7 @@ describe('SavingsFundOnboarding', () => {
 
     expect(screen.getByRole('link', { name: /Terms/i })).toHaveAttribute(
       'href',
-      'https://tuleva.ee/wp-content/uploads/2026/02/Tuleva.eurofond.tingimused.02.02.2026.pdf',
+      'https://tuleva.ee/wp-content/uploads/2026/05/TKF100-Tingimused-kehtib-alates-15.06.2026.pdf',
     );
 
     const termsCheckbox = screen.getByLabelText(
