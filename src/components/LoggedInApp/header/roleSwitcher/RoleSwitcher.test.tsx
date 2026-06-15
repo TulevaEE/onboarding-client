@@ -24,8 +24,11 @@ function renderRoleSwitcher(onRoleSwitch?: () => void) {
   renderWrapped(<RoleSwitcher userName="John Doe" onRoleSwitch={onRoleSwitch} />);
 }
 
+// All keyboard-navigable menu items in DOM order. This mirrors the component's
+// own `.dropdown-item` selector, so it includes the open-new-account link (an
+// anchor, not a button) as the last item once company onboarding is launched.
 function dropdownItems() {
-  return screen.queryAllByRole('button').filter((btn) => btn.classList.contains('dropdown-item'));
+  return Array.from(document.querySelectorAll<HTMLElement>('.dropdown-item'));
 }
 
 async function openDropdownAndGetCompanyItem() {
@@ -193,10 +196,22 @@ describe('RoleSwitcher', () => {
     userEvent.type(toggle, '{arrowdown}', { skipClick: true });
     await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
 
+    // ArrowDown advances to the next item.
     userEvent.type(dropdownItems()[0], '{arrowdown}', { skipClick: true });
     await waitFor(() => expect(dropdownItems()[1]).toHaveFocus());
 
-    userEvent.type(dropdownItems()[1], '{arrowdown}', { skipClick: true });
+    // ArrowUp steps back, then once more wraps around to the last item.
+    userEvent.type(dropdownItems()[1], '{arrowup}', { skipClick: true });
+    await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
+    userEvent.type(dropdownItems()[0], '{arrowup}', { skipClick: true });
+    await waitFor(() => {
+      const items = dropdownItems();
+      expect(items[items.length - 1]).toHaveFocus();
+    });
+
+    // ArrowDown from the last item wraps back to the first.
+    const items = dropdownItems();
+    userEvent.type(items[items.length - 1], '{arrowdown}', { skipClick: true });
     await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
   });
 
@@ -228,10 +243,13 @@ describe('RoleSwitcher', () => {
 
     const toggle = await screen.findByRole('button', { name: /John Doe/i });
     toggle.focus();
-    userEvent.type(toggle, '{arrowdown}', { skipClick: true });
-    await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
+    // ArrowUp focuses the last item, so a single Tab forward leaves the menu.
+    userEvent.type(toggle, '{arrowup}', { skipClick: true });
+    await waitFor(() => {
+      const items = dropdownItems();
+      expect(items[items.length - 1]).toHaveFocus();
+    });
 
-    userEvent.tab();
     userEvent.tab();
 
     await waitFor(() => expect(dropdownItems()).toHaveLength(0));
