@@ -60,12 +60,16 @@ describe('SavingsFundCompanyOnboarding', () => {
     expect(statusRequested).toBe(false);
   });
 
-  it('stays on the first step when a previous company onboarding left a completed status in the cache', async () => {
-    // Onboarding a second company in the same session: the previous company's
-    // COMPLETED status is still in the query cache, but it must not be mistaken
-    // for this onboarding's outcome.
+  it('ignores a cached onboarding status until this company has been submitted', async () => {
+    // Onboarding a second company in the same session: a COMPLETED status is
+    // still in the query cache, but it must not be mistaken for this onboarding's
+    // outcome. Before a registry code is submitted the status hook reads the
+    // no-code key, so seed that key to make the status genuinely visible — the
+    // flow must still stay put until this onboarding is actually submitted.
     const queryClient = new QueryClient();
-    queryClient.setQueryData(['savingsFundCompanyOnboardingStatus'], { status: 'COMPLETED' });
+    queryClient.setQueryData(['savingsFundCompanyOnboardingStatus', undefined], {
+      status: 'REJECTED',
+    });
     const history = createMemoryHistory();
 
     renderWrapped(<SavingsFundCompanyOnboarding />, history, undefined, queryClient);
