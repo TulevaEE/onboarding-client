@@ -86,29 +86,25 @@ describe('TermsStep', () => {
   test('renders the title', () => {
     renderWrapped(<TermsStepWrapper />);
 
-    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Review fund documents');
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
+      'Review the fund’s key information',
+    );
   });
 
-  test('renders the fund summary as plain bullet points', () => {
+  test('renders the fund summary bullets with icons', () => {
     renderWrapped(<TermsStepWrapper />);
 
-    expect(screen.getByRole('heading', { name: 'Fund in brief' })).toBeInTheDocument();
-    expect(screen.getAllByRole('listitem')).toHaveLength(4);
+    expect(screen.getAllByRole('listitem')).toHaveLength(3);
 
-    expect(screen.getByText('Fee 0.28% per year, no additional fees')).toBeInTheDocument();
+    expect(screen.getByText('Fund fee 0.28% per year')).toBeInTheDocument();
+    expect(screen.getByText('A globally diversified stock index fund')).toBeInTheDocument();
+    expect(screen.getByText('Flexible withdrawals within three business days')).toBeInTheDocument();
+
     expect(
-      screen.getByText('A broad-based index fund investing in global equities'),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
+      screen.queryByText(
         'The value can fluctuate from year to year, so it is best suited for long-term investing',
       ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'Flexible withdrawals – money reaches your account within three business days',
-      ),
-    ).toBeInTheDocument();
+    ).not.toBeInTheDocument();
   });
 
   test('renders links to all fund documents', () => {
@@ -168,7 +164,9 @@ describe('TermsStep', () => {
   test('works with CompanyOnboardingFormData', () => {
     renderWrapped(<CompanyTermsStepWrapper />);
 
-    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Review fund documents');
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
+      'Review the fund’s key information',
+    );
   });
 
   test('does not show validation error when checkbox is checked', async () => {

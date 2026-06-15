@@ -90,7 +90,7 @@ describe('SavingsFundOnboarding', () => {
     await fillPersonalProfileSteps();
 
     expect(
-      screen.getByRole('heading', { name: 'Review fund documents', level: 2 }),
+      screen.getByRole('heading', { name: 'Review the fund’s key information', level: 2 }),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Terms/i })).toHaveAttribute(
       'href',
