@@ -47,14 +47,7 @@ beforeEach(() => {
 });
 
 describe('RoleSwitcher', () => {
-  describe('when company onboarding is launched', () => {
-    beforeEach(() => {
-      sessionStorage.setItem('companyOnboardingPreview', 'true');
-    });
-    afterEach(() => {
-      sessionStorage.removeItem('companyOnboardingPreview');
-    });
-
+  describe('now that company onboarding has launched', () => {
     it('offers opening a new account even when there is only one role', async () => {
       rolesBackend(server, [personalRole]);
       userBackend(server, { role: personalRole });
@@ -78,26 +71,6 @@ describe('RoleSwitcher', () => {
 
       expect(screen.getByRole('link', { name: 'Open a new account' })).toBeInTheDocument();
     });
-  });
-
-  it('does not offer opening a new account before the launch', async () => {
-    setupSwitchFlow();
-
-    renderRoleSwitcher();
-
-    userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
-
-    expect(screen.queryByRole('link', { name: 'Open a new account' })).not.toBeInTheDocument();
-  });
-
-  it('renders user name as plain text when there is only one role', async () => {
-    rolesBackend(server, [personalRole]);
-    userBackend(server, { role: personalRole });
-
-    renderRoleSwitcher();
-
-    expect(await screen.findByText('John Doe')).toBeInTheDocument();
-    expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
   it('renders a dropdown button when there are multiple roles', async () => {

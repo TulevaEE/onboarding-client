@@ -1,7 +1,7 @@
 // The launch switch for company onboarding: flipping this to true is the
 // go-live. Enforced on the root route (chooser vs. personal flow), the chooser
 // options, and at route level (a direct link to a disabled flow redirects).
-const COMPANY_ONBOARDING_LAUNCHED = false;
+const COMPANY_ONBOARDING_LAUNCHED = true;
 
 // Pre-launch preview for the team: open any page with
 // ?companyOnboardingPreview=true to see the launch state for the rest of the
