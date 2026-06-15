@@ -134,10 +134,10 @@ describe('SavingsFundOnboarding', () => {
     userEvent.click(screen.getByRole('button', { name: 'Back' }));
     expect(screen.getByText('1/8')).toBeInTheDocument();
 
-    // Go back from first step should navigate to the account page until the
-    // chooser is live
+    // Going back from the first step lands on the chooser, the post-launch root
+    // of the onboarding flow.
     userEvent.click(screen.getByRole('button', { name: 'Back' }));
-    expect(history.location.pathname).toBe('/account');
+    expect(history.location.pathname).toBe('/savings-fund/onboarding');
   });
 
   it('shows pending outcome when onboarding status is pending', async () => {
@@ -149,24 +149,6 @@ describe('SavingsFundOnboarding', () => {
     });
 
     expect(screen.getByRole('heading', { name: 'Application under review' })).toBeInTheDocument();
-  });
-
-  it('renders the personal flow at the root onboarding path before the company launch', async () => {
-    savingsFundPersonOnboardingStatusBackend(server);
-    history.push('/savings-fund/onboarding');
-
-    expect(await screen.findByText('1/8')).toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', { name: 'Who are you opening the account for?' }),
-    ).not.toBeInTheDocument();
-  });
-
-  it('redirects the company route to the root personal flow before the company launch', async () => {
-    savingsFundPersonOnboardingStatusBackend(server);
-    history.push('/savings-fund/onboarding/company');
-
-    expect(await screen.findByText('1/8')).toBeInTheDocument();
-    expect(history.location.pathname).toBe('/savings-fund/onboarding');
   });
 
   it('hides navigation buttons while loading onboarding status', async () => {
