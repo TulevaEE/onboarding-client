@@ -8,7 +8,13 @@ import { useMe, useSavingsFundBalance } from '../common/apiHooks';
 
 export function RepresentedPartyAccountPage() {
   const { data: user } = useMe();
-  const { data: savingsFundBalance } = useSavingsFundBalance();
+  const { data: savingsFundBalance, isLoading: savingsFundBalanceLoading } =
+    useSavingsFundBalance();
+
+  // While the balance loads (e.g. right after a role switch), pass undefined so
+  // AccountStatement shimmers instead of rendering an empty zero-balance table.
+  const loadedSavingsFunds = savingsFundBalance ? [savingsFundBalance] : [];
+  const savingsFunds = savingsFundBalanceLoading ? undefined : loadedSavingsFunds;
 
   return (
     <section aria-label="represented-party-account">
@@ -28,7 +34,7 @@ export function RepresentedPartyAccountPage() {
           </Link>
         </div>
       </SectionHeading>
-      <AccountStatement funds={savingsFundBalance ? [savingsFundBalance] : []} />
+      <AccountStatement funds={savingsFunds} />
 
       <ApplicationSection />
 

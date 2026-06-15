@@ -416,7 +416,11 @@ export function useSwitchRole(): UseMutationResult<
   return useMutation({
     mutationFn: (command: SwitchRoleCommand) => switchRole(command),
     onSuccess: () => {
-      queryClient.invalidateQueries();
+      // Reset rather than invalidate: the new role must not see the previous
+      // role's data. Invalidate keeps the stale cache visible while refetching,
+      // so the account page would flash the old role's values. Reset clears it,
+      // flipping queries to a loading state until the new role's data arrives.
+      queryClient.resetQueries();
     },
   });
 }

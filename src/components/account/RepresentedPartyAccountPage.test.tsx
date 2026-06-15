@@ -1,5 +1,6 @@
 import { setupServer } from 'msw/node';
 import { screen } from '@testing-library/react';
+import { rest } from 'msw';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import { initializeConfiguration } from '../config/config';
@@ -124,5 +125,28 @@ describe('RepresentedPartyAccountPage with zero balance', () => {
       'href',
       '/savings-fund/payment',
     );
+  });
+});
+
+describe('RepresentedPartyAccountPage while the savings balance is loading', () => {
+  beforeEach(() => {
+    initializeConfiguration();
+    useTestBackendsExcept(server, ['user']);
+    userBackend(server, {
+      role: { type: 'LEGAL_ENTITY', code: '12345678', name: 'Acme OÜ' },
+    });
+    server.use(
+      rest.get('http://localhost/v1/savings-account-statement', (_req, res, ctx) =>
+        res(ctx.delay('infinite')),
+      ),
+    );
+    initializeComponent();
+    history.push('/account');
+  });
+
+  test('shows a shimmer in place of an empty savings table', async () => {
+    expect(await screen.findByText('Hi, Acme OÜ representative')).toBeInTheDocument();
+    expect(await screen.findByTestId('account-statement-loader')).toBeInTheDocument();
+    expect(screen.queryByText(/0.00\s€/)).not.toBeInTheDocument();
   });
 });

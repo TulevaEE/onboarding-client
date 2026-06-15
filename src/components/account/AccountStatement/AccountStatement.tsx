@@ -10,14 +10,19 @@ import { SourceFund } from '../../common/apiModels';
 import { TableColumn } from '../../common/table/Table';
 
 interface Props {
-  funds: SourceFund[];
+  funds?: SourceFund[];
 }
 
 const AccountStatement: React.FC<Props> = ({ funds }) => {
-  if (!funds) {
-    return <Shimmer height={26} />;
-  }
   const { formatMessage } = useIntl();
+
+  if (!funds) {
+    return (
+      <div data-testid="account-statement-loader">
+        <Shimmer height={26} />
+      </div>
+    );
+  }
 
   const valueSum = getValueSum(funds);
 
