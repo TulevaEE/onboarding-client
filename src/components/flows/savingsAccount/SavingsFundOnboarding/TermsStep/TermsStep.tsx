@@ -11,11 +11,50 @@ type TermsStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> =
   confirmTextId?: TranslationKey;
 };
 
-const SUMMARY_BULLETS: TranslationKey[] = [
-  'flows.savingsFundOnboarding.termsStep.summary.fee',
-  'flows.savingsFundOnboarding.termsStep.summary.strategy',
-  'flows.savingsFundOnboarding.termsStep.summary.risk',
-  'flows.savingsFundOnboarding.termsStep.summary.withdrawals',
+// Phosphor Icons, bold weight (MIT): percent, globe-hemisphere-west, money
+const featureIcons: Record<string, ReactNode> = {
+  percent: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      aria-hidden="true"
+    >
+      <path d="M208.49,64.47l-144,144a12,12,0,1,1-17-17l144-144a12,12,0,0,1,17,17ZM47.72,104.27A40,40,0,1,1,76,116,39.72,39.72,0,0,1,47.72,104.27ZM60,76a16,16,0,1,0,4.69-11.31A15.87,15.87,0,0,0,60,76ZM220,180a40,40,0,1,1-11.72-28.29A39.71,39.71,0,0,1,220,180Zm-24,0a15.87,15.87,0,0,0-4.69-11.32h0A16,16,0,1,0,196,180Z" />
+    </svg>
+  ),
+  globe: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      aria-hidden="true"
+    >
+      <path d="M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm84,108a83.64,83.64,0,0,1-4.47,27L167,130a19.65,19.65,0,0,0-7.8-2.78l-22.82-3.08A20.14,20.14,0,0,0,117.72,132h-4.07l-2.71-5.6a19.88,19.88,0,0,0-13.8-10.84L94.46,115l4-7h14.39a20,20,0,0,0,9.66-2.49l12.25-6.76a20.57,20.57,0,0,0,3.74-2.68l26.92-24.33A20,20,0,0,0,172,56.49,84,84,0,0,1,212,128ZM140.76,45l6.2,11.1L122.75,78l-10.93,6H96.14A20.05,20.05,0,0,0,78.78,94.06l-4.49,7.85L67.68,84.28l9.91-23.42A83.91,83.91,0,0,1,140.76,45ZM44,128a83.52,83.52,0,0,1,4.4-26.77l7.74,20.65a19.89,19.89,0,0,0,14.52,12.53l19.53,4.2,3,6.1a20.11,20.11,0,0,0,13.55,10.77l-5,11.12a20,20,0,0,0,3.58,21.71l.21.22,18.16,18.7-.89,4.59A84.09,84.09,0,0,1,44,128Zm103.65,81.66a20.11,20.11,0,0,0-5-17.3l-.21-.22-17.72-18.25,11.37-25.52,19,2.56,41.43,25.48A84.2,84.2,0,0,1,147.65,209.66Z" />
+    </svg>
+  ),
+  money: (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      fill="currentColor"
+      viewBox="0 0 256 256"
+      aria-hidden="true"
+    >
+      <path d="M240,52H16A12,12,0,0,0,4,64V192a12,12,0,0,0,12,12H240a12,12,0,0,0,12-12V64A12,12,0,0,0,240,52ZM181.21,180H74.79A60.18,60.18,0,0,0,28,133.21V122.79A60.18,60.18,0,0,0,74.79,76H181.21A60.18,60.18,0,0,0,228,122.79v10.42A60.18,60.18,0,0,0,181.21,180ZM228,97.94A36.23,36.23,0,0,1,206.06,76H228ZM49.94,76A36.23,36.23,0,0,1,28,97.94V76ZM28,158.06A36.23,36.23,0,0,1,49.94,180H28ZM206.06,180A36.23,36.23,0,0,1,228,158.06V180ZM128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,56a16,16,0,1,1,16-16A16,16,0,0,1,128,144Z" />
+    </svg>
+  ),
+};
+
+const SUMMARY_BULLETS: { icon: keyof typeof featureIcons; messageId: TranslationKey }[] = [
+  { icon: 'percent', messageId: 'flows.savingsFundOnboarding.termsStep.summary.fee' },
+  { icon: 'globe', messageId: 'flows.savingsFundOnboarding.termsStep.summary.strategy' },
+  { icon: 'money', messageId: 'flows.savingsFundOnboarding.termsStep.summary.withdrawals' },
 ];
 
 export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFields>({
@@ -33,18 +72,16 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
         </h2>
       </div>
       <div className="section-content d-flex flex-column gap-5">
-        <div className="d-flex flex-column gap-3 bg-light border border-gray-2 rounded-3 p-3 p-sm-4">
-          <h3 className="m-0 fs-5 fw-bold">
-            <FormattedMessage id="flows.savingsFundOnboarding.termsStep.summary.title" />
-          </h3>
-          <ul className="m-0 ps-3 d-flex flex-column gap-2">
-            {SUMMARY_BULLETS.map((id) => (
-              <li key={id}>
-                <FormattedMessage id={id} />
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ul className="list-unstyled m-0 lead d-flex flex-column gap-3 px-3 px-sm-4">
+          {SUMMARY_BULLETS.map(({ icon, messageId }) => (
+            <li key={messageId} className="d-flex align-items-center gap-2">
+              <span className="text-body d-inline-flex flex-shrink-0" style={{ width: '1.5rem' }}>
+                {featureIcons[icon]}
+              </span>
+              <FormattedMessage id={messageId} />
+            </li>
+          ))}
+        </ul>
         <div className="d-flex flex-column gap-3">
           {documents.map(({ href, labelId }) => (
             <DocumentLink key={href} href={href}>
