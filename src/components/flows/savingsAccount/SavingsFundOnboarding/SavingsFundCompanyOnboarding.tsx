@@ -40,7 +40,7 @@ export const SavingsFundCompanyOnboarding = () => {
     useSubmitSavingsFundCompanyOnboardingSurvey();
   const { mutateAsync: submitIdentitySurvey, isPending: submittingIdentity } =
     useSubmitSavingsFundOnboardingSurvey();
-  const switchRole = useSwitchRole();
+  const { mutateAsync: switchRole } = useSwitchRole();
 
   useEffect(() => {
     // Only this onboarding's own outcome may navigate away — a status another
@@ -54,7 +54,7 @@ export const SavingsFundCompanyOnboarding = () => {
       // unambiguously to the company (TKF #67 F7).
       const openCompanyAccount = async () => {
         try {
-          await switchRole.mutateAsync({ type: 'LEGAL_ENTITY', code: submittedRegistryCode });
+          await switchRole({ type: 'LEGAL_ENTITY', code: submittedRegistryCode });
           history.push('/savings-fund/onboarding/success/company');
         } catch {
           setSubmitError(true);
@@ -66,7 +66,7 @@ export const SavingsFundCompanyOnboarding = () => {
     // REJECTED — legal entities never receive PENDING. Show the generic
     // "we'll review it" outcome rather than surfacing a hard rejection.
     history.push('/savings-fund/onboarding/pending');
-  }, [onboardingStatus]);
+  }, [onboardingStatus, submittedRegistryCode, switchRole, history]);
 
   const { control, trigger, handleSubmit, watch, setValue, getValues } =
     useForm<CompanyOnboardingFormData>({

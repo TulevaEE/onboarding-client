@@ -3,19 +3,20 @@ import { screen, waitFor } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import { rest } from 'msw';
+import { QueryClient } from '@tanstack/react-query';
 import { initializeConfiguration } from '../config/config';
 import LoggedInApp from '../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../test/utils';
-import { useTestBackends } from '../../test/backend';
+import { useTestBackends, userBackend } from '../../test/backend';
 
 const server = setupServer();
 let history: History;
 
-function initializeComponent() {
+function initializeComponent(queryClient?: QueryClient) {
   history = createMemoryHistory();
   const store = createDefaultStore(history as any);
   login(store);
-  renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
+  renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store, queryClient);
 }
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -84,6 +85,34 @@ describe('SavingsFundOnboardingGatekeep', () => {
       ),
     ).toBeInTheDocument();
     expect(history.location.pathname).toBe('/savings-fund/payment');
+  });
+
+  it('does not serve a completed company status to a not-onboarded person after a role switch', async () => {
+    // The mirror of the case above. A session acting as an onboarded company has
+    // a cached COMPLETED status and is viewing the deposit page. Switching to the
+    // natural person, who has not onboarded, must not expose that page: the
+    // status is keyed by the acting party, so the person resolves to a separate
+    // cache entry and the company's COMPLETED can never leak through.
+    const queryClient = new QueryClient();
+    userBackend(server, { role: { type: 'LEGAL_ENTITY', code: '12345678', name: 'Acme OÜ' } });
+    server.use(onboardingStatusHandler.completed());
+    initializeComponent(queryClient);
+    history.push('/savings-fund/payment');
+
+    expect(
+      await screen.findByRole('heading', { name: 'Deposit to Additional Savings Fund' }),
+    ).toBeInTheDocument();
+
+    userBackend(server, { role: { type: 'PERSON', code: '39001011234', name: 'Test Person' } });
+    server.use(onboardingStatusHandler.notCompleted());
+    queryClient.invalidateQueries({ queryKey: ['user'] });
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding');
+    });
+    expect(
+      screen.queryByRole('heading', { name: 'Deposit to Additional Savings Fund' }),
+    ).not.toBeInTheDocument();
   });
 
   it('redirects /savings-fund/withdraw to /savings-fund/onboarding when onboarding is not completed', async () => {

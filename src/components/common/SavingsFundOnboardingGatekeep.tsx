@@ -9,8 +9,9 @@ export const SavingsFundOnboardingGatekeep = ({ children }: PropsWithChildren<un
     return <>{children}</>;
   }
 
-  // A role switch invalidates the cached status but leaves the stale value in
-  // place — never bounce the user on it while a fresh answer is on its way.
+  // The status is keyed by the acting party, so a role switch lands on a fresh
+  // (empty, loading) cache entry rather than the previous role's value. Wait for
+  // that fetch instead of bouncing to the chooser while it is in flight.
   if (isLoading || isFetching) {
     return null;
   }

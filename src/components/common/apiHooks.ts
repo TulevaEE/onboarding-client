@@ -203,8 +203,13 @@ export function useCompanyBusinessRegistryValidation(
 }
 
 export function useSavingsFundOnboardingStatus(): UseQueryResult<SavingsFundOnboardingStatus> {
+  const { data: user } = useMe();
+  // The endpoint resolves to the acting party's status, so key the cache by the
+  // acting party. A role switch then lands on a fresh entry instead of serving
+  // the previous role's status — which would otherwise leak a completed
+  // company's access to a not-yet-onboarded person, and vice versa.
   return useQuery({
-    queryKey: ['savingsFundOnboardingStatus'],
+    queryKey: ['savingsFundOnboardingStatus', user?.role?.code],
     queryFn: () => getSavingsFundOnboardingStatus(),
   });
 }

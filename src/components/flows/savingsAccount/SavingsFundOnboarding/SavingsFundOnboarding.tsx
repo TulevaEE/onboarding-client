@@ -147,7 +147,7 @@ export const SavingsFundOnboarding: FC = () => {
     refetch: refetchOnboardingStatus,
   } = useSavingsFundPersonOnboardingStatus();
   const { data: user } = useMe();
-  const switchRole = useSwitchRole();
+  const { mutateAsync: switchRole } = useSwitchRole();
 
   const { control, setValue, watch, handleSubmit, trigger } = useForm<OnboardingFormData>({
     mode: 'onChange',
@@ -180,7 +180,7 @@ export const SavingsFundOnboarding: FC = () => {
 
   useEffect(() => {
     if (onboardingStatus?.status === 'REJECTED' || onboardingStatus?.status === 'PENDING') {
-      redirectToOutcome('pending');
+      history.push('/savings-fund/onboarding/pending');
       return;
     }
 
@@ -193,15 +193,15 @@ export const SavingsFundOnboarding: FC = () => {
     const openPersonalAccount = async () => {
       try {
         if (user.role && user.role.type !== 'PERSON') {
-          await switchRole.mutateAsync({ type: 'PERSON', code: user.personalCode });
+          await switchRole({ type: 'PERSON', code: user.personalCode });
         }
-        redirectToOutcome('success');
+        history.push('/savings-fund/onboarding/success');
       } catch (e) {
         setSubmitError(e as ErrorResponse);
       }
     };
     openPersonalAccount();
-  }, [onboardingStatus, user]);
+  }, [onboardingStatus, user, switchRole, history]);
 
   // Auto-set residency country to first citizenship
   useEffect(() => {
@@ -217,10 +217,6 @@ export const SavingsFundOnboarding: FC = () => {
   const totalSections = steps.length;
   const currentSection = activeSection + 1;
   const isFirstSection = activeSection === 0;
-
-  const redirectToOutcome = (outcome: 'pending' | 'success') => {
-    history.push(`/savings-fund/onboarding/${outcome}`);
-  };
 
   const showPreviousSection = () => {
     if (isFirstSection) {
