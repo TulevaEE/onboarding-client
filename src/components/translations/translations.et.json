@@ -1396,10 +1396,10 @@
   "flows.savingsFundOnboarding.companyAddressStep.reUseAddress": "Samal aadressil, mis äriregistris",
 
   "flows.savingsFundOnboarding.companyIncomeSourceStep.title": "Kinnitan järgnevat",
-  "flows.savingsFundOnboarding.companyIncomeSourceStep.onlyActiveInEstonia": "Osaühing tegutseb ainult Eestis",
+  "flows.savingsFundOnboarding.companyIncomeSourceStep.onlyActiveInEstonia": "OÜ tegutseb ainult Eestis",
   "flows.savingsFundOnboarding.companyIncomeSourceStep.onlyActiveInEstonia.tooltip": "Osaühingul ei ole välismaal püsivat tegevuskohta. Kaupa ja teenuste müük välismaale on lubatud.",
-  "flows.savingsFundOnboarding.companyIncomeSourceStep.notSanctioned": "Pole sanktsioneeritud ega tee äri sanktsioneeritud riikide ega isikutega",
-  "flows.savingsFundOnboarding.companyIncomeSourceStep.notInCrypto": "Ei tegutse krüptoäris",
+  "flows.savingsFundOnboarding.companyIncomeSourceStep.notSanctioned": "OÜ pole sanktsioneeritud ega tee äri sanktsioneeritud riikide ega isikutega",
+  "flows.savingsFundOnboarding.companyIncomeSourceStep.notInCrypto": "OÜ ei tegutse krüptoäris",
   "flows.savingsFundOnboarding.companyIncomeSourceStep.notInCrypto.tooltip": "Krüptoäri tähendab, et ettevõtte tegevus seisneb krüptovara tootmises, vahendamises, ostmises või müügis. Kui ettevõte üksnes investeerib oma vara krüptovarasse (ostab ja müüb seda investeeringuna), ei loeta seda krüptoäriks ja siia see alla ei kuulu.",
   "flows.savingsFundOnboarding.companyIncomeSourceStep.error": "Jätkamiseks tuleb kõik tingimused kinnitada",
 
