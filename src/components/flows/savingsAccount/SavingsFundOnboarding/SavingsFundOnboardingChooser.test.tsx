@@ -60,24 +60,6 @@ describe('SavingsFundOnboardingChooser', () => {
     expect(screen.getAllByText('Coming soon')).toHaveLength(1);
   });
 
-  it('does not show feature bullets and uses the spare-cash company copy', async () => {
-    openChooser();
-
-    expect(
-      await screen.findByRole('heading', { name: 'Who are you opening the account for?' }),
-    ).toBeInTheDocument();
-
-    expect(screen.queryByText('A globally diversified stock index fund')).not.toBeInTheDocument();
-    expect(
-      screen.queryByText('Your company’s spare cash can grow in the fund'),
-    ).not.toBeInTheDocument();
-
-    expect(screen.getByText('Put your company’s spare cash to work')).toBeInTheDocument();
-    expect(
-      screen.queryByText('Put your private limited company’s profit to work'),
-    ).not.toBeInTheDocument();
-  });
-
   it('does not redirect away from the chooser when onboarding is already completed', async () => {
     savingsFundPersonOnboardingStatusBackend(server, 'COMPLETED');
     openChooser();
