@@ -34,7 +34,7 @@
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^17.0.2",
     "react-facebook": "^8.1.4",
-    "react-ga4": "^1.4.1",
+    "react-ga4": "^2.1.0",
     "react-global-configuration": "^1.4.1",
     "react-gtm-module": "^2.0.11",
     "react-hook-form": "^7.63.0",
