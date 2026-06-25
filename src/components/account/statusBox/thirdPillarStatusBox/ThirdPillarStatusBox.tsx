@@ -14,6 +14,7 @@ import {
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 import { InfoTooltip } from '../../../common/infoTooltip/InfoTooltip';
 import { formatDateTime } from '../../../common/dateFormatter';
+import { TULEVA_THIRD_PILLAR_FUND_ISIN } from '../../../common/utils';
 
 interface Props {
   conversion: Conversion;
@@ -33,6 +34,33 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
   const { data: mandateDeadlines } = useMandateDeadlines();
 
   const formattedPaymentDeadline = formatDateTime(mandateDeadlines?.thirdPillarPaymentDeadline);
+
+  const hasTulevaThirdPillarBalanceWithoutSelection =
+    thirdPillarActive &&
+    !activeFund &&
+    thirdPillarFunds.some(
+      (fund) =>
+        fund.isin === TULEVA_THIRD_PILLAR_FUND_ISIN &&
+        (fund.price > 0 || fund.unavailablePrice > 0),
+    );
+
+  if (hasTulevaThirdPillarBalanceWithoutSelection) {
+    return (
+      <StatusBoxRow
+        status="WARNING"
+        showAction={!loading}
+        name={<FormattedMessage id="account.status.choice.pillar.third" />}
+        lines={[
+          <FormattedMessage id="account.status.choice.pillar.third.paymentsNoSelection.label" />,
+          <ThirdPillarPaymentsAmount />,
+        ]}
+      >
+        <Link to="/3rd-pillar-flow" className="btn btn-primary">
+          <FormattedMessage id="account.status.choice.pillar.third.paymentsNoSelection.action" />
+        </Link>
+      </StatusBoxRow>
+    );
+  }
 
   if (!thirdPillarActive || !activeFund) {
     return (

@@ -97,6 +97,7 @@ export const isActingAsSelf = (user: User | undefined): boolean =>
 export type TulevaSecondPillarStockFund = 'EE3600109435';
 export type TulevaSecondPillarBondFund = 'EE3600109443';
 export type TulevaThirdPillarFund = 'EE3600001707';
+export const TULEVA_THIRD_PILLAR_FUND_ISIN: TulevaThirdPillarFund = 'EE3600001707';
 export type TulevaFundIsin =
   | TulevaSecondPillarStockFund
   | TulevaSecondPillarBondFund

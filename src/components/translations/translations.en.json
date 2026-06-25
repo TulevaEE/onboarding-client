@@ -290,6 +290,8 @@
   "account.status.choice.pillar.third.fundPensionOpening": "You have a pending fund pension application for regular payments",
   "account.status.choice.pillar.third.withdrawalContributionSuggestion": "Continue contributing 15% of your income ",
   "account.status.choice.pillar.third.fundPension.active": "You are receiving regular fund pension payments",
+  "account.status.choice.pillar.third.paymentsNoSelection.label": "Your III pillar is already growing with Tuleva. Finish choosing your fund.",
+  "account.status.choice.pillar.third.paymentsNoSelection.action": "Finish choosing",
   "account.status.choice.highFee.label": "You’re in a high cost fund",
   "account.status.choice.highFee.description": "Your portfolio weighted average cost is above 0.5% per year",
   "account.status.choice.highFee.comment": "You’re paying {currentFeesEuro} per year in fees. In Tuleva, you would pay {tulevaFeesEuro} per year.",
