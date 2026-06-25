@@ -219,6 +219,11 @@ export const activeThirdPillar: SourceFund = {
   units: 23,
 };
 
+export const paidThirdPillarNoSelection: SourceFund = {
+  ...activeThirdPillar,
+  activeFund: false,
+};
+
 export const highFeeThirdPillar: SourceFund = {
   activeFund: true,
   name: 'LHV High Cost Fund III',
