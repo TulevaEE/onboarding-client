@@ -34,12 +34,22 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
 
   const formattedPaymentDeadline = formatDateTime(mandateDeadlines?.thirdPillarPaymentDeadline);
 
-  const hasThirdPillarBalanceWithoutSelection =
-    thirdPillarActive &&
-    !activeFund &&
-    thirdPillarFunds.some((fund) => fund.price > 0 || fund.unavailablePrice > 0);
+  if (!thirdPillarActive) {
+    return (
+      <StatusBoxRow
+        status="ERROR"
+        showAction={!loading}
+        name={<FormattedMessage id="account.status.choice.pillar.third" />}
+        lines={[<FormattedMessage id="account.status.choice.pillar.third.missing.label" />]}
+      >
+        <Link to="/3rd-pillar-flow" className="btn btn-primary">
+          <FormattedMessage id="account.status.choice.pillar.third.missing.action" />
+        </Link>
+      </StatusBoxRow>
+    );
+  }
 
-  if (hasThirdPillarBalanceWithoutSelection) {
+  if (!activeFund) {
     return (
       <StatusBoxRow
         status="WARNING"
@@ -52,21 +62,6 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
       >
         <Link to="/3rd-pillar-flow" className="btn btn-primary">
           <FormattedMessage id="account.status.choice.pillar.third.paymentsNoSelection.action" />
-        </Link>
-      </StatusBoxRow>
-    );
-  }
-
-  if (!thirdPillarActive || !activeFund) {
-    return (
-      <StatusBoxRow
-        status="ERROR"
-        showAction={!loading}
-        name={<FormattedMessage id="account.status.choice.pillar.third" />}
-        lines={[<FormattedMessage id="account.status.choice.pillar.third.missing.label" />]}
-      >
-        <Link to="/3rd-pillar-flow" className="btn btn-primary">
-          <FormattedMessage id="account.status.choice.pillar.third.missing.action" />
         </Link>
       </StatusBoxRow>
     );
