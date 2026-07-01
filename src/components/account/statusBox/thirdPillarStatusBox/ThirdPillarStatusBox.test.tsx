@@ -1,14 +1,8 @@
 import React from 'react';
 import { shallow, ShallowWrapper } from 'enzyme';
-import { Link } from 'react-router-dom';
 import { ThirdPillarStatusBox } from './ThirdPillarStatusBox';
 import StatusBoxRow from '../statusBoxRow';
-import {
-  activeThirdPillar,
-  completeThirdPillarConversion,
-  highFeeThirdPillar,
-  paidThirdPillarNoSelection,
-} from '../fixtures';
+import { activeThirdPillar, completeThirdPillarConversion, highFeeThirdPillar } from '../fixtures';
 import * as apiHooks from '../../../common/apiHooks';
 
 jest.mock('../../../common/apiHooks', () => ({
@@ -16,9 +10,6 @@ jest.mock('../../../common/apiHooks', () => ({
   usePendingApplications: () => ({ data: [] }),
   useMandateDeadlines: () => ({ data: { thirdPillarPaymentDeadline: '2023-12-28T13:59:59Z' } }),
 }));
-
-const messageId = (node: unknown): string | undefined =>
-  (node as React.ReactElement<{ id: string }>)?.props?.id;
 
 /**
  * @deprecated Use AccountPageView.test.tsx
@@ -50,50 +41,6 @@ describe('ThirdPillarStatusBox', () => {
   it('renders the "open third pillar" flow when user has no third pillar active', () => {
     component.setProps({ thirdPillarActive: false });
     expect(component).toMatchSnapshot();
-  });
-
-  it('renders the "finish setup" flow when paid into the Tuleva III pillar fund but no active fund selection', () => {
-    component.setProps({ thirdPillarFunds: [paidThirdPillarNoSelection] });
-
-    const row = component.find(StatusBoxRow);
-    expect(row.prop('status')).toBe('WARNING');
-    expect(messageId((row.prop('lines') ?? [])[0])).toBe(
-      'account.status.choice.pillar.third.paymentsNoSelection.label',
-    );
-
-    const link = component.find(Link);
-    expect(link.prop('to')).toBe('/3rd-pillar-flow');
-    expect(messageId(link.prop('children'))).toBe(
-      'account.status.choice.pillar.third.paymentsNoSelection.action',
-    );
-  });
-
-  it('renders the "finish setup" flow when the Tuleva balance is only in unavailable units', () => {
-    component.setProps({
-      thirdPillarFunds: [{ ...paidThirdPillarNoSelection, price: 0, unavailablePrice: 10 }],
-    });
-    expect(messageId((component.find(StatusBoxRow).prop('lines') ?? [])[0])).toBe(
-      'account.status.choice.pillar.third.paymentsNoSelection.label',
-    );
-  });
-
-  it('renders the "open third pillar" flow when units are only in a non-Tuleva fund', () => {
-    component.setProps({ thirdPillarFunds: [{ ...highFeeThirdPillar, activeFund: false }] });
-
-    const row = component.find(StatusBoxRow);
-    expect(row.prop('status')).toBe('ERROR');
-    expect(messageId((row.prop('lines') ?? [])[0])).toBe(
-      'account.status.choice.pillar.third.missing.label',
-    );
-  });
-
-  it('renders the "open third pillar" flow when the Tuleva III pillar fund has zero balance', () => {
-    component.setProps({
-      thirdPillarFunds: [{ ...paidThirdPillarNoSelection, price: 0, unavailablePrice: 0 }],
-    });
-    expect(messageId((component.find(StatusBoxRow).prop('lines') ?? [])[0])).toBe(
-      'account.status.choice.pillar.third.missing.label',
-    );
   });
 
   it('renders the "pick tuleva" flow when user has some other fund manager', () => {
