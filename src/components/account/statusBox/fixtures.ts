@@ -219,11 +219,6 @@ export const activeThirdPillar: SourceFund = {
   units: 23,
 };
 
-export const paidThirdPillarNoSelection: SourceFund = {
-  ...activeThirdPillar,
-  activeFund: false,
-};
-
 export const highFeeThirdPillar: SourceFund = {
   activeFund: true,
   name: 'LHV High Cost Fund III',
@@ -280,4 +275,70 @@ export const additionalSavingsFund: FundBalance = {
   subtractions: 0,
   profit: 0,
   units: 0,
+};
+
+export const activeSecondPillarBalance: FundBalance = {
+  fund: {
+    fundManager: { name: 'Swedbank' },
+    isin: 'EE3600019758',
+    name: 'Swedbank Pension Fund K60',
+    managementFeeRate: 0.0083,
+    pillar: 2,
+    ongoingChargesFigure: 0.0065,
+    status: 'ACTIVE',
+    inceptionDate: '2017-01-01',
+    nav: 1.46726,
+  },
+  value: 100000,
+  unavailableValue: 0,
+  currency: 'EUR',
+  activeContributions: true,
+  contributions: 112233.44,
+  subtractions: 0,
+  profit: -12233.44,
+  units: 100000 / 1.46726,
+};
+
+export const tulevaThirdPillarBalance: FundBalance = {
+  fund: {
+    fundManager: { name: 'Tuleva' },
+    isin: 'EE3600001707',
+    name: 'Tuleva III Samba Pensionifond',
+    managementFeeRate: 0.003,
+    pillar: 3,
+    ongoingChargesFigure: 0.0043,
+    status: 'ACTIVE',
+    inceptionDate: '2017-01-01',
+    nav: 0.7813,
+  },
+  value: 5699.36,
+  unavailableValue: 0,
+  currency: 'EUR',
+  activeContributions: true,
+  contributions: 9876.54,
+  subtractions: 0,
+  profit: -1876.54,
+  units: 5699.36 / 0.7813,
+};
+
+export const otherThirdPillarBalance: FundBalance = {
+  fund: {
+    fundManager: { name: 'LHV' },
+    isin: 'EE3600007777',
+    name: 'LHV Pensionifond Aktiivne III',
+    managementFeeRate: 0.0115,
+    pillar: 3,
+    ongoingChargesFigure: 0.0156,
+    status: 'ACTIVE',
+    inceptionDate: '2017-01-01',
+    nav: 1.2,
+  },
+  value: 1234.56,
+  unavailableValue: 0,
+  currency: 'EUR',
+  activeContributions: false,
+  contributions: 1000,
+  subtractions: 0,
+  profit: 234.56,
+  units: 1234.56 / 1.2,
 };

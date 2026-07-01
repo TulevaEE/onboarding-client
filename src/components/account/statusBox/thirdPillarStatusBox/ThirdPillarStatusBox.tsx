@@ -14,7 +14,6 @@ import {
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 import { InfoTooltip } from '../../../common/infoTooltip/InfoTooltip';
 import { formatDateTime } from '../../../common/dateFormatter';
-import { TULEVA_THIRD_PILLAR_FUND_ISIN } from '../../../common/utils';
 
 interface Props {
   conversion: Conversion;
@@ -35,16 +34,12 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
 
   const formattedPaymentDeadline = formatDateTime(mandateDeadlines?.thirdPillarPaymentDeadline);
 
-  const hasTulevaThirdPillarBalanceWithoutSelection =
+  const hasThirdPillarBalanceWithoutSelection =
     thirdPillarActive &&
     !activeFund &&
-    thirdPillarFunds.some(
-      (fund) =>
-        fund.isin === TULEVA_THIRD_PILLAR_FUND_ISIN &&
-        (fund.price > 0 || fund.unavailablePrice > 0),
-    );
+    thirdPillarFunds.some((fund) => fund.price > 0 || fund.unavailablePrice > 0);
 
-  if (hasTulevaThirdPillarBalanceWithoutSelection) {
+  if (hasThirdPillarBalanceWithoutSelection) {
     return (
       <StatusBoxRow
         status="WARNING"

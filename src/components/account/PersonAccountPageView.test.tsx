@@ -10,17 +10,24 @@ import { createDefaultStore, login, renderWrapped } from '../../test/utils';
 import {
   applicationsBackend,
   fundPensionStatusBackend,
+  pensionAccountStatementBackend,
   userConversionBackend,
   useTestBackends,
   useTestBackendsExcept,
 } from '../../test/backend';
 import {
   Application,
+  FundBalance,
   FundPensionOpeningApplication,
   PartialWithdrawalApplication,
   ThirdPillarWithdrawalApplication,
 } from '../common/apiModels';
-import { additionalSavingsFund } from './statusBox/fixtures';
+import {
+  activeSecondPillarBalance,
+  additionalSavingsFund,
+  otherThirdPillarBalance,
+  tulevaThirdPillarBalance,
+} from './statusBox/fixtures';
 
 const server = setupServer();
 let history: History;
@@ -119,6 +126,52 @@ describe('happy path', () => {
   test('shows PIK account with bank name in account statement', async () => {
     expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
     expect(await screen.findByText('Swedbank PIK')).toBeInTheDocument();
+  });
+});
+
+describe('third pillar paid in without a fund selection', () => {
+  const renderAccountWith = (fundBalances: FundBalance[]) => {
+    useTestBackendsExcept(server, ['pensionAccountStatement']);
+    pensionAccountStatementBackend(server, fundBalances);
+    initializeComponent();
+
+    history.push('/account');
+  };
+
+  beforeEach(() => {
+    initializeConfiguration();
+  });
+
+  test('shows the finish-choosing warning with a call to action', async () => {
+    renderAccountWith([
+      activeSecondPillarBalance,
+      { ...tulevaThirdPillarBalance, activeContributions: false },
+    ]);
+
+    const thirdPillarRow = await getStatusBoxRow('THIRD');
+
+    expect(
+      await within(thirdPillarRow).findByText(/paid into III pillar but haven’t chosen a fund yet/),
+    ).toBeInTheDocument();
+    expect(await within(thirdPillarRow).findByTestId('status-icon-warning')).toBeInTheDocument();
+    expect(
+      within(thirdPillarRow).getByRole('link', { name: 'Finish choosing' }),
+    ).toBeInTheDocument();
+  });
+
+  test('does not warn when a fund is actively selected despite a balance in another fund', async () => {
+    renderAccountWith([
+      activeSecondPillarBalance,
+      tulevaThirdPillarBalance,
+      otherThirdPillarBalance,
+    ]);
+
+    const thirdPillarRow = await getStatusBoxRow('THIRD');
+    expect(await within(thirdPillarRow).findByRole('link')).toBeInTheDocument();
+
+    expect(
+      within(thirdPillarRow).queryByText(/paid into III pillar but haven’t chosen a fund yet/),
+    ).not.toBeInTheDocument();
   });
 });
 
