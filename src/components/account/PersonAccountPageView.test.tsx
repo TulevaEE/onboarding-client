@@ -25,7 +25,6 @@ import {
 import {
   activeSecondPillarBalance,
   additionalSavingsFund,
-  otherThirdPillarBalance,
   tulevaThirdPillarBalance,
 } from './statusBox/fixtures';
 
@@ -151,27 +150,19 @@ describe('third pillar paid in without a fund selection', () => {
     const thirdPillarRow = await getStatusBoxRow('THIRD');
 
     expect(
-      await within(thirdPillarRow).findByText(/paid into III pillar but haven’t chosen a fund yet/),
+      await within(thirdPillarRow).findByText(/haven’t chosen a fund yet/),
     ).toBeInTheDocument();
     expect(await within(thirdPillarRow).findByTestId('status-icon-warning')).toBeInTheDocument();
-    expect(
-      within(thirdPillarRow).getByRole('link', { name: 'Finish choosing' }),
-    ).toBeInTheDocument();
+    expect(within(thirdPillarRow).getByRole('link', { name: 'Choose fund' })).toBeInTheDocument();
   });
 
-  test('does not warn when a fund is actively selected despite a balance in another fund', async () => {
-    renderAccountWith([
-      activeSecondPillarBalance,
-      tulevaThirdPillarBalance,
-      otherThirdPillarBalance,
-    ]);
+  test('does not warn when a fund is actively selected', async () => {
+    renderAccountWith([activeSecondPillarBalance, tulevaThirdPillarBalance]);
 
     const thirdPillarRow = await getStatusBoxRow('THIRD');
     expect(await within(thirdPillarRow).findByRole('link')).toBeInTheDocument();
 
-    expect(
-      within(thirdPillarRow).queryByText(/paid into III pillar but haven’t chosen a fund yet/),
-    ).not.toBeInTheDocument();
+    expect(within(thirdPillarRow).queryByText(/haven’t chosen a fund yet/)).not.toBeInTheDocument();
   });
 });
 

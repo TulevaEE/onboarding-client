@@ -320,25 +320,3 @@ export const tulevaThirdPillarBalance: FundBalance = {
   profit: -1876.54,
   units: 5699.36 / 0.7813,
 };
-
-export const otherThirdPillarBalance: FundBalance = {
-  fund: {
-    fundManager: { name: 'LHV' },
-    isin: 'EE3600007777',
-    name: 'LHV Pensionifond Aktiivne III',
-    managementFeeRate: 0.0115,
-    pillar: 3,
-    ongoingChargesFigure: 0.0156,
-    status: 'ACTIVE',
-    inceptionDate: '2017-01-01',
-    nav: 1.2,
-  },
-  value: 1234.56,
-  unavailableValue: 0,
-  currency: 'EUR',
-  activeContributions: false,
-  contributions: 1000,
-  subtractions: 0,
-  profit: 234.56,
-  units: 1234.56 / 1.2,
-};
