@@ -12,6 +12,7 @@ import { InvestableAssetsStep } from './InvestableAssetsStep';
 import { CompanyIncomeSourceStep } from './CompanyIncomeSourceStep';
 import { TermsStep } from './TermsStep';
 import { OnboardingFlowLayout } from './OnboardingFlowLayout';
+import { TKF_DOCUMENTS } from './tkfDocuments';
 import {
   useSavingsFundCompanyOnboardingStatus,
   useSubmitSavingsFundCompanyOnboardingSurvey,
@@ -200,20 +201,7 @@ export const SavingsFundCompanyOnboarding = () => {
           key="terms"
           control={control}
           confirmTextId="flows.savingsFundOnboarding.termsStep.confirmTextCompany"
-          documents={[
-            {
-              href: 'https://tuleva.ee/wp-content/uploads/2026/05/TKF100-Tingimused-kehtib-alates-15.06.2026.pdf',
-              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.terms',
-            },
-            {
-              href: 'https://tuleva.ee/wp-content/uploads/2026/05/TKF100-Prospekt-kehtib-alates-15.06.2026.pdf',
-              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.prospectus',
-            },
-            {
-              href: 'https://tuleva.ee/wp-content/uploads/2026/06/TKF100-Pohiteave-kehtib-alates-15.06.2026.pdf',
-              labelId: 'flows.savingsFundOnboarding.termsStep.linkText.keyInfo',
-            },
-          ]}
+          documents={TKF_DOCUMENTS}
         />
       ),
       fields: ['termsAccepted'],

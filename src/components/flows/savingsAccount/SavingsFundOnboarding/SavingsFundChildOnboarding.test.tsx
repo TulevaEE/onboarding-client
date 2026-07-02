@@ -110,6 +110,19 @@ describe('SavingsFundChildOnboarding', () => {
     });
   });
 
+  it('prefills the parent contact as the default channel on the contact step', async () => {
+    renderWrapped(<SavingsFundChildOnboarding />);
+
+    await verifyChild();
+    expect(await screen.findByText('2/8')).toBeInTheDocument(); // confirm
+    userEvent.click(continueButton());
+    expect(await screen.findByText('3/8')).toBeInTheDocument(); // residency
+    userEvent.click(continueButton());
+    expect(await screen.findByText('4/8')).toBeInTheDocument(); // contact
+
+    expect(screen.getByLabelText(/email/i)).toHaveValue(mockUser.email);
+  });
+
   it('completes as the child and lands on the success page', async () => {
     const history = createMemoryHistory();
     renderWrapped(<SavingsFundChildOnboarding />, history);

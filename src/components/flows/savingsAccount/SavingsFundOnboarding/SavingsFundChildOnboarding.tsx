@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Control, useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
@@ -22,27 +22,13 @@ import {
 } from '../../../common/apiHooks';
 import { getSavingsFundOnboardingStatus } from '../../../common/api';
 import { transformChildFormDataToSurveyCommand } from '../utils';
+import { TKF_DOCUMENTS } from './tkfDocuments';
 
 // The step components only touch the identity fields; narrowing the control is
 // structurally safe for any form that includes them (mirrors identitySteps.tsx).
 const asIdentityControl = (
   control: Control<ChildOnboardingFormData>,
 ): Control<IdentityFormFields> => control as unknown as Control<IdentityFormFields>;
-
-const TKF_DOCUMENTS = [
-  {
-    href: 'https://tuleva.ee/wp-content/uploads/2026/05/TKF100-Tingimused-kehtib-alates-15.06.2026.pdf',
-    labelId: 'flows.savingsFundOnboarding.termsStep.linkText.terms',
-  },
-  {
-    href: 'https://tuleva.ee/wp-content/uploads/2026/05/TKF100-Prospekt-kehtib-alates-15.06.2026.pdf',
-    labelId: 'flows.savingsFundOnboarding.termsStep.linkText.prospectus',
-  },
-  {
-    href: 'https://tuleva.ee/wp-content/uploads/2026/06/TKF100-Pohiteave-kehtib-alates-15.06.2026.pdf',
-    labelId: 'flows.savingsFundOnboarding.termsStep.linkText.keyInfo',
-  },
-] as const;
 
 export const SavingsFundChildOnboarding = () => {
   const history = useHistory();
@@ -83,18 +69,21 @@ export const SavingsFundChildOnboarding = () => {
   const termsAccepted = watch('termsAccepted');
 
   // Default the contact to the parent's own, as the child's representative until
-  // 18 (the "child has own email" case is handled by editing the field).
+  // 18. Applied once and only into still-empty fields, so a later /v1/me refetch
+  // can't clobber a child's own email the parent typed on the contact step.
+  const contactPrefilledRef = useRef(false);
   useEffect(() => {
-    if (!me) {
+    if (!me || contactPrefilledRef.current) {
       return;
     }
-    if (me.email) {
+    contactPrefilledRef.current = true;
+    if (me.email && !getValues('email')) {
       setValue('email', me.email);
     }
-    if (me.phoneNumber) {
+    if (me.phoneNumber && !getValues('phoneNumber')) {
       setValue('phoneNumber', me.phoneNumber);
     }
-  }, [me, setValue]);
+  }, [me, getValues, setValue]);
 
   const steps: OnboardingStep<ChildOnboardingFormData>[] = [
     {
@@ -145,7 +134,7 @@ export const SavingsFundChildOnboarding = () => {
           key="terms"
           control={control}
           confirmTextId="flows.savingsFundChildOnboarding.termsStep.confirmText"
-          documents={[...TKF_DOCUMENTS]}
+          documents={TKF_DOCUMENTS}
         />
       ),
       fields: ['termsAccepted'],
@@ -183,7 +172,14 @@ export const SavingsFundChildOnboarding = () => {
   // child KYC must be submitted while acting as the child (role-aware backend).
   const finalize = async (): Promise<void> => {
     const childCode = getValues('childPersonalCode');
-    const parentCode = me?.personalCode ?? '';
+    const parentCode = me?.personalCode;
+    // Never switch to the child before we know the parent code to switch back to,
+    // otherwise a non-completed submit could strand the parent (the terms-step
+    // Continue is also gated on this, so this is a belt-and-suspenders guard).
+    if (!parentCode) {
+      setSubmitError(true);
+      return;
+    }
     setSubmitError(false);
     setIsFinalizing(true);
 
@@ -306,7 +302,7 @@ export const SavingsFundChildOnboarding = () => {
         onNext={showNextSection}
         submitting={creatingChild || isFinalizing}
         backDisabled={isFinalizing}
-        nextDisabled={isTermsStep && !termsAccepted}
+        nextDisabled={isTermsStep && (!termsAccepted || !me?.personalCode)}
       >
         {steps[activeSection].component}
 
