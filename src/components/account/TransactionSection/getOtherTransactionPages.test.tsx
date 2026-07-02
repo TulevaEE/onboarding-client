@@ -18,7 +18,7 @@ function fund(pillar: number | null): Fund {
 describe('getOtherTransactionPages', () => {
   it('from 2nd pillar with all fund types, returns 3rd pillar and savings fund pages', () => {
     const funds = [fund(2), fund(3), fund(null)];
-    expect(getOtherTransactionPages(2, funds)).toEqual([
+    expect(getOtherTransactionPages(2, funds, true)).toEqual([
       { pillar: 3, path: '/3rd-pillar-transactions', labelId: 'transactions.seeAll.3' },
       {
         pillar: null,
@@ -30,7 +30,7 @@ describe('getOtherTransactionPages', () => {
 
   it('from 3rd pillar with all fund types, returns 2nd pillar and savings fund pages', () => {
     const funds = [fund(2), fund(3), fund(null)];
-    expect(getOtherTransactionPages(3, funds)).toEqual([
+    expect(getOtherTransactionPages(3, funds, true)).toEqual([
       { pillar: 2, path: '/2nd-pillar-transactions', labelId: 'transactions.seeAll.2' },
       {
         pillar: null,
@@ -42,23 +42,42 @@ describe('getOtherTransactionPages', () => {
 
   it('from savings fund with all fund types, returns 2nd pillar and 3rd pillar pages', () => {
     const funds = [fund(2), fund(3), fund(null)];
-    expect(getOtherTransactionPages(null, funds)).toEqual([
+    expect(getOtherTransactionPages(null, funds, true)).toEqual([
       { pillar: 2, path: '/2nd-pillar-transactions', labelId: 'transactions.seeAll.2' },
       { pillar: 3, path: '/3rd-pillar-transactions', labelId: 'transactions.seeAll.3' },
     ]);
   });
 
   it('with two fund types, returns the one other page', () => {
-    expect(getOtherTransactionPages(2, [fund(2), fund(3)])).toEqual([
+    expect(getOtherTransactionPages(2, [fund(2), fund(3)], true)).toEqual([
       { pillar: 3, path: '/3rd-pillar-transactions', labelId: 'transactions.seeAll.3' },
     ]);
   });
 
   it('with only one fund type, returns empty array', () => {
-    expect(getOtherTransactionPages(2, [fund(2)])).toEqual([]);
+    expect(getOtherTransactionPages(2, [fund(2)], true)).toEqual([]);
   });
 
   it('when pillar is undefined, returns empty array', () => {
-    expect(getOtherTransactionPages(undefined, [fund(2), fund(3), fund(null)])).toEqual([]);
+    expect(getOtherTransactionPages(undefined, [fund(2), fund(3), fund(null)], true)).toEqual([]);
+  });
+
+  it('when representing a party (not acting as self), hides II and III pillar pages', () => {
+    const funds = [fund(2), fund(3), fund(null)];
+    // A company / represented party only has savings fund; from the savings fund page
+    // there should be no other pillar links to show.
+    expect(getOtherTransactionPages(null, funds, false)).toEqual([]);
+  });
+
+  it('when representing a party, only the savings fund page remains available', () => {
+    const funds = [fund(2), fund(3), fund(null)];
+    // Even if somehow on a pillar page, a represented party gets only the savings link.
+    expect(getOtherTransactionPages(2, funds, false)).toEqual([
+      {
+        pillar: null,
+        path: '/savings-fund-transactions',
+        labelId: 'transactions.seeAll.savingsFund',
+      },
+    ]);
   });
 });

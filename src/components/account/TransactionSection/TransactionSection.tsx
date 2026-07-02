@@ -4,12 +4,12 @@ import { captureException } from '@sentry/browser';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import sumBy from 'lodash/sumBy';
-import { useFunds, useTransactions } from '../../common/apiHooks';
+import { useFunds, useMe, useTransactions } from '../../common/apiHooks';
 import Table from '../../common/table';
 import { Euro } from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { formatDate } from '../../common/dateFormatter';
-import { formatAmountForCount } from '../../common/utils';
+import { formatAmountForCount, isActingAsSelf } from '../../common/utils';
 import { Breakpoint, TableColumn } from '../../common/table/Table';
 import { getOtherTransactionPages } from './getOtherTransactionPages';
 
@@ -21,6 +21,7 @@ export const TransactionSection: React.FunctionComponent<{
 }> = ({ limit, pillar, children, allTransactionsPath }) => {
   const { data: transactions = [], isLoading: transactionsLoading } = useTransactions();
   const { data: funds = [], isLoading: fundsLoading } = useFunds();
+  const { data: user, isLoading: userLoading } = useMe();
 
   if (!Array.isArray(transactions) || !Array.isArray(funds)) {
     captureException(
@@ -35,6 +36,7 @@ export const TransactionSection: React.FunctionComponent<{
   if (
     transactionsLoading ||
     fundsLoading ||
+    userLoading ||
     !Array.isArray(transactions) ||
     !Array.isArray(funds)
   ) {
@@ -62,7 +64,7 @@ export const TransactionSection: React.FunctionComponent<{
     fundTransactions = fundTransactions.filter((transaction) => transaction.pillar === pillar);
   }
 
-  const otherPages = getOtherTransactionPages(pillar, funds);
+  const otherPages = getOtherTransactionPages(pillar, funds, isActingAsSelf(user));
 
   const amountSum = sumBy(fundTransactions, (transaction) => transaction.amount);
 
