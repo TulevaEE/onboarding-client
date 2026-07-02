@@ -147,12 +147,24 @@ describe('Login form', () => {
 
   describe('when time within maintenance window', () => {
     beforeEach(() => {
-      jest.setSystemTime(new Date('April 21, 2026 21:00:00'));
+      jest.setSystemTime(new Date('July 2, 2026 11:00:00'));
       component = shallow(<LoginForm {...{ translations: { translate: () => '' } }} />);
     });
 
     it('shows the maintenance component', () => {
       expect(component.contains(<Maintenance />)).toBe(true);
+    });
+  });
+
+  describe('when time outside maintenance window', () => {
+    it('does not show the maintenance component', () => {
+      expect(component.find(Maintenance).exists()).toBe(false);
+    });
+
+    it('does not show the maintenance component after the window has ended', () => {
+      jest.setSystemTime(new Date('July 2, 2026 12:30:00'));
+      component = shallow(<LoginForm />);
+      expect(component.find(Maintenance).exists()).toBe(false);
     });
   });
 });

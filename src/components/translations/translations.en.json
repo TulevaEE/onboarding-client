@@ -24,7 +24,7 @@
   "login.permission.note.url": "https://tuleva.ee/en/tuleva-privacy-policy-and-terms-of-use-of-website/",
   "login.not.member": "You aren’t a member of Tuleva yet?",
   "login.apply.link": "Fill out a membership application",
-  "login.epis_maintenance": "Accessing your pension account may not be possible right now due to scheduled maintenance at Pensionikeskus.",
+  "login.epis_maintenance": "Due to unusually high demand, logging in may be slow or temporarily interrupted. Please try again in a little while.",
   "log.out": "Log out",
   "steps.next": "Next step",
   "steps.previous": "Previous step",
