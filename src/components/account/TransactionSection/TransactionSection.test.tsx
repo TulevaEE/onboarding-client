@@ -8,7 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { IntlProvider } from 'react-intl';
 import { TransactionSection } from './TransactionSection';
 import { contribution, subtraction } from './fixtures';
-import { fundsBackend } from '../../../test/backend';
+import { fundsBackend, userBackend } from '../../../test/backend';
 import { initializeConfiguration } from '../../config/config';
 import { getAuthentication } from '../../common/authenticationManager';
 import { anAuthenticationManager } from '../../common/authenticationManagerFixture';
@@ -48,6 +48,7 @@ describe('Transaction section', () => {
     initializeConfiguration();
     getAuthentication().update(anAuthenticationManager());
     fundsBackend(server);
+    userBackend(server);
   });
 
   it('does not render at all when there has been an error fetching', async () => {
@@ -155,6 +156,23 @@ describe('Transaction section', () => {
       'href',
       `/transaction/${contribution.id}`,
     );
+  });
+
+  it('shows II and III pillar navigation links on the savings fund page when acting as self', async () => {
+    mockTransactions([]);
+    initializeComponent({ pillar: null });
+    expect(await screen.findByText('transactions.title')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'transactions.seeAll.2' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'transactions.seeAll.3' })).toBeInTheDocument();
+  });
+
+  it('hides II and III pillar navigation links when representing a company', async () => {
+    userBackend(server, { role: { type: 'LEGAL_ENTITY', code: '12345678', name: 'ACME OÜ' } });
+    mockTransactions([]);
+    initializeComponent({ pillar: null });
+    expect(await screen.findByText('transactions.title')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'transactions.seeAll.2' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'transactions.seeAll.3' })).not.toBeInTheDocument();
   });
 
   function mockTransactions(transactions: any[]) {
