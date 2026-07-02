@@ -6,6 +6,8 @@ import type {
   Address,
   SourceOfIncomeSurveyItem,
   CompanySourceOfIncomeOption,
+  PlannedContributionOption,
+  FundingSourcesSurveyItem,
 } from './types.api';
 import { BusinessRegistryValidatedData } from '../../../common/apiModels/company-onboarding';
 
@@ -41,6 +43,28 @@ export interface OnboardingFormData extends SharedOnboardingFields, IdentityForm
   // Partial during the flow (fields filled one step at a time); at submit
   // time the flow guarantees full population.
   personalInvestmentProfile: Partial<PersonalInvestmentProfile>;
+}
+
+// The RR-verified child returned by POST /v1/me/children on the VERIFIED path.
+export interface VerifiedChild {
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+}
+
+export type FundingSourcesValue = FundingSourcesSurveyItem['value'];
+
+// The parent fills this on the child's behalf. Extends IdentityFormFields so the
+// shared address/contact steps can be reused; citizenship and pepSelfDeclaration
+// stay at their empty defaults — they are never collected or submitted for a
+// child (derived backend-side from the population register).
+export interface ChildOnboardingFormData extends SharedOnboardingFields, IdentityFormFields {
+  childPersonalCode: string;
+  // Populated once POST /v1/me/children confirms custody (VERIFIED); null until then.
+  child: VerifiedChild | null;
+  investmentGoals: InvestmentGoalsValue | null;
+  plannedContribution: PlannedContributionOption | null;
+  fundingSources: FundingSourcesValue;
 }
 
 export interface CompanyOnboardingFormData extends SharedOnboardingFields, IdentityFormFields {

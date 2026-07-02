@@ -1,4 +1,5 @@
 import {
+  ChildOnboardingFormData,
   CompanyOnboardingFormData,
   IdentityFormFields,
   OnboardingFormData,
@@ -86,6 +87,40 @@ export const transformFormDataToOnboardingSurveryCommand = (
       { type: 'INVESTABLE_ASSETS', value: { type: 'OPTION', value: investableAssets } },
       { type: 'SOURCE_OF_INCOME', value: sourceOfIncome },
     );
+  }
+
+  return { purpose: 'PERSONAL_ONBOARDING', answers };
+};
+
+// The parent fills the child's KYC and it is submitted while acting as the child
+// (role-aware backend). Citizenship and PEP are intentionally absent — the
+// backend derives the child's citizenship from the population register and a
+// child cannot be a PEP (that risk is inherited from the parent's own KYC).
+export const transformChildFormDataToSurveyCommand = (
+  data: ChildOnboardingFormData,
+): OnboardingSurveyCommand => {
+  const answers: OnboardingSurveyCommand['answers'] = [
+    { type: 'ADDRESS', value: { type: 'ADDRESS', value: data.address } },
+    { type: 'EMAIL', value: { type: 'TEXT', value: data.email } },
+  ];
+
+  if (data.phoneNumber) {
+    answers.push({ type: 'PHONE_NUMBER', value: { type: 'TEXT', value: data.phoneNumber } });
+  }
+
+  if (data.investmentGoals) {
+    answers.push({ type: 'INVESTMENT_GOALS', value: data.investmentGoals });
+  }
+
+  if (data.plannedContribution) {
+    answers.push({
+      type: 'PLANNED_CONTRIBUTION',
+      value: { type: 'OPTION', value: data.plannedContribution },
+    });
+  }
+
+  if (data.fundingSources.length > 0) {
+    answers.push({ type: 'FUNDING_SOURCES', value: data.fundingSources });
   }
 
   return { purpose: 'PERSONAL_ONBOARDING', answers };

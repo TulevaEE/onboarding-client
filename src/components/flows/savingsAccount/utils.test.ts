@@ -1,9 +1,14 @@
 import {
+  transformChildFormDataToSurveyCommand,
   transformCompanyFormDataToSurveyCommand,
   transformFormDataToOnboardingSurveryCommand,
   transformIdentityToOnboardingSurveyCommand,
 } from './utils';
-import { CompanyOnboardingFormData, OnboardingFormData } from './SavingsFundOnboarding/types';
+import {
+  ChildOnboardingFormData,
+  CompanyOnboardingFormData,
+  OnboardingFormData,
+} from './SavingsFundOnboarding/types';
 import { mockValidatedCompany } from '../../../test/backend-responses';
 
 const buildOnboardingFormData = (
@@ -162,6 +167,98 @@ describe('transformFormDataToOnboardingSurveryCommand', () => {
     expect(types).not.toContain('INVESTMENT_GOALS');
     expect(types).not.toContain('INVESTABLE_ASSETS');
     expect(types).not.toContain('SOURCE_OF_INCOME');
+  });
+});
+
+const buildChildFormData = (
+  overrides: Partial<ChildOnboardingFormData> = {},
+): ChildOnboardingFormData => ({
+  citizenship: [],
+  address: { street: 'Foo 1', city: 'Tallinn', postalCode: '10115', countryCode: 'EE' },
+  email: 'parent@example.com',
+  phoneNumber: '+37255555555',
+  pepSelfDeclaration: null,
+  childPersonalCode: '61509070000',
+  child: { firstName: 'Mammu', lastName: 'Maasikas', dateOfBirth: '2015-09-07' },
+  investmentGoals: { type: 'OPTION', value: 'EDUCATION' },
+  plannedContribution: 'FROM_50_TO_100',
+  fundingSources: [{ type: 'OPTION', value: 'PARENT_INCOME_AND_SAVINGS' }],
+  termsAccepted: true,
+  ...overrides,
+});
+
+describe('transformChildFormDataToSurveyCommand', () => {
+  it("marks the submission as the child's own personal onboarding", () => {
+    expect(transformChildFormDataToSurveyCommand(buildChildFormData()).purpose).toBe(
+      'PERSONAL_ONBOARDING',
+    );
+  });
+
+  it('sends the child address, contact, goal, contribution and funding sources in order', () => {
+    const types = transformChildFormDataToSurveyCommand(buildChildFormData()).answers.map(
+      (answer) => answer.type,
+    );
+    expect(types).toEqual([
+      'ADDRESS',
+      'EMAIL',
+      'PHONE_NUMBER',
+      'INVESTMENT_GOALS',
+      'PLANNED_CONTRIBUTION',
+      'FUNDING_SOURCES',
+    ]);
+  });
+
+  it('never sends citizenship or PEP — both are derived backend-side, not by the parent', () => {
+    const types = transformChildFormDataToSurveyCommand(buildChildFormData()).answers.map(
+      (answer) => answer.type,
+    );
+    expect(types).not.toContain('CITIZENSHIP');
+    expect(types).not.toContain('PEP_SELF_DECLARATION');
+  });
+
+  it('omits the optional phone number when absent', () => {
+    const types = transformChildFormDataToSurveyCommand(
+      buildChildFormData({ phoneNumber: undefined }),
+    ).answers.map((answer) => answer.type);
+    expect(types).not.toContain('PHONE_NUMBER');
+  });
+
+  it('maps the planned contribution as an OPTION value', () => {
+    expect(
+      transformChildFormDataToSurveyCommand(buildChildFormData({ plannedContribution: 'OVER_300' }))
+        .answers,
+    ).toContainEqual({ type: 'PLANNED_CONTRIBUTION', value: { type: 'OPTION', value: 'OVER_300' } });
+  });
+
+  it('passes funding sources through, including a free-text other item', () => {
+    const result = transformChildFormDataToSurveyCommand(
+      buildChildFormData({
+        fundingSources: [
+          { type: 'OPTION', value: 'GIFTS' },
+          { type: 'TEXT', value: 'lottery win' },
+        ],
+      }),
+    );
+    expect(result.answers).toContainEqual({
+      type: 'FUNDING_SOURCES',
+      value: [
+        { type: 'OPTION', value: 'GIFTS' },
+        { type: 'TEXT', value: 'lottery win' },
+      ],
+    });
+  });
+
+  it('omits goal, contribution and funding sources when not provided', () => {
+    const types = transformChildFormDataToSurveyCommand(
+      buildChildFormData({
+        investmentGoals: null,
+        plannedContribution: null,
+        fundingSources: [],
+      }),
+    ).answers.map((answer) => answer.type);
+    expect(types).not.toContain('INVESTMENT_GOALS');
+    expect(types).not.toContain('PLANNED_CONTRIBUTION');
+    expect(types).not.toContain('FUNDING_SOURCES');
   });
 });
 
