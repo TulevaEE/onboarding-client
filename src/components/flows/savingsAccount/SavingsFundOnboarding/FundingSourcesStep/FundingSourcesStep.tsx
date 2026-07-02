@@ -146,7 +146,11 @@ export const FundingSourcesStep = <T extends FieldValues>({
                       }
                     }}
                   />
-                  <label className="form-check-label w-100" htmlFor="funding-other" id="funding-other-label">
+                  <label
+                    className="form-check-label w-100"
+                    htmlFor="funding-other"
+                    id="funding-other-label"
+                  >
                     <FormattedMessage id="flows.savingsFundChildOnboarding.fundingSourcesStep.other" />
                   </label>
                   {isOtherSelected ? (

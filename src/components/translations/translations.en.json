@@ -1441,6 +1441,9 @@
   "flows.savingsFundChildOnboarding.fundingSourcesStep.otherPlaceholder": "Enter the source of money",
   "flows.savingsFundChildOnboarding.termsStep.confirmText": "As the child’s legal representative, I confirm that I have reviewed the documents and understand that the investment can both grow and shrink over time.",
   "flows.savingsFundChildOnboarding.contactDetailsStep.description": "By default we use your contact as the child’s representative. If the child has their own email, enter it.",
+  "flows.savingsFundChildOnboarding.finalizeError.title": "Something went wrong",
+  "flows.savingsFundChildOnboarding.finalizeError.description": "We couldn’t finish opening the account. Please reload the page and try again.",
+  "flows.savingsFundChildOnboarding.finalizeError.reload": "Reload",
 
   "continents.EUROPE": "Europe",
   "continents.ASIA": "Asia",

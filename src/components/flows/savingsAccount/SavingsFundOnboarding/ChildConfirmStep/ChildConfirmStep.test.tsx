@@ -17,9 +17,7 @@ describe('ChildConfirmStep', () => {
   test('asks whether it is the right child', () => {
     renderStep();
 
-    expect(
-      screen.getByRole('heading', { level: 2, name: /right child/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: /right child/i })).toBeInTheDocument();
   });
 
   test('shows the population-register name and formatted date of birth', () => {

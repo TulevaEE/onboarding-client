@@ -65,7 +65,9 @@ import {
 import { SavingsFundWithdrawal } from './apiModels/savings-fund';
 import { BusinessRegistryValidatedData } from './apiModels/company-onboarding';
 import {
+  ChildResponse,
   CompanyOnboardingSurveyCommand,
+  CreateChildCommand,
   KycIdentity,
   OnboardingSurveyCommand,
 } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
@@ -260,6 +262,10 @@ export function postSavingsFundOnboardingSurvey(command: OnboardingSurveyCommand
 
 export function getKycIdentity(): Promise<KycIdentity> {
   return getWithAuthentication(getEndpoint('/v1/kyc/identity'));
+}
+
+export function createChild(command: CreateChildCommand): Promise<ChildResponse> {
+  return postWithAuthentication(getEndpoint('/v1/me/children'), command);
 }
 
 export function getSavingsFundCompanyOnboardingStatus(

@@ -1,26 +1,33 @@
-// The launch switch for company onboarding: flipping this to true is the
+// The launch switches for each onboarding flow: flipping one to true is the
 // go-live. Enforced on the root route (chooser vs. personal flow), the chooser
 // options, and at route level (a direct link to a disabled flow redirects).
 const COMPANY_ONBOARDING_LAUNCHED = true;
+// Child onboarding stays hidden until the backend (custody verification, the
+// FUNDING_SOURCES/PLANNED_CONTRIBUTION survey items) lands. Until then it is
+// reachable only via ?childOnboardingPreview=true (see below).
+const CHILD_ONBOARDING_LAUNCHED = false;
 
-// Pre-launch preview for the team: open any page with
-// ?companyOnboardingPreview=true to see the launch state for the rest of the
-// browser session (?companyOnboardingPreview=false turns it off). This only
-// reveals the launch UI — it grants nothing the backend doesn't already allow.
-const PREVIEW_SESSION_KEY = 'companyOnboardingPreview';
+// Pre-launch preview for the team: open any page with ?<key>=true to see the
+// launch state for the rest of the browser session (?<key>=false turns it off).
+// This only reveals the launch UI — it grants nothing the backend doesn't allow.
+const COMPANY_PREVIEW_SESSION_KEY = 'companyOnboardingPreview';
+const CHILD_PREVIEW_SESSION_KEY = 'childOnboardingPreview';
 
-export const isCompanyOnboardingEnabled = (): boolean => {
-  if (COMPANY_ONBOARDING_LAUNCHED) {
-    return true;
-  }
-  const previewParameter = new URLSearchParams(window.location.search).get(PREVIEW_SESSION_KEY);
+const isPreviewEnabled = (sessionKey: string): boolean => {
+  const previewParameter = new URLSearchParams(window.location.search).get(sessionKey);
   if (previewParameter === 'true') {
-    sessionStorage.setItem(PREVIEW_SESSION_KEY, 'true');
+    sessionStorage.setItem(sessionKey, 'true');
   } else if (previewParameter === 'false') {
-    sessionStorage.removeItem(PREVIEW_SESSION_KEY);
+    sessionStorage.removeItem(sessionKey);
   }
-  return sessionStorage.getItem(PREVIEW_SESSION_KEY) === 'true';
+  return sessionStorage.getItem(sessionKey) === 'true';
 };
+
+export const isCompanyOnboardingEnabled = (): boolean =>
+  COMPANY_ONBOARDING_LAUNCHED || isPreviewEnabled(COMPANY_PREVIEW_SESSION_KEY);
+
+export const isChildOnboardingEnabled = (): boolean =>
+  CHILD_ONBOARDING_LAUNCHED || isPreviewEnabled(CHILD_PREVIEW_SESSION_KEY);
 
 export type OnboardingFlowOption = {
   key: 'person' | 'company' | 'child';
@@ -35,5 +42,9 @@ export const getOnboardingFlowOptions = (): OnboardingFlowOption[] => [
     route: '/savings-fund/onboarding/company',
     enabled: isCompanyOnboardingEnabled(),
   },
-  { key: 'child', route: '/savings-fund/onboarding/child', enabled: false },
+  {
+    key: 'child',
+    route: '/savings-fund/onboarding/child',
+    enabled: isChildOnboardingEnabled(),
+  },
 ];

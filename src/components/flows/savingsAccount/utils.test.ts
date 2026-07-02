@@ -227,7 +227,10 @@ describe('transformChildFormDataToSurveyCommand', () => {
     expect(
       transformChildFormDataToSurveyCommand(buildChildFormData({ plannedContribution: 'OVER_300' }))
         .answers,
-    ).toContainEqual({ type: 'PLANNED_CONTRIBUTION', value: { type: 'OPTION', value: 'OVER_300' } });
+    ).toContainEqual({
+      type: 'PLANNED_CONTRIBUTION',
+      value: { type: 'OPTION', value: 'OVER_300' },
+    });
   });
 
   it('passes funding sources through, including a free-text other item', () => {

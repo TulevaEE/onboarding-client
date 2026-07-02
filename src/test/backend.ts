@@ -985,6 +985,33 @@ export function savingsFundOnboardingSurveyBackend(
   );
 }
 
+export function createChildBackend(
+  server: SetupServerApi,
+  response: {
+    status: 'VERIFIED' | 'UNDER_REVIEW';
+    firstName?: string;
+    lastName?: string;
+    dateOfBirth?: string;
+    address?: unknown;
+  } = {
+    status: 'VERIFIED',
+    firstName: 'Mammu',
+    lastName: 'Maasikas',
+    dateOfBirth: '2015-09-07',
+    address: { countryCode: 'EE', street: 'Pärnu mnt 10', city: 'Tallinn', postalCode: '10141' },
+  },
+): { createdWith: unknown } {
+  const backend = { createdWith: null as unknown };
+  server.use(
+    rest.post('http://localhost/v1/me/children', (req, res, ctx) => {
+      backend.createdWith = req.body;
+      const httpStatus = response.status === 'VERIFIED' ? 200 : 202;
+      return res(ctx.status(httpStatus), ctx.json(response));
+    }),
+  );
+  return backend;
+}
+
 export function kycIdentityBackend(
   server: SetupServerApi,
   identity: KycIdentity = {

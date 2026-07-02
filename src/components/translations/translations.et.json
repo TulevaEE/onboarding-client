@@ -1531,6 +1531,9 @@
   "flows.savingsFundChildOnboarding.fundingSourcesStep.otherPlaceholder": "Sisesta raha allikas",
   "flows.savingsFundChildOnboarding.termsStep.confirmText": "Kinnitan lapse seadusliku esindajana, et olen dokumentidega tutvunud ja mõistan, et investeering võib ajas nii kasvada kui kahaneda.",
   "flows.savingsFundChildOnboarding.contactDetailsStep.description": "Vaikimisi kasutame sinu kui esindaja kontakti. Kui lapsel on oma e-post, sisesta see.",
+  "flows.savingsFundChildOnboarding.finalizeError.title": "Midagi läks valesti",
+  "flows.savingsFundChildOnboarding.finalizeError.description": "Me ei saanud konto avamist lõpetada. Palun laadi leht uuesti ja proovi uuesti.",
+  "flows.savingsFundChildOnboarding.finalizeError.reload": "Laadi uuesti",
 
   "continents.EUROPE": "Euroopa",
   "continents.ASIA": "Aasia",

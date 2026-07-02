@@ -10,6 +10,7 @@ interface OnboardingFlowLayoutProps {
   loading?: boolean;
   submitting?: boolean;
   nextDisabled?: boolean;
+  backDisabled?: boolean;
   children: ReactNode;
 }
 
@@ -21,6 +22,7 @@ export const OnboardingFlowLayout: FC<OnboardingFlowLayoutProps> = ({
   loading,
   submitting,
   nextDisabled,
+  backDisabled,
   children,
 }) => {
   const progressPercentage = (currentStep / totalSteps) * 100;
@@ -48,7 +50,12 @@ export const OnboardingFlowLayout: FC<OnboardingFlowLayoutProps> = ({
       {loading ? <Loader /> : children}
       {!loading && (
         <div className="d-flex flex-column-reverse flex-sm-row justify-content-between pt-4 border-top gap-3">
-          <button type="button" className="btn btn-lg btn-light" onClick={onBack}>
+          <button
+            type="button"
+            className="btn btn-lg btn-light"
+            onClick={onBack}
+            disabled={backDisabled}
+          >
             <FormattedMessage id="savingsFundOnboarding.back" />
           </button>
           <button
