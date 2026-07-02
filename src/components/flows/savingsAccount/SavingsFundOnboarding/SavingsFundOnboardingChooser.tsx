@@ -55,15 +55,15 @@ const OptionCardContent: FC<{ option: OnboardingFlowOption; badgeId?: Translatio
 }) => (
   <div className="d-flex align-items-center gap-3">
     <span
-      className={`d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 ${
-        option.enabled ? 'bg-primary-subtle text-navy' : 'bg-secondary-subtle text-body-secondary'
+      className={`d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-secondary-subtle ${
+        option.enabled ? 'text-body' : 'text-body-secondary'
       }`}
       style={{ width: '2.5rem', height: '2.5rem' }}
     >
       {optionIcons[option.key]}
     </span>
     <span className="d-flex flex-column">
-      <span className={`fs-5 fw-bold ${option.enabled ? 'text-navy' : 'text-body-secondary'}`}>
+      <span className={`fs-5 fw-bold ${option.enabled ? 'text-body' : 'text-body-secondary'}`}>
         <FormattedMessage id={`flows.savingsFundOnboarding.chooser.${option.key}`} />
       </span>
       <span className="text-body-secondary">
