@@ -52,13 +52,17 @@ import { ListingDetails } from '../listings/ListingDetails';
 import { CapitalTransferStatus } from '../listings/transfer/status/CapitalTransferStatus';
 import { CreateCapitalTransfer } from '../listings/transfer/create/CreateCapitalTransfer';
 import {
+  SavingsFundChildOnboarding,
   SavingsFundCompanyOnboarding,
   SavingsFundOnboarding,
   SavingsFundOnboardingChooser,
   SavingsFundOnboardingPending,
   SavingsFundOnboardingSuccess,
 } from '../flows/savingsAccount/SavingsFundOnboarding';
-import { isCompanyOnboardingEnabled } from '../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
+import {
+  isChildOnboardingEnabled,
+  isCompanyOnboardingEnabled,
+} from '../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
 import { SavingsFundPayment } from '../flows/savingsAccount/SavingsFundPayment';
 import SavingsFundPaymentSuccess from '../flows/savingsAccount/SavingsFundPayment/SavingsFundPaymentSuccess';
 import SavingsFundPaymentCancellation from '../flows/savingsAccount/SavingsFundPayment/SavingsFundPaymentCancellation';
@@ -183,7 +187,17 @@ export class LoggedInApp extends PureComponent {
                 )
               }
             />
-            <Redirect exact path="/savings-fund/onboarding/child" to="/savings-fund/onboarding" />
+            <Route
+              exact
+              path="/savings-fund/onboarding/child"
+              render={() =>
+                isChildOnboardingEnabled() ? (
+                  <SavingsFundChildOnboarding />
+                ) : (
+                  <Redirect to="/savings-fund/onboarding" />
+                )
+              }
+            />
             <Route
               exact
               path="/savings-fund/onboarding"

@@ -182,6 +182,23 @@ export type KycIdentity = {
   updatedAt?: string;
 };
 
+// POST /v1/me/children — the parent opens an account for their child. The custody
+// check runs server-side against the population register; only the code is sent.
+export type CreateChildCommand = {
+  childPersonalCode: string;
+};
+
+// VERIFIED → 200 with the child's RR identity (name/DOB, and address for prefill).
+// UNDER_REVIEW → 202 with no details — the unified "we'll review it" outcome that
+// discloses no reason. Always branch on `status`, never the HTTP status code.
+export type ChildResponse = {
+  status: 'VERIFIED' | 'UNDER_REVIEW';
+  firstName?: string;
+  lastName?: string;
+  dateOfBirth?: string;
+  address?: Address;
+};
+
 type CompanyOnboardingSurveyItem =
   | BusinessRegistryNumberSurveyItem
   | CompanyAddressSurveyItem

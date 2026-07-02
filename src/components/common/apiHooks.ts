@@ -19,6 +19,7 @@ import {
   getCapitalRowsWithToken,
   getCapitalTotal,
   getCapitalTransferContract,
+  createChild,
   getCompanyBusinessRegistryValidation,
   getContributions,
   getFundPensionStatus,
@@ -85,7 +86,9 @@ import {
 } from './apiModels/capital-transfer';
 import { BusinessRegistryValidatedData } from './apiModels/company-onboarding';
 import {
+  ChildResponse,
   CompanyOnboardingSurveyCommand,
+  CreateChildCommand,
   KycIdentity,
   OnboardingSurveyCommand,
 } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
@@ -346,6 +349,15 @@ export function useSubmitSavingsFundOnboardingSurvey(): UseMutationResult<
   return useMutation({
     mutationFn: (command) => postSavingsFundOnboardingSurvey(command),
   });
+}
+
+export function useCreateChild(): UseMutationResult<
+  ChildResponse,
+  ErrorResponse,
+  CreateChildCommand,
+  unknown
+> {
+  return useMutation({ mutationFn: (command) => createChild(command) });
 }
 
 export function useDeleteMemberCapitalListing(): UseMutationResult<
