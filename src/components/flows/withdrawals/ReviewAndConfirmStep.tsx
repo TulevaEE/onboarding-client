@@ -16,6 +16,7 @@ import {
   getEstimatedTotalFundPension,
   getPillarRatios,
   getSingleWithdrawalEstimateAfterTax,
+  formatTaxRatePercent,
   getSingleWithdrawalTaxRate,
   getTotalWithdrawableAmount,
 } from './utils';
@@ -448,6 +449,8 @@ const PartialWithdrawalMandateDescription = ({
   const estimatedWithdrawalSizeWithTax = getSingleWithdrawalEstimateAfterTax(
     partialWithdrawalSizeFromPillar,
     eligibility,
+    mandate.pillar,
+    pensionHoldings,
   );
 
   return (
@@ -494,7 +497,9 @@ const PartialWithdrawalMandateDescription = ({
               withdrawalDate: (
                 <WithdrawalPaymentDate mandate={mandate} mandateDeadlines={mandateDeadlines} />
               ),
-              taxPercent: getSingleWithdrawalTaxRate(eligibility) * 100,
+              taxPercent: formatTaxRatePercent(
+                getSingleWithdrawalTaxRate(eligibility, mandate.pillar),
+              ),
             }}
           />
         </p>

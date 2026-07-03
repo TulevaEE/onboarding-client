@@ -13,13 +13,26 @@ import {
   getFundPensionMandatesToCreate,
   getMandatesToCreate,
   getPartialWithdrawalMandatesToCreate,
+  getSingleWithdrawalEffectiveTaxRate,
   getSingleWithdrawalEstimateAfterTax,
   getSingleWithdrawalTaxAmount,
   getSingleWithdrawalTaxRate,
   getYearsToGoUntilEarlyRetirementAge,
+  getYearsToGoUntilThirdPillarReducedTax,
+  hasEarlierThirdPillarReducedTaxAccess,
+  formatTaxRatePercent,
 } from './utils';
 
 describe('getYearsToGoUntilEarlyRetirementAge', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-07-03T12:00:00Z'));
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('return correct years to early retirement age', () => {
     expect(getYearsToGoUntilEarlyRetirementAge(undefined)).toBe(0);
     expect(
@@ -27,6 +40,8 @@ describe('getYearsToGoUntilEarlyRetirementAge', () => {
         age: 25,
         hasReachedEarlyRetirementAge: false,
         canWithdrawThirdPillarWithReducedTax: false,
+        canWithdrawThirdPillarWithReducedTaxFrom: '2061-06-01',
+        earlyRetirementDate: '2061-06-01',
         recommendedDurationYears: 60 - 25 + 20,
         arrestsOrBankruptciesPresent: false,
       }),
@@ -37,6 +52,8 @@ describe('getYearsToGoUntilEarlyRetirementAge', () => {
         age: 60,
         hasReachedEarlyRetirementAge: true,
         canWithdrawThirdPillarWithReducedTax: true,
+        canWithdrawThirdPillarWithReducedTaxFrom: '2024-10-01',
+        earlyRetirementDate: '2024-10-01',
         recommendedDurationYears: 20,
         arrestsOrBankruptciesPresent: false,
       }),
@@ -47,6 +64,8 @@ describe('getYearsToGoUntilEarlyRetirementAge', () => {
         age: 65,
         hasReachedEarlyRetirementAge: true,
         canWithdrawThirdPillarWithReducedTax: true,
+        canWithdrawThirdPillarWithReducedTaxFrom: '2019-10-01',
+        earlyRetirementDate: '2024-10-01',
         recommendedDurationYears: 15,
         arrestsOrBankruptciesPresent: false,
       }),
@@ -54,125 +73,223 @@ describe('getYearsToGoUntilEarlyRetirementAge', () => {
   });
 });
 
-describe('getSingleWithdrawalTaxRate', () => {
-  it('return correct tax rate', () => {
+const reducedTaxEligibility = withdrawalEligibilityFixture;
+
+const noReducedTaxEligibility = {
+  ...withdrawalEligibilityFixture,
+  canWithdrawThirdPillarWithReducedTax: false,
+  canWithdrawThirdPillarWithReducedTaxFrom: null,
+};
+
+describe('getYearsToGoUntilThirdPillarReducedTax', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-07-03T12:00:00Z'));
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('returns null without a third pillar', () => {
     expect(
-      getSingleWithdrawalTaxRate({
-        age: 25,
+      getYearsToGoUntilThirdPillarReducedTax({
+        ...withdrawalEligibilityFixture,
+        canWithdrawThirdPillarWithReducedTaxFrom: null,
+      }),
+    ).toBe(null);
+  });
+
+  it('returns full years until the reduced tax date, rounded up', () => {
+    expect(
+      getYearsToGoUntilThirdPillarReducedTax({
+        ...withdrawalEligibilityFixture,
+        canWithdrawThirdPillarWithReducedTaxFrom: '2047-01-15',
+      }),
+    ).toBe(21);
+    expect(
+      getYearsToGoUntilThirdPillarReducedTax({
+        ...withdrawalEligibilityFixture,
+        canWithdrawThirdPillarWithReducedTaxFrom: '2026-10-15',
+      }),
+    ).toBe(1);
+  });
+
+  it('returns 0 when the reduced tax date has passed', () => {
+    expect(
+      getYearsToGoUntilThirdPillarReducedTax({
+        ...withdrawalEligibilityFixture,
+        canWithdrawThirdPillarWithReducedTaxFrom: '2024-10-01',
+      }),
+    ).toBe(0);
+  });
+});
+
+describe('hasEarlierThirdPillarReducedTaxAccess', () => {
+  it('is true when the third pillar reduced tax date is before the early retirement date', () => {
+    expect(
+      hasEarlierThirdPillarReducedTaxAccess({
+        ...withdrawalEligibilityFixture,
         hasReachedEarlyRetirementAge: false,
         canWithdrawThirdPillarWithReducedTax: false,
-        recommendedDurationYears: 50,
-        arrestsOrBankruptciesPresent: false,
+        canWithdrawThirdPillarWithReducedTaxFrom: '2047-01-15',
+        earlyRetirementDate: '2052-01-15',
       }),
-    ).toBe(0.22);
+    ).toBe(true);
+  });
 
+  it('is false without a third pillar reduced tax date', () => {
     expect(
-      getSingleWithdrawalTaxRate({
-        age: 55,
+      hasEarlierThirdPillarReducedTaxAccess({
+        ...withdrawalEligibilityFixture,
         hasReachedEarlyRetirementAge: false,
-        canWithdrawThirdPillarWithReducedTax: true,
-        recommendedDurationYears: 15,
-        arrestsOrBankruptciesPresent: false,
+        canWithdrawThirdPillarWithReducedTax: false,
+        canWithdrawThirdPillarWithReducedTaxFrom: null,
+        earlyRetirementDate: '2052-01-15',
       }),
-    ).toBe(0.1);
+    ).toBe(false);
+  });
 
+  it('is false when the reduced tax date is not earlier than the early retirement date', () => {
     expect(
-      getSingleWithdrawalTaxRate({
-        age: 60,
-        hasReachedEarlyRetirementAge: true,
-        canWithdrawThirdPillarWithReducedTax: true,
-        recommendedDurationYears: 20,
-        arrestsOrBankruptciesPresent: false,
+      hasEarlierThirdPillarReducedTaxAccess({
+        ...withdrawalEligibilityFixture,
+        hasReachedEarlyRetirementAge: false,
+        canWithdrawThirdPillarWithReducedTax: false,
+        canWithdrawThirdPillarWithReducedTaxFrom: '2052-01-15',
+        earlyRetirementDate: '2052-01-15',
       }),
+    ).toBe(false);
+  });
+
+  it('is false once early retirement age is reached', () => {
+    expect(
+      hasEarlierThirdPillarReducedTaxAccess({
+        ...withdrawalEligibilityFixture,
+        hasReachedEarlyRetirementAge: true,
+        canWithdrawThirdPillarWithReducedTax: false,
+        canWithdrawThirdPillarWithReducedTaxFrom: '2028-06-01',
+        earlyRetirementDate: '2025-06-01',
+      }),
+    ).toBe(false);
+  });
+});
+
+describe('formatTaxRatePercent', () => {
+  it('formats rates as percentages with one decimal', () => {
+    expect(formatTaxRatePercent(0.1)).toBe(10);
+    expect(formatTaxRatePercent(0.22)).toBe(22);
+    expect(formatTaxRatePercent(0.148)).toBe(14.8);
+  });
+});
+
+describe('getSingleWithdrawalTaxRate', () => {
+  it('returns 22% for third pillar without reduced tax', () => {
+    expect(getSingleWithdrawalTaxRate(noReducedTaxEligibility, 'THIRD')).toBe(0.22);
+  });
+
+  it('returns 10% for third pillar with reduced tax', () => {
+    expect(getSingleWithdrawalTaxRate(reducedTaxEligibility, 'THIRD')).toBe(0.1);
+  });
+
+  it('returns 10% for second pillar', () => {
+    expect(getSingleWithdrawalTaxRate(noReducedTaxEligibility, 'SECOND')).toBe(0.1);
+    expect(getSingleWithdrawalTaxRate(reducedTaxEligibility, 'SECOND')).toBe(0.1);
+  });
+});
+
+describe('getSingleWithdrawalEffectiveTaxRate', () => {
+  it('returns the pillar rate when withdrawing from a single pillar', () => {
+    expect(
+      getSingleWithdrawalEffectiveTaxRate(noReducedTaxEligibility, 'THIRD', pensionHoldings),
+    ).toBe(0.22);
+    expect(
+      getSingleWithdrawalEffectiveTaxRate(noReducedTaxEligibility, 'SECOND', pensionHoldings),
     ).toBe(0.1);
+  });
+
+  it('returns 10% for both pillars with reduced tax', () => {
+    expect(
+      getSingleWithdrawalEffectiveTaxRate(reducedTaxEligibility, 'BOTH', pensionHoldings),
+    ).toBe(0.1);
+  });
+
+  it('returns holdings-weighted rate for both pillars without reduced tax', () => {
+    expect(
+      getSingleWithdrawalEffectiveTaxRate(noReducedTaxEligibility, 'BOTH', pensionHoldings),
+    ).toBeCloseTo(0.148, 10);
+  });
+
+  it('returns 22% for users who can only partially withdraw third pillar, regardless of pillar selection', () => {
+    const under60Eligibility = {
+      ...noReducedTaxEligibility,
+      hasReachedEarlyRetirementAge: false,
+      age: 55,
+    };
+    expect(getSingleWithdrawalEffectiveTaxRate(under60Eligibility, 'SECOND', pensionHoldings)).toBe(
+      0.22,
+    );
+    expect(getSingleWithdrawalEffectiveTaxRate(under60Eligibility, 'BOTH', pensionHoldings)).toBe(
+      0.22,
+    );
   });
 });
 
 describe('getSingleWithdrawalTaxAmount', () => {
-  it('return correct tax amount', () => {
+  it('returns null without a withdrawal amount', () => {
     expect(
-      getSingleWithdrawalTaxAmount(null, {
-        age: 25,
-        hasReachedEarlyRetirementAge: false,
-        canWithdrawThirdPillarWithReducedTax: false,
-        recommendedDurationYears: 50,
-        arrestsOrBankruptciesPresent: false,
-      }),
+      getSingleWithdrawalTaxAmount(null, noReducedTaxEligibility, 'THIRD', pensionHoldings),
     ).toBe(null);
+  });
 
+  it('returns 22% tax on third pillar without reduced tax', () => {
     expect(
-      getSingleWithdrawalTaxAmount(10000, {
-        age: 25,
-        hasReachedEarlyRetirementAge: false,
-        canWithdrawThirdPillarWithReducedTax: false,
-        recommendedDurationYears: 50,
-        arrestsOrBankruptciesPresent: false,
-      }),
+      getSingleWithdrawalTaxAmount(10000, noReducedTaxEligibility, 'THIRD', pensionHoldings),
     ).toBe(2200);
+  });
 
+  it('returns 10% tax on third pillar with reduced tax', () => {
     expect(
-      getSingleWithdrawalTaxAmount(10000, {
-        age: 55,
-        hasReachedEarlyRetirementAge: false,
-        canWithdrawThirdPillarWithReducedTax: true,
-        recommendedDurationYears: 15,
-        arrestsOrBankruptciesPresent: false,
-      }),
+      getSingleWithdrawalTaxAmount(10000, reducedTaxEligibility, 'THIRD', pensionHoldings),
     ).toBe(1000);
+  });
 
+  it('returns 10% tax on second pillar', () => {
     expect(
-      getSingleWithdrawalTaxAmount(10000, {
-        age: 60,
-        hasReachedEarlyRetirementAge: true,
-        canWithdrawThirdPillarWithReducedTax: true,
-        recommendedDurationYears: 20,
-        arrestsOrBankruptciesPresent: false,
-      }),
+      getSingleWithdrawalTaxAmount(10000, noReducedTaxEligibility, 'SECOND', pensionHoldings),
     ).toBe(1000);
+  });
+
+  it('returns holdings-weighted tax on both pillars without reduced tax', () => {
+    expect(
+      getSingleWithdrawalTaxAmount(10000, noReducedTaxEligibility, 'BOTH', pensionHoldings),
+    ).toBeCloseTo(1480, 8);
   });
 });
 
 describe('getSingleWithdrawalEstimateAfterTax', () => {
-  it('return correct amount after tax', () => {
+  it('returns null without a withdrawal amount', () => {
     expect(
-      getSingleWithdrawalEstimateAfterTax(null, {
-        age: 25,
-        hasReachedEarlyRetirementAge: false,
-        canWithdrawThirdPillarWithReducedTax: false,
-        recommendedDurationYears: 50,
-        arrestsOrBankruptciesPresent: false,
-      }),
+      getSingleWithdrawalEstimateAfterTax(null, noReducedTaxEligibility, 'THIRD', pensionHoldings),
     ).toBe(null);
+  });
 
+  it('returns amount after 22% tax on third pillar without reduced tax', () => {
     expect(
-      getSingleWithdrawalEstimateAfterTax(10000, {
-        age: 25,
-        hasReachedEarlyRetirementAge: false,
-        canWithdrawThirdPillarWithReducedTax: false,
-        recommendedDurationYears: 50,
-        arrestsOrBankruptciesPresent: false,
-      }),
+      getSingleWithdrawalEstimateAfterTax(10000, noReducedTaxEligibility, 'THIRD', pensionHoldings),
     ).toBe(7800);
+  });
 
+  it('returns amount after 10% tax on third pillar with reduced tax', () => {
     expect(
-      getSingleWithdrawalEstimateAfterTax(10000, {
-        age: 55,
-        hasReachedEarlyRetirementAge: false,
-        canWithdrawThirdPillarWithReducedTax: true,
-        recommendedDurationYears: 15,
-        arrestsOrBankruptciesPresent: false,
-      }),
+      getSingleWithdrawalEstimateAfterTax(10000, reducedTaxEligibility, 'THIRD', pensionHoldings),
     ).toBe(9000);
+  });
 
+  it('returns amount after holdings-weighted tax on both pillars without reduced tax', () => {
     expect(
-      getSingleWithdrawalEstimateAfterTax(10000, {
-        age: 60,
-        hasReachedEarlyRetirementAge: true,
-        canWithdrawThirdPillarWithReducedTax: true,
-        recommendedDurationYears: 20,
-        arrestsOrBankruptciesPresent: false,
-      }),
-    ).toBe(9000);
+      getSingleWithdrawalEstimateAfterTax(10000, noReducedTaxEligibility, 'BOTH', pensionHoldings),
+    ).toBeCloseTo(8520, 8);
   });
 });
 
@@ -269,6 +386,8 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     const under55Eligibility = {
       hasReachedEarlyRetirementAge: false,
       canWithdrawThirdPillarWithReducedTax: false,
+      canWithdrawThirdPillarWithReducedTaxFrom: null,
+      earlyRetirementDate: '2061-06-01',
       recommendedDurationYears: 45,
       age: 25,
       arrestsOrBankruptciesPresent: false,
@@ -311,6 +430,8 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     const under55Eligibility = {
       hasReachedEarlyRetirementAge: false,
       canWithdrawThirdPillarWithReducedTax: false,
+      canWithdrawThirdPillarWithReducedTaxFrom: null,
+      earlyRetirementDate: '2061-06-01',
       recommendedDurationYears: 45,
       age: 25,
       arrestsOrBankruptciesPresent: false,
@@ -678,6 +799,8 @@ describe('getFundPensionMandatesToCreate', () => {
     const under55Eligibility = {
       hasReachedEarlyRetirementAge: false,
       canWithdrawThirdPillarWithReducedTax: false,
+      canWithdrawThirdPillarWithReducedTaxFrom: null,
+      earlyRetirementDate: '2061-06-01',
       recommendedDurationYears: 45,
       age: 25,
       arrestsOrBankruptciesPresent: false,

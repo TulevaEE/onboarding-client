@@ -13,6 +13,8 @@ export type FundPension = {
 export type WithdrawalsEligibility = {
   hasReachedEarlyRetirementAge: boolean;
   canWithdrawThirdPillarWithReducedTax: boolean;
+  canWithdrawThirdPillarWithReducedTaxFrom: string | null;
+  earlyRetirementDate: string;
   recommendedDurationYears: number;
   age: number;
   arrestsOrBankruptciesPresent: boolean;

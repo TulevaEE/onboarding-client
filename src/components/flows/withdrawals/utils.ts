@@ -1,4 +1,5 @@
 import { captureException } from '@sentry/browser';
+import moment from 'moment';
 import {
   FundPensionStatus,
   FundPensionOpeningMandateDetails,
@@ -8,7 +9,12 @@ import {
   WithdrawalsEligibility,
 } from '../../common/apiModels/withdrawals';
 import { Fund, SourceFund, UserConversion } from '../../common/apiModels/index';
-import { PensionHoldings, PersonalDetailsStepState, WithdrawalsAmountStepState } from './types';
+import {
+  PensionHoldings,
+  PersonalDetailsStepState,
+  PillarToWithdrawFrom,
+  WithdrawalsAmountStepState,
+} from './types';
 
 export const canAccessWithdrawals = (
   conversion: UserConversion,
@@ -43,12 +49,32 @@ export const canWithdrawOnlyThirdPillarTaxFree = (eligibility: WithdrawalsEligib
   !eligibility.hasReachedEarlyRetirementAge && eligibility.canWithdrawThirdPillarWithReducedTax;
 
 export const getYearsToGoUntilEarlyRetirementAge = (eligibility?: WithdrawalsEligibility) => {
-  if (!eligibility || eligibility?.hasReachedEarlyRetirementAge) {
+  if (!eligibility || eligibility.hasReachedEarlyRetirementAge) {
     return 0;
   }
 
-  return 60 - eligibility?.age;
+  return getYearsToGoUntil(eligibility.earlyRetirementDate);
 };
+
+export const hasEarlierThirdPillarReducedTaxAccess = (eligibility: WithdrawalsEligibility) =>
+  canOnlyPartiallyWithdrawThirdPillar(eligibility) &&
+  !!eligibility.canWithdrawThirdPillarWithReducedTaxFrom &&
+  moment(eligibility.canWithdrawThirdPillarWithReducedTaxFrom).isBefore(
+    eligibility.earlyRetirementDate,
+  );
+
+const getYearsToGoUntil = (date: string) =>
+  Math.max(0, Math.ceil(moment(date).diff(moment(), 'years', true)));
+
+export const getYearsToGoUntilThirdPillarReducedTax = (eligibility: WithdrawalsEligibility) => {
+  if (!eligibility.canWithdrawThirdPillarWithReducedTaxFrom) {
+    return null;
+  }
+
+  return getYearsToGoUntil(eligibility.canWithdrawThirdPillarWithReducedTaxFrom);
+};
+
+export const formatTaxRatePercent = (rate: number) => Math.round(rate * 1000) / 10;
 
 export const getWithdrawalsPath = (subPath: string) => `/withdrawals/${subPath}`;
 export const getBankAccountDetails = (
@@ -296,22 +322,49 @@ export const getAllFundNavsPresent = (
 export const getSingleWithdrawalTaxAmount = (
   withdrawalAmount: number | null,
   eligibility: WithdrawalsEligibility,
+  pillarsToWithdrawFrom: PillarToWithdrawFrom,
+  pensionHoldings: PensionHoldings,
 ) => {
   if (withdrawalAmount === null) {
     return null;
   }
 
-  const INCOME_TAX_RATE = getSingleWithdrawalTaxRate(eligibility);
-
-  return withdrawalAmount * INCOME_TAX_RATE;
+  return (
+    withdrawalAmount *
+    getSingleWithdrawalEffectiveTaxRate(eligibility, pillarsToWithdrawFrom, pensionHoldings)
+  );
 };
 
-export const getSingleWithdrawalTaxRate = (eligibility: WithdrawalsEligibility) => {
+export const getSingleWithdrawalTaxRate = (
+  eligibility: WithdrawalsEligibility,
+  pillar: 'SECOND' | 'THIRD',
+) => (pillar === 'THIRD' && !eligibility.canWithdrawThirdPillarWithReducedTax ? 0.22 : 0.1);
+
+export const getSingleWithdrawalEffectiveTaxRate = (
+  eligibility: WithdrawalsEligibility,
+  pillarsToWithdrawFrom: PillarToWithdrawFrom,
+  pensionHoldings: PensionHoldings,
+) => {
   if (canOnlyPartiallyWithdrawThirdPillar(eligibility)) {
-    return 0.22;
+    return getSingleWithdrawalTaxRate(eligibility, 'THIRD');
   }
 
-  return 0.1;
+  if (pillarsToWithdrawFrom !== 'BOTH') {
+    return getSingleWithdrawalTaxRate(eligibility, pillarsToWithdrawFrom);
+  }
+
+  const totalAvailableToWithdraw = getTotalWithdrawableAmount('BOTH', pensionHoldings);
+
+  if (totalAvailableToWithdraw === 0) {
+    return getSingleWithdrawalTaxRate(eligibility, 'THIRD');
+  }
+
+  const pillarRatios = getPillarRatios(pensionHoldings, totalAvailableToWithdraw);
+
+  return (
+    pillarRatios.SECOND * getSingleWithdrawalTaxRate(eligibility, 'SECOND') +
+    pillarRatios.THIRD * getSingleWithdrawalTaxRate(eligibility, 'THIRD')
+  );
 };
 
 export const getFundPensionMonthlyPaymentEstimation = (
@@ -345,7 +398,7 @@ export const getFundPensionMonthlyPaymentEstimation = (
 };
 
 export const getTotalWithdrawableAmount = (
-  pillarToWithdrawFrom: 'SECOND' | 'THIRD' | 'BOTH',
+  pillarToWithdrawFrom: PillarToWithdrawFrom,
   holdings: PensionHoldings,
 ) => {
   if (pillarToWithdrawFrom === 'SECOND') {
@@ -370,8 +423,15 @@ export const getPillarRatios = (
 export const getSingleWithdrawalEstimateAfterTax = (
   withdrawalAmount: number | null,
   eligibility: WithdrawalsEligibility,
+  pillarsToWithdrawFrom: PillarToWithdrawFrom,
+  pensionHoldings: PensionHoldings,
 ) => {
-  const taxAmount = getSingleWithdrawalTaxAmount(withdrawalAmount, eligibility);
+  const taxAmount = getSingleWithdrawalTaxAmount(
+    withdrawalAmount,
+    eligibility,
+    pillarsToWithdrawFrom,
+    pensionHoldings,
+  );
   if (withdrawalAmount === null || taxAmount == null) {
     return null;
   }

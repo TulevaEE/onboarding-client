@@ -4,15 +4,16 @@ import { Collapse } from 'react-bootstrap';
 import { formatAmountForCurrency } from '../../common/utils';
 import { useWithdrawalsEligibility } from '../../common/apiHooks';
 import { Radio } from '../../common';
-import { PillarToWithdrawFrom } from './types';
+import { PensionHoldings, PillarToWithdrawFrom } from './types';
 import { useFundPensionCalculation, useWithdrawalsContext } from './hooks';
 import Percentage from '../../common/Percentage';
 import {
   canOnlyPartiallyWithdrawThirdPillar,
   canWithdrawOnlyThirdPillarTaxFree,
+  formatTaxRatePercent,
+  getSingleWithdrawalEffectiveTaxRate,
   getSingleWithdrawalEstimateAfterTax,
   getSingleWithdrawalTaxAmount,
-  getSingleWithdrawalTaxRate,
   getTotalWithdrawableAmount,
   getYearsToGoUntilEarlyRetirementAge,
 } from './utils';
@@ -48,9 +49,13 @@ export const WithdrawalAmountStep = () => {
         eligibility={eligibility}
         setSelectedPillar={handlePillarSelected}
       />
-      <SingleWithdrawalSelectionBox totalAmount={totalAmount} eligibility={eligibility} />
+      <SingleWithdrawalSelectionBox
+        totalAmount={totalAmount}
+        eligibility={eligibility}
+        pensionHoldings={pensionHoldings}
+      />
       <FundPensionStatusBox />
-      <SummaryBox />
+      <SummaryBox pensionHoldings={pensionHoldings} />
     </div>
   );
 };
@@ -58,9 +63,11 @@ export const WithdrawalAmountStep = () => {
 const SingleWithdrawalSelectionBox = ({
   totalAmount,
   eligibility,
+  pensionHoldings,
 }: {
   totalAmount: number;
   eligibility: WithdrawalsEligibility;
+  pensionHoldings: PensionHoldings;
 }) => {
   const { amountStep, setAmountStep } = useWithdrawalsContext();
   const [singleWithdrawalSwitch, setSingleWithdrawalSwitch] = useState(
@@ -130,6 +137,7 @@ const SingleWithdrawalSelectionBox = ({
         <SingleWithdrawalSelectionBody
           eligibility={eligibility}
           totalAmount={totalAmount}
+          pensionHoldings={pensionHoldings}
           onlyThirdPillarPartialWithdrawal
           inputValue={inputValue}
           handleInputChange={handleInputChange}
@@ -173,6 +181,7 @@ const SingleWithdrawalSelectionBox = ({
           <SingleWithdrawalSelectionBody
             eligibility={eligibility}
             totalAmount={totalAmount}
+            pensionHoldings={pensionHoldings}
             inputValue={inputValue}
             handleInputChange={handleInputChange}
             handleSliderChange={handleSliderChange}
@@ -186,6 +195,7 @@ const SingleWithdrawalSelectionBox = ({
 const SingleWithdrawalSelectionBody = ({
   totalAmount,
   eligibility,
+  pensionHoldings,
   inputValue,
   onlyThirdPillarPartialWithdrawal = false,
   handleInputChange,
@@ -193,17 +203,37 @@ const SingleWithdrawalSelectionBody = ({
 }: {
   totalAmount: number;
   eligibility: WithdrawalsEligibility;
+  pensionHoldings: PensionHoldings;
   inputValue: string;
   onlyThirdPillarPartialWithdrawal?: boolean;
   handleInputChange: (value: string) => unknown;
   handleSliderChange: (value: number) => unknown;
 }) => {
   const { amountStep } = useWithdrawalsContext();
+
   const taxAmount =
-    getSingleWithdrawalTaxAmount(amountStep.singleWithdrawalAmount, eligibility) ?? 0;
+    getSingleWithdrawalTaxAmount(
+      amountStep.singleWithdrawalAmount,
+      eligibility,
+      amountStep.pillarsToWithdrawFrom,
+      pensionHoldings,
+    ) ?? 0;
 
   const withdrawalAmountAfterTax =
-    getSingleWithdrawalEstimateAfterTax(amountStep.singleWithdrawalAmount, eligibility) ?? 0;
+    getSingleWithdrawalEstimateAfterTax(
+      amountStep.singleWithdrawalAmount,
+      eligibility,
+      amountStep.pillarsToWithdrawFrom,
+      pensionHoldings,
+    ) ?? 0;
+
+  const taxPercent = formatTaxRatePercent(
+    getSingleWithdrawalEffectiveTaxRate(
+      eligibility,
+      amountStep.pillarsToWithdrawFrom,
+      pensionHoldings,
+    ),
+  );
 
   const sliderColor = canOnlyPartiallyWithdrawThirdPillar(eligibility) ? 'BLUE' : 'RED';
 
@@ -218,7 +248,7 @@ const SingleWithdrawalSelectionBody = ({
           >
             <FormattedMessage
               id="withdrawals.withdrawalAmount.partialWithdrawInputLabel"
-              values={{ taxPercent: getSingleWithdrawalTaxRate(eligibility) * 100 }}
+              values={{ taxPercent }}
             />
           </label>
           <div
@@ -261,7 +291,7 @@ const SingleWithdrawalSelectionBody = ({
               <div className="d-flex justify-content-between">
                 <FormattedMessage
                   id="withdrawals.withdrawalAmount.partialWithdrawalTax"
-                  values={{ taxPercent: getSingleWithdrawalTaxRate(eligibility) * 100 }}
+                  values={{ taxPercent }}
                 />
                 {taxAmount > 0 ? ': ' : '.'}
                 <div>
@@ -272,7 +302,7 @@ const SingleWithdrawalSelectionBody = ({
                 <div className="d-flex justify-content-between">
                   <FormattedMessage
                     id="withdrawals.withdrawalAmount.partialWithdrawalAfterTaxEstimate"
-                    values={{ taxPercent: getSingleWithdrawalTaxRate(eligibility) * 100 }}
+                    values={{ taxPercent }}
                   />
                   <div>
                     <b>{formatAmountForCurrency(withdrawalAmountAfterTax, 2)}</b>
@@ -284,7 +314,7 @@ const SingleWithdrawalSelectionBody = ({
             <p className="m-0 mt-3">
               <FormattedMessage
                 id="withdrawals.withdrawalAmount.partialWithdrawalTax"
-                values={{ taxPercent: getSingleWithdrawalTaxRate(eligibility) * 100 }}
+                values={{ taxPercent }}
               />
               {taxAmount > 0 ? ': ' : '.'}
               <TaxAmount amount={taxAmount} />
@@ -411,7 +441,7 @@ const FundPensionStatusBox = () => {
   );
 };
 
-const SummaryBox = () => {
+const SummaryBox = ({ pensionHoldings }: { pensionHoldings: PensionHoldings }) => {
   const { amountStep, navigateToNextStep, mandatesToCreate } = useWithdrawalsContext();
   const fundPension = useFundPensionCalculation();
   const { fundPensionEnabled } = amountStep;
@@ -423,7 +453,12 @@ const SummaryBox = () => {
   }
 
   const taxAmount =
-    getSingleWithdrawalTaxAmount(amountStep.singleWithdrawalAmount, eligibility) ?? 0;
+    getSingleWithdrawalTaxAmount(
+      amountStep.singleWithdrawalAmount,
+      eligibility,
+      amountStep.pillarsToWithdrawFrom,
+      pensionHoldings,
+    ) ?? 0;
   const canNavigateToNextStep = (mandatesToCreate ?? []).length > 0 || isTestModeEnabled;
 
   if (canOnlyPartiallyWithdrawThirdPillar(eligibility)) {

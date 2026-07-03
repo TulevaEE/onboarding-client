@@ -501,6 +501,8 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
       age: 60,
       hasReachedEarlyRetirementAge: true,
       canWithdrawThirdPillarWithReducedTax: true,
+      canWithdrawThirdPillarWithReducedTaxFrom: '2024-10-01',
+      earlyRetirementDate: '2024-10-01',
       recommendedDurationYears: 20,
       arrestsOrBankruptciesPresent: true,
     });

@@ -5,6 +5,8 @@ import { WithdrawalsEligibility } from '../../common/apiModels/withdrawals';
 export const withdrawalEligibilityFixture: WithdrawalsEligibility = {
   hasReachedEarlyRetirementAge: true,
   canWithdrawThirdPillarWithReducedTax: true,
+  canWithdrawThirdPillarWithReducedTaxFrom: '2024-10-01',
+  earlyRetirementDate: '2024-10-01',
   recommendedDurationYears: 20,
   age: 60,
   arrestsOrBankruptciesPresent: false,
