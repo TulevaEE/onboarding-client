@@ -131,7 +131,7 @@ export const assertPartialWithdrawalCalculations = ({
 }: {
   amount: string;
   taxAmount: string;
-  taxRate?: '10%' | '22%';
+  taxRate?: string;
   assertSummaryBox?: boolean;
 }) => {
   const taxText = screen.getByText(
@@ -291,9 +291,7 @@ export const assertPartialWithdrawalMandate = async ({
   }
 };
 
-export const partialWithdrawalSizeInput = async (
-  taxRate: '22%' | '10%' = '10%',
-): Promise<HTMLInputElement> =>
+export const partialWithdrawalSizeInput = async (taxRate = '10%'): Promise<HTMLInputElement> =>
   screen.findByLabelText(`Withdraw with ${taxRate} income tax`, {
     selector: 'input[type="text"]',
   });
