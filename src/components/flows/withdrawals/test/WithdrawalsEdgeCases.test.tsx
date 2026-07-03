@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { setupServer } from 'msw/node';
 import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -81,6 +82,8 @@ describe('withdrawals flow before early retirement age', () => {
       age: 25,
       hasReachedEarlyRetirementAge: false,
       canWithdrawThirdPillarWithReducedTax: false,
+      canWithdrawThirdPillarWithReducedTaxFrom: '2061-06-01',
+      earlyRetirementDate: '2061-06-01',
       recommendedDurationYears: 55,
       arrestsOrBankruptciesPresent: false,
     });
@@ -108,12 +111,43 @@ describe('withdrawals flow before early retirement age', () => {
     expect(await screen.findByText(/Your holdings in II pillar/i)).toBeInTheDocument();
   });
 
+  test('pre-2021 third pillar joiner sees preferential access from age 55', async () => {
+    pensionAccountStatementBackend(server);
+    withdrawalsEligibilityBackend(server, {
+      age: 34,
+      hasReachedEarlyRetirementAge: false,
+      canWithdrawThirdPillarWithReducedTax: false,
+      canWithdrawThirdPillarWithReducedTaxFrom: moment().add(21, 'years').format('YYYY-MM-DD'),
+      earlyRetirementDate: moment().add(26, 'years').format('YYYY-MM-DD'),
+      recommendedDurationYears: 20 + (60 - 34),
+      arrestsOrBankruptciesPresent: false,
+    });
+
+    expect(await screen.findByText(/34 years old/i)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/eligible to start using your III pillar holdings/i),
+    ).toBeInTheDocument();
+    expect(await screen.findByText(/in 21 years/)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Before the age of 55, you can withdraw money only from/i),
+    ).toBeInTheDocument();
+    expect(
+      (
+        await screen.findAllByText(
+          /You will be able to use your II pillar holdings under preferential conditions in 26 years/i,
+        )
+      ).length,
+    ).toBeGreaterThan(0);
+  });
+
   test('with second and third pillar, can only withdraw third pillar', async () => {
     pensionAccountStatementBackend(server);
     withdrawalsEligibilityBackend(server, {
       age: 25,
       hasReachedEarlyRetirementAge: false,
       canWithdrawThirdPillarWithReducedTax: false,
+      canWithdrawThirdPillarWithReducedTaxFrom: '2061-06-01',
+      earlyRetirementDate: '2061-06-01',
       recommendedDurationYears: 20 + (60 - 25),
       arrestsOrBankruptciesPresent: false,
     });
@@ -121,7 +155,7 @@ describe('withdrawals flow before early retirement age', () => {
     expect(await screen.findByText(/25 years old/i)).toBeInTheDocument();
     expect(
       await screen.findByText(
-        /eligible to start using your accumulated pension holdings under preferential conditions/i,
+        /eligible to start using your accumulated holdings under preferential conditions/i,
       ),
     ).toBeInTheDocument();
     expect(await screen.findByText(/in 35 years/i)).toBeInTheDocument();
@@ -205,6 +239,8 @@ describe('withdrawals flow before early retirement age', () => {
       age: 25,
       hasReachedEarlyRetirementAge: false,
       canWithdrawThirdPillarWithReducedTax: false,
+      canWithdrawThirdPillarWithReducedTaxFrom: '2061-06-01',
+      earlyRetirementDate: '2061-06-01',
       recommendedDurationYears: 20 + (60 - 25),
       arrestsOrBankruptciesPresent: false,
     });
@@ -212,7 +248,7 @@ describe('withdrawals flow before early retirement age', () => {
     expect(await screen.findByText(/25 years old/i)).toBeInTheDocument();
     expect(
       await screen.findByText(
-        /eligible to start using your accumulated pension holdings under preferential conditions/i,
+        /eligible to start using your accumulated holdings under preferential conditions/i,
       ),
     ).toBeInTheDocument();
     expect(await screen.findByText(/in 35 years/i)).toBeInTheDocument();
@@ -267,6 +303,36 @@ describe('withdrawals flow before early retirement age', () => {
   });
 });
 
+describe('withdrawals flow at 61 with third pillar held under 5 years', () => {
+  beforeEach(() => {
+    pensionAccountStatementBackend(server);
+    withdrawalsEligibilityBackend(server, {
+      age: 61,
+      hasReachedEarlyRetirementAge: true,
+      canWithdrawThirdPillarWithReducedTax: false,
+      canWithdrawThirdPillarWithReducedTaxFrom: moment().add(2, 'years').format('YYYY-MM-DD'),
+      earlyRetirementDate: '2024-10-01',
+      recommendedDurationYears: 20,
+      arrestsOrBankruptciesPresent: false,
+    });
+  });
+
+  test('shows the full tax note and a holdings-blended tax rate when withdrawing from both pillars', async () => {
+    expect(
+      await screen.findByText(/have not yet passed since you joined the III pillar/i),
+    ).toBeInTheDocument();
+
+    userEvent.click(await singleWithdrawalCheckbox());
+    userEvent.type(await partialWithdrawalSizeInput('10.6%'), '10000');
+
+    assertPartialWithdrawalCalculations({
+      amount: '10 000.00 €',
+      taxAmount: '−1 056.66 €',
+      taxRate: '10.6%',
+    });
+  });
+});
+
 describe('withdrawals flow at 55 withdrawing only third pillar', () => {
   beforeEach(() => {
     pensionAccountStatementBackend(server);
@@ -274,6 +340,8 @@ describe('withdrawals flow at 55 withdrawing only third pillar', () => {
       age: 55,
       hasReachedEarlyRetirementAge: false,
       canWithdrawThirdPillarWithReducedTax: true,
+      canWithdrawThirdPillarWithReducedTaxFrom: '2025-01-01',
+      earlyRetirementDate: '2061-06-01',
       recommendedDurationYears: 5 + 20, // 5 years to go until 60 + 20 years recommended duration
       arrestsOrBankruptciesPresent: false,
     });
