@@ -2,19 +2,23 @@ import React, { ChangeEvent, ReactChildren, useEffect, useMemo, useState } from 
 import { FormattedMessage } from 'react-intl';
 import { Collapse } from 'react-bootstrap';
 import { formatAmountForCurrency } from '../../common/utils';
-import { useWithdrawalsEligibility } from '../../common/apiHooks';
+import { useMandateDeadlines, useWithdrawalsEligibility } from '../../common/apiHooks';
 import { Radio } from '../../common';
 import { PensionHoldings, PillarToWithdrawFrom } from './types';
 import { useFundPensionCalculation, useWithdrawalsContext } from './hooks';
+import { formatDate } from '../../common/dateFormatter';
 import Percentage from '../../common/Percentage';
 import {
   canOnlyPartiallyWithdrawThirdPillar,
   canWithdrawOnlyThirdPillarTaxFree,
+  hasEarlierThirdPillarReducedTaxAccess,
   formatTaxRatePercent,
+  getSingleWithdrawalTaxRate,
   getSingleWithdrawalEffectiveTaxRate,
   getSingleWithdrawalEstimateAfterTax,
   getSingleWithdrawalTaxAmount,
   getTotalWithdrawableAmount,
+  getWithdrawalAmountsByPillar,
   getYearsToGoUntilEarlyRetirementAge,
 } from './utils';
 import styles from './Withdrawals.module.scss';
@@ -229,11 +233,20 @@ const SingleWithdrawalSelectionBody = ({
 
   const taxPercent = formatTaxRatePercent(
     getSingleWithdrawalEffectiveTaxRate(
+      amountStep.singleWithdrawalAmount,
       eligibility,
       amountStep.pillarsToWithdrawFrom,
       pensionHoldings,
     ),
   );
+
+  const showBlendedTaxRateInfo =
+    !canOnlyPartiallyWithdrawThirdPillar(eligibility) &&
+    amountStep.pillarsToWithdrawFrom === 'BOTH' &&
+    pensionHoldings.totalThirdPillar > 0 &&
+    pensionHoldings.totalSecondPillar > 0 &&
+    getSingleWithdrawalTaxRate(eligibility, 'SECOND') !==
+      getSingleWithdrawalTaxRate(eligibility, 'THIRD');
 
   const sliderColor = canOnlyPartiallyWithdrawThirdPillar(eligibility) ? 'BLUE' : 'RED';
 
@@ -241,16 +254,19 @@ const SingleWithdrawalSelectionBody = ({
     <div id="single-withdrawal-body">
       <div className={`card-body p-4 ${!onlyThirdPillarPartialWithdrawal ? 'border-top' : ''}`}>
         <div className="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center fs-3">
-          <label
-            id="single-withdrawal-amount-label"
-            htmlFor="single-withdrawal-amount"
-            className="mb-0"
-          >
-            <FormattedMessage
-              id="withdrawals.withdrawalAmount.partialWithdrawInputLabel"
-              values={{ taxPercent }}
-            />
-          </label>
+          <span className="mb-0 d-flex align-items-center gap-1">
+            <label id="single-withdrawal-amount-label" htmlFor="single-withdrawal-amount">
+              <FormattedMessage
+                id="withdrawals.withdrawalAmount.partialWithdrawInputLabel"
+                values={{ taxPercent }}
+              />
+            </label>
+            {showBlendedTaxRateInfo && (
+              <InfoTooltip name="blendedTaxRateTooltip" place="bottom">
+                <FormattedMessage id="withdrawals.withdrawalAmount.blendedTaxRateDescription" />
+              </InfoTooltip>
+            )}
+          </span>
           <div
             className={`input-group input-group-lg flex-shrink-1 w-25 mt-2 mt-md-0 ${styles.singleWithdrawalAmountInputContainer}`}
           >
@@ -446,6 +462,7 @@ const SummaryBox = ({ pensionHoldings }: { pensionHoldings: PensionHoldings }) =
   const fundPension = useFundPensionCalculation();
   const { fundPensionEnabled } = amountStep;
   const { data: eligibility } = useWithdrawalsEligibility();
+  const { data: mandateDeadlines } = useMandateDeadlines();
   const isTestModeEnabled = useTestMode();
 
   if (!fundPension || !eligibility) {
@@ -459,6 +476,16 @@ const SummaryBox = ({ pensionHoldings }: { pensionHoldings: PensionHoldings }) =
       amountStep.pillarsToWithdrawFrom,
       pensionHoldings,
     ) ?? 0;
+  const withdrawalAmountsByPillar = getWithdrawalAmountsByPillar(
+    amountStep.singleWithdrawalAmount ?? 0,
+    amountStep.pillarsToWithdrawFrom,
+    pensionHoldings,
+  );
+  const showPillarBreakdown =
+    amountStep.pillarsToWithdrawFrom === 'BOTH' &&
+    pensionHoldings.totalSecondPillar > 0 &&
+    pensionHoldings.totalThirdPillar > 0 &&
+    (withdrawalAmountsByPillar.SECOND > 0 || withdrawalAmountsByPillar.THIRD > 0);
   const canNavigateToNextStep = (mandatesToCreate ?? []).length > 0 || isTestModeEnabled;
 
   if (canOnlyPartiallyWithdrawThirdPillar(eligibility)) {
@@ -525,6 +552,26 @@ const SummaryBox = ({ pensionHoldings }: { pensionHoldings: PensionHoldings }) =
                   )}
                 </span>
               </p>
+              {showPillarBreakdown && (
+                <>
+                  {withdrawalAmountsByPillar.THIRD > 0 && (
+                    <p className="m-0 ps-3 d-flex flex-column flex-sm-row column-gap-2 justify-content-between text-body-secondary">
+                      <span>
+                        <FormattedMessage id="withdrawals.withdrawalAmount.summary.fromThirdPillar" />
+                      </span>
+                      <span>{formatAmountForCurrency(withdrawalAmountsByPillar.THIRD, 2)}</span>
+                    </p>
+                  )}
+                  {withdrawalAmountsByPillar.SECOND > 0 && (
+                    <p className="m-0 ps-3 d-flex flex-column flex-sm-row column-gap-2 justify-content-between text-body-secondary">
+                      <span>
+                        <FormattedMessage id="withdrawals.withdrawalAmount.summary.fromSecondPillar" />
+                      </span>
+                      <span>{formatAmountForCurrency(withdrawalAmountsByPillar.SECOND, 2)}</span>
+                    </p>
+                  )}
+                </>
+              )}
               {taxAmount > 0 && (
                 <p className="m-0 d-flex flex-column flex-sm-row column-gap-2 justify-content-between">
                   <span>
@@ -560,6 +607,21 @@ const SummaryBox = ({ pensionHoldings }: { pensionHoldings: PensionHoldings }) =
               </span>
             </div>
           </div>
+          {(mandatesToCreate ?? []).some((mandate) => mandate.pillar === 'SECOND') &&
+            mandateDeadlines && (
+              <p className="m-0 text-body-secondary">
+                <FormattedMessage id="withdrawals.withdrawalAmount.summary.secondPillarPaymentsWillStop" />
+                &nbsp;
+                <InfoTooltip name="secondPillarPaymentsWillStopTooltip" place="bottom">
+                  <FormattedMessage
+                    id="withdrawals.withdrawalAmount.summary.secondPillarPaymentsWillStopTooltip"
+                    values={{
+                      endingDate: formatDate(mandateDeadlines.secondPillarContributionEndDate),
+                    }}
+                  />
+                </InfoTooltip>
+              </p>
+            )}
           <div className="d-grid">
             <button
               className="btn btn-lg btn-primary"
@@ -615,7 +677,9 @@ const PillarSelection = ({
   );
 
   const showSecondPillarLaterInfo = useMemo(
-    () => canWithdrawOnlyThirdPillarTaxFree(eligibility),
+    () =>
+      canWithdrawOnlyThirdPillarTaxFree(eligibility) ||
+      hasEarlierThirdPillarReducedTaxAccess(eligibility),
     [eligibility],
   );
 

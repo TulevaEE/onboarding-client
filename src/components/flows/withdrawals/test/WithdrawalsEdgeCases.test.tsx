@@ -129,15 +129,13 @@ describe('withdrawals flow before early retirement age', () => {
     ).toBeInTheDocument();
     expect(await screen.findByText(/in 21 years/)).toBeInTheDocument();
     expect(
-      await screen.findByText(/Before the age of 55, you can withdraw money only from/i),
+      await screen.findByText(/Before the age of 55, withdrawing money is only worth doing for/i),
     ).toBeInTheDocument();
     expect(
-      (
-        await screen.findAllByText(
-          /You will be able to use your II pillar holdings under preferential conditions in 26 years/i,
-        )
-      ).length,
-    ).toBeGreaterThan(0);
+      await screen.findByText(
+        /You will be able to use your II pillar holdings under preferential conditions when you are 60 years old./i,
+      ),
+    ).toBeInTheDocument();
   });
 
   test('with second and third pillar, can only withdraw third pillar', async () => {
@@ -254,7 +252,7 @@ describe('withdrawals flow before early retirement age', () => {
     expect(await screen.findByText(/in 35 years/i)).toBeInTheDocument();
 
     expect(
-      await screen.findByText(/Before the age of 60, you can withdraw money only from/i),
+      await screen.findByText(/Before the age of 60, withdrawing money is only worth doing for/i),
     ).toBeInTheDocument();
 
     expect(
@@ -319,17 +317,26 @@ describe('withdrawals flow at 61 with third pillar held under 5 years', () => {
 
   test('shows the full tax note and a holdings-blended tax rate when withdrawing from both pillars', async () => {
     expect(
-      await screen.findByText(/have not yet passed since you joined the III pillar/i),
+      await screen.findByText(/If you withdraw from the III pillar right away/i),
     ).toBeInTheDocument();
 
     userEvent.click(await singleWithdrawalCheckbox());
-    userEvent.type(await partialWithdrawalSizeInput('10.6%'), '10000');
+    userEvent.type(await partialWithdrawalSizeInput('22%'), '10000');
 
     assertPartialWithdrawalCalculations({
       amount: '10 000.00 €',
-      taxAmount: '−1 056.66 €',
-      taxRate: '10.6%',
+      taxAmount: '−1 683.92 €',
+      taxRate: '17%',
     });
+
+    const summaryBox = await screen.findByRole('region', { name: /Withdrawal summary/i });
+    expect(within(summaryBox).getByText('From the III pillar')).toBeInTheDocument();
+    expect(within(summaryBox).getByText('5 699.36 €')).toBeInTheDocument();
+    expect(within(summaryBox).getByText('From the II pillar')).toBeInTheDocument();
+    expect(within(summaryBox).getByText('4 300.64 €')).toBeInTheDocument();
+    expect(
+      await within(summaryBox).findByText(/^Withdrawing from the II pillar/i),
+    ).toBeInTheDocument();
   });
 });
 
@@ -461,7 +468,7 @@ describe('withdrawals flow with missing NAV', () => {
       await screen.findByText(/I submit the following applications and am aware of their terms/i),
     ).toBeInTheDocument();
 
-    await assertMandateCount(2);
+    await assertMandateCount(1);
 
     await confirmAndSignAndAssertFailed();
   });
@@ -569,20 +576,19 @@ describe('withdrawals flow with unliquidatable fund', () => {
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
     expect(await screen.findByText('EST')).toBeInTheDocument();
 
-    await assertMandateCount(4);
+    await assertMandateCount(3);
 
-    await assertFundPensionMandate('SECOND', '338 €');
-    await assertFundPensionMandate('THIRD', '19 €');
+    await assertFundPensionMandate('SECOND', '357 €');
 
     await assertPartialWithdrawalMandate({
       pillar: 'SECOND',
       rows: [
         {
           fundName: 'Tuleva World Stocks Pension Fund',
-          liquidationAmount: '18%',
+          liquidationAmount: '14%',
         },
       ],
-      amount: '17 029 €',
+      amount: '12 871 €',
     });
 
     expect(
@@ -596,10 +602,10 @@ describe('withdrawals flow with unliquidatable fund', () => {
       rows: [
         {
           fundName: 'Tuleva III Samba Pensionifond',
-          liquidationAmount: '1380.00 units',
+          liquidationAmount: '7294.00 units',
         },
       ],
-      amount: '971 €',
+      amount: '5 129 €',
     });
 
     await confirmAndSignAndAssertDone();

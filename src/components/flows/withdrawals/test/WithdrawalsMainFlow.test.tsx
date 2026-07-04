@@ -92,24 +92,23 @@ describe('withdrawals flow with both pillars', () => {
     expect(await screen.findByText(/Citadele/)).toBeInTheDocument();
     expect(await screen.findByText('EST')).toBeInTheDocument();
 
-    await assertMandateCount(4);
+    await assertMandateCount(3);
 
-    await assertFundPensionMandate('SECOND', '400 €');
-    await assertFundPensionMandate('THIRD', '20 €');
+    await assertFundPensionMandate('SECOND', '420 €');
 
     await assertPartialWithdrawalMandate({
       pillar: 'SECOND',
       rows: [
         {
           fundName: 'Tuleva World Stocks Pension Fund',
-          liquidationAmount: '16%',
+          liquidationAmount: '12%',
         },
         {
           fundName: 'Swedbank Pension Fund K60',
-          liquidationAmount: '16%',
+          liquidationAmount: '12%',
         },
       ],
-      amount: '17 150 €',
+      amount: '12 871 €',
     });
 
     await assertPartialWithdrawalMandate({
@@ -117,10 +116,10 @@ describe('withdrawals flow with both pillars', () => {
       rows: [
         {
           fundName: 'Tuleva III Samba Pensionifond',
-          liquidationAmount: '1208.00 units',
+          liquidationAmount: '7294.00 units',
         },
       ],
-      amount: '850 €',
+      amount: '5 129 €',
     });
 
     await confirmAndSignAndAssertDone();

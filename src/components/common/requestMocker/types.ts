@@ -4,6 +4,7 @@ import { savingsFundBalanceProfiles } from './profiles/savingsFundBalance';
 import { secondPillarAssetsProfiles } from './profiles/secondPillarAssets';
 import { transactionsProfiles } from './profiles/transactions';
 import { rolesProfiles } from './profiles/roles';
+import { sourceFundsProfiles } from './profiles/sourceFunds';
 import { pendingApplicationsProfiles } from './profiles/pendingApplications';
 import { conversionMockProfiles } from './profiles/conversion';
 import { memberCapitalProfiles } from './profiles/memberCapital';
@@ -24,6 +25,7 @@ export type MockModeConfiguration = {
   secondPillarAssets: keyof typeof secondPillarAssetsProfiles | null;
   transactions: keyof typeof transactionsProfiles | null;
   roles: keyof typeof rolesProfiles | null;
+  sourceFunds: keyof typeof sourceFundsProfiles | null;
 };
 
 export type MockModeEndpoint = keyof MockModeConfiguration;

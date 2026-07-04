@@ -17,6 +17,7 @@ import {
   getSingleWithdrawalEstimateAfterTax,
   getSingleWithdrawalTaxAmount,
   getSingleWithdrawalTaxRate,
+  getWithdrawalAmountsByPillar,
   getYearsToGoUntilEarlyRetirementAge,
   getYearsToGoUntilThirdPillarReducedTax,
   hasEarlierThirdPillarReducedTaxAccess,
@@ -176,10 +177,10 @@ describe('hasEarlierThirdPillarReducedTaxAccess', () => {
 });
 
 describe('formatTaxRatePercent', () => {
-  it('formats rates as percentages with one decimal', () => {
+  it('formats rates as whole percentages', () => {
     expect(formatTaxRatePercent(0.1)).toBe(10);
     expect(formatTaxRatePercent(0.22)).toBe(22);
-    expect(formatTaxRatePercent(0.148)).toBe(14.8);
+    expect(formatTaxRatePercent(0.168)).toBe(17);
   });
 });
 
@@ -201,23 +202,56 @@ describe('getSingleWithdrawalTaxRate', () => {
 describe('getSingleWithdrawalEffectiveTaxRate', () => {
   it('returns the pillar rate when withdrawing from a single pillar', () => {
     expect(
-      getSingleWithdrawalEffectiveTaxRate(noReducedTaxEligibility, 'THIRD', pensionHoldings),
+      getSingleWithdrawalEffectiveTaxRate(4000, noReducedTaxEligibility, 'THIRD', pensionHoldings),
     ).toBe(0.22);
     expect(
-      getSingleWithdrawalEffectiveTaxRate(noReducedTaxEligibility, 'SECOND', pensionHoldings),
+      getSingleWithdrawalEffectiveTaxRate(4000, noReducedTaxEligibility, 'SECOND', pensionHoldings),
     ).toBe(0.1);
   });
 
   it('returns 10% for both pillars with reduced tax', () => {
     expect(
-      getSingleWithdrawalEffectiveTaxRate(reducedTaxEligibility, 'BOTH', pensionHoldings),
+      getSingleWithdrawalEffectiveTaxRate(4000, reducedTaxEligibility, 'BOTH', pensionHoldings),
     ).toBe(0.1);
   });
 
-  it('returns holdings-weighted rate for both pillars without reduced tax', () => {
+  it('returns the third pillar rate while the amount fits into the third pillar', () => {
     expect(
-      getSingleWithdrawalEffectiveTaxRate(noReducedTaxEligibility, 'BOTH', pensionHoldings),
-    ).toBeCloseTo(0.148, 10);
+      getSingleWithdrawalEffectiveTaxRate(1500, noReducedTaxEligibility, 'BOTH', pensionHoldings),
+    ).toBe(0.22);
+    expect(
+      getSingleWithdrawalEffectiveTaxRate(null, noReducedTaxEligibility, 'BOTH', pensionHoldings),
+    ).toBe(0.22);
+  });
+
+  it('uses the second pillar rate when there are no third pillar holdings', () => {
+    const secondPillarOnlyHoldings = {
+      totalSecondPillar: 3000,
+      totalThirdPillar: 0,
+      totalBothPillars: 3000,
+    };
+    expect(
+      getSingleWithdrawalEffectiveTaxRate(
+        null,
+        noReducedTaxEligibility,
+        'BOTH',
+        secondPillarOnlyHoldings,
+      ),
+    ).toBe(0.1);
+    expect(
+      getSingleWithdrawalEffectiveTaxRate(
+        1000,
+        noReducedTaxEligibility,
+        'BOTH',
+        secondPillarOnlyHoldings,
+      ),
+    ).toBe(0.1);
+  });
+
+  it('blends the rate once the amount exceeds the third pillar', () => {
+    expect(
+      getSingleWithdrawalEffectiveTaxRate(4000, noReducedTaxEligibility, 'BOTH', pensionHoldings),
+    ).toBeCloseTo(0.16, 10);
   });
 
   it('returns 22% for users who can only partially withdraw third pillar, regardless of pillar selection', () => {
@@ -226,12 +260,40 @@ describe('getSingleWithdrawalEffectiveTaxRate', () => {
       hasReachedEarlyRetirementAge: false,
       age: 55,
     };
-    expect(getSingleWithdrawalEffectiveTaxRate(under60Eligibility, 'SECOND', pensionHoldings)).toBe(
-      0.22,
-    );
-    expect(getSingleWithdrawalEffectiveTaxRate(under60Eligibility, 'BOTH', pensionHoldings)).toBe(
-      0.22,
-    );
+    expect(
+      getSingleWithdrawalEffectiveTaxRate(4000, under60Eligibility, 'SECOND', pensionHoldings),
+    ).toBe(0.22);
+    expect(
+      getSingleWithdrawalEffectiveTaxRate(4000, under60Eligibility, 'BOTH', pensionHoldings),
+    ).toBe(0.22);
+  });
+});
+
+describe('getWithdrawalAmountsByPillar', () => {
+  it('takes everything from the selected pillar', () => {
+    expect(getWithdrawalAmountsByPillar(1000, 'SECOND', pensionHoldings)).toStrictEqual({
+      SECOND: 1000,
+      THIRD: 0,
+    });
+    expect(getWithdrawalAmountsByPillar(1000, 'THIRD', pensionHoldings)).toStrictEqual({
+      SECOND: 0,
+      THIRD: 1000,
+    });
+  });
+
+  it('takes from the third pillar first when withdrawing from both', () => {
+    expect(getWithdrawalAmountsByPillar(1500, 'BOTH', pensionHoldings)).toStrictEqual({
+      SECOND: 0,
+      THIRD: 1500,
+    });
+    expect(getWithdrawalAmountsByPillar(4000, 'BOTH', pensionHoldings)).toStrictEqual({
+      SECOND: 2000,
+      THIRD: 2000,
+    });
+    expect(getWithdrawalAmountsByPillar(5000, 'BOTH', pensionHoldings)).toStrictEqual({
+      SECOND: 3000,
+      THIRD: 2000,
+    });
   });
 });
 
@@ -260,10 +322,13 @@ describe('getSingleWithdrawalTaxAmount', () => {
     ).toBe(1000);
   });
 
-  it('returns holdings-weighted tax on both pillars without reduced tax', () => {
+  it('taxes the third pillar part first when withdrawing from both pillars', () => {
     expect(
-      getSingleWithdrawalTaxAmount(10000, noReducedTaxEligibility, 'BOTH', pensionHoldings),
-    ).toBeCloseTo(1480, 8);
+      getSingleWithdrawalTaxAmount(1500, noReducedTaxEligibility, 'BOTH', pensionHoldings),
+    ).toBeCloseTo(330, 8);
+    expect(
+      getSingleWithdrawalTaxAmount(4000, noReducedTaxEligibility, 'BOTH', pensionHoldings),
+    ).toBeCloseTo(640, 8);
   });
 });
 
@@ -286,10 +351,10 @@ describe('getSingleWithdrawalEstimateAfterTax', () => {
     ).toBe(9000);
   });
 
-  it('returns amount after holdings-weighted tax on both pillars without reduced tax', () => {
+  it('returns amount after ordered tax on both pillars without reduced tax', () => {
     expect(
-      getSingleWithdrawalEstimateAfterTax(10000, noReducedTaxEligibility, 'BOTH', pensionHoldings),
-    ).toBeCloseTo(8520, 8);
+      getSingleWithdrawalEstimateAfterTax(4000, noReducedTaxEligibility, 'BOTH', pensionHoldings),
+    ).toBeCloseTo(3360, 8);
   });
 });
 
@@ -516,7 +581,7 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
     });
   });
 
-  it('returns correct mandates when proportionally withdrawing 40% of total holdings from both pillars', () => {
+  it('withdraws the third pillar in full when 40% of total holdings fits into it', () => {
     const mandates = getPartialWithdrawalMandatesToCreate(
       personalDetails,
       {
@@ -531,29 +596,9 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
       thirdPillarSourceFunds,
     );
 
-    expect(mandates.length).toBe(2);
+    expect(mandates.length).toBe(1);
 
-    const secondPillarMandate = mandates.find((mandate) => mandate.pillar === 'SECOND');
-    const thirdPillarMandate = mandates.find((mandate) => mandate.pillar === 'THIRD');
-
-    expect(secondPillarMandate).toStrictEqual({
-      mandateType: 'PARTIAL_WITHDRAWAL',
-      pillar: 'SECOND',
-      taxResidency: 'EST',
-      bankAccountDetails: getBankAccountDetails(personalDetails),
-      fundWithdrawalAmounts: [
-        {
-          isin: 'EE3600109435',
-          percentage: 40,
-          units: (1500 / TEST_NAVS.TULEVA_WORLD_SECOND_PILLAR) * 0.4,
-        },
-        {
-          isin: 'EE3600109443',
-          percentage: 40,
-          units: (800 / TEST_NAVS.TULEVA_BOND_SECOND_PILLAR) * 0.4,
-        },
-      ],
-    });
+    const [thirdPillarMandate] = mandates;
 
     expect(thirdPillarMandate).toStrictEqual({
       mandateType: 'PARTIAL_WITHDRAWAL',
@@ -563,10 +608,10 @@ describe('getPartialWithdrawalMandatesToCreate', () => {
       fundWithdrawalAmounts: [
         {
           isin: 'EE3600001707',
-          percentage: 40,
-          units: (1000 / TEST_NAVS.TULEVA_THIRD_PILLAR) * 0.4,
+          percentage: 100,
+          units: 1000 / TEST_NAVS.TULEVA_THIRD_PILLAR,
         },
-        { isin: 'EE3600010294', percentage: 40, units: (400 / TEST_NAVS.LHV_THIRD_PILLAR) * 0.4 },
+        { isin: 'EE3600010294', percentage: 100, units: 400 / TEST_NAVS.LHV_THIRD_PILLAR },
       ],
     });
   });
@@ -992,7 +1037,7 @@ describe('getFundPensionMandatesToCreate', () => {
 });
 
 describe('getMandatesToCreate', () => {
-  it('returns mandates to create when doing 10% partial withdrawal', () => {
+  it('creates only a third pillar withdrawal when the amount fits into the third pillar', () => {
     const mandates = getMandatesToCreate({
       personalDetails,
       amountStep: {
@@ -1007,7 +1052,7 @@ describe('getMandatesToCreate', () => {
       eligibility: withdrawalEligibilityFixture,
     });
 
-    expect(mandates?.length).toBe(4);
+    expect(mandates?.length).toBe(3);
 
     const secondPillarWithdrawalMandate = mandates?.find(
       (mandate) => mandate.pillar === 'SECOND' && mandate.mandateType === 'PARTIAL_WITHDRAWAL',
@@ -1016,24 +1061,7 @@ describe('getMandatesToCreate', () => {
       (mandate) => mandate.pillar === 'THIRD' && mandate.mandateType === 'PARTIAL_WITHDRAWAL',
     );
 
-    expect(secondPillarWithdrawalMandate).toStrictEqual({
-      mandateType: 'PARTIAL_WITHDRAWAL',
-      pillar: 'SECOND',
-      taxResidency: 'EST',
-      bankAccountDetails: getBankAccountDetails(personalDetails),
-      fundWithdrawalAmounts: [
-        {
-          isin: 'EE3600109435',
-          percentage: 10,
-          units: (1500 / TEST_NAVS.TULEVA_WORLD_SECOND_PILLAR) * 0.1,
-        },
-        {
-          isin: 'EE3600109443',
-          percentage: 10,
-          units: (800 / TEST_NAVS.TULEVA_BOND_SECOND_PILLAR) * 0.1,
-        },
-      ],
-    });
+    expect(secondPillarWithdrawalMandate).toBeUndefined();
 
     expect(thirdPillarWithdrawalMandate).toStrictEqual({
       mandateType: 'PARTIAL_WITHDRAWAL',
@@ -1044,10 +1072,10 @@ describe('getMandatesToCreate', () => {
       fundWithdrawalAmounts: [
         {
           isin: 'EE3600001707',
-          percentage: 10,
-          units: (1000 / TEST_NAVS.TULEVA_THIRD_PILLAR) * 0.1,
+          percentage: 25,
+          units: (1000 / TEST_NAVS.TULEVA_THIRD_PILLAR) * 0.25,
         },
-        { isin: 'EE3600010294', percentage: 10, units: (400 / TEST_NAVS.LHV_THIRD_PILLAR) * 0.1 },
+        { isin: 'EE3600010294', percentage: 25, units: (400 / TEST_NAVS.LHV_THIRD_PILLAR) * 0.25 },
       ],
     });
 
@@ -1058,24 +1086,72 @@ describe('getMandatesToCreate', () => {
       (mandate) => mandate.pillar === 'THIRD' && mandate.mandateType === 'FUND_PENSION_OPENING',
     );
 
-    expect(secondPillarFundPensionMandate).toStrictEqual({
-      mandateType: 'FUND_PENSION_OPENING',
-      pillar: 'SECOND',
-      bankAccountDetails: getBankAccountDetails(personalDetails),
-      duration: {
-        durationYears: 20,
-        recommendedDuration: true,
+    expect(secondPillarFundPensionMandate).toBeDefined();
+    expect(thirdPillarFundPensionMandate).toBeDefined();
+  });
+
+  it('depletes the third pillar and takes the rest from the second pillar', () => {
+    const mandates = getMandatesToCreate({
+      personalDetails,
+      amountStep: {
+        fundPensionEnabled: true,
+        pillarsToWithdrawFrom: 'BOTH',
+        singleWithdrawalAmount: 2600,
       },
+      pensionHoldings,
+      funds,
+      secondPillarSourceFunds,
+      thirdPillarSourceFunds,
+      eligibility: withdrawalEligibilityFixture,
     });
 
-    expect(thirdPillarFundPensionMandate).toStrictEqual({
-      mandateType: 'FUND_PENSION_OPENING',
+    expect(mandates?.length).toBe(3);
+
+    const thirdPillarWithdrawalMandate = mandates?.find(
+      (mandate) => mandate.pillar === 'THIRD' && mandate.mandateType === 'PARTIAL_WITHDRAWAL',
+    );
+    const secondPillarWithdrawalMandate = mandates?.find(
+      (mandate) => mandate.pillar === 'SECOND' && mandate.mandateType === 'PARTIAL_WITHDRAWAL',
+    );
+
+    expect(thirdPillarWithdrawalMandate).toStrictEqual({
+      mandateType: 'PARTIAL_WITHDRAWAL',
       pillar: 'THIRD',
+      taxResidency: 'EST',
+
       bankAccountDetails: getBankAccountDetails(personalDetails),
-      duration: {
-        durationYears: 20,
-        recommendedDuration: true,
-      },
+      fundWithdrawalAmounts: [
+        {
+          isin: 'EE3600001707',
+          percentage: 100,
+          units: 1000 / TEST_NAVS.TULEVA_THIRD_PILLAR,
+        },
+        { isin: 'EE3600010294', percentage: 100, units: 400 / TEST_NAVS.LHV_THIRD_PILLAR },
+      ],
     });
+
+    expect(secondPillarWithdrawalMandate).toStrictEqual({
+      mandateType: 'PARTIAL_WITHDRAWAL',
+      pillar: 'SECOND',
+      taxResidency: 'EST',
+      bankAccountDetails: getBankAccountDetails(personalDetails),
+      fundWithdrawalAmounts: [
+        {
+          isin: 'EE3600109435',
+          percentage: 20,
+          units: (1500 / TEST_NAVS.TULEVA_WORLD_SECOND_PILLAR) * 0.2,
+        },
+        {
+          isin: 'EE3600109443',
+          percentage: 20,
+          units: (800 / TEST_NAVS.TULEVA_BOND_SECOND_PILLAR) * 0.2,
+        },
+      ],
+    });
+
+    const thirdPillarFundPensionMandate = mandates?.find(
+      (mandate) => mandate.pillar === 'THIRD' && mandate.mandateType === 'FUND_PENSION_OPENING',
+    );
+    expect(thirdPillarFundPensionMandate).toBeUndefined();
   });
 });

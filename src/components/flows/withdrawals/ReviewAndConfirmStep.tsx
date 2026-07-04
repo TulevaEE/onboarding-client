@@ -14,7 +14,7 @@ import {
   canOnlyPartiallyWithdrawThirdPillar,
   canWithdrawOnlyThirdPillarTaxFree,
   getEstimatedTotalFundPension,
-  getPillarRatios,
+  getWithdrawalAmountsByPillar,
   getSingleWithdrawalEstimateAfterTax,
   formatTaxRatePercent,
   getSingleWithdrawalTaxRate,
@@ -328,9 +328,16 @@ const FundPensionMandateDescription = ({
     pensionHoldings,
   );
 
-  const pillarRatioOfTotal = getPillarRatios(pensionHoldings, totalWithdrawableAmount)[
-    mandate.pillar
-  ];
+  const withdrawalAmountsByPillar = getWithdrawalAmountsByPillar(
+    amountStep.singleWithdrawalAmount ?? 0,
+    amountStep.pillarsToWithdrawFrom,
+    pensionHoldings,
+  );
+  const remainderInPillar =
+    (mandate.pillar === 'SECOND'
+      ? pensionHoldings.totalSecondPillar
+      : pensionHoldings.totalThirdPillar) - withdrawalAmountsByPillar[mandate.pillar];
+  const totalRemainder = totalWithdrawableAmount - (amountStep.singleWithdrawalAmount ?? 0);
 
   const { fundPensionMonthlyPaymentApproximateSize } = getEstimatedTotalFundPension({
     totalWithdrawableAmount,
@@ -339,7 +346,9 @@ const FundPensionMandateDescription = ({
   });
 
   const fundPensionMonthlyPaymentFromPillar =
-    fundPensionMonthlyPaymentApproximateSize * pillarRatioOfTotal;
+    totalRemainder > 0
+      ? fundPensionMonthlyPaymentApproximateSize * (remainderInPillar / totalRemainder)
+      : 0;
 
   // TODO formatforcurrency rounds up, this can cause state where total is 4.6 + 1.4 = 6, but components are displayed as 4 and 1
   return (
@@ -435,16 +444,11 @@ const PartialWithdrawalMandateDescription = ({
     return <Loader className="align-middle my-4" />;
   }
 
-  const totalAvailableToWithdraw = getTotalWithdrawableAmount(
+  const partialWithdrawalSizeFromPillar = getWithdrawalAmountsByPillar(
+    amountStep.singleWithdrawalAmount,
     amountStep.pillarsToWithdrawFrom,
     pensionHoldings,
-  );
-
-  const pillarRatioOfTotal = getPillarRatios(pensionHoldings, totalAvailableToWithdraw)[
-    mandate.pillar
-  ];
-
-  const partialWithdrawalSizeFromPillar = amountStep.singleWithdrawalAmount * pillarRatioOfTotal;
+  )[mandate.pillar];
 
   const estimatedWithdrawalSizeWithTax = getSingleWithdrawalEstimateAfterTax(
     partialWithdrawalSizeFromPillar,

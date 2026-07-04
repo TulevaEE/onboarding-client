@@ -19,6 +19,15 @@ export const withdrawalsEligibilityProfiles: Record<string, WithdrawalsEligibili
     recommendedDurationYears: 60 - 34 + 20,
     arrestsOrBankruptciesPresent: false,
   },
+  UNDER_60_NO_THIRD_PILLAR: {
+    age: 45,
+    hasReachedEarlyRetirementAge: false,
+    canWithdrawThirdPillarWithReducedTax: false,
+    canWithdrawThirdPillarWithReducedTaxFrom: null,
+    earlyRetirementDate: '2041-06-01',
+    recommendedDurationYears: 60 - 45 + 20,
+    arrestsOrBankruptciesPresent: false,
+  },
   ONLY_THIRD_PILLAR_55: {
     age: 55,
     hasReachedEarlyRetirementAge: false,

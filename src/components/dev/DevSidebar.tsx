@@ -9,6 +9,7 @@ import {
   mockModeProfiles,
 } from '../common/requestMocker/profiles';
 import { MockModeConfiguration } from '../common/requestMocker/types';
+import { mockScenarios } from '../common/requestMocker/scenarios';
 import './DevSidebar.scss';
 
 const TOGGLE_BREAKPOINT = 992;
@@ -116,6 +117,24 @@ export const DevSidebar = () => {
 
     // @ts-ignore
     setConfiguration(updatedConfig);
+    window.location.reload();
+  };
+
+  const selectedScenario =
+    Object.entries(mockScenarios).find(([, scenario]) =>
+      Object.entries(scenario).every(
+        ([endpoint, profile]) =>
+          configuration?.[endpoint as keyof MockModeConfiguration] === profile,
+      ),
+    )?.[0] ?? '';
+
+  const handleScenarioSelected = (scenarioName: string) => {
+    const scenario = mockScenarios[scenarioName];
+    if (!scenario) {
+      return;
+    }
+
+    setConfiguration({ ...configuration, ...scenario });
     window.location.reload();
   };
 
@@ -238,6 +257,26 @@ export const DevSidebar = () => {
         </div>
         <div className="offcanvas-body pt-2">
           <div className="d-grid gap-3">
+            <h3 className="m-0">Scenarios</h3>
+            <div>
+              <label className="form-label mb-1" htmlFor="mock-scenario">
+                Apply a coherent multi-profile scenario
+              </label>
+              <select
+                className="form-select"
+                id="mock-scenario"
+                name="mock-scenario"
+                value={selectedScenario}
+                onChange={(e) => handleScenarioSelected(e.target.value)}
+              >
+                <option value="">Select a scenario…</option>
+                {Object.keys(mockScenarios).map((scenarioName) => (
+                  <option value={scenarioName} key={scenarioName}>
+                    {scenarioName}
+                  </option>
+                ))}
+              </select>
+            </div>
             <h3 className="m-0">Profiles</h3>
             {availableOptions.map((profileName) => {
               const options = ['null', ...getProfileOptions(profileName)];

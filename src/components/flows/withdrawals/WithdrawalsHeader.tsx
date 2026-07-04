@@ -20,8 +20,10 @@ export const WithdrawalsHeader = () => {
   }
 
   const hasThirdPillarHoldings = (pensionHoldings?.totalThirdPillar ?? 0) > 0;
+  const hasSecondPillarHoldings = (pensionHoldings?.totalSecondPillar ?? 0) > 0;
   const hasThirdPillarEarlierAccess =
     hasEarlierThirdPillarReducedTaxAccess(eligibility) && hasThirdPillarHoldings;
+  const showTaxOnlyNote = hasThirdPillarEarlierAccess || !hasSecondPillarHoldings;
   const thirdPillarAccessYearsToGo = hasThirdPillarEarlierAccess
     ? getYearsToGoUntilThirdPillarReducedTax(eligibility) ?? 0
     : getYearsToGoUntilEarlyRetirementAge(eligibility);
@@ -45,18 +47,16 @@ export const WithdrawalsHeader = () => {
             {canOnlyPartiallyWithdrawThirdPillar(eligibility) && hasThirdPillarHoldings && (
               <span className="d-block pt-3">
                 <FormattedMessage
-                  id="withdrawals.additionalInfoOnlyThirdPillar"
+                  id={
+                    showTaxOnlyNote
+                      ? 'withdrawals.additionalInfoBeforeThirdPillarReducedTax'
+                      : 'withdrawals.additionalInfoOnlyThirdPillar'
+                  }
                   values={{
                     b: (children: ReactChildren) => <span className="fw-bold">{children}</span>,
                     age: hasThirdPillarEarlierAccess ? 55 : 60,
                   }}
-                />{' '}
-                {hasThirdPillarEarlierAccess && (
-                  <FormattedMessage
-                    id="withdrawals.withdrawalAmount.secondPillarAvailableIn"
-                    values={{ years: getYearsToGoUntilEarlyRetirementAge(eligibility) }}
-                  />
-                )}
+                />
               </span>
             )}
             {eligibility.hasReachedEarlyRetirementAge &&

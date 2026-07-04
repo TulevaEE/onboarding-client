@@ -74,7 +74,7 @@ export const getYearsToGoUntilThirdPillarReducedTax = (eligibility: WithdrawalsE
   return getYearsToGoUntil(eligibility.canWithdrawThirdPillarWithReducedTaxFrom);
 };
 
-export const formatTaxRatePercent = (rate: number) => Math.round(rate * 1000) / 10;
+export const formatTaxRatePercent = (rate: number) => Math.round(rate * 100);
 
 export const getWithdrawalsPath = (subPath: string) => `/withdrawals/${subPath}`;
 export const getBankAccountDetails = (
@@ -112,17 +112,21 @@ export const getPartialWithdrawalMandatesToCreate = (
 
   const bankAccountDetails = getBankAccountDetails(personalDetails);
 
-  const totalAvailableToWithdraw = getTotalWithdrawableAmount(
+  const withdrawalAmountsByPillar = getWithdrawalAmountsByPillar(
+    singleWithdrawalAmount,
     withdrawalAmount.pillarsToWithdrawFrom,
     pensionHoldings,
   );
-  const partialWithdrawalOfTotal = singleWithdrawalAmount / totalAvailableToWithdraw;
 
   const getWithdrawalDetails = (
     pillar: 'SECOND' | 'THIRD',
     sourceFunds: SourceFund[],
     taxResidency: string,
+    pillarTotal: number,
   ): PartialWithdrawalMandateDetails => {
+    const withdrawalFractionOfPillar =
+      pillarTotal > 0 ? withdrawalAmountsByPillar[pillar] / pillarTotal : 0;
+
     const getSourceFundTotalUnits = (fund: SourceFund) =>
       typeof fund.units === 'number' ? fund.units : fund.price / fundIsinToFundNavMap[fund.isin];
 
@@ -133,10 +137,10 @@ export const getPartialWithdrawalMandatesToCreate = (
       fundWithdrawalAmounts: sourceFunds
         .filter((fund) => fund.price !== 0)
         .map((fund) => {
-          const units = getSourceFundTotalUnits(fund) * partialWithdrawalOfTotal;
+          const units = getSourceFundTotalUnits(fund) * withdrawalFractionOfPillar;
           return {
             isin: fund.isin,
-            percentage: Math.floor(partialWithdrawalOfTotal * 100),
+            percentage: Math.floor(withdrawalFractionOfPillar * 100),
             units: units > 1 ? Math.floor(units) : units, // TODO bigdecimal <-> JS IEEE754 floating point handling
           };
         }),
@@ -148,11 +152,13 @@ export const getPartialWithdrawalMandatesToCreate = (
     'SECOND',
     secondPillarSourceFunds,
     personalDetails.taxResidencyCode,
+    pensionHoldings.totalSecondPillar,
   );
   const thirdPillarWithdrawal = getWithdrawalDetails(
     'THIRD',
     thirdPillarSourceFunds,
     personalDetails.taxResidencyCode,
+    pensionHoldings.totalThirdPillar,
   );
 
   if (
@@ -170,7 +176,10 @@ export const getPartialWithdrawalMandatesToCreate = (
     return [secondPillarWithdrawal];
   }
 
-  return [secondPillarWithdrawal, thirdPillarWithdrawal];
+  return [
+    ...(withdrawalAmountsByPillar.THIRD > 0 ? [thirdPillarWithdrawal] : []),
+    ...(withdrawalAmountsByPillar.SECOND > 0 ? [secondPillarWithdrawal] : []),
+  ];
 };
 
 export const getFundPensionMandatesToCreate = (
@@ -195,6 +204,15 @@ export const getFundPensionMandatesToCreate = (
     return [];
   }
 
+  const withdrawalAmountsByPillar = getWithdrawalAmountsByPillar(
+    withdrawalAmount.singleWithdrawalAmount ?? 0,
+    withdrawalAmount.pillarsToWithdrawFrom,
+    pensionHoldings,
+  );
+  const secondPillarRemainder =
+    pensionHoldings.totalSecondPillar - withdrawalAmountsByPillar.SECOND;
+  const thirdPillarRemainder = pensionHoldings.totalThirdPillar - withdrawalAmountsByPillar.THIRD;
+
   const bankAccountDetails = getBankAccountDetails(personalDetails);
 
   const secondPillarWithdrawal: FundPensionOpeningMandateDetails = {
@@ -218,14 +236,17 @@ export const getFundPensionMandatesToCreate = (
   };
 
   if (withdrawalAmount.pillarsToWithdrawFrom === 'THIRD') {
-    return [thirdPillarWithdrawal];
+    return thirdPillarRemainder > 0 ? [thirdPillarWithdrawal] : [];
   }
 
   if (withdrawalAmount.pillarsToWithdrawFrom === 'SECOND') {
-    return [secondPillarWithdrawal];
+    return secondPillarRemainder > 0 ? [secondPillarWithdrawal] : [];
   }
 
-  return [secondPillarWithdrawal, thirdPillarWithdrawal];
+  return [
+    ...(secondPillarRemainder > 0 ? [secondPillarWithdrawal] : []),
+    ...(thirdPillarRemainder > 0 ? [thirdPillarWithdrawal] : []),
+  ];
 };
 
 export const getMandatesToCreate = ({
@@ -329,9 +350,19 @@ export const getSingleWithdrawalTaxAmount = (
     return null;
   }
 
+  if (canOnlyPartiallyWithdrawThirdPillar(eligibility)) {
+    return withdrawalAmount * getSingleWithdrawalTaxRate(eligibility, 'THIRD');
+  }
+
+  const withdrawalAmountsByPillar = getWithdrawalAmountsByPillar(
+    withdrawalAmount,
+    pillarsToWithdrawFrom,
+    pensionHoldings,
+  );
+
   return (
-    withdrawalAmount *
-    getSingleWithdrawalEffectiveTaxRate(eligibility, pillarsToWithdrawFrom, pensionHoldings)
+    withdrawalAmountsByPillar.SECOND * getSingleWithdrawalTaxRate(eligibility, 'SECOND') +
+    withdrawalAmountsByPillar.THIRD * getSingleWithdrawalTaxRate(eligibility, 'THIRD')
   );
 };
 
@@ -341,29 +372,33 @@ export const getSingleWithdrawalTaxRate = (
 ) => (pillar === 'THIRD' && !eligibility.canWithdrawThirdPillarWithReducedTax ? 0.22 : 0.1);
 
 export const getSingleWithdrawalEffectiveTaxRate = (
+  withdrawalAmount: number | null,
   eligibility: WithdrawalsEligibility,
   pillarsToWithdrawFrom: PillarToWithdrawFrom,
   pensionHoldings: PensionHoldings,
 ) => {
-  if (canOnlyPartiallyWithdrawThirdPillar(eligibility)) {
+  if (canOnlyPartiallyWithdrawThirdPillar(eligibility) || pillarsToWithdrawFrom === 'THIRD') {
     return getSingleWithdrawalTaxRate(eligibility, 'THIRD');
   }
 
-  if (pillarsToWithdrawFrom !== 'BOTH') {
-    return getSingleWithdrawalTaxRate(eligibility, pillarsToWithdrawFrom);
+  if (pillarsToWithdrawFrom === 'SECOND') {
+    return getSingleWithdrawalTaxRate(eligibility, 'SECOND');
   }
 
-  const totalAvailableToWithdraw = getTotalWithdrawableAmount('BOTH', pensionHoldings);
-
-  if (totalAvailableToWithdraw === 0) {
-    return getSingleWithdrawalTaxRate(eligibility, 'THIRD');
+  if (!withdrawalAmount) {
+    return getSingleWithdrawalTaxRate(
+      eligibility,
+      pensionHoldings.totalThirdPillar > 0 ? 'THIRD' : 'SECOND',
+    );
   }
-
-  const pillarRatios = getPillarRatios(pensionHoldings, totalAvailableToWithdraw);
 
   return (
-    pillarRatios.SECOND * getSingleWithdrawalTaxRate(eligibility, 'SECOND') +
-    pillarRatios.THIRD * getSingleWithdrawalTaxRate(eligibility, 'THIRD')
+    (getSingleWithdrawalTaxAmount(
+      withdrawalAmount,
+      eligibility,
+      pillarsToWithdrawFrom,
+      pensionHoldings,
+    ) ?? 0) / withdrawalAmount
   );
 };
 
@@ -412,13 +447,22 @@ export const getTotalWithdrawableAmount = (
   return holdings.totalBothPillars;
 };
 
-export const getPillarRatios = (
+export const getWithdrawalAmountsByPillar = (
+  withdrawalAmount: number,
+  pillarsToWithdrawFrom: PillarToWithdrawFrom,
   holdings: PensionHoldings,
-  totalAvailableToWithdraw: number,
-): Record<'SECOND' | 'THIRD', number> => ({
-  SECOND: holdings.totalSecondPillar / totalAvailableToWithdraw,
-  THIRD: holdings.totalThirdPillar / totalAvailableToWithdraw,
-});
+): Record<'SECOND' | 'THIRD', number> => {
+  if (pillarsToWithdrawFrom === 'SECOND') {
+    return { SECOND: withdrawalAmount, THIRD: 0 };
+  }
+
+  if (pillarsToWithdrawFrom === 'THIRD') {
+    return { SECOND: 0, THIRD: withdrawalAmount };
+  }
+
+  const amountFromThirdPillar = Math.min(withdrawalAmount, holdings.totalThirdPillar);
+  return { SECOND: withdrawalAmount - amountFromThirdPillar, THIRD: amountFromThirdPillar };
+};
 
 export const getSingleWithdrawalEstimateAfterTax = (
   withdrawalAmount: number | null,
