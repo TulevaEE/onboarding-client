@@ -83,17 +83,19 @@ describe('SavingsFundChildOnboarding', () => {
     expect(screen.getByText(/07\.09\.2015/)).toBeInTheDocument();
   });
 
-  it('shows the review screen (no name) when custody is not verified', async () => {
+  it('shows the check-the-code message (no name, stays on the step) when custody is not verified', async () => {
     createChildBackend(server, { status: 'UNDER_REVIEW' });
     renderWrapped(<SavingsFundChildOnboarding />);
 
     await verifyChild();
 
-    expect(await screen.findByRole('heading', { name: /review/i })).toBeInTheDocument();
+    expect(await screen.findByRole('alert')).toHaveTextContent(/check the personal ID code/i);
+    // The child's name is never revealed, and the parent can fix the code in place.
     expect(screen.queryByText(/Mammu/)).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/personal ID code/i)).toBeInTheDocument();
   });
 
-  it('shows a check-the-code message (not the generic error) when the backend rejects the code', async () => {
+  it('shows the same check-the-code message when the backend rejects the code as invalid', async () => {
     server.use(
       rest.post('http://localhost/v1/me/children', (_req, res, ctx) =>
         res(ctx.status(400), ctx.json({ errors: [{ code: 'INVALID_PERSONAL_CODE' }] })),
@@ -104,8 +106,7 @@ describe('SavingsFundChildOnboarding', () => {
     userEvent.type(await screen.findByLabelText(/personal ID code/i), CHILD_CODE);
     userEvent.click(continueButton());
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/valid personal ID code/i);
-    // Stays on the identity step rather than jumping to the under-review screen.
+    expect(await screen.findByRole('alert')).toHaveTextContent(/check the personal ID code/i);
     expect(screen.getByLabelText(/personal ID code/i)).toBeInTheDocument();
   });
 

@@ -34,10 +34,10 @@ export const SavingsFundChildOnboarding = () => {
   const history = useHistory();
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState(false);
-  const [underReview, setUnderReview] = useState(false);
-  // The code passed the client-side checksum but the backend rejected it as a bad
-  // request — show a "check the code" message, not the generic system error.
-  const [invalidChildCode, setInvalidChildCode] = useState(false);
+  // The entered code can't open an account for a child — either it's not a valid
+  // isikukood, or the parent has no asset-management custody over that child. One
+  // inline message, kept uniform so it can't reveal whether the child exists.
+  const [childCodeRejected, setChildCodeRejected] = useState(false);
   // Terminal state: after switching to the child, we could not switch back to the
   // parent. Rather than leave the parent silently stranded in the child role, show
   // an explicit "please reload" and report it.
@@ -150,7 +150,7 @@ export const SavingsFundChildOnboarding = () => {
   const verifyChild = async (): Promise<void> => {
     try {
       setSubmitError(false);
-      setInvalidChildCode(false);
+      setChildCodeRejected(false);
       const response = await createChild({ childPersonalCode: getValues('childPersonalCode') });
       // Branch on the body status, never the HTTP code; a VERIFIED response with
       // no name is malformed and treated as "under review", not advanced.
@@ -165,15 +165,16 @@ export const SavingsFundChildOnboarding = () => {
         }
         setActiveSection(1);
       } else {
-        setUnderReview(true);
+        // UNDER_REVIEW — custody couldn't be confirmed (not the parent's child, no
+        // asset-management right, or no such child). Uniform message, no reason.
+        setChildCodeRejected(true);
       }
     } catch (error) {
-      // A 4xx means the code itself was rejected (e.g. a valid-checksum code the
-      // backend still refuses) — steer the parent to check it. Anything else is a
-      // genuine system/network error.
+      // A 4xx means the code itself was rejected (an invalid isikukood) — same
+      // "check the code" message. Anything else is a genuine system/network error.
       const status = (error as { status?: number } | undefined)?.status;
       if (status !== undefined && status >= 400 && status < 500) {
-        setInvalidChildCode(true);
+        setChildCodeRejected(true);
       } else {
         setSubmitError(true);
       }
@@ -261,8 +262,8 @@ export const SavingsFundChildOnboarding = () => {
     if (submitError) {
       setSubmitError(false);
     }
-    if (invalidChildCode) {
-      setInvalidChildCode(false);
+    if (childCodeRejected) {
+      setChildCodeRejected(false);
     }
   };
 
@@ -290,24 +291,6 @@ export const SavingsFundChildOnboarding = () => {
     );
   }
 
-  if (underReview) {
-    return (
-      <div className="col-12 col-md-10 col-lg-7 mx-auto d-flex flex-column gap-4 align-items-start">
-        <div className="d-flex flex-column gap-2">
-          <h1 className="m-0">
-            <FormattedMessage id="flows.savingsFundChildOnboarding.underReview.title" />
-          </h1>
-          <p className="m-0">
-            <FormattedMessage id="flows.savingsFundChildOnboarding.underReview.description" />
-          </p>
-        </div>
-        <a href="/account" className="btn btn-lg btn-primary">
-          <FormattedMessage id="flows.savingsFundChildOnboarding.underReview.back" />
-        </a>
-      </div>
-    );
-  }
-
   return (
     <div className="col-12 col-md-10 col-lg-7 mx-auto">
       <OnboardingFlowLayout
@@ -321,7 +304,7 @@ export const SavingsFundChildOnboarding = () => {
       >
         {steps[activeSection].component}
 
-        {invalidChildCode ? (
+        {childCodeRejected ? (
           <div className="alert alert-danger mt-4" role="alert">
             <FormattedMessage id="flows.savingsFundChildOnboarding.identityStep.invalid" />
           </div>
