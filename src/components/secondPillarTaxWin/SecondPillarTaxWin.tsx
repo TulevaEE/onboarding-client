@@ -83,19 +83,17 @@ const SecondPillarTaxWin = () => {
       0,
     );
 
+    const SOCIAL_TAX_CONTRIBUTION_RATE = 4;
+
     const calculateAtRate = (targetRate: number) =>
       ytdSecondPillarContributions.reduce((sum, contribution) => {
         const secondPillarContribution = contribution as SecondPillarContribution;
-        if (secondPillarContribution.socialTaxPortion === 0) {
+        if (secondPillarContribution.employeeWithheldPortion === 0) {
           return sum;
         }
-        const actualRate =
-          (secondPillarContribution.employeeWithheldPortion /
-            secondPillarContribution.socialTaxPortion) *
-          4;
-        const scaledAmount =
-          (secondPillarContribution.employeeWithheldPortion / actualRate) * targetRate;
-        return sum + scaledAmount;
+        const employeeContributionPerRatePoint =
+          secondPillarContribution.socialTaxPortion / SOCIAL_TAX_CONTRIBUTION_RATE;
+        return sum + employeeContributionPerRatePoint * targetRate;
       }, 0);
 
     const employeeWithheldPortionYTDAt2Percent = calculateAtRate(2);

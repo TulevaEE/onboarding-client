@@ -221,6 +221,115 @@ describe('SecondPillarTaxWin', () => {
     });
   });
 
+  describe('Edge case: employeeWithheldPortion = 0 with positive socialTaxPortion', () => {
+    it('does not render NaN and does not invent a personal contribution for state-only rows', () => {
+      const userAt4Percent = createMockUser(4);
+      const stateOnlyContribution: SecondPillarContribution = {
+        pillar: 2,
+        socialTaxPortion: 100,
+        employeeWithheldPortion: 0,
+        time: '2026-01-10T10:00:00Z',
+        amount: 100,
+        additionalParentalBenefit: 0,
+        interest: 0,
+        sender: 'Test Employer',
+        currency: 'EUR',
+      };
+
+      mockUseMe.mockReturnValue({ data: userAt4Percent } as ReturnType<typeof useMe>);
+      mockUseContributions.mockReturnValue({
+        data: [stateOnlyContribution],
+      } as ReturnType<typeof useContributions>);
+
+      renderWithProviders(<SecondPillarTaxWin />);
+
+      expect(screen.getByTestId('left-bar-total')).toHaveTextContent(/^100$/);
+      expect(screen.getByTestId('right-bar-total')).toHaveTextContent(/^100$/);
+      expect(screen.getByTestId('left-income-tax-saved')).toHaveTextContent(/^0$/);
+      expect(screen.getByTestId('right-income-tax-saved')).toHaveTextContent(/^0$/);
+      expect(screen.getByTestId('left-net-salary-loss')).toHaveTextContent(/^0$/);
+      expect(screen.getByTestId('right-net-salary-loss')).toHaveTextContent(/^0$/);
+    });
+  });
+
+  describe('Mixed normal and state-only rows', () => {
+    it('counts state-only social tax in the grey band but not in the personal-contribution projection', () => {
+      const userAt4Percent = createMockUser(4);
+      const normalContribution = createContributionAtRate(4, 100, '2026-02-10T10:00:00Z');
+      const stateOnlyContribution: SecondPillarContribution = {
+        pillar: 2,
+        socialTaxPortion: 100,
+        employeeWithheldPortion: 0,
+        time: '2026-01-10T10:00:00Z',
+        amount: 100,
+        additionalParentalBenefit: 0,
+        interest: 0,
+        sender: 'Test Employer',
+        currency: 'EUR',
+      };
+
+      mockUseMe.mockReturnValue({ data: userAt4Percent } as ReturnType<typeof useMe>);
+      mockUseContributions.mockReturnValue({
+        data: [normalContribution, stateOnlyContribution],
+      } as ReturnType<typeof useContributions>);
+
+      renderWithProviders(<SecondPillarTaxWin />);
+
+      const leftBarTotal = parseInt(screen.getByTestId('left-bar-total').textContent || '', 10);
+      const rightBarTotal = parseInt(screen.getByTestId('right-bar-total').textContent || '', 10);
+      const leftIncomeTaxSaved = parseInt(
+        screen.getByTestId('left-income-tax-saved').textContent || '',
+        10,
+      );
+      const rightIncomeTaxSaved = parseInt(
+        screen.getByTestId('right-income-tax-saved').textContent || '',
+        10,
+      );
+      const leftNetSalaryLoss = parseInt(
+        screen.getByTestId('left-net-salary-loss').textContent || '',
+        10,
+      );
+      const rightNetSalaryLoss = parseInt(
+        screen.getByTestId('right-net-salary-loss').textContent || '',
+        10,
+      );
+
+      expect(leftIncomeTaxSaved).toBe(11);
+      expect(rightIncomeTaxSaved).toBe(22);
+      expect(leftNetSalaryLoss).toBe(39);
+      expect(rightNetSalaryLoss).toBe(78);
+      expect(leftBarTotal - leftNetSalaryLoss - leftIncomeTaxSaved).toBe(200);
+      expect(rightBarTotal - rightNetSalaryLoss - rightIncomeTaxSaved).toBe(200);
+    });
+  });
+
+  describe('Edge case: socialTaxPortion = 0 with positive employeeWithheldPortion', () => {
+    it('does not crash or render NaN when a row has withholding but no social tax base', () => {
+      const userAt2Percent = createMockUser(2);
+      const inverseContribution: SecondPillarContribution = {
+        pillar: 2,
+        socialTaxPortion: 0,
+        employeeWithheldPortion: 50,
+        time: '2026-01-10T10:00:00Z',
+        amount: 50,
+        additionalParentalBenefit: 0,
+        interest: 0,
+        sender: 'Test Employer',
+        currency: 'EUR',
+      };
+
+      mockUseMe.mockReturnValue({ data: userAt2Percent } as ReturnType<typeof useMe>);
+      mockUseContributions.mockReturnValue({
+        data: [inverseContribution],
+      } as ReturnType<typeof useContributions>);
+
+      expect(() => renderWithProviders(<SecondPillarTaxWin />)).not.toThrow();
+
+      expect(screen.getByTestId('left-bar-total')).toHaveTextContent(/^0$/);
+      expect(screen.getByTestId('right-bar-total')).toHaveTextContent(/^0$/);
+    });
+  });
+
   describe('Multiple months, same rate', () => {
     it('calculates correct projections for all contributions at 6%', () => {
       const userAt6Percent = createMockUser(6);
