@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
+import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   createChildBackend,
@@ -18,7 +19,7 @@ import { SavingsFundChildOnboarding } from './SavingsFundChildOnboarding';
 mockInAadress();
 
 const server = setupServer();
-const CHILD_CODE = '61509070000';
+const CHILD_CODE = '61506150006';
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 beforeEach(() => {
@@ -90,6 +91,22 @@ describe('SavingsFundChildOnboarding', () => {
 
     expect(await screen.findByRole('heading', { name: /review/i })).toBeInTheDocument();
     expect(screen.queryByText(/Mammu/)).not.toBeInTheDocument();
+  });
+
+  it('shows a check-the-code message (not the generic error) when the backend rejects the code', async () => {
+    server.use(
+      rest.post('http://localhost/v1/me/children', (_req, res, ctx) =>
+        res(ctx.status(400), ctx.json({ errors: [{ code: 'INVALID_PERSONAL_CODE' }] })),
+      ),
+    );
+    renderWrapped(<SavingsFundChildOnboarding />);
+
+    userEvent.type(await screen.findByLabelText(/personal ID code/i), CHILD_CODE);
+    userEvent.click(continueButton());
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/valid personal ID code/i);
+    // Stays on the identity step rather than jumping to the under-review screen.
+    expect(screen.getByLabelText(/personal ID code/i)).toBeInTheDocument();
   });
 
   it('does not switch role until the final submit, then switches to the child once', async () => {

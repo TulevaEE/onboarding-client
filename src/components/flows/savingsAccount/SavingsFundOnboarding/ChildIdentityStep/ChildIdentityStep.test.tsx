@@ -54,21 +54,32 @@ describe('ChildIdentityStep', () => {
     });
   });
 
-  test('rejects a malformed code', async () => {
+  test('rejects a code with too few digits', async () => {
     renderWrapped(<Wrapper />);
 
     userEvent.type(screen.getByLabelText(/personal ID code/i), '123');
     userEvent.click(screen.getByRole('button', { name: 'Validate' }));
 
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent(/valid Estonian personal/i);
+      expect(screen.getByRole('alert')).toHaveTextContent(/valid personal ID code/i);
     });
   });
 
-  test('accepts an 11-digit code', async () => {
+  test('rejects an 11-digit code with an invalid checksum', async () => {
     renderWrapped(<Wrapper />);
 
     userEvent.type(screen.getByLabelText(/personal ID code/i), '61509070000');
+    userEvent.click(screen.getByRole('button', { name: 'Validate' }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/valid personal ID code/i);
+    });
+  });
+
+  test('accepts a valid personal ID code', async () => {
+    renderWrapped(<Wrapper />);
+
+    userEvent.type(screen.getByLabelText(/personal ID code/i), '61506150006');
     userEvent.click(screen.getByRole('button', { name: 'Validate' }));
 
     await waitFor(() => {

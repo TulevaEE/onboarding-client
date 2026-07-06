@@ -2,14 +2,11 @@ import { FC } from 'react';
 import { Control, Controller } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ChildOnboardingFormData } from '../types';
+import { isValidEstonianPersonalCode } from './personalCode';
 
 type ChildIdentityStepProps = {
   control: Control<ChildOnboardingFormData>;
 };
-
-// The custody check happens server-side (POST /v1/me/children). This only guards
-// against obvious typos so an empty or malformed code never reaches the backend.
-const ESTONIAN_PERSONAL_CODE = /^\d{11}$/;
 
 export const ChildIdentityStep: FC<ChildIdentityStepProps> = ({ control }) => {
   const intl = useIntl();
@@ -35,12 +32,11 @@ export const ChildIdentityStep: FC<ChildIdentityStepProps> = ({ control }) => {
                 id: 'flows.savingsFundChildOnboarding.identityStep.required',
               }),
             },
-            pattern: {
-              value: ESTONIAN_PERSONAL_CODE,
-              message: intl.formatMessage({
+            validate: (value) =>
+              isValidEstonianPersonalCode(value) ||
+              intl.formatMessage({
                 id: 'flows.savingsFundChildOnboarding.identityStep.invalid',
               }),
-            },
           }}
           render={({ field, fieldState: { error } }) => (
             <div>

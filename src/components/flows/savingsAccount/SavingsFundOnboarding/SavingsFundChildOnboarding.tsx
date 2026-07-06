@@ -35,6 +35,9 @@ export const SavingsFundChildOnboarding = () => {
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState(false);
   const [underReview, setUnderReview] = useState(false);
+  // The code passed the client-side checksum but the backend rejected it as a bad
+  // request — show a "check the code" message, not the generic system error.
+  const [invalidChildCode, setInvalidChildCode] = useState(false);
   // Terminal state: after switching to the child, we could not switch back to the
   // parent. Rather than leave the parent silently stranded in the child role, show
   // an explicit "please reload" and report it.
@@ -147,6 +150,7 @@ export const SavingsFundChildOnboarding = () => {
   const verifyChild = async (): Promise<void> => {
     try {
       setSubmitError(false);
+      setInvalidChildCode(false);
       const response = await createChild({ childPersonalCode: getValues('childPersonalCode') });
       // Branch on the body status, never the HTTP code; a VERIFIED response with
       // no name is malformed and treated as "under review", not advanced.
@@ -163,8 +167,16 @@ export const SavingsFundChildOnboarding = () => {
       } else {
         setUnderReview(true);
       }
-    } catch {
-      setSubmitError(true);
+    } catch (error) {
+      // A 4xx means the code itself was rejected (e.g. a valid-checksum code the
+      // backend still refuses) — steer the parent to check it. Anything else is a
+      // genuine system/network error.
+      const status = (error as { status?: number } | undefined)?.status;
+      if (status !== undefined && status >= 400 && status < 500) {
+        setInvalidChildCode(true);
+      } else {
+        setSubmitError(true);
+      }
     }
   };
 
@@ -249,6 +261,9 @@ export const SavingsFundChildOnboarding = () => {
     if (submitError) {
       setSubmitError(false);
     }
+    if (invalidChildCode) {
+      setInvalidChildCode(false);
+    }
   };
 
   if (rollbackFailed) {
@@ -305,6 +320,12 @@ export const SavingsFundChildOnboarding = () => {
         nextDisabled={isTermsStep && (!termsAccepted || !me?.personalCode)}
       >
         {steps[activeSection].component}
+
+        {invalidChildCode ? (
+          <div className="alert alert-danger mt-4" role="alert">
+            <FormattedMessage id="flows.savingsFundChildOnboarding.identityStep.invalid" />
+          </div>
+        ) : null}
 
         {submitError ? (
           <div className="alert alert-danger mt-4" role="alert">
