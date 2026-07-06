@@ -61,7 +61,7 @@ describe('ChildIdentityStep', () => {
     userEvent.click(screen.getByRole('button', { name: 'Validate' }));
 
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent(/valid personal ID code/i);
+      expect(screen.getByRole('alert')).toHaveTextContent(/check the personal ID code/i);
     });
   });
 
@@ -72,7 +72,7 @@ describe('ChildIdentityStep', () => {
     userEvent.click(screen.getByRole('button', { name: 'Validate' }));
 
     await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent(/valid personal ID code/i);
+      expect(screen.getByRole('alert')).toHaveTextContent(/check the personal ID code/i);
     });
   });
 
