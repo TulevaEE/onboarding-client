@@ -14,10 +14,12 @@ const renderStep = () =>
   );
 
 describe('ChildConfirmStep', () => {
-  test('asks whether it is the right child', () => {
+  test('presents the child details heading', () => {
     renderStep();
 
-    expect(screen.getByRole('heading', { level: 2, name: /right child/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 2, name: /child.?s details/i }),
+    ).toBeInTheDocument();
   });
 
   test('shows the population-register name and formatted date of birth', () => {
