@@ -1,0 +1,227 @@
+import {
+  deriveGrossSalary,
+  deriveInitialBalance,
+  derivePrefill,
+  deriveThirdPillarBalance,
+  deriveThirdPillarMonthly,
+} from './prefill';
+import {
+  Contribution,
+  SecondPillarContribution,
+  SourceFund,
+  ThirdPillarContribution,
+  User,
+} from '../common/apiModels';
+import { MAX_THIRD_PILLAR_MONTHLY } from './calculation';
+
+const secondPillarContribution = (
+  socialTaxPortion: number,
+  time: string,
+  employeeWithheldPortion = socialTaxPortion / 2,
+): SecondPillarContribution => ({
+  pillar: 2,
+  socialTaxPortion,
+  employeeWithheldPortion,
+  additionalParentalBenefit: 0,
+  interest: 0,
+  time,
+  amount: socialTaxPortion + employeeWithheldPortion,
+  sender: 'Employer',
+  currency: 'EUR',
+});
+
+const thirdPillarContribution = (amount: number, time: string): ThirdPillarContribution => ({
+  pillar: 3,
+  amount,
+  time,
+  sender: 'Self',
+  currency: 'EUR',
+});
+
+const sourceFund = (pillar: 2 | 3, price: number, unavailablePrice = 0): SourceFund =>
+  ({ pillar, price, unavailablePrice } as SourceFund);
+
+describe('deriveGrossSalary', () => {
+  it('derives gross from the state 4% social-tax portion, rate-independently, rounded to 1000', () => {
+    // 96 social tax => gross 2400 => rounds to 2000. Rate of the row is irrelevant.
+    expect(deriveGrossSalary([secondPillarContribution(96, '2026-05-10T00:00:00Z')])).toBe(2000);
+  });
+
+  it('uses the most recent contribution when several exist', () => {
+    const salary = deriveGrossSalary([
+      secondPillarContribution(40, '2026-01-10T00:00:00Z'), // gross 1000
+      secondPillarContribution(120, '2026-06-10T00:00:00Z'), // gross 3000 (latest)
+    ]);
+    expect(salary).toBe(3000);
+  });
+
+  it('ignores third-pillar rows and rows without a social-tax base', () => {
+    const salary = deriveGrossSalary([
+      thirdPillarContribution(500, '2026-06-20T00:00:00Z') as Contribution,
+      secondPillarContribution(0, '2026-06-15T00:00:00Z'), // state-only gap month, skip
+      secondPillarContribution(100, '2026-03-10T00:00:00Z'), // gross 2500 -> 3000 rounded
+    ]);
+    expect(salary).toBe(3000);
+  });
+
+  it('returns null when there is no usable second-pillar contribution', () => {
+    expect(deriveGrossSalary([])).toBeNull();
+    expect(
+      deriveGrossSalary([thirdPillarContribution(100, '2026-06-20T00:00:00Z') as Contribution]),
+    ).toBeNull();
+  });
+});
+
+describe('deriveThirdPillarMonthly', () => {
+  const now = new Date('2026-07-01T00:00:00Z');
+
+  it('averages the trailing twelve months of third-pillar contributions', () => {
+    const monthly = deriveThirdPillarMonthly(
+      [
+        thirdPillarContribution(1200, '2026-01-15T00:00:00Z'),
+        thirdPillarContribution(1200, '2026-04-15T00:00:00Z'),
+      ],
+      now,
+    );
+    expect(monthly).toBe(200); // 2400 / 12
+  });
+
+  it('excludes contributions older than twelve months', () => {
+    const monthly = deriveThirdPillarMonthly(
+      [
+        thirdPillarContribution(6000, '2025-01-01T00:00:00Z'), // > 12 months ago, excluded
+        thirdPillarContribution(1200, '2026-06-15T00:00:00Z'),
+      ],
+      now,
+    );
+    expect(monthly).toBe(100); // only 1200 / 12
+  });
+
+  it('rounds to the nearest 10 and caps at the tax-deductible monthly ceiling', () => {
+    const capped = deriveThirdPillarMonthly(
+      [thirdPillarContribution(12000, '2026-06-15T00:00:00Z')],
+      now,
+    );
+    expect(capped).toBe(MAX_THIRD_PILLAR_MONTHLY);
+  });
+
+  it('returns 0 when there are no third-pillar contributions', () => {
+    expect(deriveThirdPillarMonthly([], now)).toBe(0);
+    expect(
+      deriveThirdPillarMonthly([secondPillarContribution(100, '2026-06-10T00:00:00Z')], now),
+    ).toBe(0);
+  });
+});
+
+describe('deriveInitialBalance', () => {
+  it('sums II and III pillar funds including the unavailable portion, rounded to 1000', () => {
+    const balance = deriveInitialBalance([
+      sourceFund(2, 10612.34, 500),
+      sourceFund(3, 4500.66),
+      sourceFund(null as unknown as 2, 9999), // no pillar -> ignored
+    ]);
+    expect(balance).toBe(16000); // (10612.34 + 500 + 4500.66) = 15613 -> 16000
+  });
+
+  it('returns 0 for no pillar funds', () => {
+    expect(deriveInitialBalance([])).toBe(0);
+  });
+});
+
+describe('deriveThirdPillarBalance', () => {
+  it('sums only III pillar funds including the unavailable portion, rounded to 1000', () => {
+    const balance = deriveThirdPillarBalance([
+      sourceFund(2, 10612.34, 500),
+      sourceFund(3, 4500.66),
+      sourceFund(null as unknown as 2, 9999),
+    ]);
+    expect(balance).toBe(5000); // only the pillar-3 fund: 4500.66 -> 5000
+  });
+
+  it('returns 0 when there are no III pillar funds', () => {
+    expect(deriveThirdPillarBalance([sourceFund(2, 12000)])).toBe(0);
+  });
+});
+
+describe('derivePrefill', () => {
+  const now = new Date('2026-07-01T00:00:00Z');
+
+  const user = {
+    age: 34,
+    retirementAge: 65,
+    secondPillarActive: true,
+    secondPillarPaymentRates: { current: 4, pending: null },
+  } as User;
+
+  it('assembles every pre-filled input from the user, funds and contributions', () => {
+    const prefill = derivePrefill(
+      user,
+      [sourceFund(2, 12000, 0), sourceFund(3, 3000)],
+      [
+        secondPillarContribution(96, '2026-06-10T00:00:00Z'),
+        thirdPillarContribution(1200, '2026-05-15T00:00:00Z'),
+      ],
+      now,
+    );
+
+    expect(prefill).toEqual({
+      currentAge: 34,
+      retirementAge: 65,
+      grossSalaryMonthly: 2000,
+      initialBalance: 15000,
+      initialThirdPillarBalance: 3000,
+      currentSecondPillarRate: 4,
+      currentThirdPillarMonthly: 100,
+    });
+  });
+
+  it('clamps the prefilled III contribution to the salary-based tax ceiling', () => {
+    // Gross 2000 => tax ceiling min(15% x 2000, 500) = 300/month. A saver whose
+    // recent contributions average above that is pre-filled at the ceiling.
+    const prefill = derivePrefill(
+      user,
+      [],
+      [
+        secondPillarContribution(80, '2026-06-10T00:00:00Z'), // gross 2000
+        thirdPillarContribution(6000, '2026-05-15T00:00:00Z'), // 500/month, above ceiling
+      ],
+      now,
+    );
+    expect(prefill.grossSalaryMonthly).toBe(2000);
+    expect(prefill.currentThirdPillarMonthly).toBe(300);
+  });
+
+  it('falls back to a sensible salary and retirement age when data is missing', () => {
+    const prefill = derivePrefill(
+      {
+        age: 40,
+        retirementAge: 0,
+        secondPillarActive: true,
+        secondPillarPaymentRates: { current: 2, pending: null },
+      } as User,
+      [],
+      [],
+      now,
+    );
+    expect(prefill.grossSalaryMonthly).toBeGreaterThan(0);
+    expect(prefill.retirementAge).toBe(67);
+    expect(prefill.initialBalance).toBe(0);
+    expect(prefill.currentThirdPillarMonthly).toBe(0);
+    expect(prefill.currentSecondPillarRate).toBe(2);
+  });
+
+  it('starts with no II rate selected for a saver who has left the II pillar', () => {
+    const prefill = derivePrefill(
+      {
+        age: 45,
+        retirementAge: 65,
+        secondPillarActive: false,
+        secondPillarPaymentRates: { current: 2, pending: null },
+      } as User,
+      [],
+      [],
+      now,
+    );
+    expect(prefill.currentSecondPillarRate).toBe(0);
+  });
+});

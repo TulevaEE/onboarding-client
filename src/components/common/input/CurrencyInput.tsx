@@ -9,6 +9,7 @@ type CurrencyInputProps = {
   error?: boolean;
   placeholder?: string;
   max?: number;
+  className?: string;
 };
 
 export function CurrencyInput({
@@ -18,6 +19,7 @@ export function CurrencyInput({
   error,
   placeholder = '0',
   max,
+  className,
 }: CurrencyInputProps) {
   const [inputValue, setInputValue] = useState('');
 
@@ -61,7 +63,7 @@ export function CurrencyInput({
   };
 
   return (
-    <div className={`input-group input-group-lg ${styles.inputGroup}`}>
+    <div className={classNames('input-group input-group-lg', styles.inputGroup, className)}>
       <input
         id={id}
         type="text"

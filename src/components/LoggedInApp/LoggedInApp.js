@@ -44,6 +44,7 @@ import { isMockModeEnabled } from '../common/requestMocker';
 import { FirstVsSecondPillarComparison } from '../comparison/FirstVsSecondPillarComparison';
 import SecondPillarTaxWin from '../secondPillarTaxWin/SecondPillarTaxWin';
 import SecondPillarGrowth from '../secondPillarGrowth/SecondPillarGrowth';
+import { MillionaireCalculator } from '../millionaire/MillionaireCalculator';
 import { Listings } from '../listings/Listings';
 import { MembersOnlyGatekeep } from '../common/MembersOnlyGatekeep';
 import { SavingsFundOnboardingGatekeep } from '../common/SavingsFundOnboardingGatekeep';
@@ -319,6 +320,7 @@ export class LoggedInApp extends PureComponent {
             <Route path="/2nd-pillar-tax-win" component={SecondPillarTaxWin} />
             <Route path="/2nd-pillar-growth" component={SecondPillarGrowth} />
             <Route path="/1st-vs-2nd-pillar" render={() => <FirstVsSecondPillarComparison />} />
+            <Route path="/millionaire" component={MillionaireCalculator} />
 
             <Redirect exact path="/" to={ACCOUNT_PATH} />
           </Switch>
