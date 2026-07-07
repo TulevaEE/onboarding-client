@@ -271,20 +271,9 @@ export function MillionaireCalculator() {
 
   const chartData: ChartData<'line', number[], number> = {
     labels: comparison.lauraTrajectory.map((point) => point.age),
+    // Laura first so the blue line draws on top of the grey one (visible when they
+    // overlap) and Laura leads in the tooltip. The test mock reads datasets by index.
     datasets: [
-      {
-        label: intl.formatMessage({ id: 'millionaire.chart.today' }),
-        data: comparison.todayTrajectory.map((point) => point.value),
-        borderColor: COLOR_TODAY,
-        backgroundColor: COLOR_TODAY,
-        borderWidth: 2.5,
-        pointRadius: endPointOnly,
-        pointBackgroundColor: COLOR_TODAY,
-        pointBorderColor: COLOR_TODAY,
-        pointHoverRadius: 5,
-        tension: 0.3,
-        fill: false,
-      },
       {
         label: intl.formatMessage({ id: 'millionaire.chart.laura' }),
         data: comparison.lauraTrajectory.map((point) => point.value),
@@ -297,6 +286,19 @@ export function MillionaireCalculator() {
         pointHoverRadius: 5,
         tension: 0.3,
         fill: 'origin',
+      },
+      {
+        label: intl.formatMessage({ id: 'millionaire.chart.today' }),
+        data: comparison.todayTrajectory.map((point) => point.value),
+        borderColor: COLOR_TODAY,
+        backgroundColor: COLOR_TODAY,
+        borderWidth: 2.5,
+        pointRadius: endPointOnly,
+        pointBackgroundColor: COLOR_TODAY,
+        pointBorderColor: COLOR_TODAY,
+        pointHoverRadius: 5,
+        tension: 0.3,
+        fill: false,
       },
     ],
   };
@@ -319,7 +321,15 @@ export function MillionaireCalculator() {
       // No legend — the top-left summary names and colours each line.
       legend: { display: false },
       tooltip: {
+        // Slide (caret/position) and fade (opacity) both at 200ms with an ease-out
+        // curve — chart.js defaults these to a sluggish 400ms/linear.
+        animation: { duration: 200, easing: 'easeOutQuart' },
+        animations: { opacity: { easing: 'easeOutQuart', duration: 200 } },
         usePointStyle: true,
+        // Keep the caret centred at the bottom (tooltip above the point) instead of
+        // flipping left/right as the cursor moves across the chart.
+        xAlign: 'center',
+        yAlign: 'bottom',
         boxWidth: 8,
         boxHeight: 8,
         boxPadding: 4,
@@ -438,7 +448,7 @@ export function MillionaireCalculator() {
   );
 
   const nextStepsSection = (
-    <div className="d-flex flex-column gap-2">
+    <div className="d-flex flex-column gap-3">
       <h2 className="m-0 h5">
         <FormattedMessage id="millionaire.cta.title" />
       </h2>
@@ -451,9 +461,12 @@ export function MillionaireCalculator() {
               <div
                 key={item.id}
                 className={classNames(
-                  'd-flex gap-3 flex-column flex-sm-row justify-content-between align-items-sm-center p-3',
+                  'd-flex gap-3 flex-column flex-sm-row justify-content-between align-items-sm-center px-3',
                   index < ctaItems.length - 1 && 'border-bottom',
                 )}
+                // Fixed row height so a step with a CTA button and one with just a
+                // checkmark are the same height.
+                style={{ minHeight: '3.5rem' }}
                 data-testid={`cta-item-${item.id}`}
                 data-done={item.done ? 'true' : 'false'}
               >
@@ -682,30 +695,34 @@ export function MillionaireCalculator() {
                   <div style={{ position: 'relative', height: 320 }}>
                     <Line data={chartData} options={chartOptions} />
                     <div
-                      className="position-absolute d-flex flex-column gap-1 rounded"
+                      className="position-absolute rounded"
                       style={{
                         top: 4,
                         left: 4,
                         padding: '4px 10px 5px 8px',
                         backgroundColor: 'rgba(255, 255, 255, 0.78)',
                         pointerEvents: 'none',
+                        // Grid so the dot, label and amount line up in columns across
+                        // both rows — the amounts start from the same spot regardless
+                        // of the label width.
+                        display: 'grid',
+                        gridTemplateColumns: 'auto auto auto',
+                        alignItems: 'center',
+                        columnGap: '0.5rem',
+                        rowGap: '0.25rem',
                       }}
                       data-testid="chart-summary"
                     >
-                      <div className="d-flex align-items-center gap-2">
-                        <span style={legendDot(COLOR_LAURA)} />
-                        <span className="small">
-                          <FormattedMessage id="millionaire.chart.laura" />
-                        </span>
-                        <span className="fw-semibold">{roundedEuro(comparison.laura.total)}</span>
-                      </div>
-                      <div className="d-flex align-items-center gap-2">
-                        <span style={legendDot(COLOR_TODAY)} />
-                        <span className="small">
-                          <FormattedMessage id="millionaire.chart.today" />
-                        </span>
-                        <span className="fw-semibold">{roundedEuro(comparison.today.total)}</span>
-                      </div>
+                      <span style={legendDot(COLOR_LAURA)} />
+                      <span className="small">
+                        <FormattedMessage id="millionaire.chart.laura" />
+                      </span>
+                      <span className="fw-semibold">{roundedEuro(comparison.laura.total)}</span>
+                      <span style={legendDot(COLOR_TODAY)} />
+                      <span className="small">
+                        <FormattedMessage id="millionaire.chart.today" />
+                      </span>
+                      <span className="fw-semibold">{roundedEuro(comparison.today.total)}</span>
                     </div>
                   </div>
                 </div>

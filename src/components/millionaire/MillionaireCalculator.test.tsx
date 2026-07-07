@@ -18,8 +18,8 @@ jest.mock('../common/apiHooks', () => ({
 
 jest.mock('react-chartjs-2', () => ({
   Line: ({ data }: { data: { labels: number[]; datasets: { data: number[] }[] } }) => {
-    const today = data.datasets[0].data;
-    const laura = data.datasets[1].data;
+    const laura = data.datasets[0].data;
+    const today = data.datasets[1].data;
     return (
       <div data-testid="mock-chart">
         <span data-testid="today-final">{Math.round(today[today.length - 1])}</span>
