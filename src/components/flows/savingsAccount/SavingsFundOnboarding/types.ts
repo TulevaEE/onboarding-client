@@ -64,6 +64,7 @@ export interface ChildOnboardingFormData extends SharedOnboardingFields, Identit
   child: VerifiedChild | null;
   investmentGoals: InvestmentGoalsValue | null;
   plannedContribution: PlannedContributionOption | null;
+  investableAssets: InvestableAssetsOption | null;
   fundingSources: FundingSourcesValue;
 }
 

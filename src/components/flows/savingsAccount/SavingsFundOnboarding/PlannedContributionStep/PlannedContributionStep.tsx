@@ -10,16 +10,16 @@ type PlannedContributionStepProps<T extends FieldValues> = {
 };
 
 const OPTIONS: { value: PlannedContributionOption; labelId: TranslationKey }[] = [
-  { value: 'UP_TO_50', labelId: 'flows.savingsFundChildOnboarding.contributionStep.upTo50' },
+  { value: 'UP_TO_200', labelId: 'flows.savingsFundChildOnboarding.contributionStep.upTo200' },
   {
-    value: 'FROM_50_TO_100',
-    labelId: 'flows.savingsFundChildOnboarding.contributionStep.from50To100',
+    value: 'FROM_200_TO_600',
+    labelId: 'flows.savingsFundChildOnboarding.contributionStep.from200To600',
   },
   {
-    value: 'FROM_100_TO_300',
-    labelId: 'flows.savingsFundChildOnboarding.contributionStep.from100To300',
+    value: 'FROM_600_TO_1000',
+    labelId: 'flows.savingsFundChildOnboarding.contributionStep.from600To1000',
   },
-  { value: 'OVER_300', labelId: 'flows.savingsFundChildOnboarding.contributionStep.over300' },
+  { value: 'OVER_1000', labelId: 'flows.savingsFundChildOnboarding.contributionStep.over1000' },
 ];
 
 const optionRadioId = (value: PlannedContributionOption) =>

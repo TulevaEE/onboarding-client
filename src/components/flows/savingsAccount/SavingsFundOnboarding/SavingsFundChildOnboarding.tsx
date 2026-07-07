@@ -10,6 +10,7 @@ import { ResidencyStep } from './ResidencyStep';
 import { ContactDetailsStep } from './ContactDetailsStep';
 import { InvestmentGoalStep } from './InvestmentGoalStep';
 import { PlannedContributionStep } from './PlannedContributionStep';
+import { InvestableAssetsStep } from './InvestableAssetsStep';
 import { FundingSourcesStep } from './FundingSourcesStep';
 import { TermsStep } from './TermsStep';
 import { OnboardingFlowLayout } from './OnboardingFlowLayout';
@@ -63,6 +64,7 @@ export const SavingsFundChildOnboarding = () => {
       pepSelfDeclaration: null,
       investmentGoals: null,
       plannedContribution: null,
+      investableAssets: null,
       fundingSources: [],
       termsAccepted: false,
     },
@@ -126,6 +128,31 @@ export const SavingsFundChildOnboarding = () => {
         <PlannedContributionStep key="contribution" control={control} name="plannedContribution" />
       ),
       fields: ['plannedContribution'],
+    },
+    {
+      component: (
+        <InvestableAssetsStep
+          key="assets"
+          control={control}
+          name="investableAssets"
+          titleId="flows.savingsFundChildOnboarding.assetsStep.title"
+          options={[
+            {
+              value: 'UP_TO_2000',
+              labelId: 'flows.savingsFundChildOnboarding.assetsStep.upTo2000',
+            },
+            {
+              value: 'FROM_2000_TO_10000',
+              labelId: 'flows.savingsFundChildOnboarding.assetsStep.from2000To10000',
+            },
+            {
+              value: 'OVER_10000',
+              labelId: 'flows.savingsFundChildOnboarding.assetsStep.over10000',
+            },
+          ]}
+        />
+      ),
+      fields: ['investableAssets'],
     },
     {
       component: <FundingSourcesStep key="funding" control={control} name="fundingSources" />,

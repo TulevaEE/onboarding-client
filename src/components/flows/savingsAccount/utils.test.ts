@@ -181,7 +181,8 @@ const buildChildFormData = (
   childPersonalCode: '61509070000',
   child: { firstName: 'Mammu', lastName: 'Maasikas', dateOfBirth: '2015-09-07' },
   investmentGoals: { type: 'OPTION', value: 'EDUCATION' },
-  plannedContribution: 'FROM_50_TO_100',
+  plannedContribution: 'FROM_200_TO_600',
+  investableAssets: 'UP_TO_2000',
   fundingSources: [{ type: 'OPTION', value: 'PARENT_INCOME_AND_SAVINGS' }],
   termsAccepted: true,
   ...overrides,
@@ -194,7 +195,7 @@ describe('transformChildFormDataToSurveyCommand', () => {
     );
   });
 
-  it('sends the child address, contact, goal, contribution and funding sources in order', () => {
+  it('sends the child address, contact, goal, contribution, investable assets and funding sources in order', () => {
     const types = transformChildFormDataToSurveyCommand(buildChildFormData()).answers.map(
       (answer) => answer.type,
     );
@@ -204,6 +205,7 @@ describe('transformChildFormDataToSurveyCommand', () => {
       'PHONE_NUMBER',
       'INVESTMENT_GOALS',
       'PLANNED_CONTRIBUTION',
+      'INVESTABLE_ASSETS',
       'FUNDING_SOURCES',
     ]);
   });
@@ -225,11 +227,23 @@ describe('transformChildFormDataToSurveyCommand', () => {
 
   it('maps the planned contribution as an OPTION value', () => {
     expect(
-      transformChildFormDataToSurveyCommand(buildChildFormData({ plannedContribution: 'OVER_300' }))
-        .answers,
+      transformChildFormDataToSurveyCommand(
+        buildChildFormData({ plannedContribution: 'OVER_1000' }),
+      ).answers,
     ).toContainEqual({
       type: 'PLANNED_CONTRIBUTION',
-      value: { type: 'OPTION', value: 'OVER_300' },
+      value: { type: 'OPTION', value: 'OVER_1000' },
+    });
+  });
+
+  it('maps the investable assets as an OPTION value', () => {
+    expect(
+      transformChildFormDataToSurveyCommand(
+        buildChildFormData({ investableAssets: 'FROM_2000_TO_10000' }),
+      ).answers,
+    ).toContainEqual({
+      type: 'INVESTABLE_ASSETS',
+      value: { type: 'OPTION', value: 'FROM_2000_TO_10000' },
     });
   });
 
@@ -251,16 +265,18 @@ describe('transformChildFormDataToSurveyCommand', () => {
     });
   });
 
-  it('omits goal, contribution and funding sources when not provided', () => {
+  it('omits goal, contribution, investable assets and funding sources when not provided', () => {
     const types = transformChildFormDataToSurveyCommand(
       buildChildFormData({
         investmentGoals: null,
         plannedContribution: null,
+        investableAssets: null,
         fundingSources: [],
       }),
     ).answers.map((answer) => answer.type);
     expect(types).not.toContain('INVESTMENT_GOALS');
     expect(types).not.toContain('PLANNED_CONTRIBUTION');
+    expect(types).not.toContain('INVESTABLE_ASSETS');
     expect(types).not.toContain('FUNDING_SOURCES');
   });
 });

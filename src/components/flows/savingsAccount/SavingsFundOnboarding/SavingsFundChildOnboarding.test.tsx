@@ -40,37 +40,41 @@ const verifyChild = async () => {
   userEvent.click(continueButton());
 };
 
-// From the confirm step (2/8) through to the terms step (8/8), leaving terms unticked.
+// From the confirm step (2/9) through to the terms step (9/9), leaving terms unticked.
 const advanceToTerms = async () => {
-  expect(await screen.findByText('2/8')).toBeInTheDocument(); // confirm
+  expect(await screen.findByText('2/9')).toBeInTheDocument(); // confirm
   userEvent.click(continueButton());
 
-  expect(await screen.findByText('3/8')).toBeInTheDocument(); // residency (prefilled)
+  expect(await screen.findByText('3/9')).toBeInTheDocument(); // residency (prefilled)
   userEvent.click(continueButton());
 
-  expect(await screen.findByText('4/8')).toBeInTheDocument(); // contact (prefilled)
+  expect(await screen.findByText('4/9')).toBeInTheDocument(); // contact (prefilled)
   userEvent.click(continueButton());
 
-  expect(await screen.findByText('5/8')).toBeInTheDocument(); // goal
+  expect(await screen.findByText('5/9')).toBeInTheDocument(); // goal
   userEvent.click(screen.getByRole('radio', { name: /Education/ }));
   userEvent.click(continueButton());
 
-  expect(await screen.findByText('6/8')).toBeInTheDocument(); // contribution
-  userEvent.click(screen.getByRole('radio', { name: /50–100/ }));
+  expect(await screen.findByText('6/9')).toBeInTheDocument(); // contribution
+  userEvent.click(screen.getByRole('radio', { name: /200–600/ }));
   userEvent.click(continueButton());
 
-  expect(await screen.findByText('7/8')).toBeInTheDocument(); // funding
+  expect(await screen.findByText('7/9')).toBeInTheDocument(); // investable assets
+  userEvent.click(screen.getByRole('radio', { name: /Up to 2000/ }));
+  userEvent.click(continueButton());
+
+  expect(await screen.findByText('8/9')).toBeInTheDocument(); // funding
   userEvent.click(screen.getByRole('checkbox', { name: /parent.*income/i }));
   userEvent.click(continueButton());
 
-  expect(await screen.findByText('8/8')).toBeInTheDocument(); // terms
+  expect(await screen.findByText('9/9')).toBeInTheDocument(); // terms
 };
 
 describe('SavingsFundChildOnboarding', () => {
   it('starts by asking for the child personal ID code', async () => {
     renderWrapped(<SavingsFundChildOnboarding />);
 
-    expect(await screen.findByText('1/8')).toBeInTheDocument();
+    expect(await screen.findByText('1/9')).toBeInTheDocument();
     expect(screen.getByLabelText(/personal ID code/i)).toBeInTheDocument();
   });
 
@@ -132,11 +136,11 @@ describe('SavingsFundChildOnboarding', () => {
     renderWrapped(<SavingsFundChildOnboarding />);
 
     await verifyChild();
-    expect(await screen.findByText('2/8')).toBeInTheDocument(); // confirm
+    expect(await screen.findByText('2/9')).toBeInTheDocument(); // confirm
     userEvent.click(continueButton());
-    expect(await screen.findByText('3/8')).toBeInTheDocument(); // residency
+    expect(await screen.findByText('3/9')).toBeInTheDocument(); // residency
     userEvent.click(continueButton());
-    expect(await screen.findByText('4/8')).toBeInTheDocument(); // contact
+    expect(await screen.findByText('4/9')).toBeInTheDocument(); // contact
 
     expect(screen.getByLabelText(/email/i)).toHaveValue(mockUser.email);
   });

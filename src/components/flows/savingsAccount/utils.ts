@@ -119,6 +119,13 @@ export const transformChildFormDataToSurveyCommand = (
     });
   }
 
+  if (data.investableAssets) {
+    answers.push({
+      type: 'INVESTABLE_ASSETS',
+      value: { type: 'OPTION', value: data.investableAssets },
+    });
+  }
+
   if (data.fundingSources.length > 0) {
     answers.push({ type: 'FUNDING_SOURCES', value: data.fundingSources });
   }
