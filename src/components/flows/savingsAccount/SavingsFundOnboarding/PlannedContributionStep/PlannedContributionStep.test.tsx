@@ -41,10 +41,10 @@ describe('PlannedContributionStep', () => {
   test('renders all monthly contribution ranges', () => {
     renderWrapped(<Wrapper />);
 
-    expect(screen.getByRole('radio', { name: /Up to 50\s€/ })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: /50–100\s€/ })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: /100–300\s€/ })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: /Over 300\s€/ })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /0–200\s€/ })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /200–600\s€/ })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /600–1000\s€/ })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /Over 1000\s€/ })).toBeInTheDocument();
   });
 
   test('shows a validation error when no range is chosen', async () => {
@@ -60,7 +60,7 @@ describe('PlannedContributionStep', () => {
   test('lets the parent pick a range and clears the error', async () => {
     renderWrapped(<Wrapper />);
 
-    const option = screen.getByRole('radio', { name: /50–100\s€/ });
+    const option = screen.getByRole('radio', { name: /200–600\s€/ });
     userEvent.click(option);
     expect(option).toBeChecked();
 
