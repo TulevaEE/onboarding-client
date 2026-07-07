@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { captureException } from '@sentry/browser';
 import ThirdPillarPaymentsAmount from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarContributionAmount';
@@ -22,8 +23,12 @@ const DEFAULT_PAYMENT_AMOUNTS: Record<AvailablePaymentType, string> = {
 export const Payment: React.FunctionComponent = () => {
   useIntl();
 
-  const [paymentType, setPaymentType] = useState<AvailablePaymentType>('SINGLE');
-  const [paymentAmount, setPaymentAmount] = useState<string>(DEFAULT_PAYMENT_AMOUNTS.SINGLE);
+  const initialPaymentType: AvailablePaymentType =
+    new URLSearchParams(useLocation().search).get('type') === 'RECURRING' ? 'RECURRING' : 'SINGLE';
+  const [paymentType, setPaymentType] = useState<AvailablePaymentType>(initialPaymentType);
+  const [paymentAmount, setPaymentAmount] = useState<string>(
+    DEFAULT_PAYMENT_AMOUNTS[initialPaymentType],
+  );
   const [amountEdited, setAmountEdited] = useState<boolean>(false);
   const [paymentBank, setPaymentBank] = useState<BankKey | 'other' | null>(null);
   const [error, setError] = useState<boolean>(false);
