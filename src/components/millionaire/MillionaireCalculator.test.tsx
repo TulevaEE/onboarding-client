@@ -155,7 +155,7 @@ describe('MillionaireCalculator', () => {
     expect(
       (
         screen.getByRole('slider', {
-          name: /III.pillar contribution per month/i,
+          name: /III.pillar per month/i,
         }) as HTMLInputElement
       ).value,
     ).toBe('100');
