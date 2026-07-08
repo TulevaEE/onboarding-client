@@ -1755,7 +1755,7 @@
   "countries.ZM": "Sambia",
   "countries.ZW": "Zimbabwe",
   "millionaire.title": "Kui palju võiksid koguda?",
-  "millionaire.intro": "Vaata, kui palju koguksid tänase kursiga ja kui palju Tuleva retseptiga: <b>maksimaalselt II ja III sambas</b> ning <b>madala tasuga indeksfondis</b>.",
+  "millionaire.intro": "Vaata, kui palju koguksid tänasel kursil ja kui palju Tuleva retseptiga: <b>maksimaalselt II ja III sambas</b> ning <b>madala tasuga indeksfondis</b>.",
   "millionaire.input.salary": "Brutopalk",
   "millionaire.input.return": "Eeldatav tootlus aastas",
   "millionaire.input.return.hint": "Aktsiate ajalooline <a>tootlus 7%</a>",
@@ -1763,7 +1763,7 @@
   "millionaire.input.thirdPillar": "III samba panus kuus",
   "millionaire.input.fee": "Tasud",
   "millionaire.chart.title": "Sinu vara {age}. eluaastaks",
-  "millionaire.chart.today": "Tänase kursiga",
+  "millionaire.chart.today": "Tänasel kursil",
   "millionaire.chart.laura": "Tuleva retseptiga",
   "millionaire.gap.more": "Tuleva retseptiga võiksid koguda <b>{amount} rohkem</b>.",
   "millionaire.gap.more.withAge": "Tuleva retseptiga jõuaksid miljonini <b>{age}‑aastaselt</b> ja koguksid <b>{amount} rohkem</b>.",
@@ -1782,6 +1782,6 @@
   "millionaire.cta.item.thirdPillarToTuleva.body": "Nii saad kuni <b>{amount} maksuvõitu</b> aastas",
   "millionaire.cta.item.thirdPillarToTuleva.buttonNew": "Avan III samba",
   "millionaire.cta.item.thirdPillarToTuleva.buttonOpen": "Teen püsimakse",
-  "millionaire.disclaimer": "<p>Tänane kurss näitab su praeguseid valikuid. Tuleva retsept soovitab koguda maksimaalselt II ja III sambasse.</p><p>Eeldame, et sinu palk ja sissemaksed kasvavad 3% aastas. Tulemus on illustratiivne. Tootlus pole lubadus ega prognoos ja investeeringu väärtus võib nii kasvada kui kahaneda.</p><p>II ja III samba maksed on tulumaksuvabad. Optimaalne ja ühtlasi maksimaalne summa, mida võiks III sambasse paigutada, on 15% sinu aasta bruto sissetulekust, aga mitte üle 6000 euro. See annab suurima maksuvõidu. Sinu II samba maksetele lisab riik veel 4% brutopalgast, mis tuleb sinu sotsiaalmaksust. See mõjutab vähesel määral ka <a>I sammast</a>.</p>",
+  "millionaire.disclaimer": "<p>Eeldame, et sinu palk ja sissemaksed kasvavad 3% aastas. Tulemus on illustratiivne. Tootlus pole lubadus ega prognoos ja investeeringu väärtus võib nii kasvada kui kahaneda.</p><p>II ja III samba maksed on tulumaksuvabad. Optimaalne ja ühtlasi maksimaalne summa, mida võiks III sambasse paigutada, on 15% sinu aasta bruto sissetulekust, aga mitte üle 6000 euro. See annab suurima maksuvõidu. Sinu II samba maksetele lisab riik veel 4% brutopalgast, mis tuleb sinu sotsiaalmaksust. See mõjutab vähesel määral ka <a>I sammast</a>.</p>",
   "millionaire.alreadyRetired": "Oled juba pensionieas. See kalkulaator on mõeldud kogumisaja planeerimiseks."
 }
