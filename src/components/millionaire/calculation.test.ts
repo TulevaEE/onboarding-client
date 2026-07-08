@@ -374,6 +374,7 @@ describe('buildComparison', () => {
     currentSecondPillarRate: 2,
     currentThirdPillarMonthly: 0,
     annualReturnPercent: 7,
+    currentFundFeePercent: 0,
   };
 
   it('composes today vs Laura vs high-fee scenarios consistently with project()', () => {
@@ -397,7 +398,7 @@ describe('buildComparison', () => {
       secondPillarRate: LAURA_SECOND_PILLAR_RATE,
       thirdPillar: { mode: 'fixedAnnual', annual: thirdPillarTaxCapMonthly(2000) * 12 },
       annualReturnPercent: 7,
-      fee: 0,
+      fee: TULEVA_FEE,
     });
 
     expect(comparison.today.total).toBeCloseTo(today.total, 6);
@@ -418,11 +419,12 @@ describe('buildComparison', () => {
       ...inputs,
       currentSecondPillarRate: 6,
       currentThirdPillarMonthly: thirdPillarTaxCapMonthly(inputs.grossSalaryMonthly),
+      currentFundFeePercent: TULEVA_FEE * 100,
     });
-    // II 6% + III at the tax-advantaged ceiling IS Laura's recipe, so the two
-    // projections coincide — no phantom "you could gain more" gap. Regression: a
-    // flat-euro III used to overtake Laura's percent-of-salary III at low incomes,
-    // making a fully-maxed saver appear to beat the recipe.
+    // II 6% + III at the tax-advantaged ceiling AND Tuleva's fee IS Laura's recipe,
+    // so the two projections coincide — no phantom "you could gain more" gap.
+    // Regression: a flat-euro III used to overtake Laura's percent-of-salary III at
+    // low incomes, making a fully-maxed saver appear to beat the recipe.
     expect(maxed.gap).toBeCloseTo(0, 6);
   });
 
@@ -444,9 +446,12 @@ describe('buildComparison', () => {
                   thirdPillarTaxCapMonthly(grossSalaryMonthly),
                 ),
                 annualReturnPercent,
+                // A realistic current fund fee (>= Tuleva's), so Laura stays the
+                // ceiling: a lower fee is the one way a maxed saver could pull ahead.
+                currentFundFeePercent: 0.5,
               });
-              // Laura is the ceiling: within tax-capped inputs the saver can match
-              // her but never exceed her.
+              // Laura is the ceiling: within tax-capped inputs and a fee no lower than
+              // Tuleva's, the saver can match her but never exceed her.
               expect(comparison.gap).toBeGreaterThanOrEqual(-1e-6);
             }),
         ),

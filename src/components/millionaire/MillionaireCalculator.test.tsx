@@ -3,7 +3,13 @@ import { render, screen, fireEvent, within } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
 import { MillionaireCalculator } from './MillionaireCalculator';
-import { useContributions, useConversion, useMe, useSourceFunds } from '../common/apiHooks';
+import {
+  useContributions,
+  useConversion,
+  useFunds,
+  useMe,
+  useSourceFunds,
+} from '../common/apiHooks';
 import { Contribution, Conversion, SourceFund, User, UserConversion } from '../common/apiModels';
 import translations from '../translations';
 import { buildComparison } from './calculation';
@@ -14,12 +20,15 @@ jest.mock('../common/apiHooks', () => ({
   useSourceFunds: jest.fn(),
   useContributions: jest.fn(),
   useConversion: jest.fn(),
+  useFunds: jest.fn(),
 }));
 
 jest.mock('react-chartjs-2', () => ({
   Line: ({ data }: { data: { labels: number[]; datasets: { data: number[] }[] } }) => {
-    const laura = data.datasets[0].data;
-    const today = data.datasets[1].data;
+    // Current-course line is drawn on top (index 0) so blue wins when the lines
+    // coincide; Tuleva's line is index 1 underneath.
+    const today = data.datasets[0].data;
+    const laura = data.datasets[1].data;
     return (
       <div data-testid="mock-chart">
         <span data-testid="today-final">{Math.round(today[today.length - 1])}</span>
@@ -35,6 +44,7 @@ const mockUseMe = useMe as jest.MockedFunction<typeof useMe>;
 const mockUseSourceFunds = useSourceFunds as jest.MockedFunction<typeof useSourceFunds>;
 const mockUseContributions = useContributions as jest.MockedFunction<typeof useContributions>;
 const mockUseConversion = useConversion as jest.MockedFunction<typeof useConversion>;
+const mockUseFunds = useFunds as jest.MockedFunction<typeof useFunds>;
 
 // Not converted to Tuleva in either pillar, so all three next steps are actionable.
 const notAtTuleva = {
@@ -101,6 +111,8 @@ const expectedAtReturn = (annualReturnPercent: number) =>
   buildComparison({
     ...derivePrefill(user(), sourceFunds, contributions, now),
     annualReturnPercent,
+    // Mirrors the component: pre-fill from the weighted-average fee (0.01 -> 1%).
+    currentFundFeePercent: conversion.weightedAverageFee * 100,
   });
 
 describe('MillionaireCalculator', () => {
@@ -108,6 +120,7 @@ describe('MillionaireCalculator', () => {
     jest.useFakeTimers();
     jest.setSystemTime(now);
     mockUseConversion.mockReturnValue({ data: undefined } as ReturnType<typeof useConversion>);
+    mockUseFunds.mockReturnValue({ data: [] } as unknown as ReturnType<typeof useFunds>);
   });
 
   afterEach(() => {
@@ -133,16 +146,18 @@ describe('MillionaireCalculator', () => {
     givenData();
     renderCalculator();
 
-    expect((screen.getByLabelText(/Gross salary per month/i) as HTMLInputElement).value).toBe(
-      '2000',
-    );
+    expect((screen.getByLabelText(/^Gross salary$/i) as HTMLInputElement).value).toBe('2000');
     expect(screen.getByRole('button', { name: '2%' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '6%' })).toHaveAttribute('aria-pressed', 'false');
     expect(
       (screen.getByRole('slider', { name: /Expected annual return/i }) as HTMLInputElement).value,
     ).toBe('0');
     expect(
-      (screen.getByRole('slider', { name: /III.pillar per month/i }) as HTMLInputElement).value,
+      (
+        screen.getByRole('slider', {
+          name: /III.pillar contribution per month/i,
+        }) as HTMLInputElement
+      ).value,
     ).toBe('100');
   });
 
@@ -219,6 +234,7 @@ describe('MillionaireCalculator', () => {
     mockUseContributions.mockReturnValue({
       data: contributions,
     } as ReturnType<typeof useContributions>);
+    mockUseConversion.mockReturnValue({ data: conversion } as ReturnType<typeof useConversion>);
 
     renderCalculator();
 

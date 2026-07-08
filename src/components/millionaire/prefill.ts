@@ -22,11 +22,12 @@ const BALANCE_ROUNDING = 1000;
 const THIRD_PILLAR_ROUNDING = 10;
 const TRAILING_MONTHS = 12;
 
-// The user's current values, shaped so `{ ...prefill, annualReturnPercent }`
+// The user's current values, shaped so `{ ...prefill, annualReturnPercent, currentFundFeePercent }`
 // is a ready-to-use CalculatorInputs.
-export type PrefillValues = Omit<CalculatorInputs, 'annualReturnPercent'>;
+export type PrefillValues = Omit<CalculatorInputs, 'annualReturnPercent' | 'currentFundFeePercent'>;
 
 const roundTo = (value: number, step: number): number => Math.round(value / step) * step;
+const floorTo = (value: number, step: number): number => Math.floor(value / step) * step;
 
 const clamp = (value: number, min: number, max: number): number =>
   Math.max(min, Math.min(value, max));
@@ -45,7 +46,8 @@ export function deriveGrossSalary(contributions: Contribution[]): number | null 
   if (!latest) {
     return null;
   }
-  return roundTo(latest.socialTaxPortion / STATE_SOCIAL_TAX_RATE, SALARY_ROUNDING);
+  // Floor (never round up) so the pre-filled salary is never higher than reality.
+  return floorTo(latest.socialTaxPortion / STATE_SOCIAL_TAX_RATE, SALARY_ROUNDING);
 }
 
 export function deriveThirdPillarMonthly(contributions: Contribution[], now: Date): number {

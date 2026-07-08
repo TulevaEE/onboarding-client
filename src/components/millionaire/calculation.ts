@@ -153,6 +153,9 @@ export interface CalculatorInputs {
   currentSecondPillarRate: number;
   currentThirdPillarMonthly: number;
   annualReturnPercent: number;
+  // Annual fee (%) on the saver's current fund. Drags the current-course line only;
+  // Tuleva's recipe is a low-fee index fund, so its line is unaffected.
+  currentFundFeePercent: number;
 }
 
 export interface Comparison {
@@ -175,14 +178,14 @@ export function buildComparison(inputs: CalculatorInputs): Comparison {
     annualReturnPercent: inputs.annualReturnPercent,
   };
 
-  // The chosen return is applied as-is — no fund fee is deducted from the
-  // headline projection. The high-fee scenario below is the only place a fee
-  // enters, purely to illustrate the drag of an expensive fund.
+  // The current-course line carries the saver's own fund fee (the slider, pre-filled
+  // from their weighted-average fee); Tuleva's recipe carries Tuleva's low index-fund
+  // fee. The gap between the two lines is contributions AND the fee difference.
   const todayInput: ProjectionInput = {
     ...shared,
     secondPillarRate: inputs.currentSecondPillarRate,
     thirdPillar: { mode: 'fixedAnnual', annual: inputs.currentThirdPillarMonthly * 12 },
-    fee: 0,
+    fee: inputs.currentFundFeePercent / 100,
   };
   const lauraInput: ProjectionInput = {
     ...shared,
@@ -194,7 +197,7 @@ export function buildComparison(inputs: CalculatorInputs): Comparison {
       mode: 'fixedAnnual',
       annual: thirdPillarTaxCapMonthly(inputs.grossSalaryMonthly) * 12,
     },
-    fee: 0,
+    fee: TULEVA_FEE,
   };
   const lauraHighFeeInput: ProjectionInput = { ...lauraInput, fee: HIGH_FEE };
 

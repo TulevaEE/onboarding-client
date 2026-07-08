@@ -14,13 +14,17 @@ import {
   Tooltip,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { Collapse } from 'react-bootstrap';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { usePageTitle } from '../common/usePageTitle';
-import { useContributions, useConversion, useMe, useSourceFunds } from '../common/apiHooks';
+import {
+  useContributions,
+  useConversion,
+  useFunds,
+  useMe,
+  useSourceFunds,
+} from '../common/apiHooks';
 import { CurrencyInput } from '../common/input/CurrencyInput';
-import { InfoTooltip } from '../common/infoTooltip/InfoTooltip';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { formatAmountForCurrency } from '../common/utils';
 import { Conversion } from '../common/apiModels';
@@ -30,8 +34,8 @@ import { derivePrefill } from './prefill';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler);
 
-const COLOR_TODAY = '#7c93ab'; // muted grey-blue — "current course"
-const COLOR_LAURA = '#006ce6'; // Tuleva blue — "Laura's recipe"
+const COLOR_TODAY = '#006ce6'; // Tuleva blue — "current course"
+const COLOR_LAURA = '#008300'; // Tuleva green — "Tuleva's recipe"
 
 const SECOND_PILLAR_RATES = [2, 4, 6];
 const RETURN_MIN = -10;
@@ -39,6 +43,11 @@ const RETURN_MAX = 10;
 const RETURN_STEP = 1;
 const HISTORICAL_RETURN = 7; // long-run historical stock return, marked on the slider
 const HISTORICAL_RETURN_LEFT = ((HISTORICAL_RETURN - RETURN_MIN) / (RETURN_MAX - RETURN_MIN)) * 100;
+// Fallbacks used until /v1/funds loads; the live min/max come from that list, so we
+// never hand-maintain the cheapest/priciest Estonian pension fund fees.
+const FEE_MIN_FALLBACK = 0.27;
+const FEE_MAX_FALLBACK = 1.57;
+const FEE_STEP = 0.01;
 const THIRD_PILLAR_STEP = 10;
 const GAP_COPY_THRESHOLD = 1000;
 const MAX_SALARY = 100000;
@@ -58,6 +67,12 @@ const roundedEuro = (value: number): string => {
   return formatEuro(Math.floor(value / step) * step);
 };
 
+// Fees are a drag on the return, so show them as a negative percent (dot decimal,
+// the app's style; real minus sign). Always two decimals so the width stays fixed
+// and the value doesn't flicker while dragging: "−0.28%", "−1.00%".
+const formatFeePercent = (value: number): string =>
+  value === 0 ? '0.00%' : `−${value.toFixed(2)}%`;
+
 const signedPercent = (value: number): string => {
   if (value === 0) {
     return '0%';
@@ -67,21 +82,24 @@ const signedPercent = (value: number): string => {
   return `${sign}${Math.abs(value)}%`;
 };
 
-// Pull a slider's caption up under the track — the range element reserves
-// whitespace below its thumb that otherwise leaves the caption floating.
-const sliderHintStyle = { marginTop: '-0.375rem' };
+// Vertical top-heavy fade of a colour, for the area fills under/between the lines.
+const areaGradient =
+  (r: number, g: number, b: number) =>
+  (context: ScriptableContext<'line'>): CanvasGradient | string => {
+    const { ctx, chartArea } = context.chart;
+    if (!chartArea) {
+      return `rgba(${r}, ${g}, ${b}, 0.12)`;
+    }
+    const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+    gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.28)`);
+    gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0.03)`);
+    return gradient;
+  };
 
-// Blue vertical gradient under Laura's line, echoing the campaign prototype.
-const lauraAreaGradient = (context: ScriptableContext<'line'>) => {
-  const { ctx, chartArea } = context.chart;
-  if (!chartArea) {
-    return 'rgba(0, 108, 230, 0.12)';
-  }
-  const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-  gradient.addColorStop(0, 'rgba(0, 108, 230, 0.22)');
-  gradient.addColorStop(1, 'rgba(0, 108, 230, 0.02)');
-  return gradient;
-};
+// Green band between the lines is the gain from Tuleva's recipe; blue below the
+// current-course line is what today's choices already build.
+const tulevaGradient = areaGradient(0, 131, 0); // #008300
+const todayGradient = areaGradient(0, 108, 230); // #006ce6
 
 // A single dot at the end of each line (the projected value at retirement).
 const endPointOnly = (context: ScriptableContext<'line'>) =>
@@ -96,8 +114,8 @@ const legendDot = (color: string): React.CSSProperties => ({
   display: 'inline-block',
 });
 
-// Status icons borrowed from the account status box: a filled green check for a
-// completed step, a dashed circle with a plus for a step still to take.
+// Status icons: a filled green check for a completed step and its empty twin, a
+// gray circle outline (an unchecked checkbox), for a step still to take.
 const successIcon = (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -137,30 +155,27 @@ const todoIcon = (
       fill="#fff"
       fillRule="evenodd"
       clipRule="evenodd"
-      stroke="#00A100"
-      strokeDasharray="2 3"
+      stroke="#adb5bd"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth="1.5"
       d="M2 12a10 10 0 1 1 20 0 10 10 0 0 1-20 0Z"
     />
-    <path stroke="#00A100" strokeLinecap="round" strokeWidth="1.5" d="M12 7v10m5-5H7" />
   </svg>
 );
 
 type CtaItem = {
   id: string;
   done: boolean;
-  link: string;
-  primary?: boolean;
-  // Overrides the button label key when a step's action depends on state (e.g. the
-  // III step reads "open a pillar" or "set up a standing order").
-  labelKey?: string;
-  // Interpolated into the benefit line (e.g. the salary-based yearly tax benefit).
+  // The step's bold title, and the state-dependent body line beneath it.
+  headingKey: TranslationKey;
+  bodyKey: TranslationKey;
+  // Interpolated into the body line (the salary-based yearly tax benefit).
   amount?: string;
-  // Keep the CTA button visible even when the step is done (III: keep nudging more
-  // contributions once the saver is already contributing).
-  keepButtonWhenDone?: boolean;
+  showButton: boolean;
+  link: string;
+  buttonKey: TranslationKey;
+  primary?: boolean;
 };
 
 // This is a July-only campaign, so we deliberately nag: a saver counts as done
@@ -176,16 +191,35 @@ export function MillionaireCalculator() {
   const { data: sourceFunds } = useSourceFunds();
   const { data: contributions } = useContributions();
   const { data: conversion } = useConversion();
+  const { data: funds } = useFunds();
 
   const [inputs, setInputs] = useState<CalculatorInputs | null>(null);
-  const [breakdownOpen, setBreakdownOpen] = useState(false);
+
+  // Fee-slider bounds straight from the live pension-fund list (cheapest to priciest),
+  // so the range stays correct without manual upkeep. Fees are stored as fractions.
+  const feeBounds = useMemo(() => {
+    const fees = (funds ?? [])
+      .filter((fund) => fund.status === 'ACTIVE' && fund.ongoingChargesFigure > 0)
+      // Round to a clean 2-decimal percent: 0.0157 * 100 is 1.5699999999999998 in
+      // binary floating point, so scale-then-round instead of a bare * 100.
+      .map((fund) => Math.round(fund.ongoingChargesFigure * 10000) / 100);
+    return fees.length
+      ? { min: Math.min(...fees), max: Math.max(...fees) }
+      : { min: FEE_MIN_FALLBACK, max: FEE_MAX_FALLBACK };
+  }, [funds]);
 
   useEffect(() => {
-    if (inputs === null && user && sourceFunds && contributions) {
+    if (inputs === null && user && sourceFunds && contributions && conversion) {
       const prefill = derivePrefill(user, sourceFunds, contributions, new Date());
-      setInputs({ ...prefill, annualReturnPercent: 0 });
+      // Pre-fill the fee slider with the saver's current weighted-average fund fee
+      // (stored as a fraction) so the current-course line reflects what they pay today.
+      const currentFundFeePercent = Math.min(
+        Math.max(conversion.weightedAverageFee * 100, feeBounds.min),
+        feeBounds.max,
+      );
+      setInputs({ ...prefill, annualReturnPercent: 0, currentFundFeePercent });
     }
-  }, [inputs, user, sourceFunds, contributions]);
+  }, [inputs, user, sourceFunds, contributions, conversion, feeBounds]);
 
   const comparison = useMemo(
     () =>
@@ -219,7 +253,6 @@ export function MillionaireCalculator() {
   // Cap the III contribution for display and calculation without mutating state,
   // so lowering then raising the salary restores it instead of ratcheting down.
   const thirdPillarMonthly = Math.min(inputs.currentThirdPillarMonthly, thirdPillarMax);
-  const thirdPillarYearly = formatEuro(thirdPillarMonthly * 12);
   // The most income tax you could get back from the III pillar in a year: 22% of the
   // maximum deductible contribution (min(15% of gross, 6000 €)), by their salary.
   const thirdPillarMaxRefund = formatEuro(INCOME_TAX_RATE * thirdPillarMax * 12);
@@ -237,68 +270,85 @@ export function MillionaireCalculator() {
   const effectiveSecondPillarRate = user?.secondPillarActive
     ? user?.secondPillarPaymentRates?.pending ?? user?.secondPillarPaymentRates?.current ?? 2
     : 0;
+  const secondAtTuleva = conversion ? fullyConverted(conversion.secondPillar) : false;
+  const secondMaxed = effectiveSecondPillarRate >= 6;
   const thirdAtTuleva = conversion ? fullyConverted(conversion.thirdPillar) : false;
   const thirdContributing = conversion ? conversion.thirdPillar.contribution.yearToDate > 0 : false;
   const ctaItems: CtaItem[] = conversion
     ? [
         {
           id: 'secondPillarToTuleva',
-          done: fullyConverted(conversion.secondPillar),
+          done: secondAtTuleva,
+          headingKey: 'millionaire.cta.item.secondPillarToTuleva.heading',
+          bodyKey: secondAtTuleva
+            ? 'millionaire.cta.item.secondPillarToTuleva.done'
+            : 'millionaire.cta.item.secondPillarToTuleva.todo',
+          showButton: !secondAtTuleva,
           link: '/2nd-pillar-flow',
-          // The whole calculator exists to move II pillars to Tuleva — this is the
-          // primary conversion goal, so it gets the filled button.
+          buttonKey: 'millionaire.cta.item.secondPillarToTuleva.button',
+          // The whole calculator exists to move II pillars to Tuleva — the primary
+          // conversion goal, so it gets the filled button.
           primary: true,
         },
         {
           id: 'raiseSecondPillar',
-          done: effectiveSecondPillarRate >= 6,
-          link: '/2nd-pillar-payment-rate',
+          done: secondMaxed,
+          headingKey: 'millionaire.cta.item.raiseSecondPillar.heading',
+          bodyKey: secondMaxed
+            ? 'millionaire.cta.item.raiseSecondPillar.done'
+            : 'millionaire.cta.item.raiseSecondPillar.todo',
           amount: secondPillarMaxTaxWin,
+          showButton: !secondMaxed,
+          link: '/2nd-pillar-payment-rate',
+          buttonKey: 'millionaire.cta.item.raiseSecondPillar.button',
         },
         {
           id: 'thirdPillarToTuleva',
-          // Done once at Tuleva and contributing this year; at Tuleva but not yet
-          // contributing → set up a standing order; not at Tuleva → open one.
+          // Checked off once at Tuleva and contributing this year, but the CTA stays:
+          // a contributing saver can still grow (or set up) their standing order.
           done: thirdAtTuleva && thirdContributing,
-          link: thirdAtTuleva ? '/3rd-pillar-payment?type=RECURRING' : '/3rd-pillar-flow',
-          labelKey: thirdAtTuleva ? 'thirdPillarPayment' : undefined,
+          headingKey: 'millionaire.cta.item.thirdPillarToTuleva.heading',
+          bodyKey: 'millionaire.cta.item.thirdPillarToTuleva.body',
           amount: thirdPillarMaxRefund,
-          // Even a contributing saver can grow their standing order, so keep nudging.
-          keepButtonWhenDone: thirdAtTuleva,
+          showButton: true,
+          link: thirdAtTuleva ? '/3rd-pillar-payment?type=RECURRING' : '/3rd-pillar-flow',
+          buttonKey: thirdAtTuleva
+            ? 'millionaire.cta.item.thirdPillarToTuleva.buttonOpen'
+            : 'millionaire.cta.item.thirdPillarToTuleva.buttonNew',
         },
       ]
     : [];
 
   const chartData: ChartData<'line', number[], number> = {
     labels: comparison.lauraTrajectory.map((point) => point.age),
-    // Laura first so the blue line draws on top of the grey one (visible when they
-    // overlap) and Laura leads in the tooltip. The test mock reads datasets by index.
+    // Current-course (blue) first so it draws ON TOP: when the two lines coincide
+    // (no gain to show) blue wins, which is the honest read. Tuleva (green) sits
+    // underneath and fills UP to the current-course line (index 0), so the green
+    // area is exactly the extra you'd gain. The test mock reads datasets by index.
     datasets: [
-      {
-        label: intl.formatMessage({ id: 'millionaire.chart.laura' }),
-        data: comparison.lauraTrajectory.map((point) => point.value),
-        borderColor: COLOR_LAURA,
-        backgroundColor: lauraAreaGradient,
-        borderWidth: 3,
-        pointRadius: endPointOnly,
-        pointBackgroundColor: COLOR_LAURA,
-        pointBorderColor: COLOR_LAURA,
-        pointHoverRadius: 5,
-        tension: 0.3,
-        fill: 'origin',
-      },
       {
         label: intl.formatMessage({ id: 'millionaire.chart.today' }),
         data: comparison.todayTrajectory.map((point) => point.value),
         borderColor: COLOR_TODAY,
-        backgroundColor: COLOR_TODAY,
+        backgroundColor: todayGradient,
         borderWidth: 2.5,
         pointRadius: endPointOnly,
         pointBackgroundColor: COLOR_TODAY,
         pointBorderColor: COLOR_TODAY,
-        pointHoverRadius: 5,
         tension: 0.3,
-        fill: false,
+        fill: 'origin',
+      },
+      {
+        label: intl.formatMessage({ id: 'millionaire.chart.laura' }),
+        data: comparison.lauraTrajectory.map((point) => point.value),
+        borderColor: COLOR_LAURA,
+        backgroundColor: tulevaGradient,
+        borderWidth: 3,
+        pointRadius: endPointOnly,
+        pointBackgroundColor: COLOR_LAURA,
+        pointBorderColor: COLOR_LAURA,
+        tension: 0.3,
+        fill: 0,
       },
     ],
   };
@@ -309,7 +359,8 @@ export function MillionaireCalculator() {
     // Fast animation so live edits feel responsive without the glitchy crawl a
     // longer duration gives when the number of points changes with age.
     animation: { duration: 200 },
-    interaction: { mode: 'index', intersect: false },
+    // No hover/touch interaction at all — the chart is a static illustration.
+    events: [],
     // Small right padding keeps the end dots off the edge; the plot otherwise
     // spans the full container width.
     layout: { padding: { top: 4, right: 6 } },
@@ -320,39 +371,9 @@ export function MillionaireCalculator() {
       datalabels: { display: false },
       // No legend — the top-left summary names and colours each line.
       legend: { display: false },
-      tooltip: {
-        // Slide (caret/position) and fade (opacity) both at 200ms with an ease-out
-        // curve — chart.js defaults these to a sluggish 400ms/linear.
-        animation: { duration: 200, easing: 'easeOutQuart' },
-        animations: { opacity: { easing: 'easeOutQuart', duration: 200 } },
-        usePointStyle: true,
-        // Keep the caret centred at the bottom (tooltip above the point) instead of
-        // flipping left/right as the cursor moves across the chart.
-        xAlign: 'center',
-        yAlign: 'bottom',
-        boxWidth: 8,
-        boxHeight: 8,
-        boxPadding: 4,
-        backgroundColor: '#fff',
-        titleColor: '#212529',
-        bodyColor: '#212529',
-        borderColor: 'rgba(0, 0, 0, 0.16)',
-        borderWidth: 1,
-        cornerRadius: 8,
-        padding: { top: 8, bottom: 8, left: 12, right: 12 },
-        callbacks: {
-          title: (items) =>
-            `${intl.formatMessage({ id: 'millionaire.input.age' })} ${items[0].label}`,
-          label: (item) => `${item.dataset.label}: ${roundedEuro(item.parsed.y)}`,
-          labelColor: (item) => ({
-            borderColor: item.dataset.borderColor as string,
-            backgroundColor: item.dataset.borderColor as string,
-            borderWidth: 0,
-            borderRadius: 4,
-          }),
-          labelPointStyle: () => ({ pointStyle: 'circle' as const, rotation: 0 }),
-        },
-      },
+      // No tooltip: on touch it pops up, sticks, overlaps the summary overlay and
+      // makes mobile scrolling awkward. The overlay already shows both totals.
+      tooltip: { enabled: false },
     },
     scales: {
       x: {
@@ -370,132 +391,55 @@ export function MillionaireCalculator() {
     },
   };
 
-  const breakdownSection = (
-    <div>
-      <button
-        type="button"
-        className="btn p-0 border-0 focus-ring d-flex align-items-center gap-1 fw-medium text-primary"
-        onClick={() => setBreakdownOpen(!breakdownOpen)}
-        aria-expanded={breakdownOpen}
-        aria-controls="millionaire-breakdown"
-      >
-        <FormattedMessage id="millionaire.breakdown.toggle" />
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="12"
-          height="12"
-          fill="currentColor"
-          viewBox="0 0 16 16"
-          style={{
-            transform: breakdownOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-            transition: 'transform 0.2s ease',
-          }}
-        >
-          <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
-        </svg>
-      </button>
-      <Collapse in={breakdownOpen}>
-        <div id="millionaire-breakdown">
-          <dl className="m-0 mt-3">
-            <div className="d-flex justify-content-between py-2 border-bottom">
-              <dt className="fw-normal m-0">
-                <FormattedMessage id="millionaire.breakdown.lauraSecondPillar" />
-              </dt>
-              <dd className="m-0 fw-medium">{roundedEuro(comparison.laura.secondPillar)}</dd>
-            </div>
-            <div className="d-flex justify-content-between py-2 border-bottom">
-              <dt className="fw-normal m-0">
-                <FormattedMessage id="millionaire.breakdown.lauraThirdPillar" />
-              </dt>
-              <dd className="m-0 fw-medium">{roundedEuro(comparison.laura.thirdPillar)}</dd>
-            </div>
-            <div className="d-flex justify-content-between py-2 border-bottom">
-              <dt className="fw-normal m-0">
-                <FormattedMessage id="millionaire.breakdown.millionaireAge" />
-              </dt>
-              <dd className="m-0 fw-medium">
-                {millionaireAge !== null ? (
-                  <FormattedMessage
-                    id="millionaire.breakdown.millionaireAgeValue"
-                    values={{ age: millionaireAge }}
-                  />
-                ) : (
-                  <FormattedMessage id="millionaire.breakdown.millionaireAgeNever" />
-                )}
-              </dd>
-            </div>
-            <div className="d-flex justify-content-between py-2">
-              <dt className="fw-normal m-0">
-                <FormattedMessage id="millionaire.breakdown.feeCost" />
-                <InfoTooltip name="millionaire-fee-cost">
-                  <FormattedMessage id="millionaire.breakdown.feeCost.info" />
-                </InfoTooltip>
-              </dt>
-              <dd className="m-0 fw-medium text-danger">−{roundedEuro(comparison.feeCost)}</dd>
-            </div>
-          </dl>
-          <div className="form-text mt-3 mb-0">
-            <FormattedMessage
-              id="millionaire.assumptions"
-              values={{
-                p: (chunks: React.ReactNode) => <p className="mb-2">{chunks}</p>,
-              }}
-            />
-          </div>
-        </div>
-      </Collapse>
-    </div>
-  );
-
   const nextStepsSection = (
     <div className="d-flex flex-column gap-3">
-      <h2 className="m-0 h5">
+      <h2 className="m-0 h3">
         <FormattedMessage id="millionaire.cta.title" />
       </h2>
       {conversion ? (
         <div className="border rounded">
-          {ctaItems.map((item, index) => {
-            const textId = `millionaire.cta.item.${item.id}.text` as TranslationKey;
-            const buttonId = `millionaire.cta.item.${item.labelKey ?? item.id}` as TranslationKey;
-            return (
-              <div
-                key={item.id}
-                className={classNames(
-                  'd-flex gap-3 flex-column flex-sm-row justify-content-between align-items-sm-center px-3',
-                  index < ctaItems.length - 1 && 'border-bottom',
-                )}
-                // Fixed row height so a step with a CTA button and one with just a
-                // checkmark are the same height.
-                style={{ minHeight: '3.5rem' }}
-                data-testid={`cta-item-${item.id}`}
-                data-done={item.done ? 'true' : 'false'}
-              >
-                <div className="d-flex gap-3 align-items-center">
-                  {item.done ? successIcon : todoIcon}
-                  <span
-                    className={
-                      item.done && !item.keepButtonWhenDone ? 'text-secondary' : 'fw-medium'
-                    }
-                  >
-                    <FormattedMessage id={textId} values={{ amount: item.amount }} />
+          {ctaItems.map((item, index) => (
+            <div
+              key={item.id}
+              className={classNames(
+                'd-flex gap-3 flex-column flex-sm-row justify-content-between align-items-sm-center px-3 py-3',
+                index < ctaItems.length - 1 && 'border-bottom',
+              )}
+              data-testid={`cta-item-${item.id}`}
+              data-done={item.done ? 'true' : 'false'}
+            >
+              <div className="d-flex gap-3 align-items-start">
+                {item.done ? successIcon : todoIcon}
+                <div className="d-flex flex-column gap-1">
+                  <span className="fw-medium">
+                    <FormattedMessage id={item.headingKey} />
+                  </span>
+                  <span className="text-secondary">
+                    <FormattedMessage
+                      id={item.bodyKey}
+                      values={{
+                        amount: item.amount,
+                        b: (chunks: React.ReactNode) => <b>{chunks}</b>,
+                      }}
+                    />
                   </span>
                 </div>
-                {(!item.done || item.keepButtonWhenDone) && (
-                  <div className="text-nowrap">
-                    <Link
-                      to={item.link}
-                      className={classNames(
-                        'btn',
-                        item.primary ? 'btn-primary' : 'btn-outline-primary',
-                      )}
-                    >
-                      <FormattedMessage id={buttonId} />
-                    </Link>
-                  </div>
-                )}
               </div>
-            );
-          })}
+              {item.showButton && (
+                <div className="text-nowrap">
+                  <Link
+                    to={item.link}
+                    className={classNames(
+                      'btn w-100 w-sm-auto',
+                      item.primary ? 'btn-primary' : 'btn-outline-primary',
+                    )}
+                  >
+                    <FormattedMessage id={item.buttonKey} />
+                  </Link>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       ) : (
         <Shimmer height={200} />
@@ -562,15 +506,6 @@ export function MillionaireCalculator() {
                     );
                   })}
                 </div>
-                <div className="form-text">
-                  <FormattedMessage
-                    id={
-                      inputs.currentSecondPillarRate > 0
-                        ? 'millionaire.input.secondPillarRate.hint'
-                        : 'millionaire.input.secondPillarRate.hintInactive'
-                    }
-                  />
-                </div>
               </div>
 
               <div>
@@ -599,16 +534,10 @@ export function MillionaireCalculator() {
                     update({ currentThirdPillarMonthly: event.target.valueAsNumber })
                   }
                 />
-                <div className="form-text" style={sliderHintStyle}>
-                  <FormattedMessage
-                    id="millionaire.input.thirdPillar.perYear"
-                    values={{ amount: thirdPillarYearly }}
-                  />
-                </div>
               </div>
 
               <div>
-                <div className="d-flex justify-content-between align-items-baseline gap-2">
+                <div className="d-flex justify-content-between align-items-baseline gap-1">
                   <label
                     id="millionaire-return-label"
                     htmlFor="millionaire-return"
@@ -653,7 +582,7 @@ export function MillionaireCalculator() {
                     ↑
                   </button>
                 </div>
-                <p className="form-text w-100 mb-0">
+                <p className="form-text w-100 mb-0 text-center">
                   <FormattedMessage
                     id="millionaire.input.return.hint"
                     values={{
@@ -670,6 +599,34 @@ export function MillionaireCalculator() {
                     }}
                   />
                 </p>
+              </div>
+
+              <div>
+                <div className="d-flex justify-content-between align-items-baseline gap-2">
+                  <label
+                    id="millionaire-fee-label"
+                    htmlFor="millionaire-fee"
+                    className="form-label fw-medium text-nowrap"
+                  >
+                    <FormattedMessage id="millionaire.input.fee" />
+                  </label>
+                  <span className="fw-semibold text-primary text-nowrap">
+                    {formatFeePercent(inputs.currentFundFeePercent)}
+                  </span>
+                </div>
+                <input
+                  id="millionaire-fee"
+                  type="range"
+                  className="form-range"
+                  min={feeBounds.min}
+                  max={feeBounds.max}
+                  step={FEE_STEP}
+                  value={inputs.currentFundFeePercent}
+                  aria-labelledby="millionaire-fee-label"
+                  onChange={(event) =>
+                    update({ currentFundFeePercent: event.target.valueAsNumber })
+                  }
+                />
               </div>
             </div>
           </div>
@@ -739,9 +696,7 @@ export function MillionaireCalculator() {
                     values={{
                       amount: roundedEuro(comparison.gap),
                       age: millionaireAge,
-                      b: (chunks: React.ReactNode) => (
-                        <span className="text-success fw-bold">{chunks}</span>
-                      ),
+                      b: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
                     }}
                   />
                 ) : (
@@ -763,10 +718,20 @@ export function MillionaireCalculator() {
       </div>
 
       {!isRetired && nextStepsSection}
-      {!isRetired && breakdownSection}
-      <p className="form-text m-0">
-        <FormattedMessage id="millionaire.disclaimer" />
-      </p>
+      <div className="form-text m-0">
+        <FormattedMessage
+          id="millionaire.disclaimer"
+          values={{
+            p: (chunks: React.ReactNode) => <p className="mb-2">{chunks}</p>,
+            // Gray link, matching the first-pillar note on the 2nd-pillar growth page.
+            a: (chunks: React.ReactNode) => (
+              <Link to="/1st-vs-2nd-pillar" className="text-secondary">
+                {chunks}
+              </Link>
+            ),
+          }}
+        />
+      </div>
     </div>
   );
 }

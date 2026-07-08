@@ -59,9 +59,9 @@ describe('deriveGrossSalary', () => {
     const salary = deriveGrossSalary([
       thirdPillarContribution(500, '2026-06-20T00:00:00Z') as Contribution,
       secondPillarContribution(0, '2026-06-15T00:00:00Z'), // state-only gap month, skip
-      secondPillarContribution(100, '2026-03-10T00:00:00Z'), // gross 2500 -> 3000 rounded
+      secondPillarContribution(100, '2026-03-10T00:00:00Z'), // gross 2500 -> 2000 floored
     ]);
-    expect(salary).toBe(3000);
+    expect(salary).toBe(2000);
   });
 
   it('returns null when there is no usable second-pillar contribution', () => {
