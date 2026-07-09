@@ -9,6 +9,7 @@ type InvestableAssetsStepProps<T extends FieldValues> = {
   name: FieldPath<T>;
   options: { value: InvestableAssetsOption; labelId: TranslationKey }[];
   titleId: TranslationKey;
+  descriptionId?: TranslationKey;
 };
 
 const optionRadioId = (value: InvestableAssetsOption) =>
@@ -43,6 +44,7 @@ export const InvestableAssetsStep = <T extends FieldValues>({
   name,
   options,
   titleId,
+  descriptionId = 'flows.savingsFundOnboarding.investableAssetsStep.description',
 }: InvestableAssetsStepProps<T>) => {
   const intl = useIntl();
   return (
@@ -52,7 +54,7 @@ export const InvestableAssetsStep = <T extends FieldValues>({
           <FormattedMessage id={titleId} />
         </h2>
         <p className="m-0">
-          <FormattedMessage id="flows.savingsFundOnboarding.investableAssetsStep.description" />
+          <FormattedMessage id={descriptionId} />
         </p>
       </div>
       <div className="section-content d-flex flex-column gap-4">

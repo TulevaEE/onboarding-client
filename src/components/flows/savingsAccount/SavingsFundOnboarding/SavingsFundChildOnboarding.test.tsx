@@ -155,7 +155,7 @@ describe('SavingsFundChildOnboarding', () => {
     userEvent.click(continueButton());
 
     await waitFor(() => {
-      expect(history.location.pathname).toBe('/savings-fund/onboarding/success');
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/success/child');
     });
   });
 

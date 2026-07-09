@@ -9,27 +9,41 @@ type InfoSectionVariant = 'payment' | 'withdraw';
 interface InfoSectionProps {
   variant: InfoSectionVariant;
   roleType?: RoleType;
+  isRepresentingChild?: boolean;
 }
 
-const creditorMessageId = (variant: InfoSectionVariant, isLegalEntity: boolean) => {
-  if (!isLegalEntity) {
+const creditorMessageId = (
+  variant: InfoSectionVariant,
+  isLegalEntity: boolean,
+  isRepresentingChild: boolean,
+) => {
+  if (isLegalEntity) {
     return variant === 'payment'
-      ? ('savingsFund.payment.infoSection.creditor' as const)
-      : ('savingsFund.withdraw.infoSection.creditor' as const);
+      ? ('savingsFund.payment.infoSection.creditor.legalEntity' as const)
+      : ('savingsFund.withdraw.infoSection.creditor.legalEntity' as const);
+  }
+  if (isRepresentingChild && variant === 'payment') {
+    return 'savingsFund.payment.infoSection.creditor.child' as const;
   }
   return variant === 'payment'
-    ? ('savingsFund.payment.infoSection.creditor.legalEntity' as const)
-    : ('savingsFund.withdraw.infoSection.creditor.legalEntity' as const);
+    ? ('savingsFund.payment.infoSection.creditor' as const)
+    : ('savingsFund.withdraw.infoSection.creditor' as const);
 };
 
-export const InfoSection: FC<InfoSectionProps> = ({ variant, roleType = 'PERSON' }) => {
+export const InfoSection: FC<InfoSectionProps> = ({
+  variant,
+  roleType = 'PERSON',
+  isRepresentingChild = false,
+}) => {
   const intl = useIntl();
   const isLegalEntity = roleType === 'LEGAL_ENTITY';
 
   return (
     <SimpleList>
       <SimpleListItem
-        title={intl.formatMessage({ id: creditorMessageId(variant, isLegalEntity) })}
+        title={intl.formatMessage({
+          id: creditorMessageId(variant, isLegalEntity, isRepresentingChild),
+        })}
         media={<Verify />}
       />
       {!isLegalEntity && (

@@ -5,10 +5,22 @@ import { usePageTitle } from '../../../common/usePageTitle';
 
 type SavingsFundOnboardingSuccessProps = {
   company?: boolean;
+  child?: boolean;
+};
+
+const successDescriptionId = (company: boolean, child: boolean) => {
+  if (company) {
+    return 'savingsFund.onboarding.success.company.description' as const;
+  }
+  if (child) {
+    return 'savingsFund.onboarding.success.child.description' as const;
+  }
+  return 'savingsFund.onboarding.success.description' as const;
 };
 
 export const SavingsFundOnboardingSuccess: FC<SavingsFundOnboardingSuccessProps> = ({
   company = false,
+  child = false,
 }) => {
   usePageTitle(
     company
@@ -40,13 +52,7 @@ export const SavingsFundOnboardingSuccess: FC<SavingsFundOnboardingSuccessProps>
         }
       >
         <p>
-          <FormattedMessage
-            id={
-              company
-                ? 'savingsFund.onboarding.success.company.description'
-                : 'savingsFund.onboarding.success.description'
-            }
-          />
+          <FormattedMessage id={successDescriptionId(company, child)} />
         </p>
       </StatusAlert>
     </div>

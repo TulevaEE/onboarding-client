@@ -2,19 +2,31 @@ import { FC } from 'react';
 import { Control, Controller } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { IdentityFormFields } from '../types';
+import { TranslationKey } from '../../../../translations';
 
 type ContactDetailsStepProps = {
   control: Control<IdentityFormFields>;
+  titleId?: TranslationKey;
+  descriptionId?: TranslationKey;
 };
-export const ContactDetailsStep: FC<ContactDetailsStepProps> = ({ control }) => {
+export const ContactDetailsStep: FC<ContactDetailsStepProps> = ({
+  control,
+  titleId = 'flows.savingsFundOnboarding.contactDetailsStep.title',
+  descriptionId,
+}) => {
   const intl = useIntl();
 
   return (
     <section className="d-flex flex-column gap-4" key="contacts">
       <div className="d-flex flex-column gap-1">
         <h2 className="m-0">
-          <FormattedMessage id="flows.savingsFundOnboarding.contactDetailsStep.title" />
+          <FormattedMessage id={titleId} />
         </h2>
+        {descriptionId ? (
+          <p className="m-0">
+            <FormattedMessage id={descriptionId} />
+          </p>
+        ) : null}
       </div>
       <div className="section-content d-flex flex-column gap-4">
         <div>

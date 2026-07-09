@@ -11,6 +11,7 @@ type InvestmentGoalStepProps<T extends FieldValues> = {
   name: FieldPath<T>;
   options: { value: InvestmentGoalOption; labelId: TranslationKey }[];
   titleId: TranslationKey;
+  descriptionId?: TranslationKey;
 };
 
 const optionRadioId = (value: InvestmentGoalOption) =>
@@ -49,6 +50,7 @@ export const InvestmentGoalStep = <T extends FieldValues>({
   name,
   options,
   titleId,
+  descriptionId,
 }: InvestmentGoalStepProps<T>) => {
   const intl = useIntl();
   const { field: investmentGoalsField } = useController({
@@ -75,6 +77,11 @@ export const InvestmentGoalStep = <T extends FieldValues>({
         <h2 className="m-0">
           <FormattedMessage id={titleId} />
         </h2>
+        {descriptionId ? (
+          <p className="m-0">
+            <FormattedMessage id={descriptionId} />
+          </p>
+        ) : null}
       </div>
       <div className="section-content d-flex flex-column gap-4">
         <Controller
