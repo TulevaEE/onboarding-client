@@ -511,4 +511,29 @@ describe(SavingsFundPayment, () => {
       expect(screen.getByText('12345678')).toBeInTheDocument();
     });
   });
+
+  describe('when representing a child', () => {
+    beforeEach(async () => {
+      cleanup();
+      // A PERSON role whose code differs from the logged-in user's personal code
+      // (mockUser.personalCode = '39001011234') means we're acting for a child.
+      userBackend(server, {
+        role: { type: 'PERSON', code: '51201011234', name: 'Junior Doe' },
+      });
+
+      initApp();
+      history.push('/savings-fund/payment');
+    });
+
+    it('shows the child bank account creditor text instead of the personal one', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+
+      expect(
+        screen.getByText('The money must come from the child’s bank account.'),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText('The money must come from a bank account in your name.'),
+      ).not.toBeInTheDocument();
+    });
+  });
 });

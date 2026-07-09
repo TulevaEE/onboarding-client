@@ -6,12 +6,17 @@ import { EstonianAddressForm } from './EstonianAddressForm';
 import Select from '../../../../account/ComparisonCalculator/select';
 import { mapCountriesToGroupedOptions } from '../../../../common/countries';
 import { AddressForm } from './AddressForm';
+import { TranslationKey } from '../../../../translations';
 
 type ResidencyStepProps = {
   control: Control<IdentityFormFields>;
+  titleId?: TranslationKey;
 };
 
-export const ResidencyStep: FC<ResidencyStepProps> = ({ control }) => {
+export const ResidencyStep: FC<ResidencyStepProps> = ({
+  control,
+  titleId = 'flows.savingsFundOnboarding.residencyStep.title',
+}) => {
   const intl = useIntl();
   const countryCode = useWatch({ control, name: 'address.countryCode' });
   const street = useWatch({ control, name: 'address.street' });
@@ -30,7 +35,7 @@ export const ResidencyStep: FC<ResidencyStepProps> = ({ control }) => {
     <section className="d-flex flex-column gap-4" key="residence">
       <div className="d-flex flex-column gap-1">
         <h2 className="m-0">
-          <FormattedMessage id="flows.savingsFundOnboarding.residencyStep.title" />
+          <FormattedMessage id={titleId} />
         </h2>
       </div>
       <div className="section-content d-flex flex-column gap-4">

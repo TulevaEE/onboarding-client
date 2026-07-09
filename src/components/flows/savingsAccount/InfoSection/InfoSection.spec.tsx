@@ -31,6 +31,17 @@ describe('InfoSection', () => {
       expect(learnMoreLink).toHaveAttribute('target', '_blank');
       expect(learnMoreLink).toHaveAttribute('rel', 'noreferrer');
     });
+
+    it('shows the child bank account creditor text when representing a child', () => {
+      renderWrapped(<InfoSection variant="payment" isRepresentingChild />);
+
+      expect(
+        screen.getByText('The money must come from the child’s bank account.'),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText('The money must come from a bank account in your name.'),
+      ).not.toBeInTheDocument();
+    });
   });
 
   describe('withdraw variant', () => {

@@ -100,11 +100,24 @@ export const SavingsFundChildOnboarding = () => {
       fields: [],
     },
     {
-      component: <ResidencyStep key="residency" control={asIdentityControl(control)} />,
+      component: (
+        <ResidencyStep
+          key="residency"
+          control={asIdentityControl(control)}
+          titleId="flows.savingsFundChildOnboarding.residencyStep.title"
+        />
+      ),
       fields: ['address.countryCode', 'address.street', 'address.city', 'address.postalCode'],
     },
     {
-      component: <ContactDetailsStep key="contact" control={asIdentityControl(control)} />,
+      component: (
+        <ContactDetailsStep
+          key="contact"
+          control={asIdentityControl(control)}
+          titleId="flows.savingsFundChildOnboarding.contactDetailsStep.title"
+          descriptionId="flows.savingsFundChildOnboarding.contactDetailsStep.description"
+        />
+      ),
       fields: ['email'],
     },
     {
@@ -114,6 +127,7 @@ export const SavingsFundChildOnboarding = () => {
           control={control}
           name="investmentGoals"
           titleId="flows.savingsFundChildOnboarding.goalStep.title"
+          descriptionId="flows.savingsFundChildOnboarding.goalStep.description"
           options={[
             { value: 'CHILD', labelId: 'flows.savingsFundChildOnboarding.goalStep.general' },
             { value: 'EDUCATION', labelId: 'flows.savingsFundChildOnboarding.goalStep.education' },
@@ -136,6 +150,7 @@ export const SavingsFundChildOnboarding = () => {
           control={control}
           name="investableAssets"
           titleId="flows.savingsFundChildOnboarding.assetsStep.title"
+          descriptionId="flows.savingsFundChildOnboarding.assetsStep.description"
           options={[
             {
               value: 'UP_TO_2000',
@@ -244,7 +259,7 @@ export const SavingsFundChildOnboarding = () => {
 
     if (outcome === 'completed') {
       // Stay as the child so the success page's deposit CTA is the child's.
-      history.push('/savings-fund/onboarding/success');
+      history.push('/savings-fund/onboarding/success/child');
       return;
     }
 
