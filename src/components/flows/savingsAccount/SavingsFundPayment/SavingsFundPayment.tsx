@@ -7,9 +7,9 @@ import { redirectToPayment } from '../../../common/api';
 import { useMe } from '../../../common/apiHooks';
 import { PaymentChannel } from '../../../common/apiModels';
 import { usePageTitle } from '../../../common/usePageTitle';
-import { isActingAsSelf } from '../../../common/utils';
 import { PaymentBankButtons } from '../../thirdPillar/ThirdPillarPayment/PaymentBankButtons';
 import { BankKey } from '../../thirdPillar/ThirdPillarPayment/types';
+import { accountHolderFor } from '../accountHolder';
 import { AmountInput } from '../AmountInput';
 import { InfoSection } from '../InfoSection';
 import { PaymentTypeSelection, SavingsFundPaymentType } from './PaymentTypeSelection';
@@ -61,10 +61,8 @@ export const SavingsFundPayment: FC = () => {
     return null;
   }
 
-  const isLegalEntity = user.role.type === 'LEGAL_ENTITY';
-  // A PERSON role whose code isn't the logged-in user's own = representing another
-  // natural person, which in the savings-fund flow is always a child.
-  const isRepresentingChild = user.role.type === 'PERSON' && !isActingAsSelf(user);
+  const accountHolder = accountHolderFor(user);
+  const isLegalEntity = accountHolder === 'company';
 
   const handleRedirect = async (data: IPaymentForm) => {
     try {
@@ -99,11 +97,7 @@ export const SavingsFundPayment: FC = () => {
       <PaymentTypeSelection paymentType={paymentType} setPaymentType={setPaymentType} />
 
       <div className="pt-4 pb-4 border-top border-bottom">
-        <InfoSection
-          variant="payment"
-          roleType={user.role.type}
-          isRepresentingChild={isRepresentingChild}
-        />
+        <InfoSection variant="payment" accountHolder={accountHolder} />
       </div>
 
       <form onSubmit={handleSubmit((data) => handleRedirect(data))} method="post">

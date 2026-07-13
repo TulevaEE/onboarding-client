@@ -10,6 +10,7 @@ import { getBankName } from '../../../common/iban';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { formatAmountForCurrency } from '../../../common/utils';
 import Slider from '../../withdrawals/Slider';
+import { accountHolderFor } from '../accountHolder';
 import { AmountInput } from '../AmountInput';
 import { InfoSection } from '../InfoSection';
 import Card from '../../../common/card';
@@ -87,7 +88,10 @@ export const SavingsFundWithdraw: FC = () => {
 
       {currentStep === 'INPUT' ? (
         <div className="pt-4 pb-4 border-top border-bottom">
-          <InfoSection variant="withdraw" roleType={user?.role.type} />
+          <InfoSection
+            variant="withdraw"
+            accountHolder={user ? accountHolderFor(user) : undefined}
+          />
         </div>
       ) : null}
 

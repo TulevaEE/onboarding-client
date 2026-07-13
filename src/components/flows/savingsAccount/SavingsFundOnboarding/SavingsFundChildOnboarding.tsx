@@ -114,8 +114,7 @@ export const SavingsFundChildOnboarding = () => {
         <ContactDetailsStep
           key="contact"
           control={asIdentityControl(control)}
-          titleId="flows.savingsFundChildOnboarding.contactDetailsStep.title"
-          descriptionId="flows.savingsFundChildOnboarding.contactDetailsStep.description"
+          accountHolder="child"
         />
       ),
       fields: ['email'],

@@ -165,16 +165,16 @@ export class LoggedInApp extends PureComponent {
             />
             <Route
               path="/savings-fund/onboarding/success/company"
-              render={() => <SavingsFundOnboardingSuccess company />}
+              render={() => <SavingsFundOnboardingSuccess accountHolder="company" />}
             />
             <Route
               path="/savings-fund/onboarding/success/child"
-              render={() => <SavingsFundOnboardingSuccess child />}
+              render={() => <SavingsFundOnboardingSuccess accountHolder="child" />}
             />
             <Route
               exact
               path="/savings-fund/onboarding/success"
-              component={SavingsFundOnboardingSuccess}
+              render={() => <SavingsFundOnboardingSuccess accountHolder="self" />}
             />
             <Route
               path="/savings-fund/onboarding/pending"

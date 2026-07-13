@@ -6,8 +6,9 @@ import { renderWrapped } from '../../../../../test/utils';
 import { ContactDetailsStep } from './ContactDetailsStep';
 import { IdentityFormFields } from '../types';
 import translations from '../../../../translations';
+import { AccountHolder } from '../../accountHolder';
 
-const ContactDetailsStepWrapper = () => {
+const ContactDetailsStepWrapper = ({ accountHolder }: { accountHolder?: AccountHolder }) => {
   const { control, trigger } = useForm<IdentityFormFields>({
     mode: 'onBlur',
     defaultValues: {
@@ -27,7 +28,7 @@ const ContactDetailsStepWrapper = () => {
   return (
     <IntlProvider locale="en" messages={translations.en}>
       <form>
-        <ContactDetailsStep control={control} />
+        <ContactDetailsStep control={control} accountHolder={accountHolder} />
         <button type="button" onClick={() => trigger('email')}>
           Validate
         </button>
@@ -77,5 +78,27 @@ describe('ContactDetailsStep', () => {
     userEvent.type(phoneInput, '+372 5555 5555');
 
     expect(phoneInput).toHaveValue('+372 5555 5555');
+  });
+
+  test('asks for your own contact details by default', () => {
+    renderWrapped(<ContactDetailsStepWrapper />);
+
+    expect(screen.getByRole('heading', { name: 'Your contact details' })).toBeInTheDocument();
+    expect(
+      screen.queryByText(/By default we use your contact as the child’s representative/),
+    ).not.toBeInTheDocument();
+  });
+
+  test('asks for the child’s contact details when the account holder is a child', () => {
+    renderWrapped(<ContactDetailsStepWrapper accountHolder="child" />);
+
+    expect(
+      screen.getByRole('heading', { name: /The child’s contact details/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'By default we use your contact as the child’s representative. If the child has their own email, enter it.',
+      ),
+    ).toBeInTheDocument();
   });
 });
