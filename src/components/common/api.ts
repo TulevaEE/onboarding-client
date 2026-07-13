@@ -68,6 +68,7 @@ import {
   ChildResponse,
   CompanyOnboardingSurveyCommand,
   CreateChildCommand,
+  EligibleChild,
   KycIdentity,
   OnboardingSurveyCommand,
 } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
@@ -262,6 +263,10 @@ export function postSavingsFundOnboardingSurvey(command: OnboardingSurveyCommand
 
 export function getKycIdentity(): Promise<KycIdentity> {
   return getWithAuthentication(getEndpoint('/v1/kyc/identity'));
+}
+
+export function getEligibleChildren(): Promise<EligibleChild[]> {
+  return getWithAuthentication(getEndpoint('/v1/me/children'));
 }
 
 export function createChild(command: CreateChildCommand): Promise<ChildResponse> {

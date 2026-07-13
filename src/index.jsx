@@ -10,12 +10,13 @@ import { Provider as ReduxProvider } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 import { ConnectedRouter, routerMiddleware } from 'connected-react-router';
 import ReactGA from 'react-ga4';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import moment from 'moment';
 import 'moment/locale/et';
 import TagManager from 'react-gtm-module';
 
 import createRootReducer from './reducers';
+import { queryClient } from './queryClient';
 import { getQueryParams } from './utils';
 import { initializeConfiguration, updateLanguage } from './components/config/config';
 import translations from './components/translations';
@@ -48,8 +49,6 @@ const store = createStore(
   createRootReducer(history),
   composeEnhancers(applyMiddleware(routerMiddleware(history), thunk)),
 );
-
-const queryClient = new QueryClient();
 
 function applyRouting() {
   const queryParams = getQueryParams();

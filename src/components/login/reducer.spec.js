@@ -26,6 +26,7 @@ import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 import { initializeConfiguration } from '../config/config';
 import { getAuthentication } from '../common/authenticationManager';
 import { anAuthenticationManager } from '../common/authenticationManagerFixture';
+import { queryClient } from '../../queryClient';
 
 describe('Login reducer', () => {
   it('changes phone number', () => {
@@ -172,6 +173,14 @@ describe('Login reducer', () => {
 
     expect(newState).toEqual(initialState);
     expect(getAuthentication().isAuthenticated()).toBe(false);
+  });
+
+  it('clears the query cache when you log out, so the next login cannot see cached data', () => {
+    queryClient.setQueryData(['eligibleChildren'], [{ personalCode: '61506150006' }]);
+
+    loginReducer(undefined, { type: LOG_OUT });
+
+    expect(queryClient.getQueryData(['eligibleChildren'])).toBeUndefined();
   });
 
   it('starts loading when starting to get the user conversion', () => {
