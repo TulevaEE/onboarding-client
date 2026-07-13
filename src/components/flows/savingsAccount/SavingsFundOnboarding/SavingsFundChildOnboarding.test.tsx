@@ -5,6 +5,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   createChildBackend,
+  eligibleChildrenBackend,
   savingsFundOnboardingStatusBackend,
   savingsFundOnboardingSurveyBackend,
   switchRoleBackend,
@@ -25,6 +26,7 @@ beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 beforeEach(() => {
   initializeConfiguration();
   userBackend(server);
+  eligibleChildrenBackend(server);
   createChildBackend(server);
   savingsFundOnboardingSurveyBackend(server);
   switchRoleBackend(server);
@@ -36,7 +38,9 @@ afterAll(() => server.close());
 const continueButton = () => screen.getByRole('button', { name: /continue/i });
 
 const verifyChild = async () => {
-  userEvent.type(await screen.findByLabelText(/personal ID code/i), CHILD_CODE);
+  const input = await screen.findByLabelText(/personal ID code/i);
+  await waitFor(() => expect(input).toBeEnabled());
+  userEvent.type(input, CHILD_CODE);
   userEvent.click(continueButton());
 };
 
@@ -78,6 +82,19 @@ describe('SavingsFundChildOnboarding', () => {
     expect(screen.getByLabelText(/personal ID code/i)).toBeInTheDocument();
   });
 
+  it('offers the children from the register in a dropdown and verifies the selected child', async () => {
+    eligibleChildrenBackend(server, [{ personalCode: CHILD_CODE }]);
+    renderWrapped(<SavingsFundChildOnboarding />);
+
+    userEvent.selectOptions(
+      await screen.findByRole('combobox', { name: /personal ID code/i }),
+      CHILD_CODE,
+    );
+    userEvent.click(continueButton());
+
+    expect(await screen.findByText(/Mammu Maasikas/)).toBeInTheDocument();
+  });
+
   it('confirms the child from the population register when custody is verified', async () => {
     renderWrapped(<SavingsFundChildOnboarding />);
 
@@ -107,8 +124,7 @@ describe('SavingsFundChildOnboarding', () => {
     );
     renderWrapped(<SavingsFundChildOnboarding />);
 
-    userEvent.type(await screen.findByLabelText(/personal ID code/i), CHILD_CODE);
-    userEvent.click(continueButton());
+    await verifyChild();
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/check the personal ID code/i);
     expect(screen.getByLabelText(/personal ID code/i)).toBeInTheDocument();

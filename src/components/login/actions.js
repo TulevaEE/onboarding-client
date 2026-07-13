@@ -301,7 +301,9 @@ export function logOut() {
         scope.clear();
       });
     }
-    return api.logout().then(() => {
+    // api.logout() drops the local authentication before the request settles, so the
+    // local LOG_OUT cleanup (state reset, query cache clear) must run even on failure
+    return api.logout().finally(() => {
       dispatch({ type: LOG_OUT });
     });
   };

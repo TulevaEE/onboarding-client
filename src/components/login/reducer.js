@@ -25,6 +25,7 @@ import {
 import { getGlobalErrorCode } from '../common/errorMessage';
 import { UPDATE_USER_SUCCESS } from '../common/user/constants';
 import { getAuthentication } from '../common/authenticationManager';
+import { queryClient } from '../../queryClient';
 
 export const initialState = {
   phoneNumber: '',
@@ -159,6 +160,9 @@ export default function loginReducer(state = initialState, action) {
     case LOG_OUT:
       // possibly duplicate with logout api action
       getAuthentication().remove();
+      // the app-level query cache holds the previous user's data (children, transactions, ...)
+      // and would leak it to the next login in the same browser session
+      queryClient.clear();
       return {
         ...initialState,
       };

@@ -21,6 +21,7 @@ import {
   getCapitalTransferContract,
   createChild,
   getCompanyBusinessRegistryValidation,
+  getEligibleChildren,
   getContributions,
   getFundPensionStatus,
   getKycIdentity,
@@ -89,6 +90,7 @@ import {
   ChildResponse,
   CompanyOnboardingSurveyCommand,
   CreateChildCommand,
+  EligibleChild,
   KycIdentity,
   OnboardingSurveyCommand,
 } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
@@ -348,6 +350,16 @@ export function useSubmitSavingsFundOnboardingSurvey(): UseMutationResult<
 > {
   return useMutation({
     mutationFn: (command) => postSavingsFundOnboardingSurvey(command),
+  });
+}
+
+export function useEligibleChildren(): UseQueryResult<EligibleChild[]> {
+  // The identity step falls back to manual code entry when this lookup fails,
+  // so fail fast instead of stalling behind silent automatic retries.
+  return useQuery({
+    queryKey: ['eligibleChildren'],
+    queryFn: () => getEligibleChildren(),
+    retry: false,
   });
 }
 

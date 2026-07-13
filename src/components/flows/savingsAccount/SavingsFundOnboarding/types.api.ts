@@ -187,6 +187,12 @@ export type KycIdentity = {
   updatedAt?: string;
 };
 
+// GET /v1/me/children — children whose assets the parent may manage according
+// to the population register. Codes only for now; names may be added later.
+export type EligibleChild = {
+  personalCode: string;
+};
+
 // POST /v1/me/children — the parent opens an account for their child. The custody
 // check runs server-side against the population register; only the code is sent.
 export type CreateChildCommand = {

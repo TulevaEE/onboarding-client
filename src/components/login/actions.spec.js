@@ -395,6 +395,15 @@ describe('Login actions', () => {
     return logout().then(() => expect(dispatch).toHaveBeenCalledWith({ type: LOG_OUT }));
   });
 
+  it('logs you out locally even when the logout request fails', async () => {
+    mockApi.logout = jest.fn(() => Promise.reject(new Error('network down')));
+    const logout = createBoundAction(actions.logOut);
+
+    await expect(logout()).rejects.toThrow('network down');
+
+    expect(dispatch).toHaveBeenCalledWith({ type: LOG_OUT });
+  });
+
   it('can get user conversion', () => {
     const userConversion = { iAmAConversion: true };
     mockApi.getUserConversionWithToken = jest.fn(() => {
