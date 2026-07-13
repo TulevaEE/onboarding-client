@@ -32,8 +32,8 @@ describe('InfoSection', () => {
       expect(learnMoreLink).toHaveAttribute('rel', 'noreferrer');
     });
 
-    it('shows the child bank account creditor text when representing a child', () => {
-      renderWrapped(<InfoSection variant="payment" isRepresentingChild />);
+    it('shows the child bank account creditor text when the account holder is a child', () => {
+      renderWrapped(<InfoSection variant="payment" accountHolder="child" />);
 
       expect(
         screen.getByText('The money must come from the child’s bank account.'),
@@ -41,6 +41,15 @@ describe('InfoSection', () => {
       expect(
         screen.queryByText('The money must come from a bank account in your name.'),
       ).not.toBeInTheDocument();
+    });
+
+    it('shows the company creditor text and hides the investment account tip for a company', () => {
+      renderWrapped(<InfoSection variant="payment" accountHolder="company" />);
+
+      expect(
+        screen.getByText("The money must come from your company's bank account."),
+      ).toBeInTheDocument();
+      expect(screen.queryByText('investment account')).not.toBeInTheDocument();
     });
   });
 

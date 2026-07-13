@@ -2,26 +2,26 @@ import { FC } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { StatusAlert } from '../../../common/statusAlert';
 import { usePageTitle } from '../../../common/usePageTitle';
+import { AccountHolder } from '../accountHolder';
 
 type SavingsFundOnboardingSuccessProps = {
-  company?: boolean;
-  child?: boolean;
+  accountHolder: AccountHolder;
 };
 
-const successDescriptionId = (company: boolean, child: boolean) => {
-  if (company) {
+const successDescriptionId = (accountHolder: AccountHolder) => {
+  if (accountHolder === 'company') {
     return 'savingsFund.onboarding.success.company.description' as const;
   }
-  if (child) {
+  if (accountHolder === 'child') {
     return 'savingsFund.onboarding.success.child.description' as const;
   }
   return 'savingsFund.onboarding.success.description' as const;
 };
 
 export const SavingsFundOnboardingSuccess: FC<SavingsFundOnboardingSuccessProps> = ({
-  company = false,
-  child = false,
+  accountHolder,
 }) => {
+  const company = accountHolder === 'company';
   usePageTitle(
     company
       ? 'savingsFund.onboarding.success.company.pageTitle'
@@ -52,7 +52,7 @@ export const SavingsFundOnboardingSuccess: FC<SavingsFundOnboardingSuccessProps>
         }
       >
         <p>
-          <FormattedMessage id={successDescriptionId(company, child)} />
+          <FormattedMessage id={successDescriptionId(accountHolder)} />
         </p>
       </StatusAlert>
     </div>
