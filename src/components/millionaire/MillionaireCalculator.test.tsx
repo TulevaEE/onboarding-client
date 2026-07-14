@@ -423,6 +423,20 @@ describe('MillionaireCalculator', () => {
     expect(after).toBeLessThan(before);
   });
 
+  it('still lists the next steps for someone past retirement age', () => {
+    givenData();
+    // The projection is over, but a high fund fee costs them more than ever at their peak
+    // balance, and they can still switch funds and pay into the III pillar.
+    mockUseMe.mockReturnValue({
+      data: user({ age: 68, retirementAge: 67 }),
+    } as ReturnType<typeof useMe>);
+
+    renderCalculator();
+
+    expect(screen.getByTestId('cta-item-secondPillarToTuleva')).toBeInTheDocument();
+    expect(screen.getByTestId('cta-item-thirdPillarToTuleva')).toBeInTheDocument();
+  });
+
   it('shows a retirement notice instead of a chart for someone past retirement age', () => {
     mockUseMe.mockReturnValue({
       data: user({ age: 68, retirementAge: 67 }),

@@ -947,7 +947,12 @@ export function MillionaireCalculator() {
         </div>
       </div>
 
-      {!isRetired && nextStepsSection}
+      {/* Past retirement age there is no projection left to draw, but the steps still
+          stand: a saver at their lifetime peak balance is exactly who a high fund fee
+          costs the most, they can still switch funds, and both the III pillar and the
+          savings fund stay open to them. It is the chart that stops making sense, not
+          the advice. */}
+      {nextStepsSection}
       <div className="form-text m-0">
         <FormattedMessage
           id="millionaire.disclaimer"
