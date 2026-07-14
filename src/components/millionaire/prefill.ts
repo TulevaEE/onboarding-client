@@ -19,7 +19,8 @@ const STATE_SOCIAL_TAX_RATE = 0.04;
 const DEFAULT_GROSS_SALARY = 2000;
 const SALARY_ROUNDING = 1000;
 const BALANCE_ROUNDING = 1000;
-const THIRD_PILLAR_ROUNDING = 10;
+// Both monthly sliders step in 10 €, so pre-filled amounts land on a step.
+const MONTHLY_ROUNDING = 10;
 const TRAILING_MONTHS = 12;
 // A standing order is set up in the saver's own bank, so we can only recognise it
 // by its fingerprint: money arriving nearly every month. Look at the last four
@@ -30,9 +31,18 @@ const TRAILING_MONTHS = 12;
 const RECURRING_LOOKBACK_MONTHS = 4;
 const RECURRING_MIN_MONTHS = 3;
 
-// The user's current values, shaped so `{ ...prefill, annualReturnPercent, currentFundFeePercent }`
-// is a ready-to-use CalculatorInputs.
-export type PrefillValues = Omit<CalculatorInputs, 'annualReturnPercent' | 'currentFundFeePercent'>;
+// The user's current values, as far as the user, their funds and their contributions
+// know them. The return, the fund fee and the savings fund come from elsewhere, so the
+// component fills those in on top.
+export type PrefillValues = Omit<
+  CalculatorInputs,
+  | 'annualReturnPercent'
+  | 'currentFundFeePercent'
+  | 'initialSavingsFundBalance'
+  | 'savingsFundMonthly'
+  | 'tulevaFee'
+  | 'savingsFundFee'
+>;
 
 const roundTo = (value: number, step: number): number => Math.round(value / step) * step;
 const floorTo = (value: number, step: number): number => Math.floor(value / step) * step;
@@ -68,46 +78,54 @@ export function deriveThirdPillarMonthly(contributions: Contribution[], now: Dat
     .reduce((sum, c) => sum + c.amount, 0);
 
   return clamp(
-    roundTo(trailingTotal / TRAILING_MONTHS, THIRD_PILLAR_ROUNDING),
+    roundTo(trailingTotal / TRAILING_MONTHS, MONTHLY_ROUNDING),
     0,
     MAX_THIRD_PILLAR_MONTHLY,
   );
 }
 
-// Recent III pillar money, totalled per calendar month and keyed by how many months
-// back that month is (0 = this month), so a month with two payments counts once.
-const recentThirdPillarByMonth = (
-  contributions: Contribution[],
-  now: Date,
-): Map<number, number> => {
+// Money arriving, whatever it was paid into.
+export type Payment = { time: string; amount: number };
+
+// Recent money, totalled per calendar month and keyed by how many months back that
+// month is (0 = this month), so a month with two payments counts once.
+const recentPaymentsByMonth = (payments: Payment[], now: Date): Map<number, number> => {
   const totals = new Map<number, number>();
-  contributions
-    .filter(isThirdPillar)
-    .filter((c) => c.amount > 0)
-    .forEach((c) => {
-      const time = new Date(c.time);
+  payments
+    .filter((payment) => payment.amount > 0)
+    .forEach((payment) => {
+      const time = new Date(payment.time);
       const monthsAgo =
         (now.getFullYear() - time.getFullYear()) * 12 + (now.getMonth() - time.getMonth());
       if (monthsAgo >= 0 && monthsAgo < RECURRING_LOOKBACK_MONTHS) {
-        totals.set(monthsAgo, (totals.get(monthsAgo) ?? 0) + c.amount);
+        totals.set(monthsAgo, (totals.get(monthsAgo) ?? 0) + payment.amount);
       }
     });
   return totals;
 };
 
-export function contributesMonthlyToThirdPillar(contributions: Contribution[], now: Date): boolean {
-  return recentThirdPillarByMonth(contributions, now).size >= RECURRING_MIN_MONTHS;
-}
+const paysMonthly = (totals: Map<number, number>): boolean => totals.size >= RECURRING_MIN_MONTHS;
 
 // What the standing order pays today: the newest month's total, not a trailing
 // average, so someone who raised their standing order sees the amount they set.
+const latestMonthTotal = (totals: Map<number, number>): number =>
+  totals.size === 0 ? 0 : totals.get(Math.min(...Array.from(totals.keys()))) ?? 0;
+
+export function contributesMonthlyToThirdPillar(contributions: Contribution[], now: Date): boolean {
+  return paysMonthly(recentPaymentsByMonth(contributions.filter(isThirdPillar), now));
+}
+
 export function latestThirdPillarMonthlyAmount(contributions: Contribution[], now: Date): number {
-  const totals = recentThirdPillarByMonth(contributions, now);
-  if (totals.size === 0) {
-    return 0;
-  }
-  const newestMonth = Math.min(...Array.from(totals.keys()));
-  return totals.get(newestMonth) ?? 0;
+  return latestMonthTotal(recentPaymentsByMonth(contributions.filter(isThirdPillar), now));
+}
+
+// Savings fund money is lumpy: a one-off transfer is usually existing wealth moving in,
+// not a new habit, and averaging it over twelve months would invent a monthly
+// contribution the saver never makes (and then project it for decades). So only a real
+// standing order pre-fills the slider; anything else starts the saver at zero.
+export function deriveSavingsFundMonthly(payments: Payment[], now: Date): number {
+  const totals = recentPaymentsByMonth(payments, now);
+  return paysMonthly(totals) ? roundTo(latestMonthTotal(totals), MONTHLY_ROUNDING) : 0;
 }
 
 export function deriveInitialBalance(sourceFunds: SourceFund[]): number {

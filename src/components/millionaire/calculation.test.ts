@@ -375,6 +375,10 @@ describe('buildComparison', () => {
     currentThirdPillarMonthly: 0,
     annualReturnPercent: 7,
     currentFundFeePercent: 0,
+    initialSavingsFundBalance: 0,
+    savingsFundMonthly: 0,
+    tulevaFee: TULEVA_FEE,
+    savingsFundFee: TULEVA_FEE,
   };
 
   it('composes today vs Laura vs high-fee scenarios consistently with project()', () => {
@@ -449,6 +453,12 @@ describe('buildComparison', () => {
                 // A realistic current fund fee (>= Tuleva's), so Laura stays the
                 // ceiling: a lower fee is the one way a maxed saver could pull ahead.
                 currentFundFeePercent: 0.5,
+                // Savings fund money is identical under either course, so it cannot
+                // tip the current course past Laura however large it is.
+                initialSavingsFundBalance: 50000,
+                savingsFundMonthly: 200,
+                tulevaFee: TULEVA_FEE,
+                savingsFundFee: TULEVA_FEE,
               });
               // Laura is the ceiling: within tax-capped inputs and a fee no lower than
               // Tuleva's, the saver can match her but never exceed her.
@@ -465,5 +475,62 @@ describe('buildComparison', () => {
     expect(comparison.lauraTrajectory[0]).toEqual({ age: 35, value: 15000 });
     expect(comparison.todayTrajectory[comparison.todayTrajectory.length - 1].age).toBe(67);
     expect(comparison.lauraTrajectory[comparison.lauraTrajectory.length - 1].age).toBe(67);
+  });
+
+  const withSavingsFund = {
+    ...inputs,
+    initialSavingsFundBalance: 20000,
+    savingsFundMonthly: 100,
+  };
+
+  it('counts the savings fund on both lines, leaving the recipe gap untouched', () => {
+    const base = buildComparison(inputs);
+    const withFund = buildComparison(withSavingsFund);
+
+    // Savings fund money is the same under either course, so it lifts both lines by the
+    // same amount: it grows the saver's assets without changing what the recipe is worth.
+    expect(withFund.today.total - base.today.total).toBeCloseTo(
+      withFund.laura.total - base.laura.total,
+      6,
+    );
+    expect(withFund.gap).toBeCloseTo(base.gap, 6);
+    expect(withFund.today.total).toBeGreaterThan(base.today.total);
+    expect(withFund.lauraTrajectory[0]).toEqual({ age: 35, value: 35000 });
+  });
+
+  it("grows the savings fund at Tuleva's fee even when the saver's pension fund is expensive", () => {
+    const expensive = { ...inputs, currentFundFeePercent: 1.5 };
+    const grown = buildComparison({ ...expensive, initialSavingsFundBalance: 20000 });
+    const base = buildComparison(expensive);
+
+    // The savings fund IS a Tuleva index fund, so the fund-fee slider must not drag it:
+    // 20 000 € compounds at 7% minus Tuleva's fee for the 32 years to retirement.
+    const netReturn = 0.07 - TULEVA_FEE;
+    expect(grown.today.total - base.today.total).toBeCloseTo(20000 * (1 + netReturn) ** 32, 6);
+  });
+
+  it('keeps compounding the savings fund after retirement when pension fees eat the return', () => {
+    const comparison = buildComparison({
+      ...inputs,
+      currentAge: 60,
+      retirementAge: 65,
+      initialBalance: 0,
+      currentSecondPillarRate: 0,
+      currentThirdPillarMonthly: 0,
+      annualReturnPercent: 7,
+      // A fee above the return: the pension pot shrinks every year, but the savings
+      // fund pays Tuleva's fee and still grows, so a million is reachable.
+      currentFundFeePercent: 8,
+      initialSavingsFundBalance: 100000,
+    });
+
+    expect(comparison.today.millionaireAge).not.toBeNull();
+  });
+
+  it('reaches a million sooner thanks to the savings fund', () => {
+    const withoutFund = buildComparison(inputs);
+    const withFund = buildComparison({ ...inputs, initialSavingsFundBalance: 100000 });
+
+    expect(withFund.laura.millionaireAge).toBeLessThan(withoutFund.laura.millionaireAge as number);
   });
 });

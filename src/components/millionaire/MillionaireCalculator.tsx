@@ -25,16 +25,23 @@ import {
   useSavingsFundBalance,
   useSavingsFundOnboardingStatus,
   useSourceFunds,
+  useTransactions,
 } from '../common/apiHooks';
 import { CurrencyInput } from '../common/input/CurrencyInput';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { formatAmountForCurrency } from '../common/utils';
-import { Conversion } from '../common/apiModels';
+import { Conversion, Fund } from '../common/apiModels';
 import { TranslationKey } from '../translations';
-import { buildComparison, CalculatorInputs, thirdPillarTaxCapMonthly } from './calculation';
+import {
+  buildComparison,
+  CalculatorInputs,
+  thirdPillarTaxCapMonthly,
+  TULEVA_FEE,
+} from './calculation';
 import {
   contributesMonthlyToThirdPillar,
   derivePrefill,
+  deriveSavingsFundMonthly,
   latestThirdPillarMonthlyAmount,
 } from './prefill';
 
@@ -55,6 +62,10 @@ const FEE_MIN_FALLBACK = 0.27;
 const FEE_MAX_FALLBACK = 1.57;
 const FEE_STEP = 0.01;
 const THIRD_PILLAR_STEP = 10;
+// The savings fund has no tax ceiling to cap the slider, so pick a range wide enough to
+// explore with, and the same 10 € step as the III pillar.
+const SAVINGS_FUND_MAX_MONTHLY = 1000;
+const SAVINGS_FUND_STEP = 10;
 const GAP_COPY_THRESHOLD = 1000;
 const MAX_SALARY = 100000;
 const INCOME_TAX_RATE = 0.22; // III pillar contributions are refunded at the income-tax rate
@@ -204,11 +215,48 @@ export function MillionaireCalculator() {
   const { data: sourceFunds } = useSourceFunds();
   const { data: contributions } = useContributions();
   const { data: conversion } = useConversion();
-  const { data: funds } = useFunds();
+  // Funds and transactions only refine the pre-fill (fee bounds, savings fund standing
+  // order), so wait for them to settle but never hold the page hostage to them: if
+  // either request fails, the calculator still opens on sensible defaults.
+  const { data: funds, isLoading: fundsLoading } = useFunds();
+  const { data: transactions, isLoading: transactionsLoading } = useTransactions();
   const { data: savingsFundOnboarding } = useSavingsFundOnboardingStatus();
   const { data: savingsFundBalance } = useSavingsFundBalance();
 
   const [inputs, setInputs] = useState<CalculatorInputs | null>(null);
+
+  // The savings fund is the one fund outside the pillars, so money paid into it is
+  // exactly the transactions against a fund with no pillar.
+  const savingsFundPayments = useMemo(() => {
+    const savingsFundIsins = new Set(
+      (funds ?? []).filter((fund) => fund.pillar === null).map((fund) => fund.isin),
+    );
+    return (transactions ?? [])
+      .filter((transaction) => savingsFundIsins.has(transaction.isin))
+      .filter((transaction) => transaction.type !== 'SUBTRACTION')
+      .map((transaction) => ({ time: transaction.time, amount: transaction.amount }));
+  }, [transactions, funds]);
+
+  // Tuleva's own fees, read from the live fund list rather than hardcoded, so the recipe
+  // stays honest if Tuleva ever changes what it charges. Today every Tuleva fund is at
+  // the same 0.28%; if they ever diverge, the recipe means the cheapest index fund.
+  const tulevaFees = useMemo(() => {
+    const tulevaFunds = (funds ?? []).filter(
+      (fund) =>
+        fund.status === 'ACTIVE' &&
+        fund.fundManager.name === 'Tuleva' &&
+        fund.ongoingChargesFigure > 0,
+    );
+    const cheapestOf = (candidates: Fund[]): number =>
+      candidates.length
+        ? Math.min(...candidates.map((fund) => fund.ongoingChargesFigure))
+        : TULEVA_FEE;
+    return {
+      // The pillars, for Tuleva's line; and the savings fund, which is outside them.
+      pension: cheapestOf(tulevaFunds.filter((fund) => fund.pillar !== null)),
+      savingsFund: cheapestOf(tulevaFunds.filter((fund) => fund.pillar === null)),
+    };
+  }, [funds]);
 
   // Fee-slider bounds straight from the live pension-fund list (cheapest to priciest),
   // so the range stays correct without manual upkeep. Fees are stored as fractions.
@@ -223,18 +271,64 @@ export function MillionaireCalculator() {
       : { min: FEE_MIN_FALLBACK, max: FEE_MAX_FALLBACK };
   }, [funds]);
 
+  // What the saver holds in the savings fund today. Unlike the pension balances this is
+  // not rounded to the nearest 1000: the fund is new, so most balances are small enough
+  // that rounding would swallow a real part of them. `null` means no account at all,
+  // `undefined` means the balance hasn't loaded yet.
+  const savingsFundValue =
+    savingsFundBalance === null || savingsFundBalance === undefined
+      ? 0
+      : Math.round(savingsFundBalance.price + savingsFundBalance.unavailablePrice);
+
   useEffect(() => {
-    if (inputs === null && user && sourceFunds && contributions && conversion) {
-      const prefill = derivePrefill(user, sourceFunds, contributions, new Date());
+    // Inputs are seeded once, so wait for the funds and transactions to settle first:
+    // they decide the fee bounds and the savings fund pre-fill. A failed request settles
+    // too, and then we seed from what we do have rather than shimmering forever.
+    if (
+      inputs === null &&
+      user &&
+      sourceFunds &&
+      contributions &&
+      conversion &&
+      !fundsLoading &&
+      !transactionsLoading &&
+      savingsFundBalance !== undefined
+    ) {
+      const now = new Date();
+      const prefill = derivePrefill(user, sourceFunds, contributions, now);
       // Pre-fill the fee slider with the saver's current weighted-average fund fee
       // (stored as a fraction) so the current-course line reflects what they pay today.
       const currentFundFeePercent = Math.min(
         Math.max(conversion.weightedAverageFee * 100, feeBounds.min),
         feeBounds.max,
       );
-      setInputs({ ...prefill, annualReturnPercent: 0, currentFundFeePercent });
+      setInputs({
+        ...prefill,
+        annualReturnPercent: 0,
+        currentFundFeePercent,
+        initialSavingsFundBalance: savingsFundValue,
+        savingsFundMonthly: Math.min(
+          deriveSavingsFundMonthly(savingsFundPayments, now),
+          SAVINGS_FUND_MAX_MONTHLY,
+        ),
+        tulevaFee: tulevaFees.pension,
+        savingsFundFee: tulevaFees.savingsFund,
+      });
     }
-  }, [inputs, user, sourceFunds, contributions, conversion, feeBounds]);
+  }, [
+    inputs,
+    user,
+    sourceFunds,
+    contributions,
+    conversion,
+    fundsLoading,
+    transactionsLoading,
+    feeBounds,
+    tulevaFees,
+    savingsFundBalance,
+    savingsFundValue,
+    savingsFundPayments,
+  ]);
 
   const comparison = useMemo(
     () =>
@@ -595,7 +689,7 @@ export function MillionaireCalculator() {
                     <FormattedMessage id="millionaire.input.thirdPillar" />
                   </label>
                   <span className="fw-semibold text-primary text-nowrap">
-                    {formatAmountForCurrency(thirdPillarMonthly, 0)}
+                    {formatEuro(thirdPillarMonthly)}
                   </span>
                 </div>
                 <input
@@ -612,6 +706,36 @@ export function MillionaireCalculator() {
                   }
                 />
               </div>
+
+              {/* Only savers who already hold savings fund units get this: to anyone
+                  else it would be a slider for a fund they have not opened. */}
+              {inputs.initialSavingsFundBalance > 0 && (
+                <div>
+                  <div className="d-flex justify-content-between align-items-baseline gap-2">
+                    <label
+                      id="millionaire-savings-fund-label"
+                      htmlFor="millionaire-savings-fund"
+                      className="form-label fw-medium text-nowrap"
+                    >
+                      <FormattedMessage id="millionaire.input.savingsFund" />
+                    </label>
+                    <span className="fw-semibold text-primary text-nowrap">
+                      {formatEuro(inputs.savingsFundMonthly)}
+                    </span>
+                  </div>
+                  <input
+                    id="millionaire-savings-fund"
+                    type="range"
+                    className="form-range"
+                    min={0}
+                    max={SAVINGS_FUND_MAX_MONTHLY}
+                    step={SAVINGS_FUND_STEP}
+                    value={inputs.savingsFundMonthly}
+                    aria-labelledby="millionaire-savings-fund-label"
+                    onChange={(event) => update({ savingsFundMonthly: event.target.valueAsNumber })}
+                  />
+                </div>
+              )}
 
               <div>
                 <div className="d-flex justify-content-between align-items-baseline gap-1">

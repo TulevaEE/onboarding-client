@@ -11,10 +11,19 @@ import {
   useSavingsFundBalance,
   useSavingsFundOnboardingStatus,
   useSourceFunds,
+  useTransactions,
 } from '../common/apiHooks';
-import { Contribution, Conversion, SourceFund, User, UserConversion } from '../common/apiModels';
+import {
+  Contribution,
+  Conversion,
+  Fund,
+  SourceFund,
+  Transaction,
+  User,
+  UserConversion,
+} from '../common/apiModels';
 import translations from '../translations';
-import { buildComparison } from './calculation';
+import { buildComparison, TULEVA_FEE } from './calculation';
 import { derivePrefill } from './prefill';
 
 jest.mock('../common/apiHooks', () => ({
@@ -25,6 +34,7 @@ jest.mock('../common/apiHooks', () => ({
   useFunds: jest.fn(),
   useSavingsFundOnboardingStatus: jest.fn(),
   useSavingsFundBalance: jest.fn(),
+  useTransactions: jest.fn(),
 }));
 
 jest.mock('react-chartjs-2', () => ({
@@ -55,6 +65,7 @@ const mockUseSavingsFundOnboardingStatus = useSavingsFundOnboardingStatus as jes
 const mockUseSavingsFundBalance = useSavingsFundBalance as jest.MockedFunction<
   typeof useSavingsFundBalance
 >;
+const mockUseTransactions = useTransactions as jest.MockedFunction<typeof useTransactions>;
 
 // Not converted to Tuleva in either pillar, so all three next steps are actionable.
 const notAtTuleva = {
@@ -149,12 +160,45 @@ const givenOptimizedPillars = () => {
   } as ReturnType<typeof useConversion>);
 };
 
+// A saver who already holds savings fund units, worth 20 000 € today.
+const savingsFundBalance = { price: 20000, unavailablePrice: 0, units: 1000 } as SourceFund;
+
+// The savings fund is the fund with no pillar; that is how its transactions are known.
+const SAVINGS_FUND_ISIN = 'EE0000003283';
+const funds = [
+  {
+    isin: SAVINGS_FUND_ISIN,
+    pillar: null,
+    status: 'ACTIVE',
+    ongoingChargesFigure: TULEVA_FEE,
+    fundManager: { name: 'Tuleva' },
+  } as Fund,
+];
+const savingsFundPayment = (amount: number, time: string) =>
+  ({ isin: SAVINGS_FUND_ISIN, amount, time, type: 'CONTRIBUTION_CASH' } as Transaction);
+
+const givenSavingsFund = (payments: Transaction[]) => {
+  givenData();
+  mockUseFunds.mockReturnValue({ data: funds } as ReturnType<typeof useFunds>);
+  mockUseSavingsFundBalance.mockReturnValue({
+    data: savingsFundBalance,
+  } as ReturnType<typeof useSavingsFundBalance>);
+  mockUseTransactions.mockReturnValue({ data: payments } as ReturnType<typeof useTransactions>);
+};
+
+const savingsFundSlider = () =>
+  screen.getByRole('slider', { name: /Savings fund monthly/i }) as HTMLInputElement;
+
 const expectedAtReturn = (annualReturnPercent: number) =>
   buildComparison({
     ...derivePrefill(user(), sourceFunds, contributions, now),
     annualReturnPercent,
     // Mirrors the component: pre-fill from the weighted-average fee (0.01 -> 1%).
     currentFundFeePercent: conversion.weightedAverageFee * 100,
+    initialSavingsFundBalance: 0,
+    savingsFundMonthly: 0,
+    tulevaFee: TULEVA_FEE,
+    savingsFundFee: TULEVA_FEE,
   });
 
 describe('MillionaireCalculator', () => {
@@ -168,6 +212,9 @@ describe('MillionaireCalculator', () => {
     >);
     mockUseSavingsFundBalance.mockReturnValue({ data: null } as ReturnType<
       typeof useSavingsFundBalance
+    >);
+    mockUseTransactions.mockReturnValue({ data: [] } as unknown as ReturnType<
+      typeof useTransactions
     >);
   });
 
@@ -203,7 +250,7 @@ describe('MillionaireCalculator', () => {
     expect(
       (
         screen.getByRole('slider', {
-          name: /III.pillar per month/i,
+          name: /III.pillar monthly/i,
         }) as HTMLInputElement
       ).value,
     ).toBe('100');
@@ -222,6 +269,108 @@ describe('MillionaireCalculator', () => {
     );
     expect(screen.getByTestId('chart-last-age')).toHaveTextContent('67');
     expect(screen.getByTestId('chart-point-count')).toHaveTextContent(String(67 - 35 + 1));
+  });
+
+  it('leaves the savings fund out entirely for a saver who has no units', () => {
+    givenData();
+    renderCalculator();
+
+    expect(screen.queryByRole('slider', { name: /Savings fund monthly/i })).not.toBeInTheDocument();
+  });
+
+  it('counts an existing savings fund balance and lets the saver add to it monthly', () => {
+    givenData();
+    mockUseSavingsFundBalance.mockReturnValue({
+      data: savingsFundBalance,
+    } as ReturnType<typeof useSavingsFundBalance>);
+
+    renderCalculator();
+
+    const withoutFund = Number(screen.getByTestId('laura-final').textContent);
+    expect(withoutFund).toBe(
+      Math.round(
+        buildComparison({
+          ...derivePrefill(user(), sourceFunds, contributions, now),
+          annualReturnPercent: 0,
+          currentFundFeePercent: conversion.weightedAverageFee * 100,
+          initialSavingsFundBalance: 20000,
+          savingsFundMonthly: 0,
+          tulevaFee: TULEVA_FEE,
+          savingsFundFee: TULEVA_FEE,
+        }).laura.total,
+      ),
+    );
+
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.change(screen.getByRole('slider', { name: /Savings fund monthly/i }), {
+      target: { value: '200' },
+    });
+
+    expect(Number(screen.getByTestId('laura-final').textContent)).toBeGreaterThan(withoutFund);
+  });
+
+  it("takes Tuleva's fee from the live fund list rather than a hardcoded constant", () => {
+    givenData();
+    // Tuleva halves its fee: the recipe must get cheaper without anyone editing code.
+    mockUseFunds.mockReturnValue({
+      data: [
+        { ...funds[0], pillar: 2, isin: 'EE3600109435', ongoingChargesFigure: 0.0014 } as Fund,
+      ],
+    } as ReturnType<typeof useFunds>);
+
+    renderCalculator();
+
+    const expected = buildComparison({
+      ...derivePrefill(user(), sourceFunds, contributions, now),
+      annualReturnPercent: 0,
+      // The saver's own fee is clamped into the (now single-fund) live fee bounds.
+      currentFundFeePercent: 0.14,
+      initialSavingsFundBalance: 0,
+      savingsFundMonthly: 0,
+      tulevaFee: 0.0014,
+      savingsFundFee: TULEVA_FEE, // no savings fund in the list, so the fallback stands
+    });
+    expect(Number(screen.getByTestId('laura-final').textContent)).toBe(
+      Math.round(expected.laura.total),
+    );
+  });
+
+  it('still opens when the fund list and transaction history fail to load', () => {
+    givenData();
+    // A failed query settles with no data: the savings fund pre-fill is all we lose, so
+    // the calculator must still render rather than shimmer forever.
+    mockUseFunds.mockReturnValue({ data: undefined, isLoading: false } as ReturnType<
+      typeof useFunds
+    >);
+    mockUseTransactions.mockReturnValue({ data: undefined, isLoading: false } as ReturnType<
+      typeof useTransactions
+    >);
+
+    renderCalculator();
+
+    expect(screen.getByTestId('mock-chart')).toBeInTheDocument();
+  });
+
+  it('starts the savings fund slider at zero for a saver who paid in one lump sum', () => {
+    givenSavingsFund([savingsFundPayment(20000, '2026-06-15T00:00:00Z')]);
+
+    renderCalculator();
+
+    // 20 000 € arriving once is wealth moving in, not a habit: projecting it as 1667 €
+    // (or, clamped, 1000 €) every month for 32 years would invent savings they never make.
+    expect(savingsFundSlider().value).toBe('0');
+  });
+
+  it('pre-fills the savings fund slider from a standing order', () => {
+    givenSavingsFund([
+      savingsFundPayment(200, '2026-06-05T00:00:00Z'),
+      savingsFundPayment(200, '2026-05-05T00:00:00Z'),
+      savingsFundPayment(200, '2026-04-05T00:00:00Z'),
+    ]);
+
+    renderCalculator();
+
+    expect(savingsFundSlider().value).toBe('200');
   });
 
   it('tells an under-contributing saver they could gain more with the recipe', () => {

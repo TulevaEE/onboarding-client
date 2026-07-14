@@ -3,6 +3,7 @@ import {
   deriveGrossSalary,
   deriveInitialBalance,
   derivePrefill,
+  deriveSavingsFundMonthly,
   deriveThirdPillarBalance,
   deriveThirdPillarMonthly,
   latestThirdPillarMonthlyAmount,
@@ -236,6 +237,43 @@ describe('latestThirdPillarMonthlyAmount', () => {
     expect(
       latestThirdPillarMonthlyAmount([thirdPillarContribution(200, '2026-01-05T00:00:00Z')], now),
     ).toBe(0);
+  });
+});
+
+describe('deriveSavingsFundMonthly', () => {
+  const now = new Date('2026-07-15T00:00:00Z');
+  const payment = (amount: number, time: string) => ({ amount, time });
+
+  it('pre-fills from a standing order, using the newest month', () => {
+    expect(
+      deriveSavingsFundMonthly(
+        [
+          payment(300, '2026-07-05T00:00:00Z'),
+          payment(200, '2026-06-05T00:00:00Z'),
+          payment(200, '2026-05-05T00:00:00Z'),
+        ],
+        now,
+      ),
+    ).toBe(300);
+  });
+
+  it('stays at zero for a lump sum, rather than inventing a monthly habit from it', () => {
+    // 20 000 € moved in once is existing wealth arriving, not 1667 € a month forever.
+    expect(deriveSavingsFundMonthly([payment(20000, '2026-06-15T00:00:00Z')], now)).toBe(0);
+    expect(deriveSavingsFundMonthly([], now)).toBe(0);
+  });
+
+  it('rounds to the nearest 10, so the pre-filled value lands on a slider step', () => {
+    expect(
+      deriveSavingsFundMonthly(
+        [
+          payment(157, '2026-07-05T00:00:00Z'),
+          payment(157, '2026-06-05T00:00:00Z'),
+          payment(157, '2026-05-05T00:00:00Z'),
+        ],
+        now,
+      ),
+    ).toBe(160);
   });
 });
 
