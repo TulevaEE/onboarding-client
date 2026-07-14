@@ -1,0 +1,32 @@
+// The chart grows into whatever height the input card leaves over, so these are floors,
+// not heights. Side by side (lg and up) the floor only has to stop the chart collapsing.
+//
+// Stacked on a phone the floor IS the height, and the plot is about 296px wide there, so
+// 220px keeps it near a 3:2 proportion once the x-axis labels take their ~20px. Shorter
+// than that letterboxes the plot and the band between the two lines, which is the whole
+// point of the chart, thins to a wedge over the first half of the projection.
+.millionaire-chart {
+  position: relative;
+
+  // flex-basis 0, not auto. Chart.js writes a pixel height onto the canvas, so with the
+  // default auto basis the canvas would dictate the card's natural height: a verdict
+  // wrapping to another line would then grow the card and stretch the input card beside
+  // it, instead of the chart giving up the space. At basis 0 the chart claims only what
+  // is left over, so it shrinks as the verdict grows and both cards stay level.
+  flex: 1 1 0;
+  min-height: 220px;
+
+  @media (min-width: 992px) {
+    min-height: 240px;
+  }
+
+  // And take the canvas out of flow, or its pixel height still feeds the card's
+  // intrinsic height through the back door: flex-basis only governs how the leftover
+  // space is handed out, not what the card asks for in the first place. Chart.js sizes
+  // the canvas from this box, so with nothing in flow the box is purely what is left.
+  > canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
