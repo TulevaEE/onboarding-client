@@ -60,13 +60,23 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     savingsFundOnboardingStatus: 'NOT_STARTED',
     savingsFundBalance: 'NO_ACCOUNT',
   },
-  // Left the funded II pillar: the stored 6% rate is stale, so they contribute nothing
-  // and must not be counted as maxed.
+  // Never joined the II pillar: no open date, so they can still open one with a fund
+  // choice and keep both II steps.
+  NEVER_JOINED_SECOND_PILLAR: {
+    user: 'THIRD_NO_SECOND_PILLAR',
+    conversion: 'INCOMPLETE',
+    contributions: 'NONE',
+    sourceFunds: 'ONLY_THIRD_PILLAR',
+    savingsFundOnboardingStatus: 'NOT_STARTED',
+    savingsFundBalance: 'NO_ACCOUNT',
+  },
+  // Left the funded II pillar: both II steps are advice they cannot act on, so they see
+  // the III pillar and then the savings fund instead.
   LEFT_SECOND_PILLAR: {
     user: 'LEFT_SECOND_PILLAR',
-    conversion: 'INCOMPLETE',
-    contributions: 'SECOND_PILLAR_ONLY',
-    sourceFunds: 'BOTH_PILLARS',
+    conversion: 'COMPLETE_ONLY_THIRD_PILLAR',
+    contributions: 'THIRD_PILLAR_MONTHLY_MAXED',
+    sourceFunds: 'ONLY_THIRD_PILLAR',
     savingsFundOnboardingStatus: 'NOT_STARTED',
     savingsFundBalance: 'NO_ACCOUNT',
   },
@@ -106,14 +116,15 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     savingsFundOnboardingStatus: 'COMPLETED',
     savingsFundBalance: 'ZERO_BALANCE',
   },
-  // Past retirement age: no projection to show, so the chart gives way to a notice.
+  // Past retirement age: no projection to show, so the chart gives way to a notice. No
+  // savings fund either, so the inputs stay the plain pension ones.
   PAST_RETIREMENT_AGE: {
     user: 'PAST_RETIREMENT_AGE',
     conversion: 'COMPLETE_ALL_PILLARS',
     contributions: 'THIRD_PILLAR_MONTHLY_MAXED',
     sourceFunds: 'BOTH_PILLARS',
-    savingsFundOnboardingStatus: 'COMPLETED',
-    savingsFundBalance: 'WITH_BALANCE',
+    savingsFundOnboardingStatus: 'NOT_STARTED',
+    savingsFundBalance: 'NO_ACCOUNT',
   },
   WITHDRAWALS_PENSIONER_60_ALL_PILLARS: {
     withdrawalsEligibility: 'ALL_PILLARS_60',

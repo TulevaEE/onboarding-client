@@ -17,6 +17,7 @@ import { Line } from 'react-chartjs-2';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { usePageTitle } from '../common/usePageTitle';
+import './MillionaireCalculator.scss';
 import {
   useContributions,
   useConversion,
@@ -374,21 +375,34 @@ export function MillionaireCalculator() {
 
   // Concrete next steps toward Laura's recipe, checked off against the saver's
   // real pension state (not the calculator's editable inputs).
-  // A saver who has left the funded II pillar contributes nothing, so a stale
-  // stored rate must not count as "already at 6%".
-  const effectiveSecondPillarRate = user?.secondPillarActive
-    ? user?.secondPillarPaymentRates?.pending ?? user?.secondPillarPaymentRates?.current ?? 2
-    : 0;
+  //
+  // Two different people have no active II pillar, and only one of them is stuck.
+  // Someone who LEFT it cannot rejoin for ten years and has no II money to move, so both
+  // II steps are advice they are unable to take: drop them, as the account page does, and
+  // let the savings fund be their next step instead. Someone who NEVER JOINED can open a
+  // II pillar right now with a fund choice, which is exactly where the first step sends
+  // them. The pension register tells them apart: leaving clears the active date but the
+  // account keeps the date it was opened on, so an open date means they have been in it.
+  const inSecondPillar = user?.secondPillarActive ?? false;
+  const everJoinedSecondPillar = Boolean(user?.secondPillarOpenDate);
+  const leftSecondPillar = !inSecondPillar && everJoinedSecondPillar;
+  const secondPillarRate =
+    user?.secondPillarPaymentRates?.pending ?? user?.secondPillarPaymentRates?.current ?? 2;
   const secondAtTuleva = conversion ? fullyConverted(conversion.secondPillar) : false;
-  const secondMaxed = effectiveSecondPillarRate >= 6;
+  const secondMaxed = secondPillarRate >= 6;
   const thirdAtTuleva = conversion ? fullyConverted(conversion.thirdPillar) : false;
-  const thirdContributing = conversion ? conversion.thirdPillar.contribution.yearToDate > 0 : false;
   // Money arriving month after month means the standing order already exists, so
   // don't offer to set one up. If it pays less than the tax-deductible ceiling,
   // point them at the only place it can be raised: their own bank.
   const thirdMonthly = contributesMonthlyToThirdPillar(contributions ?? [], new Date());
   const thirdMonthlyAmount = latestThirdPillarMonthlyAmount(contributions ?? [], new Date());
   const thirdBelowCap = thirdMonthlyAmount < thirdPillarMax;
+  // Paying in every month counts as contributing even before this year's first payment
+  // lands: in January a standing order's last payments are all in the old year, and
+  // year-to-date is still zero. Without this the step reads "you pay every month" under
+  // an unchecked circle.
+  const thirdContributing =
+    thirdMonthly || (conversion ? conversion.thirdPillar.contribution.yearToDate > 0 : false);
   const thirdPillarBodyKey = (): TranslationKey => {
     if (!(thirdAtTuleva && thirdMonthly)) {
       return 'millionaire.cta.item.thirdPillarToTuleva.body';
@@ -398,8 +412,9 @@ export function MillionaireCalculator() {
       : 'millionaire.cta.item.thirdPillarToTuleva.done';
   };
 
-  const pillarItems: CtaItem[] = conversion
-    ? [
+  const secondPillarItems: CtaItem[] = leftSecondPillar
+    ? []
+    : [
         {
           id: 'secondPillarToTuleva',
           done: secondAtTuleva,
@@ -426,6 +441,11 @@ export function MillionaireCalculator() {
           link: '/2nd-pillar-payment-rate',
           buttonKey: 'millionaire.cta.item.raiseSecondPillar.button',
         },
+      ];
+
+  const pillarItems: CtaItem[] = conversion
+    ? [
+        ...secondPillarItems,
         {
           id: 'thirdPillarToTuleva',
           done: thirdAtTuleva && thirdContributing,
@@ -456,11 +476,13 @@ export function MillionaireCalculator() {
     savingsFundBalance.units > 0;
   // Not joined yet: join. Joined but empty: get the first euro in. Already saving:
   // turn it into a habit, with the recurring option pre-selected on arrival.
+  // Joining and depositing are the same actions the account page's status box offers, so
+  // they borrow its labels rather than keeping a second copy that could drift from it.
   const savingsFundStep = (): Pick<CtaItem, 'link' | 'buttonKey'> => {
     if (!savingsFundOnboarded) {
       return {
         link: '/savings-fund/onboarding',
-        buttonKey: 'millionaire.cta.item.savingsFund.buttonNew',
+        buttonKey: 'savingsFund.status.startSaving.label',
       };
     }
     return savingsFundInvested
@@ -470,7 +492,7 @@ export function MillionaireCalculator() {
         }
       : {
           link: '/savings-fund/payment',
-          buttonKey: 'millionaire.cta.item.savingsFund.buttonSingle',
+          buttonKey: 'savingsFund.status.makeDeposit.label',
         };
   };
   const ctaItems: CtaItem[] =
@@ -634,7 +656,9 @@ export function MillionaireCalculator() {
 
       <div className="row g-4">
         <div className="col-12 col-lg-4">
-          <div className="card">
+          {/* h-100 so whichever column is taller, both cards still reach the same
+              baseline instead of one floating short of its column. */}
+          <div className="card h-100">
             <div className="card-body d-flex flex-column gap-4">
               <div>
                 <label htmlFor="millionaire-salary" className="form-label fw-medium">
@@ -841,88 +865,94 @@ export function MillionaireCalculator() {
               </div>
             </div>
           ) : (
-            <div className="d-flex flex-column gap-3">
-              <div className="card">
-                <div className="card-body">
-                  <h2 className="h5 m-0 mb-3">
-                    <FormattedMessage
-                      id="millionaire.chart.title"
-                      values={{ age: inputs.retirementAge }}
-                    />
-                  </h2>
-                  <div style={{ position: 'relative', height: 320 }}>
-                    <Line data={chartData} options={chartOptions} />
-                    <div
-                      className="position-absolute rounded"
-                      style={{
-                        top: 4,
-                        left: 4,
-                        padding: '4px 10px 5px 8px',
-                        backgroundColor: 'rgba(255, 255, 255, 0.78)',
-                        pointerEvents: 'none',
-                        // Grid so the dot, label and amount line up in columns. The
-                        // amounts are right-aligned with tabular figures, so they read
-                        // like a column of numbers (Excel-style) whatever their length.
-                        display: 'grid',
-                        gridTemplateColumns: 'auto auto auto',
-                        alignItems: 'center',
-                        columnGap: '0.5rem',
-                        rowGap: '0.25rem',
-                      }}
-                      data-testid="chart-summary"
-                    >
-                      <span style={legendDot(COLOR_LAURA)} />
-                      <span className="small">
-                        <FormattedMessage id="millionaire.chart.laura" />
-                      </span>
-                      <span className="fw-semibold" style={amountCellStyle}>
-                        {roundedEuro(comparison.laura.total)}
-                      </span>
-                      <span style={legendDot(COLOR_TODAY)} />
-                      <span className="small">
-                        <FormattedMessage id="millionaire.chart.today" />
-                      </span>
-                      <span className="fw-semibold" style={amountCellStyle}>
-                        {roundedEuro(comparison.today.total)}
-                      </span>
-                    </div>
+            // One card, matching the input card's height exactly: the chart takes
+            // whatever is left after the title and the verdict, however many lines the
+            // verdict wraps to, so neither column ends with dead space.
+            <div className="card h-100">
+              <div className="card-body d-flex flex-column">
+                <h2 className="h5 m-0 mb-3">
+                  <FormattedMessage
+                    id="millionaire.chart.title"
+                    values={{ age: inputs.retirementAge }}
+                  />
+                </h2>
+                <div className="millionaire-chart">
+                  <Line data={chartData} options={chartOptions} />
+                  <div
+                    className="position-absolute rounded"
+                    style={{
+                      top: 4,
+                      left: 4,
+                      padding: '4px 10px 5px 8px',
+                      backgroundColor: 'rgba(255, 255, 255, 0.78)',
+                      pointerEvents: 'none',
+                      // Grid so the dot, label and amount line up in columns. The
+                      // amounts are right-aligned with tabular figures, so they read
+                      // like a column of numbers (Excel-style) whatever their length.
+                      display: 'grid',
+                      gridTemplateColumns: 'auto auto auto',
+                      alignItems: 'center',
+                      columnGap: '0.5rem',
+                      rowGap: '0.25rem',
+                    }}
+                    data-testid="chart-summary"
+                  >
+                    <span style={legendDot(COLOR_LAURA)} />
+                    <span className="small">
+                      <FormattedMessage id="millionaire.chart.laura" />
+                    </span>
+                    <span className="fw-semibold" style={amountCellStyle}>
+                      {roundedEuro(comparison.laura.total)}
+                    </span>
+                    <span style={legendDot(COLOR_TODAY)} />
+                    <span className="small">
+                      <FormattedMessage id="millionaire.chart.today" />
+                    </span>
+                    <span className="fw-semibold" style={amountCellStyle}>
+                      {roundedEuro(comparison.today.total)}
+                    </span>
                   </div>
                 </div>
-              </div>
 
-              <p className="fs-5 m-0" role="status" data-testid="gap-message">
-                {comparison.gap > GAP_COPY_THRESHOLD ? (
-                  <FormattedMessage
-                    id={
-                      millionaireAge !== null
-                        ? 'millionaire.gap.more.withAge'
-                        : 'millionaire.gap.more'
-                    }
-                    values={{
-                      amount: roundedEuro(comparison.gap),
-                      age: millionaireAge,
-                      b: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
-                    }}
-                  />
-                ) : (
-                  <span className="text-success fw-bold">
+                <p className="fs-5 m-0 mt-3" role="status" data-testid="gap-message">
+                  {comparison.gap > GAP_COPY_THRESHOLD ? (
                     <FormattedMessage
                       id={
                         millionaireAge !== null
-                          ? 'millionaire.gap.onTrack.withAge'
-                          : 'millionaire.gap.onTrack'
+                          ? 'millionaire.gap.more.withAge'
+                          : 'millionaire.gap.more'
                       }
-                      values={{ age: millionaireAge }}
+                      values={{
+                        amount: roundedEuro(comparison.gap),
+                        age: millionaireAge,
+                        b: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
+                      }}
                     />
-                  </span>
-                )}
-              </p>
+                  ) : (
+                    <span className="text-success fw-bold">
+                      <FormattedMessage
+                        id={
+                          millionaireAge !== null
+                            ? 'millionaire.gap.onTrack.withAge'
+                            : 'millionaire.gap.onTrack'
+                        }
+                        values={{ age: millionaireAge }}
+                      />
+                    </span>
+                  )}
+                </p>
+              </div>
             </div>
           )}
         </div>
       </div>
 
-      {!isRetired && nextStepsSection}
+      {/* Past retirement age there is no projection left to draw, but the steps still
+          stand: a saver at their lifetime peak balance is exactly who a high fund fee
+          costs the most, they can still switch funds, and both the III pillar and the
+          savings fund stay open to them. It is the chart that stops making sense, not
+          the advice. */}
+      {nextStepsSection}
       <div className="form-text m-0">
         <FormattedMessage
           id="millionaire.disclaimer"

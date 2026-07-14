@@ -1836,9 +1836,7 @@
   "millionaire.cta.item.savingsFund.heading": "Kogu edasi Tuleva Täiendavas Kogumisfondis",
   "millionaire.cta.item.savingsFund.todo": "Järgmisena investeeri madala tasuga kogumisfondi",
   "millionaire.cta.item.savingsFund.done": "Sa oled alustanud kogumisfondis investeerimist",
-  "millionaire.cta.item.savingsFund.buttonNew": "Avan kogumiskonto",
   "millionaire.cta.item.savingsFund.buttonRecurring": "Teen püsimakse",
-  "millionaire.cta.item.savingsFund.buttonSingle": "Teen sissemakse",
   "millionaire.disclaimer": "<p>Eeldame, et sinu palk ja sissemaksed kasvavad 3% aastas. Tulemus on illustratiivne. Tootlus pole lubadus ega prognoos ja investeeringu väärtus võib nii kasvada kui kahaneda.</p><p>II ja III samba maksed on tulumaksuvabad. Optimaalne ja ühtlasi maksimaalne summa, mida võiks III sambasse paigutada, on 15% sinu aasta bruto sissetulekust, aga mitte üle 6000 euro. See annab suurima maksuvõidu. Sinu II samba maksetele lisab riik veel 4% brutopalgast, mis tuleb sinu sotsiaalmaksust. See mõjutab vähesel määral ka <a>I sammast</a>.</p>",
   "millionaire.alreadyRetired": "Oled juba pensionieas. See kalkulaator on mõeldud kogumisaja planeerimiseks."
 }

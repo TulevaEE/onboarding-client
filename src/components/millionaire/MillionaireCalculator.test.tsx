@@ -423,6 +423,20 @@ describe('MillionaireCalculator', () => {
     expect(after).toBeLessThan(before);
   });
 
+  it('still lists the next steps for someone past retirement age', () => {
+    givenData();
+    // The projection is over, but a high fund fee costs them more than ever at their peak
+    // balance, and they can still switch funds and pay into the III pillar.
+    mockUseMe.mockReturnValue({
+      data: user({ age: 68, retirementAge: 67 }),
+    } as ReturnType<typeof useMe>);
+
+    renderCalculator();
+
+    expect(screen.getByTestId('cta-item-secondPillarToTuleva')).toBeInTheDocument();
+    expect(screen.getByTestId('cta-item-thirdPillarToTuleva')).toBeInTheDocument();
+  });
+
   it('shows a retirement notice instead of a chart for someone past retirement age', () => {
     mockUseMe.mockReturnValue({
       data: user({ age: 68, retirementAge: 67 }),
@@ -475,25 +489,73 @@ describe('MillionaireCalculator', () => {
     expect(within(raiseRow).queryByRole('link')).not.toBeInTheDocument();
   });
 
-  it('keeps the raise-II step actionable for a saver who has left the funded II pillar', () => {
-    // Stored rate is 6% but the saver is inactive, so they contribute nothing.
+  it('drops both II pillar steps for a saver who has left the funded II pillar', () => {
+    givenData();
+    // They cannot rejoin for ten years and have no II money to move, so neither step is
+    // advice they could act on. The III pillar, then the savings fund, is all that's left.
+    // An open date with no active pillar is what marks them as having left.
     mockUseMe.mockReturnValue({
       data: user({
         secondPillarActive: false,
+        secondPillarOpenDate: '2010-01-01',
         secondPillarPaymentRates: { current: 6, pending: null },
       }),
     } as ReturnType<typeof useMe>);
-    mockUseSourceFunds.mockReturnValue({ data: sourceFunds } as ReturnType<typeof useSourceFunds>);
-    mockUseContributions.mockReturnValue({
-      data: contributions,
-    } as ReturnType<typeof useContributions>);
-    mockUseConversion.mockReturnValue({ data: conversion } as ReturnType<typeof useConversion>);
 
     renderCalculator();
 
-    const raiseRow = screen.getByTestId('cta-item-raiseSecondPillar');
-    expect(raiseRow).toHaveAttribute('data-done', 'false');
-    expect(within(raiseRow).getByRole('link')).toHaveAttribute('href', '/2nd-pillar-payment-rate');
+    expect(screen.queryByTestId('cta-item-secondPillarToTuleva')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('cta-item-raiseSecondPillar')).not.toBeInTheDocument();
+    expect(screen.getByTestId('cta-item-thirdPillarToTuleva')).toBeInTheDocument();
+  });
+
+  it('keeps both II pillar steps for a saver who never joined it', () => {
+    givenData();
+    // No open date: they have never been in the II pillar, so they can open one right now
+    // with a fund choice, which is exactly where the first step sends them.
+    mockUseMe.mockReturnValue({
+      data: user({ secondPillarActive: false, secondPillarOpenDate: null }),
+    } as ReturnType<typeof useMe>);
+
+    renderCalculator();
+
+    expect(
+      within(screen.getByTestId('cta-item-secondPillarToTuleva')).getByRole('link'),
+    ).toHaveAttribute('href', '/2nd-pillar-flow');
+    expect(screen.getByTestId('cta-item-raiseSecondPillar')).toBeInTheDocument();
+  });
+
+  it('offers the savings fund to a II pillar leaver once their III pillar is sorted', () => {
+    givenMonthlyThirdPillar(300);
+    mockUseMe.mockReturnValue({
+      data: user({ secondPillarActive: false, secondPillarOpenDate: '2010-01-01' }),
+    } as ReturnType<typeof useMe>);
+
+    renderCalculator();
+
+    expect(screen.getByTestId('cta-item-savingsFund')).toBeInTheDocument();
+  });
+
+  it('counts a monthly payer as contributing before this year first payment lands', () => {
+    // Every January a standing order's last payments are all in the old year, so
+    // year-to-date is zero. The step must not read "you pay every month" while unchecked.
+    givenData();
+    mockUseContributions.mockReturnValue({
+      data: monthlyContributions(300),
+    } as ReturnType<typeof useContributions>);
+    mockUseConversion.mockReturnValue({
+      data: {
+        secondPillar: notAtTuleva,
+        thirdPillar: { ...atTulevaContributing, contribution: { yearToDate: 0, lastYear: 3600 } },
+        weightedAverageFee: 0.003,
+      },
+    } as unknown as ReturnType<typeof useConversion>);
+
+    renderCalculator();
+
+    const thirdRow = screen.getByTestId('cta-item-thirdPillarToTuleva');
+    expect(thirdRow).toHaveAttribute('data-done', 'true');
+    expect(thirdRow).toHaveTextContent(/every month/i);
   });
 
   it('checks off the III pillar but keeps its standing-order CTA when contributing at Tuleva', () => {

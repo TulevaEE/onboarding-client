@@ -87,7 +87,10 @@ export const userMockProfiles: Record<string, User> = {
     memberNumber: null,
     memberJoinDate: null,
   },
-  // Left the funded II pillar: the stored rate is stale, they contribute nothing.
+  // Left the funded II pillar: the stored rate is stale, they contribute nothing. The
+  // open date inherited from mockUser is what separates them from someone who never
+  // joined (THIRD_NO_SECOND_PILLAR, whose open date is null): leaving clears the active
+  // date, but the account keeps the date it was opened on.
   LEFT_SECOND_PILLAR: {
     ...mockUser,
     secondPillarActive: false,
