@@ -21,6 +21,14 @@ const SALARY_ROUNDING = 1000;
 const BALANCE_ROUNDING = 1000;
 const THIRD_PILLAR_ROUNDING = 10;
 const TRAILING_MONTHS = 12;
+// A standing order is set up in the saver's own bank, so we can only recognise it
+// by its fingerprint: money arriving nearly every month. Look at the last four
+// calendar months and allow one gap, since the current month's payment may not
+// have landed yet and the register lags. Deliberately blind to the amount: a saver
+// who raised their standing order, or whose employer pays a percentage of salary,
+// is still paying monthly.
+const RECURRING_LOOKBACK_MONTHS = 4;
+const RECURRING_MIN_MONTHS = 3;
 
 // The user's current values, shaped so `{ ...prefill, annualReturnPercent, currentFundFeePercent }`
 // is a ready-to-use CalculatorInputs.
@@ -64,6 +72,42 @@ export function deriveThirdPillarMonthly(contributions: Contribution[], now: Dat
     0,
     MAX_THIRD_PILLAR_MONTHLY,
   );
+}
+
+// Recent III pillar money, totalled per calendar month and keyed by how many months
+// back that month is (0 = this month), so a month with two payments counts once.
+const recentThirdPillarByMonth = (
+  contributions: Contribution[],
+  now: Date,
+): Map<number, number> => {
+  const totals = new Map<number, number>();
+  contributions
+    .filter(isThirdPillar)
+    .filter((c) => c.amount > 0)
+    .forEach((c) => {
+      const time = new Date(c.time);
+      const monthsAgo =
+        (now.getFullYear() - time.getFullYear()) * 12 + (now.getMonth() - time.getMonth());
+      if (monthsAgo >= 0 && monthsAgo < RECURRING_LOOKBACK_MONTHS) {
+        totals.set(monthsAgo, (totals.get(monthsAgo) ?? 0) + c.amount);
+      }
+    });
+  return totals;
+};
+
+export function contributesMonthlyToThirdPillar(contributions: Contribution[], now: Date): boolean {
+  return recentThirdPillarByMonth(contributions, now).size >= RECURRING_MIN_MONTHS;
+}
+
+// What the standing order pays today: the newest month's total, not a trailing
+// average, so someone who raised their standing order sees the amount they set.
+export function latestThirdPillarMonthlyAmount(contributions: Contribution[], now: Date): number {
+  const totals = recentThirdPillarByMonth(contributions, now);
+  if (totals.size === 0) {
+    return 0;
+  }
+  const newestMonth = Math.min(...Array.from(totals.keys()));
+  return totals.get(newestMonth) ?? 0;
 }
 
 export function deriveInitialBalance(sourceFunds: SourceFund[]): number {

@@ -250,7 +250,10 @@ export function getFundPensionStatus(): Promise<FundPensionStatus> {
 }
 
 export function getSavingsFundOnboardingStatus(): Promise<SavingsFundOnboardingStatus> {
-  return getWithAuthentication(getEndpoint('/v1/savings/onboarding/status'));
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/savings/onboarding/status')),
+    'savingsFundOnboardingStatus',
+  );
 }
 
 export function getSavingsFundPersonOnboardingStatus(): Promise<SavingsFundOnboardingStatus> {
@@ -554,7 +557,10 @@ export function updateCapitalTransferContract(
 }
 
 export function getContributions(): Promise<Contribution[]> {
-  return getWithAuthentication(getEndpoint('/v1/contributions'), undefined);
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/contributions'), undefined),
+    'contributions',
+  );
 }
 
 export function getSecondPillarAssets(): Promise<SecondPillarAssets> {

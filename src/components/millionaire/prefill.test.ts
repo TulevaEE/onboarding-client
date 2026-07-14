@@ -1,9 +1,11 @@
 import {
+  contributesMonthlyToThirdPillar,
   deriveGrossSalary,
   deriveInitialBalance,
   derivePrefill,
   deriveThirdPillarBalance,
   deriveThirdPillarMonthly,
+  latestThirdPillarMonthlyAmount,
 } from './prefill';
 import {
   Contribution,
@@ -109,6 +111,130 @@ describe('deriveThirdPillarMonthly', () => {
     expect(deriveThirdPillarMonthly([], now)).toBe(0);
     expect(
       deriveThirdPillarMonthly([secondPillarContribution(100, '2026-06-10T00:00:00Z')], now),
+    ).toBe(0);
+  });
+});
+
+describe('contributesMonthlyToThirdPillar', () => {
+  const now = new Date('2026-07-15T00:00:00Z');
+
+  it('recognises a standing order paying every month', () => {
+    expect(
+      contributesMonthlyToThirdPillar(
+        [
+          thirdPillarContribution(200, '2026-07-05T00:00:00Z'),
+          thirdPillarContribution(200, '2026-06-05T00:00:00Z'),
+          thirdPillarContribution(200, '2026-05-05T00:00:00Z'),
+          thirdPillarContribution(200, '2026-04-05T00:00:00Z'),
+        ],
+        now,
+      ),
+    ).toBe(true);
+  });
+
+  it('allows one gap, so the current month need not have landed yet', () => {
+    expect(
+      contributesMonthlyToThirdPillar(
+        [
+          thirdPillarContribution(200, '2026-06-25T00:00:00Z'),
+          thirdPillarContribution(200, '2026-05-25T00:00:00Z'),
+          thirdPillarContribution(200, '2026-04-25T00:00:00Z'),
+        ],
+        now,
+      ),
+    ).toBe(true);
+  });
+
+  it('ignores the amount, so raising a standing order still counts as monthly', () => {
+    expect(
+      contributesMonthlyToThirdPillar(
+        [
+          thirdPillarContribution(500, '2026-07-05T00:00:00Z'),
+          thirdPillarContribution(500, '2026-06-05T00:00:00Z'),
+          thirdPillarContribution(100, '2026-05-05T00:00:00Z'),
+        ],
+        now,
+      ),
+    ).toBe(true);
+  });
+
+  it('does not count several payments made within the same month', () => {
+    expect(
+      contributesMonthlyToThirdPillar(
+        [
+          thirdPillarContribution(200, '2026-07-05T00:00:00Z'),
+          thirdPillarContribution(200, '2026-07-15T00:00:00Z'),
+          thirdPillarContribution(200, '2026-06-05T00:00:00Z'),
+        ],
+        now,
+      ),
+    ).toBe(false);
+  });
+
+  it('does not count months outside the four-month window', () => {
+    expect(
+      contributesMonthlyToThirdPillar(
+        [
+          thirdPillarContribution(200, '2026-07-05T00:00:00Z'),
+          thirdPillarContribution(200, '2026-03-05T00:00:00Z'),
+          thirdPillarContribution(200, '2026-02-05T00:00:00Z'),
+        ],
+        now,
+      ),
+    ).toBe(false);
+  });
+
+  it('is false for a one-off payer and for someone with no III pillar at all', () => {
+    expect(
+      contributesMonthlyToThirdPillar([thirdPillarContribution(6000, '2026-06-05T00:00:00Z')], now),
+    ).toBe(false);
+    expect(contributesMonthlyToThirdPillar([], now)).toBe(false);
+    expect(
+      contributesMonthlyToThirdPillar(
+        [
+          secondPillarContribution(80, '2026-07-05T00:00:00Z'),
+          secondPillarContribution(80, '2026-06-05T00:00:00Z'),
+          secondPillarContribution(80, '2026-05-05T00:00:00Z'),
+        ],
+        now,
+      ),
+    ).toBe(false);
+  });
+});
+
+describe('latestThirdPillarMonthlyAmount', () => {
+  const now = new Date('2026-07-15T00:00:00Z');
+
+  it('returns the newest month total, so a raised standing order shows its new amount', () => {
+    expect(
+      latestThirdPillarMonthlyAmount(
+        [
+          thirdPillarContribution(300, '2026-07-05T00:00:00Z'),
+          thirdPillarContribution(100, '2026-06-05T00:00:00Z'),
+          thirdPillarContribution(100, '2026-05-05T00:00:00Z'),
+        ],
+        now,
+      ),
+    ).toBe(300);
+  });
+
+  it('sums several payments landing in the same month', () => {
+    expect(
+      latestThirdPillarMonthlyAmount(
+        [
+          thirdPillarContribution(200, '2026-07-05T00:00:00Z'),
+          thirdPillarContribution(50, '2026-07-20T00:00:00Z'),
+          thirdPillarContribution(200, '2026-06-05T00:00:00Z'),
+        ],
+        now,
+      ),
+    ).toBe(250);
+  });
+
+  it('returns 0 when nothing has arrived within the window', () => {
+    expect(latestThirdPillarMonthlyAmount([], now)).toBe(0);
+    expect(
+      latestThirdPillarMonthlyAmount([thirdPillarContribution(200, '2026-01-05T00:00:00Z')], now),
     ).toBe(0);
   });
 });

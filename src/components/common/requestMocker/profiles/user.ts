@@ -87,6 +87,17 @@ export const userMockProfiles: Record<string, User> = {
     memberNumber: null,
     memberJoinDate: null,
   },
+  // Left the funded II pillar: the stored rate is stale, they contribute nothing.
+  LEFT_SECOND_PILLAR: {
+    ...mockUser,
+    secondPillarActive: false,
+    secondPillarPaymentRates: { current: 6, pending: null },
+  },
+  PAST_RETIREMENT_AGE: {
+    ...mockUser,
+    age: 65,
+    retirementAge: 60,
+  },
   LEGAL_ENTITY: {
     ...mockUser,
     role: { type: 'LEGAL_ENTITY', code: '12345678', name: 'Test OÜ' },

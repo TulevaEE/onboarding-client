@@ -8,6 +8,8 @@ import {
   useConversion,
   useFunds,
   useMe,
+  useSavingsFundBalance,
+  useSavingsFundOnboardingStatus,
   useSourceFunds,
 } from '../common/apiHooks';
 import { Contribution, Conversion, SourceFund, User, UserConversion } from '../common/apiModels';
@@ -21,6 +23,8 @@ jest.mock('../common/apiHooks', () => ({
   useContributions: jest.fn(),
   useConversion: jest.fn(),
   useFunds: jest.fn(),
+  useSavingsFundOnboardingStatus: jest.fn(),
+  useSavingsFundBalance: jest.fn(),
 }));
 
 jest.mock('react-chartjs-2', () => ({
@@ -45,6 +49,12 @@ const mockUseSourceFunds = useSourceFunds as jest.MockedFunction<typeof useSourc
 const mockUseContributions = useContributions as jest.MockedFunction<typeof useContributions>;
 const mockUseConversion = useConversion as jest.MockedFunction<typeof useConversion>;
 const mockUseFunds = useFunds as jest.MockedFunction<typeof useFunds>;
+const mockUseSavingsFundOnboardingStatus = useSavingsFundOnboardingStatus as jest.MockedFunction<
+  typeof useSavingsFundOnboardingStatus
+>;
+const mockUseSavingsFundBalance = useSavingsFundBalance as jest.MockedFunction<
+  typeof useSavingsFundBalance
+>;
 
 // Not converted to Tuleva in either pillar, so all three next steps are actionable.
 const notAtTuleva = {
@@ -57,6 +67,12 @@ const conversion: UserConversion = {
   thirdPillar: notAtTuleva,
   weightedAverageFee: 0.01,
 };
+// Fully converted to Tuleva and contributing this year.
+const atTulevaContributing = {
+  selectionComplete: true,
+  transfersComplete: true,
+  contribution: { yearToDate: 500, lastYear: 6000, total: 12000 },
+} as Conversion;
 
 const renderCalculator = () =>
   render(
@@ -96,6 +112,16 @@ const contributions: Contribution[] = [
   { pillar: 3, amount: 1200, time: '2026-05-15T00:00:00Z', sender: 'Self', currency: 'EUR' },
 ];
 
+// The same saver, but with the III pillar arriving month after month: a standing
+// order. On a 2000 € gross the tax-deductible ceiling is 300 €/month, so 200 € a
+// month is a monthly payer who still has room to raise it.
+const monthlyContributions = (amount: number): Contribution[] => [
+  ...contributions.filter((contribution) => contribution.pillar === 2),
+  { pillar: 3, amount, time: '2026-06-05T00:00:00Z', sender: 'Self', currency: 'EUR' },
+  { pillar: 3, amount, time: '2026-05-05T00:00:00Z', sender: 'Self', currency: 'EUR' },
+  { pillar: 3, amount, time: '2026-04-05T00:00:00Z', sender: 'Self', currency: 'EUR' },
+];
+
 const now = new Date('2026-07-01T00:00:00Z');
 
 const givenData = () => {
@@ -105,6 +131,22 @@ const givenData = () => {
     data: contributions,
   } as ReturnType<typeof useContributions>);
   mockUseConversion.mockReturnValue({ data: conversion } as ReturnType<typeof useConversion>);
+};
+
+// Every pension step checked off: 6% into a Tuleva II pillar, plus a Tuleva III
+// pillar being contributed to. This is what unlocks the savings-fund step.
+const givenOptimizedPillars = () => {
+  givenData();
+  mockUseMe.mockReturnValue({
+    data: user({ secondPillarPaymentRates: { current: 6, pending: null } }),
+  } as ReturnType<typeof useMe>);
+  mockUseConversion.mockReturnValue({
+    data: {
+      secondPillar: atTulevaContributing,
+      thirdPillar: atTulevaContributing,
+      weightedAverageFee: 0.0028,
+    },
+  } as ReturnType<typeof useConversion>);
 };
 
 const expectedAtReturn = (annualReturnPercent: number) =>
@@ -121,6 +163,12 @@ describe('MillionaireCalculator', () => {
     jest.setSystemTime(now);
     mockUseConversion.mockReturnValue({ data: undefined } as ReturnType<typeof useConversion>);
     mockUseFunds.mockReturnValue({ data: [] } as unknown as ReturnType<typeof useFunds>);
+    mockUseSavingsFundOnboardingStatus.mockReturnValue({ data: { status: null } } as ReturnType<
+      typeof useSavingsFundOnboardingStatus
+    >);
+    mockUseSavingsFundBalance.mockReturnValue({ data: null } as ReturnType<
+      typeof useSavingsFundBalance
+    >);
   });
 
   afterEach(() => {
@@ -300,11 +348,6 @@ describe('MillionaireCalculator', () => {
   });
 
   it('checks off the III pillar but keeps its standing-order CTA when contributing at Tuleva', () => {
-    const atTulevaContributing = {
-      selectionComplete: true,
-      transfersComplete: true,
-      contribution: { yearToDate: 500, lastYear: 6000, total: 12000 },
-    } as Conversion;
     mockUseMe.mockReturnValue({ data: user() } as ReturnType<typeof useMe>);
     mockUseSourceFunds.mockReturnValue({ data: sourceFunds } as ReturnType<typeof useSourceFunds>);
     mockUseContributions.mockReturnValue({
@@ -326,6 +369,97 @@ describe('MillionaireCalculator', () => {
     expect(within(thirdRow).getByRole('link')).toHaveAttribute(
       'href',
       '/3rd-pillar-payment?type=RECURRING',
+    );
+  });
+
+  const givenMonthlyThirdPillar = (amount: number) => {
+    givenData();
+    mockUseContributions.mockReturnValue({
+      data: monthlyContributions(amount),
+    } as ReturnType<typeof useContributions>);
+    mockUseConversion.mockReturnValue({
+      data: {
+        secondPillar: notAtTuleva,
+        thirdPillar: atTulevaContributing,
+        weightedAverageFee: 0.003,
+      },
+    } as ReturnType<typeof useConversion>);
+  };
+
+  it('drops the standing-order CTA for a saver already paying into the III pillar monthly', () => {
+    givenMonthlyThirdPillar(300); // the whole tax-deductible ceiling on a 2000 € gross
+
+    renderCalculator();
+
+    const thirdRow = screen.getByTestId('cta-item-thirdPillarToTuleva');
+    expect(thirdRow).toHaveAttribute('data-done', 'true');
+    // The standing order already exists, so there is nothing left to set up.
+    expect(within(thirdRow).queryByRole('link')).not.toBeInTheDocument();
+    expect(thirdRow).toHaveTextContent(/every month/i);
+  });
+
+  it('tells a monthly payer below the ceiling to raise the standing order in their bank', () => {
+    givenMonthlyThirdPillar(200);
+
+    renderCalculator();
+
+    const thirdRow = screen.getByTestId('cta-item-thirdPillarToTuleva');
+    expect(thirdRow).toHaveAttribute('data-done', 'true');
+    // Only their own bank can change a standing order, so we instruct instead of link.
+    expect(within(thirdRow).queryByRole('link')).not.toBeInTheDocument();
+    expect(thirdRow).toHaveTextContent(/Raise your standing order to 300/);
+  });
+
+  it('hides the savings fund step while any pension step is still open', () => {
+    givenData();
+    renderCalculator();
+
+    expect(screen.queryByTestId('cta-item-savingsFund')).not.toBeInTheDocument();
+  });
+
+  it('offers the savings fund as a fourth step once every pension step is done', () => {
+    givenOptimizedPillars();
+    renderCalculator();
+
+    const savingsRow = screen.getByTestId('cta-item-savingsFund');
+    expect(savingsRow).toHaveAttribute('data-done', 'false');
+    expect(within(savingsRow).getByRole('link')).toHaveAttribute(
+      'href',
+      '/savings-fund/onboarding',
+    );
+  });
+
+  it('asks for a first deposit from a saver who joined the savings fund but never paid in', () => {
+    givenOptimizedPillars();
+    mockUseSavingsFundOnboardingStatus.mockReturnValue({
+      data: { status: 'COMPLETED' },
+    } as ReturnType<typeof useSavingsFundOnboardingStatus>);
+
+    renderCalculator();
+
+    const savingsRow = screen.getByTestId('cta-item-savingsFund');
+    expect(savingsRow).toHaveAttribute('data-done', 'false');
+    // First get money in; the standing-order nudge comes once they are actually saving.
+    expect(within(savingsRow).getByRole('link')).toHaveAttribute('href', '/savings-fund/payment');
+  });
+
+  it('checks off the savings fund step for a saver who already invests there', () => {
+    givenOptimizedPillars();
+    mockUseSavingsFundOnboardingStatus.mockReturnValue({
+      data: { status: 'COMPLETED' },
+    } as ReturnType<typeof useSavingsFundOnboardingStatus>);
+    mockUseSavingsFundBalance.mockReturnValue({
+      data: { units: 120, contributions: 5000 } as SourceFund,
+    } as ReturnType<typeof useSavingsFundBalance>);
+
+    renderCalculator();
+
+    const savingsRow = screen.getByTestId('cta-item-savingsFund');
+    expect(savingsRow).toHaveAttribute('data-done', 'true');
+    // A lump-sum saver is nudged into a standing order, with recurring pre-selected.
+    expect(within(savingsRow).getByRole('link')).toHaveAttribute(
+      'href',
+      '/savings-fund/payment?type=RECURRING',
     );
   });
 });

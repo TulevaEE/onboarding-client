@@ -1740,6 +1740,14 @@
   "millionaire.cta.item.thirdPillarToTuleva.body": "That's up to <b>{amount} in tax benefits</b> a year",
   "millionaire.cta.item.thirdPillarToTuleva.buttonNew": "Open a III pillar",
   "millionaire.cta.item.thirdPillarToTuleva.buttonOpen": "Set up a standing order",
+  "millionaire.cta.item.thirdPillarToTuleva.done": "You pay into the III pillar every month and get <b>{amount} in tax benefits</b> a year",
+  "millionaire.cta.item.thirdPillarToTuleva.raise": "Raise your standing order to <b>{target}</b> in your bank and get <b>{amount} in tax benefits</b> a year",
+  "millionaire.cta.item.savingsFund.heading": "Keep saving in Tuleva's savings fund",
+  "millionaire.cta.item.savingsFund.todo": "An index fund you can <b>withdraw from anytime</b>",
+  "millionaire.cta.item.savingsFund.done": "You're also saving in <b>Tuleva's savings fund</b>",
+  "millionaire.cta.item.savingsFund.buttonNew": "Start saving",
+  "millionaire.cta.item.savingsFund.buttonRecurring": "Set up a standing order",
+  "millionaire.cta.item.savingsFund.buttonSingle": "Make a payment",
   "millionaire.disclaimer": "<p>We assume your salary and contributions grow 3% a year. The result is illustrative. The return is not a promise or forecast and the value of an investment can rise and fall.</p><p>II and III pillar contributions are income-tax-free. The optimal and maximum amount to put into the III pillar is 15% of your annual gross income, but no more than 6000 euros. That gives the biggest tax benefit. To your II pillar contributions the state adds another 4% of gross salary, which comes from your social tax. This also has a small effect on your <a>I pillar</a>.</p>",
   "millionaire.alreadyRetired": "You have already reached retirement age. This calculator is for planning the saving years."
 }

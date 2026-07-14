@@ -2,7 +2,7 @@ import { captureException } from '@sentry/browser';
 import { FC, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { redirectToPayment } from '../../../common/api';
 import { useMe } from '../../../common/apiHooks';
 import { PaymentChannel } from '../../../common/apiModels';
@@ -32,7 +32,11 @@ type IPaymentForm = {
 
 export const SavingsFundPayment: FC = () => {
   const [submitError, setSubmitError] = useState(false);
-  const [paymentType, setPaymentType] = useState<SavingsFundPaymentType>('SINGLE');
+  // Landing here from a "set up a standing order" link opens the recurring option,
+  // the same way the III pillar payment page does.
+  const initialPaymentType: SavingsFundPaymentType =
+    new URLSearchParams(useLocation().search).get('type') === 'RECURRING' ? 'RECURRING' : 'SINGLE';
+  const [paymentType, setPaymentType] = useState<SavingsFundPaymentType>(initialPaymentType);
   const intl = useIntl();
   const { data: user } = useMe();
   const {

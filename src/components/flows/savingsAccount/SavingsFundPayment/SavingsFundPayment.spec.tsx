@@ -231,6 +231,18 @@ describe(SavingsFundPayment, () => {
       expect(screen.getByRole('radio', { name: 'Recurring payment' })).not.toBeChecked();
     });
 
+    it('pre-selects the recurring option when linked to with type=RECURRING', async () => {
+      // Re-mount: the page is already open on the plain URL from beforeEach, and the
+      // payment type is read once, when the page loads.
+      cleanup();
+      initApp();
+      history.push('/savings-fund/payment?type=RECURRING');
+
+      expect(await findPageHeading()).toBeInTheDocument();
+      expect(screen.getByRole('radio', { name: 'Recurring payment' })).toBeChecked();
+      expect(screen.getByRole('radio', { name: 'Single payment' })).not.toBeChecked();
+    });
+
     it('shows step-by-step instructions with a bank link when LHV is selected for recurring', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
       userEvent.type(screen.getByRole('textbox', { name: 'Amount' }), '50');

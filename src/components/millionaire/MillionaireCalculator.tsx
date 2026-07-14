@@ -22,6 +22,8 @@ import {
   useConversion,
   useFunds,
   useMe,
+  useSavingsFundBalance,
+  useSavingsFundOnboardingStatus,
   useSourceFunds,
 } from '../common/apiHooks';
 import { CurrencyInput } from '../common/input/CurrencyInput';
@@ -30,7 +32,11 @@ import { formatAmountForCurrency } from '../common/utils';
 import { Conversion } from '../common/apiModels';
 import { TranslationKey } from '../translations';
 import { buildComparison, CalculatorInputs, thirdPillarTaxCapMonthly } from './calculation';
-import { derivePrefill } from './prefill';
+import {
+  contributesMonthlyToThirdPillar,
+  derivePrefill,
+  latestThirdPillarMonthlyAmount,
+} from './prefill';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler);
 
@@ -114,6 +120,13 @@ const legendDot = (color: string): React.CSSProperties => ({
   display: 'inline-block',
 });
 
+// Right-align the summary amounts with tabular (fixed-width) figures so, e.g.,
+// "1 000 000 €" and "800 000 €" line up by place value like an Excel column.
+const amountCellStyle: React.CSSProperties = {
+  justifySelf: 'end',
+  fontVariantNumeric: 'tabular-nums',
+};
+
 // Status icons: a filled green check for a completed step and its empty twin, a
 // gray circle outline (an unchecked checkbox), for a step still to take.
 const successIcon = (
@@ -170,8 +183,8 @@ type CtaItem = {
   // The step's bold title, and the state-dependent body line beneath it.
   headingKey: TranslationKey;
   bodyKey: TranslationKey;
-  // Interpolated into the body line (the salary-based yearly tax benefit).
-  amount?: string;
+  // Interpolated into the body line (tax benefits, standing-order amounts).
+  values?: Record<string, string>;
   showButton: boolean;
   link: string;
   buttonKey: TranslationKey;
@@ -192,6 +205,8 @@ export function MillionaireCalculator() {
   const { data: contributions } = useContributions();
   const { data: conversion } = useConversion();
   const { data: funds } = useFunds();
+  const { data: savingsFundOnboarding } = useSavingsFundOnboardingStatus();
+  const { data: savingsFundBalance } = useSavingsFundBalance();
 
   const [inputs, setInputs] = useState<CalculatorInputs | null>(null);
 
@@ -274,7 +289,22 @@ export function MillionaireCalculator() {
   const secondMaxed = effectiveSecondPillarRate >= 6;
   const thirdAtTuleva = conversion ? fullyConverted(conversion.thirdPillar) : false;
   const thirdContributing = conversion ? conversion.thirdPillar.contribution.yearToDate > 0 : false;
-  const ctaItems: CtaItem[] = conversion
+  // Money arriving month after month means the standing order already exists, so
+  // don't offer to set one up. If it pays less than the tax-deductible ceiling,
+  // point them at the only place it can be raised: their own bank.
+  const thirdMonthly = contributesMonthlyToThirdPillar(contributions ?? [], new Date());
+  const thirdMonthlyAmount = latestThirdPillarMonthlyAmount(contributions ?? [], new Date());
+  const thirdBelowCap = thirdMonthlyAmount < thirdPillarMax;
+  const thirdPillarBodyKey = (): TranslationKey => {
+    if (!(thirdAtTuleva && thirdMonthly)) {
+      return 'millionaire.cta.item.thirdPillarToTuleva.body';
+    }
+    return thirdBelowCap
+      ? 'millionaire.cta.item.thirdPillarToTuleva.raise'
+      : 'millionaire.cta.item.thirdPillarToTuleva.done';
+  };
+
+  const pillarItems: CtaItem[] = conversion
     ? [
         {
           id: 'secondPillarToTuleva',
@@ -297,20 +327,21 @@ export function MillionaireCalculator() {
           bodyKey: secondMaxed
             ? 'millionaire.cta.item.raiseSecondPillar.done'
             : 'millionaire.cta.item.raiseSecondPillar.todo',
-          amount: secondPillarMaxTaxWin,
+          values: { amount: secondPillarMaxTaxWin },
           showButton: !secondMaxed,
           link: '/2nd-pillar-payment-rate',
           buttonKey: 'millionaire.cta.item.raiseSecondPillar.button',
         },
         {
           id: 'thirdPillarToTuleva',
-          // Checked off once at Tuleva and contributing this year, but the CTA stays:
-          // a contributing saver can still grow (or set up) their standing order.
           done: thirdAtTuleva && thirdContributing,
           headingKey: 'millionaire.cta.item.thirdPillarToTuleva.heading',
-          bodyKey: 'millionaire.cta.item.thirdPillarToTuleva.body',
-          amount: thirdPillarMaxRefund,
-          showButton: true,
+          bodyKey: thirdPillarBodyKey(),
+          values: { amount: thirdPillarMaxRefund, target: formatEuro(thirdPillarMax) },
+          // A saver already paying in every month has the standing order, and it can
+          // only be changed in their own bank, so there is nothing to click here.
+          // Anyone else is nudged to set one up (or to open a III pillar first).
+          showButton: !(thirdAtTuleva && thirdMonthly),
           link: thirdAtTuleva ? '/3rd-pillar-payment?type=RECURRING' : '/3rd-pillar-flow',
           buttonKey: thirdAtTuleva
             ? 'millionaire.cta.item.thirdPillarToTuleva.buttonOpen'
@@ -318,6 +349,52 @@ export function MillionaireCalculator() {
         },
       ]
     : [];
+
+  // The savings fund is what comes after the pension, not instead of it: the
+  // pillars carry a tax benefit it doesn't, so it only earns a row once every
+  // pillar step is done and it can't compete with the II/III pillar CTAs.
+  const pillarsOptimized = pillarItems.length > 0 && pillarItems.every((item) => item.done);
+  const savingsFundOnboarded = savingsFundOnboarding?.status === 'COMPLETED';
+  const savingsFundInvested =
+    savingsFundBalance !== null &&
+    savingsFundBalance !== undefined &&
+    savingsFundBalance.contributions > 0 &&
+    savingsFundBalance.units > 0;
+  // Not joined yet: join. Joined but empty: get the first euro in. Already saving:
+  // turn it into a habit, with the recurring option pre-selected on arrival.
+  const savingsFundStep = (): Pick<CtaItem, 'link' | 'buttonKey'> => {
+    if (!savingsFundOnboarded) {
+      return {
+        link: '/savings-fund/onboarding',
+        buttonKey: 'millionaire.cta.item.savingsFund.buttonNew',
+      };
+    }
+    return savingsFundInvested
+      ? {
+          link: '/savings-fund/payment?type=RECURRING',
+          buttonKey: 'millionaire.cta.item.savingsFund.buttonRecurring',
+        }
+      : {
+          link: '/savings-fund/payment',
+          buttonKey: 'millionaire.cta.item.savingsFund.buttonSingle',
+        };
+  };
+  const ctaItems: CtaItem[] =
+    pillarsOptimized && savingsFundOnboarding
+      ? [
+          ...pillarItems,
+          {
+            id: 'savingsFund',
+            done: savingsFundInvested,
+            headingKey: 'millionaire.cta.item.savingsFund.heading',
+            bodyKey: savingsFundInvested
+              ? 'millionaire.cta.item.savingsFund.done'
+              : 'millionaire.cta.item.savingsFund.todo',
+            showButton: true,
+            ...savingsFundStep(),
+          },
+        ]
+      : pillarItems;
 
   const chartData: ChartData<'line', number[], number> = {
     labels: comparison.lauraTrajectory.map((point) => point.age),
@@ -418,7 +495,7 @@ export function MillionaireCalculator() {
                     <FormattedMessage
                       id={item.bodyKey}
                       values={{
-                        amount: item.amount,
+                        ...item.values,
                         b: (chunks: React.ReactNode) => <b>{chunks}</b>,
                       }}
                     />
@@ -659,9 +736,9 @@ export function MillionaireCalculator() {
                         padding: '4px 10px 5px 8px',
                         backgroundColor: 'rgba(255, 255, 255, 0.78)',
                         pointerEvents: 'none',
-                        // Grid so the dot, label and amount line up in columns across
-                        // both rows — the amounts start from the same spot regardless
-                        // of the label width.
+                        // Grid so the dot, label and amount line up in columns. The
+                        // amounts are right-aligned with tabular figures, so they read
+                        // like a column of numbers (Excel-style) whatever their length.
                         display: 'grid',
                         gridTemplateColumns: 'auto auto auto',
                         alignItems: 'center',
@@ -674,12 +751,16 @@ export function MillionaireCalculator() {
                       <span className="small">
                         <FormattedMessage id="millionaire.chart.laura" />
                       </span>
-                      <span className="fw-semibold">{roundedEuro(comparison.laura.total)}</span>
+                      <span className="fw-semibold" style={amountCellStyle}>
+                        {roundedEuro(comparison.laura.total)}
+                      </span>
                       <span style={legendDot(COLOR_TODAY)} />
                       <span className="small">
                         <FormattedMessage id="millionaire.chart.today" />
                       </span>
-                      <span className="fw-semibold">{roundedEuro(comparison.today.total)}</span>
+                      <span className="fw-semibold" style={amountCellStyle}>
+                        {roundedEuro(comparison.today.total)}
+                      </span>
                     </div>
                   </div>
                 </div>
