@@ -23,6 +23,7 @@ import {
   UserConversion,
 } from '../common/apiModels';
 import translations from '../translations';
+import { createTrackedEvent } from '../common/api';
 import { buildComparison, TULEVA_FEE } from './calculation';
 import { derivePrefill } from './prefill';
 
@@ -35,6 +36,10 @@ jest.mock('../common/apiHooks', () => ({
   useSavingsFundOnboardingStatus: jest.fn(),
   useSavingsFundBalance: jest.fn(),
   useTransactions: jest.fn(),
+}));
+
+jest.mock('../common/api', () => ({
+  createTrackedEvent: jest.fn(),
 }));
 
 jest.mock('react-chartjs-2', () => ({
@@ -66,6 +71,7 @@ const mockUseSavingsFundBalance = useSavingsFundBalance as jest.MockedFunction<
   typeof useSavingsFundBalance
 >;
 const mockUseTransactions = useTransactions as jest.MockedFunction<typeof useTransactions>;
+const mockCreateTrackedEvent = createTrackedEvent as jest.MockedFunction<typeof createTrackedEvent>;
 
 // Not converted to Tuleva in either pillar, so all three next steps are actionable.
 const notAtTuleva = {
@@ -205,6 +211,12 @@ describe('MillionaireCalculator', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     jest.setSystemTime(now);
+    // CRA sets resetMocks: true, so implementations have to be re-armed here or
+    // createTrackedEvent returns undefined and the fire-and-forget .catch() blows up.
+    mockCreateTrackedEvent.mockResolvedValue(undefined);
+    // getCurrentPath() reads the real jsdom location, which MemoryRouter never
+    // touches; park it on the page under test so the tracked path is realistic.
+    window.history.pushState({}, '', '/millionaire');
     mockUseConversion.mockReturnValue({ data: undefined } as ReturnType<typeof useConversion>);
     mockUseFunds.mockReturnValue({ data: [] } as unknown as ReturnType<typeof useFunds>);
     mockUseSavingsFundOnboardingStatus.mockReturnValue({ data: { status: null } } as ReturnType<
@@ -470,6 +482,75 @@ describe('MillionaireCalculator', () => {
       '/2nd-pillar-payment-rate',
     );
     expect(linkIn('cta-item-thirdPillarToTuleva')).toHaveAttribute('href', '/3rd-pillar-flow');
+  });
+
+  it('tracks which next step the saver clicked', () => {
+    givenData();
+    renderCalculator();
+
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.click(within(screen.getByTestId('cta-item-secondPillarToTuleva')).getByRole('link'));
+
+    expect(mockCreateTrackedEvent).toHaveBeenCalledWith('CLICK', {
+      path: '/millionaire',
+      target: 'millionaireCalculator.ctaButton',
+      value: 'secondPillarToTuleva',
+      url: '/2nd-pillar-flow',
+    });
+  });
+
+  it('tracks each next step separately, so sends can tell them apart', () => {
+    givenData();
+    renderCalculator();
+
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.click(within(screen.getByTestId('cta-item-raiseSecondPillar')).getByRole('link'));
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.click(within(screen.getByTestId('cta-item-thirdPillarToTuleva')).getByRole('link'));
+
+    expect(mockCreateTrackedEvent).toHaveBeenCalledTimes(2);
+    expect(mockCreateTrackedEvent).toHaveBeenNthCalledWith(
+      1,
+      'CLICK',
+      expect.objectContaining({ value: 'raiseSecondPillar', url: '/2nd-pillar-payment-rate' }),
+    );
+    expect(mockCreateTrackedEvent).toHaveBeenNthCalledWith(
+      2,
+      'CLICK',
+      expect.objectContaining({ value: 'thirdPillarToTuleva', url: '/3rd-pillar-flow' }),
+    );
+  });
+
+  it('tracks the II pillar rate the saver picked', () => {
+    givenData();
+    renderCalculator();
+
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.click(screen.getByRole('button', { name: '6%' }));
+
+    expect(mockCreateTrackedEvent).toHaveBeenCalledWith('CLICK', {
+      path: '/millionaire',
+      target: 'millionaireCalculator.setSecondPillarRate',
+      value: 6,
+    });
+  });
+
+  it('keeps quiet until the saver actually interacts', () => {
+    givenData();
+    renderCalculator();
+
+    expect(mockCreateTrackedEvent).not.toHaveBeenCalled();
+  });
+
+  it('still navigates when tracking fails', () => {
+    mockCreateTrackedEvent.mockRejectedValueOnce(new Error('tracking is down'));
+    givenData();
+    renderCalculator();
+
+    const link = within(screen.getByTestId('cta-item-secondPillarToTuleva')).getByRole('link');
+    // eslint-disable-next-line testing-library/prefer-user-event
+    expect(() => fireEvent.click(link)).not.toThrow();
+    expect(link).toHaveAttribute('href', '/2nd-pillar-flow');
   });
 
   it('checks off raising the II pillar rate once the saver already contributes 6%', () => {
