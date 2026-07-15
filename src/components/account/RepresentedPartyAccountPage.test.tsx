@@ -82,6 +82,40 @@ describe('RepresentedPartyAccountPage', () => {
     expect(await screen.findByText('Pending applications and transactions')).toBeInTheDocument();
     expect(screen.getByText(/deposit to Additional Savings Fund/)).toBeInTheDocument();
   });
+
+  test('does not show a third pillar section for a represented company', async () => {
+    expect(await screen.findByText(additionalSavingsFund.fund.name)).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /III\spillar/ })).not.toBeInTheDocument();
+    expect(screen.queryByText('Tuleva III Samba Pensionifond')).not.toBeInTheDocument();
+  });
+});
+
+describe('RepresentedPartyAccountPage for a represented child', () => {
+  beforeEach(() => {
+    initializeConfiguration();
+    useTestBackendsExcept(server, ['user']);
+    userBackend(server, {
+      role: { type: 'PERSON', code: '61508110000', name: 'Kid Doe' },
+    });
+    savingsAccountStatementBackend(server);
+    initializeComponent();
+    history.push('/account');
+  });
+
+  test("shows the child's third pillar holdings", async () => {
+    expect(
+      await screen.findByRole('heading', { name: /III\spillar/, level: 3 }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Tuleva III Samba Pensionifond')).toBeInTheDocument();
+  });
+
+  test('does not show second pillar funds for the child', async () => {
+    expect(
+      await screen.findByRole('heading', { name: /III\spillar/, level: 3 }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Tuleva World Stocks Pension Fund')).not.toBeInTheDocument();
+    expect(screen.queryByText('Swedbank Pension Fund K60')).not.toBeInTheDocument();
+  });
 });
 
 describe('RepresentedPartyAccountPage without savings fund balance', () => {
