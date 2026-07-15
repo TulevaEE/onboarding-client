@@ -90,10 +90,10 @@ const roundedEuro = (value: number): string => {
 // The number part of a euro figure, without the " €" suffix — only the digits are edited.
 const euroAmount = (value: number): string => formatEuro(value).replace(/[ \s]*€$/, '');
 
-// A euro figure you can edit in place by clicking it: no input box and no visual
-// affordance ("those who know, know"). Only the amount is editable, with a static " €"
-// beside it, and the chart follows every keystroke. It clamps to `max`, which lets a power
-// user type a monthly amount past the slider's cap.
+// A euro figure you can edit in place by clicking it: no input box, just the number.
+// Clicking places a caret and it behaves like any text field. Only the amount is editable,
+// with a static " €" beside it, and the chart follows every keystroke. It clamps to `max`,
+// which lets a power user type a monthly amount past the slider's cap.
 //
 // The DOM text is driven by a ref, not by React children: pushing `value` back into the
 // node only when the change came from OUTSIDE (the slider), never while the user is typing
@@ -126,7 +126,6 @@ const EditableEuro: React.FC<{
         tabIndex={0}
         contentEditable
         suppressContentEditableWarning
-        onFocus={(event) => window.getSelection()?.selectAllChildren?.(event.currentTarget)}
         onInput={(event) => {
           const el = event.currentTarget;
           const next = read(el);
@@ -161,7 +160,9 @@ const EditableEuro: React.FC<{
           event.currentTarget.textContent = euroAmount(next);
         }}
       />
-      {' €'}
+      {/* Static and click-through: the number's wide right padding reaches under it,
+          so a click on the euro still focuses the number rather than dead-ending here. */}
+      <span style={{ pointerEvents: 'none' }}>{' €'}</span>
     </span>
   );
 };
