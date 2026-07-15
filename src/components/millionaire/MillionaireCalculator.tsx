@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import classNames from 'classnames';
 import {
   CategoryScale,
@@ -85,6 +85,85 @@ const formatEuro = (value: number): string => {
 const roundedEuro = (value: number): string => {
   const step = Math.abs(value) >= 1e6 ? 100000 : 1000;
   return formatEuro(Math.floor(value / step) * step);
+};
+
+// The number part of a euro figure, without the " €" suffix — only the digits are edited.
+const euroAmount = (value: number): string => formatEuro(value).replace(/[ \s]*€$/, '');
+
+// A euro figure you can edit in place by clicking it: no input box and no visual
+// affordance ("those who know, know"). Only the amount is editable, with a static " €"
+// beside it, and the chart follows every keystroke. It clamps to `max`, which lets a power
+// user type a monthly amount past the slider's cap.
+//
+// The DOM text is driven by a ref, not by React children: pushing `value` back into the
+// node only when the change came from OUTSIDE (the slider), never while the user is typing
+// here — otherwise React would rewrite the text on each keystroke and jump the caret.
+const EditableEuro: React.FC<{
+  value: number;
+  max: number;
+  ariaLabel: string;
+  onCommit: (value: number) => void;
+  className?: string;
+}> = ({ value, max, ariaLabel, onCommit, className }) => {
+  const ref = useRef<HTMLSpanElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (el && document.activeElement !== el) {
+      el.textContent = euroAmount(value);
+    }
+  }, [value]);
+  const read = (el: HTMLElement): number => {
+    const digits = (el.textContent ?? '').replace(/\D/g, '');
+    return Math.min(Math.max(parseInt(digits || '0', 10), 0), max);
+  };
+  return (
+    <span className={className}>
+      <span
+        ref={ref}
+        className="millionaire-editable"
+        role="textbox"
+        aria-label={ariaLabel}
+        tabIndex={0}
+        contentEditable
+        suppressContentEditableWarning
+        onFocus={(event) => window.getSelection()?.selectAllChildren?.(event.currentTarget)}
+        onInput={(event) => {
+          const el = event.currentTarget;
+          const next = read(el);
+          onCommit(next);
+          // Snap the visible text back to canonical form the instant it drifts — an
+          // overflow past the cap, leading zeros, pasted non-digits — so a long string can
+          // never stretch the layout. Normal in-range digits already match, so the caret
+          // is left alone; only a rewrite moves it (to the end, where typing continues).
+          const canonical = euroAmount(next);
+          if (el.textContent !== canonical) {
+            // eslint-disable-next-line no-param-reassign
+            el.textContent = canonical;
+            const range = document.createRange();
+            range.selectNodeContents(el);
+            range.collapse(false);
+            const selection = window.getSelection();
+            selection?.removeAllRanges();
+            selection?.addRange(range);
+          }
+        }}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            event.currentTarget.blur();
+          }
+        }}
+        onBlur={(event) => {
+          const next = read(event.currentTarget);
+          onCommit(next);
+          // Normalise the display once editing ends (clamped value, stray characters gone).
+          // eslint-disable-next-line no-param-reassign
+          event.currentTarget.textContent = euroAmount(next);
+        }}
+      />
+      {' €'}
+    </span>
+  );
 };
 
 // Fees are a drag on the return, so show them as a negative percent (dot decimal,
@@ -768,9 +847,15 @@ export function MillionaireCalculator() {
                     >
                       <FormattedMessage id="millionaire.input.savingsFund" />
                     </label>
-                    <span className="fw-semibold text-primary text-nowrap">
-                      {formatEuro(inputs.savingsFundMonthly)}
-                    </span>
+                    <EditableEuro
+                      className="fw-semibold text-primary text-nowrap"
+                      value={inputs.savingsFundMonthly}
+                      // Past the slider's 1000 cap but still four digits, so a typed amount
+                      // never outgrows the display or blows up the chart.
+                      max={9999}
+                      ariaLabel={intl.formatMessage({ id: 'millionaire.input.savingsFund' })}
+                      onCommit={(value) => update({ savingsFundMonthly: value })}
+                    />
                   </div>
                   <input
                     id="millionaire-savings-fund"

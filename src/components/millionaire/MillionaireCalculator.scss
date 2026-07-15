@@ -30,3 +30,20 @@
     left: 0;
   }
 }
+
+// The click-to-edit amount is a deliberately undiscoverable power feature, so it looks
+// exactly like static text: no focus ring, and no blue tint from the select-all-on-click
+// that lets a power user type straight over the number.
+.millionaire-editable {
+  &:focus {
+    outline: none;
+  }
+
+  &::selection {
+    background: transparent;
+  }
+
+  &::-moz-selection {
+    background: transparent;
+  }
+}

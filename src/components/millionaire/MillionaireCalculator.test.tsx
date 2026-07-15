@@ -324,6 +324,107 @@ describe('MillionaireCalculator', () => {
     expect(Number(screen.getByTestId('laura-final').textContent)).toBeGreaterThan(withoutFund);
   });
 
+  it('lets a power user click the savings fund amount and type past the slider cap', () => {
+    givenData();
+    mockUseSavingsFundBalance.mockReturnValue({
+      data: savingsFundBalance,
+    } as ReturnType<typeof useSavingsFundBalance>);
+
+    renderCalculator();
+
+    const before = Number(screen.getByTestId('laura-final').textContent);
+    const amount = screen.getByRole('textbox', { name: /Savings fund monthly/i });
+    // 5000 is well above the slider's 1000 cap: the click-to-edit is the only way there.
+    amount.textContent = '5000';
+    // The chart follows each keystroke, so the input event alone (no Enter/blur) updates it.
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.input(amount);
+
+    const withSavings = Number(screen.getByTestId('laura-final').textContent);
+    const expected = buildComparison({
+      ...derivePrefill(user(), sourceFunds, contributions, now),
+      annualReturnPercent: 0,
+      currentFundFeePercent: conversion.weightedAverageFee * 100,
+      initialSavingsFundBalance: 20000,
+      savingsFundMonthly: 5000,
+      tulevaFee: TULEVA_FEE,
+      savingsFundFee: TULEVA_FEE,
+    }).laura.total;
+    expect(withSavings).toBe(Math.round(expected));
+    expect(withSavings).toBeGreaterThan(before);
+  });
+
+  it('clamps the typed savings fund amount to four digits while typing', () => {
+    givenData();
+    mockUseSavingsFundBalance.mockReturnValue({
+      data: savingsFundBalance,
+    } as ReturnType<typeof useSavingsFundBalance>);
+
+    renderCalculator();
+
+    const amount = screen.getByRole('textbox', { name: /Savings fund monthly/i });
+    amount.textContent = '12345'; // a fifth digit would overflow the layout
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.input(amount);
+
+    // The display itself snaps back to the cap, not just the value behind it.
+    expect(amount).toHaveTextContent(/^9999$/);
+    const clamped = buildComparison({
+      ...derivePrefill(user(), sourceFunds, contributions, now),
+      annualReturnPercent: 0,
+      currentFundFeePercent: conversion.weightedAverageFee * 100,
+      initialSavingsFundBalance: 20000,
+      savingsFundMonthly: 9999,
+      tulevaFee: TULEVA_FEE,
+      savingsFundFee: TULEVA_FEE,
+    }).laura.total;
+    expect(Number(screen.getByTestId('laura-final').textContent)).toBe(Math.round(clamped));
+  });
+
+  it('sanitises whatever gets typed into the savings fund amount', () => {
+    givenData();
+    mockUseSavingsFundBalance.mockReturnValue({
+      data: savingsFundBalance,
+    } as ReturnType<typeof useSavingsFundBalance>);
+
+    renderCalculator();
+
+    const amount = screen.getByRole('textbox', { name: /Savings fund monthly/i });
+    // Every case rewrites the visible text to its canonical digits so nothing can overflow
+    // the layout or leave stray characters behind, whatever the saver pastes or types.
+    const cases: Array<[string, string]> = [
+      ['250', '250'], // in range: untouched
+      ['9999', '9999'], // exactly the cap: untouched
+      ['12345', '9999'], // over the cap: clamped
+      ['0000012345', '9999'], // leading zeros hide the overflow: still clamped
+      ['000500', '500'], // leading zeros stripped
+      ['-500', '500'], // minus sign stripped, never negative
+      ['1a2b3', '123'], // letters stripped
+      ['1 234', '1234'], // spaces (a pasted separator) stripped
+    ];
+    cases.forEach(([typed, shown]) => {
+      amount.textContent = typed;
+      // eslint-disable-next-line testing-library/prefer-user-event
+      fireEvent.input(amount);
+      expect(amount).toHaveTextContent(new RegExp(`^${shown}$`));
+    });
+  });
+
+  it('keeps the euro sign out of the editable number', () => {
+    givenData();
+    mockUseSavingsFundBalance.mockReturnValue({
+      data: savingsFundBalance,
+    } as ReturnType<typeof useSavingsFundBalance>);
+
+    renderCalculator();
+
+    const amount = screen.getByRole('textbox', { name: /Savings fund monthly/i });
+    // Only digits are editable; the "€" sits beside the field, not inside it.
+    expect(amount).not.toHaveTextContent('€');
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(amount.parentElement).toHaveTextContent('€');
+  });
+
   it("takes Tuleva's fee from the live fund list rather than a hardcoded constant", () => {
     givenData();
     // Tuleva halves its fee: the recipe must get cheaper without anyone editing code.
