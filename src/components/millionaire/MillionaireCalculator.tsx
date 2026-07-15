@@ -219,7 +219,7 @@ const fullyConverted = (pillar: Conversion): boolean =>
 // absolute href: relative rows are the ones that match across local, staging and
 // prod, so the analytics stay comparable between environments.
 const trackClick = (target: string, data: Record<string, unknown> = {}): void => {
-  createTrackedEvent('CLICK', { path: getCurrentPath(), target, ...data }).catch(() => {});
+  createTrackedEvent('CLICK', { ...data, path: getCurrentPath(), target }).catch(() => {});
 };
 
 export function MillionaireCalculator() {
