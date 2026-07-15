@@ -4,12 +4,21 @@ import AccountStatement from './AccountStatement';
 import { SectionHeading } from './SectionHeading';
 import { TransactionSection } from './TransactionSection/TransactionSection';
 import { ApplicationSection } from './ApplicationSection/ApplicationSection';
-import { useMe, useSavingsFundBalance } from '../common/apiHooks';
+import { useMe, useSavingsFundBalance, useSourceFunds } from '../common/apiHooks';
 
 export function RepresentedPartyAccountPage() {
   const { data: user } = useMe();
   const { data: savingsFundBalance, isLoading: savingsFundBalanceLoading } =
     useSavingsFundBalance();
+
+  // Only a represented person (e.g. a parent viewing a child) can have a third pillar;
+  // a represented legal entity (company) never does, so skip the request for them.
+  const isRepresentedPerson = user?.role.type === 'PERSON';
+  const { data: sourceFunds } = useSourceFunds(undefined, undefined, {
+    enabled: isRepresentedPerson,
+  });
+  const thirdPillarFunds = (sourceFunds ?? []).filter((fund) => fund.pillar === 3);
+  const showThirdPillar = isRepresentedPerson && thirdPillarFunds.length > 0;
 
   // While the balance loads (e.g. right after a role switch), pass undefined so
   // AccountStatement shimmers instead of rendering an empty zero-balance table.
@@ -22,6 +31,13 @@ export function RepresentedPartyAccountPage() {
         <p className="my-5 m-0 lead">
           <FormattedMessage id="account.legalEntity.greeting" values={{ name: user.role.name }} />
         </p>
+      )}
+
+      {showThirdPillar && (
+        <>
+          <SectionHeading titleId="accountStatement.thirdPillar.heading" />
+          <AccountStatement funds={thirdPillarFunds} />
+        </>
       )}
 
       <SectionHeading titleId="accountStatement.savingsFund.heading">

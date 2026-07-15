@@ -185,10 +185,15 @@ export function useConversion(): UseQueryResult<UserConversion> {
   return useQuery({ queryKey: ['conversion'], queryFn: () => getUserConversionWithToken() });
 }
 
-export function useSourceFunds(fromDate?: string, toDate?: string): UseQueryResult<SourceFund[]> {
+export function useSourceFunds(
+  fromDate?: string,
+  toDate?: string,
+  options: { enabled?: boolean } = {},
+): UseQueryResult<SourceFund[]> {
   return useQuery({
     queryKey: ['sourceFunds', fromDate, toDate],
     queryFn: () => getSourceFunds(fromDate, toDate),
+    enabled: options.enabled ?? true,
   });
 }
 
