@@ -17,6 +17,8 @@ import { Line } from 'react-chartjs-2';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { usePageTitle } from '../common/usePageTitle';
+import { createTrackedEvent } from '../common/api';
+import { getCurrentPath } from '../account/ComparisonCalculator/utility';
 import './MillionaireCalculator.scss';
 import {
   useContributions,
@@ -208,6 +210,14 @@ type CtaItem = {
 // Anyone with money still sitting in another fund (even a cheap one) gets nudged.
 const fullyConverted = (pillar: Conversion): boolean =>
   pillar.selectionComplete && pillar.transfersComplete;
+
+// Fire-and-forget, like ComparisonCalculator: tracking must never break a click.
+// Note we do NOT preventDefault the way ComparisonCalculator does — these are
+// react-router <Link>s, so navigation keeps the document alive and the in-flight
+// POST completes on its own.
+const trackClick = (target: string, data: Record<string, unknown> = {}): void => {
+  createTrackedEvent('CLICK', { path: getCurrentPath(), target, ...data }).catch(() => {});
+};
 
 export function MillionaireCalculator() {
   const intl = useIntl();
@@ -626,6 +636,12 @@ export function MillionaireCalculator() {
                       'btn w-100 w-sm-auto',
                       item.primary ? 'btn-primary' : 'btn-outline-primary',
                     )}
+                    onClick={() =>
+                      trackClick('millionaireCalculator.ctaButton', {
+                        value: item.id,
+                        url: item.link,
+                      })
+                    }
                   >
                     <FormattedMessage id={item.buttonKey} />
                   </Link>
@@ -694,7 +710,13 @@ export function MillionaireCalculator() {
                           active ? 'btn-primary' : 'btn-outline-primary',
                         )}
                         aria-pressed={active}
-                        onClick={() => update({ currentSecondPillarRate: active ? 0 : rate })}
+                        onClick={() => {
+                          const newRate = active ? 0 : rate;
+                          trackClick('millionaireCalculator.setSecondPillarRate', {
+                            value: newRate,
+                          });
+                          update({ currentSecondPillarRate: newRate });
+                        }}
                       >
                         {rate}%
                       </button>
@@ -792,7 +814,12 @@ export function MillionaireCalculator() {
                     type="button"
                     tabIndex={-1}
                     aria-hidden="true"
-                    onClick={() => update({ annualReturnPercent: HISTORICAL_RETURN })}
+                    onClick={() => {
+                      trackClick('millionaireCalculator.setHistoricalReturn', {
+                        value: HISTORICAL_RETURN,
+                      });
+                      update({ annualReturnPercent: HISTORICAL_RETURN });
+                    }}
                     className="btn p-0 border-0 bg-transparent position-absolute lh-1 text-secondary"
                     style={{
                       // Centre on the thumb: the track travel is (100% - thumbWidth)
@@ -814,7 +841,12 @@ export function MillionaireCalculator() {
                       a: (chunks: React.ReactNode) => (
                         <button
                           type="button"
-                          onClick={() => update({ annualReturnPercent: HISTORICAL_RETURN })}
+                          onClick={() => {
+                            trackClick('millionaireCalculator.setHistoricalReturn', {
+                              value: HISTORICAL_RETURN,
+                            });
+                            update({ annualReturnPercent: HISTORICAL_RETURN });
+                          }}
                           className="btn btn-link p-0 border-0 align-baseline"
                           style={{ fontSize: 'inherit', verticalAlign: 'baseline' }}
                         >
