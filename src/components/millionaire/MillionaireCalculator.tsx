@@ -215,6 +215,9 @@ const fullyConverted = (pillar: Conversion): boolean =>
 // Note we do NOT preventDefault the way ComparisonCalculator does — these are
 // react-router <Link>s, so navigation keeps the document alive and the in-flight
 // POST completes on its own.
+// `url` is deliberately the relative route, where ComparisonCalculator logs an
+// absolute href: relative rows are the ones that match across local, staging and
+// prod, so the analytics stay comparable between environments.
 const trackClick = (target: string, data: Record<string, unknown> = {}): void => {
   createTrackedEvent('CLICK', { path: getCurrentPath(), target, ...data }).catch(() => {});
 };
@@ -817,6 +820,7 @@ export function MillionaireCalculator() {
                     onClick={() => {
                       trackClick('millionaireCalculator.setHistoricalReturn', {
                         value: HISTORICAL_RETURN,
+                        source: 'arrow',
                       });
                       update({ annualReturnPercent: HISTORICAL_RETURN });
                     }}
@@ -844,6 +848,7 @@ export function MillionaireCalculator() {
                           onClick={() => {
                             trackClick('millionaireCalculator.setHistoricalReturn', {
                               value: HISTORICAL_RETURN,
+                              source: 'hintLink',
                             });
                             update({ annualReturnPercent: HISTORICAL_RETURN });
                           }}
