@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
-import { MemoryRouter } from 'react-router-dom';
+import { Router } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
 import { MillionaireCalculator } from './MillionaireCalculator';
 import {
   useContributions,
@@ -91,14 +92,16 @@ const atTulevaContributing = {
   contribution: { yearToDate: 500, lastYear: 6000, total: 12000 },
 } as Conversion;
 
-const renderCalculator = () =>
+// Takes a history so a test can assert where a CTA actually took the saver.
+const renderCalculator = (history = createMemoryHistory({ initialEntries: ['/millionaire'] })) => {
   render(
-    <MemoryRouter>
+    <Router history={history}>
       <IntlProvider locale="en" messages={translations.en}>
         <MillionaireCalculator />
       </IntlProvider>
-    </MemoryRouter>,
+    </Router>,
   );
+};
 
 const user = (overrides: Partial<User> = {}): User =>
   ({
@@ -489,7 +492,7 @@ describe('MillionaireCalculator', () => {
     renderCalculator();
 
     // eslint-disable-next-line testing-library/prefer-user-event
-    fireEvent.click(within(screen.getByTestId('cta-item-secondPillarToTuleva')).getByRole('link'));
+    fireEvent.click(screen.getByRole('link', { name: 'Switch to Tuleva' }));
 
     expect(mockCreateTrackedEvent).toHaveBeenCalledWith('CLICK', {
       path: '/millionaire',
@@ -504,9 +507,10 @@ describe('MillionaireCalculator', () => {
     renderCalculator();
 
     // eslint-disable-next-line testing-library/prefer-user-event
-    fireEvent.click(within(screen.getByTestId('cta-item-raiseSecondPillar')).getByRole('link'));
+    fireEvent.click(screen.getByRole('link', { name: 'Raise my contribution' }));
+    // The label carries a non-breaking space, so match it with \s rather than ' '.
     // eslint-disable-next-line testing-library/prefer-user-event
-    fireEvent.click(within(screen.getByTestId('cta-item-thirdPillarToTuleva')).getByRole('link'));
+    fireEvent.click(screen.getByRole('link', { name: /Open a III\spillar/ }));
 
     expect(mockCreateTrackedEvent).toHaveBeenCalledTimes(2);
     expect(mockCreateTrackedEvent).toHaveBeenNthCalledWith(
@@ -535,6 +539,23 @@ describe('MillionaireCalculator', () => {
     });
   });
 
+  // The arrow shortcut is aria-hidden, so only the hint link is reachable by role;
+  // `source` is what separates the two in the analytics.
+  it('marks the hint link as the source when it sets the historical return', () => {
+    givenData();
+    renderCalculator();
+
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.click(screen.getByRole('button', { name: /return 7%/ }));
+
+    expect(mockCreateTrackedEvent).toHaveBeenCalledWith('CLICK', {
+      path: '/millionaire',
+      target: 'millionaireCalculator.setHistoricalReturn',
+      value: 7,
+      source: 'hintLink',
+    });
+  });
+
   it('keeps quiet until the saver actually interacts', () => {
     givenData();
     renderCalculator();
@@ -545,12 +566,13 @@ describe('MillionaireCalculator', () => {
   it('still navigates when tracking fails', () => {
     mockCreateTrackedEvent.mockRejectedValueOnce(new Error('tracking is down'));
     givenData();
-    renderCalculator();
+    const history = createMemoryHistory({ initialEntries: ['/millionaire'] });
+    renderCalculator(history);
 
-    const link = within(screen.getByTestId('cta-item-secondPillarToTuleva')).getByRole('link');
     // eslint-disable-next-line testing-library/prefer-user-event
-    expect(() => fireEvent.click(link)).not.toThrow();
-    expect(link).toHaveAttribute('href', '/2nd-pillar-flow');
+    fireEvent.click(screen.getByRole('link', { name: 'Switch to Tuleva' }));
+
+    expect(history.location.pathname).toBe('/2nd-pillar-flow');
   });
 
   it('checks off raising the II pillar rate once the saver already contributes 6%', () => {
