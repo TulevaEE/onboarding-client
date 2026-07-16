@@ -1514,7 +1514,7 @@
   "flows.savingsFundChildOnboarding.goalStep.general": "Üldiselt lapse tuleviku tarbeks",
   "flows.savingsFundChildOnboarding.goalStep.education": "Haridus",
   "flows.savingsFundChildOnboarding.goalStep.firstHome": "Esimene kodu või selle sissemakse",
-  "flows.savingsFundChildOnboarding.goalStep.description": "Vali hetkel peamine eesmärk",
+  "flows.savingsFundChildOnboarding.goalStep.description": "Vali kõik sobivad",
   "flows.savingsFundChildOnboarding.contributionStep.title": "Kui palju plaanid lapsele koguda?",
   "flows.savingsFundChildOnboarding.contributionStep.description": "Ligikaudne — saad alati muuta.",
   "flows.savingsFundChildOnboarding.contributionStep.required": "Vali summa",

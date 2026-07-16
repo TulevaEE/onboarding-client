@@ -1424,7 +1424,7 @@
   "flows.savingsFundChildOnboarding.goalStep.general": "Generally for the child’s future",
   "flows.savingsFundChildOnboarding.goalStep.education": "Education",
   "flows.savingsFundChildOnboarding.goalStep.firstHome": "First home or its down payment",
-  "flows.savingsFundChildOnboarding.goalStep.description": "Choose the main goal for now",
+  "flows.savingsFundChildOnboarding.goalStep.description": "Choose all that apply",
   "flows.savingsFundChildOnboarding.contributionStep.title": "How much do you plan to save for your child?",
   "flows.savingsFundChildOnboarding.contributionStep.description": "Approximately — you can always change it.",
   "flows.savingsFundChildOnboarding.contributionStep.required": "Choose an amount",
