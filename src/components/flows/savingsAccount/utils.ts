@@ -108,7 +108,7 @@ export const transformChildFormDataToSurveyCommand = (
     answers.push({ type: 'PHONE_NUMBER', value: { type: 'TEXT', value: data.phoneNumber } });
   }
 
-  if (data.investmentGoals) {
+  if (data.investmentGoals.length > 0) {
     answers.push({ type: 'INVESTMENT_GOALS', value: data.investmentGoals });
   }
 

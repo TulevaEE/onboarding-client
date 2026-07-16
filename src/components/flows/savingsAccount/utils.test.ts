@@ -180,7 +180,7 @@ const buildChildFormData = (
   pepSelfDeclaration: null,
   childPersonalCode: '61509070000',
   child: { firstName: 'Mammu', lastName: 'Maasikas', dateOfBirth: '2015-09-07' },
-  investmentGoals: { type: 'OPTION', value: 'EDUCATION' },
+  investmentGoals: [{ type: 'OPTION', value: 'EDUCATION' }],
   plannedContribution: 'FROM_200_TO_600',
   investableAssets: 'UP_TO_2000',
   fundingSources: [{ type: 'OPTION', value: 'PARENT_INCOME_AND_SAVINGS' }],
@@ -208,6 +208,25 @@ describe('transformChildFormDataToSurveyCommand', () => {
       'INVESTABLE_ASSETS',
       'FUNDING_SOURCES',
     ]);
+  });
+
+  it('sends every chosen investment goal as an array', () => {
+    const { answers } = transformChildFormDataToSurveyCommand(
+      buildChildFormData({
+        investmentGoals: [
+          { type: 'OPTION', value: 'EDUCATION' },
+          { type: 'OPTION', value: 'FIRST_HOME' },
+        ],
+      }),
+    );
+
+    expect(answers).toContainEqual({
+      type: 'INVESTMENT_GOALS',
+      value: [
+        { type: 'OPTION', value: 'EDUCATION' },
+        { type: 'OPTION', value: 'FIRST_HOME' },
+      ],
+    });
   });
 
   it('never sends citizenship or PEP — both are derived backend-side, not by the parent', () => {
@@ -268,7 +287,7 @@ describe('transformChildFormDataToSurveyCommand', () => {
   it('omits goal, contribution, investable assets and funding sources when not provided', () => {
     const types = transformChildFormDataToSurveyCommand(
       buildChildFormData({
-        investmentGoals: null,
+        investmentGoals: [],
         plannedContribution: null,
         investableAssets: null,
         fundingSources: [],

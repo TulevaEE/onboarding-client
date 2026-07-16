@@ -122,7 +122,12 @@ type PepSelfDeclarationSurveyItem = {
 };
 type InvestmentGoalsSurveyItem = {
   type: 'INVESTMENT_GOALS';
-  value: OptionValue<InvestmentGoalOption> | TextValue;
+  // A single value (person/company flows) or an array (child flow, multi-select).
+  // The backend accepts both — a single value deserializes into a one-element list.
+  value:
+    | OptionValue<InvestmentGoalOption>
+    | TextValue
+    | (OptionValue<InvestmentGoalOption> | TextValue)[];
 };
 type InvestableAssetsSurveyItem = {
   type: 'INVESTABLE_ASSETS';

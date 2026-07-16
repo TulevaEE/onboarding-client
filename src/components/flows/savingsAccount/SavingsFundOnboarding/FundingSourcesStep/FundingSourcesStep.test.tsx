@@ -18,7 +18,7 @@ const Wrapper = () => {
       email: '',
       phoneNumber: '',
       pepSelfDeclaration: null,
-      investmentGoals: null,
+      investmentGoals: [],
       plannedContribution: null,
       fundingSources: [],
       termsAccepted: false,
