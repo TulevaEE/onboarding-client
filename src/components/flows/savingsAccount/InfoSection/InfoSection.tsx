@@ -36,7 +36,7 @@ export const InfoSection: FC<InfoSectionProps> = ({ variant, accountHolder = 'se
         })}
         media={<Verify />}
       />
-      {accountHolder !== 'company' && (
+      {accountHolder === 'self' && (
         <SimpleListItem
           title={
             <>

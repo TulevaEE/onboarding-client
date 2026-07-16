@@ -32,7 +32,7 @@ describe('InfoSection', () => {
       expect(learnMoreLink).toHaveAttribute('rel', 'noreferrer');
     });
 
-    it('shows the child bank account creditor text when the account holder is a child', () => {
+    it('shows the child creditor text and hides the investment account tip for a child', () => {
       renderWrapped(<InfoSection variant="payment" accountHolder="child" />);
 
       expect(
@@ -41,6 +41,8 @@ describe('InfoSection', () => {
       expect(
         screen.queryByText('The money must come from a bank account in your name.'),
       ).not.toBeInTheDocument();
+      // A child's account is not an investment account, so the tax-deferral tip does not apply.
+      expect(screen.queryByText('investment account')).not.toBeInTheDocument();
     });
 
     it('shows the company creditor text and hides the investment account tip for a company', () => {
