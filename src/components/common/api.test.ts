@@ -128,6 +128,7 @@ describe('API calls', () => {
           authenticationHash: JSON.stringify(mockAuthToken),
         }),
         expect.any(Object),
+        expect.any(Object),
       );
       expect(result).toEqual(expectedTokens);
     });
@@ -167,6 +168,7 @@ describe('API calls', () => {
         '/oauth/token',
         expect.any(Object),
         expect.any(Object),
+        expect.any(Object),
       );
       expect(mockAuthenticationUpdate).toHaveBeenCalledWith({
         accessToken: expectedToken.accessToken,
@@ -198,6 +200,7 @@ describe('API calls', () => {
           client_id: 'onboarding-client',
         },
         expect.any(Object),
+        expect.any(Object),
       );
       expect(mockAuthenticationUpdate).toHaveBeenCalledWith({
         accessToken: expectedToken.accessToken,
@@ -205,6 +208,23 @@ describe('API calls', () => {
         loginMethod: 'SMART_ID',
         signingMethod: 'SMART_ID',
       });
+    });
+
+    it('should forward the abort signal to the token request', async () => {
+      mockHttp.postForm.mockResolvedValueOnce({
+        access_token: 'access-token',
+        refresh_token: 'refresh-token',
+      });
+      const controller = new AbortController();
+
+      await getSmartIdTokens(authenticationHash, { signal: controller.signal });
+
+      expect(mockHttp.postForm).toHaveBeenCalledWith(
+        '/oauth/token',
+        expect.any(Object),
+        expect.any(Object),
+        { signal: controller.signal },
+      );
     });
   });
 
@@ -221,6 +241,7 @@ describe('API calls', () => {
       expect(token).toEqual(expectedToken);
       expect(mockHttp.postForm).toHaveBeenCalledWith(
         '/oauth/token',
+        expect.any(Object),
         expect.any(Object),
         expect.any(Object),
       );
@@ -294,6 +315,7 @@ describe('API calls', () => {
         {
           Authorization: basicAuthHeader,
         },
+        expect.any(Object),
       );
       expect(mockAuthenticationUpdate).toHaveBeenCalledWith({
         accessToken: expectedToken.accessToken,
@@ -336,6 +358,7 @@ describe('API calls', () => {
         {
           Authorization: basicAuthHeader,
         },
+        expect.any(Object),
       );
     });
 
@@ -359,6 +382,7 @@ describe('API calls', () => {
           grant_type: grant,
           ...params,
         }),
+        expect.any(Object),
         expect.any(Object),
       );
       expect(mockAuthenticationUpdate).toHaveBeenCalledWith({

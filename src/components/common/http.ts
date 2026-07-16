@@ -119,7 +119,12 @@ export async function post(url: string, params = {}, headers = {}): Promise<any>
   return transformResponse(response);
 }
 
-export async function postForm(url: string, params = {}, headers = {}): Promise<any> {
+export async function postForm(
+  url: string,
+  params = {},
+  headers = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<any> {
   const body = urlEncodeParameters(params);
   const response = await fetch(url, {
     method: 'POST',
@@ -132,6 +137,7 @@ export async function postForm(url: string, params = {}, headers = {}): Promise<
     credentials: 'include',
     mode: 'cors',
     cache: 'default',
+    ...options,
   });
   return transformResponse(response);
 }

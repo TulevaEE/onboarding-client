@@ -276,6 +276,134 @@ describe('Login actions', () => {
       });
   });
 
+  it('recovers with a fresh smart id login attempt after a poll request never settles', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.authenticateWithIdCode = jest.fn(() =>
+      Promise.resolve({ challengeCode: '1337', authenticationHash: 'hash-1' }),
+    );
+    const strandedPoll = jest.fn(() => new Promise(() => {}));
+    mockApi.getSmartIdTokens = strandedPoll;
+    const authenticateWithSmartId = createBoundAction(actions.authenticateWithIdCode);
+
+    await authenticateWithSmartId('50001018865');
+    jest.runOnlyPendingTimers();
+    expect(strandedPoll).toHaveBeenCalledTimes(1);
+
+    actions.cancelMobileAuthentication();
+    expect(strandedPoll.mock.calls[0][1].signal.aborted).toBe(true);
+
+    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
+    mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(tokens));
+    await authenticateWithSmartId('50001018865');
+    jest.runOnlyPendingTimers();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(mockApi.getSmartIdTokens).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: MOBILE_AUTHENTICATION_SUCCESS,
+      tokens,
+      method: 'SMART_ID',
+    });
+  });
+
+  it.each([
+    ['visibilitychange', () => document.dispatchEvent(new Event('visibilitychange'))],
+    ['pageshow', () => window.dispatchEvent(new Event('pageshow'))],
+  ])(
+    'polls immediately on %s during a pending smart id login',
+    async (eventName, dispatchBrowserEvent) => {
+      state = { login: { loadingAuthentication: true } };
+      mockApi.authenticateWithIdCode = jest.fn(() =>
+        Promise.resolve({ challengeCode: '1337', authenticationHash: 'hash-1' }),
+      );
+      const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
+      mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(tokens));
+      const authenticateWithSmartId = createBoundAction(actions.authenticateWithIdCode);
+
+      await authenticateWithSmartId('50001018865');
+      dispatchBrowserEvent();
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(mockApi.getSmartIdTokens).toHaveBeenCalledTimes(1);
+      expect(dispatch).toHaveBeenCalledWith({
+        type: MOBILE_AUTHENTICATION_SUCCESS,
+        tokens,
+        method: 'SMART_ID',
+      });
+    },
+  );
+
+  it('ignores a late authenticate response from a canceled smart id attempt', async () => {
+    state = { login: { loadingAuthentication: true } };
+    let resolveFirstStart;
+    mockApi.authenticateWithIdCode = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          resolveFirstStart = resolve;
+        }),
+    );
+    const authenticateWithSmartId = createBoundAction(actions.authenticateWithIdCode);
+    const firstAttempt = authenticateWithSmartId('50001018865');
+
+    actions.cancelMobileAuthentication();
+
+    mockApi.authenticateWithIdCode = jest.fn(() =>
+      Promise.resolve({ challengeCode: '4321', authenticationHash: 'hash-b' }),
+    );
+    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
+    mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(tokens));
+    await authenticateWithSmartId('50001018865');
+
+    resolveFirstStart({ challengeCode: '1337', authenticationHash: 'hash-a' });
+    await firstAttempt;
+
+    jest.runOnlyPendingTimers();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(mockApi.getSmartIdTokens).toHaveBeenCalledTimes(1);
+    expect(mockApi.getSmartIdTokens).toHaveBeenCalledWith('hash-b', expect.anything());
+    expect(dispatch).toHaveBeenCalledWith({
+      type: MOBILE_AUTHENTICATION_SUCCESS,
+      tokens,
+      method: 'SMART_ID',
+    });
+  });
+
+  it('abandons a stuck poll request and retries immediately when the tab becomes visible', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.authenticateWithIdCode = jest.fn(() =>
+      Promise.resolve({ challengeCode: '1337', authenticationHash: 'hash-1' }),
+    );
+    const strandedPoll = jest.fn(() => new Promise(() => {}));
+    mockApi.getSmartIdTokens = strandedPoll;
+    const authenticateWithSmartId = createBoundAction(actions.authenticateWithIdCode);
+
+    await authenticateWithSmartId('50001018865');
+    jest.runOnlyPendingTimers();
+    expect(strandedPoll).toHaveBeenCalledTimes(1);
+
+    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
+    mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(tokens));
+    document.dispatchEvent(new Event('visibilitychange'));
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(strandedPoll.mock.calls[0][1].signal.aborted).toBe(true);
+    expect(mockApi.getSmartIdTokens).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: MOBILE_AUTHENTICATION_SUCCESS,
+      tokens,
+      method: 'SMART_ID',
+    });
+  });
+
   it('starts polling until succeeds when authenticating with id card (mTLS)', () => {
     const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
     mockApi.authenticateWithIdCardMtls = jest.fn(() => Promise.resolve());

@@ -36,7 +36,8 @@ import { getAuthentication } from '../common/authenticationManager';
 
 const POLL_DELAY = 1000;
 let timeout;
-let inflight = null;
+let smartIdAttempt = null;
+let smartIdStartSequence = 0;
 
 export function changePhoneNumber(phoneNumber) {
   return { type: CHANGE_PHONE_NUMBER, phoneNumber };
@@ -117,41 +118,51 @@ const logPoll = (stage, value = '') =>
   // eslint-disable-next-line no-console
   console.log(`[poll] ${stage}`, value, Date.now());
 
-// eslint-disable-next-line no-underscore-dangle
-if (!window.__smartIdVisibilityLoggerAttached) {
-  document.addEventListener('visibilitychange', () =>
-    logPoll('tab-visibility', document.visibilityState),
-  );
-  // eslint-disable-next-line no-underscore-dangle
-  window.__smartIdVisibilityLoggerAttached = true;
+// A poll request stranded by tab suspension (iOS Safari kills in-flight fetches on
+// app switch and the promise may never settle) must never block later polling —
+// all attempt state is scoped here and reclaimed on cancel, retry, and completion.
+function stopSmartIdPolling() {
+  if (!smartIdAttempt) {
+    return;
+  }
+  clearTimeout(smartIdAttempt.timeout);
+  if (smartIdAttempt.controller) {
+    smartIdAttempt.controller.abort();
+  }
+  document.removeEventListener('visibilitychange', smartIdAttempt.pollNow);
+  window.removeEventListener('pageshow', smartIdAttempt.pollNow);
+  smartIdAttempt = null;
 }
 
 export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => {
-  logPoll('schedule-timeout', POLL_DELAY);
+  stopSmartIdPolling();
 
-  timeout = setTimeout(async () => {
-    if (inflight) {
-      logPoll('skip-new-request-because-inflight');
+  const attempt = {};
+  smartIdAttempt = attempt;
+
+  const poll = async () => {
+    if (attempt !== smartIdAttempt) {
       return undefined;
     }
-
-    logPoll('request-start');
+    if (attempt.controller) {
+      attempt.controller.abort(); // reclaim a request stranded by tab suspension
+    }
     const controller = new AbortController();
-
-    inflight = api
-      .getSmartIdTokens(authenticationHash, { signal: controller.signal })
-      .finally(() => {
-        inflight = null;
-      });
+    attempt.controller = controller;
+    logPoll('request-start');
 
     try {
-      const tokens = await inflight;
+      const tokens = await api.getSmartIdTokens(authenticationHash, {
+        signal: controller.signal,
+      });
+      if (attempt !== smartIdAttempt || controller !== attempt.controller) {
+        return undefined; // superseded — ignore late replies
+      }
       logPoll('fetch-resolved', tokens);
 
       if (tokens?.accessToken && tokens?.refreshToken) {
         logPoll('token-present → SUCCESS');
-        clearTimeout(timeout);
-        controller.abort(); // ignore any late replies
+        stopSmartIdPolling();
 
         dispatch({
           type: MOBILE_AUTHENTICATION_SUCCESS,
@@ -163,37 +174,70 @@ export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => 
 
       if (getState().login.loadingAuthentication) {
         logPoll('token-absent → poll-again');
-        return dispatch(getSmartIdTokens(authenticationHash));
+        attempt.timeout = setTimeout(poll, POLL_DELAY);
       }
     } catch (error) {
+      if (attempt !== smartIdAttempt || controller !== attempt.controller) {
+        return undefined;
+      }
       logPoll('fetch-error', error);
 
       if (error.message === 'Load failed') {
         logPoll('load-failed → poll-again');
-        return dispatch(getSmartIdTokens(authenticationHash));
+        attempt.timeout = setTimeout(poll, POLL_DELAY);
+        return undefined;
       }
 
-      clearTimeout(timeout);
+      stopSmartIdPolling();
       logPoll('fatal-error → STOP');
       return dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error });
     }
     return undefined;
-  }, POLL_DELAY);
+  };
+
+  // iOS Safari suspends the page while the user confirms in the Smart-ID app,
+  // freezing timers and stranding fetches — poll the moment the tab comes back.
+  attempt.pollNow = () => {
+    if (attempt !== smartIdAttempt || !getState().login.loadingAuthentication) {
+      return;
+    }
+    if (document.visibilityState !== 'visible') {
+      return;
+    }
+    logPoll('tab-visible → poll-now');
+    clearTimeout(attempt.timeout);
+    poll();
+  };
+  document.addEventListener('visibilitychange', attempt.pollNow);
+  window.addEventListener('pageshow', attempt.pollNow);
+
+  logPoll('schedule-timeout', POLL_DELAY);
+  attempt.timeout = setTimeout(poll, POLL_DELAY);
 };
 
 export function authenticateWithIdCode(personalCode) {
   return (dispatch) => {
+    smartIdStartSequence += 1;
+    const startSequence = smartIdStartSequence;
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
       .authenticateWithIdCode(personalCode)
       .then((authentication) => {
+        if (startSequence !== smartIdStartSequence) {
+          return; // canceled or superseded while /authenticate was pending
+        }
         dispatch({
           type: MOBILE_AUTHENTICATION_START_SUCCESS,
           controlCode: authentication.challengeCode,
         });
         dispatch(getSmartIdTokens(authentication.authenticationHash));
       })
-      .catch((error) => dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error }));
+      .catch((error) => {
+        if (startSequence !== smartIdStartSequence) {
+          return;
+        }
+        dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error });
+      });
   };
 }
 
@@ -255,6 +299,8 @@ export function cancelMobileAuthentication() {
   if (timeout) {
     clearTimeout(timeout);
   }
+  smartIdStartSequence += 1; // invalidate any /authenticate still in flight
+  stopSmartIdPolling();
   return { type: MOBILE_AUTHENTICATION_CANCEL };
 }
 

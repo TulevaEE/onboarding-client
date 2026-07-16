@@ -136,6 +136,7 @@ export function logout(): Promise<void> {
 export async function getTokensWithGrantType(
   grantType: LoginMethod,
   extraParameters: Record<string, string> = {},
+  options: { signal?: AbortSignal } = {},
 ): Promise<Token | null> {
   try {
     const { access_token: accessToken, refresh_token: refreshToken } = await postForm(
@@ -148,6 +149,7 @@ export async function getTokensWithGrantType(
       {
         Authorization: 'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ=',
       },
+      options,
     );
 
     getAuthentication().update({
@@ -170,8 +172,11 @@ export function getMobileIdTokens(): Promise<Token | null> {
   return getTokensWithGrantType('MOBILE_ID');
 }
 
-export function getSmartIdTokens(authenticationHash: string): Promise<Token | null> {
-  return getTokensWithGrantType('SMART_ID', { authenticationHash });
+export function getSmartIdTokens(
+  authenticationHash: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<Token | null> {
+  return getTokensWithGrantType('SMART_ID', { authenticationHash }, options);
 }
 
 export function getIdCardTokens(): Promise<Token | null> {
