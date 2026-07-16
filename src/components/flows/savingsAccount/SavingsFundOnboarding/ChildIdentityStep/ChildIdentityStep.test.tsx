@@ -150,18 +150,20 @@ describe('ChildIdentityStep', () => {
   describe('with children from the register', () => {
     beforeEach(() => {
       eligibleChildrenBackend(server, [
-        { personalCode: '61506150006' },
+        { personalCode: '61506150006', firstName: 'Mari', lastName: 'Maasikas' },
         { personalCode: '61001010000' },
       ]);
     });
 
-    test('offers the children in a dropdown', async () => {
+    test('offers the children by name, falling back to the code when the register has none', async () => {
       renderWrapped(<Wrapper />);
 
       expect(
         await screen.findByRole('combobox', { name: /personal ID code/i }),
       ).toBeInTheDocument();
-      expect(screen.getByRole('option', { name: '61506150006' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('option', { name: 'Mari Maasikas (61506150006)' }),
+      ).toBeInTheDocument();
       expect(screen.getByRole('option', { name: '61001010000' })).toBeInTheDocument();
     });
 
