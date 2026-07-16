@@ -188,9 +188,11 @@ export type KycIdentity = {
 };
 
 // GET /v1/me/children — children whose assets the parent may manage according
-// to the population register. Codes only for now; names may be added later.
+// to the population register. The name comes from the register and may be absent.
 export type EligibleChild = {
   personalCode: string;
+  firstName?: string;
+  lastName?: string;
 };
 
 // POST /v1/me/children — the parent opens an account for their child. The custody

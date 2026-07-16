@@ -69,11 +69,14 @@ export const ChildIdentityStep: FC<ChildIdentityStepProps> = ({ control }) => {
                         id: 'flows.savingsFundChildOnboarding.identityStep.selectPlaceholder',
                       })}
                     </option>
-                    {eligibleChildren.map(({ personalCode }) => (
-                      <option key={personalCode} value={personalCode}>
-                        {personalCode}
-                      </option>
-                    ))}
+                    {eligibleChildren.map(({ personalCode, firstName, lastName }) => {
+                      const name = [firstName, lastName].filter(Boolean).join(' ');
+                      return (
+                        <option key={personalCode} value={personalCode}>
+                          {name ? `${name} (${personalCode})` : personalCode}
+                        </option>
+                      );
+                    })}
                   </select>
                 ) : (
                   <input

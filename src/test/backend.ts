@@ -987,7 +987,7 @@ export function savingsFundOnboardingSurveyBackend(
 
 export function eligibleChildrenBackend(
   server: SetupServerApi,
-  children: { personalCode: string }[] = [],
+  children: { personalCode: string; firstName?: string; lastName?: string }[] = [],
 ): void {
   server.use(
     rest.get('http://localhost/v1/me/children', (req, res, ctx) => res(ctx.json(children))),
