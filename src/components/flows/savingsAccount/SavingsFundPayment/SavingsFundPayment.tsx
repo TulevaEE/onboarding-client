@@ -194,7 +194,7 @@ export const SavingsFundPayment: FC = () => {
 
           {!showManualPayment && !isRecurring && (
             <div className="border-top pt-4 d-flex flex-column gap-3">
-              {paymentMethod && !isLegalEntity ? (
+              {paymentMethod && accountHolder === 'self' ? (
                 <p className="text-body-secondary m-0">
                   <FormattedMessage id="savingsFund.payment.investmentAccountReminder" />
                 </p>

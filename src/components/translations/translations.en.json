@@ -1206,7 +1206,7 @@
   "savingsFund.payment.success.title": "Deposit made",
   "savingsFund.payment.success.description": "The deposit amount will be invested in the fund within two business days. We will notify you of this by email.",
   "savingsFund.payment.investmentAccountReminder": "Using an investment account? Check that the payer account is correct.",
-  "savingsFund.payment.accountOwner": "Deposit to: {accountOwner}",
+  "savingsFund.payment.accountOwner": "Account: {accountOwner}",
 
   "savingsFund.withdraw.pageTitle": "Withdraw",
   "savingsFund.withdraw.title": "Withdraw from Additional Savings Fund",
@@ -1280,7 +1280,7 @@
   "flows.savingsFundOnboarding.chooser.company": "For my company",
   "flows.savingsFundOnboarding.chooser.company.subtitle": "Put your company’s spare cash to work",
   "flows.savingsFundOnboarding.chooser.child": "For my child",
-  "flows.savingsFundOnboarding.chooser.child.subtitle": "Invest in your child’s name — the assets are legally the child’s",
+  "flows.savingsFundOnboarding.chooser.child.subtitle": "Invest in your child’s name",
   "flows.savingsFundOnboarding.chooser.comingSoon": "Coming soon",
   "flows.savingsFundOnboarding.chooser.opened": "Opened",
 

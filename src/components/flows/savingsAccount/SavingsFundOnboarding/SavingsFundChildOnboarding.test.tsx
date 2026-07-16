@@ -82,20 +82,26 @@ describe('SavingsFundChildOnboarding', () => {
     expect(screen.getByLabelText(/personal ID code/i)).toBeInTheDocument();
   });
 
-  it('offers the children from the register in a dropdown and verifies the selected child', async () => {
-    eligibleChildrenBackend(server, [{ personalCode: CHILD_CODE }]);
+  it('skips the confirm step when a child is picked from the dropdown', async () => {
+    eligibleChildrenBackend(server, [
+      { personalCode: CHILD_CODE, firstName: 'Mammu', lastName: 'Maasikas' },
+    ]);
     renderWrapped(<SavingsFundChildOnboarding />);
 
+    // With a dropdown available the confirm step is dropped, so the flow is 8 steps.
+    expect(await screen.findByText('1/8')).toBeInTheDocument();
     userEvent.selectOptions(
       await screen.findByRole('combobox', { name: /personal ID code/i }),
       CHILD_CODE,
     );
     userEvent.click(continueButton());
 
-    expect(await screen.findByText(/Mammu Maasikas/)).toBeInTheDocument();
+    // Straight to residency — no separate card restating the child's details.
+    expect(await screen.findByText('2/8')).toBeInTheDocument();
+    expect(screen.queryByText(/Mammu Maasikas/)).not.toBeInTheDocument();
   });
 
-  it('confirms the child from the population register when custody is verified', async () => {
+  it('confirms a manually entered child from the population register when custody is verified', async () => {
     renderWrapped(<SavingsFundChildOnboarding />);
 
     await verifyChild();
