@@ -17,6 +17,7 @@ import { OnboardingFlowLayout } from './OnboardingFlowLayout';
 import { OnboardingStep } from './identitySteps';
 import {
   useCreateChild,
+  useEligibleChildren,
   useMe,
   useSubmitSavingsFundOnboardingSurvey,
   useSwitchRole,
@@ -46,8 +47,15 @@ export const SavingsFundChildOnboarding = () => {
   // Covers the whole finalize critical section (switch → submit → status → nav),
   // so both Continue and Back stay disabled until it resolves.
   const [isFinalizing, setIsFinalizing] = useState(false);
+  // null until the identity step verifies; then true when the code wasn't one of
+  // the offered children (typed manually, or the dropdown never loaded), false when
+  // picked from the named dropdown — the pick is itself the confirmation. Before
+  // verifying, fall back to "is a dropdown even available" so the total step count
+  // matches the path the parent is most likely on and doesn't lurch after step 1.
+  const [manualConfirm, setManualConfirm] = useState<boolean | null>(null);
 
   const { data: me } = useMe();
+  const { data: eligibleChildren = [] } = useEligibleChildren();
   const { mutateAsync: createChild, isPending: creatingChild } = useCreateChild();
   const { mutateAsync: submitSurvey } = useSubmitSavingsFundOnboardingSurvey();
   const { mutateAsync: switchRole } = useSwitchRole();
@@ -90,15 +98,26 @@ export const SavingsFundChildOnboarding = () => {
     }
   }, [me, getValues, setValue]);
 
+  const includeConfirmStep = manualConfirm ?? eligibleChildren.length === 0;
+  const confirmStep: OnboardingStep<ChildOnboardingFormData>[] = includeConfirmStep
+    ? [
+        {
+          component: child ? (
+            <ChildConfirmStep key="confirm" child={child} />
+          ) : (
+            <div key="confirm" />
+          ),
+          fields: [],
+        },
+      ]
+    : [];
+
   const steps: OnboardingStep<ChildOnboardingFormData>[] = [
     {
       component: <ChildIdentityStep key="identity" control={control} />,
       fields: ['childPersonalCode'],
     },
-    {
-      component: child ? <ChildConfirmStep key="confirm" child={child} /> : <div key="confirm" />,
-      fields: [],
-    },
+    ...confirmStep,
     {
       component: (
         <ResidencyStep
@@ -192,7 +211,8 @@ export const SavingsFundChildOnboarding = () => {
     try {
       setSubmitError(false);
       setChildCodeRejected(false);
-      const response = await createChild({ childPersonalCode: getValues('childPersonalCode') });
+      const childPersonalCode = getValues('childPersonalCode');
+      const response = await createChild({ childPersonalCode });
       // Branch on the body status, never the HTTP code; a VERIFIED response with
       // no name is malformed and treated as "under review", not advanced.
       if (response.status === 'VERIFIED' && response.firstName) {
@@ -204,6 +224,12 @@ export const SavingsFundChildOnboarding = () => {
         if (response.address) {
           setValue('address', response.address);
         }
+        // Confirm the child only when the code wasn't one of the named options the
+        // parent could pick — a manually typed code, or the dropdown never loaded.
+        // Either way index 1 is the next step (confirm if shown, else residency),
+        // so setActiveSection(1) is correct for both.
+        const pickedFromList = eligibleChildren.some((c) => c.personalCode === childPersonalCode);
+        setManualConfirm(!pickedFromList);
         setActiveSection(1);
       } else {
         // UNDER_REVIEW — custody couldn't be confirmed (not the parent's child, no

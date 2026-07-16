@@ -3,6 +3,7 @@ import { Control, Controller, FieldPath, FieldValues, useWatch } from 'react-hoo
 import { FormattedMessage, useIntl } from 'react-intl';
 import type { FundingSourceOption, FundingSourcesSurveyItem } from '../types.api';
 import { TranslationKey } from '../../../../translations';
+import Checkbox from '../../../../common/checkbox/Checkbox';
 
 type FundingSourcesValue = FundingSourcesSurveyItem['value'];
 
@@ -116,27 +117,22 @@ export const FundingSourcesStep = <T extends FieldValues>({
             return (
               <div className="selection-group d-flex flex-column gap-2">
                 {OPTIONS.map(({ id, value, labelId }) => (
-                  <div key={id} className="form-check m-0 lead">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id={id}
-                      checked={isChecked(value)}
-                      onChange={(e) => handleCheckboxChange(onChange, value, e.target.checked)}
-                    />
-                    <label className="form-check-label w-100" htmlFor={id}>
+                  <Checkbox
+                    key={id}
+                    id={id}
+                    checked={isChecked(value)}
+                    onToggle={(checked) => handleCheckboxChange(onChange, value, checked)}
+                  >
+                    <span className="fs-3 lh-sm">
                       <FormattedMessage id={labelId} />
-                    </label>
-                  </div>
+                    </span>
+                  </Checkbox>
                 ))}
-                <div className="form-check m-0 lead">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
+                <div className="d-flex flex-column gap-2">
+                  <Checkbox
                     id="funding-other"
                     checked={isOtherSelected}
-                    onChange={(event) => {
-                      const { checked } = event.target;
+                    onToggle={(checked) => {
                       setIsOtherSelected(checked);
                       if (checked) {
                         onChange([...optionItems(), { type: 'TEXT', value: otherValue }]);
@@ -145,19 +141,16 @@ export const FundingSourcesStep = <T extends FieldValues>({
                         onChange(optionItems());
                       }
                     }}
-                  />
-                  <label
-                    className="form-check-label w-100"
-                    htmlFor="funding-other"
-                    id="funding-other-label"
                   >
-                    <FormattedMessage id="flows.savingsFundChildOnboarding.fundingSourcesStep.other" />
-                  </label>
+                    <span className="fs-3 lh-sm" id="funding-other-label">
+                      <FormattedMessage id="flows.savingsFundChildOnboarding.fundingSourcesStep.other" />
+                    </span>
+                  </Checkbox>
                   {isOtherSelected ? (
                     <input
                       ref={inputRef}
                       type="text"
-                      className="form-control form-control-lg mt-2"
+                      className="form-control form-control-lg"
                       aria-labelledby="funding-other-label"
                       placeholder={intl.formatMessage({
                         id: 'flows.savingsFundChildOnboarding.fundingSourcesStep.otherPlaceholder',

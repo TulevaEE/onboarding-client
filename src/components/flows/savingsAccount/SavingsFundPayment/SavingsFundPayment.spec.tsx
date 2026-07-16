@@ -427,7 +427,7 @@ describe(SavingsFundPayment, () => {
 
   it('shows the personal account the deposit will go to', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
-    expect(screen.getByText('Deposit to: John Doe')).toBeInTheDocument();
+    expect(screen.getByText('Account: John Doe')).toBeInTheDocument();
   });
 
   describe('when acting as a company', () => {
@@ -443,7 +443,7 @@ describe(SavingsFundPayment, () => {
 
     it('shows the company account the deposit will go to', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
-      expect(screen.getByText('Deposit to: Test Company OÜ')).toBeInTheDocument();
+      expect(screen.getByText('Account: Test Company OÜ')).toBeInTheDocument();
     });
 
     it('shows registry code in other bank payment details', async () => {
@@ -545,6 +545,20 @@ describe(SavingsFundPayment, () => {
       ).toBeInTheDocument();
       expect(
         screen.queryByText('The money must come from a bank account in your name.'),
+      ).not.toBeInTheDocument();
+    });
+
+    it('does not show the investment account reminder, even after a bank is selected', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+
+      const lhv = screen.getByRole('radio', { name: 'LHV' });
+      userEvent.click(lhv);
+      await waitFor(() => expect(lhv).toBeChecked());
+
+      // The reminder is only relevant to an adult using their own investment
+      // account; a child's account is not one.
+      expect(
+        screen.queryByText('Using an investment account? Check that the payer account is correct.'),
       ).not.toBeInTheDocument();
     });
   });

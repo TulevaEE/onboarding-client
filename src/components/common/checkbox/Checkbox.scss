@@ -1,0 +1,79 @@
+@import '../../variables';
+
+// Mirrors .tv-radio (Radio.scss) so checkbox and radio option cards match; the only
+// visual difference is the square marker (border-radius 0.25rem) vs the radio circle.
+.tv-checkbox {
+  background-color: $gray-bg-1;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--gray-border-2);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  width: 100%;
+
+  transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
+
+  &:not(&--selected):not(&--disabled),
+  &:not(&--selected):not(&--disabled) > * {
+    cursor: pointer;
+  }
+
+  & .row {
+    border-style: solid;
+    border-width: 1px;
+    border-color: transparent;
+  }
+
+  &--selected {
+    background-color: $blue-bg-2;
+    border-color: $blue;
+    border-width: 2px;
+    cursor: auto;
+
+    & .row {
+      border-width: 0;
+    }
+
+    & .tv-checkbox__button {
+      border-color: $blue;
+
+      & .tv-checkbox__check {
+        transition: transform 0.15s ease-out;
+        background-color: $blue;
+        transform: scale(1);
+      }
+    }
+  }
+
+  &.tv-checkbox--disabled {
+    color: $text-body-secondary;
+
+    .tv-checkbox__button {
+      cursor: default;
+      border-color: $text-tertiary;
+    }
+  }
+
+  &__button {
+    border-radius: 0.25rem;
+    cursor: pointer;
+    border-color: rgba(48, 48, 48, 0.64);
+    padding: 3px 3px;
+    width: 20px;
+    height: 20px;
+    border-style: solid;
+    display: inline-block;
+    background-color: transparent;
+    border-width: 2px;
+    transition: border-color 0.15s ease-out;
+  }
+
+  &__check {
+    transition: transform 0.15s ease-out;
+    width: 10px;
+    height: 10px;
+    display: block;
+    transform: scale(0);
+    border-radius: 0.125rem;
+  }
+}
