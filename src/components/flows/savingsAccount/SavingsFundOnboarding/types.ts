@@ -15,6 +15,10 @@ export type InvestmentGoalsValue =
   | { type: 'OPTION'; value: InvestmentGoalOption }
   | { type: 'TEXT'; value: string };
 
+// The child flow lets a parent pick several goals at once (education and a first
+// home, say); the person and company flows stay single-select.
+export type InvestmentGoalsMultiValue = InvestmentGoalsValue[];
+
 export interface SharedOnboardingFields {
   termsAccepted: boolean;
 }
@@ -62,7 +66,7 @@ export interface ChildOnboardingFormData extends SharedOnboardingFields, Identit
   childPersonalCode: string;
   // Populated once POST /v1/me/children confirms custody (VERIFIED); null until then.
   child: VerifiedChild | null;
-  investmentGoals: InvestmentGoalsValue | null;
+  investmentGoals: InvestmentGoalsMultiValue;
   plannedContribution: PlannedContributionOption | null;
   investableAssets: InvestableAssetsOption | null;
   fundingSources: FundingSourcesValue;

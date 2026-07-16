@@ -33,7 +33,7 @@ const Wrapper = ({ defaultCode = '' }: { defaultCode?: string }) => {
       email: '',
       phoneNumber: '',
       pepSelfDeclaration: null,
-      investmentGoals: null,
+      investmentGoals: [],
       plannedContribution: null,
       fundingSources: [],
       termsAccepted: false,

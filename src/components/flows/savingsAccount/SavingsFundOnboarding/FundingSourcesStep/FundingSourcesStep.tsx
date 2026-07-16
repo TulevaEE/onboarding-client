@@ -1,11 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
-import { Control, Controller, FieldPath, FieldValues, useWatch } from 'react-hook-form';
-import { FormattedMessage, useIntl } from 'react-intl';
-import type { FundingSourceOption, FundingSourcesSurveyItem } from '../types.api';
+import { Control, FieldPath, FieldValues } from 'react-hook-form';
+import type { FundingSourceOption } from '../types.api';
 import { TranslationKey } from '../../../../translations';
-import Checkbox from '../../../../common/checkbox/Checkbox';
-
-type FundingSourcesValue = FundingSourcesSurveyItem['value'];
+import { MultiSelectOptionsStep } from '../MultiSelectOptionsStep';
 
 type FundingSourcesStepProps<T extends FieldValues> = {
   control: Control<T>;
@@ -38,141 +34,19 @@ const OPTIONS: { id: string; value: FundingSourceOption; labelId: TranslationKey
 export const FundingSourcesStep = <T extends FieldValues>({
   control,
   name,
-}: FundingSourcesStepProps<T>) => {
-  const intl = useIntl();
-  const rawFundingSources = useWatch({ control, name });
-  const fundingSources: FundingSourcesValue = (rawFundingSources ?? []) as FundingSourcesValue;
-  const [isOtherSelected, setIsOtherSelected] = useState(
-    fundingSources.some((item) => item.type === 'TEXT'),
-  );
-  const [otherValue, setOtherValue] = useState(
-    fundingSources.find((item) => item.type === 'TEXT')?.value || '',
-  );
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (isOtherSelected) {
-      inputRef.current?.focus();
-    }
-  }, [isOtherSelected]);
-
-  const optionItems = () =>
-    fundingSources.filter((item) => item.type === 'OPTION') as Array<{
-      type: 'OPTION';
-      value: FundingSourceOption;
-    }>;
-
-  const handleCheckboxChange = (
-    fieldOnChange: (value: FundingSourcesValue) => void,
-    option: FundingSourceOption,
-    checked: boolean,
-  ) => {
-    const currentOptions = optionItems();
-    const currentTextItem = fundingSources.find((item) => item.type === 'TEXT');
-    const newOptions = checked
-      ? [...currentOptions, { type: 'OPTION' as const, value: option }]
-      : currentOptions.filter((item) => item.value !== option);
-    fieldOnChange(currentTextItem ? [...newOptions, currentTextItem] : newOptions);
-  };
-
-  const isChecked = (option: FundingSourceOption) =>
-    fundingSources.some((item) => item.type === 'OPTION' && item.value === option);
-
-  return (
-    <section className="d-flex flex-column gap-4" key="funding-sources">
-      <div className="d-flex flex-column gap-1">
-        <h2 className="m-0">
-          <FormattedMessage id="flows.savingsFundChildOnboarding.fundingSourcesStep.title" />
-        </h2>
-        <p className="m-0">
-          <FormattedMessage id="flows.savingsFundChildOnboarding.fundingSourcesStep.description" />
-        </p>
-      </div>
-      <div className="section-content d-flex flex-column gap-4">
-        <Controller
-          control={control}
-          name={name}
-          rules={{
-            validate: (raw) => {
-              const value: FundingSourcesValue = (raw ?? []) as FundingSourcesValue;
-              const hasOption = value.some((item) => item.type === 'OPTION');
-              const textItem = value.find((item) => item.type === 'TEXT');
-              const hasValidText = textItem && textItem.value.trim().length > 0;
-
-              if (!hasOption && !textItem) {
-                return intl.formatMessage({
-                  id: 'flows.savingsFundChildOnboarding.fundingSourcesStep.required',
-                });
-              }
-              if (textItem && !hasValidText) {
-                return intl.formatMessage({
-                  id: 'flows.savingsFundChildOnboarding.fundingSourcesStep.other.required',
-                });
-              }
-              return true;
-            },
-          }}
-          render={({ field, fieldState: { error } }) => {
-            const onChange = field.onChange as (value: FundingSourcesValue) => void;
-            return (
-              <div className="selection-group d-flex flex-column gap-2">
-                {OPTIONS.map(({ id, value, labelId }) => (
-                  <Checkbox
-                    key={id}
-                    id={id}
-                    checked={isChecked(value)}
-                    onToggle={(checked) => handleCheckboxChange(onChange, value, checked)}
-                  >
-                    <span className="fs-3 lh-sm">
-                      <FormattedMessage id={labelId} />
-                    </span>
-                  </Checkbox>
-                ))}
-                <div className="d-flex flex-column gap-2">
-                  <Checkbox
-                    id="funding-other"
-                    checked={isOtherSelected}
-                    onToggle={(checked) => {
-                      setIsOtherSelected(checked);
-                      if (checked) {
-                        onChange([...optionItems(), { type: 'TEXT', value: otherValue }]);
-                      } else {
-                        setOtherValue('');
-                        onChange(optionItems());
-                      }
-                    }}
-                  >
-                    <span className="fs-3 lh-sm" id="funding-other-label">
-                      <FormattedMessage id="flows.savingsFundChildOnboarding.fundingSourcesStep.other" />
-                    </span>
-                  </Checkbox>
-                  {isOtherSelected ? (
-                    <input
-                      ref={inputRef}
-                      type="text"
-                      className="form-control form-control-lg"
-                      aria-labelledby="funding-other-label"
-                      placeholder={intl.formatMessage({
-                        id: 'flows.savingsFundChildOnboarding.fundingSourcesStep.otherPlaceholder',
-                      })}
-                      value={otherValue}
-                      onChange={(e) => {
-                        setOtherValue(e.target.value);
-                        onChange([...optionItems(), { type: 'TEXT', value: e.target.value }]);
-                      }}
-                    />
-                  ) : null}
-                </div>
-                {error && error.message ? (
-                  <p className="m-0 text-danger fs-base" role="alert">
-                    {error.message}
-                  </p>
-                ) : null}
-              </div>
-            );
-          }}
-        />
-      </div>
-    </section>
-  );
-};
+}: FundingSourcesStepProps<T>) => (
+  <MultiSelectOptionsStep
+    control={control}
+    name={name}
+    options={OPTIONS}
+    titleId="flows.savingsFundChildOnboarding.fundingSourcesStep.title"
+    descriptionId="flows.savingsFundChildOnboarding.fundingSourcesStep.description"
+    otherId="funding-other"
+    messages={{
+      other: 'flows.savingsFundChildOnboarding.fundingSourcesStep.other',
+      otherPlaceholder: 'flows.savingsFundChildOnboarding.fundingSourcesStep.otherPlaceholder',
+      required: 'flows.savingsFundChildOnboarding.fundingSourcesStep.required',
+      otherRequired: 'flows.savingsFundChildOnboarding.fundingSourcesStep.other.required',
+    }}
+  />
+);

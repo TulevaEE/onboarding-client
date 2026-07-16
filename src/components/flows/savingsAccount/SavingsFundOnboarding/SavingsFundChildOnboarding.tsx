@@ -8,7 +8,7 @@ import { ChildIdentityStep } from './ChildIdentityStep';
 import { ChildConfirmStep } from './ChildConfirmStep';
 import { ResidencyStep } from './ResidencyStep';
 import { ContactDetailsStep } from './ContactDetailsStep';
-import { InvestmentGoalStep } from './InvestmentGoalStep';
+import { MultiSelectOptionsStep } from './MultiSelectOptionsStep';
 import { PlannedContributionStep } from './PlannedContributionStep';
 import { InvestableAssetsStep } from './InvestableAssetsStep';
 import { FundingSourcesStep } from './FundingSourcesStep';
@@ -70,7 +70,7 @@ export const SavingsFundChildOnboarding = () => {
       email: '',
       phoneNumber: '',
       pepSelfDeclaration: null,
-      investmentGoals: null,
+      investmentGoals: [],
       plannedContribution: null,
       investableAssets: null,
       fundingSources: [],
@@ -140,17 +140,36 @@ export const SavingsFundChildOnboarding = () => {
     },
     {
       component: (
-        <InvestmentGoalStep
+        <MultiSelectOptionsStep
           key="goal"
           control={control}
           name="investmentGoals"
           titleId="flows.savingsFundChildOnboarding.goalStep.title"
           descriptionId="flows.savingsFundChildOnboarding.goalStep.description"
+          otherId="investment-goal-other"
           options={[
-            { value: 'CHILD', labelId: 'flows.savingsFundChildOnboarding.goalStep.general' },
-            { value: 'EDUCATION', labelId: 'flows.savingsFundChildOnboarding.goalStep.education' },
-            { value: 'FIRST_HOME', labelId: 'flows.savingsFundChildOnboarding.goalStep.firstHome' },
+            {
+              id: 'investment-goal-general',
+              value: 'CHILD',
+              labelId: 'flows.savingsFundChildOnboarding.goalStep.general',
+            },
+            {
+              id: 'investment-goal-education',
+              value: 'EDUCATION',
+              labelId: 'flows.savingsFundChildOnboarding.goalStep.education',
+            },
+            {
+              id: 'investment-goal-first-home',
+              value: 'FIRST_HOME',
+              labelId: 'flows.savingsFundChildOnboarding.goalStep.firstHome',
+            },
           ]}
+          messages={{
+            other: 'flows.savingsFundOnboarding.investmentGoalStep.other',
+            otherPlaceholder: 'flows.savingsFundOnboarding.investmentGoalStep.otherPlaceholder',
+            required: 'flows.savingsFundOnboarding.investmentGoalStep.required',
+            otherRequired: 'flows.savingsFundOnboarding.investmentGoalStep.other.required',
+          }}
         />
       ),
       fields: ['investmentGoals'],

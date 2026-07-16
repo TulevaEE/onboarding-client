@@ -55,8 +55,8 @@ const advanceToTerms = async () => {
   expect(await screen.findByText('4/9')).toBeInTheDocument(); // contact (prefilled)
   userEvent.click(continueButton());
 
-  expect(await screen.findByText('5/9')).toBeInTheDocument(); // goal
-  userEvent.click(screen.getByRole('radio', { name: /Education/ }));
+  expect(await screen.findByText('5/9')).toBeInTheDocument(); // goal (multi-select)
+  userEvent.click(screen.getByRole('checkbox', { name: /Education/ }));
   userEvent.click(continueButton());
 
   expect(await screen.findByText('6/9')).toBeInTheDocument(); // contribution
