@@ -13,7 +13,25 @@ interface Props {
 }
 
 export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
-  const personalCode = useSelector<State, string>((state) => state.login.user?.personalCode);
+  const personalCode = useSelector<State, string | undefined>(
+    (state) => state.login.user?.personalCode,
+  );
+  const [submitting, setSubmitting] = React.useState(false);
+  const [error, setError] = React.useState(false);
+
+  const finishWith = async (result: string) => {
+    setError(false);
+    setSubmitting(true);
+    try {
+      await finishProcedure(result, undefined, personalCode);
+    } catch (err) {
+      // eslint-disable-next-line no-console -- make this flow more debuggable for 3rd parties
+      console.error('error on finish', err);
+      setError(true);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <>
@@ -56,7 +74,8 @@ export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
             <button
               type="button"
               className="btn btn-primary btn-default flex-grow-1 flex-md-grow-0"
-              onClick={() => finishProcedure('newRecurringPayment', undefined, personalCode)}
+              disabled={!personalCode || submitting}
+              onClick={() => finishWith('newRecurringPayment')}
             >
               <FormattedMessage id="thirdPillarBackToPartner.recurringPayment.button" />
             </button>
@@ -68,11 +87,17 @@ export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
           <button
             type="button"
             className="btn btn-outline-primary flex-grow-1 flex-md-grow-0"
-            onClick={() => finishProcedure('newPayment', undefined, personalCode)}
+            disabled={!personalCode || submitting}
+            onClick={() => finishWith('newPayment')}
           >
             <FormattedMessage id="thirdPillarBackToPartner.singlePayment.button" />
           </button>
         </div>
+        {error && (
+          <p className="text-danger mt-2 mb-0">
+            <FormattedMessage id="partnerFlow.error" />
+          </p>
+        )}
         <p className="mt-2 mb-0">
           <small className="text-body-secondary">
             <FormattedMessage id="thirdPillarBackToPartner.payment.subtitle" />
