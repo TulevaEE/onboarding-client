@@ -18,6 +18,7 @@ import {
   userConversionBackend,
 } from '../../../../test/backend';
 import LoggedInApp from '../../../LoggedInApp';
+import { EXTERNAL_AUTHENTICATOR_PROVIDER } from '../../../TriggerProcedure/utils';
 
 describe('When is at the partner flow success screen', () => {
   const server = setupServer();
@@ -48,7 +49,7 @@ describe('When is at the partner flow success screen', () => {
 
   beforeEach(async () => {
     initializeConfiguration();
-    sessionStorage.setItem('EXTERNAL_AUTHENTICATOR_PROVIDER', 'COOP_PANK');
+    sessionStorage.setItem(EXTERNAL_AUTHENTICATOR_PROVIDER, 'COOP_PANK');
 
     userConversionBackend(server);
     userBackend(server);

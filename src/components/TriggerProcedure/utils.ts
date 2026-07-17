@@ -1,7 +1,7 @@
 import { getPaymentLink } from '../common/api';
 import { getAuthentication } from '../common/authenticationManager';
 
-const EXTERNAL_AUTHENTICATOR_PROVIDER = 'EXTERNAL_AUTHENTICATOR_PROVIDER';
+export const EXTERNAL_AUTHENTICATOR_PROVIDER = 'EXTERNAL_AUTHENTICATOR_PROVIDER';
 export const EXTERNAL_AUTHENTICATOR_REDIRECT_URI = 'EXTERNAL_AUTHENTICATOR_REDIRECT_URI';
 
 enum ExternalProvider {
@@ -62,8 +62,11 @@ const getPath = (provider: ExternalProvider, procedure: Procedure): string => {
   throw new Error(`Invalid procedure for provider(${provider}): ${procedure}`);
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const finish = async (result?: string, error?: string, personalCode?: string) => {
+export const finish = async (
+  result?: string,
+  error?: string,
+  personalCode?: string,
+): Promise<void> => {
   const provider = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_PROVIDER);
   const redirectUri = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
