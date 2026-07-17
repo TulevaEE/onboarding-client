@@ -194,10 +194,13 @@ export type KycIdentity = {
 
 // GET /v1/me/children — children whose assets the parent may manage according
 // to the population register. The name comes from the register and may be absent.
+// hasBeenOnboarded means a savings fund onboarding already exists for the child
+// (opened by either parent); optional until the backend that sends it is deployed.
 export type EligibleChild = {
   personalCode: string;
   firstName?: string;
   lastName?: string;
+  hasBeenOnboarded?: boolean;
 };
 
 // POST /v1/me/children — the parent opens an account for their child. The custody

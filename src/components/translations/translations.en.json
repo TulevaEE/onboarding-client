@@ -1417,6 +1417,7 @@
   "flows.savingsFundChildOnboarding.identityStep.selectDescription": "We show the children whose assets you have the right to manage according to the population register — no documents to upload.",
   "flows.savingsFundChildOnboarding.identityStep.selectPlaceholder": "Select a child",
   "flows.savingsFundChildOnboarding.identityStep.enterManually": "Enter the personal ID code manually",
+  "flows.savingsFundChildOnboarding.identityStep.accountOpened": "account already opened",
   "flows.savingsFundChildOnboarding.confirmStep.title": "Child's details",
   "flows.savingsFundChildOnboarding.confirmStep.name": "Name",
   "flows.savingsFundChildOnboarding.confirmStep.dateOfBirth": "Date of birth",

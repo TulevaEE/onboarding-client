@@ -201,6 +201,25 @@ describe('ChildIdentityStep', () => {
       expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
     });
 
+    test('marks an already onboarded child and prevents selecting them again', async () => {
+      eligibleChildrenBackend(server, [
+        {
+          personalCode: '61506150006',
+          firstName: 'Mari',
+          lastName: 'Maasikas',
+          hasBeenOnboarded: true,
+        },
+        { personalCode: '61001010000' },
+      ]);
+      renderWrapped(<Wrapper />);
+
+      const onboardedOption = await screen.findByRole('option', {
+        name: 'Mari Maasikas (61506150006) — account already opened',
+      });
+      expect(onboardedOption).toBeDisabled();
+      expect(screen.getByRole('option', { name: '61001010000' })).toBeEnabled();
+    });
+
     test('falls back to manual entry when the child is not listed', async () => {
       renderWrapped(<Wrapper />);
 
