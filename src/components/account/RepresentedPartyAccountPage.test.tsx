@@ -68,6 +68,12 @@ describe('RepresentedPartyAccountPage', () => {
     );
   });
 
+  test('shows the savings fund profit next to its balance', async () => {
+    expect(await screen.findByText(additionalSavingsFund.fund.name)).toBeInTheDocument();
+    // The savings fund row now includes a profit ("Tulu") cell alongside the balance.
+    expect(await screen.findByText(/^500\.00\s€$/)).toBeInTheDocument();
+  });
+
   test('renders last transactions with link to savings fund transactions', async () => {
     expect(
       await screen.findByRole('heading', { name: 'Your latest transactions', level: 2 }),
@@ -154,7 +160,8 @@ describe('RepresentedPartyAccountPage with zero balance', () => {
     expect(
       await screen.findByText(new RegExp(additionalSavingsFund.fund.name)),
     ).toBeInTheDocument();
-    expect(screen.getByText(/0.00\s€/)).toBeInTheDocument();
+    // Profit and value cells both render 0.00 € for a zero-balance fund.
+    expect(screen.getAllByText(/0.00\s€/)).toHaveLength(2);
     expect(screen.getByRole('link', { name: 'Deposit' })).toHaveAttribute(
       'href',
       '/savings-fund/payment',

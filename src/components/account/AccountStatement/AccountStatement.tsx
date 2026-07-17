@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { sortBy } from 'lodash';
+import { sortBy, sumBy } from 'lodash';
 import Table from '../../common/table';
 import { Euro } from '../../common/Euro';
 import { getValueSum, getWeightedAverageFee } from './fundSelector';
@@ -11,9 +11,10 @@ import { TableColumn } from '../../common/table/Table';
 
 interface Props {
   funds?: SourceFund[];
+  showProfit?: boolean;
 }
 
-const AccountStatement: React.FC<Props> = ({ funds }) => {
+const AccountStatement: React.FC<Props> = ({ funds, showProfit = false }) => {
   const { formatMessage } = useIntl();
 
   if (!funds) {
@@ -27,6 +28,8 @@ const AccountStatement: React.FC<Props> = ({ funds }) => {
   const valueSum = getValueSum(funds);
 
   const weightedAverageFee = valueSum <= 0 ? 0 : getWeightedAverageFee(funds);
+
+  const profitSum = showProfit ? sumBy(funds, (fund) => fund.profit) : 0;
 
   const columns: TableColumn[] = [
     {
@@ -63,6 +66,16 @@ const AccountStatement: React.FC<Props> = ({ funds }) => {
             hideOnBreakpoint: ['xs'],
           },
         ] as TableColumn[])),
+    ...(showProfit
+      ? ([
+          {
+            title: <FormattedMessage id="accountStatement.columns.profit.title" />,
+            dataIndex: 'profit',
+            width: 15,
+            footer: <Euro amount={profitSum} />,
+          },
+        ] as TableColumn[])
+      : []),
     {
       title: <FormattedMessage id="accountStatement.columns.value.title" />,
       dataIndex: 'value',
@@ -95,6 +108,7 @@ const AccountStatement: React.FC<Props> = ({ funds }) => {
       ),
       feesPercent: <Fees value={fund.ongoingChargesFigure} />,
       feesEuro: !feesEuro ? <></> : <Euro className="text-body-secondary" amount={feesEuro} />,
+      ...(showProfit ? { profit: <Euro amount={fund.profit} /> } : {}),
       value: <Euro amount={fundValue} />,
       key: fund.isin,
     };

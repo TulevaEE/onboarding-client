@@ -50,7 +50,7 @@ export function RepresentedPartyAccountPage() {
           </Link>
         </div>
       </SectionHeading>
-      <AccountStatement funds={savingsFunds} />
+      <AccountStatement funds={savingsFunds} showProfit />
 
       <ApplicationSection />
 
