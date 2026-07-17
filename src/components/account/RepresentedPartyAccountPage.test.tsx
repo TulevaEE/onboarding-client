@@ -115,6 +115,12 @@ describe('RepresentedPartyAccountPage for a represented child', () => {
     expect(screen.getByText('Tuleva III Samba Pensionifond')).toBeInTheDocument();
   });
 
+  test("shows the child's third pillar profit (no summary table on this page)", async () => {
+    expect(await screen.findByText('Tuleva III Samba Pensionifond')).toBeInTheDocument();
+    // The child/company page has no account summary, so profit is shown in the detail table.
+    expect(screen.getByText(/1\s876\.54\s€/)).toBeInTheDocument();
+  });
+
   test('does not show second pillar funds for the child', async () => {
     expect(
       await screen.findByRole('heading', { name: /III\spillar/, level: 3 }),
