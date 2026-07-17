@@ -1,6 +1,8 @@
 import React from 'react';
+import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
@@ -37,11 +39,16 @@ describe('When is at the partner flow success screen', () => {
   }
 
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterEach(() => server.resetHandlers());
+  afterEach(() => {
+    server.resetHandlers();
+    sessionStorage.clear();
+    delete (window as unknown as { ReactNativeWebView?: unknown }).ReactNativeWebView;
+  });
   afterAll(() => server.close());
 
   beforeEach(async () => {
     initializeConfiguration();
+    sessionStorage.setItem('EXTERNAL_AUTHENTICATOR_PROVIDER', 'COOP_PANK');
 
     userConversionBackend(server);
     userBackend(server);
@@ -63,12 +70,63 @@ describe('When is at the partner flow success screen', () => {
 
   test('recurring payment button is shown', async () => {
     const button = await recurringPaymentButton();
-    expect(button).toBeEnabled();
+    await waitFor(() => expect(button).toBeEnabled());
   });
 
   test('single payment button is shown', async () => {
     const button = await singlePaymentButton();
-    expect(button).toBeEnabled();
+    await waitFor(() => expect(button).toBeEnabled());
+  });
+
+  test('recurring payment button posts the payment link to the partner app without an amount', async () => {
+    const postMessage = jest.fn();
+    (window as unknown as { ReactNativeWebView: unknown }).ReactNativeWebView = { postMessage };
+    server.use(
+      rest.get('http://localhost/v1/payments/link', (req, res, ctx) => {
+        if (
+          req.url.searchParams.get('amount') !== null ||
+          req.url.searchParams.get('paymentChannel') !== 'PARTNER' ||
+          req.url.searchParams.get('type') !== 'RECURRING'
+        ) {
+          return res(ctx.status(400), ctx.json({ errors: [{ code: 'payment.amount.required' }] }));
+        }
+        return res(
+          ctx.json({
+            type: 'PREFILLED',
+            url: JSON.stringify({ accountNumber: 'EE362200221067235244', interval: 'MONTHLY' }),
+          }),
+        );
+      }),
+    );
+
+    const button = await recurringPaymentButton();
+    await waitFor(() => expect(button).toBeEnabled());
+    userEvent.click(button);
+
+    await waitFor(() => expect(postMessage).toHaveBeenCalledTimes(1));
+    expect(JSON.parse(postMessage.mock.calls[0][0])).toEqual({
+      type: 'newRecurringPayment',
+      version: '1',
+      data: { accountNumber: 'EE362200221067235244', interval: 'MONTHLY' },
+      time: expect.any(String),
+    });
+  });
+
+  test('shows an error when the payment link cannot be fetched', async () => {
+    server.use(
+      rest.get('http://localhost/v1/payments/link', (req, res, ctx) =>
+        res(ctx.status(400), ctx.json({ errors: [{ code: 'payment.amount.required' }] })),
+      ),
+    );
+
+    const button = await recurringPaymentButton();
+    await waitFor(() => expect(button).toBeEnabled());
+    userEvent.click(button);
+
+    expect(
+      await screen.findByText('An unexpected error occurred while initiating process'),
+    ).toBeInTheDocument();
+    await waitFor(() => expect(button).toBeEnabled());
   });
 
   const recurringPaymentButton = async () =>

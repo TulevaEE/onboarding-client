@@ -62,30 +62,30 @@ const getPath = (provider: ExternalProvider, procedure: Procedure): string => {
   throw new Error(`Invalid procedure for provider(${provider}): ${procedure}`);
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any -- WIP
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const finish = async (result?: string, error?: string, personalCode?: string) => {
   const provider = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_PROVIDER);
   const redirectUri = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const webView = (window as any).ReactNativeWebView;
 
-  if (!provider) {
-    // eslint-disable-next-line no-console -- WIP
-    console.error('unexpected state: no provider');
+  if (webView && error) {
+    sendMessage({ errorMessage: error, time: new Date().toISOString() });
+  }
+  if (!result) {
     return;
   }
+
+  if (!provider) {
+    throw new Error('unexpected state: no provider');
+  }
   if (!getAuthentication().isAuthenticated() || !personalCode) {
-    // eslint-disable-next-line no-console -- WIP
-    console.error('unexpected state: no token/personal code');
-    return;
+    throw new Error('unexpected state: no token/personal code');
   }
 
   const paymentType = result === 'newRecurringPayment' ? 'RECURRING' : 'SINGLE';
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  if ((window as any).ReactNativeWebView) {
-    if (error) {
-      sendMessage({ errorMessage: error, time: new Date().toISOString() });
-    }
-
+  if (webView) {
     const paymentLink = await getPaymentLink({
       type: paymentType,
       paymentChannel: 'PARTNER',

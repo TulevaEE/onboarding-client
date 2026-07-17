@@ -44,4 +44,41 @@ describe('finish', () => {
       /COOP_WEB.*missing url/,
     );
   });
+
+  it('posts an error message to the partner app even when not authenticated', async () => {
+    const postMessage = jest.fn();
+    (window as unknown as { ReactNativeWebView: unknown }).ReactNativeWebView = { postMessage };
+    (getAuthentication as jest.Mock).mockReturnValue({ isAuthenticated: () => false });
+
+    await finish(undefined, 'handover failed');
+
+    expect(postMessage).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(postMessage.mock.calls[0][0])).toEqual({
+      errorMessage: 'handover failed',
+      time: expect.any(String),
+    });
+  });
+
+  it('rejects when personal code is missing instead of failing silently', async () => {
+    (window as unknown as { ReactNativeWebView: unknown }).ReactNativeWebView = {
+      postMessage: jest.fn(),
+    };
+    (getPaymentLink as jest.Mock).mockClear();
+
+    await expect(finish('newRecurringPayment', undefined, undefined)).rejects.toThrow(
+      /personal code/,
+    );
+    expect(getPaymentLink).not.toHaveBeenCalled();
+  });
+
+  it('rejects when provider is missing instead of failing silently', async () => {
+    sessionStorage.removeItem(PROVIDER_KEY);
+    (window as unknown as { ReactNativeWebView: unknown }).ReactNativeWebView = {
+      postMessage: jest.fn(),
+    };
+
+    await expect(finish('newRecurringPayment', undefined, '38812121215')).rejects.toThrow(
+      /provider/,
+    );
+  });
 });
