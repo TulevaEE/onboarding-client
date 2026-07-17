@@ -1507,6 +1507,7 @@
   "flows.savingsFundChildOnboarding.identityStep.selectDescription": "Näitame lapsi, kelle vara sul on rahvastikuregistri järgi õigus hallata — dokumente pole vaja üles laadida.",
   "flows.savingsFundChildOnboarding.identityStep.selectPlaceholder": "Vali laps",
   "flows.savingsFundChildOnboarding.identityStep.enterManually": "Sisesta isikukood käsitsi",
+  "flows.savingsFundChildOnboarding.identityStep.accountOpened": "konto juba avatud",
   "flows.savingsFundChildOnboarding.confirmStep.title": "Lapse andmed",
   "flows.savingsFundChildOnboarding.confirmStep.name": "Nimi",
   "flows.savingsFundChildOnboarding.confirmStep.dateOfBirth": "Sünniaeg",
