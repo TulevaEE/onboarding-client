@@ -36,7 +36,7 @@ export function RepresentedPartyAccountPage() {
       {showThirdPillar && (
         <>
           <SectionHeading titleId="accountStatement.thirdPillar.heading" />
-          <AccountStatement funds={thirdPillarFunds} />
+          <AccountStatement funds={thirdPillarFunds} showProfit />
         </>
       )}
 

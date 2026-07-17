@@ -213,7 +213,7 @@ export function PersonAccountPage(
               </>
             </div>
           </SectionHeading>
-          <AccountStatement funds={[savingsFundBalance]} showProfit />
+          <AccountStatement funds={[savingsFundBalance]} />
         </>
       )}
 
