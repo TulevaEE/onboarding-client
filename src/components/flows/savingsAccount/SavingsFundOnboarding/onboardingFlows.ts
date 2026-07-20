@@ -29,12 +29,12 @@ export const isCompanyOnboardingEnabled = (): boolean =>
 export const isChildOnboardingEnabled = (): boolean =>
   CHILD_ONBOARDING_LAUNCHED || isPreviewEnabled(CHILD_PREVIEW_SESSION_KEY);
 
-// Persist any ?<key>=true|false preview override into sessionStorage at app
-// boot. Without this the override is only captured when an onboarding gate
-// renders, which never happens on /login, and the post-login redirect keeps
-// only the pathname — so a preview link (e.g. a "for a child" landing page)
-// would lose its flag across login. Called once from the App constructor, so
-// it runs on every entry page including /login, mirroring the test-mode capture.
+// Persist any ?<key>=true|false preview override into sessionStorage. Otherwise
+// the override is only captured when an onboarding gate renders (via the *Enabled
+// helpers), which never happens on the login page, and the post-login redirect
+// keeps only the pathname — so a preview link (e.g. a "for a child" landing page)
+// that bounces a logged-out user through login would lose its flag. Called from
+// the login page so the flag is captured before the login round-trip.
 export const captureOnboardingPreviewFlags = (): void => {
   isPreviewEnabled(COMPANY_PREVIEW_SESSION_KEY);
   isPreviewEnabled(CHILD_PREVIEW_SESSION_KEY);

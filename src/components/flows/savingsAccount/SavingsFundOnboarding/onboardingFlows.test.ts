@@ -56,19 +56,19 @@ describe('captureOnboardingPreviewFlags', () => {
     window.history.pushState({}, '', '/');
   });
 
-  it('captures the child preview at boot so it survives the login round-trip', () => {
-    // Enter on a preview link (?childOnboardingPreview=true) while logged out —
-    // the app boots on that URL before redirecting to /login.
-    window.history.pushState({}, '', '/savings-fund/onboarding/child?childOnboardingPreview=true');
+  it('persists the child preview so it survives the login round-trip', () => {
+    // A logged-out user enters on a preview link and is routed to /login with the
+    // query string preserved; the login page captures it before authenticating.
+    window.history.pushState({}, '', '/login?childOnboardingPreview=true');
     captureOnboardingPreviewFlags();
 
-    // After login the app redirects to the pathname only, dropping the query
-    // string. The flag must still be on because boot captured it.
+    // The post-login redirect keeps only the pathname, dropping the query string.
+    // The flag must still be on because it was captured before the redirect.
     window.history.pushState({}, '', '/savings-fund/onboarding/child');
     expect(isChildOnboardingEnabled()).toBe(true);
   });
 
-  it('leaves the child preview off when no preview parameter was present at boot', () => {
+  it('leaves the child preview off when no preview parameter is present', () => {
     window.history.pushState({}, '', '/login');
     captureOnboardingPreviewFlags();
 

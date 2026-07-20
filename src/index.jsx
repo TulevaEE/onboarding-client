@@ -34,7 +34,6 @@ import { loginPath } from './components/login/LoginPage';
 
 import { createTrackedEvent } from './components/common/api';
 import { shouldWriteTestMode, writeTestMode } from './components/common/test-mode';
-import { captureOnboardingPreviewFlags } from './components/flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
 
 const history = createBrowserHistory();
 
@@ -114,7 +113,6 @@ export class App extends Component {
   constructor(props) {
     applyRouting();
     applyTestModeForSession();
-    captureOnboardingPreviewFlags();
     super(props);
   }
 
