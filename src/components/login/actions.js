@@ -118,6 +118,82 @@ const logPoll = (stage, value = '') =>
   // eslint-disable-next-line no-console
   console.log(`[poll] ${stage}`, value, Date.now());
 
+// The pending login survives the page reload Android/iOS force on tab discard while
+// the user confirms in the Smart-ID app; the completed result waits in the backend
+// session, so a resumed poll can still collect it within the backend grant TTL.
+const PENDING_SMART_ID_KEY = 'pendingSmartIdAuthentication';
+const PENDING_SMART_ID_TTL_MILLIS = 180 * 1000; // mirrors SmartIdAuthProvider.GRANT_TTL
+
+// Per-browser fetch network-failure messages: transport blips must retry, not kill the
+// login — only definitive server answers may stop polling and drop the pending record.
+const TRANSIENT_POLL_ERRORS = [
+  'Load failed', // Safari
+  'Failed to fetch', // Chromium
+  'NetworkError when attempting to fetch resource.', // Firefox
+];
+
+function savePendingSmartIdAuthentication(authenticationHash, controlCode) {
+  if (!window.sessionStorage) {
+    return;
+  }
+  try {
+    sessionStorage.setItem(
+      PENDING_SMART_ID_KEY,
+      JSON.stringify({ authenticationHash, controlCode, startedAt: Date.now() }),
+    );
+  } catch (error) {
+    logPoll('pending-login-persistence-failed', error); // reload recovery degrades, login proceeds
+  }
+}
+
+function clearPendingSmartIdAuthentication() {
+  if (window.sessionStorage) {
+    sessionStorage.removeItem(PENDING_SMART_ID_KEY);
+  }
+}
+
+function loadPendingSmartIdAuthentication() {
+  if (!window.sessionStorage) {
+    return null;
+  }
+  try {
+    const pending = JSON.parse(sessionStorage.getItem(PENDING_SMART_ID_KEY));
+    return pending && pending.authenticationHash ? pending : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+export function resumePendingSmartIdAuthentication() {
+  return (dispatch, getState) => {
+    const pending = loadPendingSmartIdAuthentication();
+    if (!pending) {
+      return;
+    }
+    if (Date.now() - pending.startedAt > PENDING_SMART_ID_TTL_MILLIS) {
+      clearPendingSmartIdAuthentication();
+      return;
+    }
+    if (getAuthentication().isAuthenticated()) {
+      clearPendingSmartIdAuthentication(); // a completed login supersedes the pending one
+      return;
+    }
+    if (getState().login.loadingAuthentication) {
+      return; // another authentication flow is already running
+    }
+    if (window.location.pathname.startsWith('/trigger-procedure')) {
+      return; // partner handover brings its own token
+    }
+    logPoll('resume-pending-login');
+    dispatch({ type: MOBILE_AUTHENTICATION_START });
+    dispatch({
+      type: MOBILE_AUTHENTICATION_START_SUCCESS,
+      controlCode: pending.controlCode,
+    });
+    dispatch(getSmartIdTokens(pending.authenticationHash));
+  };
+}
+
 // A poll request stranded by tab suspension (iOS Safari kills in-flight fetches on
 // app switch and the promise may never settle) must never block later polling —
 // all attempt state is scoped here and reclaimed on cancel, retry, and completion.
@@ -163,6 +239,7 @@ export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => 
       if (tokens?.accessToken && tokens?.refreshToken) {
         logPoll('token-present → SUCCESS');
         stopSmartIdPolling();
+        clearPendingSmartIdAuthentication();
 
         dispatch({
           type: MOBILE_AUTHENTICATION_SUCCESS,
@@ -182,13 +259,14 @@ export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => 
       }
       logPoll('fetch-error', error);
 
-      if (error.message === 'Load failed') {
-        logPoll('load-failed → poll-again');
+      if (TRANSIENT_POLL_ERRORS.includes(error.message)) {
+        logPoll('network-error → poll-again');
         attempt.timeout = setTimeout(poll, POLL_DELAY);
         return undefined;
       }
 
       stopSmartIdPolling();
+      clearPendingSmartIdAuthentication();
       logPoll('fatal-error → STOP');
       return dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error });
     }
@@ -226,6 +304,10 @@ export function authenticateWithIdCode(personalCode) {
         if (startSequence !== smartIdStartSequence) {
           return; // canceled or superseded while /authenticate was pending
         }
+        savePendingSmartIdAuthentication(
+          authentication.authenticationHash,
+          authentication.challengeCode,
+        );
         dispatch({
           type: MOBILE_AUTHENTICATION_START_SUCCESS,
           controlCode: authentication.challengeCode,
@@ -301,6 +383,7 @@ export function cancelMobileAuthentication() {
   }
   smartIdStartSequence += 1; // invalidate any /authenticate still in flight
   stopSmartIdPolling();
+  clearPendingSmartIdAuthentication();
   return { type: MOBILE_AUTHENTICATION_CANCEL };
 }
 

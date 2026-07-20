@@ -1,3 +1,5 @@
+import config from 'react-global-configuration';
+
 import {
   CHANGE_PHONE_NUMBER,
   CHANGE_EMAIL,
@@ -24,6 +26,7 @@ import {
 } from './constants';
 
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
+import { getAuthentication } from '../common/authenticationManager';
 
 const mockHttp = jest.genMockFromModule('../common/http');
 jest.mock('../common/http', () => mockHttp);
@@ -53,6 +56,8 @@ describe('Login actions', () => {
 
   beforeEach(() => {
     jest.useFakeTimers();
+    sessionStorage.clear();
+    config.set({}, { freeze: false, assign: false });
     mockDispatch();
     mockApi.authenticateWithMobileId = () => Promise.reject();
     mockApi.authenticateWithSmartId = () => Promise.reject();
@@ -65,7 +70,7 @@ describe('Login actions', () => {
   afterEach(() => {
     jest.runOnlyPendingTimers();
     Object.defineProperty(window, 'location', {
-      value: { search: '' },
+      value: { search: '', pathname: '/' },
       writable: true,
       configurable: true,
     });
@@ -373,6 +378,253 @@ describe('Login actions', () => {
       tokens,
       method: 'SMART_ID',
     });
+  });
+
+  it('resumes a pending smart id login after a page reload', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.authenticateWithIdCode = jest.fn(() =>
+      Promise.resolve({ challengeCode: '1337', authenticationHash: 'hash-1' }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const authenticateWithSmartId = createBoundAction(actions.authenticateWithIdCode);
+    await authenticateWithSmartId('50001018865');
+
+    mockDispatch();
+    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
+    mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(tokens));
+    const resume = createBoundAction(actions.resumePendingSmartIdAuthentication);
+    resume();
+
+    expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: MOBILE_AUTHENTICATION_START_SUCCESS,
+      controlCode: '1337',
+    });
+
+    jest.runOnlyPendingTimers();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(mockApi.getSmartIdTokens).toHaveBeenCalledWith('hash-1', expect.anything());
+    expect(dispatch).toHaveBeenCalledWith({
+      type: MOBILE_AUTHENTICATION_SUCCESS,
+      tokens,
+      method: 'SMART_ID',
+    });
+  });
+
+  it.each([
+    ['Load failed'],
+    ['Failed to fetch'],
+    ['NetworkError when attempting to fetch resource.'],
+  ])('keeps polling after a transient network error: %s', async (message) => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.authenticateWithIdCode = jest.fn(() =>
+      Promise.resolve({ challengeCode: '1337', authenticationHash: 'hash-1' }),
+    );
+    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
+    mockApi.getSmartIdTokens = jest
+      .fn()
+      .mockRejectedValueOnce(new TypeError(message))
+      .mockResolvedValueOnce(tokens);
+    const authenticateWithSmartId = createBoundAction(actions.authenticateWithIdCode);
+    await authenticateWithSmartId('50001018865');
+
+    jest.runOnlyPendingTimers();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    jest.runOnlyPendingTimers();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(dispatch).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: MOBILE_AUTHENTICATION_ERROR }),
+    );
+    expect(dispatch).toHaveBeenCalledWith({
+      type: MOBILE_AUTHENTICATION_SUCCESS,
+      tokens,
+      method: 'SMART_ID',
+    });
+  });
+
+  it('keeps the pending login resumable after a transient network error', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.authenticateWithIdCode = jest.fn(() =>
+      Promise.resolve({ challengeCode: '1337', authenticationHash: 'hash-1' }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => Promise.reject(new TypeError('Failed to fetch')));
+    const authenticateWithSmartId = createBoundAction(actions.authenticateWithIdCode);
+    await authenticateWithSmartId('50001018865');
+    jest.runOnlyPendingTimers();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    mockDispatch();
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const resume = createBoundAction(actions.resumePendingSmartIdAuthentication);
+    resume();
+
+    expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START });
+  });
+
+  it('still starts polling when session storage writes fail', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.authenticateWithIdCode = jest.fn(() =>
+      Promise.resolve({ challengeCode: '1337', authenticationHash: 'hash-1' }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const setItem = jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError');
+    });
+    try {
+      const authenticateWithSmartId = createBoundAction(actions.authenticateWithIdCode);
+      await authenticateWithSmartId('50001018865');
+      jest.runOnlyPendingTimers();
+
+      expect(dispatch).toHaveBeenCalledWith({
+        type: MOBILE_AUTHENTICATION_START_SUCCESS,
+        controlCode: '1337',
+      });
+      expect(mockApi.getSmartIdTokens).toHaveBeenCalled();
+      expect(dispatch).not.toHaveBeenCalledWith(
+        expect.objectContaining({ type: MOBILE_AUTHENTICATION_START_ERROR }),
+      );
+    } finally {
+      setItem.mockRestore();
+    }
+  });
+
+  it('does not resume while another authentication flow is already running', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.authenticateWithIdCode = jest.fn(() =>
+      Promise.resolve({ challengeCode: '1337', authenticationHash: 'hash-1' }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const authenticateWithSmartId = createBoundAction(actions.authenticateWithIdCode);
+    await authenticateWithSmartId('50001018865');
+
+    mockDispatch();
+    state = { login: { loadingAuthentication: true } };
+    const resume = createBoundAction(actions.resumePendingSmartIdAuthentication);
+    resume();
+
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it('does not resume when the user is already authenticated and drops the pending login', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.authenticateWithIdCode = jest.fn(() =>
+      Promise.resolve({ challengeCode: '1337', authenticationHash: 'hash-1' }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const authenticateWithSmartId = createBoundAction(actions.authenticateWithIdCode);
+    await authenticateWithSmartId('50001018865');
+
+    getAuthentication().update({
+      accessToken: 'partner-token',
+      refreshToken: 'partner-refresh',
+      loginMethod: 'PARTNER',
+      signingMethod: 'PARTNER',
+    });
+    mockDispatch();
+    const resume = createBoundAction(actions.resumePendingSmartIdAuthentication);
+    resume();
+    getAuthentication().remove();
+    resume();
+
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it('does not resume on the partner handover route', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.authenticateWithIdCode = jest.fn(() =>
+      Promise.resolve({ challengeCode: '1337', authenticationHash: 'hash-1' }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const authenticateWithSmartId = createBoundAction(actions.authenticateWithIdCode);
+    await authenticateWithSmartId('50001018865');
+
+    Object.defineProperty(window, 'location', {
+      value: { search: '', pathname: '/trigger-procedure' },
+      writable: true,
+      configurable: true,
+    });
+    mockDispatch();
+    const resume = createBoundAction(actions.resumePendingSmartIdAuthentication);
+    resume();
+
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it('does not resume a stale pending smart id login', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.authenticateWithIdCode = jest.fn(() =>
+      Promise.resolve({ challengeCode: '1337', authenticationHash: 'hash-1' }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const authenticateWithSmartId = createBoundAction(actions.authenticateWithIdCode);
+    await authenticateWithSmartId('50001018865');
+
+    jest.advanceTimersByTime(181000);
+
+    mockDispatch();
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const resume = createBoundAction(actions.resumePendingSmartIdAuthentication);
+    resume();
+    jest.runOnlyPendingTimers();
+
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockApi.getSmartIdTokens).not.toHaveBeenCalled();
+  });
+
+  it('does not resume once the login has completed', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.authenticateWithIdCode = jest.fn(() =>
+      Promise.resolve({ challengeCode: '1337', authenticationHash: 'hash-1' }),
+    );
+    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
+    mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(tokens));
+    const authenticateWithSmartId = createBoundAction(actions.authenticateWithIdCode);
+    await authenticateWithSmartId('50001018865');
+    jest.runOnlyPendingTimers();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(dispatch).toHaveBeenCalledWith({
+      type: MOBILE_AUTHENTICATION_SUCCESS,
+      tokens,
+      method: 'SMART_ID',
+    });
+
+    mockDispatch();
+    const resume = createBoundAction(actions.resumePendingSmartIdAuthentication);
+    resume();
+    jest.runOnlyPendingTimers();
+
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it('does not resume a canceled smart id login', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.authenticateWithIdCode = jest.fn(() =>
+      Promise.resolve({ challengeCode: '1337', authenticationHash: 'hash-1' }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const authenticateWithSmartId = createBoundAction(actions.authenticateWithIdCode);
+    await authenticateWithSmartId('50001018865');
+
+    actions.cancelMobileAuthentication();
+
+    mockDispatch();
+    const resume = createBoundAction(actions.resumePendingSmartIdAuthentication);
+    resume();
+    jest.runOnlyPendingTimers();
+
+    expect(dispatch).not.toHaveBeenCalled();
   });
 
   it('abandons a stuck poll request and retries immediately when the tab becomes visible', async () => {
