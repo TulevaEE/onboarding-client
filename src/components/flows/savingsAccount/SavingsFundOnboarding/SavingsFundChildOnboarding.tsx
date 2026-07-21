@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Control, useForm } from 'react-hook-form';
 import { useHistory, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
@@ -74,7 +74,11 @@ export const SavingsFundChildOnboarding = () => {
   // picked from the named dropdown — the pick is itself the confirmation. Before
   // verifying, fall back to "is a dropdown even available" so the total step count
   // matches the path the parent is most likely on and doesn't lurch after step 1.
-  const [manualConfirm, setManualConfirm] = useState<boolean | null>(null);
+  // A switcher-picked child is a named pick from the start, so the confirm step
+  // never enters the count and the step total cannot lurch while queries load.
+  const [manualConfirm, setManualConfirm] = useState<boolean | null>(() =>
+    joinChildPersonalCode ? false : null,
+  );
   // True while a switcher-picked child is being verified in the background, so
   // the selector never flashes; verification failure falls back to the selector.
   const [autoVerifying, setAutoVerifying] = useState(() => Boolean(joinChildPersonalCode));
@@ -238,55 +242,77 @@ export const SavingsFundChildOnboarding = () => {
   const totalSections = steps.length;
   const isTermsStep = activeSection === totalSections - 1;
 
-  const verifyChild = async ({ pickedByName = false } = {}): Promise<void> => {
-    try {
-      setSubmitError(false);
-      setChildCodeRejected(false);
-      const childPersonalCode = getValues('childPersonalCode');
-      const response = await createChild({ childPersonalCode });
-      // Branch on the body status, never the HTTP code; a VERIFIED response with
-      // no name is malformed and treated as "under review", not advanced.
-      if (response.status === 'VERIFIED' && response.firstName) {
-        setValue('child', {
-          firstName: response.firstName,
-          lastName: response.lastName ?? '',
-          dateOfBirth: response.dateOfBirth ?? '',
-        });
-        if (response.address) {
-          setValue('address', response.address);
+  // Each verification carries a generation number; a response whose generation
+  // is no longer current was superseded by a newer child selection and must not
+  // touch the form — a slow response for child A landing after child B's would
+  // otherwise put A's identity and address under B's code.
+  const verifyGenerationRef = useRef(0);
+  const verifyChild = useCallback(
+    async ({ pickedByName = false } = {}): Promise<void> => {
+      verifyGenerationRef.current += 1;
+      const generation = verifyGenerationRef.current;
+      try {
+        setSubmitError(false);
+        setChildCodeRejected(false);
+        const childPersonalCode = getValues('childPersonalCode');
+        const response = await createChild({ childPersonalCode });
+        if (generation !== verifyGenerationRef.current) {
+          return;
         }
-        // Confirm the child only when the code wasn't one of the named options the
-        // parent could pick — a manually typed code, or the dropdown never loaded.
-        // A child picked by name in the account switcher counts as picked. Either
-        // way index 1 is the next step (confirm if shown, else residency), so
-        // setActiveSection(1) is correct for both.
-        const pickedFromList =
-          pickedByName || eligibleChildren.some((c) => c.personalCode === childPersonalCode);
-        setManualConfirm(!pickedFromList);
-        setActiveSection(1);
-      } else {
-        // UNDER_REVIEW — custody couldn't be confirmed (not the parent's child, no
-        // asset-management right, or no such child). Uniform message, no reason.
-        setChildCodeRejected(true);
+        // Branch on the body status, never the HTTP code; a VERIFIED response with
+        // no name is malformed and treated as "under review", not advanced.
+        if (response.status === 'VERIFIED' && response.firstName) {
+          setValue('child', {
+            firstName: response.firstName,
+            lastName: response.lastName ?? '',
+            dateOfBirth: response.dateOfBirth ?? '',
+          });
+          if (response.address) {
+            setValue('address', response.address);
+          }
+          // Confirm the child only when the code wasn't one of the named options the
+          // parent could pick — a manually typed code, or the dropdown never loaded.
+          // A child picked by name in the account switcher counts as picked. Either
+          // way index 1 is the next step (confirm if shown, else residency), so
+          // setActiveSection(1) is correct for both.
+          const pickedFromList =
+            pickedByName || eligibleChildren.some((c) => c.personalCode === childPersonalCode);
+          setManualConfirm(!pickedFromList);
+          setActiveSection(1);
+        } else {
+          // UNDER_REVIEW — custody couldn't be confirmed (not the parent's child, no
+          // asset-management right, or no such child). Uniform message, no reason.
+          setChildCodeRejected(true);
+        }
+      } catch (error) {
+        if (generation !== verifyGenerationRef.current) {
+          return;
+        }
+        // A 4xx means the code itself was rejected (an invalid isikukood) — same
+        // "check the code" message. Anything else is a genuine system/network error.
+        const status = (error as { status?: number } | undefined)?.status;
+        if (status !== undefined && status >= 400 && status < 500) {
+          setChildCodeRejected(true);
+        } else {
+          setSubmitError(true);
+        }
       }
-    } catch (error) {
-      // A 4xx means the code itself was rejected (an invalid isikukood) — same
-      // "check the code" message. Anything else is a genuine system/network error.
-      const status = (error as { status?: number } | undefined)?.status;
-      if (status !== undefined && status >= 400 && status < 500) {
-        setChildCodeRejected(true);
-      } else {
-        setSubmitError(true);
-      }
-    }
-  };
+    },
+    [createChild, eligibleChildren, getValues, setValue],
+  );
 
   // Verify the switcher-picked child automatically — and when a different child
   // is picked from the switcher while the flow is open, restart it for that
   // child with a clean form so nothing entered for the previous child leaks.
   const autoVerifiedCodeRef = useRef('');
   useEffect(() => {
-    if (!joinChildPersonalCode || autoVerifiedCodeRef.current === joinChildPersonalCode) {
+    // Never restart the flow mid-finalize: the role switch to the child may be
+    // in flight, and resetting the form under it would corrupt the submission.
+    if (
+      isFinalizing ||
+      !joinChildPersonalCode ||
+      autoVerifiedCodeRef.current === joinChildPersonalCode
+    ) {
       return;
     }
     autoVerifiedCodeRef.current = joinChildPersonalCode;
@@ -304,13 +330,24 @@ export const SavingsFundChildOnboarding = () => {
     setManualConfirm(false);
     setActiveSection(0);
     setAutoVerifying(true);
-    verifyChild({ pickedByName: true }).finally(() => setAutoVerifying(false));
-  }, [joinChildPersonalCode, me, reset, setValue, verifyChild]);
+    verifyChild({ pickedByName: true }).finally(() => {
+      // Only the verification for the still-current child may clear the loader; a
+      // superseded one finishing late must not reveal the next child's step while
+      // its own verification is still in flight.
+      if (autoVerifiedCodeRef.current === joinChildPersonalCode) {
+        setAutoVerifying(false);
+      }
+    });
+  }, [isFinalizing, joinChildPersonalCode, me, reset, setValue, verifyChild]);
 
   // The one and only role switch. Everything before this ran as the parent; the
   // child KYC must be submitted while acting as the child (role-aware backend).
   const finalize = async (): Promise<void> => {
-    const childCode = getValues('childPersonalCode');
+    // Snapshot the whole form up front: the submit below happens after awaits,
+    // and a switcher pick landing in that window resets the form — the survey
+    // must be built from what the parent actually confirmed, not a later read.
+    const formData = getValues();
+    const childCode = formData.childPersonalCode;
     const parentCode = me?.personalCode;
     // Never switch to the child before we know the parent code to switch back to,
     // otherwise a non-completed submit could strand the parent (the terms-step
@@ -333,7 +370,7 @@ export const SavingsFundChildOnboarding = () => {
 
     let outcome: 'completed' | 'pending' | 'error' = 'error';
     try {
-      await submitSurvey(transformChildFormDataToSurveyCommand(getValues()));
+      await submitSurvey(transformChildFormDataToSurveyCommand(formData));
       // One-shot read on the child token — the acting-party status is the child's.
       const status = await getSavingsFundOnboardingStatus();
       outcome = status.status === 'COMPLETED' ? 'completed' : 'pending';
