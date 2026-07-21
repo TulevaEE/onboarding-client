@@ -2,10 +2,7 @@
 // go-live. Enforced on the root route (chooser vs. personal flow), the chooser
 // options, and at route level (a direct link to a disabled flow redirects).
 const COMPANY_ONBOARDING_LAUNCHED = true;
-// Child onboarding stays hidden until the backend (custody verification, the
-// FUNDING_SOURCES/PLANNED_CONTRIBUTION survey items) lands. Until then it is
-// reachable only via ?childOnboardingPreview=true (see below).
-const CHILD_ONBOARDING_LAUNCHED = false;
+const CHILD_ONBOARDING_LAUNCHED = true;
 
 // Pre-launch preview for the team: open any page with ?<key>=true to see the
 // launch state for the rest of the browser session (?<key>=false turns it off).
