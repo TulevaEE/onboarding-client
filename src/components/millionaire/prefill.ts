@@ -1,8 +1,10 @@
 import {
   Contribution,
+  Fund,
   SecondPillarContribution,
   SourceFund,
   ThirdPillarContribution,
+  Transaction,
   User,
 } from '../common/apiModels';
 import {
@@ -10,6 +12,7 @@ import {
   MAX_THIRD_PILLAR_MONTHLY,
   RETIREMENT_AGE_FALLBACK,
   thirdPillarTaxCapMonthly,
+  TULEVA_FEE,
 } from './calculation';
 
 // The state always adds 4% of gross to the II pillar, regardless of the
@@ -135,6 +138,73 @@ export function contributesMonthlyToThirdPillar(contributions: Contribution[], n
 
 export function latestThirdPillarMonthlyAmount(contributions: Contribution[], now: Date): number {
   return latestMonthTotal(recentPaymentsByMonth(contributions.filter(isThirdPillar), now));
+}
+
+// The savings fund is the one fund outside the pillars, so its money is exactly the
+// transactions against a fund with no pillar.
+const savingsFundTransactions = (funds: Fund[], transactions: Transaction[]): Transaction[] => {
+  const savingsFundIsins = new Set(
+    funds.filter((fund) => fund.pillar === null).map((fund) => fund.isin),
+  );
+  return transactions.filter((transaction) => savingsFundIsins.has(transaction.isin));
+};
+
+// Only the inflows: for recognising a saving habit, a withdrawal says nothing.
+export function selectSavingsFundPayments(funds: Fund[], transactions: Transaction[]): Payment[] {
+  return savingsFundTransactions(funds, transactions)
+    .filter((transaction) => transaction.type !== 'SUBTRACTION')
+    .map((transaction) => ({ time: transaction.time, amount: transaction.amount }));
+}
+
+// Every movement, withdrawals included (their amounts come negative): for drawing the
+// past, a redemption must show as a dip, not vanish.
+export function selectSavingsFundFlows(funds: Fund[], transactions: Transaction[]): Payment[] {
+  return savingsFundTransactions(funds, transactions).map((transaction) => ({
+    time: transaction.time,
+    amount: transaction.amount,
+  }));
+}
+
+// Tuleva's own fees, read from the live fund list rather than hardcoded, so calculators
+// stay honest if Tuleva ever changes what it charges. Today every Tuleva fund is at the
+// same 0.28%; if they ever diverge, the recipe means the cheapest index fund.
+export function deriveTulevaFees(funds: Fund[]): { pension: number; savingsFund: number } {
+  const tulevaFunds = funds.filter(
+    (fund) =>
+      fund.status === 'ACTIVE' &&
+      fund.fundManager.name === 'Tuleva' &&
+      fund.ongoingChargesFigure > 0,
+  );
+  const cheapestOf = (candidates: Fund[]): number =>
+    candidates.length
+      ? Math.min(...candidates.map((fund) => fund.ongoingChargesFigure))
+      : TULEVA_FEE;
+  return {
+    // The pillars, for the pension lines; and the savings fund, which is outside them.
+    pension: cheapestOf(tulevaFunds.filter((fund) => fund.pillar !== null)),
+    savingsFund: cheapestOf(tulevaFunds.filter((fund) => fund.pillar === null)),
+  };
+}
+
+// Fallbacks used until /v1/funds loads; the live min/max come from that list, so we
+// never hand-maintain the cheapest/priciest Estonian pension fund fees.
+const FEE_MIN_FALLBACK = 0.27;
+const FEE_MAX_FALLBACK = 1.57;
+
+// Fee-slider bounds straight from the live pension-fund list (cheapest to priciest),
+// so the range stays correct without manual upkeep. Fees come as fractions and go
+// out as clean 2-decimal percents: 0.0157 * 100 is 1.5699999999999998 in binary
+// floating point, so scale-then-round instead of a bare * 100. The savings fund
+// (pillar null) is excluded — the slider models the pension pillars' fee.
+export function deriveFeeBounds(funds: Fund[]): { min: number; max: number } {
+  const fees = funds
+    .filter(
+      (fund) => fund.status === 'ACTIVE' && fund.pillar !== null && fund.ongoingChargesFigure > 0,
+    )
+    .map((fund) => Math.round(fund.ongoingChargesFigure * 10000) / 100);
+  return fees.length
+    ? { min: Math.min(...fees), max: Math.max(...fees) }
+    : { min: FEE_MIN_FALLBACK, max: FEE_MAX_FALLBACK };
 }
 
 // Savings fund money is lumpy: a one-off transfer is usually existing wealth moving in,

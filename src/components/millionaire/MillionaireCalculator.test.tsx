@@ -252,11 +252,26 @@ describe('MillionaireCalculator', () => {
     expect(screen.queryByTestId('mock-chart')).not.toBeInTheDocument();
   });
 
+  it('still opens when the savings fund balance request fails', () => {
+    givenData();
+    mockUseSavingsFundBalance.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: true,
+    } as ReturnType<typeof useSavingsFundBalance>);
+
+    renderCalculator();
+
+    expect(screen.getByTestId('gap-message')).toBeInTheDocument();
+  });
+
   it('pre-fills every input from the API data', () => {
     givenData();
     renderCalculator();
 
-    expect((screen.getByLabelText(/^Gross salary$/i) as HTMLInputElement).value).toBe('2000');
+    expect((screen.getByLabelText(/^Gross monthly salary$/i) as HTMLInputElement).value).toBe(
+      '2000',
+    );
     expect(screen.getByRole('button', { name: '2%' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: '6%' })).toHaveAttribute('aria-pressed', 'false');
     expect(

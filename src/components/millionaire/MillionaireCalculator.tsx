@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import {
   CategoryScale,
@@ -31,21 +31,20 @@ import {
   useTransactions,
 } from '../common/apiHooks';
 import { CurrencyInput } from '../common/input/CurrencyInput';
+import { EditableEuro } from '../common/input/EditableEuro';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { formatAmountForCurrency } from '../common/utils';
-import { Conversion, Fund } from '../common/apiModels';
+import { Conversion } from '../common/apiModels';
 import { TranslationKey } from '../translations';
-import {
-  buildComparison,
-  CalculatorInputs,
-  thirdPillarTaxCapMonthly,
-  TULEVA_FEE,
-} from './calculation';
+import { buildComparison, CalculatorInputs, thirdPillarTaxCapMonthly } from './calculation';
 import {
   contributesMonthlyToThirdPillar,
+  deriveFeeBounds,
   derivePrefill,
   deriveSavingsFundMonthly,
+  deriveTulevaFees,
   latestThirdPillarMonthlyAmount,
+  selectSavingsFundPayments,
 } from './prefill';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Legend, Filler);
@@ -59,10 +58,6 @@ const RETURN_MAX = 10;
 const RETURN_STEP = 1;
 const HISTORICAL_RETURN = 7; // long-run historical stock return, marked on the slider
 const HISTORICAL_RETURN_LEFT = ((HISTORICAL_RETURN - RETURN_MIN) / (RETURN_MAX - RETURN_MIN)) * 100;
-// Fallbacks used until /v1/funds loads; the live min/max come from that list, so we
-// never hand-maintain the cheapest/priciest Estonian pension fund fees.
-const FEE_MIN_FALLBACK = 0.27;
-const FEE_MAX_FALLBACK = 1.57;
 const FEE_STEP = 0.01;
 const THIRD_PILLAR_STEP = 10;
 // The savings fund has no tax ceiling to cap the slider, so pick a range wide enough to
@@ -85,86 +80,6 @@ const formatEuro = (value: number): string => {
 const roundedEuro = (value: number): string => {
   const step = Math.abs(value) >= 1e6 ? 100000 : 1000;
   return formatEuro(Math.floor(value / step) * step);
-};
-
-// The number part of a euro figure, without the " €" suffix — only the digits are edited.
-const euroAmount = (value: number): string => formatEuro(value).replace(/[ \s]*€$/, '');
-
-// A euro figure you can edit in place by clicking it: no input box, just the number.
-// Clicking places a caret and it behaves like any text field. Only the amount is editable,
-// with a static " €" beside it, and the chart follows every keystroke. It clamps to `max`,
-// which lets a power user type a monthly amount past the slider's cap.
-//
-// The DOM text is driven by a ref, not by React children: pushing `value` back into the
-// node only when the change came from OUTSIDE (the slider), never while the user is typing
-// here — otherwise React would rewrite the text on each keystroke and jump the caret.
-const EditableEuro: React.FC<{
-  value: number;
-  max: number;
-  ariaLabel: string;
-  onCommit: (value: number) => void;
-  className?: string;
-}> = ({ value, max, ariaLabel, onCommit, className }) => {
-  const ref = useRef<HTMLSpanElement>(null);
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (el && document.activeElement !== el) {
-      el.textContent = euroAmount(value);
-    }
-  }, [value]);
-  const read = (el: HTMLElement): number => {
-    const digits = (el.textContent ?? '').replace(/\D/g, '');
-    return Math.min(Math.max(parseInt(digits || '0', 10), 0), max);
-  };
-  return (
-    <span className={className}>
-      <span
-        ref={ref}
-        className="millionaire-editable"
-        role="textbox"
-        aria-label={ariaLabel}
-        tabIndex={0}
-        contentEditable
-        suppressContentEditableWarning
-        onInput={(event) => {
-          const el = event.currentTarget;
-          const next = read(el);
-          onCommit(next);
-          // Snap the visible text back to canonical form the instant it drifts — an
-          // overflow past the cap, leading zeros, pasted non-digits — so a long string can
-          // never stretch the layout. Normal in-range digits already match, so the caret
-          // is left alone; only a rewrite moves it (to the end, where typing continues).
-          const canonical = euroAmount(next);
-          if (el.textContent !== canonical) {
-            // eslint-disable-next-line no-param-reassign
-            el.textContent = canonical;
-            const range = document.createRange();
-            range.selectNodeContents(el);
-            range.collapse(false);
-            const selection = window.getSelection();
-            selection?.removeAllRanges();
-            selection?.addRange(range);
-          }
-        }}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter') {
-            event.preventDefault();
-            event.currentTarget.blur();
-          }
-        }}
-        onBlur={(event) => {
-          const next = read(event.currentTarget);
-          onCommit(next);
-          // Normalise the display once editing ends (clamped value, stray characters gone).
-          // eslint-disable-next-line no-param-reassign
-          event.currentTarget.textContent = euroAmount(next);
-        }}
-      />
-      {/* Static and click-through: the number's wide right padding reaches under it,
-          so a click on the euro still focuses the number rather than dead-ending here. */}
-      <span style={{ pointerEvents: 'none' }}>{' €'}</span>
-    </span>
-  );
 };
 
 // Fees are a drag on the return, so show them as a negative percent (dot decimal,
@@ -315,55 +230,19 @@ export function MillionaireCalculator() {
   const { data: funds, isLoading: fundsLoading } = useFunds();
   const { data: transactions, isLoading: transactionsLoading } = useTransactions();
   const { data: savingsFundOnboarding } = useSavingsFundOnboardingStatus();
-  const { data: savingsFundBalance } = useSavingsFundBalance();
+  const { data: savingsFundBalance, isLoading: savingsFundBalanceLoading } =
+    useSavingsFundBalance();
 
   const [inputs, setInputs] = useState<CalculatorInputs | null>(null);
 
-  // The savings fund is the one fund outside the pillars, so money paid into it is
-  // exactly the transactions against a fund with no pillar.
-  const savingsFundPayments = useMemo(() => {
-    const savingsFundIsins = new Set(
-      (funds ?? []).filter((fund) => fund.pillar === null).map((fund) => fund.isin),
-    );
-    return (transactions ?? [])
-      .filter((transaction) => savingsFundIsins.has(transaction.isin))
-      .filter((transaction) => transaction.type !== 'SUBTRACTION')
-      .map((transaction) => ({ time: transaction.time, amount: transaction.amount }));
-  }, [transactions, funds]);
+  const savingsFundPayments = useMemo(
+    () => selectSavingsFundPayments(funds ?? [], transactions ?? []),
+    [transactions, funds],
+  );
 
-  // Tuleva's own fees, read from the live fund list rather than hardcoded, so the recipe
-  // stays honest if Tuleva ever changes what it charges. Today every Tuleva fund is at
-  // the same 0.28%; if they ever diverge, the recipe means the cheapest index fund.
-  const tulevaFees = useMemo(() => {
-    const tulevaFunds = (funds ?? []).filter(
-      (fund) =>
-        fund.status === 'ACTIVE' &&
-        fund.fundManager.name === 'Tuleva' &&
-        fund.ongoingChargesFigure > 0,
-    );
-    const cheapestOf = (candidates: Fund[]): number =>
-      candidates.length
-        ? Math.min(...candidates.map((fund) => fund.ongoingChargesFigure))
-        : TULEVA_FEE;
-    return {
-      // The pillars, for Tuleva's line; and the savings fund, which is outside them.
-      pension: cheapestOf(tulevaFunds.filter((fund) => fund.pillar !== null)),
-      savingsFund: cheapestOf(tulevaFunds.filter((fund) => fund.pillar === null)),
-    };
-  }, [funds]);
+  const tulevaFees = useMemo(() => deriveTulevaFees(funds ?? []), [funds]);
 
-  // Fee-slider bounds straight from the live pension-fund list (cheapest to priciest),
-  // so the range stays correct without manual upkeep. Fees are stored as fractions.
-  const feeBounds = useMemo(() => {
-    const fees = (funds ?? [])
-      .filter((fund) => fund.status === 'ACTIVE' && fund.ongoingChargesFigure > 0)
-      // Round to a clean 2-decimal percent: 0.0157 * 100 is 1.5699999999999998 in
-      // binary floating point, so scale-then-round instead of a bare * 100.
-      .map((fund) => Math.round(fund.ongoingChargesFigure * 10000) / 100);
-    return fees.length
-      ? { min: Math.min(...fees), max: Math.max(...fees) }
-      : { min: FEE_MIN_FALLBACK, max: FEE_MAX_FALLBACK };
-  }, [funds]);
+  const feeBounds = useMemo(() => deriveFeeBounds(funds ?? []), [funds]);
 
   // What the saver holds in the savings fund today. Unlike the pension balances this is
   // not rounded to the nearest 1000: the fund is new, so most balances are small enough
@@ -386,7 +265,9 @@ export function MillionaireCalculator() {
       conversion &&
       !fundsLoading &&
       !transactionsLoading &&
-      savingsFundBalance !== undefined
+      // A failed balance request settles with the data still undefined, so gate on
+      // loading, not on the data: the page must not shimmer forever over it.
+      !savingsFundBalanceLoading
     ) {
       const now = new Date();
       const prefill = derivePrefill(user, sourceFunds, contributions, now);
@@ -419,7 +300,7 @@ export function MillionaireCalculator() {
     transactionsLoading,
     feeBounds,
     tulevaFees,
-    savingsFundBalance,
+    savingsFundBalanceLoading,
     savingsFundValue,
     savingsFundPayments,
   ]);

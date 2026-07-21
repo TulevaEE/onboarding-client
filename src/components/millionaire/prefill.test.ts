@@ -6,16 +6,21 @@ import {
   deriveSavingsFundMonthly,
   deriveThirdPillarBalance,
   deriveThirdPillarMonthly,
+  deriveTulevaFees,
   latestThirdPillarMonthlyAmount,
+  selectSavingsFundFlows,
+  selectSavingsFundPayments,
 } from './prefill';
 import {
   Contribution,
+  Fund,
   SecondPillarContribution,
   SourceFund,
   ThirdPillarContribution,
+  Transaction,
   User,
 } from '../common/apiModels';
-import { MAX_THIRD_PILLAR_MONTHLY } from './calculation';
+import { MAX_THIRD_PILLAR_MONTHLY, TULEVA_FEE } from './calculation';
 
 const secondPillarContribution = (
   socialTaxPortion: number,
@@ -432,5 +437,77 @@ describe('derivePrefill', () => {
       now,
     );
     expect(prefill.currentSecondPillarRate).toBe(0);
+  });
+});
+
+describe('selectSavingsFundPayments', () => {
+  const savingsFund = { isin: 'EE0000003283', pillar: null } as Fund;
+  const pensionFund = { isin: 'EE3600109435', pillar: 2 } as Fund;
+  const transaction = (isin: string, amount: number, type = 'CONTRIBUTION_CASH'): Transaction =>
+    ({ isin, amount, time: '2026-06-01T00:00:00Z', type } as Transaction);
+
+  it('keeps only inflows into the fund with no pillar', () => {
+    const payments = selectSavingsFundPayments(
+      [savingsFund, pensionFund],
+      [
+        transaction('EE0000003283', 100),
+        transaction('EE0000003283', 300, 'CONTRIBUTION_CASH_WORKPLACE'),
+        transaction('EE0000003283', -50, 'SUBTRACTION'),
+        transaction('EE3600109435', 200),
+      ],
+    );
+    expect(payments).toEqual([
+      { time: '2026-06-01T00:00:00Z', amount: 100 },
+      { time: '2026-06-01T00:00:00Z', amount: 300 },
+    ]);
+  });
+
+  it('keeps withdrawals when selecting all flows, so the past can dip', () => {
+    const flows = selectSavingsFundFlows(
+      [savingsFund, pensionFund],
+      [
+        transaction('EE0000003283', 100),
+        transaction('EE0000003283', -50, 'SUBTRACTION'),
+        transaction('EE3600109435', 200),
+      ],
+    );
+    expect(flows).toEqual([
+      { time: '2026-06-01T00:00:00Z', amount: 100 },
+      { time: '2026-06-01T00:00:00Z', amount: -50 },
+    ]);
+  });
+});
+
+describe('deriveTulevaFees', () => {
+  const fund = (overrides: Partial<Fund>): Fund =>
+    ({
+      status: 'ACTIVE',
+      fundManager: { name: 'Tuleva' },
+      ongoingChargesFigure: 0.0028,
+      pillar: 2,
+      ...overrides,
+    } as Fund);
+
+  it('reads each side from its own funds, so the two fees can differ', () => {
+    const fees = deriveTulevaFees([
+      fund({ pillar: 2, ongoingChargesFigure: 0.0028 }),
+      fund({ pillar: null, ongoingChargesFigure: 0.0049 }),
+    ]);
+    expect(fees).toEqual({ pension: 0.0028, savingsFund: 0.0049 });
+  });
+
+  it('picks the cheapest fund and ignores other managers, inactive funds and zero fees', () => {
+    const fees = deriveTulevaFees([
+      fund({ ongoingChargesFigure: 0.0034 }),
+      fund({ ongoingChargesFigure: 0.0028 }),
+      fund({ ongoingChargesFigure: 0.0011, fundManager: { name: 'Swedbank' } as never }),
+      fund({ ongoingChargesFigure: 0.0005, status: 'LIQUIDATED' as never }),
+      fund({ ongoingChargesFigure: 0 }),
+    ]);
+    expect(fees.pension).toBe(0.0028);
+  });
+
+  it('falls back to the known Tuleva fee when the fund list is empty', () => {
+    expect(deriveTulevaFees([])).toEqual({ pension: TULEVA_FEE, savingsFund: TULEVA_FEE });
   });
 });

@@ -1,0 +1,26 @@
+// The chart lives in a flex column, so give it a fixed box and take the canvas
+// out of flow: Chart.js writes a pixel height onto the canvas, and letting that
+// feed back into the flex layout makes the card grow a little on every redraw.
+.pension-calculator-chart {
+  position: relative;
+  height: 260px;
+
+  @media (min-width: 992px) {
+    height: 300px;
+  }
+
+  > canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+
+// Round dots, matching the millionaire chart's legend.
+.pension-calculator-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}

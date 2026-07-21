@@ -1,0 +1,14 @@
+// The click-to-edit amount: give the selection highlight some breathing room without
+// moving anything. Chrome extends the highlight over an inline-block's padding, so the
+// padding pads the blue box, and the equal negative margin cancels it back out — the
+// number, the euro sign and the row height all stay exactly where they were. The wide
+// right padding reaches past the static euro sign so it sits inside the box rather than
+// against its edge (the euro has pointer-events: none, so a click there still lands on
+// this padding and focuses the number). The padding is transparent, so at rest it still
+// reads as plain text.
+.editable-euro {
+  display: inline-block;
+  padding: 2px 18px 2px 6px;
+  margin: -2px -18px -2px -6px;
+  border-radius: 0.25rem;
+}
