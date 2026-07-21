@@ -1,13 +1,14 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { initializeConfiguration } from '../../../config/config';
 import { getAuthentication } from '../../../common/authenticationManager';
 import { anAuthenticationManager } from '../../../common/authenticationManagerFixture';
 import { renderWrapped } from '../../../../test/utils';
 import {
-  pendingChildOnboardingsBackend,
+  pendingOnboardingsBackend,
   rolesBackend,
   switchRoleBackend,
   userBackend,
@@ -78,7 +79,7 @@ beforeEach(() => {
   getAuthentication().update(anAuthenticationManager());
   mockIsCompanyOnboardingEnabled.mockReturnValue(true);
   mockIsChildOnboardingEnabled.mockReturnValue(true);
-  pendingChildOnboardingsBackend(server);
+  pendingOnboardingsBackend(server);
 });
 
 describe('RoleSwitcher', () => {
@@ -123,12 +124,12 @@ describe('RoleSwitcher', () => {
   });
 
   describe('with a child the other parent is onboarding', () => {
-    const pendingChild = { childPersonalCode: '61506150006', childName: 'Mari Maasikas' };
+    const pendingChild = { type: 'PERSON' as const, code: '61506150006', name: 'Mari Maasikas' };
 
     it('offers the child by name as a link into the child onboarding flow', async () => {
       rolesBackend(server, [personalRole]);
       userBackend(server, { role: personalRole });
-      pendingChildOnboardingsBackend(server, [pendingChild]);
+      pendingOnboardingsBackend(server, [pendingChild]);
 
       renderRoleSwitcher();
 
@@ -144,7 +145,7 @@ describe('RoleSwitcher', () => {
       mockIsCompanyOnboardingEnabled.mockReturnValue(false);
       rolesBackend(server, [personalRole]);
       userBackend(server, { role: personalRole });
-      pendingChildOnboardingsBackend(server, [pendingChild]);
+      pendingOnboardingsBackend(server, [pendingChild]);
 
       renderRoleSwitcher();
 
@@ -156,11 +157,22 @@ describe('RoleSwitcher', () => {
     it('hides the pending child while the child onboarding flow is not yet launched', async () => {
       mockIsCompanyOnboardingEnabled.mockReturnValue(false);
       mockIsChildOnboardingEnabled.mockReturnValue(false);
-      rolesBackend(server, [personalRole]);
+      // Track the roles response so the negative assertion below runs after the
+      // data that could open the dropdown has actually been applied — the plain
+      // span also renders before any query resolves, which would pass vacuously.
+      let rolesServed = false;
+      server.use(
+        rest.get('http://localhost/v1/me/roles', (req, res, ctx) => {
+          rolesServed = true;
+          return res(ctx.json([personalRole]));
+        }),
+      );
       userBackend(server, { role: personalRole });
-      pendingChildOnboardingsBackend(server, [pendingChild]);
+      pendingOnboardingsBackend(server, [pendingChild]);
 
       renderRoleSwitcher();
+
+      await waitFor(() => expect(rolesServed).toBe(true));
 
       // The child route redirects away until launch, so no dead menu link: the
       // single-role user stays plain text rather than getting a dropdown.
@@ -174,9 +186,19 @@ describe('RoleSwitcher', () => {
       mockIsCompanyOnboardingEnabled.mockReturnValue(false);
       rolesBackend(server, [personalRole]);
       userBackend(server, { role: personalRole });
-      pendingChildOnboardingsBackend(server);
+      // Track the empty pending response so the negative assertion below runs
+      // after the query that could open the dropdown has actually resolved.
+      let pendingServed = false;
+      server.use(
+        rest.get('http://localhost/v1/me/pending-onboardings', (req, res, ctx) => {
+          pendingServed = true;
+          return res(ctx.json([]));
+        }),
+      );
 
       renderRoleSwitcher();
+
+      await waitFor(() => expect(pendingServed).toBe(true));
 
       expect(await screen.findByText('John Doe')).toBeInTheDocument();
       await waitFor(() =>

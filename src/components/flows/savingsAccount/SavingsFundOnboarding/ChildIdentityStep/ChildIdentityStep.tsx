@@ -1,7 +1,7 @@
 import { FC, useState } from 'react';
 import { Control, Controller, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useEligibleChildren } from '../../../../common/apiHooks';
+import { useEligibleChildren, usePendingOnboardings } from '../../../../common/apiHooks';
 import { ChildOnboardingFormData } from '../types';
 import { isValidEstonianPersonalCode } from './personalCode';
 
@@ -12,6 +12,13 @@ type ChildIdentityStepProps = {
 export const ChildIdentityStep: FC<ChildIdentityStepProps> = ({ control }) => {
   const intl = useIntl();
   const { data: eligibleChildren = [], isLoading } = useEligibleChildren();
+  const { data: pendingOnboardings = [] } = usePendingOnboardings();
+  // Children the other guardian already onboarded stay selectable for this user:
+  // joining them (completing their own custody-verified onboarding) is exactly
+  // what a pending onboarding entry invites them to do.
+  const joinableChildCodes = new Set(
+    pendingOnboardings.filter(({ type }) => type === 'PERSON').map(({ code }) => code),
+  );
   const [manualEntry, setManualEntry] = useState(false);
   const childPersonalCode = useWatch({ control, name: 'childPersonalCode' });
   // A code typed while the lookup was in flight, or carried over from an earlier
@@ -73,13 +80,11 @@ export const ChildIdentityStep: FC<ChildIdentityStepProps> = ({ control }) => {
                       ({ personalCode, firstName, lastName, hasBeenOnboarded }) => {
                         const name = [firstName, lastName].filter(Boolean).join(' ');
                         const label = name ? `${name} (${personalCode})` : personalCode;
+                        const alreadyOpened =
+                          Boolean(hasBeenOnboarded) && !joinableChildCodes.has(personalCode);
                         return (
-                          <option
-                            key={personalCode}
-                            value={personalCode}
-                            disabled={hasBeenOnboarded}
-                          >
-                            {hasBeenOnboarded
+                          <option key={personalCode} value={personalCode} disabled={alreadyOpened}>
+                            {alreadyOpened
                               ? `${label} — ${intl.formatMessage({
                                   id: 'flows.savingsFundChildOnboarding.identityStep.accountOpened',
                                 })}`

@@ -254,13 +254,15 @@ export interface SwitchRoleCommand {
   code: string;
 }
 
-// A child whose account the other parent already opened, offered to the
-// co-guardian so they can join by completing their own onboarding/KYC.
-// childName is register-sourced and shown verbatim in the account switcher;
-// the personal code is passed only via router state, never the URL.
-export interface PendingChildOnboarding {
-  childPersonalCode: string;
-  childName: string;
+// An onboarding someone else opened that this user can join — today a child
+// account opened by the other guardian (type PERSON), later possibly companies.
+// Mirrors the Role shape; the name is register-sourced and shown verbatim in the
+// account switcher, and a child's personal code travels only via router state,
+// never the URL.
+export interface PendingOnboarding {
+  type: RoleType;
+  code: string;
+  name: string;
 }
 
 export interface User {
