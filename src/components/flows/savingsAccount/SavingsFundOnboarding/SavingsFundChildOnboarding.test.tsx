@@ -145,16 +145,17 @@ describe('SavingsFundChildOnboarding', () => {
       ],
     });
     renderWrapped(<SavingsFundChildOnboarding />, history);
-    userEvent.type(
-      await screen.findByLabelText(/Address \(street, house, apartment\)/i),
-      'Salapärane 1',
-    );
+    const streetInput = await screen.findByLabelText(/Address \(street, house, apartment\)/i);
+    // The register response prefills the street; typing appends to it, proving
+    // below that the reset (back to the fresh prefill) actually happened.
+    userEvent.type(streetInput, 'Salapärane 1');
+    expect(streetInput).toHaveValue('Pärnu mnt 10Salapärane 1');
 
     history.push('/savings-fund/onboarding/child', { childPersonalCode: OTHER_CHILD_CODE });
 
     await waitFor(() =>
-      expect(screen.getByLabelText(/Address \(street, house, apartment\)/i)).not.toHaveValue(
-        'Salapärane 1',
+      expect(screen.getByLabelText(/Address \(street, house, apartment\)/i)).toHaveValue(
+        'Pärnu mnt 10',
       ),
     );
   });
@@ -201,6 +202,60 @@ describe('SavingsFundChildOnboarding', () => {
 
     expect(await screen.findByRole('alert')).toBeInTheDocument();
     expect(screen.getByLabelText(/personal ID code/i)).toBeInTheDocument();
+  });
+
+  it('ignores a slow verification for a superseded child selection', async () => {
+    const OTHER_CHILD_CODE = '61001010000';
+    server.use(
+      rest.post('http://localhost/v1/me/children', async (req, res, ctx) => {
+        const { childPersonalCode } = req.body as { childPersonalCode: string };
+        if (childPersonalCode === CHILD_CODE) {
+          return res(
+            ctx.delay(200),
+            ctx.json({
+              status: 'VERIFIED',
+              firstName: 'Mammu',
+              lastName: 'Maasikas',
+              dateOfBirth: '2015-09-07',
+              address: {
+                countryCode: 'EE',
+                street: 'Stale 1',
+                city: 'Tallinn',
+                postalCode: '10141',
+              },
+            }),
+          );
+        }
+        return res(
+          ctx.json({
+            status: 'VERIFIED',
+            firstName: 'Teine',
+            lastName: 'Laps',
+            dateOfBirth: '2016-01-01',
+            address: { countryCode: 'EE', street: 'Fresh 2', city: 'Tartu', postalCode: '50050' },
+          }),
+        );
+      }),
+    );
+    const history = createMemoryHistory({
+      initialEntries: [
+        { pathname: '/savings-fund/onboarding/child', state: { childPersonalCode: CHILD_CODE } },
+      ],
+    });
+    renderWrapped(<SavingsFundChildOnboarding />, history);
+
+    // Supersede the slow verification for the first child immediately.
+    history.push('/savings-fund/onboarding/child', { childPersonalCode: OTHER_CHILD_CODE });
+
+    const streetInput = await screen.findByLabelText(/Address \(street, house, apartment\)/i);
+    expect(streetInput).toHaveValue('Fresh 2');
+
+    // Let the superseded response for the first child arrive — it must not
+    // overwrite the current child's form.
+    await new Promise((resolve) => {
+      setTimeout(resolve, 300);
+    });
+    expect(streetInput).toHaveValue('Fresh 2');
   });
 
   it('falls back to the child selector when the switcher-picked child cannot be verified', async () => {
