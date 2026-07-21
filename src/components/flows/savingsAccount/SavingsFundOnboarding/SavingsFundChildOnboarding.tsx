@@ -4,6 +4,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { captureException } from '@sentry/browser';
 import { ChildOnboardingFormData, IdentityFormFields } from './types';
+import { Loader } from '../../../common';
 import { ChildIdentityStep } from './ChildIdentityStep';
 import { ChildConfirmStep } from './ChildConfirmStep';
 import { ResidencyStep } from './ResidencyStep';
@@ -32,13 +33,29 @@ const asIdentityControl = (
   control: Control<ChildOnboardingFormData>,
 ): Control<IdentityFormFields> => control as unknown as Control<IdentityFormFields>;
 
+const emptyChildOnboardingForm = (childPersonalCode: string): ChildOnboardingFormData => ({
+  childPersonalCode,
+  child: null,
+  citizenship: [],
+  address: { countryCode: 'EE', street: '', city: '', postalCode: '' },
+  email: '',
+  phoneNumber: '',
+  pepSelfDeclaration: null,
+  investmentGoals: [],
+  plannedContribution: null,
+  investableAssets: null,
+  fundingSources: [],
+  termsAccepted: false,
+});
+
 export const SavingsFundChildOnboarding = () => {
   const history = useHistory();
   // A co-guardian arriving from the account switcher carries the child's personal
-  // code in router state (never the URL). Pre-select it so the identity step opens
-  // on that child; falls back to empty for the parent opening a new account.
+  // code in router state (never the URL). The click on the child's name already
+  // was the selection, so the selector step is skipped: the code is verified
+  // automatically and the flow opens on the first question step.
   const { state: locationState } = useLocation<{ childPersonalCode?: string } | undefined>();
-  const preselectedChildPersonalCode = locationState?.childPersonalCode ?? '';
+  const joinChildPersonalCode = locationState?.childPersonalCode ?? '';
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState(false);
   // The entered code can't open an account for a child — either it's not a valid
@@ -58,6 +75,9 @@ export const SavingsFundChildOnboarding = () => {
   // verifying, fall back to "is a dropdown even available" so the total step count
   // matches the path the parent is most likely on and doesn't lurch after step 1.
   const [manualConfirm, setManualConfirm] = useState<boolean | null>(null);
+  // True while a switcher-picked child is being verified in the background, so
+  // the selector never flashes; verification failure falls back to the selector.
+  const [autoVerifying, setAutoVerifying] = useState(() => Boolean(joinChildPersonalCode));
 
   const { data: me } = useMe();
   const { data: eligibleChildren = [] } = useEligibleChildren();
@@ -65,22 +85,9 @@ export const SavingsFundChildOnboarding = () => {
   const { mutateAsync: submitSurvey } = useSubmitSavingsFundOnboardingSurvey();
   const { mutateAsync: switchRole } = useSwitchRole();
 
-  const { control, trigger, watch, setValue, getValues } = useForm<ChildOnboardingFormData>({
+  const { control, trigger, watch, setValue, getValues, reset } = useForm<ChildOnboardingFormData>({
     mode: 'onSubmit',
-    defaultValues: {
-      childPersonalCode: preselectedChildPersonalCode,
-      child: null,
-      citizenship: [],
-      address: { countryCode: 'EE', street: '', city: '', postalCode: '' },
-      email: '',
-      phoneNumber: '',
-      pepSelfDeclaration: null,
-      investmentGoals: [],
-      plannedContribution: null,
-      investableAssets: null,
-      fundingSources: [],
-      termsAccepted: false,
-    },
+    defaultValues: emptyChildOnboardingForm(joinChildPersonalCode),
   });
 
   const child = watch('child');
@@ -231,7 +238,7 @@ export const SavingsFundChildOnboarding = () => {
   const totalSections = steps.length;
   const isTermsStep = activeSection === totalSections - 1;
 
-  const verifyChild = async (): Promise<void> => {
+  const verifyChild = async ({ pickedByName = false } = {}): Promise<void> => {
     try {
       setSubmitError(false);
       setChildCodeRejected(false);
@@ -250,9 +257,11 @@ export const SavingsFundChildOnboarding = () => {
         }
         // Confirm the child only when the code wasn't one of the named options the
         // parent could pick — a manually typed code, or the dropdown never loaded.
-        // Either way index 1 is the next step (confirm if shown, else residency),
-        // so setActiveSection(1) is correct for both.
-        const pickedFromList = eligibleChildren.some((c) => c.personalCode === childPersonalCode);
+        // A child picked by name in the account switcher counts as picked. Either
+        // way index 1 is the next step (confirm if shown, else residency), so
+        // setActiveSection(1) is correct for both.
+        const pickedFromList =
+          pickedByName || eligibleChildren.some((c) => c.personalCode === childPersonalCode);
         setManualConfirm(!pickedFromList);
         setActiveSection(1);
       } else {
@@ -271,6 +280,32 @@ export const SavingsFundChildOnboarding = () => {
       }
     }
   };
+
+  // Verify the switcher-picked child automatically — and when a different child
+  // is picked from the switcher while the flow is open, restart it for that
+  // child with a clean form so nothing entered for the previous child leaks.
+  const autoVerifiedCodeRef = useRef('');
+  useEffect(() => {
+    if (!joinChildPersonalCode || autoVerifiedCodeRef.current === joinChildPersonalCode) {
+      return;
+    }
+    autoVerifiedCodeRef.current = joinChildPersonalCode;
+    reset(emptyChildOnboardingForm(joinChildPersonalCode));
+    contactPrefilledRef.current = false;
+    if (me) {
+      contactPrefilledRef.current = true;
+      if (me.email) {
+        setValue('email', me.email);
+      }
+      if (me.phoneNumber) {
+        setValue('phoneNumber', me.phoneNumber);
+      }
+    }
+    setManualConfirm(false);
+    setActiveSection(0);
+    setAutoVerifying(true);
+    verifyChild({ pickedByName: true }).finally(() => setAutoVerifying(false));
+  }, [joinChildPersonalCode, me, reset, setValue, verifyChild]);
 
   // The one and only role switch. Everything before this ran as the parent; the
   // child KYC must be submitted while acting as the child (role-aware backend).
@@ -389,11 +424,11 @@ export const SavingsFundChildOnboarding = () => {
         totalSteps={totalSections}
         onBack={showPreviousSection}
         onNext={showNextSection}
-        submitting={creatingChild || isFinalizing}
+        submitting={creatingChild || isFinalizing || autoVerifying}
         backDisabled={isFinalizing}
         nextDisabled={isTermsStep && (!termsAccepted || !me?.personalCode)}
       >
-        {steps[activeSection].component}
+        {autoVerifying ? <Loader className="align-middle" /> : steps[activeSection].component}
 
         {childCodeRejected ? (
           <div className="alert alert-danger mt-4" role="alert">

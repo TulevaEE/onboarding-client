@@ -84,10 +84,9 @@ describe('SavingsFundChildOnboarding', () => {
     expect(screen.getByLabelText(/personal ID code/i)).toBeInTheDocument();
   });
 
-  it('pre-selects the child passed via router state (co-parent from the account switcher)', async () => {
-    // The realistic co-parent case: the other guardian already opened the account,
-    // so the child arrives flagged hasBeenOnboarded and only the pending-onboarding
-    // entry keeps the option selectable.
+  it('skips the child selector when arriving from the account switcher and opens on the first question', async () => {
+    // The switcher click already was the selection: the picked child is verified
+    // in the background and the flow opens on the residency step.
     eligibleChildrenBackend(server, [
       {
         personalCode: CHILD_CODE,
@@ -99,6 +98,7 @@ describe('SavingsFundChildOnboarding', () => {
     pendingOnboardingsBackend(server, [
       { type: 'PERSON', code: CHILD_CODE, name: 'Mammu Maasikas' },
     ]);
+    const created = createChildBackend(server);
     const history = createMemoryHistory({
       initialEntries: [
         { pathname: '/savings-fund/onboarding/child', state: { childPersonalCode: CHILD_CODE } },
@@ -106,12 +106,47 @@ describe('SavingsFundChildOnboarding', () => {
     });
     renderWrapped(<SavingsFundChildOnboarding />, history);
 
-    expect(await screen.findByRole('combobox', { name: /personal ID code/i })).toHaveValue(
-      CHILD_CODE,
+    expect(
+      await screen.findByRole('heading', { name: 'The child’s permanent residence' }),
+    ).toBeInTheDocument();
+    expect(created.createdWith).toEqual({ childPersonalCode: CHILD_CODE });
+    expect(screen.queryByLabelText(/personal ID code/i)).not.toBeInTheDocument();
+  });
+
+  it('restarts the flow for a different child picked from the account switcher', async () => {
+    const OTHER_CHILD_CODE = '61001010000';
+    const created = createChildBackend(server);
+    const history = createMemoryHistory({
+      initialEntries: [
+        { pathname: '/savings-fund/onboarding/child', state: { childPersonalCode: CHILD_CODE } },
+      ],
+    });
+    renderWrapped(<SavingsFundChildOnboarding />, history);
+    expect(
+      await screen.findByRole('heading', { name: 'The child’s permanent residence' }),
+    ).toBeInTheDocument();
+
+    history.push('/savings-fund/onboarding/child', { childPersonalCode: OTHER_CHILD_CODE });
+
+    await waitFor(() =>
+      expect(created.createdWith).toEqual({ childPersonalCode: OTHER_CHILD_CODE }),
     );
     expect(
-      await screen.findByRole('option', { name: `Mammu Maasikas (${CHILD_CODE})` }),
-    ).toBeEnabled();
+      await screen.findByRole('heading', { name: 'The child’s permanent residence' }),
+    ).toBeInTheDocument();
+  });
+
+  it('falls back to the child selector when the switcher-picked child cannot be verified', async () => {
+    createChildBackend(server, { status: 'UNDER_REVIEW' });
+    const history = createMemoryHistory({
+      initialEntries: [
+        { pathname: '/savings-fund/onboarding/child', state: { childPersonalCode: CHILD_CODE } },
+      ],
+    });
+    renderWrapped(<SavingsFundChildOnboarding />, history);
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(screen.getByLabelText(/personal ID code/i)).toBeInTheDocument();
   });
 
   it('skips the confirm step when a child is picked from the dropdown', async () => {
