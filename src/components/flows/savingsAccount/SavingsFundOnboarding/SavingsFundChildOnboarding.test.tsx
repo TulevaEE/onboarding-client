@@ -89,7 +89,12 @@ describe('SavingsFundChildOnboarding', () => {
     // so the child arrives flagged hasBeenOnboarded and only the pending-onboarding
     // entry keeps the option selectable.
     eligibleChildrenBackend(server, [
-      { personalCode: CHILD_CODE, firstName: 'Mammu', lastName: 'Maasikas', hasBeenOnboarded: true },
+      {
+        personalCode: CHILD_CODE,
+        firstName: 'Mammu',
+        lastName: 'Maasikas',
+        hasBeenOnboarded: true,
+      },
     ]);
     pendingOnboardingsBackend(server, [
       { type: 'PERSON', code: CHILD_CODE, name: 'Mammu Maasikas' },
