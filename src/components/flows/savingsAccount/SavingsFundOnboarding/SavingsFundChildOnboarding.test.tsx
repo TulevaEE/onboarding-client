@@ -82,6 +82,22 @@ describe('SavingsFundChildOnboarding', () => {
     expect(screen.getByLabelText(/personal ID code/i)).toBeInTheDocument();
   });
 
+  it('pre-selects the child passed via router state (co-parent from the account switcher)', async () => {
+    eligibleChildrenBackend(server, [
+      { personalCode: CHILD_CODE, firstName: 'Mammu', lastName: 'Maasikas' },
+    ]);
+    const history = createMemoryHistory({
+      initialEntries: [
+        { pathname: '/savings-fund/onboarding/child', state: { childPersonalCode: CHILD_CODE } },
+      ],
+    });
+    renderWrapped(<SavingsFundChildOnboarding />, history);
+
+    expect(await screen.findByRole('combobox', { name: /personal ID code/i })).toHaveValue(
+      CHILD_CODE,
+    );
+  });
+
   it('skips the confirm step when a child is picked from the dropdown', async () => {
     eligibleChildrenBackend(server, [
       { personalCode: CHILD_CODE, firstName: 'Mammu', lastName: 'Maasikas' },

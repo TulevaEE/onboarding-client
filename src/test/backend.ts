@@ -923,6 +923,17 @@ export function rolesBackend(
   server.use(rest.get('http://localhost/v1/me/roles', (req, res, ctx) => res(ctx.json(roles))));
 }
 
+export function pendingChildOnboardingsBackend(
+  server: SetupServerApi,
+  pendingChildOnboardings: { childPersonalCode: string; childName: string }[] = [],
+): void {
+  server.use(
+    rest.get('http://localhost/v1/me/pending-child-onboardings', (req, res, ctx) =>
+      res(ctx.json(pendingChildOnboardings)),
+    ),
+  );
+}
+
 export function contributionsBackend(server: SetupServerApi): void {
   server.use(rest.get('http://localhost/v1/contributions', (req, res, ctx) => res(ctx.json([]))));
 }
@@ -1097,6 +1108,7 @@ const TEST_BACKENDS = {
   capitalTransferContract: capitalTransferContractBackend,
   memberLookup: memberLookupBackend,
   roles: rolesBackend,
+  pendingChildOnboardings: pendingChildOnboardingsBackend,
   switchRole: switchRoleBackend,
   contributions: contributionsBackend,
   businessRegistry: businessRegistryBackend,

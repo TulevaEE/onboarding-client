@@ -254,6 +254,15 @@ export interface SwitchRoleCommand {
   code: string;
 }
 
+// A child whose account the other parent already opened, offered to the
+// co-guardian so they can join by completing their own onboarding/KYC.
+// childName is register-sourced and shown verbatim in the account switcher;
+// the personal code is passed only via router state, never the URL.
+export interface PendingChildOnboarding {
+  childPersonalCode: string;
+  childName: string;
+}
+
 export interface User {
   id: number;
   personalCode: string;
