@@ -26,6 +26,7 @@ import {
   Payment,
   PaymentLink,
   PaymentType,
+  PendingChildOnboarding,
   Role,
   SavingsFundOnboardingStatus,
   SecondPillarAssets,
@@ -650,6 +651,10 @@ export async function cancelSavingsFundWithdrawal(withdrawalId: string): Promise
 
 export function getRoles(): Promise<Role[]> {
   return mockRequestInMockMode(() => getWithAuthentication(getEndpoint('/v1/me/roles')), 'roles');
+}
+
+export function getPendingChildOnboardings(): Promise<PendingChildOnboarding[]> {
+  return getWithAuthentication(getEndpoint('/v1/me/pending-child-onboardings'));
 }
 
 export async function switchRole(command: SwitchRoleCommand): Promise<Token> {

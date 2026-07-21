@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Control, useForm } from 'react-hook-form';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { captureException } from '@sentry/browser';
 import { ChildOnboardingFormData, IdentityFormFields } from './types';
@@ -34,6 +34,11 @@ const asIdentityControl = (
 
 export const SavingsFundChildOnboarding = () => {
   const history = useHistory();
+  // A co-guardian arriving from the account switcher carries the child's personal
+  // code in router state (never the URL). Pre-select it so the identity step opens
+  // on that child; falls back to empty for the parent opening a new account.
+  const { state: locationState } = useLocation<{ childPersonalCode?: string } | undefined>();
+  const preselectedChildPersonalCode = locationState?.childPersonalCode ?? '';
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState(false);
   // The entered code can't open an account for a child — either it's not a valid
@@ -63,7 +68,7 @@ export const SavingsFundChildOnboarding = () => {
   const { control, trigger, watch, setValue, getValues } = useForm<ChildOnboardingFormData>({
     mode: 'onSubmit',
     defaultValues: {
-      childPersonalCode: '',
+      childPersonalCode: preselectedChildPersonalCode,
       child: null,
       citizenship: [],
       address: { countryCode: 'EE', street: '', city: '', postalCode: '' },

@@ -6,9 +6,25 @@ import { initializeConfiguration } from '../../../config/config';
 import { getAuthentication } from '../../../common/authenticationManager';
 import { anAuthenticationManager } from '../../../common/authenticationManagerFixture';
 import { renderWrapped } from '../../../../test/utils';
-import { rolesBackend, switchRoleBackend, userBackend } from '../../../../test/backend';
+import {
+  pendingChildOnboardingsBackend,
+  rolesBackend,
+  switchRoleBackend,
+  userBackend,
+} from '../../../../test/backend';
 import { Role } from '../../../common/apiModels';
+import { isCompanyOnboardingEnabled } from '../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
 import { RoleSwitcher } from './RoleSwitcher';
+
+// Company onboarding is the other reason a single-role user gets a dropdown, and
+// it ships permanently on. Mock the flag so the "pending child opens the dropdown"
+// tests can turn it off and prove the pending child is doing the work.
+jest.mock('../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows', () => ({
+  isCompanyOnboardingEnabled: jest.fn(() => true),
+}));
+const mockIsCompanyOnboardingEnabled = isCompanyOnboardingEnabled as jest.MockedFunction<
+  typeof isCompanyOnboardingEnabled
+>;
 
 const server = setupServer();
 
@@ -51,6 +67,8 @@ function setupSwitchFlow() {
 beforeEach(() => {
   initializeConfiguration();
   getAuthentication().update(anAuthenticationManager());
+  mockIsCompanyOnboardingEnabled.mockReturnValue(true);
+  pendingChildOnboardingsBackend(server);
 });
 
 describe('RoleSwitcher', () => {
@@ -90,6 +108,52 @@ describe('RoleSwitcher', () => {
 
       await waitFor(() =>
         expect(screen.getByRole('link', { name: 'Open a new account' })).toHaveFocus(),
+      );
+    });
+  });
+
+  describe('with a child the other parent is onboarding', () => {
+    const pendingChild = { childPersonalCode: '61506150006', childName: 'Mari Maasikas' };
+
+    it('offers the child by name as a link into the child onboarding flow', async () => {
+      rolesBackend(server, [personalRole]);
+      userBackend(server, { role: personalRole });
+      pendingChildOnboardingsBackend(server, [pendingChild]);
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(await screen.findByRole('link', { name: 'Mari Maasikas' })).toHaveAttribute(
+        'href',
+        '/savings-fund/onboarding/child',
+      );
+    });
+
+    it('opens the dropdown for a single-role user solely because a pending child exists', async () => {
+      mockIsCompanyOnboardingEnabled.mockReturnValue(false);
+      rolesBackend(server, [personalRole]);
+      userBackend(server, { role: personalRole });
+      pendingChildOnboardingsBackend(server, [pendingChild]);
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(await screen.findByRole('link', { name: 'Mari Maasikas' })).toBeInTheDocument();
+    });
+
+    it('keeps a single-role user with no pending child as plain text when company onboarding is off', async () => {
+      mockIsCompanyOnboardingEnabled.mockReturnValue(false);
+      rolesBackend(server, [personalRole]);
+      userBackend(server, { role: personalRole });
+      pendingChildOnboardingsBackend(server);
+
+      renderRoleSwitcher();
+
+      expect(await screen.findByText('John Doe')).toBeInTheDocument();
+      await waitFor(() =>
+        expect(screen.queryByRole('button', { name: /John Doe/i })).not.toBeInTheDocument(),
       );
     });
   });

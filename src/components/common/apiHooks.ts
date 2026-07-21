@@ -31,6 +31,7 @@ import {
   getMemberCapitalListings,
   getMyCapitalTransferContracts,
   getPendingApplications,
+  getPendingChildOnboardings,
   getSavingsFundBalance,
   getSavingsFundBankAccounts,
   getSavingsFundCompanyOnboardingStatus,
@@ -63,6 +64,7 @@ import {
   Fund,
   MandateDeadlines,
   MemberCapitalListing,
+  PendingChildOnboarding,
   Role,
   SecondPillarAssets,
   SwitchRoleCommand,
@@ -433,6 +435,13 @@ export function useSavingsFundWithdrawalCancellation(): UseMutationResult<
 
 export function useRoles(): UseQueryResult<Role[]> {
   return useQuery({ queryKey: ['roles'], queryFn: () => getRoles() });
+}
+
+export function usePendingChildOnboardings(): UseQueryResult<PendingChildOnboarding[]> {
+  return useQuery({
+    queryKey: ['pendingChildOnboardings'],
+    queryFn: () => getPendingChildOnboardings(),
+  });
 }
 
 export function useSwitchRole(): UseMutationResult<
