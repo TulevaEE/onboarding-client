@@ -136,6 +136,73 @@ describe('SavingsFundChildOnboarding', () => {
     ).toBeInTheDocument();
   });
 
+  it('clears everything entered for the previous child when a different child is picked', async () => {
+    const OTHER_CHILD_CODE = '61001010000';
+    createChildBackend(server);
+    const history = createMemoryHistory({
+      initialEntries: [
+        { pathname: '/savings-fund/onboarding/child', state: { childPersonalCode: CHILD_CODE } },
+      ],
+    });
+    renderWrapped(<SavingsFundChildOnboarding />, history);
+    userEvent.type(
+      await screen.findByLabelText(/Address \(street, house, apartment\)/i),
+      'Salapärane 1',
+    );
+
+    history.push('/savings-fund/onboarding/child', { childPersonalCode: OTHER_CHILD_CODE });
+
+    await waitFor(() =>
+      expect(screen.getByLabelText(/Address \(street, house, apartment\)/i)).not.toHaveValue(
+        'Salapärane 1',
+      ),
+    );
+  });
+
+  it('keeps the parent contact prefill after switching to a different child', async () => {
+    const OTHER_CHILD_CODE = '61001010000';
+    const created = createChildBackend(server);
+    const history = createMemoryHistory({
+      initialEntries: [
+        { pathname: '/savings-fund/onboarding/child', state: { childPersonalCode: CHILD_CODE } },
+      ],
+    });
+    renderWrapped(<SavingsFundChildOnboarding />, history);
+    expect(
+      await screen.findByRole('heading', { name: 'The child’s permanent residence' }),
+    ).toBeInTheDocument();
+
+    history.push('/savings-fund/onboarding/child', { childPersonalCode: OTHER_CHILD_CODE });
+
+    await waitFor(() =>
+      expect(created.createdWith).toEqual({ childPersonalCode: OTHER_CHILD_CODE }),
+    );
+    expect(
+      await screen.findByRole('heading', { name: 'The child’s permanent residence' }),
+    ).toBeInTheDocument();
+    userEvent.click(continueButton());
+
+    expect(await screen.findByText('3/8')).toBeInTheDocument(); // contact step
+    expect(screen.getByLabelText(/email/i)).toHaveValue(mockUser.email);
+  });
+
+  it('falls back to the child selector when the code itself is rejected', async () => {
+    server.use(
+      rest.post('http://localhost/v1/me/children', (req, res, ctx) =>
+        res(ctx.status(400), ctx.json({ errors: [{ code: 'invalid' }] })),
+      ),
+    );
+    const history = createMemoryHistory({
+      initialEntries: [
+        { pathname: '/savings-fund/onboarding/child', state: { childPersonalCode: CHILD_CODE } },
+      ],
+    });
+    renderWrapped(<SavingsFundChildOnboarding />, history);
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(screen.getByLabelText(/personal ID code/i)).toBeInTheDocument();
+  });
+
   it('falls back to the child selector when the switcher-picked child cannot be verified', async () => {
     createChildBackend(server, { status: 'UNDER_REVIEW' });
     const history = createMemoryHistory({
