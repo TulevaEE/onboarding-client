@@ -6,6 +6,16 @@ import { getAuthentication } from '../components/common/authenticationManager';
 
 const LOGIN_PATH = '/login';
 
+const ANALYTICS_ONLY_PARAMS = /^(utm_|gclid$|fbclid$)/;
+
+const withoutAnalyticsParams = (search) => {
+  const params = new URLSearchParams(search);
+  Array.from(params.keys())
+    .filter((key) => ANALYTICS_ONLY_PARAMS.test(key))
+    .forEach((key) => params.delete(key));
+  return params.toString() ? `?${params.toString()}` : '';
+};
+
 const PrivateRoute = ({ component: Component, isAuthenticated, ...otherPrivateRouteProps }) => (
   <Route
     {...otherPrivateRouteProps}
@@ -17,7 +27,7 @@ const PrivateRoute = ({ component: Component, isAuthenticated, ...otherPrivateRo
           to={{
             pathname: LOGIN_PATH,
             search,
-            state: { from: pathname + search },
+            state: { from: pathname + withoutAnalyticsParams(search) },
           }}
         />
       )
