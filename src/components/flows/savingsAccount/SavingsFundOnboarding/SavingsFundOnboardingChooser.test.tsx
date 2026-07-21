@@ -44,7 +44,7 @@ describe('SavingsFundOnboardingChooser', () => {
     history.push('/savings-fund/onboarding');
   };
 
-  it('shows the options with personal preselected and child as coming soon', async () => {
+  it('shows all three options with personal preselected now that all have launched', async () => {
     openChooser();
 
     expect(
@@ -55,9 +55,10 @@ describe('SavingsFundOnboardingChooser', () => {
     expect(
       screen.getByRole('button', { name: /For my company/, pressed: false }),
     ).toBeInTheDocument();
-    expect(screen.getByText('For my child')).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /For my child/ })).not.toBeInTheDocument();
-    expect(screen.getAllByText('Coming soon')).toHaveLength(1);
+    expect(
+      screen.getByRole('button', { name: /For my child/, pressed: false }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Coming soon')).not.toBeInTheDocument();
   });
 
   it('does not redirect away from the chooser when onboarding is already completed', async () => {
@@ -142,14 +143,5 @@ describe('SavingsFundOnboardingChooser', () => {
       'href',
       '/savings-fund/payment',
     );
-  });
-
-  it('redirects the reserved child route back to the chooser', async () => {
-    history.push('/savings-fund/onboarding/child');
-
-    expect(
-      await screen.findByRole('heading', { name: 'Who are you opening the account for?' }),
-    ).toBeInTheDocument();
-    expect(history.location.pathname).toBe('/savings-fund/onboarding');
   });
 });
