@@ -8,7 +8,10 @@ import {
   useSwitchRole,
 } from '../../../common/apiHooks';
 import { SwitchRoleCommand } from '../../../common/apiModels';
-import { isCompanyOnboardingEnabled } from '../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
+import {
+  isChildOnboardingEnabled,
+  isCompanyOnboardingEnabled,
+} from '../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
 
 type Props = {
   userName: string;
@@ -91,7 +94,11 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
 
   const displayName = user?.role?.name ?? userName;
   const companyOnboardingEnabled = isCompanyOnboardingEnabled();
-  const hasPendingChildOnboardings = pendingChildOnboardings.length > 0;
+  // Only surface pending children while the child flow is actually reachable — the
+  // /savings-fund/onboarding/child route redirects away until child onboarding is
+  // launched, so a menu item shown before then would be a dead link.
+  const hasPendingChildOnboardings =
+    isChildOnboardingEnabled() && pendingChildOnboardings.length > 0;
 
   // Once company onboarding is live, even a single-role user gets the dropdown
   // — it is the entry point for adding a company. A pending child (opened by the
@@ -144,22 +151,23 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
               {role.name}
             </button>
           ))}
-          {pendingChildOnboardings.map(({ childPersonalCode, childName }) => (
-            <Link
-              key={childPersonalCode}
-              className="dropdown-item"
-              // The minor's personal code travels in router state only — never the
-              // URL/query — so it stays out of history, logs, and the address bar.
-              to={{
-                pathname: '/savings-fund/onboarding/child',
-                state: { childPersonalCode },
-              }}
-              onClick={() => setOpen(false)}
-              onKeyDown={handleKeyDown}
-            >
-              {childName}
-            </Link>
-          ))}
+          {hasPendingChildOnboardings &&
+            pendingChildOnboardings.map(({ childPersonalCode, childName }) => (
+              <Link
+                key={childPersonalCode}
+                className="dropdown-item"
+                // The minor's personal code travels in router state only — never the
+                // URL/query — so it stays out of history, logs, and the address bar.
+                to={{
+                  pathname: '/savings-fund/onboarding/child',
+                  state: { childPersonalCode },
+                }}
+                onClick={() => setOpen(false)}
+                onKeyDown={handleKeyDown}
+              >
+                {childName}
+              </Link>
+            ))}
           {companyOnboardingEnabled && (
             <>
               <hr className="dropdown-divider" />
