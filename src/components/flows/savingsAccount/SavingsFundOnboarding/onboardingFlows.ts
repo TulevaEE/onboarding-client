@@ -26,3 +26,17 @@ export const getOnboardingFlowOptions = (): OnboardingFlowOption[] => [
     enabled: isChildOnboardingEnabled(),
   },
 ];
+
+const FLOW_SELECTION_STORAGE_KEY = 'savingsFundOnboardingFlowSelection';
+
+export const rememberOnboardingFlowSelection = (key: OnboardingFlowOption['key']): void => {
+  sessionStorage.setItem(FLOW_SELECTION_STORAGE_KEY, key);
+};
+
+export const getRememberedOnboardingFlowSelection = (): OnboardingFlowOption['key'] | null => {
+  const remembered = sessionStorage.getItem(FLOW_SELECTION_STORAGE_KEY);
+  const option = getOnboardingFlowOptions().find(
+    ({ key, enabled }) => key === remembered && enabled,
+  );
+  return option?.key ?? null;
+};

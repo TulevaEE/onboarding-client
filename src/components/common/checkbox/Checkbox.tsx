@@ -13,7 +13,7 @@ type CheckboxProps = {
 
 // Card-styled checkbox mirroring the Radio card (grey background, border, padding)
 // so multi-select and single-select options read as one system. The square marker
-// signals multi-select where Radio's circle signals single-select.
+// with a checkmark signals multi-select where Radio's circle signals single-select.
 const Checkbox: FC<CheckboxProps> = ({
   children = '',
   onToggle = () => null,
@@ -39,7 +39,15 @@ const Checkbox: FC<CheckboxProps> = ({
           onChange={(event) => onToggle?.(event.target.checked)}
         />
         <span className="tv-checkbox__button" aria-hidden="true">
-          <span className="tv-checkbox__check" />
+          <svg className="tv-checkbox__check" viewBox="0 0 12 10" fill="none">
+            <path
+              d="M1 5.5 4.5 9 11 1"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </span>
       </div>
       <div className="col">{children}</div>

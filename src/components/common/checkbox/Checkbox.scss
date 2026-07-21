@@ -36,10 +36,10 @@
 
     & .tv-checkbox__button {
       border-color: $blue;
+      background-color: $blue;
 
       & .tv-checkbox__check {
         transition: transform 0.15s ease-out;
-        background-color: $blue;
         transform: scale(1);
       }
     }
@@ -58,22 +58,23 @@
     border-radius: 0.25rem;
     cursor: pointer;
     border-color: rgba(48, 48, 48, 0.64);
-    padding: 3px 3px;
     width: 20px;
     height: 20px;
     border-style: solid;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background-color: transparent;
     border-width: 2px;
-    transition: border-color 0.15s ease-out;
+    transition: border-color 0.15s ease-out, background-color 0.15s ease-out;
   }
 
   &__check {
     transition: transform 0.15s ease-out;
-    width: 10px;
+    width: 12px;
     height: 10px;
     display: block;
     transform: scale(0);
-    border-radius: 0.125rem;
+    color: white;
   }
 }

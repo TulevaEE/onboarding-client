@@ -4,7 +4,12 @@ import { useHistory } from 'react-router-dom';
 import { Loader } from '../../../common';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { useSavingsFundPersonOnboardingStatus } from '../../../common/apiHooks';
-import { OnboardingFlowOption, getOnboardingFlowOptions } from './onboardingFlows';
+import {
+  OnboardingFlowOption,
+  getOnboardingFlowOptions,
+  getRememberedOnboardingFlowSelection,
+  rememberOnboardingFlowSelection,
+} from './onboardingFlows';
 import { TranslationKey } from '../../../translations';
 import checkImage from '../../common/SuccessNotice/success.svg';
 import '../../secondPillar/selectSources/targetFundSelector/TargetFundSelector.scss';
@@ -93,13 +98,25 @@ export const SavingsFundOnboardingChooser: FC = () => {
   const options = getOnboardingFlowOptions();
 
   // Resolved once when the status arrives, then frozen — the preselection must
-  // not jump after the cards have rendered.
+  // not jump after the cards have rendered. A selection remembered from an
+  // earlier visit wins, unless it points at the already-completed personal flow,
+  // where Continue would be a dead end.
   const [selectedKey, setSelectedKey] = useState<OnboardingFlowOption['key'] | null>(null);
   useEffect(() => {
     if (onboardingStatus && selectedKey === null) {
-      setSelectedKey(personOnboardingCompleted ? 'company' : 'person');
+      const remembered = getRememberedOnboardingFlowSelection();
+      if (remembered && !(remembered === 'person' && personOnboardingCompleted)) {
+        setSelectedKey(remembered);
+      } else {
+        setSelectedKey(personOnboardingCompleted ? 'company' : 'person');
+      }
     }
   }, [onboardingStatus, personOnboardingCompleted, selectedKey]);
+
+  const selectFlow = (key: OnboardingFlowOption['key']): void => {
+    setSelectedKey(key);
+    rememberOnboardingFlowSelection(key);
+  };
 
   const selectedOption = options.find((option) => option.key === selectedKey && option.enabled);
   // Mirrors the 2nd-pillar payment-rate UX: the already-opened option stays
@@ -132,7 +149,7 @@ export const SavingsFundOnboardingChooser: FC = () => {
               key={option.key}
               type="button"
               aria-pressed={option.key === selectedKey}
-              onClick={() => setSelectedKey(option.key)}
+              onClick={() => selectFlow(option.key)}
               className={`tv-target-fund d-block w-100 p-4 text-start ${
                 option.key === selectedKey ? 'tv-target-fund--active' : ''
               }`}

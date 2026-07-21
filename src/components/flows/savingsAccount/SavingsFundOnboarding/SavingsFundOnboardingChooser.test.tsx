@@ -6,6 +6,7 @@ import { Route } from 'react-router-dom';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import { initializeConfiguration } from '../../../config/config';
 import {
+  eligibleChildrenBackend,
   kycIdentityBackend,
   savingsFundOnboardingStatusBackend,
   savingsFundPersonOnboardingStatusBackend,
@@ -37,7 +38,7 @@ describe('SavingsFundOnboardingChooser', () => {
     initApp();
   });
   afterEach(() => {
-    sessionStorage.removeItem('companyOnboardingPreview');
+    sessionStorage.clear();
   });
 
   const openChooser = () => {
@@ -121,6 +122,52 @@ describe('SavingsFundOnboardingChooser', () => {
     userEvent.click(screen.getByRole('button', { name: 'Continue' }));
 
     expect(history.location.pathname).toBe('/savings-fund/onboarding/company');
+  });
+
+  it('preselects the previously chosen flow when returning to the chooser', async () => {
+    eligibleChildrenBackend(server);
+    openChooser();
+
+    userEvent.click(await screen.findByRole('button', { name: /For my child/ }));
+    userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    expect(history.location.pathname).toBe('/savings-fund/onboarding/child');
+
+    history.goBack();
+
+    expect(
+      await screen.findByRole('button', { name: /For my child/, pressed: true }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /For myself/, pressed: false })).toBeInTheDocument();
+  });
+
+  it('prefers the remembered flow over the company default when onboarding is completed', async () => {
+    savingsFundPersonOnboardingStatusBackend(server, 'COMPLETED');
+    eligibleChildrenBackend(server);
+    openChooser();
+
+    userEvent.click(await screen.findByRole('button', { name: /For my child/ }));
+    userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    expect(history.location.pathname).toBe('/savings-fund/onboarding/child');
+
+    history.goBack();
+
+    expect(
+      await screen.findByRole('button', { name: /For my child/, pressed: true }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /For my company/, pressed: false }),
+    ).toBeInTheDocument();
+  });
+
+  it('ignores a remembered personal flow when personal onboarding is completed', async () => {
+    sessionStorage.setItem('savingsFundOnboardingFlowSelection', 'person');
+    savingsFundPersonOnboardingStatusBackend(server, 'COMPLETED');
+    openChooser();
+
+    expect(
+      await screen.findByRole('button', { name: /For my company/, pressed: true }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Continue' })).toBeEnabled();
   });
 
   it('renders the company flow on the company route', async () => {

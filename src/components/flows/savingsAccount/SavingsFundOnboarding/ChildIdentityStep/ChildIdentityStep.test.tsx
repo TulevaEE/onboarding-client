@@ -215,7 +215,7 @@ describe('ChildIdentityStep', () => {
       renderWrapped(<Wrapper />);
 
       const onboardedOption = await screen.findByRole('option', {
-        name: 'Mari Maasikas (61506150006) — account already opened',
+        name: 'Mari Maasikas (61506150006) · account already opened',
       });
       expect(onboardedOption).toBeDisabled();
       expect(screen.getByRole('option', { name: '61001010000' })).toBeEnabled();

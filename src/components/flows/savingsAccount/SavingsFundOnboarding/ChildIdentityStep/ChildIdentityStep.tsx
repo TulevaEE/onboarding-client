@@ -85,7 +85,7 @@ export const ChildIdentityStep: FC<ChildIdentityStepProps> = ({ control }) => {
                         return (
                           <option key={personalCode} value={personalCode} disabled={alreadyOpened}>
                             {alreadyOpened
-                              ? `${label} — ${intl.formatMessage({
+                              ? `${label} · ${intl.formatMessage({
                                   id: 'flows.savingsFundChildOnboarding.identityStep.accountOpened',
                                 })}`
                               : label}
