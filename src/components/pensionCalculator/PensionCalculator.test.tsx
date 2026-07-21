@@ -268,12 +268,12 @@ describe('PensionCalculator', () => {
     expect(screen.getByTestId('chart-last-age')).toHaveTextContent('89');
   });
 
-  it('defaults the payout period to the life expectancy projected for the retirement year', () => {
+  it('defaults the payout end age to the projected life expectancy at retirement', () => {
     renderCalculator();
     // 19.3 years at 65 today, plus ~1.2 years per decade over the 34 years to go,
-    // minus ~0.75 per year for starting at 69 instead of 65 — the same number the
-    // tax-free bar uses, so the default payout sits exactly on it.
-    expect(screen.getByRole('slider', { name: /Payouts last/i })).toHaveValue('20');
+    // minus ~0.75 per year for starting at 69 instead of 65: 20 years, shown as
+    // the end age 89 to match the start slider and the stats.
+    expect(screen.getByRole('slider', { name: /Payouts until/i })).toHaveValue('89');
   });
 
   it("draws the past scaled to today's balances, bucket by bucket", () => {
@@ -318,23 +318,23 @@ describe('PensionCalculator', () => {
 
     // The period is no longer the saver's to pick: disabled, showing the real
     // horizon (100 - 69 = 31 years).
-    const payoutSlider = screen.getByRole('slider', { name: /Payouts last/i });
+    const payoutSlider = screen.getByRole('slider', { name: /Payouts until/i });
     expect(payoutSlider).toBeDisabled();
-    expect(payoutSlider).toHaveValue('31');
+    expect(payoutSlider).toHaveValue('100');
     // What remains at 100 is the strategy's point; the classic contract shows 0.
     expect(euroValue('inheritance')).toBeGreaterThan(0);
     // The horizon's last payment misrepresents a renewal strategy; the average
     // payment takes its place.
     expect(screen.getByTestId('average-payment')).toBeInTheDocument();
     expect(screen.queryByTestId('last-payment')).not.toBeInTheDocument();
-    // The card's tax-free note stays put, so toggling never shifts the layout.
-    expect(screen.getByTestId('tax-free-note')).toBeInTheDocument();
+    // Tax free by construction: the tax stat stays at zero.
+    expect(screen.getByTestId('total-tax')).toHaveTextContent(/^0/);
     // The projection now runs to the age-100 horizon instead of a chosen end.
     expect(screen.getByTestId('chart-last-age')).toHaveTextContent('100');
 
     // Switching the strategy off restores the classic fixed-period contract.
     userEvent.click(screen.getByLabelText(/biggest possible inheritance/i));
-    expect(screen.getByRole('slider', { name: /Payouts last/i })).toBeInTheDocument();
+    expect(screen.getByRole('slider', { name: /Payouts until/i })).toBeInTheDocument();
   });
 
   it('switches to the maximum pension strategy, and the two strategies exclude each other', () => {
@@ -348,13 +348,33 @@ describe('PensionCalculator', () => {
 
     // Switching the strategy off restores the classic fixed-period contract.
     userEvent.click(screen.getByLabelText(/biggest pension that lasts/i));
-    expect(screen.getByRole('slider', { name: /Payouts last/i })).toBeEnabled();
+    expect(screen.getByRole('slider', { name: /Payouts until/i })).toBeEnabled();
   });
 
   it('has no age or balance inputs: they come from the register', () => {
     renderCalculator();
     expect(screen.queryByLabelText(/Your age/i)).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/pillar balance|fund balance/i)).not.toBeInTheDocument();
+  });
+
+  it('keeps the payout end age put when the retirement age moves', () => {
+    renderCalculator();
+    expect(screen.getByRole('slider', { name: /Payouts until/i })).toHaveValue('89');
+
+    setSlider(/You start withdrawing/i, 72);
+
+    // Still until 89: retiring later shortens the payout, it does not postpone it.
+    // The track is fixed too, so the thumb does not move under the cursor.
+    const payoutSlider = screen.getByRole('slider', { name: /Payouts until/i });
+    expect(payoutSlider).toHaveValue('89');
+    expect(payoutSlider).toHaveAttribute('min', '62');
+    expect(payoutSlider).toHaveAttribute('max', '101');
+    expect(screen.getByTestId('chart-last-age')).toHaveTextContent('89');
+
+    // And the other direction: a long payout survives an earlier start untouched.
+    setSlider(/Payouts until/i, 99);
+    setSlider(/You start withdrawing/i, 61);
+    expect(payoutSlider).toHaveValue('99');
   });
 
   it('lets the saver pick their own retirement age, starting from the projected one', () => {
@@ -422,8 +442,8 @@ describe('PensionCalculator', () => {
     );
     // The saver's own weighted-average fee lands on the fee slider readout.
     expect(screen.getByText('−1.10%')).toBeInTheDocument();
-    expect(screen.getByTestId('risk-warning')).toHaveTextContent(
-      /Returns are not guaranteed\. The value of an investment can rise and fall\./,
+    expect(screen.getByTestId('disclaimer')).toHaveTextContent(
+      /returns are not guaranteed and the value of an investment can rise and fall/,
     );
   });
 
@@ -459,10 +479,9 @@ describe('PensionCalculator', () => {
     expect(peak()).toBeLessThan(before);
   });
 
-  it('says the payments are tax free over the recommended period', () => {
+  it('shows zero income tax over the recommended period', () => {
     renderCalculator();
-    expect(screen.getByTestId('tax-free-note')).toHaveTextContent(/free of income tax/);
-    expect(screen.queryByTestId('tax-warning')).not.toBeInTheDocument();
+    expect(screen.getByTestId('total-tax')).toHaveTextContent(/^0/);
     // A fixed-period contract pays the whole pot out: nothing left to inherit.
     expect(euroValue('inheritance')).toBe(0);
   });
@@ -470,11 +489,12 @@ describe('PensionCalculator', () => {
   it('raises the tax-free bar when money starts moving earlier', () => {
     renderCalculator();
     // At the default 69 the remaining lifetime is ~16 years; starting at 61 it is
-    // ~22, so a 19-year payout that would be tax free at 69 gets the warning.
+    // ~26, so a 19-year payout (until 80) that would be tax free at 69 gets the
+    // warning.
     setSlider(/You start withdrawing/i, 61);
-    setSlider(/Payouts last/i, 19);
+    setSlider(/Payouts until/i, 80);
 
-    expect(screen.getByTestId('tax-warning')).toBeInTheDocument();
+    expect(euroValue('total-tax')).toBeGreaterThan(0);
   });
 
   it('projects no savings fund contributions for a saver who no longer holds units', () => {
@@ -490,19 +510,22 @@ describe('PensionCalculator', () => {
     expect(Math.max(...chart.savings)).toBe(0);
   });
 
-  it('warns about 10% tax as soon as the payout period goes below the recommended one', () => {
+  it('shows the 10% tax bill as soon as the payout period goes below the recommended one', () => {
     renderCalculator();
-    setSlider(/Payouts last/i, 10);
+    setSlider(/Payouts until/i, 79);
 
-    expect(screen.getByTestId('tax-warning')).toHaveTextContent(/taxed at 10%/);
-    expect(screen.queryByTestId('tax-free-note')).not.toBeInTheDocument();
+    // Shown as money taken away, with a real minus sign, and red because the
+    // period choice caused it.
+    expect(screen.getByTestId('total-tax')).toHaveTextContent(/^−/);
+    expect(euroValue('total-tax')).toBeGreaterThan(0);
+    expect(screen.getByTestId('total-tax')).toHaveClass('text-danger');
   });
 
   it('shrinks the monthly payment when the payout period is stretched', () => {
     renderCalculator();
     const before = euroValue('first-payment');
 
-    setSlider(/Payouts last/i, 30);
+    setSlider(/Payouts until/i, 99);
 
     expect(euroValue('first-payment')).toBeLessThan(before);
     expect(screen.getByTestId('chart-last-age')).toHaveTextContent('99');
@@ -524,11 +547,12 @@ describe('PensionCalculator', () => {
 
     renderCalculator();
     setSlider(/Savings fund monthly/i, 500);
-    setSlider(/Payouts last/i, 10);
+    setSlider(/Payouts until/i, 79);
 
-    // Nothing in the II or III pillar, so a short period costs nothing — even
-    // though the savings fund still owes 22% on its gains.
-    expect(screen.getByTestId('tax-warning')).toHaveTextContent(/around 0 €/);
+    // Nothing in the II or III pillar, so a short period costs nothing; and the
+    // savings fund pays out basis money, which is not taxed either.
+    expect(screen.getByTestId('total-tax')).toHaveTextContent(/^0/);
+    expect(screen.getByTestId('total-tax')).not.toHaveClass('text-danger');
     expect(euroValue('first-payment')).toBeGreaterThan(0);
   });
 
@@ -547,7 +571,8 @@ describe('PensionCalculator', () => {
       /The financial service is provided by Tuleva Fondid AS/,
     );
     expect(screen.getByTestId('disclaimer')).toHaveTextContent(/prospectus/);
-    expect(screen.getByTestId('disclaimer')).toHaveTextContent(/Tax laws change over time/);
+    // Moved from the disclaimer into the Maksud explainer, where tax facts live.
+    expect(screen.getByText(/tax laws change over time/i)).toBeInTheDocument();
   });
 
   it('recomputes the projection when the return assumption moves', () => {
@@ -569,10 +594,10 @@ describe('PensionCalculator', () => {
     expect(peak()).toBeLessThan(before);
   });
 
-  it('bounds the fee slider by the cheapest and priciest live pension fund', () => {
+  it('lets the fee go all the way to zero, capped by the priciest live pension fund', () => {
     renderCalculator();
     const feeSlider = screen.getByRole('slider', { name: /Annual fees/i });
-    expect(feeSlider).toHaveAttribute('min', '0.28');
+    expect(feeSlider).toHaveAttribute('min', '0');
     expect(feeSlider).toHaveAttribute('max', '1.57');
   });
 

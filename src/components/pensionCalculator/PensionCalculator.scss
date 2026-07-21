@@ -5,10 +5,6 @@
   position: relative;
   height: 260px;
 
-  @media (min-width: 992px) {
-    height: 300px;
-  }
-
   > canvas {
     position: absolute;
     top: 0;

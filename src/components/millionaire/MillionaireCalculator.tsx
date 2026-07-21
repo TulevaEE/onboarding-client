@@ -83,10 +83,9 @@ const roundedEuro = (value: number): string => {
 };
 
 // Fees are a drag on the return, so show them as a negative percent (dot decimal,
-// the app's style; real minus sign). Always two decimals so the width stays fixed
-// and the value doesn't flicker while dragging: "−0.28%", "−1.00%".
-const formatFeePercent = (value: number): string =>
-  value === 0 ? '0.00%' : `−${value.toFixed(2)}%`;
+// the app's style; real minus sign). Two decimals so the width stays fixed while
+// dragging ("−0.28%", "−1.00%"); an exact zero is just "0%", not a drag at all.
+const formatFeePercent = (value: number): string => (value === 0 ? '0%' : `−${value.toFixed(2)}%`);
 
 const signedPercent = (value: number): string => {
   if (value === 0) {

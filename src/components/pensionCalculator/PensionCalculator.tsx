@@ -95,7 +95,9 @@ const FEE_STEP = 0.01;
 // Paindlik pension: the state pension can start up to five years before the
 // statutory age or be deferred past it, so the slider runs statutory ±5.
 const PAINDLIK_PENSION_YEARS = 5;
-const WITHDRAWAL_YEARS_MIN = 5;
+// No statutory minimum exists: shorter periods are legal and simply taxed at 10%
+// below the recommended duration, so the floor is only what a slider needs.
+const WITHDRAWAL_YEARS_MIN = 1;
 const WITHDRAWAL_YEARS_MAX = 30;
 const MONTHLY_STEP = 10;
 const SAVINGS_FUND_MAX_MONTHLY = 1000;
@@ -135,10 +137,9 @@ const roundedEuro = (value: number): string => {
 const toPercent = (fraction: number): number => Math.round(fraction * 10000) / 100;
 
 // Fees are a drag on the return, so show them as a negative percent (dot decimal,
-// the app's style; real minus sign). Always two decimals so the width stays fixed
-// and the value doesn't flicker while dragging: "−0.28%", "−1.00%".
-const formatFeePercent = (value: number): string =>
-  value === 0 ? '0.00%' : `−${value.toFixed(2)}%`;
+// the app's style; real minus sign). Two decimals so the width stays fixed while
+// dragging ("−0.28%", "−1.00%"); an exact zero is just "0%", not a drag at all.
+const formatFeePercent = (value: number): string => (value === 0 ? '0%' : `−${value.toFixed(2)}%`);
 
 const signedPercent = (value: number): string => {
   if (value === 0) {
@@ -197,17 +198,11 @@ const Slider: React.FC<{
    *  bare number and the euro sign or percent beside it is never read out. */
   valueText: string;
   disabled?: boolean;
+  /** An anchor value marked with an arrow under the track; clicking it selects it. */
+  marker?: { at: number; title: string };
   onChange: (value: number) => void;
-}> = ({ id, label, value, min, max, step, current, valueText, disabled, onChange }) => (
-  <div>
-    <div className="d-flex justify-content-between align-items-baseline gap-2">
-      <label className="form-label fw-medium mb-1" id={`${id}-label`} htmlFor={id}>
-        {label}
-      </label>
-      <span className="fw-semibold text-primary text-nowrap" aria-hidden="true">
-        {value}
-      </span>
-    </div>
+}> = ({ id, label, value, min, max, step, current, valueText, disabled, marker, onChange }) => {
+  const input = (
     <input
       id={id}
       type="range"
@@ -221,8 +216,44 @@ const Slider: React.FC<{
       disabled={disabled}
       onChange={(event) => onChange(Number(event.target.value))}
     />
-  </div>
-);
+  );
+  return (
+    <div>
+      <div className="d-flex justify-content-between align-items-baseline gap-2">
+        <label className="form-label fw-medium mb-1" id={`${id}-label`} htmlFor={id}>
+          {label}
+        </label>
+        <span className="fw-semibold text-primary text-nowrap" aria-hidden="true">
+          {value}
+        </span>
+      </div>
+      {marker ? (
+        <div className="position-relative" style={{ paddingBottom: '0.15rem' }}>
+          {input}
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-hidden="true"
+            onClick={() => onChange(marker.at)}
+            className="btn p-0 border-0 bg-transparent position-absolute lh-1 text-secondary"
+            style={{
+              // Centre on the thumb: the track travel is (100% - thumbWidth) and
+              // the 1.5rem thumb adds half its width back.
+              left: `calc((100% - 1.5rem) * ${(marker.at - min) / (max - min)} + 0.75rem)`,
+              transform: 'translateX(-50%)',
+              bottom: 0,
+            }}
+            title={marker.title}
+          >
+            ↑
+          </button>
+        </div>
+      ) : (
+        input
+      )}
+    </div>
+  );
+};
 
 // A shared link can carry the return assumption (?return=7). The page still
 // DEFAULTS to 0% — following a link that names a return is the reader's own
@@ -338,10 +369,7 @@ export const PensionCalculator: React.FC = () => {
         annualReturnPercent: sharedReturn(search),
         // The saver's current weighted-average fund fee, so the projection reflects
         // what they actually pay today.
-        feePercent: Math.min(
-          Math.max(toPercent(conversion.weightedAverageFee), feeBounds.min),
-          feeBounds.max,
-        ),
+        feePercent: Math.min(Math.max(toPercent(conversion.weightedAverageFee), 0), feeBounds.max),
         savingsFundFeePercent: toPercent(tulevaFees.savingsFund),
         // The default payout IS the tax-free bar: your projected remaining years at
         // the age you start — the standard fondipension setup.
@@ -443,7 +471,6 @@ export const PensionCalculator: React.FC = () => {
   const payoutEndAge = renewing
     ? SMART_PAYOUT_HORIZON_AGE
     : effectiveRetirementAge + inputs.withdrawalYears;
-  const displayedWithdrawalYears = payoutEndAge - effectiveRetirementAge;
   // The slider covers the paindlik pension window around the STATUTORY age from the
   // register — the projected prefill starts inside it, the bounds don't move with it.
   // A saver already older than the window's top still gets a slider that can reach
@@ -454,6 +481,11 @@ export const PensionCalculator: React.FC = () => {
     statutoryRetirementAge + PAINDLIK_PENSION_YEARS,
     inputs.currentAge,
   );
+  // The end-age track is FIXED (derived from the retirement slider's own fixed
+  // bounds), so dragging the start never shifts this thumb under the cursor; the
+  // 5-30 year contract bounds are enforced on change instead.
+  const payoutEndMin = retirementAgeMin + WITHDRAWAL_YEARS_MIN;
+  const payoutEndMax = Math.max(retirementAgeMax + WITHDRAWAL_YEARS_MAX, SMART_PAYOUT_HORIZON_AGE);
 
   // The slider tops out at the tax-advantaged ceiling: min(15% of gross, EUR 500)
   // a month, so it moves with the salary like the millionaire calculator's.
@@ -543,10 +575,8 @@ export const PensionCalculator: React.FC = () => {
     },
   };
 
-  const shortPeriod = result.pensionTaxRate > 0;
-
   return (
-    <div className="col-12 col-lg-10 mx-auto d-flex flex-column gap-4">
+    <div className="col-12 col-lg-10 mx-auto d-flex flex-column gap-3">
       <header>
         <h1>
           <FormattedMessage id="pensionCalculator.title" />
@@ -559,7 +589,7 @@ export const PensionCalculator: React.FC = () => {
       <div className="row g-4">
         <div className="col-12 col-lg-4">
           <div className="card h-100">
-            <div className="card-body d-flex flex-column gap-4">
+            <div className="card-body d-flex flex-column gap-3">
               <div>
                 <label className="form-label fw-medium mb-1" htmlFor="salary">
                   <FormattedMessage id="pensionCalculator.input.salary" />
@@ -671,7 +701,21 @@ export const PensionCalculator: React.FC = () => {
                 max={retirementAgeMax}
                 step={1}
                 current={effectiveRetirementAge}
-                onChange={(value) => update({ retirementAge: value })}
+                // The payout slider promises an AGE, so moving the start keeps that
+                // age put (within the 5-30 year contract bounds) and reshapes the
+                // duration instead of dragging the end along.
+                onChange={(value) =>
+                  update({
+                    retirementAge: value,
+                    ...(renewing
+                      ? {}
+                      : {
+                          // Only the 5-year floor binds: the track already caps the
+                          // end age, so moving the start can never drag it down.
+                          withdrawalYears: Math.max(payoutEndAge - value, WITHDRAWAL_YEARS_MIN),
+                        }),
+                  })
+                }
               />
 
               {/* Under a renewal strategy the period is not the saver's to pick:
@@ -680,21 +724,22 @@ export const PensionCalculator: React.FC = () => {
                 id="withdrawal-years"
                 label={<FormattedMessage id="pensionCalculator.input.withdrawalYears" />}
                 value={
-                  <FormattedMessage
-                    id="pensionCalculator.years"
-                    values={{ years: displayedWithdrawalYears }}
-                  />
+                  <FormattedMessage id="pensionCalculator.years" values={{ years: payoutEndAge }} />
                 }
                 valueText={intl.formatMessage(
                   { id: 'pensionCalculator.yearsSpoken' },
-                  { years: displayedWithdrawalYears },
+                  { years: payoutEndAge },
                 )}
-                min={WITHDRAWAL_YEARS_MIN}
-                max={Math.max(WITHDRAWAL_YEARS_MAX, displayedWithdrawalYears)}
+                min={payoutEndMin}
+                max={payoutEndMax}
                 step={1}
-                current={displayedWithdrawalYears}
+                current={payoutEndAge}
                 disabled={renewing}
-                onChange={(value) => update({ withdrawalYears: value })}
+                onChange={(value) =>
+                  update({
+                    withdrawalYears: Math.max(value - effectiveRetirementAge, WITHDRAWAL_YEARS_MIN),
+                  })
+                }
               />
 
               {/* The same return control as the millionaire calculator: an arrow marks
@@ -773,24 +818,48 @@ export const PensionCalculator: React.FC = () => {
                 label={<FormattedMessage id="pensionCalculator.input.fee" />}
                 value={formatFeePercent(inputs.feePercent)}
                 valueText={formatFeePercent(inputs.feePercent)}
-                min={feeBounds.min}
+                // Down to zero, not to today's cheapest fund: fees have only ever
+                // fallen, and a projection may assume they keep falling.
+                min={0}
                 max={feeBounds.max}
                 step={FEE_STEP}
                 current={inputs.feePercent}
                 onChange={(value) => update({ feePercent: value })}
               />
 
-              <Slider
-                id="inflation"
-                label={<FormattedMessage id="pensionCalculator.input.inflation" />}
-                value={`${inflationPercent}%`}
-                valueText={`${inflationPercent}%`}
-                min={0}
-                max={INFLATION_MAX}
-                step={INFLATION_STEP}
-                current={inflationPercent}
-                onChange={(value) => update({ inflationPercent: value })}
-              />
+              <div>
+                <Slider
+                  id="inflation"
+                  label={<FormattedMessage id="pensionCalculator.input.inflation" />}
+                  value={`${inflationPercent}%`}
+                  valueText={`${inflationPercent}%`}
+                  min={0}
+                  max={INFLATION_MAX}
+                  step={INFLATION_STEP}
+                  current={inflationPercent}
+                  // The ECB's target, anchoring the slider the way the historical
+                  // return anchors its own.
+                  marker={{ at: DEFAULT_INFLATION_PERCENT, title: `${DEFAULT_INFLATION_PERCENT}%` }}
+                  onChange={(value) => update({ inflationPercent: value })}
+                />
+                <p className="form-text w-100 mb-0 text-center">
+                  <FormattedMessage
+                    id="pensionCalculator.input.inflation.hint"
+                    values={{
+                      a: (chunks: React.ReactNode) => (
+                        <button
+                          type="button"
+                          onClick={() => update({ inflationPercent: DEFAULT_INFLATION_PERCENT })}
+                          className="btn btn-link p-0 border-0 align-baseline"
+                          style={{ fontSize: 'inherit', verticalAlign: 'baseline' }}
+                        >
+                          {chunks}
+                        </button>
+                      ),
+                    }}
+                  />
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -947,44 +1016,35 @@ export const PensionCalculator: React.FC = () => {
                     {roundedEuro(timeline[timeline.length - 1]?.total ?? 0)}
                   </dd>
                 </div>
+                <div className="col">
+                  <dt className="small text-secondary fw-normal">
+                    <FormattedMessage id="pensionCalculator.stat.totalTax" />
+                  </dt>
+                  {/* Red only when the PERIOD causes tax: savings-fund gains are
+                      taxed whichever period is picked, so they never blame the slider. */}
+                  <dd
+                    className={`fs-5 fw-semibold mb-0${
+                      result.pensionTax > 0 ? ' text-danger' : ''
+                    }`}
+                    data-testid="total-tax"
+                    aria-live="polite"
+                  >
+                    {result.totalTax > 0 ? roundedEuro(-result.totalTax) : roundedEuro(0)}
+                  </dd>
+                </div>
               </dl>
-
-              {/* The tax verdict flips only when the period crosses the
-                  recommended duration, so it is worth announcing; the headline
-                  above is not, since it changes on every slider step. */}
-              {/* The note is present in every non-warning state, renewal strategies
-                  included (they are tax free by construction), so toggling a strategy
-                  never changes the card's height and shoves the toggles around. */}
-              <div aria-live="polite">
-                {!renewing && shortPeriod && (
-                  <div className="alert alert-warning mb-0 small" data-testid="tax-warning">
-                    <FormattedMessage
-                      id="pensionCalculator.tax.short"
-                      values={{
-                        recommended: result.recommendedYears,
-                        tax: roundedEuro(result.pensionTax),
-                        b: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
-                      }}
-                    />
-                  </div>
-                )}
-
-                {(renewing || !shortPeriod) && (
-                  <p className="form-text mb-0" data-testid="tax-free-note">
-                    <FormattedMessage
-                      id="pensionCalculator.tax.free"
-                      values={{ recommended: result.recommendedYears }}
-                    />
-                  </p>
-                )}
-              </div>
             </div>
           </div>
 
           {/* Experimental payout strategies, parked under the card while we test
               them: sign a new contract every year instead of once. Mutually
               exclusive ways of picking the yearly period. */}
-          <div className="form-text mt-3 d-flex flex-column gap-3">
+          {/* The switches themselves are full size, same as the today's-money one;
+              only the words around them are small and muted. */}
+          <div className="mt-3 d-flex flex-column gap-2">
+            <div className="form-text m-0">
+              <FormattedMessage id="pensionCalculator.strategy.intro" />
+            </div>
             <div className="form-check form-switch mb-0">
               <input
                 className="form-check-input"
@@ -998,10 +1058,13 @@ export const PensionCalculator: React.FC = () => {
                   })
                 }
               />
-              <label className="form-check-label" htmlFor="strategy-four-percent">
+              <label
+                className="form-check-label small text-secondary"
+                htmlFor="strategy-four-percent"
+              >
                 <FormattedMessage id="pensionCalculator.strategy.fourPercent" />
               </label>
-              <div>
+              <div className="form-text m-0">
                 <FormattedMessage id="pensionCalculator.strategy.fourPercent.how" />
               </div>
             </div>
@@ -1016,10 +1079,13 @@ export const PensionCalculator: React.FC = () => {
                   update({ payoutStrategy: event.target.checked ? 'maxUtility' : 'fixedPeriod' })
                 }
               />
-              <label className="form-check-label" htmlFor="strategy-max-payout">
+              <label
+                className="form-check-label small text-secondary"
+                htmlFor="strategy-max-payout"
+              >
                 <FormattedMessage id="pensionCalculator.strategy.maxPayout" />
               </label>
-              <div>
+              <div className="form-text m-0">
                 <FormattedMessage id="pensionCalculator.strategy.maxPayout.how" />
               </div>
             </div>
@@ -1047,15 +1113,26 @@ export const PensionCalculator: React.FC = () => {
           para 29 lg 2, IFS para 80 lg 4, and the Tuleva teavitustegevuste eeskiri
           p 7 and p 8. */}
       <div className="form-text" data-testid="disclaimer">
-        <p className="mb-2" data-testid="risk-warning">
-          <FormattedMessage id="pensionCalculator.results.risk" />
-        </p>
         <FormattedMessage
           id="pensionCalculator.provider"
           values={{
             p: (chunks: React.ReactNode) => <p className="mb-2">{chunks}</p>,
-            a: (chunks: React.ReactNode) => <a href="https://tuleva.ee">{chunks}</a>,
-            mail: (chunks: React.ReactNode) => <a href="mailto:tuleva@tuleva.ee">{chunks}</a>,
+            // Dark like the page footer's links, so the muted block stays muted.
+            a: (chunks: React.ReactNode) => (
+              <a className="text-body-secondary" href="https://tuleva.ee">
+                {chunks}
+              </a>
+            ),
+            mail: (chunks: React.ReactNode) => (
+              <a className="text-body-secondary" href="mailto:tuleva@tuleva.ee">
+                {chunks}
+              </a>
+            ),
+            tel: (chunks: React.ReactNode) => (
+              <a className="text-body-secondary" href="tel:+3726445100">
+                {chunks}
+              </a>
+            ),
           }}
         />
         <FormattedMessage
