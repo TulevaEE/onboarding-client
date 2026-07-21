@@ -204,12 +204,18 @@ describe('SavingsFundChildOnboarding', () => {
 
   it('ignores a slow verification for a superseded child selection', async () => {
     const OTHER_CHILD_CODE = '61001010000';
+    let releaseStaleResponse!: () => void;
+    const staleResponseGate = new Promise<void>((resolve) => {
+      releaseStaleResponse = resolve;
+    });
+    let staleResponseServed = false;
     server.use(
       rest.post('http://localhost/v1/me/children', async (req, res, ctx) => {
         const { childPersonalCode } = req.body as { childPersonalCode: string };
         if (childPersonalCode === CHILD_CODE) {
+          await staleResponseGate;
+          staleResponseServed = true;
           return res(
-            ctx.delay(200),
             ctx.json({
               status: 'VERIFIED',
               firstName: 'Mammu',
@@ -247,9 +253,10 @@ describe('SavingsFundChildOnboarding', () => {
     const streetInput = await screen.findByLabelText(/Address \(street, house, apartment\)/i);
     expect(streetInput).toHaveValue('Fresh 2');
 
-    // Let the superseded first response arrive; it must not touch the form.
+    releaseStaleResponse();
+    await waitFor(() => expect(staleResponseServed).toBe(true));
     await new Promise((resolve) => {
-      setTimeout(resolve, 300);
+      setTimeout(resolve, 0);
     });
     expect(streetInput).toHaveValue('Fresh 2');
   });

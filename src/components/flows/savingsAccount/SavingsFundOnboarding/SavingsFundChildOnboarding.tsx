@@ -232,12 +232,21 @@ export const SavingsFundChildOnboarding = () => {
   const totalSections = steps.length;
   const isTermsStep = activeSection === totalSections - 1;
 
+  const mountedRef = useRef(true);
+  useEffect(
+    () => () => {
+      mountedRef.current = false;
+    },
+    [],
+  );
+
   const latestVerificationRef = useRef(0);
   const verifyChild = useCallback(
     async ({ pickedByName = false } = {}): Promise<void> => {
       latestVerificationRef.current += 1;
       const verification = latestVerificationRef.current;
-      const superseded = () => verification !== latestVerificationRef.current;
+      const superseded = () =>
+        !mountedRef.current || verification !== latestVerificationRef.current;
       try {
         setSubmitError(false);
         setChildCodeRejected(false);
@@ -294,7 +303,7 @@ export const SavingsFundChildOnboarding = () => {
     setVerifyingSwitcherPick(true);
     verifyChild({ pickedByName: true }).finally(() => {
       const stillCurrentPick = verifiedSwitcherPickRef.current === switcherPickedChildCode;
-      if (stillCurrentPick) {
+      if (mountedRef.current && stillCurrentPick) {
         setVerifyingSwitcherPick(false);
       }
     });
@@ -417,7 +426,7 @@ export const SavingsFundChildOnboarding = () => {
         onBack={showPreviousSection}
         onNext={showNextSection}
         submitting={creatingChild || isFinalizing || verifyingSwitcherPick}
-        backDisabled={isFinalizing}
+        backDisabled={isFinalizing || verifyingSwitcherPick}
         nextDisabled={isTermsStep && (!termsAccepted || !me?.personalCode)}
       >
         {verifyingSwitcherPick ? (
