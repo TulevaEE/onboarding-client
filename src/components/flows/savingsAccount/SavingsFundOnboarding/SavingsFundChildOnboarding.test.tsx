@@ -6,6 +6,7 @@ import { setupServer } from 'msw/node';
 import {
   createChildBackend,
   eligibleChildrenBackend,
+  pendingOnboardingsBackend,
   savingsFundOnboardingStatusBackend,
   savingsFundOnboardingSurveyBackend,
   switchRoleBackend,
@@ -27,6 +28,7 @@ beforeEach(() => {
   initializeConfiguration();
   userBackend(server);
   eligibleChildrenBackend(server);
+  pendingOnboardingsBackend(server);
   createChildBackend(server);
   savingsFundOnboardingSurveyBackend(server);
   switchRoleBackend(server);
@@ -83,8 +85,14 @@ describe('SavingsFundChildOnboarding', () => {
   });
 
   it('pre-selects the child passed via router state (co-parent from the account switcher)', async () => {
+    // The realistic co-parent case: the other guardian already opened the account,
+    // so the child arrives flagged hasBeenOnboarded and only the pending-onboarding
+    // entry keeps the option selectable.
     eligibleChildrenBackend(server, [
-      { personalCode: CHILD_CODE, firstName: 'Mammu', lastName: 'Maasikas' },
+      { personalCode: CHILD_CODE, firstName: 'Mammu', lastName: 'Maasikas', hasBeenOnboarded: true },
+    ]);
+    pendingOnboardingsBackend(server, [
+      { type: 'PERSON', code: CHILD_CODE, name: 'Mammu Maasikas' },
     ]);
     const history = createMemoryHistory({
       initialEntries: [
@@ -96,6 +104,9 @@ describe('SavingsFundChildOnboarding', () => {
     expect(await screen.findByRole('combobox', { name: /personal ID code/i })).toHaveValue(
       CHILD_CODE,
     );
+    expect(
+      await screen.findByRole('option', { name: `Mammu Maasikas (${CHILD_CODE})` }),
+    ).toBeEnabled();
   });
 
   it('skips the confirm step when a child is picked from the dropdown', async () => {

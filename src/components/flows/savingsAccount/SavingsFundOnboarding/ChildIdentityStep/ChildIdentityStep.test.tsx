@@ -6,7 +6,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { QueryClient } from '@tanstack/react-query';
 import { renderWrapped } from '../../../../../test/utils';
-import { eligibleChildrenBackend } from '../../../../../test/backend';
+import { eligibleChildrenBackend, pendingOnboardingsBackend } from '../../../../../test/backend';
 import { initializeConfiguration } from '../../../../config/config';
 import { ChildIdentityStep } from './ChildIdentityStep';
 import { ChildOnboardingFormData } from '../types';
@@ -18,6 +18,7 @@ beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 beforeEach(() => {
   initializeConfiguration();
   eligibleChildrenBackend(server);
+  pendingOnboardingsBackend(server);
 });
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
@@ -218,6 +219,24 @@ describe('ChildIdentityStep', () => {
       });
       expect(onboardedOption).toBeDisabled();
       expect(screen.getByRole('option', { name: '61001010000' })).toBeEnabled();
+    });
+
+    test('keeps an already onboarded child selectable when this user has a pending onboarding for them', async () => {
+      eligibleChildrenBackend(server, [
+        {
+          personalCode: '61506150006',
+          firstName: 'Mari',
+          lastName: 'Maasikas',
+          hasBeenOnboarded: true,
+        },
+      ]);
+      pendingOnboardingsBackend(server, [
+        { type: 'PERSON', code: '61506150006', name: 'Mari Maasikas' },
+      ]);
+      renderWrapped(<Wrapper />);
+
+      const option = await screen.findByRole('option', { name: 'Mari Maasikas (61506150006)' });
+      expect(option).toBeEnabled();
     });
 
     test('falls back to manual entry when the child is not listed', async () => {

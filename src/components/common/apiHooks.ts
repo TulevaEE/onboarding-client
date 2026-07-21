@@ -31,7 +31,7 @@ import {
   getMemberCapitalListings,
   getMyCapitalTransferContracts,
   getPendingApplications,
-  getPendingChildOnboardings,
+  getPendingOnboardings,
   getSavingsFundBalance,
   getSavingsFundBankAccounts,
   getSavingsFundCompanyOnboardingStatus,
@@ -64,7 +64,7 @@ import {
   Fund,
   MandateDeadlines,
   MemberCapitalListing,
-  PendingChildOnboarding,
+  PendingOnboarding,
   Role,
   SecondPillarAssets,
   SwitchRoleCommand,
@@ -437,10 +437,16 @@ export function useRoles(): UseQueryResult<Role[]> {
   return useQuery({ queryKey: ['roles'], queryFn: () => getRoles() });
 }
 
-export function usePendingChildOnboardings(): UseQueryResult<PendingChildOnboarding[]> {
+// The header mounts this for every user, so callers gate the query on the flow
+// being reachable, and it fails fast like useEligibleChildren instead of retrying.
+export function usePendingOnboardings({
+  enabled = true,
+}: { enabled?: boolean } = {}): UseQueryResult<PendingOnboarding[]> {
   return useQuery({
-    queryKey: ['pendingChildOnboardings'],
-    queryFn: () => getPendingChildOnboardings(),
+    queryKey: ['pendingOnboardings'],
+    queryFn: () => getPendingOnboardings(),
+    enabled,
+    retry: false,
   });
 }
 

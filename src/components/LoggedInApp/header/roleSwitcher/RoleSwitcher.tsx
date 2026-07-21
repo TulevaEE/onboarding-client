@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import {
   useMe,
-  usePendingChildOnboardings,
+  usePendingOnboardings,
   useRoles,
   useSwitchRole,
 } from '../../../common/apiHooks';
@@ -23,7 +23,14 @@ const dropdownItemsOf = (container: HTMLElement | null): HTMLElement[] =>
 
 export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
   const { data: roles } = useRoles();
-  const { data: pendingChildOnboardings = [] } = usePendingChildOnboardings();
+  // Only fetch pending onboardings while the child flow is actually reachable —
+  // the /savings-fund/onboarding/child route redirects away until child
+  // onboarding is launched, so a menu item shown before then would be a dead
+  // link, and the header would fire the request for every user for nothing.
+  const childOnboardingEnabled = isChildOnboardingEnabled();
+  const { data: pendingOnboardings = [] } = usePendingOnboardings({
+    enabled: childOnboardingEnabled,
+  });
   const { data: user } = useMe();
   const switchRole = useSwitchRole();
   const [open, setOpen] = useState(false);
@@ -94,11 +101,8 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
 
   const displayName = user?.role?.name ?? userName;
   const companyOnboardingEnabled = isCompanyOnboardingEnabled();
-  // Only surface pending children while the child flow is actually reachable — the
-  // /savings-fund/onboarding/child route redirects away until child onboarding is
-  // launched, so a menu item shown before then would be a dead link.
-  const hasPendingChildOnboardings =
-    isChildOnboardingEnabled() && pendingChildOnboardings.length > 0;
+  const pendingChildOnboardings = pendingOnboardings.filter(({ type }) => type === 'PERSON');
+  const hasPendingChildOnboardings = childOnboardingEnabled && pendingChildOnboardings.length > 0;
 
   // Once company onboarding is live, even a single-role user gets the dropdown
   // — it is the entry point for adding a company. A pending child (opened by the
@@ -152,20 +156,20 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
             </button>
           ))}
           {hasPendingChildOnboardings &&
-            pendingChildOnboardings.map(({ childPersonalCode, childName }) => (
+            pendingChildOnboardings.map(({ code, name }) => (
               <Link
-                key={childPersonalCode}
+                key={code}
                 className="dropdown-item"
                 // The minor's personal code travels in router state only — never the
                 // URL/query — so it stays out of history, logs, and the address bar.
                 to={{
                   pathname: '/savings-fund/onboarding/child',
-                  state: { childPersonalCode },
+                  state: { childPersonalCode: code },
                 }}
                 onClick={() => setOpen(false)}
                 onKeyDown={handleKeyDown}
               >
-                {childName}
+                {name}
               </Link>
             ))}
           {companyOnboardingEnabled && (
