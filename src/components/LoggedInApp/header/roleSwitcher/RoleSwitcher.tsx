@@ -18,10 +18,8 @@ const dropdownItemsOf = (container: HTMLElement | null): HTMLElement[] =>
 
 export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
   const { data: roles } = useRoles();
-  // Only fetch pending onboardings while the child flow is actually reachable —
-  // the /savings-fund/onboarding/child route redirects away until child
-  // onboarding is launched, so a menu item shown before then would be a dead
-  // link, and the header would fire the request for every user for nothing.
+  // The child route redirects away until child onboarding launches — no dead
+  // menu links, and the always-mounted header must not fetch for every user.
   const childOnboardingEnabled = isChildOnboardingEnabled();
   const { data: pendingOnboardings = [] } = usePendingOnboardings({
     enabled: childOnboardingEnabled,
@@ -99,10 +97,8 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
   const pendingChildOnboardings = pendingOnboardings.filter(({ type }) => type === 'PERSON');
   const hasPendingChildOnboardings = childOnboardingEnabled && pendingChildOnboardings.length > 0;
 
-  // Once company onboarding is live, even a single-role user gets the dropdown
-  // — it is the entry point for adding a company. A pending child (opened by the
-  // other parent) is likewise a reason to open the dropdown for a single-role
-  // user, so they can join that child's onboarding.
+  // Even a single-role user gets the dropdown when there is something to add:
+  // a company to onboard, or a pending child to join.
   if (!roles || (roles.length <= 1 && !companyOnboardingEnabled && !hasPendingChildOnboardings)) {
     return <span className="text-body">{displayName}</span>;
   }
@@ -155,8 +151,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
               <Link
                 key={code}
                 className="dropdown-item"
-                // The minor's personal code travels in router state only — never the
-                // URL/query — so it stays out of history, logs, and the address bar.
+                // Router state, never the URL: the minor's code must stay out of history and logs.
                 to={{
                   pathname: '/savings-fund/onboarding/child',
                   state: { childPersonalCode: code },
