@@ -1,12 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
-import {
-  useMe,
-  usePendingOnboardings,
-  useRoles,
-  useSwitchRole,
-} from '../../../common/apiHooks';
+import { useMe, usePendingOnboardings, useRoles, useSwitchRole } from '../../../common/apiHooks';
 import { SwitchRoleCommand } from '../../../common/apiModels';
 import {
   isChildOnboardingEnabled,
