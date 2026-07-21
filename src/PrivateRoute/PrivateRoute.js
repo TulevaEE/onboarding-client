@@ -17,7 +17,7 @@ const PrivateRoute = ({ component: Component, isAuthenticated, ...otherPrivateRo
           to={{
             pathname: LOGIN_PATH,
             search,
-            state: { from: pathname },
+            state: { from: pathname + search },
           }}
         />
       )
