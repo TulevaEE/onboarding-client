@@ -50,12 +50,10 @@ const emptyChildOnboardingForm = (childPersonalCode: string): ChildOnboardingFor
 
 export const SavingsFundChildOnboarding = () => {
   const history = useHistory();
-  // A co-guardian arriving from the account switcher carries the child's personal
-  // code in router state (never the URL). The click on the child's name already
-  // was the selection, so the selector step is skipped: the code is verified
-  // automatically and the flow opens on the first question step.
+  // Router state, never the URL: the minor's code must stay out of history and logs.
   const { state: locationState } = useLocation<{ childPersonalCode?: string } | undefined>();
-  const joinChildPersonalCode = locationState?.childPersonalCode ?? '';
+  const switcherPickedChildCode = locationState?.childPersonalCode ?? '';
+  const arrivedFromSwitcher = Boolean(switcherPickedChildCode);
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState(false);
   // The entered code can't open an account for a child — either it's not a valid
@@ -74,14 +72,10 @@ export const SavingsFundChildOnboarding = () => {
   // picked from the named dropdown — the pick is itself the confirmation. Before
   // verifying, fall back to "is a dropdown even available" so the total step count
   // matches the path the parent is most likely on and doesn't lurch after step 1.
-  // A switcher-picked child is a named pick from the start, so the confirm step
-  // never enters the count and the step total cannot lurch while queries load.
   const [manualConfirm, setManualConfirm] = useState<boolean | null>(() =>
-    joinChildPersonalCode ? false : null,
+    arrivedFromSwitcher ? false : null,
   );
-  // True while a switcher-picked child is being verified in the background, so
-  // the selector never flashes; verification failure falls back to the selector.
-  const [autoVerifying, setAutoVerifying] = useState(() => Boolean(joinChildPersonalCode));
+  const [verifyingSwitcherPick, setVerifyingSwitcherPick] = useState(arrivedFromSwitcher);
 
   const { data: me } = useMe();
   const { data: eligibleChildren = [] } = useEligibleChildren();
@@ -91,7 +85,7 @@ export const SavingsFundChildOnboarding = () => {
 
   const { control, trigger, watch, setValue, getValues, reset } = useForm<ChildOnboardingFormData>({
     mode: 'onSubmit',
-    defaultValues: emptyChildOnboardingForm(joinChildPersonalCode),
+    defaultValues: emptyChildOnboardingForm(switcherPickedChildCode),
   });
 
   const child = watch('child');
@@ -101,8 +95,8 @@ export const SavingsFundChildOnboarding = () => {
   // 18. Applied once and only into still-empty fields, so a later /v1/me refetch
   // can't clobber a child's own email the parent typed on the contact step.
   const contactPrefilledRef = useRef(false);
-  useEffect(() => {
-    if (!me || contactPrefilledRef.current) {
+  const prefillParentContactIfEmpty = useCallback(() => {
+    if (!me) {
       return;
     }
     contactPrefilledRef.current = true;
@@ -113,6 +107,11 @@ export const SavingsFundChildOnboarding = () => {
       setValue('phoneNumber', me.phoneNumber);
     }
   }, [me, getValues, setValue]);
+  useEffect(() => {
+    if (!contactPrefilledRef.current) {
+      prefillParentContactIfEmpty();
+    }
+  }, [prefillParentContactIfEmpty]);
 
   const includeConfirmStep = manualConfirm ?? eligibleChildren.length === 0;
   const confirmStep: OnboardingStep<ChildOnboardingFormData>[] = includeConfirmStep
@@ -242,21 +241,18 @@ export const SavingsFundChildOnboarding = () => {
   const totalSections = steps.length;
   const isTermsStep = activeSection === totalSections - 1;
 
-  // Each verification carries a generation number; a response whose generation
-  // is no longer current was superseded by a newer child selection and must not
-  // touch the form — a slow response for child A landing after child B's would
-  // otherwise put A's identity and address under B's code.
-  const verifyGenerationRef = useRef(0);
+  const latestVerificationRef = useRef(0);
   const verifyChild = useCallback(
     async ({ pickedByName = false } = {}): Promise<void> => {
-      verifyGenerationRef.current += 1;
-      const generation = verifyGenerationRef.current;
+      latestVerificationRef.current += 1;
+      const verification = latestVerificationRef.current;
+      const superseded = () => verification !== latestVerificationRef.current;
       try {
         setSubmitError(false);
         setChildCodeRejected(false);
         const childPersonalCode = getValues('childPersonalCode');
         const response = await createChild({ childPersonalCode });
-        if (generation !== verifyGenerationRef.current) {
+        if (superseded()) {
           return;
         }
         // Branch on the body status, never the HTTP code; a VERIFIED response with
@@ -285,7 +281,7 @@ export const SavingsFundChildOnboarding = () => {
           setChildCodeRejected(true);
         }
       } catch (error) {
-        if (generation !== verifyGenerationRef.current) {
+        if (superseded()) {
           return;
         }
         // A 4xx means the code itself was rejected (an invalid isikukood) — same
@@ -301,53 +297,34 @@ export const SavingsFundChildOnboarding = () => {
     [createChild, eligibleChildren, getValues, setValue],
   );
 
-  // Verify the switcher-picked child automatically — and when a different child
-  // is picked from the switcher while the flow is open, restart it for that
-  // child with a clean form so nothing entered for the previous child leaks.
-  const autoVerifiedCodeRef = useRef('');
+  const verifiedSwitcherPickRef = useRef('');
   useEffect(() => {
-    // Never restart the flow mid-finalize: the role switch to the child may be
-    // in flight, and resetting the form under it would corrupt the submission.
-    if (
-      isFinalizing ||
-      !joinChildPersonalCode ||
-      autoVerifiedCodeRef.current === joinChildPersonalCode
-    ) {
+    const isNewSwitcherPick =
+      switcherPickedChildCode && verifiedSwitcherPickRef.current !== switcherPickedChildCode;
+    if (!isNewSwitcherPick || isFinalizing) {
       return;
     }
-    autoVerifiedCodeRef.current = joinChildPersonalCode;
-    reset(emptyChildOnboardingForm(joinChildPersonalCode));
+    verifiedSwitcherPickRef.current = switcherPickedChildCode;
+    reset(emptyChildOnboardingForm(switcherPickedChildCode));
     contactPrefilledRef.current = false;
-    if (me) {
-      contactPrefilledRef.current = true;
-      if (me.email) {
-        setValue('email', me.email);
-      }
-      if (me.phoneNumber) {
-        setValue('phoneNumber', me.phoneNumber);
-      }
-    }
+    prefillParentContactIfEmpty();
     setManualConfirm(false);
     setActiveSection(0);
-    setAutoVerifying(true);
+    setVerifyingSwitcherPick(true);
     verifyChild({ pickedByName: true }).finally(() => {
-      // Only the verification for the still-current child may clear the loader; a
-      // superseded one finishing late must not reveal the next child's step while
-      // its own verification is still in flight.
-      if (autoVerifiedCodeRef.current === joinChildPersonalCode) {
-        setAutoVerifying(false);
+      const stillCurrentPick = verifiedSwitcherPickRef.current === switcherPickedChildCode;
+      if (stillCurrentPick) {
+        setVerifyingSwitcherPick(false);
       }
     });
-  }, [isFinalizing, joinChildPersonalCode, me, reset, setValue, verifyChild]);
+  }, [isFinalizing, switcherPickedChildCode, prefillParentContactIfEmpty, reset, verifyChild]);
 
   // The one and only role switch. Everything before this ran as the parent; the
   // child KYC must be submitted while acting as the child (role-aware backend).
   const finalize = async (): Promise<void> => {
-    // Snapshot the whole form up front: the submit below happens after awaits,
-    // and a switcher pick landing in that window resets the form — the survey
-    // must be built from what the parent actually confirmed, not a later read.
-    const formData = getValues();
-    const childCode = formData.childPersonalCode;
+    // Snapshot before the awaits: a switcher pick landing mid-finalize resets the form.
+    const confirmedForm = getValues();
+    const childCode = confirmedForm.childPersonalCode;
     const parentCode = me?.personalCode;
     // Never switch to the child before we know the parent code to switch back to,
     // otherwise a non-completed submit could strand the parent (the terms-step
@@ -370,7 +347,7 @@ export const SavingsFundChildOnboarding = () => {
 
     let outcome: 'completed' | 'pending' | 'error' = 'error';
     try {
-      await submitSurvey(transformChildFormDataToSurveyCommand(formData));
+      await submitSurvey(transformChildFormDataToSurveyCommand(confirmedForm));
       // One-shot read on the child token — the acting-party status is the child's.
       const status = await getSavingsFundOnboardingStatus();
       outcome = status.status === 'COMPLETED' ? 'completed' : 'pending';
@@ -461,11 +438,15 @@ export const SavingsFundChildOnboarding = () => {
         totalSteps={totalSections}
         onBack={showPreviousSection}
         onNext={showNextSection}
-        submitting={creatingChild || isFinalizing || autoVerifying}
+        submitting={creatingChild || isFinalizing || verifyingSwitcherPick}
         backDisabled={isFinalizing}
         nextDisabled={isTermsStep && (!termsAccepted || !me?.personalCode)}
       >
-        {autoVerifying ? <Loader className="align-middle" /> : steps[activeSection].component}
+        {verifyingSwitcherPick ? (
+          <Loader className="align-middle" />
+        ) : (
+          steps[activeSection].component
+        )}
 
         {childCodeRejected ? (
           <div className="alert alert-danger mt-4" role="alert">

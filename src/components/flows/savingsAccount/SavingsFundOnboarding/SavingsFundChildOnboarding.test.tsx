@@ -85,8 +85,6 @@ describe('SavingsFundChildOnboarding', () => {
   });
 
   it('skips the child selector when arriving from the account switcher and opens on the first question', async () => {
-    // The switcher click already was the selection: the picked child is verified
-    // in the background and the flow opens on the residency step.
     eligibleChildrenBackend(server, [
       {
         personalCode: CHILD_CODE,
@@ -244,14 +242,12 @@ describe('SavingsFundChildOnboarding', () => {
     });
     renderWrapped(<SavingsFundChildOnboarding />, history);
 
-    // Supersede the slow verification for the first child immediately.
     history.push('/savings-fund/onboarding/child', { childPersonalCode: OTHER_CHILD_CODE });
 
     const streetInput = await screen.findByLabelText(/Address \(street, house, apartment\)/i);
     expect(streetInput).toHaveValue('Fresh 2');
 
-    // Let the superseded response for the first child arrive — it must not
-    // overwrite the current child's form.
+    // Let the superseded first response arrive; it must not touch the form.
     await new Promise((resolve) => {
       setTimeout(resolve, 300);
     });
