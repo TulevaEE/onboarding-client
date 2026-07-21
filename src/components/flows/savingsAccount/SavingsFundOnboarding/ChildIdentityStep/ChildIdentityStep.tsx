@@ -13,22 +13,15 @@ export const ChildIdentityStep: FC<ChildIdentityStepProps> = ({ control }) => {
   const intl = useIntl();
   const { data: eligibleChildren = [], isLoading } = useEligibleChildren();
   const { data: pendingOnboardings = [] } = usePendingOnboardings();
-  // Children the other guardian already onboarded stay selectable for this user:
-  // joining them (completing their own custody-verified onboarding) is exactly
-  // what a pending onboarding entry invites them to do.
   const joinableChildCodes = new Set(
     pendingOnboardings.filter(({ type }) => type === 'PERSON').map(({ code }) => code),
   );
   const [manualEntry, setManualEntry] = useState(false);
   const childPersonalCode = useWatch({ control, name: 'childPersonalCode' });
-  // A code typed while the lookup was in flight, or carried over from an earlier
-  // manual entry, keeps the free-text input — the dropdown must never hide or
-  // replace a value that isn't one of its options.
-  const showDropdown =
-    !manualEntry &&
-    eligibleChildren.length > 0 &&
-    (!childPersonalCode ||
-      eligibleChildren.some(({ personalCode }) => personalCode === childPersonalCode));
+  const enteredCodeIsSelectable =
+    !childPersonalCode ||
+    eligibleChildren.some(({ personalCode }) => personalCode === childPersonalCode);
+  const showDropdown = !manualEntry && eligibleChildren.length > 0 && enteredCodeIsSelectable;
 
   return (
     <section className="d-flex flex-column gap-4" key="child-identity">
@@ -98,9 +91,7 @@ export const ChildIdentityStep: FC<ChildIdentityStepProps> = ({ control }) => {
                   <input
                     {...field}
                     id={field.name}
-                    // Disabled until the children lookup settles: if the control could be
-                    // focused now, its swap to a select would silently steal focus. Choosing
-                    // manual entry pins the input, so it is safe to enable mid-lookup.
+                    // A focused input swapped for the select would silently steal focus.
                     disabled={isLoading && !manualEntry}
                     inputMode="numeric"
                     autoComplete="off"

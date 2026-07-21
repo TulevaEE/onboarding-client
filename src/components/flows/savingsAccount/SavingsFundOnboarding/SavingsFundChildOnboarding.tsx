@@ -27,11 +27,14 @@ import { getSavingsFundOnboardingStatus } from '../../../common/api';
 import { transformChildFormDataToSurveyCommand } from '../utils';
 import { TKF_DOCUMENTS } from './tkfDocuments';
 
-// The step components only touch the identity fields; narrowing the control is
-// structurally safe for any form that includes them (mirrors identitySteps.tsx).
 const asIdentityControl = (
   control: Control<ChildOnboardingFormData>,
 ): Control<IdentityFormFields> => control as unknown as Control<IdentityFormFields>;
+
+const isChildCodeRejection = (error: unknown): boolean => {
+  const status = (error as { status?: number } | undefined)?.status;
+  return status !== undefined && status >= 400 && status < 500;
+};
 
 const emptyChildOnboardingForm = (childPersonalCode: string): ChildOnboardingFormData => ({
   childPersonalCode,
@@ -56,22 +59,12 @@ export const SavingsFundChildOnboarding = () => {
   const arrivedFromSwitcher = Boolean(switcherPickedChildCode);
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState(false);
-  // The entered code can't open an account for a child — either it's not a valid
-  // isikukood, or the parent has no asset-management custody over that child. One
-  // inline message, kept uniform so it can't reveal whether the child exists.
+  // One uniform rejection message, so responses can't reveal whether a child exists.
   const [childCodeRejected, setChildCodeRejected] = useState(false);
-  // Terminal state: after switching to the child, we could not switch back to the
-  // parent. Rather than leave the parent silently stranded in the child role, show
-  // an explicit "please reload" and report it.
-  const [rollbackFailed, setRollbackFailed] = useState(false);
-  // Covers the whole finalize critical section (switch → submit → status → nav),
-  // so both Continue and Back stay disabled until it resolves.
+  const [strandedInChildRole, setStrandedInChildRole] = useState(false);
   const [isFinalizing, setIsFinalizing] = useState(false);
-  // null until the identity step verifies; then true when the code wasn't one of
-  // the offered children (typed manually, or the dropdown never loaded), false when
-  // picked from the named dropdown — the pick is itself the confirmation. Before
-  // verifying, fall back to "is a dropdown even available" so the total step count
-  // matches the path the parent is most likely on and doesn't lurch after step 1.
+  // null until verified; until then the step count falls back to "is a dropdown
+  // even available" so the total doesn't lurch after step 1.
   const [manualConfirm, setManualConfirm] = useState<boolean | null>(() =>
     arrivedFromSwitcher ? false : null,
   );
@@ -91,9 +84,7 @@ export const SavingsFundChildOnboarding = () => {
   const child = watch('child');
   const termsAccepted = watch('termsAccepted');
 
-  // Default the contact to the parent's own, as the child's representative until
-  // 18. Applied once and only into still-empty fields, so a later /v1/me refetch
-  // can't clobber a child's own email the parent typed on the contact step.
+  // Once only, and only into empty fields: a /v1/me refetch must not clobber typed contacts.
   const contactPrefilledRef = useRef(false);
   const prefillParentContactIfEmpty = useCallback(() => {
     if (!me) {
@@ -255,8 +246,7 @@ export const SavingsFundChildOnboarding = () => {
         if (superseded()) {
           return;
         }
-        // Branch on the body status, never the HTTP code; a VERIFIED response with
-        // no name is malformed and treated as "under review", not advanced.
+        // A VERIFIED body without a name is malformed — treat it as under review.
         if (response.status === 'VERIFIED' && response.firstName) {
           setValue('child', {
             firstName: response.firstName,
@@ -266,28 +256,19 @@ export const SavingsFundChildOnboarding = () => {
           if (response.address) {
             setValue('address', response.address);
           }
-          // Confirm the child only when the code wasn't one of the named options the
-          // parent could pick — a manually typed code, or the dropdown never loaded.
-          // A child picked by name in the account switcher counts as picked. Either
-          // way index 1 is the next step (confirm if shown, else residency), so
-          // setActiveSection(1) is correct for both.
-          const pickedFromList =
-            pickedByName || eligibleChildren.some((c) => c.personalCode === childPersonalCode);
-          setManualConfirm(!pickedFromList);
+          const pickedFromKnownChildren = eligibleChildren.some(
+            (c) => c.personalCode === childPersonalCode,
+          );
+          setManualConfirm(!pickedByName && !pickedFromKnownChildren);
           setActiveSection(1);
         } else {
-          // UNDER_REVIEW — custody couldn't be confirmed (not the parent's child, no
-          // asset-management right, or no such child). Uniform message, no reason.
           setChildCodeRejected(true);
         }
       } catch (error) {
         if (superseded()) {
           return;
         }
-        // A 4xx means the code itself was rejected (an invalid isikukood) — same
-        // "check the code" message. Anything else is a genuine system/network error.
-        const status = (error as { status?: number } | undefined)?.status;
-        if (status !== undefined && status >= 400 && status < 500) {
+        if (isChildCodeRejection(error)) {
           setChildCodeRejected(true);
         } else {
           setSubmitError(true);
@@ -319,16 +300,13 @@ export const SavingsFundChildOnboarding = () => {
     });
   }, [isFinalizing, switcherPickedChildCode, prefillParentContactIfEmpty, reset, verifyChild]);
 
-  // The one and only role switch. Everything before this ran as the parent; the
-  // child KYC must be submitted while acting as the child (role-aware backend).
+  // The child KYC must be submitted while acting as the child (role-aware backend).
   const finalize = async (): Promise<void> => {
     // Snapshot before the awaits: a switcher pick landing mid-finalize resets the form.
     const confirmedForm = getValues();
     const childCode = confirmedForm.childPersonalCode;
     const parentCode = me?.personalCode;
-    // Never switch to the child before we know the parent code to switch back to,
-    // otherwise a non-completed submit could strand the parent (the terms-step
-    // Continue is also gated on this, so this is a belt-and-suspenders guard).
+    // Without a parent code to switch back to, a failed submit would strand the parent.
     if (!parentCode) {
       setSubmitError(true);
       return;
@@ -365,7 +343,7 @@ export const SavingsFundChildOnboarding = () => {
       await switchRole({ type: 'PERSON', code: parentCode });
     } catch {
       captureException(new Error('Child onboarding: failed to switch back to the parent role'));
-      setRollbackFailed(true);
+      setStrandedInChildRole(true);
       return;
     }
 
@@ -407,7 +385,7 @@ export const SavingsFundChildOnboarding = () => {
     }
   };
 
-  if (rollbackFailed) {
+  if (strandedInChildRole) {
     return (
       <div className="col-12 col-md-10 col-lg-7 mx-auto">
         <div className="d-flex flex-column gap-4 align-items-start">
