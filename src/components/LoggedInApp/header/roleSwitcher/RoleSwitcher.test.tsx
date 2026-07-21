@@ -13,17 +13,26 @@ import {
   userBackend,
 } from '../../../../test/backend';
 import { Role } from '../../../common/apiModels';
-import { isCompanyOnboardingEnabled } from '../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
+import {
+  isChildOnboardingEnabled,
+  isCompanyOnboardingEnabled,
+} from '../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
 import { RoleSwitcher } from './RoleSwitcher';
 
 // Company onboarding is the other reason a single-role user gets a dropdown, and
-// it ships permanently on. Mock the flag so the "pending child opens the dropdown"
-// tests can turn it off and prove the pending child is doing the work.
+// it ships permanently on. Mock the flags so the "pending child opens the dropdown"
+// tests can turn company onboarding off and prove the pending child is doing the
+// work — and so child onboarding can be toggled (pending entries only show while
+// the child flow route is reachable).
 jest.mock('../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows', () => ({
   isCompanyOnboardingEnabled: jest.fn(() => true),
+  isChildOnboardingEnabled: jest.fn(() => true),
 }));
 const mockIsCompanyOnboardingEnabled = isCompanyOnboardingEnabled as jest.MockedFunction<
   typeof isCompanyOnboardingEnabled
+>;
+const mockIsChildOnboardingEnabled = isChildOnboardingEnabled as jest.MockedFunction<
+  typeof isChildOnboardingEnabled
 >;
 
 const server = setupServer();
@@ -68,6 +77,7 @@ beforeEach(() => {
   initializeConfiguration();
   getAuthentication().update(anAuthenticationManager());
   mockIsCompanyOnboardingEnabled.mockReturnValue(true);
+  mockIsChildOnboardingEnabled.mockReturnValue(true);
   pendingChildOnboardingsBackend(server);
 });
 
@@ -141,6 +151,23 @@ describe('RoleSwitcher', () => {
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
       expect(await screen.findByRole('link', { name: 'Mari Maasikas' })).toBeInTheDocument();
+    });
+
+    it('hides the pending child while the child onboarding flow is not yet launched', async () => {
+      mockIsCompanyOnboardingEnabled.mockReturnValue(false);
+      mockIsChildOnboardingEnabled.mockReturnValue(false);
+      rolesBackend(server, [personalRole]);
+      userBackend(server, { role: personalRole });
+      pendingChildOnboardingsBackend(server, [pendingChild]);
+
+      renderRoleSwitcher();
+
+      // The child route redirects away until launch, so no dead menu link: the
+      // single-role user stays plain text rather than getting a dropdown.
+      expect(await screen.findByText('John Doe')).toBeInTheDocument();
+      await waitFor(() =>
+        expect(screen.queryByRole('button', { name: /John Doe/i })).not.toBeInTheDocument(),
+      );
     });
 
     it('keeps a single-role user with no pending child as plain text when company onboarding is off', async () => {
