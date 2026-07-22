@@ -100,6 +100,19 @@ describe('SavingsFundChildOnboarding', () => {
     expect(screen.getByText(/Mammu Maasikas/)).toBeInTheDocument();
   });
 
+  it('stops naming the child after going back to the code step', async () => {
+    renderWrapped(<SavingsFundChildOnboarding />);
+    await verifyChild();
+
+    expect(await screen.findByText('2/9')).toBeInTheDocument(); // confirm
+    userEvent.click(screen.getByRole('button', { name: 'Back' }));
+
+    // Back on the code step the child is no longer settled — naming the previously
+    // verified one would misidentify whose account is being opened.
+    expect(await screen.findByText('1/9')).toBeInTheDocument();
+    expect(screen.queryByText(/Mammu Maasikas/)).not.toBeInTheDocument();
+  });
+
   it('skips the child selector when arriving from the account switcher and opens on the first question', async () => {
     eligibleChildrenBackend(server, [
       {
