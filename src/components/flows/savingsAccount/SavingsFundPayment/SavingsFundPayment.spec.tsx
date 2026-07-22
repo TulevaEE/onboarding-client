@@ -37,11 +37,7 @@ describe(SavingsFundPayment, () => {
 
   const getAmountInput = () => screen.getByRole('textbox', { name: 'Amount' });
 
-  // The amount field is pre-filled with a default deposit amount, so replace it
-  // rather than appending. {selectall} selects the default and the typed value
-  // overwrites it in a single call (a bare clear()+type() races the controlled
-  // input's value sync and would append to the default instead).
-  const typeAmount = (value: string) => {
+  const replaceAmount = (value: string) => {
     const amountInput = getAmountInput();
     if (value === '') {
       userEvent.clear(amountInput);
@@ -76,18 +72,18 @@ describe(SavingsFundPayment, () => {
 
     expect(amountInput).toBeInTheDocument();
 
-    // Trigger minimum amount validation (replaces the pre-filled default)
-    typeAmount('0.5');
+    // Trigger minimum amount validation
+    replaceAmount('0.5');
     userEvent.click(submitButton); // Trigger validation
     expect(await screen.findByText(amountValidationMessage)).toBeInTheDocument();
 
     // Trigger required field validation
-    typeAmount('');
+    replaceAmount('');
     userEvent.click(submitButton); // Trigger validation
     expect(await screen.findByText(amountValidationMessage)).toBeInTheDocument();
 
     // Enter valid amount
-    typeAmount('123.45');
+    replaceAmount('123.45');
     userEvent.click(submitButton); // Trigger validation
     expect(amountInput).toHaveValue('123.45');
     await waitFor(() =>
@@ -130,7 +126,7 @@ describe(SavingsFundPayment, () => {
   it('does not show investment account reminder when amount is 15000 or more', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
 
-    typeAmount('15000');
+    replaceAmount('15000');
 
     expect(await screen.findByText('Did you make the payment?')).toBeInTheDocument();
     expect(
@@ -142,7 +138,7 @@ describe(SavingsFundPayment, () => {
     expect(await findPageHeading()).toBeInTheDocument();
 
     const submitButton = screen.getByRole('button', { name: 'Continue' });
-    typeAmount('123.45');
+    replaceAmount('123.45');
 
     const lhvRadio = screen.getByRole('radio', { name: 'LHV' });
     userEvent.click(lhvRadio);
@@ -187,7 +183,7 @@ describe(SavingsFundPayment, () => {
   it('shows amount in payment details when "Other bank" is selected', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
 
-    typeAmount('250');
+    replaceAmount('250');
 
     const paymentInfoRadio = screen.getByRole('radio', { name: 'Payment info' });
     userEvent.click(paymentInfoRadio);
@@ -198,7 +194,7 @@ describe(SavingsFundPayment, () => {
   it('hides bank selection and shows manual payment details when amount is 15000 or more', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
 
-    typeAmount('15000');
+    replaceAmount('15000');
 
     expect(screen.queryByRole('radio', { name: 'LHV' })).not.toBeInTheDocument();
     expect(screen.queryByRole('radio', { name: 'Payment info' })).not.toBeInTheDocument();
@@ -212,7 +208,7 @@ describe(SavingsFundPayment, () => {
   it('shows "Back to account page" link when amount is 15000 or more', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
 
-    typeAmount('15000');
+    replaceAmount('15000');
 
     expect(await screen.findByText('Did you make the payment?')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Back to account page' })).toHaveAttribute(
@@ -225,7 +221,7 @@ describe(SavingsFundPayment, () => {
   it('shows bank selection when amount is below 15000', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
 
-    typeAmount('14999');
+    replaceAmount('14999');
 
     expect(screen.getByRole('radio', { name: 'LHV' })).toBeInTheDocument();
     expect(screen.getByRole('radio', { name: 'Payment info' })).toBeInTheDocument();
@@ -259,7 +255,7 @@ describe(SavingsFundPayment, () => {
 
     it('shows step-by-step instructions with a bank link when LHV is selected for recurring', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
-      typeAmount('50');
+      replaceAmount('50');
       selectRecurring();
       userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
 
@@ -273,7 +269,7 @@ describe(SavingsFundPayment, () => {
 
     it('shows a landing-URL link and copy-card when SEB is selected for recurring', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
-      typeAmount('50');
+      replaceAmount('50');
       selectRecurring();
       userEvent.click(screen.getByRole('radio', { name: 'SEB' }));
 
@@ -289,7 +285,7 @@ describe(SavingsFundPayment, () => {
     it('does not fetch or render recurring details when amount is below minimum', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
       selectRecurring();
-      typeAmount('0.5');
+      replaceAmount('0.5');
       userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
 
       await waitFor(() =>
@@ -301,7 +297,7 @@ describe(SavingsFundPayment, () => {
 
     it('shows recurring details (without amount row) when no amount is entered', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
-      typeAmount('');
+      replaceAmount('');
       selectRecurring();
       userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
 
@@ -322,7 +318,7 @@ describe(SavingsFundPayment, () => {
       );
 
       expect(await findPageHeading()).toBeInTheDocument();
-      typeAmount('50');
+      replaceAmount('50');
       selectRecurring();
       userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
 
@@ -333,7 +329,7 @@ describe(SavingsFundPayment, () => {
 
     it('shows copy-card instead of auto-link for OTHER bank in recurring flow', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
-      typeAmount('50');
+      replaceAmount('50');
       selectRecurring();
       userEvent.click(screen.getByRole('radio', { name: 'Payment info' }));
 
@@ -344,7 +340,7 @@ describe(SavingsFundPayment, () => {
 
     it('does not render an "Open internet bank" button when Other bank is chosen', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
-      typeAmount('50');
+      replaceAmount('50');
       selectRecurring();
       userEvent.click(screen.getByRole('radio', { name: 'Payment info' }));
 
@@ -354,7 +350,7 @@ describe(SavingsFundPayment, () => {
 
     it('renders the verify and confirm steps for panel A banks', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
-      typeAmount('50');
+      replaceAmount('50');
       selectRecurring();
       userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
 
@@ -373,7 +369,7 @@ describe(SavingsFundPayment, () => {
       });
 
       expect(await findPageHeading()).toBeInTheDocument();
-      typeAmount('50');
+      replaceAmount('50');
       selectRecurring();
       userEvent.click(screen.getByRole('radio', { name: 'SEB' }));
 
@@ -396,7 +392,7 @@ describe(SavingsFundPayment, () => {
       });
 
       expect(await findPageHeading()).toBeInTheDocument();
-      typeAmount('50');
+      replaceAmount('50');
       selectRecurring();
       userEvent.click(screen.getByRole('radio', { name: 'SEB' }));
 
@@ -429,7 +425,7 @@ describe(SavingsFundPayment, () => {
       );
 
       expect(await findPageHeading()).toBeInTheDocument();
-      typeAmount('50');
+      replaceAmount('50');
       selectRecurring();
       userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
 
@@ -514,7 +510,7 @@ describe(SavingsFundPayment, () => {
 
     it('shows company-bank verify step in the recurring panel instead of the investment-account one', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
-      typeAmount('50');
+      replaceAmount('50');
       userEvent.click(screen.getByRole('radio', { name: 'Recurring payment' }));
       userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
 
@@ -530,7 +526,7 @@ describe(SavingsFundPayment, () => {
 
     it('shows a copy-card for Swedbank recurring because the business page has no pre-fill', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
-      typeAmount('50');
+      replaceAmount('50');
       userEvent.click(screen.getByRole('radio', { name: 'Recurring payment' }));
       userEvent.click(screen.getByRole('radio', { name: 'Swedbank' }));
 

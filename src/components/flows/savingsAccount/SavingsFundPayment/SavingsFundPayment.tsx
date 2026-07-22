@@ -19,8 +19,6 @@ import { SavingsFundRecurringDetails } from './SavingsFundRecurringDetails';
 const MONTONIO_MAX_AMOUNT = 15000;
 const MIN_RECURRING_AMOUNT = 1;
 
-// Deposit amount pre-filled on the payment page, nudging a meaningful recurring
-// standing order. Children start lower than adults and companies.
 const DEFAULT_AMOUNT = 250;
 const CHILD_DEFAULT_AMOUNT = 80;
 const defaultAmountFor = (accountHolder: AccountHolder): number =>
@@ -49,8 +47,6 @@ export const SavingsFundPayment: FC = () => {
   return <SavingsFundPaymentForm user={user} />;
 };
 
-// Rendered only once the user is loaded, so the pre-filled amount can be derived
-// from who the deposit is for (self/company vs. child).
 const SavingsFundPaymentForm: FC<{ user: User }> = ({ user }) => {
   const [submitError, setSubmitError] = useState(false);
   // Landing here from a "set up a standing order" link opens the recurring option,
