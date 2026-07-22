@@ -42,6 +42,7 @@ describe('FundingSourcesStep', () => {
     renderWrapped(<Wrapper />);
 
     expect(screen.getByRole('checkbox', { name: /parent.*income/i })).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: /child benefit/i })).toBeInTheDocument();
     expect(screen.getByRole('checkbox', { name: /Gifts/ })).toBeInTheDocument();
     expect(screen.getByRole('checkbox', { name: /Inheritance/ })).toBeInTheDocument();
     expect(screen.getByRole('checkbox', { name: /child.*own money/i })).toBeInTheDocument();
