@@ -250,8 +250,6 @@ export const SavingsFundChildOnboarding = () => {
       try {
         setSubmitError(false);
         setChildCodeRejected(false);
-        // This attempt supersedes any previously verified child, so clear it up
-        // front — a rejected code must not leave the earlier name in the header.
         setValue('child', null);
         const childPersonalCode = getValues('childPersonalCode');
         const response = await createChild({ childPersonalCode });
@@ -388,8 +386,6 @@ export const SavingsFundChildOnboarding = () => {
       history.goBack();
       return;
     }
-    // Going back to the code step unsettles the child: drop the verified one so the
-    // header can't keep naming it while the parent edits or retries the code.
     if (activeSection === 1) {
       setValue('child', null);
     }

@@ -11,8 +11,6 @@ interface OnboardingFlowLayoutProps {
   submitting?: boolean;
   nextDisabled?: boolean;
   backDisabled?: boolean;
-  // Who the account is being opened for, kept under the title on every step. The
-  // child flow sets it so the parent never has to remember which child they picked.
   subtitle?: ReactNode;
   children: ReactNode;
 }
