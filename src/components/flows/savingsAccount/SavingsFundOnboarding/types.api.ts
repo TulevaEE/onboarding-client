@@ -51,7 +51,8 @@ export type FundingSourceOption =
   | 'PARENT_INCOME_AND_SAVINGS'
   | 'GIFTS'
   | 'INHERITANCE'
-  | 'CHILD_OWN';
+  | 'CHILD_OWN'
+  | 'CHILD_BENEFIT';
 export type InvestableAssetsOption =
   | 'LESS_THAN_20K'
   | 'RANGE_20K_40K'

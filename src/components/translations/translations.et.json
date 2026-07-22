@@ -1533,6 +1533,7 @@
   "flows.savingsFundChildOnboarding.fundingSourcesStep.other": "Muu",
   "flows.savingsFundChildOnboarding.fundingSourcesStep.other.required": "Sisesta raha allikas",
   "flows.savingsFundChildOnboarding.fundingSourcesStep.otherPlaceholder": "Sisesta raha allikas",
+  "flows.savingsFundChildOnboarding.fundingSourcesStep.childBenefit": "Lapsetoetus",
   "flows.savingsFundChildOnboarding.termsStep.confirmText": "Kinnitan lapse seadusliku esindajana, et olen dokumentidega tutvunud ja mõistan, et investeering võib ajas nii kasvada kui kahaneda.",
   "flows.savingsFundChildOnboarding.contactDetailsStep.description": "Vaikimisi kasutame sinu kui esindaja kontakti. Kui lapsel on oma e-post, sisesta see.",
   "flows.savingsFundChildOnboarding.contactDetailsStep.title": "Lapse kontaktandmed",

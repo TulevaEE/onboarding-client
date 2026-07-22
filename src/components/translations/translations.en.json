@@ -1443,6 +1443,7 @@
   "flows.savingsFundChildOnboarding.fundingSourcesStep.other": "Other",
   "flows.savingsFundChildOnboarding.fundingSourcesStep.other.required": "Enter the source of money",
   "flows.savingsFundChildOnboarding.fundingSourcesStep.otherPlaceholder": "Enter the source of money",
+  "flows.savingsFundChildOnboarding.fundingSourcesStep.childBenefit": "Child benefit",
   "flows.savingsFundChildOnboarding.termsStep.confirmText": "As the child’s legal representative, I confirm that I have reviewed the documents and understand that the investment can both grow and shrink over time.",
   "flows.savingsFundChildOnboarding.contactDetailsStep.description": "By default we use your contact as the child’s representative. If the child has their own email, enter it.",
   "flows.savingsFundChildOnboarding.contactDetailsStep.title": "The child’s contact details",

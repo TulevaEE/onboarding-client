@@ -15,6 +15,11 @@ const OPTIONS: { id: string; value: FundingSourceOption; labelId: TranslationKey
     labelId: 'flows.savingsFundChildOnboarding.fundingSourcesStep.parentIncome',
   },
   {
+    id: 'funding-child-benefit',
+    value: 'CHILD_BENEFIT',
+    labelId: 'flows.savingsFundChildOnboarding.fundingSourcesStep.childBenefit',
+  },
+  {
     id: 'funding-gifts',
     value: 'GIFTS',
     labelId: 'flows.savingsFundChildOnboarding.fundingSourcesStep.gifts',
