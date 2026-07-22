@@ -3,7 +3,7 @@ import { Control, useForm } from 'react-hook-form';
 import { useHistory, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { captureException } from '@sentry/browser';
-import { ChildOnboardingFormData, IdentityFormFields } from './types';
+import { ChildOnboardingFormData, IdentityFormFields, VerifiedChild } from './types';
 import { Loader } from '../../../common';
 import { ChildIdentityStep } from './ChildIdentityStep';
 import { ChildConfirmStep } from './ChildConfirmStep';
@@ -38,7 +38,6 @@ const isChildCodeRejection = (error: unknown): boolean => {
 
 const emptyChildOnboardingForm = (childPersonalCode: string): ChildOnboardingFormData => ({
   childPersonalCode,
-  child: null,
   citizenship: [],
   address: { countryCode: 'EE', street: '', city: '', postalCode: '' },
   email: '',
@@ -69,6 +68,7 @@ export const SavingsFundChildOnboarding = () => {
     arrivedFromSwitcher ? false : null,
   );
   const [verifyingSwitcherPick, setVerifyingSwitcherPick] = useState(arrivedFromSwitcher);
+  const [child, setChild] = useState<VerifiedChild | null>(null);
 
   const { data: me } = useMe();
   const { data: eligibleChildren = [] } = useEligibleChildren();
@@ -81,7 +81,6 @@ export const SavingsFundChildOnboarding = () => {
     defaultValues: emptyChildOnboardingForm(switcherPickedChildCode),
   });
 
-  const child = watch('child');
   const termsAccepted = watch('termsAccepted');
 
   // Once only, and only into empty fields: a /v1/me refetch must not clobber typed contacts.
@@ -250,7 +249,7 @@ export const SavingsFundChildOnboarding = () => {
       try {
         setSubmitError(false);
         setChildCodeRejected(false);
-        setValue('child', null);
+        setChild(null);
         const childPersonalCode = getValues('childPersonalCode');
         const response = await createChild({ childPersonalCode });
         if (superseded()) {
@@ -258,7 +257,7 @@ export const SavingsFundChildOnboarding = () => {
         }
         // A VERIFIED body without a name is malformed — treat it as under review.
         if (response.status === 'VERIFIED' && response.firstName) {
-          setValue('child', {
+          setChild({
             firstName: response.firstName,
             lastName: response.lastName ?? '',
             dateOfBirth: response.dateOfBirth ?? '',
@@ -297,6 +296,7 @@ export const SavingsFundChildOnboarding = () => {
     }
     verifiedSwitcherPickRef.current = switcherPickedChildCode;
     reset(emptyChildOnboardingForm(switcherPickedChildCode));
+    setChild(null);
     contactPrefilledRef.current = false;
     prefillParentContactIfEmpty();
     setManualConfirm(false);
@@ -387,7 +387,7 @@ export const SavingsFundChildOnboarding = () => {
       return;
     }
     if (activeSection === 1) {
-      setValue('child', null);
+      setChild(null);
     }
     setActiveSection((current) => Math.max(current - 1, 0));
     if (submitError) {

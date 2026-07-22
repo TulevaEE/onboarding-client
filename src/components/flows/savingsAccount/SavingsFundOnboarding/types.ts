@@ -64,8 +64,6 @@ export type FundingSourcesValue = FundingSourcesSurveyItem['value'];
 // child (derived backend-side from the population register).
 export interface ChildOnboardingFormData extends SharedOnboardingFields, IdentityFormFields {
   childPersonalCode: string;
-  // Populated once POST /v1/me/children confirms custody (VERIFIED); null until then.
-  child: VerifiedChild | null;
   investmentGoals: InvestmentGoalsMultiValue;
   plannedContribution: PlannedContributionOption | null;
   investableAssets: InvestableAssetsOption | null;

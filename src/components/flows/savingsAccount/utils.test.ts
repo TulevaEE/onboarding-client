@@ -179,7 +179,6 @@ const buildChildFormData = (
   phoneNumber: '+37255555555',
   pepSelfDeclaration: null,
   childPersonalCode: '61509070000',
-  child: { firstName: 'Mammu', lastName: 'Maasikas', dateOfBirth: '2015-09-07' },
   investmentGoals: [{ type: 'OPTION', value: 'EDUCATION' }],
   plannedContribution: 'FROM_200_TO_600',
   investableAssets: 'UP_TO_2000',
