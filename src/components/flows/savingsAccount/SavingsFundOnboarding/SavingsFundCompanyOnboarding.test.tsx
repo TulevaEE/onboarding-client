@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { captureException } from '@sentry/browser';
 import {
   businessRegistryBackend,
   companyValidationBackend,
@@ -30,11 +31,14 @@ import {
 
 mockInAadress();
 
+jest.mock('@sentry/browser', () => ({ captureException: jest.fn() }));
+
 const server = setupServer();
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 beforeEach(() => {
   initializeConfiguration();
+  (captureException as jest.Mock).mockClear();
   businessRegistryBackend(server, [{ company_id: 123, name: 'Acme Corp', reg_code: '12345678' }]);
   companyValidationBackend(server);
   userBackend(server);
@@ -501,9 +505,143 @@ describe('SavingsFundCompanyOnboarding', () => {
     ).toBeInTheDocument();
     expect(screen.getByText('4/11')).toBeInTheDocument();
   });
+
+  it('reports the identity submission failure to Sentry', async () => {
+    kycIdentityBackend(server, mockContactOnlyKycIdentity);
+    server.use(
+      rest.post('http://localhost/v1/kyc/surveys', (_req, res, ctx) => res(ctx.status(500))),
+    );
+
+    renderWrapped(<SavingsFundCompanyOnboarding />);
+
+    expect(await screen.findByText('1/11')).toBeInTheDocument();
+
+    await fillCitizenshipStep();
+    await fillResidencyStep();
+    await fillContactDetailsStep();
+    await fillPepStep();
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(captureException).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports the company survey submission failure to Sentry', async () => {
+    await navigateToStep2();
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) =>
+        res(ctx.status(500), ctx.json({ error: 'INTERNAL_ERROR' })),
+      ),
+    );
+
+    userEvent.click(continueButton());
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(captureException).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports the role switch failure to Sentry and shows the error', async () => {
+    await navigateToStep2();
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
+        res(ctx.json({ status: 'COMPLETED' })),
+      ),
+      rest.post('http://localhost/v1/me/role', (_req, res, ctx) => res(ctx.status(500))),
+    );
+
+    userEvent.click(continueButton());
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(captureException).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not resubmit an unchanged identity when crossing back into the company steps', async () => {
+    kycIdentityBackend(server, mockContactOnlyKycIdentity);
+    let identityPosts = 0;
+    savingsFundOnboardingSurveyBackend(server, () => {
+      identityPosts += 1;
+    });
+
+    renderWrapped(<SavingsFundCompanyOnboarding />);
+
+    expect(await screen.findByText('1/11')).toBeInTheDocument();
+
+    await fillCitizenshipStep();
+    await fillResidencyStep();
+    await fillContactDetailsStep();
+    await fillPepStep();
+    expect(
+      await screen.findByRole('heading', { level: 2, name: "Enter your company's name" }),
+    ).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: /back/i }));
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Are you a politically exposed person?',
+        level: 2,
+      }),
+    ).toBeInTheDocument();
+    userEvent.click(continueButton());
+
+    expect(
+      await screen.findByRole('heading', { level: 2, name: "Enter your company's name" }),
+    ).toBeInTheDocument();
+    expect(identityPosts).toBe(1);
+  });
+
+  it('resubmits the identity when it was edited after the first submission', async () => {
+    kycIdentityBackend(server, mockContactOnlyKycIdentity);
+    const submittedEmails: (string | undefined)[] = [];
+    savingsFundOnboardingSurveyBackend(server, (body) => {
+      const emailAnswer = body.answers.find((answer) => answer.type === 'EMAIL') as
+        | { type: string; value: { value: string } }
+        | undefined;
+      submittedEmails.push(emailAnswer?.value.value);
+    });
+
+    renderWrapped(<SavingsFundCompanyOnboarding />);
+
+    expect(await screen.findByText('1/11')).toBeInTheDocument();
+
+    await fillCitizenshipStep();
+    await fillResidencyStep();
+    await fillContactDetailsStepWith('first@example.com');
+    await fillPepStep();
+    expect(
+      await screen.findByRole('heading', { level: 2, name: "Enter your company's name" }),
+    ).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: /back/i }));
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Are you a politically exposed person?',
+        level: 2,
+      }),
+    ).toBeInTheDocument();
+    userEvent.click(screen.getByRole('button', { name: /back/i }));
+
+    await fillContactDetailsStepWith('changed@example.com');
+    await fillPepStep();
+
+    expect(
+      await screen.findByRole('heading', { level: 2, name: "Enter your company's name" }),
+    ).toBeInTheDocument();
+    expect(submittedEmails).toEqual(['first@example.com', 'changed@example.com']);
+  });
 });
 
 const continueButton = () => screen.getByRole('button', { name: /continue/i });
+
+const fillContactDetailsStepWith = async (email: string) => {
+  const emailInput = await screen.findByRole('textbox', { name: 'Email' });
+  userEvent.clear(emailInput);
+  userEvent.type(emailInput, email);
+  userEvent.click(continueButton());
+};
 
 const selectCompany = async () => {
   userEvent.type(await screen.findByPlaceholderText('Search...'), 'Acme');

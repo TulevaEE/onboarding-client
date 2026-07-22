@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
+import { captureException } from '@sentry/browser';
 import { CompanyOnboardingFormData } from './types';
 import { BusinessRegistryStep } from './BusinessRegistryStep';
 import { RequirementsCheckStep } from './RequirementsCheckStep';
@@ -57,7 +58,8 @@ export const SavingsFundCompanyOnboarding = () => {
         try {
           await switchRole({ type: 'LEGAL_ENTITY', code: submittedRegistryCode });
           history.push('/savings-fund/onboarding/success/company');
-        } catch {
+        } catch (e) {
+          captureException(e);
           setSubmitError(true);
         }
       };
@@ -107,6 +109,7 @@ export const SavingsFundCompanyOnboarding = () => {
   // steps inline and submit them as IDENTITY_ONLY before the KYB steps — the
   // screening runs without touching the person's own onboarding status.
   const { identityOnFile, identityLoadFailed, retryIdentityLoad } = useIdentityOnFile(setValue);
+  const lastSubmittedIdentity = useRef<string | null>(null);
 
   const submitForm = handleSubmit(async (data) => {
     const registryCode = data.registryLookup?.registryNumber ?? '';
@@ -246,6 +249,7 @@ export const SavingsFundCompanyOnboarding = () => {
         setSubmitError(false);
         await submitForm();
       } catch (e) {
+        captureException(e);
         setSubmitError(true);
       }
       return;
@@ -253,12 +257,20 @@ export const SavingsFundCompanyOnboarding = () => {
     if (isLastIdentityStep) {
       // Crossing from identity into KYB: persist the identity first and wait —
       // the KYB requirements check reads the screening this submission creates.
-      try {
-        setSubmitError(false);
-        await submitIdentitySurvey(transformIdentityToOnboardingSurveyCommand(getValues()));
-      } catch (e) {
-        setSubmitError(true);
-        return;
+      // Re-crossing with unchanged answers skips the resubmit, so going back and
+      // forth does not pile up duplicate surveys and screenings.
+      const identityCommand = transformIdentityToOnboardingSurveyCommand(getValues());
+      const identityPayload = JSON.stringify(identityCommand);
+      if (identityPayload !== lastSubmittedIdentity.current) {
+        try {
+          setSubmitError(false);
+          await submitIdentitySurvey(identityCommand);
+          lastSubmittedIdentity.current = identityPayload;
+        } catch (e) {
+          captureException(e);
+          setSubmitError(true);
+          return;
+        }
       }
     }
     setActiveSection((current) => Math.min(current + 1, totalSections - 1));

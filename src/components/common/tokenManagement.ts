@@ -14,9 +14,14 @@ function getCurrentAccessToken(): string | null {
   return currentAccessToken;
 }
 
-type TokenRefreshSubscriber = (tokens: Token) => void;
+type TokenRefreshSubscriber = {
+  onRefreshed: (tokens: Token) => void;
+  onFailed: (error: unknown) => void;
+};
 let tokenRefreshSubscribers: TokenRefreshSubscriber[] = [];
 let isRefreshing = false;
+
+const REFRESH_REQUEST_TIMEOUT_MILLIS = 15000;
 
 function setIsRefreshing(is: boolean): void {
   isRefreshing = is;
@@ -26,11 +31,19 @@ function getIsRefreshing(): boolean {
   return isRefreshing;
 }
 
+function takeTokenRefreshSubscribers(): TokenRefreshSubscriber[] {
+  const subscribers = tokenRefreshSubscribers;
+  tokenRefreshSubscribers = [];
+  return subscribers;
+}
+
 async function executeRefreshTokenRequest(authenticationPrincipal: AuthenticationManager) {
   try {
-    const response = await axios.post('/oauth/refresh-token', {
-      refresh_token: authenticationPrincipal.refreshToken,
-    });
+    const response = await axios.post(
+      '/oauth/refresh-token',
+      { refresh_token: authenticationPrincipal.refreshToken },
+      { timeout: REFRESH_REQUEST_TIMEOUT_MILLIS },
+    );
 
     const { access_token: newAccessToken, refresh_token: newRefreshToken } = response.data;
     const updatedPrincipal: AuthenticationPrincipal = {
@@ -42,12 +55,15 @@ async function executeRefreshTokenRequest(authenticationPrincipal: Authenticatio
     authenticationPrincipal.update(updatedPrincipal);
     setIsRefreshing(false);
 
-    tokenRefreshSubscribers.forEach((callback) => callback(newAccessToken));
-    tokenRefreshSubscribers = [];
+    takeTokenRefreshSubscribers().forEach(({ onRefreshed }) =>
+      onRefreshed({ accessToken: newAccessToken, refreshToken: newRefreshToken }),
+    );
 
     return updatedPrincipal;
   } catch (error: unknown) {
     setIsRefreshing(false);
+
+    takeTokenRefreshSubscribers().forEach(({ onFailed }) => onFailed(error));
 
     // eslint-disable-next-line no-console
     console.error('Token refresh failed:', error);
@@ -58,14 +74,17 @@ async function executeRefreshTokenRequest(authenticationPrincipal: Authenticatio
 function queueRequestToWaitForANewToken(
   authenticationPrincipal: AuthenticationManager,
 ): Promise<AuthenticationManager> {
-  return new Promise((resolve) => {
-    tokenRefreshSubscribers.push((tokens: Token) => {
-      const updatedPrincipal: AuthenticationManager = {
-        ...authenticationPrincipal,
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
-      };
-      resolve(updatedPrincipal);
+  return new Promise((resolve, reject) => {
+    tokenRefreshSubscribers.push({
+      onRefreshed: (tokens: Token) => {
+        const updatedPrincipal: AuthenticationManager = {
+          ...authenticationPrincipal,
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+        };
+        resolve(updatedPrincipal);
+      },
+      onFailed: reject,
     });
   });
 }

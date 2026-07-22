@@ -94,6 +94,73 @@ describe('Axios Instance Creation and Interceptors', () => {
     }
   });
 
+  it('retries all concurrently queued requests with the refreshed token', async () => {
+    const axiosInstance = createAxiosInstance();
+    const newAccessToken = 'newAccessToken';
+
+    mockAxios.onGet('/first').replyOnce(401, { error: 'TOKEN_EXPIRED' });
+    mockAxios.onGet('/second').replyOnce(401, { error: 'TOKEN_EXPIRED' });
+    mockAxios.onPost('/oauth/refresh-token').reply(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(
+            () =>
+              resolve([200, { access_token: newAccessToken, refresh_token: 'newRefreshToken' }]),
+            50,
+          );
+        }),
+    );
+    const retriedAuthHeaders: (string | undefined)[] = [];
+    mockAxios.onGet('/first').reply((configuration: AxiosRequestConfig) => {
+      retriedAuthHeaders.push(configuration.headers?.Authorization as string);
+      return [200, {}];
+    });
+    mockAxios.onGet('/second').reply((configuration: AxiosRequestConfig) => {
+      retriedAuthHeaders.push(configuration.headers?.Authorization as string);
+      return [200, {}];
+    });
+
+    await Promise.all([axiosInstance.get('/first'), axiosInstance.get('/second')]);
+
+    expect(retriedAuthHeaders).toEqual([`Bearer ${newAccessToken}`, `Bearer ${newAccessToken}`]);
+  });
+
+  it('rejects queued requests when the token refresh fails instead of leaving them pending', async () => {
+    const axiosInstance = createAxiosInstance();
+
+    mockAxios.onGet('/first').replyOnce(401, { error: 'TOKEN_EXPIRED' });
+    mockAxios.onGet('/second').replyOnce(401, { error: 'TOKEN_EXPIRED' });
+    mockAxios.onPost('/oauth/refresh-token').reply(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => resolve([500, {}]), 50);
+        }),
+    );
+
+    const results = await Promise.allSettled([
+      axiosInstance.get('/first'),
+      axiosInstance.get('/second'),
+    ]);
+
+    expect(results.map((result) => result.status)).toEqual(['rejected', 'rejected']);
+  });
+
+  it('bounds the refresh request with a timeout', async () => {
+    const axiosInstance = createAxiosInstance();
+
+    mockAxios.onGet('/test').replyOnce(401, { error: 'TOKEN_EXPIRED' });
+    let refreshTimeout: number | undefined;
+    mockAxios.onPost('/oauth/refresh-token').reply((configuration: AxiosRequestConfig) => {
+      refreshTimeout = configuration.timeout;
+      return [200, { access_token: 'newAccessToken', refresh_token: 'newRefreshToken' }];
+    });
+    mockAxios.onGet('/test').reply(200, {});
+
+    await axiosInstance.get('/test');
+
+    expect(refreshTimeout).toBe(15000);
+  });
+
   it('sets Accept-Language header according to config', async () => {
     const axiosInstance = createAxiosInstance();
 
