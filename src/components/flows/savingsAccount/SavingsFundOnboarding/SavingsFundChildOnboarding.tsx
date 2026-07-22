@@ -428,6 +428,14 @@ export const SavingsFundChildOnboarding = () => {
         submitting={creatingChild || isFinalizing || verifyingSwitcherPick}
         backDisabled={isFinalizing || verifyingSwitcherPick}
         nextDisabled={isTermsStep && (!termsAccepted || !me?.personalCode)}
+        subtitle={
+          child ? (
+            <FormattedMessage
+              id="flows.savingsFundChildOnboarding.forChild"
+              values={{ name: `${child.firstName} ${child.lastName}`.trim() }}
+            />
+          ) : undefined
+        }
       >
         {verifyingSwitcherPick ? (
           <Loader className="align-middle" />

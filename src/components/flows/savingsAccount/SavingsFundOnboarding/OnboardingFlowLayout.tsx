@@ -11,6 +11,9 @@ interface OnboardingFlowLayoutProps {
   submitting?: boolean;
   nextDisabled?: boolean;
   backDisabled?: boolean;
+  // Who the account is being opened for, kept under the title on every step. The
+  // child flow sets it so the parent never has to remember which child they picked.
+  subtitle?: ReactNode;
   children: ReactNode;
 }
 
@@ -23,6 +26,7 @@ export const OnboardingFlowLayout: FC<OnboardingFlowLayoutProps> = ({
   submitting,
   nextDisabled,
   backDisabled,
+  subtitle,
   children,
 }) => {
   const progressPercentage = (currentStep / totalSteps) * 100;
@@ -43,9 +47,12 @@ export const OnboardingFlowLayout: FC<OnboardingFlowLayoutProps> = ({
             {currentStep}/{totalSteps}
           </span>
         </div>
-        <h1 className="m-0">
-          <FormattedMessage id="flows.savingsFundOnboarding.title" />
-        </h1>
+        <div className="d-flex flex-column gap-1">
+          <h1 className="m-0">
+            <FormattedMessage id="flows.savingsFundOnboarding.title" />
+          </h1>
+          {subtitle ? <p className="m-0 fs-3 text-body-secondary">{subtitle}</p> : null}
+        </div>
       </div>
       {loading ? <Loader /> : children}
       {!loading && (
