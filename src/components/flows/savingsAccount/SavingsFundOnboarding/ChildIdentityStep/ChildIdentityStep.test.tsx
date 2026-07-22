@@ -28,7 +28,6 @@ const Wrapper = ({ defaultCode = '' }: { defaultCode?: string }) => {
     mode: 'onBlur',
     defaultValues: {
       childPersonalCode: defaultCode,
-      child: null,
       citizenship: [],
       address: { countryCode: 'EE', street: '', city: '', postalCode: '' },
       email: '',
