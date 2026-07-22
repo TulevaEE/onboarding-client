@@ -84,6 +84,22 @@ describe('SavingsFundChildOnboarding', () => {
     expect(screen.getByLabelText(/personal ID code/i)).toBeInTheDocument();
   });
 
+  it('keeps naming the child on later steps, so the parent can see whose account it is', async () => {
+    renderWrapped(<SavingsFundChildOnboarding />);
+    await verifyChild();
+
+    expect(await screen.findByText('2/9')).toBeInTheDocument(); // confirm
+    userEvent.click(continueButton());
+
+    expect(await screen.findByText('3/9')).toBeInTheDocument(); // residency
+    userEvent.click(continueButton());
+
+    // The email step is far enough from the identity step that the parent has lost
+    // track of which child they picked, so the name has to stay on screen.
+    expect(await screen.findByText('4/9')).toBeInTheDocument(); // contact
+    expect(screen.getByText(/Mammu Maasikas/)).toBeInTheDocument();
+  });
+
   it('skips the child selector when arriving from the account switcher and opens on the first question', async () => {
     eligibleChildrenBackend(server, [
       {
@@ -288,9 +304,10 @@ describe('SavingsFundChildOnboarding', () => {
     );
     userEvent.click(continueButton());
 
-    // Straight to residency — no separate card restating the child's details.
+    // Straight to residency — no separate card restating the child's details. The
+    // flow header still names the child, so assert on the card, not the name.
     expect(await screen.findByText('2/8')).toBeInTheDocument();
-    expect(screen.queryByText(/Mammu Maasikas/)).not.toBeInTheDocument();
+    expect(screen.queryByRole('definition')).not.toBeInTheDocument();
   });
 
   it('confirms a manually entered child from the population register when custody is verified', async () => {
@@ -298,7 +315,9 @@ describe('SavingsFundChildOnboarding', () => {
 
     await verifyChild();
 
-    expect(await screen.findByText(/Mammu Maasikas/)).toBeInTheDocument();
+    // The header names the child too, so scope the check to the confirm card itself.
+    const [nameValue] = await screen.findAllByRole('definition');
+    expect(nameValue).toHaveTextContent('Mammu Maasikas');
     expect(screen.getByText(/07\.09\.2015/)).toBeInTheDocument();
   });
 
