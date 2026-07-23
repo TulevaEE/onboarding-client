@@ -199,6 +199,9 @@ export const SavingsFundPayment: FC = () => {
                   <FormattedMessage id="savingsFund.payment.investmentAccountReminder" />
                 </p>
               ) : null}
+              <p className="text-body-secondary m-0">
+                <FormattedMessage id="savingsFund.payment.transferLimit" />
+              </p>
               <div className="d-flex justify-content-between">
                 <Link to="/account" className="btn btn-outline-primary">
                   <FormattedMessage id="savingsFund.payment.form.cancel.label" />

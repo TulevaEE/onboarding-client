@@ -59,6 +59,14 @@ export const InfoSection: FC<InfoSectionProps> = ({ variant, accountHolder = 'se
           media={<Defer />}
         />
       )}
+      {accountHolder === 'child' && variant === 'payment' && (
+        <SimpleListItem
+          title={intl.formatMessage({
+            id: 'savingsFund.payment.infoSection.noInvestmentAccount.child',
+          })}
+          media={<CircleOff />}
+        />
+      )}
       <SimpleListItem
         title={intl.formatMessage({ id: `savingsFund.${variant}.infoSection.fees` })}
         media={variant === 'payment' ? <Deposit /> : <CircleOff />}

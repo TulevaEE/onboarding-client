@@ -1268,8 +1268,9 @@
   "savingsFund.payment.infoSection.investmentAccount.learnMore": "Mis see on ja kuidas see käib?",
   "savingsFund.payment.infoSection.creditor": "Raha peab laekuma sinu enda pangakontolt.",
   "savingsFund.payment.infoSection.creditor.legalEntity": "Raha peab laekuma sinu osaühingu pangakontolt.",
-  "savingsFund.payment.infoSection.creditor.child": "Raha peab laekuma lapse pangakontolt.",
+  "savingsFund.payment.infoSection.creditor.child": "Raha peab laekuma sinu või lapse pangakontolt.",
   "savingsFund.payment.infoSection.fees": "Sissemakse tegemine on tasuta.",
+  "savingsFund.payment.infoSection.noInvestmentAccount.child": "Ära kasuta lapse sissemakseks oma investeerimiskontot.",
   "savingsFund.payment.linkGenerationError": "Makse algatamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee",
 
   "savingsFund.payment.otherBank.title": "Tee sissemakse teisest pangast",
@@ -1289,6 +1290,7 @@
   "savingsFund.payment.success.description": "Sissemakse summa investeeritakse fondi kahe tööpäeva jooksul. Teavitame sellest meili teel.",
   "savingsFund.payment.investmentAccountReminder": "Kasutad investeerimiskontot? Kontrolli, et maksja konto oleks õige.",
   "savingsFund.payment.accountOwner": "Konto: {accountOwner}",
+  "savingsFund.payment.transferLimit": "Veendu, et sinu pangakonto ülekandelimiit on piisavalt suur.",
 
   "savingsFund.withdraw.pageTitle": "Väljamakse",
   "savingsFund.withdraw.title": "Väljamakse Täiendavast Kogumisfondist",

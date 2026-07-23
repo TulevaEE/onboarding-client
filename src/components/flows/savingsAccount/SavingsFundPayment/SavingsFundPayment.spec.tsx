@@ -79,6 +79,14 @@ describe(SavingsFundPayment, () => {
     expect(submitButton).toBeEnabled();
   });
 
+  it('reminds about bank transfer limits on a single payment', async () => {
+    expect(await findPageHeading()).toBeInTheDocument();
+
+    expect(
+      screen.getByText('Make sure your bank transaction limits are high enough.'),
+    ).toBeInTheDocument();
+  });
+
   it('shows investment account reminder only after a bank is selected', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
 
@@ -541,7 +549,7 @@ describe(SavingsFundPayment, () => {
       expect(await findPageHeading()).toBeInTheDocument();
 
       expect(
-        screen.getByText('The money must come from the child’s bank account.'),
+        screen.getByText('The money must come from your or the child’s bank account.'),
       ).toBeInTheDocument();
       expect(
         screen.queryByText('The money must come from a bank account in your name.'),
