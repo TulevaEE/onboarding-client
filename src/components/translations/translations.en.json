@@ -1186,8 +1186,9 @@
   "savingsFund.payment.infoSection.investmentAccount.learnMore": "What is this and how does it work?",
   "savingsFund.payment.infoSection.creditor": "The money must come from a bank account in your name.",
   "savingsFund.payment.infoSection.creditor.legalEntity": "The money must come from your company's bank account.",
-  "savingsFund.payment.infoSection.creditor.child": "The money must come from the child’s bank account.",
+  "savingsFund.payment.infoSection.creditor.child": "The money must come from your or the child’s bank account.",
   "savingsFund.payment.infoSection.fees": "Making a deposit is free.",
+  "savingsFund.payment.infoSection.noInvestmentAccount.child": "Don’t use your own investment account for the child’s deposit.",
   "savingsFund.payment.linkGenerationError": "There was an error initiating the payment. Please try again later or contact us: tuleva@tuleva.ee.",
 
   "savingsFund.payment.otherBank.title": "Make a deposit from another bank",
@@ -1207,6 +1208,7 @@
   "savingsFund.payment.success.description": "The deposit amount will be invested in the fund within two business days. We will notify you of this by email.",
   "savingsFund.payment.investmentAccountReminder": "Using an investment account? Check that the payer account is correct.",
   "savingsFund.payment.accountOwner": "Account: {accountOwner}",
+  "savingsFund.payment.transferLimit": "Make sure your bank transaction limits are high enough.",
 
   "savingsFund.withdraw.pageTitle": "Withdraw",
   "savingsFund.withdraw.title": "Withdraw from Additional Savings Fund",
