@@ -16,7 +16,7 @@ import { InfoSection } from '../InfoSection';
 import Card from '../../../common/card';
 import { Euro } from '../../../common/Euro';
 
-const parseAmount = (value: string | number | undefined): number => {
+const parseAmount = (value: string | number | null | undefined): number => {
   if (!value) {
     return 0;
   }
@@ -26,7 +26,7 @@ const parseAmount = (value: string | number | undefined): number => {
 };
 
 type IWithdrawalForm = {
-  amount: number | undefined;
+  amount: number | null;
   iban: string;
 };
 
@@ -48,7 +48,7 @@ export const SavingsFundWithdraw: FC = () => {
   } = useForm<IWithdrawalForm>({
     mode: 'onChange',
     defaultValues: {
-      amount: undefined,
+      amount: null,
       iban: '',
     },
   });

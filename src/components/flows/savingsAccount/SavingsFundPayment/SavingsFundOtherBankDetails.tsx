@@ -8,7 +8,7 @@ const ACCOUNT_NAME = 'Tuleva Täiendav Kogumisfond';
 const ACCOUNT_NUMBER = 'EE711010220306707220';
 
 export const SavingsFundOtherBankDetails: FC<{
-  amount: number | undefined;
+  amount: number | null | undefined;
   personalCode: string;
   titleId?: TranslationKey;
 }> = ({ amount, personalCode, titleId = 'savingsFund.payment.otherBank.title' }) => (

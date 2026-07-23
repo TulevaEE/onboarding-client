@@ -46,7 +46,9 @@ export function AmountInput<T extends FieldValues>({
             <CurrencyInput
               id={inputId}
               value={field.value}
-              onChange={field.onChange}
+              // An undefined value makes react-hook-form fall back to the field's
+              // default, so a cleared input would repopulate; null is kept as-is.
+              onChange={(value) => field.onChange(value ?? null)}
               error={!!fieldState.error}
               max={max}
             />
