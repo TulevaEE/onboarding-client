@@ -5,11 +5,11 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 import { redirectToPayment } from '../../../common/api';
 import { useMe } from '../../../common/apiHooks';
-import { PaymentChannel } from '../../../common/apiModels';
+import { PaymentChannel, User } from '../../../common/apiModels';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { PaymentBankButtons } from '../../thirdPillar/ThirdPillarPayment/PaymentBankButtons';
 import { BankKey } from '../../thirdPillar/ThirdPillarPayment/types';
-import { accountHolderFor } from '../accountHolder';
+import { AccountHolder, accountHolderFor } from '../accountHolder';
 import { AmountInput } from '../AmountInput';
 import { InfoSection } from '../InfoSection';
 import { PaymentTypeSelection, SavingsFundPaymentType } from './PaymentTypeSelection';
@@ -18,6 +18,12 @@ import { SavingsFundRecurringDetails } from './SavingsFundRecurringDetails';
 
 const MONTONIO_MAX_AMOUNT = 15000;
 const MIN_RECURRING_AMOUNT = 1;
+
+const DEFAULT_AMOUNT = 250;
+const CHILD_DEFAULT_AMOUNT = 80;
+const defaultAmountFor = (accountHolder: AccountHolder): number =>
+  accountHolder === 'child' ? CHILD_DEFAULT_AMOUNT : DEFAULT_AMOUNT;
+
 const RECURRING_BANK_KEYS = ['LHV', 'COOP', 'SWEDBANK', 'SEB', 'LUMINOR', 'OTHER'] as const;
 type RecurringBankKey = (typeof RECURRING_BANK_KEYS)[number];
 const toRecurringBank = (value: string | undefined): RecurringBankKey | null => {
@@ -31,6 +37,17 @@ type IPaymentForm = {
 };
 
 export const SavingsFundPayment: FC = () => {
+  const { data: user } = useMe();
+  usePageTitle('savingsFund.payment.pageTitle');
+
+  if (!user) {
+    return null;
+  }
+
+  return <SavingsFundPaymentForm user={user} />;
+};
+
+const SavingsFundPaymentForm: FC<{ user: User }> = ({ user }) => {
   const [submitError, setSubmitError] = useState(false);
   // Landing here from a "set up a standing order" link opens the recurring option,
   // the same way the III pillar payment page does.
@@ -38,7 +55,10 @@ export const SavingsFundPayment: FC = () => {
     new URLSearchParams(useLocation().search).get('type') === 'RECURRING' ? 'RECURRING' : 'SINGLE';
   const [paymentType, setPaymentType] = useState<SavingsFundPaymentType>(initialPaymentType);
   const intl = useIntl();
-  const { data: user } = useMe();
+
+  const accountHolder = accountHolderFor(user);
+  const isLegalEntity = accountHolder === 'company';
+
   const {
     handleSubmit,
     control,
@@ -46,7 +66,7 @@ export const SavingsFundPayment: FC = () => {
     formState: { errors, isSubmitting },
   } = useForm<IPaymentForm>({
     defaultValues: {
-      amount: undefined,
+      amount: defaultAmountFor(accountHolder),
       paymentMethod: undefined,
     },
   });
@@ -59,14 +79,6 @@ export const SavingsFundPayment: FC = () => {
   const isRecurring = paymentType === 'RECURRING';
   const recurringBank = isRecurring ? toRecurringBank(paymentMethod) : null;
   const hasValidRecurringAmount = Number.isFinite(amount) && (amount ?? 0) >= MIN_RECURRING_AMOUNT;
-  usePageTitle('savingsFund.payment.pageTitle');
-
-  if (!user) {
-    return null;
-  }
-
-  const accountHolder = accountHolderFor(user);
-  const isLegalEntity = accountHolder === 'company';
 
   const handleRedirect = async (data: IPaymentForm) => {
     try {
