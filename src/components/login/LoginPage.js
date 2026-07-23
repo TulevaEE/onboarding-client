@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Redirect, withRouter } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 
 import { logo, AuthenticationLoader, ErrorAlert } from '../common';
 import { usePageTitle } from '../common/usePageTitle';
+import { captureOnboardingPreviewFlags } from '../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
 import styles from './LoginPage.module.scss';
 import { loginPath } from './constants';
 
@@ -39,6 +40,13 @@ export const LoginPage = ({
   location,
 }) => {
   usePageTitle('pageTitle.loginPage');
+
+  // Capture any onboarding preview override (?childOnboardingPreview=true) from
+  // the entry URL now, so it survives the post-login redirect that keeps only
+  // the pathname. This is how a preview link enables the child flow through login.
+  useEffect(() => {
+    captureOnboardingPreviewFlags();
+  }, []);
 
   if (isAuthenticated) {
     return <Redirect to={location.state && location.state.from ? location.state.from : '/'} />;
