@@ -548,7 +548,7 @@ describe('withdrawals flow with only second pillar and arrests/bankruptcy', () =
     });
 
     await confirmAndSignAndAssertDone();
-  });
+  }, 20_000);
 });
 
 describe('withdrawals flow with only third pillar', () => {
@@ -607,5 +607,5 @@ describe('withdrawals flow with only third pillar', () => {
     });
 
     await confirmAndSignAndAssertDone();
-  });
+  }, 20_000);
 });

@@ -125,6 +125,12 @@ export const ESTONIAN_AVERAGE_FEE = 0.0083;
 export const STATE_SECOND_PILLAR_TOP_UP = 4;
 export const SECOND_PILLAR_RATES = [2, 4, 6];
 
+// Tuleva's liikmeboonus: a member earns 0.05% of their whole Tuleva balance (II, III
+// and savings fund together) into member capital each year. Modelled at book value —
+// the sum contributed, not the ~1.3x fair value the cooperative's equity trades at —
+// so the projection never talks up the price of Tuleva's own shares to a member.
+export const MEMBERSHIP_BONUS_RATE = 0.0005;
+
 export const THIRD_PILLAR_ANNUAL_TAX_CAP = 6000;
 export const THIRD_PILLAR_TAX_DEDUCTIBLE_RATE = 0.15;
 /** The most anyone can pay in a month and still earn a refund on all of it. */
@@ -162,6 +168,17 @@ export interface CalculatorInputs {
    *  balance that already contains gains must not all count as tax-free principal.
    *  Defaults to the balance (no gains yet). */
   savingsFundBasis?: number;
+  /** The member's member capital (liikmekapital) today, at book value — the sum of
+   *  their capital contributions, not the ~1.3x fair value. `undefined` for a
+   *  non-member: no band, no bonus. A member earns MEMBERSHIP_BONUS_RATE of their
+   *  whole Tuleva balance each year, and the pot rides the market like a pension fund
+   *  but is never drawn down as pension — it is left as an inheritance. */
+  memberCapitalBalance?: number;
+  /** The part of member capital deductible from the tax base on drawdown: only the
+   *  member's own capital contributions (kapitali panus). Bonuses, work compensation
+   *  and market growth are all taxed at 22%, like the savings fund. Defaults to 0, so
+   *  nothing is deductible unless the caller knows the own-contribution total. */
+  memberCapitalBasis?: number;
   /** How the fondipension is signed: one fixed-period contract (the default), or
    *  renewed yearly under one of the strategies above. When renewing,
    *  `withdrawalYears` is ignored and the drawdown is drawn to age 100. */
@@ -186,10 +203,15 @@ export interface Pillars {
 
 export interface TimelinePoint extends Pillars {
   age: number;
+  /** Member capital (liikmekapital), tracked alongside the pillars but never drawn
+   *  down as pension. Zero for a non-member and across the recorded past. */
+  memberCapital: number;
   total: number;
 }
 
 export interface MonthlyPayment extends Pillars {
+  /** Member capital drawn this month, like a savings-fund unit sale. */
+  memberCapital: number;
   /** Before tax. */
   gross: number;
   tax: number;
@@ -198,7 +220,10 @@ export interface MonthlyPayment extends Pillars {
 }
 
 export interface Projection {
-  potAtRetirement: Pillars & { total: number };
+  /** The pension pot at retirement. `total` is the drawable pension only (second +
+   *  third + savings); `memberCapital` is carried alongside so callers can show total
+   *  wealth without it leaking into the payment maths. */
+  potAtRetirement: Pillars & { total: number; memberCapital: number };
   yearsToRetirement: number;
   withdrawalMonths: number;
   firstPayment: MonthlyPayment;
@@ -218,6 +243,9 @@ export interface Projection {
   pensionTax: number;
   /** Income tax on savings-fund gains, owed whatever payout period is chosen. */
   savingsFundTax: number;
+  /** Income tax on member-capital gains (everything above the member's own capital
+   *  contributions), owed whatever payout period is chosen. */
+  memberCapitalTax: number;
   /** 0 when the period is at least the recommended duration, otherwise 10%. */
   pensionTaxRate: number;
   /** The tax-free bar the period is measured against: the statistical remaining
@@ -267,6 +295,10 @@ export function accumulate(inputs: CalculatorInputs): {
   // Money paid into the savings fund. Under an investeerimiskonto this is the
   // basis: withdrawals are untaxed until they exceed it.
   let savingsFundBasis = inputs.savingsFundBasis ?? inputs.savingsFundBalance;
+  // Members carry a fourth pot: no member capital number means a non-member, and the
+  // whole band stays at zero.
+  const isMember = inputs.memberCapitalBalance !== undefined;
+  let memberCapital = inputs.memberCapitalBalance ?? 0;
 
   const points: TimelinePoint[] = [
     {
@@ -274,7 +306,8 @@ export function accumulate(inputs: CalculatorInputs): {
       secondPillar,
       thirdPillar,
       savingsFund,
-      total: secondPillar + thirdPillar + savingsFund,
+      memberCapital,
+      total: secondPillar + thirdPillar + savingsFund + memberCapital,
     },
   ];
 
@@ -285,12 +318,22 @@ export function accumulate(inputs: CalculatorInputs): {
     // no refund, but the money still goes in and still gets the 0% withdrawal
     // treatment later. Only the refund is capped, further down.
     const thirdPillarThisMonth = inputs.thirdPillarMonthly;
+    const balanceStartOfYear = secondPillar + thirdPillar + savingsFund;
 
     for (let month = 0; month < 12; month += 1) {
       secondPillar = secondPillar * (1 + monthlyReturn) + salary * contributionRate;
       thirdPillar = thirdPillar * (1 + monthlyReturn) + thirdPillarThisMonth;
       savingsFund = savingsFund * (1 + savingsMonthlyReturn) + inputs.savingsFundMonthly;
       savingsFundBasis += inputs.savingsFundMonthly;
+      memberCapital *= 1 + monthlyReturn;
+    }
+
+    // The liikmeboonus is credited once a year on the average annual Tuleva balance
+    // (approximated by the mean of the year's start and end), at book value; from then
+    // on it rides the market like the pension pot.
+    if (isMember) {
+      const averageBalance = (balanceStartOfYear + secondPillar + thirdPillar + savingsFund) / 2;
+      memberCapital += MEMBERSHIP_BONUS_RATE * averageBalance;
     }
 
     salary *= 1 + SALARY_GROWTH;
@@ -299,7 +342,8 @@ export function accumulate(inputs: CalculatorInputs): {
       secondPillar,
       thirdPillar,
       savingsFund,
-      total: secondPillar + thirdPillar + savingsFund,
+      memberCapital,
+      total: secondPillar + thirdPillar + savingsFund + memberCapital,
     });
   }
 
@@ -314,9 +358,12 @@ export interface PastPayments {
   secondPillar: PastPayment[];
   thirdPillar: PastPayment[];
   savingsFund: PastPayment[];
+  // Member capital events (bonuses, work compensation, payments), so the band climbs
+  // over the member's real history rather than appearing at today.
+  memberCapital: PastPayment[];
 }
 
-const BUCKETS = ['secondPillar', 'thirdPillar', 'savingsFund'] as const;
+const BUCKETS = ['secondPillar', 'thirdPillar', 'savingsFund', 'memberCapital'] as const;
 
 // The largest believable (balance / net paid in) multiple. When negative correction
 // rows nearly cancel a bucket's total, the ratio explodes and every intermediate
@@ -342,7 +389,7 @@ const MAX_HISTORY_SCALE = 10;
  */
 export function buildHistory(
   payments: PastPayments,
-  balances: Pillars,
+  balances: Pillars & { memberCapital: number },
   currentAge: number,
   now: Date,
 ): TimelinePoint[] {
@@ -383,6 +430,7 @@ export function buildHistory(
       secondPillar: 0,
       thirdPillar: 0,
       savingsFund: 0,
+      memberCapital: 0,
       total: 0,
     };
     buckets.forEach(({ key, rows, scale }) => {
@@ -392,7 +440,7 @@ export function buildHistory(
       // Corrections can post negative rows; a stacked area chart cannot dip below zero.
       point[key] = Math.max(0, cumulative * scale);
     });
-    point.total = point.secondPillar + point.thirdPillar + point.savingsFund;
+    point.total = point.secondPillar + point.thirdPillar + point.savingsFund + point.memberCapital;
     points.push(point);
   }
   return points;
@@ -430,6 +478,7 @@ export function project(inputs: CalculatorInputs): Projection {
   const baseSecond = atRetirement.secondPillar / months;
   const baseThird = atRetirement.thirdPillar / months;
   const baseSavings = atRetirement.savingsFund / months;
+  const baseMemberCapital = atRetirement.memberCapital / months;
 
   const recommendedYears = projectedRemainingYears(retirementAge, yearsToRetirement);
   // Every renewed contract runs at least the tax-free minimum, so renewal
@@ -441,12 +490,19 @@ export function project(inputs: CalculatorInputs): Projection {
   // investeerimiskonto, withdrawals are untaxed until they exceed what was paid
   // in; everything above that basis is taxed as income.
   let cumulativeSavingsWithdrawn = 0;
+  // Member capital is drawn like the savings fund, but only the member's own capital
+  // contributions are deductible; bonuses, work compensation and growth are all taxed.
+  const memberCapitalBasis =
+    inputs.memberCapitalBalance !== undefined ? inputs.memberCapitalBasis ?? 0 : 0;
+  let cumulativeMemberCapitalWithdrawn = 0;
   let totalNetWithdrawn = 0;
   let totalGrossWithdrawn = 0;
   // Kept apart because they answer different questions: the pension tax is what
-  // the payout-period choice costs, the savings-fund tax is owed either way.
+  // the payout-period choice costs, the savings-fund and member-capital taxes are
+  // owed either way.
   let pensionTax = 0;
   let savingsFundTax = 0;
+  let memberCapitalTax = 0;
   let netSum = 0;
   let firstPayment: MonthlyPayment | null = null;
   let lastPayment: MonthlyPayment | null = null;
@@ -458,6 +514,7 @@ export function project(inputs: CalculatorInputs): Projection {
   let secondValue = atRetirement.secondPillar;
   let thirdValue = atRetirement.thirdPillar;
   let savingsValue = atRetirement.savingsFund;
+  let memberCapitalValue = atRetirement.memberCapital;
   let sellRate = 0;
 
   for (let month = 0; month < months; month += 1) {
@@ -468,6 +525,7 @@ export function project(inputs: CalculatorInputs): Projection {
     let second: number;
     let third: number;
     let savings: number;
+    let memberCapital: number;
     if (renewing) {
       if (month % 12 === 0) {
         const age = retirementAge + month / 12;
@@ -477,7 +535,11 @@ export function project(inputs: CalculatorInputs): Projection {
           secondPillar: deflate(secondValue, yearsFromNow),
           thirdPillar: deflate(thirdValue, yearsFromNow),
           savingsFund: deflate(savingsValue, yearsFromNow),
-          total: deflate(secondValue + thirdValue + savingsValue, yearsFromNow),
+          memberCapital: deflate(memberCapitalValue, yearsFromNow),
+          total: deflate(
+            secondValue + thirdValue + savingsValue + memberCapitalValue,
+            yearsFromNow,
+          ),
         });
       }
       secondValue *= 1 + monthlyReturn;
@@ -489,10 +551,15 @@ export function project(inputs: CalculatorInputs): Projection {
       savingsValue *= 1 + savingsMonthlyReturn;
       savings = savingsValue * sellRate;
       savingsValue -= savings;
+      // Member capital grows at the pension return (it sits in the II pillar fund).
+      memberCapitalValue *= 1 + monthlyReturn;
+      memberCapital = memberCapitalValue * sellRate;
+      memberCapitalValue -= memberCapital;
     } else {
       second = baseSecond * growth;
       third = baseThird * growth;
       savings = baseSavings * savingsGrowth;
+      memberCapital = baseMemberCapital * growth;
     }
 
     // Basis is used up first, so early savings-fund withdrawals are untaxed.
@@ -500,16 +567,26 @@ export function project(inputs: CalculatorInputs): Projection {
     const taxableSavings = Math.max(0, savings - basisLeft);
     cumulativeSavingsWithdrawn += savings;
 
-    const gross = second + third + savings;
+    // Member capital the same way, but the basis is only the own contributions.
+    const memberCapitalBasisLeft = Math.max(
+      0,
+      memberCapitalBasis - cumulativeMemberCapitalWithdrawn,
+    );
+    const taxableMemberCapital = Math.max(0, memberCapital - memberCapitalBasisLeft);
+    cumulativeMemberCapitalWithdrawn += memberCapital;
+
+    const gross = second + third + savings + memberCapital;
     const monthPensionTax = (second + third) * pensionTaxRate;
     const monthSavingsTax = taxableSavings * INCOME_TAX_RATE;
-    const tax = monthPensionTax + monthSavingsTax;
+    const monthMemberCapitalTax = taxableMemberCapital * INCOME_TAX_RATE;
+    const tax = monthPensionTax + monthSavingsTax + monthMemberCapitalTax;
     const net = gross - tax;
 
     const payment: MonthlyPayment = {
       secondPillar: deflate(second, yearsFromNow),
       thirdPillar: deflate(third, yearsFromNow),
       savingsFund: deflate(savings, yearsFromNow),
+      memberCapital: deflate(memberCapital, yearsFromNow),
       gross: deflate(gross, yearsFromNow),
       tax: deflate(tax, yearsFromNow),
       net: deflate(net, yearsFromNow),
@@ -524,6 +601,7 @@ export function project(inputs: CalculatorInputs): Projection {
     totalGrossWithdrawn += payment.gross;
     pensionTax += deflate(monthPensionTax, yearsFromNow);
     savingsFundTax += deflate(monthSavingsTax, yearsFromNow);
+    memberCapitalTax += deflate(monthMemberCapitalTax, yearsFromNow);
 
     // One chart point a year: the remaining balance, which under the classic
     // contract runs down linearly in units and so is (months left / months) of
@@ -535,8 +613,12 @@ export function project(inputs: CalculatorInputs): Projection {
         secondPillar: deflate(atRetirement.secondPillar * remaining * growth, yearsFromNow),
         thirdPillar: deflate(atRetirement.thirdPillar * remaining * growth, yearsFromNow),
         savingsFund: deflate(atRetirement.savingsFund * remaining * savingsGrowth, yearsFromNow),
+        // Member capital runs down with the pillars, at the same pension return.
+        memberCapital: deflate(atRetirement.memberCapital * remaining * growth, yearsFromNow),
         total: deflate(
-          (atRetirement.secondPillar + atRetirement.thirdPillar) * remaining * growth +
+          (atRetirement.secondPillar + atRetirement.thirdPillar + atRetirement.memberCapital) *
+            remaining *
+            growth +
             atRetirement.savingsFund * remaining * savingsGrowth,
           yearsFromNow,
         ),
@@ -554,13 +636,15 @@ export function project(inputs: CalculatorInputs): Projection {
           secondPillar: deflate(secondValue, yearsAtEnd),
           thirdPillar: deflate(thirdValue, yearsAtEnd),
           savingsFund: deflate(savingsValue, yearsAtEnd),
-          total: deflate(secondValue + thirdValue + savingsValue, yearsAtEnd),
+          memberCapital: deflate(memberCapitalValue, yearsAtEnd),
+          total: deflate(secondValue + thirdValue + savingsValue + memberCapitalValue, yearsAtEnd),
         }
       : {
           age: retirementAge + months / 12,
           secondPillar: 0,
           thirdPillar: 0,
           savingsFund: 0,
+          memberCapital: 0,
           total: 0,
         },
   );
@@ -570,6 +654,7 @@ export function project(inputs: CalculatorInputs): Projection {
     secondPillar: deflate(point.secondPillar, point.age - inputs.currentAge),
     thirdPillar: deflate(point.thirdPillar, point.age - inputs.currentAge),
     savingsFund: deflate(point.savingsFund, point.age - inputs.currentAge),
+    memberCapital: deflate(point.memberCapital, point.age - inputs.currentAge),
     total: deflate(point.total, point.age - inputs.currentAge),
   }));
 
@@ -583,7 +668,15 @@ export function project(inputs: CalculatorInputs): Projection {
       secondPillar: deflate(atRetirement.secondPillar, yearsToRetirement),
       thirdPillar: deflate(atRetirement.thirdPillar, yearsToRetirement),
       savingsFund: deflate(atRetirement.savingsFund, yearsToRetirement),
-      total: deflate(atRetirement.total, yearsToRetirement),
+      // Everything drawable, member capital now included since it is drawn down too.
+      total: deflate(
+        atRetirement.secondPillar +
+          atRetirement.thirdPillar +
+          atRetirement.savingsFund +
+          atRetirement.memberCapital,
+        yearsToRetirement,
+      ),
+      memberCapital: deflate(atRetirement.memberCapital, yearsToRetirement),
     },
     yearsToRetirement,
     withdrawalMonths: months,
@@ -592,9 +685,10 @@ export function project(inputs: CalculatorInputs): Projection {
     averageNetPayment: netSum / months,
     totalNetWithdrawn,
     totalGrossWithdrawn,
-    totalTax: pensionTax + savingsFundTax,
+    totalTax: pensionTax + savingsFundTax + memberCapitalTax,
     pensionTax,
     savingsFundTax,
+    memberCapitalTax,
     pensionTaxRate,
     recommendedYears,
     thirdPillarAnnualRefund: eligibleThirdPillar * INCOME_TAX_RATE,

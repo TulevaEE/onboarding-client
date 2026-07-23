@@ -6,6 +6,8 @@ import { MemoryRouter } from 'react-router-dom';
 import translations from '../translations';
 import { PensionCalculator } from './PensionCalculator';
 import {
+  useCapitalEvents,
+  useCapitalRows,
   useContributions,
   useConversion,
   useFunds,
@@ -15,6 +17,8 @@ import {
   useTransactions,
 } from '../common/apiHooks';
 import {
+  CapitalEvent,
+  CapitalRow,
   Contribution,
   Fund,
   SourceFund,
@@ -31,12 +35,18 @@ jest.mock('../common/apiHooks', () => ({
   useFunds: jest.fn(),
   useSavingsFundBalance: jest.fn(),
   useTransactions: jest.fn(),
+  useCapitalRows: jest.fn(),
+  useCapitalEvents: jest.fn(),
 }));
 
 // The chart is Chart.js on a canvas, which jsdom cannot draw. Swap it for a stub
 // that surfaces the numbers as text so the projection stays assertable.
 jest.mock('react-chartjs-2', () => ({
-  Line: ({ data }: { data: { labels: number[]; datasets: { data: number[] }[] } }) => (
+  Line: ({
+    data,
+  }: {
+    data: { labels: number[]; datasets: { data: number[]; hidden?: boolean }[] };
+  }) => (
     <div>
       <span data-testid="chart-first-age">{data.labels[0]}</span>
       <span data-testid="chart-last-age">{data.labels[data.labels.length - 1]}</span>
@@ -56,8 +66,11 @@ jest.mock('react-chartjs-2', () => ({
           second: data.datasets[0].data,
           third: data.datasets[1].data,
           savings: data.datasets[2].data,
+          memberCapital: data.datasets[3].data,
         })}
       </span>
+      {/* Chart.js hides a dataset via its `hidden` flag, which the legend toggle drives. */}
+      <span data-testid="member-capital-hidden">{String(data.datasets[3]?.hidden ?? false)}</span>
     </div>
   ),
 }));
@@ -71,6 +84,8 @@ const mockUseSavingsFundBalance = useSavingsFundBalance as jest.MockedFunction<
   typeof useSavingsFundBalance
 >;
 const mockUseTransactions = useTransactions as jest.MockedFunction<typeof useTransactions>;
+const mockUseCapitalRows = useCapitalRows as jest.MockedFunction<typeof useCapitalRows>;
+const mockUseCapitalEvents = useCapitalEvents as jest.MockedFunction<typeof useCapitalEvents>;
 
 const now = new Date('2026-07-15T12:00:00Z');
 
@@ -225,6 +240,11 @@ describe('PensionCalculator', () => {
     mockUseTransactions.mockReturnValue({ data: [] } as unknown as ReturnType<
       typeof useTransactions
     >);
+    // Default saver is not a member, so the member capital requests never resolve data.
+    mockUseCapitalRows.mockReturnValue({ data: undefined } as ReturnType<typeof useCapitalRows>);
+    mockUseCapitalEvents.mockReturnValue({ data: undefined } as ReturnType<
+      typeof useCapitalEvents
+    >);
   });
 
   afterEach(() => {
@@ -274,6 +294,149 @@ describe('PensionCalculator', () => {
     // minus ~0.75 per year for starting at 69 instead of 65: 20 years, shown as
     // the end age 89 to match the start slider and the stats.
     expect(screen.getByRole('slider', { name: /Payouts until/i })).toHaveValue('89');
+  });
+
+  const memberWithCapital = (rows: CapitalRow[], events: CapitalEvent[] = []) => {
+    mockUseMe.mockReturnValue({ data: user({ memberNumber: 12345 }) } as ReturnType<typeof useMe>);
+    mockUseCapitalRows.mockReturnValue({ data: rows } as ReturnType<typeof useCapitalRows>);
+    mockUseCapitalEvents.mockReturnValue({ data: events } as ReturnType<typeof useCapitalEvents>);
+  };
+
+  it('gives a non-member the same chart, with no member capital band or note', () => {
+    renderCalculator();
+    const chart = JSON.parse(screen.getByTestId('chart-data').textContent ?? '{}');
+
+    expect(chart.memberCapital.every((value: number) => value === 0)).toBe(true);
+    expect(screen.queryByText('Member capital')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('member-capital-note')).not.toBeInTheDocument();
+  });
+
+  it("seeds a member's band from book value, not the higher fair value", () => {
+    memberWithCapital([
+      { type: 'CAPITAL_PAYMENT', contributions: 1000, profit: 300, value: 1300 } as CapitalRow,
+      { type: 'MEMBERSHIP_BONUS', contributions: 200, profit: 60, value: 260 } as CapitalRow,
+    ]);
+
+    renderCalculator();
+    const chart = JSON.parse(screen.getByTestId('chart-data').textContent ?? '{}');
+
+    // 1000 + 200 contributed, not the 1560 € fair value, at today's point (age 35).
+    expect(chart.memberCapital[chart.labels.indexOf(35)]).toBeCloseTo(1200, 0);
+    expect(screen.getByRole('button', { name: /Member capital/i })).toBeInTheDocument();
+    expect(screen.getByTestId('member-capital-note')).toHaveTextContent('0.05%');
+  });
+
+  it('draws member capital down under the classic contract, leaving no inheritance', () => {
+    memberWithCapital([
+      { type: 'CAPITAL_PAYMENT', contributions: 3000, profit: 0, value: 3000 } as CapitalRow,
+    ]);
+
+    renderCalculator('/calculator?return=7');
+
+    // Member capital is now spent down like the pillars, so a classic contract leaves
+    // nothing behind — the first monthly payment, which it feeds, is what shows.
+    expect(euroValue('inheritance')).toBe(0);
+    expect(euroValue('first-payment')).toBeGreaterThan(0);
+  });
+
+  it('opens for a non-member even while the disabled capital query reports loading', () => {
+    // React Query v4 still reports isLoading on a disabled query, since it has no data
+    // yet; the page must not wait on a request that will never fire for a non-member.
+    mockUseCapitalRows.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+    } as ReturnType<typeof useCapitalRows>);
+
+    renderCalculator();
+
+    expect(screen.getByTestId('headline')).toBeInTheDocument();
+  });
+
+  it('counts work compensation not yet vested, matching the account page total', () => {
+    memberWithCapital([
+      { type: 'CAPITAL_PAYMENT', contributions: 1000, profit: 0, value: 1000 } as CapitalRow,
+      {
+        type: 'UNVESTED_WORK_COMPENSATION',
+        contributions: 5000,
+        profit: 0,
+        value: 5000,
+      } as CapitalRow,
+    ]);
+
+    renderCalculator();
+    const chart = JSON.parse(screen.getByTestId('chart-data').textContent ?? '{}');
+
+    // 1000 + 5000: every row counts, since the projection assumes a lifelong membership
+    // in which the unvested part vests, just as the account page sums it today.
+    expect(chart.memberCapital[chart.labels.indexOf(35)]).toBeCloseTo(6000, 0);
+  });
+
+  it('climbs member capital over its event history instead of starting it at today', () => {
+    memberWithCapital(
+      [{ type: 'CAPITAL_PAYMENT', contributions: 2000, profit: 0, value: 2000 } as CapitalRow],
+      [
+        { date: '2018-06-01', type: 'MEMBERSHIP_BONUS', value: 1000 } as CapitalEvent,
+        { date: '2024-06-01', type: 'MEMBERSHIP_BONUS', value: 1000 } as CapitalEvent,
+      ],
+    );
+
+    renderCalculator();
+    const chart = JSON.parse(screen.getByTestId('chart-data').textContent ?? '{}');
+
+    // Eight years ago (age 27) only the 2018 event had landed: 1000 of the 2000, scaled
+    // to today's book value. The band is well up before the final year, not at today.
+    expect(chart.memberCapital[chart.labels.indexOf(27)]).toBeCloseTo(1000, 0);
+    expect(chart.memberCapital[chart.labels.indexOf(34)]).toBeCloseTo(2000, 0);
+  });
+
+  it('toggles a band off the chart when its legend item is clicked', () => {
+    memberWithCapital([
+      { type: 'CAPITAL_PAYMENT', contributions: 3000, profit: 0, value: 3000 } as CapitalRow,
+    ]);
+
+    renderCalculator();
+    const before = JSON.parse(screen.getByTestId('chart-data').textContent ?? '{}');
+    expect(before.memberCapital.some((value: number) => value > 0)).toBe(true);
+
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.click(screen.getByRole('button', { name: /Member capital/i }));
+
+    // Chart.js hides the dataset; the raw series still exists behind the stub, so the
+    // toggle is asserted through the dataset's hidden flag surfaced by the chart mock.
+    expect(screen.getByTestId('member-capital-hidden')).toHaveTextContent('true');
+  });
+
+  it('drops a toggled-off band from the stats, not just the chart', () => {
+    memberWithCapital([
+      { type: 'CAPITAL_PAYMENT', contributions: 50000, profit: 0, value: 50000 } as CapitalRow,
+    ]);
+
+    renderCalculator('/calculator?return=7');
+    const paymentWith = euroValue('first-payment');
+
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.click(screen.getByRole('button', { name: /Member capital/i }));
+
+    // Member capital is now drawn into the monthly payment, so switching it off lowers
+    // the payment the stat reports — the numbers recompute, not only the chart.
+    expect(euroValue('first-payment')).toBeLessThan(paymentWith);
+  });
+
+  it('seeds the lower fair value when member capital has fallen below book', () => {
+    memberWithCapital([
+      {
+        type: 'CAPITAL_PAYMENT',
+        contributions: 1000,
+        profit: -123.45,
+        value: 876.55,
+      } as CapitalRow,
+    ]);
+
+    renderCalculator();
+    const chart = JSON.parse(screen.getByTestId('chart-data').textContent ?? '{}');
+
+    // Book value would be 1000, but the fair value is lower, so we never seed a phantom gain.
+    expect(chart.memberCapital[chart.labels.indexOf(35)]).toBeCloseTo(876.55, 1);
   });
 
   it("draws the past scaled to today's balances, bucket by bucket", () => {
@@ -479,9 +642,11 @@ describe('PensionCalculator', () => {
     expect(peak()).toBeLessThan(before);
   });
 
-  it('shows zero income tax over the recommended period', () => {
+  it('shows zero income tax over the recommended period, in green', () => {
     renderCalculator();
     expect(screen.getByTestId('total-tax')).toHaveTextContent(/^0/);
+    // Green: the fund pension is taken tax free, the smallest possible bill.
+    expect(screen.getByTestId('total-tax')).toHaveClass('text-success');
     // A fixed-period contract pays the whole pot out: nothing left to inherit.
     expect(euroValue('inheritance')).toBe(0);
   });
@@ -550,9 +715,10 @@ describe('PensionCalculator', () => {
     setSlider(/Payouts until/i, 79);
 
     // Nothing in the II or III pillar, so a short period costs nothing; and the
-    // savings fund pays out basis money, which is not taxed either.
+    // savings fund pays out basis money, which is not taxed either. Green, not red:
+    // the period added no avoidable tax.
     expect(screen.getByTestId('total-tax')).toHaveTextContent(/^0/);
-    expect(screen.getByTestId('total-tax')).not.toHaveClass('text-danger');
+    expect(screen.getByTestId('total-tax')).toHaveClass('text-success');
     expect(euroValue('first-payment')).toBeGreaterThan(0);
   });
 

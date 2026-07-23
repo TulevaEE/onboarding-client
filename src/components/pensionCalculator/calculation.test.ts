@@ -393,11 +393,19 @@ describe('edge cases', () => {
 describe('history', () => {
   const now = new Date('2026-07-01T00:00:00Z');
   const payment = (time: string, amount: number) => ({ time, amount });
-  const none: PastPayments = { secondPillar: [], thirdPillar: [], savingsFund: [] };
-  const balances = (overrides: Partial<Pillars> = {}): Pillars => ({
+  const none: PastPayments = {
+    secondPillar: [],
+    thirdPillar: [],
+    savingsFund: [],
+    memberCapital: [],
+  };
+  const balances = (
+    overrides: Partial<Pillars & { memberCapital: number }> = {},
+  ): Pillars & { memberCapital: number } => ({
     secondPillar: 0,
     thirdPillar: 0,
     savingsFund: 0,
+    memberCapital: 0,
     ...overrides,
   });
 
@@ -415,6 +423,7 @@ describe('history', () => {
       secondPillar: 0,
       thirdPillar: 0,
       savingsFund: 0,
+      memberCapital: 0,
       total: 0,
     });
   });
@@ -507,6 +516,25 @@ describe('history', () => {
     );
 
     expect(points[0].age).toBe(0);
+  });
+
+  it('draws member capital climbing over its own event history', () => {
+    const points = buildHistory(
+      {
+        ...none,
+        memberCapital: [payment('2023-01-15T00:00:00Z', 100), payment('2025-01-15T00:00:00Z', 100)],
+      },
+      balances({ memberCapital: 200 }),
+      35,
+      now,
+    );
+
+    // Two equal events, balance equal to what was paid in, so the band lands on 100 once
+    // the first event is in and on the full 200 by the last recorded year.
+    expect(points.find((point) => point.age === 33)?.memberCapital).toBe(100);
+    expect(points[points.length - 1].memberCapital).toBe(200);
+    // A member-capital-only past still counts toward the stacked total.
+    expect(points[points.length - 1].total).toBe(200);
   });
 });
 
@@ -615,5 +643,88 @@ describe('smart payout: annual renewal on the 4% rule', () => {
     expect(result.lastPayment.net).toBeGreaterThan(result.firstPayment.net);
     const last = result.timeline[result.timeline.length - 1];
     expect(last.total).toBeGreaterThan(result.potAtRetirement.total);
+  });
+});
+
+describe('member capital', () => {
+  it('gives a non-member no member capital anywhere in the timeline', () => {
+    const { timeline } = project(inputs());
+
+    expect(timeline.every((point) => point.memberCapital === 0)).toBe(true);
+  });
+
+  it('seeds the band from the current book value', () => {
+    const { timeline } = project(inputs({ memberCapitalBalance: 1000 }));
+
+    expect(timeline[0].memberCapital).toBe(1000);
+  });
+
+  it('adds a yearly bonus of 0.05% of the whole Tuleva balance', () => {
+    // One year, no growth and no fee, so only the bonus moves the balance; a rate of
+    // 0 means no new pillar contributions, so the 100 000 € balance is the whole base.
+    const { timeline } = project(
+      inputs({
+        currentAge: 40,
+        retirementAge: 41,
+        secondPillarRate: 0,
+        secondPillarBalance: 100000,
+        thirdPillarBalance: 0,
+        savingsFundBalance: 0,
+        annualReturnPercent: 0,
+        feePercent: 0,
+        memberCapitalBalance: 0,
+      }),
+    );
+
+    // 0.05% of 100 000 = 50, credited once after the first year.
+    expect(timeline.find((point) => point.age === 41)?.memberCapital).toBeCloseTo(50, 6);
+  });
+
+  it('compounds member capital at the market return, like a pension fund', () => {
+    // No pillars, so no bonus; 10% for a year isolates the growth on the seed.
+    const { timeline } = project(
+      inputs({
+        currentAge: 40,
+        retirementAge: 41,
+        secondPillarRate: 0,
+        secondPillarBalance: 0,
+        thirdPillarBalance: 0,
+        savingsFundBalance: 0,
+        annualReturnPercent: 10,
+        feePercent: 0,
+        memberCapitalBalance: 1000,
+      }),
+    );
+
+    expect(timeline.find((point) => point.age === 41)?.memberCapital).toBeCloseTo(1100, 0);
+  });
+
+  it('draws member capital down into the pot and the monthly payment', () => {
+    const member = project(
+      inputs({
+        memberCapitalBalance: 5000,
+        memberCapitalBasis: 5000,
+        payoutStrategy: 'fixedPeriod',
+      }),
+    );
+    const nonMember = project(inputs({ payoutStrategy: 'fixedPeriod' }));
+
+    // Member capital is part of the drawable pot and lifts the monthly payment.
+    expect(member.potAtRetirement.total).toBeGreaterThan(nonMember.potAtRetirement.total);
+    expect(member.firstPayment.net).toBeGreaterThan(nonMember.firstPayment.net);
+    // The classic contract spends it like everything else: nothing left to inherit.
+    expect(member.timeline[member.timeline.length - 1].total).toBeCloseTo(0, 6);
+  });
+
+  it('taxes member capital gains above the own-contribution basis at 22%', () => {
+    // With the whole own contribution deductible, only the bonuses and market growth on
+    // top are taxed; with no deductible basis the whole drawdown is taxed.
+    const withBasis = project(inputs({ memberCapitalBalance: 5000, memberCapitalBasis: 5000 }));
+    const noBasis = project(inputs({ memberCapitalBalance: 5000, memberCapitalBasis: 0 }));
+
+    expect(withBasis.memberCapitalTax).toBeGreaterThan(0);
+    expect(noBasis.memberCapitalTax).toBeGreaterThan(withBasis.memberCapitalTax);
+    // A non-member owes no member-capital tax at all.
+    expect(project(inputs()).memberCapitalTax).toBe(0);
   });
 });

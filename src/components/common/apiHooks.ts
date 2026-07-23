@@ -105,12 +105,22 @@ export function useTransactions(): UseQueryResult<Transaction[]> {
   return useQuery({ queryKey: ['transactions'], queryFn: () => getTransactions() });
 }
 
-export function useCapitalEvents(): UseQueryResult<CapitalEvent[]> {
-  return useQuery({ queryKey: ['capitalEvents'], queryFn: () => getCapitalEvents() });
+export function useCapitalEvents(
+  options: { enabled?: boolean } = {},
+): UseQueryResult<CapitalEvent[]> {
+  return useQuery({
+    queryKey: ['capitalEvents'],
+    queryFn: () => getCapitalEvents(),
+    enabled: options.enabled ?? true,
+  });
 }
 
-export function useCapitalRows(): UseQueryResult<CapitalRow[]> {
-  return useQuery({ queryKey: ['capitalRows'], queryFn: () => getCapitalRowsWithToken() });
+export function useCapitalRows(options: { enabled?: boolean } = {}): UseQueryResult<CapitalRow[]> {
+  return useQuery({
+    queryKey: ['capitalRows'],
+    queryFn: () => getCapitalRowsWithToken(),
+    enabled: options.enabled ?? true,
+  });
 }
 
 export function useCapitalTotal(): UseQueryResult<CapitalTotal> {

@@ -1853,6 +1853,7 @@
   "pensionCalculator.pillar.second": "II sammas",
   "pensionCalculator.pillar.third": "III sammas",
   "pensionCalculator.pillar.savingsFund": "Kogumisfond",
+  "pensionCalculator.pillar.memberCapital": "Liikmekapital",
   "pensionCalculator.results.heading": "Sinu elukaar",
   "pensionCalculator.results.headline": "{age}‑aastaselt on sul koos umbes <b>{pot}</b>.",
   "pensionCalculator.results.assumption": "Arvutatud <b>{return}%</b> aastase tootluse juures.",
@@ -1862,6 +1863,7 @@
   "pensionCalculator.stat.averagePayment": "Keskmine kuumakse ({from}–{to} a)",
   "pensionCalculator.stat.inheritance": "Pärandiks jääb ({age} a)",
   "pensionCalculator.stat.totalTax": "Tulumaks kokku",
+  "pensionCalculator.stat.totalTax.tooltip": "Tulumaks sinu väljamaksetelt. Vähemalt soovitusliku {recommended} aasta jooksul on II ja III samba fondipension tulumaksuvaba (0%); lühema perioodi puhul maksustatakse seda 10%-ga. Kogumisfondi ja liikmekapitali kasvutulu maksustatakse 22%-ga olenemata perioodist.",
   "pensionCalculator.input.salary": "Brutopalk kuus",
   "pensionCalculator.input.secondPillarRate": "II samba makse palgast",
   "pensionCalculator.input.thirdPillarMonthly": "III sambasse kuus",
@@ -1882,10 +1884,12 @@
   "pensionCalculator.yearsSpoken": "{years, plural, one {# aasta} other {# aastat}}",
   "pensionCalculator.chart.label": "Graafik: kogutud vara vanuse järgi, sambade kaupa",
   "pensionCalculator.chart.description": "Vara kasvab {from}. eluaastast kuni {peakAge}. eluaastani, kus see on umbes {peak}: II sammas {second}, III sammas {third}, kogumisfond {savings}. Seejärel kahaneb see väljamaksete käigus nullini {to}. eluaastaks.",
+  "pensionCalculator.chart.description.memberCapital": "Tuleva liikmena on umbes {memberCapital} varast liikmekapital, mis võetakse välja koos sammastega.",
   "pensionCalculator.input.retirementAge": "Hakkad välja võtma",
   "pensionCalculator.strategy.fourPercent": "Võimalikult suur pärand",
   "pensionCalculator.strategy.fourPercent.how": "Uus leping alati 25 aastaks ehk võtad välja 4% jäägist. Kui tootlus on üle 4%, kasvavad nii kuumaksed kui ka lastele jääv pärand.",
   "pensionCalculator.strategy.maxPayout": "Võimalikult suur pension elu lõpuni",
   "pensionCalculator.strategy.maxPayout.how": "Uus leping alati lühima maksuvaba perioodiga. Kuumakse on igas vanuses suurim võimalik ja väljamaksed ei lõpe enne elu lõppu.",
-  "pensionCalculator.strategy.intro": "Pensionil saad igakuise väljamakse ehk fondipensioni. Fondipensioni lepingu võid igal aastal uuesti sõlmida ja nii tekib kaks strateegiat:"
+  "pensionCalculator.strategy.intro": "Pensionil saad igakuise väljamakse ehk fondipensioni. Fondipensioni lepingu võid igal aastal uuesti sõlmida ja nii tekib kaks strateegiat:",
+  "pensionCalculator.memberCapital.note": "Tuleva liikmena teenid igal aastal {bonus}% liikmeboonust kogu oma Tuleva varalt. See kasvab koos turuga ja võetakse pensionil välja nagu kogumisfond, maksustades 22%-ga kõike, mis ületab sinu enda kapitalipanuse."
 }

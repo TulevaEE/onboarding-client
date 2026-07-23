@@ -20,3 +20,13 @@
   border-radius: 50%;
   flex-shrink: 0;
 }
+
+// Clickable things should say so: neither a native button nor a Bootstrap switch
+// gets a pointer cursor on its own, and the legend items and toggles are all clickable.
+.pension-calculator {
+  .pension-calculator-legend-item,
+  .form-check-input:not(:disabled),
+  .form-check-input:not(:disabled) + .form-check-label {
+    cursor: pointer;
+  }
+}

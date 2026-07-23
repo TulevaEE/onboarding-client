@@ -1763,6 +1763,7 @@
   "pensionCalculator.pillar.second": "II pillar",
   "pensionCalculator.pillar.third": "III pillar",
   "pensionCalculator.pillar.savingsFund": "Savings fund",
+  "pensionCalculator.pillar.memberCapital": "Member capital",
   "pensionCalculator.results.heading": "Your money over a lifetime",
   "pensionCalculator.results.headline": "At {age} you will have around <b>{pot}</b> in total.",
   "pensionCalculator.results.assumption": "Calculated at a <b>{return}%</b> annual return.",
@@ -1772,6 +1773,7 @@
   "pensionCalculator.stat.averagePayment": "Average monthly payment (age {from}–{to})",
   "pensionCalculator.stat.inheritance": "Left as inheritance (age {age})",
   "pensionCalculator.stat.totalTax": "Total income tax",
+  "pensionCalculator.stat.totalTax.tooltip": "Income tax on your payouts. Taken over at least the recommended {recommended} years, the II and III pillar fund pension is tax free (0%); a shorter period is taxed at 10%. Savings-fund and member-capital gains are taxed at 22% whatever the period.",
   "pensionCalculator.input.salary": "Gross monthly salary",
   "pensionCalculator.input.secondPillarRate": "II pillar of salary",
   "pensionCalculator.input.thirdPillarMonthly": "III pillar monthly",
@@ -1792,10 +1794,12 @@
   "pensionCalculator.yearsSpoken": "{years, plural, one {# year} other {# years}}",
   "pensionCalculator.chart.label": "Chart: savings by age, split by pillar",
   "pensionCalculator.chart.description": "Savings grow from age {from} to age {peakAge}, where they reach around {peak}: II pillar {second}, III pillar {third}, savings fund {savings}. They then run down to zero over the payout period, by age {to}.",
+  "pensionCalculator.chart.description.memberCapital": "As a Tuleva member, about {memberCapital} of the pot is member capital, drawn down alongside the pillars.",
   "pensionCalculator.input.retirementAge": "You start withdrawing",
   "pensionCalculator.strategy.fourPercent": "The biggest possible inheritance",
   "pensionCalculator.strategy.fourPercent.how": "A new contract for 25 years every time: you take out 4% of what remains. When the return beats 4%, both the payments and the inheritance grow.",
   "pensionCalculator.strategy.maxPayout": "The biggest pension that lasts for life",
   "pensionCalculator.strategy.maxPayout.how": "A new contract at the shortest tax-free period every time: the biggest possible payment at every age, and the payouts never end before you do.",
-  "pensionCalculator.strategy.intro": "In retirement you get a monthly payout, the fund pension. You can re-sign the fund pension contract every year, which opens two strategies:"
+  "pensionCalculator.strategy.intro": "In retirement you get a monthly payout, the fund pension. You can re-sign the fund pension contract every year, which opens two strategies:",
+  "pensionCalculator.memberCapital.note": "as a Tuleva member you earn a {bonus}% yearly bonus on your whole Tuleva balance. It grows with the market and is drawn down in retirement like the savings fund, taxed 22% on everything above your own capital contributions."
 }

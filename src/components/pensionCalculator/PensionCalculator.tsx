@@ -19,8 +19,11 @@ import { usePageTitle } from '../common/usePageTitle';
 import { formatAmountForCurrency } from '../common/utils';
 import { CurrencyInput } from '../common/input/CurrencyInput';
 import { EditableEuro } from '../common/input/EditableEuro';
+import { InfoTooltip } from '../common/infoTooltip/InfoTooltip';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import {
+  useCapitalEvents,
+  useCapitalRows,
   useContributions,
   useConversion,
   useFunds,
@@ -46,6 +49,7 @@ import {
   DEFAULT_INFLATION_PERCENT,
   DEFAULT_RETURN_PERCENT,
   MAX_SALARY,
+  MEMBERSHIP_BONUS_RATE,
   project,
   projectedRemainingYears,
   projectedRetirementAge,
@@ -62,6 +66,10 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip,
 const COLOR_SECOND = '#00AEEA';
 const COLOR_THIRD = '#FDD835';
 const COLOR_SAVINGS = '#52A560';
+// Member capital becomes an inheritance in this model, so it borrows the II pillar
+// growth page's inheritance orange. Stacked on top, above the green savings band, it
+// stays clear of the yellow III band it would otherwise sit beside.
+const COLOR_MEMBER_CAPITAL = '#F29B0F';
 // Semi-transparent, not a lighter gray: the lines cross the coloured areas, so a
 // flat light tone washes out on them while a solid dark one shouts. Alpha keeps
 // the line visible over blue, yellow and green alike, and soft over the white top.
@@ -72,6 +80,11 @@ const PILLAR_LEGEND = [
   { key: 'secondPillar', color: COLOR_SECOND, id: 'pensionCalculator.pillar.second' },
   { key: 'thirdPillar', color: COLOR_THIRD, id: 'pensionCalculator.pillar.third' },
   { key: 'savingsFund', color: COLOR_SAVINGS, id: 'pensionCalculator.pillar.savingsFund' },
+  {
+    key: 'memberCapital',
+    color: COLOR_MEMBER_CAPITAL,
+    id: 'pensionCalculator.pillar.memberCapital',
+  },
 ] as const;
 
 const HOW_IT_WORKS = [
@@ -281,8 +294,47 @@ export const PensionCalculator: React.FC = () => {
   const { data: transactions, isLoading: transactionsLoading } = useTransactions();
   const { data: savingsFundBalance, isLoading: savingsFundBalanceLoading } =
     useSavingsFundBalance();
+  // Only members hold member capital, so only they earn the yearly bonus and get the
+  // fourth band. The request is scoped to them, so non-members never fire it.
+  const isMember = user?.memberNumber != null;
+  const { data: capitalRows, isLoading: capitalRowsLoading } = useCapitalRows({
+    enabled: isMember,
+  });
+  // The dated member-capital events (bonuses, work compensation, payments) draw the
+  // band's real past instead of letting it appear at today. Refines the chart only, so
+  // it never holds up the seed.
+  const { data: capitalEvents } = useCapitalEvents({ enabled: isMember });
+  // A disabled query still reports isLoading in React Query v4 (it has no data yet), so
+  // a non-member would shimmer forever if we waited on it — only members wait.
+  const capitalRowsSettled = !isMember || !capitalRowsLoading;
 
   const [inputs, setInputs] = useState<CalculatorInputs | null>(null);
+  // Bands the saver has toggled off from the legend; hidden datasets drop out of the
+  // stack so the rest can be read on their own.
+  const [hiddenKeys, setHiddenKeys] = useState<Set<string>>(() => new Set());
+
+  // Today's member capital, valued conservatively: the nominal sum contributed (the 1x
+  // book value, ignoring the ~1.3x fair-value premium the marketplace trades at), but
+  // never above today's fair value, so a rare loss below book is not projected as a
+  // gain. Every row counts, matching the total on the account page — including work
+  // compensation not yet vested, since the projection assumes a lifelong membership in
+  // which it does vest.
+  const memberCapitalSeed = useMemo(() => {
+    const rows = capitalRows ?? [];
+    const contributed = rows.reduce((sum, row) => sum + row.contributions, 0);
+    const fairValue = rows.reduce((sum, row) => sum + row.value, 0);
+    return Math.min(contributed, fairValue);
+  }, [capitalRows]);
+
+  // The tax basis on drawdown: only the member's own capital contributions (kapitali
+  // panus) are deductible. Bonuses, work compensation and market growth are all taxed.
+  const ownCapitalContributions = useMemo(
+    () =>
+      (capitalRows ?? [])
+        .filter((row) => row.type === 'CAPITAL_PAYMENT')
+        .reduce((sum, row) => sum + row.contributions, 0),
+    [capitalRows],
+  );
 
   const savingsFundPayments = useMemo(
     () => selectSavingsFundPayments(funds ?? [], transactions ?? []),
@@ -293,6 +345,13 @@ export const PensionCalculator: React.FC = () => {
   const savingsFundFlows = useMemo(
     () => selectSavingsFundFlows(funds ?? [], transactions ?? []),
     [funds, transactions],
+  );
+
+  // Each dated member-capital event is a payment into the band, so the history scales
+  // to today's book value the same way the pillars scale to their balances.
+  const memberCapitalFlows = useMemo(
+    () => (capitalEvents ?? []).map((event) => ({ time: event.date, amount: event.value })),
+    [capitalEvents],
   );
 
   const tulevaFees = useMemo(() => deriveTulevaFees(funds ?? []), [funds]);
@@ -324,7 +383,8 @@ export const PensionCalculator: React.FC = () => {
       conversion &&
       !fundsLoading &&
       !transactionsLoading &&
-      !savingsFundBalanceLoading
+      !savingsFundBalanceLoading &&
+      capitalRowsSettled
     ) {
       const now = new Date();
       // The register's retirement age is the statutory floor, established only two
@@ -366,6 +426,10 @@ export const PensionCalculator: React.FC = () => {
             : 0,
         savingsFundBalance: savingsFundValue,
         savingsFundBasis,
+        // A number (even 0) marks a member and turns on the band; undefined leaves a
+        // non-member with the same three-pillar chart as before.
+        memberCapitalBalance: isMember ? memberCapitalSeed : undefined,
+        memberCapitalBasis: isMember ? ownCapitalContributions : undefined,
         annualReturnPercent: sharedReturn(search),
         // The saver's current weighted-average fund fee, so the projection reflects
         // what they actually pay today.
@@ -388,6 +452,10 @@ export const PensionCalculator: React.FC = () => {
     fundsLoading,
     transactionsLoading,
     savingsFundBalanceLoading,
+    capitalRowsSettled,
+    isMember,
+    memberCapitalSeed,
+    ownCapitalContributions,
     savingsFundValue,
     savingsFundBasis,
     savingsFundPayments,
@@ -398,18 +466,41 @@ export const PensionCalculator: React.FC = () => {
 
   // The III contribution is capped by the salary for calculation without mutating
   // state, so lowering then raising the salary restores it instead of ratcheting down.
+  // A band toggled off the legend is dropped from the numbers too, not just the chart:
+  // its balance and contributions are zeroed, so the projection answers "what if I did
+  // not have this?" and every stat below recomputes to match.
+  const effectiveInputs = useMemo(() => {
+    if (!inputs) {
+      return null;
+    }
+    let next = inputs;
+    if (hiddenKeys.has('secondPillar')) {
+      next = { ...next, secondPillarBalance: 0, secondPillarRate: 0 };
+    }
+    if (hiddenKeys.has('thirdPillar')) {
+      next = { ...next, thirdPillarBalance: 0, thirdPillarMonthly: 0 };
+    }
+    if (hiddenKeys.has('savingsFund')) {
+      next = { ...next, savingsFundBalance: 0, savingsFundMonthly: 0, savingsFundBasis: 0 };
+    }
+    if (hiddenKeys.has('memberCapital')) {
+      next = { ...next, memberCapitalBalance: undefined };
+    }
+    return next;
+  }, [inputs, hiddenKeys]);
+
   const result = useMemo(
     () =>
-      inputs
+      effectiveInputs
         ? project({
-            ...inputs,
+            ...effectiveInputs,
             thirdPillarMonthly: Math.min(
-              inputs.thirdPillarMonthly,
-              thirdPillarTaxCapMonthly(inputs.grossSalaryMonthly),
+              effectiveInputs.thirdPillarMonthly,
+              thirdPillarTaxCapMonthly(effectiveInputs.grossSalaryMonthly),
             ),
           })
         : null,
-    [inputs],
+    [effectiveInputs],
   );
 
   // The saver's recorded past, from their first contribution to last year, so the
@@ -417,23 +508,27 @@ export const PensionCalculator: React.FC = () => {
   // (nominal euros of its time), whichever way the future is restated.
   const history = useMemo(
     () =>
-      inputs && contributions
+      effectiveInputs && contributions
         ? buildHistory(
             {
               secondPillar: contributions.filter((contribution) => contribution.pillar === 2),
               thirdPillar: contributions.filter((contribution) => contribution.pillar === 3),
               savingsFund: savingsFundFlows,
+              memberCapital: memberCapitalFlows,
             },
+            // A hidden bucket's balance is zero here, so buildHistory scales it away and
+            // its past disappears from the chart along with its future.
             {
-              secondPillar: inputs.secondPillarBalance,
-              thirdPillar: inputs.thirdPillarBalance,
-              savingsFund: inputs.savingsFundBalance,
+              secondPillar: effectiveInputs.secondPillarBalance,
+              thirdPillar: effectiveInputs.thirdPillarBalance,
+              savingsFund: effectiveInputs.savingsFundBalance,
+              memberCapital: effectiveInputs.memberCapitalBalance ?? 0,
             },
-            inputs.currentAge,
+            effectiveInputs.currentAge,
             new Date(),
           )
         : [],
-    [inputs, contributions, savingsFundFlows],
+    [effectiveInputs, contributions, savingsFundFlows, memberCapitalFlows],
   );
 
   const timeline = useMemo(
@@ -458,6 +553,17 @@ export const PensionCalculator: React.FC = () => {
 
   const update = (patch: Partial<CalculatorInputs>) =>
     setInputs((previous) => (previous ? { ...previous, ...patch } : previous));
+
+  const toggleHiddenKey = (key: string) =>
+    setHiddenKeys((previous) => {
+      const next = new Set(previous);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
 
   const todaysMoney = inputs.todaysMoney ?? true;
   const inflationPercent = inputs.inflationPercent ?? DEFAULT_INFLATION_PERCENT;
@@ -500,43 +606,28 @@ export const PensionCalculator: React.FC = () => {
   );
 
   // A bucket that never has money in it — past, present or future — gets no legend
-  // entry: a swatch for an invisible area only raises questions.
-  const visibleLegend = PILLAR_LEGEND.filter(({ key }) => timeline.some((point) => point[key] > 0));
+  // entry: a swatch for an invisible area only raises questions. A toggled-off band has
+  // no data in the effective timeline either, so it is kept explicitly, still clickable
+  // to switch back on.
+  const visibleLegend = PILLAR_LEGEND.filter(
+    ({ key }) => hiddenKeys.has(key) || timeline.some((point) => point[key] > 0),
+  );
 
   const chartData: ChartData<'line'> = {
     labels: timeline.map((point) => point.age),
-    datasets: [
-      {
-        label: intl.formatMessage({ id: 'pensionCalculator.pillar.second' }),
-        data: timeline.map((point) => point.secondPillar),
-        borderColor: COLOR_SECOND,
-        backgroundColor: COLOR_SECOND,
-        fill: true,
-        borderWidth: 0,
-        pointRadius: 0,
-        tension: 0.2,
-      },
-      {
-        label: intl.formatMessage({ id: 'pensionCalculator.pillar.third' }),
-        data: timeline.map((point) => point.thirdPillar),
-        borderColor: COLOR_THIRD,
-        backgroundColor: COLOR_THIRD,
-        fill: true,
-        borderWidth: 0,
-        pointRadius: 0,
-        tension: 0.2,
-      },
-      {
-        label: intl.formatMessage({ id: 'pensionCalculator.pillar.savingsFund' }),
-        data: timeline.map((point) => point.savingsFund),
-        borderColor: COLOR_SAVINGS,
-        backgroundColor: COLOR_SAVINGS,
-        fill: true,
-        borderWidth: 0,
-        pointRadius: 0,
-        tension: 0.2,
-      },
-    ],
+    // One dataset per pillar, in legend order. A band toggled off from the legend is
+    // hidden, dropping out of the stack so the rest can be read on their own.
+    datasets: PILLAR_LEGEND.map(({ key, color, id }) => ({
+      label: intl.formatMessage({ id }),
+      data: timeline.map((point) => point[key]),
+      borderColor: color,
+      backgroundColor: color,
+      fill: true,
+      borderWidth: 0,
+      pointRadius: 0,
+      tension: 0.2,
+      hidden: hiddenKeys.has(key),
+    })),
   };
 
   // The same choices as the millionaire chart: a fast, static illustration.
@@ -576,7 +667,7 @@ export const PensionCalculator: React.FC = () => {
   };
 
   return (
-    <div className="col-12 col-lg-10 mx-auto d-flex flex-column gap-3">
+    <div className="pension-calculator col-12 col-lg-10 mx-auto d-flex flex-column gap-3">
       <header>
         <h1>
           <FormattedMessage id="pensionCalculator.title" />
@@ -925,6 +1016,17 @@ export const PensionCalculator: React.FC = () => {
                     savings: roundedEuro(result.potAtRetirement.savingsFund),
                   }}
                 />
+                {/* Name the member-capital share of the pot for a screen reader, since
+                    the visible breakdown lists only the three pillars. */}
+                {visibleLegend.some(({ key }) => key === 'memberCapital') && (
+                  <>
+                    {' '}
+                    <FormattedMessage
+                      id="pensionCalculator.chart.description.memberCapital"
+                      values={{ memberCapital: roundedEuro(result.potAtRetirement.memberCapital) }}
+                    />
+                  </>
+                )}
               </p>
               <div
                 className="pension-calculator-chart"
@@ -934,20 +1036,37 @@ export const PensionCalculator: React.FC = () => {
                 <Line data={chartData} options={chartOptions} plugins={chartPlugins} />
               </div>
 
+              {/* Clickable legend: each entry toggles its band off the stack, driving
+                  Chart.js's own dataset visibility (the `hidden` flag) from a custom
+                  HTML legend, as the library recommends when the canvas legend is off. */}
               <ul className="list-unstyled d-flex flex-wrap gap-3 mb-0 small">
-                {visibleLegend.map(({ color, id }) => (
-                  <li key={id} className="d-flex align-items-center gap-2">
-                    <span
-                      className="pension-calculator-swatch"
-                      style={{ backgroundColor: color }}
-                    />
-                    <FormattedMessage id={id} />
-                  </li>
-                ))}
+                {visibleLegend.map(({ key, color, id }) => {
+                  const isHidden = hiddenKeys.has(key);
+                  return (
+                    <li key={id}>
+                      <button
+                        type="button"
+                        className="pension-calculator-legend-item d-flex align-items-center gap-2 p-0 border-0 bg-transparent text-body"
+                        aria-pressed={!isHidden}
+                        onClick={() => toggleHiddenKey(key)}
+                      >
+                        <span
+                          className="pension-calculator-swatch"
+                          style={{ backgroundColor: color, opacity: isHidden ? 0.3 : 1 }}
+                        />
+                        <span
+                          className={isHidden ? 'text-decoration-line-through text-secondary' : ''}
+                        >
+                          <FormattedMessage id={id} />
+                        </span>
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
 
-              {/* Only the pot lives here — the payments live in the stats below,
-                  with their ages, so the two never repeat each other. */}
+              {/* The whole pot at retirement, member capital included since it is now
+                  drawn down with everything else. */}
               <p className="fs-5 mb-0" data-testid="headline">
                 <FormattedMessage
                   id="pensionCalculator.results.headline"
@@ -1020,17 +1139,30 @@ export const PensionCalculator: React.FC = () => {
                   <dt className="small text-secondary fw-normal">
                     <FormattedMessage id="pensionCalculator.stat.totalTax" />
                   </dt>
-                  {/* Red only when the PERIOD causes tax: savings-fund gains are
-                      taxed whichever period is picked, so they never blame the slider. */}
+                  {/* Green when the pension tax is zero — the fund pension is taken tax
+                      free, the smallest possible bill (any savings-fund tax is owed
+                      whatever the period). Red only when a short period adds avoidable
+                      10% tax, since that is the one part the slider controls. */}
                   <dd
-                    className={`fs-5 fw-semibold mb-0${
-                      result.pensionTax > 0 ? ' text-danger' : ''
+                    className={`fs-5 fw-semibold mb-0 ${
+                      result.pensionTax > 0 ? 'text-danger' : 'text-success'
                     }`}
                     data-testid="total-tax"
+                    data-tip
+                    data-for="total-tax-tooltip"
+                    style={{ cursor: 'help' }}
                     aria-live="polite"
                   >
                     {result.totalTax > 0 ? roundedEuro(-result.totalTax) : roundedEuro(0)}
                   </dd>
+                  {/* Tooltip content kept OUTSIDE the dd, so the stat's text stays just
+                      the number for anything reading it. */}
+                  <InfoTooltip name="total-tax-tooltip" noTrigger place="top">
+                    <FormattedMessage
+                      id="pensionCalculator.stat.totalTax.tooltip"
+                      values={{ recommended: result.recommendedYears }}
+                    />
+                  </InfoTooltip>
                 </div>
               </dl>
             </div>
@@ -1105,6 +1237,20 @@ export const PensionCalculator: React.FC = () => {
             <FormattedMessage id={body} values={{ recommended: result.recommendedYears }} />
           </p>
         ))}
+        {/* Members only, kept down here with the other footnotes so the chart card
+            stays the same height as the input card beside it. */}
+        {visibleLegend.some(({ key }) => key === 'memberCapital') && (
+          <p className="mb-2" data-testid="member-capital-note">
+            <span className="fw-medium">
+              <FormattedMessage id="pensionCalculator.pillar.memberCapital" />
+            </span>
+            {': '}
+            <FormattedMessage
+              id="pensionCalculator.memberCapital.note"
+              values={{ bonus: String(MEMBERSHIP_BONUS_RATE * 100) }}
+            />
+          </p>
+        )}
       </div>
 
       {/* Mandatory for a fund communication: who provides the service, where the
