@@ -4,7 +4,7 @@ import styles from './CurrencyInput.module.scss';
 
 type CurrencyInputProps = {
   id?: string;
-  value: number | undefined;
+  value: number | null | undefined;
   onChange: (value: number | undefined) => void;
   error?: boolean;
   placeholder?: string;

@@ -51,7 +51,7 @@ const isSafeBankUrl = (url: string | undefined): url is string => {
 
 type Props = {
   bank: BankKey;
-  amount: number | undefined;
+  amount: number | null | undefined;
   personalCode: string;
   isLegalEntity: boolean;
 };
@@ -76,7 +76,7 @@ export const SavingsFundRecurringDetails: FC<Props> = ({
         type: 'SAVINGS_RECURRING',
         ...(meta.channel ? { paymentChannel: meta.channel } : {}),
         recipientPersonalCode: personalCode,
-        ...(hasAmount ? { amount } : {}),
+        ...(hasAmount ? { amount: amount ?? undefined } : {}),
         currency: 'EUR',
       }),
     enabled: !!personalCode,

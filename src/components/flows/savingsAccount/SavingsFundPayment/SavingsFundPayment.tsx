@@ -32,7 +32,7 @@ const toRecurringBank = (value: string | undefined): RecurringBankKey | null => 
 };
 
 type IPaymentForm = {
-  amount: number | undefined;
+  amount: number | null;
   paymentMethod: BankKey | 'other';
 };
 
@@ -85,7 +85,7 @@ const SavingsFundPaymentForm: FC<{ user: User }> = ({ user }) => {
       setSubmitError(false);
       await redirectToPayment({
         recipientPersonalCode: user.role.code,
-        amount: data.amount,
+        amount: data.amount ?? undefined,
         currency: 'EUR',
         type: 'SAVINGS',
         paymentChannel: data.paymentMethod?.toUpperCase() as PaymentChannel,

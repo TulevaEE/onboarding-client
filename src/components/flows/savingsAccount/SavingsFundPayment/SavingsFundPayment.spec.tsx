@@ -62,6 +62,14 @@ describe(SavingsFundPayment, () => {
     expect(getAmountInput()).toHaveValue('250');
   });
 
+  it('stays empty when the pre-filled amount is deleted', async () => {
+    expect(await findPageHeading()).toBeInTheDocument();
+
+    replaceAmount('');
+
+    expect(getAmountInput()).toHaveValue('');
+  });
+
   it('validates the deposit amount and bank selection', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
 
