@@ -8,6 +8,7 @@ import { PaymentDetailRow } from '../../thirdPillar/ThirdPillarPayment/paymentDe
 import { PaymentStep } from '../../common/PaymentStep/PaymentStep';
 import { CopyButton } from '../../../common/CopyButton';
 import { formatAmountForCount, formatAmountForCurrency } from '../../../common/utils';
+import { AccountHolder } from '../accountHolder';
 
 export type BankKey = 'LHV' | 'COOP' | 'SWEDBANK' | 'SEB' | 'LUMINOR' | 'OTHER';
 
@@ -53,21 +54,27 @@ type Props = {
   bank: BankKey;
   amount: number | null | undefined;
   personalCode: string;
-  isLegalEntity: boolean;
+  accountHolder: AccountHolder;
 };
+
+const VERIFY_STEP_MESSAGE_IDS = {
+  self: 'savingsFund.recurring.step.verify',
+  company: 'savingsFund.recurring.step.verify.legalEntity',
+  child: 'savingsFund.recurring.step.verify.child',
+} as const;
 
 export const SavingsFundRecurringDetails: FC<Props> = ({
   bank,
   amount,
   personalCode,
-  isLegalEntity,
+  accountHolder,
 }) => {
   const meta = BANK_META[bank];
   // Swedbank only pre-fills the private standing-order form. Legal entities are
   // sent to the business page, which has no pre-fill, so they copy the fields
   // manually like any other LANDING bank.
   const linkBehavior: LinkBehavior =
-    bank === 'SWEDBANK' && isLegalEntity ? 'LANDING' : meta.linkBehavior;
+    bank === 'SWEDBANK' && accountHolder === 'company' ? 'LANDING' : meta.linkBehavior;
   const hasAmount = Number.isFinite(amount) && (amount ?? 0) >= 1;
   const { data, isLoading, isFetching, isError } = useQuery<PaymentLink>({
     queryKey: ['paymentLink', 'SAVINGS_RECURRING', meta.channel ?? null, amount, personalCode],
@@ -153,11 +160,7 @@ export const SavingsFundRecurringDetails: FC<Props> = ({
 
           <PaymentStep number={3}>
             <FormattedMessage
-              id={
-                isLegalEntity
-                  ? 'savingsFund.recurring.step.verify.legalEntity'
-                  : 'savingsFund.recurring.step.verify'
-              }
+              id={VERIFY_STEP_MESSAGE_IDS[accountHolder]}
               values={{
                 b: (chunks: string) => <b>{chunks}</b>,
               }}

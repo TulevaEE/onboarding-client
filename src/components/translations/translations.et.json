@@ -1352,6 +1352,7 @@
   "savingsFund.recurring.step.review": "Kontrolli andmed üle",
   "savingsFund.recurring.step.verify": "Veendu, et maksad <b>investeerimiskontolt</b>, ja kinnita püsimakse",
   "savingsFund.recurring.step.verify.legalEntity": "Veendu, et maksad <b>osaühingu pangakontolt</b>, ja kinnita püsimakse",
+  "savingsFund.recurring.step.verify.child": "Veendu, et maksad <b>enda või lapse pangakontolt</b>, ja kinnita püsimakse",
   "savingsFund.recurring.copyCard.recipientName": "Saaja nimi",
   "savingsFund.recurring.copyCard.recipientIban": "Kontonumber",
   "savingsFund.recurring.copyCard.description": "Selgitus",

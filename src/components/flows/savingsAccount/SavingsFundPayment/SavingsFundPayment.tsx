@@ -57,7 +57,6 @@ const SavingsFundPaymentForm: FC<{ user: User }> = ({ user }) => {
   const intl = useIntl();
 
   const accountHolder = accountHolderFor(user);
-  const isLegalEntity = accountHolder === 'company';
 
   const {
     handleSubmit,
@@ -183,7 +182,7 @@ const SavingsFundPaymentForm: FC<{ user: User }> = ({ user }) => {
               bank={recurringBank}
               amount={amount}
               personalCode={user.role.code}
-              isLegalEntity={isLegalEntity}
+              accountHolder={accountHolder}
             />
           ) : null}
 

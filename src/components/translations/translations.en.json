@@ -1262,6 +1262,7 @@
   "savingsFund.recurring.step.review": "Check the details",
   "savingsFund.recurring.step.verify": "Make sure you're paying from an <b>investment account</b>, then confirm the standing order",
   "savingsFund.recurring.step.verify.legalEntity": "Make sure you're paying from the <b>company's bank account</b>, then confirm the standing order",
+  "savingsFund.recurring.step.verify.child": "Make sure you're paying from <b>your or the child’s bank account</b>, then confirm the standing order",
   "savingsFund.recurring.copyCard.recipientName": "Recipient name",
   "savingsFund.recurring.copyCard.recipientIban": "Recipient account (IBAN)",
   "savingsFund.recurring.copyCard.description": "Description",

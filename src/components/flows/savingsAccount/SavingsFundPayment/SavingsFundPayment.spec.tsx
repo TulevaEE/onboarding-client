@@ -585,6 +585,24 @@ describe(SavingsFundPayment, () => {
       ).not.toBeInTheDocument();
     });
 
+    it('shows the child-bank verify step in the recurring panel instead of the investment-account one', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      replaceAmount('50');
+      userEvent.click(screen.getByRole('radio', { name: 'Recurring payment' }));
+      userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
+
+      expect(
+        await screen.findByRole('heading', { name: 'Set up the recurring payment in LHV' }),
+      ).toBeInTheDocument();
+
+      expect(screen.getByText(/paying from/i)).toBeInTheDocument();
+      expect(screen.getByText(/then confirm the standing order/i)).toBeInTheDocument();
+      // Once in the info section at the top, once as the bold chunk of step 3.
+      expect(screen.getAllByText(/your or the child’s bank account/)).toHaveLength(2);
+      // The self variant of the step ("…paying from an investment account") must not appear.
+      expect(screen.queryByText(/paying from an/i)).not.toBeInTheDocument();
+    });
+
     it('does not show the investment account reminder, even after a bank is selected', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
 
