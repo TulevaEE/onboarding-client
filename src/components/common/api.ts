@@ -506,7 +506,7 @@ export function getMissingAmlChecks(): Promise<AmlCheck[]> {
 }
 
 export function getFunds(): Promise<Fund[]> {
-  return getWithAuthentication(getEndpoint('/v1/funds'));
+  return mockRequestInMockMode(() => getWithAuthentication(getEndpoint('/v1/funds')), 'funds');
 }
 
 export function getPendingApplications(): Promise<Application[]> {

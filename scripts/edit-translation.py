@@ -128,10 +128,13 @@ def cmd_set(args: argparse.Namespace) -> int:
     eol = b"\r\n" if anchor.endswith(b"\r\n") else b"\n"
     indent_m = re.match(rb"^(\s*)", anchor)
     indent = indent_m.group(1).decode() if indent_m else "  "
+    anchor_is_last = not anchor.rstrip().endswith(b",")
+    if anchor_is_last:
+        lines[anchor_idx] = anchor.rstrip() + b"," + eol
     new_line = (
         f'{indent}"{args.key}": "'.encode()
         + _encode_value(value)
-        + b'",'
+        + (b'"' if anchor_is_last else b'",')
         + eol
     )
     lines.insert(anchor_idx + 1, new_line)
