@@ -3,9 +3,9 @@ import { FormattedMessage } from 'react-intl';
 import { useFunds, useTransactions } from '../../common/apiHooks';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { usePageTitle } from '../../common/usePageTitle';
-import { TaxTab } from './TaxTab';
+import { TaxReportView } from './TaxReportView';
 
-export const SavingsFundTaxReportPage: React.FunctionComponent = () => {
+export const TaxReportPage: React.FunctionComponent = () => {
   usePageTitle('pageTitle.savingsFundTaxReport');
 
   const { data: transactions = [], isLoading: transactionsLoading } = useTransactions();
@@ -41,7 +41,7 @@ export const SavingsFundTaxReportPage: React.FunctionComponent = () => {
         <FormattedMessage id="savingsFundTaxReport.pillarNote" />
       </div>
 
-      <TaxTab transactions={savingsFundTransactions} />
+      <TaxReportView transactions={savingsFundTransactions} />
     </section>
   );
 };

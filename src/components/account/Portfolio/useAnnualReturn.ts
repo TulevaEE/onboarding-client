@@ -11,8 +11,8 @@ export const useAnnualReturn = (
   keys: string[],
   from: string,
   to: string,
-): { personalReturn: Return | null; isLoading: boolean } => {
-  const { data, isLoading } = useQuery({
+): { personalReturn: Return | null } => {
+  const { data } = useQuery({
     queryKey: ['savingsFundStatementReturns', keys.join(), from, to],
     queryFn: () => getReturns(keys, from, to),
     enabled: keys.length === 1,
@@ -21,5 +21,5 @@ export const useAnnualReturn = (
   const personalReturn =
     data?.returns?.find((item) => item.type === 'PERSONAL' && keys.includes(item.key)) ?? null;
 
-  return { personalReturn, isLoading };
+  return { personalReturn };
 };
