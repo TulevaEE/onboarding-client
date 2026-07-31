@@ -423,6 +423,11 @@ export interface Authentication {
   challengeCode: string;
 }
 
+export interface NavValue {
+  date: string;
+  value: number;
+}
+
 export interface Transaction {
   id: string;
   amount: number;

@@ -1,4 +1,6 @@
 import { fundPensionStatusProfiles } from './fundPensionStatus';
+import { fundsProfiles } from './funds';
+import { navHistoryProfiles } from './navHistory';
 import { memberCapitalListingsProfiles } from './memberCapitalListings';
 import { userMockProfiles } from './user';
 import { MockModeConfiguration } from '../types';
@@ -24,6 +26,8 @@ export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string
   memberCapitalListings: memberCapitalListingsProfiles,
   pendingApplications: pendingApplicationsProfiles,
   fundPensionStatus: fundPensionStatusProfiles,
+  funds: fundsProfiles,
+  navHistory: navHistoryProfiles,
   returns: returnsProfiles,
   savingsFundBalance: savingsFundBalanceProfiles,
   savingsFundOnboardingStatus: savingsFundOnboardingStatusProfiles,
