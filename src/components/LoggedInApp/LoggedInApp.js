@@ -30,7 +30,6 @@ import { ContributionPageSecondPillar } from '../contribution/ContributionPageSe
 import { TransactionPageSecondPillar } from '../account/TransactionSection/TransactionPageSecondPillar';
 import { SavingsTransactionPage } from '../account/TransactionSection/SavingsTransactionPage';
 import { PortfolioPage } from '../account/Portfolio';
-import { TaxReportPage } from '../account/SavingsFundTaxReport';
 import { TransactionDetailPage } from '../account/TransactionSection/TransactionDetailPage';
 import SecondPillarUpsellCard from '../account/SecondPillarUpsell/SecondPillarUpsellCard';
 import { SecondPillarPaymentRate } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRate';
@@ -226,7 +225,6 @@ export class LoggedInApp extends PureComponent {
             <Route path="/3rd-pillar-transactions" component={TransactionPageThirdPillar} />
             <Route path="/savings-fund-transactions" component={SavingsTransactionPage} />
             <Route path="/portfolio" component={PortfolioPage} />
-            <Route path="/savings-fund-tax-report" component={TaxReportPage} />
             <Route path="/transaction/:id" component={TransactionDetailPage} />
             <Route path="/2nd-pillar-contributions" component={ContributionPageSecondPillar} />
             <Route path="/3rd-pillar-contributions" component={ContributionPageThirdPillar} />
