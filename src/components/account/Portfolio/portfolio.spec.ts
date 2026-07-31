@@ -95,21 +95,22 @@ describe('period summary', () => {
   });
 
   it('builds a series from the days a price was published in the period', () => {
-    const summary = getPeriodSummary(history, navHistory, [TKF], '2025-01-01', '2025-12-31');
-
-    expect(summary.series.map((point) => point.date)).toEqual([
+    const series = getStackedSeries(
+      history,
+      navHistory,
+      [{ id: 'savingsFund', isins: [TKF] }],
       '2025-01-01',
-      '2025-06-30',
       '2025-12-31',
-    ]);
-    expect(summary.series[2].value).toBeCloseTo(1800, 2);
+    );
+
+    expect(series.map((point) => point.date)).toEqual(['2025-01-01', '2025-06-30', '2025-12-31']);
+    expect(series[2].total).toBeCloseTo(1800, 2);
   });
 
   it('is empty and safe when no prices are known', () => {
     const summary = getPeriodSummary(history, {}, [TKF], '2025-01-01', '2025-12-31');
 
     expect(summary.endValue).toBe(0);
-    expect(summary.series).toEqual([]);
   });
 });
 
@@ -138,10 +139,16 @@ describe('unpriced holdings', () => {
         ['2025-12-31', 12],
       ]),
     };
-    const summary = getPeriodSummary(history, lateNavs, [TKF], '2025-01-01', '2025-12-31');
+    const series = getStackedSeries(
+      history,
+      lateNavs,
+      [{ id: 'savingsFund', isins: [TKF] }],
+      '2025-01-01',
+      '2025-12-31',
+    );
 
-    expect(summary.series.map((point) => point.date)).toEqual(['2025-06-30', '2025-12-31']);
-    expect(summary.series.every((point) => point.value > 0)).toBe(true);
+    expect(series.map((point) => point.date)).toEqual(['2025-06-30', '2025-12-31']);
+    expect(series.every((point) => point.total > 0)).toBe(true);
   });
 });
 

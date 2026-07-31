@@ -1,4 +1,4 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { useQueries, useQuery, UseQueryResult } from '@tanstack/react-query';
 import { getEndpoint } from '../../../common/api';
 import { getWithAuthentication } from '../../../common/http';
 import { NavValue } from '../../../common/apiModels';
@@ -25,4 +25,22 @@ export function useFundNavHistory(
     queryFn: () => getFundNavHistory(isin as string, startDate, endDate),
     enabled: !!isin,
   });
+}
+
+export function useFundNavHistories(
+  isins: string[],
+  startDate: string,
+  endDate: string,
+): Record<string, NavValue[]> {
+  const results = useQueries({
+    queries: isins.map((isin) => ({
+      queryKey: ['fundNavHistory', isin, startDate, endDate],
+      queryFn: () => getFundNavHistory(isin, startDate, endDate),
+    })),
+  });
+
+  return isins.reduce<Record<string, NavValue[]>>((histories, isin, index) => {
+    const history = results[index]?.data;
+    return history ? { ...histories, [isin]: history } : histories;
+  }, {});
 }

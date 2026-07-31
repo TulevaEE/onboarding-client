@@ -7,7 +7,7 @@ import { CostBasisMethod, getRealisedGainsBetween } from './statement';
 
 const TAX_YEARS = [moment().year() - 1, moment().year()];
 
-export const TaxTab: React.FunctionComponent<{ transactions: Transaction[] }> = ({
+export const TaxReportView: React.FunctionComponent<{ transactions: Transaction[] }> = ({
   transactions,
 }) => {
   const [year, setYear] = useState(TAX_YEARS[0]);

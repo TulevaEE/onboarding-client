@@ -3,11 +3,6 @@ import { NavValue, Transaction } from '../../common/apiModels';
 
 export type NavHistoryByIsin = Record<string, NavValue[]>;
 
-export interface ValuePoint {
-  date: string;
-  value: number;
-}
-
 export interface PeriodSummary {
   from: string;
   to: string;
@@ -17,7 +12,6 @@ export interface PeriodSummary {
   withdrawals: number;
   gain: number;
   gainPercentage: number;
-  series: ValuePoint[];
 }
 
 export interface Layer {
@@ -231,8 +225,5 @@ export const getPeriodSummary = (
     withdrawals,
     gain,
     gainPercentage: invested > 0 ? (gain / invested) * 100 : 0,
-    series: getStackedSeries(transactions, navHistoryByIsin, [{ id: 'all', isins }], from, to).map(
-      (point) => ({ date: point.date, value: point.total }),
-    ),
   };
 };

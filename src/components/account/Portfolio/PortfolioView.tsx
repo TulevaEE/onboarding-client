@@ -41,7 +41,7 @@ const SELECTIONS: {
 
 const today = () => moment().format('YYYY-MM-DD');
 
-export const MoneyTab: React.FunctionComponent<{
+export const PortfolioView: React.FunctionComponent<{
   transactions: Transaction[];
   funds: Fund[];
   navHistoryByIsin: NavHistoryByIsin;
@@ -85,9 +85,11 @@ export const MoneyTab: React.FunctionComponent<{
     [transactions, navHistoryByIsin, selected.join(), funds, from, to],
   );
 
-  const returnKeys = SELECTIONS.filter(
-    (selection) => selected.includes(selection.id) && selection.returnKey,
-  ).map((selection) => selection.returnKey as string);
+  // A rate belongs to one source. Showing a pillar's rate beside a balance that also
+  // includes the savings fund would read as the whole portfolio's return.
+  const onlyVisible =
+    selected.length === 1 ? SELECTIONS.find(({ id }) => id === selected[0]) : null;
+  const returnKeys = onlyVisible?.returnKey ? [onlyVisible.returnKey] : [];
   const { personalReturn } = useAnnualReturn(returnKeys, from, to);
 
   const toggle = (id: Selection) =>
