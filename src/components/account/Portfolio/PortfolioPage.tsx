@@ -23,7 +23,11 @@ export const PortfolioPage: React.FunctionComponent = () => {
     .map((fund) => fund.isin)
     .filter((isin) => transactions.some((transaction) => transaction.isin === isin));
 
-  const navHistoryByIsin = useFundNavHistories(
+  const {
+    navHistoryByIsin,
+    isLoading: navHistoryLoading,
+    isError: navHistoryFailed,
+  } = useFundNavHistories(
     heldIsins,
     moment(from).subtract(PRICE_LOOKBACK_MONTHS, 'month').format('YYYY-MM-DD'),
     to,
@@ -34,9 +38,21 @@ export const PortfolioPage: React.FunctionComponent = () => {
     setTo(nextTo);
   }, []);
 
+  // Without every held fund's prices the totals would silently understate the balance.
+  if (navHistoryFailed) {
+    return (
+      <section className="mt-5">
+        <div className="alert alert-danger">
+          <FormattedMessage id="myMoney.pricesUnavailable" />
+        </div>
+      </section>
+    );
+  }
+
   if (
     transactionsLoading ||
     fundsLoading ||
+    navHistoryLoading ||
     !Array.isArray(transactions) ||
     !Array.isArray(funds)
   ) {

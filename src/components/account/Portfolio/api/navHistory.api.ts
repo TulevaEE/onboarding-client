@@ -27,11 +27,17 @@ export function useFundNavHistory(
   });
 }
 
+export interface NavHistories {
+  navHistoryByIsin: Record<string, NavValue[]>;
+  isLoading: boolean;
+  isError: boolean;
+}
+
 export function useFundNavHistories(
   isins: string[],
   startDate: string,
   endDate: string,
-): Record<string, NavValue[]> {
+): NavHistories {
   const results = useQueries({
     queries: isins.map((isin) => ({
       queryKey: ['fundNavHistory', isin, startDate, endDate],
@@ -39,8 +45,14 @@ export function useFundNavHistories(
     })),
   });
 
-  return isins.reduce<Record<string, NavValue[]>>((histories, isin, index) => {
+  const navHistoryByIsin = isins.reduce<Record<string, NavValue[]>>((histories, isin, index) => {
     const history = results[index]?.data;
     return history ? { ...histories, [isin]: history } : histories;
   }, {});
+
+  return {
+    navHistoryByIsin,
+    isLoading: results.some((result) => result.isLoading),
+    isError: results.some((result) => result.isError),
+  };
 }

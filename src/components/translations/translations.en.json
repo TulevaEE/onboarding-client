@@ -1848,6 +1848,7 @@
   "pensionCalculator.memberCapital.note": "as a Tuleva member you earn a {bonus}% yearly bonus on your whole Tuleva balance. It grows with the market and is drawn down in retirement like the savings fund, taxed 22% on everything above your own capital contributions.",
   "myMoney.title": "My money",
   "myMoney.subtitle": "See how much money you had on any given day and how it has grown.",
+  "myMoney.pricesUnavailable": "We cannot load fund prices right now, so we cannot show what your money is worth. Please try again later.",
   "savingsFundTaxReport.title": "Tax report",
   "savingsFundTaxReport.subtitle": "Täiendav Kogumisfond redemptions and the calculation for your income tax return.",
   "savingsFundTaxReport.pillarNote": "This report covers Täiendav Kogumisfond only. Tax on II and III pillar is handled automatically and is not included here."
