@@ -13,8 +13,9 @@ const PRICE_LOOKBACK_MONTHS = 3;
 
 export const PortfolioPage: React.FunctionComponent = () => {
   usePageTitle('pageTitle.myMoney');
-  const [from, setFrom] = useState(moment().startOf('year').format('YYYY-MM-DD'));
-  const [to, setTo] = useState(moment().format('YYYY-MM-DD'));
+  // Left unset until the person picks a period, so the default can follow the transactions
+  // once they arrive rather than being fixed on the first render.
+  const [chosenPeriod, setChosenPeriod] = useState<{ from: string; to: string } | null>(null);
 
   const { data: transactions = [], isLoading: transactionsLoading } = useTransactions();
   const { data: funds = [], isLoading: fundsLoading } = useFunds();
@@ -22,6 +23,15 @@ export const PortfolioPage: React.FunctionComponent = () => {
   const heldIsins = funds
     .map((fund) => fund.isin)
     .filter((isin) => transactions.some((transaction) => transaction.isin === isin));
+
+  const firstTransaction = transactions
+    .filter((transaction) => heldIsins.includes(transaction.isin))
+    .map((transaction) => moment(transaction.time).format('YYYY-MM-DD'))
+    .sort()[0];
+
+  const from =
+    chosenPeriod?.from ?? firstTransaction ?? moment().startOf('year').format('YYYY-MM-DD');
+  const to = chosenPeriod?.to ?? moment().format('YYYY-MM-DD');
 
   const {
     navHistoryByIsin,
@@ -34,8 +44,7 @@ export const PortfolioPage: React.FunctionComponent = () => {
   );
 
   const onPeriodChange = useCallback((nextFrom: string, nextTo: string) => {
-    setFrom(nextFrom);
-    setTo(nextTo);
+    setChosenPeriod({ from: nextFrom, to: nextTo });
   }, []);
 
   // Without every held fund's prices the totals would silently understate the balance.
