@@ -286,7 +286,7 @@ export interface User {
   secondPillarOpenDate: string | null;
   thirdPillarInitDate: string | null;
   contactDetailsLastUpdateDate: string | null;
-  role: Role;
+  role?: Role;
 }
 
 export interface MemberLookup {

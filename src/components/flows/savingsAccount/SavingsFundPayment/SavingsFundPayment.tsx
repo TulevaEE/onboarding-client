@@ -9,7 +9,12 @@ import { PaymentChannel, User } from '../../../common/apiModels';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { PaymentBankButtons } from '../../thirdPillar/ThirdPillarPayment/PaymentBankButtons';
 import { BankKey } from '../../thirdPillar/ThirdPillarPayment/types';
-import { AccountHolder, accountHolderFor } from '../accountHolder';
+import {
+  AccountHolder,
+  accountHolderFor,
+  accountHolderName,
+  accountHolderPersonalCode,
+} from '../accountHolder';
 import { AmountInput } from '../AmountInput';
 import { InfoSection } from '../InfoSection';
 import { PaymentTypeSelection, SavingsFundPaymentType } from './PaymentTypeSelection';
@@ -83,7 +88,7 @@ const SavingsFundPaymentForm: FC<{ user: User }> = ({ user }) => {
     try {
       setSubmitError(false);
       await redirectToPayment({
-        recipientPersonalCode: user.role.code,
+        recipientPersonalCode: accountHolderPersonalCode(user),
         amount: data.amount ?? undefined,
         currency: 'EUR',
         type: 'SAVINGS',
@@ -104,7 +109,7 @@ const SavingsFundPaymentForm: FC<{ user: User }> = ({ user }) => {
         <p className="m-0 text-center fs-3 fw-medium">
           <FormattedMessage
             id="savingsFund.payment.accountOwner"
-            values={{ accountOwner: user.role.name }}
+            values={{ accountOwner: accountHolderName(user) }}
           />
         </p>
       </div>
@@ -168,7 +173,7 @@ const SavingsFundPaymentForm: FC<{ user: User }> = ({ user }) => {
           {showManualPayment && (
             <SavingsFundOtherBankDetails
               amount={amount}
-              personalCode={user.role.code}
+              personalCode={accountHolderPersonalCode(user)}
               titleId={
                 isOverMaxAmount
                   ? 'savingsFund.payment.manualTransfer.title'
@@ -181,7 +186,7 @@ const SavingsFundPaymentForm: FC<{ user: User }> = ({ user }) => {
             <SavingsFundRecurringDetails
               bank={recurringBank}
               amount={amount}
-              personalCode={user.role.code}
+              personalCode={accountHolderPersonalCode(user)}
               accountHolder={accountHolder}
             />
           ) : null}

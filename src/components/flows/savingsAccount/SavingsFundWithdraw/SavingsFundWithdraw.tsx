@@ -183,7 +183,7 @@ export const SavingsFundWithdraw: FC = () => {
               <p className="m-0 text-secondary">
                 <FormattedMessage
                   id={
-                    user?.role.type === 'LEGAL_ENTITY'
+                    user?.role?.type === 'LEGAL_ENTITY'
                       ? 'savingsFund.withdraw.form.iban.description.legalEntity'
                       : 'savingsFund.withdraw.form.iban.description'
                   }
