@@ -1,10 +1,21 @@
 import { getWithAuthentication } from '../../../common/http';
 import { getEndpoint } from '../../../common/api';
 import { mockRequestInMockMode } from '../../../common/requestMocker';
-import { Key, Return, ReturnComparison, ReturnsResponse } from './returnComparison.types';
+import {
+  ComparableReturn,
+  Key,
+  Return,
+  ReturnComparison,
+  ReturnsResponse,
+} from './returnComparison.types';
 
 export { Key } from './returnComparison.types';
-export type { Return, ReturnComparison, ReturnsResponse } from './returnComparison.types';
+export type {
+  ComparableReturn,
+  Return,
+  ReturnComparison,
+  ReturnsResponse,
+} from './returnComparison.types';
 
 export async function getReturnComparison(
   {
@@ -28,8 +39,11 @@ export async function getReturnComparison(
   return { personal, pensionFund, index, from, to };
 }
 
-function getReturnByKey(key: string, returns: Return[]): Return | null {
-  return returns?.find((ret) => ret.key === key) || null;
+// A return the server could not compute a rate for cannot be compared against, so it
+// is reported as absent rather than as a zero-rate return.
+function getReturnByKey(key: string, returns: Return[]): ComparableReturn | null {
+  const found = returns?.find((ret) => ret.key === key);
+  return found && found.rate !== null ? { ...found, rate: found.rate } : null;
 }
 
 export function getReturns(
