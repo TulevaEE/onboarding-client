@@ -10,7 +10,11 @@ import {
 } from './constants';
 
 function toFieldErrors(errorResponse) {
-  return errorResponse.body.errors.reduce((totalErrors, currentError) => {
+  const errors = errorResponse?.body?.errors;
+  if (!Array.isArray(errors)) {
+    return { _error: 'error.technical' };
+  }
+  return errors.reduce((totalErrors, currentError) => {
     if (currentError.path) {
       totalErrors[currentError.path] = currentError.code;
     } else {

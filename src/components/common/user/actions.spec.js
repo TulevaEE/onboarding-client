@@ -70,6 +70,16 @@ describe('newUserFlow actions', () => {
       );
   });
 
+  it('maps a malformed error response to a generic form error', () => {
+    const error = { status: 504 };
+    mockApi.updateUserWithToken = jest.fn(() => Promise.reject(error));
+    const updateUser = createBoundAction(actions.updateUser);
+
+    return updateUser().catch((givenError) =>
+      expect(givenError).toEqual(new SubmissionError({ _error: 'error.technical' })),
+    );
+  });
+
   it('can create a new user', () => {
     const newUser = { firstName: 'Jordan' };
     mockApi.updateUserWithToken = jest.fn(() => {
