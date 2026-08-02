@@ -94,7 +94,9 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
 
   const displayName = user?.role?.name ?? userName;
   const companyOnboardingEnabled = isCompanyOnboardingEnabled();
-  const pendingChildOnboardings = pendingOnboardings.filter(({ type }) => type === 'PERSON');
+  const pendingChildOnboardings = (
+    Array.isArray(pendingOnboardings) ? pendingOnboardings : []
+  ).filter(({ type }) => type === 'PERSON');
   const hasPendingChildOnboardings = childOnboardingEnabled && pendingChildOnboardings.length > 0;
 
   // Even a single-role user gets the dropdown when there is something to add:

@@ -90,7 +90,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     return <PendingPartialWithdrawalOrFundPension {...rowProps} />;
   }
 
-  const activeSecondPillarFundPension = fundPensionStatus?.fundPensions.find(
+  const activeSecondPillarFundPension = fundPensionStatus?.fundPensions?.find(
     (fundPension) => fundPension.active && fundPension.pillar === 'SECOND',
   );
 
