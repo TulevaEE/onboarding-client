@@ -200,6 +200,7 @@
   "error.messages.intro": "Esines viga. Palun proovi uuesti või võta meiega ühendust.",
   "error.message.close": "Sulge",
   "error.payment-failed": "Makse ebaõnnestus.",
+  "error.technical": "Midagi läks valesti. Palun proovi uuesti või võta meiega ühendust.",
   "id.card.signing.error": "Ei leidnud ID-kaarti/lugejat või on sertifikaadid aegunud.",
   "mandate.processing.error.epis.already.active.contributions.fund": "Valitud fond on juba aktiivne",
   "mandate.processing.error.epis.unknown": "Tundmatu Eesti Pensioni Infosüsteemi viga",
