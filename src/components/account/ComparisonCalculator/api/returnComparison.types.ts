@@ -12,11 +12,14 @@ type ReturnType = 'PERSONAL' | 'FUND' | 'INDEX';
 export interface Return {
   type: ReturnType;
   key: string;
-  rate: number;
+  rate: number | null;
   amount: number;
   paymentsSum: number;
   currency: string;
 }
+
+// A return the server was able to compute a rate for, and can therefore be compared.
+export type ComparableReturn = Return & { rate: number };
 
 export interface ReturnsResponse {
   returns: Return[];
@@ -25,9 +28,9 @@ export interface ReturnsResponse {
 }
 
 export interface ReturnComparison {
-  personal: Return | null;
-  pensionFund: Return | null;
-  index: Return | null;
+  personal: ComparableReturn | null;
+  pensionFund: ComparableReturn | null;
+  index: ComparableReturn | null;
   from: string;
   to: string;
 }

@@ -56,6 +56,32 @@ describe('Return comparison API', () => {
     });
   });
 
+  it('treats a return without a rate as absent', async () => {
+    const personalReturn = { key: Key.THIRD_PILLAR, rate: null, amount: 997.12, currency: 'EUR' };
+    const fundReturn = { key: 'EE123456', rate: 0.0228, amount: 883.45, currency: 'EUR' };
+    (getWithAuthentication as jest.Mock).mockResolvedValueOnce({
+      returns: [fundReturn, personalReturn],
+      from: '2020-01-01',
+      to: '2025-01-01',
+    });
+
+    const comparison = await getReturnComparison(
+      {
+        personalKey: Key.THIRD_PILLAR,
+        pensionFundKey: 'EE123456',
+        indexKey: Key.CPI,
+      },
+      '',
+    );
+    expect(comparison).toStrictEqual({
+      personal: null,
+      pensionFund: fundReturn,
+      index: null,
+      from: '2020-01-01',
+      to: '2025-01-01',
+    });
+  });
+
   it('returns return comparison object with null values when respective keys are not found', async () => {
     const fundReturn = { key: 'EPI', rate: 0.0228, amount: 220.204, currency: 'EUR' };
     (getWithAuthentication as jest.Mock).mockResolvedValueOnce({
