@@ -240,6 +240,7 @@
   "smart.id.account.not.found": "Smart-ID account not found",
   "smart.id.user.refused": "Smart-ID user refused",
   "smart.id.technical.error": "Smart-ID technical error",
+  "smart.id.timeout": "You didn’t confirm the request in the Smart-ID app or there was a communication error.",
   "id.card.signature.session.not.found": "ID-card session is expired. Please log in again.",
   "header.my.account": "My account",
   "roleSwitcher.openNewAccount": "Open a new account",

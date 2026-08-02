@@ -250,6 +250,7 @@
   "smart.id.account.not.found": "Smart-ID kontot ei leitud",
   "smart.id.user.refused": "Smart-ID sessioon katkestatud",
   "smart.id.technical.error": "Smart-ID süsteemi viga",
+  "smart.id.timeout": "Sa ei kinnitanud päringut Smart-ID rakenduses või tekkis sidehäire.",
   "id.card.signature.session.not.found": "ID-kaardi sessioon on aegunud, palun logi uuesti sisse.",
   "header.my.account": "Minu konto",
   "roleSwitcher.openNewAccount": "Ava uus konto",
