@@ -423,9 +423,30 @@ export interface Authentication {
   challengeCode: string;
 }
 
-export interface NavValue {
+export type PortfolioGroup = 'SAVINGS_FUND' | 'SECOND_PILLAR' | 'THIRD_PILLAR';
+
+export interface PortfolioGroupSummary {
+  group: PortfolioGroup;
+  startValue: number;
+  endValue: number;
+  contributions: number;
+  withdrawals: number;
+  gain: number;
+  gainPercentage: number;
+  annualReturnRate: number | null;
+}
+
+/** A group is null on days it is held but has no published price yet. */
+export interface PortfolioValuePoint {
   date: string;
-  value: number;
+  values: Partial<Record<PortfolioGroup, number | null>>;
+}
+
+export interface Portfolio {
+  from: string;
+  to: string;
+  groups: PortfolioGroupSummary[];
+  series: PortfolioValuePoint[];
 }
 
 export interface Transaction {

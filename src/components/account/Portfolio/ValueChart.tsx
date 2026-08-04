@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import moment from 'moment';
 import { Euro } from '../../common/Euro';
-import { StackedPoint } from './portfolio';
 
 const WIDTH = 720;
 const HEIGHT = 180;
@@ -13,8 +12,15 @@ export interface ChartLayer {
   label: React.ReactNode;
 }
 
+/** One value per layer, in the order the layers were given. */
+export interface ChartPoint {
+  date: string;
+  values: number[];
+  total: number;
+}
+
 export const ValueChart: React.FunctionComponent<{
-  series: StackedPoint[];
+  series: ChartPoint[];
   layers: ChartLayer[];
   totalLabel: React.ReactNode;
 }> = ({ series, layers, totalLabel }) => {
@@ -29,7 +35,7 @@ export const ValueChart: React.FunctionComponent<{
   const x = (index: number) => PADDING + (index * (WIDTH - 2 * PADDING)) / (series.length - 1);
   const y = (value: number) => HEIGHT - PADDING - (value / highest) * (HEIGHT - 2 * PADDING);
 
-  const cumulativeAt = (point: StackedPoint, layer: number) =>
+  const cumulativeAt = (point: ChartPoint, layer: number) =>
     point.values.slice(0, layer + 1).reduce((sum, value) => sum + value, 0);
 
   // Tallest band first, so the smaller ones stay visible in front of it.
