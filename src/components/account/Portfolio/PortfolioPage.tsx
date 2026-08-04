@@ -1,54 +1,27 @@
 import React, { useCallback, useState } from 'react';
 import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
-import { useFunds, useTransactions } from '../../common/apiHooks';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { usePageTitle } from '../../common/usePageTitle';
-import { useFundNavHistories } from './api/navHistory.api';
+import { usePortfolio } from './api/portfolio.api';
 import { PortfolioView } from './PortfolioView';
-
-// Prices are fetched from before the period so the opening day already has one, otherwise
-// the period would open at zero and report the whole starting balance as growth.
-const PRICE_LOOKBACK_MONTHS = 3;
 
 export const PortfolioPage: React.FunctionComponent = () => {
   usePageTitle('pageTitle.myMoney');
-  // Left unset until the person picks a period, so the default can follow the transactions
-  // once they arrive rather than being fixed on the first render.
-  const [chosenPeriod, setChosenPeriod] = useState<{ from: string; to: string } | null>(null);
+  // Opens on the whole history: an undefined start lets the backend begin at the first
+  // price it has rather than a date the client would have to guess.
+  const [period, setPeriod] = useState<{ from: string | undefined; to: string }>({
+    from: undefined,
+    to: moment().format('YYYY-MM-DD'),
+  });
 
-  const { data: transactions = [], isLoading: transactionsLoading } = useTransactions();
-  const { data: funds = [], isLoading: fundsLoading } = useFunds();
+  const { data: portfolio, isLoading, isError } = usePortfolio(period.from, period.to);
 
-  const heldIsins = funds
-    .map((fund) => fund.isin)
-    .filter((isin) => transactions.some((transaction) => transaction.isin === isin));
-
-  const firstTransaction = transactions
-    .filter((transaction) => heldIsins.includes(transaction.isin))
-    .map((transaction) => moment(transaction.time).format('YYYY-MM-DD'))
-    .sort()[0];
-
-  const from =
-    chosenPeriod?.from ?? firstTransaction ?? moment().startOf('year').format('YYYY-MM-DD');
-  const to = chosenPeriod?.to ?? moment().format('YYYY-MM-DD');
-
-  const {
-    navHistoryByIsin,
-    isLoading: navHistoryLoading,
-    isError: navHistoryFailed,
-  } = useFundNavHistories(
-    heldIsins,
-    moment(from).subtract(PRICE_LOOKBACK_MONTHS, 'month').format('YYYY-MM-DD'),
-    to,
-  );
-
-  const onPeriodChange = useCallback((nextFrom: string, nextTo: string) => {
-    setChosenPeriod({ from: nextFrom, to: nextTo });
+  const onPeriodChange = useCallback((from: string | undefined, to: string) => {
+    setPeriod({ from, to });
   }, []);
 
-  // Without every held fund's prices the totals would silently understate the balance.
-  if (navHistoryFailed) {
+  if (isError) {
     return (
       <section className="mt-5">
         <div className="alert alert-danger">
@@ -58,13 +31,7 @@ export const PortfolioPage: React.FunctionComponent = () => {
     );
   }
 
-  if (
-    transactionsLoading ||
-    fundsLoading ||
-    navHistoryLoading ||
-    !Array.isArray(transactions) ||
-    !Array.isArray(funds)
-  ) {
+  if (isLoading || !portfolio) {
     return (
       <section className="mt-5">
         <Shimmer height={32} />
@@ -82,11 +49,9 @@ export const PortfolioPage: React.FunctionComponent = () => {
       </p>
 
       <PortfolioView
-        transactions={transactions}
-        funds={funds}
-        navHistoryByIsin={navHistoryByIsin}
-        from={from}
-        to={to}
+        portfolio={portfolio}
+        from={period.from}
+        to={period.to}
         onPeriodChange={onPeriodChange}
       />
     </section>

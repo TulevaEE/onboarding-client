@@ -1,106 +1,85 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
-import { Fund, Transaction } from '../../common/apiModels';
 import { Euro } from '../../common/Euro';
 import { TranslationKey } from '../../translations';
-import { getPeriodSummary, getStackedSeries, NavHistoryByIsin } from './portfolio';
-import { useAnnualReturn } from './useAnnualReturn';
-import { ValueChart } from './ValueChart';
+import { Portfolio, PortfolioGroup, PortfolioGroupSummary } from '../../common/apiModels';
+import { ChartPoint, ValueChart } from './ValueChart';
 
-type Selection = 'savingsFund' | 'secondPillar' | 'thirdPillar';
-
-const SELECTIONS: {
-  id: Selection;
-  pillar: number | null;
-  label: TranslationKey;
-  color: string;
-  returnKey?: string;
-}[] = [
+const GROUPS: { id: PortfolioGroup; label: TranslationKey; color: string }[] = [
   {
-    id: 'savingsFund',
-    pillar: null,
+    id: 'SAVINGS_FUND',
     label: 'savingsFund.statement.show.savingsFund',
     color: '#006ce6',
   },
   {
-    id: 'secondPillar',
-    pillar: 2,
+    id: 'SECOND_PILLAR',
     label: 'savingsFund.statement.show.secondPillar',
     color: '#002f63',
-    returnKey: 'SECOND_PILLAR',
   },
   {
-    id: 'thirdPillar',
-    pillar: 3,
+    id: 'THIRD_PILLAR',
     label: 'savingsFund.statement.show.thirdPillar',
     color: '#00aeea',
-    returnKey: 'THIRD_PILLAR',
   },
 ];
 
 const today = () => moment().format('YYYY-MM-DD');
 
+const add = (summaries: PortfolioGroupSummary[], field: keyof PortfolioGroupSummary): number =>
+  summaries.reduce((sum, summary) => sum + ((summary[field] as number) ?? 0), 0);
+
 export const PortfolioView: React.FunctionComponent<{
-  transactions: Transaction[];
-  funds: Fund[];
-  navHistoryByIsin: NavHistoryByIsin;
-  from: string;
+  portfolio: Portfolio;
+  from: string | undefined;
   to: string;
-  onPeriodChange: (from: string, to: string) => void;
-}> = ({ transactions, funds, navHistoryByIsin, from, to, onPeriodChange }) => {
-  const available = SELECTIONS.filter(({ pillar }) =>
-    funds.some(
-      (fund) => fund.pillar === pillar && transactions.some((tx) => tx.isin === fund.isin),
-    ),
+  onPeriodChange: (from: string | undefined, to: string) => void;
+}> = ({ portfolio, from, to, onPeriodChange }) => {
+  const available = GROUPS.filter(({ id }) =>
+    portfolio.groups.some((summary) => summary.group === id),
   );
 
-  // Everything the person holds is shown until they switch a layer off, so someone with
+  // Everything the person holds is shown until they switch a band off, so someone with
   // no savings fund still lands on their own pillars instead of an empty chart.
-  const [hidden, setHidden] = useState<Selection[]>([]);
-  const selected = available.map(({ id }) => id).filter((id) => !hidden.includes(id));
+  const [hidden, setHidden] = useState<PortfolioGroup[]>([]);
+  const visible = available.filter(({ id }) => !hidden.includes(id));
 
-  const selectedIsins = funds
-    .filter((fund) =>
-      selected.some(
-        (id) => SELECTIONS.find((selection) => selection.id === id)?.pillar === fund.pillar,
-      ),
-    )
-    .map((fund) => fund.isin);
-
-  const summary = useMemo(
-    () => getPeriodSummary(transactions, navHistoryByIsin, selectedIsins, from, to),
-    [transactions, navHistoryByIsin, selectedIsins.join(), from, to],
+  const visibleSummaries = portfolio.groups.filter((summary) =>
+    visible.some(({ id }) => id === summary.group),
   );
 
-  const activeLayers = SELECTIONS.filter((selection) => selected.includes(selection.id)).map(
-    (selection) => ({
-      ...selection,
-      isins: funds.filter((fund) => fund.pillar === selection.pillar).map((fund) => fund.isin),
-    }),
-  );
-
-  const stacked = useMemo(
-    () => getStackedSeries(transactions, navHistoryByIsin, activeLayers, from, to),
-    [transactions, navHistoryByIsin, selected.join(), funds, from, to],
-  );
+  const startValue = add(visibleSummaries, 'startValue');
+  const endValue = add(visibleSummaries, 'endValue');
+  const contributions = add(visibleSummaries, 'contributions');
+  const withdrawals = add(visibleSummaries, 'withdrawals');
+  const gain = add(visibleSummaries, 'gain');
 
   // A rate belongs to one source. Showing a pillar's rate beside a balance that also
   // includes the savings fund would read as the whole portfolio's return.
-  const onlyVisible =
-    selected.length === 1 ? SELECTIONS.find(({ id }) => id === selected[0]) : null;
-  const returnKeys = onlyVisible?.returnKey ? [onlyVisible.returnKey] : [];
-  const { personalReturn } = useAnnualReturn(returnKeys, from, to);
+  const annualReturnRate =
+    visibleSummaries.length === 1 ? visibleSummaries[0].annualReturnRate : null;
 
-  const toggle = (id: Selection) =>
+  // Days where a visible band has no published price are left out rather than drawn as
+  // zero, which would show up as a cliff on the day its price history begins.
+  const series: ChartPoint[] = portfolio.series
+    .map((point) => {
+      const values = visible.map(({ id }) => point.values[id] ?? null);
+      if (values.some((value) => value === null)) {
+        return null;
+      }
+      const numbers = values as number[];
+      return {
+        date: point.date,
+        values: numbers,
+        total: numbers.reduce((sum, value) => sum + value, 0),
+      };
+    })
+    .filter((point): point is ChartPoint => point !== null);
+
+  const toggle = (id: PortfolioGroup) =>
     setHidden((current) =>
       current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
     );
-
-  const earliestTransaction = transactions
-    .filter((transaction) => selectedIsins.includes(transaction.isin))
-    .map((transaction) => moment(transaction.time).format('YYYY-MM-DD'))
-    .sort()[0];
 
   const presets = [
     {
@@ -124,10 +103,12 @@ export const PortfolioView: React.FunctionComponent<{
     {
       id: 'allTime',
       label: <FormattedMessage id="savingsFund.statement.period.allTime" />,
-      from: earliestTransaction ?? moment().startOf('year').format('YYYY-MM-DD'),
+      from: undefined,
       to: today(),
     },
   ];
+
+  const shownFrom = from ?? portfolio.series[0]?.date ?? portfolio.from;
 
   return (
     <>
@@ -155,7 +136,7 @@ export const PortfolioView: React.FunctionComponent<{
             type="date"
             aria-label="from"
             className="form-control form-control-sm w-auto"
-            value={from}
+            value={shownFrom}
             max={to}
             onChange={(event) => onPeriodChange(event.target.value, to)}
           />
@@ -165,7 +146,7 @@ export const PortfolioView: React.FunctionComponent<{
             aria-label="to"
             className="form-control form-control-sm w-auto"
             value={to}
-            min={from}
+            min={shownFrom}
             max={today()}
             onChange={(event) => onPeriodChange(from, event.target.value)}
           />
@@ -180,9 +161,9 @@ export const PortfolioView: React.FunctionComponent<{
               <button
                 key={id}
                 type="button"
-                aria-pressed={selected.includes(id)}
+                aria-pressed={!hidden.includes(id)}
                 className={`btn btn-sm rounded-pill ${
-                  selected.includes(id) ? 'btn-primary' : 'btn-outline-secondary'
+                  hidden.includes(id) ? 'btn-outline-secondary' : 'btn-primary'
                 }`}
                 onClick={() => toggle(id)}
               >
@@ -201,22 +182,22 @@ export const PortfolioView: React.FunctionComponent<{
           />
         </h2>
         <div className="display-6 fw-medium text-navy">
-          <Euro amount={summary.endValue} />
+          <Euro amount={endValue} />
         </div>
         <div className="mt-1">
-          <span className={summary.gain >= 0 ? 'text-success' : 'text-danger'}>
-            {summary.gain >= 0 ? '+' : '−'}
-            <Euro amount={Math.abs(summary.gain)} />
+          <span className={gain >= 0 ? 'text-success' : 'text-danger'}>
+            {gain >= 0 ? '+' : '−'}
+            <Euro amount={Math.abs(gain)} />
           </span>{' '}
           <span className="text-body-secondary">
             <FormattedMessage id="savingsFund.statement.money.growth" />
           </span>
         </div>
         <div className="mt-1 text-body-secondary">
-          {personalReturn ? (
+          {annualReturnRate !== null && annualReturnRate !== undefined ? (
             <FormattedMessage
               id="savingsFund.statement.money.annualReturn"
-              values={{ rate: `${(personalReturn.rate * 100).toFixed(1)}%` }}
+              values={{ rate: `${(annualReturnRate * 100).toFixed(1)}%` }}
             />
           ) : (
             <FormattedMessage id="savingsFund.statement.money.annualReturnUnavailable" />
@@ -225,35 +206,35 @@ export const PortfolioView: React.FunctionComponent<{
 
         <div className="mt-4">
           <ValueChart
-            series={stacked}
-            layers={activeLayers.map((layer) => ({
-              id: layer.id,
-              color: layer.color,
-              label: <FormattedMessage id={layer.label} />,
+            series={series}
+            layers={visible.map((group) => ({
+              id: group.id,
+              color: group.color,
+              label: <FormattedMessage id={group.label} />,
             }))}
             totalLabel={<FormattedMessage id="savingsFund.statement.total" />}
           />
-          {stacked.length > 1 && (
+          {series.length > 1 && (
             <div className="d-flex justify-content-between text-body-tertiary small mt-1">
-              <span>{moment(stacked[0].date).format('DD.MM.YYYY')}</span>
-              <span>{moment(stacked[stacked.length - 1].date).format('DD.MM.YYYY')}</span>
+              <span>{moment(series[0].date).format('DD.MM.YYYY')}</span>
+              <span>{moment(series[series.length - 1].date).format('DD.MM.YYYY')}</span>
             </div>
           )}
-          {activeLayers.length > 1 && (
+          {visible.length > 1 && (
             <div className="d-flex flex-wrap gap-3 mt-2 small">
-              {activeLayers.map((layer) => (
-                <span key={layer.id} className="d-inline-flex align-items-center gap-1">
+              {visible.map((group) => (
+                <span key={group.id} className="d-inline-flex align-items-center gap-1">
                   <span
                     aria-hidden="true"
                     style={{
                       width: '10px',
                       height: '10px',
                       borderRadius: '2px',
-                      background: layer.color,
+                      background: group.color,
                       display: 'inline-block',
                     }}
                   />
-                  <FormattedMessage id={layer.label} />
+                  <FormattedMessage id={group.label} />
                 </span>
               ))}
             </div>
@@ -265,22 +246,22 @@ export const PortfolioView: React.FunctionComponent<{
             {
               key: 'startValue',
               label: <FormattedMessage id="savingsFund.statement.money.startValue" />,
-              value: <Euro amount={summary.startValue} />,
+              value: <Euro amount={startValue} />,
             },
             {
               key: 'contributions',
               label: <FormattedMessage id="savingsFund.statement.money.contributions" />,
-              value: <Euro amount={summary.contributions} />,
+              value: <Euro amount={contributions} />,
             },
             {
               key: 'withdrawals',
               label: <FormattedMessage id="savingsFund.statement.money.withdrawals" />,
-              value: <Euro amount={summary.withdrawals} />,
+              value: <Euro amount={withdrawals} />,
             },
             {
               key: 'endValue',
               label: <FormattedMessage id="savingsFund.statement.money.endValue" />,
-              value: <Euro amount={summary.endValue} />,
+              value: <Euro amount={endValue} />,
             },
           ].map((tile) => (
             <div className="col-6 col-md-3" key={tile.key}>
