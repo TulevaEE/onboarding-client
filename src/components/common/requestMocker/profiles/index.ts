@@ -1,6 +1,7 @@
 import { fundPensionStatusProfiles } from './fundPensionStatus';
 import { fundsProfiles } from './funds';
 import { portfolioProfiles } from './portfolio';
+import { savingsFundTaxReportProfiles } from './savingsFundTaxReport';
 import { memberCapitalListingsProfiles } from './memberCapitalListings';
 import { userMockProfiles } from './user';
 import { MockModeConfiguration } from '../types';
@@ -28,6 +29,7 @@ export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string
   fundPensionStatus: fundPensionStatusProfiles,
   funds: fundsProfiles,
   portfolio: portfolioProfiles,
+  savingsFundTaxReport: savingsFundTaxReportProfiles,
   returns: returnsProfiles,
   savingsFundBalance: savingsFundBalanceProfiles,
   savingsFundOnboardingStatus: savingsFundOnboardingStatusProfiles,

@@ -1,23 +1,23 @@
 import React, { useState } from 'react';
 import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
-import { Transaction } from '../../common/apiModels';
 import { Euro } from '../../common/Euro';
-import { CostBasisMethod, getRealisedGainsBetween } from './statement';
+import { CostBasisMethod, SavingsFundTaxReport } from '../../common/apiModels';
 
-const TAX_YEARS = [moment().year() - 1, moment().year()];
+const METHODS: CostBasisMethod[] = ['FIFO', 'WEIGHTED_AVERAGE'];
 
-export const TaxReportView: React.FunctionComponent<{ transactions: Transaction[] }> = ({
-  transactions,
-}) => {
-  const [year, setYear] = useState(TAX_YEARS[0]);
-  const [method, setMethod] = useState<CostBasisMethod>('WEIGHTED_AVERAGE');
+export const TaxReportView: React.FunctionComponent<{
+  report: SavingsFundTaxReport;
+  taxYears: number[];
+  year: number;
+  method: CostBasisMethod;
+  onYearChange: (year: number) => void;
+  onMethodChange: (method: CostBasisMethod) => void;
+}> = ({ report, taxYears, year, method, onYearChange, onMethodChange }) => {
   const [detailsOpen, setDetailsOpen] = useState(false);
 
-  const from = moment().year(year).startOf('year').format('YYYY-MM-DD');
-  const to = moment().year(year).endOf('year').format('YYYY-MM-DD');
-  const gains = getRealisedGainsBetween(transactions, from, to, method);
-  const total = gains.reduce((sum, gain) => sum + gain.gain, 0);
+  const gains = report.redemptions;
+  const total = report.totalGain;
 
   return (
     <>
@@ -26,14 +26,14 @@ export const TaxReportView: React.FunctionComponent<{ transactions: Transaction[
           <span className="text-body-secondary me-1">
             <FormattedMessage id="savingsFund.statement.tax.year" />
           </span>
-          {TAX_YEARS.map((taxYear) => (
+          {taxYears.map((taxYear) => (
             <button
               key={taxYear}
               type="button"
               className={`btn btn-sm rounded-pill ${
                 year === taxYear ? 'btn-primary' : 'btn-outline-secondary'
               }`}
-              onClick={() => setYear(taxYear)}
+              onClick={() => onYearChange(taxYear)}
             >
               {taxYear}
             </button>
@@ -103,14 +103,14 @@ export const TaxReportView: React.FunctionComponent<{ transactions: Transaction[
             <span className="text-body-secondary me-1">
               <FormattedMessage id="savingsFund.statement.tax.method" />
             </span>
-            {(['FIFO', 'WEIGHTED_AVERAGE'] as CostBasisMethod[]).map((option) => (
+            {METHODS.map((option) => (
               <button
                 key={option}
                 type="button"
                 className={`btn btn-sm rounded-pill ${
                   method === option ? 'btn-primary' : 'btn-outline-secondary'
                 }`}
-                onClick={() => setMethod(option)}
+                onClick={() => onMethodChange(option)}
               >
                 {option === 'FIFO' ? (
                   <FormattedMessage id="savingsFund.statement.tax.methodFifo" />
