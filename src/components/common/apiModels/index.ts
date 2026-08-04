@@ -450,6 +450,23 @@ export interface Portfolio {
   series: PortfolioValuePoint[];
 }
 
+export type CostBasisMethod = 'FIFO' | 'WEIGHTED_AVERAGE';
+
+export interface RealisedGain {
+  time: string;
+  units: number;
+  acquisitionCost: number;
+  proceeds: number;
+  gain: number;
+}
+
+export interface SavingsFundTaxReport {
+  year: number;
+  method: CostBasisMethod;
+  totalGain: number;
+  redemptions: RealisedGain[];
+}
+
 export interface Transaction {
   id: string;
   amount: number;
