@@ -5,6 +5,7 @@ import { Euro } from '../../common/Euro';
 import { PillButton } from '../../common/PillButton';
 import { TranslationKey } from '../../translations';
 import { Portfolio, PortfolioGroup, PortfolioGroupSummary } from '../../common/apiModels';
+import { PeriodSelector } from './PeriodSelector';
 import { ChartPoint, ValueChart } from './ValueChart';
 
 // Bottom of the stack first: the pillars someone has held longest sit underneath, and
@@ -26,8 +27,6 @@ const GROUPS: { id: PortfolioGroup; label: TranslationKey; color: string }[] = [
     color: '#006ce6',
   },
 ];
-
-const today = () => moment().format('YYYY-MM-DD');
 
 // A group with no published price reports null. Summing it as zero would show someone
 // their money as 0 €, so an unknown part makes the whole total unknown.
@@ -98,77 +97,15 @@ export const PortfolioView: React.FunctionComponent<{
       current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
     );
 
-  const presets = [
-    {
-      id: 'thisYear',
-      label: <FormattedMessage id="savingsFund.statement.period.thisYear" />,
-      from: moment().startOf('year').format('YYYY-MM-DD'),
-      to: today(),
-    },
-    {
-      id: 'lastYear',
-      label: <FormattedMessage id="savingsFund.statement.period.lastYear" />,
-      from: moment().subtract(1, 'year').startOf('year').format('YYYY-MM-DD'),
-      to: moment().subtract(1, 'year').endOf('year').format('YYYY-MM-DD'),
-    },
-    {
-      id: 'twelveMonths',
-      label: <FormattedMessage id="savingsFund.statement.period.twelveMonths" />,
-      from: moment().subtract(12, 'month').format('YYYY-MM-DD'),
-      to: today(),
-    },
-    {
-      id: 'allTime',
-      label: <FormattedMessage id="savingsFund.statement.period.allTime" />,
-      from: undefined,
-      to: today(),
-    },
-  ];
-
-  const shownFrom = from ?? portfolio.series[0]?.date ?? portfolio.from;
-
   return (
     <>
       <div className="card p-4 mb-3">
-        <div className="d-flex flex-wrap gap-2 align-items-center mb-3">
-          <span className="text-body-secondary me-1">
-            <FormattedMessage id="savingsFund.statement.period.label" />
-          </span>
-          {presets.map((preset) => (
-            <PillButton
-              key={preset.id}
-              selected={from === preset.from && to === preset.to}
-              onClick={() => onPeriodChange(preset.from, preset.to)}
-            >
-              {preset.label}
-            </PillButton>
-          ))}
-        </div>
-
-        <div className="d-flex flex-wrap gap-2 align-items-center">
-          <input
-            type="date"
-            aria-label="from"
-            className="form-control form-control-sm w-auto"
-            value={shownFrom}
-            max={to}
-            // A date input reports '' while a date is half-typed or cleared. No start
-            // date means all time, which is a period someone can ask for.
-            onChange={(event) => onPeriodChange(event.target.value || undefined, to)}
-          />
-          <span className="text-body-secondary">–</span>
-          <input
-            type="date"
-            aria-label="to"
-            className="form-control form-control-sm w-auto"
-            value={to}
-            min={shownFrom}
-            max={today()}
-            // An end date is required, so a half-typed or cleared one is not a period to
-            // ask the backend for — the previous end date stands until a whole one arrives.
-            onChange={(event) => event.target.value && onPeriodChange(from, event.target.value)}
-          />
-        </div>
+        <PeriodSelector
+          from={from}
+          to={to}
+          allTimeStartDate={portfolio.series[0]?.date ?? portfolio.from}
+          onPeriodChange={onPeriodChange}
+        />
 
         {available.length > 1 && (
           <div className="d-flex flex-wrap gap-2 align-items-center mt-3 pt-3 border-top">

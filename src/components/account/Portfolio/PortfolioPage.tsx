@@ -4,6 +4,7 @@ import { FormattedMessage } from 'react-intl';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { usePageTitle } from '../../common/usePageTitle';
 import { usePortfolio } from './api/portfolio.api';
+import { PeriodSelector } from './PeriodSelector';
 import { PortfolioView } from './PortfolioView';
 
 export const PortfolioPage: React.FunctionComponent = () => {
@@ -15,29 +16,11 @@ export const PortfolioPage: React.FunctionComponent = () => {
     to: moment().format('YYYY-MM-DD'),
   });
 
-  const { data: portfolio, isLoading, isError } = usePortfolio(period.from, period.to);
+  const { data: portfolio, isLoading, isError, refetch } = usePortfolio(period.from, period.to);
 
   const onPeriodChange = useCallback((from: string | undefined, to: string) => {
     setPeriod({ from, to });
   }, []);
-
-  if (isError) {
-    return (
-      <section className="mt-5">
-        <div className="alert alert-danger">
-          <FormattedMessage id="myMoney.pricesUnavailable" />
-        </div>
-      </section>
-    );
-  }
-
-  if (isLoading || !portfolio) {
-    return (
-      <section className="mt-5">
-        <Shimmer height={32} />
-      </section>
-    );
-  }
 
   return (
     <section className="mt-5">
@@ -48,12 +31,34 @@ export const PortfolioPage: React.FunctionComponent = () => {
         <FormattedMessage id="myMoney.subtitle" />
       </p>
 
-      <PortfolioView
-        portfolio={portfolio}
-        from={period.from}
-        to={period.to}
-        onPeriodChange={onPeriodChange}
-      />
+      {isError && (
+        <div className="alert alert-danger d-flex flex-wrap gap-3 align-items-center justify-content-between">
+          <span>
+            <FormattedMessage id="myMoney.pricesUnavailable" />
+          </span>
+          <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => refetch()}>
+            <FormattedMessage id="myMoney.retry" />
+          </button>
+        </div>
+      )}
+
+      {/* A period the backend refused leaves nothing to draw, so the period someone can
+          change is shown on its own — otherwise the page stays broken until a reload. */}
+      {portfolio ? (
+        <PortfolioView
+          portfolio={portfolio}
+          from={period.from}
+          to={period.to}
+          onPeriodChange={onPeriodChange}
+        />
+      ) : (
+        <>
+          <div className="card p-4 mb-3">
+            <PeriodSelector from={period.from} to={period.to} onPeriodChange={onPeriodChange} />
+          </div>
+          {isLoading && <Shimmer height={32} />}
+        </>
+      )}
     </section>
   );
 };
