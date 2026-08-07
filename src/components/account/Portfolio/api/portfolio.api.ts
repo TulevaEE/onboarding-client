@@ -15,5 +15,8 @@ export function usePortfolio(from: string | undefined, to: string): UseQueryResu
   return useQuery({
     queryKey: ['portfolio', from ?? 'allTime', to],
     queryFn: () => getPortfolio(from, to),
+    // The previous period stays on screen while the next one loads, so the view is not
+    // unmounted on every period change — which would reset the bands someone switched off.
+    keepPreviousData: true,
   });
 }
