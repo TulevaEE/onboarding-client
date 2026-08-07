@@ -7,12 +7,9 @@ import { TranslationKey } from '../../translations';
 import { Portfolio, PortfolioGroup, PortfolioGroupSummary } from '../../common/apiModels';
 import { ChartPoint, ValueChart } from './ValueChart';
 
+// Bottom of the stack first: the pillars someone has held longest sit underneath, and
+// the savings fund rides on top of them.
 const GROUPS: { id: PortfolioGroup; label: TranslationKey; color: string }[] = [
-  {
-    id: 'SAVINGS_FUND',
-    label: 'savingsFund.statement.show.savingsFund',
-    color: '#006ce6',
-  },
   {
     id: 'SECOND_PILLAR',
     label: 'savingsFund.statement.show.secondPillar',
@@ -22,6 +19,11 @@ const GROUPS: { id: PortfolioGroup; label: TranslationKey; color: string }[] = [
     id: 'THIRD_PILLAR',
     label: 'savingsFund.statement.show.thirdPillar',
     color: '#00aeea',
+  },
+  {
+    id: 'SAVINGS_FUND',
+    label: 'savingsFund.statement.show.savingsFund',
+    color: '#006ce6',
   },
 ];
 
