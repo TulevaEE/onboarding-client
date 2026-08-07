@@ -3,16 +3,18 @@ import { Portfolio, PortfolioGroup } from '../../apiModels';
 
 const day = (daysAgo: number): string => moment().subtract(daysAgo, 'day').format('YYYY-MM-DD');
 
-const grown = (days: number, start: number, dailyGrowth: number, index: number): number =>
-  Number((start * (1 + dailyGrowth) ** index).toFixed(2));
+const DAILY_GROWTH = 0.0003;
+
+const grown = (start: number, index: number): number =>
+  Number((start * (1 + DAILY_GROWTH) ** index).toFixed(2));
 
 const series = (days: number, bands: Partial<Record<PortfolioGroup, number>>) =>
   Array.from({ length: days }, (unused, index) => ({
     date: day(days - 1 - index),
     values: Object.fromEntries(
-      Object.entries(bands).map(([group, start]) => [
+      (Object.entries(bands) as [PortfolioGroup, number][]).map(([group, start]) => [
         group,
-        grown(days, start as number, 0.0003, index),
+        grown(start, index),
       ]),
     ) as Partial<Record<PortfolioGroup, number | null>>,
   }));

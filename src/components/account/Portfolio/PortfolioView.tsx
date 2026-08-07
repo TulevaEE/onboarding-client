@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
 import { Euro } from '../../common/Euro';
+import { PillButton } from '../../common/PillButton';
 import { TranslationKey } from '../../translations';
 import { Portfolio, PortfolioGroup, PortfolioGroupSummary } from '../../common/apiModels';
 import { ChartPoint, ValueChart } from './ValueChart';
@@ -28,12 +29,13 @@ const today = () => moment().format('YYYY-MM-DD');
 
 // A group with no published price reports null. Summing it as zero would show someone
 // their money as 0 €, so an unknown part makes the whole total unknown.
-const add = (
-  summaries: PortfolioGroupSummary[],
-  field: keyof PortfolioGroupSummary,
-): number | null =>
+type AmountField = {
+  [K in keyof PortfolioGroupSummary]: PortfolioGroupSummary[K] extends number | null ? K : never;
+}[keyof PortfolioGroupSummary];
+
+const add = (summaries: PortfolioGroupSummary[], field: AmountField): number | null =>
   summaries.reduce<number | null>((sum, summary) => {
-    const value = summary[field] as number | null;
+    const value = summary[field];
     return sum === null || value === null ? null : sum + value;
   }, 0);
 
@@ -78,20 +80,16 @@ export const PortfolioView: React.FunctionComponent<{
 
   // Days where a visible band has no published price are left out rather than drawn as
   // zero, which would show up as a cliff on the day its price history begins.
-  const series: ChartPoint[] = portfolio.series
-    .map((point) => {
-      const values = visible.map(({ id }) => point.values[id] ?? null);
-      if (values.some((value) => value === null)) {
-        return null;
-      }
-      const numbers = values as number[];
-      return {
-        date: point.date,
-        values: numbers,
-        total: numbers.reduce((sum, value) => sum + value, 0),
-      };
-    })
-    .filter((point): point is ChartPoint => point !== null);
+  const series: ChartPoint[] = portfolio.series.flatMap((point) => {
+    const values = visible
+      .map(({ id }) => point.values[id])
+      .filter((value): value is number => value !== null && value !== undefined);
+
+    if (values.length !== visible.length) {
+      return [];
+    }
+    return [{ date: point.date, values, total: values.reduce((sum, value) => sum + value, 0) }];
+  });
 
   const toggle = (id: PortfolioGroup) =>
     setHidden((current) =>
@@ -135,16 +133,13 @@ export const PortfolioView: React.FunctionComponent<{
             <FormattedMessage id="savingsFund.statement.period.label" />
           </span>
           {presets.map((preset) => (
-            <button
+            <PillButton
               key={preset.id}
-              type="button"
-              className={`btn btn-sm rounded-pill ${
-                from === preset.from && to === preset.to ? 'btn-primary' : 'btn-outline-secondary'
-              }`}
+              selected={from === preset.from && to === preset.to}
               onClick={() => onPeriodChange(preset.from, preset.to)}
             >
               {preset.label}
-            </button>
+            </PillButton>
           ))}
         </div>
 
@@ -175,17 +170,14 @@ export const PortfolioView: React.FunctionComponent<{
               <FormattedMessage id="savingsFund.statement.show" />
             </span>
             {available.map(({ id, label }) => (
-              <button
+              <PillButton
                 key={id}
-                type="button"
-                aria-pressed={!hidden.includes(id)}
-                className={`btn btn-sm rounded-pill ${
-                  hidden.includes(id) ? 'btn-outline-secondary' : 'btn-primary'
-                }`}
+                selected={!hidden.includes(id)}
+                pressed={!hidden.includes(id)}
                 onClick={() => toggle(id)}
               >
                 <FormattedMessage id={label} />
-              </button>
+              </PillButton>
             ))}
           </div>
         )}
