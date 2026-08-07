@@ -180,4 +180,33 @@ describe('the portfolio the backend valued', () => {
     expect(screen.getAllByText(/200[.,]00/).length).toBeGreaterThan(0);
     expect(screen.queryByText(/cannot show what this is worth/)).not.toBeInTheDocument();
   });
+
+  it('stacks the savings fund on top of the pillars', () => {
+    render(
+      portfolio({
+        groups: [
+          summary('SAVINGS_FUND', { endValue: 200 }),
+          summary('SECOND_PILLAR', { endValue: 300 }),
+          summary('THIRD_PILLAR', { endValue: 400 }),
+        ],
+        series: [
+          {
+            date: '2025-01-01',
+            values: { SAVINGS_FUND: 100, SECOND_PILLAR: 200, THIRD_PILLAR: 300 },
+          },
+          {
+            date: '2025-12-31',
+            values: { SAVINGS_FUND: 200, SECOND_PILLAR: 300, THIRD_PILLAR: 400 },
+          },
+        ],
+      }),
+    );
+
+    // Only the band toggles carry aria-pressed, and they render bottom of the stack first.
+    const bands = screen
+      .getAllByRole('button', { pressed: true })
+      .map((button) => button.textContent);
+
+    expect(bands).toEqual(['II\u00a0pillar', 'III\u00a0pillar', 'T\u00e4iendav Kogumisfond']);
+  });
 });
