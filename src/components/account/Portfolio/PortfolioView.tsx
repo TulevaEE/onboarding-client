@@ -6,6 +6,7 @@ import { PillButton } from '../../common/PillButton';
 import { TranslationKey } from '../../translations';
 import { Portfolio, PortfolioGroup, PortfolioGroupSummary } from '../../common/apiModels';
 import { PeriodSelector } from './PeriodSelector';
+import { buildChartSeries } from './chartSeries';
 import { ChartPoint, ValueChart } from './ValueChart';
 
 // Bottom of the stack first: the pillars someone has held longest sit underneath, and
@@ -79,18 +80,10 @@ export const PortfolioView: React.FunctionComponent<{
   const annualReturnRate =
     visibleSummaries.length === 1 ? visibleSummaries[0].annualReturnRate : null;
 
-  // Days where a visible band has no published price are left out rather than drawn as
-  // zero, which would show up as a cliff on the day its price history begins.
-  const series: ChartPoint[] = portfolio.series.flatMap((point) => {
-    const values = visible
-      .map(({ id }) => point.values[id])
-      .filter((value): value is number => value !== null && value !== undefined);
-
-    if (values.length !== visible.length) {
-      return [];
-    }
-    return [{ date: point.date, values, total: values.reduce((sum, value) => sum + value, 0) }];
-  });
+  const series: ChartPoint[] = buildChartSeries(
+    portfolio.series,
+    visible.map(({ id }) => id),
+  );
 
   const toggle = (id: PortfolioGroup) =>
     setHidden((current) =>

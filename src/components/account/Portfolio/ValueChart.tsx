@@ -12,10 +12,13 @@ export interface ChartLayer {
   label: React.ReactNode;
 }
 
-/** One value per layer, in the order the layers were given. */
+/**
+ * One value per layer, in the order the layers were given. A layer is null on the days
+ * before it existed: it takes up no thickness in the stack and is not named in the total.
+ */
 export interface ChartPoint {
   date: string;
-  values: number[];
+  values: (number | null)[];
   total: number;
 }
 
@@ -36,7 +39,7 @@ export const ValueChart: React.FunctionComponent<{
   const y = (value: number) => HEIGHT - PADDING - (value / highest) * (HEIGHT - 2 * PADDING);
 
   const cumulativeAt = (point: ChartPoint, layer: number) =>
-    point.values.slice(0, layer + 1).reduce((sum, value) => sum + value, 0);
+    point.values.slice(0, layer + 1).reduce<number>((sum, value) => sum + (value ?? 0), 0);
 
   // Tallest band first, so the smaller ones stay visible in front of it.
   const bands = layers
@@ -113,18 +116,20 @@ export const ValueChart: React.FunctionComponent<{
               strokeDasharray="3 3"
               vectorEffect="non-scaling-stroke"
             />
-            {layers.map((layer, index) => (
-              <circle
-                key={layer.id}
-                cx={x(hovered)}
-                cy={y(cumulativeAt(point, index))}
-                r="3.5"
-                fill={layer.color}
-                stroke="#fff"
-                strokeWidth="1.5"
-                vectorEffect="non-scaling-stroke"
-              />
-            ))}
+            {layers.map((layer, index) =>
+              point.values[index] === null ? null : (
+                <circle
+                  key={layer.id}
+                  cx={x(hovered)}
+                  cy={y(cumulativeAt(point, index))}
+                  r="3.5"
+                  fill={layer.color}
+                  stroke="#fff"
+                  strokeWidth="1.5"
+                  vectorEffect="non-scaling-stroke"
+                />
+              ),
+            )}
           </g>
         )}
       </svg>
@@ -142,25 +147,29 @@ export const ValueChart: React.FunctionComponent<{
           }}
         >
           <div className="text-body-secondary mb-1">{moment(point.date).format('DD.MM.YYYY')}</div>
-          {layers.map((layer, index) => (
-            <div key={layer.id} className="d-flex align-items-center gap-2">
-              <span
-                aria-hidden="true"
-                style={{
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '2px',
-                  background: layer.color,
-                  display: 'inline-block',
-                  flex: 'none',
-                }}
-              />
-              <span className="text-body-secondary">{layer.label}</span>
-              <span className="ms-auto fw-medium">
-                <Euro amount={point.values[index]} />
-              </span>
-            </div>
-          ))}
+          {/* A band the person did not hold yet is left off the day rather than named at 0 €. */}
+          {layers.map((layer, index) => {
+            const value = point.values[index];
+            return value === null ? null : (
+              <div key={layer.id} className="d-flex align-items-center gap-2">
+                <span
+                  aria-hidden="true"
+                  style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '2px',
+                    background: layer.color,
+                    display: 'inline-block',
+                    flex: 'none',
+                  }}
+                />
+                <span className="text-body-secondary">{layer.label}</span>
+                <span className="ms-auto fw-medium">
+                  <Euro amount={value} />
+                </span>
+              </div>
+            );
+          })}
           {layers.length > 1 && (
             <div className="d-flex align-items-center gap-2 border-top mt-1 pt-1">
               <span className="text-body-secondary">{totalLabel}</span>
