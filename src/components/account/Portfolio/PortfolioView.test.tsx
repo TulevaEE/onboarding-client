@@ -124,4 +124,60 @@ describe('the portfolio the backend valued', () => {
     expect(screen.getByText('30.06.2025')).toBeInTheDocument();
     expect(screen.queryByText('01.01.2025')).not.toBeInTheDocument();
   });
+
+  it('says so instead of showing zero when a band cannot be valued', () => {
+    render(
+      portfolio({
+        groups: [
+          summary('SAVINGS_FUND', {
+            startValue: null,
+            endValue: null,
+            gain: null,
+            gainPercentage: null,
+          }),
+        ],
+      }),
+    );
+
+    expect(screen.getByText(/cannot show what this is worth/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Not known/).length).toBeGreaterThan(0);
+  });
+
+  it('does not add an unvaluable band into the total', () => {
+    render(
+      portfolio({
+        groups: [
+          summary('SAVINGS_FUND', { endValue: 200, gain: 50 }),
+          summary('SECOND_PILLAR', { endValue: null, gain: null }),
+        ],
+        series: [
+          { date: '2025-01-01', values: { SAVINGS_FUND: 100, SECOND_PILLAR: 200 } },
+          { date: '2025-12-31', values: { SAVINGS_FUND: 200, SECOND_PILLAR: 300 } },
+        ],
+      }),
+    );
+
+    expect(screen.getByText(/cannot show what this is worth/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Not known/).length).toBeGreaterThan(0);
+  });
+
+  it('values the total again once the unvaluable band is switched off', () => {
+    render(
+      portfolio({
+        groups: [
+          summary('SAVINGS_FUND', { endValue: 200, gain: 50 }),
+          summary('SECOND_PILLAR', { endValue: null, gain: null }),
+        ],
+        series: [
+          { date: '2025-01-01', values: { SAVINGS_FUND: 100, SECOND_PILLAR: 200 } },
+          { date: '2025-12-31', values: { SAVINGS_FUND: 200, SECOND_PILLAR: 300 } },
+        ],
+      }),
+    );
+
+    userEvent.click(screen.getByRole('button', { name: /II\spillar/ }));
+
+    expect(screen.getAllByText(/200[.,]00/).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/cannot show what this is worth/)).not.toBeInTheDocument();
+  });
 });

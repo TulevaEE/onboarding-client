@@ -425,14 +425,15 @@ export interface Authentication {
 
 export type PortfolioGroup = 'SAVINGS_FUND' | 'SECOND_PILLAR' | 'THIRD_PILLAR';
 
+/** Value fields are null when a holding in the group has no published price yet. */
 export interface PortfolioGroupSummary {
   group: PortfolioGroup;
-  startValue: number;
-  endValue: number;
+  startValue: number | null;
+  endValue: number | null;
   contributions: number;
   withdrawals: number;
-  gain: number;
-  gainPercentage: number;
+  gain: number | null;
+  gainPercentage: number | null;
   annualReturnRate: number | null;
 }
 
