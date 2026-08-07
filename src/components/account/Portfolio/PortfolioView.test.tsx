@@ -159,6 +159,22 @@ describe('the portfolio the backend valued', () => {
     expect(screen.queryByText('01.01.2025')).not.toBeInTheDocument();
   });
 
+  it('draws the history a longer held band had before the newest one existed', () => {
+    render(
+      portfolio({
+        groups: [summary('SAVINGS_FUND'), summary('SECOND_PILLAR')],
+        series: [
+          { date: '2025-01-01', values: { SECOND_PILLAR: 200 } },
+          { date: '2025-06-30', values: { SECOND_PILLAR: 250, SAVINGS_FUND: 100 } },
+          { date: '2025-12-31', values: { SECOND_PILLAR: 300, SAVINGS_FUND: 200 } },
+        ],
+      }),
+    );
+
+    expect(screen.getByText('01.01.2025')).toBeInTheDocument();
+    expect(screen.getByText('31.12.2025')).toBeInTheDocument();
+  });
+
   it('says so instead of showing zero when a band cannot be valued', () => {
     render(
       portfolio({
