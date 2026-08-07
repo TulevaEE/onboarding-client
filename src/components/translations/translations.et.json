@@ -1917,5 +1917,6 @@
   "pensionCalculator.memberCapital.note": "Tuleva liikmena teenid igal aastal {bonus}% liikmeboonust kogu oma Tuleva varalt. See kasvab koos turuga ja võetakse pensionil välja nagu kogumisfond, maksustades 22%-ga kõike, mis ületab sinu enda kapitalipanuse.",
   "myMoney.title": "Minu raha",
   "myMoney.subtitle": "Vaata, kui palju sul mis tahes päeval raha oli ja kuidas see on kasvanud.",
-  "myMoney.pricesUnavailable": "Praegu ei õnnestu fondide hindu laadida, seepärast ei saa vara väärtust näidata. Palun proovi hiljem uuesti."
+  "myMoney.pricesUnavailable": "Praegu ei õnnestu fondide hindu laadida, seepärast ei saa vara väärtust näidata. Palun proovi hiljem uuesti.",
+  "myMoney.retry": "Proovi uuesti"
 }

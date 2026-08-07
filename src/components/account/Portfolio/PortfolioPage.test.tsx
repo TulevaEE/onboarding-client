@@ -81,6 +81,22 @@ const portfolioBackend = () =>
     ),
   );
 
+const portfolioBackendRefusingNarrowedPeriods = () =>
+  server.use(
+    rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
+      req.url.searchParams.get('from')
+        ? res(ctx.status(500), ctx.json({}))
+        : res(ctx.json(allTime)),
+    ),
+  );
+
+const portfolioBackendDown = () =>
+  server.use(
+    rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
+      res(ctx.status(500), ctx.json({})),
+    ),
+  );
+
 function initializeComponent() {
   const history = createMemoryHistory();
   const store = createDefaultStore(history as any);
@@ -121,5 +137,41 @@ describe('the bands someone switched off', () => {
       'false',
     );
     expect(screen.queryByText(/600[.,]00/)).not.toBeInTheDocument();
+  });
+});
+
+describe('a period the backend cannot serve', () => {
+  it('leaves the period on the page so someone can ask for another one', async () => {
+    portfolioBackendRefusingNarrowedPeriods();
+    initializeComponent();
+
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(await screen.findByText(/cannot load fund prices/)).toBeInTheDocument();
+    expect(screen.getByLabelText('from')).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'All time' }));
+
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+    expect(screen.queryByText(/cannot load fund prices/)).not.toBeInTheDocument();
+  });
+});
+
+describe('a portfolio the backend never gave', () => {
+  it('asks the backend again when someone says to', async () => {
+    portfolioBackendDown();
+    initializeComponent();
+
+    expect(await screen.findByText(/cannot load fund prices/)).toBeInTheDocument();
+    expect(screen.getByLabelText('from')).toBeInTheDocument();
+
+    portfolioBackend();
+
+    userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+    expect(screen.queryByText(/cannot load fund prices/)).not.toBeInTheDocument();
   });
 });
