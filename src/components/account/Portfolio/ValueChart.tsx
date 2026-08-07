@@ -85,7 +85,6 @@ export const ValueChart: React.FunctionComponent<{
         preserveAspectRatio="none"
         className="w-100 d-block"
         style={{ height: '180px' }}
-        role="img"
         aria-hidden="true"
       >
         {bands.map((band) => (
