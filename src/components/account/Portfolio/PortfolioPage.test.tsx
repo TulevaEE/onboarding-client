@@ -1,4 +1,5 @@
 import React from 'react';
+import moment from 'moment';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { QueryClient } from '@tanstack/react-query';
@@ -74,11 +75,17 @@ const lastYear: Portfolio = {
 
 const server = setupServer();
 
+const requestedPeriods: { from: string | null; to: string | null }[] = [];
+
 const portfolioBackend = () =>
   server.use(
-    rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
-      res(ctx.json(req.url.searchParams.get('from') ? lastYear : allTime)),
-    ),
+    rest.get('http://localhost/v1/portfolio', (req, res, ctx) => {
+      requestedPeriods.push({
+        from: req.url.searchParams.get('from'),
+        to: req.url.searchParams.get('to'),
+      });
+      return res(ctx.json(req.url.searchParams.get('from') ? lastYear : allTime));
+    }),
   );
 
 const portfolioBackendRefusingNarrowedPeriods = () =>
@@ -116,7 +123,39 @@ afterAll(() => server.close());
 
 beforeEach(() => {
   initializeConfiguration();
+  requestedPeriods.length = 0;
   portfolioBackend();
+});
+
+describe('a portfolio the backend has not answered with yet', () => {
+  it('shows the period someone can change while the numbers are still coming', async () => {
+    initializeComponent();
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(document.querySelector('.shimmerDefault')).toBeInTheDocument();
+    expect(screen.getByLabelText('from')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'All time' })).toBeInTheDocument();
+
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(document.querySelector('.shimmerDefault')).not.toBeInTheDocument();
+  });
+});
+
+describe('a start date someone chose themselves', () => {
+  it('is the period the backend is asked for', async () => {
+    initializeComponent();
+
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+
+    userEvent.type(screen.getByLabelText('from'), '2025-01-01');
+
+    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
+    expect(requestedPeriods[requestedPeriods.length - 1]).toEqual({
+      from: '2025-01-01',
+      to: moment().format('YYYY-MM-DD'),
+    });
+  });
 });
 
 describe('the bands someone switched off', () => {
