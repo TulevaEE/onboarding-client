@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
 import { Euro } from '../../common/Euro';
+import { PillButton } from '../../common/PillButton';
 import { CostBasisMethod, SavingsFundTaxReport } from '../../common/apiModels';
 
 const METHODS: CostBasisMethod[] = ['FIFO', 'WEIGHTED_AVERAGE'];
@@ -27,16 +28,13 @@ export const TaxReportView: React.FunctionComponent<{
             <FormattedMessage id="savingsFund.statement.tax.year" />
           </span>
           {taxYears.map((taxYear) => (
-            <button
+            <PillButton
               key={taxYear}
-              type="button"
-              className={`btn btn-sm rounded-pill ${
-                year === taxYear ? 'btn-primary' : 'btn-outline-secondary'
-              }`}
+              selected={year === taxYear}
               onClick={() => onYearChange(taxYear)}
             >
               {taxYear}
-            </button>
+            </PillButton>
           ))}
         </div>
       </div>
@@ -104,12 +102,9 @@ export const TaxReportView: React.FunctionComponent<{
               <FormattedMessage id="savingsFund.statement.tax.method" />
             </span>
             {METHODS.map((option) => (
-              <button
+              <PillButton
                 key={option}
-                type="button"
-                className={`btn btn-sm rounded-pill ${
-                  method === option ? 'btn-primary' : 'btn-outline-secondary'
-                }`}
+                selected={method === option}
                 onClick={() => onMethodChange(option)}
               >
                 {option === 'FIFO' ? (
@@ -117,7 +112,7 @@ export const TaxReportView: React.FunctionComponent<{
                 ) : (
                   <FormattedMessage id="savingsFund.statement.tax.methodAverage" />
                 )}
-              </button>
+              </PillButton>
             ))}
           </div>
 
