@@ -81,6 +81,40 @@ describe('the portfolio the backend valued', () => {
     expect(screen.getAllByText(/200[.,]00/).length).toBeGreaterThan(0);
   });
 
+  it('keeps the last visible band switched on', () => {
+    render(
+      portfolio({
+        groups: [
+          summary('SAVINGS_FUND', { endValue: 200, gain: 50 }),
+          summary('SECOND_PILLAR', { endValue: 300, gain: 70 }),
+        ],
+        series: [
+          { date: '2025-01-01', values: { SAVINGS_FUND: 100, SECOND_PILLAR: 200 } },
+          { date: '2025-12-31', values: { SAVINGS_FUND: 200, SECOND_PILLAR: 300 } },
+        ],
+      }),
+    );
+
+    const secondPillar = screen.getByRole('button', { name: /II\spillar/ });
+    const savingsFund = screen.getByRole('button', { name: /Täiendav Kogumisfond/ });
+
+    userEvent.click(secondPillar);
+
+    expect(savingsFund).toBeDisabled();
+    expect(secondPillar).toBeEnabled();
+
+    userEvent.click(savingsFund);
+
+    expect(screen.getAllByText(/200[.,]00/).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/500[.,]00/)).not.toBeInTheDocument();
+
+    userEvent.click(secondPillar);
+
+    expect(savingsFund).toBeEnabled();
+    expect(secondPillar).toBeEnabled();
+    expect(screen.getAllByText(/500[.,]00/).length).toBeGreaterThan(0);
+  });
+
   it('shows the annual return the backend computed for a single band', () => {
     render(
       portfolio({
