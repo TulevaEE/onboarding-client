@@ -171,11 +171,14 @@ export const PortfolioView: React.FunctionComponent<{
             <span className="text-body-secondary me-1">
               <FormattedMessage id="savingsFund.statement.show" />
             </span>
+            {/* The last band still showing cannot be switched off: an empty selection would
+                sum to nothing and present the person's money as 0 €. */}
             {available.map(({ id, label }) => (
               <PillButton
                 key={id}
                 selected={!hidden.includes(id)}
                 pressed={!hidden.includes(id)}
+                disabled={visible.length === 1 && !hidden.includes(id)}
                 onClick={() => toggle(id)}
               >
                 <FormattedMessage id={label} />
