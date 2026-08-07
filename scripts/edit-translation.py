@@ -150,10 +150,15 @@ def cmd_delete(args: argparse.Namespace) -> int:
         if pattern.match(raw):
             was_last = not raw.rstrip().endswith(b",")
             del lines[i]
-            if was_last and i > 0:
-                previous = lines[i - 1]
-                eol = b"\r\n" if previous.endswith(b"\r\n") else b"\n"
-                lines[i - 1] = previous.rstrip().rstrip(b",") + eol
+            if was_last:
+                # Skip blank separator lines to reach the key that now ends the object.
+                j = i - 1
+                while j >= 0 and not lines[j].strip():
+                    j -= 1
+                if j >= 0:
+                    previous = lines[j]
+                    eol = b"\r\n" if previous.endswith(b"\r\n") else b"\n"
+                    lines[j] = previous.rstrip().rstrip(b",") + eol
             _save_lines(args.lang, lines)
             print(f"deleted {args.lang}:{args.key}")
             return 0
