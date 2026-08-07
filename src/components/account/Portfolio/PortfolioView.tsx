@@ -152,7 +152,9 @@ export const PortfolioView: React.FunctionComponent<{
             className="form-control form-control-sm w-auto"
             value={shownFrom}
             max={to}
-            onChange={(event) => onPeriodChange(event.target.value, to)}
+            // A date input reports '' while a date is half-typed or cleared. No start
+            // date means all time, which is a period someone can ask for.
+            onChange={(event) => onPeriodChange(event.target.value || undefined, to)}
           />
           <span className="text-body-secondary">–</span>
           <input
@@ -162,7 +164,9 @@ export const PortfolioView: React.FunctionComponent<{
             value={to}
             min={shownFrom}
             max={today()}
-            onChange={(event) => onPeriodChange(from, event.target.value)}
+            // An end date is required, so a half-typed or cleared one is not a period to
+            // ask the backend for — the previous end date stands until a whole one arrives.
+            onChange={(event) => event.target.value && onPeriodChange(from, event.target.value)}
           />
         </div>
 

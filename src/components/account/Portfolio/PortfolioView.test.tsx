@@ -244,3 +244,42 @@ describe('the portfolio the backend valued', () => {
     expect(bands).toEqual(['II\u00a0pillar', 'III\u00a0pillar', 'T\u00e4iendav Kogumisfond']);
   });
 });
+
+describe('the period someone types into the date inputs', () => {
+  const renderWithPeriodChange = (onPeriodChange: (from?: string, to?: string) => void) =>
+    renderWrapped(
+      <PortfolioView
+        portfolio={portfolio()}
+        from="2025-01-01"
+        to="2025-12-31"
+        onPeriodChange={onPeriodChange}
+      />,
+    );
+
+  it('passes a start date on to the period', () => {
+    const onPeriodChange = jest.fn();
+    renderWithPeriodChange(onPeriodChange);
+
+    userEvent.type(screen.getByLabelText('from'), '2025-03-01');
+
+    expect(onPeriodChange).toHaveBeenCalledWith('2025-03-01', '2025-12-31');
+  });
+
+  it('reads a cleared start date as all time rather than as an empty date', () => {
+    const onPeriodChange = jest.fn();
+    renderWithPeriodChange(onPeriodChange);
+
+    userEvent.clear(screen.getByLabelText('from'));
+
+    expect(onPeriodChange).toHaveBeenCalledWith(undefined, '2025-12-31');
+  });
+
+  it('keeps the end date someone had while they retype it', () => {
+    const onPeriodChange = jest.fn();
+    renderWithPeriodChange(onPeriodChange);
+
+    userEvent.clear(screen.getByLabelText('to'));
+
+    expect(onPeriodChange).not.toHaveBeenCalled();
+  });
+});
