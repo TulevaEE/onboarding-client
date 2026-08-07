@@ -26,8 +26,25 @@ const GROUPS: { id: PortfolioGroup; label: TranslationKey; color: string }[] = [
 
 const today = () => moment().format('YYYY-MM-DD');
 
-const add = (summaries: PortfolioGroupSummary[], field: keyof PortfolioGroupSummary): number =>
-  summaries.reduce((sum, summary) => sum + ((summary[field] as number) ?? 0), 0);
+// A group with no published price reports null. Summing it as zero would show someone
+// their money as 0 €, so an unknown part makes the whole total unknown.
+const add = (
+  summaries: PortfolioGroupSummary[],
+  field: keyof PortfolioGroupSummary,
+): number | null =>
+  summaries.reduce<number | null>((sum, summary) => {
+    const value = summary[field] as number | null;
+    return sum === null || value === null ? null : sum + value;
+  }, 0);
+
+const Amount: React.FunctionComponent<{ value: number | null }> = ({ value }) =>
+  value === null ? (
+    <span className="text-body-secondary">
+      <FormattedMessage id="savingsFund.statement.money.unknown" />
+    </span>
+  ) : (
+    <Euro amount={value} />
+  );
 
 export const PortfolioView: React.FunctionComponent<{
   portfolio: Portfolio;
@@ -182,17 +199,24 @@ export const PortfolioView: React.FunctionComponent<{
           />
         </h2>
         <div className="display-6 fw-medium text-navy">
-          <Euro amount={endValue} />
+          <Amount value={endValue} />
         </div>
-        <div className="mt-1">
-          <span className={gain >= 0 ? 'text-success' : 'text-danger'}>
-            {gain >= 0 ? '+' : '−'}
-            <Euro amount={Math.abs(gain)} />
-          </span>{' '}
-          <span className="text-body-secondary">
-            <FormattedMessage id="savingsFund.statement.money.growth" />
-          </span>
-        </div>
+        {gain !== null && (
+          <div className="mt-1">
+            <span className={gain >= 0 ? 'text-success' : 'text-danger'}>
+              {gain >= 0 ? '+' : '−'}
+              <Euro amount={Math.abs(gain)} />
+            </span>{' '}
+            <span className="text-body-secondary">
+              <FormattedMessage id="savingsFund.statement.money.growth" />
+            </span>
+          </div>
+        )}
+        {endValue === null && (
+          <div className="alert alert-warning mt-3 mb-0">
+            <FormattedMessage id="savingsFund.statement.money.unvaluable" />
+          </div>
+        )}
         <div className="mt-1 text-body-secondary">
           {annualReturnRate !== null && annualReturnRate !== undefined ? (
             <FormattedMessage
@@ -246,22 +270,22 @@ export const PortfolioView: React.FunctionComponent<{
             {
               key: 'startValue',
               label: <FormattedMessage id="savingsFund.statement.money.startValue" />,
-              value: <Euro amount={startValue} />,
+              value: <Amount value={startValue} />,
             },
             {
               key: 'contributions',
               label: <FormattedMessage id="savingsFund.statement.money.contributions" />,
-              value: <Euro amount={contributions} />,
+              value: <Amount value={contributions} />,
             },
             {
               key: 'withdrawals',
               label: <FormattedMessage id="savingsFund.statement.money.withdrawals" />,
-              value: <Euro amount={withdrawals} />,
+              value: <Amount value={withdrawals} />,
             },
             {
               key: 'endValue',
               label: <FormattedMessage id="savingsFund.statement.money.endValue" />,
-              value: <Euro amount={endValue} />,
+              value: <Amount value={endValue} />,
             },
           ].map((tile) => (
             <div className="col-6 col-md-3" key={tile.key}>

@@ -1277,6 +1277,8 @@
   "savingsFund.statement.money.growth": "growth over the selected period",
   "savingsFund.statement.money.annualReturn": "Annual return (XIRR): {rate}",
   "savingsFund.statement.money.annualReturnUnavailable": "Annual return is shown one selection at a time (II or III pillar).",
+  "savingsFund.statement.money.unvaluable": "We do not have a price for part of your holdings right now, so we cannot show what this is worth. Please try again later.",
+  "savingsFund.statement.money.unknown": "Not known",
   "savingsFund.statement.period.label": "Period",
   "savingsFund.statement.period.thisYear": "This year",
   "savingsFund.statement.period.lastYear": "Last year",
