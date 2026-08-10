@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWrapped } from '../../../test/utils';
 import { Portfolio, PortfolioGroup, PortfolioGroupSummary } from '../../common/apiModels';
@@ -272,11 +272,13 @@ describe('the period someone types into the date inputs', () => {
       />,
     );
 
-  it('passes a start date on to the period', () => {
+  it('passes a start date on once the typing is done', () => {
     const onPeriodChange = jest.fn();
     renderWithPeriodChange(onPeriodChange);
 
     userEvent.type(screen.getByLabelText('from'), '2025-03-01');
+    // A date is acted on when the typing stops, so half a year never reaches the backend.
+    fireEvent.blur(screen.getByLabelText('from'));
 
     expect(onPeriodChange).toHaveBeenCalledWith('2025-03-01', '2025-12-31');
   });
@@ -286,6 +288,7 @@ describe('the period someone types into the date inputs', () => {
     renderWithPeriodChange(onPeriodChange);
 
     userEvent.clear(screen.getByLabelText('from'));
+    fireEvent.blur(screen.getByLabelText('from'));
 
     expect(onPeriodChange).toHaveBeenCalledWith(undefined, '2025-12-31');
   });
