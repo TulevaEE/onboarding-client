@@ -1,4 +1,4 @@
-import { Fund } from './apiModels';
+import { Fund, Role } from './apiModels';
 import {
   findWhere,
   createClamper,
@@ -264,6 +264,10 @@ describe('Utils', () => {
 
     it('is false when there is no user', () => {
       expect(isActingAsSelf(undefined)).toBe(false);
+    });
+
+    it('is false when the user has no role', () => {
+      expect(isActingAsSelf({ ...mockUser, role: undefined as unknown as Role })).toBe(false);
     });
   });
 });

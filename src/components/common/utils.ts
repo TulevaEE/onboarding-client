@@ -92,7 +92,7 @@ export const isTuleva = (fund: Fund) => (fund.fundManager || {}).name === 'Tulev
 // themselves only when their PERSON role points at their own personal code. A board
 // member representing a company or a parent representing a child is "representing".
 export const isActingAsSelf = (user: User | undefined): boolean =>
-  user?.role.type === 'PERSON' && user.role.code === user.personalCode;
+  user?.role?.type === 'PERSON' && user.role.code === user.personalCode;
 
 export type TulevaSecondPillarStockFund = 'EE3600109435';
 export type TulevaSecondPillarBondFund = 'EE3600109443';
