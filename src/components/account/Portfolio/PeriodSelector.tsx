@@ -41,10 +41,13 @@ const DateInput: React.FunctionComponent<{
   // whatever was being typed.
   useEffect(() => setTyped(null), [value]);
 
+  const isCommittable = (next: string) =>
+    next === '' ? Boolean(emptyMeansAllTime) : isWholeDate(next);
+
   const commit = (next: string) => {
     stopWaiting(quietPeriod.current);
 
-    if (next === '' ? emptyMeansAllTime : isWholeDate(next)) {
+    if (isCommittable(next)) {
       setTyped(null);
       onCommit(next);
       return;
@@ -69,9 +72,21 @@ const DateInput: React.FunctionComponent<{
         const next = event.target.value;
         setTyped(next);
         stopWaiting(quietPeriod.current);
-        quietPeriod.current = setTimeout(() => commit(next), QUIET_PERIOD_MS);
+        // A pause between keystrokes is not the end of the typing: a date that is not
+        // whole yet is left standing in the box, with the cursor still in it.
+        quietPeriod.current = setTimeout(() => {
+          if (isCommittable(next)) {
+            commit(next);
+          }
+        }, QUIET_PERIOD_MS);
       }}
-      onBlur={(event) => commit(event.target.value)}
+      // Nothing typed is nothing to act on: the box shows the start the backend resolved
+      // for all time, and merely passing through it must not turn that into a chosen date.
+      onBlur={() => {
+        if (typed !== null) {
+          commit(typed);
+        }
+      }}
     />
   );
 };
