@@ -252,6 +252,7 @@
   "id.card.signature.session.not.found": "ID-kaardi sessioon on aegunud, palun logi uuesti sisse.",
   "header.my.account": "Minu konto",
   "roleSwitcher.openNewAccount": "Ava uus konto",
+  "roleSwitcher.accountMenu": "kontode menüü",
   "account.member.statement": "Sa oled Tuleva liige nr {memberNumber}",
   "account.member.statement.comment": "Alates {memberJoinDate} teenid Tulevasse toodud raha pealt liikmeboonust 0.05% aastas",
   "account.member.statement.comment.amount": "{year}. aastal teenisid liikmeboonust {amount}",

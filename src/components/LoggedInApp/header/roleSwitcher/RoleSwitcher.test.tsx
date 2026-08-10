@@ -123,6 +123,37 @@ describe('RoleSwitcher', () => {
     });
   });
 
+  describe('as a control people can recognise', () => {
+    it('names the toggle as an account menu rather than only the account holder', async () => {
+      rolesBackend(server, [personalRole]);
+      userBackend(server, { role: personalRole });
+
+      renderRoleSwitcher();
+
+      expect(await screen.findByRole('button', { name: /account menu/i })).toBeInTheDocument();
+    });
+
+    it('marks the toggle with a person icon while acting as yourself', async () => {
+      rolesBackend(server, multipleRoles);
+      userBackend(server, { role: personalRole });
+
+      renderRoleSwitcher();
+
+      expect(await screen.findByTestId('role-icon-person')).toBeInTheDocument();
+      expect(screen.queryByTestId('role-icon-legal-entity')).not.toBeInTheDocument();
+    });
+
+    it('swaps to a company icon while acting as a company', async () => {
+      rolesBackend(server, multipleRoles);
+      userBackend(server, { role: companyRole });
+
+      renderRoleSwitcher();
+
+      expect(await screen.findByTestId('role-icon-legal-entity')).toBeInTheDocument();
+      expect(screen.queryByTestId('role-icon-person')).not.toBeInTheDocument();
+    });
+  });
+
   describe('with a child the other parent is onboarding', () => {
     const pendingChild = { type: 'PERSON' as const, code: '61506150006', name: 'Mari Maasikas' };
 
