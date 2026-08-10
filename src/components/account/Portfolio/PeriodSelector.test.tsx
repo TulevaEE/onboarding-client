@@ -129,6 +129,44 @@ describe('typing a date rather than picking it', () => {
     expect(screen.getByLabelText('from')).toHaveValue('2025-01-01');
   });
 
+  it('leaves the start date alone when the box is only looked at', () => {
+    renderWrapped(
+      <PeriodSelector
+        from={undefined}
+        allTimeStartDate="2005-03-14"
+        to="2025-08-15"
+        onPeriodChange={onPeriodChange}
+      />,
+    );
+
+    fireEvent.blur(screen.getByLabelText('from'));
+
+    expect(onPeriodChange).not.toHaveBeenCalled();
+  });
+
+  it('leaves a half typed date on screen while it is still being typed', () => {
+    renderSelector();
+
+    type('from', '0002-01-15');
+
+    waitForQuiet();
+
+    expect(screen.getByLabelText('from')).toHaveValue('0002-01-15');
+    expect(onPeriodChange).not.toHaveBeenCalled();
+  });
+
+  it('asks for the date once when the typing stops and the field is then left', () => {
+    renderSelector();
+
+    type('from', '2013-01-15');
+
+    waitForQuiet();
+
+    fireEvent.blur(screen.getByLabelText('from'));
+
+    expect(onPeriodChange).toHaveBeenCalledTimes(1);
+  });
+
   it('reads a cleared start date as all time', () => {
     renderSelector();
 
