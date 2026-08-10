@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWrapped } from '../../../test/utils';
 import { PeriodSelector } from './PeriodSelector';
@@ -46,5 +46,104 @@ describe('the periods someone can ask for by name', () => {
     clickPreset('All time');
 
     expect(onPeriodChange).toHaveBeenCalledWith(undefined, '2025-08-15');
+  });
+});
+
+describe('typing a date rather than picking it', () => {
+  const onPeriodChange = jest.fn();
+
+  const renderSelector = () =>
+    renderWrapped(
+      <PeriodSelector from="2025-01-01" to="2025-08-15" onPeriodChange={onPeriodChange} />,
+    );
+
+  beforeEach(() => {
+    onPeriodChange.mockClear();
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2025-08-15T12:00:00Z'));
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  // userEvent cannot drive a native date input's segments, so the value is set directly.
+  const type = (label: string, value: string) =>
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.change(screen.getByLabelText(label), { target: { value } });
+
+  const waitForQuiet = () =>
+    act(() => {
+      jest.advanceTimersByTime(500);
+    });
+
+  it('asks for nothing while the year is still half typed', () => {
+    renderSelector();
+
+    type('from', '0002-01-15');
+    type('from', '0020-01-15');
+    type('from', '0201-01-15');
+
+    waitForQuiet();
+
+    expect(onPeriodChange).not.toHaveBeenCalled();
+  });
+
+  it('asks once, for the whole date, after the typing stops', () => {
+    renderSelector();
+
+    type('from', '0002-01-15');
+    type('from', '0020-01-15');
+    type('from', '2013-01-15');
+
+    waitForQuiet();
+
+    expect(onPeriodChange).toHaveBeenCalledTimes(1);
+    expect(onPeriodChange).toHaveBeenCalledWith('2013-01-15', '2025-08-15');
+  });
+
+  it('shows what was typed while it waits', () => {
+    renderSelector();
+
+    type('from', '2013-01-15');
+
+    expect(screen.getByLabelText('from')).toHaveValue('2013-01-15');
+  });
+
+  it('does not wait once the field is left', () => {
+    renderSelector();
+
+    type('from', '2013-01-15');
+    fireEvent.blur(screen.getByLabelText('from'), { target: { value: '2013-01-15' } });
+
+    expect(onPeriodChange).toHaveBeenCalledWith('2013-01-15', '2025-08-15');
+  });
+
+  it('drops a half typed date when the field is left', () => {
+    renderSelector();
+
+    type('from', '0002-01-15');
+    fireEvent.blur(screen.getByLabelText('from'), { target: { value: '0002-01-15' } });
+
+    expect(onPeriodChange).not.toHaveBeenCalled();
+    expect(screen.getByLabelText('from')).toHaveValue('2025-01-01');
+  });
+
+  it('reads a cleared start date as all time', () => {
+    renderSelector();
+
+    type('from', '');
+    waitForQuiet();
+
+    expect(onPeriodChange).toHaveBeenCalledWith(undefined, '2025-08-15');
+  });
+
+  it('keeps the previous end date when the end is cleared', () => {
+    renderSelector();
+
+    type('to', '');
+    waitForQuiet();
+
+    expect(onPeriodChange).not.toHaveBeenCalled();
   });
 });
