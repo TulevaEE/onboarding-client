@@ -39,7 +39,10 @@ const DateInput: React.FunctionComponent<{
 
   // A period chosen elsewhere — a preset, or the start the backend resolved — replaces
   // whatever was being typed.
-  useEffect(() => setTyped(null), [value]);
+  useEffect(() => {
+    stopWaiting(quietPeriod.current);
+    setTyped(null);
+  }, [value]);
 
   const isCommittable = (next: string) =>
     next === '' ? Boolean(emptyMeansAllTime) : isWholeDate(next);
