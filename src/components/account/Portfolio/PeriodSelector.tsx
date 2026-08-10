@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
 import { PillButton } from '../../common/PillButton';
@@ -38,8 +38,9 @@ const DateInput: React.FunctionComponent<{
   useEffect(() => () => stopWaiting(quietPeriod.current), []);
 
   // A period chosen elsewhere — a preset, or the start the backend resolved — replaces
-  // whatever was being typed.
-  useEffect(() => {
+  // whatever was being typed. The wait has to be called off in the same breath as the
+  // value changing, before a timer that is already due can slip in and commit the old date.
+  useLayoutEffect(() => {
     stopWaiting(quietPeriod.current);
     setTyped(null);
   }, [value]);
