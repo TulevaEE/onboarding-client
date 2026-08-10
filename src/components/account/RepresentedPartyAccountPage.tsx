@@ -13,7 +13,7 @@ export function RepresentedPartyAccountPage() {
 
   // Only a represented person (e.g. a parent viewing a child) can have a third pillar;
   // a represented legal entity (company) never does, so skip the request for them.
-  const isRepresentedPerson = user?.role.type === 'PERSON';
+  const isRepresentedPerson = user?.role?.type === 'PERSON';
   const { data: sourceFunds } = useSourceFunds(undefined, undefined, {
     enabled: isRepresentedPerson,
   });
@@ -27,7 +27,7 @@ export function RepresentedPartyAccountPage() {
 
   return (
     <section aria-label="represented-party-account">
-      {user && (
+      {user?.role && (
         <p className="my-5 m-0 lead">
           <FormattedMessage id="account.legalEntity.greeting" values={{ name: user.role.name }} />
         </p>

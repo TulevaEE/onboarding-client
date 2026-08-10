@@ -3,9 +3,12 @@ import { screen } from '@testing-library/react';
 import { rest } from 'msw';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, MemoryHistory } from 'history';
+import { QueryClient } from '@tanstack/react-query';
 import { initializeConfiguration } from '../config/config';
 import LoggedInApp from '../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../test/utils';
+import { mockUser } from '../../test/backend-responses';
+import { RepresentedPartyAccountPage } from './RepresentedPartyAccountPage';
 import {
   applicationsBackend,
   savingsAccountStatementBackend,
@@ -26,6 +29,15 @@ function initializeComponent() {
   const store = createDefaultStore(history);
   login(store);
   renderWrapped(<Route path="" component={LoggedInApp} />, history, store);
+}
+
+function initializeComponentForUserWithoutRole() {
+  history = createMemoryHistory();
+  const store = createDefaultStore(history);
+  login(store);
+  const queryClient = new QueryClient();
+  queryClient.setQueryData(['user'], { ...mockUser, role: undefined });
+  renderWrapped(<RepresentedPartyAccountPage />, history, store, queryClient);
 }
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -172,6 +184,30 @@ describe('RepresentedPartyAccountPage with zero balance', () => {
       'href',
       '/savings-fund/payment',
     );
+  });
+});
+
+describe('RepresentedPartyAccountPage for a user without a role', () => {
+  let thirdPillarRequestCount: number;
+
+  beforeEach(() => {
+    initializeConfiguration();
+    useTestBackendsExcept(server, ['user', 'pensionAccountStatement']);
+    userBackend(server, { role: undefined });
+    thirdPillarRequestCount = 0;
+    server.use(
+      rest.get('http://localhost/v1/pension-account-statement', (_req, res, ctx) => {
+        thirdPillarRequestCount += 1;
+        return res(ctx.json([]));
+      }),
+    );
+
+    initializeComponentForUserWithoutRole();
+  });
+
+  test('renders the savings fund section without asking for third pillar holdings', async () => {
+    expect(await screen.findByRole('link', { name: 'Deposit' })).toBeInTheDocument();
+    expect(thirdPillarRequestCount).toBe(0);
   });
 });
 
