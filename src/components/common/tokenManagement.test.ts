@@ -1,15 +1,26 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosAdapter, AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import config from 'react-global-configuration';
 import { createAxiosInstance } from './tokenManagement';
 import { AuthenticationManager } from './authenticationManager';
 import * as authenticationManager from './authenticationManager';
 import { loginPath } from '../login/constants';
+import { queryClient } from '../../queryClient';
 import Mock = jest.Mock;
 
 jest.mock('./authenticationManager', () => ({
   getAuthentication: jest.fn(),
 }));
+const terminatedRequestAdapter: AxiosAdapter = (configuration) =>
+  Promise.resolve({
+    data: '',
+    status: 0,
+    statusText: '',
+    headers: {},
+    config: configuration,
+    request: {},
+  });
+
 describe('Axios Instance Creation and Interceptors', () => {
   let mockAxios: MockAdapter;
   const mockPrincipal: AuthenticationManager = {
@@ -159,6 +170,34 @@ describe('Axios Instance Creation and Interceptors', () => {
     await axiosInstance.get('/test');
 
     expect(refreshTimeout).toBe(15000);
+  });
+
+  it('cancels in-flight queries before redirecting to login on refresh token expiration', async () => {
+    const axiosInstance = createAxiosInstance();
+    let hrefWhenQueriesWereCancelled: string | undefined;
+    jest.spyOn(queryClient, 'cancelQueries').mockImplementation(() => {
+      hrefWhenQueriesWereCancelled = window.location.href;
+      return Promise.resolve();
+    });
+
+    delete (window as any).location;
+    window.location = { href: '' } as any;
+
+    mockAxios.onGet('/test').replyOnce(401, { error: 'TOKEN_EXPIRED' });
+    mockAxios.onPost('/oauth/refresh-token').reply(403, { error: 'REFRESH_TOKEN_EXPIRED' });
+
+    await expect(axiosInstance.get('/test')).rejects.toBeDefined();
+
+    expect(hrefWhenQueriesWereCancelled).toBe('');
+    expect(window.location.href).toBe(loginPath);
+  });
+
+  it('rejects a response the browser terminated before it carried a status', async () => {
+    const axiosInstance = createAxiosInstance();
+
+    await expect(
+      axiosInstance.get('/v1/transactions', { adapter: terminatedRequestAdapter }),
+    ).rejects.toBeDefined();
   });
 
   it('sets Accept-Language header according to config', async () => {
