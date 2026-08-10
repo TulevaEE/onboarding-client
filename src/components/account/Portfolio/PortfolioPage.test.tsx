@@ -3,7 +3,7 @@ import moment from 'moment';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { QueryClient } from '@tanstack/react-query';
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
@@ -149,6 +149,9 @@ describe('a start date someone chose themselves', () => {
     expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
 
     userEvent.type(screen.getByLabelText('from'), '2025-01-01');
+    // Leaving the box asks for the period at once, rather than waiting out the pause
+    // that a person still typing is given.
+    fireEvent.blur(screen.getByLabelText('from'));
 
     expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
     expect(requestedPeriods[requestedPeriods.length - 1]).toEqual({

@@ -144,13 +144,15 @@ describe('typing a date rather than picking it', () => {
     expect(onPeriodChange).not.toHaveBeenCalled();
   });
 
-  it('leaves a half typed date on screen while it is still being typed', () => {
+  it('leaves a half typed date on screen, with the cursor in it, while it is still being typed', () => {
     renderSelector();
 
+    userEvent.click(screen.getByLabelText('from'));
     type('from', '0002-01-15');
 
     waitForQuiet();
 
+    expect(screen.getByLabelText('from')).toHaveFocus();
     expect(screen.getByLabelText('from')).toHaveValue('0002-01-15');
     expect(onPeriodChange).not.toHaveBeenCalled();
   });
@@ -177,23 +179,79 @@ describe('typing a date rather than picking it', () => {
     waitForQuiet();
 
     expect(onPeriodChange).not.toHaveBeenCalled();
+    expect(screen.getByLabelText('from')).toHaveValue('2005-03-14');
   });
 
-  it('reads a cleared start date as all time', () => {
+  it('reads a cleared start date as all time once the field is left', () => {
     renderSelector();
 
     type('from', '');
-    waitForQuiet();
+    fireEvent.blur(screen.getByLabelText('from'));
 
     expect(onPeriodChange).toHaveBeenCalledWith(undefined, '2025-08-15');
   });
 
-  it('keeps the previous end date when the end is cleared', () => {
+  it('keeps the period while the start date is cleared to be typed again', () => {
     renderSelector();
 
-    type('to', '');
+    type('from', '');
+
     waitForQuiet();
 
     expect(onPeriodChange).not.toHaveBeenCalled();
+    expect(screen.getByLabelText('from')).toHaveValue('');
+  });
+
+  it('drops a start date typed after the end of the period', () => {
+    renderSelector();
+
+    type('from', '2030-06-01');
+
+    waitForQuiet();
+
+    expect(onPeriodChange).not.toHaveBeenCalled();
+
+    fireEvent.blur(screen.getByLabelText('from'));
+
+    expect(onPeriodChange).not.toHaveBeenCalled();
+    expect(screen.getByLabelText('from')).toHaveValue('2025-01-01');
+  });
+
+  it('drops an end date typed before the start of the period', () => {
+    renderSelector();
+
+    type('to', '2019-06-01');
+
+    waitForQuiet();
+
+    expect(onPeriodChange).not.toHaveBeenCalled();
+
+    fireEvent.blur(screen.getByLabelText('to'));
+
+    expect(onPeriodChange).not.toHaveBeenCalled();
+    expect(screen.getByLabelText('to')).toHaveValue('2025-08-15');
+  });
+
+  it('asks once for an end date picked inside the period', () => {
+    renderSelector();
+
+    type('to', '2025-06-01');
+
+    waitForQuiet();
+
+    fireEvent.blur(screen.getByLabelText('to'));
+
+    expect(onPeriodChange).toHaveBeenCalledTimes(1);
+    expect(onPeriodChange).toHaveBeenCalledWith('2025-01-01', '2025-06-01');
+  });
+
+  it('puts the end date back when its box is emptied and left', () => {
+    renderSelector();
+
+    type('to', '');
+    fireEvent.blur(screen.getByLabelText('to'));
+
+    expect(onPeriodChange).not.toHaveBeenCalled();
+    expect(screen.getByLabelText('to')).toHaveValue('2025-08-15');
   });
 });

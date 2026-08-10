@@ -45,15 +45,27 @@ const DateInput: React.FunctionComponent<{
     setTyped(null);
   }, [value]);
 
+  // The min and max on the box only colour a date outside them: whatever is typed still
+  // arrives here. A start after the end of the period, or an end before its start, is
+  // not a period anyone can be shown — it is left standing like half a date rather than
+  // sent on for the backend to refuse.
+  const isPeriodBoundary = (next: string) =>
+    isWholeDate(next) && (!min || next >= min) && (!max || next <= max);
+
   const isCommittable = (next: string) =>
-    next === '' ? Boolean(emptyMeansAllTime) : isWholeDate(next);
+    next === '' ? Boolean(emptyMeansAllTime) : isPeriodBoundary(next);
 
   const commit = (next: string) => {
     stopWaiting(quietPeriod.current);
 
     if (isCommittable(next)) {
-      setTyped(null);
+      // The new period goes out first. React does not batch these two when the quiet
+      // period runs them, so letting go of what was typed beforehand would put the old
+      // date back into the box for one pass — and writing a date input's value throws
+      // away the segment the cursor was sitting in. Letting go afterwards is only left
+      // to do at all when the date committed is the one already in effect.
       onCommit(next);
+      setTyped(null);
       return;
     }
     // Half a date is not a period. The box goes back to the one actually in effect
@@ -77,9 +89,11 @@ const DateInput: React.FunctionComponent<{
         setTyped(next);
         stopWaiting(quietPeriod.current);
         // A pause between keystrokes is not the end of the typing: a date that is not
-        // whole yet is left standing in the box, with the cursor still in it.
+        // whole yet is left standing in the box, with the cursor still in it. An empty
+        // box only means all time once the person leaves it — clearing a date to type
+        // another one empties the box for as long as they take to start typing.
         quietPeriod.current = setTimeout(() => {
-          if (isCommittable(next)) {
+          if (isPeriodBoundary(next)) {
             commit(next);
           }
         }, QUIET_PERIOD_MS);
