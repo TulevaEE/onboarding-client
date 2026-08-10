@@ -3,6 +3,7 @@ import config from 'react-global-configuration';
 import { AuthenticationPrincipal, Token } from './apiModels';
 import { AuthenticationManager, getAuthentication } from './authenticationManager';
 import { loginPath } from '../login/constants';
+import { queryClient } from '../../queryClient';
 
 let currentAccessToken: string | null = null;
 
@@ -127,7 +128,20 @@ export function createAxiosInstance(): AxiosInstance {
   );
 
   axiosInstance.interceptors.response.use(
-    (response) => response,
+    (response) => {
+      if (!response.status) {
+        return Promise.reject(
+          new AxiosError(
+            `Request terminated: url=${response.config?.url}`,
+            AxiosError.ECONNABORTED,
+            response.config,
+            response.request,
+            response,
+          ),
+        );
+      }
+      return response;
+    },
     async (error) => {
       const originalRequest = error.config;
       if (
@@ -176,6 +190,7 @@ function handleTokenRefreshFailure(
     if (axiosError.response) {
       if (isRefreshTokenExpired(axiosError)) {
         authenticationPrincipal.remove();
+        queryClient.cancelQueries();
         window.location.href = loginPath;
         return Promise.reject(axiosError.response.data);
       }
