@@ -2,6 +2,7 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
+import config from 'react-global-configuration';
 import { setupServer } from 'msw/node';
 import { initializeConfiguration } from '../../../config/config';
 import { getAuthentication } from '../../../common/authenticationManager';
@@ -46,8 +47,10 @@ const personalRole: Role = { type: 'PERSON', code: '39001011234', name: 'John Do
 const companyRole: Role = { type: 'LEGAL_ENTITY', code: '12345678', name: 'Test OÜ' };
 const multipleRoles = [personalRole, companyRole];
 
-function renderRoleSwitcher(onRoleSwitch?: () => void) {
-  renderWrapped(<RoleSwitcher userName="John Doe" onRoleSwitch={onRoleSwitch} />);
+function renderRoleSwitcher(onRoleSwitch?: () => void, onLogout: () => void = jest.fn()) {
+  renderWrapped(
+    <RoleSwitcher userName="John Doe" onRoleSwitch={onRoleSwitch} onLogout={onLogout} />,
+  );
 }
 
 // All keyboard-navigable menu items in DOM order. This mirrors the component's
@@ -115,11 +118,51 @@ describe('RoleSwitcher', () => {
 
       const toggle = await screen.findByRole('button', { name: /John Doe/i });
       toggle.focus();
+      // Log out is the last item now, so the new-account link is one step further up.
       userEvent.type(toggle, '{arrowup}', { skipClick: true });
+      await waitFor(() => expect(screen.getByRole('link', { name: 'Log out' })).toHaveFocus());
+      userEvent.type(screen.getByRole('link', { name: 'Log out' }), '{arrowup}', {
+        skipClick: true,
+      });
 
       await waitFor(() =>
         expect(screen.getByRole('link', { name: 'Open a new account' })).toHaveFocus(),
       );
+    });
+  });
+
+  describe('now that the header collapsed into this menu', () => {
+    it('groups the roles under an accounts heading', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(screen.getByText('Accounts')).toBeInTheDocument();
+    });
+
+    it('logs the user out from the menu', async () => {
+      setupSwitchFlow();
+      const onLogout = jest.fn();
+
+      renderRoleSwitcher(undefined, onLogout);
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      userEvent.click(screen.getByRole('link', { name: 'Log out' }));
+
+      expect(onLogout).toHaveBeenCalledTimes(1);
+    });
+
+    it('offers the other language from inside the menu', async () => {
+      config.set({ language: 'et' }, { freeze: false, assign: true });
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(screen.getByRole('link', { name: 'EN' })).toHaveAttribute('href', '?language=en');
     });
   });
 
@@ -205,15 +248,14 @@ describe('RoleSwitcher', () => {
 
       await waitFor(() => expect(rolesServed).toBe(true));
 
-      // The child route redirects away until launch, so no dead menu link: the
-      // single-role user stays plain text rather than getting a dropdown.
-      expect(await screen.findByText('John Doe')).toBeInTheDocument();
-      await waitFor(() =>
-        expect(screen.queryByRole('button', { name: /John Doe/i })).not.toBeInTheDocument(),
-      );
+      // The child route redirects away until launch, so no dead menu link — but the
+      // menu itself still opens, because logging out now lives inside it.
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      expect(screen.queryByRole('link', { name: 'Mari Maasikas' })).not.toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Log out' })).toBeInTheDocument();
     });
 
-    it('keeps a single-role user with no pending child as plain text when company onboarding is off', async () => {
+    it('still opens the menu for a single-role user with nothing to add', async () => {
       mockIsCompanyOnboardingEnabled.mockReturnValue(false);
       rolesBackend(server, [personalRole]);
       userBackend(server, { role: personalRole });
@@ -231,10 +273,10 @@ describe('RoleSwitcher', () => {
 
       await waitFor(() => expect(pendingServed).toBe(true));
 
-      expect(await screen.findByText('John Doe')).toBeInTheDocument();
-      await waitFor(() =>
-        expect(screen.queryByRole('button', { name: /John Doe/i })).not.toBeInTheDocument(),
-      );
+      // Nothing to add, but the menu is the only way to log out, so it must open.
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      expect(screen.queryByRole('link', { name: 'Open a new account' })).not.toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Log out' })).toBeInTheDocument();
     });
   });
 

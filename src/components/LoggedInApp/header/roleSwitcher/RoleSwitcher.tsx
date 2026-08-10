@@ -3,6 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { useMe, usePendingOnboardings, useRoles, useSwitchRole } from '../../../common/apiHooks';
 import { RoleType, SwitchRoleCommand } from '../../../common/apiModels';
+import LanguageSwitcher from '../languageSwitcher';
 import {
   isChildOnboardingEnabled,
   isCompanyOnboardingEnabled,
@@ -11,6 +12,7 @@ import {
 type Props = {
   userName: string;
   onRoleSwitch?: () => void;
+  onLogout?: () => unknown;
 };
 
 const dropdownItemsOf = (container: HTMLElement | null): HTMLElement[] =>
@@ -49,7 +51,7 @@ const roleIcons: Record<RoleType, ReactNode> = {
   ),
 };
 
-export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
+export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
   const { data: roles } = useRoles();
   // The child route redirects away until child onboarding launches — no dead
   // menu links, and the always-mounted header must not fetch for every user.
@@ -130,9 +132,10 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
   const pendingChildOnboardings = pendingOnboardings.filter(({ type }) => type === 'PERSON');
   const hasPendingChildOnboardings = childOnboardingEnabled && pendingChildOnboardings.length > 0;
 
-  // Even a single-role user gets the dropdown when there is something to add:
-  // a company to onboard, or a pending child to join.
-  if (!roles || (roles.length <= 1 && !companyOnboardingEnabled && !hasPendingChildOnboardings)) {
+  // The menu now also holds logging out and the language choice, so it always
+  // renders — falling back to plain text would strand a single-role user with no
+  // way to log out. Only the roles list itself varies.
+  if (!roles) {
     return <span className="text-body">{displayName}</span>;
   }
 
@@ -179,6 +182,9 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
       </button>
       {open && (
         <span className="dropdown-menu show shadow" data-bs-popper="static">
+          <span className="dropdown-header">
+            <FormattedMessage id="roleSwitcher.accounts" />
+          </span>
           {roles.map((role) => (
             <button
               key={role.code}
@@ -229,6 +235,25 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
               </Link>
             </>
           )}
+          <hr className="dropdown-divider" />
+          {/* Not a .dropdown-item: the row is a label plus two links, so arrow-key
+              navigation steps over it to the next real menu item. */}
+          <span className="dropdown-item-text d-flex justify-content-between align-items-baseline gap-3">
+            <FormattedMessage id="roleSwitcher.language" />
+            <LanguageSwitcher />
+          </span>
+          <a
+            href="/login"
+            className="dropdown-item"
+            onClick={(event) => {
+              event.preventDefault();
+              setOpen(false);
+              onLogout?.();
+            }}
+            onKeyDown={handleKeyDown}
+          >
+            <FormattedMessage id="log.out" />
+          </a>
         </span>
       )}
     </span>

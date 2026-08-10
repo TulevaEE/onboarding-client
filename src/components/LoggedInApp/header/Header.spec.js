@@ -4,7 +4,6 @@ import config from 'react-global-configuration';
 
 import { logo } from '../../common';
 import { Header } from './Header';
-import LanguageSwitcher from './languageSwitcher';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { RoleSwitcher } from './roleSwitcher';
 
@@ -36,30 +35,26 @@ describe('Header', () => {
       loading: false,
     });
     expect(component.find(RoleSwitcher).prop('userName')).toBe(name);
-    expect(component.contains(<Shimmer height={24} />)).toBe(false);
+    expect(component.contains(<Shimmer height={32} />)).toBe(false);
   });
 
-  it('can log out the user', () => {
+  // Logging out lives in the account menu now, so the header only forwards it.
+  it('hands logging out to the account menu', () => {
     const onLogout = jest.fn();
     component.setProps({ loading: false, onLogout, user: { name: 'name' } });
-    expect(onLogout).not.toHaveBeenCalled();
-    component.find('[href="/login"]').simulate('click');
-    expect(onLogout).toHaveBeenCalledTimes(1);
+    expect(component.find(RoleSwitcher).prop('onLogout')).toBe(onLogout);
   });
 
   it("shows a loader when it's loading", () => {
     component.setProps({ loading: true });
-    expect(component.contains(<Shimmer height={24} />)).toBe(true);
+    expect(component.contains(<Shimmer height={32} />)).toBe(true);
   });
 
-  it('renders my account button', () => {
-    const onLogout = jest.fn();
-    component.setProps({ loading: false, onLogout, user: { name: 'name' } });
-    expect(component.find('[href="/account"]').at(1)).toMatchSnapshot();
-  });
-
-  it('renders the language switcher', () => {
-    component.setProps({ loading: false, user: { name: 'name' } });
-    expect(component.contains(<LanguageSwitcher />)).toBe(true);
+  it('leaves the account menu as the only control in the header', () => {
+    component.setProps({ loading: false, onLogout: jest.fn(), user: { name: 'name' } });
+    // The logo link is the one remaining anchor; log out, my account and the
+    // language switcher all moved into the menu.
+    expect(component.find('a')).toHaveLength(2); // skip-link + logo
+    expect(component.find(RoleSwitcher)).toHaveLength(1);
   });
 });
