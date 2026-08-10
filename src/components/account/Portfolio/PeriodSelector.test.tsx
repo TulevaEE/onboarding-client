@@ -167,6 +167,18 @@ describe('typing a date rather than picking it', () => {
     expect(onPeriodChange).toHaveBeenCalledTimes(1);
   });
 
+  it('drops a date being typed when the period changes from elsewhere first', () => {
+    const { rerender } = renderSelector();
+
+    type('from', '2013-01-15');
+
+    rerender(<PeriodSelector from="2005-03-14" to="2025-08-15" onPeriodChange={onPeriodChange} />);
+
+    waitForQuiet();
+
+    expect(onPeriodChange).not.toHaveBeenCalled();
+  });
+
   it('reads a cleared start date as all time', () => {
     renderSelector();
 
