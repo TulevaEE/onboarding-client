@@ -1,5 +1,4 @@
 import React from 'react';
-import { captureException } from '@sentry/browser';
 
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -22,16 +21,6 @@ export const TransactionSection: React.FunctionComponent<{
   const { data: transactions = [], isLoading: transactionsLoading } = useTransactions();
   const { data: funds = [], isLoading: fundsLoading } = useFunds();
   const { data: user, isLoading: userLoading } = useMe();
-
-  if (!Array.isArray(transactions) || !Array.isArray(funds)) {
-    captureException(
-      new Error(
-        `TransactionSection received non-array data: transactionsType=${typeof transactions}, fundsType=${typeof funds}, transactions=${JSON.stringify(
-          transactions,
-        )?.slice(0, 200)}, funds=${JSON.stringify(funds)?.slice(0, 200)}`,
-      ),
-    );
-  }
 
   if (
     transactionsLoading ||
