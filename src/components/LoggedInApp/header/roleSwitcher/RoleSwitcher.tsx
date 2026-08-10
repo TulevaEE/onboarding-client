@@ -146,11 +146,13 @@ export const RoleSwitcher = ({ userName, onRoleSwitch }: Props) => {
     <span className="dropdown d-inline-block" ref={containerRef} onBlur={handleBlur}>
       {/* Bordered rather than a bare link: a name with only a chevron reads as a
           label, so nobody discovers that account switching and "open a new account"
-          live behind it. */}
+          live behind it. Primary (brand blue) rather than secondary grey, which read
+          as disabled next to the header's blue links; the pill shape keeps it from
+          looking like a disabled form field. */}
       <button
         ref={toggleRef}
         type="button"
-        className="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-2"
+        className="btn btn-outline-primary btn-sm rounded-pill d-inline-flex align-items-center gap-2"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
         onKeyDown={handleKeyDown}
