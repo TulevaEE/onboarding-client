@@ -88,11 +88,19 @@ export const isThirdPillar = (fund: Fund) => fund.pillar === 3;
 
 export const isTuleva = (fund: Fund) => (fund.fundManager || {}).name === 'Tuleva';
 
-// Mirrors the backend AuthenticatedPerson.isActingAsSelf(): the user is acting as
-// themselves only when their PERSON role points at their own personal code. A board
-// member representing a company or a parent representing a child is "representing".
-export const isActingAsSelf = (user: User | undefined): boolean =>
-  user?.role?.type === 'PERSON' && user.role.code === user.personalCode;
+// Mirrors the backend AuthenticatedPerson.isActingAsSelf(): no active role means the
+// user is acting as themselves, and a role means it only when the PERSON role points at
+// their own personal code. A board member representing a company or a parent
+// representing a child is "representing".
+export const isActingAsSelf = (user: User | undefined): boolean => {
+  if (!user) {
+    return false;
+  }
+  if (!user.role) {
+    return true;
+  }
+  return user.role.type === 'PERSON' && user.role.code === user.personalCode;
+};
 
 export type TulevaSecondPillarStockFund = 'EE3600109435';
 export type TulevaSecondPillarBondFund = 'EE3600109443';

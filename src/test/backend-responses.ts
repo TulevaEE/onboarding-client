@@ -7,6 +7,7 @@ import {
   MandateDeadlines,
   MobileSignatureResponse,
   MobileSignatureStatusResponse,
+  Role,
   SecondPillarAssets,
   User,
 } from '../components/common/apiModels';
@@ -40,7 +41,7 @@ export const cancellationResponse: CancellationMandate = {
   mandateId: 1,
 };
 
-export const mockUser: User = {
+export const mockUser: User & { role: Role } = {
   id: 123,
   personalCode: '39001011234',
   firstName: 'John',

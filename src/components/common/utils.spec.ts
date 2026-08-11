@@ -1,4 +1,4 @@
-import { Fund, Role } from './apiModels';
+import { Fund } from './apiModels';
 import {
   findWhere,
   createClamper,
@@ -266,8 +266,10 @@ describe('Utils', () => {
       expect(isActingAsSelf(undefined)).toBe(false);
     });
 
-    it('is false when the user has no role', () => {
-      expect(isActingAsSelf({ ...mockUser, role: undefined as unknown as Role })).toBe(false);
+    // Matches the backend AuthenticatedPerson.isActingAsSelf(), where a null role means
+    // acting as self. A partner handover session and PATCH /v1/me both carry no role.
+    it('is true when the user has no role', () => {
+      expect(isActingAsSelf({ ...mockUser, role: undefined })).toBe(true);
     });
   });
 });
