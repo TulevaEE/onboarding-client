@@ -1,5 +1,5 @@
 import { ChangeEventHandler, HTMLProps, useState } from 'react';
-import { Fund, User } from './apiModels';
+import { Fund, Role, User } from './apiModels';
 
 const isTruthy = (value: unknown) => !!value;
 
@@ -101,6 +101,12 @@ export const isActingAsSelf = (user: User | undefined): boolean => {
   }
   return user.role.type === 'PERSON' && user.role.code === user.personalCode;
 };
+
+// The same test, applied to a role you could switch to rather than the one you hold.
+// A PERSON role that is not your own personal code is someone you represent, which
+// today is always a child — companies come through as LEGAL_ENTITY.
+export const isChildRole = (role: Role, user: User | undefined): boolean =>
+  role.type === 'PERSON' && role.code !== user?.personalCode;
 
 export type TulevaSecondPillarStockFund = 'EE3600109435';
 export type TulevaSecondPillarBondFund = 'EE3600109443';

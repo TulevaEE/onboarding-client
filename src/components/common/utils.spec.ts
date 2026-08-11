@@ -7,6 +7,7 @@ import {
   isSecondPillar,
   isActive,
   isActingAsSelf,
+  isChildRole,
   isTuleva,
   formatAmountForCount,
 } from './utils';
@@ -270,6 +271,26 @@ describe('Utils', () => {
     // acting as self. A partner handover session and PATCH /v1/me both carry no role.
     it('is true when the user has no role', () => {
       expect(isActingAsSelf({ ...mockUser, role: undefined })).toBe(true);
+    });
+  });
+
+  describe('isChildRole', () => {
+    it('is true for a PERSON role that is not your own personal code', () => {
+      expect(
+        isChildRole({ type: 'PERSON', code: '61506150006', name: 'Child Name' }, mockUser),
+      ).toBe(true);
+    });
+
+    it('is false for your own PERSON role', () => {
+      expect(
+        isChildRole({ type: 'PERSON', code: mockUser.personalCode, name: 'Me' }, mockUser),
+      ).toBe(false);
+    });
+
+    it('is false for a LEGAL_ENTITY role', () => {
+      expect(
+        isChildRole({ type: 'LEGAL_ENTITY', code: '12345678', name: 'Acme OÜ' }, mockUser),
+      ).toBe(false);
     });
   });
 });
