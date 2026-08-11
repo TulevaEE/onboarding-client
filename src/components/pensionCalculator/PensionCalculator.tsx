@@ -32,7 +32,7 @@ import {
   useSourceFunds,
   useTransactions,
 } from '../common/apiHooks';
-import { SourceFund } from '../common/apiModels';
+import { pillarBalance } from '../common/balances';
 import {
   deriveFeeBounds,
   deriveGrossSalary,
@@ -162,13 +162,6 @@ const signedPercent = (value: number): string => {
   const sign = value > 0 ? '+' : '−';
   return `${sign}${Math.abs(value)}%`;
 };
-
-const pillarBalance = (sourceFunds: SourceFund[], pillar: 2 | 3): number =>
-  Math.round(
-    sourceFunds
-      .filter((fund) => fund.pillar === pillar)
-      .reduce((sum, fund) => sum + fund.price + fund.unavailablePrice, 0),
-  );
 
 // Draws the dashed vertical marker lines: "you are here" between the recorded past
 // and the projection, and "you retire here". Chart.js has no annotation support
@@ -410,13 +403,13 @@ export const PensionCalculator: React.FC = () => {
         secondPillarRate: user.secondPillarActive
           ? user.secondPillarPaymentRates?.pending ?? user.secondPillarPaymentRates?.current ?? 2
           : 0,
-        secondPillarBalance: pillarBalance(sourceFunds, 2),
+        secondPillarBalance: Math.round(pillarBalance(sourceFunds, 2)),
         // Capped at the tax-advantaged ceiling — the slider never exceeds it either.
         thirdPillarMonthly: Math.min(
           deriveThirdPillarMonthly(contributions, now),
           thirdPillarTaxCapMonthly(deriveGrossSalary(contributions, now) ?? DEFAULT_GROSS_SALARY),
         ),
-        thirdPillarBalance: pillarBalance(sourceFunds, 3),
+        thirdPillarBalance: Math.round(pillarBalance(sourceFunds, 3)),
         // Only unit holders get the slider, so only they get a prefill: projecting a
         // standing order behind a hidden control would bake in money the saver can
         // neither see nor turn off (e.g. after emptying the account).
