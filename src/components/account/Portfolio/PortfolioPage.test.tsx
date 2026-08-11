@@ -7,8 +7,9 @@ import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
+import { userBackend } from '../../../test/backend';
 import { initializeConfiguration } from '../../config/config';
-import { Portfolio } from '../../common/apiModels';
+import { Portfolio, RoleType } from '../../common/apiModels';
 import { PortfolioPage } from './PortfolioPage';
 
 const allTime: Portfolio = {
@@ -116,15 +117,31 @@ const portfolioBackendRefusingNarrowedPeriods = () =>
     ),
   );
 
+const statementRequests: string[] = [];
+
 const registerHolding = (funds: unknown[], savingsFund: unknown | null) =>
+  server.use(
+    rest.get('http://localhost/v1/pension-account-statement', (req, res, ctx) => {
+      statementRequests.push(req.url.pathname);
+      return res(ctx.json(funds));
+    }),
+    rest.get('http://localhost/v1/savings-account-statement', (req, res, ctx) =>
+      res(ctx.json(savingsFund)),
+    ),
+  );
+
+const registerRefusingTheSavingsBalance = (funds: unknown[]) =>
   server.use(
     rest.get('http://localhost/v1/pension-account-statement', (req, res, ctx) =>
       res(ctx.json(funds)),
     ),
     rest.get('http://localhost/v1/savings-account-statement', (req, res, ctx) =>
-      res(ctx.json(savingsFund)),
+      res(ctx.status(500), ctx.json({})),
     ),
   );
+
+const actingFor = (roleType: RoleType) =>
+  userBackend(server, { role: { type: roleType, code: '90000000', name: 'Acme' } });
 
 const portfolioBackendDown = () =>
   server.use(
@@ -153,8 +170,10 @@ afterAll(() => server.close());
 beforeEach(() => {
   initializeConfiguration();
   requestedPeriods.length = 0;
+  statementRequests.length = 0;
   portfolioBackend();
   registerHolding([], null);
+  actingFor('PERSON');
 });
 
 describe('what the register holds today', () => {
@@ -177,6 +196,27 @@ describe('what the register holds today', () => {
 
     expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
     expect(screen.queryByText(/899[.,]00/)).not.toBeInTheDocument();
+  });
+
+  it('waits for the whole register answer rather than mixing it with rebuilt values', async () => {
+    registerRefusingTheSavingsBalance([fundBalance(2, 700, 77)]);
+    initializeComponent();
+
+    // 200 savings fund + 300 II pillar, the values the prices rebuilt: a balance for one
+    // band and a rebuilt value for the other would add up to a total from neither source.
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+    expect(screen.queryByText(/1[\s ]?077[.,]00/)).not.toBeInTheDocument();
+  });
+
+  it('does not ask the pension register about a company', async () => {
+    actingFor('LEGAL_ENTITY');
+    registerHolding([fundBalance(2, 700, 77)], fundBalance(null, 111, 11));
+    initializeComponent();
+
+    // 122 in the savings fund the company does hold, on top of the 300 the prices
+    // rebuilt; a company holds no pillar, so the register is never asked about one.
+    expect(await screen.findAllByText(/422[.,]00/)).not.toHaveLength(0);
+    expect(statementRequests).toHaveLength(0);
   });
 
   it('leaves a pillar the register says nothing about on its rebuilt value', async () => {
