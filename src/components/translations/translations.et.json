@@ -254,6 +254,7 @@
   "roleSwitcher.openNewAccount": "Ava konto lapsele või OÜ-le",
   "roleSwitcher.accountMenu": "kontode menüü",
   "roleSwitcher.switchAccount": "Vaheta kontot",
+  "roleSwitcher.otherLanguage": "In English",
   "account.member.statement": "Sa oled Tuleva liige nr {memberNumber}",
   "account.member.statement.comment": "Alates {memberJoinDate} teenid Tulevasse toodud raha pealt liikmeboonust 0.05% aastas",
   "account.member.statement.comment.amount": "{year}. aastal teenisid liikmeboonust {amount}",
