@@ -95,10 +95,9 @@ describe('RoleSwitcher', () => {
 
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
-      expect(screen.getByRole('link', { name: 'Open a new account' })).toHaveAttribute(
-        'href',
-        '/savings-fund/onboarding',
-      );
+      expect(
+        screen.getByRole('link', { name: 'Open an account for a child or company' }),
+      ).toHaveAttribute('href', '/savings-fund/onboarding');
     });
 
     it('offers opening a new account below the existing roles', async () => {
@@ -108,7 +107,9 @@ describe('RoleSwitcher', () => {
 
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
-      expect(screen.getByRole('link', { name: 'Open a new account' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('link', { name: 'Open an account for a child or company' }),
+      ).toBeInTheDocument();
     });
 
     it('reaches the open-new-account link with arrow keys', async () => {
@@ -118,28 +119,58 @@ describe('RoleSwitcher', () => {
 
       const toggle = await screen.findByRole('button', { name: /John Doe/i });
       toggle.focus();
-      // Log out is the last item now, so the new-account link is one step further up.
+      // Arrow up enters the menu at the bottom. Walking up from there: log out, the
+      // language choice, then the new-account link.
       userEvent.type(toggle, '{arrowup}', { skipClick: true });
       await waitFor(() => expect(screen.getByRole('link', { name: 'Log out' })).toHaveFocus());
+
+      const items = dropdownItems();
+      const languageItem = items[items.length - 2];
       userEvent.type(screen.getByRole('link', { name: 'Log out' }), '{arrowup}', {
         skipClick: true,
       });
+      await waitFor(() => expect(languageItem).toHaveFocus());
+      userEvent.type(languageItem, '{arrowup}', { skipClick: true });
 
       await waitFor(() =>
-        expect(screen.getByRole('link', { name: 'Open a new account' })).toHaveFocus(),
+        expect(
+          screen.getByRole('link', { name: 'Open an account for a child or company' }),
+        ).toHaveFocus(),
       );
     });
   });
 
   describe('now that the header collapsed into this menu', () => {
-    it('groups the roles under an accounts heading', async () => {
+    it('groups the roles under a switch-account heading', async () => {
       setupSwitchFlow();
 
       renderRoleSwitcher();
 
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
-      expect(screen.getByText('Accounts')).toBeInTheDocument();
+      expect(screen.getByText('Switch account')).toBeInTheDocument();
+    });
+
+    it('opens with my account and ends with logging out', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      const items = dropdownItems();
+      expect(items[0]).toHaveTextContent('My account');
+      expect(items[items.length - 1]).toHaveTextContent('Log out');
+    });
+
+    it('links my account to the account page', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(screen.getByRole('link', { name: 'My account' })).toHaveAttribute('href', '/account');
     });
 
     it('logs the user out from the menu', async () => {
@@ -154,7 +185,9 @@ describe('RoleSwitcher', () => {
       expect(onLogout).toHaveBeenCalledTimes(1);
     });
 
-    it('offers the other language from inside the menu', async () => {
+    // The label names the language you would switch TO, written in that language,
+    // so it is recognisable to someone who cannot read the language they are stuck in.
+    it('offers English from inside the Estonian menu', async () => {
       config.set({ language: 'et' }, { freeze: false, assign: true });
       setupSwitchFlow();
 
@@ -162,7 +195,63 @@ describe('RoleSwitcher', () => {
 
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
-      expect(screen.getByRole('link', { name: 'EN' })).toHaveAttribute('href', '?language=en');
+      expect(screen.getByRole('link', { name: 'In English' })).toHaveAttribute(
+        'href',
+        '?language=en',
+      );
+    });
+
+    it('offers Estonian from inside the English menu', async () => {
+      config.set({ language: 'en' }, { freeze: false, assign: true });
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(screen.getByRole('link', { name: 'Eesti keeles' })).toHaveAttribute(
+        'href',
+        '?language=et',
+      );
+    });
+  });
+
+  describe('telling the accounts in the menu apart', () => {
+    // A child has no role type of its own — it is a PERSON role pointing at someone
+    // else's personal code, the same test isActingAsSelf() makes.
+    const childRole: Role = { type: 'PERSON', code: '61506150006', name: 'Mari Maasikas' };
+
+    it('gives a child you represent the child icon, not the person icon', async () => {
+      rolesBackend(server, [personalRole, childRole]);
+      userBackend(server, { role: personalRole });
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(screen.getByTestId('role-icon-child')).toBeInTheDocument();
+    });
+
+    it('gives a company the company icon', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(screen.getByTestId('role-icon-legal-entity')).toBeInTheDocument();
+    });
+
+    it('marks the account you are currently acting as', async () => {
+      rolesBackend(server, multipleRoles);
+      userBackend(server, { role: companyRole });
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /Test OÜ/i }));
+
+      expect(screen.getByRole('button', { name: 'Test OÜ', current: true })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'John Doe' })).not.toHaveAttribute('aria-current');
     });
   });
 
@@ -275,7 +364,9 @@ describe('RoleSwitcher', () => {
 
       // Nothing to add, but the menu is the only way to log out, so it must open.
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
-      expect(screen.queryByRole('link', { name: 'Open a new account' })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('link', { name: 'Open an account for a child or company' }),
+      ).not.toBeInTheDocument();
       expect(screen.getByRole('link', { name: 'Log out' })).toBeInTheDocument();
     });
   });

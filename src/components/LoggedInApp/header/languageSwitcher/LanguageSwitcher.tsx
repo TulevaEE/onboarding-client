@@ -1,31 +1,43 @@
-import React, { FC } from 'react';
+import React, { FC, KeyboardEvent } from 'react';
 import config from 'react-global-configuration';
 
-// Inside the account menu there is room to name both languages, so the current
-// one is stated rather than left implicit the way a bare toggle would.
-const LanguageSwitcher: FC = () => {
+type Props = {
+  onKeyDown?: (event: KeyboardEvent) => void;
+  onClick?: () => void;
+};
+
+// The label always names the language you would switch TO, written in that language.
+// Someone stranded in a language they cannot read still recognises the way back, which
+// is why this one string is deliberately not a translation key.
+const LanguageSwitcher: FC<Props> = ({ onKeyDown, onClick }) => {
   const isEstonian = config.get('language') === 'et';
 
   return (
-    <span className="d-inline-flex align-items-baseline gap-1">
-      {isEstonian ? (
-        <strong>ET</strong>
-      ) : (
-        <a className="icon-link" href="?language=et">
-          ET
-        </a>
-      )}
-      <span className="text-body-secondary" aria-hidden="true">
-        /
-      </span>
-      {isEstonian ? (
-        <a className="icon-link" href="?language=en">
-          EN
-        </a>
-      ) : (
-        <strong>EN</strong>
-      )}
-    </span>
+    <a
+      className="dropdown-item d-flex align-items-center gap-2"
+      href={isEstonian ? '?language=en' : '?language=et'}
+      onKeyDown={onKeyDown}
+      onClick={onClick}
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="text-body-secondary"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="M3.5 12h17" />
+        <path d="M12 3.5c2.5 2.3 3.8 5.2 3.8 8.5s-1.3 6.2-3.8 8.5c-2.5-2.3-3.8-5.2-3.8-8.5s1.3-6.2 3.8-8.5Z" />
+      </svg>
+      {isEstonian ? 'In English' : 'Eesti keeles'}
+    </a>
   );
 };
 

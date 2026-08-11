@@ -1,8 +1,10 @@
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { useMe, usePendingOnboardings, useRoles, useSwitchRole } from '../../../common/apiHooks';
-import { RoleType, SwitchRoleCommand } from '../../../common/apiModels';
+import { Role, SwitchRoleCommand, User } from '../../../common/apiModels';
+import { AccountIcon, AccountIconKind } from '../../../common/AccountIcon';
+import { isChildRole } from '../../../common/utils';
 import LanguageSwitcher from '../languageSwitcher';
 import {
   isChildOnboardingEnabled,
@@ -18,38 +20,19 @@ type Props = {
 const dropdownItemsOf = (container: HTMLElement | null): HTMLElement[] =>
   Array.from(container?.querySelectorAll<HTMLElement>('.dropdown-item') ?? []);
 
-// Phosphor Icons, bold weight (MIT) — the same user/briefcase pair the savings-fund
-// onboarding chooser uses for its person and company cards. Decorative: the button
-// already says whose account this is, so they stay out of the accessible name.
-// A represented child is a PERSON role too, and shares the person icon.
-const roleIcons: Record<RoleType, ReactNode> = {
-  PERSON: (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      fill="currentColor"
-      viewBox="0 0 256 256"
-      aria-hidden="true"
-      data-testid="role-icon-person"
-    >
-      <path d="M234.38,210a123.36,123.36,0,0,0-60.78-53.23,76,76,0,1,0-91.2,0A123.36,123.36,0,0,0,21.62,210a12,12,0,1,0,20.77,12c18.12-31.32,50.12-50,85.61-50s67.49,18.69,85.61,50a12,12,0,0,0,20.77-12ZM76,96a52,52,0,1,1,52,52A52.06,52.06,0,0,1,76,96Z" />
-    </svg>
-  ),
-  LEGAL_ENTITY: (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      fill="currentColor"
-      viewBox="0 0 256 256"
-      aria-hidden="true"
-      data-testid="role-icon-legal-entity"
-    >
-      <path d="M100,100a12,12,0,0,1,12-12h32a12,12,0,0,1,0,24H112A12,12,0,0,1,100,100ZM236,68V196a20,20,0,0,1-20,20H40a20,20,0,0,1-20-20V68A20,20,0,0,1,40,48H76V40a28,28,0,0,1,28-28h48a28,28,0,0,1,28,28v8h36A20,20,0,0,1,236,68ZM100,48h56V40a4,4,0,0,0-4-4H104a4,4,0,0,0-4,4ZM44,72v35.23A180.06,180.06,0,0,0,128,128a180,180,0,0,0,84-20.78V72ZM212,192V133.94A204.27,204.27,0,0,1,128,152a204.21,204.21,0,0,1-84-18.06V192Z" />
-    </svg>
-  ),
+// The same three marks the savings-fund onboarding chooser puts on its cards, so an
+// account is recognisable here by the card it was opened from. Decorative: every row
+// names the account holder right beside the icon.
+const accountIconKind = (role: Role, user: User | undefined): AccountIconKind => {
+  if (role.type === 'LEGAL_ENTITY') {
+    return 'company';
+  }
+  return isChildRole(role, user) ? 'child' : 'person';
 };
+
+// The menu is wide enough for the longest row rather than sized to the name, so the
+// rows do not reflow as you switch between a short name and a long company one.
+const menuStyle = { minWidth: '19rem' };
 
 export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
   const { data: roles } = useRoles();
@@ -148,19 +131,19 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
   return (
     <span className="dropdown d-inline-block" ref={containerRef} onBlur={handleBlur}>
       {/* Bordered rather than a bare link: a name with only a chevron reads as a
-          label, so nobody discovers that account switching and "open a new account"
-          live behind it. Primary (brand blue) rather than secondary grey, which read
-          as disabled next to the header's blue links; the pill shape keeps it from
-          looking like a disabled form field. */}
+          label, and everything the header used to show now lives behind it. Primary
+          (brand blue) rather than secondary grey, which read as disabled next to the
+          header's blue links. Stock button radius and size, so the header's only
+          control reads as an ordinary button. */}
       <button
         ref={toggleRef}
         type="button"
-        className="btn btn-outline-primary btn-sm rounded-pill d-inline-flex align-items-center gap-2"
+        className="btn btn-outline-primary d-inline-flex align-items-center gap-2"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
         onKeyDown={handleKeyDown}
       >
-        {roleIcons[user?.role?.type ?? 'PERSON']}
+        <AccountIcon kind={user?.role ? accountIconKind(user.role, user) : 'person'} />
         {displayName}
         {/* Screen readers otherwise hear only a name, with no hint it opens anything. */}
         <span className="visually-hidden">
@@ -181,26 +164,77 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
         </svg>
       </button>
       {open && (
-        <span className="dropdown-menu show shadow" data-bs-popper="static">
-          <span className="dropdown-header">
-            <FormattedMessage id="roleSwitcher.accounts" />
-          </span>
-          {roles.map((role) => (
-            <button
-              key={role.code}
-              type="button"
-              className="dropdown-item"
-              onClick={() => handleRoleClick({ type: role.type, code: role.code })}
-              onKeyDown={handleKeyDown}
+        <span className="dropdown-menu show shadow" data-bs-popper="static" style={menuStyle}>
+          {/* First, because it is the one thing every visitor to this menu wants and
+              the header no longer carries it as a link of its own. */}
+          <Link
+            className="dropdown-item d-flex align-items-center gap-2"
+            to="/account"
+            onClick={() => setOpen(false)}
+            onKeyDown={handleKeyDown}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="text-body-secondary"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
             >
-              {role.name}
-            </button>
-          ))}
+              <path d="m3 10 9-7 9 7" />
+              <path d="M5 8.7V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8.7" />
+            </svg>
+            <FormattedMessage id="header.my.account" />
+          </Link>
+          <hr className="dropdown-divider" />
+          <span className="dropdown-header">
+            <FormattedMessage id="roleSwitcher.switchAccount" />
+          </span>
+          {roles.map((role) => {
+            const isCurrent = user?.role.type === role.type && user?.role.code === role.code;
+            return (
+              <button
+                key={role.code}
+                type="button"
+                className="dropdown-item d-flex align-items-center gap-2"
+                // Marks the row you are already on, so the tick is announced rather
+                // than being colour alone.
+                aria-current={isCurrent || undefined}
+                onClick={() => handleRoleClick({ type: role.type, code: role.code })}
+                onKeyDown={handleKeyDown}
+              >
+                <AccountIcon kind={accountIconKind(role, user)} size={18} />
+                {role.name}
+                {isCurrent && (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="ms-auto text-success"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.25"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="m5 13 4 4L19 7" />
+                  </svg>
+                )}
+              </button>
+            );
+          })}
           {hasPendingChildOnboardings &&
             pendingChildOnboardings.map(({ code, name }) => (
               <Link
                 key={code}
-                className="dropdown-item"
+                className="dropdown-item d-flex align-items-center gap-2"
                 // Router state, never the URL: the minor's code must stay out of history and logs.
                 to={{
                   pathname: '/savings-fund/onboarding/child',
@@ -209,42 +243,36 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                 onClick={() => setOpen(false)}
                 onKeyDown={handleKeyDown}
               >
+                <AccountIcon kind="child" size={18} />
                 {name}
               </Link>
             ))}
           {companyOnboardingEnabled && (
-            <>
-              <hr className="dropdown-divider" />
-              <Link
-                className="dropdown-item d-flex align-items-center gap-2 link-primary fw-medium"
-                to="/savings-fund/onboarding"
-                onClick={() => setOpen(false)}
-                onKeyDown={handleKeyDown}
+            <Link
+              className="dropdown-item d-flex align-items-center gap-2 link-primary fw-medium"
+              to="/savings-fund/onboarding"
+              onClick={() => setOpen(false)}
+              onKeyDown={handleKeyDown}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                fill="currentColor"
+                viewBox="0 0 256 256"
+                aria-hidden="true"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  viewBox="0 0 256 256"
-                  aria-hidden="true"
-                >
-                  <path d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z" />
-                </svg>
-                <FormattedMessage id="roleSwitcher.openNewAccount" />
-              </Link>
-            </>
+                <path d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z" />
+              </svg>
+              <FormattedMessage id="roleSwitcher.openNewAccount" />
+            </Link>
           )}
           <hr className="dropdown-divider" />
-          {/* Not a .dropdown-item: the row is a label plus two links, so arrow-key
-              navigation steps over it to the next real menu item. */}
-          <span className="dropdown-item-text d-flex justify-content-between align-items-baseline gap-3">
-            <FormattedMessage id="roleSwitcher.language" />
-            <LanguageSwitcher />
-          </span>
+          <LanguageSwitcher onKeyDown={handleKeyDown} onClick={() => setOpen(false)} />
+          <hr className="dropdown-divider" />
           <a
             href="/login"
-            className="dropdown-item"
+            className="dropdown-item d-flex align-items-center gap-2"
             onClick={(event) => {
               event.preventDefault();
               setOpen(false);
@@ -252,6 +280,23 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
             }}
             onKeyDown={handleKeyDown}
           >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="text-body-secondary"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <path d="m16 17 5-5-5-5" />
+              <path d="M21 12H9" />
+            </svg>
             <FormattedMessage id="log.out" />
           </a>
         </span>

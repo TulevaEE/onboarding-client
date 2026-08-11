@@ -29,9 +29,9 @@ export const Header = ({ user, loading, onLogout, onRoleSwitch }: Props) => (
           <img src={logo} alt="Tuleva" className="brand-logo" />
         </a>
       )}
-      {/* Logging out and the language choice moved into the account menu, so the
-          header carries a single control. The logo already links to the account
-          page, which is why the separate "my account" link is gone. */}
+      {/* My account, the language choice and logging out all moved into the account
+          menu, so the header carries a single control. The logo keeps its own link to
+          the account page for anyone who never opens the menu. */}
       {loading || !user ? (
         <div style={{ width: '200px' }}>
           <Shimmer height={32} />
