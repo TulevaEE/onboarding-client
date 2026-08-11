@@ -1,4 +1,5 @@
 import React, { FC, KeyboardEvent } from 'react';
+import { FormattedMessage } from 'react-intl';
 import config from 'react-global-configuration';
 
 type Props = {
@@ -6,9 +7,9 @@ type Props = {
   onClick?: () => void;
 };
 
-// The label always names the language you would switch TO, written in that language.
-// Someone stranded in a language they cannot read still recognises the way back, which
-// is why this one string is deliberately not a translation key.
+// roleSwitcher.otherLanguage names the language you would switch TO, written in that
+// language — so the Estonian file says "In English" and the English file says "Eesti
+// keeles". Someone stranded in a language they cannot read still recognises the way back.
 const LanguageSwitcher: FC<Props> = ({ onKeyDown, onClick }) => {
   const isEstonian = config.get('language') === 'et';
 
@@ -36,7 +37,7 @@ const LanguageSwitcher: FC<Props> = ({ onKeyDown, onClick }) => {
         <path d="M3.5 12h17" />
         <path d="M12 3.5c2.5 2.3 3.8 5.2 3.8 8.5s-1.3 6.2-3.8 8.5c-2.5-2.3-3.8-5.2-3.8-8.5s1.3-6.2 3.8-8.5Z" />
       </svg>
-      {isEstonian ? 'In English' : 'Eesti keeles'}
+      <FormattedMessage id="roleSwitcher.otherLanguage" />
     </a>
   );
 };

@@ -246,6 +246,7 @@
   "roleSwitcher.openNewAccount": "Open an account for a child or company",
   "roleSwitcher.accountMenu": "account menu",
   "roleSwitcher.switchAccount": "Switch account",
+  "roleSwitcher.otherLanguage": "Eesti keeles",
   "account.member.statement": "You are Tuleva member no. {memberNumber}",
   "account.member.statement.comment": "Since {memberJoinDate}, you earn a 0.05% annual membership bonus",
   "account.member.statement.comment.amount": "In {year}, you earned a membership bonus of {amount}",
