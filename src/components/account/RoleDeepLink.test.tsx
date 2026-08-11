@@ -68,6 +68,32 @@ function roleSessionBackend(roles: Role[], initialRole: Role) {
   return session;
 }
 
+// Keeps the switch in flight so the test can navigate away mid-resolution.
+function holdRoleSwitch(session: { role: Role }, target: Role) {
+  let release: () => void = () => undefined;
+  let markRequested: () => void = () => undefined;
+  const requested = new Promise<void>((resolve) => {
+    markRequested = resolve;
+  });
+  const held = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+
+  server.use(
+    rest.post('http://localhost/v1/me/role', async (_req, res, ctx) => {
+      markRequested();
+      await held;
+      // eslint-disable-next-line no-param-reassign
+      session.role = target;
+      return res(
+        ctx.json({ access_token: 'new-access-token', refresh_token: 'new-refresh-token' }),
+      );
+    }),
+  );
+
+  return { requested, release: () => release() };
+}
+
 function initializeWithRoles(roles: Role[], initialRole: Role) {
   initializeConfiguration();
   useTestBackendsExcept(server, ['user', 'roles']);
@@ -90,8 +116,10 @@ describe('/account/company', () => {
     expect(session.switchedRole).toEqual({ type: 'LEGAL_ENTITY', code: '11111111' });
   });
 
-  test('picks the first company when the member represents several', async () => {
-    const session = initializeWithRoles([personRole, acmeRole, betaRole], personRole);
+  // The roles endpoint has no ORDER BY, so the same link must not open a different
+  // company depending on what order the server happened to return them in.
+  test('picks the same company whatever order the server returns them in', async () => {
+    const session = initializeWithRoles([personRole, betaRole, acmeRole], personRole);
 
     history.push('/account/company');
 
@@ -139,8 +167,8 @@ describe('/account/child', () => {
     expect(session.switchedRole).toEqual({ type: 'PERSON', code: '61506150006' });
   });
 
-  test('picks the first child when the member represents several', async () => {
-    const session = initializeWithRoles([personRole, childRole, secondChildRole], personRole);
+  test('picks the same child whatever order the server returns them in', async () => {
+    const session = initializeWithRoles([personRole, secondChildRole, childRole], personRole);
 
     history.push('/account/child');
 
@@ -169,6 +197,21 @@ describe('/account/child', () => {
 
     expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
     expect(history.location.pathname).toBe('/account');
+  });
+
+  test('does not pull the member back once they have navigated away mid-switch', async () => {
+    const session = initializeWithRoles([personRole, childRole], personRole);
+    const { requested, release } = holdRoleSwitch(session, childRole);
+
+    history.push('/account/child');
+    await requested;
+    history.push('/somewhere-else');
+    release();
+
+    // The switch itself still completes — the token has already changed server
+    // side — so the header settles on the child. Only the redirect is abandoned.
+    expect(await screen.findByRole('button', { name: /Child Name/ })).toBeInTheDocument();
+    expect(history.location.pathname).toBe('/somewhere-else');
   });
 
   test('does not mistake the own person role for a child', async () => {

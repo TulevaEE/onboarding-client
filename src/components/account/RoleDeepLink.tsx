@@ -24,6 +24,17 @@ export const RoleDeepLink = ({ holder, onRoleSwitched }: Props) => {
   const { data: roles, isError: rolesFailed } = useRoles();
   const switchRole = useSwitchRole();
   const resolved = useRef(false);
+  const leftPage = useRef(false);
+
+  // Its own effect with no dependencies: the resolving effect below re-runs on
+  // dependency churn, so a cleanup attached to it would report leaving the page
+  // while the member is still sitting on it.
+  useEffect(
+    () => () => {
+      leftPage.current = true;
+    },
+    [],
+  );
 
   useEffect(() => {
     // A failed lookup still has to land somewhere. Without counting the error as
@@ -35,11 +46,16 @@ export const RoleDeepLink = ({ holder, onRoleSwitched }: Props) => {
     resolved.current = true;
 
     const openAccount = async () => {
-      // Already representing this kind of account: switching would drag someone
-      // looking at their second child back to their first.
+      // Skipped when already representing this kind of account: switching would
+      // drag someone looking at their second child back to their first.
       const target =
         user && roles && accountHolderFor(user) !== holder
-          ? roles.find((role) => accountHolderForRole(role, user.personalCode) === holder)
+          ? roles
+              .filter((role) => accountHolderForRole(role, user.personalCode) === holder)
+              // Sorted, not first-found: /v1/me/roles has no ORDER BY, so the
+              // server's order would open a different child on different visits.
+              // The code is unique and, unlike the name, never changes.
+              .sort((a, b) => a.code.localeCompare(b.code))[0]
           : undefined;
 
       if (target) {
@@ -54,7 +70,12 @@ export const RoleDeepLink = ({ holder, onRoleSwitched }: Props) => {
         }
       }
 
-      history.replace('/account');
+      // The switch is not cancellable once sent, so it is allowed to finish and
+      // refresh. The redirect is not: navigating someone who has already moved on
+      // would drag them off whatever page they opened next.
+      if (!leftPage.current) {
+        history.replace('/account');
+      }
     };
 
     openAccount();
