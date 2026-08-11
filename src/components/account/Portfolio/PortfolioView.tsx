@@ -123,23 +123,25 @@ export const PortfolioView: React.FunctionComponent<{
         />
 
         {available.length > 1 && (
-          <div className="d-flex flex-wrap gap-2 align-items-center mt-3 pt-3 border-top">
+          <div className="d-flex flex-column flex-sm-row flex-wrap align-items-start align-items-sm-center gap-2 mt-3 pt-3 border-top">
             <span className="text-body-secondary me-1">
               <FormattedMessage id="savingsFund.statement.show" />
             </span>
             {/* The last band still showing cannot be switched off: an empty selection would
                 sum to nothing and present the person's money as 0 €. */}
-            {available.map(({ id, label }) => (
-              <PillButton
-                key={id}
-                selected={!hidden.includes(id)}
-                pressed={!hidden.includes(id)}
-                disabled={visible.length === 1 && !hidden.includes(id)}
-                onClick={() => toggle(id)}
-              >
-                <FormattedMessage id={label} />
-              </PillButton>
-            ))}
+            <div className="d-flex flex-wrap gap-2">
+              {available.map(({ id, label }) => (
+                <PillButton
+                  key={id}
+                  selected={!hidden.includes(id)}
+                  pressed={!hidden.includes(id)}
+                  disabled={visible.length === 1 && !hidden.includes(id)}
+                  onClick={() => toggle(id)}
+                >
+                  <FormattedMessage id={label} />
+                </PillButton>
+              ))}
+            </div>
           </div>
         )}
       </div>

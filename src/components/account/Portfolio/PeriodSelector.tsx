@@ -80,7 +80,7 @@ const DateInput: React.FunctionComponent<{
       key={discarded}
       type="date"
       aria-label={label}
-      className="form-control form-control-sm w-auto"
+      className="form-control form-control-sm w-auto flex-fill"
       value={typed ?? value}
       min={min}
       max={max}
@@ -148,21 +148,28 @@ export const PeriodSelector: React.FunctionComponent<{
 
   return (
     <>
-      <div className="d-flex flex-wrap gap-2 align-items-center mb-3">
+      {/* On a phone the label takes its own line and the pills wrap as one group under
+          it. Left in a single row they break wherever they run out of width, which puts
+          the label on one line and the buttons in a staircase down the card. */}
+      <div className="d-flex flex-column flex-sm-row flex-wrap align-items-start align-items-sm-center gap-2 mb-3">
         <span className="text-body-secondary me-1">
           <FormattedMessage id="savingsFund.statement.period.label" />
         </span>
-        {presets.map((preset) => (
-          <PillButton
-            key={preset.id}
-            selected={from === preset.from && to === preset.to}
-            onClick={() => onPeriodChange(preset.from, preset.to)}
-          >
-            {preset.label}
-          </PillButton>
-        ))}
+        <div className="d-flex flex-wrap gap-2">
+          {presets.map((preset) => (
+            <PillButton
+              key={preset.id}
+              selected={from === preset.from && to === preset.to}
+              onClick={() => onPeriodChange(preset.from, preset.to)}
+            >
+              {preset.label}
+            </PillButton>
+          ))}
+        </div>
       </div>
 
+      {/* A date box is as wide as the date it holds, so on a narrow screen the two of
+          them share the row rather than pushing the second one off the card. */}
       <div className="d-flex flex-wrap gap-2 align-items-center">
         <DateInput
           label="from"
