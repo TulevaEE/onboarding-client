@@ -3,6 +3,8 @@ import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { usePageTitle } from '../../common/usePageTitle';
+import { useSavingsFundBalance, useSourceFunds } from '../../common/apiHooks';
+import { currentValueByGroup } from '../../common/balances';
 import { usePortfolio } from './api/portfolio.api';
 import { PeriodSelector } from './PeriodSelector';
 import { PortfolioView } from './PortfolioView';
@@ -17,6 +19,16 @@ export const PortfolioPage: React.FunctionComponent = () => {
   });
 
   const { data: portfolio, isLoading, isError, refetch } = usePortfolio(period.from, period.to);
+
+  // Prices rebuild a value out of units, and money the register has not turned into units
+  // yet has none. For a period that runs to today the register itself can be asked, so the
+  // closing value is the one the account page shows rather than one short of it.
+  const { data: sourceFunds } = useSourceFunds();
+  const { data: savingsFundBalance } = useSavingsFundBalance();
+  const currentValues =
+    period.to === moment().format('YYYY-MM-DD')
+      ? currentValueByGroup(sourceFunds, savingsFundBalance)
+      : undefined;
 
   const onPeriodChange = useCallback((from: string | undefined, to: string) => {
     setPeriod({ from, to });
@@ -49,6 +61,7 @@ export const PortfolioPage: React.FunctionComponent = () => {
           portfolio={portfolio}
           from={period.from}
           to={period.to}
+          currentValues={currentValues}
           onPeriodChange={onPeriodChange}
         />
       ) : (

@@ -261,6 +261,83 @@ describe('the portfolio the backend valued', () => {
   });
 });
 
+describe('the balance the register holds today', () => {
+  const renderWithBalances = (
+    value: Portfolio,
+    currentValues: Partial<Record<PortfolioGroup, number>>,
+  ) =>
+    renderWrapped(
+      <PortfolioView
+        portfolio={value}
+        from="2025-01-01"
+        to="2025-12-31"
+        currentValues={currentValues}
+        onPeriodChange={() => {}}
+      />,
+    );
+
+  it('is shown instead of the value rebuilt from transactions', () => {
+    renderWithBalances(portfolio(), { SAVINGS_FUND: 250 });
+
+    expect(screen.getAllByText(/250[.,]00/).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/200[.,]00/)).not.toBeInTheDocument();
+  });
+
+  it('counts the money the register has not turned into units into the growth', () => {
+    renderWithBalances(portfolio(), { SAVINGS_FUND: 260 });
+
+    // 260 closing + 0 withdrawn − 100 opening − 50 paid in
+    expect(screen.getByText(/110[.,]00/)).toBeInTheDocument();
+  });
+
+  it('leaves a band the register says nothing about on its rebuilt value', () => {
+    renderWithBalances(
+      portfolio({
+        groups: [
+          summary('SAVINGS_FUND', { endValue: 200 }),
+          summary('SECOND_PILLAR', { endValue: 300 }),
+        ],
+        series: [
+          { date: '2025-01-01', values: { SAVINGS_FUND: 100, SECOND_PILLAR: 200 } },
+          { date: '2025-12-31', values: { SAVINGS_FUND: 200, SECOND_PILLAR: 300 } },
+        ],
+      }),
+      { SECOND_PILLAR: 350 },
+    );
+
+    expect(screen.getAllByText(/550[.,]00/).length).toBeGreaterThan(0);
+  });
+
+  it('values a band the prices could not value at what the register holds', () => {
+    renderWithBalances(portfolio({ groups: [summary('SAVINGS_FUND', { endValue: null })] }), {
+      SAVINGS_FUND: 250,
+    });
+
+    expect(screen.getAllByText(/250[.,]00/).length).toBeGreaterThan(0);
+  });
+
+  it('drops a band switched off from the balance as well', () => {
+    renderWithBalances(
+      portfolio({
+        groups: [
+          summary('SAVINGS_FUND', { endValue: 200 }),
+          summary('SECOND_PILLAR', { endValue: 300 }),
+        ],
+        series: [
+          { date: '2025-01-01', values: { SAVINGS_FUND: 100, SECOND_PILLAR: 200 } },
+          { date: '2025-12-31', values: { SAVINGS_FUND: 200, SECOND_PILLAR: 300 } },
+        ],
+      }),
+      { SAVINGS_FUND: 250, SECOND_PILLAR: 350 },
+    );
+
+    userEvent.click(screen.getByRole('button', { name: /Täiendav Kogumisfond/ }));
+
+    expect(screen.getAllByText(/350[.,]00/).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/600[.,]00/)).not.toBeInTheDocument();
+  });
+});
+
 describe('the period someone types into the date inputs', () => {
   const renderWithPeriodChange = (onPeriodChange: (from?: string, to?: string) => void) =>
     renderWrapped(

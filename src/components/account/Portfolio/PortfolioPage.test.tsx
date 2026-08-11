@@ -73,6 +73,25 @@ const lastYear: Portfolio = {
   ],
 };
 
+const fundBalance = (pillar: number | null, value: number, unavailableValue: number) => ({
+  fund: {
+    isin: `EE${pillar}${value}`,
+    name: `Fund ${pillar}`,
+    fundManager: { name: 'Tuleva' },
+    managementFeeRate: 0.0034,
+    pillar,
+    ongoingChargesFigure: 0.0039,
+  },
+  value,
+  unavailableValue,
+  currency: 'EUR',
+  activeContributions: true,
+  contributions: 0,
+  subtractions: 0,
+  profit: 0,
+  units: 1,
+});
+
 const server = setupServer();
 
 const requestedPeriods: { from: string | null; to: string | null }[] = [];
@@ -94,6 +113,16 @@ const portfolioBackendRefusingNarrowedPeriods = () =>
       req.url.searchParams.get('from')
         ? res(ctx.status(500), ctx.json({}))
         : res(ctx.json(allTime)),
+    ),
+  );
+
+const registerHolding = (funds: unknown[], savingsFund: unknown | null) =>
+  server.use(
+    rest.get('http://localhost/v1/pension-account-statement', (req, res, ctx) =>
+      res(ctx.json(funds)),
+    ),
+    rest.get('http://localhost/v1/savings-account-statement', (req, res, ctx) =>
+      res(ctx.json(savingsFund)),
     ),
   );
 
@@ -125,6 +154,37 @@ beforeEach(() => {
   initializeConfiguration();
   requestedPeriods.length = 0;
   portfolioBackend();
+  registerHolding([], null);
+});
+
+describe('what the register holds today', () => {
+  it('is the closing value of a period that runs to today', async () => {
+    registerHolding([fundBalance(2, 700, 77)], fundBalance(null, 111, 11));
+    initializeComponent();
+
+    // 777 in the II pillar and 122 in the savings fund, rather than the 500 the
+    // published prices rebuild from units alone.
+    expect(await screen.findAllByText(/899[.,]00/)).not.toHaveLength(0);
+  });
+
+  it('is left out of a period that ended before today', async () => {
+    registerHolding([fundBalance(2, 700, 77)], fundBalance(null, 111, 11));
+    initializeComponent();
+
+    expect(await screen.findAllByText(/899[.,]00/)).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
+    expect(screen.queryByText(/899[.,]00/)).not.toBeInTheDocument();
+  });
+
+  it('leaves a pillar the register says nothing about on its rebuilt value', async () => {
+    registerHolding([fundBalance(3, 900, 0)], null);
+    initializeComponent();
+
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+  });
 });
 
 describe('a portfolio the backend has not answered with yet', () => {
