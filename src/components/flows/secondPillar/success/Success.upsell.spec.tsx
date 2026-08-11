@@ -161,7 +161,11 @@ describe('2nd Pillar Success - Payment Rate Increase Upsell', () => {
       initializeComponent();
       history.push('/partner/2nd-pillar-flow-success');
 
-      const accountLink = await screen.findByRole('link', { name: /My Account/i });
+      // The page's own back-to-account CTA. This used to match the header's "My account"
+      // link instead, which disappeared when the header collapsed into the account menu.
+      const accountLink = await screen.findByRole('link', {
+        name: /View your account balance/i,
+      });
       expect(accountLink).toBeInTheDocument();
       expect(accountLink).toHaveAttribute(
         'href',
