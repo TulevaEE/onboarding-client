@@ -190,6 +190,51 @@ describe('Axios Instance Creation and Interceptors', () => {
     expect(window.location.href).toBe(loginPath);
   });
 
+  it('waits for query cancellation to settle before redirecting to login', async () => {
+    const axiosInstance = createAxiosInstance();
+    let signalCancellationStarted = (): void => {};
+    const cancellationStarted = new Promise<void>((resolve) => {
+      signalCancellationStarted = () => resolve();
+    });
+    let completeCancellation = (): void => {};
+    const cancellation = new Promise<void>((resolve) => {
+      completeCancellation = () => resolve();
+    });
+    jest.spyOn(queryClient, 'cancelQueries').mockImplementation(() => {
+      signalCancellationStarted();
+      return cancellation;
+    });
+
+    stubLocation();
+
+    mockAxios.onGet('/test').replyOnce(401, { error: 'TOKEN_EXPIRED' });
+    mockAxios.onPost('/oauth/refresh-token').reply(403, { error: 'REFRESH_TOKEN_EXPIRED' });
+
+    const requestRejection = expect(axiosInstance.get('/test')).rejects.toBeDefined();
+    await cancellationStarted;
+
+    expect(window.location.href).toBe('');
+
+    completeCancellation();
+
+    await requestRejection;
+    expect(window.location.href).toBe(loginPath);
+  });
+
+  it('redirects to login even when query cancellation fails', async () => {
+    const axiosInstance = createAxiosInstance();
+    jest.spyOn(queryClient, 'cancelQueries').mockRejectedValue(new Error('cancellation failed'));
+
+    stubLocation();
+
+    mockAxios.onGet('/test').replyOnce(401, { error: 'TOKEN_EXPIRED' });
+    mockAxios.onPost('/oauth/refresh-token').reply(403, { error: 'REFRESH_TOKEN_EXPIRED' });
+
+    await expect(axiosInstance.get('/test')).rejects.toBeDefined();
+
+    expect(window.location.href).toBe(loginPath);
+  });
+
   it('rejects a response the browser terminated before it carried a status', async () => {
     const axiosInstance = createAxiosInstance();
 

@@ -180,7 +180,7 @@ function isRefreshTokenExpired(axiosError: AxiosError) {
   return axiosError.response?.status === 403 && data?.error === 'REFRESH_TOKEN_EXPIRED';
 }
 
-function handleTokenRefreshFailure(
+async function handleTokenRefreshFailure(
   refreshError: unknown,
   authenticationPrincipal: AuthenticationManager,
   error: unknown,
@@ -190,8 +190,11 @@ function handleTokenRefreshFailure(
     if (axiosError.response) {
       if (isRefreshTokenExpired(axiosError)) {
         authenticationPrincipal.remove();
-        queryClient.cancelQueries();
-        window.location.href = loginPath;
+        try {
+          await queryClient.cancelQueries();
+        } finally {
+          window.location.href = loginPath;
+        }
         return Promise.reject(axiosError.response.data);
       }
     }
