@@ -1,9 +1,10 @@
-import axios, { AxiosAdapter, AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import config from 'react-global-configuration';
 import { createAxiosInstance } from './tokenManagement';
 import { AuthenticationManager } from './authenticationManager';
 import * as authenticationManager from './authenticationManager';
+import { terminatedRequestAdapter } from './terminatedRequestAdapterFixture';
 import { loginPath } from '../login/constants';
 import { queryClient } from '../../queryClient';
 import Mock = jest.Mock;
@@ -11,15 +12,6 @@ import Mock = jest.Mock;
 jest.mock('./authenticationManager', () => ({
   getAuthentication: jest.fn(),
 }));
-const terminatedRequestAdapter: AxiosAdapter = (configuration) =>
-  Promise.resolve({
-    data: '',
-    status: 0,
-    statusText: '',
-    headers: {},
-    config: configuration,
-    request: {},
-  });
 
 describe('Axios Instance Creation and Interceptors', () => {
   let mockAxios: MockAdapter;

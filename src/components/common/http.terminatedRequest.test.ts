@@ -1,22 +1,12 @@
-import { AxiosAdapter } from 'axios';
 import config from 'react-global-configuration';
 import { getWithAuthentication } from './http';
 import * as authenticationManager from './authenticationManager';
 import { anAuthenticationManager } from './authenticationManagerFixture';
+import { terminatedRequestAdapter } from './terminatedRequestAdapterFixture';
 
 jest.mock('./authenticationManager', () => ({
   getAuthentication: jest.fn(),
 }));
-
-const terminatedRequestAdapter: AxiosAdapter = (configuration) =>
-  Promise.resolve({
-    data: '',
-    status: 0,
-    statusText: '',
-    headers: {},
-    config: configuration,
-    request: {},
-  });
 
 describe('getWithAuthentication when the browser terminates the request', () => {
   config.set({ language: 'en' });
