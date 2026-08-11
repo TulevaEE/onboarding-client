@@ -23,6 +23,7 @@ const terminatedRequestAdapter: AxiosAdapter = (configuration) =>
 
 describe('Axios Instance Creation and Interceptors', () => {
   let mockAxios: MockAdapter;
+  const originalLocation = window.location;
   const mockPrincipal: AuthenticationManager = {
     accessToken: 'initialAccessToken',
     refreshToken: 'validRefreshToken',
@@ -45,7 +46,15 @@ describe('Axios Instance Creation and Interceptors', () => {
 
   afterEach(() => {
     mockAxios.restore();
+    jest.restoreAllMocks();
+    delete (window as any).location;
+    window.location = originalLocation;
   });
+
+  function stubLocation(): void {
+    delete (window as any).location;
+    window.location = { href: '' } as any;
+  }
 
   it('sets Authorization header with current access token', async () => {
     const axiosInstance = createAxiosInstance();
@@ -87,9 +96,7 @@ describe('Axios Instance Creation and Interceptors', () => {
   it('removes principal and redirects to login on refresh token expiration', async () => {
     const axiosInstance = createAxiosInstance();
 
-    // Mock window.location
-    delete (window as any).location;
-    window.location = { href: '' } as any;
+    stubLocation();
 
     // First request fails with 401, indicating expired token
     mockAxios.onGet('/test').replyOnce(401, { error: 'TOKEN_EXPIRED' });
@@ -180,8 +187,7 @@ describe('Axios Instance Creation and Interceptors', () => {
       return Promise.resolve();
     });
 
-    delete (window as any).location;
-    window.location = { href: '' } as any;
+    stubLocation();
 
     mockAxios.onGet('/test').replyOnce(401, { error: 'TOKEN_EXPIRED' });
     mockAxios.onPost('/oauth/refresh-token').reply(403, { error: 'REFRESH_TOKEN_EXPIRED' });
