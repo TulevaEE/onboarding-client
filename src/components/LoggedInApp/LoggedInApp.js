@@ -8,6 +8,7 @@ import { actions as loginActions } from '../login';
 import { actions as exchangeActions } from '../exchange';
 import { Header } from './header/Header';
 import AccountPage from '../account';
+import { RoleDeepLink } from '../account/RoleDeepLink';
 import SecondPillarFlow from '../flows/secondPillar';
 import ThirdPillarFlow from '../flows/thirdPillar';
 import PartnerSecondPillarFlow from '../flows/partner/PartnerSecondPillarFlow';
@@ -128,6 +129,19 @@ export class LoggedInApp extends PureComponent {
         {this.isDevelopmentMode() && <DevSidebar />}
         <main id="main" className="pb-5">
           <Switch>
+            {/* Before the account route, which is not exact and would swallow them. */}
+            <Route
+              path={`${ACCOUNT_PATH}/child`}
+              render={() => (
+                <RoleDeepLink holder="child" onRoleSwitched={() => this.fetchAllUserData()} />
+              )}
+            />
+            <Route
+              path={`${ACCOUNT_PATH}/company`}
+              render={() => (
+                <RoleDeepLink holder="company" onRoleSwitched={() => this.fetchAllUserData()} />
+              )}
+            />
             <Route path={ACCOUNT_PATH} component={AccountPage} />
             <Route path={AML_PATH} component={AmlPage} />
             <Route path="/join" component={SignUpPage} />
