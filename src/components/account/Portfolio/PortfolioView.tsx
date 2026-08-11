@@ -107,6 +107,14 @@ export const PortfolioView: React.FunctionComponent<{
     visible.map(({ id }) => id),
   );
 
+  // Prices are published a day or more behind, so the last point drawn is not always the
+  // end of the period. The heading names the day the money on it was actually counted:
+  // the register's own day when it answered, otherwise the last day with a price.
+  const lastPricedDay = series.length > 0 ? series[series.length - 1].date : undefined;
+  const askedTheRegister = visible.some(({ id }) => currentValues?.[id] !== undefined);
+  const valuedAt = askedTheRegister ? to : lastPricedDay ?? to;
+  const chartStopsEarlier = lastPricedDay !== undefined && lastPricedDay < valuedAt;
+
   const toggle = (id: PortfolioGroup) =>
     setHidden((current) =>
       current.includes(id) ? current.filter((item) => item !== id) : [...current, id],
@@ -150,7 +158,7 @@ export const PortfolioView: React.FunctionComponent<{
         <h2 className="h6 text-body-secondary mb-2">
           <FormattedMessage
             id="savingsFund.statement.money.heading"
-            values={{ date: moment(to).format('DD.MM.YYYY') }}
+            values={{ date: moment(valuedAt).format('DD.MM.YYYY') }}
           />
         </h2>
         <div className="display-6 fw-medium text-navy">
@@ -198,6 +206,16 @@ export const PortfolioView: React.FunctionComponent<{
               <span>{moment(series[0].date).format('DD.MM.YYYY')}</span>
               <span>{moment(series[series.length - 1].date).format('DD.MM.YYYY')}</span>
             </div>
+          )}
+          {/* Otherwise the chart simply ends lower than the number above it, and nothing
+              on the page says why. */}
+          {chartStopsEarlier && series.length > 1 && (
+            <p className="text-body-tertiary small mt-1 mb-0">
+              <FormattedMessage
+                id="savingsFund.statement.money.chartEndsAt"
+                values={{ date: moment(lastPricedDay).format('DD.MM.YYYY') }}
+              />
+            </p>
           )}
           {visible.length > 1 && (
             <div className="d-flex flex-wrap gap-3 mt-2 small">

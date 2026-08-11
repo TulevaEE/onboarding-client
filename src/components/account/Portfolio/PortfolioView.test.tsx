@@ -338,6 +338,55 @@ describe('the balance the register holds today', () => {
   });
 });
 
+describe('the day the money is counted on', () => {
+  const renderTo = (
+    value: Portfolio,
+    to: string,
+    currentValues?: Partial<Record<PortfolioGroup, number>>,
+  ) =>
+    renderWrapped(
+      <PortfolioView
+        portfolio={value}
+        from="2025-01-01"
+        to={to}
+        currentValues={currentValues}
+        onPeriodChange={() => {}}
+      />,
+    );
+
+  const endingBefore = portfolio({
+    series: [
+      { date: '2025-01-01', values: { SAVINGS_FUND: 100 } },
+      { date: '2025-12-28', values: { SAVINGS_FUND: 200 } },
+    ],
+  });
+
+  it('is the last day with a price when that is all the value rests on', () => {
+    renderTo(endingBefore, '2025-12-31');
+
+    expect(screen.getByRole('heading', { name: /28\.12\.2025/ })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /31\.12\.2025/ })).not.toBeInTheDocument();
+  });
+
+  it('is the end of the period once the register has been asked', () => {
+    renderTo(endingBefore, '2025-12-31', { SAVINGS_FUND: 250 });
+
+    expect(screen.getByRole('heading', { name: /31\.12\.2025/ })).toBeInTheDocument();
+  });
+
+  it('says where the chart stops when the balance is newer than the prices', () => {
+    renderTo(endingBefore, '2025-12-31', { SAVINGS_FUND: 250 });
+
+    expect(screen.getByText(/chart ends on 28\.12\.2025/i)).toBeInTheDocument();
+  });
+
+  it('says nothing about the chart when it already runs to the end of the period', () => {
+    renderTo(portfolio(), '2025-12-31', { SAVINGS_FUND: 250 });
+
+    expect(screen.queryByText(/chart ends on/i)).not.toBeInTheDocument();
+  });
+});
+
 describe('the period someone types into the date inputs', () => {
   const renderWithPeriodChange = (onPeriodChange: (from?: string, to?: string) => void) =>
     renderWrapped(

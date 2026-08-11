@@ -1370,6 +1370,7 @@
   "savingsFund.statement.money.annualReturnUnavailable": "Aastast tootlust näitame ühe valiku kaupa (II või III sammas).",
   "savingsFund.statement.money.unvaluable": "Osale sinu varast puudub praegu hind, seega me ei saa näidata, kui palju see väärt on. Palun proovi hiljem uuesti.",
   "savingsFund.statement.money.unknown": "Pole teada",
+  "savingsFund.statement.money.chartEndsAt": "Graafik lõpeb {date} – viimane päev, mille kohta fondide hinnad on teada.",
   "savingsFund.statement.period.label": "Periood",
   "savingsFund.statement.period.thisYear": "See aasta",
   "savingsFund.statement.period.lastYear": "Eelmine aasta",
