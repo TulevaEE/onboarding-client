@@ -129,7 +129,6 @@ export class LoggedInApp extends PureComponent {
         {this.isDevelopmentMode() && <DevSidebar />}
         <main id="main" className="pb-5">
           <Switch>
-            {/* Before the account route, which is not exact and would swallow them. */}
             <Route
               path={`${ACCOUNT_PATH}/child`}
               render={() => (

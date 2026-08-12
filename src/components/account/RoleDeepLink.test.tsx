@@ -23,8 +23,6 @@ function initializeComponent() {
   const store = createDefaultStore(history as any);
   login(store);
 
-  // No retries: one test drives the roles lookup to failure, and the default
-  // backoff would outlast the test timeout before the component gives up.
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
   renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store, queryClient);
@@ -40,10 +38,6 @@ const betaRole: Role = { type: 'LEGAL_ENTITY', code: '22222222', name: 'Beta OÜ
 const childRole: Role = { type: 'PERSON', code: '61506150006', name: 'Child Name' };
 const secondChildRole: Role = { type: 'PERSON', code: '61506150007', name: 'Second Child' };
 
-// The real backend reissues a token carrying the new role, so every later /v1/me
-// reflects it. A fixed user fixture cannot express that, and the whole point of a
-// deep link is which role you end up acting as — so the session role is mutable
-// here and the switch endpoint moves it, exactly as the token swap does in prod.
 function roleSessionBackend(roles: Role[], initialRole: Role) {
   const session = { role: initialRole, switchedRole: null as SwitchRoleCommand | null };
 
@@ -68,7 +62,6 @@ function roleSessionBackend(roles: Role[], initialRole: Role) {
   return session;
 }
 
-// Keeps the switch in flight so the test can navigate away mid-resolution.
 function holdRoleSwitch(session: { role: Role }, target: Role) {
   let release: () => void = () => undefined;
   let markRequested: () => void = () => undefined;
@@ -105,6 +98,8 @@ function initializeWithRoles(roles: Role[], initialRole: Role) {
 const representedPartyAccount = () =>
   screen.findByRole('region', { name: 'represented-party-account' });
 
+const accountSwitcherFor = (name: RegExp) => screen.findByRole('button', { name });
+
 describe('/account/company', () => {
   test('switches to the company role and renders its account', async () => {
     const session = initializeWithRoles([personRole, acmeRole], personRole);
@@ -116,8 +111,6 @@ describe('/account/company', () => {
     expect(session.switchedRole).toEqual({ type: 'LEGAL_ENTITY', code: '11111111' });
   });
 
-  // The roles endpoint has no ORDER BY, so the same link must not open a different
-  // company depending on what order the server happened to return them in.
   test('picks the same company whatever order the server returns them in', async () => {
     const session = initializeWithRoles([personRole, betaRole, acmeRole], personRole);
 
@@ -199,7 +192,7 @@ describe('/account/child', () => {
     expect(history.location.pathname).toBe('/account');
   });
 
-  test('does not pull the member back once they have navigated away mid-switch', async () => {
+  test('finishes the switch but abandons the redirect once the member has navigated away', async () => {
     const session = initializeWithRoles([personRole, childRole], personRole);
     const { requested, release } = holdRoleSwitch(session, childRole);
 
@@ -208,9 +201,7 @@ describe('/account/child', () => {
     history.push('/somewhere-else');
     release();
 
-    // The switch itself still completes — the token has already changed server
-    // side — so the header settles on the child. Only the redirect is abandoned.
-    expect(await screen.findByRole('button', { name: /Child Name/ })).toBeInTheDocument();
+    expect(await accountSwitcherFor(/Child Name/)).toBeInTheDocument();
     expect(history.location.pathname).toBe('/somewhere-else');
   });
 
