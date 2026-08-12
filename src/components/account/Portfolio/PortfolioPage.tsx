@@ -54,7 +54,10 @@ export const PortfolioPage: React.FunctionComponent = () => {
       </p>
 
       {isError && (
-        <div className="alert alert-danger d-flex flex-wrap gap-3 align-items-center justify-content-between">
+        <div
+          role="alert"
+          className="alert alert-danger d-flex flex-wrap gap-3 align-items-center justify-content-between"
+        >
           <span>
             <FormattedMessage id="myMoney.pricesUnavailable" />
           </span>

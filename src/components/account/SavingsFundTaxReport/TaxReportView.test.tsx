@@ -31,6 +31,8 @@ const taxReportView = (
     year={value.year}
     method={value.method}
     detailsOpen={detailsOpen}
+    isLoading={false}
+    methodReachable={false}
     onYearChange={() => {}}
     onMethodChange={() => {}}
     onDetailsToggle={onDetailsToggle}
@@ -77,6 +79,22 @@ describe('the tax report the backend calculated', () => {
     expect(screen.getByText('10.09.2025')).toBeInTheDocument();
     expect(screen.getByText(/421[.,]04/)).toBeInTheDocument();
     expect(screen.getByText(/480[.,]00/)).toBeInTheDocument();
+  });
+
+  it('tells a screen reader whether the details are open', () => {
+    const { rerender } = render(report());
+
+    expect(screen.getByRole('button', { name: 'Show details' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+
+    rerender(taxReportView(report(), { detailsOpen: true }));
+
+    expect(screen.getByRole('button', { name: 'Hide details' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
   });
 
   it('says the savings fund is the only thing covered', () => {

@@ -2,16 +2,19 @@ import React from 'react';
 import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
 import { Euro } from '../../common/Euro';
+import { Shimmer } from '../../common/shimmer/Shimmer';
 import { CostBasisMethod, SavingsFundTaxReport } from '../../common/apiModels';
 import { MethodSelector } from './MethodSelector';
 import { YearSelector } from './YearSelector';
 
 export const TaxReportView: React.FunctionComponent<{
-  report: SavingsFundTaxReport;
+  report?: SavingsFundTaxReport;
   taxYears: number[];
   year: number;
   method: CostBasisMethod;
   detailsOpen: boolean;
+  isLoading: boolean;
+  methodReachable: boolean;
   onYearChange: (year: number) => void;
   onMethodChange: (method: CostBasisMethod) => void;
   onDetailsToggle: () => void;
@@ -21,25 +24,24 @@ export const TaxReportView: React.FunctionComponent<{
   year,
   method,
   detailsOpen,
+  isLoading,
+  methodReachable,
   onYearChange,
   onMethodChange,
   onDetailsToggle,
-}) => {
-  const gains = report.redemptions;
-  const total = report.totalGain;
+}) => (
+  <>
+    <div className="card p-4 mb-3">
+      <YearSelector taxYears={taxYears} year={year} onYearChange={onYearChange} />
+    </div>
 
-  return (
-    <>
-      <div className="card p-4 mb-3">
-        <YearSelector taxYears={taxYears} year={year} onYearChange={onYearChange} />
-      </div>
-
+    {report && (
       <div className="card p-4 mb-3">
         <h2 className="h6 text-body-secondary mb-2">
           <FormattedMessage id="savingsFund.statement.tax.heading" values={{ year }} />
         </h2>
 
-        {gains.length === 0 ? (
+        {report.redemptions.length === 0 ? (
           <>
             <div className="h3 fw-medium text-navy">
               <FormattedMessage id="savingsFund.statement.tax.nothing" />
@@ -51,15 +53,17 @@ export const TaxReportView: React.FunctionComponent<{
         ) : (
           <>
             <div className="h3 fw-medium text-navy">
-              {total >= 0 ? (
+              {report.totalGain >= 0 ? (
                 <FormattedMessage
                   id="savingsFund.statement.tax.gain"
-                  values={{ amount: <Euro amount={total} className="text-success" /> }}
+                  values={{ amount: <Euro amount={report.totalGain} className="text-success" /> }}
                 />
               ) : (
                 <FormattedMessage
                   id="savingsFund.statement.tax.loss"
-                  values={{ amount: <Euro amount={Math.abs(total)} className="text-danger" /> }}
+                  values={{
+                    amount: <Euro amount={Math.abs(report.totalGain)} className="text-danger" />,
+                  }}
                 />
               )}
             </div>
@@ -73,91 +77,120 @@ export const TaxReportView: React.FunctionComponent<{
           <FormattedMessage id="savingsFund.statement.tax.investmentAccount" />
         </div>
       </div>
+    )}
 
-      <button type="button" className="btn btn-link p-0 mb-3" onClick={onDetailsToggle}>
+    {isLoading && <Shimmer height={32} />}
+
+    {/* The details someone opened outlive the report being calculated again, so the button
+        that closes them stays put rather than vanishing until the new figures arrive. */}
+    {(report || detailsOpen) && (
+      <button
+        type="button"
+        aria-expanded={detailsOpen}
+        className="btn btn-link p-0 mb-3"
+        onClick={onDetailsToggle}
+      >
         <FormattedMessage
           id={
             detailsOpen ? 'savingsFund.statement.hideDetails' : 'savingsFund.statement.showDetails'
           }
         />
       </button>
+    )}
 
-      {detailsOpen && (
-        <div className="card p-4 mb-3">
+    {/* A request the backend refused leaves nothing to draw, so the method someone can change
+        is shown on its own — otherwise the page stays broken until a reload. Every request
+        carries a method, so the method stays reachable once a failure has been reported; while
+        nothing has failed it is shown only with the details open, keeping it from flashing on
+        an ordinary first load. The details themselves belong to the panel someone opened, so
+        they wait for that even when a failure has already brought the card onto the page. */}
+    {(detailsOpen || methodReachable) && (
+      <div className="card p-4 mb-3">
+        {report && detailsOpen && (
           <h2 className="h6 text-body-secondary mb-3">
             <FormattedMessage id="savingsFund.statement.tax.detailsHeading" />
           </h2>
+        )}
 
-          <div className="mb-3">
-            <MethodSelector method={method} onMethodChange={onMethodChange} />
-          </div>
+        <div className="mb-3">
+          <MethodSelector method={method} onMethodChange={onMethodChange} />
+        </div>
 
-          <div className="table-responsive">
-            <table className="table align-middle">
-              <thead>
-                <tr>
-                  <th scope="col">
-                    <FormattedMessage id="savingsFund.statement.tax.tableDate" />
-                  </th>
-                  <th scope="col" className="text-end">
-                    <FormattedMessage id="savingsFund.statement.tax.tableUnits" />
-                  </th>
-                  <th scope="col" className="text-end">
-                    <FormattedMessage id="savingsFund.statement.tax.tableCost" />
-                  </th>
-                  <th scope="col" className="text-end">
-                    <FormattedMessage id="savingsFund.statement.tax.tableProceeds" />
-                  </th>
-                  <th scope="col" className="text-end">
-                    <FormattedMessage id="savingsFund.statement.tax.tableGain" />
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {gains.length ? (
-                  gains.map((gain) => (
-                    <tr key={gain.time}>
-                      <td>{moment(gain.time).format('DD.MM.YYYY')}</td>
-                      <td className="text-end">{gain.units.toFixed(3)}</td>
-                      <td className="text-end">
-                        <Euro amount={gain.acquisitionCost} />
-                      </td>
-                      <td className="text-end">
-                        <Euro amount={gain.proceeds} />
-                      </td>
-                      <td className={`text-end ${gain.gain >= 0 ? 'text-success' : 'text-danger'}`}>
-                        <Euro amount={gain.gain} />
+        {report && detailsOpen && (
+          <>
+            <div className="table-responsive">
+              <table className="table align-middle">
+                <thead>
+                  <tr>
+                    <th scope="col">
+                      <FormattedMessage id="savingsFund.statement.tax.tableDate" />
+                    </th>
+                    <th scope="col" className="text-end">
+                      <FormattedMessage id="savingsFund.statement.tax.tableUnits" />
+                    </th>
+                    <th scope="col" className="text-end">
+                      <FormattedMessage id="savingsFund.statement.tax.tableCost" />
+                    </th>
+                    <th scope="col" className="text-end">
+                      <FormattedMessage id="savingsFund.statement.tax.tableProceeds" />
+                    </th>
+                    <th scope="col" className="text-end">
+                      <FormattedMessage id="savingsFund.statement.tax.tableGain" />
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {report.redemptions.length ? (
+                    report.redemptions.map((gain) => (
+                      <tr key={gain.time}>
+                        <td>{moment(gain.time).format('DD.MM.YYYY')}</td>
+                        <td className="text-end">{gain.units.toFixed(3)}</td>
+                        <td className="text-end">
+                          <Euro amount={gain.acquisitionCost} />
+                        </td>
+                        <td className="text-end">
+                          <Euro amount={gain.proceeds} />
+                        </td>
+                        <td
+                          className={`text-end ${gain.gain >= 0 ? 'text-success' : 'text-danger'}`}
+                        >
+                          <Euro amount={gain.gain} />
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={5} className="text-body-secondary">
+                        <FormattedMessage id="savingsFund.statement.tax.tableEmpty" />
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan={5} className="text-body-secondary">
-                      <FormattedMessage id="savingsFund.statement.tax.tableEmpty" />
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-              {gains.length ? (
-                <tfoot>
-                  <tr>
-                    <td colSpan={4}>
-                      <FormattedMessage id="savingsFund.statement.tax.tableTotal" />
-                    </td>
-                    <td className={`text-end ${total >= 0 ? 'text-success' : 'text-danger'}`}>
-                      <Euro amount={total} />
-                    </td>
-                  </tr>
-                </tfoot>
-              ) : null}
-            </table>
-          </div>
+                  )}
+                </tbody>
+                {report.redemptions.length ? (
+                  <tfoot>
+                    <tr>
+                      <td colSpan={4}>
+                        <FormattedMessage id="savingsFund.statement.tax.tableTotal" />
+                      </td>
+                      <td
+                        className={`text-end ${
+                          report.totalGain >= 0 ? 'text-success' : 'text-danger'
+                        }`}
+                      >
+                        <Euro amount={report.totalGain} />
+                      </td>
+                    </tr>
+                  </tfoot>
+                ) : null}
+              </table>
+            </div>
 
-          <p className="text-body-secondary small mb-0">
-            <FormattedMessage id="savingsFund.statement.tax.methodNote" />
-          </p>
-        </div>
-      )}
-    </>
-  );
-};
+            <p className="text-body-secondary small mb-0">
+              <FormattedMessage id="savingsFund.statement.tax.methodNote" />
+            </p>
+          </>
+        )}
+      </div>
+    )}
+  </>
+);
