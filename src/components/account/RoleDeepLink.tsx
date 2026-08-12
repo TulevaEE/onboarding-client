@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { captureException } from '@sentry/browser';
 import { Role, User } from '../common/apiModels';
@@ -34,8 +34,14 @@ export const RoleDeepLink = ({ holder, onRoleSwitched }: Props) => {
   const { data: user, isError: userFailed } = useMe();
   const { data: roles, isError: rolesFailed } = useRoles();
   const switchRole = useSwitchRole();
-  const resolved = useRef(false);
+  const [switching, setSwitching] = useState(false);
+  const openedHolder = useRef<AccountHolder | null>(null);
+  const requestedHolder = useRef(holder);
   const leftPage = useRef(false);
+
+  useEffect(() => {
+    requestedHolder.current = holder;
+  }, [holder]);
 
   useEffect(
     () => () => {
@@ -46,30 +52,45 @@ export const RoleDeepLink = ({ holder, onRoleSwitched }: Props) => {
 
   useEffect(() => {
     const lookupSettled = (user || userFailed) && (roles || rolesFailed);
-    if (resolved.current || !lookupSettled) {
+    if (switching || openedHolder.current === holder || !lookupSettled) {
       return;
     }
-    resolved.current = true;
+    openedHolder.current = holder;
 
     const openAccount = async () => {
       const target = user && roles ? roleToSwitchTo(user, roles, holder) : undefined;
 
       if (target) {
+        setSwitching(true);
         try {
           await switchRole.mutateAsync({ type: target.type, code: target.code });
           await onRoleSwitched();
         } catch (error) {
           captureException(error);
+        } finally {
+          if (!leftPage.current) {
+            setSwitching(false);
+          }
         }
       }
 
-      if (!leftPage.current) {
+      if (requestedHolder.current === holder && !leftPage.current) {
         history.replace('/account');
       }
     };
 
     openAccount();
-  }, [user, userFailed, roles, rolesFailed, holder, history, onRoleSwitched, switchRole]);
+  }, [
+    user,
+    userFailed,
+    roles,
+    rolesFailed,
+    holder,
+    switching,
+    history,
+    onRoleSwitched,
+    switchRole,
+  ]);
 
   return <AccountPageLoader />;
 };
