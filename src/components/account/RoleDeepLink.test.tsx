@@ -87,6 +87,44 @@ function holdRoleSwitch(session: { role: Role }, target: Role) {
   return { requested, release: () => release() };
 }
 
+function holdFirstRoleSwitch(
+  session: { role: Role; switchedRole: SwitchRoleCommand | null },
+  roles: Role[],
+) {
+  let markRequested: () => void = () => undefined;
+  const requested = new Promise<void>((resolve) => {
+    markRequested = resolve;
+  });
+  let release: () => void = () => undefined;
+  const held = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  let firstSwitch = true;
+
+  server.use(
+    rest.post('http://localhost/v1/me/role', async (req, res, ctx) => {
+      if (firstSwitch) {
+        firstSwitch = false;
+        markRequested();
+        await held;
+      }
+      const command = req.body as SwitchRoleCommand;
+      const target = roles.find(({ type, code }) => type === command.type && code === command.code);
+      /* eslint-disable no-param-reassign */
+      session.switchedRole = command;
+      if (target) {
+        session.role = target;
+      }
+      /* eslint-enable no-param-reassign */
+      return res(
+        ctx.json({ access_token: 'new-access-token', refresh_token: 'new-refresh-token' }),
+      );
+    }),
+  );
+
+  return { requested, release: () => release() };
+}
+
 function initializeWithRoles(roles: Role[], initialRole: Role) {
   initializeConfiguration();
   useTestBackendsExcept(server, ['user', 'roles']);
@@ -212,5 +250,36 @@ describe('/account/child', () => {
 
     expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
     expect(session.switchedRole).toBeNull();
+  });
+});
+
+describe('a second deep link opened while the first is still resolving', () => {
+  const roles = [personRole, acmeRole, childRole];
+
+  test('opens the account the member asked for last', async () => {
+    const session = initializeWithRoles(roles, personRole);
+    const { requested, release } = holdFirstRoleSwitch(session, roles);
+
+    history.push('/account/company');
+    await requested;
+    history.push('/account/child');
+    release();
+
+    expect(await accountSwitcherFor(/Child Name/)).toBeInTheDocument();
+    expect(session.role).toEqual(childRole);
+  });
+
+  test('does not let the abandoned deep link redirect on top of the newer one', async () => {
+    const session = initializeWithRoles(roles, personRole);
+    const { requested, release } = holdFirstRoleSwitch(session, roles);
+
+    history.push('/account/company');
+    await requested;
+    history.push('/account/child');
+    release();
+
+    expect(await accountSwitcherFor(/Child Name/)).toBeInTheDocument();
+    expect(history.location.pathname).toBe('/account');
+    expect(history.entries.map(({ pathname }) => pathname)).not.toContain('/account/child');
   });
 });
