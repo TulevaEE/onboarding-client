@@ -12,7 +12,12 @@ export const YearSelector: React.FunctionComponent<{
       <FormattedMessage id="savingsFund.statement.tax.year" />
     </span>
     {taxYears.map((taxYear) => (
-      <PillButton key={taxYear} selected={year === taxYear} onClick={() => onYearChange(taxYear)}>
+      <PillButton
+        key={taxYear}
+        selected={year === taxYear}
+        pressed={year === taxYear}
+        onClick={() => onYearChange(taxYear)}
+      >
         {taxYear}
       </PillButton>
     ))}

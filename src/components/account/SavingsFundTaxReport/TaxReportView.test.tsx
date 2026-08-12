@@ -21,17 +21,26 @@ const report = (overrides: Partial<SavingsFundTaxReport> = {}): SavingsFundTaxRe
   ...overrides,
 });
 
-const render = (value: SavingsFundTaxReport) =>
-  renderWrapped(
-    <TaxReportView
-      report={value}
-      taxYears={[2024, 2025]}
-      year={value.year}
-      method={value.method}
-      onYearChange={() => {}}
-      onMethodChange={() => {}}
-    />,
-  );
+const taxReportView = (
+  value: SavingsFundTaxReport,
+  { detailsOpen = false, onDetailsToggle = () => {} } = {},
+) => (
+  <TaxReportView
+    report={value}
+    taxYears={[2024, 2025]}
+    year={value.year}
+    method={value.method}
+    detailsOpen={detailsOpen}
+    onYearChange={() => {}}
+    onMethodChange={() => {}}
+    onDetailsToggle={onDetailsToggle}
+  />
+);
+
+const render = (
+  value: SavingsFundTaxReport,
+  options: { detailsOpen?: boolean; onDetailsToggle?: () => void } = {},
+) => renderWrapped(taxReportView(value, options));
 
 describe('the tax report the backend calculated', () => {
   it('shows the gain it was given', () => {
@@ -54,10 +63,16 @@ describe('the tax report the backend calculated', () => {
     expect(screen.getByText(/Nothing to declare/)).toBeInTheDocument();
   });
 
-  it('lists each redemption once the details are opened', () => {
-    render(report());
+  it('asks for the details and lists each redemption once they are open', () => {
+    const onDetailsToggle = jest.fn();
+    const { rerender } = render(report(), { onDetailsToggle });
 
-    userEvent.click(screen.getByRole('button', { name: /details/i }));
+    userEvent.click(screen.getByRole('button', { name: 'Show details' }));
+
+    expect(onDetailsToggle).toHaveBeenCalled();
+    expect(screen.queryByText('10.09.2025')).not.toBeInTheDocument();
+
+    rerender(taxReportView(report(), { detailsOpen: true, onDetailsToggle }));
 
     expect(screen.getByText('10.09.2025')).toBeInTheDocument();
     expect(screen.getByText(/421[.,]04/)).toBeInTheDocument();

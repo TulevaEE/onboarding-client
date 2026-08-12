@@ -1,23 +1,30 @@
-import React, { useState } from 'react';
+import React from 'react';
 import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
 import { Euro } from '../../common/Euro';
-import { PillButton } from '../../common/PillButton';
 import { CostBasisMethod, SavingsFundTaxReport } from '../../common/apiModels';
+import { MethodSelector } from './MethodSelector';
 import { YearSelector } from './YearSelector';
-
-const METHODS: CostBasisMethod[] = ['FIFO', 'WEIGHTED_AVERAGE'];
 
 export const TaxReportView: React.FunctionComponent<{
   report: SavingsFundTaxReport;
   taxYears: number[];
   year: number;
   method: CostBasisMethod;
+  detailsOpen: boolean;
   onYearChange: (year: number) => void;
   onMethodChange: (method: CostBasisMethod) => void;
-}> = ({ report, taxYears, year, method, onYearChange, onMethodChange }) => {
-  const [detailsOpen, setDetailsOpen] = useState(false);
-
+  onDetailsToggle: () => void;
+}> = ({
+  report,
+  taxYears,
+  year,
+  method,
+  detailsOpen,
+  onYearChange,
+  onMethodChange,
+  onDetailsToggle,
+}) => {
   const gains = report.redemptions;
   const total = report.totalGain;
 
@@ -67,11 +74,7 @@ export const TaxReportView: React.FunctionComponent<{
         </div>
       </div>
 
-      <button
-        type="button"
-        className="btn btn-link p-0 mb-3"
-        onClick={() => setDetailsOpen(!detailsOpen)}
-      >
+      <button type="button" className="btn btn-link p-0 mb-3" onClick={onDetailsToggle}>
         <FormattedMessage
           id={
             detailsOpen ? 'savingsFund.statement.hideDetails' : 'savingsFund.statement.showDetails'
@@ -85,23 +88,8 @@ export const TaxReportView: React.FunctionComponent<{
             <FormattedMessage id="savingsFund.statement.tax.detailsHeading" />
           </h2>
 
-          <div className="d-flex flex-wrap gap-2 align-items-center mb-3">
-            <span className="text-body-secondary me-1">
-              <FormattedMessage id="savingsFund.statement.tax.method" />
-            </span>
-            {METHODS.map((option) => (
-              <PillButton
-                key={option}
-                selected={method === option}
-                onClick={() => onMethodChange(option)}
-              >
-                {option === 'FIFO' ? (
-                  <FormattedMessage id="savingsFund.statement.tax.methodFifo" />
-                ) : (
-                  <FormattedMessage id="savingsFund.statement.tax.methodAverage" />
-                )}
-              </PillButton>
-            ))}
+          <div className="mb-3">
+            <MethodSelector method={method} onMethodChange={onMethodChange} />
           </div>
 
           <div className="table-responsive">
