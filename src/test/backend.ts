@@ -45,6 +45,10 @@ import {
   CreateCapitalTransferDto,
   UpdateCapitalTransferContractDto,
 } from '../components/common/apiModels/capital-transfer';
+import {
+  HackathonRegistration,
+  HackathonRegistrationCommand,
+} from '../components/common/apiModels/hackathon';
 import { KycIdentity } from '../components/flows/savingsAccount/SavingsFundOnboarding/types.api';
 
 export function cancellationBackend(server: SetupServerApi): {
@@ -1050,6 +1054,37 @@ export function kycIdentityBackend(
   );
 }
 
+export function hackathonRegistrationBackend(
+  server: SetupServerApi,
+  registration: HackathonRegistration = {
+    registered: false,
+    open: true,
+    deadline: '2026-09-20T20:59:59Z',
+    email: mockUser.email,
+    phoneNumber: mockUser.phoneNumber,
+    role: null,
+    skills: [],
+    challenges: [],
+    participation: null,
+    idea: null,
+    linkedinUrl: null,
+  },
+): void {
+  let current = registration;
+  server.use(
+    rest.get('http://localhost/v1/hackathon-registration', (req, res, ctx) =>
+      res(ctx.json(current)),
+    ),
+    rest.post(
+      'http://localhost/v1/hackathon-registration',
+      (req: RestRequest<HackathonRegistrationCommand>, res, ctx) => {
+        current = { ...current, ...req.body, registered: true };
+        return res(ctx.json(current));
+      },
+    ),
+  );
+}
+
 export function savingsAccountStatementBackend(
   server: SetupServerApi,
   statement: FundBalance | null = null,
@@ -1116,6 +1151,7 @@ const TEST_BACKENDS = {
   kycIdentity: kycIdentityBackend,
   savingsFundOnboardingStatus: savingsFundOnboardingStatusBackend,
   savingsFundPersonOnboardingStatus: savingsFundPersonOnboardingStatusBackend,
+  hackathonRegistration: hackathonRegistrationBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

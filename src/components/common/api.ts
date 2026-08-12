@@ -37,6 +37,7 @@ import {
   User,
   UserConversion,
 } from './apiModels/index';
+import { HackathonRegistration, HackathonRegistrationCommand } from './apiModels/hackathon';
 import {
   deleteWithAuthentication,
   downloadFileWithAuthentication,
@@ -671,4 +672,14 @@ export async function switchRole(command: SwitchRoleCommand): Promise<Token> {
   });
 
   return { accessToken, refreshToken };
+}
+
+export function getHackathonRegistration(): Promise<HackathonRegistration> {
+  return getWithAuthentication(getEndpoint('/v1/hackathon-registration'));
+}
+
+export function saveHackathonRegistration(
+  command: HackathonRegistrationCommand,
+): Promise<HackathonRegistration> {
+  return postWithAuthentication(getEndpoint('/v1/hackathon-registration'), command);
 }
