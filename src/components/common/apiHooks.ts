@@ -6,6 +6,8 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
+import { HackathonRegistration, HackathonRegistrationCommand } from './apiModels/hackathon';
+
 import {
   cancelSavingsFundWithdrawal,
   contactMemberCapitalListingOwner,
@@ -24,6 +26,8 @@ import {
   getEligibleChildren,
   getContributions,
   getFundPensionStatus,
+  getHackathonRegistration,
+  saveHackathonRegistration,
   getKycIdentity,
   getFunds,
   getMandateDeadlines,
@@ -475,6 +479,35 @@ export function useSwitchRole(): UseMutationResult<
       // so the account page would flash the old role's values. Reset clears it,
       // flipping queries to a loading state until the new role's data arrives.
       queryClient.resetQueries();
+    },
+  });
+}
+
+export function useHackathonRegistration(
+  enabled: boolean,
+): UseQueryResult<HackathonRegistration, ErrorResponse> {
+  return useQuery({
+    queryKey: ['hackathonRegistration'],
+    queryFn: () => getHackathonRegistration(),
+    enabled,
+    retry: false,
+  });
+}
+
+export function useSaveHackathonRegistration(): UseMutationResult<
+  HackathonRegistration,
+  ErrorResponse,
+  HackathonRegistrationCommand,
+  unknown
+> {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (command: HackathonRegistrationCommand) => saveHackathonRegistration(command),
+    onSuccess: (registration) => {
+      queryClient.setQueryData(['hackathonRegistration'], registration);
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ['hackathonRegistration'] });
     },
   });
 }
