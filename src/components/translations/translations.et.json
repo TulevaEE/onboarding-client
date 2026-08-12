@@ -2017,5 +2017,7 @@
   "hackathon.membersOnly.action": "Astun liikmeks",
   "savingsFundTaxReport.title": "Maksuaruanne",
   "savingsFundTaxReport.subtitle": "Täiendava Kogumisfondi tagasivõtmised ja arvutus tuludeklaratsiooni jaoks.",
-  "savingsFundTaxReport.pillarNote": "See aruanne on ainult Täiendava Kogumisfondi kohta. II ja III samba maksuasjad käivad automaatselt — neid siin ei kajastata."
+  "savingsFundTaxReport.pillarNote": "See aruanne on ainult Täiendava Kogumisfondi kohta. II ja III samba maksuasjad käivad automaatselt — neid siin ei kajastata.",
+  "savingsFundTaxReport.unavailable": "Praegu ei õnnestu maksuaruannet laadida. Palun proovi hiljem uuesti.",
+  "savingsFundTaxReport.retry": "Proovi uuesti"
 }

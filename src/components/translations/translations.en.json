@@ -1927,5 +1927,7 @@
   "hackathon.membersOnly.action": "Become a member",
   "savingsFundTaxReport.title": "Tax report",
   "savingsFundTaxReport.subtitle": "Täiendav Kogumisfond redemptions and the calculation for your income tax return.",
-  "savingsFundTaxReport.pillarNote": "This report covers Täiendav Kogumisfond only. Tax on II and III pillar is handled automatically and is not included here."
+  "savingsFundTaxReport.pillarNote": "This report covers Täiendav Kogumisfond only. Tax on II and III pillar is handled automatically and is not included here.",
+  "savingsFundTaxReport.unavailable": "We cannot load your tax report right now. Please try again later.",
+  "savingsFundTaxReport.retry": "Try again"
 }

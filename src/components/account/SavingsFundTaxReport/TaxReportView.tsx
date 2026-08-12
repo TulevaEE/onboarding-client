@@ -4,6 +4,7 @@ import { FormattedMessage } from 'react-intl';
 import { Euro } from '../../common/Euro';
 import { PillButton } from '../../common/PillButton';
 import { CostBasisMethod, SavingsFundTaxReport } from '../../common/apiModels';
+import { YearSelector } from './YearSelector';
 
 const METHODS: CostBasisMethod[] = ['FIFO', 'WEIGHTED_AVERAGE'];
 
@@ -23,20 +24,7 @@ export const TaxReportView: React.FunctionComponent<{
   return (
     <>
       <div className="card p-4 mb-3">
-        <div className="d-flex flex-wrap gap-2 align-items-center">
-          <span className="text-body-secondary me-1">
-            <FormattedMessage id="savingsFund.statement.tax.year" />
-          </span>
-          {taxYears.map((taxYear) => (
-            <PillButton
-              key={taxYear}
-              selected={year === taxYear}
-              onClick={() => onYearChange(taxYear)}
-            >
-              {taxYear}
-            </PillButton>
-          ))}
-        </div>
+        <YearSelector taxYears={taxYears} year={year} onYearChange={onYearChange} />
       </div>
 
       <div className="card p-4 mb-3">
