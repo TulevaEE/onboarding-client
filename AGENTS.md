@@ -98,10 +98,27 @@ const renderWithIntl = (component) =>
 ```
 
 ## Clean Code Principles
+- **No comments, no JSDoc** on implementation code. Extract well-named functions, variables, and types instead — the name is the documentation, and unlike a comment it cannot go stale
 - **Write self-documenting code** - Code should be clear without comments
-- **Remove unnecessary comments** - If the code is clear, the comment is redundant
 - **Use descriptive test names** - Test names should describe what is being tested
 - **Use existing fixtures** - Avoid creating incomplete objects, use fixtures to prevent TypeScript errors
+
+### Comments
+
+Default to none. A comment is a signal the code failed to explain itself — fix the code first:
+
+| Instead of a comment explaining… | Do this |
+|---|---|
+| what a block does | extract a named function |
+| what a condition means | extract a named boolean (`const isRepresentingChild = …`) |
+| what a magic value is | extract a named constant |
+| what a chunk of a test sets up | extract a named helper or fixture |
+
+**Never write:** comments that restate the code (`// Sorted, not first-found` above a `.sort()`), narrate the diff or the PR discussion (`// Its own effect with no dependencies…`, `// Before the account route, which is not exact…`), argue a choice against an alternative that isn't in the code, or repeat what the type signature already states.
+
+**Only keep** a comment carrying information genuinely absent from the codebase and impossible to encode in a name — an external system's undocumented behaviour, a browser or library bug being worked around, a spec or legal requirement, a link to the ticket behind a non-obvious constraint. These are rare. Write one line stating the constraint, not the reasoning that led to it.
+
+Rationale for *why a change was made* belongs in the commit message and the PR description, where reviewers and `git blame` look for it. Rationale in the source is read by everyone who touches the file forever, and rots silently when the surrounding code moves on.
 
 ## Key Rules
 1. Use semantic queries (getByRole, getByLabelText)
