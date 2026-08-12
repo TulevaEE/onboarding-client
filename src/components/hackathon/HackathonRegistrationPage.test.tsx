@@ -92,7 +92,6 @@ describe('hackathon registration', () => {
     history.push('/hackathon');
 
     expect(await screen.findByLabelText('Email')).toHaveValue('existing@example.com');
-    expect(screen.getByLabelText('Mentor')).toBeChecked();
     expect(screen.getByLabelText('Design')).toBeChecked();
     expect(screen.getByLabelText('Insurance that actually protects')).toBeChecked();
     expect(
@@ -101,6 +100,50 @@ describe('hackathon registration', () => {
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save changes' })).toBeInTheDocument();
+    expect(screen.queryByLabelText('Mentor')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Participant')).not.toBeInTheDocument();
+  });
+
+  test('keeps a role set by the organizers when the member edits their answers', async () => {
+    let stored: Record<string, unknown> | null = null;
+    server.use(
+      rest.get('http://localhost/v1/hackathon-registration', (req, res, ctx) =>
+        res(
+          ctx.json({
+            registered: true,
+            open: true,
+            deadline: '2026-09-20T20:59:59Z',
+            email: 'mentor@example.com',
+            phoneNumber: null,
+            role: 'MENTOR',
+            skills: [],
+            challenges: [],
+            participation: 'WITH_TEAM',
+            idea: null,
+            linkedinUrl: null,
+          }),
+        ),
+      ),
+      rest.post('http://localhost/v1/hackathon-registration', (req: any, res, ctx) => {
+        stored = req.body;
+        return res(
+          ctx.json({
+            ...req.body,
+            registered: true,
+            open: true,
+            deadline: '2026-09-20T20:59:59Z',
+          }),
+        );
+      }),
+    );
+    initializeComponent();
+    history.push('/hackathon');
+
+    userEvent.click(await screen.findByLabelText('Design'));
+    userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+
+    expect(await screen.findByText('Your registration has been saved.')).toBeInTheDocument();
+    expect(stored).toMatchObject({ role: 'MENTOR' });
   });
 
   test('keeps an existing registration read-only once registration has closed', async () => {

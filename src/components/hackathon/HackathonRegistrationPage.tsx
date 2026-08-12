@@ -6,7 +6,6 @@ import { useHackathonRegistration, useMe, useSaveHackathonRegistration } from '.
 import {
   HackathonChallenge,
   HackathonParticipation,
-  HackathonRole,
   HackathonSkill,
 } from '../common/apiModels/hackathon';
 import Checkbox from '../common/checkbox/Checkbox';
@@ -18,18 +17,12 @@ import { TranslationKey } from '../translations';
 type HackathonFormData = {
   email: string;
   phoneNumber: string;
-  role: HackathonRole;
   skills: HackathonSkill[];
   challenges: HackathonChallenge[];
   participation: HackathonParticipation | null;
   idea: string;
   linkedinUrl: string;
 };
-
-const ROLES: { value: HackathonRole; labelId: TranslationKey }[] = [
-  { value: 'PARTICIPANT', labelId: 'hackathon.role.participant' },
-  { value: 'MENTOR', labelId: 'hackathon.role.mentor' },
-];
 
 const PARTICIPATIONS: { value: HackathonParticipation; labelId: TranslationKey }[] = [
   { value: 'WITH_TEAM', labelId: 'hackathon.participation.withTeam' },
@@ -78,7 +71,6 @@ export const HackathonRegistrationPage = () => {
     defaultValues: {
       email: '',
       phoneNumber: '',
-      role: 'PARTICIPANT',
       skills: [],
       challenges: [],
       participation: null,
@@ -95,7 +87,6 @@ export const HackathonRegistrationPage = () => {
       reset({
         email: registration.email ?? '',
         phoneNumber: registration.phoneNumber ?? '',
-        role: registration.role ?? 'PARTICIPANT',
         skills: registration.skills,
         challenges: registration.challenges,
         participation: registration.participation,
@@ -109,7 +100,7 @@ export const HackathonRegistrationPage = () => {
     saveRegistration({
       email: data.email.trim(),
       phoneNumber: trimmedOrNull(data.phoneNumber),
-      role: data.role,
+      role: registration?.role ?? 'PARTICIPANT',
       skills: data.skills,
       challenges: data.challenges,
       participation: data.participation as HackathonParticipation,
@@ -265,37 +256,6 @@ export const HackathonRegistrationPage = () => {
               />
             </div>
           </div>
-        </section>
-
-        <section className="d-flex flex-column gap-2">
-          <h2 className="m-0 fs-3" id="hackathon-role-title">
-            <FormattedMessage id="hackathon.role.title" />
-          </h2>
-          <Controller
-            control={control}
-            name="role"
-            render={({ field }) => (
-              <div
-                className="d-flex flex-column gap-2"
-                role="radiogroup"
-                aria-labelledby="hackathon-role-title"
-              >
-                {ROLES.map(({ value, labelId }) => (
-                  <Radio
-                    key={value}
-                    name="hackathon-role"
-                    id={`hackathon-role-${value}`}
-                    selected={field.value === value}
-                    onSelect={() => field.onChange(value)}
-                  >
-                    <span className="fs-3 lh-sm">
-                      <FormattedMessage id={labelId} />
-                    </span>
-                  </Radio>
-                ))}
-              </div>
-            )}
-          />
         </section>
 
         <section className="d-flex flex-column gap-2">
