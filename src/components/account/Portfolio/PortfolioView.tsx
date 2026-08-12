@@ -142,7 +142,6 @@ export const PortfolioView: React.FunctionComponent<{
                 <PillButton
                   key={id}
                   selected={!hidden.includes(id)}
-                  pressed={!hidden.includes(id)}
                   disabled={visible.length === 1 && !hidden.includes(id)}
                   onClick={() => toggle(id)}
                 >

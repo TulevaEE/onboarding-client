@@ -125,6 +125,13 @@ beforeEach(() => {
 });
 
 describe('a tax report the backend never gave', () => {
+  it('says so where a screen reader will hear it', async () => {
+    taxReportBackendDown();
+    initializeComponent();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/cannot load your tax report/);
+  });
+
   it('asks the backend again when someone says to', async () => {
     taxReportBackendDown();
     initializeComponent();
@@ -288,6 +295,54 @@ describe('the calculation someone opened', () => {
     expect(screen.getByRole('table')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Weighted average' })).toBeInTheDocument();
     expect(screen.getByText(/405[.,]88/)).toBeInTheDocument();
+  });
+});
+
+describe('the pill someone pressed', () => {
+  it('is still where the keyboard left it while another year is being calculated', async () => {
+    initializeComponent();
+
+    expect(await screen.findByText(/58[.,]96/)).toBeInTheDocument();
+
+    taxReportBackendStillCalculating();
+
+    userEvent.click(screen.getByRole('button', { name: String(thisYear) }));
+
+    expect(screen.getByRole('button', { name: String(thisYear) })).toHaveFocus();
+
+    expect(await screen.findByText(/12[.,]34/)).toBeInTheDocument();
+  });
+
+  it('is still where the keyboard left it while another method is being calculated', async () => {
+    initializeComponent();
+
+    expect(await screen.findByText(/58[.,]96/)).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Show details' }));
+
+    taxReportBackendStillCalculating();
+
+    userEvent.click(screen.getByRole('button', { name: 'FIFO' }));
+
+    expect(screen.getByRole('button', { name: 'FIFO' })).toHaveFocus();
+
+    expect(await screen.findAllByText(/74[.,]12/)).not.toHaveLength(0);
+  });
+
+  it('is still where the keyboard left it when a refused first load is all that put the methods on the page', async () => {
+    taxReportBackendRefusingWeightedAverageForLastYear();
+    initializeComponent();
+
+    expect(await screen.findByText(/cannot load your tax report/)).toBeInTheDocument();
+
+    taxReportBackendStillCalculating();
+
+    userEvent.click(screen.getByRole('button', { name: 'FIFO' }));
+
+    expect(screen.getByRole('button', { name: 'FIFO' })).toHaveFocus();
+
+    expect(await screen.findByText(/74[.,]12/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'FIFO' })).toHaveFocus();
   });
 });
 

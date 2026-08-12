@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
-import { Shimmer } from '../../common/shimmer/Shimmer';
 import { usePageTitle } from '../../common/usePageTitle';
 import { CostBasisMethod } from '../../common/apiModels';
 import { useSavingsFundTaxReport } from './api/taxReport.api';
-import { MethodSelector } from './MethodSelector';
 import { TaxReportView } from './TaxReportView';
-import { YearSelector } from './YearSelector';
 
 const TAX_YEARS = [moment().year() - 1, moment().year()];
 const DEFAULT_METHOD: CostBasisMethod = 'WEIGHTED_AVERAGE';
@@ -23,6 +20,14 @@ export const TaxReportPage: React.FunctionComponent = () => {
 
   const { data: report, isLoading, isError, refetch } = useSavingsFundTaxReport(year, method);
 
+  // Asking for another method puts the query back into loading, clearing the failure that was
+  // the only reason the methods were on the page. Remembering the failure keeps them there,
+  // so the pill someone just pressed is not pulled out from under the keyboard.
+  const [methodReachable, setMethodReachable] = useState(false);
+  if (isError && !methodReachable) {
+    setMethodReachable(true);
+  }
+
   return (
     <section className="mt-5">
       <h1 className="mb-1">
@@ -36,7 +41,10 @@ export const TaxReportPage: React.FunctionComponent = () => {
       </div>
 
       {isError && (
-        <div className="alert alert-danger d-flex flex-wrap gap-3 align-items-center justify-content-between">
+        <div
+          role="alert"
+          className="alert alert-danger d-flex flex-wrap gap-3 align-items-center justify-content-between"
+        >
           <span>
             <FormattedMessage id="savingsFundTaxReport.unavailable" />
           </span>
@@ -46,35 +54,18 @@ export const TaxReportPage: React.FunctionComponent = () => {
         </div>
       )}
 
-      {/* A request the backend refused leaves nothing to draw, so the selectors are shown on
-          their own — otherwise the page stays broken until a reload. Every request carries a
-          method, so the method is reachable once a failure has been reported; while nothing
-          has failed it is shown only if it was already on screen, keeping it from flashing on
-          an ordinary first load. */}
-      {report ? (
-        <TaxReportView
-          report={report}
-          taxYears={TAX_YEARS}
-          year={year}
-          method={method}
-          detailsOpen={detailsOpen}
-          onYearChange={setYear}
-          onMethodChange={setMethod}
-          onDetailsToggle={() => setDetailsOpen(!detailsOpen)}
-        />
-      ) : (
-        <>
-          <div className="card p-4 mb-3">
-            <YearSelector taxYears={TAX_YEARS} year={year} onYearChange={setYear} />
-          </div>
-          {(isError || detailsOpen) && (
-            <div className="card p-4 mb-3">
-              <MethodSelector method={method} onMethodChange={setMethod} />
-            </div>
-          )}
-          {isLoading && <Shimmer height={32} />}
-        </>
-      )}
+      <TaxReportView
+        report={report}
+        taxYears={TAX_YEARS}
+        year={year}
+        method={method}
+        detailsOpen={detailsOpen}
+        isLoading={isLoading}
+        methodReachable={methodReachable}
+        onYearChange={setYear}
+        onMethodChange={setMethod}
+        onDetailsToggle={() => setDetailsOpen(!detailsOpen)}
+      />
     </section>
   );
 };

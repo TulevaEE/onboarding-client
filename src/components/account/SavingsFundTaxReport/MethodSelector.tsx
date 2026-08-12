@@ -14,12 +14,7 @@ export const MethodSelector: React.FunctionComponent<{
       <FormattedMessage id="savingsFund.statement.tax.method" />
     </span>
     {METHODS.map((option) => (
-      <PillButton
-        key={option}
-        selected={method === option}
-        pressed={method === option}
-        onClick={() => onMethodChange(option)}
-      >
+      <PillButton key={option} selected={method === option} onClick={() => onMethodChange(option)}>
         {option === 'FIFO' ? (
           <FormattedMessage id="savingsFund.statement.tax.methodFifo" />
         ) : (

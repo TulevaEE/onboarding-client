@@ -313,6 +313,13 @@ describe('a period the backend cannot serve', () => {
 });
 
 describe('a portfolio the backend never gave', () => {
+  it('says so where a screen reader will hear it', async () => {
+    portfolioBackendDown();
+    initializeComponent();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/cannot load fund prices/);
+  });
+
   it('asks the backend again when someone says to', async () => {
     portfolioBackendDown();
     initializeComponent();

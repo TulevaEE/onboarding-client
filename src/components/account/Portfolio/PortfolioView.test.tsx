@@ -31,9 +31,11 @@ const portfolio = (overrides: Partial<Portfolio> = {}): Portfolio => ({
   ...overrides,
 });
 
+// A period no preset can ever name, so no preset pill reports itself pressed
+// alongside the band toggles the pressed-button queries in this file rely on.
 const render = (value: Portfolio) =>
   renderWrapped(
-    <PortfolioView portfolio={value} from="2025-01-01" to="2025-12-31" onPeriodChange={() => {}} />,
+    <PortfolioView portfolio={value} from="2025-02-01" to="2025-11-30" onPeriodChange={() => {}} />,
   );
 
 describe('the portfolio the backend valued', () => {
@@ -252,7 +254,7 @@ describe('the portfolio the backend valued', () => {
       }),
     );
 
-    // Only the band toggles carry aria-pressed, and they render bottom of the stack first.
+    // The band toggles render bottom of the stack first.
     const bands = screen
       .getAllByRole('button', { pressed: true })
       .map((button) => button.textContent);

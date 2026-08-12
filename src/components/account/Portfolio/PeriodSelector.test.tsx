@@ -49,6 +49,30 @@ describe('the periods someone can ask for by name', () => {
   });
 });
 
+describe('the period a preset put in effect', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2025-08-15T12:00:00Z'));
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('is the one a screen reader is told is pressed', () => {
+    renderWrapped(<PeriodSelector from={undefined} to="2025-08-15" onPeriodChange={() => {}} />);
+
+    expect(screen.getByRole('button', { name: 'All time' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(screen.getByRole('button', { name: 'This year' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
+  });
+});
+
 describe('typing a date rather than picking it', () => {
   const onPeriodChange = jest.fn();
 
