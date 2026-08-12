@@ -6,6 +6,7 @@ import { usePageTitle } from '../../common/usePageTitle';
 import { CostBasisMethod } from '../../common/apiModels';
 import { useSavingsFundTaxReport } from './api/taxReport.api';
 import { TaxReportView } from './TaxReportView';
+import { YearSelector } from './YearSelector';
 
 const TAX_YEARS = [moment().year() - 1, moment().year()];
 
@@ -15,15 +16,7 @@ export const TaxReportPage: React.FunctionComponent = () => {
   const [year, setYear] = useState(TAX_YEARS[0]);
   const [method, setMethod] = useState<CostBasisMethod>('WEIGHTED_AVERAGE');
 
-  const { data: report, isLoading } = useSavingsFundTaxReport(year, method);
-
-  if (isLoading || !report) {
-    return (
-      <section className="mt-5">
-        <Shimmer height={32} />
-      </section>
-    );
-  }
+  const { data: report, isLoading, isError, refetch } = useSavingsFundTaxReport(year, method);
 
   return (
     <section className="mt-5">
@@ -37,14 +30,36 @@ export const TaxReportPage: React.FunctionComponent = () => {
         <FormattedMessage id="savingsFundTaxReport.pillarNote" />
       </div>
 
-      <TaxReportView
-        report={report}
-        taxYears={TAX_YEARS}
-        year={year}
-        method={method}
-        onYearChange={setYear}
-        onMethodChange={setMethod}
-      />
+      {isError && (
+        <div className="alert alert-danger d-flex flex-wrap gap-3 align-items-center justify-content-between">
+          <span>
+            <FormattedMessage id="savingsFundTaxReport.unavailable" />
+          </span>
+          <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => refetch()}>
+            <FormattedMessage id="savingsFundTaxReport.retry" />
+          </button>
+        </div>
+      )}
+
+      {/* A year the backend refused leaves nothing to draw, so the year someone can change
+          is shown on its own — otherwise the page stays broken until a reload. */}
+      {report ? (
+        <TaxReportView
+          report={report}
+          taxYears={TAX_YEARS}
+          year={year}
+          method={method}
+          onYearChange={setYear}
+          onMethodChange={setMethod}
+        />
+      ) : (
+        <>
+          <div className="card p-4 mb-3">
+            <YearSelector taxYears={TAX_YEARS} year={year} onYearChange={setYear} />
+          </div>
+          {isLoading && <Shimmer height={32} />}
+        </>
+      )}
     </section>
   );
 };
