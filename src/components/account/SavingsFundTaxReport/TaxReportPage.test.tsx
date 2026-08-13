@@ -299,6 +299,21 @@ describe('the calculation someone opened', () => {
   });
 });
 
+describe('the details someone opened', () => {
+  it('leave no button behind when the report they showed is gone', async () => {
+    taxReportBackendRefusingThisYear();
+    initializeComponent();
+
+    expect(await screen.findByText(/58[.,]96/)).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Show details' }));
+    userEvent.click(screen.getByRole('button', { name: String(thisYear) }));
+
+    expect(await screen.findByText(/cannot load your tax report/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Hide details' })).not.toBeInTheDocument();
+  });
+});
+
 describe('the pill someone pressed', () => {
   it('is still where the keyboard left it while another year is being calculated', async () => {
     initializeComponent();
@@ -330,7 +345,7 @@ describe('the pill someone pressed', () => {
     expect(await screen.findAllByText(/74[.,]12/)).not.toHaveLength(0);
   });
 
-  it('is still where the keyboard left it when a refused first load is all that put the methods on the page', async () => {
+  it('is still where the keyboard left it when a refused first load is replaced by a report', async () => {
     taxReportBackendRefusingWeightedAverageForLastYear();
     initializeComponent();
 

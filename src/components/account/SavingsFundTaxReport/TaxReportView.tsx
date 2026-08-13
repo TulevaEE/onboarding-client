@@ -91,9 +91,7 @@ export const TaxReportView: React.FunctionComponent<{
       </p>
     </div>
 
-    {/* The details someone opened outlive the report being calculated again, so the button
-        that closes them stays put rather than vanishing until the new figures arrive. */}
-    {(report || detailsOpen) && (
+    {report && (
       <button
         type="button"
         aria-expanded={detailsOpen}
