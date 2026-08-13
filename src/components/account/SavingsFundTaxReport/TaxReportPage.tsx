@@ -20,14 +20,6 @@ export const TaxReportPage: React.FunctionComponent = () => {
 
   const { data: report, isLoading, isError, refetch } = useSavingsFundTaxReport(year, method);
 
-  // Asking for another method puts the query back into loading, clearing the failure that was
-  // the only reason the methods were on the page. Remembering the failure keeps them there,
-  // so the pill someone just pressed is not pulled out from under the keyboard.
-  const [methodReachable, setMethodReachable] = useState(false);
-  if (isError && !methodReachable) {
-    setMethodReachable(true);
-  }
-
   return (
     <section className="mt-5">
       <h1 className="mb-1">
@@ -61,7 +53,6 @@ export const TaxReportPage: React.FunctionComponent = () => {
         method={method}
         detailsOpen={detailsOpen}
         isLoading={isLoading}
-        methodReachable={methodReachable}
         onYearChange={setYear}
         onMethodChange={setMethod}
         onDetailsToggle={() => setDetailsOpen(!detailsOpen)}
