@@ -32,7 +32,6 @@ const taxReportView = (
     method={value.method}
     detailsOpen={detailsOpen}
     isLoading={false}
-    methodReachable={false}
     onYearChange={() => {}}
     onMethodChange={() => {}}
     onDetailsToggle={onDetailsToggle}

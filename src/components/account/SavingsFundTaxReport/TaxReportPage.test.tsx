@@ -175,14 +175,13 @@ describe('a calculation method the backend cannot serve', () => {
 
     expect(await screen.findByText(/58[.,]96/)).toBeInTheDocument();
 
-    userEvent.click(screen.getByRole('button', { name: 'Show details' }));
     userEvent.click(screen.getByRole('button', { name: 'FIFO' }));
 
     expect(await screen.findByText(/cannot load your tax report/)).toBeInTheDocument();
 
     userEvent.click(screen.getByRole('button', { name: 'Weighted average' }));
 
-    expect(await screen.findAllByText(/58[.,]96/)).not.toHaveLength(0);
+    expect(await screen.findByText(/58[.,]96/)).toBeInTheDocument();
     expect(screen.queryByText(/cannot load your tax report/)).not.toBeInTheDocument();
   });
 
@@ -221,14 +220,17 @@ describe('a calculation method the backend cannot serve', () => {
     expect(await screen.findByText(/74[.,]12/)).toBeInTheDocument();
     expect(screen.queryByText(/cannot load your tax report/)).not.toBeInTheDocument();
   });
+});
 
-  it('says nothing about methods while the first report is still being calculated', async () => {
+describe('the calculation method someone can choose', () => {
+  it('is on the page while the first report is still being calculated', async () => {
     taxReportBackendStillCalculating();
     initializeComponent();
 
     expect(screen.getByRole('button', { name: String(lastYear) })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'FIFO' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Weighted average' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: String(thisYear) })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Weighted average' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'FIFO' })).toBeInTheDocument();
 
     expect(await screen.findByText(/58[.,]96/)).toBeInTheDocument();
   });
@@ -261,10 +263,9 @@ describe('the tax report the backend is asked for', () => {
 
     expect(await screen.findByText(/58[.,]96/)).toBeInTheDocument();
 
-    userEvent.click(screen.getByRole('button', { name: 'Show details' }));
     userEvent.click(screen.getByRole('button', { name: 'FIFO' }));
 
-    expect(await screen.findAllByText(/74[.,]12/)).not.toHaveLength(0);
+    expect(await screen.findByText(/74[.,]12/)).toBeInTheDocument();
     expect(requestedReports[requestedReports.length - 1]).toEqual({
       year: lastYear,
       method: 'FIFO',
@@ -360,10 +361,9 @@ describe('the tax year and the calculation method someone chose', () => {
       'false',
     );
 
-    userEvent.click(screen.getByRole('button', { name: 'Show details' }));
     userEvent.click(screen.getByRole('button', { name: 'FIFO' }));
 
-    expect(await screen.findAllByText(/74[.,]12/)).not.toHaveLength(0);
+    expect(await screen.findByText(/74[.,]12/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'FIFO' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: 'Weighted average' })).toHaveAttribute(
       'aria-pressed',
