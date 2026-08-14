@@ -27,7 +27,7 @@ export const PortfolioPage: React.FunctionComponent = () => {
   // A legal entity never holds a pillar, so it is not asked about one — the same request
   // the represented-party account page leaves out for a company.
   const { data: user } = useMe();
-  const holdsPillars = user !== undefined && user.role.type !== 'LEGAL_ENTITY';
+  const holdsPillars = user !== undefined && user.role?.type !== 'LEGAL_ENTITY';
   const pensionBalance = useSourceFunds(undefined, undefined, { enabled: holdsPillars });
   const savingsBalance = useSavingsFundBalance();
 

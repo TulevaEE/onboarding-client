@@ -143,6 +143,8 @@ const registerRefusingTheSavingsBalance = (funds: unknown[]) =>
 const actingFor = (roleType: RoleType) =>
   userBackend(server, { role: { type: roleType, code: '90000000', name: 'Acme' } });
 
+const actingForThemselves = () => userBackend(server, { role: undefined });
+
 const portfolioBackendDown = () =>
   server.use(
     rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
@@ -217,6 +219,15 @@ describe('what the register holds today', () => {
     // rebuilt; a company holds no pillar, so the register is never asked about one.
     expect(await screen.findAllByText(/422[.,]00/)).not.toHaveLength(0);
     expect(statementRequests).toHaveLength(0);
+  });
+
+  it('is asked for when someone is acting as themselves', async () => {
+    actingForThemselves();
+    registerHolding([fundBalance(2, 700, 77)], fundBalance(null, 111, 11));
+    initializeComponent();
+
+    expect(await screen.findAllByText(/899[.,]00/)).not.toHaveLength(0);
+    expect(statementRequests).not.toHaveLength(0);
   });
 
   it('leaves a pillar the register says nothing about on its rebuilt value', async () => {
