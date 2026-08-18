@@ -140,7 +140,10 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
         onClick={() => setOpen(!open)}
         onKeyDown={handleKeyDown}
       >
-        <AccountIcon kind={user?.role ? accountIconKind(user.role, user) : 'person'} />
+        <AccountIcon
+          kind={user?.role ? accountIconKind(user.role, user) : 'person'}
+          testIdPrefix="active-role-icon"
+        />
         {displayName}
         {/* Screen readers otherwise hear only a name, with no hint it opens anything. */}
         <span className="visually-hidden">
@@ -246,7 +249,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                     onClick={() => setOpen(false)}
                     onKeyDown={handleKeyDown}
                   >
-                    <AccountIcon kind="child" size={18} />
+                    <AccountIcon kind="child" size={18} testIdPrefix="pending-role-icon" />
                     {name}
                   </Link>
                 ))}
