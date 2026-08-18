@@ -15,7 +15,7 @@ const LanguageSwitcher: FC<Props> = ({ onKeyDown, onClick }) => {
 
   return (
     <a
-      className="dropdown-item d-flex align-items-center gap-2"
+      className="dropdown-item text-wrap d-flex align-items-center gap-2"
       href={isEstonian ? '?language=en' : '?language=et'}
       onKeyDown={onKeyDown}
       onClick={onClick}

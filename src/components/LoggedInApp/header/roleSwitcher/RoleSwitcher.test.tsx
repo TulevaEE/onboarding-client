@@ -385,6 +385,18 @@ describe('RoleSwitcher', () => {
       expect(menu).toHaveClass('dropdown-menu-end');
       expect(menu).toHaveStyle({ minWidth: 'min(19rem, calc(100vw - 2rem))' });
     });
+
+    it('keeps a long account name inside the viewport instead of widening the menu', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
+
+      expect(dropdownMenuPanel()).toHaveStyle({ maxWidth: 'calc(100vw - 2rem)' });
+      dropdownItems().forEach((item) => expect(item).toHaveClass('text-wrap'));
+    });
   });
 
   describe('with a child the other parent is onboarding', () => {
