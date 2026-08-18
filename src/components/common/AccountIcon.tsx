@@ -16,19 +16,20 @@ const paths: Record<AccountIconKind, string> = {
 
 // Kept as-is from when the switcher owned these icons, so the switcher's tests keep
 // naming the account kind they are about.
-const testIds: Record<AccountIconKind, string> = {
-  person: 'role-icon-person',
-  child: 'role-icon-child',
-  company: 'role-icon-legal-entity',
+const testIdSuffixes: Record<AccountIconKind, string> = {
+  person: 'person',
+  child: 'child',
+  company: 'legal-entity',
 };
 
 type Props = {
   kind: AccountIconKind;
   size?: number;
+  testIdPrefix?: string;
 };
 
 // Decorative everywhere it is used: the name sits right next to it.
-export const AccountIcon: FC<Props> = ({ kind, size = 16 }) => (
+export const AccountIcon: FC<Props> = ({ kind, size = 16, testIdPrefix = 'role-icon' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width={size}
@@ -36,7 +37,7 @@ export const AccountIcon: FC<Props> = ({ kind, size = 16 }) => (
     fill="currentColor"
     viewBox="0 0 256 256"
     aria-hidden="true"
-    data-testid={testIds[kind]}
+    data-testid={`${testIdPrefix}-${testIdSuffixes[kind]}`}
   >
     <path d={paths[kind]} />
   </svg>

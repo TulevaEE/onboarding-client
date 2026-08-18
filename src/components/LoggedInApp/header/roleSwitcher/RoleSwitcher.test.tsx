@@ -316,8 +316,8 @@ describe('RoleSwitcher', () => {
 
       renderRoleSwitcher();
 
-      expect(await screen.findByTestId('role-icon-person')).toBeInTheDocument();
-      expect(screen.queryByTestId('role-icon-legal-entity')).not.toBeInTheDocument();
+      expect(await screen.findByTestId('active-role-icon-person')).toBeInTheDocument();
+      expect(screen.queryByTestId('active-role-icon-legal-entity')).not.toBeInTheDocument();
     });
 
     it('swaps to a company icon while acting as a company', async () => {
@@ -326,8 +326,20 @@ describe('RoleSwitcher', () => {
 
       renderRoleSwitcher();
 
-      expect(await screen.findByTestId('role-icon-legal-entity')).toBeInTheDocument();
-      expect(screen.queryByTestId('role-icon-person')).not.toBeInTheDocument();
+      expect(await screen.findByTestId('active-role-icon-legal-entity')).toBeInTheDocument();
+      expect(screen.queryByTestId('active-role-icon-person')).not.toBeInTheDocument();
+    });
+
+    it('keeps the toggle icon apart from the icon of the row it repeats', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
+
+      expect(screen.getByTestId('role-icon-person')).toBeInTheDocument();
+      expect(screen.getByTestId('active-role-icon-person')).toBeInTheDocument();
     });
 
     it('hangs the menu off the right edge of the toggle so a phone screen fits it', async () => {
