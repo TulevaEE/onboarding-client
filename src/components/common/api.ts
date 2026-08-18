@@ -597,13 +597,21 @@ export function getPaymentLink(payment: Payment): Promise<PaymentLink> {
   return getWithAuthentication(getEndpoint('/v1/payments/link'), payment);
 }
 
-export async function redirectToPayment(payment: Payment): Promise<void> {
+export async function redirectToPayment(payment: Payment): Promise<{ openedInNewTab: boolean }> {
   const wndw = getWindow(payment.type);
   const paymentLink = await getPaymentLink(payment);
   if (!paymentLink.url) {
     throw new Error(`No payment URL returned for type=${payment.type}`);
   }
   wndw.location.replace(paymentLink.url);
+  return { openedInNewTab: wndw !== window };
+}
+
+export async function cancelThirdPillarPaymentReminder(): Promise<void> {
+  return postWithAuthentication(
+    getEndpoint('/v1/third-pillar-payment-reminders/cancellations'),
+    {},
+  );
 }
 
 function getWindow(paymentType: PaymentType): Window {

@@ -32,11 +32,11 @@ import { TransactionPageSecondPillar } from '../account/TransactionSection/Trans
 import { SavingsTransactionPage } from '../account/TransactionSection/SavingsTransactionPage';
 import { PortfolioPage } from '../account/Portfolio';
 import { TransactionDetailPage } from '../account/TransactionSection/TransactionDetailPage';
-import SecondPillarUpsellCard from '../account/SecondPillarUpsell/SecondPillarUpsellCard';
 import { SecondPillarPaymentRate } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRate';
 import { SecondPillarPaymentRateSuccess } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRateSuccess';
 import BackToPartner from '../flows/partner/BackToPartner';
 import ThirdPillarPaymentPage from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarPaymentPage';
+import { RecurringPaymentConfirmation } from '../flows/thirdPillar/ThirdPillarPayment/RecurringPaymentConfirmation';
 import { DevSidebar } from '../dev/DevSidebar';
 import Success from '../flows/secondPillar/success';
 import { getAuthentication } from '../common/authenticationManager';
@@ -231,6 +231,10 @@ export class LoggedInApp extends PureComponent {
               }
             />
             <Route path="/partner/3rd-pillar-flow-success" component={BackToPartner} />
+            <Route
+              path="/3rd-pillar-payment/recurring-confirmation"
+              component={RecurringPaymentConfirmation}
+            />
             <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />
             <Route path="/3rd-pillar-success" component={ThirdPillarSuccess} />
             <Route path="/3rd-pillar-gift" component={Gift} />
@@ -242,7 +246,6 @@ export class LoggedInApp extends PureComponent {
             <Route path="/transaction/:id" component={TransactionDetailPage} />
             <Route path="/2nd-pillar-contributions" component={ContributionPageSecondPillar} />
             <Route path="/3rd-pillar-contributions" component={ContributionPageThirdPillar} />
-            <Route path="/2nd-pillar-upsell" component={SecondPillarUpsellCard} />
             <Route
               path="/2nd-pillar-payment-rate"
               render={() => (

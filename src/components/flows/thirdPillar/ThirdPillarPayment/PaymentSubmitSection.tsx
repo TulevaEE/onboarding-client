@@ -9,6 +9,11 @@ type Props = {
   handleSubmit: () => unknown;
   disabled: boolean;
 };
+
+const confirmationPath = (paymentType: AvailablePaymentType) =>
+  `/3rd-pillar-payment/recurring-confirmation?confirmed=true${
+    paymentType === 'SINGLE' ? '&type=SINGLE' : ''
+  }`;
 export const PaymentSubmitSection = ({
   paymentBank,
   paymentType,
@@ -24,8 +29,8 @@ export const PaymentSubmitSection = ({
             <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
           )}
         </span>
-        <Link className="icon-link" to="/account">
-          <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
+        <Link className="icon-link" to={confirmationPath(paymentType)}>
+          <FormattedMessage id="thirdPillarPayment.confirmation.yes" />
         </Link>
       </div>
     );
@@ -81,9 +86,9 @@ export const PaymentSubmitSection = ({
             <span>
               <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
             </span>
-            <a className="icon-link" href="/account">
-              <FormattedMessage id="thirdPillarPayment.backToAccountPage" />
-            </a>
+            <Link className="icon-link" to={confirmationPath(paymentType)}>
+              <FormattedMessage id="thirdPillarPayment.confirmation.yes" />
+            </Link>
           </div>
         )}
       </div>
