@@ -286,5 +286,11 @@ describe('Utils', () => {
         isChildRole({ type: 'LEGAL_ENTITY', code: '12345678', name: 'Acme OÜ' }, mockUser),
       ).toBe(false);
     });
+
+    it('is false for a PERSON role when there is no user', () => {
+      expect(
+        isChildRole({ type: 'PERSON', code: '61506150006', name: 'Child Name' }, undefined),
+      ).toBe(false);
+    });
   });
 });
