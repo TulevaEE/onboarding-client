@@ -115,13 +115,6 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
   const pendingChildOnboardings = pendingOnboardings.filter(({ type }) => type === 'PERSON');
   const hasPendingChildOnboardings = childOnboardingEnabled && pendingChildOnboardings.length > 0;
 
-  // The menu now also holds logging out and the language choice, so it always
-  // renders — falling back to plain text would strand a single-role user with no
-  // way to log out. Only the roles list itself varies.
-  if (!roles) {
-    return <span className="text-body">{displayName}</span>;
-  }
-
   const handleRoleClick = async (command: SwitchRoleCommand) => {
     setOpen(false);
     await switchRole.mutateAsync(command);
@@ -191,81 +184,85 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
             </svg>
             <FormattedMessage id="header.my.account" />
           </Link>
-          <hr className="dropdown-divider" />
-          <span className="dropdown-header">
-            <FormattedMessage id="roleSwitcher.switchAccount" />
-          </span>
-          {roles.map((role) => {
-            const isCurrent = user?.role?.type === role.type && user?.role?.code === role.code;
-            return (
-              <button
-                key={role.code}
-                type="button"
-                className="dropdown-item d-flex align-items-center gap-2"
-                // Marks the row you are already on, so the tick is announced rather
-                // than being colour alone.
-                aria-current={isCurrent || undefined}
-                onClick={() => handleRoleClick({ type: role.type, code: role.code })}
-                onKeyDown={handleKeyDown}
-              >
-                <AccountIcon kind={accountIconKind(role, user)} size={18} />
-                {role.name}
-                {isCurrent && (
+          {roles && (
+            <>
+              <hr className="dropdown-divider" />
+              <span className="dropdown-header">
+                <FormattedMessage id="roleSwitcher.switchAccount" />
+              </span>
+              {roles.map((role) => {
+                const isCurrent = user?.role?.type === role.type && user?.role?.code === role.code;
+                return (
+                  <button
+                    key={role.code}
+                    type="button"
+                    className="dropdown-item d-flex align-items-center gap-2"
+                    // Marks the row you are already on, so the tick is announced rather
+                    // than being colour alone.
+                    aria-current={isCurrent || undefined}
+                    onClick={() => handleRoleClick({ type: role.type, code: role.code })}
+                    onKeyDown={handleKeyDown}
+                  >
+                    <AccountIcon kind={accountIconKind(role, user)} size={18} />
+                    {role.name}
+                    {isCurrent && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="ms-auto text-success"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.25"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="m5 13 4 4L19 7" />
+                      </svg>
+                    )}
+                  </button>
+                );
+              })}
+              {hasPendingChildOnboardings &&
+                pendingChildOnboardings.map(({ code, name }) => (
+                  <Link
+                    key={code}
+                    className="dropdown-item d-flex align-items-center gap-2"
+                    // Router state, never the URL: the minor's code must stay out of history and logs.
+                    to={{
+                      pathname: '/savings-fund/onboarding/child',
+                      state: { childPersonalCode: code },
+                    }}
+                    onClick={() => setOpen(false)}
+                    onKeyDown={handleKeyDown}
+                  >
+                    <AccountIcon kind="child" size={18} />
+                    {name}
+                  </Link>
+                ))}
+              {companyOnboardingEnabled && (
+                <Link
+                  className="dropdown-item d-flex align-items-center gap-2 link-primary fw-medium"
+                  to="/savings-fund/onboarding"
+                  onClick={() => setOpen(false)}
+                  onKeyDown={handleKeyDown}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="ms-auto text-success"
                     width="18"
                     height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.25"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                    fill="currentColor"
+                    viewBox="0 0 256 256"
                     aria-hidden="true"
                   >
-                    <path d="m5 13 4 4L19 7" />
+                    <path d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z" />
                   </svg>
-                )}
-              </button>
-            );
-          })}
-          {hasPendingChildOnboardings &&
-            pendingChildOnboardings.map(({ code, name }) => (
-              <Link
-                key={code}
-                className="dropdown-item d-flex align-items-center gap-2"
-                // Router state, never the URL: the minor's code must stay out of history and logs.
-                to={{
-                  pathname: '/savings-fund/onboarding/child',
-                  state: { childPersonalCode: code },
-                }}
-                onClick={() => setOpen(false)}
-                onKeyDown={handleKeyDown}
-              >
-                <AccountIcon kind="child" size={18} />
-                {name}
-              </Link>
-            ))}
-          {companyOnboardingEnabled && (
-            <Link
-              className="dropdown-item d-flex align-items-center gap-2 link-primary fw-medium"
-              to="/savings-fund/onboarding"
-              onClick={() => setOpen(false)}
-              onKeyDown={handleKeyDown}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                fill="currentColor"
-                viewBox="0 0 256 256"
-                aria-hidden="true"
-              >
-                <path d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z" />
-              </svg>
-              <FormattedMessage id="roleSwitcher.openNewAccount" />
-            </Link>
+                  <FormattedMessage id="roleSwitcher.openNewAccount" />
+                </Link>
+              )}
+            </>
           )}
           <hr className="dropdown-divider" />
           <LanguageSwitcher onKeyDown={handleKeyDown} onClick={() => setOpen(false)} />
