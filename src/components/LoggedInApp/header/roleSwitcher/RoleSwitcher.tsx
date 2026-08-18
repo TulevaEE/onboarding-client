@@ -116,8 +116,11 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
   const pendingChildOnboardings = pendingOnboardings.filter(({ type }) => type === 'PERSON');
   const hasPendingChildOnboardings = childOnboardingEnabled && pendingChildOnboardings.length > 0;
 
-  const handleRoleClick = async (command: SwitchRoleCommand) => {
+  const handleRoleClick = async (command: SwitchRoleCommand, isCurrent: boolean) => {
     setOpen(false);
+    if (isCurrent) {
+      return;
+    }
     await switchRole.mutateAsync(command);
     onRoleSwitch?.();
   };
@@ -201,7 +204,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                     // Marks the row you are already on, so the tick is announced rather
                     // than being colour alone.
                     aria-current={isCurrent || undefined}
-                    onClick={() => handleRoleClick({ type: role.type, code: role.code })}
+                    onClick={() => handleRoleClick({ type: role.type, code: role.code }, isCurrent)}
                     onKeyDown={handleKeyDown}
                   >
                     <AccountIcon kind={accountIconKind(role, user)} size={18} />
