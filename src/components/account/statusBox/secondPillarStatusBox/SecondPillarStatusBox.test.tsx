@@ -182,10 +182,29 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
       expect(screen.queryByRole('link', { name: 'Increase contribution' })).not.toBeInTheDocument();
     });
 
-    it('nudges to bring the second pillar over when it is elsewhere in a low-fee fund, even with a low payment rate', () => {
+    it('nudges the payment rate when the second pillar is elsewhere in a low-fee fund with a low payment rate', () => {
       renderWithIntl(
         <SecondPillarStatusBox
           {...baseProps}
+          conversion={{
+            ...completeSecondPillarConversion.secondPillar,
+            selectionComplete: false,
+            transfersComplete: false,
+            weightedAverageFee: 0.0049,
+          }}
+        />,
+      );
+
+      expect(screen.getByRole('link', { name: 'Increase contribution' })).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Choose Tuleva' })).not.toBeInTheDocument();
+    });
+
+    it('nudges to bring the second pillar over when it is elsewhere in a low-fee fund and the payment rate is already raised', () => {
+      renderWithIntl(
+        <SecondPillarStatusBox
+          {...baseProps}
+          pendingPaymentRate={6}
+          currentPaymentRate={6}
           conversion={{
             ...completeSecondPillarConversion.secondPillar,
             selectionComplete: false,
