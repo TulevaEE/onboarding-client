@@ -202,15 +202,16 @@ export function PersonAccountPage(
       {savingsFundBalance && (
         <>
           <SectionHeading titleId="accountStatement.savingsFund.heading">
-            <div className="d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline justify-content-between">
-              <>
-                <Link to="/savings-fund/payment">
-                  <FormattedMessage id="accountStatement.savingsFund.deposit" />
-                </Link>
-                <Link to="/savings-fund/withdraw">
-                  <FormattedMessage id="accountStatement.savingsFund.withdraw" />
-                </Link>
-              </>
+            <div className="d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline">
+              <Link className="icon-link" to="/savings-fund/payment">
+                <FormattedMessage id="accountStatement.savingsFund.deposit" />
+              </Link>
+              <Link className="icon-link" to="/savings-fund/withdraw">
+                <FormattedMessage id="accountStatement.savingsFund.withdraw" />
+              </Link>
+              <Link className="icon-link" to="/savings-fund/onboarding">
+                <FormattedMessage id="accountStatement.savingsFund.openChildOrCompanyAccount" />
+              </Link>
             </div>
           </SectionHeading>
           <AccountStatement funds={[savingsFundBalance]} />
