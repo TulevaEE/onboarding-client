@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
+import config from 'react-global-configuration';
 import { useMe, usePendingOnboardings, useRoles, useSwitchRole } from '../../../common/apiHooks';
 import { Role, SwitchRoleCommand, User } from '../../../common/apiModels';
 import { AccountIcon, AccountIconKind } from '../../../common/AccountIcon';
@@ -162,7 +163,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
               the header no longer carries it as a link of its own. */}
           <Link
             className="dropdown-item d-flex align-items-center gap-2"
-            to="/account"
+            to={config.get('language') === 'et' ? '/account' : '/account?language=en'}
             onClick={() => setOpen(false)}
             onKeyDown={handleKeyDown}
           >

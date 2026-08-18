@@ -3,7 +3,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { initializeConfiguration } from '../../../config/config';
+import { initializeConfiguration, updateLanguage } from '../../../config/config';
 import { getAuthentication } from '../../../common/authenticationManager';
 import { anAuthenticationManager } from '../../../common/authenticationManagerFixture';
 import { renderWrapped } from '../../../../test/utils';
@@ -163,6 +163,7 @@ describe('RoleSwitcher', () => {
     });
 
     it('links my account to the account page', async () => {
+      updateLanguage('et');
       setupSwitchFlow();
 
       renderRoleSwitcher();
@@ -170,6 +171,20 @@ describe('RoleSwitcher', () => {
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
       expect(screen.getByRole('link', { name: 'My account' })).toHaveAttribute('href', '/account');
+    });
+
+    it('keeps the English language choice on the my account link', async () => {
+      updateLanguage('en');
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(screen.getByRole('link', { name: 'My account' })).toHaveAttribute(
+        'href',
+        '/account?language=en',
+      );
     });
 
     it('logs the user out from the menu', async () => {
