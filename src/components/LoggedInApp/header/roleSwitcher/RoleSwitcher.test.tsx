@@ -64,11 +64,7 @@ async function openDropdownAndGetCompanyItem() {
   const toggle = await screen.findByRole('button', { name: /John Doe/i });
   userEvent.click(toggle);
 
-  const companyItem = screen
-    .getAllByRole('button')
-    .find((btn) => btn.textContent === 'Test OÜ') as HTMLElement;
-  expect(companyItem).toBeDefined();
-  return companyItem;
+  return screen.findByRole('button', { name: 'Test OÜ' });
 }
 
 function setupSwitchFlow() {
@@ -96,7 +92,7 @@ describe('RoleSwitcher', () => {
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
       expect(
-        screen.getByRole('link', { name: 'Open an account for a child or company' }),
+        await screen.findByRole('link', { name: 'Open an account for a child or company' }),
       ).toHaveAttribute('href', '/savings-fund/onboarding');
     });
 
@@ -108,7 +104,7 @@ describe('RoleSwitcher', () => {
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
       expect(
-        screen.getByRole('link', { name: 'Open an account for a child or company' }),
+        await screen.findByRole('link', { name: 'Open an account for a child or company' }),
       ).toBeInTheDocument();
     });
 
@@ -123,6 +119,9 @@ describe('RoleSwitcher', () => {
       // language choice, then the new-account link.
       userEvent.type(toggle, '{arrowup}', { skipClick: true });
       await waitFor(() => expect(screen.getByRole('link', { name: 'Log out' })).toHaveFocus());
+      expect(
+        await screen.findByRole('link', { name: 'Open an account for a child or company' }),
+      ).toBeInTheDocument();
 
       const items = dropdownItems();
       const languageItem = items[items.length - 2];
@@ -148,7 +147,7 @@ describe('RoleSwitcher', () => {
 
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
-      expect(screen.getByText('Switch account')).toBeInTheDocument();
+      expect(await screen.findByText('Switch account')).toBeInTheDocument();
     });
 
     it('opens with my account and ends with logging out', async () => {
@@ -185,6 +184,24 @@ describe('RoleSwitcher', () => {
       expect(onLogout).toHaveBeenCalledTimes(1);
     });
 
+    it('still lets the user log out when loading the roles fails', async () => {
+      server.use(rest.get('http://localhost/v1/me/roles', (req, res, ctx) => res(ctx.status(500))));
+      userBackend(server, { role: personalRole });
+      const onLogout = jest.fn();
+
+      renderRoleSwitcher(undefined, onLogout);
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(screen.getByRole('link', { name: 'My account' })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Eesti keeles' })).toBeInTheDocument();
+      expect(screen.queryByText('Switch account')).not.toBeInTheDocument();
+
+      userEvent.click(screen.getByRole('link', { name: 'Log out' }));
+
+      await waitFor(() => expect(onLogout).toHaveBeenCalledTimes(1));
+    });
+
     // Which language the row names is LanguageSwitcher's own test — this harness pins
     // the IntlProvider to English, so only the destination is meaningful here.
     it('offers the other language from inside the menu', async () => {
@@ -214,7 +231,7 @@ describe('RoleSwitcher', () => {
 
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
-      expect(screen.getByTestId('role-icon-child')).toBeInTheDocument();
+      expect(await screen.findByTestId('role-icon-child')).toBeInTheDocument();
     });
 
     it('gives a company the company icon', async () => {
@@ -224,7 +241,7 @@ describe('RoleSwitcher', () => {
 
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
-      expect(screen.getByTestId('role-icon-legal-entity')).toBeInTheDocument();
+      expect(await screen.findByTestId('role-icon-legal-entity')).toBeInTheDocument();
     });
 
     it('marks nothing as current for a login the backend gives no role', async () => {
@@ -243,7 +260,9 @@ describe('RoleSwitcher', () => {
 
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
-      expect(screen.getByRole('button', { name: 'John Doe' })).not.toHaveAttribute('aria-current');
+      expect(await screen.findByRole('button', { name: 'John Doe' })).not.toHaveAttribute(
+        'aria-current',
+      );
       expect(screen.getByRole('link', { name: 'Log out' })).toBeInTheDocument();
     });
 
@@ -255,7 +274,9 @@ describe('RoleSwitcher', () => {
 
       userEvent.click(await screen.findByRole('button', { name: /Test OÜ/i }));
 
-      expect(screen.getByRole('button', { name: 'Test OÜ', current: true })).toBeInTheDocument();
+      expect(
+        await screen.findByRole('button', { name: 'Test OÜ', current: true }),
+      ).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'John Doe' })).not.toHaveAttribute('aria-current');
     });
   });
@@ -394,10 +415,8 @@ describe('RoleSwitcher', () => {
     const toggle = await screen.findByRole('button', { name: /John Doe/i });
     userEvent.click(toggle);
 
-    const menuItems = screen.getAllByRole('button');
-    const itemNames = menuItems.map((item) => item.textContent);
-    expect(itemNames).toContain('John Doe');
-    expect(itemNames).toContain('Test OÜ');
+    expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'John Doe' })).toBeInTheDocument();
   });
 
   it('closes the dropdown when clicking a role', async () => {
@@ -477,6 +496,7 @@ describe('RoleSwitcher', () => {
     toggle.focus();
     userEvent.type(toggle, '{arrowdown}', { skipClick: true });
     await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
+    expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
 
     // ArrowDown advances to the next item.
     userEvent.type(dropdownItems()[0], '{arrowdown}', { skipClick: true });
