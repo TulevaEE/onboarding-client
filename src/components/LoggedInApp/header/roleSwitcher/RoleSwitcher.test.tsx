@@ -586,6 +586,20 @@ describe('RoleSwitcher', () => {
     });
   });
 
+  it('only closes the menu when clicking the role you are already acting as', async () => {
+    const backend = setupSwitchFlow();
+
+    const onRoleSwitch = jest.fn();
+    renderRoleSwitcher(onRoleSwitch);
+
+    userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+    userEvent.click(await screen.findByRole('button', { name: 'John Doe', current: true }));
+
+    await waitFor(() => expect(dropdownItems()).toHaveLength(0));
+    expect(backend.switchedRole).toBeNull();
+    expect(onRoleSwitch).not.toHaveBeenCalled();
+  });
+
   it('calls switchRole API and onRoleSwitch when selecting a different role', async () => {
     const backend = setupSwitchFlow();
 
