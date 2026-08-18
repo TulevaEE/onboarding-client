@@ -102,14 +102,14 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     return <HighFee {...rowProps} />;
   }
 
+  if (pendingPaymentRate < 6) {
+    return <IncreasePaymentRate {...rowProps} />;
+  }
+
   const isFullyConvertedToTuleva = conversion.selectionComplete && conversion.transfersComplete;
 
   if (!isFullyConvertedToTuleva) {
     return <InLowFeeFund {...rowProps} />;
-  }
-
-  if (pendingPaymentRate < 6) {
-    return <IncreasePaymentRate {...rowProps} />;
   }
 
   const TULEVA_2ND_PILLAR_BOND_FUND_ISIN = 'EE3600109443';
