@@ -106,7 +106,7 @@ export const isActingAsSelf = (user: User | undefined): boolean => {
 // A PERSON role that is not your own personal code is someone you represent, which
 // today is always a child — companies come through as LEGAL_ENTITY.
 export const isChildRole = (role: Role, user: User | undefined): boolean =>
-  role.type === 'PERSON' && role.code !== user?.personalCode;
+  role.type === 'PERSON' && user !== undefined && role.code !== user.personalCode;
 
 export type TulevaSecondPillarStockFund = 'EE3600109435';
 export type TulevaSecondPillarBondFund = 'EE3600109443';
