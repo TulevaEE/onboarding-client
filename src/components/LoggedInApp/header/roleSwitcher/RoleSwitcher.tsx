@@ -33,7 +33,7 @@ const accountIconKind = (role: Role, user: User | undefined): AccountIconKind =>
 
 // The menu is wide enough for the longest row rather than sized to the name, so the
 // rows do not reflow as you switch between a short name and a long company one.
-const menuStyle = { minWidth: '19rem' };
+const menuStyle = { minWidth: 'min(19rem, calc(100vw - 2rem))' };
 
 export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
   const { data: roles } = useRoles();
@@ -161,7 +161,11 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
         </svg>
       </button>
       {open && (
-        <span className="dropdown-menu show shadow" data-bs-popper="static" style={menuStyle}>
+        <span
+          className="dropdown-menu dropdown-menu-end show shadow"
+          data-bs-popper="static"
+          style={menuStyle}
+        >
           {/* First, because it is the one thing every visitor to this menu wants and
               the header no longer carries it as a link of its own. */}
           <Link

@@ -60,6 +60,10 @@ function dropdownItems() {
   return Array.from(document.querySelectorAll<HTMLElement>('.dropdown-item'));
 }
 
+function dropdownMenuPanel() {
+  return document.querySelector('.dropdown-menu');
+}
+
 async function openDropdownAndGetCompanyItem() {
   const toggle = await screen.findByRole('button', { name: /John Doe/i });
   userEvent.click(toggle);
@@ -324,6 +328,20 @@ describe('RoleSwitcher', () => {
 
       expect(await screen.findByTestId('role-icon-legal-entity')).toBeInTheDocument();
       expect(screen.queryByTestId('role-icon-person')).not.toBeInTheDocument();
+    });
+
+    it('hangs the menu off the right edge of the toggle so a phone screen fits it', async () => {
+      rolesBackend(server, multipleRoles);
+      userBackend(server, { role: personalRole });
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
+
+      const menu = dropdownMenuPanel();
+      expect(menu).toHaveClass('dropdown-menu-end');
+      expect(menu).toHaveStyle({ minWidth: 'min(19rem, calc(100vw - 2rem))' });
     });
   });
 
