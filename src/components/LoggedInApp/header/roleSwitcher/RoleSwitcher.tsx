@@ -196,7 +196,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
             <FormattedMessage id="roleSwitcher.switchAccount" />
           </span>
           {roles.map((role) => {
-            const isCurrent = user?.role.type === role.type && user?.role.code === role.code;
+            const isCurrent = user?.role?.type === role.type && user?.role?.code === role.code;
             return (
               <button
                 key={role.code}

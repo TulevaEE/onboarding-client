@@ -13,6 +13,7 @@ import {
   switchRoleBackend,
   userBackend,
 } from '../../../../test/backend';
+import { mockUser } from '../../../../test/backend-responses';
 import { Role } from '../../../common/apiModels';
 import {
   isChildOnboardingEnabled,
@@ -224,6 +225,26 @@ describe('RoleSwitcher', () => {
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
       expect(screen.getByTestId('role-icon-legal-entity')).toBeInTheDocument();
+    });
+
+    it('marks nothing as current for a login the backend gives no role', async () => {
+      rolesBackend(server, [personalRole]);
+      let userServed = false;
+      server.use(
+        rest.get('http://localhost/v1/me', (req, res, ctx) => {
+          userServed = true;
+          return res(ctx.json({ ...mockUser, role: undefined }));
+        }),
+      );
+
+      renderRoleSwitcher();
+
+      await waitFor(() => expect(userServed).toBe(true));
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(screen.getByRole('button', { name: 'John Doe' })).not.toHaveAttribute('aria-current');
+      expect(screen.getByRole('link', { name: 'Log out' })).toBeInTheDocument();
     });
 
     it('marks the account you are currently acting as', async () => {
