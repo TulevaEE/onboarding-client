@@ -129,6 +129,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
   const handleRoleClick = async (command: SwitchRoleCommand, isCurrent: boolean) => {
     setOpen(false);
     if (isCurrent) {
+      toggleRef.current?.focus();
       return;
     }
     await switchRole.mutateAsync(command);

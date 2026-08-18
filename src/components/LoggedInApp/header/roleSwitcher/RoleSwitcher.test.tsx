@@ -608,6 +608,25 @@ describe('RoleSwitcher', () => {
     expect(toggle).toHaveFocus();
   });
 
+  it('returns focus to the toggle when activating the role you are already acting as', async () => {
+    const backend = setupSwitchFlow();
+
+    renderRoleSwitcher();
+
+    const toggle = await screen.findByRole('button', { name: /John Doe/i });
+    toggle.focus();
+    userEvent.type(toggle, '{arrowdown}', { skipClick: true });
+    await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
+
+    const currentRow = await screen.findByRole('button', { name: 'John Doe', current: true });
+    currentRow.focus();
+    userEvent.type(currentRow, '{enter}', { skipClick: true });
+
+    await waitFor(() => expect(dropdownItems()).toHaveLength(0));
+    expect(toggle).toHaveFocus();
+    expect(backend.switchedRole).toBeNull();
+  });
+
   it('closes the dropdown when focus leaves via Tab', async () => {
     setupSwitchFlow();
 
