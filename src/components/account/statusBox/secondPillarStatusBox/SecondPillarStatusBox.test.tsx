@@ -152,6 +152,61 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
       </BrowserRouter>,
     );
 
+  describe('branch order: transfer nudge comes before the payment rate nudge', () => {
+    const baseProps: Props = {
+      loading: false,
+      conversion: completeSecondPillarConversion.secondPillar,
+      sourceFunds: [activeSecondPillar],
+      targetFunds: [tulevaSecondPillarFund],
+      secondPillarActive: true,
+      pendingPaymentRate: 2,
+      currentPaymentRate: 2,
+      activeFundIsin: 'EE000123',
+    };
+
+    it('nudges to bring the second pillar over when it is elsewhere in a high-fee fund, even with a low payment rate', () => {
+      renderWithIntl(
+        <SecondPillarStatusBox
+          {...baseProps}
+          sourceFunds={[highFeeSecondPillar]}
+          conversion={{
+            ...completeSecondPillarConversion.secondPillar,
+            selectionComplete: false,
+            transfersComplete: false,
+            weightedAverageFee: 0.01,
+          }}
+        />,
+      );
+
+      expect(screen.getByRole('link', { name: 'Choose Tuleva' })).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Increase contribution' })).not.toBeInTheDocument();
+    });
+
+    it('nudges to bring the second pillar over when it is elsewhere in a low-fee fund, even with a low payment rate', () => {
+      renderWithIntl(
+        <SecondPillarStatusBox
+          {...baseProps}
+          conversion={{
+            ...completeSecondPillarConversion.secondPillar,
+            selectionComplete: false,
+            transfersComplete: false,
+            weightedAverageFee: 0.0049,
+          }}
+        />,
+      );
+
+      expect(screen.getByRole('link', { name: 'Choose Tuleva' })).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Increase contribution' })).not.toBeInTheDocument();
+    });
+
+    it('nudges the payment rate when the second pillar is already at Tuleva', () => {
+      renderWithIntl(<SecondPillarStatusBox {...baseProps} />);
+
+      expect(screen.getByRole('link', { name: 'Increase contribution' })).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Choose Tuleva' })).not.toBeInTheDocument();
+    });
+  });
+
   describe('InLowFeeFund component', () => {
     it('renders tax win component as separate line item in low fee fund', () => {
       const props: Props = {

@@ -1112,8 +1112,13 @@ export function companyValidationBackend(server: SetupServerApi): void {
   );
 }
 
+export function trackedEventsBackend(server: SetupServerApi): void {
+  server.use(rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))));
+}
+
 const TEST_BACKENDS = {
   cancellation: cancellationBackend,
+  trackedEvents: trackedEventsBackend,
   mandatePreview: mandatePreviewBackend,
   smartIdMandateSigning: smartIdMandateSigningBackend,
   smartIdMandateBatchSigning: smartIdMandateBatchSigningBackend,

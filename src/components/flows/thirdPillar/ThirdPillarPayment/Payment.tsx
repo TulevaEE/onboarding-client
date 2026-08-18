@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { captureException } from '@sentry/browser';
 import ThirdPillarPaymentsAmount from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarContributionAmount';
@@ -32,6 +32,7 @@ export const Payment: React.FunctionComponent = () => {
   const [amountEdited, setAmountEdited] = useState<boolean>(false);
   const [paymentBank, setPaymentBank] = useState<BankKey | 'other' | null>(null);
   const [error, setError] = useState<boolean>(false);
+  const history = useHistory();
 
   const handlePaymentTypeChange = (type: AvailablePaymentType) => {
     setPaymentType(type);
@@ -61,13 +62,16 @@ export const Payment: React.FunctionComponent = () => {
     }
 
     try {
-      await redirectToPayment({
+      const { openedInNewTab } = await redirectToPayment({
         recipientPersonalCode: user.personalCode,
         amount: Number(paymentAmount.replace(',', '.')),
         currency: 'EUR',
         type: paymentType,
         paymentChannel: paymentBank?.toUpperCase() as PaymentChannel,
       });
+      if (openedInNewTab && paymentType === 'RECURRING') {
+        history.push('/3rd-pillar-payment/recurring-confirmation');
+      }
     } catch (e) {
       setError(true);
       captureException(e);

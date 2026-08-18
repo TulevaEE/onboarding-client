@@ -1,3 +1,4 @@
+import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { screen, waitFor } from '@testing-library/react';
 import { Route } from 'react-router-dom';
@@ -120,6 +121,60 @@ describe('When a user is making a third pillar payment', () => {
     expect(windowLocation).toHaveBeenCalledTimes(1);
   });
 
+  test('shows a confirmation screen after the bank opens in a new tab for a recurring payment', async () => {
+    const fakeWindow = { location: { replace: jest.fn() }, document: { write: jest.fn() } };
+    const windowOpen = jest.spyOn(window, 'open').mockReturnValue(fakeWindow as unknown as Window);
+
+    const recurringPayment = await recurringPaymentOption();
+    const amount = await amountInput();
+    const lhvBank = await lhvButton();
+    userEvent.click(recurringPayment);
+    userEvent.clear(amount);
+    userEvent.type(amount, '34');
+    userEvent.click(lhvBank);
+    userEvent.click(await logIntoInternetBankButton());
+
+    await waitFor(() =>
+      expect(fakeWindow.location.replace).toHaveBeenCalledWith('https://LHV.EE/RECURRING.34.EUR'),
+    );
+    expect(
+      await screen.findByRole('heading', { name: 'Did you set up the recurring payment?' }),
+    ).toBeInTheDocument();
+    windowOpen.mockRestore();
+  });
+
+  test('confirming the recurring payment shows support with a second pillar nudge and cancels the payment reminder', async () => {
+    const reminderCancellation = jest.fn();
+    server.use(
+      rest.post(
+        'http://localhost/v1/third-pillar-payment-reminders/cancellations',
+        (req, res, ctx) => {
+          reminderCancellation();
+          return res(ctx.status(200), ctx.json({}));
+        },
+      ),
+    );
+    const fakeWindow = { location: { replace: jest.fn() }, document: { write: jest.fn() } };
+    const windowOpen = jest.spyOn(window, 'open').mockReturnValue(fakeWindow as unknown as Window);
+
+    const recurringPayment = await recurringPaymentOption();
+    const lhvBank = await lhvButton();
+    userEvent.click(recurringPayment);
+    userEvent.click(lhvBank);
+    userEvent.click(await logIntoInternetBankButton());
+    userEvent.click(await screen.findByRole('button', { name: 'Yes, done' }));
+
+    expect(
+      await screen.findByRole('heading', { name: 'Recurring payment set up' }),
+    ).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'Increase your contribution' })).toHaveAttribute(
+      'href',
+      '/2nd-pillar-payment-rate',
+    );
+    await waitFor(() => expect(reminderCancellation).toHaveBeenCalled());
+    windowOpen.mockRestore();
+  });
+
   test('can see recurring payment details', async () => {
     const recurringPayment = await recurringPaymentOption();
     const lhvBank = await paymentInfoButton();
@@ -134,7 +189,7 @@ describe('When a user is making a third pillar payment', () => {
     expect(screen.getByText('30101119828, IK:39001011234, EE3600001707')).toBeInTheDocument();
   });
 
-  test('can go back to account page after seeing other banks recurring payment details', async () => {
+  test('can confirm the recurring payment after seeing other banks recurring payment details', async () => {
     const recurringPayment = await recurringPaymentOption();
     const amount = await amountInput();
     const paymentInfo = await paymentInfoButton();
@@ -142,10 +197,11 @@ describe('When a user is making a third pillar payment', () => {
     userEvent.click(recurringPayment);
     userEvent.type(amount, '34');
     userEvent.click(paymentInfo);
-    const backToAccountPage = await backToAccountPageButton();
-    userEvent.click(backToAccountPage);
+    userEvent.click(await confirmDoneLink());
 
-    expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Recurring payment set up' }),
+    ).toBeInTheDocument();
   });
 
   test('can see Other bank payment details', async () => {
@@ -169,15 +225,14 @@ describe('When a user is making a third pillar payment', () => {
     expect(screen.queryByText('9876543210')).not.toBeInTheDocument();
   });
 
-  test('can go back to account page after seeing the other bank payment details', async () => {
+  test('can confirm the payment after seeing the other bank payment details', async () => {
     const amount = await amountInput();
     userEvent.type(amount, '34');
     const paymentInfo = await paymentInfoButton();
     userEvent.click(paymentInfo);
-    const backToAccountPage = await backToAccountPageButton();
-    userEvent.click(backToAccountPage);
+    userEvent.click(await confirmDoneLink());
 
-    expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: 'Payment done' })).toBeInTheDocument();
   });
 
   test('can switch between Single and Recurring payment', async () => {
@@ -189,7 +244,7 @@ describe('When a user is making a third pillar payment', () => {
     userEvent.click(lhvBank);
     expect(queryMakePaymentButton()).not.toBeInTheDocument();
     expect(await logIntoInternetBankButton()).toBeInTheDocument();
-    expect(await backToAccountPageButton()).toBeInTheDocument();
+    expect(await confirmDoneLink()).toBeInTheDocument();
 
     const singlePayment = await singlePaymentOption();
     userEvent.click(singlePayment);
@@ -215,5 +270,5 @@ describe('When a user is making a third pillar payment', () => {
   const queryLogIntoInternetBankButton = () =>
     screen.queryByRole('button', { name: 'Log into internet bank' });
 
-  const backToAccountPageButton = async () => screen.findByText('Back to account page');
+  const confirmDoneLink = async () => screen.findByRole('link', { name: 'Yes, done' });
 });
