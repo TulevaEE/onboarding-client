@@ -263,25 +263,55 @@ describe('RoleSwitcher', () => {
       expect(await screen.findByTestId('role-icon-legal-entity')).toBeInTheDocument();
     });
 
-    it('marks nothing as current for a login the backend gives no role', async () => {
-      rolesBackend(server, [personalRole]);
+    function serveRolelessLogin(personalCode: string) {
       let userServed = false;
       server.use(
         rest.get('http://localhost/v1/me', (req, res, ctx) => {
           userServed = true;
-          return res(ctx.json({ ...mockUser, role: undefined }));
+          return res(ctx.json({ ...mockUser, personalCode, role: undefined }));
         }),
       );
+      return () => waitFor(() => expect(userServed).toBe(true));
+    }
+
+    it('stands for the person it belongs to when the backend gives no role', async () => {
+      rolesBackend(server, multipleRoles);
+      const backend = switchRoleBackend(server);
+      const userIsServed = serveRolelessLogin(personalRole.code);
+
+      const onRoleSwitch = jest.fn();
+      renderRoleSwitcher(onRoleSwitch);
+
+      await userIsServed();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(
+        await screen.findByRole('button', { name: 'John Doe', current: true }),
+      ).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Test OÜ' })).not.toHaveAttribute('aria-current');
+
+      userEvent.click(screen.getByRole('button', { name: 'John Doe', current: true }));
+
+      await waitFor(() => expect(dropdownItems()).toHaveLength(0));
+      expect(backend.switchedRole).toBeNull();
+      expect(onRoleSwitch).not.toHaveBeenCalled();
+    });
+
+    it('marks nothing as current for a roleless login matching none of the accounts', async () => {
+      rolesBackend(server, multipleRoles);
+      const userIsServed = serveRolelessLogin('48888888888');
 
       renderRoleSwitcher();
 
-      await waitFor(() => expect(userServed).toBe(true));
+      await userIsServed();
 
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
       expect(await screen.findByRole('button', { name: 'John Doe' })).not.toHaveAttribute(
         'aria-current',
       );
+      expect(screen.getByRole('button', { name: 'Test OÜ' })).not.toHaveAttribute('aria-current');
       expect(screen.getByRole('link', { name: 'Log out' })).toBeInTheDocument();
     });
 

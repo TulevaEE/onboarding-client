@@ -31,6 +31,16 @@ const accountIconKind = (role: Role, user: User | undefined): AccountIconKind =>
   return isChildRole(role, user) ? 'child' : 'person';
 };
 
+const isCurrentRole = (role: Role, user: User | undefined): boolean => {
+  if (!user) {
+    return false;
+  }
+  if (user.role) {
+    return user.role.type === role.type && user.role.code === role.code;
+  }
+  return role.type === 'PERSON' && role.code === user.personalCode;
+};
+
 // The menu is wide enough for the longest row rather than sized to the name, so the
 // rows do not reflow as you switch between a short name and a long company one.
 const menuStyle = { minWidth: 'min(19rem, calc(100vw - 2rem))' };
@@ -202,7 +212,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                 <FormattedMessage id="roleSwitcher.switchAccount" />
               </span>
               {roles.map((role) => {
-                const isCurrent = user?.role?.type === role.type && user?.role?.code === role.code;
+                const isCurrent = isCurrentRole(role, user);
                 return (
                   <button
                     key={role.code}
