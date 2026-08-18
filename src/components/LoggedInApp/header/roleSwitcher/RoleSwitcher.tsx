@@ -43,7 +43,10 @@ const isCurrentRole = (role: Role, user: User | undefined): boolean => {
 
 // The menu is wide enough for the longest row rather than sized to the name, so the
 // rows do not reflow as you switch between a short name and a long company one.
-const menuStyle = { minWidth: 'min(19rem, calc(100vw - 2rem))' };
+const menuStyle = {
+  minWidth: 'min(19rem, calc(100vw - 2rem))',
+  maxWidth: 'calc(100vw - 2rem)',
+};
 
 export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
   const { data: roles } = useRoles();
@@ -183,7 +186,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
           {/* First, because it is the one thing every visitor to this menu wants and
               the header no longer carries it as a link of its own. */}
           <Link
-            className="dropdown-item d-flex align-items-center gap-2"
+            className="dropdown-item text-wrap d-flex align-items-center gap-2"
             to={config.get('language') === 'et' ? '/account' : '/account?language=en'}
             onClick={() => setOpen(false)}
             onKeyDown={handleKeyDown}
@@ -218,7 +221,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                   <button
                     key={role.code}
                     type="button"
-                    className="dropdown-item d-flex align-items-center gap-2"
+                    className="dropdown-item text-wrap d-flex align-items-center gap-2"
                     // Marks the row you are already on, so the tick is announced rather
                     // than being colour alone.
                     aria-current={isCurrent || undefined}
@@ -251,7 +254,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                 pendingChildOnboardings.map(({ code, name }) => (
                   <Link
                     key={code}
-                    className="dropdown-item d-flex align-items-center gap-2"
+                    className="dropdown-item text-wrap d-flex align-items-center gap-2"
                     // Router state, never the URL: the minor's code must stay out of history and logs.
                     to={{
                       pathname: '/savings-fund/onboarding/child',
@@ -266,7 +269,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                 ))}
               {companyOnboardingEnabled && (
                 <Link
-                  className="dropdown-item d-flex align-items-center gap-2 link-primary fw-medium"
+                  className="dropdown-item text-wrap d-flex align-items-center gap-2 link-primary fw-medium"
                   to="/savings-fund/onboarding"
                   onClick={() => setOpen(false)}
                   onKeyDown={handleKeyDown}
@@ -291,7 +294,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
           <hr className="dropdown-divider" />
           <a
             href="/login"
-            className="dropdown-item d-flex align-items-center gap-2"
+            className="dropdown-item text-wrap d-flex align-items-center gap-2"
             onClick={(event) => {
               event.preventDefault();
               setOpen(false);
