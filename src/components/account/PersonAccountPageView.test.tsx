@@ -623,6 +623,23 @@ describe('Additional Savings Fund status', () => {
     expect(within(savingsFundRow).getByText('You have invested an additional')).toBeInTheDocument();
     expect(within(savingsFundRow).getByText('1.00 €')).toBeInTheDocument();
   });
+
+  it('still offers the account chooser once the member has completed their own onboarding', async () => {
+    server.use(savingsFundOnboardingStatus.completed());
+    server.use(savingsAccountStatement.zero());
+
+    initializeComponent();
+    history.push('/account');
+
+    expect(
+      await screen.findByRole('link', { name: 'Open a child or company account' }),
+    ).toHaveAttribute('href', '/savings-fund/onboarding');
+
+    const savingsFundRow = screen.getAllByTestId('status-box-row')[2];
+    expect(
+      within(savingsFundRow).getByRole('link', { name: 'Make a payment' }),
+    ).toBeInTheDocument();
+  });
 });
 
 const savingsFundOnboardingStatus = {

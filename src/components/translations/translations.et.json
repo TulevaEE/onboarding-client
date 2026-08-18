@@ -76,6 +76,7 @@
   "accountStatement.savingsFund.heading": "Täiendav Kogumisfond",
   "accountStatement.savingsFund.deposit": "Lisan raha",
   "accountStatement.savingsFund.withdraw": "Võtan välja",
+  "accountStatement.savingsFund.openChildOrCompanyAccount": "Avan konto lapsele või OÜ-le",
   "accountStatement.columns.fund.title": "Fond",
   "accountStatement.columns.fees.title": "Tasud aastas",
   "accountStatement.columns.contributions.title": "Sissemaksed",
