@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import moment from 'moment';
 import { Euro } from '../../common/Euro';
 
@@ -30,38 +30,48 @@ export const ValueChart: React.FunctionComponent<{
   const container = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState<number | null>(null);
 
-  if (!series || series.length < 2 || !layers || layers.length === 0) {
+  const geometry = useMemo(() => {
+    if (!series || series.length < 2 || !layers || layers.length === 0) {
+      return null;
+    }
+
+    const highest = Math.max(...series.map((point) => point.total)) * 1.08 || 1;
+    const x = (index: number) => PADDING + (index * (WIDTH - 2 * PADDING)) / (series.length - 1);
+    const y = (value: number) => HEIGHT - PADDING - (value / highest) * (HEIGHT - 2 * PADDING);
+
+    const cumulativeAt = (point: ChartPoint, layer: number) =>
+      point.values.slice(0, layer + 1).reduce<number>((sum, value) => sum + (value ?? 0), 0);
+
+    // Tallest band first, so the smaller ones stay visible in front of it.
+    const bands = layers
+      .map((layer, index) => {
+        const line = series
+          .map(
+            (point, pointIndex) =>
+              `${pointIndex ? 'L' : 'M'}${x(pointIndex).toFixed(1)},${y(
+                cumulativeAt(point, index),
+              ).toFixed(1)}`,
+          )
+          .join(' ');
+        return {
+          index,
+          color: layer.color,
+          line,
+          area: `${line} L${x(series.length - 1).toFixed(1)},${HEIGHT} L${x(0).toFixed(
+            1,
+          )},${HEIGHT} Z`,
+        };
+      })
+      .reverse();
+
+    return { x, y, cumulativeAt, bands };
+  }, [series, layers]);
+
+  if (!geometry) {
     return <></>;
   }
 
-  const highest = Math.max(...series.map((point) => point.total)) * 1.08 || 1;
-  const x = (index: number) => PADDING + (index * (WIDTH - 2 * PADDING)) / (series.length - 1);
-  const y = (value: number) => HEIGHT - PADDING - (value / highest) * (HEIGHT - 2 * PADDING);
-
-  const cumulativeAt = (point: ChartPoint, layer: number) =>
-    point.values.slice(0, layer + 1).reduce<number>((sum, value) => sum + (value ?? 0), 0);
-
-  // Tallest band first, so the smaller ones stay visible in front of it.
-  const bands = layers
-    .map((layer, index) => {
-      const line = series
-        .map(
-          (point, pointIndex) =>
-            `${pointIndex ? 'L' : 'M'}${x(pointIndex).toFixed(1)},${y(
-              cumulativeAt(point, index),
-            ).toFixed(1)}`,
-        )
-        .join(' ');
-      return {
-        index,
-        color: layer.color,
-        line,
-        area: `${line} L${x(series.length - 1).toFixed(1)},${HEIGHT} L${x(0).toFixed(
-          1,
-        )},${HEIGHT} Z`,
-      };
-    })
-    .reverse();
+  const { x, y, cumulativeAt, bands } = geometry;
 
   const track = (event: React.PointerEvent<HTMLDivElement>) => {
     const bounds = container.current?.getBoundingClientRect();

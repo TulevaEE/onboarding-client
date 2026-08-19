@@ -74,8 +74,9 @@ export const PortfolioView: React.FunctionComponent<{
   from: string | undefined;
   to: string;
   currentValues?: Partial<Record<PortfolioGroup, number>>;
+  loading?: boolean;
   onPeriodChange: (from: string | undefined, to: string) => void;
-}> = ({ portfolio, from, to, currentValues, onPeriodChange }) => {
+}> = ({ portfolio, from, to, currentValues, loading, onPeriodChange }) => {
   const groups = portfolio.groups.map((summary) =>
     withCurrentValue(summary, currentValues?.[summary.group]),
   );
@@ -154,7 +155,11 @@ export const PortfolioView: React.FunctionComponent<{
         )}
       </div>
 
-      <div className="card p-4 mb-3">
+      <div
+        className="card p-4 mb-3"
+        aria-busy={loading}
+        style={loading ? { opacity: 0.5 } : undefined}
+      >
         <h2 className="h6 text-body-secondary mb-2">
           <FormattedMessage
             id="savingsFund.statement.money.heading"

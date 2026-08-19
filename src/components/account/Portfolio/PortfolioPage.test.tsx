@@ -3,7 +3,7 @@ import moment from 'moment';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { QueryClient } from '@tanstack/react-query';
-import { fireEvent, screen } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
@@ -113,6 +113,15 @@ const portfolioBackendRefusingNarrowedPeriods = () =>
     rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
       req.url.searchParams.get('from')
         ? res(ctx.status(500), ctx.json({}))
+        : res(ctx.json(allTime)),
+    ),
+  );
+
+const portfolioBackendSlowOnNarrowedPeriods = () =>
+  server.use(
+    rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
+      req.url.searchParams.get('from')
+        ? res(ctx.delay(150), ctx.json(lastYear))
         : res(ctx.json(allTime)),
     ),
   );
@@ -326,5 +335,26 @@ describe('a portfolio the backend never gave', () => {
 
     expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
     expect(screen.queryByText(/cannot load fund prices/)).not.toBeInTheDocument();
+  });
+});
+
+describe('the numbers of a period that is being replaced', () => {
+  it('are marked busy until the ones asked for arrive', async () => {
+    portfolioBackendSlowOnNarrowedPeriods();
+    initializeComponent();
+
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    await waitFor(() =>
+      // eslint-disable-next-line testing-library/no-node-access
+      expect(document.querySelector('[aria-busy="true"]')).toBeInTheDocument(),
+    );
+    expect(screen.getAllByText(/500[.,]00/)).not.toHaveLength(0);
+
+    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(document.querySelector('[aria-busy="true"]')).not.toBeInTheDocument();
   });
 });

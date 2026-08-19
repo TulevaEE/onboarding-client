@@ -18,7 +18,14 @@ export const PortfolioPage: React.FunctionComponent = () => {
     to: moment().format('YYYY-MM-DD'),
   });
 
-  const { data: portfolio, isLoading, isError, refetch } = usePortfolio(period.from, period.to);
+  const {
+    data: portfolio,
+    isLoading,
+    isError,
+    isFetching,
+    isPreviousData,
+    refetch,
+  } = usePortfolio(period.from, period.to);
 
   // Prices rebuild a value out of units, and money the register has not turned into units
   // yet has none. For a period that runs to today the register itself can be asked, so the
@@ -73,6 +80,7 @@ export const PortfolioPage: React.FunctionComponent = () => {
           to={period.to}
           currentValues={currentValues}
           onPeriodChange={onPeriodChange}
+          loading={isFetching && isPreviousData}
         />
       ) : (
         <>
