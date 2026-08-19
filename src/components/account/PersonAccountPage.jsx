@@ -210,7 +210,7 @@ export function PersonAccountPage(
                 <FormattedMessage id="accountStatement.savingsFund.withdraw" />
               </Link>
               <Link className="icon-link" to="/savings-fund/onboarding">
-                <FormattedMessage id="accountStatement.savingsFund.openChildOrCompanyAccount" />
+                <FormattedMessage id="accountStatement.savingsFund.openNewAccount" />
               </Link>
             </div>
           </SectionHeading>

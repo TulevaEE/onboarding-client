@@ -74,7 +74,7 @@
   "accountStatement.savingsFund.heading": "Additional Savings Fund",
   "accountStatement.savingsFund.deposit": "Deposit",
   "accountStatement.savingsFund.withdraw": "Withdraw",
-  "accountStatement.savingsFund.openChildOrCompanyAccount": "Open a child or company account",
+  "accountStatement.savingsFund.openNewAccount": "Open a new account",
   "accountStatement.columns.fund.title": "Fund",
   "accountStatement.columns.fees.title": "Annual fees",
   "accountStatement.columns.contributions.title": "Contributions",
