@@ -83,8 +83,9 @@ export const ValueChart: React.FunctionComponent<{
     setHovered(Math.min(series.length - 1, Math.max(0, index)));
   };
 
-  const point = hovered === null ? null : series[hovered];
-  const hoverFraction = hovered === null ? 0 : hovered / (series.length - 1);
+  const hoveredIndex = hovered === null ? null : Math.min(hovered, series.length - 1);
+  const point = hoveredIndex === null ? null : series[hoveredIndex];
+  const hoverFraction = hoveredIndex === null ? 0 : hoveredIndex / (series.length - 1);
 
   return (
     <div
@@ -114,12 +115,12 @@ export const ValueChart: React.FunctionComponent<{
           </g>
         ))}
 
-        {point && hovered !== null && (
+        {point && hoveredIndex !== null && (
           <g>
             <line
-              x1={x(hovered)}
+              x1={x(hoveredIndex)}
               y1={0}
-              x2={x(hovered)}
+              x2={x(hoveredIndex)}
               y2={HEIGHT}
               stroke="#8a8d91"
               strokeWidth="1"
@@ -130,7 +131,7 @@ export const ValueChart: React.FunctionComponent<{
               point.values[index] === null ? null : (
                 <circle
                   key={layer.id}
-                  cx={x(hovered)}
+                  cx={x(hoveredIndex)}
                   cy={y(cumulativeAt(point, index))}
                   r="3.5"
                   fill={layer.color}

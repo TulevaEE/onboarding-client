@@ -3,7 +3,7 @@ import moment from 'moment';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { QueryClient } from '@tanstack/react-query';
-import { fireEvent, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
@@ -117,13 +117,35 @@ const portfolioBackendRefusingNarrowedPeriods = () =>
     ),
   );
 
-const portfolioBackendSlowOnNarrowedPeriods = () =>
+let heldNarrowedPeriods: (() => void)[] = [];
+
+const releaseNarrowedPeriods = () => {
+  const held = heldNarrowedPeriods;
+  heldNarrowedPeriods = [];
+  held.forEach((release) => release());
+};
+
+const portfolioBackendHoldingNarrowedPeriods = () =>
   server.use(
-    rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
-      req.url.searchParams.get('from')
-        ? res(ctx.delay(150), ctx.json(lastYear))
-        : res(ctx.json(allTime)),
-    ),
+    rest.get('http://localhost/v1/portfolio', async (req, res, ctx) => {
+      if (!req.url.searchParams.get('from')) {
+        return res(ctx.json(allTime));
+      }
+      await new Promise<void>((resolve) => {
+        heldNarrowedPeriods.push(resolve);
+      });
+      return res(ctx.json(lastYear));
+    }),
+  );
+
+const portfolioRequests: string[] = [];
+
+const portfolioBackendRefusingOutright = () =>
+  server.use(
+    rest.get('http://localhost/v1/portfolio', (req, res, ctx) => {
+      portfolioRequests.push(req.url.search);
+      return res(ctx.status(400), ctx.json({ errors: [{ code: 'epis.message.exception' }] }));
+    }),
   );
 
 const statementRequests: string[] = [];
@@ -175,12 +197,16 @@ function initializeComponent() {
 }
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  releaseNarrowedPeriods();
+  server.resetHandlers();
+});
 afterAll(() => server.close());
 
 beforeEach(() => {
   initializeConfiguration();
   requestedPeriods.length = 0;
+  portfolioRequests.length = 0;
   statementRequests.length = 0;
   portfolioBackend();
   registerHolding([], null);
@@ -339,8 +365,8 @@ describe('a portfolio the backend never gave', () => {
 });
 
 describe('the numbers of a period that is being replaced', () => {
-  it('are marked busy until the ones asked for arrive', async () => {
-    portfolioBackendSlowOnNarrowedPeriods();
+  it('are marked busy, with the old figures inside the busy region, until the new ones arrive', async () => {
+    portfolioBackendHoldingNarrowedPeriods();
     initializeComponent();
 
     expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
@@ -351,10 +377,25 @@ describe('the numbers of a period that is being replaced', () => {
       // eslint-disable-next-line testing-library/no-node-access
       expect(document.querySelector('[aria-busy="true"]')).toBeInTheDocument(),
     );
-    expect(screen.getAllByText(/500[.,]00/)).not.toHaveLength(0);
+
+    // eslint-disable-next-line testing-library/no-node-access
+    const busyRegion = document.querySelector('[aria-busy="true"]') as HTMLElement;
+    expect(within(busyRegion).getAllByText(/500[.,]00/)).not.toHaveLength(0);
+
+    releaseNarrowedPeriods();
 
     expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
     // eslint-disable-next-line testing-library/no-node-access
     expect(document.querySelector('[aria-busy="true"]')).not.toBeInTheDocument();
+  });
+});
+
+describe('a period the backend refuses outright', () => {
+  it('is not asked for again', async () => {
+    portfolioBackendRefusingOutright();
+    initializeComponent();
+
+    expect(await screen.findByText(/cannot load fund prices/)).toBeInTheDocument();
+    expect(portfolioRequests).toHaveLength(1);
   });
 });
