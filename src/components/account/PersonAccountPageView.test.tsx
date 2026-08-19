@@ -631,9 +631,10 @@ describe('Additional Savings Fund status', () => {
     initializeComponent();
     history.push('/account');
 
-    expect(
-      await screen.findByRole('link', { name: 'Open a child or company account' }),
-    ).toHaveAttribute('href', '/savings-fund/onboarding');
+    expect(await screen.findByRole('link', { name: 'Open a new account' })).toHaveAttribute(
+      'href',
+      '/savings-fund/onboarding',
+    );
 
     const savingsFundRow = screen.getAllByTestId('status-box-row')[2];
     expect(
