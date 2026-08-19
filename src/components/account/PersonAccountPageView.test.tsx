@@ -631,10 +631,14 @@ describe('Additional Savings Fund status', () => {
     initializeComponent();
     history.push('/account');
 
-    expect(await screen.findByRole('link', { name: 'Open a new account' })).toHaveAttribute(
-      'href',
-      '/savings-fund/onboarding',
-    );
+    /* eslint-disable testing-library/no-node-access,@typescript-eslint/no-non-null-assertion */
+    const savingsFundActions = (await screen.findByRole('link', { name: 'Deposit' }))
+      .parentElement!;
+    /* eslint-enable testing-library/no-node-access,@typescript-eslint/no-non-null-assertion */
+
+    expect(
+      within(savingsFundActions).getByRole('link', { name: 'Open a new account' }),
+    ).toHaveAttribute('href', '/savings-fund/onboarding');
 
     const savingsFundRow = screen.getAllByTestId('status-box-row')[2];
     expect(
