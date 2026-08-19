@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { captureException } from '@sentry/browser';
@@ -63,6 +63,7 @@ export const SavingsFundIdentityVerification: FC = () => {
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const submitInFlight = useRef(false);
 
   const { mutateAsync: submitSurvey, isPending: submitting } =
     useSubmitSavingsFundOnboardingSurvey();
@@ -102,10 +103,20 @@ export const SavingsFundIdentityVerification: FC = () => {
     }
 
     if (activeSection < totalSections - 1) {
-      setActiveSection((current) => current + 1);
+      // A second click arriving while the validation above was still running
+      // carries the same activeSection, so advancing unconditionally would skip
+      // the next step without ever validating it. Only the click that still
+      // matches the rendered step may advance.
+      setActiveSection((current) => (current === activeSection ? current + 1 : current));
       return;
     }
 
+    // isPending only disables the button on the next render, which is too late
+    // to stop a double-click from posting the survey twice.
+    if (submitInFlight.current) {
+      return;
+    }
+    submitInFlight.current = true;
     try {
       setSubmitError(false);
       await submitSurvey(transformIdentityToOnboardingSurveyCommand(getValues()));
@@ -113,6 +124,8 @@ export const SavingsFundIdentityVerification: FC = () => {
     } catch (e) {
       setSubmitError(true);
       captureException(e);
+    } finally {
+      submitInFlight.current = false;
     }
   };
 

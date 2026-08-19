@@ -1,4 +1,5 @@
 import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
@@ -109,6 +110,76 @@ describe('SavingsFundIdentityVerification', () => {
     ).toBeInTheDocument();
     expect(screen.queryByText('1/4')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument();
+  });
+
+  // A click lands while the previous click is still awaiting validation, so both
+  // handlers run against the same step index.
+  const doubleClickContinue = async () => {
+    const button = await screen.findByRole('button', { name: 'Continue' });
+    userEvent.click(button);
+    userEvent.click(button);
+  };
+
+  it('does not skip an unvalidated step when Continue is double-clicked', async () => {
+    renderWrapped(<SavingsFundIdentityVerification />);
+
+    expect(await screen.findByText('1/4')).toBeInTheDocument();
+    await fillCitizenshipStep();
+
+    // Fill residency without continuing, so both clicks pass validation and the
+    // step really can be advanced twice.
+    expect(
+      await screen.findByRole('heading', { name: 'Your permanent residence', level: 2 }),
+    ).toBeInTheDocument();
+    userEvent.selectOptions(screen.getByRole('combobox', { name: 'Country' }), 'FI');
+    const cityInput = await screen.findByRole('textbox', { name: 'City' }, { timeout: 3_000 });
+    userEvent.type(cityInput, 'Helsinki');
+    userEvent.type(screen.getByRole('textbox', { name: 'Postal code' }), '00100');
+    userEvent.type(
+      screen.getByRole('textbox', { name: 'Address (street, house, apartment)' }),
+      'Mannerheimintie 1',
+    );
+
+    await doubleClickContinue();
+
+    // One click, one step: contact details, not the PEP step beyond it, which
+    // would leave the email nobody entered to be submitted empty.
+    expect(
+      await screen.findByRole('heading', { name: 'Your contact details', level: 2 }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('3/4')).toBeInTheDocument();
+  });
+
+  it('submits once when Continue is double-clicked on the last step', async () => {
+    let posts = 0;
+    server.use(
+      rest.post('http://localhost/v1/kyc/surveys', (_req, res, ctx) => {
+        posts += 1;
+        return res(ctx.delay(50), ctx.status(200));
+      }),
+    );
+
+    renderWrapped(<SavingsFundIdentityVerification />);
+
+    expect(await screen.findByText('1/4')).toBeInTheDocument();
+    await fillCitizenshipStep();
+    await fillResidencyStep();
+    await fillContactDetailsStep();
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Are you a politically exposed person?',
+        level: 2,
+      }),
+    ).toBeInTheDocument();
+    userEvent.click(screen.getByRole('radio', { name: 'I am not a politically exposed person' }));
+
+    await doubleClickContinue();
+
+    expect(
+      await screen.findByRole('heading', { name: 'Identity verification complete' }),
+    ).toBeInTheDocument();
+    expect(posts).toBe(1);
   });
 
   it('surfaces a submit failure instead of claiming the verification is done', async () => {
