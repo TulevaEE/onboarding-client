@@ -1,12 +1,15 @@
 import { FC, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Loader } from '../../../common';
+import { TranslationKey } from '../../../translations';
 
 interface OnboardingFlowLayoutProps {
   currentStep: number;
   totalSteps: number;
   onBack: () => void;
   onNext: () => void;
+  // Defaults to the savings-fund onboarding heading.
+  titleId?: TranslationKey;
   loading?: boolean;
   submitting?: boolean;
   nextDisabled?: boolean;
@@ -20,6 +23,7 @@ export const OnboardingFlowLayout: FC<OnboardingFlowLayoutProps> = ({
   totalSteps,
   onBack,
   onNext,
+  titleId = 'flows.savingsFundOnboarding.title',
   loading,
   submitting,
   nextDisabled,
@@ -47,7 +51,7 @@ export const OnboardingFlowLayout: FC<OnboardingFlowLayoutProps> = ({
         </div>
         <div className="d-flex flex-column gap-1">
           <h1 className="m-0">
-            <FormattedMessage id="flows.savingsFundOnboarding.title" />
+            <FormattedMessage id={titleId} />
           </h1>
           {subtitle ? <p className="m-0 fs-3 text-body-secondary">{subtitle}</p> : null}
         </div>

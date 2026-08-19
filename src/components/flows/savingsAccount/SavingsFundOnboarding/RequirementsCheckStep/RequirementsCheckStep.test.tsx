@@ -396,7 +396,7 @@ describe('RequirementsCheckStep', () => {
     );
 
     expect(
-      await screen.findByText(/everyone connected to it must open a personal Tuleva account/i),
+      await screen.findByText(/everyone connected to it must verify their identity in Tuleva/i),
     ).toBeInTheDocument();
     // The raw backend KYC message must not leak into the UI as a bullet.
     expect(screen.queryByText(/Isikusamasuse tuvastamine on lõpetamata/)).not.toBeInTheDocument();
@@ -438,8 +438,10 @@ describe('RequirementsCheckStep', () => {
     expect(
       await screen.findByText(/Share this link with the connected people above/i),
     ).toBeInTheDocument();
+    // Identity verification, not a personal onboarding: the connected person is
+    // asked to be identified, not to open an account of their own.
     expect(
-      screen.getByRole('link', { name: 'http://localhost/savings-fund/onboarding' }),
+      screen.getByRole('link', { name: 'http://localhost/savings-fund/onboarding/identity' }),
     ).toHaveAttribute('target', '_blank');
     expect(
       screen.queryByText('Your identity verification is under review'),
@@ -482,7 +484,7 @@ describe('RequirementsCheckStep', () => {
       await screen.findByText('Ettevõtte omandistruktuur ei ole toetatud'),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText(/everyone connected to it must open a personal Tuleva account/i),
+      screen.queryByText(/everyone connected to it must verify their identity in Tuleva/i),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByText('Your identity verification is under review'),
