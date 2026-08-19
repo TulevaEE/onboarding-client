@@ -60,6 +60,7 @@ import { CreateCapitalTransfer } from '../listings/transfer/create/CreateCapital
 import {
   SavingsFundChildOnboarding,
   SavingsFundCompanyOnboarding,
+  SavingsFundIdentityVerification,
   SavingsFundOnboarding,
   SavingsFundOnboardingChooser,
   SavingsFundOnboardingPending,
@@ -198,6 +199,14 @@ export class LoggedInApp extends PureComponent {
               component={SavingsFundOnboardingPending}
             />
             <Route exact path="/savings-fund/onboarding/person" component={SavingsFundOnboarding} />
+            {/* Not an onboarding: identity verification alone, for someone
+                connected to a company that is applying. Shared as a link, so it
+                takes no company context and no registry code. */}
+            <Route
+              exact
+              path="/savings-fund/onboarding/identity"
+              component={SavingsFundIdentityVerification}
+            />
             <Route
               exact
               path="/savings-fund/onboarding/company"

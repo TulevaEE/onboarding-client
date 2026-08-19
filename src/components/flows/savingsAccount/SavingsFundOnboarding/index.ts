@@ -4,3 +4,4 @@ export * from './SavingsFundOnboardingPending';
 export * from './SavingsFundOnboardingSuccess';
 export * from './SavingsFundCompanyOnboarding';
 export * from './SavingsFundChildOnboarding';
+export * from './SavingsFundIdentityVerification';
