@@ -1,12 +1,12 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import userEvent from '@testing-library/user-event';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import { initializeConfiguration } from '../../../config/config';
-import { useTestBackends } from '../../../../test/backend';
+import { useTestBackends, useTestBackendsExcept, userBackend } from '../../../../test/backend';
 import LoggedInApp from '../../../LoggedInApp';
 
 describe('When a user is making a third pillar payment', () => {
@@ -172,6 +172,35 @@ describe('When a user is making a third pillar payment', () => {
       '/2nd-pillar-payment-rate',
     );
     await waitFor(() => expect(reminderCancellation).toHaveBeenCalled());
+    windowOpen.mockRestore();
+  });
+
+  test('does not nudge a recurring payment right after the user confirmed setting one up', async () => {
+    useTestBackendsExcept(server, ['user']);
+    userBackend(server, {
+      secondPillarPaymentRates: { current: 6, pending: null },
+    });
+    const fakeWindow = { location: { replace: jest.fn() }, document: { write: jest.fn() } };
+    const windowOpen = jest.spyOn(window, 'open').mockReturnValue(fakeWindow as unknown as Window);
+
+    const recurringPayment = await recurringPaymentOption();
+    const lhvBank = await lhvButton();
+    userEvent.click(recurringPayment);
+    userEvent.click(lhvBank);
+    userEvent.click(await logIntoInternetBankButton());
+    userEvent.click(await screen.findByRole('button', { name: 'Yes, done' }));
+
+    expect(
+      await screen.findByRole('heading', { name: 'Recurring payment set up' }),
+    ).toBeInTheDocument();
+    const main = within(screen.getByRole('main'));
+    expect(await main.findByRole('link', { name: 'My account' })).toHaveAttribute(
+      'href',
+      '/account',
+    );
+    expect(
+      main.queryByRole('link', { name: 'Set up a recurring payment' }),
+    ).not.toBeInTheDocument();
     windowOpen.mockRestore();
   });
 

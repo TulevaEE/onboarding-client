@@ -61,7 +61,10 @@ const ConfirmedSupportWithNudge = ({ paymentType }: { paymentType: AvailablePaym
     user && conversion && pendingApplications
       ? secondPillarSuggestion(user, conversion.secondPillar, pendingApplications)
       : undefined;
-  const supportOnly = suggestion === 'NONE' || suggestion === 'PENDING_TRANSFER';
+  const supportOnly =
+    suggestion === 'NONE' ||
+    suggestion === 'PENDING_TRANSFER' ||
+    suggestion === 'RECURRING_PAYMENT';
 
   return (
     <>
@@ -90,7 +93,7 @@ const ConfirmedSupportWithNudge = ({ paymentType }: { paymentType: AvailablePaym
           </a>
         )}
       </SuccessNotice>
-      <SecondPillarNudge />
+      {suggestion !== 'RECURRING_PAYMENT' && <SecondPillarNudge />}
     </>
   );
 };
