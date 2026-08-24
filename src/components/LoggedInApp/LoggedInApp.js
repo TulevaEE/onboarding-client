@@ -3,6 +3,7 @@ import React, { PureComponent } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { ACCOUNT_PATH, AML_PATH } from '../paths';
 
 import { actions as loginActions } from '../login';
 import { actions as exchangeActions } from '../exchange';
@@ -79,8 +80,7 @@ import {
   SavingsFundWithdrawCancellation,
 } from '../flows/savingsAccount/SavingsFundWithdraw';
 
-export const ACCOUNT_PATH = '/account';
-export const AML_PATH = '/aml';
+export { ACCOUNT_PATH, AML_PATH } from '../paths';
 
 export class LoggedInApp extends PureComponent {
   async componentDidMount() {
