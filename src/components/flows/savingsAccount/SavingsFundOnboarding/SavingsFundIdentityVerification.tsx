@@ -63,7 +63,7 @@ export const SavingsFundIdentityVerification: FC = () => {
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const submitInFlight = useRef(false);
+  const submitBlocked = useRef(false);
 
   const { mutateAsync: submitSurvey, isPending: submitting } =
     useSubmitSavingsFundOnboardingSurvey();
@@ -113,19 +113,18 @@ export const SavingsFundIdentityVerification: FC = () => {
 
     // isPending only disables the button on the next render, which is too late
     // to stop a double-click from posting the survey twice.
-    if (submitInFlight.current) {
+    if (submitBlocked.current) {
       return;
     }
-    submitInFlight.current = true;
+    submitBlocked.current = true;
     try {
       setSubmitError(false);
       await submitSurvey(transformIdentityToOnboardingSurveyCommand(getValues()));
       setSubmitted(true);
     } catch (e) {
+      submitBlocked.current = false;
       setSubmitError(true);
       captureException(e);
-    } finally {
-      submitInFlight.current = false;
     }
   };
 
