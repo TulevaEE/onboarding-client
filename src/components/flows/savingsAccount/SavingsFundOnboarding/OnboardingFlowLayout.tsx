@@ -8,7 +8,6 @@ interface OnboardingFlowLayoutProps {
   totalSteps: number;
   onBack: () => void;
   onNext: () => void;
-  // Defaults to the savings-fund onboarding heading.
   titleId?: TranslationKey;
   loading?: boolean;
   submitting?: boolean;
