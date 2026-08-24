@@ -3,12 +3,13 @@ import moment from 'moment';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { QueryClient } from '@tanstack/react-query';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
+import { userBackend } from '../../../test/backend';
 import { initializeConfiguration } from '../../config/config';
-import { CostBasisMethod, SavingsFundTaxReport } from '../../common/apiModels';
+import { CostBasisMethod, RoleType, SavingsFundTaxReport } from '../../common/apiModels';
 import { TaxReportPage } from './TaxReportPage';
 
 const lastYear = moment().year() - 1;
@@ -101,6 +102,9 @@ const taxReportBackendDown = () =>
     ),
   );
 
+const actingFor = (roleType: RoleType) =>
+  userBackend(server, { role: { type: roleType, code: '90000000', name: 'Acme' } });
+
 function initializeComponent() {
   const history = createMemoryHistory();
   const store = createDefaultStore(history as any);
@@ -112,6 +116,8 @@ function initializeComponent() {
     store,
     new QueryClient({ defaultOptions: { queries: { retry: false } } }),
   );
+
+  return history;
 }
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -122,6 +128,25 @@ beforeEach(() => {
   initializeConfiguration();
   requestedReports.length = 0;
   taxReportBackend();
+  actingFor('PERSON');
+});
+
+describe('a company looking at a report about personal income tax', () => {
+  it('is sent to the account page instead', async () => {
+    actingFor('LEGAL_ENTITY');
+    const history = initializeComponent();
+
+    await waitFor(() => expect(history.location.pathname).toBe('/account'));
+    expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument();
+  });
+
+  it('is not asked about on the backend', async () => {
+    actingFor('LEGAL_ENTITY');
+    const history = initializeComponent();
+
+    await waitFor(() => expect(history.location.pathname).toBe('/account'));
+    expect(requestedReports).toHaveLength(0);
+  });
 });
 
 describe('a tax report the backend never gave', () => {

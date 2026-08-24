@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
+import { Redirect } from 'react-router-dom';
 import { usePageTitle } from '../../common/usePageTitle';
+import { useMe } from '../../common/apiHooks';
+import { ACCOUNT_PATH } from '../../paths';
 import { CostBasisMethod } from '../../common/apiModels';
 import { useSavingsFundTaxReport } from './api/taxReport.api';
 import { TaxReportView } from './TaxReportView';
@@ -12,13 +15,25 @@ const DEFAULT_METHOD: CostBasisMethod = 'WEIGHTED_AVERAGE';
 export const TaxReportPage: React.FunctionComponent = () => {
   usePageTitle('pageTitle.savingsFundTaxReport');
 
+  const { data: user } = useMe();
+  const isLegalEntity = user?.role?.type === 'LEGAL_ENTITY';
+
   const [year, setYear] = useState(TAX_YEARS[0]);
   const [method, setMethod] = useState<CostBasisMethod>(DEFAULT_METHOD);
   // The details live here so that asking for another method — which leaves nothing to draw
   // until the backend answers — does not close the panel someone opened.
   const [detailsOpen, setDetailsOpen] = useState(false);
 
-  const { data: report, isLoading, isError, refetch } = useSavingsFundTaxReport(year, method);
+  const {
+    data: report,
+    isLoading,
+    isError,
+    refetch,
+  } = useSavingsFundTaxReport(year, method, { enabled: user !== undefined && !isLegalEntity });
+
+  if (isLegalEntity) {
+    return <Redirect to={ACCOUNT_PATH} />;
+  }
 
   return (
     <section className="mt-5">

@@ -17,9 +17,11 @@ export function getSavingsFundTaxReport(
 export function useSavingsFundTaxReport(
   year: number,
   method: CostBasisMethod,
+  options: { enabled?: boolean } = {},
 ): UseQueryResult<SavingsFundTaxReport> {
   return useQuery({
     queryKey: ['savingsFundTaxReport', year, method],
     queryFn: () => getSavingsFundTaxReport(year, method),
+    enabled: options.enabled ?? true,
   });
 }
