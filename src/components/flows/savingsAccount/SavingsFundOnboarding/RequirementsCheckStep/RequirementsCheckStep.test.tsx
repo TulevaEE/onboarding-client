@@ -21,15 +21,16 @@ beforeEach(() => {
 
 // The backend marks unverified connected people with dedicated codes on the
 // relatedPersons field: USER_KYC means the logged-in user is one of them,
-// OTHER_RELATED_PERSONS_KYC means someone else is. It does not expose which
-// specific person via the code.
+// OTHER_RELATED_PERSONS_KYC means someone else is — that one names them in
+// `persons`, and omits the field when it knows nobody.
 const USER_KYC_ERROR: ValidationError = {
   code: 'USER_KYC',
   message: 'Sinu isikusamasuse tuvastamine on lõpetamata',
 };
 const OTHER_PERSONS_KYC_ERROR: ValidationError = {
   code: 'OTHER_RELATED_PERSONS_KYC',
-  message: 'Isikusamasuse tuvastamine on lõpetamata: Person McPerson',
+  message: 'Isikusamasuse tuvastamine on lõpetamata',
+  persons: [{ personalCode: '40404049996', name: 'Person McPerson' }],
 };
 const relatedPersonsError = (...errors: ValidationError[]) =>
   rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
