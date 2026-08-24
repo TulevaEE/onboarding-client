@@ -166,7 +166,7 @@ export const SavingsFundIdentityVerification: FC = () => {
 
         {submitError ? (
           <div className="alert alert-danger" role="alert">
-            <FormattedMessage id="flows.savingsFundOnboarding.error" />
+            <FormattedMessage id="flows.savingsFundIdentityVerification.error" />
           </div>
         ) : null}
       </OnboardingFlowLayout>

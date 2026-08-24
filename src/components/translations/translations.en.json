@@ -1537,6 +1537,7 @@
   "flows.savingsFundChildOnboarding.residencyStep.title": "The child’s permanent residence",
   "flows.savingsFundChildOnboarding.forChild": "For {name}",
   "flows.savingsFundIdentityVerification.title": "Identity verification",
+  "flows.savingsFundIdentityVerification.error": "There was an error while submitting your details. Please try again later or contact us: tuleva@tuleva.ee",
 
   "continents.EUROPE": "Europe",
   "continents.ASIA": "Asia",
