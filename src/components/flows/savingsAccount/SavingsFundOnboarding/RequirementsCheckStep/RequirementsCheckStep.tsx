@@ -61,8 +61,8 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
   // the relatedPersons field. USER_KYC means the logged-in user's own verification
   // needs manual review (the flow has already collected their identity, so there is
   // nothing for them to redo); OTHER_RELATED_PERSONS_KYC means someone else is
-  // unverified, so we offer a shareable link. It does not expose which specific
-  // person, so the copy stays generic. Any other relatedPersons error (e.g.
+  // unverified, so we offer a shareable link — naming them when the error carries
+  // them, addressing everyone when it does not. Any other relatedPersons error (e.g.
   // ownership structure) is a genuine "company does not fit" reason and flows to
   // the generic list below.
   const relatedPersonErrorCodes = (data?.relatedPersons.errors ?? []).map(errorCode);
@@ -73,9 +73,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
   const identityIncomplete =
     isSuccess && (userIdentityIncomplete || otherPersonsIdentityIncomplete);
   const identityVerificationUrl = `${window.location.origin}/savings-fund/onboarding/identity`;
-  const unverifiedNames = data
-    ? unverifiedRelatedPersonNames(data.relatedPersons.errors, data.relatedPersons.value)
-    : [];
+  const unverifiedNames = data ? unverifiedRelatedPersonNames(data.relatedPersons.errors) : [];
 
   // Every validation error except the identity-KYC ones (which have their own
   // dedicated dead-end block) — these are genuine "company does not fit" reasons.
