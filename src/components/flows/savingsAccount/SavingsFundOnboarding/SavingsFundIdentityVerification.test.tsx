@@ -220,7 +220,9 @@ describe('SavingsFundIdentityVerification', () => {
     expect(await screen.findByText('1/4')).toBeInTheDocument();
     await completeIdentitySteps();
 
-    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'There was an error while submitting your details.',
+    );
     expect(
       screen.queryByRole('heading', { name: 'Identity verification complete' }),
     ).not.toBeInTheDocument();

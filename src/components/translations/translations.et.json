@@ -1627,6 +1627,7 @@
   "flows.savingsFundChildOnboarding.residencyStep.title": "Lapse alaline elukoht",
   "flows.savingsFundChildOnboarding.forChild": "Lapsele {name}",
   "flows.savingsFundIdentityVerification.title": "Isikutuvastus",
+  "flows.savingsFundIdentityVerification.error": "Andmete esitamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee",
 
   "continents.EUROPE": "Euroopa",
   "continents.ASIA": "Aasia",
