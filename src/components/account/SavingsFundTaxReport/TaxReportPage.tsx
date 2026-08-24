@@ -7,6 +7,7 @@ import { useMe } from '../../common/apiHooks';
 import { ACCOUNT_PATH } from '../../paths';
 import { CostBasisMethod } from '../../common/apiModels';
 import { useSavingsFundTaxReport } from './api/taxReport.api';
+import { InvestmentAccountSection } from './InvestmentAccountSection';
 import { TaxReportView } from './TaxReportView';
 
 const TAX_YEARS = [moment().year() - 1, moment().year()];
@@ -60,6 +61,8 @@ export const TaxReportPage: React.FunctionComponent = () => {
           </button>
         </div>
       )}
+
+      <InvestmentAccountSection />
 
       <TaxReportView
         report={report}

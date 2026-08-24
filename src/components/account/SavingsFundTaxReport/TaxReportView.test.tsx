@@ -6,6 +6,7 @@ import { SavingsFundTaxReport } from '../../common/apiModels';
 import { TaxReportView } from './TaxReportView';
 
 const report = (overrides: Partial<SavingsFundTaxReport> = {}): SavingsFundTaxReport => ({
+  investmentAccount: null,
   year: 2025,
   method: 'WEIGHTED_AVERAGE',
   totalGain: 58.96,
@@ -100,5 +101,41 @@ describe('the tax report the backend calculated', () => {
     render(report());
 
     expect(screen.getByText(/investment account/)).toBeInTheDocument();
+  });
+});
+
+describe('an investment account someone declared', () => {
+  const investmentAccount = (overrides = {}) => ({
+    iban: 'EE471000001020145685',
+    totalGain: 60,
+    redemptions: [],
+    redeemedOutsideTheAccount: false,
+    ...overrides,
+  });
+
+  it('keeps its gains apart from the gains someone declares', () => {
+    render(report({ investmentAccount: investmentAccount() }));
+
+    expect(screen.getByText(/Units bought from the investment account/)).toBeInTheDocument();
+    expect(screen.getByText(/do not declare this as a gain/)).toBeInTheDocument();
+  });
+
+  it('stops asking which account the money came from once it is known', () => {
+    render(report({ investmentAccount: investmentAccount() }));
+
+    expect(screen.queryByText(/We do not yet know which account/)).not.toBeInTheDocument();
+  });
+
+  it('still asks when nothing was declared', () => {
+    render(report());
+
+    expect(screen.getByText(/We do not yet know which account/)).toBeInTheDocument();
+  });
+
+  it('says the transactions could not be split when money went elsewhere', () => {
+    render(report({ investmentAccount: investmentAccount({ redeemedOutsideTheAccount: true }) }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent(/cannot split these transactions/i);
+    expect(screen.queryByText(/Units bought from the investment account/)).not.toBeInTheDocument();
   });
 });

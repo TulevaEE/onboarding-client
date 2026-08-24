@@ -1,0 +1,54 @@
+import React, { useEffect, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { useDeclareInvestmentAccount, useInvestmentAccount } from './api/investmentAccount.api';
+
+export const InvestmentAccountSection: React.FunctionComponent = () => {
+  const intl = useIntl();
+  const { data: investmentAccount } = useInvestmentAccount();
+  const declareInvestmentAccount = useDeclareInvestmentAccount();
+
+  const [typed, setTyped] = useState('');
+  const declaredIban = investmentAccount?.iban ?? '';
+
+  useEffect(() => setTyped(declaredIban), [declaredIban]);
+
+  return (
+    <div className="card p-4 mb-3">
+      <h2 className="h6 mb-2">
+        <FormattedMessage id="savingsFundTaxReport.investmentAccount.heading" />
+      </h2>
+      <p className="text-body-secondary small">
+        <FormattedMessage id="savingsFundTaxReport.investmentAccount.explainer" />
+      </p>
+
+      <form
+        className="d-flex flex-column flex-sm-row flex-wrap align-items-start align-items-sm-end gap-2"
+        onSubmit={(event) => {
+          event.preventDefault();
+          declareInvestmentAccount.mutate(typed);
+        }}
+      >
+        <div>
+          <label className="form-label small mb-1" htmlFor="investment-account-iban">
+            <FormattedMessage id="savingsFundTaxReport.investmentAccount.label" />
+          </label>
+          <input
+            id="investment-account-iban"
+            className="form-control form-control-sm"
+            value={typed}
+            onChange={(event) => setTyped(event.target.value)}
+          />
+        </div>
+        <button type="submit" className="btn btn-sm btn-primary">
+          {intl.formatMessage({ id: 'savingsFundTaxReport.investmentAccount.save' })}
+        </button>
+      </form>
+
+      {declareInvestmentAccount.isError && (
+        <div role="alert" className="alert alert-danger mt-3 mb-0">
+          <FormattedMessage id="savingsFundTaxReport.investmentAccount.invalid" />
+        </div>
+      )}
+    </div>
+  );
+};

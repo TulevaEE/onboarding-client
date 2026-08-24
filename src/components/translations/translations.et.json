@@ -2030,5 +2030,13 @@
   "savingsFundTaxReport.subtitle": "Täiendava Kogumisfondi tagasivõtmised ja arvutus tuludeklaratsiooni jaoks.",
   "savingsFundTaxReport.pillarNote": "See aruanne on ainult Täiendava Kogumisfondi kohta. II ja III samba maksuasjad käivad automaatselt — neid siin ei kajastata.",
   "savingsFundTaxReport.unavailable": "Praegu ei õnnestu maksuaruannet laadida. Palun proovi hiljem uuesti.",
-  "savingsFundTaxReport.retry": "Proovi uuesti"
+  "savingsFundTaxReport.retry": "Proovi uuesti",
+  "savingsFundTaxReport.investmentAccount.heading": "Investeerimiskonto",
+  "savingsFundTaxReport.investmentAccount.explainer": "Kui ostsid osakuid investeerimiskontolt, siis nende kasu tuludeklaratsioonis kasuna ei deklareerita. Ütle meile, milline konto see on, ja näitame need tehingud eraldi. Konto enda deklareerid maksuametile ise.",
+  "savingsFundTaxReport.investmentAccount.label": "Investeerimiskonto IBAN",
+  "savingsFundTaxReport.investmentAccount.save": "Salvesta",
+  "savingsFundTaxReport.investmentAccount.invalid": "See ei ole korrektne kontonumber.",
+  "savingsFundTaxReport.investmentAccount.gainsHeading": "Investeerimiskontolt ostetud osakud",
+  "savingsFundTaxReport.investmentAccount.notAGain": "Seda sa tuludeklaratsioonis kasuna ei deklareeri. Maks tuleb tasuda alles siis, kui investeerimiskontolt on välja võetud rohkem, kui sinna on sisse makstud.",
+  "savingsFundTaxReport.investmentAccount.redeemedOutside": "Osa väljamakseid läks mujale kui investeerimiskontole, seega me ei saa tehinguid kindlalt kaheks jagada – allpool on need kõik koos. Maksu edasilükkamise säilimiseks peab investeerimiskontolt ostetud osakute raha laekuma tagasi samale kontole."
 }

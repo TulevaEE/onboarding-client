@@ -5,6 +5,7 @@ const lastYear = moment().year() - 1;
 
 export const savingsFundTaxReportProfiles: Record<string, SavingsFundTaxReport> = {
   ONE_REDEMPTION: {
+    investmentAccount: null,
     year: lastYear,
     method: 'WEIGHTED_AVERAGE',
     totalGain: 58.96,
@@ -19,6 +20,7 @@ export const savingsFundTaxReportProfiles: Record<string, SavingsFundTaxReport> 
     ],
   },
   LOSS: {
+    investmentAccount: null,
     year: lastYear,
     method: 'WEIGHTED_AVERAGE',
     totalGain: -32.5,
@@ -33,6 +35,7 @@ export const savingsFundTaxReportProfiles: Record<string, SavingsFundTaxReport> 
     ],
   },
   NOTHING_SOLD: {
+    investmentAccount: null,
     year: lastYear,
     method: 'WEIGHTED_AVERAGE',
     totalGain: 0,
