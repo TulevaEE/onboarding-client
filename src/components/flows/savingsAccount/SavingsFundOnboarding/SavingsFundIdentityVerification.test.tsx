@@ -225,4 +225,28 @@ describe('SavingsFundIdentityVerification', () => {
       screen.queryByRole('heading', { name: 'Identity verification complete' }),
     ).not.toBeInTheDocument();
   });
+
+  it('lets the person submit again after a failed submit', async () => {
+    let posts = 0;
+    server.use(
+      rest.post('http://localhost/v1/kyc/surveys', (_req, res, ctx) => {
+        posts += 1;
+        return res(ctx.status(posts === 1 ? 500 : 200));
+      }),
+    );
+
+    renderWrapped(<SavingsFundIdentityVerification />);
+
+    expect(await screen.findByText('1/4')).toBeInTheDocument();
+    await completeIdentitySteps();
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+    expect(
+      await screen.findByRole('heading', { name: 'Identity verification complete' }),
+    ).toBeInTheDocument();
+    expect(posts).toBe(2);
+  });
 });
