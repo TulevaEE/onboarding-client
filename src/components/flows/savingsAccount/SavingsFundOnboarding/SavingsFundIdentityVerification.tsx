@@ -49,14 +49,8 @@ const Outcome: FC<{ variant: OutcomeVariant }> = ({ variant }) => {
   );
 };
 
-// Identity verification on its own, for someone connected to a company that is
-// applying to the savings fund. It submits the same four identity steps as the
-// personal and company flows, but as IDENTITY_ONLY: that runs the KYC screening
-// and persists the KYC_CHECK the company's RELATED_PERSONS_KYC requirement
-// reads, while deliberately leaving this person's own savings-fund onboarding
-// untouched. Joining the fund is never a side effect of helping a co-owner.
-// The backend guarantees that split in SavingsFundKycCheckEventListener, which
-// ignores every purpose other than PERSONAL_ONBOARDING.
+// SavingsFundKycCheckEventListener ignores every purpose but PERSONAL_ONBOARDING, so an
+// IDENTITY_ONLY submission never joins this person to the fund.
 export const SavingsFundIdentityVerification: FC = () => {
   usePageTitle('pageTitle.savingsFundIdentityVerification');
 

@@ -112,8 +112,6 @@ describe('SavingsFundIdentityVerification', () => {
     expect(screen.queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument();
   });
 
-  // A click lands while the previous click is still awaiting validation, so both
-  // handlers run against the same step index.
   const doubleClickContinue = async () => {
     const button = await screen.findByRole('button', { name: 'Continue' });
     userEvent.click(button);
@@ -126,8 +124,6 @@ describe('SavingsFundIdentityVerification', () => {
     expect(await screen.findByText('1/4')).toBeInTheDocument();
     await fillCitizenshipStep();
 
-    // Fill residency without continuing, so both clicks pass validation and the
-    // step really can be advanced twice.
     expect(
       await screen.findByRole('heading', { name: 'Your permanent residence', level: 2 }),
     ).toBeInTheDocument();
@@ -142,8 +138,6 @@ describe('SavingsFundIdentityVerification', () => {
 
     await doubleClickContinue();
 
-    // One click, one step: contact details, not the PEP step beyond it, which
-    // would leave the email nobody entered to be submitted empty.
     expect(
       await screen.findByRole('heading', { name: 'Your contact details', level: 2 }),
     ).toBeInTheDocument();

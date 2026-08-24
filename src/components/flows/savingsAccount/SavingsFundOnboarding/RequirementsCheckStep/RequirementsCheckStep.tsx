@@ -71,9 +71,6 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
   );
   const identityIncomplete =
     isSuccess && (userIdentityIncomplete || otherPersonsIdentityIncomplete);
-  // Identity verification only, not a personal onboarding: a connected person
-  // has to be identified before the company can join, but nothing obliges them
-  // to open an account of their own.
   const identityVerificationUrl = `${window.location.origin}/savings-fund/onboarding/identity`;
 
   // Every validation error except the identity-KYC ones (which have their own
