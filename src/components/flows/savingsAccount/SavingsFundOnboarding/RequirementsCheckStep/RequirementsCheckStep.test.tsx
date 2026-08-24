@@ -396,7 +396,9 @@ describe('RequirementsCheckStep', () => {
     );
 
     expect(
-      await screen.findByText(/everyone connected to it must verify their identity in Tuleva/i),
+      await screen.findByText(
+        /once everyone connected to it has verified their identity in Tuleva/i,
+      ),
     ).toBeInTheDocument();
     // The raw backend KYC message must not leak into the UI as a bullet.
     expect(screen.queryByText(/Isikusamasuse tuvastamine on lõpetamata/)).not.toBeInTheDocument();
@@ -435,17 +437,41 @@ describe('RequirementsCheckStep', () => {
       />,
     );
 
+    // Naming who is outstanding is what stops the applicant from clicking the
+    // link themselves: the list above this notice includes them too.
     expect(
-      await screen.findByText(/Share this link with the connected people above/i),
+      await screen.findByText('Identity verification still missing: Person McPerson'),
     ).toBeInTheDocument();
-    // Identity verification, not a personal onboarding: the connected person is
-    // asked to be identified, not to open an account of their own.
+    expect(screen.getByText(/Send them this link/i)).toBeInTheDocument();
+    expect(screen.getByText(/press "Check again"/i)).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: 'http://localhost/savings-fund/onboarding/identity' }),
     ).toHaveAttribute('target', '_blank');
     expect(
       screen.queryByText('Your identity verification is under review'),
     ).not.toBeInTheDocument();
+  });
+
+  it('asks everyone listed when the backend names nobody', async () => {
+    server.use(
+      relatedPersonsError({
+        code: 'OTHER_RELATED_PERSONS_KYC',
+        message: 'Isikusamasuse tuvastamine on lõpetamata',
+      }),
+    );
+
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(
+      await screen.findByText(/Share this link with everyone connected to the company/i),
+    ).toBeInTheDocument();
+    // Nobody was named, so the applicant's own status is unknown and the copy
+    // must not claim otherwise.
+    expect(screen.queryByText(/Identity verification still missing/i)).not.toBeInTheDocument();
   });
 
   it('shows both the under-review notice and the shareable link when the user and other people are unverified', async () => {
@@ -460,9 +486,7 @@ describe('RequirementsCheckStep', () => {
     expect(
       await screen.findByText('Your identity verification is under review'),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/Share this link with the connected people above/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Send them this link/i)).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: 'Check again' })).toHaveLength(1);
   });
 
@@ -484,7 +508,7 @@ describe('RequirementsCheckStep', () => {
       await screen.findByText('Ettevõtte omandistruktuur ei ole toetatud'),
     ).toBeInTheDocument();
     expect(
-      screen.queryByText(/everyone connected to it must verify their identity in Tuleva/i),
+      screen.queryByText(/once everyone connected to it has verified their identity in Tuleva/i),
     ).not.toBeInTheDocument();
     expect(
       screen.queryByText('Your identity verification is under review'),
