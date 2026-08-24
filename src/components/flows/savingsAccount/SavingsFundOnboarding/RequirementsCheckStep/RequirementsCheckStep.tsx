@@ -8,6 +8,7 @@ import { Shimmer } from '../../../../common/shimmer/Shimmer';
 import { CompanyOnboardingFormData } from '../types';
 import { errorCode, errorMessage } from './collectValidationErrors';
 import { hasNoValidationErrors } from './hasNoValidationErrors';
+import { unverifiedRelatedPersonNames } from './unverifiedRelatedPersonNames';
 
 // Identity-verification codes the backend sets on the relatedPersons field.
 // USER_KYC: the logged-in user's own verification did not pass automatically — the
@@ -72,6 +73,9 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
   const identityIncomplete =
     isSuccess && (userIdentityIncomplete || otherPersonsIdentityIncomplete);
   const identityVerificationUrl = `${window.location.origin}/savings-fund/onboarding/identity`;
+  const unverifiedNames = data
+    ? unverifiedRelatedPersonNames(data.relatedPersons.errors, data.relatedPersons.value)
+    : [];
 
   // Every validation error except the identity-KYC ones (which have their own
   // dedicated dead-end block) — these are genuine "company does not fit" reasons.
@@ -191,13 +195,31 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
                   </span>
                 </div>
                 <div className="d-flex flex-column gap-1">
+                  {unverifiedNames.length > 0 && (
+                    <span className="fw-bold">
+                      <FormattedMessage
+                        id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.pending"
+                        values={{ names: unverifiedNames.join(', ') }}
+                      />
+                    </span>
+                  )}
                   <span>
-                    <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.shareInstruction" />
+                    {unverifiedNames.length > 0 ? (
+                      <FormattedMessage
+                        id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.shareInstruction"
+                        values={{ count: unverifiedNames.length }}
+                      />
+                    ) : (
+                      <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.shareInstructionAll" />
+                    )}
                   </span>
                   <a href={identityVerificationUrl} target="_blank" rel="noopener noreferrer">
                     {identityVerificationUrl}
                   </a>
                 </div>
+                <span>
+                  <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.thenCheckAgain" />
+                </span>
               </>
             )}
             <button
