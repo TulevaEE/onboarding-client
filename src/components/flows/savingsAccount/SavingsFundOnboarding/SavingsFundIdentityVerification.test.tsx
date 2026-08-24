@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -180,6 +180,34 @@ describe('SavingsFundIdentityVerification', () => {
       await screen.findByRole('heading', { name: 'Identity verification complete' }),
     ).toBeInTheDocument();
     expect(posts).toBe(1);
+  });
+
+  it('does not let the person walk back while the answers are in flight', async () => {
+    let releaseSubmit = () => {};
+    const submitReleased = new Promise<void>((resolve) => {
+      releaseSubmit = resolve;
+    });
+    server.use(
+      rest.post('http://localhost/v1/kyc/surveys', async (_req, res, ctx) => {
+        await submitReleased;
+        return res(ctx.status(200));
+      }),
+    );
+
+    renderWrapped(<SavingsFundIdentityVerification />);
+
+    expect(await screen.findByText('1/4')).toBeInTheDocument();
+    await completeIdentitySteps();
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Back' })).toBeDisabled();
+    });
+
+    releaseSubmit();
+
+    expect(
+      await screen.findByRole('heading', { name: 'Identity verification complete' }),
+    ).toBeInTheDocument();
   });
 
   it('surfaces a submit failure instead of claiming the verification is done', async () => {
