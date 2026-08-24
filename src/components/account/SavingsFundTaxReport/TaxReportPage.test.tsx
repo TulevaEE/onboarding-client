@@ -23,6 +23,7 @@ const totalGainOf = (year: number, method: CostBasisMethod) => {
 };
 
 const reportFor = (year: number, method: CostBasisMethod): SavingsFundTaxReport => ({
+  investmentAccount: null,
   year,
   method,
   totalGain: totalGainOf(year, method),
@@ -50,6 +51,13 @@ const reportHandler = (delayInMilliseconds: number) =>
     requestedReports.push({ year, method });
     return res(ctx.delay(delayInMilliseconds), ctx.json(reportFor(year, method)));
   });
+
+const investmentAccountBackend = () =>
+  server.use(
+    rest.get('http://localhost/v1/savings-fund/investment-account', (req, res, ctx) =>
+      res(ctx.json({ iban: null })),
+    ),
+  );
 
 const taxReportBackend = () => server.use(reportHandler(0));
 
@@ -128,6 +136,7 @@ beforeEach(() => {
   initializeConfiguration();
   requestedReports.length = 0;
   taxReportBackend();
+  investmentAccountBackend();
   actingFor('PERSON');
 });
 

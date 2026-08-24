@@ -460,11 +460,23 @@ export interface RealisedGain {
   gain: number;
 }
 
+export interface InvestmentAccountGains {
+  iban: string;
+  totalGain: number;
+  redemptions: RealisedGain[];
+  redeemedOutsideTheAccount: boolean;
+}
+
 export interface SavingsFundTaxReport {
   year: number;
   method: CostBasisMethod;
   totalGain: number;
   redemptions: RealisedGain[];
+  investmentAccount: InvestmentAccountGains | null;
+}
+
+export interface InvestmentAccount {
+  iban: string | null;
 }
 
 export interface Transaction {

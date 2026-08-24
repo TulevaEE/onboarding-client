@@ -71,9 +71,30 @@ export const TaxReportView: React.FunctionComponent<{
           </>
         )}
 
-        <div className="alert alert-warning mt-3 mb-0">
-          <FormattedMessage id="savingsFund.statement.tax.investmentAccount" />
-        </div>
+        {report.investmentAccount === null && (
+          <div className="alert alert-warning mt-3 mb-0">
+            <FormattedMessage id="savingsFund.statement.tax.investmentAccount" />
+          </div>
+        )}
+
+        {report.investmentAccount?.redeemedOutsideTheAccount && (
+          <div role="alert" className="alert alert-warning mt-3 mb-0">
+            <FormattedMessage id="savingsFundTaxReport.investmentAccount.redeemedOutside" />
+          </div>
+        )}
+
+        {report.investmentAccount !== null &&
+          !report.investmentAccount.redeemedOutsideTheAccount && (
+            <div className="alert alert-info mt-3 mb-0">
+              <div className="fw-medium mb-1">
+                <FormattedMessage id="savingsFundTaxReport.investmentAccount.gainsHeading" />
+              </div>
+              <Euro amount={report.investmentAccount.totalGain} />
+              <p className="small mt-2 mb-0">
+                <FormattedMessage id="savingsFundTaxReport.investmentAccount.notAGain" />
+              </p>
+            </div>
+          )}
       </div>
     )}
 

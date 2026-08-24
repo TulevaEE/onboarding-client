@@ -1940,5 +1940,13 @@
   "savingsFundTaxReport.subtitle": "Täiendav Kogumisfond redemptions and the calculation for your income tax return.",
   "savingsFundTaxReport.pillarNote": "This report covers Täiendav Kogumisfond only. Tax on II and III pillar is handled automatically and is not included here.",
   "savingsFundTaxReport.unavailable": "We cannot load your tax report right now. Please try again later.",
-  "savingsFundTaxReport.retry": "Try again"
+  "savingsFundTaxReport.retry": "Try again",
+  "savingsFundTaxReport.investmentAccount.heading": "Investment account",
+  "savingsFundTaxReport.investmentAccount.explainer": "If you bought units with money from an investment account, the gain on them is not declared as a gain. Tell us which account that is and we will show those transactions separately. You declare the account itself to the Tax and Customs Board yourself.",
+  "savingsFundTaxReport.investmentAccount.label": "Investment account IBAN",
+  "savingsFundTaxReport.investmentAccount.save": "Save",
+  "savingsFundTaxReport.investmentAccount.invalid": "That is not a valid account number.",
+  "savingsFundTaxReport.investmentAccount.gainsHeading": "Units bought from the investment account",
+  "savingsFundTaxReport.investmentAccount.notAGain": "You do not declare this as a gain. Tax falls due only once more money has left the investment account than went into it.",
+  "savingsFundTaxReport.investmentAccount.redeemedOutside": "Some money was paid out to an account other than the investment account, so we cannot split these transactions with confidence – all of them are shown together below. For the deferral to hold, money from units bought on an investment account has to come back to that same account."
 }
