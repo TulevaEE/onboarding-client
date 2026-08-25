@@ -8,16 +8,13 @@ import { Shimmer } from '../../../../common/shimmer/Shimmer';
 import { CompanyOnboardingFormData } from '../types';
 import { errorCode, errorMessage } from './collectValidationErrors';
 import { hasNoValidationErrors } from './hasNoValidationErrors';
+import {
+  IDENTITY_KYC_CODES,
+  OTHER_RELATED_PERSONS_KYC_CODE,
+  USER_KYC_CODE,
+  onlyIdentityVerificationMissing,
+} from './onlyIdentityVerificationMissing';
 import { unverifiedRelatedPersonNames } from './unverifiedRelatedPersonNames';
-
-// Identity-verification codes the backend sets on the relatedPersons field.
-// USER_KYC: the logged-in user's own verification did not pass automatically — the
-// flow has already collected their identity, so this is a manual-review dead end.
-// OTHER_RELATED_PERSONS_KYC: someone else connected to the company is unverified
-// (offer a shareable link).
-const USER_KYC_CODE = 'USER_KYC';
-const OTHER_RELATED_PERSONS_KYC_CODE = 'OTHER_RELATED_PERSONS_KYC';
-const IDENTITY_KYC_CODES = [USER_KYC_CODE, OTHER_RELATED_PERSONS_KYC_CODE];
 
 type RequirementsCheckStepProps = {
   control: Control<CompanyOnboardingFormData>;
@@ -44,7 +41,13 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
           return 'No data';
         }
 
-        return hasNoValidationErrors(companyData) || 'Validation failed';
+        // An unverified person is not a reason to stop: the applicant can finish
+        // the form and the submitted application waits for them.
+        return (
+          hasNoValidationErrors(companyData) ||
+          onlyIdentityVerificationMissing(companyData) ||
+          'Validation failed'
+        );
       },
     },
   });

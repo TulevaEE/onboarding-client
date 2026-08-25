@@ -64,6 +64,7 @@ import {
   SavingsFundOnboarding,
   SavingsFundOnboardingChooser,
   SavingsFundOnboardingPending,
+  SavingsFundOnboardingWaiting,
   SavingsFundOnboardingSuccess,
 } from '../flows/savingsAccount/SavingsFundOnboarding';
 import {
@@ -197,6 +198,10 @@ export class LoggedInApp extends PureComponent {
             <Route
               path="/savings-fund/onboarding/pending"
               component={SavingsFundOnboardingPending}
+            />
+            <Route
+              path="/savings-fund/onboarding/waiting"
+              component={SavingsFundOnboardingWaiting}
             />
             <Route exact path="/savings-fund/onboarding/person" component={SavingsFundOnboarding} />
             <Route

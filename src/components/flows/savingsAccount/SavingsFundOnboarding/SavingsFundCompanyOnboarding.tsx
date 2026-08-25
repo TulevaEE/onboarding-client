@@ -7,6 +7,7 @@ import { CompanyOnboardingFormData } from './types';
 import { BusinessRegistryStep } from './BusinessRegistryStep';
 import { RequirementsCheckStep } from './RequirementsCheckStep';
 import { hasNoValidationErrors } from './RequirementsCheckStep/hasNoValidationErrors';
+import { onlyIdentityVerificationMissing } from './RequirementsCheckStep/onlyIdentityVerificationMissing';
 import { CompanyAddressStep } from './CompanyAddressStep';
 import { InvestmentGoalStep } from './InvestmentGoalStep';
 import { InvestableAssetsStep } from './InvestableAssetsStep';
@@ -66,8 +67,15 @@ export const SavingsFundCompanyOnboarding = () => {
       openCompanyAccount();
       return;
     }
-    // REJECTED — legal entities never receive PENDING. Show the generic
-    // "we'll review it" outcome rather than surfacing a hard rejection.
+    if (onboardingStatus.status === 'PENDING') {
+      // Everything about the company passed and it is only waiting for a person
+      // to be verified. It completes on its own once they are, so say that
+      // rather than claiming a review is under way.
+      history.push('/savings-fund/onboarding/waiting');
+      return;
+    }
+    // REJECTED — show the generic "we'll review it" outcome rather than
+    // surfacing a hard rejection.
     history.push('/savings-fund/onboarding/pending');
   }, [onboardingStatus, submittedRegistryCode, switchRole, history]);
 
@@ -218,13 +226,15 @@ export const SavingsFundCompanyOnboarding = () => {
   const totalSections = steps.length;
   const currentSection = activeSection + 1;
   const isTermsStep = activeSection === totalSections - 1;
-  // The requirements step cannot be passed while the company fails validation,
-  // so disable Continue with the reason on screen instead of letting the click
-  // silently no-op.
+  // The requirements step cannot be passed while the company itself fails a
+  // check, so disable Continue with the reason on screen instead of letting the
+  // click silently no-op. An outstanding identity verification is not such a
+  // reason: the applicant finishes the form and the application waits.
   const requirementsStepBlocked =
     activeSection === identityStepCount + 1 &&
     companyValidatedData != null &&
-    !hasNoValidationErrors(companyValidatedData);
+    !hasNoValidationErrors(companyValidatedData) &&
+    !onlyIdentityVerificationMissing(companyValidatedData);
 
   const showPreviousSection = () => {
     if (activeSection === 0) {
