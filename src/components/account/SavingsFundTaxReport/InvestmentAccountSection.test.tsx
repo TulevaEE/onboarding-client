@@ -52,7 +52,7 @@ const investmentAccountBackendRefusing = () =>
       res(ctx.json({ iban: null })),
     ),
     rest.put('http://localhost/v1/savings-fund/investment-account', (req, res, ctx) =>
-      res(ctx.status(400), ctx.json({ errors: [{ code: 'investmentAccount.iban.invalid' }] })),
+      res(ctx.status(400), ctx.json({ errors: [{ code: 'ValidIban', path: 'iban' }] })),
     ),
   );
 

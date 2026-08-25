@@ -5,8 +5,8 @@ import { useDeclareInvestmentAccount, useInvestmentAccount } from './api/investm
 const ERROR_ID = 'investment-account-error';
 
 const isRejectedAccountNumber = (error: unknown): boolean => {
-  const body = (error as { body?: { errors?: { code?: string }[] } })?.body;
-  return body?.errors?.some((one) => one.code === 'investmentAccount.iban.invalid') ?? false;
+  const body = (error as { body?: { errors?: { path?: string }[] } })?.body;
+  return body?.errors?.some((one) => one.path === 'iban') ?? false;
 };
 
 export const InvestmentAccountSection: React.FunctionComponent = () => {
