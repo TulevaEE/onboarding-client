@@ -1168,7 +1168,7 @@
   "savingsFund.onboarding.pending.description": "Thanks, we received your application. We'll review it within a week and let you know the decision by email.",
   "savingsFund.onboarding.pending.myAccountButton.label": "My account",
   "savingsFund.onboarding.waiting.title": "Everything is in. We are waiting for one more identity verification",
-  "savingsFund.onboarding.waiting.description": "Your application is with us. Everyone connected to the company still has to verify their identity in Tuleva, and they do not need to open an account of their own. We check again as soon as someone does, and email you once we have a decision. You do not need to do anything more here.",
+  "savingsFund.onboarding.waiting.description": "Your application is with us. Everyone connected to the company still has to verify their identity in Tuleva, and they do not need to open an account of their own. We check again as soon as someone does, and once everyone is verified the company account opens by itself. You do not need to do anything more here.",
   "savingsFund.onboarding.waiting.pageTitle": "Waiting for identity verification",
   "savingsFund.onboarding.waiting.accountButton.label": "Back to account",
   "secondPillarTaxWin.title": "Your benefit from increasing your II pillar contribution",
