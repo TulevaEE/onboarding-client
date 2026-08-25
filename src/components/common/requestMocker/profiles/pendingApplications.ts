@@ -1,6 +1,45 @@
 import moment from 'moment';
 import { Application } from '../../apiModels';
 
+const pendingTransfer = (pillar: 2 | 3): Application => ({
+  id: pillar === 2 ? 9001 : 9002,
+  status: 'PENDING',
+  creationTime: moment().subtract(1, 'hours').toISOString(),
+  type: 'TRANSFER',
+  details: {
+    sourceFund: {
+      fundManager: { name: 'Swedbank' },
+      isin: pillar === 2 ? 'EE3600109442' : 'EE3600071031',
+      name: pillar === 2 ? 'Swedbank II' : 'Swedbank III',
+      managementFeeRate: 0.0034,
+      pillar,
+      ongoingChargesFigure: 0.0096,
+      nav: 1,
+      status: 'ACTIVE',
+      inceptionDate: '2017-01-01',
+    },
+    exchanges: [
+      {
+        targetFund: {
+          name:
+            pillar === 2 ? 'Tuleva Maailma Aktsiate Pensionifond' : 'Tuleva III Samba Pensionifond',
+          fundManager: { name: 'Tuleva' },
+          pillar,
+          isin: pillar === 2 ? 'EE3600109435' : 'EE3600001707',
+          ongoingChargesFigure: 0.0049,
+          nav: 1,
+          managementFeeRate: 0.0049,
+          status: 'ACTIVE',
+          inceptionDate: '2020-01-01',
+        },
+        targetPik: null,
+        amount: 1,
+      },
+    ],
+    cancellationDeadline: moment().add(7, 'days').toISOString(),
+  },
+});
+
 export const pendingApplicationsProfiles: Record<string, Application[]> = {
   ALL_TYPES: [
     {
@@ -392,4 +431,8 @@ export const pendingApplicationsProfiles: Record<string, Application[]> = {
       },
     },
   ] as Application[],
+  // Nothing pending: the plain "just submitted a new application" state.
+  NONE: [],
+  SECOND_PILLAR_TRANSFER: [pendingTransfer(2)],
+  THIRD_PILLAR_TRANSFER: [pendingTransfer(3)],
 };
