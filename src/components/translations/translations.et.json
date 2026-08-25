@@ -1248,6 +1248,10 @@
   "savingsFund.onboarding.pending.title": "Taotlus on läbivaatamisel",
   "savingsFund.onboarding.pending.description": "Aitäh, saime su taotluse kätte. Vaatame selle läbi nädala jooksul ja teavitame sind otsusest meiliga.",
   "savingsFund.onboarding.pending.myAccountButton.label": "Minu konto",
+  "savingsFund.onboarding.waiting.title": "Kõik on esitatud. Ootame veel isikutuvastust",
+  "savingsFund.onboarding.waiting.description": "Sinu avaldus on meil olemas. Kõik ettevõttega seotud isikud peavad Tulevas isikutuvastuse läbima ja neil ei ole vaja oma kontot avada. Kontrollime kohe, kui keegi selle teeb, ja anname otsusest meiliga teada. Sul ei ole siin vaja rohkem midagi teha.",
+  "savingsFund.onboarding.waiting.pageTitle": "Ootame isikutuvastust",
+  "savingsFund.onboarding.waiting.accountButton.label": "Tagasi kontole",
 
   "secondPillarTaxWin.title": "Sinu kasu II samba panuse tõstmisest",
   "secondPillarTaxWin.title.2PercentContribution": "Kuidas saada II sambast suuremat võitu?",
@@ -1430,9 +1434,9 @@
   "savingsFund.statement.tax.tableTotal": "Kokku (tabelisse 6.1)",
   "savingsFund.statement.tax.tableEmpty": "Sel aastal tagasivõtmisi pole.",
   "savingsFund.identityVerification.done.title": "Isikutuvastus on tehtud",
-  "savingsFund.identityVerification.done.description": "Sinu pool on valmis. Ettevõtte avalduse saab nüüd lõpuni viia see, kes selle alustas. Sul ei ole vaja rohkem midagi teha.",
+  "savingsFund.identityVerification.done.description": "Sinu pool on valmis. Kui ka teised ettevõttega seotud isikud on isikutuvastuse läbinud, avaneb ettevõtte konto ise. Sul ei ole vaja rohkem midagi teha.",
   "savingsFund.identityVerification.alreadyDone.title": "Sinu isikutuvastus on juba tehtud",
-  "savingsFund.identityVerification.alreadyDone.description": "Sul ei ole vaja midagi teha. Ettevõtte avalduse saab lõpuni viia see, kes selle alustas.",
+  "savingsFund.identityVerification.alreadyDone.description": "Sul ei ole vaja midagi teha. Kui ka teised ettevõttega seotud isikud on isikutuvastuse läbinud, avaneb ettevõtte konto ise.",
   "savingsFund.identityVerification.accountButton.label": "Minu kontole",
 
   "flows.savingsFundOnboarding.title": "Täiendava Kogumisfondi avamine",

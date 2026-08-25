@@ -94,9 +94,7 @@ describe('SavingsFundIdentityVerification', () => {
     expect(
       await screen.findByRole('heading', { name: 'Identity verification complete' }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/whoever started the company's application can now continue it/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/the company account opens by itself/i)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument();
   });
 

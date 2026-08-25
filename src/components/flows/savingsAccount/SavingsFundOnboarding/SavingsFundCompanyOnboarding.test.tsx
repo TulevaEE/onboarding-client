@@ -183,6 +183,77 @@ describe('SavingsFundCompanyOnboarding', () => {
     });
   });
 
+  it('shows the waiting page when the company is only waiting for a verification', async () => {
+    const history = createMemoryHistory();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history);
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
+        res(ctx.json({ status: 'PENDING' })),
+      ),
+    );
+
+    userEvent.click(continueButton());
+
+    // Nothing is being reviewed, so this must not land on the rejection page.
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/waiting');
+    });
+  });
+
+  it('lets the applicant finish the form while a connected person is unverified', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
+        res(
+          ctx.json({
+            ...mockValidatedCompany,
+            relatedPersons: {
+              value: mockValidatedCompany.relatedPersons.value,
+              errors: [
+                {
+                  code: 'OTHER_RELATED_PERSONS_KYC',
+                  message: 'Isikusamasuse tuvastamine on lõpetamata',
+                },
+              ],
+            },
+          }),
+        ),
+      ),
+    );
+
+    await navigateToStep2();
+
+    await waitFor(() => {
+      expect(continueButton()).toBeEnabled();
+    });
+  });
+
+  it('still blocks the applicant when the company itself fails a check', async () => {
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
+        res(
+          ctx.json({
+            ...mockValidatedCompany,
+            status: {
+              value: 'INVALID',
+              errors: [{ code: 'COMPANY_ACTIVE', message: 'Ettevõte ei ole aktiivne' }],
+            },
+          }),
+        ),
+      ),
+    );
+
+    await navigateToStep2();
+
+    await waitFor(() => {
+      expect(continueButton()).toBeDisabled();
+    });
+  });
+
   it('includes registry code as query parameter in survey POST', async () => {
     switchRoleBackend(server);
     await navigateToStep2();
@@ -430,14 +501,16 @@ describe('SavingsFundCompanyOnboarding', () => {
     await navigateToStep2();
 
     expect(await screen.findByRole('button', { name: 'Check again' })).toBeInTheDocument();
-    expect(continueButton()).toBeDisabled();
+    // An outstanding verification no longer stops the applicant: they can finish
+    // the form and the submitted application waits for the person.
+    expect(continueButton()).toBeEnabled();
 
     userEvent.click(screen.getByRole('button', { name: 'Check again' }));
 
     await waitFor(() => {
-      expect(continueButton()).toBeEnabled();
+      expect(screen.queryByRole('button', { name: 'Check again' })).not.toBeInTheDocument();
     });
-    expect(screen.queryByRole('button', { name: 'Check again' })).not.toBeInTheDocument();
+    expect(continueButton()).toBeEnabled();
   });
 
   it('collects identity before the company steps when it is not on file', async () => {
