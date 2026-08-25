@@ -41,8 +41,6 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
           return 'No data';
         }
 
-        // An unverified person is not a reason to stop: the applicant can finish
-        // the form and the submitted application waits for them.
         return (
           hasNoValidationErrors(companyData) ||
           onlyIdentityVerificationMissing(companyData) ||
