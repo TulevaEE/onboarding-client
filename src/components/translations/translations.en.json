@@ -500,7 +500,7 @@
   "thirdPillarPayment.confirmation.yes": "Yes, done",
   "thirdPillarPayment.confirmation.showDetails": "Show the payment details again",
   "thirdPillarPayment.confirmation.done.title.recurring": "Recurring payment set up",
-  "thirdPillarPayment.confirmation.done.message.recurring": "Your bank makes the first payment on the date you chose. You can change the amount at any time.",
+  "thirdPillarPayment.confirmation.done.message.recurring": "From now on you save into your third pillar automatically. The first payment is on the date you chose, and you can change the amount in your internet bank whenever you need.",
   "thirdPillarSuccess.done": "Payment done",
   "thirdPillarSuccess.message": "Payment will reach the fund within 2 working days.",
   "thirdPillarSuccess.notice.header": "Euros paid in fees earn no returns",

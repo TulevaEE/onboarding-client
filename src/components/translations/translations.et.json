@@ -540,7 +540,7 @@
   "thirdPillarPayment.confirmation.yes": "Jah, valmis",
   "thirdPillarPayment.confirmation.showDetails": "Näita makseandmeid uuesti",
   "thirdPillarPayment.confirmation.done.title.recurring": "Püsimakse on seadistatud",
-  "thirdPillarPayment.confirmation.done.message.recurring": "Pank teeb esimese makse sinu valitud kuupäeval. Summat saad alati muuta.",
+  "thirdPillarPayment.confirmation.done.message.recurring": "Edaspidi kogud III sambasse automaatselt. Esimene makse toimub sinu valitud kuupäeval ja summat saad vajadusel internetipangas muuta.",
 
   "thirdPillarSuccess.done": "Sissemakse tehtud",
   "thirdPillarSuccess.message": "Makse jõuab fondi 2 tööpäeva jooksul.",
