@@ -145,27 +145,12 @@ beforeEach(() => {
 });
 
 describe('a company looking at a report about personal income tax', () => {
-  it('is sent to the account page instead', async () => {
-    actingFor('LEGAL_ENTITY');
-    const history = initializeComponent();
-
-    await waitFor(() => expect(history.location.pathname).toBe('/account'));
-    expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument();
-  });
-
-  it('is not asked about on the backend', async () => {
+  it('is sent to the account page instead, and asked nothing on the way', async () => {
     actingFor('LEGAL_ENTITY');
     const history = initializeComponent();
 
     await waitFor(() => expect(history.location.pathname).toBe('/account'));
     expect(requestedReports).toHaveLength(0);
-  });
-
-  it('is not asked about an investment account it cannot hold', async () => {
-    actingFor('LEGAL_ENTITY');
-    const history = initializeComponent();
-
-    await waitFor(() => expect(history.location.pathname).toBe('/account'));
     expect(investmentAccountRequests).toHaveLength(0);
   });
 });

@@ -105,24 +105,13 @@ describe('the tax report the backend calculated', () => {
 });
 
 describe('an investment account someone declared', () => {
-  const investmentAccount = (overrides = {}) => ({
-    iban: 'EE471000001020145685',
-    totalGain: 60,
-    redemptions: [],
-    redeemedOutsideTheAccount: false,
-    ...overrides,
-  });
+  const investmentAccount = (overrides = {}) => ({ totalGain: 60, ...overrides });
 
-  it('keeps its gains apart from the gains someone declares', () => {
+  it('keeps its gains apart, and stops asking which account the money came from', () => {
     render(report({ investmentAccount: investmentAccount() }));
 
     expect(screen.getByText(/Units bought from the investment account/)).toBeInTheDocument();
     expect(screen.getByText(/do not declare this as a gain/)).toBeInTheDocument();
-  });
-
-  it('stops asking which account the money came from once it is known', () => {
-    render(report({ investmentAccount: investmentAccount() }));
-
     expect(screen.queryByText(/We do not yet know which account/)).not.toBeInTheDocument();
   });
 
@@ -133,7 +122,7 @@ describe('an investment account someone declared', () => {
   });
 
   it('says the transactions could not be split when money went elsewhere', () => {
-    render(report({ investmentAccount: investmentAccount({ redeemedOutsideTheAccount: true }) }));
+    render(report({ investmentAccount: investmentAccount({ totalGain: null }) }));
 
     expect(screen.getByRole('alert')).toHaveTextContent(/cannot split these transactions/i);
     expect(screen.queryByText(/Units bought from the investment account/)).not.toBeInTheDocument();
