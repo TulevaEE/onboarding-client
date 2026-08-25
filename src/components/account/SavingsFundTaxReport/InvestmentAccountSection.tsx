@@ -1,15 +1,15 @@
 import React, { useRef, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import {
-  isRejectedAccountNumber,
-  useDeclareInvestmentAccount,
-  useInvestmentAccount,
-} from './api/investmentAccount.api';
+import { FormattedMessage } from 'react-intl';
+import { useDeclareInvestmentAccount, useInvestmentAccount } from './api/investmentAccount.api';
 
 const ERROR_ID = 'investment-account-error';
 
+const isRejectedAccountNumber = (error: unknown): boolean => {
+  const body = (error as { body?: { errors?: { code?: string }[] } })?.body;
+  return body?.errors?.some((one) => one.code === 'investmentAccount.iban.invalid') ?? false;
+};
+
 export const InvestmentAccountSection: React.FunctionComponent = () => {
-  const intl = useIntl();
   const { data: investmentAccount, isError, refetch } = useInvestmentAccount();
   const declareInvestmentAccount = useDeclareInvestmentAccount();
 
@@ -51,8 +51,7 @@ export const InvestmentAccountSection: React.FunctionComponent = () => {
               return;
             }
             declaring.current = true;
-            const iban = value.trim();
-            declareInvestmentAccount.mutate(iban === '' ? null : iban, {
+            declareInvestmentAccount.mutate(value.trim(), {
               onSuccess: () => setTyped(null),
               onSettled: () => {
                 declaring.current = false;
@@ -78,7 +77,7 @@ export const InvestmentAccountSection: React.FunctionComponent = () => {
             className="btn btn-sm btn-primary"
             disabled={declareInvestmentAccount.isLoading}
           >
-            {intl.formatMessage({ id: 'savingsFundTaxReport.investmentAccount.save' })}
+            <FormattedMessage id="savingsFundTaxReport.investmentAccount.save" />
           </button>
         </form>
       )}

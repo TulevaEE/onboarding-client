@@ -461,10 +461,7 @@ export interface RealisedGain {
 }
 
 export interface InvestmentAccountGains {
-  iban: string;
-  totalGain: number;
-  redemptions: RealisedGain[];
-  redeemedOutsideTheAccount: boolean;
+  totalGain: number | null;
 }
 
 export interface SavingsFundTaxReport {
