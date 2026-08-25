@@ -1326,7 +1326,7 @@
   "savingsFund.statement.tax.lead": "When you file your income tax return, add this amount to table 6.1. We have done the calculation for you.",
   "savingsFund.statement.tax.nothing": "Nothing to declare this year",
   "savingsFund.statement.tax.nothingLead": "You did not redeem any units this year.",
-  "savingsFund.statement.tax.investmentAccount": "If you bought units through an investment account, they are not counted here — with an investment account you only declare payments in and out of the account. We do not yet know which account your money came from, so please check this.",
+  "savingsFund.statement.tax.investmentAccount": "If you bought units with money from an investment account, the gain on them is not declared as a gain. We do not yet know which account your money came from, so everything here is counted the ordinary way. Tell us your investment account above and we will show those separately.",
   "savingsFund.statement.tax.detailsHeading": "Redemptions and calculation",
   "savingsFund.statement.tax.method": "Acquisition cost",
   "savingsFund.statement.tax.methodFifo": "FIFO",
@@ -1950,5 +1950,6 @@
   "savingsFundTaxReport.investmentAccount.notAGain": "You do not declare this as a gain. Tax falls due only once more money has left the investment account than went into it.",
   "savingsFundTaxReport.investmentAccount.redeemedOutside": "Some money was paid out to an account other than the investment account, so we cannot split these transactions with confidence – all of them are shown together below. For the deferral to hold, money from units bought on an investment account has to come back to that same account.",
   "savingsFundTaxReport.investmentAccount.unavailable": "We cannot load your investment account right now, so we cannot tell whether you have declared one.",
-  "savingsFundTaxReport.investmentAccount.retry": "Try again"
+  "savingsFundTaxReport.investmentAccount.retry": "Try again",
+  "savingsFundTaxReport.investmentAccount.saveFailed": "We could not save that just now. Please try again."
 }

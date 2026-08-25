@@ -52,11 +52,14 @@ const reportHandler = (delayInMilliseconds: number) =>
     return res(ctx.delay(delayInMilliseconds), ctx.json(reportFor(year, method)));
   });
 
+const investmentAccountRequests: string[] = [];
+
 const investmentAccountBackend = () =>
   server.use(
-    rest.get('http://localhost/v1/savings-fund/investment-account', (req, res, ctx) =>
-      res(ctx.json({ iban: null })),
-    ),
+    rest.get('http://localhost/v1/savings-fund/investment-account', (req, res, ctx) => {
+      investmentAccountRequests.push(req.url.pathname);
+      return res(ctx.json({ iban: null }));
+    }),
   );
 
 const taxReportBackend = () => server.use(reportHandler(0));
@@ -135,6 +138,7 @@ afterAll(() => server.close());
 beforeEach(() => {
   initializeConfiguration();
   requestedReports.length = 0;
+  investmentAccountRequests.length = 0;
   taxReportBackend();
   investmentAccountBackend();
   actingFor('PERSON');
@@ -155,6 +159,14 @@ describe('a company looking at a report about personal income tax', () => {
 
     await waitFor(() => expect(history.location.pathname).toBe('/account'));
     expect(requestedReports).toHaveLength(0);
+  });
+
+  it('is not asked about an investment account it cannot hold', async () => {
+    actingFor('LEGAL_ENTITY');
+    const history = initializeComponent();
+
+    await waitFor(() => expect(history.location.pathname).toBe('/account'));
+    expect(investmentAccountRequests).toHaveLength(0);
   });
 });
 

@@ -28,6 +28,7 @@ export const TaxReportPage: React.FunctionComponent = () => {
   const {
     data: report,
     isLoading,
+    isFetching,
     isError,
     refetch,
   } = useSavingsFundTaxReport(year, method, { enabled: user !== undefined && !isLegalEntity });
@@ -62,7 +63,7 @@ export const TaxReportPage: React.FunctionComponent = () => {
         </div>
       )}
 
-      <InvestmentAccountSection />
+      {user !== undefined && <InvestmentAccountSection />}
 
       <TaxReportView
         report={report}
@@ -70,7 +71,7 @@ export const TaxReportPage: React.FunctionComponent = () => {
         year={year}
         method={method}
         detailsOpen={detailsOpen}
-        isLoading={isLoading}
+        isLoading={isLoading || isFetching}
         onYearChange={setYear}
         onMethodChange={setMethod}
         onDetailsToggle={() => setDetailsOpen(!detailsOpen)}
