@@ -227,9 +227,17 @@ describe('SavingsFundCompanyOnboarding', () => {
 
     await navigateToStep2();
 
-    await waitFor(() => {
-      expect(continueButton()).toBeEnabled();
-    });
+    // The validation has to have arrived: Continue is enabled while it is still
+    // loading, and clicking then simply no-ops.
+    expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+    expect(continueButton()).toBeEnabled();
+
+    // Clicking through matters: the controller's own validate rule gates
+    // advancement independently of the button, so enabling one without the other
+    // would look unblocked and then refuse to move.
+    userEvent.click(continueButton());
+
+    expect(await screen.findByText('3/7')).toBeInTheDocument();
   });
 
   it('still blocks the applicant when the company itself fails a check', async () => {

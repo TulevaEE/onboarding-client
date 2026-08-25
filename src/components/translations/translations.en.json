@@ -1398,7 +1398,7 @@
   "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.shareInstruction": "{count, plural, one {Send them this link. Identity verification takes a few minutes and does not open an account for them:} other {Send them this link. Identity verification takes a few minutes and does not open accounts for them:}}",
   "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.pending": "Identity verification still missing: {names}",
   "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.shareInstructionAll": "Share this link with everyone connected to the company listed above. Identity verification takes a few minutes and does not open an account:",
-  "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.thenCheckAgain": "Once identity verification is done, press \"Check again\".",
+  "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.thenCheckAgain": "You can fill in the rest of the application now. The company account opens once everyone has verified.",
 
   "flows.savingsFundOnboarding.companyAddressStep.title": "Where does your company operate?",
   "flows.savingsFundOnboarding.companyAddressStep.description": "If the information here is incorrect, the data must be updated in the business registry.",
