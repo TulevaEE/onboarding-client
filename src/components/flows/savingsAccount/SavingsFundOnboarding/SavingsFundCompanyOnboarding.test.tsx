@@ -262,6 +262,40 @@ describe('SavingsFundCompanyOnboarding', () => {
     });
   });
 
+  it('does not let the applicant walk back while the application is in flight', async () => {
+    let releaseSubmit = () => {};
+    const submitReleased = new Promise<void>((resolve) => {
+      releaseSubmit = resolve;
+    });
+    const history = createMemoryHistory();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history);
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', async (_req, res, ctx) => {
+        await submitReleased;
+        return res(ctx.status(200));
+      }),
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
+        res(ctx.json({ status: 'PENDING' })),
+      ),
+    );
+
+    userEvent.click(continueButton());
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Back' })).toBeDisabled();
+    });
+
+    releaseSubmit();
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/waiting');
+    });
+  });
+
   it('includes registry code as query parameter in survey POST', async () => {
     switchRoleBackend(server);
     await navigateToStep2();

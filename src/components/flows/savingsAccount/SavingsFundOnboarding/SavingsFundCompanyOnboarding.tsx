@@ -68,9 +68,6 @@ export const SavingsFundCompanyOnboarding = () => {
       return;
     }
     if (onboardingStatus.status === 'PENDING') {
-      // Everything about the company passed and it is only waiting for a person
-      // to be verified. It completes on its own once they are, so say that
-      // rather than claiming a review is under way.
       history.push('/savings-fund/onboarding/waiting');
       return;
     }
@@ -299,6 +296,7 @@ export const SavingsFundCompanyOnboarding = () => {
         onNext={showNextSection}
         loading={identityOnFile === null}
         submitting={submittingSurvey || submittingIdentity}
+        backDisabled={submittingSurvey || submittingIdentity}
         nextDisabled={(isTermsStep && !termsAccepted) || requirementsStepBlocked}
       >
         {steps[activeSection].component}
