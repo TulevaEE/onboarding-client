@@ -1416,7 +1416,7 @@
   "savingsFund.statement.tax.lead": "Kui esitad tuludeklaratsiooni, lisa see summa tabelisse 6.1. Oleme arvutuse sinu eest ära teinud.",
   "savingsFund.statement.tax.nothing": "Sel aastal pole midagi deklareerida",
   "savingsFund.statement.tax.nothingLead": "Sa ei võtnud sel aastal ühtki osakut tagasi.",
-  "savingsFund.statement.tax.investmentAccount": "Kui ostsid osakuid investeerimiskonto kaudu, siis neid siin ei arvestata — investeerimiskonto puhul deklareerid ainult konto sisse- ja väljamakseid. Meil pole veel infot selle kohta, milliselt kontolt su raha tuli, seega kontrolli see üle.",
+  "savingsFund.statement.tax.investmentAccount": "Kui ostsid osakuid investeerimiskontolt, siis nende kasu kasuna ei deklareerita. Me ei tea veel, milliselt kontolt su raha tuli, seega on siin kõik arvestatud tavalisel viisil. Ütle ülal oma investeerimiskonto, siis näitame need eraldi.",
   "savingsFund.statement.tax.detailsHeading": "Tagasivõtmised ja arvutus",
   "savingsFund.statement.tax.method": "Soetamismaksumus",
   "savingsFund.statement.tax.methodFifo": "FIFO",
@@ -2040,5 +2040,6 @@
   "savingsFundTaxReport.investmentAccount.notAGain": "Seda sa tuludeklaratsioonis kasuna ei deklareeri. Maks tuleb tasuda alles siis, kui investeerimiskontolt on välja võetud rohkem, kui sinna on sisse makstud.",
   "savingsFundTaxReport.investmentAccount.redeemedOutside": "Osa väljamakseid läks mujale kui investeerimiskontole, seega me ei saa tehinguid kindlalt kaheks jagada – allpool on need kõik koos. Maksu edasilükkamise säilimiseks peab investeerimiskontolt ostetud osakute raha laekuma tagasi samale kontole.",
   "savingsFundTaxReport.investmentAccount.unavailable": "Praegu ei õnnestu sinu investeerimiskontot laadida, seega me ei tea, kas oled selle meile öelnud.",
-  "savingsFundTaxReport.investmentAccount.retry": "Proovi uuesti"
+  "savingsFundTaxReport.investmentAccount.retry": "Proovi uuesti",
+  "savingsFundTaxReport.investmentAccount.saveFailed": "Praegu ei õnnestunud seda salvestada. Palun proovi uuesti."
 }

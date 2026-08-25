@@ -56,6 +56,29 @@ const investmentAccountBackendRefusing = () =>
     ),
   );
 
+const investmentAccountBackendBroken = () =>
+  server.use(
+    rest.get('http://localhost/v1/savings-fund/investment-account', (req, res, ctx) =>
+      res(ctx.json({ iban: IBAN })),
+    ),
+    rest.put('http://localhost/v1/savings-fund/investment-account', (req, res, ctx) =>
+      res(ctx.status(500), ctx.json({})),
+    ),
+  );
+
+const undeclared: number[] = [];
+
+const investmentAccountBackendAccepting = () =>
+  server.use(
+    rest.get('http://localhost/v1/savings-fund/investment-account', (req, res, ctx) =>
+      res(ctx.json({ iban: IBAN })),
+    ),
+    rest.delete('http://localhost/v1/savings-fund/investment-account', (req, res, ctx) => {
+      undeclared.push(1);
+      return res(ctx.json({ iban: null }));
+    }),
+  );
+
 function initializeComponent() {
   const history = createMemoryHistory();
   const store = createDefaultStore(history as any);
@@ -76,6 +99,7 @@ afterAll(() => server.close());
 beforeEach(() => {
   initializeConfiguration();
   declared.length = 0;
+  undeclared.length = 0;
 });
 
 describe('the investment account someone can declare', () => {
@@ -133,5 +157,43 @@ describe('the investment account someone can declare', () => {
 
     expect(await screen.findByRole('alert')).toBeInTheDocument();
     expect(screen.queryByLabelText(/Investment account IBAN/)).not.toBeInTheDocument();
+  });
+
+  it('takes the declaration back when the field is cleared and saved', async () => {
+    investmentAccountBackendAccepting();
+    initializeComponent();
+
+    const field = await screen.findByLabelText(/Investment account IBAN/);
+    await waitFor(() => expect(field).toHaveValue(IBAN));
+
+    userEvent.clear(field);
+    userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => expect(undeclared).toHaveLength(1));
+  });
+
+  it('does not blame the account number when the backend breaks', async () => {
+    investmentAccountBackendBroken();
+    initializeComponent();
+
+    const field = await screen.findByLabelText(/Investment account IBAN/);
+    await waitFor(() => expect(field).toHaveValue(IBAN));
+
+    userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/could not save/i);
+    expect(field).not.toHaveAttribute('aria-invalid');
+  });
+
+  it('marks the field itself invalid when the account number is refused', async () => {
+    investmentAccountBackendRefusing();
+    initializeComponent();
+
+    const field = await screen.findByLabelText(/Investment account IBAN/);
+    userEvent.type(field, 'EE001');
+    userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(field).toHaveAttribute('aria-invalid', 'true');
   });
 });

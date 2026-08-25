@@ -1,17 +1,25 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useDeclareInvestmentAccount, useInvestmentAccount } from './api/investmentAccount.api';
+import {
+  isRejectedAccountNumber,
+  useDeclareInvestmentAccount,
+  useInvestmentAccount,
+} from './api/investmentAccount.api';
+
+const ERROR_ID = 'investment-account-error';
 
 export const InvestmentAccountSection: React.FunctionComponent = () => {
   const intl = useIntl();
   const { data: investmentAccount, isError, refetch } = useInvestmentAccount();
   const declareInvestmentAccount = useDeclareInvestmentAccount();
 
-  const [typed, setTyped] = useState('');
+  const [typed, setTyped] = useState<string | null>(null);
   const declaring = useRef(false);
-  const declaredIban = investmentAccount?.iban ?? '';
 
-  useEffect(() => setTyped(declaredIban), [declaredIban]);
+  const declaredIban = investmentAccount?.iban ?? '';
+  const value = typed ?? declaredIban;
+  const rejectedAccountNumber =
+    declareInvestmentAccount.isError && isRejectedAccountNumber(declareInvestmentAccount.error);
 
   return (
     <div className="card p-4 mb-3">
@@ -43,7 +51,9 @@ export const InvestmentAccountSection: React.FunctionComponent = () => {
               return;
             }
             declaring.current = true;
-            declareInvestmentAccount.mutate(typed, {
+            const iban = value.trim();
+            declareInvestmentAccount.mutate(iban === '' ? null : iban, {
+              onSuccess: () => setTyped(null),
               onSettled: () => {
                 declaring.current = false;
               },
@@ -57,7 +67,9 @@ export const InvestmentAccountSection: React.FunctionComponent = () => {
             <input
               id="investment-account-iban"
               className="form-control form-control-sm"
-              value={typed}
+              value={value}
+              aria-invalid={rejectedAccountNumber || undefined}
+              aria-describedby={declareInvestmentAccount.isError ? ERROR_ID : undefined}
               onChange={(event) => setTyped(event.target.value)}
             />
           </div>
@@ -72,8 +84,14 @@ export const InvestmentAccountSection: React.FunctionComponent = () => {
       )}
 
       {declareInvestmentAccount.isError && (
-        <div role="alert" className="alert alert-danger mt-3 mb-0">
-          <FormattedMessage id="savingsFundTaxReport.investmentAccount.invalid" />
+        <div id={ERROR_ID} role="alert" className="alert alert-danger mt-3 mb-0">
+          <FormattedMessage
+            id={
+              rejectedAccountNumber
+                ? 'savingsFundTaxReport.investmentAccount.invalid'
+                : 'savingsFundTaxReport.investmentAccount.saveFailed'
+            }
+          />
         </div>
       )}
     </div>
