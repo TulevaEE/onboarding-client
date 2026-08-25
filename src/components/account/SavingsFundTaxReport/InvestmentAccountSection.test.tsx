@@ -27,6 +27,25 @@ const investmentAccountBackend = (iban: string | null) =>
     }),
   );
 
+const investmentAccountBackendDown = () =>
+  server.use(
+    rest.get('http://localhost/v1/savings-fund/investment-account', (req, res, ctx) =>
+      res(ctx.status(500), ctx.json({})),
+    ),
+  );
+
+const investmentAccountBackendStillAnswering = () =>
+  server.use(
+    rest.get('http://localhost/v1/savings-fund/investment-account', (req, res, ctx) =>
+      res(ctx.json({ iban: null })),
+    ),
+    rest.put('http://localhost/v1/savings-fund/investment-account', (req, res, ctx) => {
+      const { iban: declaredIban } = req.body as { iban: string };
+      declared.push(declaredIban);
+      return res(ctx.delay(100), ctx.json({ iban: declaredIban }));
+    }),
+  );
+
 const investmentAccountBackendRefusing = () =>
   server.use(
     rest.get('http://localhost/v1/savings-fund/investment-account', (req, res, ctx) =>
@@ -94,5 +113,25 @@ describe('the investment account someone can declare', () => {
     userEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/not a valid account number/i);
+  });
+
+  it('does not send the account twice when the button is pressed twice', async () => {
+    investmentAccountBackendStillAnswering();
+    initializeComponent();
+
+    userEvent.type(await screen.findByLabelText(/Investment account IBAN/), IBAN);
+    const save = screen.getByRole('button', { name: 'Save' });
+    userEvent.click(save);
+    userEvent.click(save);
+
+    await waitFor(() => expect(declared).toEqual([IBAN]));
+  });
+
+  it('does not present an empty field as an answer when it could not be loaded', async () => {
+    investmentAccountBackendDown();
+    initializeComponent();
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(screen.queryByLabelText(/Investment account IBAN/)).not.toBeInTheDocument();
   });
 });

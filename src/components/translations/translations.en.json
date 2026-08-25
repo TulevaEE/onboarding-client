@@ -1948,5 +1948,7 @@
   "savingsFundTaxReport.investmentAccount.invalid": "That is not a valid account number.",
   "savingsFundTaxReport.investmentAccount.gainsHeading": "Units bought from the investment account",
   "savingsFundTaxReport.investmentAccount.notAGain": "You do not declare this as a gain. Tax falls due only once more money has left the investment account than went into it.",
-  "savingsFundTaxReport.investmentAccount.redeemedOutside": "Some money was paid out to an account other than the investment account, so we cannot split these transactions with confidence – all of them are shown together below. For the deferral to hold, money from units bought on an investment account has to come back to that same account."
+  "savingsFundTaxReport.investmentAccount.redeemedOutside": "Some money was paid out to an account other than the investment account, so we cannot split these transactions with confidence – all of them are shown together below. For the deferral to hold, money from units bought on an investment account has to come back to that same account.",
+  "savingsFundTaxReport.investmentAccount.unavailable": "We cannot load your investment account right now, so we cannot tell whether you have declared one.",
+  "savingsFundTaxReport.investmentAccount.retry": "Try again"
 }
