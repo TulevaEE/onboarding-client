@@ -87,6 +87,13 @@ export const userMockProfiles: Record<string, User> = {
     memberNumber: null,
     memberJoinDate: null,
   },
+  // 6% rate but not a member: the one combination that makes the membership nudge show.
+  PAYMENT_RATE_6_NON_MEMBER: {
+    ...mockUser,
+    secondPillarPaymentRates: { current: 6, pending: null },
+    memberNumber: null,
+    memberJoinDate: null,
+  },
   // Left the funded II pillar: the stored rate is stale, they contribute nothing. The
   // open date inherited from mockUser is what separates them from someone who never
   // joined (THIRD_NO_SECOND_PILLAR, whose open date is null): leaving clears the active

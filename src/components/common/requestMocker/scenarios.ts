@@ -126,6 +126,79 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     savingsFundOnboardingStatus: 'NOT_STARTED',
     savingsFundBalance: 'NO_ACCOUNT',
   },
+  // The III pillar flow's last step (/3rd-pillar-flow/success). The green notice on top
+  // only has two states — a plain new application ("Sissemakse tehtud") or one that also
+  // moves old units over ("Avaldus esitatud") — while the II pillar nudge under it has
+  // six. One scenario per nudge, so every variant of that screen can be seen without
+  // submitting anything.
+
+  // II pillar elsewhere in an expensive fund: the fee comparison chart. Most common state
+  // for someone who has just joined the III pillar.
+  THIRD_PILLAR_SUCCESS_TRANSFER_HIGH_FEE: {
+    user: 'PAYMENT_RATE_2',
+    conversion: 'INCOMPLETE',
+    pendingApplications: 'NONE',
+    sourceFunds: 'BOTH_PILLARS',
+    funds: 'WITHOUT_SAVINGS_FUND',
+  },
+  // II pillar elsewhere but cheap: no chart to make, so the plain transfer suggestion.
+  THIRD_PILLAR_SUCCESS_TRANSFER_LOW_FEE: {
+    user: 'PAYMENT_RATE_2',
+    conversion: 'LOW_FEES_NOT_TULEVA',
+    pendingApplications: 'NONE',
+    sourceFunds: 'BOTH_PILLARS',
+    funds: 'WITHOUT_SAVINGS_FUND',
+  },
+  // II pillar already at Tuleva, rate still 2%: raise the contribution instead.
+  THIRD_PILLAR_SUCCESS_INCREASE_PAYMENT_RATE: {
+    user: 'PAYMENT_RATE_2',
+    conversion: 'COMPLETE_ONLY_SECOND_PILLAR',
+    pendingApplications: 'NONE',
+    sourceFunds: 'BOTH_PILLARS',
+    funds: 'WITHOUT_SAVINGS_FUND',
+  },
+  // Everything moved and the rate maxed, but not a member yet.
+  THIRD_PILLAR_SUCCESS_MEMBERSHIP: {
+    user: 'PAYMENT_RATE_6_NON_MEMBER',
+    conversion: 'COMPLETE_ALL_PILLARS',
+    pendingApplications: 'NONE',
+    sourceFunds: 'BOTH_PILLARS',
+    funds: 'WITHOUT_SAVINGS_FUND',
+  },
+  // Nothing left to fix in the II pillar: nudged towards a standing order.
+  THIRD_PILLAR_SUCCESS_RECURRING_PAYMENT: {
+    user: 'PAYMENT_RATE_6',
+    conversion: 'COMPLETE_ALL_PILLARS',
+    pendingApplications: 'NONE',
+    sourceFunds: 'BOTH_PILLARS',
+    funds: 'WITHOUT_SAVINGS_FUND',
+  },
+  // II pillar application already in: a notice, no call to action.
+  THIRD_PILLAR_SUCCESS_SECOND_PILLAR_PENDING: {
+    user: 'PAYMENT_RATE_2',
+    conversion: 'INCOMPLETE',
+    pendingApplications: 'SECOND_PILLAR_TRANSFER',
+    sourceFunds: 'BOTH_PILLARS',
+    funds: 'WITHOUT_SAVINGS_FUND',
+  },
+  // No II pillar at all: no nudge, so the "Minu konto" button is the only way onwards.
+  THIRD_PILLAR_SUCCESS_NO_NUDGE: {
+    user: 'THIRD_NO_SECOND_PILLAR',
+    conversion: 'COMPLETE_ONLY_THIRD_PILLAR',
+    pendingApplications: 'NONE',
+    sourceFunds: 'ONLY_THIRD_PILLAR',
+    funds: 'WITHOUT_SAVINGS_FUND',
+  },
+  // The application also moves old III pillar units over: the header changes to
+  // "Avaldus esitatud" and the money-arrived sentence gives way to the units one.
+  THIRD_PILLAR_SUCCESS_TRANSFER_IN: {
+    user: 'PAYMENT_RATE_2',
+    conversion: 'INCOMPLETE',
+    pendingApplications: 'THIRD_PILLAR_TRANSFER',
+    sourceFunds: 'BOTH_PILLARS',
+    funds: 'WITHOUT_SAVINGS_FUND',
+  },
+
   WITHDRAWALS_PENSIONER_60_ALL_PILLARS: {
     withdrawalsEligibility: 'ALL_PILLARS_60',
     sourceFunds: 'BOTH_PILLARS',
