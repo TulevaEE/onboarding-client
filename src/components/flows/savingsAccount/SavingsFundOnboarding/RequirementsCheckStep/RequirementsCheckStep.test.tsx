@@ -444,7 +444,9 @@ describe('RequirementsCheckStep', () => {
       await screen.findByText('Identity verification still missing: Person McPerson'),
     ).toBeInTheDocument();
     expect(screen.getByText(/Send them this link/i)).toBeInTheDocument();
-    expect(screen.getByText(/press "Check again"/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/You can fill in the rest of the application now/i),
+    ).toBeInTheDocument();
     expect(
       screen.getByRole('link', { name: 'http://localhost/savings-fund/onboarding/identity' }),
     ).toHaveAttribute('target', '_blank');

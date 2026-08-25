@@ -1488,7 +1488,7 @@
   "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.shareInstruction": "{count, plural, one {Saada talle see link. Isikutuvastus võtab paar minutit ega ava talle kontot:} other {Saada neile see link. Isikutuvastus võtab paar minutit ega ava neile kontot:}}",
   "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.pending": "Isikutuvastus on tegemata: {names}",
   "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.shareInstructionAll": "Jaga seda linki kõigi ülaltoodud seotud isikutega. Isikutuvastus võtab paar minutit ega ava kontot:",
-  "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.thenCheckAgain": "Kui isikutuvastus on tehtud, vajuta „Kontrolli uuesti“.",
+  "flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.thenCheckAgain": "Võid avalduse kohe ära täita. Ettevõtte konto avaneb siis, kui kõik on isikutuvastuse läbinud.",
 
   "flows.savingsFundOnboarding.companyAddressStep.title": "Kus sinu osaühing tegutseb?",
   "flows.savingsFundOnboarding.companyAddressStep.description": "Kui siinne info ei vasta tõele, tuleb andmeid uuendada äriregistris.",
