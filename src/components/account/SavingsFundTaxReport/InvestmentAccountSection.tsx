@@ -47,11 +47,12 @@ export const InvestmentAccountSection: React.FunctionComponent = () => {
           className="d-flex flex-column flex-sm-row flex-wrap align-items-start align-items-sm-end gap-2"
           onSubmit={(event) => {
             event.preventDefault();
-            if (declaring.current) {
+            const iban = value.trim();
+            if (!iban || declaring.current) {
               return;
             }
             declaring.current = true;
-            declareInvestmentAccount.mutate(value.trim(), {
+            declareInvestmentAccount.mutate(iban, {
               onSuccess: () => setTyped(null),
               onSettled: () => {
                 declaring.current = false;
