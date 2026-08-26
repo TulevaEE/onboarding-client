@@ -125,6 +125,22 @@ describe('the investment account someone can declare', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(/not a valid account number/i);
   });
 
+  it('stops blaming the account number as soon as it is being corrected', async () => {
+    investmentAccountBackendRefusing();
+    initializeComponent();
+
+    const field = await screen.findByLabelText(/Investment account IBAN/);
+    userEvent.type(field, 'EE001');
+    userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/not a valid account number/i);
+
+    userEvent.type(field, '0');
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(field).not.toHaveAttribute('aria-invalid');
+  });
+
   it('does not send the account twice when the button is pressed twice', async () => {
     investmentAccountBackendStillAnswering();
     initializeComponent();
