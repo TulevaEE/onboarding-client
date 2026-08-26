@@ -69,7 +69,10 @@ export const InvestmentAccountSection: React.FunctionComponent = () => {
               value={value}
               aria-invalid={rejectedAccountNumber || undefined}
               aria-describedby={declareInvestmentAccount.isError ? ERROR_ID : undefined}
-              onChange={(event) => setTyped(event.target.value)}
+              onChange={(event) => {
+                setTyped(event.target.value);
+                declareInvestmentAccount.reset();
+              }}
             />
           </div>
           <button
