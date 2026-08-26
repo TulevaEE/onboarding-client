@@ -71,13 +71,13 @@ export const TaxReportView: React.FunctionComponent<{
           </>
         )}
 
-        {report.investmentAccount === null && (
+        {report.investmentAccount == null && (
           <div className="alert alert-warning mt-3 mb-0">
             <FormattedMessage id="savingsFund.statement.tax.investmentAccount" />
           </div>
         )}
 
-        {report.investmentAccount !== null && report.investmentAccount.totalGain === null && (
+        {report.investmentAccount != null && report.investmentAccount.totalGain === null && (
           <div role="alert" className="alert alert-warning mt-3 mb-0">
             <FormattedMessage id="savingsFundTaxReport.investmentAccount.redeemedOutside" />
           </div>
