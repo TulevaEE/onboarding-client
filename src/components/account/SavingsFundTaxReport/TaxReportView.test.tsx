@@ -107,6 +107,12 @@ describe('the tax report the backend calculated', () => {
 describe('an investment account someone declared', () => {
   const investmentAccount = (overrides = {}) => ({ totalGain: 60, ...overrides });
 
+  const reportFromABackendWithoutInvestmentAccounts = (): SavingsFundTaxReport => {
+    const olderReport: Partial<SavingsFundTaxReport> = report();
+    delete olderReport.investmentAccount;
+    return olderReport as SavingsFundTaxReport;
+  };
+
   it('keeps its gains apart, and stops asking which account the money came from', () => {
     render(report({ investmentAccount: investmentAccount() }));
 
@@ -119,6 +125,13 @@ describe('an investment account someone declared', () => {
     render(report());
 
     expect(screen.getByText(/We do not yet know which account/)).toBeInTheDocument();
+  });
+
+  it('still asks when the backend answered without knowing about investment accounts', () => {
+    render(reportFromABackendWithoutInvestmentAccounts());
+
+    expect(screen.getByText(/We do not yet know which account/)).toBeInTheDocument();
+    expect(screen.getByText(/You earned/)).toBeInTheDocument();
   });
 
   it('says the transactions could not be split when money went elsewhere', () => {
