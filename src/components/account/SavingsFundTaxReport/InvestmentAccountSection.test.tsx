@@ -15,6 +15,8 @@ const server = setupServer();
 
 const declared: string[] = [];
 
+const loads: string[] = [];
+
 const investmentAccountBackend = (iban: string | null) =>
   server.use(
     rest.get('http://localhost/v1/savings-fund/investment-account', (req, res, ctx) =>
@@ -24,6 +26,19 @@ const investmentAccountBackend = (iban: string | null) =>
       const { iban: declaredIban } = req.body as { iban: string };
       declared.push(declaredIban);
       return res(ctx.json({ iban: declaredIban }));
+    }),
+  );
+
+const investmentAccountBackendTidyingTheAccountNumber = () =>
+  server.use(
+    rest.get('http://localhost/v1/savings-fund/investment-account', (req, res, ctx) => {
+      loads.push(req.url.pathname);
+      return res(ctx.json({ iban: null }));
+    }),
+    rest.put('http://localhost/v1/savings-fund/investment-account', (req, res, ctx) => {
+      const { iban: declaredIban } = req.body as { iban: string };
+      declared.push(declaredIban);
+      return res(ctx.json({ iban: declaredIban.toUpperCase() }));
     }),
   );
 
@@ -86,6 +101,7 @@ afterAll(() => server.close());
 beforeEach(() => {
   initializeConfiguration();
   declared.length = 0;
+  loads.length = 0;
 });
 
 describe('the investment account someone can declare', () => {
@@ -113,6 +129,18 @@ describe('the investment account someone can declare', () => {
     userEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     await waitFor(() => expect(declared).toEqual([IBAN]));
+  });
+
+  it('shows the account the backend saved, without asking for it again', async () => {
+    investmentAccountBackendTidyingTheAccountNumber();
+    initializeComponent();
+
+    const field = await screen.findByLabelText(/Investment account IBAN/);
+    userEvent.type(field, IBAN.toLowerCase());
+    userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => expect(field).toHaveValue(IBAN));
+    expect(loads).toHaveLength(1);
   });
 
   it('has nothing to send while the field is empty', async () => {

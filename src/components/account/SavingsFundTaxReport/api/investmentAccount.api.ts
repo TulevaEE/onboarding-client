@@ -24,8 +24,8 @@ export function useDeclareInvestmentAccount() {
       putWithAuthentication<InvestmentAccount>(getEndpoint('/v1/savings-fund/investment-account'), {
         iban,
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [INVESTMENT_ACCOUNT_QUERY_KEY] });
+    onSuccess: (declaredAccount: InvestmentAccount) => {
+      queryClient.setQueryData([INVESTMENT_ACCOUNT_QUERY_KEY], declaredAccount);
       queryClient.invalidateQueries({ queryKey: ['savingsFundTaxReport'] });
     },
   });
