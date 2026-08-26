@@ -115,6 +115,20 @@ describe('the investment account someone can declare', () => {
     await waitFor(() => expect(declared).toEqual([IBAN]));
   });
 
+  it('has nothing to send while the field is empty', async () => {
+    investmentAccountBackend(null);
+    initializeComponent();
+
+    const field = await screen.findByLabelText(/Investment account IBAN/);
+    userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    userEvent.type(field, IBAN);
+    userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => expect(declared).toEqual([IBAN]));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('says so when the backend will not take the account number', async () => {
     investmentAccountBackendRefusing();
     initializeComponent();
