@@ -1,26 +1,33 @@
 import { mockValidatedCompany } from '../../../../../test/backend-responses';
-import { collectValidationErrors } from './collectValidationErrors';
+import {
+  BusinessRegistryValidatedData,
+  ValidationError,
+} from '../../../../common/apiModels/company-onboarding';
+import { collectErrors } from './collectValidationErrors';
 
-describe('collectValidationErrors', () => {
-  it('returns empty array when no fields have errors', () => {
-    expect(collectValidationErrors(mockValidatedCompany)).toEqual([]);
+const statusError: ValidationError = {
+  code: 'COMPANY_ACTIVE',
+  message: 'Company status is invalid',
+};
+const naceError: ValidationError = { code: 'HIGH_RISK_NACE', message: 'NACE code is not allowed' };
+
+const withStatusAndNaceErrors = {
+  ...mockValidatedCompany,
+  status: { value: 'INVALID', errors: [statusError] },
+  naceCode: { value: '', errors: [naceError] },
+};
+
+describe('collectErrors', () => {
+  it('gathers the errors of every field', () => {
+    expect(collectErrors(withStatusAndNaceErrors)).toEqual([statusError, naceError]);
   });
 
-  it('returns the messages from fields that have errors', () => {
-    const data = {
+  it('survives a report that does not describe one of the fields', () => {
+    const reportWithoutNaceCode = {
       ...mockValidatedCompany,
-      status: {
-        value: 'INVALID',
-        errors: [{ code: 'COMPANY_ACTIVE', message: 'Company status is invalid' }],
-      },
-      naceCode: {
-        value: '',
-        errors: [{ code: 'HIGH_RISK_NACE', message: 'NACE code is not allowed' }],
-      },
-    };
-    expect(collectValidationErrors(data)).toEqual([
-      'Company status is invalid',
-      'NACE code is not allowed',
-    ]);
+      naceCode: undefined,
+    } as unknown as BusinessRegistryValidatedData;
+
+    expect(collectErrors(reportWithoutNaceCode)).toEqual([]);
   });
 });

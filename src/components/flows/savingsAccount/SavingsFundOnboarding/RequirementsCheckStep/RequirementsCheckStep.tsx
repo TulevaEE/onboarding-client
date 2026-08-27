@@ -6,14 +6,9 @@ import { useCompanyBusinessRegistryValidation } from '../../../../common/apiHook
 import { formatDateYear } from '../../../../common/dateFormatter';
 import { Shimmer } from '../../../../common/shimmer/Shimmer';
 import { CompanyOnboardingFormData } from '../types';
-import { errorCode, errorMessage } from './collectValidationErrors';
-import { hasNoValidationErrors } from './hasNoValidationErrors';
-import {
-  IDENTITY_KYC_CODES,
-  OTHER_RELATED_PERSONS_KYC_CODE,
-  USER_KYC_CODE,
-  onlyIdentityVerificationMissing,
-} from './onlyIdentityVerificationMissing';
+import { collectErrors, errorCode, errorMessage } from './collectValidationErrors';
+import { IDENTITY_KYC_CODES, OTHER_RELATED_PERSONS_KYC_CODE, USER_KYC_CODE } from './kycErrorCodes';
+import { mayPassRequirementsStep } from './mayPassRequirementsStep';
 import { unverifiedRelatedPersonNames } from './unverifiedRelatedPersonNames';
 
 type RequirementsCheckStepProps = {
@@ -41,11 +36,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
           return 'No data';
         }
 
-        return (
-          hasNoValidationErrors(companyData) ||
-          onlyIdentityVerificationMissing(companyData) ||
-          'Validation failed'
-        );
+        return mayPassRequirementsStep(companyData) || 'Validation failed';
       },
     },
   });
@@ -66,7 +57,8 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
   // them, addressing everyone when it does not. Any other relatedPersons error (e.g.
   // ownership structure) is a genuine "company does not fit" reason and flows to
   // the generic list below.
-  const relatedPersonErrorCodes = (data?.relatedPersons.errors ?? []).map(errorCode);
+  const relatedPersonErrors = data?.relatedPersons?.errors ?? [];
+  const relatedPersonErrorCodes = relatedPersonErrors.map(errorCode);
   const userIdentityIncomplete = relatedPersonErrorCodes.includes(USER_KYC_CODE);
   const otherPersonsIdentityIncomplete = relatedPersonErrorCodes.includes(
     OTHER_RELATED_PERSONS_KYC_CODE,
@@ -74,13 +66,12 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
   const identityIncomplete =
     isSuccess && (userIdentityIncomplete || otherPersonsIdentityIncomplete);
   const identityVerificationUrl = `${window.location.origin}/savings-fund/onboarding/identity`;
-  const unverifiedNames = data ? unverifiedRelatedPersonNames(data.relatedPersons.errors) : [];
+  const unverifiedNames = unverifiedRelatedPersonNames(relatedPersonErrors);
 
   // Every validation error except the identity-KYC ones (which have their own
   // dedicated dead-end block) — these are genuine "company does not fit" reasons.
   const otherRequirementErrors = data
-    ? Object.values(data)
-        .flatMap((validatedField) => validatedField.errors)
+    ? collectErrors(data)
         .filter((validationError) => !IDENTITY_KYC_CODES.includes(errorCode(validationError)))
         .map(errorMessage)
     : [];
@@ -141,7 +132,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
             <div className="border-top border-gray-2" />
             <div className="d-flex flex-column d-sm-grid flex-wrap gap-3 half-column-grid">
               {isSuccess && data ? (
-                data.relatedPersons.value.map((person) => (
+                (data.relatedPersons?.value ?? []).map((person) => (
                   <div key={person.personalCode} className="d-flex flex-column gap-1">
                     <div className="fw-bold">
                       <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.relatedPerson" />
