@@ -430,7 +430,6 @@ export const SavingsFundChildOnboarding = () => {
         onBack={showPreviousSection}
         onNext={showNextSection}
         submitting={creatingChild || isFinalizing || verifyingSwitcherPick}
-        backDisabled={isFinalizing || verifyingSwitcherPick}
         nextDisabled={isTermsStep && (!termsAccepted || !me?.personalCode)}
         subtitle={
           child ? (

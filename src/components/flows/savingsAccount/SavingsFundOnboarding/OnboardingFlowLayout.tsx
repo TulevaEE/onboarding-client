@@ -62,7 +62,7 @@ export const OnboardingFlowLayout: FC<OnboardingFlowLayoutProps> = ({
             type="button"
             className="btn btn-lg btn-light"
             onClick={onBack}
-            disabled={backDisabled}
+            disabled={submitting || backDisabled}
           >
             <FormattedMessage id="savingsFundOnboarding.back" />
           </button>
