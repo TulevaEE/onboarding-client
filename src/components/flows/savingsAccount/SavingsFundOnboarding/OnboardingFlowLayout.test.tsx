@@ -84,6 +84,12 @@ describe('OnboardingFlowLayout', () => {
     expect(screen.getByRole('button', { name: /back/i })).toBeDisabled();
   });
 
+  it('disables the Back button while submitting', () => {
+    renderLayout({ submitting: true });
+
+    expect(screen.getByRole('button', { name: /back/i })).toBeDisabled();
+  });
+
   it('renders spinner in continue button when submitting', () => {
     renderLayout({ submitting: true });
 

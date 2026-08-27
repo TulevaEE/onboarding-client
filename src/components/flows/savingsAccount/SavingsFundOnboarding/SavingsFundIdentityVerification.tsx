@@ -153,7 +153,7 @@ export const SavingsFundIdentityVerification: FC = () => {
         totalSteps={totalSections}
         onBack={showPreviousSection}
         onNext={showNextSection}
-        backDisabled={activeSection === 0 || submitting}
+        backDisabled={activeSection === 0}
         submitting={submitting}
       >
         {steps[activeSection].component}
