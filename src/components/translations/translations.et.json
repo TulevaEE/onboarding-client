@@ -1434,9 +1434,9 @@
   "savingsFund.statement.tax.tableTotal": "Kokku (tabelisse 6.1)",
   "savingsFund.statement.tax.tableEmpty": "Sel aastal tagasivõtmisi pole.",
   "savingsFund.identityVerification.done.title": "Isikutuvastus on tehtud",
-  "savingsFund.identityVerification.done.description": "Sinu pool on valmis. Kui ka teised ettevõttega seotud isikud on isikutuvastuse läbinud, avaneb ettevõtte konto ise. Sul ei ole vaja rohkem midagi teha.",
+  "savingsFund.identityVerification.done.description": "Sinu pool on valmis. Ettevõtte konto avaneb automaatselt, kui ettevõtte avaldus on esitatud ja kõik ettevõttega seotud isikud on isikutuvastuse läbinud.",
   "savingsFund.identityVerification.alreadyDone.title": "Sinu isikutuvastus on juba tehtud",
-  "savingsFund.identityVerification.alreadyDone.description": "Sul ei ole vaja midagi teha. Kui ka teised ettevõttega seotud isikud on isikutuvastuse läbinud, avaneb ettevõtte konto ise.",
+  "savingsFund.identityVerification.alreadyDone.description": "Sul ei ole vaja midagi teha. Ettevõtte konto avaneb automaatselt, kui ettevõtte avaldus on esitatud ja kõik ettevõttega seotud isikud on isikutuvastuse läbinud.",
   "savingsFund.identityVerification.accountButton.label": "Minu kontole",
 
   "flows.savingsFundOnboarding.title": "Täiendava Kogumisfondi avamine",
