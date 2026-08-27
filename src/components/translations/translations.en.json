@@ -1344,9 +1344,9 @@
   "savingsFund.statement.tax.tableTotal": "Total (to table 6.1)",
   "savingsFund.statement.tax.tableEmpty": "No redemptions this year.",
   "savingsFund.identityVerification.done.title": "Identity verification complete",
-  "savingsFund.identityVerification.done.description": "Your part is done. Once everyone else connected to the company has verified their identity too, the company account opens by itself. There is nothing more for you to do.",
+  "savingsFund.identityVerification.done.description": "Your part is done. The company account opens automatically once the company's application has been submitted and everyone connected to the company has verified their identity.",
   "savingsFund.identityVerification.alreadyDone.title": "Your identity is already verified",
-  "savingsFund.identityVerification.alreadyDone.description": "You have nothing more to do. Once everyone else connected to the company has verified their identity too, the company account opens by itself.",
+  "savingsFund.identityVerification.alreadyDone.description": "You have nothing more to do. The company account opens automatically once the company's application has been submitted and everyone connected to the company has verified their identity.",
   "savingsFund.identityVerification.accountButton.label": "Go to my account",
 
   "flows.savingsFundOnboarding.title": "Opening an Additional Savings Fund",
