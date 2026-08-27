@@ -1951,5 +1951,6 @@
   "savingsFundTaxReport.investmentAccount.redeemedOutside": "Some money was paid out to an account other than the investment account, so we cannot split these transactions with confidence – all of them are shown together below. For the deferral to hold, money from units bought on an investment account has to come back to that same account.",
   "savingsFundTaxReport.investmentAccount.unavailable": "We cannot load your investment account right now, so we cannot tell whether you have declared one.",
   "savingsFundTaxReport.investmentAccount.retry": "Try again",
-  "savingsFundTaxReport.investmentAccount.saveFailed": "We could not save that just now. Please try again."
+  "savingsFundTaxReport.investmentAccount.saveFailed": "We could not save that just now. Please try again.",
+  "savingsFundTaxReport.investmentAccount.toggle": "I have an investment account"
 }

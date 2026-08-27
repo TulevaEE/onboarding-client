@@ -93,7 +93,9 @@ describe('the investment account someone can declare', () => {
     investmentAccountBackend(null);
     initializeComponent();
 
-    expect(await screen.findByLabelText(/Investment account IBAN/)).toHaveValue('');
+    userEvent.click(await screen.findByRole('button', { name: /I have an investment account/ }));
+
+    expect(screen.getByLabelText(/Investment account IBAN/)).toHaveValue('');
   });
 
   it('shows the account that was declared', async () => {
@@ -109,7 +111,8 @@ describe('the investment account someone can declare', () => {
     investmentAccountBackend(null);
     initializeComponent();
 
-    userEvent.type(await screen.findByLabelText(/Investment account IBAN/), IBAN);
+    userEvent.click(await screen.findByRole('button', { name: /I have an investment account/ }));
+    userEvent.type(screen.getByLabelText(/Investment account IBAN/), IBAN);
     userEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     await waitFor(() => expect(declared).toEqual([IBAN]));
@@ -119,7 +122,8 @@ describe('the investment account someone can declare', () => {
     investmentAccountBackendRefusing();
     initializeComponent();
 
-    userEvent.type(await screen.findByLabelText(/Investment account IBAN/), 'EE001');
+    userEvent.click(await screen.findByRole('button', { name: /I have an investment account/ }));
+    userEvent.type(screen.getByLabelText(/Investment account IBAN/), 'EE001');
     userEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/not a valid account number/i);
@@ -129,7 +133,8 @@ describe('the investment account someone can declare', () => {
     investmentAccountBackendStillAnswering();
     initializeComponent();
 
-    userEvent.type(await screen.findByLabelText(/Investment account IBAN/), IBAN);
+    userEvent.click(await screen.findByRole('button', { name: /I have an investment account/ }));
+    userEvent.type(screen.getByLabelText(/Investment account IBAN/), IBAN);
     const save = screen.getByRole('button', { name: 'Save' });
     userEvent.click(save);
     userEvent.click(save);
@@ -137,11 +142,31 @@ describe('the investment account someone can declare', () => {
     await waitFor(() => expect(declared).toEqual([IBAN]));
   });
 
-  it('does not present an empty field as an answer when it could not be loaded', async () => {
+  it('stays out of the way when nobody has said they have one', async () => {
+    investmentAccountBackend(null);
+    initializeComponent();
+
+    expect(
+      await screen.findByRole('button', { name: /I have an investment account/ }),
+    ).toBeInTheDocument();
+    expect(screen.queryByLabelText(/Investment account IBAN/)).not.toBeInTheDocument();
+  });
+
+  it('opens to the account someone already declared, without being asked', async () => {
+    investmentAccountBackend(IBAN);
+    initializeComponent();
+
+    expect(await screen.findByLabelText(/Investment account IBAN/)).toHaveValue(IBAN);
+  });
+
+  it('does not raise an alarm when it could not be loaded', async () => {
     investmentAccountBackendDown();
     initializeComponent();
 
-    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: /I have an investment account/ }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     expect(screen.queryByLabelText(/Investment account IBAN/)).not.toBeInTheDocument();
   });
 
@@ -162,7 +187,8 @@ describe('the investment account someone can declare', () => {
     investmentAccountBackendRefusing();
     initializeComponent();
 
-    const field = await screen.findByLabelText(/Investment account IBAN/);
+    userEvent.click(await screen.findByRole('button', { name: /I have an investment account/ }));
+    const field = screen.getByLabelText(/Investment account IBAN/);
     userEvent.type(field, 'EE001');
     userEvent.click(screen.getByRole('button', { name: 'Save' }));
 

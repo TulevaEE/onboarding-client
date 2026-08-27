@@ -2041,5 +2041,6 @@
   "savingsFundTaxReport.investmentAccount.redeemedOutside": "Osa väljamakseid läks mujale kui investeerimiskontole, seega me ei saa tehinguid kindlalt kaheks jagada – allpool on need kõik koos. Maksu edasilükkamise säilimiseks peab investeerimiskontolt ostetud osakute raha laekuma tagasi samale kontole.",
   "savingsFundTaxReport.investmentAccount.unavailable": "Praegu ei õnnestu sinu investeerimiskontot laadida, seega me ei tea, kas oled selle meile öelnud.",
   "savingsFundTaxReport.investmentAccount.retry": "Proovi uuesti",
-  "savingsFundTaxReport.investmentAccount.saveFailed": "Praegu ei õnnestunud seda salvestada. Palun proovi uuesti."
+  "savingsFundTaxReport.investmentAccount.saveFailed": "Praegu ei õnnestunud seda salvestada. Palun proovi uuesti.",
+  "savingsFundTaxReport.investmentAccount.toggle": "Mul on investeerimiskonto"
 }
