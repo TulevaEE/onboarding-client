@@ -1,7 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createMemoryHistory } from 'history';
+import { MemoryHistory, createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { captureException } from '@sentry/browser';
@@ -18,6 +18,8 @@ import {
   mockContactOnlyKycIdentity,
   mockValidatedCompany,
 } from '../../../../test/backend-responses';
+import { SavingsFundOnboardingStatus } from '../../../common/apiModels';
+import { ValidationError } from '../../../common/apiModels/company-onboarding';
 import { initializeConfiguration } from '../../../config/config';
 import { renderWrapped } from '../../../../test/utils';
 import { SavingsFundCompanyOnboarding } from './SavingsFundCompanyOnboarding';
@@ -45,7 +47,10 @@ beforeEach(() => {
   kycIdentityBackend(server, mockCompleteKycIdentity);
   savingsFundOnboardingSurveyBackend(server);
 });
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers();
+  jest.useRealTimers();
+});
 afterAll(() => server.close());
 
 describe('SavingsFundCompanyOnboarding', () => {
@@ -65,18 +70,14 @@ describe('SavingsFundCompanyOnboarding', () => {
   });
 
   it('ignores a cached onboarding status until this company has been submitted', async () => {
-    // Onboarding a second company in the same session: a COMPLETED status is
-    // still in the query cache, but it must not be mistaken for this onboarding's
-    // outcome. Before a registry code is submitted the status hook reads the
-    // no-code key, so seed that key to make the status genuinely visible — the
-    // flow must still stay put until this onboarding is actually submitted.
-    const queryClient = new QueryClient();
-    queryClient.setQueryData(['savingsFundCompanyOnboardingStatus', undefined], {
-      status: 'REJECTED',
-    });
     const history = createMemoryHistory();
 
-    renderWrapped(<SavingsFundCompanyOnboarding />, history, undefined, queryClient);
+    renderWrapped(
+      <SavingsFundCompanyOnboarding />,
+      history,
+      undefined,
+      clientHoldingAStaleStatus('REJECTED'),
+    );
 
     expect(await screen.findByText('1/7')).toBeInTheDocument();
     expect(history.location.pathname).not.toBe('/savings-fund/onboarding/pending');
@@ -162,6 +163,30 @@ describe('SavingsFundCompanyOnboarding', () => {
     });
   });
 
+  it('opens the account when the onboarding completes while the validation report is read', async () => {
+    const switchBackend = switchRoleBackend(server);
+    const reportRequests = completeTheOnboardingOnceTheReportIsRead([OTHER_PERSONS_KYC_ERROR]);
+    const history = createMemoryHistory();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history);
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+    );
+
+    userEvent.click(continueButton());
+
+    await waitFor(() => {
+      expect(switchBackend.switchedRole).toEqual({ type: 'LEGAL_ENTITY', code: '12345678' });
+    });
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/success/company');
+    });
+    expect(reportRequests.count).toBe(2);
+  });
+
   it('shows the pending page when the company KYB is rejected', async () => {
     const history = createMemoryHistory();
     renderWrapped(<SavingsFundCompanyOnboarding />, history);
@@ -185,6 +210,166 @@ describe('SavingsFundCompanyOnboarding', () => {
 
   it('shows the waiting page when the company is only waiting for a verification', async () => {
     const history = createMemoryHistory();
+
+    await submitApplicationThatGoesPending(history);
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/waiting');
+    });
+  });
+
+  it('shows the waiting page when only other connected people are unverified', async () => {
+    respondWithRelatedPersonErrors(OTHER_PERSONS_KYC_ERROR);
+    const history = createMemoryHistory();
+
+    await submitApplicationThatGoesPending(history);
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/waiting');
+    });
+  });
+
+  it('shows the review page when the applicant`s own identity verification is outstanding', async () => {
+    respondWithRelatedPersonErrors(USER_KYC_ERROR);
+    const history = createMemoryHistory();
+
+    await submitApplicationThatGoesPending(history);
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/pending');
+    });
+  });
+
+  it('shows the review page when the applicant is unverified alongside other people', async () => {
+    respondWithRelatedPersonErrors(OTHER_PERSONS_KYC_ERROR, USER_KYC_ERROR);
+    const history = createMemoryHistory();
+
+    await submitApplicationThatGoesPending(history);
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/pending');
+    });
+  });
+
+  it('shows the waiting page when the applicant`s own verification resolved while they filled the form', async () => {
+    relatedPersonErrorsChangeWhileTheApplicantFillsTheForm(
+      [USER_KYC_ERROR],
+      [OTHER_PERSONS_KYC_ERROR],
+    );
+    const history = createMemoryHistory();
+
+    await submitApplicationThatGoesPending(history);
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/waiting');
+    });
+  });
+
+  it('shows the review page when the applicant`s own verification fell behind while they filled the form', async () => {
+    relatedPersonErrorsChangeWhileTheApplicantFillsTheForm(
+      [OTHER_PERSONS_KYC_ERROR],
+      [USER_KYC_ERROR],
+    );
+    const history = createMemoryHistory();
+
+    await submitApplicationThatGoesPending(history);
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/pending');
+    });
+  });
+
+  it('routes on a report read after submission, not on a check-again request still in flight', async () => {
+    let releaseCheckAgain = () => {};
+    const checkAgainReleased = new Promise<void>((resolve) => {
+      releaseCheckAgain = resolve;
+    });
+    const heldCheckAgainReport = reportWithRelatedPersonErrors([USER_KYC_ERROR]);
+    const reportRequests = { count: 0 };
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', async (_req, res, ctx) => {
+        reportRequests.count += 1;
+        if (reportRequests.count === 2) {
+          await checkAgainReleased;
+          return res(ctx.json(heldCheckAgainReport));
+        }
+        return res(ctx.json(reportWithRelatedPersonErrors([OTHER_PERSONS_KYC_ERROR])));
+      }),
+    );
+    const history = createMemoryHistory();
+    const queryClient = new QueryClient();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history, undefined, queryClient);
+    await selectCompany();
+    await advanceToStep(2);
+    await waitForValidationReport();
+
+    userEvent.click(await screen.findByRole('button', { name: 'Check again' }));
+    await waitFor(() => {
+      expect(reportRequests.count).toBe(2);
+    });
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
+        res(ctx.json({ status: 'PENDING' })),
+      ),
+    );
+
+    userEvent.click(continueButton());
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/waiting');
+    });
+    expect(reportRequests.count).toBe(3);
+
+    releaseCheckAgain();
+
+    await waitFor(() => {
+      expect(queryClient.getQueryData(['companyBusinessRegistryValidation', '12345678'])).toEqual(
+        heldCheckAgainReport,
+      );
+    });
+    expect(history.location.pathname).toBe('/savings-fund/onboarding/waiting');
+  });
+
+  it('falls back to the requirements-step report when it cannot be refreshed at submission time', async () => {
+    const reportRequests = failToRefreshTheReportAfterTheRequirementsStep([USER_KYC_ERROR]);
+    const history = createMemoryHistory();
+
+    await submitApplicationThatGoesPending(history);
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/pending');
+    });
+    expect(reportRequests.count).toBe(2);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('falls back to the requirements-step report when the refresh never answers', async () => {
+    let releaseTheHungReport = () => {};
+    const hungReportReleased = new Promise<void>((resolve) => {
+      releaseTheHungReport = resolve;
+    });
+    let announceTheHungReportRequest = () => {};
+    const hungReportRequested = new Promise<void>((resolve) => {
+      announceTheHungReportRequest = resolve;
+    });
+    let reportRequests = 0;
+    let hungReportDelivered = false;
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', async (_req, res, ctx) => {
+        reportRequests += 1;
+        if (reportRequests === 1) {
+          return res(ctx.json(reportWithRelatedPersonErrors([USER_KYC_ERROR])));
+        }
+        announceTheHungReportRequest();
+        await hungReportReleased;
+        hungReportDelivered = true;
+        return res(ctx.json(reportWithRelatedPersonErrors([OTHER_PERSONS_KYC_ERROR])));
+      }),
+    );
+    const history = createMemoryHistory();
     renderWrapped(<SavingsFundCompanyOnboarding />, history);
     await selectCompany();
     await advanceToStep(2);
@@ -197,44 +382,116 @@ describe('SavingsFundCompanyOnboarding', () => {
       ),
     );
 
+    jest.useFakeTimers();
     userEvent.click(continueButton());
-
-    // Nothing is being reviewed, so this must not land on the rejection page.
-    await waitFor(() => {
-      expect(history.location.pathname).toBe('/savings-fund/onboarding/waiting');
+    await act(async () => {
+      await hungReportRequested;
     });
+    act(() => {
+      jest.advanceTimersByTime(LONGER_THAN_ANY_REPORT_DEADLINE);
+    });
+    jest.useRealTimers();
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/pending');
+    });
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+
+    releaseTheHungReport();
+
+    await waitFor(() => {
+      expect(hungReportDelivered).toBe(true);
+    });
+    expect(history.location.pathname).toBe('/savings-fund/onboarding/pending');
+    expect(reportRequests).toBe(2);
   });
 
-  it('lets the applicant finish the form while a connected person is unverified', async () => {
+  it('cancels the report request that missed the deadline', async () => {
+    const { abortedRequestUrls, stopObservingAbortedRequests } = observeAbortedRequests();
+    let releaseTheHungReport = () => {};
+    const hungReportReleased = new Promise<void>((resolve) => {
+      releaseTheHungReport = resolve;
+    });
+    let announceTheHungReportRequest = () => {};
+    const hungReportRequested = new Promise<void>((resolve) => {
+      announceTheHungReportRequest = resolve;
+    });
+    let reportRequests = 0;
     server.use(
-      rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
-        res(
-          ctx.json({
-            ...mockValidatedCompany,
-            relatedPersons: {
-              value: mockValidatedCompany.relatedPersons.value,
-              errors: [
-                {
-                  code: 'OTHER_RELATED_PERSONS_KYC',
-                  message: 'Isikusamasuse tuvastamine on lõpetamata',
-                },
-              ],
-            },
-          }),
-        ),
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', async (_req, res, ctx) => {
+        reportRequests += 1;
+        if (reportRequests === 1) {
+          return res(ctx.json(reportWithRelatedPersonErrors([USER_KYC_ERROR])));
+        }
+        announceTheHungReportRequest();
+        await hungReportReleased;
+        return res(ctx.json(reportWithRelatedPersonErrors([OTHER_PERSONS_KYC_ERROR])));
+      }),
+    );
+    const history = createMemoryHistory();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history);
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
+        res(ctx.json({ status: 'PENDING' })),
       ),
     );
 
-    await navigateToStep2();
+    jest.useFakeTimers();
+    userEvent.click(continueButton());
+    await act(async () => {
+      await hungReportRequested;
+    });
+    expect(abortedRequestUrls).toEqual([]);
 
-    // The validation has to have arrived: Continue is enabled while it is still
-    // loading, and clicking then simply no-ops.
-    expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+    act(() => {
+      jest.advanceTimersByTime(LONGER_THAN_ANY_REPORT_DEADLINE);
+    });
+    jest.useRealTimers();
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/pending');
+    });
+    expect(abortedRequestUrls).toEqual([
+      expect.stringContaining('/v1/kyb/surveys/initial-validation'),
+    ]);
+
+    releaseTheHungReport();
+    stopObservingAbortedRequests();
+  });
+
+  it('shows an error instead of a pending page when the submitted application has no status', async () => {
+    const history = createMemoryHistory();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history);
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
+        res(ctx.json({ status: null })),
+      ),
+    );
+
+    userEvent.click(continueButton());
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(history.location.pathname).toBe('/');
+  });
+
+  it('lets the applicant continue past the requirements step while a connected person is unverified', async () => {
+    respondWithRelatedPersonErrors(OTHER_PERSONS_KYC_ERROR);
+
+    await navigateToStep2();
+    await waitForValidationReport();
+
     expect(continueButton()).toBeEnabled();
 
-    // Clicking through matters: the controller's own validate rule gates
-    // advancement independently of the button, so enabling one without the other
-    // would look unblocked and then refuse to move.
     userEvent.click(continueButton());
 
     expect(await screen.findByText('3/7')).toBeInTheDocument();
@@ -294,6 +551,270 @@ describe('SavingsFundCompanyOnboarding', () => {
     await waitFor(() => {
       expect(history.location.pathname).toBe('/savings-fund/onboarding/waiting');
     });
+  });
+
+  it('keeps both buttons disabled while the submitted application waits for its outcome', async () => {
+    let releaseStatus = () => {};
+    const statusReleased = new Promise<void>((resolve) => {
+      releaseStatus = resolve;
+    });
+    let surveyPosts = 0;
+    let statusRequests = 0;
+    const history = createMemoryHistory();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history);
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => {
+        surveyPosts += 1;
+        return res(ctx.status(200));
+      }),
+      rest.get(
+        'http://localhost/v1/savings/onboarding/status/legal-entity',
+        async (_req, res, ctx) => {
+          statusRequests += 1;
+          await statusReleased;
+          return res(ctx.json({ status: 'PENDING' }));
+        },
+      ),
+    );
+
+    userEvent.click(continueButton());
+
+    await waitFor(() => {
+      expect(statusRequests).toBe(1);
+    });
+    expect(continueButton()).toBeDisabled();
+    expect(backButton()).toBeDisabled();
+
+    userEvent.click(continueButton());
+    releaseStatus();
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/waiting');
+    });
+    expect(surveyPosts).toBe(1);
+  });
+
+  it('does not navigate when the applicant has left the flow before the outcome arrives', async () => {
+    let releaseStatus = () => {};
+    const statusReleased = new Promise<void>((resolve) => {
+      releaseStatus = resolve;
+    });
+    let statusRequests = 0;
+    const history = createMemoryHistory();
+    const queryClient = new QueryClient();
+    const { unmount } = renderWrapped(
+      <SavingsFundCompanyOnboarding />,
+      history,
+      undefined,
+      queryClient,
+    );
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+      rest.get(
+        'http://localhost/v1/savings/onboarding/status/legal-entity',
+        async (_req, res, ctx) => {
+          statusRequests += 1;
+          await statusReleased;
+          return res(ctx.json({ status: 'PENDING' }));
+        },
+      ),
+    );
+
+    userEvent.click(continueButton());
+
+    await waitFor(() => {
+      expect(statusRequests).toBe(1);
+    });
+
+    unmount();
+    releaseStatus();
+
+    await waitFor(() => {
+      expect(queryClient.getQueryData(['savingsFundCompanyOnboardingStatus', '12345678'])).toEqual({
+        status: 'PENDING',
+      });
+    });
+    expect(history.location.pathname).toBe('/');
+  });
+
+  it('does not navigate when the applicant has left the flow while the account is switched', async () => {
+    let releaseRoleSwitch = () => {};
+    const roleSwitchReleased = new Promise<void>((resolve) => {
+      releaseRoleSwitch = resolve;
+    });
+    let roleSwitches = 0;
+    const history = createMemoryHistory();
+    const queryClient = new QueryClient();
+    const { unmount } = renderWrapped(
+      <SavingsFundCompanyOnboarding />,
+      history,
+      undefined,
+      queryClient,
+    );
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
+        res(ctx.json({ status: 'COMPLETED' })),
+      ),
+      rest.post('http://localhost/v1/me/role', async (_req, res, ctx) => {
+        roleSwitches += 1;
+        await roleSwitchReleased;
+        return res(
+          ctx.json({ access_token: 'new-access-token', refresh_token: 'new-refresh-token' }),
+        );
+      }),
+    );
+
+    userEvent.click(continueButton());
+
+    await waitFor(() => {
+      expect(roleSwitches).toBe(1);
+    });
+
+    unmount();
+    releaseRoleSwitch();
+
+    await waitFor(() => {
+      expect(
+        queryClient.getQueryData(['savingsFundCompanyOnboardingStatus', '12345678']),
+      ).toBeUndefined();
+    });
+    expect(history.location.pathname).toBe('/');
+  });
+
+  it('does not navigate when the applicant has left the flow while the report is refreshed', async () => {
+    const consoleError = jest.spyOn(console, 'error');
+    let releaseRefreshedReport = () => {};
+    const refreshedReportReleased = new Promise<void>((resolve) => {
+      releaseRefreshedReport = resolve;
+    });
+    let reportRequests = 0;
+    let refreshedReportDelivered = false;
+    let statusRequests = 0;
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', async (_req, res, ctx) => {
+        reportRequests += 1;
+        if (reportRequests === 1) {
+          return res(ctx.json(reportWithRelatedPersonErrors([USER_KYC_ERROR])));
+        }
+        await refreshedReportReleased;
+        refreshedReportDelivered = true;
+        return res(ctx.json(mockValidatedCompany));
+      }),
+    );
+    const history = createMemoryHistory();
+    const { unmount } = renderWrapped(<SavingsFundCompanyOnboarding />, history);
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) => {
+        statusRequests += 1;
+        return res(ctx.json({ status: 'PENDING' }));
+      }),
+    );
+
+    userEvent.click(continueButton());
+
+    await waitFor(() => {
+      expect(reportRequests).toBe(2);
+    });
+
+    unmount();
+    releaseRefreshedReport();
+
+    await waitFor(() => {
+      expect(refreshedReportDelivered).toBe(true);
+    });
+    expect(statusRequests).toBe(0);
+    expect(history.location.pathname).toBe('/');
+    expect(warningsAboutUnmountedUpdates(consoleError)).toEqual([]);
+    consoleError.mockRestore();
+  });
+
+  it('does not update state when the outcome fails after the applicant has left the flow', async () => {
+    const consoleError = jest.spyOn(console, 'error');
+    let releaseStatus = () => {};
+    const statusReleased = new Promise<void>((resolve) => {
+      releaseStatus = resolve;
+    });
+    let statusRequests = 0;
+    const history = createMemoryHistory();
+    const { unmount } = renderWrapped(<SavingsFundCompanyOnboarding />, history);
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+      rest.get(
+        'http://localhost/v1/savings/onboarding/status/legal-entity',
+        async (_req, res, ctx) => {
+          statusRequests += 1;
+          await statusReleased;
+          return res(ctx.status(500), ctx.json({ error: 'INTERNAL_ERROR' }));
+        },
+      ),
+    );
+
+    userEvent.click(continueButton());
+
+    await waitFor(() => {
+      expect(statusRequests).toBe(1);
+    });
+
+    unmount();
+    releaseStatus();
+
+    await waitFor(() => {
+      expect(captureException).toHaveBeenCalledTimes(1);
+    });
+    expect(warningsAboutUnmountedUpdates(consoleError)).toEqual([]);
+    consoleError.mockRestore();
+  });
+
+  it('acts on the freshly fetched status, not on one cached from an earlier submission', async () => {
+    switchRoleBackend(server);
+    const history = createMemoryHistory();
+    const visitedPaths: string[] = [];
+    history.listen((location) => visitedPaths.push(location.pathname));
+    renderWrapped(
+      <SavingsFundCompanyOnboarding />,
+      history,
+      undefined,
+      clientHoldingAStaleStatus('PENDING'),
+    );
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
+        res(ctx.json({ status: 'COMPLETED' })),
+      ),
+    );
+
+    userEvent.click(continueButton());
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/success/company');
+    });
+    expect(visitedPaths).toEqual(['/savings-fund/onboarding/success/company']);
   });
 
   it('includes registry code as query parameter in survey POST', async () => {
@@ -438,6 +959,62 @@ describe('SavingsFundCompanyOnboarding', () => {
     expect(await screen.findByRole('alert')).toBeInTheDocument();
   });
 
+  it('shows an error and offers a retry when the application outcome cannot be fetched', async () => {
+    const history = createMemoryHistory();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history);
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
+        res(ctx.status(500), ctx.json({ error: 'INTERNAL_ERROR' })),
+      ),
+    );
+
+    userEvent.click(continueButton());
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(history.location.pathname).toBe('/');
+    expect(continueButton()).toBeEnabled();
+  });
+
+  it('checks the status again without screening the company twice when the applicant retries', async () => {
+    let surveyPosts = 0;
+    let statusRequests = 0;
+    const history = createMemoryHistory();
+    renderWrapped(<SavingsFundCompanyOnboarding />, history);
+    await selectCompany();
+    await advanceToStep(2);
+    await completeStepsThroughTerms();
+
+    server.use(
+      rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => {
+        surveyPosts += 1;
+        return res(ctx.status(200));
+      }),
+      rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) => {
+        statusRequests += 1;
+        if (statusRequests === 1) {
+          return res(ctx.status(500), ctx.json({ error: 'INTERNAL_ERROR' }));
+        }
+        return res(ctx.json({ status: 'PENDING' }));
+      }),
+    );
+
+    userEvent.click(continueButton());
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+
+    userEvent.click(continueButton());
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/waiting');
+    });
+    expect(surveyPosts).toBe(1);
+  });
+
   it('disables the continue button while survey is being submitted', async () => {
     switchRoleBackend(server);
     await navigateToStep2();
@@ -543,8 +1120,6 @@ describe('SavingsFundCompanyOnboarding', () => {
     await navigateToStep2();
 
     expect(await screen.findByRole('button', { name: 'Check again' })).toBeInTheDocument();
-    // An outstanding verification no longer stops the applicant: they can finish
-    // the form and the submitted application waits for the person.
     expect(continueButton()).toBeEnabled();
 
     userEvent.click(screen.getByRole('button', { name: 'Check again' }));
@@ -749,7 +1324,127 @@ describe('SavingsFundCompanyOnboarding', () => {
   });
 });
 
+const OTHER_PERSONS_KYC_ERROR: ValidationError = {
+  code: 'OTHER_RELATED_PERSONS_KYC',
+  message: 'Isikusamasuse tuvastamine on lõpetamata',
+};
+
+const LONGER_THAN_ANY_REPORT_DEADLINE = 60000;
+
+const USER_KYC_ERROR: ValidationError = {
+  code: 'USER_KYC',
+  message: 'Sinu isikusamasuse tuvastamine on lõpetamata',
+};
+
+const clientHoldingAStaleStatus = (status: SavingsFundOnboardingStatus['status']) => {
+  const queryClient = new QueryClient();
+  queryClient.setQueryData(['savingsFundCompanyOnboardingStatus', '12345678'], { status });
+  return queryClient;
+};
+
+const submitApplicationThatGoesPending = async (history: MemoryHistory) => {
+  renderWrapped(<SavingsFundCompanyOnboarding />, history);
+  await selectCompany();
+  await advanceToStep(2);
+  await completeStepsThroughTerms();
+
+  server.use(
+    rest.post('http://localhost/v1/kyb/surveys', (_req, res, ctx) => res(ctx.status(200))),
+    rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
+      res(ctx.json({ status: 'PENDING' })),
+    ),
+  );
+
+  userEvent.click(continueButton());
+};
+
+const reportWithRelatedPersonErrors = (errors: ValidationError[]) => ({
+  ...mockValidatedCompany,
+  relatedPersons: { value: mockValidatedCompany.relatedPersons.value, errors },
+});
+
+const respondWithRelatedPersonErrors = (...errors: ValidationError[]) => {
+  server.use(
+    rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
+      res(ctx.json(reportWithRelatedPersonErrors(errors))),
+    ),
+  );
+};
+
+const relatedPersonErrorsChangeWhileTheApplicantFillsTheForm = (
+  atTheRequirementsStep: ValidationError[],
+  byTheTimeTheApplicationIsSubmitted: ValidationError[],
+) => {
+  let reportRequests = 0;
+  server.use(
+    rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) => {
+      reportRequests += 1;
+      return res(
+        ctx.json(
+          reportWithRelatedPersonErrors(
+            reportRequests === 1 ? atTheRequirementsStep : byTheTimeTheApplicationIsSubmitted,
+          ),
+        ),
+      );
+    }),
+  );
+};
+
+const failToRefreshTheReportAfterTheRequirementsStep = (
+  atTheRequirementsStep: ValidationError[],
+) => {
+  const reportRequests = { count: 0 };
+  server.use(
+    rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) => {
+      reportRequests.count += 1;
+      if (reportRequests.count === 1) {
+        return res(ctx.json(reportWithRelatedPersonErrors(atTheRequirementsStep)));
+      }
+      return res(ctx.status(500), ctx.json({ error: 'INTERNAL_ERROR' }));
+    }),
+  );
+  return reportRequests;
+};
+
+const completeTheOnboardingOnceTheReportIsRead = (stillOutstanding: ValidationError[]) => {
+  const reportRequests = { count: 0 };
+  let theOnboardingHasCompleted = false;
+  server.use(
+    rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) => {
+      reportRequests.count += 1;
+      if (reportRequests.count > 1) {
+        theOnboardingHasCompleted = true;
+      }
+      return res(ctx.json(reportWithRelatedPersonErrors(stillOutstanding)));
+    }),
+    rest.get('http://localhost/v1/savings/onboarding/status/legal-entity', (_req, res, ctx) =>
+      res(ctx.json({ status: theOnboardingHasCompleted ? 'COMPLETED' : 'PENDING' })),
+    ),
+  );
+  return reportRequests;
+};
+
+type InterceptedRequest = XMLHttpRequest & { url: string };
+
+const observeAbortedRequests = () => {
+  const abortedRequestUrls: string[] = [];
+  const interceptedRequests = window.XMLHttpRequest.prototype as InterceptedRequest;
+  const abortRequest = interceptedRequests.abort;
+  const observer = jest
+    .spyOn(interceptedRequests, 'abort')
+    .mockImplementation(function recordAbortedUrl(this: InterceptedRequest) {
+      abortedRequestUrls.push(this.url);
+      abortRequest.call(this);
+    });
+  return { abortedRequestUrls, stopObservingAbortedRequests: () => observer.mockRestore() };
+};
+
+const warningsAboutUnmountedUpdates = (consoleError: jest.SpyInstance) =>
+  consoleError.mock.calls.filter(([message]) => String(message).includes('unmounted component'));
+
 const continueButton = () => screen.getByRole('button', { name: /continue/i });
+
+const backButton = () => screen.getByRole('button', { name: /back/i });
 
 const fillContactDetailsStepWith = async (email: string) => {
   const emailInput = await screen.findByRole('textbox', { name: 'Email' });
@@ -774,10 +1469,13 @@ const navigateToStep2 = async () => {
   await advanceToStep(2);
 };
 
+const waitForValidationReport = async () => {
+  expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+};
+
 // Advances from step 2 through to the terms step (7/7) without accepting the terms.
 const advanceToTerms = async () => {
-  // Step 2: Requirements Check — wait for validation data before continuing
-  expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+  await waitForValidationReport();
   await advanceToStep(3);
 
   // Step 3: Company Address — no fields to fill
@@ -810,7 +1508,7 @@ const completeStepsThroughTerms = async () => {
 // Like completeStepsThroughTerms, but the investment goal at step 4 is chosen
 // by the provided callback instead of defaulting to the long-term option.
 const completeStepsThroughTermsWithGoal = async (pickGoal: () => void) => {
-  expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+  await waitForValidationReport();
   await advanceToStep(3);
   await advanceToStep(4);
   pickGoal();
@@ -828,7 +1526,7 @@ const completeStepsThroughTermsWithGoal = async (pickGoal: () => void) => {
 
 // Advances from step 2 to the confirmations step (6/7) without ticking any box.
 const advanceToConfirmations = async () => {
-  expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+  await waitForValidationReport();
   await advanceToStep(3);
   await advanceToStep(4);
   userEvent.click(screen.getByRole('radio', { name: 'Long-term growth of company assets' }));
