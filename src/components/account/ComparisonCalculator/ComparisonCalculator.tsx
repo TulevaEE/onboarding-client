@@ -866,7 +866,7 @@ const ComparisonCalculator: React.FC = () => {
     }
     benchmarkOptions.push(inflationOption);
 
-    const lowFeeFundThreshold = 0.005;
+    const lowFeeFundThreshold = 0.003;
     const lowFeeFunds = sortFundsWithTulevaFirst(
       funds.filter((fund) => fund.ongoingChargesFigure < lowFeeFundThreshold),
     );

@@ -6,7 +6,7 @@ exports[`SecondPillarStatusBox renders high fee flow when fund selection incompl
     Object {
       "selectionComplete": false,
       "selectionPartial": false,
-      "weightedAverageFee": 0.0051,
+      "weightedAverageFee": 0.0031,
     }
   }
   currentPaymentRate={6}
@@ -126,7 +126,7 @@ exports[`SecondPillarStatusBox renders low fee when fund selection incomplete 1`
     Object {
       "selectionComplete": false,
       "selectionPartial": false,
-      "weightedAverageFee": 0.0049,
+      "weightedAverageFee": 0.0029,
     }
   }
   currentPaymentRate={6}

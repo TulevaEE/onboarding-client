@@ -222,7 +222,7 @@ type CtaItem = {
   link: string | null;
 };
 
-const LOW_FEE_THRESHOLD = 0.005;
+const LOW_FEE_THRESHOLD = 0.003;
 
 const SecondPillarGrowth = () => {
   const intl = useIntl();

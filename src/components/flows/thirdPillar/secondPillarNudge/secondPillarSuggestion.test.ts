@@ -70,7 +70,7 @@ describe('secondPillarSuggestion', () => {
     },
     {
       name: 'transfer nudge without the fee argument when second pillar is elsewhere in low-fee funds',
-      conversion: { ...elsewhere, weightedAverageFee: 0.004 },
+      conversion: { ...elsewhere, weightedAverageFee: 0.0029 },
       expected: 'TRANSFER_LOW_FEE',
     },
     {

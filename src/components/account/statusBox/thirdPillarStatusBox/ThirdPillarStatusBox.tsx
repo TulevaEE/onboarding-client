@@ -149,8 +149,8 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
   if (!isPartiallyConverted) {
     const activeFundFee = activeFund?.ongoingChargesFigure || 0;
     const hasHighFees =
-      conversion.weightedAverageFee > 0.005 ||
-      (conversion.contribution.total === 0 && activeFundFee > 0.005);
+      conversion.weightedAverageFee > 0.003 ||
+      (conversion.contribution.total === 0 && activeFundFee > 0.003);
 
     if (hasHighFees) {
       return (

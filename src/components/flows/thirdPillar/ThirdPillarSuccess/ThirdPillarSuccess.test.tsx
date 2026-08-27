@@ -105,7 +105,7 @@ describe('Third pillar success screen', () => {
     userConversionBackend(server, {
       selectionComplete: false,
       transfersComplete: false,
-      weightedAverageFee: 0.004,
+      weightedAverageFee: 0.0029,
     });
     pensionAccountStatementBackend(server, [swedbankSecondPillar, tulevaThirdPillar]);
     initializeComponent();

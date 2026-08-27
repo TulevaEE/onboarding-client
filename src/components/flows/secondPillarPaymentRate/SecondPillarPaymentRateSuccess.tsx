@@ -14,7 +14,10 @@ export const SecondPillarPaymentRateSuccess: React.FC = () => {
   const { data: mandateDeadlines } = useMandateDeadlines();
   const { data: conversion } = useConversion();
 
-  const hasHighFees = conversion && conversion.secondPillar.weightedAverageFee > 0.005;
+  const hasHighFees =
+    conversion &&
+    !(conversion.secondPillar.selectionComplete && conversion.secondPillar.transfersComplete) &&
+    conversion.secondPillar.weightedAverageFee > 0.003;
 
   return (
     <SuccessNotice>

@@ -247,7 +247,7 @@ describe('ComparisonCalculator', () => {
 
     const comparisonSelect = await comparedToSelect();
     expect(
-      within(comparisonSelect).getByRole('group', { name: 'Low fee funds (below 0.5%)' }),
+      within(comparisonSelect).getByRole('group', { name: 'Low fee funds (below 0.3%)' }),
     ).toBeInTheDocument();
     expect(
       within(comparisonSelect).getByRole('group', {

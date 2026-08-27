@@ -80,7 +80,7 @@ describe('SecondPillarStatusBox', () => {
 
   it('renders low fee when fund selection incomplete', () => {
     component.setProps({
-      conversion: { selectionPartial: false, selectionComplete: false, weightedAverageFee: 0.0049 },
+      conversion: { selectionPartial: false, selectionComplete: false, weightedAverageFee: 0.0029 },
     });
     expect(component).toMatchSnapshot();
   });
@@ -89,7 +89,7 @@ describe('SecondPillarStatusBox', () => {
     component.setProps({
       sourceFunds: [highFeeSecondPillar],
       targetFunds: [tulevaSecondPillarFund],
-      conversion: { selectionPartial: false, selectionComplete: false, weightedAverageFee: 0.0051 },
+      conversion: { selectionPartial: false, selectionComplete: false, weightedAverageFee: 0.0031 },
     });
     expect(component).toMatchSnapshot();
   });
@@ -190,7 +190,7 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
             ...completeSecondPillarConversion.secondPillar,
             selectionComplete: false,
             transfersComplete: false,
-            weightedAverageFee: 0.0049,
+            weightedAverageFee: 0.0029,
           }}
         />,
       );
@@ -209,7 +209,7 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
             ...completeSecondPillarConversion.secondPillar,
             selectionComplete: false,
             transfersComplete: false,
-            weightedAverageFee: 0.0049,
+            weightedAverageFee: 0.0029,
           }}
         />,
       );
@@ -235,7 +235,7 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
           ...completeSecondPillarConversion.secondPillar,
           selectionComplete: false,
           transfersComplete: false,
-          weightedAverageFee: 0.0049,
+          weightedAverageFee: 0.0029,
         },
         sourceFunds: [activeSecondPillar],
         targetFunds: [tulevaSecondPillarFund],
@@ -263,7 +263,7 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
         conversion: {
           ...lowFeesNoTulevaConversion.secondPillar,
           transfersPartial: true,
-          weightedAverageFee: 0.0049,
+          weightedAverageFee: 0.0029,
         },
         sourceFunds: [activeSecondPillar],
         targetFunds: [tulevaSecondPillarFund],
@@ -288,7 +288,7 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
         conversion: {
           ...lowFeesNoTulevaConversion.secondPillar,
           transfersPartial: true,
-          weightedAverageFee: 0.0049,
+          weightedAverageFee: 0.0029,
         },
         sourceFunds: [activeSecondPillar],
         targetFunds: [tulevaSecondPillarFund],

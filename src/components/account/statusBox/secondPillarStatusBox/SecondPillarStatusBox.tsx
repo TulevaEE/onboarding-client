@@ -98,15 +98,15 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     return <ActiveFundPension fundPension={activeSecondPillarFundPension} />;
   }
 
-  if (conversion.weightedAverageFee > 0.005) {
+  const isFullyConvertedToTuleva = conversion.selectionComplete && conversion.transfersComplete;
+
+  if (!isFullyConvertedToTuleva && conversion.weightedAverageFee > 0.003) {
     return <HighFee {...rowProps} />;
   }
 
   if (pendingPaymentRate < 6) {
     return <IncreasePaymentRate {...rowProps} />;
   }
-
-  const isFullyConvertedToTuleva = conversion.selectionComplete && conversion.transfersComplete;
 
   if (!isFullyConvertedToTuleva) {
     return <InLowFeeFund {...rowProps} />;

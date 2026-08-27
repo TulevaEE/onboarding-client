@@ -23,7 +23,7 @@ export function secondPillarSuggestion(
   const isAtTuleva =
     secondPillarConversion.selectionComplete && secondPillarConversion.transfersComplete;
   if (!isAtTuleva) {
-    return secondPillarConversion.weightedAverageFee > 0.005
+    return secondPillarConversion.weightedAverageFee > 0.003
       ? 'TRANSFER_HIGH_FEE'
       : 'TRANSFER_LOW_FEE';
   }

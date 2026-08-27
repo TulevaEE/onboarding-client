@@ -49,7 +49,7 @@ describe('ThirdPillarStatusBox', () => {
         selectionPartial: false,
         selectionComplete: false,
         contribution: { yearToDate: 20, total: 20 },
-        weightedAverageFee: 0.0049,
+        weightedAverageFee: 0.0029,
       },
     });
     expect(component).toMatchSnapshot();
@@ -71,7 +71,7 @@ describe('ThirdPillarStatusBox', () => {
       conversion: {
         transferPartial: true,
         contribution: { yearToDate: 20, total: 20 },
-        weightedAverageFee: 0.0049,
+        weightedAverageFee: 0.0029,
       },
     });
     expect(component).toMatchSnapshot();

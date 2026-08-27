@@ -68,7 +68,7 @@
   "accountSummary.columns.subtractions": "Väljamaksed",
   "accountSummary.columns.profit": "Tulu",
   "accountSummary.columns.value": "Osakute väärtus",
-  "accountSummary.disclaimer": "Madalad tasud (alla 0.5% aastas) <a>ennustavad</a> suuremat pikaajalist tootlust.",
+  "accountSummary.disclaimer": "Madalad tasud (alla 0.3% aastas) <a>ennustavad</a> suuremat pikaajalist tootlust.",
 
   "accountStatement.heading": "Sinu portfell detailsemalt",
   "accountStatement.secondPillar.heading": "II sammas",
@@ -316,11 +316,11 @@
   "account.status.choice.pillar.third.paymentsNoSelection.action": "Valin fondi",
 
   "account.status.choice.highFee.label": "Sa kogud kõrge tasuga fondis",
-  "account.status.choice.highFee.description": "Sinu fondide kaalutud keskmine tasu on üle 0.5% aastas",
+  "account.status.choice.highFee.description": "Sinu fondide kaalutud keskmine tasu on üle 0.3% aastas",
   "account.status.choice.highFee.comment": "Maksad tasudeks {currentFeesEuro} aastas. Tulevas maksaksid {tulevaFeesEuro} aastas.",
   "account.status.choice.diversification.comment": "Läbi Tuleva saad hoida munad 3000 eri korvis.",
   "account.status.choice.lowFee.label": "Sa kogud madala tasuga fondis",
-  "account.status.choice.lowFee.description": "Sinu fondide kaalutud keskmine tasu on alla 0.5% aastas",
+  "account.status.choice.lowFee.description": "Sinu fondide kaalutud keskmine tasu on alla 0.3% aastas",
   "account.status.choice.lowFee.index.label": "Sa kogud Tuleva madala tasuga indeksfondis",
 
   "account.status.choice.paymentRate": "Sinu panus on {currentPaymentRate}% brutopalgast",
@@ -732,7 +732,7 @@
   "secondPillarPaymentRateSuccess.title.decrease": "Langetasid II samba makset",
   "secondPillarPaymentRateSuccess.descriptionNewRate.increase": "Alates <b>{paymentRateFulfillmentDate}</b> panustad II sambasse <b>{paymentRate}%</b> brutopalgast. Muudatus jõustub automaatselt.",
   "secondPillarPaymentRateSuccess.descriptionNewRate.decrease": "Alates <b>{paymentRateFulfillmentDate}</b> panustad II sambasse senisest vähem ehk <b>{paymentRate}%</b> brutopalgast. Oma otsust saad veel muuta kuni <b>{paymentRateDeadline}</b>.",
-  "secondPillarPaymentRateSuccess.highFeesWarning": "Nüüd veendu, et sinu fondi tasud oleksid <b>alla 0.5% aastas</b>, sest madalad tasud annavad parimad eeldused parimaks pikaajaliseks tootluseks.",
+  "secondPillarPaymentRateSuccess.highFeesWarning": "Nüüd veendu, et sinu fondi tasud oleksid <b>alla 0.3% aastas</b>, sest madalad tasud annavad parimad eeldused parimaks pikaajaliseks tootluseks.",
   "secondPillarPaymentRateSuccess.reviewFeesLink": "Vaatan üle",
   "secondPillarPaymentRateSuccess.accountLink": "Minu konto",
 
@@ -744,7 +744,7 @@
   "comparisonCalculator.shortTimePeriodWarningLink": "Loe lähemalt",
 
   "comparisonCalculator.comparisonOptions.benchmarks": "Mõõdikud",
-  "comparisonCalculator.comparisonOptions.lowFeeFunds": "Madala tasuga fondid (alla 0.5%)",
+  "comparisonCalculator.comparisonOptions.lowFeeFunds": "Madala tasuga fondid (alla 0.3%)",
   "comparisonCalculator.comparisonOptions.highFeeFunds": "Kõrge tasuga fondid ({minimumFee}%–{maximumFee}%)",
   "comparisonCalculator.comparisonOptions.UNION_STOCK_INDEX": "Maailmaturu indeks",
   "comparisonCalculator.comparisonOptions.EPI": "Eesti keskmine II samba fond",
