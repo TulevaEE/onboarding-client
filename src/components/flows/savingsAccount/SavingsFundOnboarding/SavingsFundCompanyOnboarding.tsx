@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
+import { useQueryClient } from '@tanstack/react-query';
 import { captureException } from '@sentry/browser';
 import { CompanyOnboardingFormData } from './types';
 import { BusinessRegistryStep } from './BusinessRegistryStep';
 import { RequirementsCheckStep } from './RequirementsCheckStep';
-import { hasNoValidationErrors } from './RequirementsCheckStep/hasNoValidationErrors';
-import { onlyIdentityVerificationMissing } from './RequirementsCheckStep/onlyIdentityVerificationMissing';
+import { mayPassRequirementsStep } from './RequirementsCheckStep/mayPassRequirementsStep';
+import { applicantIdentityUnderReview } from './RequirementsCheckStep/applicantIdentityUnderReview';
 import { CompanyAddressStep } from './CompanyAddressStep';
 import { InvestmentGoalStep } from './InvestmentGoalStep';
 import { InvestableAssetsStep } from './InvestableAssetsStep';
@@ -16,11 +17,16 @@ import { TermsStep } from './TermsStep';
 import { OnboardingFlowLayout } from './OnboardingFlowLayout';
 import { TKF_DOCUMENTS } from './tkfDocuments';
 import {
-  useSavingsFundCompanyOnboardingStatus,
   useSubmitSavingsFundCompanyOnboardingSurvey,
   useSubmitSavingsFundOnboardingSurvey,
   useSwitchRole,
 } from '../../../common/apiHooks';
+import {
+  getCompanyBusinessRegistryValidation,
+  getSavingsFundCompanyOnboardingStatus,
+} from '../../../common/api';
+import { SavingsFundOnboardingStatus } from '../../../common/apiModels';
+import { BusinessRegistryValidatedData } from '../../../common/apiModels/company-onboarding';
 import {
   transformCompanyFormDataToSurveyCommand,
   transformIdentityToOnboardingSurveyCommand,
@@ -32,80 +38,49 @@ import {
   useIdentityOnFile,
 } from './identitySteps';
 
+const REPORT_DEADLINE_MS = 5000;
+
 export const SavingsFundCompanyOnboarding = () => {
   const history = useHistory();
+  const queryClient = useQueryClient();
   const [activeSection, setActiveSection] = useState(0);
   const [submitError, setSubmitError] = useState(false);
-  const [submittedRegistryCode, setSubmittedRegistryCode] = useState<string | undefined>(undefined);
+  const [awaitingApplicationOutcome, setAwaitingApplicationOutcome] = useState(false);
 
-  const { data: onboardingStatus } = useSavingsFundCompanyOnboardingStatus(submittedRegistryCode);
-  const { mutateAsync: submitSurvey, isPending: submittingSurvey } =
-    useSubmitSavingsFundCompanyOnboardingSurvey();
+  const { mutateAsync: submitSurvey } = useSubmitSavingsFundCompanyOnboardingSurvey();
   const { mutateAsync: submitIdentitySurvey, isPending: submittingIdentity } =
     useSubmitSavingsFundOnboardingSurvey();
   const { mutateAsync: switchRole } = useSwitchRole();
 
-  useEffect(() => {
-    // Only this onboarding's own outcome may navigate away — a status another
-    // company's onboarding left in the query cache must be ignored.
-    if (!onboardingStatus || !submittedRegistryCode) {
-      return;
-    }
-    if (onboardingStatus.status === 'COMPLETED') {
-      // KYB passed — switch to the new company account first, so the success
-      // page's deposit CTA opens the company's deposit view and the deposit is
-      // unambiguously to the company (TKF #67 F7).
-      const openCompanyAccount = async () => {
-        try {
-          await switchRole({ type: 'LEGAL_ENTITY', code: submittedRegistryCode });
-          history.push('/savings-fund/onboarding/success/company');
-        } catch (e) {
-          captureException(e);
-          setSubmitError(true);
-        }
-      };
-      openCompanyAccount();
-      return;
-    }
-    if (onboardingStatus.status === 'PENDING') {
-      history.push('/savings-fund/onboarding/waiting');
-      return;
-    }
-    // REJECTED — show the generic "we'll review it" outcome rather than
-    // surfacing a hard rejection.
-    history.push('/savings-fund/onboarding/pending');
-  }, [onboardingStatus, submittedRegistryCode, switchRole, history]);
-
-  const { control, trigger, handleSubmit, watch, setValue, getValues } =
-    useForm<CompanyOnboardingFormData>({
-      // Validate on submit (each "Continue" triggers validation explicitly), so a
-      // half-filled confirmations step doesn't flash an error after the first
-      // checkbox; reValidateMode then clears the error as the user ticks the rest.
-      mode: 'onSubmit',
-      defaultValues: {
-        citizenship: [],
-        address: {
-          countryCode: 'EE',
-          street: '',
-          city: '',
-          postalCode: '',
-        },
-        email: '',
-        phoneNumber: '',
-        pepSelfDeclaration: null,
-        registryLookup: undefined,
-        companyValidatedData: undefined,
-        companyAddress: { reuseBackendAddress: true },
-        investmentGoals: null,
-        investableAssets: null,
-        sourceOfCompanyIncome: {
-          ONLY_ACTIVE_IN_ESTONIA: false,
-          NOT_SANCTIONED_NOT_PROFITING_FROM_SANCTIONED_COUNTRIES: false,
-          NOT_IN_CRYPTO: false,
-        },
-        termsAccepted: false,
+  const { control, trigger, watch, setValue, getValues } = useForm<CompanyOnboardingFormData>({
+    // Validate on submit (each "Continue" triggers validation explicitly), so a
+    // half-filled confirmations step doesn't flash an error after the first
+    // checkbox; reValidateMode then clears the error as the user ticks the rest.
+    mode: 'onSubmit',
+    defaultValues: {
+      citizenship: [],
+      address: {
+        countryCode: 'EE',
+        street: '',
+        city: '',
+        postalCode: '',
       },
-    });
+      email: '',
+      phoneNumber: '',
+      pepSelfDeclaration: null,
+      registryLookup: undefined,
+      companyValidatedData: undefined,
+      companyAddress: { reuseBackendAddress: true },
+      investmentGoals: null,
+      investableAssets: null,
+      sourceOfCompanyIncome: {
+        ONLY_ACTIVE_IN_ESTONIA: false,
+        NOT_SANCTIONED_NOT_PROFITING_FROM_SANCTIONED_COUNTRIES: false,
+        NOT_IN_CRYPTO: false,
+      },
+      termsAccepted: false,
+    },
+  });
 
   const termsAccepted = watch('termsAccepted');
   const companyValidatedData = watch('companyValidatedData');
@@ -115,15 +90,125 @@ export const SavingsFundCompanyOnboarding = () => {
   // screening runs without touching the person's own onboarding status.
   const { identityOnFile, identityLoadFailed, retryIdentityLoad } = useIdentityOnFile(setValue);
   const lastSubmittedIdentity = useRef<string | null>(null);
+  const lastSubmittedApplication = useRef<string | null>(null);
+  const applicationInFlight = useRef(false);
+  const stillOnTheFlow = useRef(true);
 
-  const submitForm = handleSubmit(async (data) => {
-    const registryCode = data.registryLookup?.registryNumber ?? '';
-    await submitSurvey({
-      command: transformCompanyFormDataToSurveyCommand(data),
-      registryCode,
+  useEffect(
+    () => () => {
+      stillOnTheFlow.current = false;
+    },
+    [],
+  );
+
+  const applicantLeftTheFlow = () => !stillOnTheFlow.current;
+
+  const fetchFreshApplicationStatus = (registryCode: string) =>
+    queryClient.fetchQuery({
+      queryKey: ['savingsFundCompanyOnboardingStatus', registryCode],
+      queryFn: () => getSavingsFundCompanyOnboardingStatus(registryCode),
+      staleTime: 0,
     });
-    setSubmittedRegistryCode(registryCode);
-  });
+
+  // Not fetchQuery: react-query would dedupe onto an in-flight pre-submission refetch.
+  const freshValidationReportOrRequirementsStepReport = (registryCode: string) => {
+    const requirementsStepReport = companyValidatedData;
+    const abandonTheFreshReport = new AbortController();
+    let stopWaitingForTheFreshReport = () => {};
+    const requirementsStepReportOnceTheReportIsLate = new Promise<
+      BusinessRegistryValidatedData | undefined
+    >((resolve) => {
+      const deadline = setTimeout(() => {
+        abandonTheFreshReport.abort();
+        resolve(requirementsStepReport);
+      }, REPORT_DEADLINE_MS);
+      stopWaitingForTheFreshReport = () => clearTimeout(deadline);
+    });
+    const freshReportOrRequirementsStepReport = getCompanyBusinessRegistryValidation(
+      registryCode,
+      abandonTheFreshReport.signal,
+    )
+      .catch(() => requirementsStepReport)
+      .finally(() => stopWaitingForTheFreshReport());
+    return Promise.race([
+      freshReportOrRequirementsStepReport,
+      requirementsStepReportOnceTheReportIsLate,
+    ]);
+  };
+
+  const followApplicationStatus = async (
+    status: SavingsFundOnboardingStatus['status'],
+    registryCode: string,
+    report: BusinessRegistryValidatedData | undefined,
+  ) => {
+    switch (status) {
+      case 'COMPLETED':
+        // KYB passed — switch to the new company account first, so the success
+        // page's deposit CTA opens the company's deposit view and the deposit is
+        // unambiguously to the company (TKF #67 F7).
+        await switchRole({ type: 'LEGAL_ENTITY', code: registryCode });
+        if (applicantLeftTheFlow()) {
+          return;
+        }
+        history.push('/savings-fund/onboarding/success/company');
+        return;
+      case 'PENDING':
+        history.push(
+          report != null && applicantIdentityUnderReview(report)
+            ? '/savings-fund/onboarding/pending'
+            : '/savings-fund/onboarding/waiting',
+        );
+        return;
+      case 'REJECTED':
+        // Show the generic "we'll review it" outcome rather than surfacing a
+        // hard rejection.
+        history.push('/savings-fund/onboarding/pending');
+        return;
+      case null:
+        throw new Error('Company onboarding has no status after the survey was submitted');
+      default: {
+        const unhandledStatus: never = status;
+        throw new Error(`Unhandled company onboarding status: ${String(unhandledStatus)}`);
+      }
+    }
+  };
+
+  const finishApplication = async () => {
+    if (applicationInFlight.current) {
+      return;
+    }
+    applicationInFlight.current = true;
+    setAwaitingApplicationOutcome(true);
+    setSubmitError(false);
+    try {
+      const data = getValues();
+      const registryCode = data.registryLookup?.registryNumber ?? '';
+      const survey = transformCompanyFormDataToSurveyCommand(data);
+      const application = JSON.stringify({ registryCode, survey });
+      const alreadyScreened = application === lastSubmittedApplication.current;
+      if (!alreadyScreened) {
+        await submitSurvey({ command: survey, registryCode });
+        lastSubmittedApplication.current = application;
+      }
+      const report = await freshValidationReportOrRequirementsStepReport(registryCode);
+      if (applicantLeftTheFlow()) {
+        return;
+      }
+      const { status } = await fetchFreshApplicationStatus(registryCode);
+      if (applicantLeftTheFlow()) {
+        return;
+      }
+      await followApplicationStatus(status, registryCode, report);
+    } catch (e) {
+      captureException(e);
+      if (applicantLeftTheFlow()) {
+        return;
+      }
+      applicationInFlight.current = false;
+      setAwaitingApplicationOutcome(false);
+      setSubmitError(true);
+    }
+  };
 
   const identitySteps =
     identityOnFile === true ? [] : buildIdentitySteps<CompanyOnboardingFormData>(control);
@@ -223,15 +308,10 @@ export const SavingsFundCompanyOnboarding = () => {
   const totalSections = steps.length;
   const currentSection = activeSection + 1;
   const isTermsStep = activeSection === totalSections - 1;
-  // The requirements step cannot be passed while the company itself fails a
-  // check, so disable Continue with the reason on screen instead of letting the
-  // click silently no-op. An outstanding identity verification is not such a
-  // reason: the applicant finishes the form and the application waits.
   const requirementsStepBlocked =
     activeSection === identityStepCount + 1 &&
     companyValidatedData != null &&
-    !hasNoValidationErrors(companyValidatedData) &&
-    !onlyIdentityVerificationMissing(companyValidatedData);
+    !mayPassRequirementsStep(companyValidatedData);
 
   const showPreviousSection = () => {
     if (activeSection === 0) {
@@ -251,14 +331,8 @@ export const SavingsFundCompanyOnboarding = () => {
     if (!isStepValid) {
       return;
     }
-    if (activeSection === totalSections - 1) {
-      try {
-        setSubmitError(false);
-        await submitForm();
-      } catch (e) {
-        captureException(e);
-        setSubmitError(true);
-      }
+    if (isTermsStep) {
+      await finishApplication();
       return;
     }
     if (isLastIdentityStep) {
@@ -295,8 +369,7 @@ export const SavingsFundCompanyOnboarding = () => {
         onBack={showPreviousSection}
         onNext={showNextSection}
         loading={identityOnFile === null}
-        submitting={submittingSurvey || submittingIdentity}
-        backDisabled={submittingSurvey || submittingIdentity}
+        submitting={awaitingApplicationOutcome || submittingIdentity}
         nextDisabled={(isTermsStep && !termsAccepted) || requirementsStepBlocked}
       >
         {steps[activeSection].component}

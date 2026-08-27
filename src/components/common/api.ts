@@ -303,9 +303,12 @@ export function postSavingsFundCompanyOnboardingSurvey(
 
 export function getCompanyBusinessRegistryValidation(
   companyRegistryCode: string,
+  signal?: AbortSignal,
 ): Promise<BusinessRegistryValidatedData> {
   return getWithAuthentication(
     getEndpoint(`/v1/kyb/surveys/initial-validation?registry-code=${companyRegistryCode}`),
+    {},
+    { signal },
   );
 }
 

@@ -38,7 +38,6 @@ import {
   getPendingOnboardings,
   getSavingsFundBalance,
   getSavingsFundBankAccounts,
-  getSavingsFundCompanyOnboardingStatus,
   getSavingsFundOnboardingStatus,
   getSavingsFundPersonOnboardingStatus,
   getSecondPillarAssets,
@@ -338,16 +337,6 @@ export function useCreateMemberCapitalListing(): UseMutationResult<
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['memberCapitalListings'] });
     },
-  });
-}
-
-export function useSavingsFundCompanyOnboardingStatus(
-  registryCode: string | undefined,
-): UseQueryResult<SavingsFundOnboardingStatus> {
-  return useQuery({
-    queryKey: ['savingsFundCompanyOnboardingStatus', registryCode],
-    queryFn: () => getSavingsFundCompanyOnboardingStatus(registryCode ?? ''),
-    enabled: Boolean(registryCode),
   });
 }
 
