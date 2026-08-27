@@ -518,6 +518,24 @@ describe('RequirementsCheckStep', () => {
     ).not.toBeInTheDocument();
   });
 
+  it('survives a report that does not mention related persons', async () => {
+    const reportWithoutRelatedPersons = { ...mockValidatedCompany, relatedPersons: undefined };
+    server.use(
+      rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
+        res(ctx.json(reportWithoutRelatedPersons)),
+      ),
+    );
+
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('displays error when backend returns 501 UNEXPECTED_ERROR', async () => {
     server.use(
       rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
