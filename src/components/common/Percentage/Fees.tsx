@@ -13,7 +13,7 @@ export const Fees: React.FC<FeesProps> = ({ value, className, showPerYear }) => 
     return <></>;
   }
   return (
-    <span className={`${className || ''} ${value > 0.005 ? ' text-danger' : 'text-success'}`}>
+    <span className={`${className || ''} ${value > 0.003 ? ' text-danger' : 'text-success'}`}>
       <Percentage value={value} />
       {showPerYear && <FormattedMessage id="fees.perYear" />}
     </span>
