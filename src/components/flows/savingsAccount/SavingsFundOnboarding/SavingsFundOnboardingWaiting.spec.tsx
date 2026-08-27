@@ -7,18 +7,24 @@ describe('SavingsFundOnboardingWaiting', () => {
     renderWrapped(<SavingsFundOnboardingWaiting />);
 
     expect(
-      screen.getByRole('heading', { name: /waiting for one more identity verification/i }),
+      screen.getByRole('heading', {
+        name: /^Everything is in\.\sWe are waiting for identity verification$/i,
+      }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Your application is with us/i)).toBeInTheDocument();
     expect(screen.getByText(/You do not need to do anything more here/i)).toBeInTheDocument();
   });
 
-  // Nothing is being reviewed and nobody at Tuleva has to act, so the page must
-  // not borrow the rejection page's "we will review it within a week" promise.
   it('does not claim a review is under way', () => {
     renderWrapped(<SavingsFundOnboardingWaiting />);
 
     expect(screen.queryByText(/within a week/i)).not.toBeInTheDocument();
+  });
+
+  it('does not claim a single person is still outstanding', () => {
+    renderWrapped(<SavingsFundOnboardingWaiting />);
+
+    expect(screen.queryByText(/one more/i)).not.toBeInTheDocument();
   });
 
   it('offers a way back to the account', () => {
