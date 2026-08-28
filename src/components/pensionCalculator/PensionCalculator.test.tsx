@@ -270,7 +270,9 @@ describe('PensionCalculator', () => {
     renderCalculator();
 
     expect(screen.getByTestId('headline')).toBeInTheDocument();
-    expect(screen.queryByRole('slider', { name: /Savings fund monthly/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('slider', { name: /Investment fund monthly/i }),
+    ).not.toBeInTheDocument();
   });
 
   it('shows a headline with a pot and a monthly payment, at the projected pension age', () => {
@@ -612,7 +614,9 @@ describe('PensionCalculator', () => {
 
   it('hides the savings fund slider from savers who do not hold the fund', () => {
     renderCalculator();
-    expect(screen.queryByRole('slider', { name: /Savings fund monthly/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('slider', { name: /Investment fund monthly/i }),
+    ).not.toBeInTheDocument();
   });
 
   it('shows the savings fund slider to unit holders, pre-filled from their standing order', () => {
@@ -624,7 +628,7 @@ describe('PensionCalculator', () => {
 
     renderCalculator();
 
-    expect(screen.getByRole('slider', { name: /Savings fund monthly/i })).toHaveValue('150');
+    expect(screen.getByRole('slider', { name: /Investment fund monthly/i })).toHaveValue('150');
   });
 
   it('grows the pot when the saver raises their II pillar rate', () => {
@@ -711,7 +715,7 @@ describe('PensionCalculator', () => {
     givenSavingsFund();
 
     renderCalculator();
-    setSlider(/Savings fund monthly/i, 500);
+    setSlider(/Investment fund monthly/i, 500);
     setSlider(/Payouts until/i, 79);
 
     // Nothing in the II or III pillar, so a short period costs nothing; and the
@@ -836,12 +840,12 @@ describe('PensionCalculator', () => {
     givenSavingsFund();
     renderCalculator();
 
-    const amount = screen.getByRole('textbox', { name: /Savings fund monthly/i });
+    const amount = screen.getByRole('textbox', { name: /Investment fund monthly/i });
     amount.textContent = '250';
     // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.input(amount);
     expect(amount).toHaveTextContent(/^250$/);
-    expect(screen.getByRole('slider', { name: /Savings fund monthly/i })).toHaveValue('250');
+    expect(screen.getByRole('slider', { name: /Investment fund monthly/i })).toHaveValue('250');
 
     amount.textContent = '12345';
     // eslint-disable-next-line testing-library/prefer-user-event
@@ -856,7 +860,7 @@ describe('PensionCalculator', () => {
     renderCalculator();
     const before = euroValue('first-payment');
 
-    setSlider(/Savings fund monthly/i, 200);
+    setSlider(/Investment fund monthly/i, 200);
 
     expect(euroValue('first-payment')).toBeGreaterThan(before);
   });

@@ -542,7 +542,7 @@ describe('withdrawals link', () => {
   });
 });
 
-describe('Additional Savings Fund status', () => {
+describe('Additional Investment Fund status', () => {
   beforeEach(() => {
     initializeConfiguration();
     useTestBackends(server);
@@ -563,7 +563,7 @@ describe('Additional Savings Fund status', () => {
     const savingsFundRow = screen.getAllByTestId('status-box-row')[2];
 
     expect(
-      within(savingsFundRow).getByRole('heading', { name: 'Additional Savings Fund' }),
+      within(savingsFundRow).getByRole('heading', { name: 'Additional Investment Fund' }),
     ).toBeInTheDocument();
     expect(
       within(savingsFundRow).getByRole('link', { name: 'Start investing' }),
@@ -577,7 +577,7 @@ describe('Additional Savings Fund status', () => {
     initializeComponent();
     history.push('/account');
 
-    // We fetch Additional Savings Fund with react-query, so we need to wait for it to appear
+    // We fetch Additional Investment Fund with react-query, so we need to wait for it to appear
     await waitFor(async () => {
       const rows = await screen.findAllByTestId('status-box-row');
       expect(rows).toHaveLength(4);
@@ -587,7 +587,7 @@ describe('Additional Savings Fund status', () => {
 
     expect(within(savingsFundRow).getByTestId('status-icon-todo')).toBeInTheDocument();
     expect(
-      within(savingsFundRow).getByRole('heading', { name: 'Additional Savings Fund' }),
+      within(savingsFundRow).getByRole('heading', { name: 'Additional Investment Fund' }),
     ).toBeInTheDocument();
     expect(
       within(savingsFundRow).getByText(
@@ -606,7 +606,7 @@ describe('Additional Savings Fund status', () => {
     initializeComponent();
     history.push('/account');
 
-    // We fetch Additional Savings Fund with react-query, so we need to wait for it to appear
+    // We fetch Additional Investment Fund with react-query, so we need to wait for it to appear
     await waitFor(async () => {
       const rows = await screen.findAllByTestId('status-box-row');
       expect(rows).toHaveLength(4);
@@ -615,7 +615,7 @@ describe('Additional Savings Fund status', () => {
     const savingsFundRow = screen.getAllByTestId('status-box-row')[2];
 
     expect(
-      within(savingsFundRow).getByRole('heading', { name: 'Additional Savings Fund' }),
+      within(savingsFundRow).getByRole('heading', { name: 'Additional Investment Fund' }),
     ).toBeInTheDocument();
     expect(
       within(savingsFundRow).getByText('You are investing in Tuleva low cost index fund'),
