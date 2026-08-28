@@ -24,6 +24,7 @@ describe('SavingsFundOnboardingWaiting', () => {
     expect(
       screen.getByText('Identity verification still missing: Jaan Näidis'),
     ).toBeInTheDocument();
+    expect(screen.getByText(/Please send them this link:/i)).toBeInTheDocument();
   });
 
   it('speaks of partners in the plural when more than one is outstanding', () => {
@@ -49,6 +50,8 @@ describe('SavingsFundOnboardingWaiting', () => {
     ).toBeInTheDocument();
     expect(screen.queryByText(/still missing:/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/business partner/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Please send this link on:/i)).toBeInTheDocument();
+    expect(screen.queryByText(/send them this link/i)).not.toBeInTheDocument();
   });
 
   it('does not claim a review is under way', () => {
