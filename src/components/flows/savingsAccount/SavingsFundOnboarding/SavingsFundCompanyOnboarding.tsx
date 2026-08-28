@@ -9,6 +9,7 @@ import { BusinessRegistryStep } from './BusinessRegistryStep';
 import { RequirementsCheckStep } from './RequirementsCheckStep';
 import { mayPassRequirementsStep } from './RequirementsCheckStep/mayPassRequirementsStep';
 import { applicantIdentityUnderReview } from './RequirementsCheckStep/applicantIdentityUnderReview';
+import { unverifiedRelatedPersonNames } from './RequirementsCheckStep/unverifiedRelatedPersonNames';
 import { CompanyAddressStep } from './CompanyAddressStep';
 import { InvestmentGoalStep } from './InvestmentGoalStep';
 import { InvestableAssetsStep } from './InvestableAssetsStep';
@@ -153,11 +154,13 @@ export const SavingsFundCompanyOnboarding = () => {
         history.push('/savings-fund/onboarding/success/company');
         return;
       case 'PENDING':
-        history.push(
-          report != null && applicantIdentityUnderReview(report)
-            ? '/savings-fund/onboarding/pending'
-            : '/savings-fund/onboarding/waiting',
-        );
+        if (report != null && applicantIdentityUnderReview(report)) {
+          history.push('/savings-fund/onboarding/pending');
+          return;
+        }
+        history.push('/savings-fund/onboarding/waiting', {
+          unverifiedNames: unverifiedRelatedPersonNames(report?.relatedPersons?.errors ?? []),
+        });
         return;
       case 'REJECTED':
         // Show the generic "we'll review it" outcome rather than surfacing a
