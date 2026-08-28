@@ -44,10 +44,14 @@ export const SavingsFundOnboardingWaiting: FC = () => {
           </p>
         )}
         <p className="m-0">
-          <FormattedMessage
-            id="savingsFund.onboarding.waiting.description"
-            values={{ count: names.length }}
-          />
+          {names.length > 0 ? (
+            <FormattedMessage
+              id="savingsFund.onboarding.waiting.description.named"
+              values={{ count: names.length }}
+            />
+          ) : (
+            <FormattedMessage id="savingsFund.onboarding.waiting.description" />
+          )}
         </p>
         <a href={identityVerificationUrl} target="_blank" rel="noopener noreferrer">
           {identityVerificationUrl}
