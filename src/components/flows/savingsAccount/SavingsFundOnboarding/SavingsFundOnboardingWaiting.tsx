@@ -5,6 +5,7 @@ import { usePageTitle } from '../../../common/usePageTitle';
 
 export const SavingsFundOnboardingWaiting: FC = () => {
   usePageTitle('savingsFund.onboarding.waiting.pageTitle');
+  const identityVerificationUrl = `${window.location.origin}/savings-fund/onboarding/identity`;
 
   return (
     <div className="col-12 col-md-10 col-lg-7 mx-auto">
@@ -17,9 +18,12 @@ export const SavingsFundOnboardingWaiting: FC = () => {
           </a>
         }
       >
-        <p>
+        <p className="m-0">
           <FormattedMessage id="savingsFund.onboarding.waiting.description" />
         </p>
+        <a href={identityVerificationUrl} target="_blank" rel="noopener noreferrer">
+          {identityVerificationUrl}
+        </a>
       </StatusAlert>
     </div>
   );
