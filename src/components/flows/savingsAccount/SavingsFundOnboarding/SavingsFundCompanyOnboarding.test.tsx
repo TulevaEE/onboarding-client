@@ -229,6 +229,34 @@ describe('SavingsFundCompanyOnboarding', () => {
     });
   });
 
+  it('carries the names still unverified at submission to the waiting page', async () => {
+    relatedPersonErrorsChangeWhileTheApplicantFillsTheForm(
+      [
+        {
+          ...OTHER_PERSONS_KYC_ERROR,
+          persons: [{ personalCode: '38001010000', name: 'Mart Näidis' }],
+        },
+      ],
+      [
+        {
+          ...OTHER_PERSONS_KYC_ERROR,
+          persons: [
+            { personalCode: '39001010000', name: 'Jaan Näidis' },
+            { personalCode: '48001010000', name: 'Kati Näidis' },
+          ],
+        },
+      ],
+    );
+    const history = createMemoryHistory();
+
+    await submitApplicationThatGoesPending(history);
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/waiting');
+    });
+    expect(history.location.state).toEqual({ unverifiedNames: ['Jaan Näidis', 'Kati Näidis'] });
+  });
+
   it('shows the review page when the applicant`s own identity verification is outstanding', async () => {
     respondWithRelatedPersonErrors(USER_KYC_ERROR);
     const history = createMemoryHistory();
