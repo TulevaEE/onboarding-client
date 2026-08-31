@@ -19,8 +19,6 @@ export const Header = ({ user, loading, onLogout, onRoleSwitch }: Props) => (
     <a className="skip-link visually-hidden-focusable" href="#main">
       <FormattedMessage id="global.skipToContent" />
     </a>
-    {/* Bottom-aligned, not centred: the logo is taller than the account menu button,
-        and the button sits on the same line as the logo's bottom edge. */}
     <header className="d-flex justify-content-between align-items-end border-bottom py-4 mb-5 app-header">
       {config.get('language') === 'et' ? (
         <a href="/account">
