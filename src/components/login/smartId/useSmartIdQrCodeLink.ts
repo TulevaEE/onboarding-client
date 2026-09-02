@@ -12,41 +12,40 @@ export function useSmartIdQrCodeLink(): { deviceLink: string | null; expired: bo
 
   useEffect(() => {
     const startedAt = Date.now();
-    let refreshedAt = startedAt;
+    let refreshInterval: ReturnType<typeof setInterval>;
+    let stalenessTimeout: ReturnType<typeof setTimeout>;
     let stopped = false;
+
+    const stop = () => {
+      stopped = true;
+      clearInterval(refreshInterval);
+      clearTimeout(stalenessTimeout);
+    };
+
+    const hideWhenStale = () => {
+      clearTimeout(stalenessTimeout);
+      stalenessTimeout = setTimeout(() => setDeviceLink(null), MAX_LINK_AGE_MILLIS);
+    };
 
     const refresh = async () => {
       if (Date.now() - startedAt >= SESSION_LIFETIME_MILLIS) {
-        stopped = true;
-        clearInterval(interval);
+        stop();
         setDeviceLink(null);
         setExpired(true);
         return;
       }
-      if (Date.now() - refreshedAt >= MAX_LINK_AGE_MILLIS) {
-        setDeviceLink(null);
+      const qrCode = await getSmartIdQrCodeLink().catch(() => null);
+      if (stopped || !qrCode) {
+        return;
       }
-      try {
-        const qrCode = await getSmartIdQrCodeLink();
-        if (stopped) {
-          return;
-        }
-        refreshedAt = Date.now();
-        setDeviceLink(qrCode.deviceLink);
-      } catch (error) {
-        setDeviceLink((staleLink) =>
-          Date.now() - refreshedAt >= MAX_LINK_AGE_MILLIS ? null : staleLink,
-        );
-      }
+      setDeviceLink(qrCode.deviceLink);
+      hideWhenStale();
     };
 
-    const interval = setInterval(refresh, REFRESH_INTERVAL_MILLIS);
+    refreshInterval = setInterval(refresh, REFRESH_INTERVAL_MILLIS);
     refresh();
 
-    return () => {
-      stopped = true;
-      clearInterval(interval);
-    };
+    return stop;
   }, []);
 
   return { deviceLink, expired };
