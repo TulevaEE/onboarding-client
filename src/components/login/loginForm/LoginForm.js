@@ -4,6 +4,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import LoginTabs from './LoginTabs';
 import { IdCardLoginTab } from './IdCardLoginTab';
+import { SmartIdLoginTab } from './SmartIdLoginTab';
 import { Maintenance } from '../Maintenance';
 
 function runWithDefaultPrevention(fn) {
@@ -19,7 +20,7 @@ export const LoginForm = ({
   onPhoneNumberChange,
   onPersonalCodeChange,
   onMobileIdSubmit,
-  onIdCodeSubmit,
+  onSmartIdLoginStart,
   onAuthenticateWithIdCard,
   monthlyThirdPillarContribution,
   exchangeExistingThirdPillarUnits,
@@ -36,7 +37,7 @@ export const LoginForm = ({
       {renderLoginForm(
         monthlyThirdPillarContribution,
         exchangeExistingThirdPillarUnits,
-        onIdCodeSubmit,
+        onSmartIdLoginStart,
         personalCode,
         onPersonalCodeChange,
         onMobileIdSubmit,
@@ -58,7 +59,7 @@ const isMaintenanceWindow = () => {
 const renderLoginForm = (
   monthlyThirdPillarContribution,
   exchangeExistingThirdPillarUnits,
-  onIdCodeSubmit,
+  onSmartIdLoginStart,
   personalCode,
   onPersonalCodeChange,
   onMobileIdSubmit,
@@ -87,7 +88,7 @@ const renderLoginForm = (
       )}
 
       {renderLoginTabs(
-        onIdCodeSubmit,
+        onSmartIdLoginStart,
         personalCode,
         onPersonalCodeChange,
         onMobileIdSubmit,
@@ -137,7 +138,7 @@ const renderMonthlyThirdPillarNotice = (
 );
 
 const renderLoginTabs = (
-  onIdCodeSubmit,
+  onSmartIdLoginStart,
   personalCode,
   onPersonalCodeChange,
   onMobileIdSubmit,
@@ -147,7 +148,10 @@ const renderLoginTabs = (
   formatMessage,
 ) => (
   <LoginTabs>
-    {renderSmartId(onIdCodeSubmit, personalCode, onPersonalCodeChange, formatMessage)}
+    {/* eslint-disable-next-line react/no-unknown-property */}
+    <div label="login.smart.id">
+      <SmartIdLoginTab onSmartIdLoginStart={onSmartIdLoginStart} />
+    </div>
     {renderMobileId(
       onMobileIdSubmit,
       phoneNumber,
@@ -161,36 +165,6 @@ const renderLoginTabs = (
       <IdCardLoginTab onAuthenticateWithIdCardMtls={onAuthenticateWithIdCard} />
     </div>
   </LoginTabs>
-);
-
-const renderSmartId = (onIdCodeSubmit, personalCode, onPersonalCodeChange, formatMessage) => (
-  // eslint-disable-next-line react/no-unknown-property
-  <div label="login.smart.id">
-    <form onSubmit={runWithDefaultPrevention(() => onIdCodeSubmit(personalCode))}>
-      <div className="mb-3">
-        <input
-          id="smart-id-personal-code"
-          type="text"
-          inputMode="numeric"
-          autoComplete="username"
-          value={personalCode}
-          onChange={(event) => onPersonalCodeChange(event.target.value)}
-          className="form-control form-control-lg"
-          placeholder={formatMessage({ id: 'login.id.code' })}
-          aria-label={formatMessage({ id: 'login.id.code' })}
-        />
-      </div>
-      <div className="d-grid mb-3">
-        <input
-          id="smart-id-submit"
-          type="submit"
-          className="btn btn-primary btn-lg"
-          disabled={!personalCode}
-          value={formatMessage({ id: 'login.enter' })}
-        />
-      </div>
-    </form>
-  </div>
 );
 
 const renderMobileId = (
@@ -248,7 +222,7 @@ LoginForm.defaultProps = {
   onPhoneNumberChange: noop,
   onPersonalCodeChange: noop,
   onMobileIdSubmit: noop,
-  onIdCodeSubmit: noop,
+  onSmartIdLoginStart: noop,
   onAuthenticateWithIdCard: noop,
 
   phoneNumber: '',
@@ -261,7 +235,7 @@ LoginForm.propTypes = {
   onPhoneNumberChange: Types.func,
   onPersonalCodeChange: Types.func,
   onMobileIdSubmit: Types.func,
-  onIdCodeSubmit: Types.func,
+  onSmartIdLoginStart: Types.func,
   onAuthenticateWithIdCard: Types.func,
 
   phoneNumber: Types.string,
