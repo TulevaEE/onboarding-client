@@ -5,7 +5,7 @@ import config from 'react-global-configuration';
 import { useMe, usePendingOnboardings, useRoles, useSwitchRole } from '../../../common/apiHooks';
 import { Role, SwitchRoleCommand, User } from '../../../common/apiModels';
 import { AccountIcon, AccountIconKind } from '../../../common/AccountIcon';
-import { isChildRole } from '../../../common/utils';
+import { isChildRole, isCurrentRole } from '../../../common/utils';
 import LanguageSwitcher from '../languageSwitcher';
 import {
   isChildOnboardingEnabled,
@@ -29,16 +29,6 @@ const accountIconKind = (role: Role, user: User | undefined): AccountIconKind =>
     return 'company';
   }
   return isChildRole(role, user) ? 'child' : 'person';
-};
-
-const isCurrentRole = (role: Role, user: User | undefined): boolean => {
-  if (!user) {
-    return false;
-  }
-  if (user.role) {
-    return user.role.type === role.type && user.role.code === role.code;
-  }
-  return role.type === 'PERSON' && role.code === user.personalCode;
 };
 
 // The menu is wide enough for the longest row rather than sized to the name, so the

@@ -336,6 +336,26 @@ describe('a payment deep link that names the account', () => {
   });
 });
 
+describe('a payment deep link opened while acting as another account of the same kind', () => {
+  test('switches from one child to the child the link names', async () => {
+    const session = initializeWithRoles([personRole, childRole, secondChildRole], childRole);
+
+    history.push(`/savings-fund/payment/child/${secondChildRole.id}`);
+
+    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
+    expect(session.switchedRole).toEqual({ type: 'PERSON', code: secondChildRole.code });
+  });
+
+  test('does not switch when already acting as the child the link names', async () => {
+    const session = initializeWithRoles([personRole, childRole, secondChildRole], secondChildRole);
+
+    history.push(`/savings-fund/payment/child/${secondChildRole.id}`);
+
+    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
+    expect(session.switchedRole).toBeNull();
+  });
+});
+
 describe('a payment deep link that cannot reach the account it was opened for', () => {
   test('stays on the account page when the member represents no child', async () => {
     const session = initializeWithRoles([personRole], personRole);
