@@ -87,6 +87,29 @@ describe('Smart-ID device link login', () => {
     expect(mockGetSmartIdQrCodeLink).toHaveBeenCalledTimes(3);
   });
 
+  it('ignores a QR code request that answers out of order', async () => {
+    let answerFirstRequest: (qrCode: { deviceLink: string }) => void = () => undefined;
+    mockGetSmartIdQrCodeLink
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            answerFirstRequest = resolve;
+          }),
+      )
+      .mockResolvedValue({ deviceLink: qrCodeLinkAfter(1) });
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    await advanceOneSecond();
+    expect(screen.getByRole('img')).toHaveAttribute('data-value', qrCodeLinkAfter(1));
+
+    await act(async () => {
+      answerFirstRequest({ deviceLink: qrCodeLinkAfter(0) });
+    });
+
+    expect(screen.getByRole('img')).toHaveAttribute('data-value', qrCodeLinkAfter(1));
+  });
+
   it('hides a QR code that has not been refreshed for three seconds', async () => {
     mockGetSmartIdQrCodeLink
       .mockResolvedValueOnce({ deviceLink: qrCodeLinkAfter(0) })

@@ -15,6 +15,7 @@ export function useSmartIdQrCodeLink(): { deviceLink: string | null; expired: bo
     let refreshInterval: ReturnType<typeof setInterval>;
     let stalenessTimeout: ReturnType<typeof setTimeout>;
     let stopped = false;
+    let latestRequest = 0;
 
     const stop = () => {
       stopped = true;
@@ -34,8 +35,10 @@ export function useSmartIdQrCodeLink(): { deviceLink: string | null; expired: bo
         setExpired(true);
         return;
       }
+      latestRequest += 1;
+      const request = latestRequest;
       const qrCode = await getSmartIdQrCodeLink().catch(() => null);
-      if (stopped || !qrCode) {
+      if (stopped || !qrCode || request !== latestRequest) {
         return;
       }
       setDeviceLink(qrCode.deviceLink);
