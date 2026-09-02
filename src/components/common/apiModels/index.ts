@@ -247,6 +247,7 @@ export interface Role {
   type: RoleType;
   code: string;
   name: string;
+  id?: string;
 }
 
 export interface SwitchRoleCommand {
