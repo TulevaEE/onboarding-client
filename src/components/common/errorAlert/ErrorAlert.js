@@ -3,6 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 
 export const ID_CARD_LOGIN_START_FAILED_ERROR = 'ID_CARD_LOGIN_START_FAILED';
+export const SMART_ID_CALLBACK_FAILED_ERROR = 'SMART_ID_CALLBACK_FAILED';
 export const WEB_EID_USER_CANCELLED = 'WEB_EID_USER_CANCELLED';
 export const WEB_EID_EXTENSION_UNAVAILABLE = 'WEB_EID_EXTENSION_UNAVAILABLE';
 const NOT_JOINED_ERROR_DESCRIPTION = 'INVALID_USER_CREDENTIALS';
@@ -29,6 +30,14 @@ class ErrorAlert extends Component {
       return (
         <div>
           <FormattedMessage id="login.id.card.start.failed" />
+        </div>
+      );
+    }
+
+    if (description === SMART_ID_CALLBACK_FAILED_ERROR) {
+      return (
+        <div>
+          <FormattedMessage id="login.smart.id.callback.failed" />
         </div>
       );
     }
