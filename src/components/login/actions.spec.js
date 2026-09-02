@@ -28,7 +28,10 @@ import {
 
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 import { getAuthentication } from '../common/authenticationManager';
-import { rememberedMobileIdPhoneNumber } from './mobileId/rememberedPhoneNumbers';
+import {
+  rememberMobileIdPhoneNumber,
+  rememberedMobileIdPhoneNumber,
+} from './mobileId/rememberedPhoneNumbers';
 
 const mockHttp = jest.genMockFromModule('../common/http');
 jest.mock('../common/http', () => mockHttp);
@@ -255,8 +258,9 @@ describe('Login actions', () => {
     });
   });
 
-  it('leaves the phone number alone when the user did not ask to remember it', () => {
+  it('forgets a previously remembered phone number when the user opts out', () => {
     localStorage.clear();
+    rememberMobileIdPhoneNumber('38888888888', '+37255500000');
     const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
     mockApi.authenticateWithMobileId = jest.fn(() => Promise.resolve('1337'));
     mockApi.getMobileIdTokens = jest.fn(() => Promise.resolve(tokens));
