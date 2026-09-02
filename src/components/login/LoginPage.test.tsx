@@ -50,14 +50,18 @@ describe('When a user is logging in', () => {
   });
   afterAll(() => server.close());
 
-  test('they can sign in with smart id, showing the security code', async () => {
-    const identityCode = '396112341234';
-    const backend = smartIdAuthenticationBackend(server, { challengeCode: '1928', identityCode });
-    expect(await screen.findByText('Log in')).toBeInTheDocument();
-    userEvent.click(screen.getByText(/Smart-ID/gi));
-    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), identityCode);
-    userEvent.click(screen.getByText(/Log in$/gi));
-    expect(await screen.findByText('1928')).toBeInTheDocument();
+  test('they can sign in with smart id by scanning the QR code', async () => {
+    const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+    expect(await screen.findByRole('button', { name: 'Log in with Smart-ID' })).toBeInTheDocument();
+    expect(screen.queryByPlaceholderText(/Identity code/gi)).not.toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Log in with Smart-ID' }));
+
+    expect(
+      await screen.findByRole('img', { name: /Open the Smart-ID app on your phone/ }),
+    ).toBeInTheDocument();
+    expect(backend.startedSessions).toBe(1);
+
     backend.resolvePolling();
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
@@ -72,7 +76,7 @@ describe('When a user is logging in', () => {
       identityCode,
       phoneNumber,
     });
-    expect(await screen.findByText('Log in')).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Log in with Smart-ID' })).toBeInTheDocument();
     userEvent.click(screen.getByText(/Mobile-ID/gi));
     userEvent.type(screen.getByPlaceholderText(/Identity code/gi), identityCode);
     userEvent.type(screen.getByPlaceholderText(/Phone number/gi), phoneNumber);
@@ -94,7 +98,7 @@ describe('When a user is logging in', () => {
     const backend = idCardAuthenticationBackend(server);
     expect(backend.acceptedCertificate).toBeFalsy();
     expect(backend.authenticatedWithIdCard).toBeFalsy();
-    expect(await screen.findByText('Log in')).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Log in with Smart-ID' })).toBeInTheDocument();
     userEvent.click(screen.getByText(/ID-card/gi));
     userEvent.click(screen.getByText(/Log in$/gi));
 

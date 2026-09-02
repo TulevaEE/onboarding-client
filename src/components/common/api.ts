@@ -4,7 +4,6 @@ import {
   SwitchRoleCommand,
   AmlCheck,
   Application,
-  Authentication,
   CancellationMandate,
   CapitalEvent,
   CapitalRow,
@@ -107,14 +106,6 @@ export async function authenticateWithMobileId(
   return challengeCode;
 }
 
-export async function authenticateWithIdCode(personalCode: string): Promise<Authentication> {
-  const { challengeCode, authenticationHash } = await post(getEndpoint('/authenticate'), {
-    personalCode,
-    type: 'SMART_ID',
-  });
-  return { challengeCode, authenticationHash };
-}
-
 export function startSmartIdLogin(language: string): Promise<SmartIdLoginStart> {
   return post(getEndpoint('/v1/smart-id/login'), { language });
 }
@@ -190,11 +181,8 @@ export function getMobileIdTokens(): Promise<Token | null> {
   return getTokensWithGrantType('MOBILE_ID');
 }
 
-export function getSmartIdTokens(
-  authenticationHash: string,
-  options: { signal?: AbortSignal } = {},
-): Promise<Token | null> {
-  return getTokensWithGrantType('SMART_ID', { authenticationHash }, options);
+export function getSmartIdTokens(options: { signal?: AbortSignal } = {}): Promise<Token | null> {
+  return getTokensWithGrantType('SMART_ID', {}, options);
 }
 
 export function getIdCardTokens(): Promise<Token | null> {

@@ -123,18 +123,11 @@ describe('Login form', () => {
     expect(onMobileIdSubmit).toHaveBeenCalledWith(phoneNumber, personalCode);
   });
 
-  it('can submit identity code', () => {
-    const personalCode = 'number';
-    const onIdCodeSubmit = jest.fn();
-    component.setProps({ personalCode, onIdCodeSubmit });
+  it('passes the smart id start handler to SmartIdLoginTab', () => {
+    const onSmartIdLoginStart = jest.fn();
+    component.setProps({ onSmartIdLoginStart });
 
-    expect(onIdCodeSubmit).not.toHaveBeenCalled();
-    component
-      .find('form')
-      .first()
-      .simulate('submit', { preventDefault: () => true });
-    expect(onIdCodeSubmit).toHaveBeenCalledTimes(1);
-    expect(onIdCodeSubmit).toHaveBeenCalledWith(personalCode);
+    expect(component.find('SmartIdLoginTab').prop('onSmartIdLoginStart')).toBe(onSmartIdLoginStart);
   });
 
   it('passes id card auth handler to IdCardLoginTab', () => {

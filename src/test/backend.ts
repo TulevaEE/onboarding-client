@@ -38,6 +38,8 @@ import {
   mockUser,
   mockValidatedCompany,
   secondPillarAssetsResponse,
+  smartIdQrDeviceLink,
+  smartIdWeb2AppLink,
   secondPillarPaymentRateChangeResponse,
 } from './backend-responses';
 import {
@@ -194,20 +196,39 @@ export function smartIdMandateBatchSigningBackend(
 
 export function smartIdAuthenticationBackend(
   server: SetupServerApi,
-  options: { challengeCode?: string; identityCode?: string } = {},
-): { resolvePolling: () => void } {
+  options: { language?: string; rejectCallback?: boolean } = {},
+): { resolvePolling: () => void; startedSessions: number } {
   let pollingResolved = false;
+  let elapsedSeconds = 0;
+  const backend: { resolvePolling: () => void; startedSessions: number } = {
+    resolvePolling: () => undefined,
+    startedSessions: 0,
+  };
 
   server.use(
-    rest.post('http://localhost/authenticate', (req, res, ctx) => {
-      const body = req.body as DefaultRequestMultipartBody;
-      if (
-        body.type !== 'SMART_ID' ||
-        (options.identityCode && body.personalCode !== options.identityCode)
-      ) {
-        return res(ctx.status(401), ctx.json({ error: 'wrong method or id code' }));
+    rest.post('http://localhost/v1/smart-id/login', (req, res, ctx) => {
+      const { language } = req.body as { language?: string };
+      if (options.language && language !== options.language) {
+        return res(ctx.status(400), ctx.json({ errors: [{ code: 'smart.id.technical.error' }] }));
       }
-      return res(ctx.status(200), ctx.json(getMobileSignatureResponse(options.challengeCode)));
+      backend.startedSessions += 1;
+      return res(
+        ctx.status(200),
+        ctx.json({ web2AppLink: smartIdWeb2AppLink(language as string) }),
+      );
+    }),
+
+    rest.get('http://localhost/v1/smart-id/login/qr-code', (req, res, ctx) => {
+      elapsedSeconds += 1;
+      return res(ctx.status(200), ctx.json({ deviceLink: smartIdQrDeviceLink(elapsedSeconds) }));
+    }),
+
+    rest.post('http://localhost/v1/smart-id/login/callback', (req, res, ctx) => {
+      const body = req.body as { value?: string };
+      if (options.rejectCallback || !body.value) {
+        return res(ctx.status(401), ctx.json({ errors: [{ code: 'smart.id.callback.invalid' }] }));
+      }
+      return res(ctx.status(204));
     }),
 
     rest.post('http://localhost/oauth/token', (req, res, ctx) => {
@@ -234,11 +255,10 @@ export function smartIdAuthenticationBackend(
       );
     }),
   );
-  return {
-    resolvePolling() {
-      pollingResolved = true;
-    },
+  backend.resolvePolling = () => {
+    pollingResolved = true;
   };
+  return backend;
 }
 
 export function mobileIdAuthenticationBackend(

@@ -2,7 +2,6 @@ import config from 'react-global-configuration';
 import {
   authenticateWithIdCardMtls,
   authenticateWithIdCardWebEid,
-  authenticateWithIdCode,
   authenticateWithMobileId,
   completeSmartIdCallback,
   createAmlCheck,
@@ -183,8 +182,6 @@ describe('API calls', () => {
   });
 
   describe('getSmartIdTokens', () => {
-    const authenticationHash = 'auth-hash';
-
     it('should retrieve smart ID tokens successfully', async () => {
       const expectedToken = { accessToken: 'access-token', refreshToken: 'refresh-token' };
       mockHttp.postForm.mockResolvedValueOnce({
@@ -192,14 +189,13 @@ describe('API calls', () => {
         refresh_token: expectedToken.refreshToken,
       });
 
-      const token = await getSmartIdTokens(authenticationHash);
+      const token = await getSmartIdTokens();
 
       expect(token).toEqual(expectedToken);
       expect(mockHttp.postForm).toHaveBeenCalledWith(
         '/oauth/token',
         {
           grant_type: 'SMART_ID',
-          authenticationHash,
           client_id: 'onboarding-client',
         },
         expect.any(Object),
@@ -220,7 +216,7 @@ describe('API calls', () => {
       });
       const controller = new AbortController();
 
-      await getSmartIdTokens(authenticationHash, { signal: controller.signal });
+      await getSmartIdTokens({ signal: controller.signal });
 
       expect(mockHttp.postForm).toHaveBeenCalledWith(
         '/oauth/token',
@@ -330,24 +326,6 @@ describe('API calls', () => {
       phoneNumber,
       personalCode,
       type: 'MOBILE_ID',
-    });
-  });
-
-  describe('authenticateWithIdCode', () => {
-    it('should return both challengeCode and authenticationHash on successful authentication', async () => {
-      const personalCode = '1223445567';
-      const expectedAuthentication = {
-        challengeCode: '1234',
-        authenticationHash: 'abcd1234',
-      };
-      mockHttp.post.mockResolvedValueOnce(expectedAuthentication);
-
-      const authentication = await authenticateWithIdCode(personalCode);
-      expect(authentication).toEqual(expectedAuthentication);
-      expect(mockHttp.post).toHaveBeenCalledWith('/authenticate', {
-        personalCode,
-        type: 'SMART_ID',
-      });
     });
   });
 
