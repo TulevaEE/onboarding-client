@@ -40,3 +40,4 @@ export const SET_LOGIN_TO_REDIRECT = withPrefix('SET_LOGIN_TO_REDIRECT');
 export const CHANGE_EMAIL = withPrefix('CHANGE_EMAIL');
 
 export const loginPath = '/login';
+export const smartIdCallbackPath = '/login/smart-id/callback';
