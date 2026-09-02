@@ -269,7 +269,7 @@ describe('Login actions', () => {
 
     await startSmartIdLogin('en');
 
-    expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('en');
+    expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('en', 'DEVICE_LINK');
     expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START });
     expect(dispatch).toHaveBeenCalledWith({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink });
   });
@@ -308,6 +308,53 @@ describe('Login actions', () => {
     await startSmartIdLogin('et');
 
     expect(assign).not.toHaveBeenCalled();
+  });
+
+  it('shows the control code and polls when the remembered account is pushed a notification', async () => {
+    const assign = jest.fn();
+    Object.defineProperty(window, 'location', {
+      value: { assign, search: '', pathname: '/login' },
+      writable: true,
+      configurable: true,
+    });
+    mockApi.startSmartIdLogin = jest.fn(() =>
+      Promise.resolve({ flow: 'NOTIFICATION', web2AppLink: null, verificationCode: '4321' }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
+
+    await startSmartIdLogin('et', 'NOTIFICATION');
+
+    expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('et', 'NOTIFICATION');
+    expect(dispatch).toHaveBeenCalledWith({
+      type: MOBILE_AUTHENTICATION_START_SUCCESS,
+      controlCode: '4321',
+    });
+    expect(dispatch).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: SMART_ID_LOGIN_START_SUCCESS }),
+    );
+    expect(assign).not.toHaveBeenCalled();
+  });
+
+  it('resumes a pending push login with its control code after a page reload', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.startSmartIdLogin = jest.fn(() =>
+      Promise.resolve({ flow: 'NOTIFICATION', web2AppLink: null, verificationCode: '4321' }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    await createBoundAction(actions.startSmartIdLogin)('et', 'NOTIFICATION');
+
+    mockDispatch();
+    createBoundAction(actions.resumePendingSmartIdAuthentication)();
+
+    expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: MOBILE_AUTHENTICATION_START_SUCCESS,
+      controlCode: '4321',
+    });
+    expect(dispatch).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: SMART_ID_LOGIN_START_SUCCESS }),
+    );
   });
 
   it('remembers where the login was headed', async () => {

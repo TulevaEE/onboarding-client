@@ -135,14 +135,14 @@ const TRANSIENT_POLL_ERRORS = [
   'NetworkError when attempting to fetch resource.', // Firefox
 ];
 
-function savePendingSmartIdAuthentication(web2AppLink, returnPath) {
+function savePendingSmartIdAuthentication({ web2AppLink, controlCode, returnPath }) {
   if (!window.sessionStorage) {
     return;
   }
   try {
     sessionStorage.setItem(
       PENDING_SMART_ID_KEY,
-      JSON.stringify({ web2AppLink, returnPath, startedAt: Date.now() }),
+      JSON.stringify({ web2AppLink, controlCode, returnPath, startedAt: Date.now() }),
     );
   } catch (error) {
     logPoll('pending-login-persistence-failed', error); // reload recovery degrades, login proceeds
@@ -199,6 +199,9 @@ export function resumePendingSmartIdAuthentication() {
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     if (pending.web2AppLink) {
       dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink: pending.web2AppLink });
+    }
+    if (pending.controlCode) {
+      dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode: pending.controlCode });
     }
     dispatch(getSmartIdTokens());
   };
@@ -301,18 +304,27 @@ export const getSmartIdTokens = () => (dispatch, getState) => {
   attempt.timeout = setTimeout(poll, POLL_DELAY);
 };
 
-export function startSmartIdLogin(language) {
+export function startSmartIdLogin(language, flow = 'DEVICE_LINK') {
   return (dispatch, getState) => {
     smartIdStartSequence += 1;
     const startSequence = smartIdStartSequence;
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
-      .startSmartIdLogin(language)
-      .then(({ web2AppLink }) => {
+      .startSmartIdLogin(language, flow)
+      .then((start) => {
         if (startSequence !== smartIdStartSequence) {
           return; // canceled or superseded while the session start was pending
         }
-        savePendingSmartIdAuthentication(web2AppLink, getState().router?.location?.state?.from);
+        const returnPath = getState().router?.location?.state?.from;
+        if (start.flow === 'NOTIFICATION') {
+          const controlCode = start.verificationCode;
+          savePendingSmartIdAuthentication({ controlCode, returnPath });
+          dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
+          dispatch(getSmartIdTokens());
+          return;
+        }
+        const { web2AppLink } = start;
+        savePendingSmartIdAuthentication({ web2AppLink, returnPath });
         dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink });
         dispatch(getSmartIdTokens());
         if (isMobileDevice()) {
