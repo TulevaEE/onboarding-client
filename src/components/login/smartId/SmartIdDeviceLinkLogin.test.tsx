@@ -154,19 +154,12 @@ describe('Smart-ID device link login', () => {
     expect(onCancel).toHaveBeenCalledTimes(1);
   });
 
-  it('opens the Smart-ID app on a phone and offers the link as a fallback', async () => {
+  it('offers the Smart-ID app link and instructions on a phone', async () => {
     setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15');
-    const assign = jest.fn();
-    Object.defineProperty(window, 'location', {
-      value: { assign, search: '' },
-      writable: true,
-      configurable: true,
-    });
 
     renderDeviceLinkLogin();
     await flushPendingRequests();
 
-    expect(assign).toHaveBeenCalledWith(web2AppLink);
     expect(
       screen.getByText(
         'Confirm the login in the Smart-ID app. You will be brought back here automatically.',

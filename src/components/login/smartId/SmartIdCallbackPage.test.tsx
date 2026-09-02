@@ -21,6 +21,7 @@ describe('When the Smart-ID app returns to the browser', () => {
     renderWrapped(
       <Switch>
         <Route exact path="/" render={() => <h1>Mock account page</h1>} />
+        <Route exact path="/capital/listings/42" render={() => <h1>Mock listing page</h1>} />
         <Route exact path={loginPath} render={() => <h1>Mock login page</h1>} />
         <Route exact path={smartIdCallbackPath} component={SmartIdCallbackPage} />
       </Switch>,
@@ -33,9 +34,16 @@ describe('When the Smart-ID app returns to the browser', () => {
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
 
+  const rememberDestination = (returnPath: string) =>
+    sessionStorage.setItem(
+      'pendingSmartIdAuthentication',
+      JSON.stringify({ returnPath, startedAt: Date.now() }),
+    );
+
   beforeEach(() => {
     initializeConfiguration();
     getAuthentication().remove();
+    sessionStorage.clear();
   });
 
   test('the login completes and the account page opens', async () => {
@@ -48,6 +56,20 @@ describe('When the Smart-ID app returns to the browser', () => {
 
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+  });
+
+  test('the login continues to the page the person was heading for', async () => {
+    const backend = smartIdAuthenticationBackend(server);
+    backend.resolvePolling();
+    rememberDestination('/capital/listings/42');
+
+    openCallback(
+      '?value=a-callback-value&sessionSecretDigest=a-digest&userChallengeVerifier=a-verifier',
+    );
+
+    expect(
+      await screen.findByText(/mock listing page/gi, undefined, { timeout: 3000 }),
     ).toBeInTheDocument();
   });
 

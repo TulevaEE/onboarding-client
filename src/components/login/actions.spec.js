@@ -41,6 +41,7 @@ const actions = require('./actions'); // need to use require because of jest moc
 describe('Login actions', () => {
   const web2AppLink =
     'https://smart-id.com/device-link/?deviceLinkType=Web2App&sessionType=auth&lang=est';
+  const desktopUserAgent = navigator.userAgent;
 
   let dispatch;
   let state;
@@ -76,6 +77,10 @@ describe('Login actions', () => {
     Object.defineProperty(window, 'location', {
       value: { search: '', pathname: '/' },
       writable: true,
+      configurable: true,
+    });
+    Object.defineProperty(navigator, 'userAgent', {
+      value: desktopUserAgent,
       configurable: true,
     });
   });
@@ -267,6 +272,82 @@ describe('Login actions', () => {
     expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('en');
     expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START });
     expect(dispatch).toHaveBeenCalledWith({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink });
+  });
+
+  it('opens the Smart-ID app right away on a phone', async () => {
+    const assign = jest.fn();
+    Object.defineProperty(window, 'location', {
+      value: { assign, search: '', pathname: '/login' },
+      writable: true,
+      configurable: true,
+    });
+    Object.defineProperty(navigator, 'userAgent', {
+      value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15',
+      configurable: true,
+    });
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
+
+    await startSmartIdLogin('et');
+
+    expect(assign).toHaveBeenCalledWith(web2AppLink);
+  });
+
+  it('leaves the browser alone when the session starts on a computer', async () => {
+    const assign = jest.fn();
+    Object.defineProperty(window, 'location', {
+      value: { assign, search: '', pathname: '/login' },
+      writable: true,
+      configurable: true,
+    });
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
+
+    await startSmartIdLogin('et');
+
+    expect(assign).not.toHaveBeenCalled();
+  });
+
+  it('remembers where the login was headed', async () => {
+    state = { login: {}, router: { location: { state: { from: '/capital/listings/42' } } } };
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
+
+    await startSmartIdLogin('et');
+
+    expect(actions.getPendingSmartIdReturnPath()).toBe('/capital/listings/42');
+  });
+
+  it('has no destination to remember for a login started from the login page', async () => {
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
+
+    await startSmartIdLogin('et');
+
+    expect(actions.getPendingSmartIdReturnPath()).toBe(null);
+  });
+
+  it('does not resume on the smart id callback route', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
+    await startSmartIdLogin('et');
+
+    Object.defineProperty(window, 'location', {
+      value: { search: '', pathname: '/login/smart-id/callback' },
+      writable: true,
+      configurable: true,
+    });
+    mockDispatch();
+    const resume = createBoundAction(actions.resumePendingSmartIdAuthentication);
+    resume();
+
+    expect(dispatch).not.toHaveBeenCalled();
   });
 
   it('reports a failure to start a smart id session', async () => {
@@ -473,6 +554,7 @@ describe('Login actions', () => {
     resume();
 
     expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START });
+    expect(dispatch).toHaveBeenCalledWith({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink });
 
     jest.runOnlyPendingTimers();
     await Promise.resolve();
