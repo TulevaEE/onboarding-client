@@ -5,14 +5,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import LoginTabs from './LoginTabs';
 import { IdCardLoginTab } from './IdCardLoginTab';
 import { SmartIdLoginTab } from './SmartIdLoginTab';
+import { MobileIdLoginTab } from '../mobileId/MobileIdLoginTab';
 import { Maintenance } from '../Maintenance';
-
-function runWithDefaultPrevention(fn) {
-  return (event) => {
-    event.preventDefault();
-    fn();
-  };
-}
 
 export const LoginForm = ({
   phoneNumber,
@@ -95,7 +89,6 @@ const renderLoginForm = (
         phoneNumber,
         onPhoneNumberChange,
         onAuthenticateWithIdCard,
-        formatMessage,
       )}
 
       <p className="m-0 mt-4 text-body-secondary">
@@ -145,75 +138,27 @@ const renderLoginTabs = (
   phoneNumber,
   onPhoneNumberChange,
   onAuthenticateWithIdCard,
-  formatMessage,
 ) => (
   <LoginTabs>
     {/* eslint-disable-next-line react/no-unknown-property */}
     <div label="login.smart.id">
       <SmartIdLoginTab onSmartIdLoginStart={onSmartIdLoginStart} />
     </div>
-    {renderMobileId(
-      onMobileIdSubmit,
-      phoneNumber,
-      personalCode,
-      onPersonalCodeChange,
-      formatMessage,
-      onPhoneNumberChange,
-    )}
+    {/* eslint-disable-next-line react/no-unknown-property */}
+    <div label="login.mobile.id">
+      <MobileIdLoginTab
+        phoneNumber={phoneNumber}
+        personalCode={personalCode}
+        onPhoneNumberChange={onPhoneNumberChange}
+        onPersonalCodeChange={onPersonalCodeChange}
+        onMobileIdSubmit={onMobileIdSubmit}
+      />
+    </div>
     {/* eslint-disable-next-line react/no-unknown-property */}
     <div label="login.id.card" hideOnMobile>
       <IdCardLoginTab onAuthenticateWithIdCardMtls={onAuthenticateWithIdCard} />
     </div>
   </LoginTabs>
-);
-
-const renderMobileId = (
-  onMobileIdSubmit,
-  phoneNumber,
-  personalCode,
-  onPersonalCodeChange,
-  formatMessage,
-  onPhoneNumberChange,
-) => (
-  // eslint-disable-next-line react/no-unknown-property
-  <div label="login.mobile.id">
-    <form onSubmit={runWithDefaultPrevention(() => onMobileIdSubmit(phoneNumber, personalCode))}>
-      <div className="mb-3">
-        <input
-          id="mobile-id-personal-code"
-          type="text"
-          inputMode="numeric"
-          autoComplete="username"
-          value={personalCode}
-          onChange={(event) => onPersonalCodeChange(event.target.value)}
-          className="form-control form-control-lg"
-          placeholder={formatMessage({ id: 'login.id.code' })}
-          aria-label={formatMessage({ id: 'login.id.code' })}
-        />
-      </div>
-      <div className="mb-3">
-        <input
-          id="mobile-id-number"
-          type="tel"
-          autoComplete="tel"
-          value={phoneNumber}
-          onChange={(event) => onPhoneNumberChange(event.target.value)}
-          className="form-control form-control-lg"
-          placeholder={formatMessage({ id: 'login.phone.number' })}
-          aria-label={formatMessage({ id: 'login.phone.number' })}
-        />
-      </div>
-      <div className="d-grid mb-3">
-        <input
-          id="mobile-id-submit"
-          type="submit"
-          className="btn btn-primary btn-lg"
-          disabled={!phoneNumber || !personalCode}
-          value={formatMessage({ id: 'login.enter' })}
-        />
-      </div>
-    </form>
-  </div>
 );
 
 const noop = () => null;

@@ -28,6 +28,7 @@ import {
 
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 import { getAuthentication } from '../common/authenticationManager';
+import { rememberedMobileIdPhoneNumber } from './mobileId/rememberedPhoneNumbers';
 
 const mockHttp = jest.genMockFromModule('../common/http');
 jest.mock('../common/http', () => mockHttp);
@@ -236,6 +237,37 @@ describe('Login actions', () => {
           method: 'MOBILE_ID',
         });
       });
+  });
+
+  it('remembers the phone number only after a mobile id login succeeds', () => {
+    localStorage.clear();
+    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
+    mockApi.authenticateWithMobileId = jest.fn(() => Promise.resolve('1337'));
+    mockApi.getMobileIdTokens = jest.fn(() => Promise.resolve(tokens));
+    const authenticateWithMobileId = createBoundAction(actions.authenticateWithMobileId);
+
+    return authenticateWithMobileId('+37255512345', '38888888888', true).then(() => {
+      expect(rememberedMobileIdPhoneNumber('38888888888')).toBeNull();
+      jest.runOnlyPendingTimers();
+      return Promise.resolve().then(() => {
+        expect(rememberedMobileIdPhoneNumber('38888888888')).toBe('+37255512345');
+      });
+    });
+  });
+
+  it('leaves the phone number alone when the user did not ask to remember it', () => {
+    localStorage.clear();
+    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
+    mockApi.authenticateWithMobileId = jest.fn(() => Promise.resolve('1337'));
+    mockApi.getMobileIdTokens = jest.fn(() => Promise.resolve(tokens));
+    const authenticateWithMobileId = createBoundAction(actions.authenticateWithMobileId);
+
+    return authenticateWithMobileId('+37255512345', '38888888888', false).then(() => {
+      jest.runOnlyPendingTimers();
+      return Promise.resolve().then(() => {
+        expect(rememberedMobileIdPhoneNumber('38888888888')).toBeNull();
+      });
+    });
   });
 
   it('starts polling until fails when authenticating with a phone number', () => {
