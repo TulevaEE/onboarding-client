@@ -6,7 +6,12 @@ axios.defaults.withCredentials = true;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+const NO_CONTENT = 204;
+
 function transformResponse(response: Response): Promise<Response> {
+  if (response.status === NO_CONTENT) {
+    return Promise.resolve(undefined as unknown as Response);
+  }
   if (response.ok && response.status < 400) {
     return response.json();
   }

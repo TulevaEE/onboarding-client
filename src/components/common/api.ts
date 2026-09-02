@@ -33,6 +33,9 @@ import {
   SavingsFundOnboardingStatus,
   SecondPillarAssets,
   SigningMethod,
+  SmartIdLoginCallback,
+  SmartIdLoginStart,
+  SmartIdQrCode,
   SourceFund,
   Token,
   Transaction,
@@ -50,6 +53,7 @@ import { NudgeContext, NudgeDecision, PaymentRateRedirect } from './apiModels/nu
 import {
   deleteWithAuthentication,
   downloadFileWithAuthentication,
+  get,
   getWithAuthentication,
   head,
   patchWithAuthentication,
@@ -118,6 +122,18 @@ export async function authenticateWithIdCode(personalCode: string): Promise<Auth
     type: 'SMART_ID',
   });
   return { challengeCode, authenticationHash };
+}
+
+export function startSmartIdLogin(language: string): Promise<SmartIdLoginStart> {
+  return post(getEndpoint('/v1/smart-id/login'), { language });
+}
+
+export function getSmartIdQrCodeLink(): Promise<SmartIdQrCode> {
+  return get(getEndpoint('/v1/smart-id/login/qr-code'));
+}
+
+export async function completeSmartIdCallback(callback: SmartIdLoginCallback): Promise<void> {
+  await post(getEndpoint('/v1/smart-id/login/callback'), callback);
 }
 
 export async function authenticateWithIdCardMtls(): Promise<boolean> {
