@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -29,26 +29,20 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
 const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> = ({
   web2AppLink,
   onCancel,
-}) => {
-  useEffect(() => {
-    window.location.assign(web2AppLink);
-  }, [web2AppLink]);
-
-  return (
-    <SmartIdLoginCard>
-      <p className="m-0 mb-4">
-        <FormattedMessage id="login.smart.id.mobile.instructions" />
-      </p>
-      <Loader className="align-middle" />
-      <div className="d-grid mt-4">
-        <a className="btn btn-primary btn-lg" href={web2AppLink}>
-          <FormattedMessage id="login.smart.id.open.app" />
-        </a>
-      </div>
-      <CancelButton onCancel={onCancel} />
-    </SmartIdLoginCard>
-  );
-};
+}) => (
+  <SmartIdLoginCard>
+    <p className="m-0 mb-4">
+      <FormattedMessage id="login.smart.id.mobile.instructions" />
+    </p>
+    <Loader className="align-middle" />
+    <div className="d-grid mt-4">
+      <a className="btn btn-primary btn-lg" href={web2AppLink}>
+        <FormattedMessage id="login.smart.id.open.app" />
+      </a>
+    </div>
+    <CancelButton onCancel={onCancel} />
+  </SmartIdLoginCard>
+);
 
 const SmartIdQrCodeLogin: React.FC<{
   onCancel: () => void;
