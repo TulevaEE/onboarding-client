@@ -108,6 +108,16 @@ export const isActingAsSelf = (user: User | undefined): boolean => {
 export const isChildRole = (role: Role, user: User | undefined): boolean =>
   role.type === 'PERSON' && user !== undefined && role.code !== user.personalCode;
 
+export const isCurrentRole = (role: Role, user: User | undefined): boolean => {
+  if (!user) {
+    return false;
+  }
+  if (user.role) {
+    return user.role.type === role.type && user.role.code === role.code;
+  }
+  return role.type === 'PERSON' && role.code === user.personalCode;
+};
+
 export type TulevaSecondPillarStockFund = 'EE3600109435';
 export type TulevaSecondPillarBondFund = 'EE3600109443';
 export type TulevaThirdPillarFund = 'EE3600001707';
