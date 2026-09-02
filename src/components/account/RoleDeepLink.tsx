@@ -9,6 +9,7 @@ import {
   accountHolderForRole,
   lowestByCode,
 } from '../flows/savingsAccount/accountHolder';
+import { isCurrentRole } from '../common/utils';
 import { AccountPageLoader } from './AccountPageLoader';
 
 type Props = {
@@ -64,10 +65,12 @@ export const RoleDeepLink = ({ holder, destination, accountId, onRoleSwitched }:
     openedRequest.current = request;
 
     const openAccount = async () => {
-      let opened = !!user && accountHolderFor(user) === holder;
-      const target = !opened && user && roles ? roleFor(user, roles, holder, accountId) : undefined;
+      const target = user && roles ? roleFor(user, roles, holder, accountId) : undefined;
+      let opened = target
+        ? isCurrentRole(target, user)
+        : !!user && accountHolderFor(user) === holder;
 
-      if (target) {
+      if (target && !opened) {
         setSwitching(true);
         try {
           await switchRole.mutateAsync({ type: target.type, code: target.code });
