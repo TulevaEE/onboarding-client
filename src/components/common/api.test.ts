@@ -4,6 +4,7 @@ import {
   authenticateWithIdCardWebEid,
   authenticateWithIdCode,
   authenticateWithMobileId,
+  completeSmartIdCallback,
   createAmlCheck,
   createApplicationCancellation,
   createTrackedEvent,
@@ -23,6 +24,7 @@ import {
   getPaymentLink,
   getPendingApplications,
   getSavingsFundBalance,
+  getSmartIdQrCodeLink,
   getSmartIdSignatureChallengeCode,
   getSmartIdSignatureStatus,
   getSmartIdTokens,
@@ -34,6 +36,7 @@ import {
   logout,
   redirectToPayment,
   saveMandateWithAuthentication,
+  startSmartIdLogin,
   updateUserWithToken,
 } from './api';
 import * as http from './http';
@@ -225,6 +228,67 @@ describe('API calls', () => {
         expect.any(Object),
         { signal: controller.signal },
       );
+    });
+  });
+
+  describe('startSmartIdLogin', () => {
+    it('starts a device link session in the given language', async () => {
+      const web2AppLink = 'https://smart-id.com/device-link/?deviceLinkType=Web2App';
+      mockHttp.post.mockResolvedValueOnce({ web2AppLink });
+
+      const start = await startSmartIdLogin('en');
+
+      expect(start).toEqual({ web2AppLink });
+      expect(mockHttp.post).toHaveBeenCalledWith('/v1/smart-id/login', { language: 'en' });
+    });
+
+    it('propagates a failure to start the session', async () => {
+      const error = { status: 401, body: { errors: [{ code: 'smart.id.technical.error' }] } };
+      mockHttp.post.mockRejectedValueOnce(error);
+
+      await expect(startSmartIdLogin('et')).rejects.toEqual(error);
+    });
+  });
+
+  describe('getSmartIdQrCodeLink', () => {
+    it('retrieves the current device link of the running session', async () => {
+      const deviceLink = 'https://smart-id.com/device-link/?deviceLinkType=QR&elapsedSeconds=7';
+      mockHttp.get.mockResolvedValueOnce({ deviceLink });
+
+      const qrCode = await getSmartIdQrCodeLink();
+
+      expect(qrCode).toEqual({ deviceLink });
+      expect(mockHttp.get).toHaveBeenCalledWith('/v1/smart-id/login/qr-code');
+    });
+
+    it('propagates a missing session error', async () => {
+      const error = { status: 401, body: { errors: [{ code: 'auth.session.not.found' }] } };
+      mockHttp.get.mockRejectedValueOnce(error);
+
+      await expect(getSmartIdQrCodeLink()).rejects.toEqual(error);
+    });
+  });
+
+  describe('completeSmartIdCallback', () => {
+    const callback = {
+      value: 'a-callback-value',
+      sessionSecretDigest: 'a-digest',
+      userChallengeVerifier: 'a-verifier',
+    };
+
+    it('posts the device link callback parameters', async () => {
+      mockHttp.post.mockResolvedValueOnce(undefined);
+
+      await completeSmartIdCallback(callback);
+
+      expect(mockHttp.post).toHaveBeenCalledWith('/v1/smart-id/login/callback', callback);
+    });
+
+    it('propagates an invalid callback error', async () => {
+      const error = { status: 401, body: { errors: [{ code: 'smart.id.callback.invalid' }] } };
+      mockHttp.post.mockRejectedValueOnce(error);
+
+      await expect(completeSmartIdCallback(callback)).rejects.toEqual(error);
     });
   });
 

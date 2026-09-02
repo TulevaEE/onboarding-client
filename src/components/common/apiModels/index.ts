@@ -423,6 +423,20 @@ export interface Authentication {
   challengeCode: string;
 }
 
+export interface SmartIdLoginStart {
+  web2AppLink: string;
+}
+
+export interface SmartIdQrCode {
+  deviceLink: string;
+}
+
+export interface SmartIdLoginCallback {
+  value: string;
+  sessionSecretDigest: string;
+  userChallengeVerifier: string;
+}
+
 export type PortfolioGroup = 'SAVINGS_FUND' | 'SECOND_PILLAR' | 'THIRD_PILLAR';
 
 /** Value fields are null when a holding in the group has no published price yet. */
