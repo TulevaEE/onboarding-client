@@ -68,6 +68,38 @@ describe('When a user is logging in', () => {
     ).toBeInTheDocument();
   });
 
+  test('they can continue with a push notification when the browser remembers their Smart-ID account', async () => {
+    const backend = smartIdAuthenticationBackend(server, {
+      rememberedAccount: { firstName: 'Mari', lastName: 'Maasikas' },
+      verificationCode: '5678',
+    });
+
+    userEvent.click(await screen.findByRole('button', { name: 'Continue as Mari' }));
+
+    expect(await screen.findByText('5678')).toBeInTheDocument();
+    expect(backend.startedFlows).toEqual(['NOTIFICATION']);
+
+    backend.resolvePolling();
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+  });
+
+  test('somebody else can switch from the remembered account to the QR code', async () => {
+    const backend = smartIdAuthenticationBackend(server, {
+      rememberedAccount: { firstName: 'Mari', lastName: 'Maasikas' },
+    });
+    expect(await screen.findByRole('button', { name: 'Continue as Mari' })).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: /Not you/ }));
+
+    expect(
+      await screen.findByRole('img', { name: /Open the Smart-ID app on your phone/ }),
+    ).toBeInTheDocument();
+    expect(backend.rememberedAccount).toBeNull();
+    expect(backend.startedFlows).toEqual(['DEVICE_LINK']);
+  });
+
   test('they can sign in with mobile id, showing the security code', async () => {
     const identityCode = '396112341234';
     const phoneNumber = '+372123456789';

@@ -124,6 +124,18 @@ export async function post(url: string, params = {}, headers = {}): Promise<any>
   return transformResponse(response);
 }
 
+export async function deleteRequest(url: string, headers = {}): Promise<any> {
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: { ...headers, ...createLanguageHeaders() },
+    credentials: 'include',
+    mode: 'cors',
+    cache: 'default',
+  });
+
+  return transformResponse(response);
+}
+
 export async function postForm(
   url: string,
   params = {},

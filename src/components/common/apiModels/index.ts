@@ -418,8 +418,17 @@ export type PaymentChannel =
   | 'PARTNER'
   | 'TULUNDUSUHISTU';
 
+export type SmartIdLoginFlow = 'DEVICE_LINK' | 'NOTIFICATION';
+
 export interface SmartIdLoginStart {
-  web2AppLink: string;
+  flow: SmartIdLoginFlow;
+  web2AppLink: string | null;
+  verificationCode: string | null;
+}
+
+export interface RememberedSmartIdAccount {
+  firstName: string;
+  lastName: string;
 }
 
 export interface SmartIdQrCode {

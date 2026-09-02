@@ -35,6 +35,8 @@ import {
   logout,
   redirectToPayment,
   saveMandateWithAuthentication,
+  forgetRememberedSmartIdAccount,
+  getRememberedSmartIdAccount,
   startSmartIdLogin,
   updateUserWithToken,
 } from './api';
@@ -230,12 +232,25 @@ describe('API calls', () => {
   describe('startSmartIdLogin', () => {
     it('starts a device link session in the given language', async () => {
       const web2AppLink = 'https://smart-id.com/device-link/?deviceLinkType=Web2App';
-      mockHttp.post.mockResolvedValueOnce({ web2AppLink });
+      const start = { flow: 'DEVICE_LINK', web2AppLink, verificationCode: null };
+      mockHttp.post.mockResolvedValueOnce(start);
 
-      const start = await startSmartIdLogin('en');
+      expect(await startSmartIdLogin('en')).toEqual(start);
+      expect(mockHttp.post).toHaveBeenCalledWith('/v1/smart-id/login', {
+        flow: 'DEVICE_LINK',
+        language: 'en',
+      });
+    });
 
-      expect(start).toEqual({ web2AppLink });
-      expect(mockHttp.post).toHaveBeenCalledWith('/v1/smart-id/login', { language: 'en' });
+    it('starts a push notification session for the remembered account', async () => {
+      const start = { flow: 'NOTIFICATION', web2AppLink: null, verificationCode: '1234' };
+      mockHttp.post.mockResolvedValueOnce(start);
+
+      expect(await startSmartIdLogin('et', 'NOTIFICATION')).toEqual(start);
+      expect(mockHttp.post).toHaveBeenCalledWith('/v1/smart-id/login', {
+        flow: 'NOTIFICATION',
+        language: 'et',
+      });
     });
 
     it('propagates a failure to start the session', async () => {
@@ -243,6 +258,32 @@ describe('API calls', () => {
       mockHttp.post.mockRejectedValueOnce(error);
 
       await expect(startSmartIdLogin('et')).rejects.toEqual(error);
+    });
+  });
+
+  describe('getRememberedSmartIdAccount', () => {
+    it('returns the account the browser is remembered for', async () => {
+      const account = { firstName: 'Mari', lastName: 'Maasikas' };
+      mockHttp.get.mockResolvedValueOnce(account);
+
+      expect(await getRememberedSmartIdAccount()).toEqual(account);
+      expect(mockHttp.get).toHaveBeenCalledWith('/v1/smart-id/login/remembered-account');
+    });
+
+    it('returns null when the browser has no remembered account', async () => {
+      mockHttp.get.mockResolvedValueOnce(undefined);
+
+      expect(await getRememberedSmartIdAccount()).toBeNull();
+    });
+  });
+
+  describe('forgetRememberedSmartIdAccount', () => {
+    it('deletes the remembered account cookie', async () => {
+      mockHttp.deleteRequest.mockResolvedValueOnce(undefined);
+
+      await forgetRememberedSmartIdAccount();
+
+      expect(mockHttp.deleteRequest).toHaveBeenCalledWith('/v1/smart-id/login/remembered-account');
     });
   });
 

@@ -30,7 +30,9 @@ import {
   SavingsFundOnboardingStatus,
   SecondPillarAssets,
   SigningMethod,
+  RememberedSmartIdAccount,
   SmartIdLoginCallback,
+  SmartIdLoginFlow,
   SmartIdLoginStart,
   SmartIdQrCode,
   SourceFund,
@@ -41,6 +43,7 @@ import {
 } from './apiModels/index';
 import { HackathonRegistration, HackathonRegistrationCommand } from './apiModels/hackathon';
 import {
+  deleteRequest,
   deleteWithAuthentication,
   downloadFileWithAuthentication,
   get,
@@ -106,8 +109,20 @@ export async function authenticateWithMobileId(
   return challengeCode;
 }
 
-export function startSmartIdLogin(language: string): Promise<SmartIdLoginStart> {
-  return post(getEndpoint('/v1/smart-id/login'), { language });
+export function startSmartIdLogin(
+  language: string,
+  flow: SmartIdLoginFlow = 'DEVICE_LINK',
+): Promise<SmartIdLoginStart> {
+  return post(getEndpoint('/v1/smart-id/login'), { flow, language });
+}
+
+export async function getRememberedSmartIdAccount(): Promise<RememberedSmartIdAccount | null> {
+  const account = await get(getEndpoint('/v1/smart-id/login/remembered-account'));
+  return account ?? null;
+}
+
+export async function forgetRememberedSmartIdAccount(): Promise<void> {
+  await deleteRequest(getEndpoint('/v1/smart-id/login/remembered-account'));
 }
 
 export function getSmartIdQrCodeLink(): Promise<SmartIdQrCode> {

@@ -196,25 +196,71 @@ export function smartIdMandateBatchSigningBackend(
 
 export function smartIdAuthenticationBackend(
   server: SetupServerApi,
-  options: { language?: string; rejectCallback?: boolean } = {},
-): { resolvePolling: () => void; startedSessions: number } {
+  options: {
+    language?: string;
+    rejectCallback?: boolean;
+    rememberedAccount?: { firstName: string; lastName: string };
+    verificationCode?: string;
+  } = {},
+): {
+  resolvePolling: () => void;
+  startedSessions: number;
+  startedFlows: string[];
+  rememberedAccount: { firstName: string; lastName: string } | null;
+} {
   let pollingResolved = false;
   let elapsedSeconds = 0;
-  const backend: { resolvePolling: () => void; startedSessions: number } = {
+  const backend: {
+    resolvePolling: () => void;
+    startedSessions: number;
+    startedFlows: string[];
+    rememberedAccount: { firstName: string; lastName: string } | null;
+  } = {
     resolvePolling: () => undefined,
     startedSessions: 0,
+    startedFlows: [],
+    rememberedAccount: options.rememberedAccount ?? null,
   };
 
   server.use(
+    rest.get('http://localhost/v1/smart-id/login/remembered-account', (req, res, ctx) =>
+      backend.rememberedAccount
+        ? res(ctx.status(200), ctx.json(backend.rememberedAccount))
+        : res(ctx.status(204)),
+    ),
+
+    rest.delete('http://localhost/v1/smart-id/login/remembered-account', (req, res, ctx) => {
+      backend.rememberedAccount = null;
+      return res(ctx.status(204));
+    }),
+
     rest.post('http://localhost/v1/smart-id/login', (req, res, ctx) => {
-      const { language } = req.body as { language?: string };
+      const { flow, language } = req.body as { flow?: string; language?: string };
       if (options.language && language !== options.language) {
         return res(ctx.status(400), ctx.json({ errors: [{ code: 'smart.id.technical.error' }] }));
       }
+      if (flow === 'NOTIFICATION' && !backend.rememberedAccount) {
+        return res(ctx.status(401), ctx.json({ errors: [{ code: 'auth.session.not.found' }] }));
+      }
       backend.startedSessions += 1;
+      backend.startedFlows.push(flow as string);
+      if (flow === 'NOTIFICATION') {
+        return res(
+          ctx.status(200),
+          ctx.json({
+            flow: 'NOTIFICATION',
+            web2AppLink: null,
+            verificationCode: options.verificationCode ?? '1234',
+          }),
+        );
+      }
       return res(
         ctx.status(200),
-        ctx.json({ web2AppLink: smartIdWeb2AppLink(language as string) }),
+        ctx.json({
+          flow: 'DEVICE_LINK',
+          web2AppLink: smartIdWeb2AppLink(language as string),
+          verificationCode: null,
+        }),
       );
     }),
 
