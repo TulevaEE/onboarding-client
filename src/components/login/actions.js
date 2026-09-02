@@ -36,6 +36,7 @@ import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAler
 
 import { getAuthentication } from '../common/authenticationManager';
 import { isMobileDevice } from '../common/isMobileDevice';
+import { rememberMobileIdPhoneNumber } from './mobileId/rememberedPhoneNumbers';
 
 const POLL_DELAY = 1000;
 let timeout;
@@ -80,14 +81,14 @@ function handleLogin() {
   };
 }
 
-function getMobileIdTokens() {
+function getMobileIdTokens(onSuccess = () => undefined) {
   return (dispatch, getState) => {
     timeout = setTimeout(() => {
       api
         .getMobileIdTokens()
         .then((tokens) => {
           if (isTokenPresent(tokens)) {
-            // authentication complete
+            onSuccess();
             dispatch({
               type: MOBILE_AUTHENTICATION_SUCCESS,
               tokens,
@@ -95,8 +96,7 @@ function getMobileIdTokens() {
             });
             dispatch(handleLogin());
           } else if (getState().login.loadingAuthentication) {
-            // authentication not yet completed
-            dispatch(getMobileIdTokens()); // poll again
+            dispatch(getMobileIdTokens(onSuccess));
           }
         })
         .catch((error) => dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error }));
@@ -104,14 +104,20 @@ function getMobileIdTokens() {
   };
 }
 
-export function authenticateWithMobileId(phoneNumber, personalCode) {
+export function authenticateWithMobileId(phoneNumber, personalCode, rememberPhoneNumber = false) {
   return (dispatch) => {
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
       .authenticateWithMobileId(phoneNumber, personalCode)
       .then((controlCode) => {
         dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
-        dispatch(getMobileIdTokens());
+        dispatch(
+          getMobileIdTokens(() => {
+            if (rememberPhoneNumber) {
+              rememberMobileIdPhoneNumber(personalCode, phoneNumber);
+            }
+          }),
+        );
       })
       .catch((error) => dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error }));
   };
