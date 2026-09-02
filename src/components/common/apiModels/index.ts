@@ -422,11 +422,6 @@ export type PaymentChannel =
   | 'PARTNER'
   | 'TULUNDUSUHISTU';
 
-export interface Authentication {
-  authenticationHash: string;
-  challengeCode: string;
-}
-
 export interface SmartIdLoginStart {
   web2AppLink: string;
 }

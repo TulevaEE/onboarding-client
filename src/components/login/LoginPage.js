@@ -10,13 +10,14 @@ import styles from './LoginPage.module.scss';
 import { loginPath } from './constants';
 
 import LoginForm from './loginForm';
+import { SmartIdDeviceLinkLogin } from './smartId/SmartIdDeviceLinkLogin';
 import {
   changePhoneNumber,
   changePersonalCode,
   authenticateWithMobileId,
   cancelMobileAuthentication,
   authenticateWithIdCard,
-  authenticateWithIdCode,
+  startSmartIdLogin,
 } from './actions';
 import { getAuthentication } from '../common/authenticationManager';
 import { loginLanding } from './loginLanding';
@@ -27,11 +28,12 @@ export const LoginPage = ({
   onPhoneNumberChange,
   onPersonalCodeChange,
   onCancelMobileAuthentication,
-  onIdCodeSubmit,
+  onSmartIdLoginStart,
   onAuthenticateWithIdCard,
   phoneNumber,
   personalCode,
   controlCode,
+  smartIdWeb2AppLink,
   loadingAuthentication,
   loadingUserConversion,
   errorDescription,
@@ -46,6 +48,8 @@ export const LoginPage = ({
     return <Redirect to={loginLanding(from)} />;
   }
 
+  const authenticating = loadingAuthentication || controlCode || loadingUserConversion;
+
   return (
     <div className={styles.loginPage}>
       <div className="container py-5">
@@ -53,14 +57,14 @@ export const LoginPage = ({
           <div className="col-12 col-md-9 col-lg-7">
             <img width="146" height="66" src={logo} alt="Tuleva" className="d-block mx-auto mb-5" />
             {errorDescription ? <ErrorAlert description={errorDescription} /> : ''}
-            {!loadingAuthentication && !controlCode && !loadingUserConversion ? (
+            {!authenticating ? (
               <LoginForm
                 onMobileIdSubmit={onMobileIdSubmit}
                 onPhoneNumberChange={onPhoneNumberChange}
                 onPersonalCodeChange={onPersonalCodeChange}
                 phoneNumber={phoneNumber}
                 personalCode={personalCode}
-                onIdCodeSubmit={onIdCodeSubmit}
+                onSmartIdLoginStart={onSmartIdLoginStart}
                 onAuthenticateWithIdCard={onAuthenticateWithIdCard}
                 monthlyThirdPillarContribution={monthlyThirdPillarContribution}
                 exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
@@ -68,8 +72,16 @@ export const LoginPage = ({
             ) : (
               ''
             )}
-            {!errorDescription &&
-            (loadingAuthentication || controlCode || loadingUserConversion) ? (
+            {!errorDescription && authenticating && smartIdWeb2AppLink ? (
+              <SmartIdDeviceLinkLogin
+                web2AppLink={smartIdWeb2AppLink}
+                onCancel={onCancelMobileAuthentication}
+                onSmartIdLoginStart={onSmartIdLoginStart}
+              />
+            ) : (
+              ''
+            )}
+            {!errorDescription && authenticating && !smartIdWeb2AppLink ? (
               <AuthenticationLoader
                 onCancel={onCancelMobileAuthentication}
                 controlCode={controlCode}
@@ -91,13 +103,14 @@ LoginPage.defaultProps = {
   onPersonalCodeChange: noop,
   onMobileIdSubmit: noop,
   onCancelMobileAuthentication: noop,
-  onIdCodeSubmit: noop,
+  onSmartIdLoginStart: noop,
   onAuthenticateWithIdCard: noop,
 
   isAuthenticated: false,
   phoneNumber: '',
   personalCode: '',
   controlCode: '',
+  smartIdWeb2AppLink: null,
   loadingAuthentication: false,
   loadingUserConversion: false,
   errorDescription: '',
@@ -112,13 +125,14 @@ LoginPage.propTypes = {
   onPersonalCodeChange: Types.func,
   onMobileIdSubmit: Types.func,
   onCancelMobileAuthentication: Types.func,
-  onIdCodeSubmit: Types.func,
+  onSmartIdLoginStart: Types.func,
   onAuthenticateWithIdCard: Types.func,
 
   isAuthenticated: Types.bool,
   phoneNumber: Types.string,
   personalCode: Types.string,
   controlCode: Types.string,
+  smartIdWeb2AppLink: Types.string,
   loadingAuthentication: Types.bool,
   loadingUserConversion: Types.bool,
   errorDescription: Types.string,
@@ -133,6 +147,7 @@ const mapStateToProps = (state) => ({
   phoneNumber: state.login.phoneNumber,
   personalCode: state.login.personalCode,
   controlCode: state.login.controlCode,
+  smartIdWeb2AppLink: state.login.smartIdWeb2AppLink,
   loadingAuthentication: state.login.loadingAuthentication,
   loadingUserConversion: state.login.loadingUserConversion,
   errorDescription: state.login.error || state.login.userConversionError,
@@ -146,7 +161,7 @@ const mapDispatchToProps = (dispatch) =>
       onPersonalCodeChange: changePersonalCode,
       onMobileIdSubmit: authenticateWithMobileId,
       onCancelMobileAuthentication: cancelMobileAuthentication,
-      onIdCodeSubmit: authenticateWithIdCode,
+      onSmartIdLoginStart: startSmartIdLogin,
       onAuthenticateWithIdCard: authenticateWithIdCard,
     },
     dispatch,
