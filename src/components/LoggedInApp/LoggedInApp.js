@@ -136,13 +136,21 @@ export class LoggedInApp extends PureComponent {
             <Route
               path={`${ACCOUNT_PATH}/child`}
               render={() => (
-                <RoleDeepLink holder="child" onRoleSwitched={() => this.fetchAllUserData()} />
+                <RoleDeepLink
+                  holder="child"
+                  destination={ACCOUNT_PATH}
+                  onRoleSwitched={() => this.fetchAllUserData()}
+                />
               )}
             />
             <Route
               path={`${ACCOUNT_PATH}/company`}
               render={() => (
-                <RoleDeepLink holder="company" onRoleSwitched={() => this.fetchAllUserData()} />
+                <RoleDeepLink
+                  holder="company"
+                  destination={ACCOUNT_PATH}
+                  onRoleSwitched={() => this.fetchAllUserData()}
+                />
               )}
             />
             <Route path={ACCOUNT_PATH} component={AccountPage} />
@@ -313,6 +321,28 @@ export class LoggedInApp extends PureComponent {
                 <MembersOnlyGatekeep>
                   <CapitalPage />
                 </MembersOnlyGatekeep>
+              )}
+            />
+            <Route
+              path="/savings-fund/payment/child/:accountId?"
+              render={({ match }) => (
+                <RoleDeepLink
+                  holder="child"
+                  destination="/savings-fund/payment"
+                  accountId={match.params.accountId}
+                  onRoleSwitched={() => this.fetchAllUserData()}
+                />
+              )}
+            />
+            <Route
+              path="/savings-fund/payment/company/:accountId?"
+              render={({ match }) => (
+                <RoleDeepLink
+                  holder="company"
+                  destination="/savings-fund/payment"
+                  accountId={match.params.accountId}
+                  onRoleSwitched={() => this.fetchAllUserData()}
+                />
               )}
             />
             <Route
