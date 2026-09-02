@@ -36,7 +36,10 @@ import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAler
 
 import { getAuthentication } from '../common/authenticationManager';
 import { isMobileDevice } from '../common/isMobileDevice';
-import { rememberMobileIdPhoneNumber } from './mobileId/rememberedPhoneNumbers';
+import {
+  forgetMobileIdPhoneNumber,
+  rememberMobileIdPhoneNumber,
+} from './mobileId/rememberedPhoneNumbers';
 
 const POLL_DELAY = 1000;
 let timeout;
@@ -115,6 +118,8 @@ export function authenticateWithMobileId(phoneNumber, personalCode, rememberPhon
           getMobileIdTokens(() => {
             if (rememberPhoneNumber) {
               rememberMobileIdPhoneNumber(personalCode, phoneNumber);
+            } else {
+              forgetMobileIdPhoneNumber(personalCode);
             }
           }),
         );
