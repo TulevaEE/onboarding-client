@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, Redirect, useLocation } from 'react-router-dom';
@@ -9,8 +9,9 @@ import AuthenticationLoader from '../../common/authenticationLoader/Authenticati
 import { getAuthentication } from '../../common/authenticationManager';
 import { usePageTitle } from '../../common/usePageTitle';
 import { SmartIdLoginCallback } from '../../common/apiModels';
-import { completeSmartIdLogin } from '../actions';
+import { completeSmartIdLogin, getPendingSmartIdReturnPath } from '../actions';
 import { loginPath } from '../constants';
+import { loginLanding } from '../loginLanding';
 import styles from '../LoginPage.module.scss';
 
 export const SmartIdCallbackPage: React.FC = () => {
@@ -20,6 +21,7 @@ export const SmartIdCallbackPage: React.FC = () => {
   const isAuthenticated = useSelector(() => getAuthentication().isAuthenticated());
   const loginError = useSelector((state: { login: { error: string | null } }) => state.login.error);
   const callback = useMemo(() => parseCallback(search), [search]);
+  const [destination] = useState(() => loginLanding(getPendingSmartIdReturnPath() ?? undefined));
 
   useEffect(() => {
     if (callback) {
@@ -28,7 +30,7 @@ export const SmartIdCallbackPage: React.FC = () => {
   }, [callback, dispatch]);
 
   if (isAuthenticated) {
-    return <Redirect to="/" />;
+    return <Redirect to={destination} />;
   }
 
   return (

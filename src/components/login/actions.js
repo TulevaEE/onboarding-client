@@ -27,6 +27,7 @@ import {
   GET_USER_CONVERSION_ERROR,
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
+  smartIdCallbackPath,
 } from './constants';
 
 import { api } from '../common';
@@ -34,6 +35,7 @@ import { api } from '../common';
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 
 import { getAuthentication } from '../common/authenticationManager';
+import { isMobileDevice } from '../common/isMobileDevice';
 
 const POLL_DELAY = 1000;
 let timeout;
@@ -133,12 +135,15 @@ const TRANSIENT_POLL_ERRORS = [
   'NetworkError when attempting to fetch resource.', // Firefox
 ];
 
-function savePendingSmartIdAuthentication() {
+function savePendingSmartIdAuthentication(web2AppLink, returnPath) {
   if (!window.sessionStorage) {
     return;
   }
   try {
-    sessionStorage.setItem(PENDING_SMART_ID_KEY, JSON.stringify({ startedAt: Date.now() }));
+    sessionStorage.setItem(
+      PENDING_SMART_ID_KEY,
+      JSON.stringify({ web2AppLink, returnPath, startedAt: Date.now() }),
+    );
   } catch (error) {
     logPoll('pending-login-persistence-failed', error); // reload recovery degrades, login proceeds
   }
@@ -162,6 +167,11 @@ function loadPendingSmartIdAuthentication() {
   }
 }
 
+export function getPendingSmartIdReturnPath() {
+  const pending = loadPendingSmartIdAuthentication();
+  return pending?.returnPath ?? null;
+}
+
 export function resumePendingSmartIdAuthentication() {
   return (dispatch, getState) => {
     const pending = loadPendingSmartIdAuthentication();
@@ -182,8 +192,14 @@ export function resumePendingSmartIdAuthentication() {
     if (window.location.pathname.startsWith('/trigger-procedure')) {
       return; // partner handover brings its own token
     }
+    if (window.location.pathname.startsWith(smartIdCallbackPath)) {
+      return; // the callback page completes the login itself
+    }
     logPoll('resume-pending-login');
     dispatch({ type: MOBILE_AUTHENTICATION_START });
+    if (pending.web2AppLink) {
+      dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink: pending.web2AppLink });
+    }
     dispatch(getSmartIdTokens());
   };
 }
@@ -286,7 +302,7 @@ export const getSmartIdTokens = () => (dispatch, getState) => {
 };
 
 export function startSmartIdLogin(language) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     smartIdStartSequence += 1;
     const startSequence = smartIdStartSequence;
     dispatch({ type: MOBILE_AUTHENTICATION_START });
@@ -296,9 +312,12 @@ export function startSmartIdLogin(language) {
         if (startSequence !== smartIdStartSequence) {
           return; // canceled or superseded while the session start was pending
         }
-        savePendingSmartIdAuthentication();
+        savePendingSmartIdAuthentication(web2AppLink, getState().router?.location?.state?.from);
         dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink });
         dispatch(getSmartIdTokens());
+        if (isMobileDevice()) {
+          window.location.assign(web2AppLink);
+        }
       })
       .catch((error) => {
         if (startSequence !== smartIdStartSequence) {
@@ -320,7 +339,6 @@ export function completeSmartIdLogin(callback) {
         if (startSequence !== smartIdStartSequence) {
           return;
         }
-        savePendingSmartIdAuthentication();
         dispatch(getSmartIdTokens());
       })
       .catch((error) => {
