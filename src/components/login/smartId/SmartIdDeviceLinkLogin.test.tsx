@@ -110,6 +110,30 @@ describe('Smart-ID device link login', () => {
     expect(screen.getByRole('img')).toHaveAttribute('data-value', qrCodeLinkAfter(1));
   });
 
+  it('keeps showing fresh QR codes when every request takes longer than a second', async () => {
+    let served = 0;
+    mockGetSmartIdQrCodeLink.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          const elapsedSeconds = served;
+          served += 1;
+          setTimeout(() => resolve({ deviceLink: qrCodeLinkAfter(elapsedSeconds) }), 1500);
+        }),
+    );
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    await advanceOneSecond();
+    await advanceOneSecond();
+    expect(screen.getByRole('img')).toHaveAttribute('data-value', qrCodeLinkAfter(0));
+
+    await advanceOneSecond();
+    expect(screen.getByRole('img')).toHaveAttribute('data-value', qrCodeLinkAfter(1));
+
+    await advanceOneSecond();
+    expect(screen.getByRole('img')).toHaveAttribute('data-value', qrCodeLinkAfter(2));
+  });
+
   it('hides a QR code that has not been refreshed for three seconds', async () => {
     mockGetSmartIdQrCodeLink
       .mockResolvedValueOnce({ deviceLink: qrCodeLinkAfter(0) })
