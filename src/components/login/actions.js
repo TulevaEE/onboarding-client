@@ -128,9 +128,13 @@ export function authenticateWithMobileId(phoneNumber, personalCode, rememberPhon
   };
 }
 
-const logPoll = (stage, value = '') =>
+const logPoll = (stage, value = '') => {
+  if (process.env.NODE_ENV === 'production') {
+    return; // the poll trace carries tokens and login state, so it never ships
+  }
   // eslint-disable-next-line no-console
   console.log(`[poll] ${stage}`, value, Date.now());
+};
 
 // The pending login survives the page reload Android/iOS force on tab discard while
 // the user confirms in the Smart-ID app; the completed result waits in the backend
@@ -256,7 +260,7 @@ export const getSmartIdTokens = () => (dispatch, getState) => {
       if (attempt !== smartIdAttempt || controller !== attempt.controller) {
         return undefined; // superseded — ignore late replies
       }
-      logPoll('fetch-resolved', tokens);
+      logPoll('fetch-resolved', Boolean(tokens?.accessToken));
 
       if (tokens?.accessToken && tokens?.refreshToken) {
         logPoll('token-present → SUCCESS');
