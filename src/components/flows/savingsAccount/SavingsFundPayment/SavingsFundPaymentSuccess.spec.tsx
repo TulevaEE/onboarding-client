@@ -8,10 +8,14 @@ import { createDefaultStore, login, renderWrapped } from '../../../../test/utils
 import LoggedInApp from '../../../LoggedInApp';
 import { initializeConfiguration } from '../../../config/config';
 import { userBackend, useTestBackends } from '../../../../test/backend';
+import { Role } from '../../../common/apiModels';
 
 type TrackedEvent = { type: string; data?: { path: string; savingsFundNudge?: string } };
 
 describe('SavingsFundPaymentSuccess', () => {
+  const childRole: Role = { type: 'PERSON', code: '51201011234', name: 'Junior Doe' };
+  const companyRole: Role = { type: 'LEGAL_ENTITY', code: '12345678', name: 'Test Company OÜ' };
+
   const server = setupServer();
   let history: History;
   let queryClient: QueryClient;
@@ -128,10 +132,7 @@ describe('SavingsFundPaymentSuccess', () => {
   });
 
   it('words the nudge for the child when paying under a child role', async () => {
-    userBackend(server, {
-      // A PERSON role whose code differs from the logged-in user's personal code
-      role: { type: 'PERSON', code: '51201011234', name: 'Junior Doe' },
-    });
+    userBackend(server, { role: childRole });
     initApp();
     history.push('/savings-fund/payment/success');
 
@@ -143,9 +144,7 @@ describe('SavingsFundPaymentSuccess', () => {
   });
 
   it('words the nudge for the company when paying under a company role', async () => {
-    userBackend(server, {
-      role: { type: 'LEGAL_ENTITY', code: '12345678', name: 'Test Company OÜ' },
-    });
+    userBackend(server, { role: companyRole });
     initApp();
     history.push('/savings-fund/payment/success');
 
