@@ -384,6 +384,7 @@ export interface MobileSignatureStatusResponse {
 
 export interface IdCardSignatureResponse {
   hash: string;
+  hashFunction: string;
 }
 
 export interface IdCardSignatureStatusResponse {
