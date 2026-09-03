@@ -3,22 +3,14 @@
 }
 
 @media print {
-  // Printing this page prints the statement document alone: everything else on the page
-  // is made invisible, and the document is lifted to the top of the first sheet.
-  :global(body) * {
-    visibility: hidden;
+  // The statement is rendered through a portal beside the app root, so dropping the
+  // whole app from the print flow leaves the statement to paginate alone — on-screen
+  // content hidden with visibility would still force blank trailing pages.
+  :global(#root) {
+    display: none;
   }
 
   .printOnly {
     display: block;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-  }
-
-  .printOnly,
-  .printOnly * {
-    visibility: visible;
   }
 }
