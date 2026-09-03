@@ -89,6 +89,24 @@ describe('Login actions', () => {
     });
   });
 
+  it('never writes tokens to the console while polling', async () => {
+    const consoleLog = jest.spyOn(console, 'log').mockImplementation(() => undefined);
+    const tokens = { accessToken: 'a secret access token', refreshToken: 'a secret refresh token' };
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(tokens));
+    await createBoundAction(actions.startSmartIdLogin)('et');
+
+    jest.runOnlyPendingTimers();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const logged = consoleLog.mock.calls.flat().map(String).join(' ');
+    expect(logged).not.toContain('a secret access token');
+    expect(logged).not.toContain('a secret refresh token');
+    consoleLog.mockRestore();
+  });
+
   it('can change mobile identity code', () => {
     const personalCode = '50001018865';
     const action = actions.changePersonalCode(personalCode);
