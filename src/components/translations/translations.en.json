@@ -2168,5 +2168,5 @@
   "units.roundingNote.screen": "Units are shown to three decimal places, as the fund rules state. Totals are added up from the exact quantities.",
   "units.roundingNote.printed": "Units are shown to three decimal places, as the fund rules state. Balances are calculated from the exact quantities.",
   "units.roundingNote.hover": "Hover over a number to see its exact quantity.",
-  "signature.status.unexpected": "Signing did not complete. Please try again."
+  "signature.error.unknown": "Signing did not complete. Please try again."
 }

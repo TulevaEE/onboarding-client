@@ -2258,5 +2258,5 @@
   "units.roundingNote.screen": "Osakud on näidatud fondi tingimuste kohaselt täpsusega kolm kohta pärast koma. Summad on arvutatud täpsetest kogustest.",
   "units.roundingNote.printed": "Osakud on näidatud fondi tingimuste kohaselt täpsusega kolm kohta pärast koma. Saldod on arvutatud täpsetest kogustest.",
   "units.roundingNote.hover": "Täpse koguse näed, kui viid kursori numbrile.",
-  "signature.status.unexpected": "Allkirjastamine ei jõudnud lõpuni. Palun proovi uuesti."
+  "signature.error.unknown": "Allkirjastamine ei jõudnud lõpuni. Palun proovi uuesti."
 }
