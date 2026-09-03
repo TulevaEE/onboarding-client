@@ -8,6 +8,11 @@ import { pollForSignatureStatus, startSigningWithChallengeCode } from './signWit
 
 const POLL_DELAY = 1000;
 const SIGNATURE_DONE_STATUS = 'SIGNATURE';
+const SIGNING_IN_PROGRESS_STATUS = 'OUTSTANDING_TRANSACTION';
+
+const UNEXPECTED_SIGNATURE_STATUS: ErrorResponse = {
+  body: { errors: [{ code: 'signature.status.unexpected' }] },
+};
 
 export const useSigning = <TSignableEntity extends { id: number | string }>(
   entityType: SignableEntity,
@@ -50,8 +55,10 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
         });
         if (signatureStatus === SIGNATURE_DONE_STATUS) {
           setSigned(true);
-        } else {
+        } else if (signatureStatus === SIGNING_IN_PROGRESS_STATUS) {
           pollForIdCard(entity);
+        } else {
+          setError(UNEXPECTED_SIGNATURE_STATUS);
         }
       } else if (signingMethod === 'SMART_ID' || signingMethod === 'MOBILE_ID') {
         setSigningType(signingMethod);
@@ -82,8 +89,10 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
 
         if (signatureStatus === SIGNATURE_DONE_STATUS) {
           setSigned(true);
-        } else {
+        } else if (signatureStatus === SIGNING_IN_PROGRESS_STATUS) {
           pollForIdCard(entity);
+        } else {
+          setError(UNEXPECTED_SIGNATURE_STATUS);
         }
       } catch (e) {
         setError(e as ErrorResponse); // TODO
@@ -101,8 +110,10 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
 
         if (signatureStatus.statusCode === SIGNATURE_DONE_STATUS) {
           setSigned(true);
-        } else {
+        } else if (signatureStatus.statusCode === SIGNING_IN_PROGRESS_STATUS) {
           poll(entity, signingMethod);
+        } else {
+          setError(UNEXPECTED_SIGNATURE_STATUS);
         }
       } catch (e) {
         setError(e as ErrorResponse); // TODO

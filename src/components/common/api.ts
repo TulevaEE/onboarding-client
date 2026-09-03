@@ -17,6 +17,7 @@ import {
   FundBalance,
   IdCardSignatureResponse,
   IdCardSignatureStatusResponse,
+  SignatureStatus,
   LoginMethod,
   Mandate,
   MandateDeadlines,
@@ -443,7 +444,7 @@ export async function persistIdCardSignature({
   entityId: string;
   type?: SignableEntity;
   signature: string;
-}): Promise<string> {
+}): Promise<SignatureStatus> {
   const path = `${getSigningBaseUrl(entityId, type)}/id-card/signature`;
 
   const { statusCode } = await putWithAuthentication<IdCardSignatureStatusResponse>(
@@ -459,7 +460,7 @@ export async function getIdCardSignatureStatus({
 }: {
   entityId: string;
   type?: SignableEntity;
-}): Promise<string> {
+}): Promise<SignatureStatus> {
   const path = `${getSigningBaseUrl(entityId, type)}/id-card/status`;
 
   const { statusCode } = await getWithAuthentication<IdCardSignatureStatusResponse>(

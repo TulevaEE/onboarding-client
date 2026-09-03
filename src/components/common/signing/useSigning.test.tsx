@@ -6,6 +6,9 @@ import { useSigning } from './useSigning';
 const mockSignWithIdCard = jest.fn();
 const mockPersistIdCardSignature = jest.fn();
 const mockGetIdCardSignatureStatus = jest.fn();
+const mockGetAuthentication = jest.fn();
+const mockStartSigningWithChallengeCode = jest.fn();
+const mockPollForSignatureStatus = jest.fn();
 
 jest.mock('./signWithIdCard', () => ({
   signWithIdCard: (...args: unknown[]) => mockSignWithIdCard(...args),
@@ -15,7 +18,11 @@ jest.mock('../api', () => ({
   getIdCardSignatureStatus: (...args: unknown[]) => mockGetIdCardSignatureStatus(...args),
 }));
 jest.mock('../authenticationManager', () => ({
-  getAuthentication: () => ({ signingMethod: 'ID_CARD' }),
+  getAuthentication: () => mockGetAuthentication(),
+}));
+jest.mock('./signWithChallengeCode', () => ({
+  startSigningWithChallengeCode: (...args: unknown[]) => mockStartSigningWithChallengeCode(...args),
+  pollForSignatureStatus: (...args: unknown[]) => mockPollForSignatureStatus(...args),
 }));
 
 const describeStatus = (signed: boolean, loading: boolean) => {
@@ -43,6 +50,7 @@ describe('useSigning with an ID card', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
+    mockGetAuthentication.mockReturnValue({ signingMethod: 'ID_CARD' });
     mockSignWithIdCard.mockResolvedValue({
       signature: 'signature',
       entityId: 7,
@@ -98,5 +106,42 @@ describe('useSigning with an ID card', () => {
     expect(await screen.findByText('id.card.signing.cancelled')).toBeInTheDocument();
     expect(await screen.findByText('idle')).toBeInTheDocument();
     expect(mockPersistIdCardSignature).not.toHaveBeenCalled();
+  });
+
+  it('stops with an error when persisting reports an unexpected status', async () => {
+    mockPersistIdCardSignature.mockResolvedValue('SOMETHING_ELSE');
+    render(<SigningHarness />);
+
+    userEvent.click(screen.getByRole('button', { name: 'sign' }));
+
+    expect(await screen.findByText('signature.status.unexpected')).toBeInTheDocument();
+    expect(await screen.findByText('idle')).toBeInTheDocument();
+    expect(mockGetIdCardSignatureStatus).not.toHaveBeenCalled();
+  });
+
+  it('stops with an error when the status poll reports an unexpected status', async () => {
+    mockPersistIdCardSignature.mockResolvedValue('OUTSTANDING_TRANSACTION');
+    mockGetIdCardSignatureStatus.mockResolvedValue('SOMETHING_ELSE');
+    render(<SigningHarness />);
+
+    userEvent.click(screen.getByRole('button', { name: 'sign' }));
+
+    expect(await screen.findByText('signature.status.unexpected')).toBeInTheDocument();
+    expect(mockGetIdCardSignatureStatus).toHaveBeenCalledTimes(1);
+  });
+
+  it('stops with an error when the challenge code poll reports an unexpected status', async () => {
+    mockGetAuthentication.mockReturnValue({ signingMethod: 'SMART_ID' });
+    mockStartSigningWithChallengeCode.mockResolvedValue('1234');
+    mockPollForSignatureStatus.mockResolvedValue({
+      statusCode: 'SOMETHING_ELSE',
+      challengeCode: '1234',
+    });
+    render(<SigningHarness />);
+
+    userEvent.click(screen.getByRole('button', { name: 'sign' }));
+
+    expect(await screen.findByText('signature.status.unexpected')).toBeInTheDocument();
+    expect(mockPollForSignatureStatus).toHaveBeenCalledTimes(1);
   });
 });
