@@ -6,6 +6,7 @@ import { PillButton } from '../../common/PillButton';
 import { TranslationKey } from '../../translations';
 import { Portfolio, PortfolioGroup, PortfolioGroupSummary } from '../../common/apiModels';
 import { PeriodSelector } from './PeriodSelector';
+import { StatementSection } from './StatementSection';
 import { buildChartSeries } from './chartSeries';
 import { ChartPoint, ValueChart } from './ValueChart';
 
@@ -79,6 +80,8 @@ export const PortfolioView: React.FunctionComponent<{
   const groups = portfolio.groups.map((summary) =>
     withCurrentValue(summary, currentValues?.[summary.group]),
   );
+
+  const savingsFundSummary = groups.find((summary) => summary.group === 'SAVINGS_FUND');
 
   const available = GROUPS.filter(({ id }) => groups.some((summary) => summary.group === id));
 
@@ -273,6 +276,13 @@ export const PortfolioView: React.FunctionComponent<{
           <FormattedMessage id="savingsFund.statement.money.explainer" />
         </p>
       </div>
+
+      {/* An accountant needs the period's savings fund transactions and a statement they
+          can file, not just a chart. Shown to whoever holds savings fund units — a
+          company, a child, or the person themselves. */}
+      {savingsFundSummary && (
+        <StatementSection summary={savingsFundSummary} from={from ?? portfolio.from} to={to} />
+      )}
     </>
   );
 };
