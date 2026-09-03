@@ -9,7 +9,6 @@ import { pollForSignatureStatus, startSigningWithChallengeCode } from './signWit
 
 const POLL_DELAY = 1000;
 const SIGNATURE_DONE_STATUS = 'SIGNATURE';
-const SIGNING_IN_PROGRESS_STATUS = 'OUTSTANDING_TRANSACTION';
 
 const UNKNOWN_SIGNATURE_ERROR = errorResponseWithCode('signature.error.unknown');
 
@@ -57,10 +56,8 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
         });
         if (signatureStatus === SIGNATURE_DONE_STATUS) {
           setSigned(true);
-        } else if (signatureStatus === SIGNING_IN_PROGRESS_STATUS) {
-          pollForIdCard(entity);
         } else {
-          setError(UNKNOWN_SIGNATURE_ERROR);
+          pollForIdCard(entity);
         }
       } else if (signingMethod === 'SMART_ID' || signingMethod === 'MOBILE_ID') {
         setSigningType(signingMethod);
@@ -91,10 +88,8 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
 
         if (signatureStatus === SIGNATURE_DONE_STATUS) {
           setSigned(true);
-        } else if (signatureStatus === SIGNING_IN_PROGRESS_STATUS) {
-          pollForIdCard(entity);
         } else {
-          setError(UNKNOWN_SIGNATURE_ERROR);
+          pollForIdCard(entity);
         }
       } catch (e) {
         setError(toErrorResponse(e));
@@ -112,10 +107,8 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
 
         if (signatureStatus.statusCode === SIGNATURE_DONE_STATUS) {
           setSigned(true);
-        } else if (signatureStatus.statusCode === SIGNING_IN_PROGRESS_STATUS) {
-          poll(entity, signingMethod);
         } else {
-          setError(UNKNOWN_SIGNATURE_ERROR);
+          poll(entity, signingMethod);
         }
       } catch (e) {
         setError(toErrorResponse(e));

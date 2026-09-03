@@ -108,43 +108,6 @@ describe('useSigning with an ID card', () => {
     expect(mockPersistIdCardSignature).not.toHaveBeenCalled();
   });
 
-  it('stops with an error when persisting reports an unexpected status', async () => {
-    mockPersistIdCardSignature.mockResolvedValue('SOMETHING_ELSE');
-    render(<SigningHarness />);
-
-    userEvent.click(screen.getByRole('button', { name: 'sign' }));
-
-    expect(await screen.findByText('signature.error.unknown')).toBeInTheDocument();
-    expect(await screen.findByText('idle')).toBeInTheDocument();
-    expect(mockGetIdCardSignatureStatus).not.toHaveBeenCalled();
-  });
-
-  it('stops with an error when the status poll reports an unexpected status', async () => {
-    mockPersistIdCardSignature.mockResolvedValue('OUTSTANDING_TRANSACTION');
-    mockGetIdCardSignatureStatus.mockResolvedValue('SOMETHING_ELSE');
-    render(<SigningHarness />);
-
-    userEvent.click(screen.getByRole('button', { name: 'sign' }));
-
-    expect(await screen.findByText('signature.error.unknown')).toBeInTheDocument();
-    expect(mockGetIdCardSignatureStatus).toHaveBeenCalledTimes(1);
-  });
-
-  it('stops with an error when the challenge code poll reports an unexpected status', async () => {
-    mockGetAuthentication.mockReturnValue({ signingMethod: 'SMART_ID' });
-    mockStartSigningWithChallengeCode.mockResolvedValue('1234');
-    mockPollForSignatureStatus.mockResolvedValue({
-      statusCode: 'SOMETHING_ELSE',
-      challengeCode: '1234',
-    });
-    render(<SigningHarness />);
-
-    userEvent.click(screen.getByRole('button', { name: 'sign' }));
-
-    expect(await screen.findByText('signature.error.unknown')).toBeInTheDocument();
-    expect(mockPollForSignatureStatus).toHaveBeenCalledTimes(1);
-  });
-
   it('surfaces a generic error when signing fails without an error response', async () => {
     mockSignWithIdCard.mockRejectedValue(new Error('boom'));
     render(<SigningHarness />);

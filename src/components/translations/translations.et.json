@@ -203,7 +203,7 @@
   "error.message.close": "Sulge",
   "error.payment-failed": "Makse ebaõnnestus.",
   "error.technical": "Midagi läks valesti. Palun proovi uuesti või võta meiega ühendust.",
-  "id.card.signing.error": "ID-kaardiga allkirjastamine ebaõnnestus. Kontrolli, et kaardilugeja on ühendatud ning ID-tarkvara ja Web eID brauserilaiendus on paigaldatud, ja proovi uuesti.",
+  "id.card.signing.error": "ID-kaardiga allkirjastamine ebaõnnestus. Kontrolli, et kaardilugeja on ühendatud ning et nii ID-tarkvara kui ka Web eID brauserilaiendus on paigaldatud, ja proovi uuesti.",
   "id.card.signing.cancelled": "Allkirjastamine katkestati.",
   "id.card.signing.extension.unavailable": "Web eID laiendus ei ole saadaval. Palun paigalda Web eID laiendus ja proovi uuesti.",
   "id.card.signing.certificate.invalid": "ID-kaardi allkirjastamise sertifikaati ei õnnestunud lugeda. Palun proovi uuesti.",
@@ -2258,5 +2258,7 @@
   "units.roundingNote.screen": "Osakud on näidatud fondi tingimuste kohaselt täpsusega kolm kohta pärast koma. Summad on arvutatud täpsetest kogustest.",
   "units.roundingNote.printed": "Osakud on näidatud fondi tingimuste kohaselt täpsusega kolm kohta pärast koma. Saldod on arvutatud täpsetest kogustest.",
   "units.roundingNote.hover": "Täpse koguse näed, kui viid kursori numbrile.",
-  "signature.error.unknown": "Allkirjastamine ei jõudnud lõpuni. Palun proovi uuesti."
+  "signature.error.unknown": "Allkirjastamine ei jõudnud lõpuni. Palun proovi uuesti.",
+  "signature.already.signed": "See on juba allkirjastatud.",
+  "signature.not.signed": "See ei ole veel allkirjastatud."
 }
