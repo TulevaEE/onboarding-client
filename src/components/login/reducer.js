@@ -4,6 +4,7 @@ import {
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
+  SMART_ID_LOGIN_START_SUCCESS,
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
   MOBILE_AUTHENTICATION_CANCEL,
@@ -31,6 +32,7 @@ export const initialState = {
   phoneNumber: '',
   personalCode: '',
   controlCode: null,
+  smartIdWeb2AppLink: null,
   loadingAuthentication: false,
   error: null,
   user: null,
@@ -52,11 +54,17 @@ export default function loginReducer(state = initialState, action) {
     case CHANGE_EMAIL:
       return { ...state, email: action.email };
     case MOBILE_AUTHENTICATION_START:
-      return { ...state, loadingAuthentication: true, error: null };
+      return { ...state, loadingAuthentication: true, error: null, smartIdWeb2AppLink: null };
     case MOBILE_AUTHENTICATION_START_SUCCESS:
       return {
         ...state,
         controlCode: action.controlCode,
+        error: null,
+      };
+    case SMART_ID_LOGIN_START_SUCCESS:
+      return {
+        ...state,
+        smartIdWeb2AppLink: action.web2AppLink,
         error: null,
       };
     case MOBILE_AUTHENTICATION_START_ERROR:
@@ -66,6 +74,7 @@ export default function loginReducer(state = initialState, action) {
         error: getGlobalErrorCode(action.error.body),
         loadingAuthentication: false,
         loadingUser: false,
+        smartIdWeb2AppLink: null,
       };
 
     case MOBILE_AUTHENTICATION_SUCCESS:
@@ -74,6 +83,7 @@ export default function loginReducer(state = initialState, action) {
         ...state,
         loadingAuthentication: false,
         controlCode: null,
+        smartIdWeb2AppLink: null,
         error: null,
         phoneNumber: '',
         personalCode: '',
@@ -84,6 +94,7 @@ export default function loginReducer(state = initialState, action) {
         ...state,
         error: getGlobalErrorCode(action.error.body),
         controlCode: null,
+        smartIdWeb2AppLink: null,
         loadingAuthentication: false,
         loadingUser: false,
       };
@@ -94,6 +105,7 @@ export default function loginReducer(state = initialState, action) {
         loadingAuthentication: false,
         error: null,
         controlCode: null,
+        smartIdWeb2AppLink: null,
         loadingUser: false,
       };
 

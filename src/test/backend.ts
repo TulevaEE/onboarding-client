@@ -38,6 +38,8 @@ import {
   mockUser,
   mockValidatedCompany,
   secondPillarAssetsResponse,
+  smartIdQrDeviceLink,
+  smartIdWeb2AppLink,
   secondPillarPaymentRateChangeResponse,
 } from './backend-responses';
 import {
@@ -194,20 +196,88 @@ export function smartIdMandateBatchSigningBackend(
 
 export function smartIdAuthenticationBackend(
   server: SetupServerApi,
-  options: { challengeCode?: string; identityCode?: string } = {},
-): { resolvePolling: () => void } {
+  options: {
+    language?: string;
+    rejectCallback?: boolean;
+    rememberedAccount?: { firstName: string; lastName: string };
+    verificationCode?: string;
+  } = {},
+): {
+  resolvePolling: () => void;
+  startedSessions: number;
+  startedFlows: string[];
+  rememberedAccount: { firstName: string; lastName: string } | null;
+} {
   let pollingResolved = false;
+  let elapsedSeconds = 0;
+  const backend: {
+    resolvePolling: () => void;
+    startedSessions: number;
+    startedFlows: string[];
+    rememberedAccount: { firstName: string; lastName: string } | null;
+  } = {
+    resolvePolling: () => undefined,
+    startedSessions: 0,
+    startedFlows: [],
+    rememberedAccount: options.rememberedAccount ?? null,
+  };
 
   server.use(
-    rest.post('http://localhost/authenticate', (req, res, ctx) => {
-      const body = req.body as DefaultRequestMultipartBody;
-      if (
-        body.type !== 'SMART_ID' ||
-        (options.identityCode && body.personalCode !== options.identityCode)
-      ) {
-        return res(ctx.status(401), ctx.json({ error: 'wrong method or id code' }));
+    rest.get('http://localhost/v1/smart-id/login/remembered-account', (req, res, ctx) =>
+      backend.rememberedAccount
+        ? res(ctx.status(200), ctx.json(backend.rememberedAccount))
+        : res(ctx.status(204)),
+    ),
+
+    rest.delete('http://localhost/v1/smart-id/login/remembered-account', (req, res, ctx) => {
+      backend.rememberedAccount = null;
+      return res(ctx.status(204));
+    }),
+
+    rest.post('http://localhost/v1/smart-id/login', (req, res, ctx) => {
+      const { flow, language = 'et' } = req.body as { flow?: string; language?: string };
+      if (!flow) {
+        return res(ctx.status(400), ctx.json({ errors: [{ code: 'flow.required' }] }));
       }
-      return res(ctx.status(200), ctx.json(getMobileSignatureResponse(options.challengeCode)));
+      if (options.language && language !== options.language) {
+        return res(ctx.status(400), ctx.json({ errors: [{ code: 'smart.id.technical.error' }] }));
+      }
+      if (flow === 'NOTIFICATION' && !backend.rememberedAccount) {
+        return res(ctx.status(401), ctx.json({ errors: [{ code: 'auth.session.not.found' }] }));
+      }
+      backend.startedSessions += 1;
+      backend.startedFlows.push(flow);
+      if (flow === 'NOTIFICATION') {
+        return res(
+          ctx.status(200),
+          ctx.json({
+            flow: 'NOTIFICATION',
+            web2AppLink: null,
+            verificationCode: options.verificationCode ?? '1234',
+          }),
+        );
+      }
+      return res(
+        ctx.status(200),
+        ctx.json({
+          flow: 'DEVICE_LINK',
+          web2AppLink: smartIdWeb2AppLink(language),
+          verificationCode: null,
+        }),
+      );
+    }),
+
+    rest.get('http://localhost/v1/smart-id/login/qr-code', (req, res, ctx) => {
+      elapsedSeconds += 1;
+      return res(ctx.status(200), ctx.json({ deviceLink: smartIdQrDeviceLink(elapsedSeconds) }));
+    }),
+
+    rest.post('http://localhost/v1/smart-id/login/callback', (req, res, ctx) => {
+      const body = req.body as { value?: string };
+      if (options.rejectCallback || !body.value) {
+        return res(ctx.status(401), ctx.json({ errors: [{ code: 'smart.id.callback.invalid' }] }));
+      }
+      return res(ctx.status(204));
     }),
 
     rest.post('http://localhost/oauth/token', (req, res, ctx) => {
@@ -234,16 +304,20 @@ export function smartIdAuthenticationBackend(
       );
     }),
   );
-  return {
-    resolvePolling() {
-      pollingResolved = true;
-    },
+  backend.resolvePolling = () => {
+    pollingResolved = true;
   };
+  return backend;
 }
 
 export function mobileIdAuthenticationBackend(
   server: SetupServerApi,
-  options: { challengeCode?: string; identityCode?: string; phoneNumber?: string } = {},
+  options: {
+    challengeCode?: string;
+    identityCode?: string;
+    phoneNumber?: string;
+    failWith?: string;
+  } = {},
 ): { resolvePolling: () => void } {
   let pollingResolved = false;
 
@@ -272,6 +346,10 @@ export function mobileIdAuthenticationBackend(
           ctx.status(401),
           ctx.json({ error: 'wrong grant type, client id or basic auth' }),
         );
+      }
+
+      if (options.failWith) {
+        return res(ctx.status(400), ctx.json({ errors: [{ code: options.failWith }] }));
       }
 
       if (!pollingResolved) {

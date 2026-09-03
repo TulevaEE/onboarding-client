@@ -1,3 +1,4 @@
+import config from 'react-global-configuration';
 import * as apiFunctions from './http';
 
 const mockData = 'mockData';
@@ -14,6 +15,30 @@ jest.mock('./tokenManagement', () => ({
     }),
   }),
 }));
+
+describe('post', () => {
+  const originalFetch = global.fetch;
+
+  beforeEach(() => {
+    config.set({ language: 'en' }, { freeze: false, assign: false });
+  });
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+  });
+
+  it('resolves without a body when the server answers 204 No Content', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 204,
+      json: () => Promise.reject(new SyntaxError('Unexpected end of JSON input')),
+    });
+
+    await expect(
+      apiFunctions.post('http://example.com/thing', { key: 'value' }),
+    ).resolves.toBeUndefined();
+  });
+});
 
 describe('Authenticated requests', () => {
   it('postWithAuthentication', async () => {

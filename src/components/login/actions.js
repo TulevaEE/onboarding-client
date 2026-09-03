@@ -10,6 +10,7 @@ import {
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
+  SMART_ID_LOGIN_START_SUCCESS,
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
   MOBILE_AUTHENTICATION_CANCEL,
@@ -26,6 +27,7 @@ import {
   GET_USER_CONVERSION_ERROR,
   SET_LOGIN_TO_REDIRECT,
   LOG_OUT,
+  smartIdCallbackPath,
 } from './constants';
 
 import { api } from '../common';
@@ -33,6 +35,11 @@ import { api } from '../common';
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 
 import { getAuthentication } from '../common/authenticationManager';
+import { isMobileDevice } from '../common/isMobileDevice';
+import {
+  forgetMobileIdPhoneNumber,
+  rememberMobileIdPhoneNumber,
+} from './mobileId/rememberedPhoneNumbers';
 
 const POLL_DELAY = 1000;
 let timeout;
@@ -77,14 +84,14 @@ function handleLogin() {
   };
 }
 
-function getMobileIdTokens() {
+function getMobileIdTokens(onSuccess = () => undefined) {
   return (dispatch, getState) => {
     timeout = setTimeout(() => {
       api
         .getMobileIdTokens()
         .then((tokens) => {
           if (isTokenPresent(tokens)) {
-            // authentication complete
+            onSuccess();
             dispatch({
               type: MOBILE_AUTHENTICATION_SUCCESS,
               tokens,
@@ -92,8 +99,7 @@ function getMobileIdTokens() {
             });
             dispatch(handleLogin());
           } else if (getState().login.loadingAuthentication) {
-            // authentication not yet completed
-            dispatch(getMobileIdTokens()); // poll again
+            dispatch(getMobileIdTokens(onSuccess));
           }
         })
         .catch((error) => dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error }));
@@ -101,22 +107,34 @@ function getMobileIdTokens() {
   };
 }
 
-export function authenticateWithMobileId(phoneNumber, personalCode) {
+export function authenticateWithMobileId(phoneNumber, personalCode, rememberPhoneNumber = false) {
   return (dispatch) => {
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
       .authenticateWithMobileId(phoneNumber, personalCode)
       .then((controlCode) => {
         dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
-        dispatch(getMobileIdTokens());
+        dispatch(
+          getMobileIdTokens(() => {
+            if (rememberPhoneNumber) {
+              rememberMobileIdPhoneNumber(personalCode, phoneNumber);
+            } else {
+              forgetMobileIdPhoneNumber(personalCode);
+            }
+          }),
+        );
       })
       .catch((error) => dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error }));
   };
 }
 
-const logPoll = (stage, value = '') =>
+const logPoll = (stage, value = '') => {
+  if (process.env.NODE_ENV === 'production') {
+    return; // the poll trace carries tokens and login state, so it never ships
+  }
   // eslint-disable-next-line no-console
   console.log(`[poll] ${stage}`, value, Date.now());
+};
 
 // The pending login survives the page reload Android/iOS force on tab discard while
 // the user confirms in the Smart-ID app; the completed result waits in the backend
@@ -132,14 +150,14 @@ const TRANSIENT_POLL_ERRORS = [
   'NetworkError when attempting to fetch resource.', // Firefox
 ];
 
-function savePendingSmartIdAuthentication(authenticationHash, controlCode) {
+function savePendingSmartIdAuthentication({ web2AppLink, controlCode, returnPath }) {
   if (!window.sessionStorage) {
     return;
   }
   try {
     sessionStorage.setItem(
       PENDING_SMART_ID_KEY,
-      JSON.stringify({ authenticationHash, controlCode, startedAt: Date.now() }),
+      JSON.stringify({ web2AppLink, controlCode, returnPath, startedAt: Date.now() }),
     );
   } catch (error) {
     logPoll('pending-login-persistence-failed', error); // reload recovery degrades, login proceeds
@@ -158,10 +176,15 @@ function loadPendingSmartIdAuthentication() {
   }
   try {
     const pending = JSON.parse(sessionStorage.getItem(PENDING_SMART_ID_KEY));
-    return pending && pending.authenticationHash ? pending : null;
+    return pending && pending.startedAt ? pending : null;
   } catch (error) {
     return null;
   }
+}
+
+export function getPendingSmartIdReturnPath() {
+  const pending = loadPendingSmartIdAuthentication();
+  return pending?.returnPath ?? null;
 }
 
 export function resumePendingSmartIdAuthentication() {
@@ -184,13 +207,18 @@ export function resumePendingSmartIdAuthentication() {
     if (window.location.pathname.startsWith('/trigger-procedure')) {
       return; // partner handover brings its own token
     }
+    if (window.location.pathname.startsWith(smartIdCallbackPath)) {
+      return; // the callback page completes the login itself
+    }
     logPoll('resume-pending-login');
     dispatch({ type: MOBILE_AUTHENTICATION_START });
-    dispatch({
-      type: MOBILE_AUTHENTICATION_START_SUCCESS,
-      controlCode: pending.controlCode,
-    });
-    dispatch(getSmartIdTokens(pending.authenticationHash));
+    if (pending.web2AppLink) {
+      dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink: pending.web2AppLink });
+    }
+    if (pending.controlCode) {
+      dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode: pending.controlCode });
+    }
+    dispatch(getSmartIdTokens());
   };
 }
 
@@ -210,7 +238,7 @@ function stopSmartIdPolling() {
   smartIdAttempt = null;
 }
 
-export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => {
+export const getSmartIdTokens = () => (dispatch, getState) => {
   stopSmartIdPolling();
 
   const attempt = {};
@@ -228,13 +256,11 @@ export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => 
     logPoll('request-start');
 
     try {
-      const tokens = await api.getSmartIdTokens(authenticationHash, {
-        signal: controller.signal,
-      });
+      const tokens = await api.getSmartIdTokens({ signal: controller.signal });
       if (attempt !== smartIdAttempt || controller !== attempt.controller) {
         return undefined; // superseded — ignore late replies
       }
-      logPoll('fetch-resolved', tokens);
+      logPoll('fetch-resolved', Boolean(tokens?.accessToken));
 
       if (tokens?.accessToken && tokens?.refreshToken) {
         logPoll('token-present → SUCCESS');
@@ -293,26 +319,54 @@ export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => 
   attempt.timeout = setTimeout(poll, POLL_DELAY);
 };
 
-export function authenticateWithIdCode(personalCode) {
+export function startSmartIdLogin(language, flow = 'DEVICE_LINK') {
+  return (dispatch, getState) => {
+    smartIdStartSequence += 1;
+    const startSequence = smartIdStartSequence;
+    dispatch({ type: MOBILE_AUTHENTICATION_START });
+    return api
+      .startSmartIdLogin(language, flow)
+      .then((start) => {
+        if (startSequence !== smartIdStartSequence) {
+          return; // canceled or superseded while the session start was pending
+        }
+        const returnPath = getState().router?.location?.state?.from;
+        if (start.flow === 'NOTIFICATION') {
+          const controlCode = start.verificationCode;
+          savePendingSmartIdAuthentication({ controlCode, returnPath });
+          dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
+          dispatch(getSmartIdTokens());
+          return;
+        }
+        const { web2AppLink } = start;
+        savePendingSmartIdAuthentication({ web2AppLink, returnPath });
+        dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink });
+        dispatch(getSmartIdTokens());
+        if (isMobileDevice()) {
+          window.location.assign(web2AppLink);
+        }
+      })
+      .catch((error) => {
+        if (startSequence !== smartIdStartSequence) {
+          return;
+        }
+        dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error });
+      });
+  };
+}
+
+export function completeSmartIdLogin(callback) {
   return (dispatch) => {
     smartIdStartSequence += 1;
     const startSequence = smartIdStartSequence;
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
-      .authenticateWithIdCode(personalCode)
-      .then((authentication) => {
+      .completeSmartIdCallback(callback)
+      .then(() => {
         if (startSequence !== smartIdStartSequence) {
-          return; // canceled or superseded while /authenticate was pending
+          return;
         }
-        savePendingSmartIdAuthentication(
-          authentication.authenticationHash,
-          authentication.challengeCode,
-        );
-        dispatch({
-          type: MOBILE_AUTHENTICATION_START_SUCCESS,
-          controlCode: authentication.challengeCode,
-        });
-        dispatch(getSmartIdTokens(authentication.authenticationHash));
+        dispatch(getSmartIdTokens());
       })
       .catch((error) => {
         if (startSequence !== smartIdStartSequence) {
@@ -455,9 +509,9 @@ export function useRedirectLoginWithIdCard() {
   };
 }
 
-export function useRedirectLoginWithIdCode(personalCode) {
+export function useRedirectLoginWithSmartId(language) {
   return (dispatch) => {
     dispatch(setLoginToRedirect());
-    dispatch(authenticateWithIdCode(personalCode));
+    dispatch(startSmartIdLogin(language));
   };
 }

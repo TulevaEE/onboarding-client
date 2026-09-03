@@ -40,6 +40,25 @@ describe('Error alert', () => {
     );
   });
 
+  it('explains a Smart-ID login the user cancelled in the app', () => {
+    component.setProps({ description: 'smart.id.user.refused' });
+    expect(component.contains(<FormattedMessage id="login.error.smart.id.user.refused" />)).toBe(
+      true,
+    );
+  });
+
+  it('explains a Mobile-ID login that timed out', () => {
+    component.setProps({ description: 'mobile.id.timeout' });
+    expect(component.contains(<FormattedMessage id="login.error.mobile.id.timeout" />)).toBe(true);
+  });
+
+  it('explains an ID-card type that may not log in', () => {
+    component.setProps({ description: 'id.card.document.type.not.allowed' });
+    expect(
+      component.contains(<FormattedMessage id="login.error.id.card.document.type.not.allowed" />),
+    ).toBe(true);
+  });
+
   it('shows id card login start failed error message', () => {
     component.setProps({ description: 'ID_CARD_LOGIN_START_FAILED' });
     expect(component.contains(<FormattedMessage id="login.id.card.start.failed" />)).toBe(true);

@@ -5,6 +5,7 @@ import {
   MOBILE_AUTHENTICATION_START,
   MOBILE_AUTHENTICATION_START_SUCCESS,
   MOBILE_AUTHENTICATION_START_ERROR,
+  SMART_ID_LOGIN_START_SUCCESS,
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
   MOBILE_AUTHENTICATION_CANCEL,
@@ -60,6 +61,28 @@ describe('Login reducer', () => {
     const newState = loginReducer(undefined, action);
     expect(newState.loadingAuthentication).toBe(false);
     expect(newState.controlCode).toBe(controlCode);
+  });
+
+  it('saves the device link when a smart id session starts', () => {
+    const web2AppLink = 'https://smart-id.com/device-link/?deviceLinkType=Web2App';
+    const action = { type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink };
+
+    const newState = loginReducer({ error: 'an earlier error' }, action);
+
+    expect(newState.smartIdWeb2AppLink).toBe(web2AppLink);
+    expect(newState.error).toBe(null);
+  });
+
+  it.each([
+    [MOBILE_AUTHENTICATION_START, {}],
+    [MOBILE_AUTHENTICATION_CANCEL, {}],
+    [MOBILE_AUTHENTICATION_SUCCESS, { method: 'SMART_ID' }],
+    [MOBILE_AUTHENTICATION_ERROR, { error: { body: { errors: [{ code: 'oh no!' }] } } }],
+    [MOBILE_AUTHENTICATION_START_ERROR, { error: { body: { errors: [{ code: 'oh no!' }] } } }],
+  ])('drops the device link on %s', (type, payload) => {
+    const previousState = { ...initialState, smartIdWeb2AppLink: 'https://smart-id.com/old' };
+
+    expect(loginReducer(previousState, { type, ...payload }).smartIdWeb2AppLink).toBe(null);
   });
 
   it('stops loading and saves the error when starting mobile authentication fails', () => {

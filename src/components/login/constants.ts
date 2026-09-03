@@ -10,6 +10,8 @@ export const MOBILE_AUTHENTICATION_START_SUCCESS = withPrefix(
 );
 export const MOBILE_AUTHENTICATION_START_ERROR = withPrefix('MOBILE_AUTHENTICATION_START_ERROR');
 
+export const SMART_ID_LOGIN_START_SUCCESS = withPrefix('SMART_ID_LOGIN_START_SUCCESS');
+
 export const MOBILE_AUTHENTICATION_SUCCESS = withPrefix('MOBILE_AUTHENTICATION_SUCCESS');
 export const MOBILE_AUTHENTICATION_ERROR = withPrefix('MOBILE_AUTHENTICATION_ERROR');
 export const MOBILE_AUTHENTICATION_CANCEL = withPrefix('MOBILE_AUTHENTICATION_CANCEL');
@@ -38,3 +40,4 @@ export const SET_LOGIN_TO_REDIRECT = withPrefix('SET_LOGIN_TO_REDIRECT');
 export const CHANGE_EMAIL = withPrefix('CHANGE_EMAIL');
 
 export const loginPath = '/login';
+export const smartIdCallbackPath = '/login/smart-id/callback';

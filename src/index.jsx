@@ -31,6 +31,8 @@ import './polyfills';
 import LoggedInApp from './components/LoggedInApp';
 import { ScrollToTopOnNavigation } from './components/common/ScrollToTopOnNavigation';
 import { loginPath } from './components/login/LoginPage';
+import { smartIdCallbackPath } from './components/login/constants';
+import { SmartIdCallbackPage } from './components/login/smartId/SmartIdCallbackPage';
 
 import { createTrackedEvent } from './components/common/api';
 import { shouldWriteTestMode, writeTestMode } from './components/common/test-mode';
@@ -127,6 +129,7 @@ export class App extends Component {
             <ConnectedRouter history={history}>
               <ScrollToTopOnNavigation />
               <Switch>
+                <Route exact path={smartIdCallbackPath} component={SmartIdCallbackPage} />
                 <Route path={loginPath} component={LoginPage} />
                 <Route path="/trigger-procedure" component={TriggerProcedure} />
                 <PrivateRoute exact path="" component={LoggedInApp} />
