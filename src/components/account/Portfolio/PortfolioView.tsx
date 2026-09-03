@@ -277,8 +277,12 @@ export const PortfolioView: React.FunctionComponent<{
         </p>
       </div>
 
+      {/* The period comes off the same response as the summary: while a fresh request is
+          still loading (or failed) and the previous portfolio stays on screen, the
+          statement's dates, balances and rows all describe that same previous period —
+          never new dates over old values. */}
       {savingsFundSummary && (
-        <StatementSection summary={savingsFundSummary} from={from ?? portfolio.from} to={to} />
+        <StatementSection summary={savingsFundSummary} from={portfolio.from} to={portfolio.to} />
       )}
     </>
   );

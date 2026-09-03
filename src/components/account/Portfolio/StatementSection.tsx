@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import download from 'downloadjs';
 import moment from 'moment';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -14,7 +15,9 @@ import styles from './Statement.module.scss';
 const signedUnits = (transaction: Transaction): number =>
   transaction.type === 'SUBTRACTION' ? -transaction.units : transaction.units;
 
-const onDate = (transaction: Transaction): string => transaction.time.slice(0, 10);
+// The statement filters and displays by the same local calendar day, so a transaction
+// booked near midnight UTC cannot be listed under a date outside the period.
+const onDate = (transaction: Transaction): string => moment(transaction.time).format('YYYY-MM-DD');
 
 // No computed cost basis or realised gain anywhere here: choosing FIFO or weighted
 // average is the account owner's accounting policy, not ours to make for them.
@@ -161,111 +164,116 @@ export const StatementSection: React.FunctionComponent<{
         )}
       </section>
 
-      <div className={styles.printOnly}>
-        <h1 className="h3 mb-4">
-          <FormattedMessage id="savingsFund.statement.document.title" />
-        </h1>
-        <table className="table table-sm mb-4">
-          <tbody>
-            <tr>
-              <th scope="row">
-                <FormattedMessage id="savingsFund.statement.document.owner" />
-              </th>
-              <td>{owner.name}</td>
-            </tr>
-            <tr>
-              <th scope="row">
-                <FormattedMessage id={owner.codeLabel} />
-              </th>
-              <td>{owner.code}</td>
-            </tr>
-            {savingsFund && (
+      {/* Rendered beside the app root, not inside it, so print CSS can drop the whole
+          app from the print flow and the statement paginates alone. */}
+      {createPortal(
+        <div className={styles.printOnly}>
+          <h1 className="h3 mb-4">
+            <FormattedMessage id="savingsFund.statement.document.title" />
+          </h1>
+          <table className="table table-sm mb-4">
+            <tbody>
               <tr>
                 <th scope="row">
-                  <FormattedMessage id="savingsFund.statement.document.fund" />
+                  <FormattedMessage id="savingsFund.statement.document.owner" />
+                </th>
+                <td>{owner.name}</td>
+              </tr>
+              <tr>
+                <th scope="row">
+                  <FormattedMessage id={owner.codeLabel} />
+                </th>
+                <td>{owner.code}</td>
+              </tr>
+              {savingsFund && (
+                <tr>
+                  <th scope="row">
+                    <FormattedMessage id="savingsFund.statement.document.fund" />
+                  </th>
+                  <td>
+                    {savingsFund.name} ({savingsFund.isin})
+                  </td>
+                </tr>
+              )}
+              <tr>
+                <th scope="row">
+                  <FormattedMessage id="savingsFund.statement.document.period" />
                 </th>
                 <td>
-                  {savingsFund.name} ({savingsFund.isin})
+                  {moment(from).format('DD.MM.YYYY')}–{moment(to).format('DD.MM.YYYY')}
                 </td>
               </tr>
-            )}
-            <tr>
-              <th scope="row">
-                <FormattedMessage id="savingsFund.statement.document.period" />
-              </th>
-              <td>
-                {moment(from).format('DD.MM.YYYY')}–{moment(to).format('DD.MM.YYYY')}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            </tbody>
+          </table>
 
-        <table className="table table-sm">
-          <thead>
-            <tr>
-              <th scope="col">
-                <FormattedMessage id="savingsFund.statement.transactions.date" />
-              </th>
-              <th scope="col">
-                <FormattedMessage id="savingsFund.statement.transactions.type" />
-              </th>
-              <th scope="col" className="text-end">
-                <FormattedMessage id="savingsFund.statement.transactions.units" />
-              </th>
-              <th scope="col" className="text-end">
-                <FormattedMessage id="savingsFund.statement.transactions.nav" />
-              </th>
-              <th scope="col" className="text-end">
-                <FormattedMessage id="savingsFund.statement.transactions.amount" />
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colSpan={2}>
-                <FormattedMessage
-                  id="savingsFund.statement.document.opening"
-                  values={{ date: moment(from).format('DD.MM.YYYY') }}
-                />
-              </td>
-              <td className="text-end">{formatAmountForCount(openingUnits, 4)}</td>
-              <td colSpan={2} className="text-end">
-                {summary.startValue !== null && <Euro amount={summary.startValue} />}
-              </td>
-            </tr>
-            {periodTransactions.map((transaction) => (
-              <tr key={transaction.id ?? transaction.time}>
-                <td>{moment(transaction.time).format('DD.MM.YYYY')}</td>
-                <td>{typeLabel(transaction)}</td>
-                <td className="text-end">{formatAmountForCount(signedUnits(transaction), 4)}</td>
-                <td className="text-end">{formatAmountForCount(transaction.nav, 5)}</td>
-                <td className="text-end">
-                  <Euro amount={transaction.amount} />
+          <table className="table table-sm">
+            <thead>
+              <tr>
+                <th scope="col">
+                  <FormattedMessage id="savingsFund.statement.transactions.date" />
+                </th>
+                <th scope="col">
+                  <FormattedMessage id="savingsFund.statement.transactions.type" />
+                </th>
+                <th scope="col" className="text-end">
+                  <FormattedMessage id="savingsFund.statement.transactions.units" />
+                </th>
+                <th scope="col" className="text-end">
+                  <FormattedMessage id="savingsFund.statement.transactions.nav" />
+                </th>
+                <th scope="col" className="text-end">
+                  <FormattedMessage id="savingsFund.statement.transactions.amount" />
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colSpan={2}>
+                  <FormattedMessage
+                    id="savingsFund.statement.document.opening"
+                    values={{ date: moment(from).format('DD.MM.YYYY') }}
+                  />
+                </td>
+                <td className="text-end">{formatAmountForCount(openingUnits, 4)}</td>
+                <td colSpan={2} className="text-end">
+                  {summary.startValue !== null && <Euro amount={summary.startValue} />}
                 </td>
               </tr>
-            ))}
-            <tr className="fw-bold">
-              <td colSpan={2}>
-                <FormattedMessage
-                  id="savingsFund.statement.document.closing"
-                  values={{ date: moment(to).format('DD.MM.YYYY') }}
-                />
-              </td>
-              <td className="text-end">{formatAmountForCount(closingUnits, 4)}</td>
-              <td colSpan={2} className="text-end">
-                {summary.endValue !== null && <Euro amount={summary.endValue} />}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              {periodTransactions.map((transaction) => (
+                <tr key={transaction.id ?? transaction.time}>
+                  <td>{moment(transaction.time).format('DD.MM.YYYY')}</td>
+                  <td>{typeLabel(transaction)}</td>
+                  <td className="text-end">{formatAmountForCount(signedUnits(transaction), 4)}</td>
+                  <td className="text-end">{formatAmountForCount(transaction.nav, 5)}</td>
+                  <td className="text-end">
+                    <Euro amount={transaction.amount} />
+                  </td>
+                </tr>
+              ))}
+              <tr className="fw-bold">
+                <td colSpan={2}>
+                  <FormattedMessage
+                    id="savingsFund.statement.document.closing"
+                    values={{ date: moment(to).format('DD.MM.YYYY') }}
+                  />
+                </td>
+                <td className="text-end">{formatAmountForCount(closingUnits, 4)}</td>
+                <td colSpan={2} className="text-end">
+                  {summary.endValue !== null && <Euro amount={summary.endValue} />}
+                </td>
+              </tr>
+            </tbody>
+          </table>
 
-        <p className="text-body-secondary small">
-          <FormattedMessage
-            id="savingsFund.statement.document.generated"
-            values={{ date: moment().format('DD.MM.YYYY') }}
-          />
-        </p>
-      </div>
+          <p className="text-body-secondary small">
+            <FormattedMessage
+              id="savingsFund.statement.document.generated"
+              values={{ date: moment().format('DD.MM.YYYY') }}
+            />
+          </p>
+        </div>,
+        document.body,
+      )}
     </>
   );
 };

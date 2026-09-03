@@ -376,9 +376,12 @@ describe('the savings fund statement', () => {
 
     userEvent.click(screen.getByRole('button', { name: 'Last year' }));
 
-    expect(await screen.findAllByText('10.03.2025')).not.toHaveLength(0);
+    // The statement describes the response on screen, so the new period's rows appear
+    // only once the new portfolio has rendered — never new dates over old values.
+    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
+    expect(screen.getAllByText('10.03.2025')).not.toHaveLength(0);
     expect(screen.getAllByText('01.08.2025')).not.toHaveLength(0);
-    expect(screen.queryByText('01.02.2026')).not.toBeInTheDocument();
+    expect(screen.queryAllByText('01.02.2026')).toHaveLength(0);
   });
 
   it('carries the opening and closing units into the printable statement', async () => {
@@ -403,7 +406,7 @@ describe('the savings fund statement', () => {
     expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
 
     userEvent.click(screen.getByRole('button', { name: 'Last year' }));
-    expect(await screen.findAllByText('10.03.2025')).not.toHaveLength(0);
+    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
 
     userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
 
