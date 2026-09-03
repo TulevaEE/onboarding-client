@@ -10,10 +10,8 @@ import { pollForSignatureStatus, startSigningWithChallengeCode } from './signWit
 const POLL_DELAY = 1000;
 const SIGNATURE_DONE_STATUS = 'SIGNATURE';
 
-const UNKNOWN_SIGNATURE_ERROR = errorResponseWithCode('signature.error.unknown');
-
 const toErrorResponse = (error: unknown): ErrorResponse =>
-  isErrorResponse(error) ? error : UNKNOWN_SIGNATURE_ERROR;
+  isErrorResponse(error) ? error : errorResponseWithCode('signature.error.unknown');
 
 export const useSigning = <TSignableEntity extends { id: number | string }>(
   entityType: SignableEntity,
