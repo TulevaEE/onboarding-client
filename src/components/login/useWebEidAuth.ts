@@ -8,6 +8,7 @@ import {
   webEidOptions,
   withWebEidDiagnosis,
 } from '../common/webEid';
+import { getGlobalErrorCode } from '../common/errorMessage/ErrorMessage';
 import { loginLanding } from './loginLanding';
 import {
   ID_CARD_LOGIN_START_FAILED_ERROR,
@@ -26,7 +27,12 @@ const LOGIN_ERRORS: Record<WebEidFailure, string> = {
 
 function mapWebEidError(error: unknown): string {
   const webEidFailure = webEidFailureOf(error);
-  return webEidFailure ? LOGIN_ERRORS[webEidFailure] : ID_CARD_LOGIN_START_FAILED_ERROR;
+  if (webEidFailure) {
+    return LOGIN_ERRORS[webEidFailure];
+  }
+  return (
+    getGlobalErrorCode((error as { body?: unknown })?.body) ?? ID_CARD_LOGIN_START_FAILED_ERROR
+  );
 }
 
 export function useWebEidAuth() {
