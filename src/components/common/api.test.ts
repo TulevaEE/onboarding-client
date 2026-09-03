@@ -586,7 +586,7 @@ describe('API calls', () => {
 
       expect(challengeCode).toEqual(mockResponse.challengeCode);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
-        expect.stringContaining(`/v1/mandates/${mandateId}/signature/mobileId`),
+        expect.stringContaining(`/v1/mandates/${mandateId}/signature/mobile-id`),
         undefined,
       );
     });
@@ -622,7 +622,7 @@ describe('API calls', () => {
 
       expect(statusResponse).toEqual(mockStatusResponse);
       expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        expect.stringContaining(`/v1/mandates/${mandateId}/signature/mobileId/status`),
+        expect.stringContaining(`/v1/mandates/${mandateId}/signature/mobile-id/status`),
         undefined,
       );
     });
@@ -655,7 +655,7 @@ describe('API calls', () => {
 
       expect(challengeCode).toEqual(mockResponse.challengeCode);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
-        expect.stringContaining(`/v1/mandates/${mandateId}/signature/smartId`),
+        expect.stringContaining(`/v1/mandates/${mandateId}/signature/smart-id`),
         undefined,
       );
     });
@@ -688,7 +688,7 @@ describe('API calls', () => {
 
       expect(statusResponse).toEqual(mockStatusResponse);
       expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        expect.stringContaining(`/v1/mandates/${mandateId}/signature/smartId/status`),
+        expect.stringContaining(`/v1/mandates/${mandateId}/signature/smart-id/status`),
         undefined,
       );
     });
@@ -725,7 +725,7 @@ describe('API calls', () => {
 
       expect(hash).toEqual(mockResponse.hash);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
-        expect.stringContaining(`/v1/mandates/${mandateId}/signature/idCard`),
+        expect.stringContaining(`/v1/mandates/${mandateId}/signature/id-card`),
         { clientCertificate: certificateHex },
       );
     });
@@ -760,7 +760,7 @@ describe('API calls', () => {
 
       expect(statusCode).toEqual(mockResponse.statusCode);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
-        expect.stringContaining(`/v1/mandates/${mandateId}/signature/idCard/status`),
+        expect.stringContaining(`/v1/mandates/${mandateId}/signature/id-card/status`),
         { signedHash },
       );
     });
