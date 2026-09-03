@@ -2,22 +2,53 @@ import { Route } from 'react-router-dom';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { createMemoryHistory, History } from 'history';
-import { screen, waitFor } from '@testing-library/react';
+import { QueryClient } from '@tanstack/react-query';
+import { act, screen, waitFor } from '@testing-library/react';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import LoggedInApp from '../../../LoggedInApp';
 import { initializeConfiguration } from '../../../config/config';
 import { userBackend, useTestBackends } from '../../../../test/backend';
 
+type TrackedEvent = { type: string; data?: { path: string; savingsFundNudge?: string } };
+
 describe('SavingsFundPaymentSuccess', () => {
   const server = setupServer();
   let history: History;
+  let queryClient: QueryClient;
 
   const initApp = () => {
     history = createMemoryHistory();
     const store = createDefaultStore(history as any);
     login(store);
-    renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
+    queryClient = new QueryClient();
+    renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store, queryClient);
   };
+
+  const trackEvents = (): TrackedEvent[] => {
+    const trackedEvents: TrackedEvent[] = [];
+    server.use(
+      rest.post('http://localhost/v1/t', (req, res, ctx) => {
+        trackedEvents.push(req.body as TrackedEvent);
+        return res(ctx.json({}));
+      }),
+    );
+    return trackedEvents;
+  };
+
+  const recurringNudgeViews = (trackedEvents: TrackedEvent[]) =>
+    trackedEvents.filter(
+      ({ type, data }) => type === 'PAGE_VIEW' && data?.savingsFundNudge === 'RECURRING_PAYMENT',
+    );
+
+  const userUpdateCount = () => queryClient.getQueryState(['user'])?.dataUpdateCount ?? 0;
+
+  const settlePendingRequests = () =>
+    act(
+      () =>
+        new Promise<void>((resolve) => {
+          setTimeout(resolve, 0);
+        }),
+    );
 
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
   afterEach(() => server.resetHandlers());
@@ -59,13 +90,7 @@ describe('SavingsFundPaymentSuccess', () => {
   });
 
   it('tracks the nudge view', async () => {
-    let trackedEvent: unknown;
-    server.use(
-      rest.post('http://localhost/v1/t', (req, res, ctx) => {
-        trackedEvent = req.body;
-        return res(ctx.json({}));
-      }),
-    );
+    const trackedEvents = trackEvents();
     initApp();
     history.push('/savings-fund/payment/success');
 
@@ -73,7 +98,7 @@ describe('SavingsFundPaymentSuccess', () => {
       await screen.findByRole('heading', { name: 'Make saving automatic' }),
     ).toBeInTheDocument();
     await waitFor(() =>
-      expect(trackedEvent).toEqual({
+      expect(trackedEvents).toContainEqual({
         type: 'PAGE_VIEW',
         data: {
           path: '/savings-fund/payment/success',
@@ -81,6 +106,25 @@ describe('SavingsFundPaymentSuccess', () => {
         },
       }),
     );
+  });
+
+  it('tracks the nudge view once when the user data is refetched', async () => {
+    const trackedEvents = trackEvents();
+    initApp();
+    history.push('/savings-fund/payment/success');
+
+    expect(
+      await screen.findByRole('heading', { name: 'Make saving automatic' }),
+    ).toBeInTheDocument();
+    await waitFor(() => expect(recurringNudgeViews(trackedEvents)).toHaveLength(1));
+
+    const userUpdatesBeforeRefetch = userUpdateCount();
+    userBackend(server, { email: 'changed@example.com' });
+    await act(() => queryClient.invalidateQueries({ queryKey: ['user'] }));
+    await waitFor(() => expect(userUpdateCount()).toBeGreaterThan(userUpdatesBeforeRefetch));
+    await settlePendingRequests();
+
+    expect(recurringNudgeViews(trackedEvents)).toHaveLength(1);
   });
 
   it('words the nudge for the child when paying under a child role', async () => {

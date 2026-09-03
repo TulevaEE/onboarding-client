@@ -16,17 +16,18 @@ const DESCRIPTION_IDS: Record<AccountHolder, TranslationKey> = {
 export const SavingsFundRecurringNudge: FC = () => {
   const { data: user } = useMe();
   const { pathname } = useLocation();
+  const accountHolder = user ? accountHolderFor(user) : undefined;
 
   useEffect(() => {
-    if (user) {
+    if (accountHolder) {
       createTrackedEvent('PAGE_VIEW', {
         path: pathname,
         savingsFundNudge: 'RECURRING_PAYMENT',
       }).catch(() => {});
     }
-  }, [user, pathname]);
+  }, [accountHolder, pathname]);
 
-  if (!user) {
+  if (!accountHolder) {
     return null;
   }
 
@@ -36,7 +37,7 @@ export const SavingsFundRecurringNudge: FC = () => {
         <FormattedMessage id="savingsFund.payment.success.recurringNudge.header" />
       </h2>
       <p className="mt-5">
-        <FormattedMessage id={DESCRIPTION_IDS[accountHolderFor(user)]} />
+        <FormattedMessage id={DESCRIPTION_IDS[accountHolder]} />
       </p>
       <a className="btn btn-primary mt-4" href="/savings-fund/payment?type=RECURRING">
         <FormattedMessage id="savingsFund.payment.success.recurringNudge.button" />
