@@ -6,6 +6,7 @@ import { PillButton } from '../../common/PillButton';
 import { TranslationKey } from '../../translations';
 import { Portfolio, PortfolioGroup, PortfolioGroupSummary } from '../../common/apiModels';
 import { PeriodSelector } from './PeriodSelector';
+import { StatementSection } from './StatementSection';
 import { buildChartSeries } from './chartSeries';
 import { ChartPoint, ValueChart } from './ValueChart';
 
@@ -79,6 +80,8 @@ export const PortfolioView: React.FunctionComponent<{
   const groups = portfolio.groups.map((summary) =>
     withCurrentValue(summary, currentValues?.[summary.group]),
   );
+
+  const savingsFundSummary = groups.find((summary) => summary.group === 'SAVINGS_FUND');
 
   const available = GROUPS.filter(({ id }) => groups.some((summary) => summary.group === id));
 
@@ -273,6 +276,14 @@ export const PortfolioView: React.FunctionComponent<{
           <FormattedMessage id="savingsFund.statement.money.explainer" />
         </p>
       </div>
+
+      {/* The period comes off the same response as the summary: while a fresh request is
+          still loading (or failed) and the previous portfolio stays on screen, the
+          statement's dates, balances and rows all describe that same previous period —
+          never new dates over old values. */}
+      {savingsFundSummary && (
+        <StatementSection summary={savingsFundSummary} from={portfolio.from} to={portfolio.to} />
+      )}
     </>
   );
 };

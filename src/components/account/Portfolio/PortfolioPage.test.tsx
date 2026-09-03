@@ -6,11 +6,14 @@ import { QueryClient } from '@tanstack/react-query';
 import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
+import download from 'downloadjs';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import { userBackend } from '../../../test/backend';
 import { initializeConfiguration } from '../../config/config';
-import { Portfolio, RoleType } from '../../common/apiModels';
+import { Portfolio, RoleType, Transaction } from '../../common/apiModels';
 import { PortfolioPage } from './PortfolioPage';
+
+jest.mock('downloadjs');
 
 const allTime: Portfolio = {
   from: '2020-01-01',
@@ -140,6 +143,49 @@ const registerRefusingTheSavingsBalance = (funds: unknown[]) =>
     ),
   );
 
+const savingsFund = {
+  isin: 'EE0000000001',
+  name: 'Tuleva Täiendav Kogumisfond',
+  fundManager: { name: 'Tuleva' },
+  managementFeeRate: 0.0025,
+  pillar: null,
+  ongoingChargesFigure: 0.0025,
+};
+
+const pillarFund = {
+  isin: 'EE3600109435',
+  name: 'Tuleva World Stocks Pension Fund',
+  fundManager: { name: 'Tuleva' },
+  managementFeeRate: 0.0034,
+  pillar: 2,
+  ongoingChargesFigure: 0.0039,
+};
+
+const savingsTransaction = (
+  time: string,
+  units: number,
+  nav: number,
+  amount: number,
+  type: Transaction['type'] = 'CONTRIBUTION_CASH',
+): Transaction => ({
+  id: time,
+  amount,
+  currency: 'EUR',
+  time,
+  isin: savingsFund.isin,
+  type,
+  units,
+  nav,
+});
+
+const accountHolding = (transactions: Transaction[]) =>
+  server.use(
+    rest.get('http://localhost/v1/funds', (req, res, ctx) =>
+      res(ctx.json([savingsFund, pillarFund])),
+    ),
+    rest.get('http://localhost/v1/transactions', (req, res, ctx) => res(ctx.json(transactions))),
+  );
+
 const actingFor = (roleType: RoleType) =>
   userBackend(server, { role: { type: roleType, code: '90000000', name: 'Acme' } });
 
@@ -171,10 +217,12 @@ afterAll(() => server.close());
 
 beforeEach(() => {
   initializeConfiguration();
+  jest.clearAllMocks();
   requestedPeriods.length = 0;
   statementRequests.length = 0;
   portfolioBackend();
   registerHolding([], null);
+  accountHolding([]);
   actingFor('PERSON');
 });
 
@@ -309,6 +357,112 @@ describe('a period the backend cannot serve', () => {
 
     expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
     expect(screen.queryByText(/cannot load fund prices/)).not.toBeInTheDocument();
+  });
+});
+
+describe('the savings fund statement', () => {
+  const holdingHistory = [
+    savingsTransaction('2024-06-01T10:00:00Z', 10, 1.0, 10),
+    savingsTransaction('2025-03-10T10:00:00Z', 20, 1.1, 22),
+    savingsTransaction('2025-08-01T10:00:00Z', 5, 1.2, -6, 'SUBTRACTION'),
+    savingsTransaction('2026-02-01T10:00:00Z', 7, 1.3, 9.1),
+  ];
+
+  it('shows only the transactions of the selected period', async () => {
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    // The statement describes the response on screen, so the new period's rows appear
+    // only once the new portfolio has rendered — never new dates over old values.
+    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
+    expect(screen.getAllByText('10.03.2025')).not.toHaveLength(0);
+    expect(screen.getAllByText('01.08.2025')).not.toHaveLength(0);
+    expect(screen.queryAllByText('01.02.2026')).toHaveLength(0);
+  });
+
+  it('carries the opening and closing units into the printable statement', async () => {
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(await screen.findByText('Opening balance 01.01.2025')).toBeInTheDocument();
+    // 10 units bought before the period; 10 + 20 − 5 held at its end.
+    expect(screen.getAllByText(/10[.,]0000/)).not.toHaveLength(0);
+    expect(screen.getByText('Closing balance 31.12.2025')).toBeInTheDocument();
+    expect(screen.getAllByText(/25[.,]0000/)).not.toHaveLength(0);
+  });
+
+  it('downloads the period as CSV', async () => {
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    expect(download).toHaveBeenCalledTimes(1);
+    const [content, filename] = (download as jest.Mock).mock.calls[0];
+    expect(filename).toBe('tuleva-kogumisfondi-valjavote-2025-01-01-2025-12-31.csv');
+    expect(content).toContain('10.03.2025;Contribution;20,0000;1,10000;22,00');
+    expect(content).toContain('01.08.2025;Redemption;-5,0000;1,20000;-6,00');
+    expect(content).not.toContain('01.02.2026');
+  });
+
+  it('opens the print dialog for the PDF', async () => {
+    const print = jest.spyOn(window, 'print').mockImplementation(() => {});
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    userEvent.click(await screen.findByRole('button', { name: 'Save as PDF' }));
+
+    expect(print).toHaveBeenCalledTimes(1);
+    print.mockRestore();
+  });
+
+  it('is left out when the transactions never load, rather than claiming an empty period', async () => {
+    server.use(
+      rest.get('http://localhost/v1/transactions', (req, res, ctx) =>
+        res(ctx.status(500), ctx.json({})),
+      ),
+    );
+    initializeComponent();
+
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+    expect(
+      screen.queryByText('No savings fund transactions in the selected period.'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
+  });
+
+  it('is left out when nothing is held in the savings fund', async () => {
+    server.use(
+      rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
+        res(
+          ctx.json({
+            ...allTime,
+            groups: allTime.groups.filter((group) => group.group !== 'SAVINGS_FUND'),
+            series: [
+              { date: '2020-01-01', values: { SECOND_PILLAR: 100 } },
+              { date: '2026-08-07', values: { SECOND_PILLAR: 300 } },
+            ],
+          }),
+        ),
+      ),
+    );
+    initializeComponent();
+
+    expect(await screen.findAllByText(/300[.,]00/)).not.toHaveLength(0);
+    expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
   });
 });
 
