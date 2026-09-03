@@ -40,6 +40,7 @@
   "login.error.mobile.id.timeout": "Mobiil-ID ei saanud kinnitust õigel ajal. Palun proovi uuesti.",
   "login.error.mobile.id.no.signal": "Telefoniga ei saadud ühendust. Palun kontrolli ühendust ja proovi uuesti.",
   "login.error.mobile.id.certificates.revoked": "Selle telefoni Mobiil-ID sertifikaadid ei kehti.",
+  "login.error.id.card.document.type.not.allowed": "Seda tüüpi ID-kaardiga ei saa sisse logida.",
   "login.join.tuleva": "Liitu!",
   "login.or": "või",
   "login.permission.note": "Sisenedes annad ühekordse loa küsida pensioniregistrist su andmed ja oled teadlik Tuleva <a>privaatsuspoliitikast</a>.",
