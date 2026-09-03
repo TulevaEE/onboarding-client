@@ -354,6 +354,13 @@ export function saveMandateWithAuthentication(mandate: string): Promise<Mandate>
   return postWithAuthentication(getEndpoint('/v1/mandates'), mandate);
 }
 
+const toSignatureStatus = (statusCode: string): SignatureStatus => {
+  if (statusCode === 'SIGNATURE' || statusCode === 'OUTSTANDING_TRANSACTION') {
+    return statusCode;
+  }
+  throw new Error(`Unexpected signature status: ${statusCode}`);
+};
+
 const getSigningBaseUrl = (entityId: string, type: SignableEntity) => {
   if (type === 'CAPITAL_TRANSFER_CONTRACT') {
     return `/v1/capital-transfer-contracts/${entityId}/signature`;
@@ -391,7 +398,11 @@ export async function getMobileIdSignatureStatus({
 }): Promise<MobileSignatureStatusResponse> {
   const path = `${getSigningBaseUrl(entityId, type)}/mobile-id/status`;
 
-  return getWithAuthentication<MobileSignatureStatusResponse>(getEndpoint(path), undefined);
+  const response = await getWithAuthentication<MobileSignatureStatusResponse>(
+    getEndpoint(path),
+    undefined,
+  );
+  return { ...response, statusCode: toSignatureStatus(response.statusCode) };
 }
 
 export async function getSmartIdSignatureChallengeCode({
@@ -419,7 +430,11 @@ export async function getSmartIdSignatureStatus({
 }): Promise<MobileSignatureStatusResponse> {
   const path = `${getSigningBaseUrl(entityId, type)}/smart-id/status`;
 
-  return getWithAuthentication<MobileSignatureStatusResponse>(getEndpoint(path), undefined);
+  const response = await getWithAuthentication<MobileSignatureStatusResponse>(
+    getEndpoint(path),
+    undefined,
+  );
+  return { ...response, statusCode: toSignatureStatus(response.statusCode) };
 }
 
 export async function startIdCardSignature({
@@ -451,7 +466,7 @@ export async function persistIdCardSignature({
     getEndpoint(path),
     { signature },
   );
-  return statusCode;
+  return toSignatureStatus(statusCode);
 }
 
 export async function getIdCardSignatureStatus({
@@ -467,7 +482,7 @@ export async function getIdCardSignatureStatus({
     getEndpoint(path),
     undefined,
   );
-  return statusCode;
+  return toSignatureStatus(statusCode);
 }
 
 export function updateUserWithToken(user: User): Promise<User> {

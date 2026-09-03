@@ -192,7 +192,7 @@
   "error.message.close": "Close",
   "error.payment-failed": "Payment failed.",
   "error.technical": "Something went wrong. Please try again or reach out to us.",
-  "id.card.signing.error": "Could not sign with the ID-card. Check that the card reader is connected and the ID-software with the Web eID browser extension is installed, then try again.",
+  "id.card.signing.error": "Could not sign with the ID-card. Check that the card reader is connected, and that both the ID-software and the Web eID browser extension are installed, then try again.",
   "id.card.signing.cancelled": "Signing was cancelled.",
   "id.card.signing.extension.unavailable": "Web eID extension is not available. Please install the Web eID extension and try again.",
   "id.card.signing.certificate.invalid": "Could not read the signing certificate from your ID-card. Please try again.",
@@ -1963,5 +1963,7 @@
   "savingsFundTaxReport.investmentAccount.unavailable": "We cannot load your investment account right now, so we cannot tell whether you have declared one.",
   "savingsFundTaxReport.investmentAccount.retry": "Try again",
   "savingsFundTaxReport.investmentAccount.saveFailed": "We could not save that just now. Please try again.",
-  "signature.error.unknown": "Signing did not complete. Please try again."
+  "signature.error.unknown": "Signing did not complete. Please try again.",
+  "signature.already.signed": "This has already been signed.",
+  "signature.not.signed": "This has not been signed yet."
 }

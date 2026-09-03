@@ -805,6 +805,41 @@ describe('API calls', () => {
     });
   });
 
+  describe('signature status validation', () => {
+    const mandateId = '12345';
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('rejects a status the backend should never return when persisting', async () => {
+      mockHttp.putWithAuthentication.mockResolvedValue({ statusCode: 'SOMETHING_ELSE' });
+
+      await expect(
+        persistIdCardSignature({ entityId: mandateId, signature: 'signature' }),
+      ).rejects.toThrow(/SOMETHING_ELSE/);
+    });
+
+    it('rejects a status the backend should never return when polling', async () => {
+      mockHttp.getWithAuthentication.mockResolvedValue({ statusCode: 'SOMETHING_ELSE' });
+
+      await expect(getIdCardSignatureStatus({ entityId: mandateId })).rejects.toThrow(
+        /SOMETHING_ELSE/,
+      );
+    });
+
+    it('rejects a status the backend should never return when polling with a challenge code', async () => {
+      mockHttp.getWithAuthentication.mockResolvedValue({
+        statusCode: 'SOMETHING_ELSE',
+        challengeCode: '1234',
+      });
+
+      await expect(getSmartIdSignatureStatus({ entityId: mandateId })).rejects.toThrow(
+        /SOMETHING_ELSE/,
+      );
+    });
+  });
+
   describe('updateUserWithToken', () => {
     const mockUser: User = {
       id: 1,
