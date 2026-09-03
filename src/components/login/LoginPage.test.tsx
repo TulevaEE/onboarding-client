@@ -37,6 +37,7 @@ describe('When a user is logging in', () => {
     );
   }
   beforeEach(() => {
+    localStorage.clear();
     initializeConfiguration();
     getAuthentication().remove();
     initializeComponent();
