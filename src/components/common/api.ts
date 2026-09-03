@@ -117,8 +117,9 @@ export function startSmartIdLogin(
 }
 
 export async function getRememberedSmartIdAccount(): Promise<RememberedSmartIdAccount | null> {
+  // A browser with nothing remembered answers 204, which axios hands back as an empty string.
   const account = await get(getEndpoint('/v1/smart-id/login/remembered-account'));
-  return account ?? null;
+  return account && typeof account === 'object' ? account : null;
 }
 
 export async function forgetRememberedSmartIdAccount(): Promise<void> {

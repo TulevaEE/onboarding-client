@@ -95,6 +95,21 @@ describe('Login page', () => {
     expect(component.find(AuthenticationLoader)).toHaveLength(0);
   });
 
+  it('drops the device link login while a new smart id session is starting', () => {
+    component.setProps({
+      loadingAuthentication: true,
+      smartIdWeb2AppLink: 'https://smart-id.com/device-link/?deviceLinkType=Web2App',
+    });
+    expect(component.find(SmartIdDeviceLinkLogin)).toHaveLength(1);
+
+    // Starting again clears the link, which unmounts the QR view and with it the expired
+    // polling state, so the fresh session is shown a fresh QR code.
+    component.setProps({ smartIdWeb2AppLink: null });
+
+    expect(component.find(SmartIdDeviceLinkLogin)).toHaveLength(0);
+    expect(component.find(AuthenticationLoader)).toHaveLength(1);
+  });
+
   it('passes an error forwards to ErrorAlert, shows login form and does not show other components', () => {
     const errorDescription = 'oh no something broke yo';
     const formProps = {

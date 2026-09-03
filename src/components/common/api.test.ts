@@ -270,11 +270,14 @@ describe('API calls', () => {
       expect(mockHttp.get).toHaveBeenCalledWith('/v1/smart-id/login/remembered-account');
     });
 
-    it('returns null when the browser has no remembered account', async () => {
-      mockHttp.get.mockResolvedValueOnce(undefined);
+    it.each([[undefined], [null], ['']])(
+      'returns null when the browser has no remembered account: %p',
+      async (noContent) => {
+        mockHttp.get.mockResolvedValueOnce(noContent);
 
-      expect(await getRememberedSmartIdAccount()).toBeNull();
-    });
+        expect(await getRememberedSmartIdAccount()).toBeNull();
+      },
+    );
   });
 
   describe('forgetRememberedSmartIdAccount', () => {
