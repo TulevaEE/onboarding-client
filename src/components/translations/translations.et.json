@@ -206,6 +206,7 @@
   "id.card.signing.error": "ID-kaardiga allkirjastamine ebaõnnestus. Kontrolli, et kaardilugeja on ühendatud ning ID-tarkvara ja Web eID brauserilaiendus on paigaldatud, ja proovi uuesti.",
   "id.card.signing.cancelled": "Allkirjastamine katkestati.",
   "id.card.signing.extension.unavailable": "Web eID laiendus ei ole saadaval. Palun paigalda Web eID laiendus ja proovi uuesti.",
+  "id.card.signing.certificate.invalid": "ID-kaardi allkirjastamise sertifikaati ei õnnestunud lugeda. Palun proovi uuesti.",
   "mandate.processing.error.epis.already.active.contributions.fund": "Valitud fond on juba aktiivne",
   "mandate.processing.error.epis.unknown": "Tundmatu Eesti Pensioni Infosüsteemi viga",
   "mandate.processing.error.epis.technical.error": "Tundmatu Eesti Pensioni Infosüsteemi tehniline viga",
@@ -256,6 +257,7 @@
   "smart.id.technical.error": "Smart-ID süsteemi viga",
   "smart.id.timeout": "Sa ei kinnitanud päringut Smart-ID rakenduses või tekkis sidehäire.",
   "id.card.signature.session.not.found": "ID-kaardi sessioon on aegunud, palun logi uuesti sisse.",
+  "id.card.signature.invalid": "ID-kaardi allkirja ei õnnestunud lugeda. Palun proovi uuesti.",
   "header.my.account": "Minu konto",
   "roleSwitcher.openNewAccount": "Ava konto lapsele või OÜ-le",
   "roleSwitcher.accountMenu": "kontode menüü",
@@ -2255,5 +2257,6 @@
   "giftLink.gifts.error": "Kingituste laadimine ebaõnnestus. Link ise töötab edasi.",
   "units.roundingNote.screen": "Osakud on näidatud fondi tingimuste kohaselt täpsusega kolm kohta pärast koma. Summad on arvutatud täpsetest kogustest.",
   "units.roundingNote.printed": "Osakud on näidatud fondi tingimuste kohaselt täpsusega kolm kohta pärast koma. Saldod on arvutatud täpsetest kogustest.",
-  "units.roundingNote.hover": "Täpse koguse näed, kui viid kursori numbrile."
+  "units.roundingNote.hover": "Täpse koguse näed, kui viid kursori numbrile.",
+  "signature.status.unexpected": "Allkirjastamine ei jõudnud lõpuni. Palun proovi uuesti."
 }
