@@ -277,9 +277,6 @@ export const PortfolioView: React.FunctionComponent<{
         </p>
       </div>
 
-      {/* An accountant needs the period's savings fund transactions and a statement they
-          can file, not just a chart. Shown to whoever holds savings fund units — a
-          company, a child, or the person themselves. */}
       {savingsFundSummary && (
         <StatementSection summary={savingsFundSummary} from={from ?? portfolio.from} to={to} />
       )}
