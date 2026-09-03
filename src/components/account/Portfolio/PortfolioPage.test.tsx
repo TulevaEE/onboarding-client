@@ -426,6 +426,21 @@ describe('the savings fund statement', () => {
     print.mockRestore();
   });
 
+  it('is left out when the transactions never load, rather than claiming an empty period', async () => {
+    server.use(
+      rest.get('http://localhost/v1/transactions', (req, res, ctx) =>
+        res(ctx.status(500), ctx.json({})),
+      ),
+    );
+    initializeComponent();
+
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+    expect(
+      screen.queryByText('No savings fund transactions in the selected period.'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
+  });
+
   it('is left out when nothing is held in the savings fund', async () => {
     server.use(
       rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>

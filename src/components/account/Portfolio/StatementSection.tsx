@@ -16,9 +16,8 @@ const signedUnits = (transaction: Transaction): number =>
 
 const onDate = (transaction: Transaction): string => transaction.time.slice(0, 10);
 
-// An accounting document must not choose an accounting policy for the company. It shows
-// what happened — every purchase and redemption with its own units, price and amount —
-// and the closing market value, leaving cost-basis arithmetic to the accountant.
+// No computed cost basis or realised gain anywhere here: choosing FIFO or weighted
+// average is the account owner's accounting policy, not ours to make for them.
 export const StatementSection: React.FunctionComponent<{
   summary: PortfolioGroupSummary;
   from: string;
@@ -29,18 +28,18 @@ export const StatementSection: React.FunctionComponent<{
   const { data: funds, isLoading: fundsLoading } = useFunds();
   const { data: user } = useMe();
 
-  // Nothing to show yet: the section appears whole once the rows are in, rather than
-  // as one more shimmer under a page that has already answered.
-  if (transactionsLoading || fundsLoading || !user) {
+  // Absent rows are not an empty statement: while the answers are loading, or when one
+  // never comes, there is no section — not a document claiming the period had nothing.
+  if (transactionsLoading || fundsLoading || !transactions || !funds || !user) {
     return <></>;
   }
 
   // The savings fund is the fund the pension registry does not know: it has no pillar.
-  const savingsFunds = (funds ?? []).filter((fund) => fund.pillar === null);
+  const savingsFunds = funds.filter((fund) => fund.pillar === null);
   const savingsFund = savingsFunds[0];
   const savingsIsins = new Set(savingsFunds.map((fund) => fund.isin));
 
-  const allSavingsTransactions = (transactions ?? [])
+  const allSavingsTransactions = transactions
     .filter((transaction) => savingsIsins.has(transaction.isin))
     .sort((first, second) => first.time.localeCompare(second.time));
 
