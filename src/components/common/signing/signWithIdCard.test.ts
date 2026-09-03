@@ -68,6 +68,14 @@ describe('signWithIdCard', () => {
     expect(mockStartIdCardSignature).not.toHaveBeenCalled();
   });
 
+  it('wraps an error that is neither a Web eID error nor a backend error', async () => {
+    mockSign.mockRejectedValue(new TypeError('cannot read property of undefined'));
+
+    await expect(signWithIdCard({ id: 42 }, 'MANDATE_BATCH')).rejects.toMatchObject({
+      body: { errors: [{ code: 'id.card.signing.error' }] },
+    });
+  });
+
   it('passes backend errors through unchanged', async () => {
     const backendError = { body: { errors: [{ code: 'id.card.signature.session.not.found' }] } };
     mockStartIdCardSignature.mockRejectedValue(backendError);
