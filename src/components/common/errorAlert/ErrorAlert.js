@@ -17,6 +17,7 @@ const AUTHENTICATION_ERROR_MESSAGES = {
   'mobile.id.timeout': 'login.error.mobile.id.timeout',
   'mobile.id.no.signal': 'login.error.mobile.id.no.signal',
   'mobile.id.certificates.revoked': 'login.error.mobile.id.certificates.revoked',
+  'id.card.document.type.not.allowed': 'login.error.id.card.document.type.not.allowed',
 };
 
 class ErrorAlert extends Component {

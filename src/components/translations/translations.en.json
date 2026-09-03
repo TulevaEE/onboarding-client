@@ -40,6 +40,7 @@
   "login.error.mobile.id.timeout": "Mobile-ID did not get a confirmation in time. Please try again.",
   "login.error.mobile.id.no.signal": "Your phone could not be reached. Please check the connection and try again.",
   "login.error.mobile.id.certificates.revoked": "The Mobile-ID certificates on this phone are not valid.",
+  "login.error.id.card.document.type.not.allowed": "This type of ID-card cannot be used to log in.",
   "login.join.tuleva": "Join!",
   "login.or": "or",
   "login.permission.note": "By logging in, you allow a one-time request for your data from the pension register and agree to Tuleva’s <a>privacy policy</a>.",
