@@ -114,7 +114,7 @@ describe('useSigning with an ID card', () => {
 
     userEvent.click(screen.getByRole('button', { name: 'sign' }));
 
-    expect(await screen.findByText('signature.status.unexpected')).toBeInTheDocument();
+    expect(await screen.findByText('signature.error.unknown')).toBeInTheDocument();
     expect(await screen.findByText('idle')).toBeInTheDocument();
     expect(mockGetIdCardSignatureStatus).not.toHaveBeenCalled();
   });
@@ -126,7 +126,7 @@ describe('useSigning with an ID card', () => {
 
     userEvent.click(screen.getByRole('button', { name: 'sign' }));
 
-    expect(await screen.findByText('signature.status.unexpected')).toBeInTheDocument();
+    expect(await screen.findByText('signature.error.unknown')).toBeInTheDocument();
     expect(mockGetIdCardSignatureStatus).toHaveBeenCalledTimes(1);
   });
 
@@ -141,7 +141,27 @@ describe('useSigning with an ID card', () => {
 
     userEvent.click(screen.getByRole('button', { name: 'sign' }));
 
-    expect(await screen.findByText('signature.status.unexpected')).toBeInTheDocument();
+    expect(await screen.findByText('signature.error.unknown')).toBeInTheDocument();
     expect(mockPollForSignatureStatus).toHaveBeenCalledTimes(1);
+  });
+
+  it('surfaces a generic error when signing fails without an error response', async () => {
+    mockSignWithIdCard.mockRejectedValue(new Error('boom'));
+    render(<SigningHarness />);
+
+    userEvent.click(screen.getByRole('button', { name: 'sign' }));
+
+    expect(await screen.findByText('signature.error.unknown')).toBeInTheDocument();
+    expect(await screen.findByText('idle')).toBeInTheDocument();
+  });
+
+  it('surfaces a generic error when the status poll rejects without an error response', async () => {
+    mockPersistIdCardSignature.mockResolvedValue('OUTSTANDING_TRANSACTION');
+    mockGetIdCardSignatureStatus.mockRejectedValue(new Error('network down'));
+    render(<SigningHarness />);
+
+    userEvent.click(screen.getByRole('button', { name: 'sign' }));
+
+    expect(await screen.findByText('signature.error.unknown')).toBeInTheDocument();
   });
 });

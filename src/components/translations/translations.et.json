@@ -2053,5 +2053,5 @@
   "savingsFundTaxReport.investmentAccount.unavailable": "Praegu ei õnnestu sinu investeerimiskontot laadida, seega me ei tea, kas oled selle meile öelnud.",
   "savingsFundTaxReport.investmentAccount.retry": "Proovi uuesti",
   "savingsFundTaxReport.investmentAccount.saveFailed": "Praegu ei õnnestunud seda salvestada. Palun proovi uuesti.",
-  "signature.status.unexpected": "Allkirjastamine ei jõudnud lõpuni. Palun proovi uuesti."
+  "signature.error.unknown": "Allkirjastamine ei jõudnud lõpuni. Palun proovi uuesti."
 }

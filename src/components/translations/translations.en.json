@@ -1963,5 +1963,5 @@
   "savingsFundTaxReport.investmentAccount.unavailable": "We cannot load your investment account right now, so we cannot tell whether you have declared one.",
   "savingsFundTaxReport.investmentAccount.retry": "Try again",
   "savingsFundTaxReport.investmentAccount.saveFailed": "We could not save that just now. Please try again.",
-  "signature.status.unexpected": "Signing did not complete. Please try again."
+  "signature.error.unknown": "Signing did not complete. Please try again."
 }

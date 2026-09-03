@@ -3,6 +3,7 @@ import { getAuthentication } from '../authenticationManager';
 import { getIdCardSignatureStatus, persistIdCardSignature } from '../api';
 import { signWithIdCard } from './signWithIdCard';
 import { ErrorResponse } from '../apiModels';
+import { errorResponseWithCode, isErrorResponse } from '../errorResponse';
 import { SignableEntity } from './types';
 import { pollForSignatureStatus, startSigningWithChallengeCode } from './signWithChallengeCode';
 
@@ -10,9 +11,10 @@ const POLL_DELAY = 1000;
 const SIGNATURE_DONE_STATUS = 'SIGNATURE';
 const SIGNING_IN_PROGRESS_STATUS = 'OUTSTANDING_TRANSACTION';
 
-const UNEXPECTED_SIGNATURE_STATUS: ErrorResponse = {
-  body: { errors: [{ code: 'signature.status.unexpected' }] },
-};
+const UNKNOWN_SIGNATURE_ERROR = errorResponseWithCode('signature.error.unknown');
+
+const toErrorResponse = (error: unknown): ErrorResponse =>
+  isErrorResponse(error) ? error : UNKNOWN_SIGNATURE_ERROR;
 
 export const useSigning = <TSignableEntity extends { id: number | string }>(
   entityType: SignableEntity,
@@ -58,7 +60,7 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
         } else if (signatureStatus === SIGNING_IN_PROGRESS_STATUS) {
           pollForIdCard(entity);
         } else {
-          setError(UNEXPECTED_SIGNATURE_STATUS);
+          setError(UNKNOWN_SIGNATURE_ERROR);
         }
       } else if (signingMethod === 'SMART_ID' || signingMethod === 'MOBILE_ID') {
         setSigningType(signingMethod);
@@ -70,7 +72,7 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
         throw new Error(`Invalid signing method: ${signingMethod}`);
       }
     } catch (e) {
-      setError(e as ErrorResponse); // TODO
+      setError(toErrorResponse(e));
       return Promise.reject(e);
     }
 
@@ -92,10 +94,10 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
         } else if (signatureStatus === SIGNING_IN_PROGRESS_STATUS) {
           pollForIdCard(entity);
         } else {
-          setError(UNEXPECTED_SIGNATURE_STATUS);
+          setError(UNKNOWN_SIGNATURE_ERROR);
         }
       } catch (e) {
-        setError(e as ErrorResponse); // TODO
+        setError(toErrorResponse(e));
       }
     }, POLL_DELAY);
   };
@@ -113,10 +115,10 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
         } else if (signatureStatus.statusCode === SIGNING_IN_PROGRESS_STATUS) {
           poll(entity, signingMethod);
         } else {
-          setError(UNEXPECTED_SIGNATURE_STATUS);
+          setError(UNKNOWN_SIGNATURE_ERROR);
         }
       } catch (e) {
-        setError(e as ErrorResponse); // TODO
+        setError(toErrorResponse(e));
       }
     }, POLL_DELAY);
   };

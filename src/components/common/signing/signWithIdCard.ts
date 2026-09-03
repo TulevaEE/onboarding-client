@@ -2,6 +2,7 @@ import { ErrorCode, getSigningCertificate, sign } from '@web-eid/web-eid-library
 import config from 'react-global-configuration';
 import { startIdCardSignature } from '../api';
 import { ErrorResponse, IdCardSignatureResponse } from '../apiModels';
+import { isErrorResponse } from '../errorResponse';
 import { SignableEntity } from './types';
 
 export type SignedEntity<T> = { signature: string; entityId: T; entityType: SignableEntity };
@@ -26,10 +27,12 @@ const isWebEidError = (error: unknown): error is { code: ErrorCode } => {
   return typeof code === 'string' && code.startsWith('ERR_WEBEID_');
 };
 
-const toSigningError = (error: unknown): unknown =>
-  isWebEidError(error)
-    ? new IdCardSigningError(WEB_EID_ERROR_CODES[error.code] ?? 'id.card.signing.error')
-    : error;
+const toSigningError = (error: unknown): unknown => {
+  if (isWebEidError(error)) {
+    return new IdCardSigningError(WEB_EID_ERROR_CODES[error.code] ?? 'id.card.signing.error');
+  }
+  return isErrorResponse(error) ? error : new IdCardSigningError('id.card.signing.error');
+};
 
 const webEidOptions = () => ({ lang: config.get('language') || 'et' });
 
