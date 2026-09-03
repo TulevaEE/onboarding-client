@@ -8,9 +8,9 @@ axios.defaults.withCredentials = true;
 
 const NO_CONTENT = 204;
 
-function transformResponse(response: Response): Promise<Response> {
+function transformResponse(response: Response): Promise<any> {
   if (response.status === NO_CONTENT) {
-    return Promise.resolve(undefined as unknown as Response);
+    return Promise.resolve(undefined);
   }
   if (response.ok && response.status < 400) {
     return response.json();

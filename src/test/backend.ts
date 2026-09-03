@@ -235,7 +235,10 @@ export function smartIdAuthenticationBackend(
     }),
 
     rest.post('http://localhost/v1/smart-id/login', (req, res, ctx) => {
-      const { flow, language } = req.body as { flow?: string; language?: string };
+      const { flow, language = 'et' } = req.body as { flow?: string; language?: string };
+      if (!flow) {
+        return res(ctx.status(400), ctx.json({ errors: [{ code: 'flow.required' }] }));
+      }
       if (options.language && language !== options.language) {
         return res(ctx.status(400), ctx.json({ errors: [{ code: 'smart.id.technical.error' }] }));
       }
@@ -243,7 +246,7 @@ export function smartIdAuthenticationBackend(
         return res(ctx.status(401), ctx.json({ errors: [{ code: 'auth.session.not.found' }] }));
       }
       backend.startedSessions += 1;
-      backend.startedFlows.push(flow as string);
+      backend.startedFlows.push(flow);
       if (flow === 'NOTIFICATION') {
         return res(
           ctx.status(200),
@@ -258,7 +261,7 @@ export function smartIdAuthenticationBackend(
         ctx.status(200),
         ctx.json({
           flow: 'DEVICE_LINK',
-          web2AppLink: smartIdWeb2AppLink(language as string),
+          web2AppLink: smartIdWeb2AppLink(language),
           verificationCode: null,
         }),
       );
