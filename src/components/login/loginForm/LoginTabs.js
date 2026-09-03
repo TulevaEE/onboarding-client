@@ -2,6 +2,13 @@ import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 
 import LoginTab from './LoginTab';
+import { readPreferredLoginMethod, savePreferredLoginMethod } from './preferredLoginMethod';
+
+function initialTab(children) {
+  const labels = children.map((child) => child.props.label);
+  const preferred = readPreferredLoginMethod();
+  return labels.includes(preferred) ? preferred : labels[0];
+}
 
 class LoginTabs extends Component {
   static propTypes = {
@@ -10,9 +17,8 @@ class LoginTabs extends Component {
 
   panelRef = createRef();
 
-  state = {
-    activeTab: this.props.children[0].props.label,
-  };
+  // eslint-disable-next-line react/destructuring-assignment
+  state = { activeTab: initialTab(this.props.children) };
 
   componentDidUpdate(_prevProps, { activeTab: prevActiveTab }) {
     const { activeTab } = this.state;
@@ -22,6 +28,7 @@ class LoginTabs extends Component {
   }
 
   onClickTabItem = (tab) => {
+    savePreferredLoginMethod(tab);
     this.setState({ activeTab: tab });
   };
 

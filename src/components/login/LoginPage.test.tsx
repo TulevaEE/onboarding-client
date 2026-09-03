@@ -120,6 +120,27 @@ describe('When a user is logging in', () => {
     ).toBeInTheDocument();
   });
 
+  test('a failed Mobile-ID login explains what happened and stays on the Mobile-ID tab', async () => {
+    mobileIdAuthenticationBackend(server, {
+      challengeCode: '4321',
+      failWith: 'mobile.id.timeout',
+    });
+    expect(await screen.findByRole('button', { name: 'Log in with Smart-ID' })).toBeInTheDocument();
+    userEvent.click(screen.getByText(/Mobile-ID/gi));
+    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), '38888888888');
+    userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '+37255512345');
+    userEvent.click(screen.getByText(/Log in$/gi));
+    expect(await screen.findByText('4321')).toBeInTheDocument();
+
+    expect(
+      await screen.findByText(/Mobile-ID did not get a confirmation in time/, undefined, {
+        timeout: 3000,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Phone number/gi)).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Mobile-ID' })).toHaveClass('active');
+  });
+
   test('they can sign in with id card via mTLS escape hatch (?mtls=true)', async () => {
     Object.defineProperty(window, 'location', {
       value: { search: '?mtls=true' },

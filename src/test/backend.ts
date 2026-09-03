@@ -309,7 +309,12 @@ export function smartIdAuthenticationBackend(
 
 export function mobileIdAuthenticationBackend(
   server: SetupServerApi,
-  options: { challengeCode?: string; identityCode?: string; phoneNumber?: string } = {},
+  options: {
+    challengeCode?: string;
+    identityCode?: string;
+    phoneNumber?: string;
+    failWith?: string;
+  } = {},
 ): { resolvePolling: () => void } {
   let pollingResolved = false;
 
@@ -338,6 +343,10 @@ export function mobileIdAuthenticationBackend(
           ctx.status(401),
           ctx.json({ error: 'wrong grant type, client id or basic auth' }),
         );
+      }
+
+      if (options.failWith) {
+        return res(ctx.status(400), ctx.json({ errors: [{ code: options.failWith }] }));
       }
 
       if (!pollingResolved) {
