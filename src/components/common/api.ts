@@ -16,6 +16,7 @@ import {
   Fund,
   FundBalance,
   IdCardSignatureResponse,
+  IdCardSignatureStatusResponse,
   LoginMethod,
   Mandate,
   MandateDeadlines,
@@ -420,36 +421,51 @@ export async function getSmartIdSignatureStatus({
   return getWithAuthentication<MobileSignatureStatusResponse>(getEndpoint(path), undefined);
 }
 
-export async function getIdCardSignatureHash({
+export async function startIdCardSignature({
   entityId,
   type = 'MANDATE',
-  certificateHex,
+  certificate,
 }: {
   entityId: string;
-  certificateHex: string;
+  certificate: string;
   type?: SignableEntity;
-}) {
+}): Promise<IdCardSignatureResponse> {
   const path = `${getSigningBaseUrl(entityId, type)}/id-card`;
 
-  const { hash } = await putWithAuthentication<IdCardSignatureResponse>(getEndpoint(path), {
-    clientCertificate: certificateHex,
-  });
+  return putWithAuthentication<IdCardSignatureResponse>(getEndpoint(path), { certificate });
+}
 
-  return hash;
+export async function persistIdCardSignature({
+  entityId,
+  type = 'MANDATE',
+  signature,
+}: {
+  entityId: string;
+  type?: SignableEntity;
+  signature: string;
+}): Promise<string> {
+  const path = `${getSigningBaseUrl(entityId, type)}/id-card/signature`;
+
+  const { statusCode } = await putWithAuthentication<IdCardSignatureStatusResponse>(
+    getEndpoint(path),
+    { signature },
+  );
+  return statusCode;
 }
 
 export async function getIdCardSignatureStatus({
   entityId,
   type = 'MANDATE',
-  signedHash,
 }: {
   entityId: string;
   type?: SignableEntity;
-  signedHash: string;
 }): Promise<string> {
   const path = `${getSigningBaseUrl(entityId, type)}/id-card/status`;
 
-  const { statusCode } = await putWithAuthentication(getEndpoint(path), { signedHash });
+  const { statusCode } = await getWithAuthentication<IdCardSignatureStatusResponse>(
+    getEndpoint(path),
+    undefined,
+  );
   return statusCode;
 }
 

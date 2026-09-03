@@ -25,11 +25,11 @@ const mockAuthentication = jest.createMockFromModule('../common/authenticationMa
 
 const mockApi = jest.genMockFromModule('../common/api');
 const mockDownload = jest.fn();
-const mockHwcrypto = jest.genMockFromModule('hwcrypto-js');
+const mockIdCard = { getIdCardSigningCertificate: jest.fn(), signHashWithIdCard: jest.fn() };
 
 jest.mock('../common/api', () => mockApi);
 jest.mock('downloadjs', () => mockDownload);
-jest.mock('hwcrypto-js', () => mockHwcrypto);
+jest.mock('../common/signing/signWithIdCard', () => mockIdCard);
 jest.mock('../common/authenticationManager');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -60,6 +60,9 @@ describe('Exchange actions', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     mockDispatch();
+    mockIdCard.getIdCardSigningCertificate = jest.fn(() =>
+      Promise.reject(new Error('No signing certificate')),
+    );
 
     mockAuthentication.getAuthentication.mockImplementation(() => ({
       isAuthenticated: jest.fn().mockReturnValue(true),
@@ -317,35 +320,77 @@ describe('Exchange actions', () => {
 
   it('starts polling until succeeds when signing the mandate with id card', async () => {
     const mandate = { id: 'id', pillar: 2 };
-    const hash = 'hash';
-    const certificate = { hex: 'certificate' };
-    const signedHash = { hex: 'signedHash' };
 
-    global.hwcrypto = mockHwcrypto;
-    mockHwcrypto.getCertificate = jest.fn(() => Promise.resolve(certificate));
+    mockIdCard.getIdCardSigningCertificate = jest.fn(() => Promise.resolve('certificate'));
     mockApi.saveMandateWithAuthentication = jest.fn(() => Promise.resolve(mandate));
-
-    mockApi.getIdCardSignatureHash = jest.fn(() => Promise.resolve(hash));
-    mockHwcrypto.sign = jest.fn(() => Promise.resolve(signedHash));
+    mockApi.startIdCardSignature = jest.fn(() =>
+      Promise.resolve({ hash: 'hash', hashFunction: 'SHA-256' }),
+    );
+    mockIdCard.signHashWithIdCard = jest.fn(() => Promise.resolve('signature'));
+    mockApi.persistIdCardSignature = jest.fn(() => Promise.resolve('OUTSTANDING_TRANSACTION'));
     mockApi.getIdCardSignatureStatus = jest.fn(() => Promise.resolve('OUTSTANDING_TRANSACTION'));
 
     const signMandate = createBoundAction(actions.signMandateWithIdCard);
     await signMandate(mandate);
+    expect(mockApi.startIdCardSignature).toHaveBeenCalledWith({
+      entityId: 'id',
+      certificate: 'certificate',
+    });
+    expect(mockIdCard.signHashWithIdCard).toHaveBeenCalledWith('certificate', {
+      hash: 'hash',
+      hashFunction: 'SHA-256',
+    });
+    expect(mockApi.persistIdCardSignature).toHaveBeenCalledWith({
+      entityId: 'id',
+      signature: 'signature',
+    });
     dispatch.mockClear();
     mockApi.getIdCardSignatureStatus = jest.fn(() => Promise.resolve('SIGNATURE'));
     jest.runOnlyPendingTimers();
     expect(dispatch).not.toHaveBeenCalled();
     expect(mockApi.getIdCardSignatureStatus).toHaveBeenCalledTimes(1);
-    expect(mockApi.getIdCardSignatureStatus).toHaveBeenCalledWith({
-      entityId: 'id',
-      signedHash: 'signedHash',
-    });
+    expect(mockApi.getIdCardSignatureStatus).toHaveBeenCalledWith({ entityId: 'id' });
     await nextTick();
     expect(dispatch).toHaveBeenCalledWith({
       type: SIGN_MANDATE_SUCCESS,
       signedMandateId: mandate.id,
       pillar: mandate.pillar,
     });
+  });
+
+  it('succeeds without polling when persisting the id card signature already reports it processed', async () => {
+    const mandate = { id: 'id', pillar: 3 };
+
+    mockIdCard.getIdCardSigningCertificate = jest.fn(() => Promise.resolve('certificate'));
+    mockApi.saveMandateWithAuthentication = jest.fn(() => Promise.resolve(mandate));
+    mockApi.startIdCardSignature = jest.fn(() =>
+      Promise.resolve({ hash: 'hash', hashFunction: 'SHA-256' }),
+    );
+    mockIdCard.signHashWithIdCard = jest.fn(() => Promise.resolve('signature'));
+    mockApi.persistIdCardSignature = jest.fn(() => Promise.resolve('SIGNATURE'));
+    mockApi.getIdCardSignatureStatus = jest.fn();
+
+    const signMandate = createBoundAction(actions.signMandateWithIdCard);
+    await signMandate(mandate);
+
+    expect(mockApi.getIdCardSignatureStatus).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({
+      type: SIGN_MANDATE_SUCCESS,
+      signedMandateId: mandate.id,
+      pillar: mandate.pillar,
+    });
+  });
+
+  it('stops with a start error when the id card signing certificate cannot be read', async () => {
+    const error = { body: { errors: [{ code: 'id.card.signing.cancelled' }] } };
+    mockIdCard.getIdCardSigningCertificate = jest.fn(() => Promise.reject(error));
+    mockApi.saveMandateWithAuthentication = jest.fn(() => Promise.resolve({ id: 'id' }));
+
+    const signMandate = createBoundAction(actions.signMandateWithIdCard);
+    await signMandate({ id: 'id', pillar: 2 });
+
+    expect(mockApi.saveMandateWithAuthentication).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({ type: SIGN_MANDATE_START_ERROR, error });
   });
 
   it('can handle unprocessable entity errors when saving the mandate', async () => {
@@ -514,10 +559,8 @@ describe('Exchange actions', () => {
     const signMandate = createBoundAction(actions.signMandate);
     mockApi.saveMandateWithAuthentication = jest.fn(() => Promise.resolve(mandate));
 
-    const certificate = { hex: 'certificate' };
-    global.hwcrypto = mockHwcrypto;
-    mockHwcrypto.getCertificate = jest.fn(() => Promise.resolve(certificate));
-    mockApi.getIdCardSignatureHash = jest.fn(() => Promise.reject(new Error('Stop polling')));
+    mockIdCard.getIdCardSigningCertificate = jest.fn(() => Promise.resolve('certificate'));
+    mockApi.startIdCardSignature = jest.fn(() => Promise.reject(new Error('Stop polling')));
     await signMandate(mandate);
     expect(mockApi.saveMandateWithAuthentication).not.toHaveBeenCalled();
   });
