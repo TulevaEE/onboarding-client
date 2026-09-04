@@ -206,6 +206,8 @@
   "id.card.signing.cancelled": "Allkirjastamine katkestati.",
   "id.card.signing.extension.unavailable": "Web eID laiendus ei ole saadaval. Palun paigalda Web eID laiendus ja proovi uuesti.",
   "id.card.signing.certificate.invalid": "ID-kaardi allkirjastamise sertifikaati ei õnnestunud lugeda. Palun proovi uuesti.",
+  "id.card.signing.certificate.mismatch": "See ID-kaart kuulub kellelegi teisele. Palun allkirjasta oma ID-kaardiga.",
+  "id.card.signing.hash.function.unsupported": "Sinu ID-kaart ei toeta selle dokumendi jaoks vajalikku allkirjatüüpi. Palun uuenda ID-tarkvara ja proovi uuesti.",
   "mandate.processing.error.epis.already.active.contributions.fund": "Valitud fond on juba aktiivne",
   "mandate.processing.error.epis.unknown": "Tundmatu Eesti Pensioni Infosüsteemi viga",
   "mandate.processing.error.epis.technical.error": "Tundmatu Eesti Pensioni Infosüsteemi tehniline viga",

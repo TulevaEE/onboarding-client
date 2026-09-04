@@ -441,14 +441,19 @@ export async function startIdCardSignature({
   entityId,
   type = 'MANDATE',
   certificate,
+  supportedHashFunctions,
 }: {
   entityId: string;
   certificate: string;
+  supportedHashFunctions: string[];
   type?: SignableEntity;
 }): Promise<IdCardSignatureResponse> {
   const path = `${getSigningBaseUrl(entityId, type)}/id-card`;
 
-  return putWithAuthentication<IdCardSignatureResponse>(getEndpoint(path), { certificate });
+  return putWithAuthentication<IdCardSignatureResponse>(getEndpoint(path), {
+    certificate,
+    supportedHashFunctions,
+  });
 }
 
 export async function persistIdCardSignature({

@@ -271,18 +271,24 @@ export function signMandateWithIdCard(mandate: Mandate) {
   return (dispatch: Dispatch<unknown>) => {
     dispatch({ type: SIGN_MANDATE_ID_CARD_START });
     let certificate: string;
+    let supportedHashFunctions: string[];
     let mandateId: number;
     let mandatePillar: 2 | 3;
 
     return getIdCardSigningCertificate()
       .then((signingCertificate) => {
-        certificate = signingCertificate;
+        certificate = signingCertificate.certificate;
+        supportedHashFunctions = signingCertificate.supportedHashFunctions;
         return saveOrRetrieveExistingMandate(mandate);
       })
       .then(({ id, pillar }: Mandate) => {
         mandateId = id;
         mandatePillar = pillar;
-        return startIdCardSignature({ entityId: mandateId.toString(), certificate });
+        return startIdCardSignature({
+          entityId: mandateId.toString(),
+          certificate,
+          supportedHashFunctions,
+        });
       })
       .then((hashToSign) => {
         dispatch({ type: SIGN_MANDATE_ID_CARD_START_SUCCESS });

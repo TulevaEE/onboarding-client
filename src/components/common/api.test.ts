@@ -705,6 +705,7 @@ describe('API calls', () => {
   describe('startIdCardSignature', () => {
     const mandateId = '12345';
     const certificate = 'cert-123';
+    const supportedHashFunctions = ['SHA-256', 'SHA-384'];
     const mockResponse = { hash: 'hash-123', hashFunction: 'SHA-256' };
 
     beforeEach(() => {
@@ -713,12 +714,16 @@ describe('API calls', () => {
     });
 
     it('starts the ID card signature with the signing certificate', async () => {
-      const response = await startIdCardSignature({ entityId: mandateId, certificate });
+      const response = await startIdCardSignature({
+        entityId: mandateId,
+        certificate,
+        supportedHashFunctions,
+      });
 
       expect(response).toEqual(mockResponse);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
         expect.stringContaining(`/v1/mandates/${mandateId}/signature/id-card`),
-        { certificate },
+        { certificate, supportedHashFunctions },
       );
     });
 
@@ -726,13 +731,14 @@ describe('API calls', () => {
       const response = await startIdCardSignature({
         entityId: mandateId,
         certificate,
+        supportedHashFunctions,
         type: 'MANDATE_BATCH',
       });
 
       expect(response).toEqual(mockResponse);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
         expect.stringContaining(`/v1/mandate-batches/${mandateId}/signature/id-card`),
-        { certificate },
+        { certificate, supportedHashFunctions },
       );
     });
   });
