@@ -36,10 +36,19 @@ const toSigningError = (error: unknown): unknown => {
 
 const webEidOptions = () => ({ lang: config.get('language') || 'et' });
 
-export const getIdCardSigningCertificate = async (): Promise<string> => {
+export type SigningCertificate = { certificate: string; supportedHashFunctions: string[] };
+
+export const getIdCardSigningCertificate = async (): Promise<SigningCertificate> => {
   try {
-    const { certificate } = await getSigningCertificate(webEidOptions());
-    return certificate;
+    const { certificate, supportedSignatureAlgorithms } = await getSigningCertificate(
+      webEidOptions(),
+    );
+    return {
+      certificate,
+      supportedHashFunctions: supportedSignatureAlgorithms
+        .map(({ hashFunction }) => hashFunction)
+        .filter((hashFunction, index, all) => all.indexOf(hashFunction) === index),
+    };
   } catch (error) {
     throw toSigningError(error);
   }
@@ -61,11 +70,12 @@ export const signWithIdCard = async <T extends { id: number | string }>(
   entity: T,
   entityType: SignableEntity,
 ): Promise<SignedEntity<T['id']>> => {
-  const certificate = await getIdCardSigningCertificate();
+  const { certificate, supportedHashFunctions } = await getIdCardSigningCertificate();
   const hashToSign = await startIdCardSignature({
     entityId: entity.id.toString(),
     type: entityType,
     certificate,
+    supportedHashFunctions,
   });
   const signature = await signHashWithIdCard(certificate, hashToSign);
 
