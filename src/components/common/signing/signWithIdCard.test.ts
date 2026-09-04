@@ -28,7 +28,11 @@ describe('signWithIdCard', () => {
     jest.clearAllMocks();
     mockGetSigningCertificate.mockResolvedValue({
       certificate: 'certificate',
-      supportedSignatureAlgorithms: [],
+      supportedSignatureAlgorithms: [
+        { hashFunction: 'SHA-256', paddingScheme: 'PKCS1.5', cryptoAlgorithm: 'RSA' },
+        { hashFunction: 'SHA-384', paddingScheme: 'PKCS1.5', cryptoAlgorithm: 'RSA' },
+        { hashFunction: 'SHA-256', paddingScheme: 'PSS', cryptoAlgorithm: 'RSA' },
+      ],
     });
     mockStartIdCardSignature.mockResolvedValue({ hash: 'hash', hashFunction: 'SHA-256' });
     mockSign.mockResolvedValue({ signature: 'signature', signatureAlgorithm: {} });
@@ -42,6 +46,7 @@ describe('signWithIdCard', () => {
       entityId: '42',
       type: 'MANDATE_BATCH',
       certificate: 'certificate',
+      supportedHashFunctions: ['SHA-256', 'SHA-384'],
     });
     expect(mockSign).toHaveBeenCalledWith('certificate', 'hash', 'SHA-256', { lang: 'en' });
     expect(signed).toEqual({ signature: 'signature', entityId: 42, entityType: 'MANDATE_BATCH' });

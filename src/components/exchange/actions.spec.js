@@ -327,7 +327,9 @@ describe('Exchange actions', () => {
   it('starts polling until succeeds when signing the mandate with id card', async () => {
     const mandate = { id: 'id', pillar: 2 };
 
-    mockIdCard.getIdCardSigningCertificate = jest.fn(() => Promise.resolve('certificate'));
+    mockIdCard.getIdCardSigningCertificate = jest.fn(() =>
+      Promise.resolve({ certificate: 'certificate', supportedHashFunctions: ['SHA-256'] }),
+    );
     mockApi.saveMandateWithAuthentication = jest.fn(() => Promise.resolve(mandate));
     mockApi.startIdCardSignature = jest.fn(() =>
       Promise.resolve({ hash: 'hash', hashFunction: 'SHA-256' }),
@@ -341,6 +343,7 @@ describe('Exchange actions', () => {
     expect(mockApi.startIdCardSignature).toHaveBeenCalledWith({
       entityId: 'id',
       certificate: 'certificate',
+      supportedHashFunctions: ['SHA-256'],
     });
     expect(mockIdCard.signHashWithIdCard).toHaveBeenCalledWith('certificate', {
       hash: 'hash',
@@ -367,7 +370,9 @@ describe('Exchange actions', () => {
   it('succeeds without polling when persisting the id card signature already reports it processed', async () => {
     const mandate = { id: 'id', pillar: 3 };
 
-    mockIdCard.getIdCardSigningCertificate = jest.fn(() => Promise.resolve('certificate'));
+    mockIdCard.getIdCardSigningCertificate = jest.fn(() =>
+      Promise.resolve({ certificate: 'certificate', supportedHashFunctions: ['SHA-256'] }),
+    );
     mockApi.saveMandateWithAuthentication = jest.fn(() => Promise.resolve(mandate));
     mockApi.startIdCardSignature = jest.fn(() =>
       Promise.resolve({ hash: 'hash', hashFunction: 'SHA-256' }),
@@ -565,7 +570,9 @@ describe('Exchange actions', () => {
     const signMandate = createBoundAction(actions.signMandate);
     mockApi.saveMandateWithAuthentication = jest.fn(() => Promise.resolve(mandate));
 
-    mockIdCard.getIdCardSigningCertificate = jest.fn(() => Promise.resolve('certificate'));
+    mockIdCard.getIdCardSigningCertificate = jest.fn(() =>
+      Promise.resolve({ certificate: 'certificate', supportedHashFunctions: ['SHA-256'] }),
+    );
     mockApi.startIdCardSignature = jest.fn(() => Promise.reject(new Error('Stop polling')));
     await signMandate(mandate);
     expect(mockApi.saveMandateWithAuthentication).not.toHaveBeenCalled();
