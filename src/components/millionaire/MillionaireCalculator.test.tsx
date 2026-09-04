@@ -196,7 +196,7 @@ const givenSavingsFund = (payments: Transaction[]) => {
 };
 
 const savingsFundSlider = () =>
-  screen.getByRole('slider', { name: /Savings fund monthly/i }) as HTMLInputElement;
+  screen.getByRole('slider', { name: /Investment fund monthly/i }) as HTMLInputElement;
 
 const expectedAtReturn = (annualReturnPercent: number) =>
   buildComparison({
@@ -305,7 +305,9 @@ describe('MillionaireCalculator', () => {
     givenData();
     renderCalculator();
 
-    expect(screen.queryByRole('slider', { name: /Savings fund monthly/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('slider', { name: /Investment fund monthly/i }),
+    ).not.toBeInTheDocument();
   });
 
   it('counts an existing savings fund balance and lets the saver add to it monthly', () => {
@@ -332,7 +334,7 @@ describe('MillionaireCalculator', () => {
     );
 
     // eslint-disable-next-line testing-library/prefer-user-event
-    fireEvent.change(screen.getByRole('slider', { name: /Savings fund monthly/i }), {
+    fireEvent.change(screen.getByRole('slider', { name: /Investment fund monthly/i }), {
       target: { value: '200' },
     });
 
@@ -348,7 +350,7 @@ describe('MillionaireCalculator', () => {
     renderCalculator();
 
     const before = Number(screen.getByTestId('laura-final').textContent);
-    const amount = screen.getByRole('textbox', { name: /Savings fund monthly/i });
+    const amount = screen.getByRole('textbox', { name: /Investment fund monthly/i });
     // 5000 is well above the slider's 1000 cap: the click-to-edit is the only way there.
     amount.textContent = '5000';
     // The chart follows each keystroke, so the input event alone (no Enter/blur) updates it.
@@ -377,7 +379,7 @@ describe('MillionaireCalculator', () => {
 
     renderCalculator();
 
-    const amount = screen.getByRole('textbox', { name: /Savings fund monthly/i });
+    const amount = screen.getByRole('textbox', { name: /Investment fund monthly/i });
     amount.textContent = '12345'; // a fifth digit would overflow the layout
     // eslint-disable-next-line testing-library/prefer-user-event
     fireEvent.input(amount);
@@ -404,7 +406,7 @@ describe('MillionaireCalculator', () => {
 
     renderCalculator();
 
-    const amount = screen.getByRole('textbox', { name: /Savings fund monthly/i });
+    const amount = screen.getByRole('textbox', { name: /Investment fund monthly/i });
     // Every case rewrites the visible text to its canonical digits so nothing can overflow
     // the layout or leave stray characters behind, whatever the saver pastes or types.
     const cases: Array<[string, string]> = [
@@ -433,7 +435,7 @@ describe('MillionaireCalculator', () => {
 
     renderCalculator();
 
-    const amount = screen.getByRole('textbox', { name: /Savings fund monthly/i });
+    const amount = screen.getByRole('textbox', { name: /Investment fund monthly/i });
     // Only digits are editable; the "€" sits beside the field, not inside it.
     expect(amount).not.toHaveTextContent('€');
     // eslint-disable-next-line testing-library/no-node-access
