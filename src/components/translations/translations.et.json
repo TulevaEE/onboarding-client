@@ -202,7 +202,12 @@
   "error.message.close": "Sulge",
   "error.payment-failed": "Makse ebaõnnestus.",
   "error.technical": "Midagi läks valesti. Palun proovi uuesti või võta meiega ühendust.",
-  "id.card.signing.error": "Ei leidnud ID-kaarti/lugejat või on sertifikaadid aegunud.",
+  "id.card.signing.error": "ID-kaardiga allkirjastamine ebaõnnestus. Kontrolli, et kaardilugeja on ühendatud ning et nii ID-tarkvara kui ka Web eID brauserilaiendus on paigaldatud, ja proovi uuesti.",
+  "id.card.signing.cancelled": "Allkirjastamine katkestati.",
+  "id.card.signing.extension.unavailable": "Web eID laiendus ei ole saadaval. Palun paigalda Web eID laiendus ja proovi uuesti.",
+  "id.card.signing.certificate.invalid": "ID-kaardi allkirjastamise sertifikaati ei õnnestunud lugeda. Palun proovi uuesti.",
+  "id.card.signing.certificate.mismatch": "See ID-kaart kuulub kellelegi teisele. Palun allkirjasta oma ID-kaardiga.",
+  "id.card.signing.hash.function.unsupported": "Sinu ID-kaart ei toeta selle dokumendi jaoks vajalikku allkirjatüüpi. Palun uuenda ID-tarkvara ja proovi uuesti.",
   "mandate.processing.error.epis.already.active.contributions.fund": "Valitud fond on juba aktiivne",
   "mandate.processing.error.epis.unknown": "Tundmatu Eesti Pensioni Infosüsteemi viga",
   "mandate.processing.error.epis.technical.error": "Tundmatu Eesti Pensioni Infosüsteemi tehniline viga",
@@ -253,6 +258,7 @@
   "smart.id.technical.error": "Smart-ID süsteemi viga",
   "smart.id.timeout": "Sa ei kinnitanud päringut Smart-ID rakenduses või tekkis sidehäire.",
   "id.card.signature.session.not.found": "ID-kaardi sessioon on aegunud, palun logi uuesti sisse.",
+  "id.card.signature.invalid": "ID-kaardi allkirja ei õnnestunud lugeda. Palun proovi uuesti.",
   "header.my.account": "Minu konto",
   "roleSwitcher.openNewAccount": "Ava konto lapsele või OÜ-le",
   "roleSwitcher.accountMenu": "kontode menüü",
@@ -2053,5 +2059,8 @@
   "savingsFundTaxReport.investmentAccount.redeemedOutside": "Osa väljamakseid läks mujale kui investeerimiskontole, seega me ei saa tehinguid kindlalt kaheks jagada – allpool on need kõik koos. Maksu edasilükkamise säilimiseks peab investeerimiskontolt ostetud osakute raha laekuma tagasi samale kontole.",
   "savingsFundTaxReport.investmentAccount.unavailable": "Praegu ei õnnestu sinu investeerimiskontot laadida, seega me ei tea, kas oled selle meile öelnud.",
   "savingsFundTaxReport.investmentAccount.retry": "Proovi uuesti",
-  "savingsFundTaxReport.investmentAccount.saveFailed": "Praegu ei õnnestunud seda salvestada. Palun proovi uuesti."
+  "savingsFundTaxReport.investmentAccount.saveFailed": "Praegu ei õnnestunud seda salvestada. Palun proovi uuesti.",
+  "signature.error.unknown": "Allkirjastamine ei jõudnud lõpuni. Palun proovi uuesti.",
+  "signature.already.signed": "See on juba allkirjastatud.",
+  "signature.not.signed": "See ei ole veel allkirjastatud."
 }

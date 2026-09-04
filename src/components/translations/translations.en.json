@@ -192,7 +192,12 @@
   "error.message.close": "Close",
   "error.payment-failed": "Payment failed.",
   "error.technical": "Something went wrong. Please try again or reach out to us.",
-  "id.card.signing.error": "Couldn’t find ID-card or certificates are outdated or browser signing plugin is not working. If needed restart the broswer and try again.",
+  "id.card.signing.error": "Could not sign with the ID-card. Check that the card reader is connected, and that both the ID-software and the Web eID browser extension are installed, then try again.",
+  "id.card.signing.cancelled": "Signing was cancelled.",
+  "id.card.signing.extension.unavailable": "Web eID extension is not available. Please install the Web eID extension and try again.",
+  "id.card.signing.certificate.invalid": "Could not read the signing certificate from your ID-card. Please try again.",
+  "id.card.signing.certificate.mismatch": "This ID-card belongs to someone else. Please sign with your own ID-card.",
+  "id.card.signing.hash.function.unsupported": "Your ID-card does not support the signature type required for this document. Please update your ID-software and try again.",
   "mandate.processing.error.epis.already.active.contributions.fund": "Selected contributions fund is already active",
   "mandate.processing.error.epis.unknown": "Unknown Estonian Pension Information system error",
   "mandate.processing.error.epis.technical.error": "Unknown Estonian Pension Information system technical error",
@@ -243,6 +248,7 @@
   "smart.id.technical.error": "Smart-ID technical error",
   "smart.id.timeout": "You didn’t confirm the request in the Smart-ID app or there was a communication error.",
   "id.card.signature.session.not.found": "ID-card session is expired. Please log in again.",
+  "id.card.signature.invalid": "Could not read the signature from your ID-card. Please try again.",
   "header.my.account": "My account",
   "roleSwitcher.openNewAccount": "Open an account for a child or company",
   "roleSwitcher.accountMenu": "account menu",
@@ -1963,5 +1969,8 @@
   "savingsFundTaxReport.investmentAccount.redeemedOutside": "Some money was paid out to an account other than the investment account, so we cannot split these transactions with confidence – all of them are shown together below. For the deferral to hold, money from units bought on an investment account has to come back to that same account.",
   "savingsFundTaxReport.investmentAccount.unavailable": "We cannot load your investment account right now, so we cannot tell whether you have declared one.",
   "savingsFundTaxReport.investmentAccount.retry": "Try again",
-  "savingsFundTaxReport.investmentAccount.saveFailed": "We could not save that just now. Please try again."
+  "savingsFundTaxReport.investmentAccount.saveFailed": "We could not save that just now. Please try again.",
+  "signature.error.unknown": "Signing did not complete. Please try again.",
+  "signature.already.signed": "This has already been signed.",
+  "signature.not.signed": "This has not been signed yet."
 }
