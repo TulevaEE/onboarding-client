@@ -721,7 +721,6 @@
   "secondPillarPaymentRate.option.6Percent": "6% brutopalgast",
   "secondPillarPaymentRate.calculation.6Percent": "Sina panustad 6% ja riik 4%, kokku kogud <b>10%</b>",
   "secondPillarPaymentRate.current": "Praegune valik",
-  "secondPillarPaymentRate.recommended": "Soovitame",
   "secondPillarPaymentRate.maximumBenefit": "Saad suurima maksuvõidu ja kogud II sambasse maksimaalselt",
   "secondPillarPaymentRate.confirmation": "Kinnitamine",
   "secondPillarPaymentRate.confirm.mandate.agree.to.terms": "Vajutades nupule “Allkirjastan ja saadan”, saadan digiallkirjastatud avalduse otse registripidajale.",
@@ -827,7 +826,6 @@
   "withdrawals.navigation.forward": "Edasi",
   "withdrawals.navigation.notEligible": "Sa pole veel 60-aastane ega saa jätkata",
 
-  "withdrawals.withdrawalAmount.recommended": "Soovitame",
   "withdrawals.withdrawalAmount.partialWithdrawTitle": "Võtan osa raha kohe välja",
   "withdrawals.withdrawalAmount.partialWithdrawInputLabel": "Võtan välja {taxPercent}% tulumaksuga",
   "withdrawals.withdrawalAmount.partialWithdrawalTax": "Väljamakselt peab riik kinni {taxPercent}% tulumaksu",
@@ -1362,6 +1360,7 @@
 
   "savingsFund.paymentCancellation.pageTitle": "Katkesta sissemakse",
   "savingsFund.paymentCancellation.title": "Sissemakse katkestamine",
+  "common.recommended": "Soovitame",
   "savingsFund.paymentCancellation.success.title": "Sissemakse on katkestatud",
   "savingsFund.paymentCancellation.success.description": "Tagastame raha ühe tööpäeva jooksul samale pangakontole, kust see laekus.",
   "savingsFund.paymentCancellation.error": "Makse katkestamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee",
