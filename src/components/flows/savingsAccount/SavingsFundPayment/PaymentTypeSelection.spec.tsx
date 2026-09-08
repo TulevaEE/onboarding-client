@@ -14,7 +14,7 @@ describe('PaymentTypeSelection', () => {
     ).toBeInTheDocument();
     expect(
       within(paymentTypes).getByRole('radio', {
-        name: /^Recurring\spayment.*Recommended.*Saving\shappens\sautomatically,\swithout\syou\shaving\sto\sremember\sit\.$/,
+        name: /^Recurring\spayment.*Recommended.*You\ssave\sautomatically,\swithout\shaving\sto\sthink\sabout\sit\.$/,
       }),
     ).toBeInTheDocument();
   });
