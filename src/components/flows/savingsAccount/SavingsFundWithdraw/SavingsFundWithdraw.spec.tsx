@@ -14,7 +14,7 @@ import { SourceFund } from '../../../common/apiModels';
 const mockSavingsFundBalance: SourceFund = {
   fundManager: { name: 'Tuleva' },
   activeFund: true,
-  name: 'Tuleva Additional Savings Fund',
+  name: 'Tuleva Additional Investment Fund',
   pillar: null,
   managementFeePercent: 0.34,
   isin: 'EE3600001707',
@@ -58,7 +58,7 @@ describe(SavingsFundWithdraw, () => {
             fund: {
               fundManager: { name: 'Tuleva' },
               isin: 'EE3600001707',
-              name: 'Tuleva Additional Savings Fund',
+              name: 'Tuleva Additional Investment Fund',
               managementFeeRate: 0.0034,
               pillar: null,
               status: 'ACTIVE',
@@ -87,7 +87,7 @@ describe(SavingsFundWithdraw, () => {
 
   it('validates the withdrawal amount and bank account selection', async () => {
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Investment Fund' }),
     ).toBeInTheDocument();
 
     const amountInput = await screen.findByRole('textbox', { name: 'Amount' });
@@ -121,7 +121,7 @@ describe(SavingsFundWithdraw, () => {
 
   it('displays balance slider with correct range', async () => {
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Investment Fund' }),
     ).toBeInTheDocument();
 
     const slider = await screen.findByRole('slider');
@@ -135,7 +135,7 @@ describe(SavingsFundWithdraw, () => {
 
   it('populates bank account dropdown with available accounts', async () => {
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Investment Fund' }),
     ).toBeInTheDocument();
 
     const bankAccountSelect = await screen.findByRole('combobox', { name: 'Bank account' });
@@ -167,7 +167,7 @@ describe(SavingsFundWithdraw, () => {
     );
 
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Investment Fund' }),
     ).toBeInTheDocument();
 
     const amountInput = await screen.findByRole('textbox', { name: 'Amount' });
@@ -200,7 +200,7 @@ describe(SavingsFundWithdraw, () => {
     );
 
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Investment Fund' }),
     ).toBeInTheDocument();
 
     const amountInput = await screen.findByRole('textbox', { name: 'Amount' });
@@ -221,7 +221,7 @@ describe(SavingsFundWithdraw, () => {
 
   it('displays cancel button that navigates to account page', async () => {
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Investment Fund' }),
     ).toBeInTheDocument();
 
     const cancelButton = screen.getByRole('link', { name: 'Back' });
@@ -231,7 +231,7 @@ describe(SavingsFundWithdraw, () => {
 
   it('displays info section with withdraw variant', async () => {
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Investment Fund' }),
     ).toBeInTheDocument();
 
     expect(
@@ -242,7 +242,7 @@ describe(SavingsFundWithdraw, () => {
 
   it('enforces maximum withdrawal amount', async () => {
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Investment Fund' }),
     ).toBeInTheDocument();
 
     const amountInput = await screen.findByRole('textbox', { name: 'Amount' });
@@ -265,7 +265,7 @@ describe(SavingsFundWithdraw, () => {
     );
 
     expect(
-      await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
+      await screen.findByRole('heading', { name: 'Withdraw from Additional Investment Fund' }),
     ).toBeInTheDocument();
 
     const amountInput = await screen.findByRole('textbox', { name: 'Amount' });
@@ -298,7 +298,7 @@ describe(SavingsFundWithdraw, () => {
 
     it('hides the investment account info block in the withdraw view', async () => {
       expect(
-        await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
+        await screen.findByRole('heading', { name: 'Withdraw from Additional Investment Fund' }),
       ).toBeInTheDocument();
 
       expect(
@@ -311,7 +311,7 @@ describe(SavingsFundWithdraw, () => {
 
     it('shows company-bank creditor text instead of the personal one', async () => {
       expect(
-        await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
+        await screen.findByRole('heading', { name: 'Withdraw from Additional Investment Fund' }),
       ).toBeInTheDocument();
 
       expect(
@@ -324,12 +324,12 @@ describe(SavingsFundWithdraw, () => {
 
     it('shows company-bank IBAN description instead of the personal one', async () => {
       expect(
-        await screen.findByRole('heading', { name: 'Withdraw from Additional Savings Fund' }),
+        await screen.findByRole('heading', { name: 'Withdraw from Additional Investment Fund' }),
       ).toBeInTheDocument();
 
       expect(
         screen.getByText(
-          /You can only withdraw to a company bank account from which you have previously made a deposit to the Additional Savings Fund\./i,
+          /You can only withdraw to a company bank account from which you have previously made a deposit to the Additional Investment Fund\./i,
         ),
       ).toBeInTheDocument();
       expect(

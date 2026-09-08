@@ -9,7 +9,7 @@ describe('SavingsFundOnboardingSuccess', () => {
     expect(screen.getByText('All set! One more step…')).toBeInTheDocument();
     expect(
       screen.getByText(
-        'Put your money to work right away by making a contribution to the Additional Savings Fund. Start with even one euro.',
+        'Put your money to work right away by making a contribution to the Additional Investment Fund. Start with even one euro.',
       ),
     ).toBeInTheDocument();
   });
@@ -31,7 +31,7 @@ describe('SavingsFundOnboardingSuccess', () => {
     expect(screen.getByText('All set! One more step…')).toBeInTheDocument();
     expect(
       screen.getByText(
-        'Put the money to work right away by making a contribution to the Additional Savings Fund. Start with even one euro.',
+        'Put the money to work right away by making a contribution to the Additional Investment Fund. Start with even one euro.',
       ),
     ).toBeInTheDocument();
   });
