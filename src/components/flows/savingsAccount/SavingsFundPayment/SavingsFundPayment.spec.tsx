@@ -246,15 +246,15 @@ describe(SavingsFundPayment, () => {
 
   describe('recurring payment flow', () => {
     const selectRecurring = () => {
-      const recurringRadio = screen.getByRole('radio', { name: 'Recurring payment' });
+      const recurringRadio = screen.getByRole('radio', { name: /^Recurring\spayment/ });
       userEvent.click(recurringRadio);
       return recurringRadio;
     };
 
     it('defaults to single payment and offers a recurring option', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
-      expect(screen.getByRole('radio', { name: 'Single payment' })).toBeChecked();
-      expect(screen.getByRole('radio', { name: 'Recurring payment' })).not.toBeChecked();
+      expect(screen.getByRole('radio', { name: /^Single\spayment/ })).toBeChecked();
+      expect(screen.getByRole('radio', { name: /^Recurring\spayment/ })).not.toBeChecked();
     });
 
     it('pre-selects the recurring option when linked to with type=RECURRING', async () => {
@@ -265,8 +265,8 @@ describe(SavingsFundPayment, () => {
       history.push('/savings-fund/payment?type=RECURRING');
 
       expect(await findPageHeading()).toBeInTheDocument();
-      expect(screen.getByRole('radio', { name: 'Recurring payment' })).toBeChecked();
-      expect(screen.getByRole('radio', { name: 'Single payment' })).not.toBeChecked();
+      expect(screen.getByRole('radio', { name: /^Recurring\spayment/ })).toBeChecked();
+      expect(screen.getByRole('radio', { name: /^Single\spayment/ })).not.toBeChecked();
     });
 
     it('shows step-by-step instructions with a bank link when LHV is selected for recurring', async () => {
@@ -527,7 +527,7 @@ describe(SavingsFundPayment, () => {
     it('shows company-bank verify step in the recurring panel instead of the investment-account one', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
       replaceAmount('50');
-      userEvent.click(screen.getByRole('radio', { name: 'Recurring payment' }));
+      userEvent.click(screen.getByRole('radio', { name: /^Recurring\spayment/ }));
       userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
 
       expect(
@@ -543,7 +543,7 @@ describe(SavingsFundPayment, () => {
     it('shows a copy-card for Swedbank recurring because the business page has no pre-fill', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
       replaceAmount('50');
-      userEvent.click(screen.getByRole('radio', { name: 'Recurring payment' }));
+      userEvent.click(screen.getByRole('radio', { name: /^Recurring\spayment/ }));
       userEvent.click(screen.getByRole('radio', { name: 'Swedbank' }));
 
       expect(
@@ -588,7 +588,7 @@ describe(SavingsFundPayment, () => {
     it('shows the child-bank verify step in the recurring panel instead of the investment-account one', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
       replaceAmount('50');
-      userEvent.click(screen.getByRole('radio', { name: 'Recurring payment' }));
+      userEvent.click(screen.getByRole('radio', { name: /^Recurring\spayment/ }));
       userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
 
       expect(

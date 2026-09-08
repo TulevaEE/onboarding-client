@@ -1299,6 +1299,7 @@
   "savingsFund.payment.form.paymentType.label": "Millist tüüpi makset soovid teha?",
   "savingsFund.payment.form.paymentType.single": "Ühekordne sissemakse",
   "savingsFund.payment.form.paymentType.recurring": "Igakuine püsimakse",
+  "savingsFund.payment.form.paymentType.recurring.description": "Kogumine käib automaatselt, ilma et peaksid seda meeles pidama.",
   "savingsFund.payment.infoSection.investmentAccount": "Saad investeerimistulult tulumaksu tasumise edasi lükata, kui deklareerid oma pangakonto <b>investeerimiskontona</b>.",
   "savingsFund.payment.infoSection.investmentAccount.learnMore": "Mis see on ja kuidas see käib?",
   "savingsFund.payment.infoSection.creditor": "Raha peab laekuma sinu enda pangakontolt.",
