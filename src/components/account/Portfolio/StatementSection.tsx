@@ -19,6 +19,9 @@ const signedUnits = (transaction: Transaction): number =>
 // booked near midnight UTC cannot be listed under a date outside the period.
 const onDate = (transaction: Transaction): string => moment(transaction.time).format('YYYY-MM-DD');
 
+const UTF8_BYTE_ORDER_MARK = '\ufeff';
+const ESTONIAN_EXCEL_COLUMN_SEPARATOR = ';';
+
 // No computed cost basis or realised gain anywhere here: choosing FIFO or weighted
 // average is the account owner's accounting policy, not ours to make for them.
 export const StatementSection: React.FunctionComponent<{
@@ -72,9 +75,7 @@ export const StatementSection: React.FunctionComponent<{
     });
 
   const downloadCsv = () => {
-    // Semicolon-separated with comma decimals: what Estonian-locale Excel opens into
-    // columns without an import dialog. The BOM tells it the file is UTF-8.
-    const number = (value: number, fractionDigits: number) =>
+    const decimalComma = (value: number, fractionDigits: number) =>
       value.toFixed(fractionDigits).replace('.', ',');
     const header = [
       formatMessage({ id: 'savingsFund.statement.transactions.date' }),
@@ -86,12 +87,17 @@ export const StatementSection: React.FunctionComponent<{
     const rows = periodTransactions.map((transaction) => [
       moment(transaction.time).format('DD.MM.YYYY'),
       typeLabel(transaction),
-      number(signedUnits(transaction), 4),
-      number(transaction.nav, 5),
-      number(transaction.amount, 2),
+      decimalComma(signedUnits(transaction), 4),
+      decimalComma(transaction.nav, 5),
+      decimalComma(transaction.amount, 2),
     ]);
-    const csv = [header, ...rows].map((row) => row.join(';')).join('\r\n');
-    download(`\ufeff${csv}`, `tuleva-kogumisfondi-valjavote-${from}-${to}.csv`, 'text/csv');
+    const csv = [header, ...rows]
+      .map((row) => row.join(ESTONIAN_EXCEL_COLUMN_SEPARATOR))
+      .join('\r\n');
+    download(
+      new Blob([UTF8_BYTE_ORDER_MARK, csv], { type: 'text/csv;charset=utf-8' }),
+      `tuleva-kogumisfondi-valjavote-${from}-${to}.csv`,
+    );
   };
 
   const dataSource = [...periodTransactions].reverse().map((transaction) => ({

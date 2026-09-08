@@ -14,6 +14,9 @@ import { Portfolio, RoleType, Transaction } from '../../common/apiModels';
 import { PortfolioPage } from './PortfolioPage';
 
 jest.mock('downloadjs');
+// setupTests pins useIntl to English for the whole suite, which would hide every
+// language the CSV is actually written in.
+jest.unmock('react-intl');
 
 const allTime: Portfolio = {
   from: '2020-01-01',
@@ -205,7 +208,7 @@ const portfolioBackendDown = () =>
     ),
   );
 
-function initializeComponent() {
+function initializeComponent(language: 'en' | 'et' = 'en') {
   const history = createMemoryHistory();
   const store = createDefaultStore(history as any);
   login(store);
@@ -215,6 +218,7 @@ function initializeComponent() {
     history as any,
     store,
     new QueryClient({ defaultOptions: { queries: { retry: false } } }),
+    language,
   );
 }
 
@@ -375,6 +379,17 @@ describe('the savings fund statement', () => {
     savingsTransaction('2026-02-01T10:00:00Z', 7, 1.3, 9.1),
   ];
 
+  const downloadedCsv = async (): Promise<{ filename: string; text: string }> => {
+    const [content, filename] = (download as jest.Mock).mock.calls[0];
+    expect(content).toBeInstanceOf(Blob);
+    const text = await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(Buffer.from(reader.result as ArrayBuffer).toString('utf8'));
+      reader.readAsArrayBuffer(content);
+    });
+    return { filename, text };
+  };
+
   it('shows only the transactions of the selected period', async () => {
     accountHolding(holdingHistory);
     initializeComponent();
@@ -418,11 +433,25 @@ describe('the savings fund statement', () => {
     userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
 
     expect(download).toHaveBeenCalledTimes(1);
-    const [content, filename] = (download as jest.Mock).mock.calls[0];
+    const { filename, text } = await downloadedCsv();
     expect(filename).toBe('tuleva-kogumisfondi-valjavote-2025-01-01-2025-12-31.csv');
-    expect(content).toContain('10.03.2025;Contribution;20,0000;1,10000;22,00');
-    expect(content).toContain('01.08.2025;Redemption;-5,0000;1,20000;-6,00');
-    expect(content).not.toContain('01.02.2026');
+    expect(text).toMatch(/^\ufeffDate;Transaction;Units;NAV;Amount\r\n/);
+    expect(text).toContain('10.03.2025;Contribution;20,0000;1,10000;22,00');
+    expect(text).toContain('01.08.2025;Redemption;-5,0000;1,20000;-6,00');
+    expect(text).not.toContain('01.02.2026');
+  });
+
+  it('writes the Estonian CSV in the UTF-8 the byte order mark announces', async () => {
+    accountHolding(holdingHistory);
+    initializeComponent('et');
+
+    expect(await screen.findByText('Tehingud valitud perioodil')).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Laadi alla CSV' }));
+
+    const { text } = await downloadedCsv();
+    expect(text).toMatch(/^\ufeffKuupäev;Tehing;Osakud;NAV;Summa\r\n/);
+    expect(text).toContain('01.08.2025;Väljamakse;-5,0000;1,20000;-6,00');
   });
 
   it('opens the print dialog for the PDF', async () => {
