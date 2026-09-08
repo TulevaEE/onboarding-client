@@ -51,6 +51,14 @@ describe('Third pillar success screen', () => {
     history.push('/3rd-pillar-success');
 
     expect(await screen.findByRole('heading', { name: 'Payment done' })).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'That puts you among the top 30% of people in Estonia who save in the third pillar.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('New fund units will reach your account within 2 working days.'),
+    ).toBeInTheDocument();
     expect(await main().findByRole('link', { name: 'Increase your contribution' })).toHaveAttribute(
       'href',
       '/2nd-pillar-payment-rate',

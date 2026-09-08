@@ -8,6 +8,7 @@ import {
   secondPillarSuggestion,
 } from '../secondPillarNudge/secondPillarSuggestion';
 import { SecondPillarNudge } from '../secondPillarNudge/SecondPillarNudge';
+import { PaymentDoneMessage } from './PaymentDoneMessage';
 
 export const ThirdPillarSuccess = () => {
   const { data: conversion, isLoading: conversionLoading } = useConversion();
@@ -50,11 +51,13 @@ const SupportNotice = ({
         id={isTransferIn ? 'thirdPillarSuccess.transfer.done' : 'thirdPillarSuccess.done'}
       />
     </h2>
-    <p className="mt-5">
-      <FormattedMessage
-        id={isTransferIn ? 'thirdPillarSuccess.transfer.message' : 'thirdPillarSuccess.message'}
-      />
-    </p>
+    {isTransferIn ? (
+      <p className="mt-5">
+        <FormattedMessage id="thirdPillarSuccess.transfer.message" />
+      </p>
+    ) : (
+      <PaymentDoneMessage />
+    )}
     {showAccountButton && (
       <a className="btn btn-primary mt-4 profile-link" href="/account">
         <FormattedMessage id="thirdPillarSuccess.button.account" />

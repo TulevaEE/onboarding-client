@@ -7,6 +7,7 @@ import { cancelThirdPillarPaymentReminder } from '../../../common/api';
 import { useConversion, useMe, usePendingApplications } from '../../../common/apiHooks';
 import { secondPillarSuggestion } from '../secondPillarNudge/secondPillarSuggestion';
 import { SecondPillarNudge } from '../secondPillarNudge/SecondPillarNudge';
+import { PaymentDoneMessage } from '../ThirdPillarSuccess/PaymentDoneMessage';
 import { AvailablePaymentType } from './types';
 
 export const RecurringPaymentConfirmation = () => {
@@ -78,15 +79,18 @@ const ConfirmedSupportWithNudge = ({ paymentType }: { paymentType: AvailablePaym
             }
           />
         </h2>
-        <p className="mt-5">
-          <FormattedMessage
-            id={
-              paymentType === 'RECURRING'
-                ? 'thirdPillarPayment.confirmation.done.message.recurring'
-                : 'thirdPillarSuccess.message'
-            }
-          />
-        </p>
+        {paymentType === 'RECURRING' ? (
+          <>
+            <p className="mt-5">
+              <FormattedMessage id="thirdPillarPayment.confirmation.done.message.recurring" />
+            </p>
+            <p>
+              <FormattedMessage id="thirdPillarPayment.confirmation.done.message.recurring.firstPayment" />
+            </p>
+          </>
+        ) : (
+          <PaymentDoneMessage />
+        )}
         {supportOnly && (
           <a className="btn btn-primary mt-4 profile-link" href="/account">
             <FormattedMessage id="thirdPillarSuccess.button.account" />

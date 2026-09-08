@@ -231,6 +231,16 @@ describe('When a user is making a third pillar payment', () => {
     expect(
       await screen.findByRole('heading', { name: 'Recurring payment set up' }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'From now on you save into your third pillar automatically, without having to remember it.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'The first payment is on the date you chose, and you can change the amount in your internet bank whenever you need.',
+      ),
+    ).toBeInTheDocument();
   });
 
   test('can see Other bank payment details', async () => {
@@ -262,6 +272,14 @@ describe('When a user is making a third pillar payment', () => {
     userEvent.click(await confirmDoneLink());
 
     expect(await screen.findByRole('heading', { name: 'Payment done' })).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'That puts you among the top 30% of people in Estonia who save in the third pillar.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('New fund units will reach your account within 2 working days.'),
+    ).toBeInTheDocument();
   });
 
   test('can switch between Single and Recurring payment', async () => {
