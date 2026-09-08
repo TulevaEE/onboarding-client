@@ -7,6 +7,7 @@ import { useFunds, useMe, useTransactions } from '../../common/apiHooks';
 import { Euro } from '../../common/Euro';
 import Table from '../../common/table';
 import { formatAmountForCount, isActingAsSelf } from '../../common/utils';
+import { dayInTallinn, formatDayInTallinn } from '../../common/dateFormatter';
 import { PortfolioGroupSummary, Transaction, User } from '../../common/apiModels';
 import styles from './Statement.module.scss';
 
@@ -17,7 +18,7 @@ const signedUnits = (transaction: Transaction): number =>
 
 // The statement filters and displays by the same local calendar day, so a transaction
 // booked near midnight UTC cannot be listed under a date outside the period.
-const onDate = (transaction: Transaction): string => moment(transaction.time).format('YYYY-MM-DD');
+const onDate = (transaction: Transaction): string => dayInTallinn(transaction.time);
 
 const UTF8_BYTE_ORDER_MARK = '\ufeff';
 const ESTONIAN_EXCEL_COLUMN_SEPARATOR = ';';
@@ -85,7 +86,7 @@ export const StatementSection: React.FunctionComponent<{
       formatMessage({ id: 'savingsFund.statement.transactions.amount' }),
     ];
     const rows = periodTransactions.map((transaction) => [
-      moment(transaction.time).format('DD.MM.YYYY'),
+      formatDayInTallinn(transaction.time),
       typeLabel(transaction),
       decimalComma(signedUnits(transaction), 4),
       decimalComma(transaction.nav, 5),
@@ -101,7 +102,7 @@ export const StatementSection: React.FunctionComponent<{
   };
 
   const dataSource = [...periodTransactions].reverse().map((transaction) => ({
-    date: <span className="text-nowrap">{moment(transaction.time).format('DD.MM.YYYY')}</span>,
+    date: <span className="text-nowrap">{formatDayInTallinn(transaction.time)}</span>,
     type: typeLabel(transaction),
     units: formatAmountForCount(signedUnits(transaction), 4),
     nav: formatAmountForCount(transaction.nav, 5),
@@ -244,7 +245,7 @@ export const StatementSection: React.FunctionComponent<{
             </tr>
             {periodTransactions.map((transaction) => (
               <tr key={transaction.id ?? transaction.time}>
-                <td>{moment(transaction.time).format('DD.MM.YYYY')}</td>
+                <td>{formatDayInTallinn(transaction.time)}</td>
                 <td>{typeLabel(transaction)}</td>
                 <td className="text-end">{formatAmountForCount(signedUnits(transaction), 4)}</td>
                 <td className="text-end">{formatAmountForCount(transaction.nav, 5)}</td>

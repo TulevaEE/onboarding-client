@@ -502,6 +502,8 @@ describe('the savings fund statement', () => {
     savingsTransaction('2026-02-01T10:00:00Z', 7, 1.3, 9.1),
   ];
 
+  const justAfterMidnightInTallinn = savingsTransaction('2025-12-31T22:30:00Z', 3, 1.4, 4.2);
+
   const downloadedCsv = async (): Promise<{ filename: string; text: string }> => {
     const [content, filename] = (download as jest.Mock).mock.calls[0];
     expect(content).toBeInstanceOf(Blob);
@@ -527,6 +529,32 @@ describe('the savings fund statement', () => {
     expect(screen.getAllByText('10.03.2025')).not.toHaveLength(0);
     expect(screen.getAllByText('01.08.2025')).not.toHaveLength(0);
     expect(screen.queryAllByText('01.02.2026')).toHaveLength(0);
+  });
+
+  it('dates a transaction by the day it fell on in Estonia', async () => {
+    accountHolding([...holdingHistory, justAfterMidnightInTallinn]);
+    initializeComponent();
+
+    expect(await screen.findAllByText('01.01.2026')).not.toHaveLength(0);
+    expect(screen.queryAllByText('31.12.2025')).toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    expect(text).toContain('01.01.2026;Contribution;3,0000;1,40000;4,20');
+  });
+
+  it('leaves a transaction that crossed midnight in Estonia out of the year before', async () => {
+    accountHolding([...holdingHistory, justAfterMidnightInTallinn]);
+    initializeComponent();
+
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
+    expect(screen.queryAllByText('01.01.2026')).toHaveLength(0);
+    expect(screen.queryAllByText(/1[.,]40000/)).toHaveLength(0);
   });
 
   it('carries the opening and closing units into the printable statement', async () => {
