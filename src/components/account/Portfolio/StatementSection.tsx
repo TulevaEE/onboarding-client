@@ -11,13 +11,9 @@ import { dayInTallinn, formatDayInTallinn } from '../../common/dateFormatter';
 import { Fund, PortfolioGroupSummary, Transaction, User } from '../../common/apiModels';
 import styles from './Statement.module.scss';
 
-// The register reports units as positive numbers on both directions; the sign lives in
-// the transaction type. Everything below works on signed units so balances add up.
 const signedUnits = (transaction: Transaction): number =>
   transaction.type === 'SUBTRACTION' ? -transaction.units : transaction.units;
 
-// The statement filters and displays by the same local calendar day, so a transaction
-// booked near midnight UTC cannot be listed under a date outside the period.
 const onDate = (transaction: Transaction): string => dayInTallinn(transaction.time);
 
 const isSavingsFund = (fund: Fund): boolean => fund.pillar === null;
@@ -25,8 +21,6 @@ const isSavingsFund = (fund: Fund): boolean => fund.pillar === null;
 const UTF8_BYTE_ORDER_MARK = '\ufeff';
 const ESTONIAN_EXCEL_COLUMN_SEPARATOR = ';';
 
-// No computed cost basis or realised gain anywhere here: choosing FIFO or weighted
-// average is the account owner's accounting policy, not ours to make for them.
 export const StatementSection: React.FunctionComponent<{
   summary: PortfolioGroupSummary;
   from: string;
@@ -37,8 +31,6 @@ export const StatementSection: React.FunctionComponent<{
   const { data: funds, isLoading: fundsLoading } = useFunds();
   const { data: user } = useMe();
 
-  // Absent rows are not an empty statement: while the answers are loading, or when one
-  // never comes, there is no section — not a document claiming the period had nothing.
   if (transactionsLoading || fundsLoading || !transactions || !funds || !user) {
     return <></>;
   }
@@ -295,8 +287,6 @@ const PrintOnlyDocument: React.FunctionComponent<{ children: React.ReactNode }> 
   return createPortal(<div className={styles.printOnly}>{children}</div>, document.body);
 };
 
-// The document names whoever the account belongs to: the company or child someone is
-// acting for, or the person themselves.
 const statementOwner = (
   user: User,
 ): {
