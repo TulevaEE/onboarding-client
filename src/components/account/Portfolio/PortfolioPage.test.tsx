@@ -18,9 +18,11 @@ jest.mock('downloadjs');
 // language the CSV is actually written in.
 jest.unmock('react-intl');
 
+const today = moment().format('YYYY-MM-DD');
+
 const allTime: Portfolio = {
   from: '2020-01-01',
-  to: '2026-08-07',
+  to: today,
   groups: [
     {
       group: 'SAVINGS_FUND',
@@ -45,7 +47,7 @@ const allTime: Portfolio = {
   ],
   series: [
     { date: '2020-01-01', values: { SAVINGS_FUND: 100, SECOND_PILLAR: 100 } },
-    { date: '2026-08-07', values: { SAVINGS_FUND: 200, SECOND_PILLAR: 300 } },
+    { date: today, values: { SAVINGS_FUND: 200, SECOND_PILLAR: 300 } },
   ],
 };
 
@@ -77,6 +79,41 @@ const lastYear: Portfolio = {
   series: [
     { date: '2025-01-01', values: { SAVINGS_FUND: 120, SECOND_PILLAR: 180 } },
     { date: '2025-12-31', values: { SAVINGS_FUND: 250, SECOND_PILLAR: 350 } },
+  ],
+};
+
+const thisYearStart = moment().startOf('year').format('YYYY-MM-DD');
+
+const lastYearStart = moment().subtract(1, 'year').startOf('year').format('YYYY-MM-DD');
+
+const thisYear: Portfolio = {
+  from: thisYearStart,
+  to: today,
+  groups: [
+    {
+      group: 'SAVINGS_FUND',
+      startValue: 210,
+      endValue: 260,
+      contributions: 20,
+      withdrawals: 0,
+      gain: 30,
+      gainPercentage: 14.0,
+      annualReturnRate: null,
+    },
+    {
+      group: 'SECOND_PILLAR',
+      startValue: 310,
+      endValue: 360,
+      contributions: 20,
+      withdrawals: 0,
+      gain: 30,
+      gainPercentage: 9.0,
+      annualReturnRate: null,
+    },
+  ],
+  series: [
+    { date: thisYearStart, values: { SAVINGS_FUND: 210, SECOND_PILLAR: 310 } },
+    { date: today, values: { SAVINGS_FUND: 260, SECOND_PILLAR: 360 } },
   ],
 };
 
@@ -113,6 +150,46 @@ const portfolioBackend = () =>
       return res(ctx.json(req.url.searchParams.get('from') ? lastYear : allTime));
     }),
   );
+
+const portfolioBackendHoldingBackThisYear = () => {
+  let answerThisYear: () => void = () => {};
+  const answered = new Promise<void>((resolve) => {
+    answerThisYear = resolve;
+  });
+
+  server.use(
+    rest.get('http://localhost/v1/portfolio', async (req, res, ctx) => {
+      const from = req.url.searchParams.get('from');
+      if (from === thisYearStart) {
+        await answered;
+        return res(ctx.json(thisYear));
+      }
+      return res(ctx.json(from ? lastYear : allTime));
+    }),
+  );
+
+  return () => answerThisYear();
+};
+
+const portfolioBackendHoldingBackLastYear = () => {
+  let answerLastYear: () => void = () => {};
+  const answered = new Promise<void>((resolve) => {
+    answerLastYear = resolve;
+  });
+
+  server.use(
+    rest.get('http://localhost/v1/portfolio', async (req, res, ctx) => {
+      const from = req.url.searchParams.get('from');
+      if (from === lastYearStart) {
+        await answered;
+        return res(ctx.json(lastYear));
+      }
+      return res(ctx.json(from ? lastYear : allTime));
+    }),
+  );
+
+  return () => answerLastYear();
+};
 
 const portfolioBackendRefusingNarrowedPeriods = () =>
   server.use(
@@ -257,6 +334,52 @@ describe('what the register holds today', () => {
 
     expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
     expect(screen.queryByText(/899[.,]00/)).not.toBeInTheDocument();
+  });
+
+  it('is left off the period still on screen while the next one is on its way', async () => {
+    const answerThisYear = portfolioBackendHoldingBackThisYear();
+    registerHolding([fundBalance(2, 700, 77)], fundBalance(null, 111, 11));
+    accountHolding([savingsTransaction('2025-03-10T10:00:00Z', 20, 1.1, 22)]);
+    initializeComponent();
+
+    expect(await screen.findAllByText(/899[.,]00/)).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'This year' }));
+
+    expect(screen.getByText('Closing balance 31.12.2025')).toBeInTheDocument();
+    expect(screen.getAllByText(/600[.,]00/)).not.toHaveLength(0);
+    expect(screen.queryByText(/899[.,]00/)).not.toBeInTheDocument();
+
+    answerThisYear();
+
+    expect(await screen.findAllByText(/899[.,]00/)).not.toHaveLength(0);
+  });
+
+  it('dates the period still on screen by its own end while the next one is on its way', async () => {
+    const answerLastYear = portfolioBackendHoldingBackLastYear();
+    registerHolding([fundBalance(2, 700, 77)], fundBalance(null, 111, 11));
+    initializeComponent();
+
+    expect(await screen.findAllByText(/899[.,]00/)).not.toHaveLength(0);
+    expect(
+      screen.getByText(`Your money as of ${moment().format('DD.MM.YYYY')}`),
+    ).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(
+      screen.getByText(`Your money as of ${moment().format('DD.MM.YYYY')}`),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/899[.,]00/)).not.toHaveLength(0);
+
+    answerLastYear();
+
+    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
+    expect(screen.getByText('Your money as of 31.12.2025')).toBeInTheDocument();
   });
 
   it('waits for the whole register answer rather than mixing it with rebuilt values', async () => {
@@ -485,7 +608,7 @@ describe('the savings fund statement', () => {
             groups: allTime.groups.filter((group) => group.group !== 'SAVINGS_FUND'),
             series: [
               { date: '2020-01-01', values: { SECOND_PILLAR: 100 } },
-              { date: '2026-08-07', values: { SECOND_PILLAR: 300 } },
+              { date: today, values: { SECOND_PILLAR: 300 } },
             ],
           }),
         ),
