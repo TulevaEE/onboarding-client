@@ -281,8 +281,9 @@ describe('When a user is making a third pillar payment', () => {
     expect(await makePaymentButton()).toBeInTheDocument();
   });
 
-  const singlePaymentOption = async () => screen.findByLabelText('Single payment');
-  const recurringPaymentOption = async () => screen.findByLabelText('Recurring payment');
+  const singlePaymentOption = async () => screen.findByRole('radio', { name: /^Single\spayment/ });
+  const recurringPaymentOption = async () =>
+    screen.findByRole('radio', { name: /^Recurring\spayment/ });
   const amountInput: () => Promise<HTMLInputElement> = async () =>
     screen.findByLabelText('What is the payment amount?', {
       exact: false,
