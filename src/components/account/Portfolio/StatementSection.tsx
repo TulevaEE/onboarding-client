@@ -8,7 +8,7 @@ import { Euro } from '../../common/Euro';
 import Table from '../../common/table';
 import { formatAmountForCount, isActingAsSelf } from '../../common/utils';
 import { dayInTallinn, formatDayInTallinn } from '../../common/dateFormatter';
-import { PortfolioGroupSummary, Transaction, User } from '../../common/apiModels';
+import { Fund, PortfolioGroupSummary, Transaction, User } from '../../common/apiModels';
 import styles from './Statement.module.scss';
 
 // The register reports units as positive numbers on both directions; the sign lives in
@@ -19,6 +19,8 @@ const signedUnits = (transaction: Transaction): number =>
 // The statement filters and displays by the same local calendar day, so a transaction
 // booked near midnight UTC cannot be listed under a date outside the period.
 const onDate = (transaction: Transaction): string => dayInTallinn(transaction.time);
+
+const isSavingsFund = (fund: Fund): boolean => fund.pillar === null;
 
 const UTF8_BYTE_ORDER_MARK = '\ufeff';
 const ESTONIAN_EXCEL_COLUMN_SEPARATOR = ';';
@@ -41,9 +43,13 @@ export const StatementSection: React.FunctionComponent<{
     return <></>;
   }
 
-  // The savings fund is the fund the pension registry does not know: it has no pillar.
-  const savingsFunds = funds.filter((fund) => fund.pillar === null);
+  const savingsFunds = funds.filter(isSavingsFund);
   const savingsFund = savingsFunds[0];
+
+  if (!savingsFund) {
+    return <></>;
+  }
+
   const savingsIsins = new Set(savingsFunds.map((fund) => fund.isin));
 
   const allSavingsTransactions = transactions
@@ -189,16 +195,14 @@ export const StatementSection: React.FunctionComponent<{
               </th>
               <td>{owner.code}</td>
             </tr>
-            {savingsFund && (
-              <tr>
-                <th scope="row">
-                  <FormattedMessage id="savingsFund.statement.document.fund" />
-                </th>
-                <td>
-                  {savingsFund.name} ({savingsFund.isin})
-                </td>
-              </tr>
-            )}
+            <tr>
+              <th scope="row">
+                <FormattedMessage id="savingsFund.statement.document.fund" />
+              </th>
+              <td>
+                {savingsFund.name} ({savingsFund.isin})
+              </td>
+            </tr>
             <tr>
               <th scope="row">
                 <FormattedMessage id="savingsFund.statement.document.period" />
