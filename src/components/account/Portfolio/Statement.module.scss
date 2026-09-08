@@ -3,9 +3,6 @@
 }
 
 @media print {
-  // The statement is rendered through a portal beside the app root, so dropping the
-  // whole app from the print flow leaves the statement to paginate alone — on-screen
-  // content hidden with visibility would still force blank trailing pages.
   :global(body).printingStatement :global(#root) {
     display: none;
   }

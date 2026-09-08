@@ -281,6 +281,9 @@ const actingFor = (roleType: RoleType) =>
 
 const actingForThemselves = () => userBackend(server, { role: undefined });
 
+const actingForAChild = () =>
+  userBackend(server, { role: { type: 'PERSON', code: '51201011234', name: 'Junior Doe' } });
+
 const portfolioBackendDown = () =>
   server.use(
     rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
@@ -664,6 +667,53 @@ describe('the savings fund statement', () => {
     expect(
       screen.queryByText('No savings fund transactions in the selected period.'),
     ).not.toBeInTheDocument();
+  });
+
+  describe('the printed document', () => {
+    it('names the person whose account it is', async () => {
+      actingForThemselves();
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      expect(await screen.findByText('John Doe')).toBeInTheDocument();
+      expect(screen.getByText('Personal code')).toBeInTheDocument();
+      expect(screen.getByText('39001011234')).toBeInTheDocument();
+    });
+
+    it('names the company someone is acting for by its registry code', async () => {
+      actingFor('LEGAL_ENTITY');
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      expect(await screen.findByText('Acme')).toBeInTheDocument();
+      expect(screen.getByText('Registry code')).toBeInTheDocument();
+      expect(screen.getByText('90000000')).toBeInTheDocument();
+      expect(screen.queryByText('Personal code')).not.toBeInTheDocument();
+    });
+
+    it('names the child someone is acting for by their personal code', async () => {
+      actingForAChild();
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      expect(await screen.findByText('Junior Doe')).toBeInTheDocument();
+      expect(screen.getByText('Personal code')).toBeInTheDocument();
+      expect(screen.getByText('51201011234')).toBeInTheDocument();
+    });
+
+    it('names the fund and the period, and what the holding opened and closed at', async () => {
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+
+      userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+      expect(await screen.findByText('01.01.2025–31.12.2025')).toBeInTheDocument();
+      expect(screen.getByText('Tuleva Täiendav Kogumisfond (EE0000000001)')).toBeInTheDocument();
+      expect(screen.getAllByText(/120[.,]00/)).not.toHaveLength(0);
+      expect(screen.getAllByText(/250[.,]00/)).not.toHaveLength(0);
+    });
   });
 
   describe('the print flow', () => {
