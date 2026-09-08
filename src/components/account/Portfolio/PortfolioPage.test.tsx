@@ -186,6 +186,13 @@ const accountHolding = (transactions: Transaction[]) =>
     rest.get('http://localhost/v1/transactions', (req, res, ctx) => res(ctx.json(transactions))),
   );
 
+const accountHoldingUnavailable = () =>
+  server.use(
+    rest.get('http://localhost/v1/transactions', (req, res, ctx) =>
+      res(ctx.status(500), ctx.json({})),
+    ),
+  );
+
 const actingFor = (roleType: RoleType) =>
   userBackend(server, { role: { type: roleType, code: '90000000', name: 'Acme' } });
 
@@ -203,7 +210,7 @@ function initializeComponent() {
   const store = createDefaultStore(history as any);
   login(store);
 
-  renderWrapped(
+  return renderWrapped(
     <PortfolioPage />,
     history as any,
     store,
@@ -430,11 +437,7 @@ describe('the savings fund statement', () => {
   });
 
   it('is left out when the transactions never load, rather than claiming an empty period', async () => {
-    server.use(
-      rest.get('http://localhost/v1/transactions', (req, res, ctx) =>
-        res(ctx.status(500), ctx.json({})),
-      ),
-    );
+    accountHoldingUnavailable();
     initializeComponent();
 
     expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
@@ -463,6 +466,35 @@ describe('the savings fund statement', () => {
 
     expect(await screen.findAllByText(/300[.,]00/)).not.toHaveLength(0);
     expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
+  });
+
+  describe('the print flow', () => {
+    it('drops the app from the printed page while the statement is on it', async () => {
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      expect(await screen.findByText('Transactions in the selected period')).toBeInTheDocument();
+      expect(document.body).toHaveClass('printingStatement');
+    });
+
+    it('leaves the app on the printed page when there is no statement', async () => {
+      accountHoldingUnavailable();
+      initializeComponent();
+
+      expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+      expect(document.body).not.toHaveClass('printingStatement');
+    });
+
+    it('gives the app the printed page back once the statement is gone', async () => {
+      accountHolding(holdingHistory);
+      const { unmount } = initializeComponent();
+
+      expect(await screen.findByText('Transactions in the selected period')).toBeInTheDocument();
+
+      unmount();
+
+      expect(document.body).not.toHaveClass('printingStatement');
+    });
   });
 });
 
