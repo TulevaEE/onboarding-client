@@ -266,6 +266,9 @@ const accountHolding = (transactions: Transaction[]) =>
     rest.get('http://localhost/v1/transactions', (req, res, ctx) => res(ctx.json(transactions))),
   );
 
+const accountHoldingNoSavingsFund = () =>
+  server.use(rest.get('http://localhost/v1/funds', (req, res, ctx) => res(ctx.json([pillarFund]))));
+
 const accountHoldingUnavailable = () =>
   server.use(
     rest.get('http://localhost/v1/transactions', (req, res, ctx) =>
@@ -646,6 +649,21 @@ describe('the savings fund statement', () => {
 
     expect(await screen.findAllByText(/300[.,]00/)).not.toHaveLength(0);
     expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
+  });
+
+  it('is left out when the account holds no savings fund at all', async () => {
+    accountHoldingNoSavingsFund();
+    initializeComponent();
+
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
+    expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('No savings fund transactions in the selected period.'),
+    ).not.toBeInTheDocument();
   });
 
   describe('the print flow', () => {
