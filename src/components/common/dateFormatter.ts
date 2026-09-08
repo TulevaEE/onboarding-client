@@ -66,3 +66,27 @@ export function formatMonth(date?: string | null): string {
   }
   return moment(date).format('MMMM\u00A0YYYY');
 }
+
+const TALLINN_DAY_FORMAT = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Europe/Tallinn',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+function tallinnDayParts(time: string): { year: string; month: string; day: string } {
+  const parts = TALLINN_DAY_FORMAT.formatToParts(new Date(time));
+  const valueOf = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? '';
+  return { year: valueOf('year'), month: valueOf('month'), day: valueOf('day') };
+}
+
+export function dayInTallinn(time: string): string {
+  const { year, month, day } = tallinnDayParts(time);
+  return `${year}-${month}-${day}`;
+}
+
+export function formatDayInTallinn(time: string): string {
+  const { year, month, day } = tallinnDayParts(time);
+  return `${day}.${month}.${year}`;
+}
