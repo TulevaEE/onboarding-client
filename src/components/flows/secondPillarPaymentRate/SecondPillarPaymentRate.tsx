@@ -3,6 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { Link, Redirect } from 'react-router-dom';
 import { AuthenticationLoader, ErrorMessage, Loader, Radio } from '../../common';
 import { Shimmer } from '../../common/shimmer/Shimmer';
+import { Recommended } from '../../common/Recommended';
 import { usePageTitle } from '../../common/usePageTitle';
 import { useSecondPillarPaymentRate } from './hooks';
 import { PaymentRate } from './types';
@@ -146,7 +147,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
             <span className="fs-3 lh-sm fw-medium me-2">
               <FormattedMessage id="secondPillarPaymentRate.option.6Percent" />
             </span>
-            <Recommended />
+            <Recommended className="me-1" />
             {pendingPaymentRate === 6 && <Currently />}
           </p>
           <p className="mb-1">
@@ -181,11 +182,5 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
 const Currently = () => (
   <span className="badge rounded-pill text-bg-secondary align-text-bottom">
     <FormattedMessage id="secondPillarPaymentRate.current" />
-  </span>
-);
-
-const Recommended = () => (
-  <span className="me-1 badge rounded-pill text-bg-primary align-text-bottom">
-    <FormattedMessage id="secondPillarPaymentRate.recommended" />
   </span>
 );

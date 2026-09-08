@@ -674,7 +674,6 @@
   "secondPillarPaymentRate.option.6Percent": "6% of Gross Salary",
   "secondPillarPaymentRate.calculation.6Percent": "You contribute 6% and the state 4%, totaling <b>10%</b>",
   "secondPillarPaymentRate.current": "Current choice",
-  "secondPillarPaymentRate.recommended": "Recommended",
   "secondPillarPaymentRate.maximumBenefit": "You achieve the greatest tax benefit and contribute the maximum to your II pillar",
   "secondPillarPaymentRate.confirmation": "Confirmation",
   "secondPillarPaymentRate.confirm.mandate.agree.to.terms": "By clicking “Sign and send“ a digitally signed application will be sent to the register.",
@@ -768,7 +767,6 @@
   "withdrawals.navigation.continue": "Continue",
   "withdrawals.navigation.forward": "Forward",
   "withdrawals.navigation.notEligible": "You aren’t 60 years old yet and can’t continue",
-  "withdrawals.withdrawalAmount.recommended": "Recommended",
   "withdrawals.withdrawalAmount.partialWithdrawTitle": "Withdraw some money right away",
   "withdrawals.withdrawalAmount.partialWithdrawInputLabel": "Withdraw with {taxPercent}% income tax",
   "withdrawals.withdrawalAmount.partialWithdrawalTax": "Partial withdrawal will be subject to {taxPercent}% income tax",
@@ -1280,6 +1278,7 @@
 
   "savingsFund.paymentCancellation.pageTitle": "Cancel deposit",
   "savingsFund.paymentCancellation.title": "Cancel deposit",
+  "common.recommended": "Recommended",
   "savingsFund.paymentCancellation.success.title": "Deposit cancelled",
   "savingsFund.paymentCancellation.success.description": "We will refund the money to the same bank account within one business day.",
   "savingsFund.paymentCancellation.error": "There was an error cancelling the payment. Please try again later or contact us: tuleva@tuleva.ee",
