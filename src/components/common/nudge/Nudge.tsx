@@ -146,15 +146,13 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({
           onCallToAction={onCallToAction}
         />
       );
-    case 'ACCOUNT_RECURRING':
+    case 'SAVINGS_FUND_RECURRING':
       return (
         <RecurringPaymentNudge
           accountHolder={user ? accountHolderFor(user) : 'self'}
           onCallToAction={onCallToAction}
         />
       );
-    case 'SAVINGS_FUND_RECURRING':
-      return <RecurringPaymentNudge accountHolder="self" onCallToAction={onCallToAction} />;
     case 'NONE':
     default:
       return null;
