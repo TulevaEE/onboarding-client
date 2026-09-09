@@ -53,6 +53,7 @@ import {
   HackathonRegistrationCommand,
 } from '../components/common/apiModels/hackathon';
 import { KycIdentity } from '../components/flows/savingsAccount/SavingsFundOnboarding/types.api';
+import { NudgeDecision } from '../components/common/apiModels/nudge';
 
 export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
@@ -1152,6 +1153,13 @@ export function companyValidationBackend(server: SetupServerApi): void {
   );
 }
 
+export function nudgeBackend(
+  server: SetupServerApi,
+  decision: NudgeDecision = { key: 'NONE', tag: 'nudge_none' },
+): void {
+  server.use(rest.get('http://localhost/v1/me/nudge', (req, res, ctx) => res(ctx.json(decision))));
+}
+
 export function trackedEventsBackend(server: SetupServerApi): void {
   server.use(rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))));
 }
@@ -1198,6 +1206,7 @@ const TEST_BACKENDS = {
   savingsFundPersonOnboardingStatus: savingsFundPersonOnboardingStatusBackend,
   hackathonRegistration: hackathonRegistrationBackend,
   hackathonIdeas: hackathonIdeasBackend,
+  nudge: nudgeBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

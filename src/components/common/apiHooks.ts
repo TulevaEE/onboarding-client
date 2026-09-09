@@ -42,6 +42,7 @@ import {
   getMemberCapitalListingCount,
   getMemberCapitalListings,
   getMyCapitalTransferContracts,
+  getNudge,
   getPendingApplications,
   getPendingOnboardings,
   getSavingsFundBalance,
@@ -93,6 +94,7 @@ import {
   MandateBatchDto,
   WithdrawalsEligibility,
 } from './apiModels/withdrawals';
+import { NudgeContext, NudgeDecision } from './apiModels/nudge';
 import {
   CapitalTransferContract,
   CreateCapitalTransferDto,
@@ -202,6 +204,17 @@ export function useWithdrawalsEligibility(): UseQueryResult<WithdrawalsEligibili
 
 export function useFundPensionStatus(): UseQueryResult<FundPensionStatus> {
   return useQuery({ queryKey: ['fundPensionStatus'], queryFn: () => getFundPensionStatus() });
+}
+
+export function useNudge(context: NudgeContext): UseQueryResult<NudgeDecision> {
+  const { data: user } = useMe();
+  return useQuery({
+    queryKey: ['nudge', context, user?.personalCode, user?.role?.code],
+    queryFn: () => getNudge(context),
+    enabled: !!user,
+    retry: false,
+    staleTime: 2 * 60 * 1000,
+  });
 }
 
 export function useConversion(): UseQueryResult<UserConversion> {

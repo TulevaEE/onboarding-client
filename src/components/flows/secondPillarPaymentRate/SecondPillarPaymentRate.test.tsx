@@ -1,11 +1,11 @@
 import { setupServer } from 'msw/node';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import userEvent from '@testing-library/user-event';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import { initializeConfiguration } from '../../config/config';
-import { useTestBackends } from '../../../test/backend';
+import { nudgeBackend, useTestBackends } from '../../../test/backend';
 import LoggedInApp from '../../LoggedInApp';
 
 describe('When a user is changing their 2nd pillar payment rate', () => {
@@ -97,6 +97,36 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
     expect(await newPaymentRate()).toBeInTheDocument();
   }, 20_000);
 
+  test('shows the account link on the success screen', async () => {
+    history.push('/2nd-pillar-payment-rate-success');
+
+    expect(await allDone()).toBeInTheDocument();
+    expect(await main().findByRole('link', { name: 'My Account' })).toHaveAttribute(
+      'href',
+      expect.stringMatching(/^\/account(\?language=en)?$/),
+    );
+  });
+
+  test('shows the nudge the server decided on the success screen', async () => {
+    nudgeBackend(server, { key: 'SECOND_PILLAR_TRANSFER', tag: 'nudge_second_pillar' });
+    history.push('/2nd-pillar-payment-rate-success');
+
+    expect(await allDone()).toBeInTheDocument();
+    expect(
+      await main().findByRole('link', { name: /Bring your II\spillar to Tuleva/ }),
+    ).toHaveAttribute('href', '/2nd-pillar-flow');
+  });
+
+  test('shows no nudge on the success screen when the server decides on none', async () => {
+    history.push('/2nd-pillar-payment-rate-success');
+
+    expect(await allDone()).toBeInTheDocument();
+    expect(
+      main().queryByRole('link', { name: /Bring your II\spillar to Tuleva/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  const main = () => within(screen.getByRole('main'));
   const title = () => screen.findByText('Increase your II pillar tax benefits');
   const twoPercentOption = () => screen.findByText('2% of Gross Salary');
   const twoPercentOptionWithCurrentlyBadge = () =>
