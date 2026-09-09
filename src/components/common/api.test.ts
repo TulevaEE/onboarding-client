@@ -2,8 +2,8 @@ import config from 'react-global-configuration';
 import {
   authenticateWithIdCardMtls,
   authenticateWithIdCardWebEid,
-  authenticateWithIdCode,
   authenticateWithMobileId,
+  completeSmartIdCallback,
   createAmlCheck,
   createApplicationCancellation,
   createTrackedEvent,
@@ -23,6 +23,7 @@ import {
   getPaymentLink,
   getPendingApplications,
   getSavingsFundBalance,
+  getSmartIdQrCodeLink,
   getSmartIdSignatureChallengeCode,
   getSmartIdSignatureStatus,
   getSmartIdTokens,
@@ -34,6 +35,9 @@ import {
   logout,
   redirectToPayment,
   saveMandateWithAuthentication,
+  forgetRememberedSmartIdAccount,
+  getRememberedSmartIdAccount,
+  startSmartIdLogin,
   updateUserWithToken,
 } from './api';
 import * as http from './http';
@@ -180,8 +184,6 @@ describe('API calls', () => {
   });
 
   describe('getSmartIdTokens', () => {
-    const authenticationHash = 'auth-hash';
-
     it('should retrieve smart ID tokens successfully', async () => {
       const expectedToken = { accessToken: 'access-token', refreshToken: 'refresh-token' };
       mockHttp.postForm.mockResolvedValueOnce({
@@ -189,14 +191,13 @@ describe('API calls', () => {
         refresh_token: expectedToken.refreshToken,
       });
 
-      const token = await getSmartIdTokens(authenticationHash);
+      const token = await getSmartIdTokens();
 
       expect(token).toEqual(expectedToken);
       expect(mockHttp.postForm).toHaveBeenCalledWith(
         '/oauth/token',
         {
           grant_type: 'SMART_ID',
-          authenticationHash,
           client_id: 'onboarding-client',
         },
         expect.any(Object),
@@ -217,7 +218,7 @@ describe('API calls', () => {
       });
       const controller = new AbortController();
 
-      await getSmartIdTokens(authenticationHash, { signal: controller.signal });
+      await getSmartIdTokens({ signal: controller.signal });
 
       expect(mockHttp.postForm).toHaveBeenCalledWith(
         '/oauth/token',
@@ -225,6 +226,109 @@ describe('API calls', () => {
         expect.any(Object),
         { signal: controller.signal },
       );
+    });
+  });
+
+  describe('startSmartIdLogin', () => {
+    it('starts a device link session in the given language', async () => {
+      const web2AppLink = 'https://smart-id.com/device-link/?deviceLinkType=Web2App';
+      const start = { flow: 'DEVICE_LINK', web2AppLink, verificationCode: null };
+      mockHttp.post.mockResolvedValueOnce(start);
+
+      expect(await startSmartIdLogin('en')).toEqual(start);
+      expect(mockHttp.post).toHaveBeenCalledWith('/v1/smart-id/login', {
+        flow: 'DEVICE_LINK',
+        language: 'en',
+      });
+    });
+
+    it('starts a push notification session for the remembered account', async () => {
+      const start = { flow: 'NOTIFICATION', web2AppLink: null, verificationCode: '1234' };
+      mockHttp.post.mockResolvedValueOnce(start);
+
+      expect(await startSmartIdLogin('et', 'NOTIFICATION')).toEqual(start);
+      expect(mockHttp.post).toHaveBeenCalledWith('/v1/smart-id/login', {
+        flow: 'NOTIFICATION',
+        language: 'et',
+      });
+    });
+
+    it('propagates a failure to start the session', async () => {
+      const error = { status: 401, body: { errors: [{ code: 'smart.id.technical.error' }] } };
+      mockHttp.post.mockRejectedValueOnce(error);
+
+      await expect(startSmartIdLogin('et')).rejects.toEqual(error);
+    });
+  });
+
+  describe('getRememberedSmartIdAccount', () => {
+    it('returns the account the browser is remembered for', async () => {
+      const account = { firstName: 'Mari', lastName: 'Maasikas' };
+      mockHttp.get.mockResolvedValueOnce(account);
+
+      expect(await getRememberedSmartIdAccount()).toEqual(account);
+      expect(mockHttp.get).toHaveBeenCalledWith('/v1/smart-id/login/remembered-account');
+    });
+
+    it.each([[undefined], [null], ['']])(
+      'returns null when the browser has no remembered account: %p',
+      async (noContent) => {
+        mockHttp.get.mockResolvedValueOnce(noContent);
+
+        expect(await getRememberedSmartIdAccount()).toBeNull();
+      },
+    );
+  });
+
+  describe('forgetRememberedSmartIdAccount', () => {
+    it('deletes the remembered account cookie', async () => {
+      mockHttp.deleteRequest.mockResolvedValueOnce(undefined);
+
+      await forgetRememberedSmartIdAccount();
+
+      expect(mockHttp.deleteRequest).toHaveBeenCalledWith('/v1/smart-id/login/remembered-account');
+    });
+  });
+
+  describe('getSmartIdQrCodeLink', () => {
+    it('retrieves the current device link of the running session', async () => {
+      const deviceLink = 'https://smart-id.com/device-link/?deviceLinkType=QR&elapsedSeconds=7';
+      mockHttp.get.mockResolvedValueOnce({ deviceLink });
+
+      const qrCode = await getSmartIdQrCodeLink();
+
+      expect(qrCode).toEqual({ deviceLink });
+      expect(mockHttp.get).toHaveBeenCalledWith('/v1/smart-id/login/qr-code');
+    });
+
+    it('propagates a missing session error', async () => {
+      const error = { status: 401, body: { errors: [{ code: 'auth.session.not.found' }] } };
+      mockHttp.get.mockRejectedValueOnce(error);
+
+      await expect(getSmartIdQrCodeLink()).rejects.toEqual(error);
+    });
+  });
+
+  describe('completeSmartIdCallback', () => {
+    const callback = {
+      value: 'a-callback-value',
+      sessionSecretDigest: 'a-digest',
+      userChallengeVerifier: 'a-verifier',
+    };
+
+    it('posts the device link callback parameters', async () => {
+      mockHttp.post.mockResolvedValueOnce(undefined);
+
+      await completeSmartIdCallback(callback);
+
+      expect(mockHttp.post).toHaveBeenCalledWith('/v1/smart-id/login/callback', callback);
+    });
+
+    it('propagates an invalid callback error', async () => {
+      const error = { status: 401, body: { errors: [{ code: 'smart.id.callback.invalid' }] } };
+      mockHttp.post.mockRejectedValueOnce(error);
+
+      await expect(completeSmartIdCallback(callback)).rejects.toEqual(error);
     });
   });
 
@@ -266,24 +370,6 @@ describe('API calls', () => {
       phoneNumber,
       personalCode,
       type: 'MOBILE_ID',
-    });
-  });
-
-  describe('authenticateWithIdCode', () => {
-    it('should return both challengeCode and authenticationHash on successful authentication', async () => {
-      const personalCode = '1223445567';
-      const expectedAuthentication = {
-        challengeCode: '1234',
-        authenticationHash: 'abcd1234',
-      };
-      mockHttp.post.mockResolvedValueOnce(expectedAuthentication);
-
-      const authentication = await authenticateWithIdCode(personalCode);
-      expect(authentication).toEqual(expectedAuthentication);
-      expect(mockHttp.post).toHaveBeenCalledWith('/authenticate', {
-        personalCode,
-        type: 'SMART_ID',
-      });
     });
   });
 

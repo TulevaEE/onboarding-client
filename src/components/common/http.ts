@@ -6,7 +6,12 @@ axios.defaults.withCredentials = true;
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-function transformResponse(response: Response): Promise<Response> {
+const NO_CONTENT = 204;
+
+function transformResponse(response: Response): Promise<any> {
+  if (response.status === NO_CONTENT) {
+    return Promise.resolve(undefined);
+  }
   if (response.ok && response.status < 400) {
     return response.json();
   }
@@ -111,6 +116,18 @@ export async function post(url: string, params = {}, headers = {}): Promise<any>
       ...createLanguageHeaders(),
     },
     body: JSON.stringify(params),
+    credentials: 'include',
+    mode: 'cors',
+    cache: 'default',
+  });
+
+  return transformResponse(response);
+}
+
+export async function deleteRequest(url: string, headers = {}): Promise<any> {
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: { ...headers, ...createLanguageHeaders() },
     credentials: 'include',
     mode: 'cors',
     cache: 'default',

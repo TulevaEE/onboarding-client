@@ -128,6 +128,23 @@ describe('Web eID Auth Integration', () => {
     });
   });
 
+  it('should explain a card type the backend refuses', async () => {
+    mockAuthenticateWithIdCardWebEid.mockRejectedValueOnce({
+      status: 400,
+      body: { errors: [{ code: 'id.card.document.type.not.allowed' }] },
+    });
+
+    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+
+    userEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/This type of ID-card cannot be used to log in/i),
+      ).toBeInTheDocument();
+    });
+  });
+
   it('should display generic error for unknown errors', async () => {
     mockAuthenticateWithIdCardWebEid.mockRejectedValueOnce(new Error('Network error'));
 

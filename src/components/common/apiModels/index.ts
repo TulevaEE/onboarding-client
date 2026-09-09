@@ -418,9 +418,27 @@ export type PaymentChannel =
   | 'PARTNER'
   | 'TULUNDUSUHISTU';
 
-export interface Authentication {
-  authenticationHash: string;
-  challengeCode: string;
+export type SmartIdLoginFlow = 'DEVICE_LINK' | 'NOTIFICATION';
+
+export interface SmartIdLoginStart {
+  flow: SmartIdLoginFlow;
+  web2AppLink: string | null;
+  verificationCode: string | null;
+}
+
+export interface RememberedSmartIdAccount {
+  firstName: string;
+  lastName: string;
+}
+
+export interface SmartIdQrCode {
+  deviceLink: string;
+}
+
+export interface SmartIdLoginCallback {
+  value: string;
+  sessionSecretDigest: string;
+  userChallengeVerifier: string;
 }
 
 export type PortfolioGroup = 'SAVINGS_FUND' | 'SECOND_PILLAR' | 'THIRD_PILLAR';

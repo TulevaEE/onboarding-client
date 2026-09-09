@@ -3,10 +3,22 @@ import { PropTypes as Types } from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 
 export const ID_CARD_LOGIN_START_FAILED_ERROR = 'ID_CARD_LOGIN_START_FAILED';
+export const SMART_ID_CALLBACK_FAILED_ERROR = 'SMART_ID_CALLBACK_FAILED';
 export const WEB_EID_USER_CANCELLED = 'WEB_EID_USER_CANCELLED';
 export const WEB_EID_EXTENSION_UNAVAILABLE = 'WEB_EID_EXTENSION_UNAVAILABLE';
 const NOT_JOINED_ERROR_DESCRIPTION = 'INVALID_USER_CREDENTIALS';
 const INVALID_PERSONAL_CODE = 'ValidPersonalCode';
+const AUTHENTICATION_ERROR_MESSAGES = {
+  'smart.id.user.refused': 'login.error.smart.id.user.refused',
+  'smart.id.timeout': 'login.error.smart.id.timeout',
+  'smart.id.account.not.found': 'login.error.smart.id.account.not.found',
+  'smart.id.unsupported.country': 'login.error.smart.id.unsupported.country',
+  'mobile.id.cancelled': 'login.error.mobile.id.cancelled',
+  'mobile.id.timeout': 'login.error.mobile.id.timeout',
+  'mobile.id.no.signal': 'login.error.mobile.id.no.signal',
+  'mobile.id.certificates.revoked': 'login.error.mobile.id.certificates.revoked',
+  'id.card.document.type.not.allowed': 'login.error.id.card.document.type.not.allowed',
+};
 
 class ErrorAlert extends Component {
   errorMessage() {
@@ -33,6 +45,14 @@ class ErrorAlert extends Component {
       );
     }
 
+    if (description === SMART_ID_CALLBACK_FAILED_ERROR) {
+      return (
+        <div>
+          <FormattedMessage id="login.smart.id.callback.failed" />
+        </div>
+      );
+    }
+
     if (description === WEB_EID_USER_CANCELLED) {
       return (
         <div>
@@ -53,6 +73,14 @@ class ErrorAlert extends Component {
       return (
         <div>
           <FormattedMessage id="login.invalid.personal.code" />
+        </div>
+      );
+    }
+
+    if (AUTHENTICATION_ERROR_MESSAGES[description]) {
+      return (
+        <div>
+          <FormattedMessage id={AUTHENTICATION_ERROR_MESSAGES[description]} />
         </div>
       );
     }

@@ -4,6 +4,7 @@ export type Login = {
   phoneNumber: string;
   personalCode: string;
   controlCode: string;
+  smartIdWeb2AppLink: string | null;
   loadingAuthentication: boolean;
   authenticationPrincipal: AuthenticationPrincipal;
   error: string;

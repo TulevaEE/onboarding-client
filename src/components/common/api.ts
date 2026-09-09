@@ -4,7 +4,6 @@ import {
   SwitchRoleCommand,
   AmlCheck,
   Application,
-  Authentication,
   CancellationMandate,
   CapitalEvent,
   CapitalRow,
@@ -31,6 +30,11 @@ import {
   SavingsFundOnboardingStatus,
   SecondPillarAssets,
   SigningMethod,
+  RememberedSmartIdAccount,
+  SmartIdLoginCallback,
+  SmartIdLoginFlow,
+  SmartIdLoginStart,
+  SmartIdQrCode,
   SourceFund,
   Token,
   Transaction,
@@ -39,8 +43,10 @@ import {
 } from './apiModels/index';
 import { HackathonRegistration, HackathonRegistrationCommand } from './apiModels/hackathon';
 import {
+  deleteRequest,
   deleteWithAuthentication,
   downloadFileWithAuthentication,
+  get,
   getWithAuthentication,
   head,
   patchWithAuthentication,
@@ -103,12 +109,29 @@ export async function authenticateWithMobileId(
   return challengeCode;
 }
 
-export async function authenticateWithIdCode(personalCode: string): Promise<Authentication> {
-  const { challengeCode, authenticationHash } = await post(getEndpoint('/authenticate'), {
-    personalCode,
-    type: 'SMART_ID',
-  });
-  return { challengeCode, authenticationHash };
+export function startSmartIdLogin(
+  language: string,
+  flow: SmartIdLoginFlow = 'DEVICE_LINK',
+): Promise<SmartIdLoginStart> {
+  return post(getEndpoint('/v1/smart-id/login'), { flow, language });
+}
+
+export async function getRememberedSmartIdAccount(): Promise<RememberedSmartIdAccount | null> {
+  // A browser with nothing remembered answers 204, which axios hands back as an empty string.
+  const account = await get(getEndpoint('/v1/smart-id/login/remembered-account'));
+  return account && typeof account === 'object' ? account : null;
+}
+
+export async function forgetRememberedSmartIdAccount(): Promise<void> {
+  await deleteRequest(getEndpoint('/v1/smart-id/login/remembered-account'));
+}
+
+export function getSmartIdQrCodeLink(): Promise<SmartIdQrCode> {
+  return get(getEndpoint('/v1/smart-id/login/qr-code'));
+}
+
+export async function completeSmartIdCallback(callback: SmartIdLoginCallback): Promise<void> {
+  await post(getEndpoint('/v1/smart-id/login/callback'), callback);
 }
 
 export async function authenticateWithIdCardMtls(): Promise<boolean> {
@@ -174,11 +197,8 @@ export function getMobileIdTokens(): Promise<Token | null> {
   return getTokensWithGrantType('MOBILE_ID');
 }
 
-export function getSmartIdTokens(
-  authenticationHash: string,
-  options: { signal?: AbortSignal } = {},
-): Promise<Token | null> {
-  return getTokensWithGrantType('SMART_ID', { authenticationHash }, options);
+export function getSmartIdTokens(options: { signal?: AbortSignal } = {}): Promise<Token | null> {
+  return getTokensWithGrantType('SMART_ID', {}, options);
 }
 
 export function getIdCardTokens(): Promise<Token | null> {

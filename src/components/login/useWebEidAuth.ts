@@ -4,6 +4,7 @@ import config from 'react-global-configuration';
 import { ErrorCode } from '@web-eid/web-eid-library';
 
 import { authenticateWithIdCardWebEid } from '../common/api';
+import { getGlobalErrorCode } from '../common/errorMessage/ErrorMessage';
 import {
   ID_CARD_LOGIN_START_FAILED_ERROR,
   WEB_EID_EXTENSION_UNAVAILABLE,
@@ -11,14 +12,14 @@ import {
 } from '../common/errorAlert/ErrorAlert';
 
 function mapWebEidError(error: unknown): string {
-  const webEidError = error as { code?: string };
+  const webEidError = error as { code?: string; body?: unknown };
   if (webEidError?.code === ErrorCode.ERR_WEBEID_USER_CANCELLED) {
     return WEB_EID_USER_CANCELLED;
   }
   if (webEidError?.code === ErrorCode.ERR_WEBEID_EXTENSION_UNAVAILABLE) {
     return WEB_EID_EXTENSION_UNAVAILABLE;
   }
-  return ID_CARD_LOGIN_START_FAILED_ERROR;
+  return getGlobalErrorCode(webEidError?.body) ?? ID_CARD_LOGIN_START_FAILED_ERROR;
 }
 
 export function useWebEidAuth() {

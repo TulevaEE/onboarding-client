@@ -25,6 +25,12 @@ export const getMobileSignatureResponse = (
   challengeCode: challengeCode ?? '9876',
 });
 
+export const smartIdWeb2AppLink = (language: string): string =>
+  `https://smart-id.com/device-link/?deviceLinkType=Web2App&sessionToken=a-session-token&sessionType=auth&version=1.0&lang=${language}&authCode=an-auth-code`;
+
+export const smartIdQrDeviceLink = (elapsedSeconds: number): string =>
+  `https://smart-id.com/device-link/?deviceLinkType=QR&elapsedSeconds=${elapsedSeconds}&sessionToken=a-session-token&sessionType=auth&version=1.0&lang=est&authCode=an-auth-code`;
+
 export const getMobileSignatureStatusResponse = (
   statusCode: 'SIGNATURE' | 'OUTSTANDING_TRANSACTION',
   challengeCode?: string | null,
