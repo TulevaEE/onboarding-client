@@ -23,6 +23,7 @@ import { ContactDetailsPage } from '../contact-details/ContactDetailsPage';
 import { ContactDetailsGatekeep } from '../contact-details/ContactDetailsGatekeep';
 import AmlPage, { actions as amlActions } from '../aml';
 import SignUpPage from '../newUserFlow';
+import { MembershipSuccess } from '../newUserFlow/MembershipSuccess';
 import { TransactionPageThirdPillar } from '../account/TransactionSection/TransactionPageThirdPillar';
 import { ContributionPageThirdPillar } from '../contribution/ContributionPageThirdPillar';
 import Gift from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarGift';
@@ -147,6 +148,7 @@ export class LoggedInApp extends PureComponent {
             />
             <Route path={ACCOUNT_PATH} component={AccountPage} />
             <Route path={AML_PATH} component={AmlPage} />
+            <Route path="/join/success" component={MembershipSuccess} />
             <Route path="/join" component={SignUpPage} />
             <Route path="/contact-details" component={ContactDetailsPage} />
             <Route

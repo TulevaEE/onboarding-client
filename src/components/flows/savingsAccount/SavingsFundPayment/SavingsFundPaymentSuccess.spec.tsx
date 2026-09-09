@@ -7,14 +7,18 @@ import { act, screen, waitFor } from '@testing-library/react';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import LoggedInApp from '../../../LoggedInApp';
 import { initializeConfiguration } from '../../../config/config';
-import { userBackend, useTestBackends } from '../../../../test/backend';
+import { nudgeBackend, userBackend, useTestBackends } from '../../../../test/backend';
 import { Role } from '../../../common/apiModels';
 
-type TrackedEvent = { type: string; data?: { path: string; savingsFundNudge?: string } };
+type TrackedEvent = { type: string; data?: Record<string, unknown> };
 
 describe('SavingsFundPaymentSuccess', () => {
   const childRole: Role = { type: 'PERSON', code: '51201011234', name: 'Junior Doe' };
   const companyRole: Role = { type: 'LEGAL_ENTITY', code: '12345678', name: 'Test Company OÜ' };
+  const recurringDecision = {
+    key: 'ACCOUNT_RECURRING',
+    tag: 'nudge_savings_fund_recurring',
+  } as const;
 
   const server = setupServer();
   let history: History;
@@ -39,10 +43,8 @@ describe('SavingsFundPaymentSuccess', () => {
     return trackedEvents;
   };
 
-  const recurringNudgeViews = (trackedEvents: TrackedEvent[]) =>
-    trackedEvents.filter(
-      ({ type, data }) => type === 'PAGE_VIEW' && data?.savingsFundNudge === 'RECURRING_PAYMENT',
-    );
+  const nudgeViews = (trackedEvents: TrackedEvent[]) =>
+    trackedEvents.filter(({ type }) => type === 'NUDGE_VIEW');
 
   const userUpdateCount = () => queryClient.getQueryState(['user'])?.dataUpdateCount ?? 0;
 
@@ -76,6 +78,7 @@ describe('SavingsFundPaymentSuccess', () => {
   });
 
   it('nudges to set up a recurring payment', async () => {
+    nudgeBackend(server, recurringDecision);
     initApp();
     history.push('/savings-fund/payment/success');
 
@@ -93,8 +96,23 @@ describe('SavingsFundPaymentSuccess', () => {
     );
   });
 
+  it('shows the membership nudge instead when the server decides on it', async () => {
+    nudgeBackend(server, { key: 'MEMBERSHIP', tag: 'nudge_membership' });
+    initApp();
+    history.push('/savings-fund/payment/success');
+
+    expect(
+      await screen.findByRole('heading', { name: /You gain the most from Tuleva as a co-owner/ }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Become a member' })).toHaveAttribute('href', '/join');
+    expect(
+      screen.queryByRole('heading', { name: 'Make saving automatic' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('tracks the nudge view', async () => {
     const trackedEvents = trackEvents();
+    nudgeBackend(server, recurringDecision);
     initApp();
     history.push('/savings-fund/payment/success');
 
@@ -103,10 +121,13 @@ describe('SavingsFundPaymentSuccess', () => {
     ).toBeInTheDocument();
     await waitFor(() =>
       expect(trackedEvents).toContainEqual({
-        type: 'PAGE_VIEW',
+        type: 'NUDGE_VIEW',
         data: {
+          context: 'SAVINGS_FUND_PAYMENT',
+          key: 'ACCOUNT_RECURRING',
+          tag: 'nudge_savings_fund_recurring',
           path: '/savings-fund/payment/success',
-          savingsFundNudge: 'RECURRING_PAYMENT',
+          channel: 'SCREEN',
         },
       }),
     );
@@ -114,13 +135,14 @@ describe('SavingsFundPaymentSuccess', () => {
 
   it('tracks the nudge view once when the user data is refetched', async () => {
     const trackedEvents = trackEvents();
+    nudgeBackend(server, recurringDecision);
     initApp();
     history.push('/savings-fund/payment/success');
 
     expect(
       await screen.findByRole('heading', { name: 'Make saving automatic' }),
     ).toBeInTheDocument();
-    await waitFor(() => expect(recurringNudgeViews(trackedEvents)).toHaveLength(1));
+    await waitFor(() => expect(nudgeViews(trackedEvents)).toHaveLength(1));
 
     const userUpdatesBeforeRefetch = userUpdateCount();
     userBackend(server, { email: 'changed@example.com' });
@@ -128,10 +150,11 @@ describe('SavingsFundPaymentSuccess', () => {
     await waitFor(() => expect(userUpdateCount()).toBeGreaterThan(userUpdatesBeforeRefetch));
     await settlePendingRequests();
 
-    expect(recurringNudgeViews(trackedEvents)).toHaveLength(1);
+    expect(nudgeViews(trackedEvents)).toHaveLength(1);
   });
 
   it('words the nudge for the child when paying under a child role', async () => {
+    nudgeBackend(server, recurringDecision);
     userBackend(server, { role: childRole });
     initApp();
     history.push('/savings-fund/payment/success');
@@ -144,6 +167,7 @@ describe('SavingsFundPaymentSuccess', () => {
   });
 
   it('words the nudge for the company when paying under a company role', async () => {
+    nudgeBackend(server, recurringDecision);
     userBackend(server, { role: companyRole });
     initApp();
     history.push('/savings-fund/payment/success');

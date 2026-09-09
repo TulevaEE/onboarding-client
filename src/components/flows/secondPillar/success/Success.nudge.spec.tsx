@@ -5,19 +5,12 @@ import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import { initializeConfiguration } from '../../../config/config';
-import { nudgeBackend, useTestBackendsExcept } from '../../../../test/backend';
+import { nudgeBackend, userBackend, useTestBackendsExcept } from '../../../../test/backend';
 import LoggedInApp from '../../../LoggedInApp';
 
-describe('When is at the partner 2nd pillar flow success screen', () => {
+describe('2nd pillar success screen nudge', () => {
   const server = setupServer();
   let history: History;
-
-  const windowLocation = jest.fn();
-  Object.defineProperty(window, 'location', {
-    value: {
-      replace: windowLocation,
-    },
-  });
 
   function initializeComponent() {
     history = createMemoryHistory();
@@ -33,31 +26,31 @@ describe('When is at the partner 2nd pillar flow success screen', () => {
 
   beforeEach(async () => {
     initializeConfiguration();
-    useTestBackendsExcept(server, ['nudge']);
+    useTestBackendsExcept(server, ['nudge', 'user']);
   });
 
   const main = () => within(screen.getByRole('main'));
 
-  test('success title is shown', async () => {
-    nudgeBackend(server);
+  test('nudges a saver at the maximum payment rate to start a third pillar', async () => {
+    userBackend(server, { secondPillarPaymentRates: { current: 6, pending: null } });
+    nudgeBackend(server, { key: 'THIRD_PILLAR_START', tag: 'nudge_third_pillar' });
     initializeComponent();
     history.push('/partner/2nd-pillar-flow-success');
 
     expect(await screen.findByText('Application finished')).toBeInTheDocument();
-  });
-
-  test('account button is shown', async () => {
-    nudgeBackend(server);
-    initializeComponent();
-    history.push('/partner/2nd-pillar-flow-success');
-
-    expect(await main().findByRole('link', { name: 'View your account balance' })).toHaveAttribute(
+    expect(
+      await main().findByRole('heading', {
+        name: 'Setting up your third pillar is a smart next step',
+      }),
+    ).toBeInTheDocument();
+    expect(await main().findByRole('link', { name: 'Calculate your tax benefit' })).toHaveAttribute(
       'href',
-      expect.stringMatching(/^\/account(\?language=en)?$/),
+      '/3rd-pillar-flow',
     );
   });
 
-  test('shows the nudge the server decided on', async () => {
+  test('nudges a saver below the maximum payment rate to raise it', async () => {
+    userBackend(server, { secondPillarPaymentRates: { current: 2, pending: null } });
     nudgeBackend(server, { key: 'SECOND_PILLAR_PAYMENT_RATE', tag: 'nudge_payment_rate' });
     initializeComponent();
     history.push('/partner/2nd-pillar-flow-success');
@@ -69,14 +62,15 @@ describe('When is at the partner 2nd pillar flow success screen', () => {
     );
   });
 
-  test('shows no nudge when the server decides on none', async () => {
-    nudgeBackend(server);
+  test('shows the account button whatever the server decides', async () => {
+    userBackend(server, { secondPillarPaymentRates: { current: 2, pending: null } });
+    nudgeBackend(server, { key: 'SECOND_PILLAR_PAYMENT_RATE', tag: 'nudge_payment_rate' });
     initializeComponent();
     history.push('/partner/2nd-pillar-flow-success');
 
-    expect(await screen.findByText('Application finished')).toBeInTheDocument();
-    expect(
-      main().queryByRole('link', { name: 'Increase your contribution' }),
-    ).not.toBeInTheDocument();
+    expect(await main().findByRole('link', { name: 'View your account balance' })).toHaveAttribute(
+      'href',
+      expect.stringMatching(/^\/account(\?language=en)?$/),
+    );
   });
 });
