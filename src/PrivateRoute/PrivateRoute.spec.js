@@ -5,10 +5,26 @@ import { Route, Router, Switch } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import PrivateRoute from '.';
+import { SECOND_PILLAR_NUDGE_OTHER_SERVICE_ENTRY_KEY } from '../components/account/secondPillarNudge/suppression';
 
 jest.mock('../components/common/authenticationManager', () => ({
   getAuthentication: () => ({ isAuthenticated: () => false }),
 }));
+
+const renderRedirectFrom = (path) => {
+  const history = createMemoryHistory({ initialEntries: [path] });
+  render(
+    <Provider store={createStore(() => ({}))}>
+      <Router history={history}>
+        <Switch>
+          <Route path="/login" render={() => <div>login page</div>} />
+          <PrivateRoute exact path="" component={() => null} />
+        </Switch>
+      </Router>
+    </Provider>,
+  );
+  return history;
+};
 
 it('carries the full destination, query included, through the login redirect', () => {
   // A shared link like /calculator?return=7 must survive the login wall: the
@@ -57,4 +73,22 @@ it('keeps tracking params on the login url for attribution, but out of the desti
   expect(history.location.search).toBe('?utm_source=email&return=7&gclid=abc');
   // ...while the app only gets back the params it actually uses.
   expect(screen.getByTestId('from')).toHaveTextContent(/^\/calculator\?return=7$/);
+});
+
+describe('second pillar nudge suppression', () => {
+  afterEach(() => {
+    sessionStorage.clear();
+  });
+
+  it('marks entry via another service when redirecting an unauthenticated visitor', () => {
+    renderRedirectFrom('/3rd-pillar-flow');
+
+    expect(sessionStorage.getItem(SECOND_PILLAR_NUDGE_OTHER_SERVICE_ENTRY_KEY)).toBe('true');
+  });
+
+  it('does not mark entry when redirecting from the account page', () => {
+    renderRedirectFrom('/account');
+
+    expect(sessionStorage.getItem(SECOND_PILLAR_NUDGE_OTHER_SERVICE_ENTRY_KEY)).toBeNull();
+  });
 });

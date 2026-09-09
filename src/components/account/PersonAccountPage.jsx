@@ -28,6 +28,7 @@ import {
 } from '../common/apiHooks';
 import { canAccessWithdrawals } from '../flows/withdrawals/utils';
 import { getBankName } from '../common/iban';
+import { SecondPillarNudgeModal } from './secondPillarNudge/SecondPillarNudgeModal';
 
 const noop = () => null;
 
@@ -111,6 +112,8 @@ export function PersonAccountPage(
           }}
         />
       )}
+
+      <SecondPillarNudgeModal />
 
       <GreetingBar />
 
