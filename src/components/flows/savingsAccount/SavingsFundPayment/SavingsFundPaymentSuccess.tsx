@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { StatusAlert } from '../../../common/statusAlert';
-import { SavingsFundRecurringNudge } from './SavingsFundRecurringNudge';
+import { Nudge } from '../../../common/nudge/Nudge';
 
 const SavingsFundPaymentSuccess: FC = () => {
   usePageTitle('savingsFund.payment.success.pageTitle');
@@ -21,7 +21,7 @@ const SavingsFundPaymentSuccess: FC = () => {
           <FormattedMessage id="savingsFund.payment.success.description" />
         </p>
       </StatusAlert>
-      <SavingsFundRecurringNudge />
+      <Nudge context="SAVINGS_FUND_PAYMENT" />
     </div>
   );
 };

@@ -1,25 +1,20 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { connect, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { finish as finishProcedure } from '../../../TriggerProcedure/utils';
 import { State } from '../../../../types';
-import pig from './pig.svg';
 import { SuccessNotice2 } from '../../common/SuccessNotice2/SuccessNotice2';
-import { Notice } from '../../common/Notice/Notice';
+import { Nudge } from '../../../common/nudge/Nudge';
 import { BackToInternetBankButton } from './BackToInternetBankButton';
 
-interface Props {
-  recurringPaymentCount: number;
-}
-
-export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
+export const BackToPartner: React.FC = () => {
   const personalCode = useSelector<State, string | undefined>(
     (state) => state.login.user?.personalCode,
   );
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState(false);
 
-  const finishWith = async (result: string) => {
+  const finishWith = async (result: 'newPayment' | 'newRecurringPayment') => {
     setError(false);
     setSubmitting(true);
     try {
@@ -44,45 +39,6 @@ export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
             <FormattedMessage id="thirdPillarBackToPartner.account" />
           </a>
         </div>
-        <BackToInternetBankButton />
-      </SuccessNotice2>
-
-      <Notice>
-        <img src={pig} alt="" />
-
-        {recurringPaymentCount < 1 ? (
-          <>
-            <h2 className="mt-3">
-              <FormattedMessage id="thirdPillarBackToPartner.automateNext" />
-            </h2>
-            <p className="mt-3">
-              <FormattedMessage id="thirdPillarBackToPartner.automateNext.subtitle" />
-            </p>
-          </>
-        ) : (
-          <>
-            <h2 className="mt-3">
-              <FormattedMessage id="thirdPillarBackToPartner.automated" />
-            </h2>
-            <p className="mt-3">
-              <FormattedMessage id="thirdPillarBackToPartner.automated.subtitle" />
-            </p>
-          </>
-        )}
-        {recurringPaymentCount < 1 ? (
-          <div className="d-flex justify-content-center mt-4">
-            <button
-              type="button"
-              className="btn btn-primary btn-default flex-grow-1 flex-md-grow-0"
-              disabled={!personalCode || submitting}
-              onClick={() => finishWith('newRecurringPayment')}
-            >
-              <FormattedMessage id="thirdPillarBackToPartner.recurringPayment.button" />
-            </button>
-          </div>
-        ) : (
-          ''
-        )}
         <div className="d-flex justify-content-center mt-2">
           <button
             type="button"
@@ -103,13 +59,18 @@ export const BackToPartner: React.FC<Props> = ({ recurringPaymentCount }) => {
             <FormattedMessage id="thirdPillarBackToPartner.payment.subtitle" />
           </small>
         </p>
-      </Notice>
+        <BackToInternetBankButton />
+      </SuccessNotice2>
+      <Nudge
+        context="THIRD_PILLAR_MANDATE"
+        onRecurringPayment={() => {
+          if (personalCode && !submitting) {
+            finishWith('newRecurringPayment');
+          }
+        }}
+      />
     </>
   );
 };
 
-const mapStateToProps = (state: State) => ({
-  recurringPaymentCount: state.thirdPillar.recurringPaymentCount,
-});
-
-export default connect(mapStateToProps)(BackToPartner);
+export default BackToPartner;

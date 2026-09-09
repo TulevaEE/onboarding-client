@@ -11,7 +11,7 @@ export const SignUpPage: React.FunctionComponent<{
   isMember: boolean;
 }> = ({ saveUser, isMember }) => (
   <div className="row">
-    {isMember && <Redirect to="/account" />}
+    {isMember && <Redirect to="/join/success" />}
     <div className="col-md-4">
       <InlineSignUpForm onSubmit={saveUser} />
     </div>
