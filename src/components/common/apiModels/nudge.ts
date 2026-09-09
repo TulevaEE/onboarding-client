@@ -15,7 +15,6 @@ export interface NudgeFeeComparison {
 }
 
 export type NudgeDecision =
-  | { key: 'ACCOUNT_RECURRING'; tag: string }
   | { key: 'SECOND_PILLAR_TRANSFER'; tag: string; feeComparison?: NudgeFeeComparison }
   | { key: 'SECOND_PILLAR_PAYMENT_RATE'; tag: string }
   | { key: 'THIRD_PILLAR_START'; tag: string }

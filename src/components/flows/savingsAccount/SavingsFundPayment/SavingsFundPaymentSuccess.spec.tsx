@@ -16,7 +16,7 @@ describe('SavingsFundPaymentSuccess', () => {
   const childRole: Role = { type: 'PERSON', code: '51201011234', name: 'Junior Doe' };
   const companyRole: Role = { type: 'LEGAL_ENTITY', code: '12345678', name: 'Test Company OÜ' };
   const recurringDecision = {
-    key: 'ACCOUNT_RECURRING',
+    key: 'SAVINGS_FUND_RECURRING',
     tag: 'nudge_savings_fund_recurring',
   } as const;
 
@@ -124,7 +124,7 @@ describe('SavingsFundPaymentSuccess', () => {
         type: 'NUDGE_VIEW',
         data: {
           context: 'SAVINGS_FUND_PAYMENT',
-          key: 'ACCOUNT_RECURRING',
+          key: 'SAVINGS_FUND_RECURRING',
           tag: 'nudge_savings_fund_recurring',
           path: '/savings-fund/payment/success',
           channel: 'SCREEN',
