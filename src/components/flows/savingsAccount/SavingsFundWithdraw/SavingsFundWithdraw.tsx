@@ -10,7 +10,7 @@ import { getBankName } from '../../../common/iban';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { formatAmountForCurrency } from '../../../common/utils';
 import Slider from '../../withdrawals/Slider';
-import { accountHolderFor } from '../accountHolder';
+import { AccountHolder, accountHolderFor } from '../accountHolder';
 import { AmountInput } from '../AmountInput';
 import { InfoSection } from '../InfoSection';
 import Card from '../../../common/card';
@@ -23,6 +23,16 @@ const parseAmount = (value: string | number | null | undefined): number => {
   const stringValue = String(value).replace(',', '.');
   const parsed = Number(stringValue);
   return Number.isNaN(parsed) ? 0 : parsed;
+};
+
+const ibanDescriptionMessageId = (accountHolder: AccountHolder) => {
+  if (accountHolder === 'company') {
+    return 'savingsFund.withdraw.form.iban.description.legalEntity' as const;
+  }
+  if (accountHolder === 'child') {
+    return 'savingsFund.withdraw.form.iban.description.child' as const;
+  }
+  return 'savingsFund.withdraw.form.iban.description' as const;
 };
 
 type IWithdrawalForm = {
@@ -52,6 +62,7 @@ export const SavingsFundWithdraw: FC = () => {
       iban: '',
     },
   });
+  const accountHolder = user ? accountHolderFor(user) : undefined;
   const selectedBankAccount = watch('iban');
   const selectedAmount = watch('amount');
 
@@ -88,10 +99,7 @@ export const SavingsFundWithdraw: FC = () => {
 
       {currentStep === 'INPUT' ? (
         <div className="pt-4 pb-4 border-top border-bottom">
-          <InfoSection
-            variant="withdraw"
-            accountHolder={user ? accountHolderFor(user) : undefined}
-          />
+          <InfoSection variant="withdraw" accountHolder={accountHolder} />
         </div>
       ) : null}
 
@@ -181,13 +189,7 @@ export const SavingsFundWithdraw: FC = () => {
                 <div className="d-block invalid-feedback">{errors.iban.message}</div>
               ) : null}
               <p className="m-0 text-secondary">
-                <FormattedMessage
-                  id={
-                    user?.role?.type === 'LEGAL_ENTITY'
-                      ? 'savingsFund.withdraw.form.iban.description.legalEntity'
-                      : 'savingsFund.withdraw.form.iban.description'
-                  }
-                />
+                <FormattedMessage id={ibanDescriptionMessageId(accountHolder ?? 'self')} />
               </p>
             </div>
 

@@ -104,5 +104,16 @@ describe('InfoSection', () => {
       expect(learnMoreLink).toHaveAttribute('target', '_blank');
       expect(learnMoreLink).toHaveAttribute('rel', 'noreferrer');
     });
+
+    it('shows the child creditor text instead of the personal one for a child', () => {
+      renderWrapped(<InfoSection variant="withdraw" accountHolder="child" />);
+
+      expect(
+        screen.getByText('You can only withdraw to a bank account in the child’s name.'),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText('You can only withdraw to a bank account in your name.'),
+      ).not.toBeInTheDocument();
+    });
   });
 });
