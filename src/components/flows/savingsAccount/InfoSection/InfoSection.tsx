@@ -17,8 +17,10 @@ const creditorMessageId = (variant: InfoSectionVariant, accountHolder: AccountHo
       ? ('savingsFund.payment.infoSection.creditor.legalEntity' as const)
       : ('savingsFund.withdraw.infoSection.creditor.legalEntity' as const);
   }
-  if (accountHolder === 'child' && variant === 'payment') {
-    return 'savingsFund.payment.infoSection.creditor.child' as const;
+  if (accountHolder === 'child') {
+    return variant === 'payment'
+      ? ('savingsFund.payment.infoSection.creditor.child' as const)
+      : ('savingsFund.withdraw.infoSection.creditor.child' as const);
   }
   return variant === 'payment'
     ? ('savingsFund.payment.infoSection.creditor' as const)
