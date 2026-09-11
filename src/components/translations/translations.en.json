@@ -1259,6 +1259,7 @@
   "savingsFund.withdraw.form.iban.label": "Bank account",
   "savingsFund.withdraw.form.iban.description": "You can only withdraw to your own bank account from which you have previously made a deposit to the Additional Savings Fund.",
   "savingsFund.withdraw.form.iban.description.legalEntity": "You can only withdraw to a company bank account from which you have previously made a deposit to the Additional Savings Fund.",
+  "savingsFund.withdraw.form.iban.description.child": "You can only withdraw to a bank account in the child’s name from which a deposit to the Additional Savings Fund has previously been made.",
   "savingsFund.withdraw.form.iban.placeholder": "Select bank account",
   "savingsFund.withdraw.form.iban.required": "Please select a bank account",
   "savingsFund.withdraw.form.continue.label": "Continue",
@@ -1270,6 +1271,7 @@
   "savingsFund.withdraw.infoSection.investmentAccount.learnMore": "What is this and how does it work?",
   "savingsFund.withdraw.infoSection.creditor": "You can only withdraw to a bank account in your name.",
   "savingsFund.withdraw.infoSection.creditor.legalEntity": "You can only withdraw to a bank account belonging to your company.",
+  "savingsFund.withdraw.infoSection.creditor.child": "You can only withdraw to a bank account in the child’s name.",
   "savingsFund.withdraw.infoSection.fees": "Making a withdrawal is free.",
   "savingsFund.withdraw.error": "There was an error processing your withdrawal request. Please try again later or contact us: tuleva@tuleva.ee",
 

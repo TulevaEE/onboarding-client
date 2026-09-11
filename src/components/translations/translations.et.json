@@ -1341,6 +1341,7 @@
   "savingsFund.withdraw.form.iban.label": "Pangakonto",
   "savingsFund.withdraw.form.iban.description": "Väljamakseid saad teha iseenda pangakontole, millelt oled varasemalt Täiendavasse Kogumisfondi sissemakse teinud.",
   "savingsFund.withdraw.form.iban.description.legalEntity": "Väljamakseid saad teha osaühingu pangakontole, millelt oled varasemalt Täiendavasse Kogumisfondi sissemakse teinud.",
+  "savingsFund.withdraw.form.iban.description.child": "Väljamakseid saab teha ainult lapse nimel olevale pangakontole, millelt on varasemalt Täiendavasse Kogumisfondi sissemakse tehtud.",
   "savingsFund.withdraw.form.iban.placeholder": "Vali pangakonto",
   "savingsFund.withdraw.form.iban.required": "Vali, millesele pangakontole soovid väljamakse teha",
   "savingsFund.withdraw.form.continue.label": "Jätkan",
@@ -1352,6 +1353,7 @@
   "savingsFund.withdraw.infoSection.investmentAccount.learnMore": "Mis see on ja kuidas see käib?",
   "savingsFund.withdraw.infoSection.creditor": "Raha saad kanda oma enda pangakontole.",
   "savingsFund.withdraw.infoSection.creditor.legalEntity": "Raha saad kanda oma osaühingu pangakontole.",
+  "savingsFund.withdraw.infoSection.creditor.child": "Raha saab kanda ainult lapse enda pangakontole.",
   "savingsFund.withdraw.infoSection.fees": "Väljamakse tegemine on tasuta.",
   "savingsFund.withdraw.error": "Väljamakse algatamisel tekkis viga. Palun proovi hiljem uuesti või võta meiega ühendust: tuleva@tuleva.ee",
 
