@@ -99,7 +99,7 @@ describe('hackathon idea submission', () => {
     expect(screen.getByRole('heading', { name: 'About you' })).toBeInTheDocument();
     expect(screen.getByLabelText('Email')).toHaveValue(mockUser.email);
     userEvent.click(
-      within(screen.getByRole('group', { name: 'What are your own skills?' })).getByLabelText(
+      within(screen.getByRole('group', { name: 'What are your skills and experience?' })).getByLabelText(
         'Software development',
       ),
     );
@@ -220,7 +220,7 @@ describe('hackathon idea submission', () => {
       ).getByLabelText('Design'),
     );
     userEvent.click(
-      within(screen.getByRole('group', { name: 'What are your own skills?' })).getByLabelText(
+      within(screen.getByRole('group', { name: 'What are your skills and experience?' })).getByLabelText(
         'Design',
       ),
     );
