@@ -1,6 +1,4 @@
 import download from 'downloadjs';
-// TODO migrate to web-eid-library
-import hwcrypto, { Certificate } from 'hwcrypto-js';
 
 import { Dispatch } from 'react';
 import { AxiosError } from 'axios';
@@ -8,15 +6,17 @@ import {
   downloadMandatePreviewWithId,
   downloadMandateWithId,
   getFunds,
-  getIdCardSignatureHash,
   getIdCardSignatureStatus,
   getMobileIdSignatureChallengeCode,
   getMobileIdSignatureStatus,
   getSmartIdSignatureChallengeCode,
   getSmartIdSignatureStatus,
   getSourceFunds,
+  persistIdCardSignature,
   saveMandateWithAuthentication,
+  startIdCardSignature,
 } from '../common/api';
+import { getIdCardSigningCertificate, signHashWithIdCard } from '../common/signing/signWithIdCard';
 import {
   CHANGE_AGREEMENT_TO_TERMS,
   GET_SOURCE_FUNDS_ERROR,
@@ -232,57 +232,32 @@ export function signMandateWithSmartId(mandate: Mandate) {
   };
 }
 
-function pollForIdCardSignature(mandateId: number, pillar: 2 | 3, signedHash: string) {
+function handleIdCardSignatureStatus(
+  dispatch: Dispatch<unknown>,
+  statusCode: string,
+  mandateId: number,
+  pillar: 2 | 3,
+) {
+  if (statusCode === SIGNATURE_DONE_STATUS) {
+    dispatch({ type: SIGN_MANDATE_SUCCESS, signedMandateId: mandateId, pillar });
+  } else if (statusCode === SIGNING_IN_PROGRESS_STATUS) {
+    dispatch(pollForIdCardSignature(mandateId, pillar));
+  } else {
+    dispatch({ type: SIGN_MANDATE_ERROR, statusCode });
+  }
+}
+
+function pollForIdCardSignature(mandateId: number, pillar: 2 | 3) {
   return (dispatch: Dispatch<unknown>) => {
     if (timeout) {
       clearTimeout(timeout);
     }
     timeout = window.setTimeout(() => {
-      getIdCardSignatureStatus({ entityId: mandateId.toString(), signedHash })
-        .then((statusCode) => {
-          if (statusCode === SIGNATURE_DONE_STATUS) {
-            dispatch({
-              type: SIGN_MANDATE_SUCCESS,
-              signedMandateId: mandateId,
-              pillar,
-            });
-          } else if (statusCode === SIGNING_IN_PROGRESS_STATUS) {
-            dispatch(pollForIdCardSignature(mandateId, pillar, signedHash));
-          } else {
-            dispatch({ type: SIGN_MANDATE_ERROR, statusCode });
-          }
-        })
+      getIdCardSignatureStatus({ entityId: mandateId.toString() })
+        .then((statusCode) => handleIdCardSignatureStatus(dispatch, statusCode, mandateId, pillar))
         .catch((error) => dispatch({ type: SIGN_MANDATE_ERROR, error }));
     }, POLL_DELAY);
   };
-}
-
-function signIdCardSignatureHash(
-  hash: string,
-  certificate: Certificate,
-  mandateId: number,
-  pillar: 2 | 3,
-) {
-  return (dispatch: Dispatch<unknown>) =>
-    hwcrypto
-      .sign(certificate, { type: 'SHA-256', hex: hash }, { lang: 'en' })
-      .then(
-        (signature: { hex: string }) => {
-          dispatch({ type: SIGN_MANDATE_ID_CARD_SIGN_HASH_SUCCESS });
-          return signature.hex;
-        },
-        (error: string) => {
-          dispatch({ type: SIGN_MANDATE_ERROR, error });
-        },
-      )
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      .then((signedHash: string) => {
-        dispatch(pollForIdCardSignature(mandateId, pillar, signedHash));
-      })
-      .catch((error: string) => {
-        handleSaveMandateError(dispatch, error);
-      });
 }
 
 function saveOrRetrieveExistingMandate(mandate: Mandate | string) {
@@ -295,38 +270,39 @@ function saveOrRetrieveExistingMandate(mandate: Mandate | string) {
 export function signMandateWithIdCard(mandate: Mandate) {
   return (dispatch: Dispatch<unknown>) => {
     dispatch({ type: SIGN_MANDATE_ID_CARD_START });
+    let certificate: string;
+    let supportedHashFunctions: string[];
     let mandateId: number;
     let mandatePillar: 2 | 3;
-    let certificate: Certificate;
 
-    return hwcrypto
-      .getCertificate({ lang: 'en' })
-      .then(
-        (cert) => {
-          certificate = cert;
-        },
-        () => {
-          const error = {
-            body: { errors: [{ code: 'id.card.signing.error' }] },
-          };
-          dispatch({ type: SIGN_MANDATE_START_ERROR, error });
-        },
-      )
-      .then(() => saveOrRetrieveExistingMandate(mandate))
+    return getIdCardSigningCertificate()
+      .then((signingCertificate) => {
+        certificate = signingCertificate.certificate;
+        supportedHashFunctions = signingCertificate.supportedHashFunctions;
+        return saveOrRetrieveExistingMandate(mandate);
+      })
       .then(({ id, pillar }: Mandate) => {
         mandateId = id;
         mandatePillar = pillar;
-        return getIdCardSignatureHash({
+        return startIdCardSignature({
           entityId: mandateId.toString(),
-          certificateHex: certificate.hex,
+          certificate,
+          supportedHashFunctions,
         });
       })
-      .then((hash: string) => {
+      .then((hashToSign) => {
         dispatch({ type: SIGN_MANDATE_ID_CARD_START_SUCCESS });
-        dispatch(signIdCardSignatureHash(hash, certificate, mandateId, mandatePillar));
+        return signHashWithIdCard(certificate, hashToSign);
       })
-      .catch((error: string) => {
-        dispatch({ type: SIGN_MANDATE_START_ERROR, error });
+      .then((signature) => {
+        dispatch({ type: SIGN_MANDATE_ID_CARD_SIGN_HASH_SUCCESS });
+        return persistIdCardSignature({ entityId: mandateId.toString(), signature });
+      })
+      .then((statusCode) =>
+        handleIdCardSignatureStatus(dispatch, statusCode, mandateId, mandatePillar),
+      )
+      .catch((error) => {
+        handleSaveMandateError(dispatch, error);
       });
   };
 }

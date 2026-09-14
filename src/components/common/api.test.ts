@@ -12,7 +12,6 @@ import {
   getCapitalRowsWithToken,
   getContributions,
   getFunds,
-  getIdCardSignatureHash,
   getIdCardSignatureStatus,
   getIdCardTokens,
   getMandateDeadlines,
@@ -32,8 +31,10 @@ import {
   getUserConversionWithToken,
   getUserWithToken,
   logout,
+  persistIdCardSignature,
   redirectToPayment,
   saveMandateWithAuthentication,
+  startIdCardSignature,
   updateUserWithToken,
 } from './api';
 import * as http from './http';
@@ -580,7 +581,7 @@ describe('API calls', () => {
 
       expect(challengeCode).toEqual(mockResponse.challengeCode);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
-        expect.stringContaining(`/v1/mandates/${mandateId}/signature/mobileId`),
+        expect.stringContaining(`/v1/mandates/${mandateId}/signature/mobile-id`),
         undefined,
       );
     });
@@ -616,7 +617,7 @@ describe('API calls', () => {
 
       expect(statusResponse).toEqual(mockStatusResponse);
       expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        expect.stringContaining(`/v1/mandates/${mandateId}/signature/mobileId/status`),
+        expect.stringContaining(`/v1/mandates/${mandateId}/signature/mobile-id/status`),
         undefined,
       );
     });
@@ -649,7 +650,7 @@ describe('API calls', () => {
 
       expect(challengeCode).toEqual(mockResponse.challengeCode);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
-        expect.stringContaining(`/v1/mandates/${mandateId}/signature/smartId`),
+        expect.stringContaining(`/v1/mandates/${mandateId}/signature/smart-id`),
         undefined,
       );
     });
@@ -682,7 +683,7 @@ describe('API calls', () => {
 
       expect(statusResponse).toEqual(mockStatusResponse);
       expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        expect.stringContaining(`/v1/mandates/${mandateId}/signature/smartId/status`),
+        expect.stringContaining(`/v1/mandates/${mandateId}/signature/smart-id/status`),
         undefined,
       );
     });
@@ -701,75 +702,146 @@ describe('API calls', () => {
     });
   });
 
-  describe('getIdCardSignatureHash', () => {
+  describe('startIdCardSignature', () => {
     const mandateId = '12345';
-    const certificateHex = 'cert-123';
-    const mockResponse = { hash: 'hash-123' };
+    const certificate = 'cert-123';
+    const supportedHashFunctions = ['SHA-256', 'SHA-384'];
+    const mockResponse = { hash: 'hash-123', hashFunction: 'SHA-256' };
 
     beforeEach(() => {
       jest.clearAllMocks();
       mockHttp.putWithAuthentication.mockResolvedValue(mockResponse);
     });
 
-    it('retrieves the ID card signature hash correctly', async () => {
-      const hash = await getIdCardSignatureHash({
+    it('starts the ID card signature with the signing certificate', async () => {
+      const response = await startIdCardSignature({
         entityId: mandateId,
-        certificateHex,
+        certificate,
+        supportedHashFunctions,
       });
 
-      expect(hash).toEqual(mockResponse.hash);
+      expect(response).toEqual(mockResponse);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
-        expect.stringContaining(`/v1/mandates/${mandateId}/signature/idCard`),
-        { clientCertificate: certificateHex },
+        expect.stringContaining(`/v1/mandates/${mandateId}/signature/id-card`),
+        { certificate, supportedHashFunctions },
       );
     });
 
-    it('retrieves the ID card signature hash correctly for mandate batch', async () => {
-      const hash = await getIdCardSignatureHash({
+    it('starts the ID card signature for a mandate batch', async () => {
+      const response = await startIdCardSignature({
         entityId: mandateId,
-        certificateHex,
+        certificate,
+        supportedHashFunctions,
         type: 'MANDATE_BATCH',
       });
 
-      expect(hash).toEqual(mockResponse.hash);
+      expect(response).toEqual(mockResponse);
       expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
         expect.stringContaining(`/v1/mandate-batches/${mandateId}/signature/id-card`),
-        { clientCertificate: certificateHex },
+        { certificate, supportedHashFunctions },
+      );
+    });
+  });
+
+  describe('persistIdCardSignature', () => {
+    const mandateId = '12345';
+    const signature = 'signature-123';
+    const mockResponse = { statusCode: 'OUTSTANDING_TRANSACTION' };
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      mockHttp.putWithAuthentication.mockResolvedValue(mockResponse);
+    });
+
+    it('persists the ID card signature and returns the processing status', async () => {
+      const statusCode = await persistIdCardSignature({ entityId: mandateId, signature });
+
+      expect(statusCode).toEqual(mockResponse.statusCode);
+      expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
+        expect.stringContaining(`/v1/mandates/${mandateId}/signature/id-card/signature`),
+        { signature },
+      );
+    });
+
+    it('persists the ID card signature for a mandate batch', async () => {
+      const statusCode = await persistIdCardSignature({
+        entityId: mandateId,
+        signature,
+        type: 'MANDATE_BATCH',
+      });
+
+      expect(statusCode).toEqual(mockResponse.statusCode);
+      expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
+        expect.stringContaining(`/v1/mandate-batches/${mandateId}/signature/id-card/signature`),
+        { signature },
       );
     });
   });
 
   describe('getIdCardSignatureStatus', () => {
     const mandateId = '12345';
-    const signedHash = 'signed-hash-123';
     const mockResponse = { statusCode: 'SIGNATURE' };
 
     beforeEach(() => {
       jest.clearAllMocks();
-      mockHttp.putWithAuthentication.mockResolvedValue(mockResponse);
+      mockHttp.getWithAuthentication.mockResolvedValue(mockResponse);
     });
 
-    it('retrieves the ID card signature status correctly', async () => {
-      const statusCode = await getIdCardSignatureStatus({ entityId: mandateId, signedHash });
+    it('retrieves the ID card signature status', async () => {
+      const statusCode = await getIdCardSignatureStatus({ entityId: mandateId });
 
       expect(statusCode).toEqual(mockResponse.statusCode);
-      expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
-        expect.stringContaining(`/v1/mandates/${mandateId}/signature/idCard/status`),
-        { signedHash },
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
+        expect.stringContaining(`/v1/mandates/${mandateId}/signature/id-card/status`),
+        undefined,
       );
     });
 
-    it('retrieves the ID card signature status correctly for mandate batch', async () => {
+    it('retrieves the ID card signature status for a mandate batch', async () => {
       const statusCode = await getIdCardSignatureStatus({
         entityId: mandateId,
-        signedHash,
         type: 'MANDATE_BATCH',
       });
 
       expect(statusCode).toEqual(mockResponse.statusCode);
-      expect(mockHttp.putWithAuthentication).toHaveBeenCalledWith(
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
         expect.stringContaining(`/v1/mandate-batches/${mandateId}/signature/id-card/status`),
-        { signedHash },
+        undefined,
+      );
+    });
+  });
+
+  describe('signature status validation', () => {
+    const mandateId = '12345';
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('rejects a status the backend should never return when persisting', async () => {
+      mockHttp.putWithAuthentication.mockResolvedValue({ statusCode: 'SOMETHING_ELSE' });
+
+      await expect(
+        persistIdCardSignature({ entityId: mandateId, signature: 'signature' }),
+      ).rejects.toThrow(/SOMETHING_ELSE/);
+    });
+
+    it('rejects a status the backend should never return when polling', async () => {
+      mockHttp.getWithAuthentication.mockResolvedValue({ statusCode: 'SOMETHING_ELSE' });
+
+      await expect(getIdCardSignatureStatus({ entityId: mandateId })).rejects.toThrow(
+        /SOMETHING_ELSE/,
+      );
+    });
+
+    it('rejects a status the backend should never return when polling with a challenge code', async () => {
+      mockHttp.getWithAuthentication.mockResolvedValue({
+        statusCode: 'SOMETHING_ELSE',
+        challengeCode: '1234',
+      });
+
+      await expect(getSmartIdSignatureStatus({ entityId: mandateId })).rejects.toThrow(
+        /SOMETHING_ELSE/,
       );
     });
   });

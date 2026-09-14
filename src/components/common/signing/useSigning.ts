@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { getAuthentication } from '../authenticationManager';
-import {
-  persistSignedIdCardHex,
-  pollForBatchStatusSignedWithIdCard,
-  SignedEntity,
-  signWithIdCard,
-} from './signWithIdCard';
+import { getIdCardSignatureStatus, persistIdCardSignature } from '../api';
+import { signWithIdCard } from './signWithIdCard';
 import { ErrorResponse } from '../apiModels';
+import { errorResponseWithCode, isErrorResponse } from '../errorResponse';
 import { SignableEntity } from './types';
 import { pollForSignatureStatus, startSigningWithChallengeCode } from './signWithChallengeCode';
 
 const POLL_DELAY = 1000;
 const SIGNATURE_DONE_STATUS = 'SIGNATURE';
+
+const toErrorResponse = (error: unknown): ErrorResponse =>
+  isErrorResponse(error) ? error : errorResponseWithCode('signature.error.unknown');
 
 export const useSigning = <TSignableEntity extends { id: number | string }>(
   entityType: SignableEntity,
@@ -28,6 +28,7 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
   useEffect(() => {
     if (error) {
       setSigned(false);
+      setLoading(false);
       setChallengeCode(null);
     }
   }, [error]);
@@ -45,9 +46,17 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
       setLoading(true);
       if (signingMethod === 'ID_CARD') {
         setSigningType('ID_CARD');
-        const signature = await signWithIdCard<TSignableEntity>(entity, entityType);
-        await persistSignedIdCardHex(signature);
-        pollForIdCard(signature);
+        const { signature } = await signWithIdCard<TSignableEntity>(entity, entityType);
+        const signatureStatus = await persistIdCardSignature({
+          entityId: entity.id.toString(),
+          type: entityType,
+          signature,
+        });
+        if (signatureStatus === SIGNATURE_DONE_STATUS) {
+          setSigned(true);
+        } else {
+          pollForIdCard(entity);
+        }
       } else if (signingMethod === 'SMART_ID' || signingMethod === 'MOBILE_ID') {
         setSigningType(signingMethod);
         setChallengeCode(
@@ -58,28 +67,30 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
         throw new Error(`Invalid signing method: ${signingMethod}`);
       }
     } catch (e) {
-      setError(e as ErrorResponse); // TODO
+      setError(toErrorResponse(e));
       return Promise.reject(e);
     }
 
     return Promise.resolve();
   };
 
-  // PUT id card status method requires signed hex every time, so this is split from other polling method
-  const pollForIdCard = (signedEntity: SignedEntity<TSignableEntity['id']>) => {
+  const pollForIdCard = (entity: TSignableEntity) => {
     resetCurrentPolling();
 
     pollTimeout.current = window.setTimeout(async () => {
       try {
-        const signatureStatus = await pollForBatchStatusSignedWithIdCard(signedEntity);
+        const signatureStatus = await getIdCardSignatureStatus({
+          entityId: entity.id.toString(),
+          type: entityType,
+        });
 
         if (signatureStatus === SIGNATURE_DONE_STATUS) {
           setSigned(true);
         } else {
-          pollForIdCard(signedEntity);
+          pollForIdCard(entity);
         }
       } catch (e) {
-        setError(e as ErrorResponse); // TODO
+        setError(toErrorResponse(e));
       }
     }, POLL_DELAY);
   };
@@ -98,7 +109,7 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
           poll(entity, signingMethod);
         }
       } catch (e) {
-        setError(e as ErrorResponse); // TODO
+        setError(toErrorResponse(e));
       }
     }, POLL_DELAY);
   };

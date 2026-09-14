@@ -376,17 +376,20 @@ export interface MobileSignatureResponse {
   challengeCode: string | null; // Can be null during first request of Smart-ID
 }
 
+export type SignatureStatus = 'SIGNATURE' | 'OUTSTANDING_TRANSACTION';
+
 export interface MobileSignatureStatusResponse {
-  statusCode: 'SIGNATURE' | 'OUTSTANDING_TRANSACTION';
+  statusCode: SignatureStatus;
   challengeCode: string;
 }
 
 export interface IdCardSignatureResponse {
   hash: string;
+  hashFunction: string;
 }
 
 export interface IdCardSignatureStatusResponse {
-  statusCode: string;
+  statusCode: SignatureStatus;
 }
 
 export interface Payment {

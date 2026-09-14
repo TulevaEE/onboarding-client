@@ -1,4 +1,5 @@
 module.exports = {
+  root: true,
   extends: [
     '@transferwise',
     'plugin:@typescript-eslint/recommended',

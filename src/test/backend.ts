@@ -135,14 +135,14 @@ export function smartIdMandateSigningBackend(
     mandateSigned: false,
   };
   server.use(
-    rest.put('http://localhost/v1/mandates/1/signature/smartId', (req, res, ctx) => {
+    rest.put('http://localhost/v1/mandates/1/signature/smart-id', (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
         return res(ctx.status(401), ctx.json(authErrorResponse));
       }
       backend.mandateSigned = true;
       return res(ctx.status(200), ctx.json(getMobileSignatureResponse(options.challengeCode)));
     }),
-    rest.get('http://localhost/v1/mandates/1/signature/smartId/status', (req, res, ctx) => {
+    rest.get('http://localhost/v1/mandates/1/signature/smart-id/status', (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
         return res(ctx.status(401), ctx.json(authErrorResponse));
       }
