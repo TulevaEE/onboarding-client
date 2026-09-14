@@ -1,6 +1,6 @@
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
@@ -36,6 +36,7 @@ const existingRegistration = (
   phoneNumber: null,
   role: 'PARTICIPANT',
   skills: [],
+  otherSkills: null,
   challenges: [],
   participation: 'LOOKING_FOR_TEAM',
   idea: null,
@@ -64,8 +65,10 @@ describe('hackathon registration', () => {
     expect(await screen.findByLabelText('Email')).toHaveValue(mockUser.email);
     expect(screen.getByLabelText('Phone (optional)')).toHaveValue(mockUser.phoneNumber);
 
-    userEvent.click(screen.getByLabelText('I am looking for a team'));
     userEvent.click(screen.getByLabelText('Software development'));
+    expect(screen.queryByLabelText('Other skills')).not.toBeInTheDocument();
+    userEvent.click(screen.getByLabelText('Other'));
+    userEvent.type(screen.getByLabelText('Other skills'), '  Projektijuhtimine ');
     userEvent.click(screen.getByLabelText('Fair lending'));
     userEvent.click(screen.getByLabelText('Navy blue'));
     userEvent.selectOptions(screen.getByLabelText('Size'), 'L');
@@ -79,6 +82,7 @@ describe('hackathon registration', () => {
         phoneNumber: mockUser.phoneNumber,
         role: 'PARTICIPANT',
         skills: ['SOFTWARE_DEVELOPMENT'],
+        otherSkills: 'Projektijuhtimine',
         challenges: ['FAIR_LENDING'],
         participation: 'LOOKING_FOR_TEAM',
         idea: null,
@@ -95,12 +99,14 @@ describe('hackathon registration', () => {
     initializeComponent();
     history.push('/hackathon');
 
-    userEvent.click(await screen.findByLabelText('I am looking for a team'));
-    userEvent.click(screen.getByLabelText('White'));
+    userEvent.click(await screen.findByLabelText('White'));
     expect(screen.getByLabelText('Size')).toBeInTheDocument();
 
     userEvent.click(screen.getByLabelText("I don't want a T-shirt"));
     expect(screen.queryByLabelText('Size')).not.toBeInTheDocument();
+
+    userEvent.click(screen.getByLabelText('Design'));
+    userEvent.click(screen.getByLabelText('Fair lending'));
 
     userEvent.click(screen.getByLabelText(/I have read the hackathon terms/));
     userEvent.click(screen.getByRole('button', { name: 'Register' }));
@@ -114,13 +120,20 @@ describe('hackathon registration', () => {
     initializeComponent();
     history.push('/hackathon');
 
-    userEvent.click(await screen.findByLabelText('I am looking for a team'));
-    userEvent.click(screen.getByRole('button', { name: 'Register' }));
+    userEvent.click(await screen.findByRole('button', { name: 'Register' }));
 
     expect(
       await screen.findByText("Please choose a T-shirt or let us know you don't want one"),
     ).toBeInTheDocument();
     expect(screen.getByText('Please accept the hackathon terms')).toBeInTheDocument();
+    expect(screen.getByText('Please choose at least one skill')).toBeInTheDocument();
+    expect(screen.getByText('Please choose at least one challenge')).toBeInTheDocument();
+
+    userEvent.click(screen.getByLabelText('Other'));
+    userEvent.type(screen.getByLabelText('Other skills'), 'Projektijuhtimine');
+    await waitFor(() =>
+      expect(screen.queryByText('Please choose at least one skill')).not.toBeInTheDocument(),
+    );
 
     userEvent.click(screen.getByLabelText('Grey'));
     userEvent.click(screen.getByRole('button', { name: 'Register' }));
@@ -142,6 +155,7 @@ describe('hackathon registration', () => {
       'href',
       '/hackathon/idea',
     );
+    expect(screen.getByText('deadline 30.09')).toBeInTheDocument();
   });
 
   test('never asks for the name or personal code we already have', async () => {
@@ -155,15 +169,24 @@ describe('hackathon registration', () => {
     expect(screen.queryByLabelText(/personal code/i)).not.toBeInTheDocument();
   });
 
-  test('requires a participation choice before registering', async () => {
+  test('does not ask how the member takes part and marks the required fields', async () => {
     hackathonRegistrationBackend(server);
     initializeComponent();
     history.push('/hackathon');
 
-    userEvent.click(await screen.findByRole('button', { name: 'Register' }));
-
+    expect(await screen.findByLabelText('Email')).toBeRequired();
     expect(
-      await screen.findByText('Please choose how you would like to take part'),
+      screen.getByText('Fields marked with an asterisk (*) are required.'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('radiogroup', { name: 'Tuleva T-shirt' })).toBeRequired();
+    expect(screen.getByRole('link', { name: "Members' Hackathon" })).toHaveAttribute(
+      'href',
+      '/hackathon',
+    );
+    expect(screen.queryByText("Members' hackathon")).not.toBeInTheDocument();
+    expect(screen.queryByRole('radio', { name: /team/i })).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/The hackathon is an intensive weekend of working together/),
     ).toBeInTheDocument();
   });
 
@@ -205,6 +228,7 @@ describe('hackathon registration', () => {
       email: 'mentor@example.com',
       role: 'MENTOR',
       participation: 'WITH_TEAM',
+      challenges: ['INSURANCE'],
       idea: 'Sujuv kahjukäsitlus',
     });
     server.use(
@@ -223,7 +247,25 @@ describe('hackathon registration', () => {
     userEvent.click(screen.getByRole('button', { name: 'Save changes' }));
 
     expect(await screen.findByText('Your registration has been saved.')).toBeInTheDocument();
-    expect(stored).toMatchObject({ role: 'MENTOR', idea: 'Sujuv kahjukäsitlus' });
+    expect(stored).toMatchObject({
+      role: 'MENTOR',
+      idea: 'Sujuv kahjukäsitlus',
+      participation: 'WITH_TEAM',
+    });
+  });
+
+  test('tells a member who registered with an idea that they are already registered', async () => {
+    hackathonRegistrationBackend(server, existingRegistration({ participation: 'WITH_IDEA' }));
+    initializeComponent();
+    history.push('/hackathon');
+
+    expect(
+      await screen.findByText(
+        'You are already registered for the hackathon with your idea. There is no need to register again. You can change your details here until October 5.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save changes' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Register' })).not.toBeInTheDocument();
   });
 
   test('keeps an existing registration read-only once registration has closed', async () => {
@@ -288,8 +330,9 @@ describe('hackathon registration', () => {
     initializeComponent();
     history.push('/hackathon');
 
-    userEvent.click(await screen.findByLabelText('I am looking for a team'));
-    userEvent.click(screen.getByLabelText("I don't want a T-shirt"));
+    userEvent.click(await screen.findByLabelText("I don't want a T-shirt"));
+    userEvent.click(screen.getByLabelText('Design'));
+    userEvent.click(screen.getByLabelText('Fair lending'));
     userEvent.click(screen.getByLabelText(/I have read the hackathon terms/));
     userEvent.click(screen.getByRole('button', { name: 'Register' }));
 

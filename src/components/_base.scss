@@ -303,6 +303,14 @@ small {
     height: 60px;
   }
 
+  // Logo and an optional label beside it (e.g. "Liikmete Häkaton"), aligned by the last
+  // baseline so the label's bottom line stands on the same line as the wordmark
+  .app-header__brand {
+    display: flex;
+    align-items: flex-end;
+    align-items: last baseline;
+  }
+
   @media (max-width: 576px) {
     .brand-logo {
       height: 52px;

@@ -13,4 +13,13 @@ describe('Footer', () => {
     expect(component.find('a[href^="mailto:"]').exists()).toBe(true);
     expect(component.find('a[href^="tel:"]').exists()).toBe(true);
   });
+
+  it('renders info about the cooperative when asked to', () => {
+    const component = shallow(<Footer cooperative />);
+    expect(component.contains(<FormattedMessage id="footer.cooperative.name" />)).toBe(true);
+    expect(component.contains(<FormattedMessage id="footer.cooperative.registration.code" />)).toBe(
+      true,
+    );
+    expect(component.contains(<FormattedMessage id="footer.name" />)).toBe(false);
+  });
 });
