@@ -7,12 +7,25 @@ import {
   HackathonChallenge,
   HackathonParticipation,
   HackathonSkill,
+  HackathonTshirtColor,
+  HackathonTshirtSize,
 } from '../common/apiModels/hackathon';
 import Checkbox from '../common/checkbox/Checkbox';
 import Radio from '../common/radio/Radio';
 import { Loader } from '../common';
 import { usePageTitle } from '../common/usePageTitle';
 import { TranslationKey } from '../translations';
+import {
+  CHALLENGES,
+  FieldError,
+  HackathonHeading,
+  HackathonMembersOnly,
+  SkillCheckboxes,
+  TermsField,
+  toggle,
+  trimmedOrNull,
+  TshirtFields,
+} from './HackathonFormFields';
 
 type HackathonFormData = {
   email: string;
@@ -20,8 +33,10 @@ type HackathonFormData = {
   skills: HackathonSkill[];
   challenges: HackathonChallenge[];
   participation: HackathonParticipation | null;
-  idea: string;
   linkedinUrl: string;
+  tshirtColor: HackathonTshirtColor | null;
+  tshirtSize: HackathonTshirtSize | '';
+  termsAccepted: boolean;
 };
 
 const PARTICIPATIONS: { value: HackathonParticipation; labelId: TranslationKey }[] = [
@@ -29,28 +44,6 @@ const PARTICIPATIONS: { value: HackathonParticipation; labelId: TranslationKey }
   { value: 'WITH_IDEA', labelId: 'hackathon.participation.withIdea' },
   { value: 'LOOKING_FOR_TEAM', labelId: 'hackathon.participation.lookingForTeam' },
 ];
-
-const SKILLS: { value: HackathonSkill; labelId: TranslationKey }[] = [
-  { value: 'SOFTWARE_DEVELOPMENT', labelId: 'hackathon.skill.softwareDevelopment' },
-  { value: 'DESIGN', labelId: 'hackathon.skill.design' },
-  { value: 'DATA_AND_AI', labelId: 'hackathon.skill.dataAndAi' },
-  { value: 'LAW_AND_REGULATION', labelId: 'hackathon.skill.lawAndRegulation' },
-  { value: 'BUSINESS_AND_PRODUCT', labelId: 'hackathon.skill.businessAndProduct' },
-  { value: 'MARKETING_AND_COMMUNICATION', labelId: 'hackathon.skill.marketingAndCommunication' },
-  { value: 'FINANCE_AND_INSURANCE', labelId: 'hackathon.skill.financeAndInsurance' },
-];
-
-const CHALLENGES: { value: HackathonChallenge; labelId: TranslationKey }[] = [
-  { value: 'FAIR_LENDING', labelId: 'hackathon.challenge.fairLending' },
-  { value: 'INSURANCE', labelId: 'hackathon.challenge.insurance' },
-  { value: 'COLLECTIVE_BUYING_POWER', labelId: 'hackathon.challenge.collectiveBuyingPower' },
-  { value: 'WEALTH_AND_INHERITANCE', labelId: 'hackathon.challenge.wealthAndInheritance' },
-];
-
-const toggle = <T,>(values: T[], value: T, checked: boolean): T[] =>
-  checked ? [...values, value] : values.filter((item) => item !== value);
-
-const trimmedOrNull = (value: string): string | null => value.trim() || null;
 
 export const HackathonRegistrationPage = () => {
   usePageTitle('pageTitle.hackathon');
@@ -74,8 +67,10 @@ export const HackathonRegistrationPage = () => {
       skills: [],
       challenges: [],
       participation: null,
-      idea: '',
       linkedinUrl: '',
+      tshirtColor: null,
+      tshirtSize: '',
+      termsAccepted: false,
     },
   });
 
@@ -90,8 +85,10 @@ export const HackathonRegistrationPage = () => {
         skills: registration.skills,
         challenges: registration.challenges,
         participation: registration.participation,
-        idea: registration.idea ?? '',
         linkedinUrl: registration.linkedinUrl ?? '',
+        tshirtColor: registration.tshirtColor,
+        tshirtSize: registration.tshirtSize ?? '',
+        termsAccepted: registration.termsAccepted,
       });
     }
   }, [registration, prefilled, reset]);
@@ -104,30 +101,16 @@ export const HackathonRegistrationPage = () => {
       skills: data.skills,
       challenges: data.challenges,
       participation: data.participation as HackathonParticipation,
-      idea: trimmedOrNull(data.idea),
+      idea: registration?.idea ?? null,
       linkedinUrl: trimmedOrNull(data.linkedinUrl),
+      tshirtColor: data.tshirtColor as HackathonTshirtColor,
+      tshirtSize: data.tshirtColor === 'NONE' ? null : data.tshirtSize || null,
+      termsAccepted: data.termsAccepted,
     }).catch(() => null),
   );
 
   if (user && !isMember) {
-    return (
-      <div className="col-12 col-md-11 col-lg-8 mx-auto py-4">
-        <HackathonHeading />
-        <div className="card p-4 mt-4">
-          <h2 className="mt-0 mb-2 fs-3">
-            <FormattedMessage id="hackathon.membersOnly.title" />
-          </h2>
-          <p className="m-0">
-            <FormattedMessage id="hackathon.membersOnly.description" />
-          </p>
-          <div className="mt-4">
-            <a className="btn btn-primary" href="https://tuleva.ee/tulundusyhistu/">
-              <FormattedMessage id="hackathon.membersOnly.action" />
-            </a>
-          </div>
-        </div>
-      </div>
-    );
+    return <HackathonMembersOnly titleId="hackathon.title" />;
   }
 
   if (isLoading) {
@@ -137,7 +120,7 @@ export const HackathonRegistrationPage = () => {
   if (isError || !registration) {
     return (
       <div className="col-12 col-md-11 col-lg-8 mx-auto py-4">
-        <HackathonHeading />
+        <HackathonHeading titleId="hackathon.title" />
         <div className="alert alert-danger mt-4" role="alert">
           <FormattedMessage id="hackathon.loadFailed" />
         </div>
@@ -157,7 +140,7 @@ export const HackathonRegistrationPage = () => {
   if (!registration.open) {
     return (
       <div className="col-12 col-md-11 col-lg-8 mx-auto py-4">
-        <HackathonHeading />
+        <HackathonHeading titleId="hackathon.title" />
         <div className="card p-4 mt-4">
           <h2 className="mt-0 mb-2 fs-3">
             <FormattedMessage id="hackathon.closed.title" />
@@ -184,13 +167,27 @@ export const HackathonRegistrationPage = () => {
 
   return (
     <div className="col-12 col-md-11 col-lg-8 mx-auto py-4">
-      <HackathonHeading />
+      <HackathonHeading titleId="hackathon.title" />
 
       {registration.registered && (
         <div className="alert alert-success mt-4" role="status">
           <FormattedMessage id="hackathon.alreadyRegistered" values={{ deadline }} />
         </div>
       )}
+
+      <div className="card p-4 mt-4 d-flex flex-column flex-sm-row gap-3 align-items-sm-center justify-content-between">
+        <div>
+          <h2 className="m-0 fs-3">
+            <FormattedMessage id="hackathon.ideaInvite.title" />
+          </h2>
+          <p className="mt-1 mb-0 text-body-secondary">
+            <FormattedMessage id="hackathon.ideaInvite.description" />
+          </p>
+        </div>
+        <Link className="btn btn-outline-primary text-nowrap" to="/hackathon/idea">
+          <FormattedMessage id="hackathon.ideaInvite.action" />
+        </Link>
+      </div>
 
       <form onSubmit={submit} className="d-flex flex-column gap-4 mt-4">
         <section className="d-flex flex-column gap-2">
@@ -225,15 +222,9 @@ export const HackathonRegistrationPage = () => {
                       aria-invalid={error ? true : undefined}
                       aria-describedby={error ? 'hackathon-email-error' : undefined}
                     />
-                    {error?.message && (
-                      <p
-                        className="mt-1 mb-0 text-danger fs-base"
-                        role="alert"
-                        id="hackathon-email-error"
-                      >
-                        {error.message}
-                      </p>
-                    )}
+                    <div className="mt-1">
+                      <FieldError id="hackathon-email-error" message={error?.message} />
+                    </div>
                   </>
                 )}
               />
@@ -288,15 +279,7 @@ export const HackathonRegistrationPage = () => {
                     </span>
                   </Radio>
                 ))}
-                {error?.message && (
-                  <p
-                    className="m-0 text-danger fs-base"
-                    role="alert"
-                    id="hackathon-participation-error"
-                  >
-                    {error.message}
-                  </p>
-                )}
+                <FieldError id="hackathon-participation-error" message={error?.message} />
               </div>
             )}
           />
@@ -313,24 +296,12 @@ export const HackathonRegistrationPage = () => {
             control={control}
             name="skills"
             render={({ field }) => (
-              <div
-                className="d-flex flex-column gap-2"
-                role="group"
-                aria-labelledby="hackathon-skills-title"
-              >
-                {SKILLS.map(({ value, labelId }) => (
-                  <Checkbox
-                    key={value}
-                    id={`hackathon-skill-${value}`}
-                    checked={field.value.includes(value)}
-                    onToggle={(checked) => field.onChange(toggle(field.value, value, checked))}
-                  >
-                    <span className="fs-3 lh-sm">
-                      <FormattedMessage id={labelId} />
-                    </span>
-                  </Checkbox>
-                ))}
-              </div>
+              <SkillCheckboxes
+                idPrefix="hackathon-skill"
+                labelledBy="hackathon-skills-title"
+                value={field.value}
+                onChange={field.onChange}
+              />
             )}
           />
         </section>
@@ -368,48 +339,67 @@ export const HackathonRegistrationPage = () => {
           />
         </section>
 
-        <section className="d-flex flex-column gap-3">
-          <div>
-            <label className="form-label" htmlFor="hackathon-idea">
-              <FormattedMessage id="hackathon.idea.label" />
-            </label>
-            <Controller
-              control={control}
-              name="idea"
-              rules={{ maxLength: 500 }}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  id="hackathon-idea"
-                  type="text"
-                  maxLength={500}
-                  className="form-control form-control-lg"
-                  placeholder={intl.formatMessage({ id: 'hackathon.idea.placeholder' })}
-                />
-              )}
-            />
-          </div>
-          <div>
-            <label className="form-label" htmlFor="hackathon-linkedin">
-              <FormattedMessage id="hackathon.linkedin.label" />
-            </label>
-            <Controller
-              control={control}
-              name="linkedinUrl"
-              rules={{ maxLength: 500 }}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  id="hackathon-linkedin"
-                  type="text"
-                  maxLength={500}
-                  className="form-control form-control-lg"
-                  placeholder="https://linkedin.com/in/..."
-                />
-              )}
-            />
-          </div>
+        <section>
+          <label className="form-label" htmlFor="hackathon-linkedin">
+            <FormattedMessage id="hackathon.linkedin.label" />
+          </label>
+          <Controller
+            control={control}
+            name="linkedinUrl"
+            rules={{ maxLength: 500 }}
+            render={({ field }) => (
+              <input
+                {...field}
+                id="hackathon-linkedin"
+                type="text"
+                maxLength={500}
+                className="form-control form-control-lg"
+                placeholder="https://linkedin.com/in/..."
+              />
+            )}
+          />
         </section>
+
+        <Controller
+          control={control}
+          name="tshirtColor"
+          rules={{ required: intl.formatMessage({ id: 'hackathon.tshirt.required' }) }}
+          render={({ field: colorField, fieldState: { error: colorError } }) => (
+            <Controller
+              control={control}
+              name="tshirtSize"
+              rules={{
+                validate: (size, values) =>
+                  !values.tshirtColor ||
+                  values.tshirtColor === 'NONE' ||
+                  Boolean(size) ||
+                  intl.formatMessage({ id: 'hackathon.tshirt.size.required' }),
+              }}
+              render={({ field: sizeField, fieldState: { error: sizeError } }) => (
+                <TshirtFields
+                  color={colorField.value}
+                  size={sizeField.value}
+                  onColorChange={colorField.onChange}
+                  onSizeChange={sizeField.onChange}
+                  colorError={colorError?.message}
+                  sizeError={sizeError?.message}
+                />
+              )}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="termsAccepted"
+          rules={{
+            validate: (accepted) =>
+              accepted || intl.formatMessage({ id: 'hackathon.terms.required' }),
+          }}
+          render={({ field, fieldState: { error } }) => (
+            <TermsField checked={field.value} onChange={field.onChange} error={error?.message} />
+          )}
+        />
 
         {isSaveError && (
           <div className="alert alert-danger" role="alert">
@@ -435,14 +425,3 @@ export const HackathonRegistrationPage = () => {
     </div>
   );
 };
-
-const HackathonHeading = () => (
-  <>
-    <h1 className="m-0">
-      <FormattedMessage id="hackathon.title" />
-    </h1>
-    <p className="mt-2 mb-0 text-body-secondary">
-      <FormattedMessage id="hackathon.subtitle" />
-    </p>
-  </>
-);

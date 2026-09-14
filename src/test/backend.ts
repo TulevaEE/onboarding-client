@@ -46,6 +46,9 @@ import {
   UpdateCapitalTransferContractDto,
 } from '../components/common/apiModels/capital-transfer';
 import {
+  HackathonIdea,
+  HackathonIdeaCommand,
+  HackathonIdeas,
   HackathonRegistration,
   HackathonRegistrationCommand,
 } from '../components/common/apiModels/hackathon';
@@ -1059,7 +1062,7 @@ export function hackathonRegistrationBackend(
   registration: HackathonRegistration = {
     registered: false,
     open: true,
-    deadline: '2026-09-20T20:59:59Z',
+    deadline: '2026-10-05T20:59:59Z',
     email: mockUser.email,
     phoneNumber: mockUser.phoneNumber,
     role: null,
@@ -1068,8 +1071,12 @@ export function hackathonRegistrationBackend(
     participation: null,
     idea: null,
     linkedinUrl: null,
+    tshirtColor: null,
+    tshirtSize: null,
+    termsAccepted: false,
   },
-): void {
+): { registrations: HackathonRegistrationCommand[] } {
+  const backend = { registrations: [] as HackathonRegistrationCommand[] };
   let current = registration;
   server.use(
     rest.get('http://localhost/v1/hackathon-registration', (req, res, ctx) =>
@@ -1078,11 +1085,43 @@ export function hackathonRegistrationBackend(
     rest.post(
       'http://localhost/v1/hackathon-registration',
       (req: RestRequest<HackathonRegistrationCommand>, res, ctx) => {
+        backend.registrations.push(req.body);
         current = { ...current, ...req.body, registered: true };
         return res(ctx.json(current));
       },
     ),
   );
+  return backend;
+}
+
+export function hackathonIdeasBackend(
+  server: SetupServerApi,
+  ideas: HackathonIdeas = {
+    open: true,
+    deadline: '2026-09-30T20:59:59Z',
+    registered: false,
+    ideas: [],
+  },
+): { submitted: HackathonIdeaCommand[] } {
+  const backend = { submitted: [] as HackathonIdeaCommand[] };
+  let current = ideas;
+  server.use(
+    rest.get('http://localhost/v1/hackathon-ideas', (req, res, ctx) => res(ctx.json(current))),
+    rest.post(
+      'http://localhost/v1/hackathon-ideas',
+      (req: RestRequest<HackathonIdeaCommand>, res, ctx) => {
+        backend.submitted.push(req.body);
+        const idea: HackathonIdea = {
+          ...req.body,
+          id: current.ideas.length + 1,
+          createdTime: '2026-09-15T10:00:00Z',
+        };
+        current = { ...current, registered: true, ideas: [...current.ideas, idea] };
+        return res(ctx.json(idea));
+      },
+    ),
+  );
+  return backend;
 }
 
 export function savingsAccountStatementBackend(
@@ -1157,6 +1196,7 @@ const TEST_BACKENDS = {
   savingsFundOnboardingStatus: savingsFundOnboardingStatusBackend,
   savingsFundPersonOnboardingStatus: savingsFundPersonOnboardingStatusBackend,
   hackathonRegistration: hackathonRegistrationBackend,
+  hackathonIdeas: hackathonIdeasBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;
