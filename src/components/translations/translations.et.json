@@ -2081,7 +2081,7 @@
   "hackathon.tshirt.size": "Suurus",
   "hackathon.tshirt.size.placeholder": "Vali suurus",
   "hackathon.tshirt.size.required": "Vali särgi suurus",
-  "hackathon.terms.label": "Olen tutvunud {termsLink} ja nõustun, et häkatonil loodud lahenduste autorsus jääb tiimile ja varalised õigused Tulevale.",
+  "hackathon.terms.label": "Olen tutvunud {termsLink} ja nõustun, et häkatonil loodud lahenduste autorsus jääb tiimile ja varalised õigused Tulevale, et ühistu saaks parimad lahendused liikmete huvides ellu viia.",
   "hackathon.terms.link": "häkatoni tingimustega",
   "hackathon.terms.required": "Nõustu häkatoni tingimustega",
   "hackathon.idea.title": "Esita idee",
