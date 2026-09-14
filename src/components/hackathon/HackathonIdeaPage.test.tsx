@@ -99,9 +99,9 @@ describe('hackathon idea submission', () => {
     expect(screen.getByRole('heading', { name: 'About you' })).toBeInTheDocument();
     expect(screen.getByLabelText('Email')).toHaveValue(mockUser.email);
     userEvent.click(
-      within(screen.getByRole('group', { name: 'What are your skills and experience?' })).getByLabelText(
-        'Software development',
-      ),
+      within(
+        screen.getByRole('group', { name: 'What are your skills and experience?' }),
+      ).getByLabelText('Software development'),
     );
     userEvent.click(screen.getByLabelText('Other'));
     userEvent.type(screen.getByLabelText('Other skills'), 'Projektijuhtimine');
@@ -220,9 +220,9 @@ describe('hackathon idea submission', () => {
       ).getByLabelText('Design'),
     );
     userEvent.click(
-      within(screen.getByRole('group', { name: 'What are your skills and experience?' })).getByLabelText(
-        'Design',
-      ),
+      within(
+        screen.getByRole('group', { name: 'What are your skills and experience?' }),
+      ).getByLabelText('Design'),
     );
     userEvent.click(screen.getByLabelText("I don't want a T-shirt"));
     userEvent.click(screen.getByLabelText(/I have read the hackathon terms/));
