@@ -2001,7 +2001,7 @@
   "hackathon.tshirt.size": "Size",
   "hackathon.tshirt.size.placeholder": "Choose a size",
   "hackathon.tshirt.size.required": "Please choose a size",
-  "hackathon.terms.label": "I have read the {termsLink} and agree that the team keeps the authorship of the solutions created at the hackathon and Tuleva holds the economic rights, so that the cooperative can bring the best solutions to life in its members' interest.",
+  "hackathon.terms.label": "I have read the {termsLink} and agree that the team keeps the authorship of the solutions created at the hackathon and Tuleva holds the economic rights. This way the cooperative can bring the best solutions to life in its members' interest.",
   "hackathon.terms.link": "hackathon terms",
   "hackathon.terms.required": "Please accept the hackathon terms",
   "hackathon.idea.title": "Submit an idea to the Tuleva hackathon",
