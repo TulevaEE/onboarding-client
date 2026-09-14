@@ -2045,7 +2045,7 @@
   "hackathon.required.hint": "Tärniga (*) märgitud väljad on kohustuslikud.",
   "hackathon.label": "Häkaton",
   "hackathon.label.members": "Liikmete",
-  "hackathon.skills.intro": "Häkaton on intensiivne ühistöö nädalavahetus, kus saalitäis liikmeid ehitab koos lahendusi. Oleks vahva, kui saame kokku 15 tiimi ja ca 100 liiget. Igaühe panus loeb, seepärast küsime sinu oskusi ja teemasid, mis sind kõnetavad. Varasemat häkatonikogemust pole vaja, küll aga tahtmist ja oskust tiimiga koos uut lahendust ehitada.",
+  "hackathon.skills.intro": "Häkaton on ühistöö nädalavahetus. Loodame kokku saada umbes 100 liiget, kes ehitavad 15 tiimis uusi lahendusi. Igaühe panus loeb, seepärast küsime, mida sa oskad ja millised teemad sind kõnetavad. Varasemat häkatonikogemust pole vaja, küll aga tahtmist ja oskust tiimiga koos midagi uut ehitada.",
   "hackathon.challenges.title": "Millised väljakutsed sind huvitavad?",
   "hackathon.challenges.description": "Vali kõik, mis sobivad. Ühte väljakutset võib lahendada mitu tiimi.",
   "hackathon.challenge.fairLending": "Mõistlik laenamine",

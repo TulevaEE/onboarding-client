@@ -63,7 +63,7 @@ describe('hackathon registration', () => {
     history.push('/hackathon');
 
     expect(await screen.findByLabelText('Email')).toHaveValue(mockUser.email);
-    expect(screen.getByLabelText('Phone (optional)')).toHaveValue(mockUser.phoneNumber);
+    expect(screen.queryByLabelText('Phone (optional)')).not.toBeInTheDocument();
 
     userEvent.click(screen.getByLabelText('Software development'));
     expect(screen.queryByLabelText('Other skills')).not.toBeInTheDocument();
@@ -185,9 +185,7 @@ describe('hackathon registration', () => {
     );
     expect(screen.queryByText("Members' hackathon")).not.toBeInTheDocument();
     expect(screen.queryByRole('radio', { name: /team/i })).not.toBeInTheDocument();
-    expect(
-      screen.getByText(/The hackathon is an intensive weekend of working together/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/The hackathon is a weekend of working together/)).toBeInTheDocument();
   });
 
   test('shows an existing registration and lets the member update it', async () => {
