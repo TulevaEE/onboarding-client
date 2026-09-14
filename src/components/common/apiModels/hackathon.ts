@@ -13,9 +13,14 @@ export type HackathonChallenge =
   | 'FAIR_LENDING'
   | 'INSURANCE'
   | 'COLLECTIVE_BUYING_POWER'
-  | 'WEALTH_AND_INHERITANCE';
+  | 'WEALTH_AND_INHERITANCE'
+  | 'OTHER';
 
 export type HackathonParticipation = 'WITH_TEAM' | 'WITH_IDEA' | 'LOOKING_FOR_TEAM';
+
+export type HackathonTshirtColor = 'WHITE' | 'GRAY' | 'NAVY' | 'NONE';
+
+export type HackathonTshirtSize = 'XS' | 'S' | 'M' | 'L' | 'XL';
 
 export interface HackathonRegistration {
   registered: boolean;
@@ -29,6 +34,9 @@ export interface HackathonRegistration {
   participation: HackathonParticipation | null;
   idea: string | null;
   linkedinUrl: string | null;
+  tshirtColor: HackathonTshirtColor | null;
+  tshirtSize: HackathonTshirtSize | null;
+  termsAccepted: boolean;
 }
 
 export interface HackathonRegistrationCommand {
@@ -40,4 +48,34 @@ export interface HackathonRegistrationCommand {
   participation: HackathonParticipation;
   idea: string | null;
   linkedinUrl: string | null;
+  tshirtColor: HackathonTshirtColor;
+  tshirtSize: HackathonTshirtSize | null;
+  termsAccepted: boolean;
+}
+
+export interface HackathonIdea {
+  id: number;
+  challenge: HackathonChallenge;
+  problem: string;
+  solution: string;
+  progress: string | null;
+  neededSkills: HackathonSkill[];
+  additionalInfo: string | null;
+  createdTime: string;
+}
+
+export interface HackathonIdeas {
+  open: boolean;
+  deadline: string;
+  registered: boolean;
+  ideas: HackathonIdea[];
+}
+
+export interface HackathonIdeaCommand {
+  challenge: HackathonChallenge;
+  problem: string;
+  solution: string;
+  progress: string | null;
+  neededSkills: HackathonSkill[];
+  additionalInfo: string | null;
 }

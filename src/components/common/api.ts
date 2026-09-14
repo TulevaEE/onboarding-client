@@ -37,7 +37,13 @@ import {
   User,
   UserConversion,
 } from './apiModels/index';
-import { HackathonRegistration, HackathonRegistrationCommand } from './apiModels/hackathon';
+import {
+  HackathonIdea,
+  HackathonIdeaCommand,
+  HackathonIdeas,
+  HackathonRegistration,
+  HackathonRegistrationCommand,
+} from './apiModels/hackathon';
 import {
   deleteWithAuthentication,
   downloadFileWithAuthentication,
@@ -693,4 +699,12 @@ export function saveHackathonRegistration(
   command: HackathonRegistrationCommand,
 ): Promise<HackathonRegistration> {
   return postWithAuthentication(getEndpoint('/v1/hackathon-registration'), command);
+}
+
+export function getHackathonIdeas(): Promise<HackathonIdeas> {
+  return getWithAuthentication(getEndpoint('/v1/hackathon-ideas'));
+}
+
+export function submitHackathonIdea(command: HackathonIdeaCommand): Promise<HackathonIdea> {
+  return postWithAuthentication(getEndpoint('/v1/hackathon-ideas'), command);
 }

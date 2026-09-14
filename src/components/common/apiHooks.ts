@@ -6,7 +6,13 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import { HackathonRegistration, HackathonRegistrationCommand } from './apiModels/hackathon';
+import {
+  HackathonIdea,
+  HackathonIdeaCommand,
+  HackathonIdeas,
+  HackathonRegistration,
+  HackathonRegistrationCommand,
+} from './apiModels/hackathon';
 
 import {
   cancelSavingsFundWithdrawal,
@@ -26,8 +32,10 @@ import {
   getEligibleChildren,
   getContributions,
   getFundPensionStatus,
+  getHackathonIdeas,
   getHackathonRegistration,
   saveHackathonRegistration,
+  submitHackathonIdea,
   getKycIdentity,
   getFunds,
   getMandateDeadlines,
@@ -497,6 +505,30 @@ export function useSaveHackathonRegistration(): UseMutationResult<
     },
     onError: () => {
       queryClient.invalidateQueries({ queryKey: ['hackathonRegistration'] });
+    },
+  });
+}
+
+export function useHackathonIdeas(enabled: boolean): UseQueryResult<HackathonIdeas, ErrorResponse> {
+  return useQuery({
+    queryKey: ['hackathonIdeas'],
+    queryFn: () => getHackathonIdeas(),
+    enabled,
+    retry: false,
+  });
+}
+
+export function useSubmitHackathonIdea(): UseMutationResult<
+  HackathonIdea,
+  ErrorResponse,
+  HackathonIdeaCommand,
+  unknown
+> {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (command: HackathonIdeaCommand) => submitHackathonIdea(command),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['hackathonIdeas'] });
     },
   });
 }
