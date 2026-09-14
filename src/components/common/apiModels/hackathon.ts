@@ -13,8 +13,7 @@ export type HackathonChallenge =
   | 'FAIR_LENDING'
   | 'INSURANCE'
   | 'COLLECTIVE_BUYING_POWER'
-  | 'WEALTH_AND_INHERITANCE'
-  | 'OTHER';
+  | 'WEALTH_AND_INHERITANCE';
 
 export type HackathonParticipation = 'WITH_TEAM' | 'WITH_IDEA' | 'LOOKING_FOR_TEAM';
 
@@ -30,6 +29,7 @@ export interface HackathonRegistration {
   phoneNumber: string | null;
   role: HackathonRole | null;
   skills: HackathonSkill[];
+  otherSkills: string | null;
   challenges: HackathonChallenge[];
   participation: HackathonParticipation | null;
   idea: string | null;
@@ -44,6 +44,7 @@ export interface HackathonRegistrationCommand {
   phoneNumber: string | null;
   role: HackathonRole;
   skills: HackathonSkill[];
+  otherSkills: string | null;
   challenges: HackathonChallenge[];
   participation: HackathonParticipation;
   idea: string | null;

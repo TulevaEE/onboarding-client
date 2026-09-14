@@ -34,6 +34,7 @@ const registeredMember: HackathonRegistration = {
   phoneNumber: mockUser.phoneNumber,
   role: 'PARTICIPANT',
   skills: ['DESIGN'],
+  otherSkills: null,
   challenges: ['INSURANCE'],
   participation: 'LOOKING_FOR_TEAM',
   idea: null,
@@ -77,6 +78,24 @@ describe('hackathon idea submission', () => {
     history.push('/hackathon/idea');
 
     await describeTheIdea();
+    expect(screen.getByText(/Ideas are the heart of the hackathon/)).toBeInTheDocument();
+    expect(
+      screen.getByRole('list', { name: 'What kind of ideas are we looking for?' }),
+    ).toHaveTextContent('Impact.');
+    expect(
+      screen.getByText('Fields marked with an asterisk (*) are required.'),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Describe the problem you want to solve')).toBeRequired();
+    expect(screen.getByLabelText('Describe the problem you want to solve')).toHaveAttribute(
+      'aria-describedby',
+      'hackathon-idea-problem-hint',
+    );
+    expect(
+      screen.getByText("Whose problem is it? How often does it happen? What isn't working today?"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('radiogroup', { name: 'Which challenge does your idea solve?' }),
+    ).toBeRequired();
     expect(screen.getByRole('heading', { name: 'About you' })).toBeInTheDocument();
     expect(screen.getByLabelText('Email')).toHaveValue(mockUser.email);
     userEvent.click(
@@ -84,6 +103,8 @@ describe('hackathon idea submission', () => {
         'Software development',
       ),
     );
+    userEvent.click(screen.getByLabelText('Other'));
+    userEvent.type(screen.getByLabelText('Other skills'), 'Projektijuhtimine');
     userEvent.click(screen.getByLabelText('White'));
     userEvent.selectOptions(screen.getByLabelText('Size'), 'M');
     userEvent.click(screen.getByLabelText(/I have read the hackathon terms/));
@@ -100,6 +121,7 @@ describe('hackathon idea submission', () => {
         phoneNumber: mockUser.phoneNumber,
         role: 'PARTICIPANT',
         skills: ['SOFTWARE_DEVELOPMENT'],
+        otherSkills: 'Projektijuhtimine',
         challenges: ['FAIR_LENDING'],
         participation: 'WITH_IDEA',
         idea: null,
@@ -156,6 +178,9 @@ describe('hackathon idea submission', () => {
     expect(await screen.findByText('Please choose a challenge')).toBeInTheDocument();
     expect(screen.getByText('Please describe the problem')).toBeInTheDocument();
     expect(screen.getByText('Please describe the solution')).toBeInTheDocument();
+    expect(
+      screen.getByText('Please choose at least one skill your team needs'),
+    ).toBeInTheDocument();
     expect(ideasBackend.submitted).toEqual([]);
   });
 
@@ -172,21 +197,32 @@ describe('hackathon idea submission', () => {
       await screen.findByText("Please choose a T-shirt or let us know you don't want one"),
     ).toBeInTheDocument();
     expect(screen.getByText('Please accept the hackathon terms')).toBeInTheDocument();
+    expect(screen.getByText('Please choose at least one skill')).toBeInTheDocument();
     expect(registrationBackend.registrations).toEqual([]);
     expect(ideasBackend.submitted).toEqual([]);
   });
 
-  test('lets the member submit an idea on a topic outside the challenges', async () => {
+  test('registers the member for the chosen challenge when submitting an idea', async () => {
     const registrationBackend = hackathonRegistrationBackend(server);
     const ideasBackend = hackathonIdeasBackend(server);
     initializeComponent();
     history.push('/hackathon/idea');
 
-    userEvent.click(await screen.findByLabelText('Other / my own topic'));
+    userEvent.click(await screen.findByLabelText('Insurance that actually protects'));
     userEvent.type(screen.getByLabelText('Describe the problem you want to solve'), 'Probleem');
     userEvent.type(
       screen.getByLabelText('Describe the solution you plan to develop at the hackathon'),
       'Lahendus',
+    );
+    userEvent.click(
+      within(
+        screen.getByRole('group', { name: 'What skills does your team need?' }),
+      ).getByLabelText('Design'),
+    );
+    userEvent.click(
+      within(screen.getByRole('group', { name: 'What are your own skills?' })).getByLabelText(
+        'Design',
+      ),
     );
     userEvent.click(screen.getByLabelText("I don't want a T-shirt"));
     userEvent.click(screen.getByLabelText(/I have read the hackathon terms/));
@@ -196,11 +232,11 @@ describe('hackathon idea submission', () => {
       await screen.findByText(/You are registered for the Tuleva hackathon with your idea/),
     ).toBeInTheDocument();
     expect(registrationBackend.registrations[0]).toMatchObject({
-      challenges: [],
+      challenges: ['INSURANCE'],
       tshirtColor: 'NONE',
       tshirtSize: null,
     });
-    expect(ideasBackend.submitted[0]).toMatchObject({ challenge: 'OTHER' });
+    expect(ideasBackend.submitted[0]).toMatchObject({ challenge: 'INSURANCE' });
   });
 
   test('shows the ideas the member has already submitted', async () => {

@@ -1,7 +1,7 @@
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ContrastModeSwitch } from '../../common/accessibility/ContrastModeSwitch';
 
-export const Footer = () => {
+export const Footer = ({ cooperative = false }: { cooperative?: boolean }) => {
   const { formatMessage } = useIntl();
 
   return (
@@ -9,13 +9,15 @@ export const Footer = () => {
       <address className="text-center small text-body-secondary">
         <p className="d-flex flex-wrap gap-4 row-gap-1 justify-content-center">
           <strong>
-            <FormattedMessage id="footer.name" />
+            <FormattedMessage id={cooperative ? 'footer.cooperative.name' : 'footer.name'} />
           </strong>
           <span>
             <FormattedMessage id="footer.address" />
           </span>
           <span>
-            <FormattedMessage id="footer.registration.code" />
+            <FormattedMessage
+              id={cooperative ? 'footer.cooperative.registration.code' : 'footer.registration.code'}
+            />
           </span>
         </p>
         <p className="d-flex flex-wrap gap-4 row-gap-1 justify-content-center">

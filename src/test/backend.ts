@@ -1067,6 +1067,7 @@ export function hackathonRegistrationBackend(
     phoneNumber: mockUser.phoneNumber,
     role: null,
     skills: [],
+    otherSkills: null,
     challenges: [],
     participation: null,
     idea: null,
