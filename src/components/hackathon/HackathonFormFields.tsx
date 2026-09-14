@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
   HackathonChallenge,
@@ -8,6 +9,10 @@ import {
 import Checkbox from '../common/checkbox/Checkbox';
 import Radio from '../common/radio/Radio';
 import { TranslationKey } from '../translations';
+import './hackathon.scss';
+import tshirtWhite from './tshirts/tshirt-white.png';
+import tshirtGray from './tshirts/tshirt-gray.png';
+import tshirtNavy from './tshirts/tshirt-navy.png';
 
 export const SKILLS: { value: HackathonSkill; labelId: TranslationKey }[] = [
   { value: 'SOFTWARE_DEVELOPMENT', labelId: 'hackathon.skill.softwareDevelopment' },
@@ -29,14 +34,15 @@ export const CHALLENGES: { value: HackathonChallenge; labelId: TranslationKey }[
 const TSHIRT_COLORS: {
   value: HackathonTshirtColor;
   labelId: TranslationKey;
-  fill: string;
-  stroke: string;
+  image: string | null;
 }[] = [
-  { value: 'WHITE', labelId: 'hackathon.tshirt.white', fill: '#FFFFFF', stroke: '#C8D0D8' },
-  { value: 'GRAY', labelId: 'hackathon.tshirt.gray', fill: '#A9B1B9', stroke: '#8A9199' },
-  { value: 'NAVY', labelId: 'hackathon.tshirt.navy', fill: '#002F63', stroke: '#002F63' },
-  { value: 'NONE', labelId: 'hackathon.tshirt.none', fill: 'none', stroke: '#C8D0D8' },
+  { value: 'WHITE', labelId: 'hackathon.tshirt.white', image: tshirtWhite },
+  { value: 'GRAY', labelId: 'hackathon.tshirt.gray', image: tshirtGray },
+  { value: 'NAVY', labelId: 'hackathon.tshirt.navy', image: tshirtNavy },
+  { value: 'NONE', labelId: 'hackathon.tshirt.none', image: null },
 ];
+
+const TSHIRT_IMAGE_SIZE = 64;
 
 const TSHIRT_SIZES: HackathonTshirtSize[] = ['XS', 'S', 'M', 'L', 'XL'];
 
@@ -109,25 +115,73 @@ export const SkillCheckboxes = ({
   </div>
 );
 
-const ShirtIcon = ({
-  fill,
-  stroke,
-  crossed,
+export const OtherSkillsField = ({
+  idPrefix,
+  value,
+  onChange,
 }: {
-  fill: string;
-  stroke: string;
-  crossed: boolean;
-}) => (
-  <svg width="36" height="36" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+  idPrefix: string;
+  value: string;
+  onChange: (otherSkills: string) => void;
+}) => {
+  const intl = useIntl();
+  const [checked, setChecked] = useState(value !== '');
+
+  useEffect(() => {
+    if (value !== '') {
+      setChecked(true);
+    }
+  }, [value]);
+
+  return (
+    <>
+      <Checkbox
+        id={`${idPrefix}-OTHER`}
+        checked={checked}
+        onToggle={(isChecked) => {
+          setChecked(isChecked);
+          if (!isChecked) {
+            onChange('');
+          }
+        }}
+      >
+        <span className="fs-3 lh-sm">
+          <FormattedMessage id="hackathon.skill.other" />
+        </span>
+      </Checkbox>
+      {checked && (
+        <input
+          id={`${idPrefix}-other-text`}
+          type="text"
+          className="form-control form-control-lg"
+          maxLength={500}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          aria-label={intl.formatMessage({ id: 'hackathon.skill.other.label' })}
+          placeholder={intl.formatMessage({ id: 'hackathon.skill.other.placeholder' })}
+        />
+      )}
+    </>
+  );
+};
+
+const NoShirtIcon = () => (
+  <svg
+    width={TSHIRT_IMAGE_SIZE}
+    height={TSHIRT_IMAGE_SIZE}
+    viewBox="0 0 100 100"
+    aria-hidden="true"
+    focusable="false"
+  >
     <path
       d="M36 12 22 18 6 33l10 13 10-6v50h48V40l10 6 10-13-16-15-14-6c-3 7-8 11-14 11s-11-4-14-11Z"
-      fill={fill}
-      stroke={stroke}
+      fill="none"
+      stroke="#C8D0D8"
       strokeWidth="3"
       strokeLinejoin="round"
-      strokeDasharray={crossed ? '6 5' : undefined}
+      strokeDasharray="6 5"
     />
-    {crossed && <path d="M18 86 82 14" stroke="#8A8D91" strokeWidth="5" strokeLinecap="round" />}
+    <path d="M18 86 82 14" stroke="#8A8D91" strokeWidth="5" strokeLinecap="round" />
   </svg>
 );
 
@@ -138,7 +192,9 @@ export const TshirtFields = ({
   onSizeChange,
   colorError,
   sizeError,
+  required = false,
 }: {
+  required?: boolean;
   color: HackathonTshirtColor | null;
   size: HackathonTshirtSize | '';
   onColorChange: (color: HackathonTshirtColor) => void;
@@ -150,7 +206,10 @@ export const TshirtFields = ({
 
   return (
     <section className="d-flex flex-column gap-2">
-      <h2 className="m-0 fs-3" id="hackathon-tshirt-title">
+      <h2
+        className={`m-0 fs-3${required ? ' hackathon-required' : ''}`}
+        id="hackathon-tshirt-title"
+      >
         <FormattedMessage id="hackathon.tshirt.title" />
       </h2>
       <p className="m-0 text-body-secondary">
@@ -160,9 +219,10 @@ export const TshirtFields = ({
         className="d-flex flex-column gap-2"
         role="radiogroup"
         aria-labelledby="hackathon-tshirt-title"
+        aria-required={required || undefined}
         aria-describedby={colorError ? 'hackathon-tshirt-error' : undefined}
       >
-        {TSHIRT_COLORS.map(({ value, labelId, fill, stroke }) => (
+        {TSHIRT_COLORS.map(({ value, labelId, image }) => (
           <Radio
             key={value}
             name="hackathon-tshirt"
@@ -172,7 +232,17 @@ export const TshirtFields = ({
             alignRadioCenter
           >
             <span className="d-flex align-items-center gap-3 fs-3 lh-sm">
-              <ShirtIcon fill={fill} stroke={stroke} crossed={value === 'NONE'} />
+              {image ? (
+                <img
+                  src={image}
+                  alt=""
+                  width={TSHIRT_IMAGE_SIZE}
+                  height={TSHIRT_IMAGE_SIZE}
+                  className="rounded"
+                />
+              ) : (
+                <NoShirtIcon />
+              )}
               <FormattedMessage id={labelId} />
             </span>
           </Radio>
@@ -214,14 +284,16 @@ export const TermsField = ({
   checked,
   onChange,
   error,
+  required = false,
 }: {
   checked: boolean;
   onChange: (checked: boolean) => void;
   error?: string;
+  required?: boolean;
 }) => (
   <section className="d-flex flex-column gap-2">
     <Checkbox id="hackathon-terms" checked={checked} onToggle={onChange}>
-      <span className="lh-sm">
+      <span className={`lh-sm${required ? ' hackathon-required' : ''}`}>
         <FormattedMessage
           id="hackathon.terms.label"
           values={{

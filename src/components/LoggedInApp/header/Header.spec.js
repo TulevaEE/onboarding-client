@@ -1,6 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import config from 'react-global-configuration';
+import { FormattedMessage } from 'react-intl';
 
 import { logo } from '../../common';
 import { Header } from './Header';
@@ -48,6 +49,16 @@ describe('Header', () => {
   it("shows a loader when it's loading", () => {
     component.setProps({ loading: true });
     expect(component.contains(<Shimmer height={32} />)).toBe(true);
+  });
+
+  it('names the hackathon next to the logo on the hackathon pages', () => {
+    expect(component.find('.hackathon-brand-sub').exists()).toBe(false);
+
+    component.setProps({ hackathon: true });
+
+    const label = component.find('.hackathon-brand-sub');
+    expect(label.prop('href')).toBe('/hackathon');
+    expect(label.contains(<FormattedMessage id="hackathon.label" />)).toBe(true);
   });
 
   it('leaves the account menu as the only control in the header', () => {

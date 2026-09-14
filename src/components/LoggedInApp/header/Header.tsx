@@ -12,23 +12,34 @@ type Props = {
   loading: boolean;
   onLogout: () => unknown;
   onRoleSwitch?: () => void;
+  hackathon?: boolean;
 };
 
-export const Header = ({ user, loading, onLogout, onRoleSwitch }: Props) => (
+export const Header = ({ user, loading, onLogout, onRoleSwitch, hackathon = false }: Props) => (
   <>
     <a className="skip-link visually-hidden-focusable" href="#main">
       <FormattedMessage id="global.skipToContent" />
     </a>
     <header className="d-flex justify-content-between align-items-end border-bottom py-4 mb-5 app-header">
-      {config.get('language') === 'et' ? (
-        <a href="/account">
-          <img src={logo} alt="Tuleva" className="brand-logo" />
-        </a>
-      ) : (
-        <a href="/account?language=en">
-          <img src={logo} alt="Tuleva" className="brand-logo" />
-        </a>
-      )}
+      <div className="app-header__brand">
+        {config.get('language') === 'et' ? (
+          <a href="/account">
+            <img src={logo} alt="Tuleva" className="brand-logo" />
+          </a>
+        ) : (
+          <a href="/account?language=en">
+            <img src={logo} alt="Tuleva" className="brand-logo" />
+          </a>
+        )}
+        {hackathon && (
+          <a href="/hackathon" className="hackathon-brand-sub">
+            <span className="hackathon-brand-sub__top">
+              <FormattedMessage id="hackathon.label.members" />
+            </span>{' '}
+            <FormattedMessage id="hackathon.label" />
+          </a>
+        )}
+      </div>
       {/* My account, the language choice and logging out all moved into the account
           menu, so the header carries a single control. The logo keeps its own link to
           the account page for anyone who never opens the menu. */}

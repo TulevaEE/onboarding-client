@@ -24,6 +24,7 @@ import {
   FieldError,
   HackathonHeading,
   HackathonMembersOnly,
+  OtherSkillsField,
   SkillCheckboxes,
   TermsField,
   trimmedOrNull,
@@ -39,18 +40,28 @@ type IdeaFormData = {
   additionalInfo: string;
   email: string;
   skills: HackathonSkill[];
+  otherSkills: string;
   tshirtColor: HackathonTshirtColor | null;
   tshirtSize: HackathonTshirtSize | '';
   termsAccepted: boolean;
 };
 
-const IDEA_CHALLENGES: { value: HackathonChallenge; labelId: TranslationKey }[] = [
-  ...CHALLENGES,
-  { value: 'OTHER', labelId: 'hackathon.challenge.other' },
+const IDEA_CRITERIA: { labelId: TranslationKey; textId: TranslationKey }[] = [
+  { labelId: 'hackathon.idea.criteria.impact.label', textId: 'hackathon.idea.criteria.impact' },
+  { labelId: 'hackathon.idea.criteria.better.label', textId: 'hackathon.idea.criteria.better' },
+  {
+    labelId: 'hackathon.idea.criteria.technology.label',
+    textId: 'hackathon.idea.criteria.technology',
+  },
+  {
+    labelId: 'hackathon.idea.criteria.viability.label',
+    textId: 'hackathon.idea.criteria.viability',
+  },
 ];
 
-const challengeLabel = (challenge: HackathonChallenge): TranslationKey =>
-  IDEA_CHALLENGES.find(({ value }) => value === challenge)?.labelId ?? 'hackathon.challenge.other';
+const CHALLENGE_LABELS = Object.fromEntries(
+  CHALLENGES.map(({ value, labelId }) => [value, labelId]),
+) as Record<HackathonChallenge, TranslationKey>;
 
 const EMPTY_IDEA = {
   challenge: null,
@@ -75,12 +86,13 @@ export const HackathonIdeaPage = () => {
   const { mutateAsync: submitIdea } = useSubmitHackathonIdea();
   const [status, setStatus] = useState<SubmitStatus>('idle');
 
-  const { control, handleSubmit, reset, getValues } = useForm<IdeaFormData>({
+  const { control, handleSubmit, reset, getValues, trigger, formState } = useForm<IdeaFormData>({
     mode: 'onChange',
     defaultValues: {
       ...EMPTY_IDEA,
       email: '',
       skills: [],
+      otherSkills: '',
       tshirtColor: null,
       tshirtSize: '',
       termsAccepted: false,
@@ -98,6 +110,7 @@ export const HackathonIdeaPage = () => {
         ...getValues(),
         email: registration.email ?? '',
         skills: registration.skills,
+        otherSkills: registration.otherSkills ?? '',
         tshirtColor: registration.tshirtColor,
         tshirtSize: registration.tshirtSize ?? '',
         termsAccepted: registration.termsAccepted,
@@ -116,7 +129,8 @@ export const HackathonIdeaPage = () => {
           phoneNumber: registration.phoneNumber,
           role: 'PARTICIPANT',
           skills: data.skills,
-          challenges: data.challenge && data.challenge !== 'OTHER' ? [data.challenge] : [],
+          otherSkills: trimmedOrNull(data.otherSkills),
+          challenges: data.challenge ? [data.challenge] : [],
           participation: 'WITH_IDEA',
           idea: null,
           linkedinUrl: null,
@@ -196,6 +210,28 @@ export const HackathonIdeaPage = () => {
     <div className="col-12 col-md-11 col-lg-8 mx-auto py-4">
       <HackathonHeading titleId="hackathon.idea.title" />
 
+      <section className="mt-4">
+        <p className="m-0 fs-3 lh-sm">
+          <FormattedMessage id="hackathon.idea.intro" />
+        </p>
+        <h2 className="mt-3 mb-2 fs-4" id="hackathon-idea-criteria-title">
+          <FormattedMessage id="hackathon.idea.criteria.title" />
+        </h2>
+        <ul
+          className="m-0 ps-3 d-flex flex-column gap-1"
+          aria-labelledby="hackathon-idea-criteria-title"
+        >
+          {IDEA_CRITERIA.map(({ labelId, textId }) => (
+            <li key={labelId}>
+              <strong>
+                <FormattedMessage id={labelId} />
+              </strong>{' '}
+              <FormattedMessage id={textId} />
+            </li>
+          ))}
+        </ul>
+      </section>
+
       {status === 'submitted' && (
         <div className="alert alert-success mt-4" role="status">
           <FormattedMessage id="hackathon.idea.submitted" />
@@ -211,7 +247,7 @@ export const HackathonIdeaPage = () => {
             {ideas.ideas.map((idea) => (
               <li key={idea.id}>
                 <strong>
-                  <FormattedMessage id={challengeLabel(idea.challenge)} />
+                  <FormattedMessage id={CHALLENGE_LABELS[idea.challenge]} />
                 </strong>
                 : {idea.solution}
               </li>
@@ -221,8 +257,11 @@ export const HackathonIdeaPage = () => {
       )}
 
       <form onSubmit={submit} className="d-flex flex-column gap-4 mt-4">
+        <p className="m-0 text-body-secondary">
+          <FormattedMessage id="hackathon.required.hint" />
+        </p>
         <section className="d-flex flex-column gap-2">
-          <h2 className="m-0 fs-3" id="hackathon-idea-challenge-title">
+          <h2 className="m-0 fs-3 hackathon-required" id="hackathon-idea-challenge-title">
             <FormattedMessage id="hackathon.idea.challenge.title" />
           </h2>
           <Controller
@@ -234,9 +273,10 @@ export const HackathonIdeaPage = () => {
                 className="d-flex flex-column gap-2"
                 role="radiogroup"
                 aria-labelledby="hackathon-idea-challenge-title"
+                aria-required
                 aria-describedby={error ? 'hackathon-idea-challenge-error' : undefined}
               >
-                {IDEA_CHALLENGES.map(({ value, labelId }) => (
+                {CHALLENGES.map(({ value, labelId }) => (
                   <Radio
                     key={value}
                     name="hackathon-idea-challenge"
@@ -259,30 +299,48 @@ export const HackathonIdeaPage = () => {
           control={control}
           name="problem"
           labelId="hackathon.idea.problem.label"
+          hintId="hackathon.idea.problem.hint"
           requiredId="hackathon.idea.problem.required"
         />
         <IdeaTextarea
           control={control}
           name="solution"
           labelId="hackathon.idea.solution.label"
+          hintId="hackathon.idea.solution.hint"
           requiredId="hackathon.idea.solution.required"
         />
-        <IdeaTextarea control={control} name="progress" labelId="hackathon.idea.progress.label" />
+        <IdeaTextarea
+          control={control}
+          name="progress"
+          labelId="hackathon.idea.progress.label"
+          hintId="hackathon.idea.progress.hint"
+        />
 
         <section className="d-flex flex-column gap-2">
-          <h2 className="m-0 fs-3" id="hackathon-idea-needed-skills-title">
+          <h2 className="m-0 fs-3 hackathon-required" id="hackathon-idea-needed-skills-title">
             <FormattedMessage id="hackathon.idea.neededSkills.title" />
           </h2>
+          <p className="m-0 text-body-secondary">
+            <FormattedMessage id="hackathon.idea.neededSkills.description" />
+          </p>
           <Controller
             control={control}
             name="neededSkills"
-            render={({ field }) => (
-              <SkillCheckboxes
-                idPrefix="hackathon-idea-needed-skill"
-                labelledBy="hackathon-idea-needed-skills-title"
-                value={field.value}
-                onChange={field.onChange}
-              />
+            rules={{
+              validate: (neededSkills) =>
+                neededSkills.length > 0 ||
+                intl.formatMessage({ id: 'hackathon.idea.neededSkills.required' }),
+            }}
+            render={({ field, fieldState: { error } }) => (
+              <>
+                <SkillCheckboxes
+                  idPrefix="hackathon-idea-needed-skill"
+                  labelledBy="hackathon-idea-needed-skills-title"
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+                <FieldError id="hackathon-idea-needed-skills-error" message={error?.message} />
+              </>
             )}
           />
         </section>
@@ -291,6 +349,7 @@ export const HackathonIdeaPage = () => {
           control={control}
           name="additionalInfo"
           labelId="hackathon.idea.additionalInfo.label"
+          hintId="hackathon.idea.additionalInfo.hint"
         />
 
         {needsRegistration && (
@@ -302,7 +361,7 @@ export const HackathonIdeaPage = () => {
               <p className="m-0 text-body-secondary">
                 <FormattedMessage id="hackathon.idea.aboutYou.description" />
               </p>
-              <label className="form-label mt-2" htmlFor="hackathon-idea-email">
+              <label className="form-label mt-2 hackathon-required" htmlFor="hackathon-idea-email">
                 <FormattedMessage id="hackathon.contact.email" />
               </label>
               <Controller
@@ -322,6 +381,7 @@ export const HackathonIdeaPage = () => {
                       id="hackathon-idea-email"
                       type="email"
                       className="form-control form-control-lg"
+                      aria-required
                       aria-invalid={error ? true : undefined}
                       aria-describedby={error ? 'hackathon-idea-email-error' : undefined}
                     />
@@ -332,12 +392,18 @@ export const HackathonIdeaPage = () => {
             </section>
 
             <section className="d-flex flex-column gap-2">
-              <h2 className="m-0 fs-3" id="hackathon-idea-own-skills-title">
+              <h2 className="m-0 fs-3 hackathon-required" id="hackathon-idea-own-skills-title">
                 <FormattedMessage id="hackathon.idea.ownSkills.title" />
               </h2>
               <Controller
                 control={control}
                 name="skills"
+                rules={{
+                  validate: (skills, values) =>
+                    skills.length > 0 ||
+                    values.otherSkills.trim() !== '' ||
+                    intl.formatMessage({ id: 'hackathon.skills.required' }),
+                }}
                 render={({ field }) => (
                   <SkillCheckboxes
                     idPrefix="hackathon-idea-own-skill"
@@ -346,6 +412,26 @@ export const HackathonIdeaPage = () => {
                     onChange={field.onChange}
                   />
                 )}
+              />
+              <Controller
+                control={control}
+                name="otherSkills"
+                render={({ field }) => (
+                  <OtherSkillsField
+                    idPrefix="hackathon-idea-own-skill"
+                    value={field.value}
+                    onChange={(otherSkills) => {
+                      field.onChange(otherSkills);
+                      if (formState.isSubmitted) {
+                        trigger('skills');
+                      }
+                    }}
+                  />
+                )}
+              />
+              <FieldError
+                id="hackathon-idea-own-skills-error"
+                message={formState.errors.skills?.message}
               />
             </section>
 
@@ -372,6 +458,7 @@ export const HackathonIdeaPage = () => {
                       onSizeChange={sizeField.onChange}
                       colorError={colorError?.message}
                       sizeError={sizeError?.message}
+                      required
                     />
                   )}
                 />
@@ -390,6 +477,7 @@ export const HackathonIdeaPage = () => {
                   checked={field.value}
                   onChange={field.onChange}
                   error={error?.message}
+                  required
                 />
               )}
             />
@@ -425,11 +513,13 @@ const IdeaTextarea = ({
   control,
   name,
   labelId,
+  hintId,
   requiredId,
 }: {
   control: ReturnType<typeof useForm<IdeaFormData>>['control'];
   name: IdeaTextField;
   labelId: TranslationKey;
+  hintId: TranslationKey;
   requiredId?: TranslationKey;
 }) => {
   const intl = useIntl();
@@ -437,9 +527,12 @@ const IdeaTextarea = ({
 
   return (
     <section>
-      <label className="form-label" htmlFor={id}>
+      <label className={`form-label mb-1${requiredId ? ' hackathon-required' : ''}`} htmlFor={id}>
         <FormattedMessage id={labelId} />
       </label>
+      <p className="mt-0 mb-2 text-body-secondary" id={`${id}-hint`}>
+        <FormattedMessage id={hintId} />
+      </p>
       <Controller
         control={control}
         name={name}
@@ -455,8 +548,9 @@ const IdeaTextarea = ({
               rows={4}
               maxLength={2000}
               className="form-control form-control-lg"
+              aria-required={requiredId ? true : undefined}
               aria-invalid={error ? true : undefined}
-              aria-describedby={error ? `${id}-error` : undefined}
+              aria-describedby={error ? `${id}-hint ${id}-error` : `${id}-hint`}
             />
             <div className="mt-1">
               <FieldError id={`${id}-error`} message={error?.message} />

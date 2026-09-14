@@ -121,7 +121,8 @@ export class LoggedInApp extends PureComponent {
   }
 
   render() {
-    const { user, loading, onLogout } = this.props;
+    const { user, loading, onLogout, location } = this.props;
+    const isHackathonPage = location.pathname.startsWith('/hackathon');
 
     return (
       <div className="container">
@@ -130,6 +131,7 @@ export class LoggedInApp extends PureComponent {
           loading={loading}
           onLogout={onLogout}
           onRoleSwitch={() => this.handleRoleSwitch()}
+          hackathon={isHackathonPage}
         />
         {this.isDevelopmentMode() && <DevSidebar />}
         <main id="main" className="pb-5">
@@ -380,7 +382,7 @@ export class LoggedInApp extends PureComponent {
             <Redirect exact path="/" to={ACCOUNT_PATH} />
           </Switch>
         </main>
-        <Footer />
+        <Footer cooperative={isHackathonPage} />
       </div>
     );
   }
@@ -393,6 +395,7 @@ LoggedInApp.defaultProps = {
   hasError: false,
   loading: false,
   shouldLoadAllUserData: false,
+  location: { pathname: '' },
 
   onLogout: noop,
   onGetUserConversion: noop,
@@ -407,6 +410,7 @@ LoggedInApp.propTypes = {
   hasError: Types.bool,
   loading: Types.bool,
   shouldLoadAllUserData: Types.bool,
+  location: Types.shape({ pathname: Types.string }),
 
   onLogout: Types.func,
   onGetUserConversion: Types.func,
