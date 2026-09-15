@@ -44,10 +44,11 @@ export function PersonAccountPage(
     loadingCapital: false,
     error: null,
     shouldRedirectToAml: false,
+    paymentRateRedirectReady: false,
   },
 ) {
   usePageTitle('pageTitle.accountPage');
-  usePaymentRateRedirect();
+  usePaymentRateRedirect(props.paymentRateRedirectReady === true);
 
   const getData = () => {
     const { shouldGetMemberCapital, onGetMemberCapital } = props;
@@ -268,6 +269,7 @@ PersonAccountPage.propTypes = {
     body: Types.shape({}),
   }),
   shouldRedirectToAml: Types.bool,
+  paymentRateRedirectReady: Types.bool,
 };
 
 export const shouldRedirectToAml = (state) =>
@@ -280,6 +282,11 @@ export const shouldRedirectToAml = (state) =>
   state.thirdPillar.sourceFunds.some(
     (fund) => isTuleva(fund) && (fund.price + fund.unavailablePrice > 0 || fund.activeFund),
   );
+
+const isLandingSettled = (state) =>
+  state.aml.missingAmlChecks !== null &&
+  state.thirdPillar.exchangeableSourceFunds !== null &&
+  !shouldRedirectToAml(state);
 
 const mapStateToProps = (state) => ({
   secondPillarSourceFunds: [
@@ -312,6 +319,7 @@ const mapStateToProps = (state) => ({
   loadingCapital: state.account.loadingInitialCapital,
   error: state.exchange.error,
   shouldRedirectToAml: shouldRedirectToAml(state),
+  paymentRateRedirectReady: isLandingSettled(state),
   user: state.login.user,
 });
 const mapDispatchToProps = (dispatch) =>

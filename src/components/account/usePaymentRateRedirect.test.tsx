@@ -8,17 +8,18 @@ jest.mock('../common/api', () => ({ postPaymentRateRedirect: jest.fn() }));
 
 const post = postPaymentRateRedirect as jest.Mock;
 
-const Probe = () => {
-  usePaymentRateRedirect();
+const Probe = ({ ready = true }: { ready?: boolean }) => {
+  usePaymentRateRedirect(ready);
   return null;
 };
 
-const renderAt = (history: History) =>
-  render(
-    <Router history={history}>
-      <Probe />
-    </Router>,
-  );
+const probeAt = (history: History, ready: boolean) => (
+  <Router history={history}>
+    <Probe ready={ready} />
+  </Router>
+);
+
+const renderAt = (history: History, ready = true) => render(probeAt(history, ready));
 
 describe('usePaymentRateRedirect', () => {
   beforeEach(() => {
@@ -79,9 +80,23 @@ describe('usePaymentRateRedirect', () => {
     expect(history.location.pathname).toBe('/3rd-pillar-flow');
   });
 
+  it('asks for nothing until the landing has settled', async () => {
+    const history = createMemoryHistory();
+    history.push('/account', { justLoggedIn: true });
+    const { rerender } = renderAt(history, false);
+
+    await waitFor(() => expect(post).not.toHaveBeenCalled());
+    expect(history.location.state).toEqual({ justLoggedIn: true });
+
+    rerender(probeAt(history, true));
+
+    await waitFor(() => expect(post).toHaveBeenCalledTimes(1));
+    expect(history.location.state).toBeUndefined();
+  });
+
   it('lets a mandatory AML redirect win over the login landing', async () => {
     const ToAml = () => {
-      usePaymentRateRedirect();
+      usePaymentRateRedirect(true);
       return <Redirect to="/aml" />;
     };
     const history = createMemoryHistory();
