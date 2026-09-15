@@ -24,11 +24,11 @@ export const StatusBoxComponent: React.FunctionComponent<Props> = ({
   loading = false,
 }) => {
   useSavingsFundOnboardingStatus();
-  const { data: decision } = useNudge('ACCOUNT');
+  const { data: decision, isInitialLoading: loadingDecision } = useNudge('ACCOUNT');
 
   // `loading` covers refreshes over stale data — e.g. a role switch refetches
   // everything, and the previous role's data must not flash wrong statuses.
-  if (loading || !conversion || !secondPillarFunds || !thirdPillarFunds) {
+  if (loading || loadingDecision || !conversion || !secondPillarFunds || !thirdPillarFunds) {
     return <StatusBoxLoader />;
   }
 

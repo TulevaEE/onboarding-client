@@ -13,6 +13,8 @@ import {
   tulevaSecondPillarFund,
 } from '../fixtures';
 
+let mockContributionsAreLoaded = true;
+
 // TODO: Figure out a cleaner way to mock the hooks
 jest.mock('../../../common/apiHooks', () => ({
   usePendingApplications: () => ({ data: [{ type: 'WITHDRAWAL' }] }),
@@ -21,15 +23,21 @@ jest.mock('../../../common/apiHooks', () => ({
   useMandateDeadlines: () => ({ data: { periodEnding: '2024-07-31T00:59:59.999999999Z' } }),
   useFundPensionStatus: () => ({ fundPensions: [] }),
   useContributions: () => ({
-    data: [
-      {
-        pillar: 2,
-        time: new Date().toISOString(),
-        employeeWithheldPortion: 100,
-      },
-    ],
+    data: mockContributionsAreLoaded
+      ? [
+          {
+            pillar: 2,
+            time: new Date().toISOString(),
+            employeeWithheldPortion: 100,
+          },
+        ]
+      : undefined,
   }),
 }));
+
+afterEach(() => {
+  mockContributionsAreLoaded = true;
+});
 
 jest.useFakeTimers();
 jest.setSystemTime(new Date('2024-07-22T10:36:00Z'));
@@ -510,6 +518,17 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
     );
 
     expect(byTextContent(/^the application deadline is November\s30$/).tagName).toBe('B');
+  });
+
+  it('shimmers the tax win line instead of guessing while the contributions load', () => {
+    mockContributionsAreLoaded = false;
+
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(2, 2)} />);
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(document.querySelector('.shimmerDefault')).toBeInTheDocument();
+    expect(screen.queryByText(/This year you saved/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/The application deadline is/)).not.toBeInTheDocument();
   });
 
   it('keeps the transfer call to action for a saver whose second pillar is elsewhere', () => {
