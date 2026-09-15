@@ -147,6 +147,16 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
 
     const eventsOfType = (type: string) => trackedEvents.filter((event) => event.type === type);
 
+    const nudgeEventData = {
+      context: 'PAYMENT_RATE_REDIRECT',
+      key: 'SECOND_PILLAR_PAYMENT_RATE',
+      tag: 'nudge_payment_rate',
+      path: '/2nd-pillar-payment-rate',
+      channel: 'SCREEN',
+      arm: 'TREATMENT',
+      seasonYear: 2026,
+    };
+
     test('replaces the page introduction with the nudge copy', async () => {
       expect(await nudgeHeading()).toHaveClass('balancedHeading');
       expect(
@@ -210,7 +220,7 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
       await waitFor(() => expect(eventsOfType('NUDGE_VIEW')).toHaveLength(1));
       expect(eventsOfType('NUDGE_VIEW')[0]).toEqual({
         type: 'NUDGE_VIEW',
-        data: { context: 'PAYMENT_RATE_REDIRECT', arm: 'TREATMENT', seasonYear: 2026 },
+        data: nudgeEventData,
       });
     });
 
@@ -222,7 +232,7 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
       await waitFor(() => expect(eventsOfType('NUDGE_CLICK')).toHaveLength(1));
       expect(eventsOfType('NUDGE_CLICK')[0]).toEqual({
         type: 'NUDGE_CLICK',
-        data: { context: 'PAYMENT_RATE_REDIRECT', arm: 'TREATMENT', seasonYear: 2026 },
+        data: nudgeEventData,
       });
     }, 20_000);
   });
