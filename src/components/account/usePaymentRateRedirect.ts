@@ -6,7 +6,7 @@ type LandingState = { justLoggedIn?: boolean } | undefined;
 
 export function usePaymentRateRedirect(): void {
   const history = useHistory();
-  const { pathname, state } = useLocation<LandingState>();
+  const { pathname, search, state } = useLocation<LandingState>();
   const justLoggedIn = state?.justLoggedIn === true;
   const onTheAccountPage = useRef(true);
 
@@ -18,10 +18,13 @@ export function usePaymentRateRedirect(): void {
   }, []);
 
   useEffect(() => {
-    if (!justLoggedIn) {
+    const stillOnTheLanding =
+      history.location.pathname === pathname &&
+      (history.location.state as LandingState)?.justLoggedIn === true;
+    if (!justLoggedIn || !stillOnTheLanding) {
       return;
     }
-    history.replace(pathname);
+    history.replace({ pathname, search });
     postPaymentRateRedirect()
       .then(({ redirect, arm, seasonYear }) => {
         if (redirect && onTheAccountPage.current) {
