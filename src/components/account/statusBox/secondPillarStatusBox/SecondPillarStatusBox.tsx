@@ -213,6 +213,9 @@ const SeasonPaymentRateRow = ({
     fulfillmentDate: formatDateFrom(paymentRateSeason.fulfillmentDate),
     ...(taxWin === null ? {} : { taxWin: `${taxWin.toFixed(0)}\u00A0€` }),
     b: (chunks: string) => (emphasizeDeadline ? <b>{chunks}</b> : <>{chunks}</>),
+    hl: (chunks: string) => <span className="text-primary fw-semibold">{chunks}</span>,
+    link: (chunks: string) => <Link to="/2nd-pillar-tax-win">{chunks}</Link>,
+    amount: (chunks: string) => <b>{chunks}</b>,
   };
 
   return (
@@ -223,7 +226,7 @@ const SeasonPaymentRateRow = ({
         <span className="d-inline-flex flex-wrap align-items-center gap-2">
           <FormattedMessage id="account.status.choice.pillar.second" />
           {row.showsPill && (
-            <span className={`${styles.pill} fs-6 fw-normal text-nowrap`}>
+            <span className={`${styles.pill} text-nowrap`}>
               <FormattedMessage
                 id="account.status.choice.pillar.second.season.pill"
                 values={values}

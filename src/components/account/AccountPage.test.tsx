@@ -228,7 +228,7 @@ describe('when the payment rate season is on and the payment rate nudge wins', (
   });
 
   test('renders the second pillar row with the season pill and the deadline', async () => {
-    expect(await screen.findByText(/Now 2% → up to 6%/)).toBeInTheDocument();
+    expect(await screen.findByText(/Now 2% →/)).toHaveTextContent('Now 2% → up to 6%');
     expect(
       screen.getByText(
         /From January\s1 you can contribute up to 6% straight from your gross salary/,
@@ -238,7 +238,7 @@ describe('when the payment rate season is on and the payment rate nudge wins', (
   });
 
   test('highlights the second pillar row and outlines every other action', async () => {
-    expect(await screen.findByText(/Now 2% → up to 6%/)).toBeInTheDocument();
+    expect(await screen.findByText(/Now 2% →/)).toHaveTextContent('Now 2% → up to 6%');
     const rows = screen.getAllByTestId('status-box-row');
 
     expect(rows[0]).toHaveClass('primary');
