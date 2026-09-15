@@ -175,4 +175,16 @@ describe('Third pillar success screen', () => {
       cancellationDeadline: '2026-08-31T00:00:00Z',
     },
   };
+  test('keeps a single primary button when a nudge is shown', async () => {
+    useTestBackendsExcept(server, ['nudge']);
+    nudgeBackend(server, { key: 'SECOND_PILLAR_PAYMENT_RATE', tag: 'nudge_payment_rate' });
+    initializeComponent();
+    history.push('/3rd-pillar-success');
+
+    expect(await main().findByRole('link', { name: 'Increase your contribution' })).toHaveClass(
+      'btn-primary',
+    );
+    expect(main().getByRole('link', { name: 'My account' })).toHaveClass('btn-outline-primary');
+    expect(main().getByRole('link', { name: 'My account' })).not.toHaveClass('btn-primary');
+  });
 });

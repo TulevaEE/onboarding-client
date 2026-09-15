@@ -40,7 +40,7 @@ const SupportNotice = ({ isTransferIn }: { isTransferIn: boolean }) => (
     ) : (
       <PaymentDoneMessage />
     )}
-    <a className="btn btn-primary mt-4 profile-link" href="/account">
+    <a className="btn btn-outline-primary mt-4 profile-link" href="/account">
       <FormattedMessage id="thirdPillarSuccess.button.account" />
     </a>
   </SuccessNotice>
