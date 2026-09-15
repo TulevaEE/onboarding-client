@@ -88,6 +88,20 @@ describe('Web eID Auth Integration', () => {
     expect(history.location.state).toBeUndefined();
   });
 
+  it('should treat a redirect from the app root as the ordinary account landing', async () => {
+    mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce({});
+
+    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    history.replace({ pathname: '/login', state: { from: '/' } });
+
+    userEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/account');
+    });
+    expect(history.location.state).toEqual({ justLoggedIn: true });
+  });
+
   it('should use configured language', async () => {
     config.set({ language: 'en' }, configOptions);
     mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce({});
