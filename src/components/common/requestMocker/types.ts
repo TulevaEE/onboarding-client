@@ -18,6 +18,7 @@ import { userMockProfiles } from './profiles/user';
 import { withdrawalsEligibilityProfiles } from './profiles/withdrawalsEligibility';
 import { nudgeProfiles } from './profiles/nudge';
 import { mandateDeadlinesProfiles } from './profiles/mandateDeadlines';
+import { paymentRateRedirectProfiles } from './profiles/paymentRateRedirect';
 
 export type MockModeConfiguration = {
   withdrawalsEligibility: keyof typeof withdrawalsEligibilityProfiles | null;
@@ -40,6 +41,7 @@ export type MockModeConfiguration = {
   sourceFunds: keyof typeof sourceFundsProfiles | null;
   nudge: keyof typeof nudgeProfiles | null;
   mandateDeadlines: keyof typeof mandateDeadlinesProfiles | null;
+  paymentRateRedirect: keyof typeof paymentRateRedirectProfiles | null;
 };
 
 export type MockModeEndpoint = keyof MockModeConfiguration;

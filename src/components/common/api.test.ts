@@ -17,6 +17,7 @@ import {
   getIdCardTokens,
   getMandateDeadlines,
   getNudge,
+  postPaymentRateRedirect,
   getMissingAmlChecks,
   getMobileIdSignatureChallengeCode,
   getMobileIdSignatureStatus,
@@ -56,6 +57,7 @@ import {
 import { writeMockModeConfiguration } from './requestMocker';
 import { mandateDeadlinesProfiles } from './requestMocker/profiles/mandateDeadlines';
 import { nudgeProfiles } from './requestMocker/profiles/nudge';
+import { paymentRateRedirectProfiles } from './requestMocker/profiles/paymentRateRedirect';
 
 import * as authenticationManager from './authenticationManager';
 import Mock = jest.Mock;
@@ -1109,6 +1111,30 @@ describe('API calls', () => {
 
       expect(mandateDeadlines).toBe(mandateDeadlinesProfiles.NOVEMBER_2026_BEFORE_DEADLINE);
       expect(mockHttp.getWithAuthentication).not.toHaveBeenCalled();
+      writeMockModeConfiguration(null);
+    });
+  });
+
+  describe('postPaymentRateRedirect', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      mockHttp.postWithAuthentication.mockResolvedValue({ redirect: false });
+    });
+
+    it('asks the backend once for the redirect decision', async () => {
+      const decision = await postPaymentRateRedirect();
+
+      expect(decision).toEqual({ redirect: false });
+      expect(mockHttp.postWithAuthentication).toHaveBeenCalledWith('/v1/me/payment-rate-redirect');
+    });
+
+    it('returns the selected mock mode profile without calling the backend', async () => {
+      writeMockModeConfiguration({ paymentRateRedirect: 'TREATMENT' });
+
+      const decision = await postPaymentRateRedirect();
+
+      expect(decision).toBe(paymentRateRedirectProfiles.TREATMENT);
+      expect(mockHttp.postWithAuthentication).not.toHaveBeenCalled();
       writeMockModeConfiguration(null);
     });
   });
