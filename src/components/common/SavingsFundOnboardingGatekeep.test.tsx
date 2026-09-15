@@ -56,7 +56,7 @@ describe('SavingsFundOnboardingGatekeep', () => {
     history.push('/savings-fund/payment');
 
     expect(
-      await screen.findByRole('heading', { name: 'Deposit to Additional Savings Fund' }),
+      await screen.findByRole('heading', { name: 'Deposit to Additional Investment Fund' }),
     ).toBeInTheDocument();
   });
 
@@ -80,7 +80,7 @@ describe('SavingsFundOnboardingGatekeep', () => {
     expect(
       await screen.findByRole(
         'heading',
-        { name: 'Deposit to Additional Savings Fund' },
+        { name: 'Deposit to Additional Investment Fund' },
         { timeout: 5_000 },
       ),
     ).toBeInTheDocument();
@@ -100,7 +100,7 @@ describe('SavingsFundOnboardingGatekeep', () => {
     history.push('/savings-fund/payment');
 
     expect(
-      await screen.findByRole('heading', { name: 'Deposit to Additional Savings Fund' }),
+      await screen.findByRole('heading', { name: 'Deposit to Additional Investment Fund' }),
     ).toBeInTheDocument();
 
     userBackend(server, { role: { type: 'PERSON', code: '39001011234', name: 'Test Person' } });
@@ -111,7 +111,7 @@ describe('SavingsFundOnboardingGatekeep', () => {
       expect(history.location.pathname).toBe('/savings-fund/onboarding');
     });
     expect(
-      screen.queryByRole('heading', { name: 'Deposit to Additional Savings Fund' }),
+      screen.queryByRole('heading', { name: 'Deposit to Additional Investment Fund' }),
     ).not.toBeInTheDocument();
   });
 

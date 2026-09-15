@@ -98,7 +98,7 @@ describe('RepresentedPartyAccountPage', () => {
 
   test('renders pending savings fund applications', async () => {
     expect(await screen.findByText('Pending applications and transactions')).toBeInTheDocument();
-    expect(screen.getByText(/deposit to Additional Savings Fund/)).toBeInTheDocument();
+    expect(screen.getByText(/deposit to Additional Investment Fund/)).toBeInTheDocument();
   });
 
   test('does not show a third pillar section for a represented company', async () => {

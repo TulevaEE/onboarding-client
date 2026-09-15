@@ -33,7 +33,7 @@ describe(SavingsFundPayment, () => {
   };
 
   const findPageHeading = () =>
-    screen.findByRole('heading', { name: 'Deposit to Additional Savings Fund' });
+    screen.findByRole('heading', { name: 'Deposit to Additional Investment Fund' });
 
   const getAmountInput = () => screen.getByRole('textbox', { name: 'Amount' });
 
