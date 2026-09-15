@@ -43,9 +43,11 @@ describe('landing on the account page right after logging in', () => {
     history.push('/account', { justLoggedIn: true });
 
     await waitFor(() => expect(history.location.pathname).toBe('/2nd-pillar-payment-rate'));
-    expect(history.location.state).toEqual({
-      nudge: { arm: 'TREATMENT', seasonYear: 2026 },
-    });
+    expect(
+      await screen.findByRole('heading', {
+        name: /Your next logical step: contribute more to your II\spillar/,
+      }),
+    ).toBeInTheDocument();
     expect(requests.count()).toBe(1);
   });
 
