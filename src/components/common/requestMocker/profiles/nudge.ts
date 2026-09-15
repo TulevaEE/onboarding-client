@@ -1,4 +1,12 @@
-import { NudgeDecision } from '../../apiModels/nudge';
+import { NudgeDecision, PaymentRateSeason } from '../../apiModels/nudge';
+
+const november2026: PaymentRateSeason = {
+  deadline: '2026-11-30',
+  fulfillmentDate: '2027-01-01',
+  mode: 'SEASON',
+};
+
+const lastDaysOfNovember2026: PaymentRateSeason = { ...november2026, mode: 'LAST_DAYS' };
 
 export const nudgeProfiles: Record<string, NudgeDecision> = {
   NONE: { key: 'NONE', tag: 'nudge_none' },
@@ -24,4 +32,19 @@ export const nudgeProfiles: Record<string, NudgeDecision> = {
   SAVINGS_FUND: { key: 'SAVINGS_FUND', tag: 'nudge_savings_fund', savingsFundFeePercent: 0.28 },
   SAVINGS_FUND_RECURRING: { key: 'SAVINGS_FUND_RECURRING', tag: 'nudge_savings_fund_recurring' },
   MEMBERSHIP: { key: 'MEMBERSHIP', tag: 'nudge_membership' },
+  SECOND_PILLAR_PAYMENT_RATE_NOVEMBER: {
+    key: 'SECOND_PILLAR_PAYMENT_RATE',
+    tag: 'nudge_payment_rate',
+    paymentRateSeason: november2026,
+  },
+  SECOND_PILLAR_PAYMENT_RATE_LAST_DAYS: {
+    key: 'SECOND_PILLAR_PAYMENT_RATE',
+    tag: 'nudge_payment_rate',
+    paymentRateSeason: lastDaysOfNovember2026,
+  },
+  THIRD_PILLAR_START_NOVEMBER: {
+    key: 'THIRD_PILLAR_START',
+    tag: 'nudge_third_pillar',
+    paymentRateSeason: november2026,
+  },
 };

@@ -131,27 +131,27 @@ describe('SecondPillarStatusBox', () => {
   });
 });
 
+const renderWithIntl = (component: React.ReactElement) =>
+  render(
+    <BrowserRouter>
+      <IntlProvider
+        locale="en"
+        messages={translations.en}
+        defaultLocale="et"
+        onError={(err) => {
+          if (err.code === 'MISSING_TRANSLATION') {
+            return;
+          }
+          throw err;
+        }}
+      >
+        {component}
+      </IntlProvider>
+    </BrowserRouter>,
+  );
+
 // Test with React Testing Library for deep rendering
 describe('SecondPillarStatusBox - Component Integration Tests', () => {
-  const renderWithIntl = (component: React.ReactElement) =>
-    render(
-      <BrowserRouter>
-        <IntlProvider
-          locale="en"
-          messages={translations.en}
-          defaultLocale="et"
-          onError={(err) => {
-            if (err.code === 'MISSING_TRANSLATION') {
-              return;
-            }
-            throw err;
-          }}
-        >
-          {component}
-        </IntlProvider>
-      </BrowserRouter>,
-    );
-
   describe('branch order: transfer nudge comes before the payment rate nudge', () => {
     const baseProps: Props = {
       loading: false,
@@ -363,5 +363,142 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
 
       expect(screen.queryByRole('button')).not.toBeInTheDocument();
     });
+  });
+});
+
+describe('SecondPillarStatusBox in the payment rate season', () => {
+  const paymentRateSeason = {
+    deadline: '2026-11-30',
+    fulfillmentDate: '2027-01-01',
+    mode: 'SEASON' as const,
+  };
+
+  const seasonProps = (currentPaymentRate: number, pendingPaymentRate: number): Props => ({
+    loading: false,
+    conversion: completeSecondPillarConversion.secondPillar,
+    sourceFunds: [activeSecondPillar],
+    targetFunds: [tulevaSecondPillarFund],
+    secondPillarActive: true,
+    currentPaymentRate,
+    pendingPaymentRate,
+    activeFundIsin: 'EE000123',
+    paymentRateSeason,
+  });
+
+  it.each([
+    [2, 2, 'Now 2% → up to 6%'],
+    [4, 4, 'Now 4% → up to 6%'],
+  ])('shows the pill and the raise copy for %s%%', (current, pending, pill) => {
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(current, pending)} />);
+
+    expect(screen.getByText(pill)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /From January\s1 you can contribute up to 6% straight from your gross salary/,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /This year you saved 22\s€ in income tax, the application deadline is November\s30/,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Increase contribution' })).toBeInTheDocument();
+  });
+
+  it('congratulates the maximum contributor without an action', () => {
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(6, 6)} />);
+
+    expect(
+      screen.getByText(/You contribute the maximum to II\spillar, 6% of your gross salary/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /This year you saved 22\s€ in income tax, your decision works for you every month/,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    expect(screen.queryByText(/→/)).not.toBeInTheDocument();
+  });
+
+  it.each([
+    [2, 6],
+    [4, 6],
+  ])('confirms a pending raise from %s%% to 6%% without an action', (current, pending) => {
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(current, pending)} />);
+
+    expect(
+      screen.getByText(/From January\s1 you will contribute 6% of your gross salary to II\spillar/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /This year you saved 22\s€ in income tax, the application is in and there is nothing more to do/,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+  });
+
+  it('invites a pending 4% raise to go further', () => {
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(2, 4)} />);
+
+    expect(
+      screen.getByText(/From January\s1 you will contribute 4% of your gross salary to II\spillar/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /This year you saved 22\s€ in income tax, until November\s30 you can raise it to 6%/,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Increase contribution' })).toBeInTheDocument();
+  });
+
+  it.each([
+    [4, 2],
+    [6, 4],
+    [6, 2],
+  ])('describes a pending decrease from %s%% to %s%%', (current, pending) => {
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(current, pending)} />);
+
+    expect(
+      screen.getByText(
+        new RegExp(
+          `From January\\s1 you will contribute ${pending}% of your gross salary to II\\spillar, now ${current}%`,
+        ),
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /This year you saved 22\s€ in income tax, you can change your choice until November\s30/,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Change contribution' })).toBeInTheDocument();
+    expect(screen.getByTestId('status-icon-warning')).toBeInTheDocument();
+  });
+
+  it('emphasizes the deadline fact in the last days', () => {
+    renderWithIntl(
+      <SecondPillarStatusBox
+        {...seasonProps(2, 2)}
+        paymentRateSeason={{ ...paymentRateSeason, mode: 'LAST_DAYS' }}
+      />,
+    );
+
+    expect(screen.getByText(/^the application deadline is November\s30$/).tagName).toBe('B');
+  });
+
+  it('keeps the transfer call to action for a saver whose second pillar is elsewhere', () => {
+    renderWithIntl(
+      <SecondPillarStatusBox
+        {...seasonProps(6, 6)}
+        conversion={{
+          ...completeSecondPillarConversion.secondPillar,
+          selectionComplete: false,
+          transfersComplete: false,
+          weightedAverageFee: 0.0029,
+        }}
+      />,
+    );
+
+    expect(screen.getByRole('link', { name: 'Choose Tuleva' })).toBeInTheDocument();
+    expect(screen.queryByText(/You contribute the maximum to II\spillar/)).not.toBeInTheDocument();
   });
 });

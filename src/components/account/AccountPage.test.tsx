@@ -1,5 +1,5 @@
 import { setupServer } from 'msw/node';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
 import { Route } from 'react-router-dom';
@@ -12,6 +12,7 @@ import {
   switchRoleBackend,
   transactionsBackend,
   useTestBackends,
+  nudgeBackend,
   useTestBackendsExcept,
   userBackend,
 } from '../../test/backend';
@@ -204,5 +205,83 @@ describe('when switching from one company role to another', () => {
 
     expect(await screen.findByText('Hi, Beta OÜ representative')).toBeInTheDocument();
     expect(screen.queryByText('Hi, Acme OÜ representative')).not.toBeInTheDocument();
+  });
+});
+
+const paymentRateSeason = {
+  deadline: '2026-11-30',
+  fulfillmentDate: '2027-01-01',
+  mode: 'SEASON' as const,
+};
+
+describe('when the payment rate season is on and the payment rate nudge wins', () => {
+  beforeEach(() => {
+    initializeConfiguration();
+    useTestBackendsExcept(server, ['nudge']);
+    nudgeBackend(server, {
+      key: 'SECOND_PILLAR_PAYMENT_RATE',
+      tag: 'nudge_payment_rate',
+      paymentRateSeason,
+    });
+    initializeComponent();
+    history.push('/account');
+  });
+
+  test('renders the second pillar row with the season pill and the deadline', async () => {
+    expect(await screen.findByText(/Now 2% → up to 6%/)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /From January\s1 you can contribute up to 6% straight from your gross salary/,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/application deadline is November\s30/)).toBeInTheDocument();
+  });
+
+  test('highlights the second pillar row and outlines every other action', async () => {
+    expect(await screen.findByText(/Now 2% → up to 6%/)).toBeInTheDocument();
+    const rows = screen.getAllByTestId('status-box-row');
+
+    expect(rows[0]).toHaveClass('primary');
+    expect(rows.slice(1).every((row) => row.classList.contains('secondary'))).toBe(true);
+
+    const filledActions = rows.flatMap((row) =>
+      within(row)
+        .queryAllByRole('link')
+        .filter((link) => link.classList.contains('btn-primary')),
+    );
+
+    expect(filledActions.length).toBe(1);
+    expect(filledActions[0]).toHaveTextContent('Increase contribution');
+  });
+});
+
+describe('when the payment rate season is on and another nudge wins', () => {
+  beforeEach(() => {
+    initializeConfiguration();
+    useTestBackendsExcept(server, ['nudge', 'user']);
+    userBackend(server, { secondPillarPaymentRates: { current: 6, pending: null } });
+    nudgeBackend(server, {
+      key: 'THIRD_PILLAR_START',
+      tag: 'nudge_third_pillar',
+      paymentRateSeason,
+    });
+    initializeComponent();
+    history.push('/account');
+  });
+
+  test('renders the second pillar season support copy', async () => {
+    expect(
+      await screen.findByText(/You contribute the maximum to II\spillar, 6% of your gross salary/),
+    ).toBeInTheDocument();
+  });
+
+  test('demotes no row', async () => {
+    expect(
+      await screen.findByText(/You contribute the maximum to II\spillar, 6% of your gross salary/),
+    ).toBeInTheDocument();
+    const rows = screen.getAllByTestId('status-box-row');
+
+    expect(rows.some((row) => row.classList.contains('primary'))).toBe(false);
+    expect(rows.some((row) => row.classList.contains('secondary'))).toBe(false);
   });
 });

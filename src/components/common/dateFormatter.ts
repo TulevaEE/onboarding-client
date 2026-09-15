@@ -8,6 +8,34 @@ export function formatDate(date?: string | null): string {
   return moment(date).format(format);
 }
 
+const ESTONIAN_MONTH_STEMS = [
+  'jaanuari',
+  'veebruari',
+  'märtsi',
+  'aprilli',
+  'mai',
+  'juuni',
+  'juuli',
+  'augusti',
+  'septembri',
+  'oktoobri',
+  'novembri',
+  'detsembri',
+];
+
+function inflectedEstonianDate(date: string, suffix: string): string {
+  const parsed = moment(date);
+  return `${parsed.format('D.')}\u00A0${ESTONIAN_MONTH_STEMS[parsed.month()]}${suffix}`;
+}
+
+export function formatDateFrom(date: string): string {
+  return moment.locale() === 'et' ? inflectedEstonianDate(date, 'st') : formatDate(date);
+}
+
+export function formatDateUntil(date: string): string {
+  return moment.locale() === 'et' ? inflectedEstonianDate(date, 'ni') : formatDate(date);
+}
+
 export function formatDateRange(firstDate: string, secondDate: string): string {
   const firstDateMoment = moment(firstDate);
   const secondDateMoment = moment(secondDate);
