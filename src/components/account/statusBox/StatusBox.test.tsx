@@ -41,6 +41,24 @@ describe('Status Box', () => {
     expect(component.find('StatusBoxLoader')).toHaveLength(1);
     expect(component.find('ThirdPillarStatusBox')).toHaveLength(0);
   });
+
+  it('shows only a loader while the nudge decision is on its way', () => {
+    useNudgeMock.mockReturnValue({ data: undefined, isInitialLoading: true });
+
+    component = shallow(<StatusBoxComponent {...props} />);
+
+    expect(component.find('StatusBoxLoader')).toHaveLength(1);
+    expect(component.find(SecondPillarStatusBox)).toHaveLength(0);
+  });
+
+  it('paints the box when the nudge decision failed instead of waiting forever', () => {
+    useNudgeMock.mockReturnValue({ data: undefined, isInitialLoading: false, isError: true });
+
+    component = shallow(<StatusBoxComponent {...props} />);
+
+    expect(component.find('StatusBoxLoader')).toHaveLength(0);
+    expect(component.find(SecondPillarStatusBox)).toHaveLength(1);
+  });
 });
 
 describe('Status Box emphasis', () => {

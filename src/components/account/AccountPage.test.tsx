@@ -234,7 +234,7 @@ describe('when the payment rate season is on and the payment rate nudge wins', (
         /From January\s1 you can contribute up to 6% straight from your gross salary/,
       ),
     ).toBeInTheDocument();
-    expect(screen.getByText(/application deadline is November\s30/)).toBeInTheDocument();
+    expect(await screen.findByText(/application deadline is November\s30/)).toBeInTheDocument();
   });
 
   test('highlights the second pillar row and outlines every other action', async () => {

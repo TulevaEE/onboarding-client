@@ -13,6 +13,11 @@ import { mockUser } from '../../../../test/backend-responses';
 const server = setupServer();
 let history: History;
 
+async function lastStatusBoxRow() {
+  const rows = await screen.findAllByTestId('status-box-row');
+  return rows[rows.length - 1];
+}
+
 function initializeComponent() {
   history = createMemoryHistory();
   const store = createDefaultStore(history as any);
@@ -41,7 +46,7 @@ describe('member status box with existing membership but no bonus', () => {
   });
 
   it('renders member number and upcoming membership bonus %', async () => {
-    const memberStatusRow = (await screen.findAllByTestId('status-box-row'))[2];
+    const memberStatusRow = await lastStatusBoxRow();
 
     expect(
       await within(memberStatusRow).findByText('You are Tuleva member no. 987'),
@@ -74,7 +79,7 @@ describe('member status box with existing membership and latest received members
   });
 
   it('renders existing membership bonus', async () => {
-    const memberStatusRow = (await screen.findAllByTestId('status-box-row'))[2];
+    const memberStatusRow = await lastStatusBoxRow();
 
     expect(
       await within(memberStatusRow).findByText('You are Tuleva member no. 987'),
@@ -106,7 +111,7 @@ describe('member status box with existing membership and membership bonus sale',
   });
 
   it('renders the only the last received membership bonus', async () => {
-    const memberStatusRow = (await screen.findAllByTestId('status-box-row'))[2];
+    const memberStatusRow = await lastStatusBoxRow();
 
     expect(
       await within(memberStatusRow).findByText('You are Tuleva member no. 987'),
@@ -130,7 +135,7 @@ describe('member status box without membership', () => {
   });
 
   it('allows to join', async () => {
-    const memberStatusRow = (await screen.findAllByTestId('status-box-row'))[2];
+    const memberStatusRow = await lastStatusBoxRow();
 
     expect(
       await within(memberStatusRow).findByText('Not a member and not earning any membership bonus'),

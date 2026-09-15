@@ -21,6 +21,7 @@ import { InfoTooltip } from '../../../common/infoTooltip/InfoTooltip';
 import { isTuleva } from '../../../common/utils';
 import { getValueSum } from '../../AccountStatement/fundSelector';
 import { Euro } from '../../../common/Euro';
+import { Shimmer } from '../../../common/shimmer/Shimmer';
 import { formatDate, formatDateFrom, formatDateUntil } from '../../../common/dateFormatter';
 import { isDateSameOrBeforeCancellationDeadline } from '../../ApplicationSection/ApplicationFunctions';
 import {
@@ -202,7 +203,7 @@ const SeasonPaymentRateRow = ({
   pendingPaymentRate,
   paymentRateSeason,
 }: RowProps & { paymentRateSeason: PaymentRateSeason }) => {
-  const { taxWin } = useSecondPillarTaxWin();
+  const { taxWin, loading: loadingTaxWin } = useSecondPillarTaxWin();
   const row = SEASON_ROWS[seasonRowState(currentPaymentRate, pendingPaymentRate)];
   const emphasizeDeadline = paymentRateSeason.mode === 'LAST_DAYS';
   const values = {
@@ -237,12 +238,16 @@ const SeasonPaymentRateRow = ({
       }
       lines={[
         <FormattedMessage id={row.line1} values={values} />,
-        <span className="text-body-secondary">
-          <FormattedMessage
-            id={taxWin === null ? row.line2WithoutTaxWin : row.line2}
-            values={values}
-          />
-        </span>,
+        loadingTaxWin ? (
+          <Shimmer height={24} />
+        ) : (
+          <span className="text-body-secondary">
+            <FormattedMessage
+              id={taxWin === null ? row.line2WithoutTaxWin : row.line2}
+              values={values}
+            />
+          </span>
+        ),
       ]}
     >
       {row.action && (
