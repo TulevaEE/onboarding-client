@@ -74,6 +74,22 @@ describe('Web eID Auth Integration', () => {
     expect(history.location.state).toEqual({ justLoggedIn: true });
   });
 
+  it('replaces the login entry so going back does not hand out a new landing', async () => {
+    mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce({});
+
+    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    history.replace({ pathname: '/login' });
+    const entriesOnTheLoginPage = history.length;
+
+    userEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/account');
+    });
+    expect(history.length).toBe(entriesOnTheLoginPage);
+    expect(history.action).toBe('REPLACE');
+  });
+
   it('should redirect to location.state.from when set by PrivateRoute', async () => {
     mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce({});
 
