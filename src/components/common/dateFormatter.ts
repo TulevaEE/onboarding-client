@@ -24,8 +24,8 @@ const ESTONIAN_MONTH_STEMS = [
 ];
 
 function inflectedEstonianDate(date: string, suffix: string): string {
-  const parsed = moment(date);
-  return `${parsed.format('D.')}\u00A0${ESTONIAN_MONTH_STEMS[parsed.month()]}${suffix}`;
+  const { month, day } = tallinnDayParts(date);
+  return `${Number(day)}.\u00A0${ESTONIAN_MONTH_STEMS[Number(month) - 1]}${suffix}`;
 }
 
 export function formatDateFrom(date: string): string {
