@@ -497,7 +497,10 @@ export function getNudge(context: NudgeContext): Promise<NudgeDecision> {
 }
 
 export function postPaymentRateRedirect(): Promise<PaymentRateRedirect> {
-  return postWithAuthentication(getEndpoint('/v1/me/payment-rate-redirect'));
+  return mockRequestInMockMode(
+    () => postWithAuthentication(getEndpoint('/v1/me/payment-rate-redirect')),
+    'paymentRateRedirect',
+  );
 }
 
 export function postPaymentRateRedirectDismissal(): Promise<void> {

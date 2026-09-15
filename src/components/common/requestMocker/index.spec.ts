@@ -6,6 +6,7 @@ import { userMockProfiles } from './profiles/user';
 import { withdrawalsEligibilityProfiles } from './profiles/withdrawalsEligibility';
 import { nudgeProfiles } from './profiles/nudge';
 import { mandateDeadlinesProfiles } from './profiles/mandateDeadlines';
+import { paymentRateRedirectProfiles } from './profiles/paymentRateRedirect';
 
 describe('mockRequestInMockMode', () => {
   beforeEach(() => {
@@ -86,5 +87,16 @@ describe('mockRequestInMockMode', () => {
     expect(
       await mockRequestInMockMode(() => Promise.reject(new Error('offline')), 'mandateDeadlines'),
     ).toBe(mandateDeadlinesProfiles.NOVEMBER_2026_BEFORE_DEADLINE);
+  });
+
+  it('mocks the payment rate redirect answer when its profile is set', async () => {
+    writeMockModeConfiguration({ paymentRateRedirect: 'TREATMENT' });
+
+    expect(
+      await mockRequestInMockMode(
+        () => Promise.reject(new Error('offline')),
+        'paymentRateRedirect',
+      ),
+    ).toBe(paymentRateRedirectProfiles.TREATMENT);
   });
 });
