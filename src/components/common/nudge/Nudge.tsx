@@ -33,7 +33,7 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({
 }) => {
   const { pathname } = useLocation();
   const { data: user } = useMe();
-  const viewTracked = useRef(false);
+  const trackedView = useRef<string | null>(null);
 
   const trackedEventData = () => ({
     context,
@@ -48,13 +48,14 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({
       : createTrackedEvent(type, trackedEventData())
     ).catch(() => {});
 
+  const viewIdentity = [context, decision.key, decision.tag, pathname].join('|');
   useEffect(() => {
-    if (decision.key === 'NONE' || viewTracked.current) {
+    if (decision.key === 'NONE' || trackedView.current === viewIdentity) {
       return;
     }
-    viewTracked.current = true;
+    trackedView.current = viewIdentity;
     track('NUDGE_VIEW');
-  }, [decision.key, decision.tag, context, pathname]);
+  }, [viewIdentity]);
 
   const onCallToAction = () => track('NUDGE_CLICK');
 

@@ -1157,7 +1157,13 @@ export function nudgeBackend(
   server: SetupServerApi,
   decision: NudgeDecision = { key: 'NONE', tag: 'nudge_none' },
 ): void {
-  server.use(rest.get('http://localhost/v1/me/nudge', (req, res, ctx) => res(ctx.json(decision))));
+  server.use(
+    rest.get('http://localhost/v1/me/nudge', (req, res, ctx) =>
+      req.url.searchParams.get('context')
+        ? res(ctx.json(decision))
+        : res(ctx.status(400), ctx.json({ errors: [{ code: 'context.missing' }] })),
+    ),
+  );
 }
 
 export function trackedEventsBackend(server: SetupServerApi): void {
