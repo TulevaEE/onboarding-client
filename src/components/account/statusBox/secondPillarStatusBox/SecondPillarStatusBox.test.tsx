@@ -366,6 +366,15 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
   });
 });
 
+const byTextContent = (pattern: string | RegExp) => {
+  const regex =
+    pattern instanceof RegExp
+      ? pattern
+      : new RegExp(`^${pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`);
+  const matching = screen.getAllByText((_, element) => regex.test(element?.textContent ?? ''));
+  return matching[matching.length - 1];
+};
+
 describe('SecondPillarStatusBox in the payment rate season', () => {
   const paymentRateSeason = {
     deadline: '2026-11-30',
@@ -385,20 +394,34 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
     paymentRateSeason,
   });
 
+  it('highlights the target rate inside the pill', () => {
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(2, 2)} />);
+
+    expect(byTextContent('up to 6%')).toHaveClass('text-primary');
+  });
+
+  it('links the tax win to the tax win page and shows the amount in bold', () => {
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(2, 2)} />);
+
+    expect(screen.getByRole('link', { name: /saved 22\s€ in income tax/ })).toHaveAttribute(
+      'href',
+      '/2nd-pillar-tax-win',
+    );
+    expect(byTextContent(/^22\s€$/).tagName).toBe('B');
+  });
+
   it.each([
     [2, 2, 'Now 2% → up to 6%'],
     [4, 4, 'Now 4% → up to 6%'],
   ])('shows the pill and the raise copy for %s%%', (current, pending, pill) => {
     renderWithIntl(<SecondPillarStatusBox {...seasonProps(current, pending)} />);
 
-    expect(screen.getByText(pill)).toBeInTheDocument();
+    expect(byTextContent(pill)).toBeInTheDocument();
     expect(
-      screen.getByText(
-        /From January\s1 you can contribute up to 6% straight from your gross salary/,
-      ),
+      byTextContent(/From January\s1 you can contribute up to 6% straight from your gross salary/),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
+      byTextContent(
         /This year you saved 22\s€ in income tax, the application deadline is November\s30/,
       ),
     ).toBeInTheDocument();
@@ -409,14 +432,16 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
     renderWithIntl(<SecondPillarStatusBox {...seasonProps(6, 6)} />);
 
     expect(
-      screen.getByText(/You contribute the maximum to II\spillar, 6% of your gross salary/),
+      byTextContent(/You contribute the maximum to II\spillar, 6% of your gross salary/),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
+      byTextContent(
         /This year you saved 22\s€ in income tax, your decision works for you every month/,
       ),
     ).toBeInTheDocument();
-    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([
+      '/2nd-pillar-tax-win',
+    ]);
     expect(screen.queryByText(/→/)).not.toBeInTheDocument();
   });
 
@@ -427,24 +452,26 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
     renderWithIntl(<SecondPillarStatusBox {...seasonProps(current, pending)} />);
 
     expect(
-      screen.getByText(/From January\s1 you will contribute 6% of your gross salary to II\spillar/),
+      byTextContent(/From January\s1 you will contribute 6% of your gross salary to II\spillar/),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
+      byTextContent(
         /This year you saved 22\s€ in income tax, the application is in and there is nothing more to do/,
       ),
     ).toBeInTheDocument();
-    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([
+      '/2nd-pillar-tax-win',
+    ]);
   });
 
   it('invites a pending 4% raise to go further', () => {
     renderWithIntl(<SecondPillarStatusBox {...seasonProps(2, 4)} />);
 
     expect(
-      screen.getByText(/From January\s1 you will contribute 4% of your gross salary to II\spillar/),
+      byTextContent(/From January\s1 you will contribute 4% of your gross salary to II\spillar/),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
+      byTextContent(
         /This year you saved 22\s€ in income tax, until November\s30 you can raise it to 6%/,
       ),
     ).toBeInTheDocument();
@@ -459,14 +486,14 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
     renderWithIntl(<SecondPillarStatusBox {...seasonProps(current, pending)} />);
 
     expect(
-      screen.getByText(
+      byTextContent(
         new RegExp(
           `From January\\s1 you will contribute ${pending}% of your gross salary to II\\spillar, now ${current}%`,
         ),
       ),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(
+      byTextContent(
         /This year you saved 22\s€ in income tax, you can change your choice until November\s30/,
       ),
     ).toBeInTheDocument();
@@ -482,7 +509,7 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
       />,
     );
 
-    expect(screen.getByText(/^the application deadline is November\s30$/).tagName).toBe('B');
+    expect(byTextContent(/^the application deadline is November\s30$/).tagName).toBe('B');
   });
 
   it('keeps the transfer call to action for a saver whose second pillar is elsewhere', () => {
