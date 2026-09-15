@@ -1,5 +1,5 @@
 import { act, render, waitFor } from '@testing-library/react';
-import { Router } from 'react-router-dom';
+import { Redirect, Router } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import { usePaymentRateRedirect } from './usePaymentRateRedirect';
 import { postPaymentRateRedirect } from '../common/api';
@@ -77,6 +77,35 @@ describe('usePaymentRateRedirect', () => {
     });
 
     expect(history.location.pathname).toBe('/3rd-pillar-flow');
+  });
+
+  it('lets a mandatory AML redirect win over the login landing', async () => {
+    const ToAml = () => {
+      usePaymentRateRedirect();
+      return <Redirect to="/aml" />;
+    };
+    const history = createMemoryHistory();
+    history.push('/account', { justLoggedIn: true });
+    render(
+      <Router history={history}>
+        <ToAml />
+      </Router>,
+    );
+
+    await waitFor(() => expect(history.location.pathname).toBe('/aml'));
+    expect(history.location.state).toBeUndefined();
+    expect(post).not.toHaveBeenCalled();
+  });
+
+  it('keeps the query string when it clears the login flag', async () => {
+    const history = createMemoryHistory();
+    history.push('/account?dev', { justLoggedIn: true });
+    renderAt(history);
+
+    await waitFor(() => expect(post).toHaveBeenCalledTimes(1));
+    expect(history.location.pathname).toBe('/account');
+    expect(history.location.search).toBe('?dev');
+    expect(history.location.state).toBeUndefined();
   });
 
   it('keeps the account page when the redirect call fails', async () => {
