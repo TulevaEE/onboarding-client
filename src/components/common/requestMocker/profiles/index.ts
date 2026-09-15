@@ -17,6 +17,8 @@ import { secondPillarAssetsProfiles } from './secondPillarAssets';
 import { transactionsProfiles } from './transactions';
 import { rolesProfiles } from './roles';
 import { sourceFundsProfiles } from './sourceFunds';
+import { nudgeProfiles } from './nudge';
+import { mandateDeadlinesProfiles } from './mandateDeadlines';
 
 export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string, unknown>> = {
   withdrawalsEligibility: withdrawalsEligibilityProfiles,
@@ -37,6 +39,8 @@ export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string
   transactions: transactionsProfiles,
   roles: rolesProfiles,
   sourceFunds: sourceFundsProfiles,
+  nudge: nudgeProfiles,
+  mandateDeadlines: mandateDeadlinesProfiles,
 } as const;
 
 export const getAllProfileNames = () =>

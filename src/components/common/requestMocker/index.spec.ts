@@ -4,6 +4,8 @@ import { completeConversion } from '../../account/statusBox/fixtures';
 import { conversionMockProfiles } from './profiles/conversion';
 import { userMockProfiles } from './profiles/user';
 import { withdrawalsEligibilityProfiles } from './profiles/withdrawalsEligibility';
+import { nudgeProfiles } from './profiles/nudge';
+import { mandateDeadlinesProfiles } from './profiles/mandateDeadlines';
 
 describe('mockRequestInMockMode', () => {
   beforeEach(() => {
@@ -70,5 +72,19 @@ describe('mockRequestInMockMode', () => {
         'withdrawalsEligibility',
       ),
     ).toBe(withdrawalsEligibilityProfiles.UNDER_55);
+  });
+
+  it('mocks the nudge decision and the mandate deadlines when their profiles are set', async () => {
+    writeMockModeConfiguration({
+      nudge: 'THIRD_PILLAR_START',
+      mandateDeadlines: 'NOVEMBER_2026_BEFORE_DEADLINE',
+    });
+
+    expect(await mockRequestInMockMode(() => Promise.reject(new Error('offline')), 'nudge')).toBe(
+      nudgeProfiles.THIRD_PILLAR_START,
+    );
+    expect(
+      await mockRequestInMockMode(() => Promise.reject(new Error('offline')), 'mandateDeadlines'),
+    ).toBe(mandateDeadlinesProfiles.NOVEMBER_2026_BEFORE_DEADLINE);
   });
 });
