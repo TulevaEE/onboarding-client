@@ -53,7 +53,7 @@ import {
   HackathonRegistrationCommand,
 } from '../components/common/apiModels/hackathon';
 import { KycIdentity } from '../components/flows/savingsAccount/SavingsFundOnboarding/types.api';
-import { NudgeDecision } from '../components/common/apiModels/nudge';
+import { NudgeDecision, PaymentRateRedirect } from '../components/common/apiModels/nudge';
 
 export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
@@ -1166,6 +1166,25 @@ export function nudgeBackend(
   );
 }
 
+export function paymentRateRedirectBackend(
+  server: SetupServerApi,
+  decision: PaymentRateRedirect = { redirect: false },
+): { count: () => number; dismissals: () => number } {
+  let count = 0;
+  let dismissals = 0;
+  server.use(
+    rest.post('http://localhost/v1/me/payment-rate-redirect/dismissal', (req, res, ctx) => {
+      dismissals += 1;
+      return res(ctx.status(204));
+    }),
+    rest.post('http://localhost/v1/me/payment-rate-redirect', (req, res, ctx) => {
+      count += 1;
+      return res(ctx.json(decision));
+    }),
+  );
+  return { count: () => count, dismissals: () => dismissals };
+}
+
 export function trackedEventsBackend(server: SetupServerApi): void {
   server.use(rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))));
 }
@@ -1213,6 +1232,7 @@ const TEST_BACKENDS = {
   hackathonRegistration: hackathonRegistrationBackend,
   hackathonIdeas: hackathonIdeasBackend,
   nudge: nudgeBackend,
+  paymentRateRedirect: paymentRateRedirectBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

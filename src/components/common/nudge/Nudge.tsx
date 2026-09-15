@@ -4,10 +4,10 @@ import { useLocation } from 'react-router-dom';
 import { Notice } from './Notice';
 import { AccountHolder, accountHolderFor } from '../../flows/savingsAccount/accountHolder';
 import { TranslationKey } from '../../translations';
-import { createTrackedEvent, createTrackedEventBeforeUnload } from '../api';
 import { useMe, useNudge } from '../apiHooks';
 import { NudgeContext, NudgeDecision, NudgeFeeComparison } from '../apiModels/nudge';
 import styles from './Nudge.module.scss';
+import { NudgeEventType, trackNudgeEvent } from './tracking';
 
 type NudgeProps = {
   context: NudgeContext;
@@ -42,11 +42,7 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({
     path: pathname,
     channel: 'SCREEN',
   });
-  const track = (type: 'NUDGE_VIEW' | 'NUDGE_CLICK') =>
-    (type === 'NUDGE_CLICK'
-      ? createTrackedEventBeforeUnload(type, trackedEventData())
-      : createTrackedEvent(type, trackedEventData())
-    ).catch(() => {});
+  const track = (type: NudgeEventType) => trackNudgeEvent(type, trackedEventData());
 
   const viewIdentity = [context, decision.key, decision.tag, pathname].join('|');
   useEffect(() => {

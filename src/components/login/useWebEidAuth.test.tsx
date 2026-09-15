@@ -55,7 +55,7 @@ describe('Web eID Auth Integration', () => {
     config.set({ language: 'et' }, configOptions);
   });
 
-  it('should authenticate successfully and redirect to home', async () => {
+  it('should authenticate successfully and land on the account page', async () => {
     const mockTokens = { accessToken: 'access-token', refreshToken: 'refresh-token' };
     mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce(mockTokens);
 
@@ -69,8 +69,9 @@ describe('Web eID Auth Integration', () => {
     });
 
     await waitFor(() => {
-      expect(history.location.pathname).toBe('/');
+      expect(history.location.pathname).toBe('/account');
     });
+    expect(history.location.state).toEqual({ justLoggedIn: true });
   });
 
   it('should redirect to location.state.from when set by PrivateRoute', async () => {
@@ -84,6 +85,7 @@ describe('Web eID Auth Integration', () => {
     await waitFor(() => {
       expect(history.location.pathname).toBe('/capital/listings/42');
     });
+    expect(history.location.state).toBeUndefined();
   });
 
   it('should use configured language', async () => {
