@@ -490,7 +490,10 @@ export function getUserConversionWithToken(): Promise<UserConversion> {
 }
 
 export function getNudge(context: NudgeContext): Promise<NudgeDecision> {
-  return getWithAuthentication(getEndpoint('/v1/me/nudge'), { context });
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/me/nudge'), { context }),
+    'nudge',
+  );
 }
 
 export function getCapitalRowsWithToken(): Promise<CapitalRow[]> {
@@ -592,7 +595,10 @@ export function getSecondPillarAssets(): Promise<SecondPillarAssets> {
 }
 
 export function getMandateDeadlines(): Promise<MandateDeadlines> {
-  return getWithAuthentication(getEndpoint('/v1/mandate-deadlines'), undefined);
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/mandate-deadlines'), undefined),
+    'mandateDeadlines',
+  );
 }
 
 export function createApplicationCancellation(applicationId: number): Promise<CancellationMandate> {

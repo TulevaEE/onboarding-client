@@ -16,6 +16,7 @@ import {
   getIdCardSignatureStatus,
   getIdCardTokens,
   getMandateDeadlines,
+  getNudge,
   getMissingAmlChecks,
   getMobileIdSignatureChallengeCode,
   getMobileIdSignatureStatus,
@@ -52,6 +53,9 @@ import {
   User,
   UserConversion,
 } from './apiModels';
+import { writeMockModeConfiguration } from './requestMocker';
+import { mandateDeadlinesProfiles } from './requestMocker/profiles/mandateDeadlines';
+import { nudgeProfiles } from './requestMocker/profiles/nudge';
 
 import * as authenticationManager from './authenticationManager';
 import Mock = jest.Mock;
@@ -1096,6 +1100,42 @@ describe('API calls', () => {
         '/v1/mandate-deadlines',
         undefined,
       );
+    });
+
+    it('returns the selected mock mode profile without calling the backend', async () => {
+      writeMockModeConfiguration({ mandateDeadlines: 'NOVEMBER_2026_BEFORE_DEADLINE' });
+
+      const mandateDeadlines = await getMandateDeadlines();
+
+      expect(mandateDeadlines).toBe(mandateDeadlinesProfiles.NOVEMBER_2026_BEFORE_DEADLINE);
+      expect(mockHttp.getWithAuthentication).not.toHaveBeenCalled();
+      writeMockModeConfiguration(null);
+    });
+  });
+
+  describe('getNudge', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      mockHttp.getWithAuthentication.mockResolvedValue(nudgeProfiles.NONE);
+    });
+
+    it('retrieves the nudge decision for a context', async () => {
+      const decision = await getNudge('THIRD_PILLAR_PAYMENT');
+
+      expect(decision).toEqual(nudgeProfiles.NONE);
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v1/me/nudge', {
+        context: 'THIRD_PILLAR_PAYMENT',
+      });
+    });
+
+    it('returns the selected mock mode profile without calling the backend', async () => {
+      writeMockModeConfiguration({ nudge: 'THIRD_PILLAR_START' });
+
+      const decision = await getNudge('THIRD_PILLAR_PAYMENT');
+
+      expect(decision).toBe(nudgeProfiles.THIRD_PILLAR_START);
+      expect(mockHttp.getWithAuthentication).not.toHaveBeenCalled();
+      writeMockModeConfiguration(null);
     });
   });
 
