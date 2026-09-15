@@ -27,7 +27,6 @@ import {
 
 type HackathonFormData = {
   email: string;
-  phoneNumber: string;
   skills: HackathonSkill[];
   otherSkills: string;
   challenges: HackathonChallenge[];
@@ -55,7 +54,6 @@ export const HackathonRegistrationPage = () => {
     mode: 'onChange',
     defaultValues: {
       email: '',
-      phoneNumber: '',
       skills: [],
       otherSkills: '',
       challenges: [],
@@ -73,7 +71,6 @@ export const HackathonRegistrationPage = () => {
       setPrefilled(true);
       reset({
         email: registration.email ?? '',
-        phoneNumber: registration.phoneNumber ?? '',
         skills: registration.skills,
         otherSkills: registration.otherSkills ?? '',
         challenges: registration.challenges,
@@ -88,7 +85,7 @@ export const HackathonRegistrationPage = () => {
   const submit = handleSubmit((data) =>
     saveRegistration({
       email: data.email.trim(),
-      phoneNumber: trimmedOrNull(data.phoneNumber),
+      phoneNumber: registration?.phoneNumber ?? null,
       role: registration?.role ?? 'PARTICIPANT',
       skills: data.skills,
       otherSkills: trimmedOrNull(data.otherSkills),
@@ -235,23 +232,6 @@ export const HackathonRegistrationPage = () => {
                       <FieldError id="hackathon-email-error" message={error?.message} />
                     </div>
                   </>
-                )}
-              />
-            </div>
-            <div className="col-12 col-sm-6">
-              <label className="form-label" htmlFor="hackathon-phone">
-                <FormattedMessage id="hackathon.contact.phoneNumber" />
-              </label>
-              <Controller
-                control={control}
-                name="phoneNumber"
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    id="hackathon-phone"
-                    type="tel"
-                    className="form-control form-control-lg"
-                  />
                 )}
               />
             </div>
