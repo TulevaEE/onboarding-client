@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { formatDateRange, formatDateYear } from './dateFormatter';
+import { formatDateFrom, formatDateRange, formatDateUntil, formatDateYear } from './dateFormatter';
 
 describe('DateFormatter functions', () => {
   describe('English locale', () => {
@@ -55,6 +55,23 @@ describe('DateFormatter functions', () => {
         const dateString = '2024-01-21T15:00:00+02:00';
         expect(formatDateYear(dateString)).toBe('21. jaanuar 2024');
       });
+    });
+  });
+
+  describe('season deadline forms', () => {
+    it('inflects the Estonian month for "from" and "until"', () => {
+      moment.locale('et');
+
+      expect(formatDateFrom('2027-01-01')).toBe('1.\u00a0jaanuarist');
+      expect(formatDateUntil('2026-11-30')).toBe('30.\u00a0novembrini');
+      expect(formatDateUntil('2026-05-31')).toBe('31.\u00a0maini');
+    });
+
+    it('keeps the plain date in English', () => {
+      moment.locale('en');
+
+      expect(formatDateFrom('2027-01-01')).toBe('January\u00a01');
+      expect(formatDateUntil('2026-11-30')).toBe('November\u00a030');
     });
   });
 });

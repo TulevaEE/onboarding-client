@@ -34,10 +34,25 @@ describe('Nudge decision contract', () => {
       new QueryClient({ defaultOptions: { queries: { retry: false } } }),
     );
 
+  it('covers the payment rate season payload', () => {
+    expect(decisions.filter(({ paymentRateSeason }) => paymentRateSeason)).toEqual([
+      {
+        key: 'SECOND_PILLAR_PAYMENT_RATE',
+        tag: 'nudge_payment_rate',
+        paymentRateSeason: {
+          deadline: '2026-11-30',
+          fulfillmentDate: '2027-01-01',
+          mode: 'SEASON',
+        },
+      },
+    ]);
+  });
+
   it('covers every key the server can return', () => {
     expect(decisions.map(({ key }) => key)).toEqual([
       'SECOND_PILLAR_TRANSFER',
       'SECOND_PILLAR_TRANSFER',
+      'SECOND_PILLAR_PAYMENT_RATE',
       'SECOND_PILLAR_PAYMENT_RATE',
       'THIRD_PILLAR_START',
       'THIRD_PILLAR_FEES',

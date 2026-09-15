@@ -11,6 +11,15 @@
   },
   { "key": "SECOND_PILLAR_TRANSFER", "tag": "nudge_second_pillar" },
   { "key": "SECOND_PILLAR_PAYMENT_RATE", "tag": "nudge_payment_rate" },
+  {
+    "key": "SECOND_PILLAR_PAYMENT_RATE",
+    "tag": "nudge_payment_rate",
+    "paymentRateSeason": {
+      "deadline": "2026-11-30",
+      "fulfillmentDate": "2027-01-01",
+      "mode": "SEASON"
+    }
+  },
   { "key": "THIRD_PILLAR_START", "tag": "nudge_third_pillar" },
   { "key": "THIRD_PILLAR_FEES", "tag": "nudge_third_pillar" },
   { "key": "THIRD_PILLAR_RECURRING", "tag": "nudge_third_pillar_recurring" },

@@ -7,7 +7,8 @@ import ThirdPillarStatusBox from './thirdPillarStatusBox';
 import MemberStatusBox from './memberStatusBox';
 import { SourceFund, UserConversion } from '../../common/apiModels';
 import SavingsFundStatusBox from './savingsFundStatusBox/SavingsFundStatusBox';
-import { useSavingsFundOnboardingStatus } from '../../common/apiHooks';
+import { useNudge, useSavingsFundOnboardingStatus } from '../../common/apiHooks';
+import { StatusBoxEmphasisProvider } from './statusBoxEmphasis';
 
 interface Props {
   conversion?: UserConversion;
@@ -23,21 +24,30 @@ export const StatusBoxComponent: React.FunctionComponent<Props> = ({
   loading = false,
 }) => {
   useSavingsFundOnboardingStatus();
+  const { data: decision } = useNudge('ACCOUNT');
 
   // `loading` covers refreshes over stale data — e.g. a role switch refetches
   // everything, and the previous role's data must not flash wrong statuses.
   if (loading || !conversion || !secondPillarFunds || !thirdPillarFunds) {
     return <StatusBoxLoader />;
   }
+
+  const paymentRateSeason = decision?.paymentRateSeason;
+  const paymentRateLeads = !!paymentRateSeason && decision?.key === 'SECOND_PILLAR_PAYMENT_RATE';
+
   return (
     <>
       <StatusBoxTitle />
 
       <div className="card card-secondary">
-        <SecondPillarStatusBox />
-        <ThirdPillarStatusBox />
-        <SavingsFundStatusBox />
-        <MemberStatusBox />
+        <StatusBoxEmphasisProvider value={paymentRateLeads ? 'primary' : undefined}>
+          <SecondPillarStatusBox paymentRateSeason={paymentRateSeason} />
+        </StatusBoxEmphasisProvider>
+        <StatusBoxEmphasisProvider value={paymentRateLeads ? 'secondary' : undefined}>
+          <ThirdPillarStatusBox />
+          <SavingsFundStatusBox />
+          <MemberStatusBox />
+        </StatusBoxEmphasisProvider>
       </div>
     </>
   );

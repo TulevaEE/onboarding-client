@@ -21,12 +21,18 @@ import { InfoTooltip } from '../../../common/infoTooltip/InfoTooltip';
 import { isTuleva } from '../../../common/utils';
 import { getValueSum } from '../../AccountStatement/fundSelector';
 import { Euro } from '../../../common/Euro';
-import { formatDate } from '../../../common/dateFormatter';
+import { formatDate, formatDateFrom, formatDateUntil } from '../../../common/dateFormatter';
 import { isDateSameOrBeforeCancellationDeadline } from '../../ApplicationSection/ApplicationFunctions';
-import { SecondPillarPaymentRateTaxWin } from '../../../flows/secondPillarPaymentRate/SecondPillarPaymentRateTaxWin';
+import {
+  SecondPillarPaymentRateTaxWin,
+  useSecondPillarTaxWin,
+} from '../../../flows/secondPillarPaymentRate/SecondPillarPaymentRateTaxWin';
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 import { FundPension } from '../../../common/apiModels/withdrawals';
 import { PaymentRateSubRow } from './PaymentRateSubRow';
+import { PaymentRateSeason } from '../../../common/apiModels/nudge';
+import { TranslationKey } from '../../../translations';
+import styles from './SecondPillarStatusBox.module.scss';
 
 export interface Props {
   loading: boolean;
@@ -37,6 +43,7 @@ export interface Props {
   currentPaymentRate: number;
   pendingPaymentRate: number;
   activeFundIsin: string | undefined;
+  paymentRateSeason?: PaymentRateSeason;
 }
 
 type RowProps = {
@@ -48,6 +55,7 @@ type RowProps = {
   targetFunds: Fund[];
   mandateDeadlines: MandateDeadlines | undefined;
   leaveApplication?: Application | undefined;
+  paymentRateSeason?: PaymentRateSeason;
 };
 
 export const SecondPillarStatusBox: React.FC<Props> = ({
@@ -59,6 +67,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   currentPaymentRate,
   pendingPaymentRate,
   activeFundIsin,
+  paymentRateSeason,
 }: Props) => {
   // TODO improve loading state handling here
   const { data: mandateDeadlines } = useMandateDeadlines();
@@ -80,6 +89,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     targetFunds,
     mandateDeadlines,
     leaveApplication,
+    paymentRateSeason,
   };
 
   if (!secondPillarActive) {
@@ -105,7 +115,11 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   }
 
   if (pendingPaymentRate < 6) {
-    return <IncreasePaymentRate {...rowProps} />;
+    return paymentRateSeason ? (
+      <SeasonPaymentRateRow {...rowProps} paymentRateSeason={paymentRateSeason} />
+    ) : (
+      <IncreasePaymentRate {...rowProps} />
+    );
   }
 
   if (!isFullyConvertedToTuleva) {
@@ -117,7 +131,124 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     return <FullyConvertedToTulevaBonds {...rowProps} />;
   }
 
-  return <FullyConvertedToTuleva {...rowProps} />;
+  return paymentRateSeason ? (
+    <SeasonPaymentRateRow {...rowProps} paymentRateSeason={paymentRateSeason} />
+  ) : (
+    <FullyConvertedToTuleva {...rowProps} />
+  );
+};
+
+type SeasonRowState = 'raise' | 'maximum' | 'pendingRaise' | 'pendingPartial' | 'pendingDecrease';
+
+type SeasonRow = {
+  status: 'SUCCESS' | 'WARNING';
+  line1: TranslationKey;
+  line2: TranslationKey;
+  line2WithoutTaxWin: TranslationKey;
+  action?: TranslationKey;
+  showsPill?: boolean;
+};
+
+const SEASON_ROWS: Record<SeasonRowState, SeasonRow> = {
+  raise: {
+    status: 'WARNING',
+    line1: 'account.status.choice.pillar.second.season.raise.line1',
+    line2: 'account.status.choice.pillar.second.season.raise.line2',
+    line2WithoutTaxWin: 'account.status.choice.pillar.second.season.raise.line2.noTaxWin',
+    action: 'account.status.choice.paymentRate.increase',
+    showsPill: true,
+  },
+  maximum: {
+    status: 'SUCCESS',
+    line1: 'account.status.choice.pillar.second.season.maximum.line1',
+    line2: 'account.status.choice.pillar.second.season.maximum.line2',
+    line2WithoutTaxWin: 'account.status.choice.pillar.second.season.maximum.line2.noTaxWin',
+  },
+  pendingRaise: {
+    status: 'SUCCESS',
+    line1: 'account.status.choice.pillar.second.season.pending.line1',
+    line2: 'account.status.choice.pillar.second.season.pendingRaise.line2',
+    line2WithoutTaxWin: 'account.status.choice.pillar.second.season.pendingRaise.line2.noTaxWin',
+  },
+  pendingPartial: {
+    status: 'WARNING',
+    line1: 'account.status.choice.pillar.second.season.pending.line1',
+    line2: 'account.status.choice.pillar.second.season.pendingPartial.line2',
+    line2WithoutTaxWin: 'account.status.choice.pillar.second.season.pendingPartial.line2.noTaxWin',
+    action: 'account.status.choice.paymentRate.increase',
+  },
+  pendingDecrease: {
+    status: 'WARNING',
+    line1: 'account.status.choice.pillar.second.season.pendingDecrease.line1',
+    line2: 'account.status.choice.pillar.second.season.pendingDecrease.line2',
+    line2WithoutTaxWin: 'account.status.choice.pillar.second.season.pendingDecrease.line2.noTaxWin',
+    action: 'account.status.choice.paymentRate.change',
+  },
+};
+
+const seasonRowState = (currentPaymentRate: number, pendingPaymentRate: number): SeasonRowState => {
+  if (pendingPaymentRate === currentPaymentRate) {
+    return currentPaymentRate === 6 ? 'maximum' : 'raise';
+  }
+  if (pendingPaymentRate < currentPaymentRate) {
+    return 'pendingDecrease';
+  }
+  return pendingPaymentRate === 6 ? 'pendingRaise' : 'pendingPartial';
+};
+
+const SeasonPaymentRateRow = ({
+  loading,
+  currentPaymentRate,
+  pendingPaymentRate,
+  paymentRateSeason,
+}: RowProps & { paymentRateSeason: PaymentRateSeason }) => {
+  const { taxWin } = useSecondPillarTaxWin();
+  const row = SEASON_ROWS[seasonRowState(currentPaymentRate, pendingPaymentRate)];
+  const emphasizeDeadline = paymentRateSeason.mode === 'LAST_DAYS';
+  const values = {
+    currentPaymentRate,
+    pendingPaymentRate,
+    deadline: formatDate(paymentRateSeason.deadline),
+    deadlineUntil: formatDateUntil(paymentRateSeason.deadline),
+    fulfillmentDate: formatDateFrom(paymentRateSeason.fulfillmentDate),
+    ...(taxWin === null ? {} : { taxWin: `${taxWin.toFixed(0)}\u00A0€` }),
+    b: (chunks: string) => (emphasizeDeadline ? <b>{chunks}</b> : <>{chunks}</>),
+  };
+
+  return (
+    <StatusBoxRow
+      status={row.status}
+      showAction={!loading}
+      name={
+        <span className="d-inline-flex flex-wrap align-items-center gap-2">
+          <FormattedMessage id="account.status.choice.pillar.second" />
+          {row.showsPill && (
+            <span className={`${styles.pill} fs-6 fw-normal text-nowrap`}>
+              <FormattedMessage
+                id="account.status.choice.pillar.second.season.pill"
+                values={values}
+              />
+            </span>
+          )}
+        </span>
+      }
+      lines={[
+        <FormattedMessage id={row.line1} values={values} />,
+        <span className="text-body-secondary">
+          <FormattedMessage
+            id={taxWin === null ? row.line2WithoutTaxWin : row.line2}
+            values={values}
+          />
+        </span>,
+      ]}
+    >
+      {row.action && (
+        <Link to="/2nd-pillar-payment-rate" className="btn btn-primary">
+          <FormattedMessage id={row.action} />
+        </Link>
+      )}
+    </StatusBoxRow>
+  );
 };
 
 const FeeComparison = ({
