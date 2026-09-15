@@ -177,6 +177,24 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
       expect(await signButton()).toHaveClass('btn-primary');
     });
 
+    test('takes the nudge out of the history so a reload shows the ordinary page', async () => {
+      expect(await nudgeHeading()).toBeInTheDocument();
+
+      await waitFor(() => expect(history.location.state).toBeUndefined());
+      expect(await nudgeHeading()).toBeInTheDocument();
+      await waitFor(() => expect(eventsOfType('NUDGE_VIEW')).toHaveLength(1));
+    });
+
+    test('leaves no way back to the nudge once it is dismissed', async () => {
+      expect(await nudgeHeading()).toBeInTheDocument();
+      const entriesOnTheNudge = history.length;
+
+      userEvent.click(await notNowButton());
+
+      await waitFor(() => expect(history.location.pathname).toBe('/account'));
+      expect(history.length).toBe(entriesOnTheNudge);
+    });
+
     test('records the dismissal and returns to the account page', async () => {
       expect(await nudgeHeading()).toBeInTheDocument();
 
