@@ -19,7 +19,7 @@ import {
   authenticateWithIdCode,
 } from './actions';
 import { getAuthentication } from '../common/authenticationManager';
-import { ACCOUNT_PATH, isDeepLink } from '../paths';
+import { loginLanding } from './loginLanding';
 
 export const LoginPage = ({
   isAuthenticated,
@@ -43,11 +43,7 @@ export const LoginPage = ({
 
   if (isAuthenticated) {
     const from = location.state && location.state.from;
-    return isDeepLink(from) ? (
-      <Redirect to={from} />
-    ) : (
-      <Redirect to={{ pathname: ACCOUNT_PATH, state: { justLoggedIn: true } }} />
-    );
+    return <Redirect to={loginLanding(from)} />;
   }
 
   return (

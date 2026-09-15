@@ -4,7 +4,7 @@ import config from 'react-global-configuration';
 import { ErrorCode } from '@web-eid/web-eid-library';
 
 import { authenticateWithIdCardWebEid } from '../common/api';
-import { ACCOUNT_PATH, isDeepLink } from '../paths';
+import { loginLanding } from './loginLanding';
 import {
   ID_CARD_LOGIN_START_FAILED_ERROR,
   WEB_EID_EXTENSION_UNAVAILABLE,
@@ -30,11 +30,7 @@ export function useWebEidAuth() {
     mutationFn: () => authenticateWithIdCardWebEid(config.get('language') || 'et'),
     onSuccess: () => {
       const from = location.state?.from;
-      if (isDeepLink(from)) {
-        history.push(from);
-      } else {
-        history.push(ACCOUNT_PATH, { justLoggedIn: true });
-      }
+      history.push(loginLanding(from));
     },
   });
 

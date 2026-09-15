@@ -102,6 +102,21 @@ describe('Web eID Auth Integration', () => {
     expect(history.location.state).toEqual({ justLoggedIn: true });
   });
 
+  it('keeps the query string of an account landing recorded by PrivateRoute', async () => {
+    mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce({});
+
+    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    history.replace({ pathname: '/login', state: { from: '/account?language=en' } });
+
+    userEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/account');
+    });
+    expect(history.location.search).toBe('?language=en');
+    expect(history.location.state).toEqual({ justLoggedIn: true });
+  });
+
   it('should use configured language', async () => {
     config.set({ language: 'en' }, configOptions);
     mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce({});
