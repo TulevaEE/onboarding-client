@@ -180,6 +180,10 @@ describe('Contact details gatekeep', () => {
 
     await waitForElementToBeRemoved(() => screen.queryByText('My details'));
     expect(history.location.pathname).toBe('/2nd-pillar-payment-rate');
-    expect(history.location.state).toEqual({ nudge });
+    expect(
+      await screen.findByRole('heading', {
+        name: /Your next logical step: contribute more to your II\spillar/,
+      }),
+    ).toBeInTheDocument();
   });
 });
