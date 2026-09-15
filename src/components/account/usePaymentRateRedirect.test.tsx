@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import { usePaymentRateRedirect } from './usePaymentRateRedirect';
@@ -55,6 +55,28 @@ describe('usePaymentRateRedirect', () => {
     await waitFor(() => expect(history.location.pathname).toBe('/2nd-pillar-payment-rate'));
     expect(history.location.state).toEqual({ nudge: { arm: 'TREATMENT', seasonYear: 2026 } });
     expect(history.length).toBe(entriesAfterLanding);
+  });
+
+  it('leaves a person who already moved on where they are', async () => {
+    let answer: (decision: { redirect: boolean; arm: string; seasonYear: number }) => void = () =>
+      undefined;
+    post.mockReturnValue(
+      new Promise((resolve) => {
+        answer = resolve;
+      }),
+    );
+    const history = createMemoryHistory();
+    history.push('/account', { justLoggedIn: true });
+    const { unmount } = renderAt(history);
+
+    await waitFor(() => expect(post).toHaveBeenCalledTimes(1));
+    unmount();
+    history.push('/3rd-pillar-flow');
+    await act(async () => {
+      answer({ redirect: true, arm: 'TREATMENT', seasonYear: 2026 });
+    });
+
+    expect(history.location.pathname).toBe('/3rd-pillar-flow');
   });
 
   it('keeps the account page when the redirect call fails', async () => {

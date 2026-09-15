@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { postPaymentRateRedirect } from '../common/api';
 
@@ -8,6 +8,14 @@ export function usePaymentRateRedirect(): void {
   const history = useHistory();
   const { pathname, state } = useLocation<LandingState>();
   const justLoggedIn = state?.justLoggedIn === true;
+  const onTheAccountPage = useRef(true);
+
+  useEffect(() => {
+    onTheAccountPage.current = true;
+    return () => {
+      onTheAccountPage.current = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!justLoggedIn) {
@@ -16,7 +24,7 @@ export function usePaymentRateRedirect(): void {
     history.replace(pathname);
     postPaymentRateRedirect()
       .then(({ redirect, arm, seasonYear }) => {
-        if (redirect) {
+        if (redirect && onTheAccountPage.current) {
           history.replace('/2nd-pillar-payment-rate', { nudge: { arm, seasonYear } });
         }
       })

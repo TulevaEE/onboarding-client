@@ -84,6 +84,24 @@ describe('When a user is logging in', () => {
     expect(history.location.state).toBeUndefined();
   });
 
+  test('they land on the account page with the landing flag when they came from the app root', async () => {
+    act(() => {
+      history.replace('/login', { from: '/' });
+    });
+    const identityCode = '396112341234';
+    const backend = smartIdAuthenticationBackend(server, { challengeCode: '1928', identityCode });
+    expect(await screen.findByText('Log in')).toBeInTheDocument();
+    userEvent.click(screen.getByText(/Smart-ID/gi));
+    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), identityCode);
+    userEvent.click(screen.getByText(/Log in$/gi));
+    expect(await screen.findByText('1928')).toBeInTheDocument();
+    backend.resolvePolling();
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    expect(history.location.state).toEqual({ justLoggedIn: true });
+  });
+
   test('they can sign in with mobile id, showing the security code', async () => {
     const identityCode = '396112341234';
     const phoneNumber = '+372123456789';
