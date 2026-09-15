@@ -190,6 +190,24 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
       expect(screen.queryByRole('link', { name: 'Increase contribution' })).not.toBeInTheDocument();
     });
 
+    it('counts a fee of exactly 0.3% as high, the way the server decides it', () => {
+      renderWithIntl(
+        <SecondPillarStatusBox
+          {...baseProps}
+          sourceFunds={[highFeeSecondPillar]}
+          conversion={{
+            ...completeSecondPillarConversion.secondPillar,
+            selectionComplete: false,
+            transfersComplete: false,
+            weightedAverageFee: 0.003,
+          }}
+        />,
+      );
+
+      expect(screen.getByText(/in a high cost fund/)).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Increase contribution' })).not.toBeInTheDocument();
+    });
+
     it('nudges the payment rate when the second pillar is elsewhere in a low-fee fund with a low payment rate', () => {
       renderWithIntl(
         <SecondPillarStatusBox
