@@ -4,6 +4,7 @@ import config from 'react-global-configuration';
 import { ErrorCode } from '@web-eid/web-eid-library';
 
 import { authenticateWithIdCardWebEid } from '../common/api';
+import { ACCOUNT_PATH } from '../paths';
 import {
   ID_CARD_LOGIN_START_FAILED_ERROR,
   WEB_EID_EXTENSION_UNAVAILABLE,
@@ -28,7 +29,12 @@ export function useWebEidAuth() {
   const mutation = useMutation({
     mutationFn: () => authenticateWithIdCardWebEid(config.get('language') || 'et'),
     onSuccess: () => {
-      history.push(location.state?.from ?? '/');
+      const from = location.state?.from;
+      if (from) {
+        history.push(from);
+      } else {
+        history.push(ACCOUNT_PATH, { justLoggedIn: true });
+      }
     },
   });
 

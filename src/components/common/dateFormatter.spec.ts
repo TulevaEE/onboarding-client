@@ -1,5 +1,11 @@
 import moment from 'moment';
-import { formatDateFrom, formatDateRange, formatDateUntil, formatDateYear } from './dateFormatter';
+import {
+  formatDateFrom,
+  formatDateOn,
+  formatDateRange,
+  formatDateUntil,
+  formatDateYear,
+} from './dateFormatter';
 
 describe('DateFormatter functions', () => {
   describe('English locale', () => {
@@ -63,6 +69,7 @@ describe('DateFormatter functions', () => {
       moment.locale('et');
 
       expect(formatDateFrom('2027-01-01')).toBe('1.\u00a0jaanuarist');
+      expect(formatDateOn('2026-11-30')).toBe('30.\u00a0novembril');
       expect(formatDateUntil('2026-11-30')).toBe('30.\u00a0novembrini');
       expect(formatDateUntil('2026-05-31')).toBe('31.\u00a0maini');
     });
@@ -71,6 +78,7 @@ describe('DateFormatter functions', () => {
       moment.locale('en');
 
       expect(formatDateFrom('2027-01-01')).toBe('January\u00a01');
+      expect(formatDateOn('2026-11-30')).toBe('November\u00a030');
       expect(formatDateUntil('2026-11-30')).toBe('November\u00a030');
     });
   });

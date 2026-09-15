@@ -738,6 +738,12 @@
   "secondPillarPaymentRate.confirm.mandate.agree.to.terms": "Vajutades nupule “Allkirjastan ja saadan”, saadan digiallkirjastatud avalduse otse registripidajale.",
   "secondPillarPaymentRate.confirm.mandate.sign": "Allkirjastan ja saadan",
   "secondPillarPaymentRate.cancel": "Katkestan",
+  "secondPillarPaymentRate.nudge.heading": "Sinu järgmine loogiline samm: kogu II sambasse rohkem",
+  "secondPillarPaymentRate.nudge.lead": "Su II sammas on sinu enda vara, investeeritud sinu nimel ja edasi pärandatav.",
+  "secondPillarPaymentRate.nudge.body": "Praegu suunad sinna 2% palgast. Alates jaanuarist saad koguda kuni 6% otse brutopalgast ja su maksuvõit kasvab kuni kolm korda.",
+  "secondPillarPaymentRate.nudge.deadline": "Tee avaldus hiljemalt {deadline}, et koguda uuest aastast rohkem.",
+  "secondPillarPaymentRate.nudge.fulfillment": "Sinu valik jõustub {fulfillmentDate}.",
+  "secondPillarPaymentRate.nudge.dismiss": "Mitte praegu",
 
   "secondPillarPaymentRateSuccess.title.increase": "Tõstsid II samba makset",
   "secondPillarPaymentRateSuccess.title.decrease": "Langetasid II samba makset",

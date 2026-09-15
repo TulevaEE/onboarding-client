@@ -29,7 +29,8 @@ describe('When a user is logging in', () => {
 
     renderWrapped(
       <Switch>
-        <Route exact path="/" render={() => <h1>Mock account page</h1>} />
+        <Route exact path="/account" render={() => <h1>Mock account page</h1>} />
+        <Route exact path="/capital" render={() => <h1>Mock deep link page</h1>} />
         <Route exact path={loginPath} component={LoginPage} />
       </Switch>,
       history as any,
@@ -62,6 +63,25 @@ describe('When a user is logging in', () => {
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
     ).toBeInTheDocument();
+    expect(history.location.state).toEqual({ justLoggedIn: true });
+  });
+
+  test('they land on the page they came for, without the login landing flag', async () => {
+    act(() => {
+      history.replace('/login', { from: '/capital' });
+    });
+    const identityCode = '396112341234';
+    const backend = smartIdAuthenticationBackend(server, { challengeCode: '1928', identityCode });
+    expect(await screen.findByText('Log in')).toBeInTheDocument();
+    userEvent.click(screen.getByText(/Smart-ID/gi));
+    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), identityCode);
+    userEvent.click(screen.getByText(/Log in$/gi));
+    expect(await screen.findByText('1928')).toBeInTheDocument();
+    backend.resolvePolling();
+    expect(
+      await screen.findByText(/mock deep link page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    expect(history.location.state).toBeUndefined();
   });
 
   test('they can sign in with mobile id, showing the security code', async () => {

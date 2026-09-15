@@ -28,6 +28,7 @@ import {
 } from '../common/apiHooks';
 import { canAccessWithdrawals } from '../flows/withdrawals/utils';
 import { getBankName } from '../common/iban';
+import { usePaymentRateRedirect } from './usePaymentRateRedirect';
 
 const noop = () => null;
 
@@ -46,6 +47,7 @@ export function PersonAccountPage(
   },
 ) {
   usePageTitle('pageTitle.accountPage');
+  usePaymentRateRedirect();
 
   const getData = () => {
     const { shouldGetMemberCapital, onGetMemberCapital } = props;

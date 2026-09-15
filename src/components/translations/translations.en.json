@@ -691,6 +691,12 @@
   "secondPillarPaymentRate.confirm.mandate.agree.to.terms": "By clicking “Sign and send“ a digitally signed application will be sent to the register.",
   "secondPillarPaymentRate.confirm.mandate.sign": "Sign and send",
   "secondPillarPaymentRate.cancel": "Cancel",
+  "secondPillarPaymentRate.nudge.heading": "Your next logical step: contribute more to your II pillar",
+  "secondPillarPaymentRate.nudge.lead": "Your II pillar is your own wealth, invested in your name and inheritable.",
+  "secondPillarPaymentRate.nudge.body": "Right now you direct 2% of your salary there. From January you can contribute up to 6% straight from your gross salary and your tax win grows up to threefold.",
+  "secondPillarPaymentRate.nudge.deadline": "Submit your application by {deadline} at the latest to save more from the new year.",
+  "secondPillarPaymentRate.nudge.fulfillment": "Your choice takes effect on {fulfillmentDate}.",
+  "secondPillarPaymentRate.nudge.dismiss": "Not now",
 
   "secondPillarPaymentRateSuccess.title.increase": "You increased your II pillar contribution",
   "secondPillarPaymentRateSuccess.title.decrease": "You lowered your II pillar contribution",

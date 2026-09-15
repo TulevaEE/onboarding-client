@@ -16,6 +16,7 @@ jest.mock('../common/apiHooks', () => ({
   useMemberCapitalListingCount: () => ({ data: [] }),
   useSavingsFundBalance: () => ({ data: mockSavingsFundBalance }),
 }));
+jest.mock('./usePaymentRateRedirect', () => ({ usePaymentRateRedirect: () => undefined }));
 /**
  * @deprecated Use PersonAccountPageView.test.tsx
  */

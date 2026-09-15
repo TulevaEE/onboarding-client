@@ -35,3 +35,16 @@ export type NudgeDecision = { paymentRateSeason?: PaymentRateSeason } & (
 );
 
 export type NudgeKey = NudgeDecision['key'];
+
+export type ExperimentArm = 'TREATMENT' | 'CONTROL';
+
+export interface PaymentRateRedirect {
+  redirect: boolean;
+  arm?: ExperimentArm;
+  seasonYear?: number;
+}
+
+export interface PaymentRateNudge {
+  arm?: ExperimentArm;
+  seasonYear?: number;
+}

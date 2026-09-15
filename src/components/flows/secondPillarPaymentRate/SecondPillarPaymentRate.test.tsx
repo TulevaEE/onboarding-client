@@ -1,11 +1,12 @@
+import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import userEvent from '@testing-library/user-event';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import { initializeConfiguration } from '../../config/config';
-import { nudgeBackend, useTestBackends } from '../../../test/backend';
+import { nudgeBackend, paymentRateRedirectBackend, useTestBackends } from '../../../test/backend';
 import LoggedInApp from '../../LoggedInApp';
 
 describe('When a user is changing their 2nd pillar payment rate', () => {
@@ -126,6 +127,95 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
     ).not.toBeInTheDocument();
   });
 
+  describe('when the page is the login landing of the payment rate experiment', () => {
+    let trackedEvents: { type: string; data?: Record<string, unknown> }[];
+    let redirectBackend: ReturnType<typeof paymentRateRedirectBackend>;
+
+    beforeEach(() => {
+      trackedEvents = [];
+      redirectBackend = paymentRateRedirectBackend(server);
+      server.use(
+        rest.post('http://localhost/v1/t', (req, res, ctx) => {
+          trackedEvents.push(req.body as { type: string });
+          return res(ctx.json({}));
+        }),
+      );
+      history.push('/2nd-pillar-payment-rate', {
+        nudge: { arm: 'TREATMENT', seasonYear: 2026 },
+      });
+    });
+
+    const eventsOfType = (type: string) => trackedEvents.filter((event) => event.type === type);
+
+    test('replaces the page introduction with the nudge copy', async () => {
+      expect(await nudgeHeading()).toHaveClass('balancedHeading');
+      expect(
+        screen.getByText(
+          /Your II\spillar is your own wealth, invested in your name and inheritable\./,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /Right now you direct 2% of your salary there\. From January you can contribute up to 6% straight from your gross salary and your tax win grows up to threefold\./,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /Submit your application by November\s30 at the latest to save more from the new year\./,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Your choice takes effect on January\s1,\s2025\./),
+      ).toBeInTheDocument();
+      expect(screen.queryByText('Increase your II pillar tax benefits')).not.toBeInTheDocument();
+    });
+
+    test('offers a way out that is as visible as the action', async () => {
+      expect(await nudgeHeading()).toBeInTheDocument();
+
+      expect(await notNowButton()).toHaveClass('btn-outline-primary');
+      expect(await signButton()).toHaveClass('btn-primary');
+    });
+
+    test('records the dismissal and returns to the account page', async () => {
+      expect(await nudgeHeading()).toBeInTheDocument();
+
+      userEvent.click(await notNowButton());
+
+      await waitFor(() => expect(redirectBackend.dismissals()).toBe(1));
+      await waitFor(() => expect(history.location.pathname).toBe('/account'));
+    });
+
+    test('tracks the view once with the arm it was given', async () => {
+      expect(await nudgeHeading()).toBeInTheDocument();
+
+      await waitFor(() => expect(eventsOfType('NUDGE_VIEW')).toHaveLength(1));
+      expect(eventsOfType('NUDGE_VIEW')[0]).toEqual({
+        type: 'NUDGE_VIEW',
+        data: { context: 'PAYMENT_RATE_REDIRECT', arm: 'TREATMENT', seasonYear: 2026 },
+      });
+    });
+
+    test('tracks the click when the mandate is signed', async () => {
+      expect(await nudgeHeading()).toBeInTheDocument();
+
+      userEvent.click(await signButton());
+
+      await waitFor(() => expect(eventsOfType('NUDGE_CLICK')).toHaveLength(1));
+      expect(eventsOfType('NUDGE_CLICK')[0]).toEqual({
+        type: 'NUDGE_CLICK',
+        data: { context: 'PAYMENT_RATE_REDIRECT', arm: 'TREATMENT', seasonYear: 2026 },
+      });
+    }, 20_000);
+  });
+
+  test('shows no experiment copy when the page was opened on its own', async () => {
+    expect(await title()).toBeInTheDocument();
+
+    expect(screen.queryByText(/Your next logical step/)).not.toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'Cancel' })).toBeInTheDocument();
+  });
+
   const main = () => within(screen.getByRole('main'));
   const title = () => screen.findByText('Increase your II pillar tax benefits');
   const twoPercentOption = () => screen.findByText('2% of Gross Salary');
@@ -140,5 +230,10 @@ describe('When a user is changing their 2nd pillar payment rate', () => {
       { timeout: 10_000 },
     );
   const paymentRateFulfillmentDate = () => screen.findByText('January 1, 2025');
+  const nudgeHeading = () =>
+    screen.findByRole('heading', {
+      name: /Your next logical step: contribute more to your II\spillar/,
+    });
+  const notNowButton = () => screen.findByRole('button', { name: 'Not now' });
   const newPaymentRate = () => screen.findByText('4%');
 });

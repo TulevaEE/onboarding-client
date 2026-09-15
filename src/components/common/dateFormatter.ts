@@ -32,6 +32,10 @@ export function formatDateFrom(date: string): string {
   return moment.locale() === 'et' ? inflectedEstonianDate(date, 'st') : formatDate(date);
 }
 
+export function formatDateOn(date: string): string {
+  return moment.locale() === 'et' ? inflectedEstonianDate(date, 'l') : formatDate(date);
+}
+
 export function formatDateUntil(date: string): string {
   return moment.locale() === 'et' ? inflectedEstonianDate(date, 'ni') : formatDate(date);
 }

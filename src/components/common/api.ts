@@ -44,7 +44,7 @@ import {
   HackathonRegistration,
   HackathonRegistrationCommand,
 } from './apiModels/hackathon';
-import { NudgeContext, NudgeDecision } from './apiModels/nudge';
+import { NudgeContext, NudgeDecision, PaymentRateRedirect } from './apiModels/nudge';
 import {
   deleteWithAuthentication,
   downloadFileWithAuthentication,
@@ -494,6 +494,14 @@ export function getNudge(context: NudgeContext): Promise<NudgeDecision> {
     () => getWithAuthentication(getEndpoint('/v1/me/nudge'), { context }),
     'nudge',
   );
+}
+
+export function postPaymentRateRedirect(): Promise<PaymentRateRedirect> {
+  return postWithAuthentication(getEndpoint('/v1/me/payment-rate-redirect'));
+}
+
+export function postPaymentRateRedirectDismissal(): Promise<void> {
+  return postWithAuthentication(getEndpoint('/v1/me/payment-rate-redirect/dismissal'));
 }
 
 export function getCapitalRowsWithToken(): Promise<CapitalRow[]> {
