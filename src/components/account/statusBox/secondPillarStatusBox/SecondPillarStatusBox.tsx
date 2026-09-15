@@ -111,7 +111,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
 
   const isFullyConvertedToTuleva = conversion.selectionComplete && conversion.transfersComplete;
 
-  if (!isFullyConvertedToTuleva && conversion.weightedAverageFee > 0.003) {
+  if (!isFullyConvertedToTuleva && conversion.weightedAverageFee >= 0.003) {
     return <HighFee {...rowProps} />;
   }
 
