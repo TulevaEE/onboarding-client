@@ -81,5 +81,14 @@ describe('DateFormatter functions', () => {
       expect(formatDateOn('2026-11-30')).toBe('November\u00a030');
       expect(formatDateUntil('2026-11-30')).toBe('November\u00a030');
     });
+
+    it('reads an instant as the calendar day it falls on in Estonia', () => {
+      moment.locale('et');
+
+      expect(formatDateOn('2026-11-30T21:59:59.999999999Z')).toBe('30.\u00a0novembril');
+      expect(formatDateOn('2026-11-30T22:30:00Z')).toBe('1.\u00a0detsembril');
+      expect(formatDateUntil('2026-11-30T22:30:00Z')).toBe('1.\u00a0detsembrini');
+      expect(formatDateFrom('2026-12-31T22:30:00Z')).toBe('1.\u00a0jaanuarist');
+    });
   });
 });
