@@ -19,8 +19,8 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
 
   const { data: user } = useMe();
   const history = useHistory();
-  const { state } = useLocation<{ nudge?: PaymentRateNudge } | undefined>();
-  const nudge = state?.nudge;
+  const { pathname, search, state } = useLocation<{ nudge?: PaymentRateNudge } | undefined>();
+  const [nudge] = useState(() => state?.nudge);
   const trackedView = useRef(false);
 
   useEffect(() => {
@@ -28,6 +28,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
       return;
     }
     trackedView.current = true;
+    history.replace({ pathname, search });
     trackNudgeEvent('NUDGE_VIEW', { context: 'PAYMENT_RATE_REDIRECT', ...nudge });
   }, [nudge]);
 
@@ -51,7 +52,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
 
   const dismissNudge = () => {
     postPaymentRateRedirectDismissal().catch(() => {});
-    history.push('/account');
+    history.replace('/account');
   };
 
   const signPaymentRate = (rate: PaymentRate) => {
