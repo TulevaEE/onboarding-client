@@ -30,7 +30,7 @@ export function useWebEidAuth() {
     mutationFn: () => authenticateWithIdCardWebEid(config.get('language') || 'et'),
     onSuccess: () => {
       const from = location.state?.from;
-      history.push(loginLanding(from));
+      history.replace(loginLanding(from));
     },
   });
 
