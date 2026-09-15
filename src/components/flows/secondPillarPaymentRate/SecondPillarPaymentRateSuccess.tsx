@@ -44,7 +44,7 @@ export const SecondPillarPaymentRateSuccess: React.FC = () => {
         </p>
 
         <a
-          className="btn btn-primary mt-5"
+          className="btn btn-outline-primary mt-5"
           href={`/account${config.get('language') === 'en' ? '?language=en' : ''}`}
         >
           <FormattedMessage id="secondPillarPaymentRateSuccess.accountLink" />
