@@ -4,7 +4,7 @@ import { postPaymentRateRedirect } from '../common/api';
 
 type LandingState = { justLoggedIn?: boolean } | undefined;
 
-export function usePaymentRateRedirect(): void {
+export function usePaymentRateRedirect(ready: boolean): void {
   const history = useHistory();
   const { pathname, search, state } = useLocation<LandingState>();
   const justLoggedIn = state?.justLoggedIn === true;
@@ -21,7 +21,7 @@ export function usePaymentRateRedirect(): void {
     const stillOnTheLanding =
       history.location.pathname === pathname &&
       (history.location.state as LandingState)?.justLoggedIn === true;
-    if (!justLoggedIn || !stillOnTheLanding) {
+    if (!ready || !justLoggedIn || !stillOnTheLanding) {
       return;
     }
     history.replace({ pathname, search });
@@ -32,5 +32,5 @@ export function usePaymentRateRedirect(): void {
         }
       })
       .catch(() => {});
-  }, [justLoggedIn]);
+  }, [ready, justLoggedIn]);
 }

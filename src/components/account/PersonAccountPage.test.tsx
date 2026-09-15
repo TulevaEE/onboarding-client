@@ -1,3 +1,4 @@
+import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { screen, waitFor } from '@testing-library/react';
 import { Route } from 'react-router-dom';
@@ -69,6 +70,31 @@ describe('landing on the account page right after logging in', () => {
 
     await waitFor(() => expect(requests.count()).toBe(1));
     expect(history.location.state).toBeUndefined();
+  });
+});
+
+describe('landing on the account page while an AML check is still due', () => {
+  test('lets the AML page take over without recording an exposure', async () => {
+    useTestBackendsExcept(server, ['paymentRateRedirect', 'amlChecks']);
+    server.use(
+      rest.get('http://localhost/v1/amlchecks', (req, res, ctx) =>
+        res(
+          ctx.delay(100),
+          ctx.json([{ type: 'RESIDENCY_MANUAL', success: false, createdTime: '2026-01-01' }]),
+        ),
+      ),
+    );
+    const requests = paymentRateRedirectBackend(server, {
+      redirect: true,
+      arm: 'TREATMENT',
+      seasonYear: 2026,
+    });
+    initializeComponent();
+
+    history.push('/account', { justLoggedIn: true });
+
+    await waitFor(() => expect(history.location.pathname).toBe('/aml'));
+    expect(requests.count()).toBe(0);
   });
 });
 
