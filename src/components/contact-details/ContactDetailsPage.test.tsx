@@ -159,4 +159,27 @@ describe('Contact details gatekeep', () => {
       expect(history.location.pathname).toMatch(new RegExp(path));
     },
   );
+
+  it('brings the nudge state back to the payment rate page after a mandatory update', async () => {
+    const contactDetailsLastUpdateDate = moment().subtract(2, 'years').toISOString();
+    userBackend(
+      server,
+      { contactDetailsLastUpdateDate },
+      { ...mockUser, contactDetailsLastUpdateDate, email: 'test@tuleva.ee' },
+    );
+    initializeComponent();
+    const nudge = { arm: 'TREATMENT', seasonYear: 2026 };
+
+    history.push('/2nd-pillar-payment-rate', { nudge });
+
+    expect(await screen.findByText('My details')).toBeInTheDocument();
+    const emailAddressInput = await screen.findByLabelText(/Email address/);
+    userEvent.clear(emailAddressInput);
+    userEvent.type(emailAddressInput, 'test@tuleva.ee');
+    userEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitForElementToBeRemoved(() => screen.queryByText('My details'));
+    expect(history.location.pathname).toBe('/2nd-pillar-payment-rate');
+    expect(history.location.state).toEqual({ nudge });
+  });
 });
