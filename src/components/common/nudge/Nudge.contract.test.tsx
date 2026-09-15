@@ -34,7 +34,7 @@ describe('Nudge decision contract', () => {
       new QueryClient({ defaultOptions: { queries: { retry: false } } }),
     );
 
-  it('covers the payment rate season payload', () => {
+  it('covers both payment rate season modes the server can send', () => {
     expect(decisions.filter(({ paymentRateSeason }) => paymentRateSeason)).toEqual([
       {
         key: 'SECOND_PILLAR_PAYMENT_RATE',
@@ -45,6 +45,15 @@ describe('Nudge decision contract', () => {
           mode: 'SEASON',
         },
       },
+      {
+        key: 'THIRD_PILLAR_START',
+        tag: 'nudge_third_pillar',
+        paymentRateSeason: {
+          deadline: '2026-11-30',
+          fulfillmentDate: '2027-01-01',
+          mode: 'LAST_DAYS',
+        },
+      },
     ]);
   });
 
@@ -52,7 +61,6 @@ describe('Nudge decision contract', () => {
     expect(decisions.map(({ key }) => key)).toEqual([
       'SECOND_PILLAR_TRANSFER',
       'SECOND_PILLAR_TRANSFER',
-      'SECOND_PILLAR_PAYMENT_RATE',
       'SECOND_PILLAR_PAYMENT_RATE',
       'THIRD_PILLAR_START',
       'THIRD_PILLAR_FEES',
@@ -62,6 +70,8 @@ describe('Nudge decision contract', () => {
       'SAVINGS_FUND_RECURRING',
       'MEMBERSHIP',
       'NONE',
+      'SECOND_PILLAR_PAYMENT_RATE',
+      'THIRD_PILLAR_START',
     ]);
   });
 
