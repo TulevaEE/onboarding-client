@@ -282,6 +282,10 @@ small {
   text-wrap: balance;
 }
 
+.text-pretty {
+  text-wrap: pretty;
+}
+
 .items-count-badge {
   min-width: $font-size-base * 0.75 + $spacer * 0.25 + $spacer * 0.25;
   margin-left: $spacer * 0.125;
