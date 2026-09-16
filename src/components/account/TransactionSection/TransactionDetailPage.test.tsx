@@ -7,11 +7,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { IntlProvider } from 'react-intl';
 
 import { TransactionDetailPage } from './TransactionDetailPage';
-import { fundsBackend } from '../../../test/backend';
+import { fundsBackend, userBackend } from '../../../test/backend';
 import { initializeConfiguration } from '../../config/config';
 import { getAuthentication } from '../../common/authenticationManager';
 import { anAuthenticationManager } from '../../common/authenticationManagerFixture';
 import { Transaction } from '../../common/apiModels';
+import translations from '../../translations';
 
 jest.mock('react-redux');
 
@@ -22,6 +23,7 @@ describe('TransactionDetailPage', () => {
     render(
       <IntlProvider
         locale="en"
+        messages={translations.en}
         onError={(err) => {
           if (err.code === 'MISSING_TRANSLATION') {
             return;
@@ -48,6 +50,7 @@ describe('TransactionDetailPage', () => {
     initializeConfiguration();
     getAuthentication().update(anAuthenticationManager());
     fundsBackend(server);
+    userBackend(server);
   });
 
   function mockTransactions(transactions: Transaction[]) {
@@ -68,6 +71,9 @@ describe('TransactionDetailPage', () => {
         amount: 500,
         currency: 'EUR',
         time: '2026-04-06T16:20:00Z',
+        priceDate: '2026-04-02',
+        applicationTime: null,
+        counterpartyIban: null,
         isin: 'EE3600001707',
         type: 'CONTRIBUTION_CASH',
         units: 407.465,
@@ -87,6 +93,9 @@ describe('TransactionDetailPage', () => {
         amount: 707.01,
         currency: 'EUR',
         time: '2026-04-14T14:57:11Z',
+        priceDate: '2026-04-11',
+        applicationTime: null,
+        counterpartyIban: null,
         isin: 'EE3600109435',
         type: 'CONTRIBUTION_CASH_WORKPLACE',
         units: 500.141,
@@ -106,6 +115,9 @@ describe('TransactionDetailPage', () => {
         amount: 100,
         currency: 'EUR',
         time: '2024-05-10T10:00:00Z',
+        priceDate: '2024-05-09',
+        applicationTime: null,
+        counterpartyIban: null,
         isin: 'EE3600019758',
         type: 'CONTRIBUTION_CASH_WORKPLACE',
         units: 68.155,
@@ -125,6 +137,9 @@ describe('TransactionDetailPage', () => {
         amount: 100,
         currency: 'EUR',
         time: '2024-05-10T10:00:00Z',
+        priceDate: '2024-05-09',
+        applicationTime: null,
+        counterpartyIban: null,
         isin: 'EE9999999999',
         type: 'CONTRIBUTION_CASH_WORKPLACE',
         units: 80,
@@ -144,6 +159,9 @@ describe('TransactionDetailPage', () => {
         amount: 2000,
         currency: 'EUR',
         time: '2026-02-02T14:56:21Z',
+        priceDate: '2026-02-01',
+        applicationTime: null,
+        counterpartyIban: null,
         isin: 'EE0000003283',
         type: 'CONTRIBUTION_CASH',
         units: 2000,
@@ -154,5 +172,107 @@ describe('TransactionDetailPage', () => {
     initializeComponent('tkf100-tx');
 
     expect(await screen.findByText(/1\.0000\s*€/)).toBeInTheDocument();
+  });
+
+  it('states everything an execution notice must state for a subscription', async () => {
+    mockTransactions([
+      {
+        id: 'tkf100-subscription',
+        amount: 2000,
+        currency: 'EUR',
+        time: '2026-02-05T14:00:00Z',
+        priceDate: '2026-02-04',
+        applicationTime: '2026-02-03T11:30:00Z',
+        counterpartyIban: 'EE651010220306497226',
+        isin: 'EE0000003283',
+        type: 'CONTRIBUTION_CASH',
+        units: 2000,
+        nav: 1,
+      },
+    ]);
+
+    initializeComponent('tkf100-subscription');
+
+    expect(
+      await screen.findByText(/Tuleva Fondid AS, Telliskivi\s*60\/1, 10412\s*Tallinn, Estonia/),
+    ).toBeInTheDocument();
+    expect(await screen.findByText('John Doe')).toBeInTheDocument();
+    expect(await screen.findByText(/February\s*3,\s*2026 at 13:30/)).toBeInTheDocument();
+    expect(
+      await screen.findByText(/Bank transfer from account EE651010220306497226/),
+    ).toBeInTheDocument();
+    expect(await screen.findByText(/February\s*4,\s*2026/)).toBeInTheDocument();
+    expect(await screen.findByText(/February\s*5,\s*2026/)).toBeInTheDocument();
+    expect(await screen.findByText(/^0\.00\s*€$/)).toBeInTheDocument();
+  });
+
+  it('states the application time as the clock time in Estonia', async () => {
+    mockTransactions([
+      {
+        id: 'tkf100-late-order',
+        amount: 2000,
+        currency: 'EUR',
+        time: '2026-02-05T14:00:00Z',
+        priceDate: '2026-02-04',
+        applicationTime: '2026-02-03T22:30:00Z',
+        counterpartyIban: 'EE651010220306497226',
+        isin: 'EE0000003283',
+        type: 'CONTRIBUTION_CASH',
+        units: 2000,
+        nav: 1,
+      },
+    ]);
+
+    initializeComponent('tkf100-late-order');
+
+    expect(await screen.findByText(/February\s*4,\s*2026 at 00:30/)).toBeInTheDocument();
+  });
+
+  it('shows the account a redemption was paid to', async () => {
+    mockTransactions([
+      {
+        id: 'tkf100-redemption',
+        amount: -500,
+        currency: 'EUR',
+        time: '2026-02-05T14:00:00Z',
+        priceDate: '2026-02-04',
+        applicationTime: '2026-02-03T11:30:00Z',
+        counterpartyIban: 'EE651010220306497226',
+        isin: 'EE0000003283',
+        type: 'SUBTRACTION',
+        units: 500,
+        nav: 1,
+      },
+    ]);
+
+    initializeComponent('tkf100-redemption');
+
+    expect(
+      await screen.findByText(/Bank transfer to account EE651010220306497226/),
+    ).toBeInTheDocument();
+  });
+
+  it('leaves the fund manager and the unit holder out of a pension fund transaction', async () => {
+    mockTransactions([
+      {
+        id: 'tuk75-tx',
+        amount: 707.01,
+        currency: 'EUR',
+        time: '2026-04-14T14:57:11Z',
+        priceDate: '2026-04-11',
+        applicationTime: null,
+        counterpartyIban: null,
+        isin: 'EE3600109435',
+        type: 'CONTRIBUTION_CASH_WORKPLACE',
+        units: 500.141,
+        nav: 1.431,
+      },
+    ]);
+
+    initializeComponent('tuk75-tx');
+
+    expect(await screen.findByText(/1\.43100\s*€/)).toBeInTheDocument();
+    expect(screen.queryByText(/Tuleva Fondid AS/)).not.toBeInTheDocument();
+    expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
   });
 });

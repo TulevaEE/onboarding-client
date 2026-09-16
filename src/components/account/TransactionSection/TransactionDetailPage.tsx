@@ -1,12 +1,12 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect, useParams } from 'react-router-dom';
-import { useFunds, useTransactions } from '../../common/apiHooks';
+import { useFunds, useMe, useTransactions } from '../../common/apiHooks';
 import { Euro } from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
-import { formatDateYear } from '../../common/dateFormatter';
+import { dayInTallinn, formatDateYear, timeInTallinn } from '../../common/dateFormatter';
 import { usePageTitle } from '../../common/usePageTitle';
-import { Fund } from '../../common/apiModels';
+import { Fund, User } from '../../common/apiModels';
 
 const NAV_SCALE_BY_ISIN: Record<string, number> = {
   EE3600109435: 5, // TUK75
@@ -49,14 +49,22 @@ function getBackPath(fund?: Fund): string {
   return '/account';
 }
 
+function unitHolderName(user?: User): string | null {
+  if (!user) {
+    return null;
+  }
+  return user.role?.name ?? `${user.firstName} ${user.lastName}`;
+}
+
 export const TransactionDetailPage: React.FunctionComponent = () => {
   usePageTitle('pageTitle.transactionDetail');
 
   const { id } = useParams<{ id: string }>();
   const { data: transactions, isLoading: transactionsLoading } = useTransactions();
   const { data: funds = [], isLoading: fundsLoading } = useFunds();
+  const { data: user, isLoading: userLoading } = useMe();
 
-  if (transactionsLoading || fundsLoading) {
+  if (transactionsLoading || fundsLoading || userLoading) {
     return (
       <section className="mt-5">
         <Shimmer height={200} />
@@ -71,6 +79,9 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
   }
 
   const fund = funds.find((f) => f.isin === transaction.isin);
+  const isSavingsFund = fund?.pillar === null;
+  const isRedemption = transaction.type === 'SUBTRACTION';
+  const holder = unitHolderName(user);
 
   return (
     <section className="mt-5">
@@ -83,10 +94,69 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
         </Link>
       </div>
       <dl className="row">
+        {isSavingsFund && (
+          <>
+            <dt className="col-sm-2">
+              <FormattedMessage id="transactions.detail.fundManager" />
+            </dt>
+            <dd className="col-sm-10">
+              <FormattedMessage id="transactions.detail.fundManager.value" />
+            </dd>
+          </>
+        )}
+
+        {isSavingsFund && holder && (
+          <>
+            <dt className="col-sm-2">
+              <FormattedMessage id="transactions.detail.unitHolder" />
+            </dt>
+            <dd className="col-sm-10">{holder}</dd>
+          </>
+        )}
+
+        {isSavingsFund && transaction.applicationTime && (
+          <>
+            <dt className="col-sm-2">
+              <FormattedMessage id="transactions.detail.applicationTime" />
+            </dt>
+            <dd className="col-sm-10">
+              <FormattedMessage
+                id="transactions.detail.applicationTime.value"
+                values={{
+                  date: formatDateYear(dayInTallinn(transaction.applicationTime)),
+                  time: timeInTallinn(transaction.applicationTime),
+                }}
+              />
+            </dd>
+          </>
+        )}
+
+        {isSavingsFund && (
+          <>
+            <dt className="col-sm-2">
+              <FormattedMessage id="transactions.detail.paymentMethod" />
+            </dt>
+            <dd className="col-sm-10">
+              {transaction.counterpartyIban ? (
+                <FormattedMessage
+                  id={
+                    isRedemption
+                      ? 'transactions.detail.paymentMethod.toAccount'
+                      : 'transactions.detail.paymentMethod.fromAccount'
+                  }
+                  values={{ iban: transaction.counterpartyIban }}
+                />
+              ) : (
+                <FormattedMessage id="transactions.detail.paymentMethod.bankTransfer" />
+              )}
+            </dd>
+          </>
+        )}
+
         <dt className="col-sm-2">
           <FormattedMessage id="transactions.detail.date" />
         </dt>
-        <dd className="col-sm-10">{formatDateYear(transaction.time)}</dd>
+        <dd className="col-sm-10">{formatDateYear(dayInTallinn(transaction.time))}</dd>
 
         <dt className="col-sm-2">
           <FormattedMessage id="transactions.detail.fund" />
@@ -97,7 +167,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
           <FormattedMessage id="transactions.detail.type" />
         </dt>
         <dd className="col-sm-10">
-          {transaction.type === 'SUBTRACTION' ? (
+          {isRedemption ? (
             <FormattedMessage id="transactions.detail.type.redemption" />
           ) : (
             <FormattedMessage id="transactions.detail.type.subscription" />
@@ -122,6 +192,15 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
           </>
         )}
 
+        {isSavingsFund && transaction.priceDate && (
+          <>
+            <dt className="col-sm-2">
+              <FormattedMessage id="transactions.detail.priceDate" />
+            </dt>
+            <dd className="col-sm-10">{formatDateYear(transaction.priceDate)}</dd>
+          </>
+        )}
+
         {transaction.units != null && (
           <>
             <dt className="col-sm-2">
@@ -129,6 +208,17 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
             </dt>
             <dd className="col-sm-10">
               {transaction.units.toFixed(unitScaleFor(transaction.units))}
+            </dd>
+          </>
+        )}
+
+        {isSavingsFund && (
+          <>
+            <dt className="col-sm-2">
+              <FormattedMessage id="transactions.detail.fees" />
+            </dt>
+            <dd className="col-sm-10">
+              <Euro amount={0} />
             </dd>
           </>
         )}
