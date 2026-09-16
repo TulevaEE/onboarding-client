@@ -7,6 +7,7 @@ import { Shimmer } from '../../common/shimmer/Shimmer';
 import { dayInTallinn, formatDateYear, timeInTallinn } from '../../common/dateFormatter';
 import { usePageTitle } from '../../common/usePageTitle';
 import { Fund, User } from '../../common/apiModels';
+import { getBankName } from '../../common/iban';
 
 const NAV_SCALE_BY_ISIN: Record<string, number> = {
   EE3600109435: 5, // TUK75
@@ -82,6 +83,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
   const isSavingsFund = fund?.pillar === null;
   const isRedemption = transaction.type === 'SUBTRACTION';
   const holder = unitHolderName(user);
+  const bankName = transaction.counterpartyIban && getBankName(transaction.counterpartyIban);
 
   return (
     <section className="mt-5">
@@ -179,14 +181,17 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
             </dt>
             <dd className="col-sm-8">
               {transaction.counterpartyIban ? (
-                <FormattedMessage
-                  id={
-                    isRedemption
-                      ? 'transactions.detail.paymentMethod.toAccount'
-                      : 'transactions.detail.paymentMethod.fromAccount'
-                  }
-                  values={{ iban: transaction.counterpartyIban }}
-                />
+                <>
+                  <FormattedMessage
+                    id={
+                      isRedemption
+                        ? 'transactions.detail.paymentMethod.toAccount'
+                        : 'transactions.detail.paymentMethod.fromAccount'
+                    }
+                    values={{ iban: transaction.counterpartyIban }}
+                  />
+                  {bankName && <div className="text-secondary">{bankName}</div>}
+                </>
               ) : (
                 <FormattedMessage id="transactions.detail.paymentMethod.bankTransfer" />
               )}

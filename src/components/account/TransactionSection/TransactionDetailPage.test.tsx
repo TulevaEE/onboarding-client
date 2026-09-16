@@ -1,7 +1,7 @@
 import React from 'react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { IntlProvider } from 'react-intl';
@@ -53,9 +53,13 @@ describe('TransactionDetailPage', () => {
     userBackend(server);
   });
 
-  function valueOf(label: string) {
+  function definitionOf(label: string) {
     const labels = screen.getAllByRole('term').map((term) => term.textContent);
-    return screen.getAllByRole('definition')[labels.indexOf(label)].textContent;
+    return screen.getAllByRole('definition')[labels.indexOf(label)];
+  }
+
+  function valueOf(label: string) {
+    return definitionOf(label).textContent;
   }
 
   function mockTransactions(transactions: Transaction[]) {
@@ -210,8 +214,9 @@ describe('TransactionDetailPage', () => {
     expect(await screen.findByText('John Doe')).toBeInTheDocument();
     expect(await screen.findByText(/February\s*3,\s*2026 at 13:30/)).toBeInTheDocument();
     expect(
-      await screen.findByText(/Bank transfer from account\sEE651010220306497226$/),
+      await screen.findByText(/^Bank transfer from account\sEE651010220306497226$/),
     ).toBeInTheDocument();
+    expect(within(definitionOf('Payment method')).getByText('SEB')).toBeInTheDocument();
     expect(valueOf('Price calculation date')).toMatch(/^February\s5,\s2026$/);
     expect(valueOf('Execution date')).toMatch(/^February\s5,\s2026$/);
     expect(await screen.findByText(/^0\.00\s*€$/)).toBeInTheDocument();
@@ -248,7 +253,7 @@ describe('TransactionDetailPage', () => {
       'Application received',
       'Execution date',
       'Payment method',
-      'Subscription and redemption\u00a0fees',
+      'Subscription and redemption fees',
       'Unit holder',
       'Fund manager',
     ]);
@@ -329,8 +334,33 @@ describe('TransactionDetailPage', () => {
     initializeComponent('tkf100-redemption');
 
     expect(
-      await screen.findByText(/Bank transfer to account\sEE651010220306497226$/),
+      await screen.findByText(/^Bank transfer to account\sEE651010220306497226$/),
     ).toBeInTheDocument();
+    expect(within(definitionOf('Payment method')).getByText('SEB')).toBeInTheDocument();
+  });
+
+  it('names no bank for an account whose bank it cannot tell', async () => {
+    mockTransactions([
+      {
+        id: 'tkf100-foreign-account',
+        amount: 2000,
+        currency: 'EUR',
+        time: '2026-02-05T14:00:00Z',
+        navDate: '2026-02-04',
+        priceCalculationDate: '2026-02-05',
+        applicationTime: '2026-02-03T11:30:00Z',
+        counterpartyIban: 'FI2112345600000785',
+        isin: 'EE0000003283',
+        type: 'CONTRIBUTION_CASH',
+        units: 2000,
+        nav: 1,
+      },
+    ]);
+
+    initializeComponent('tkf100-foreign-account');
+
+    expect(await screen.findByText(/FI2112345600000785/)).toBeInTheDocument();
+    expect(valueOf('Payment method')).toMatch(/^Bank transfer from account\sFI2112345600000785$/);
   });
 
   it('leaves the fund manager and the unit holder out of a pension fund transaction', async () => {
