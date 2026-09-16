@@ -49,10 +49,6 @@ function getBackPath(fund?: Fund): string {
   return '/account';
 }
 
-function groupedIban(iban: string): string {
-  return iban.replace(/(.{4})(?=.)/g, '$1\u00A0');
-}
-
 function unitHolderName(user?: User): string | null {
   if (!user) {
     return null;
@@ -189,7 +185,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
                       ? 'transactions.detail.paymentMethod.toAccount'
                       : 'transactions.detail.paymentMethod.fromAccount'
                   }
-                  values={{ iban: groupedIban(transaction.counterpartyIban) }}
+                  values={{ iban: transaction.counterpartyIban }}
                 />
               ) : (
                 <FormattedMessage id="transactions.detail.paymentMethod.bankTransfer" />
