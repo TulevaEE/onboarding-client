@@ -98,23 +98,57 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
         </Link>
       </div>
       <dl className="row text-pretty">
-        {isSavingsFund && (
+        <dt className="col-sm-4 mb-sm-2 text-balance">
+          <FormattedMessage id="transactions.detail.type" />
+        </dt>
+        <dd className="col-sm-8">
+          {isRedemption ? (
+            <FormattedMessage id="transactions.detail.type.redemption" />
+          ) : (
+            <FormattedMessage id="transactions.detail.type.subscription" />
+          )}
+        </dd>
+
+        <dt className="col-sm-4 mb-sm-2 text-balance">
+          <FormattedMessage id="transactions.detail.fund" />
+        </dt>
+        <dd className="col-sm-8">{fund?.name ?? transaction.isin}</dd>
+
+        <dt className="col-sm-4 mb-sm-2 text-balance">
+          <FormattedMessage id="transactions.detail.amount" />
+        </dt>
+        <dd className="col-sm-8">
+          <Euro amount={transaction.amount} />
+        </dd>
+
+        {transaction.units != null && (
           <>
             <dt className="col-sm-4 mb-sm-2 text-balance">
-              <FormattedMessage id="transactions.detail.fundManager" />
+              <FormattedMessage id="transactions.detail.units" />
             </dt>
             <dd className="col-sm-8">
-              <FormattedMessage id="transactions.detail.fundManager.value" />
+              {transaction.units.toFixed(unitScaleFor(transaction.units))}
             </dd>
           </>
         )}
 
-        {isSavingsFund && holder && (
+        {transaction.nav != null && (
           <>
             <dt className="col-sm-4 mb-sm-2 text-balance">
-              <FormattedMessage id="transactions.detail.unitHolder" />
+              <FormattedMessage id="transactions.detail.nav" />
             </dt>
-            <dd className="col-sm-8">{holder}</dd>
+            <dd className="col-sm-8">
+              <Euro amount={transaction.nav} fractionDigits={navScaleFor(transaction)} />
+            </dd>
+          </>
+        )}
+
+        {isSavingsFund && transaction.priceDate && (
+          <>
+            <dt className="col-sm-4 mb-sm-2 text-balance">
+              <FormattedMessage id="transactions.detail.priceDate" />
+            </dt>
+            <dd className="col-sm-8">{formatDateYear(transaction.priceDate)}</dd>
           </>
         )}
 
@@ -134,6 +168,11 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
             </dd>
           </>
         )}
+
+        <dt className="col-sm-4 mb-sm-2 text-balance">
+          <FormattedMessage id="transactions.detail.date" />
+        </dt>
+        <dd className="col-sm-8">{formatDateYear(dayInTallinn(transaction.time))}</dd>
 
         {isSavingsFund && (
           <>
@@ -157,65 +196,6 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
           </>
         )}
 
-        <dt className="col-sm-4 mb-sm-2 text-balance">
-          <FormattedMessage id="transactions.detail.date" />
-        </dt>
-        <dd className="col-sm-8">{formatDateYear(dayInTallinn(transaction.time))}</dd>
-
-        <dt className="col-sm-4 mb-sm-2 text-balance">
-          <FormattedMessage id="transactions.detail.fund" />
-        </dt>
-        <dd className="col-sm-8">{fund?.name ?? transaction.isin}</dd>
-
-        <dt className="col-sm-4 mb-sm-2 text-balance">
-          <FormattedMessage id="transactions.detail.type" />
-        </dt>
-        <dd className="col-sm-8">
-          {isRedemption ? (
-            <FormattedMessage id="transactions.detail.type.redemption" />
-          ) : (
-            <FormattedMessage id="transactions.detail.type.subscription" />
-          )}
-        </dd>
-
-        <dt className="col-sm-4 mb-sm-2 text-balance">
-          <FormattedMessage id="transactions.detail.amount" />
-        </dt>
-        <dd className="col-sm-8">
-          <Euro amount={transaction.amount} />
-        </dd>
-
-        {transaction.nav != null && (
-          <>
-            <dt className="col-sm-4 mb-sm-2 text-balance">
-              <FormattedMessage id="transactions.detail.nav" />
-            </dt>
-            <dd className="col-sm-8">
-              <Euro amount={transaction.nav} fractionDigits={navScaleFor(transaction)} />
-            </dd>
-          </>
-        )}
-
-        {isSavingsFund && transaction.priceDate && (
-          <>
-            <dt className="col-sm-4 mb-sm-2 text-balance">
-              <FormattedMessage id="transactions.detail.priceDate" />
-            </dt>
-            <dd className="col-sm-8">{formatDateYear(transaction.priceDate)}</dd>
-          </>
-        )}
-
-        {transaction.units != null && (
-          <>
-            <dt className="col-sm-4 mb-sm-2 text-balance">
-              <FormattedMessage id="transactions.detail.units" />
-            </dt>
-            <dd className="col-sm-8">
-              {transaction.units.toFixed(unitScaleFor(transaction.units))}
-            </dd>
-          </>
-        )}
-
         {isSavingsFund && (
           <>
             <dt className="col-sm-4 mb-sm-2 text-balance">
@@ -223,6 +203,26 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
             </dt>
             <dd className="col-sm-8">
               <Euro amount={0} />
+            </dd>
+          </>
+        )}
+
+        {isSavingsFund && holder && (
+          <>
+            <dt className="col-sm-4 mb-sm-2 text-balance">
+              <FormattedMessage id="transactions.detail.unitHolder" />
+            </dt>
+            <dd className="col-sm-8">{holder}</dd>
+          </>
+        )}
+
+        {isSavingsFund && (
+          <>
+            <dt className="col-sm-4 mb-sm-2 text-balance">
+              <FormattedMessage id="transactions.detail.fundManager" />
+            </dt>
+            <dd className="col-sm-8">
+              <FormattedMessage id="transactions.detail.fundManager.value" />
             </dd>
           </>
         )}

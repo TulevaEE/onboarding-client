@@ -206,6 +206,72 @@ describe('TransactionDetailPage', () => {
     expect(await screen.findByText(/^0\.00\s*€$/)).toBeInTheDocument();
   });
 
+  it('orders a savings fund notice from what happened to who was involved', async () => {
+    mockTransactions([
+      {
+        id: 'tkf100-ordered',
+        amount: 2000,
+        currency: 'EUR',
+        time: '2026-02-05T14:00:00Z',
+        priceDate: '2026-02-04',
+        applicationTime: '2026-02-03T11:30:00Z',
+        counterpartyIban: 'EE651010220306497226',
+        isin: 'EE0000003283',
+        type: 'CONTRIBUTION_CASH',
+        units: 2000,
+        nav: 1,
+      },
+    ]);
+
+    initializeComponent('tkf100-ordered');
+
+    expect(await screen.findByText('John Doe')).toBeInTheDocument();
+    expect(screen.getAllByRole('term').map((term) => term.textContent)).toEqual([
+      'Type',
+      'Fund',
+      'Amount',
+      'Units',
+      'Unit price (NAV)',
+      'Price calculation date',
+      'Application received',
+      'Date',
+      'Payment method',
+      'Subscription and redemption\u00a0fees',
+      'Unit holder',
+      'Fund manager',
+    ]);
+  });
+
+  it('keeps a pension fund transaction in the same relative order', async () => {
+    mockTransactions([
+      {
+        id: 'tuk75-ordered',
+        amount: 707.01,
+        currency: 'EUR',
+        time: '2026-04-14T14:57:11Z',
+        priceDate: '2026-04-11',
+        applicationTime: null,
+        counterpartyIban: null,
+        isin: 'EE3600109435',
+        type: 'CONTRIBUTION_CASH_WORKPLACE',
+        units: 500.141,
+        nav: 1.431,
+      },
+    ]);
+
+    initializeComponent('tuk75-ordered');
+
+    expect(await screen.findByText(/1\.43100\s*€/)).toBeInTheDocument();
+    expect(screen.getAllByRole('term').map((term) => term.textContent)).toEqual([
+      'Type',
+      'Fund',
+      'Amount',
+      'Units',
+      'Unit price (NAV)',
+      'Date',
+    ]);
+  });
+
   it('states the application time as the clock time in Estonia', async () => {
     mockTransactions([
       {
