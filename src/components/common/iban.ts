@@ -90,15 +90,24 @@ const IBAN_CODE_LENGTHS = {
   HN: 28,
 };
 
-const ESTONIAN_IBAN_CHECK_CODE_TO_BANK_NAME = {
-  42: 'Coop Pank',
-  10: 'SEB',
-  22: 'Swedbank',
-  96: 'Luminor',
-  17: 'Luminor',
-  77: 'LHV',
-  75: 'Bigbank',
-  12: 'Citadele',
+type BankCodes = { codeLength: number; bankNames: Record<string, string> };
+
+const BANK_CODES_BY_COUNTRY: Partial<Record<keyof typeof IBAN_CODE_LENGTHS, BankCodes>> = {
+  EE: {
+    codeLength: 2,
+    bankNames: {
+      '42': 'Coop Pank',
+      '10': 'SEB',
+      '22': 'Swedbank',
+      '96': 'Luminor',
+      '17': 'Luminor',
+      '77': 'LHV',
+      '75': 'Bigbank',
+      '12': 'Citadele',
+    },
+  },
+  BE: { codeLength: 3, bankNames: { '967': 'Wise' } },
+  LT: { codeLength: 5, bankNames: { '32500': 'Revolut', '35000': 'Paysera' } },
 };
 
 export const getBankName = (iban: string): string | null => {
@@ -107,16 +116,15 @@ export const getBankName = (iban: string): string | null => {
   }
 
   const country = getIbanCountry(iban);
+  const bankCodes = country ? BANK_CODES_BY_COUNTRY[country] : undefined;
 
-  if (country !== 'EE') {
+  if (!bankCodes) {
     return null;
   }
 
-  const checkDigits = Number(
-    preProcessIban(iban).substring(4, 6),
-  ) as keyof typeof ESTONIAN_IBAN_CHECK_CODE_TO_BANK_NAME;
+  const bankCode = preProcessIban(iban).substring(4, 4 + bankCodes.codeLength);
 
-  return ESTONIAN_IBAN_CHECK_CODE_TO_BANK_NAME[checkDigits] ?? null;
+  return bankCodes.bankNames[bankCode] ?? null;
 };
 
 export const preProcessIban = (iban: string) => iban.trim().replace(/\s/g, '').toUpperCase();
