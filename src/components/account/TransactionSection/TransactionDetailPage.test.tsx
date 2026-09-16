@@ -199,7 +199,7 @@ describe('TransactionDetailPage', () => {
     expect(await screen.findByText('John Doe')).toBeInTheDocument();
     expect(await screen.findByText(/February\s*3,\s*2026 at 13:30/)).toBeInTheDocument();
     expect(
-      await screen.findByText(/Bank transfer from account EE651010220306497226/),
+      await screen.findByText(/Bank transfer from account EE65\s1010\s2203\s0649\s7226/),
     ).toBeInTheDocument();
     expect(await screen.findByText(/February\s*4,\s*2026/)).toBeInTheDocument();
     expect(await screen.findByText(/February\s*5,\s*2026/)).toBeInTheDocument();
@@ -248,7 +248,7 @@ describe('TransactionDetailPage', () => {
     initializeComponent('tkf100-redemption');
 
     expect(
-      await screen.findByText(/Bank transfer to account EE651010220306497226/),
+      await screen.findByText(/Bank transfer to account EE65\s1010\s2203\s0649\s7226/),
     ).toBeInTheDocument();
   });
 

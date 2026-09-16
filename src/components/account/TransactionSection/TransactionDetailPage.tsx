@@ -49,6 +49,10 @@ function getBackPath(fund?: Fund): string {
   return '/account';
 }
 
+function groupedIban(iban: string): string {
+  return iban.replace(/(.{4})(?=.)/g, '$1\u00A0');
+}
+
 function unitHolderName(user?: User): string | null {
   if (!user) {
     return null;
@@ -96,10 +100,10 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
       <dl className="row">
         {isSavingsFund && (
           <>
-            <dt className="col-sm-2">
+            <dt className="col-sm-4 mb-sm-2">
               <FormattedMessage id="transactions.detail.fundManager" />
             </dt>
-            <dd className="col-sm-10">
+            <dd className="col-sm-8">
               <FormattedMessage id="transactions.detail.fundManager.value" />
             </dd>
           </>
@@ -107,19 +111,19 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
 
         {isSavingsFund && holder && (
           <>
-            <dt className="col-sm-2">
+            <dt className="col-sm-4 mb-sm-2">
               <FormattedMessage id="transactions.detail.unitHolder" />
             </dt>
-            <dd className="col-sm-10">{holder}</dd>
+            <dd className="col-sm-8">{holder}</dd>
           </>
         )}
 
         {isSavingsFund && transaction.applicationTime && (
           <>
-            <dt className="col-sm-2">
+            <dt className="col-sm-4 mb-sm-2">
               <FormattedMessage id="transactions.detail.applicationTime" />
             </dt>
-            <dd className="col-sm-10">
+            <dd className="col-sm-8">
               <FormattedMessage
                 id="transactions.detail.applicationTime.value"
                 values={{
@@ -133,10 +137,10 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
 
         {isSavingsFund && (
           <>
-            <dt className="col-sm-2">
+            <dt className="col-sm-4 mb-sm-2">
               <FormattedMessage id="transactions.detail.paymentMethod" />
             </dt>
-            <dd className="col-sm-10">
+            <dd className="col-sm-8">
               {transaction.counterpartyIban ? (
                 <FormattedMessage
                   id={
@@ -144,7 +148,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
                       ? 'transactions.detail.paymentMethod.toAccount'
                       : 'transactions.detail.paymentMethod.fromAccount'
                   }
-                  values={{ iban: transaction.counterpartyIban }}
+                  values={{ iban: groupedIban(transaction.counterpartyIban) }}
                 />
               ) : (
                 <FormattedMessage id="transactions.detail.paymentMethod.bankTransfer" />
@@ -153,20 +157,20 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
           </>
         )}
 
-        <dt className="col-sm-2">
+        <dt className="col-sm-4 mb-sm-2">
           <FormattedMessage id="transactions.detail.date" />
         </dt>
-        <dd className="col-sm-10">{formatDateYear(dayInTallinn(transaction.time))}</dd>
+        <dd className="col-sm-8">{formatDateYear(dayInTallinn(transaction.time))}</dd>
 
-        <dt className="col-sm-2">
+        <dt className="col-sm-4 mb-sm-2">
           <FormattedMessage id="transactions.detail.fund" />
         </dt>
-        <dd className="col-sm-10">{fund?.name ?? transaction.isin}</dd>
+        <dd className="col-sm-8">{fund?.name ?? transaction.isin}</dd>
 
-        <dt className="col-sm-2">
+        <dt className="col-sm-4 mb-sm-2">
           <FormattedMessage id="transactions.detail.type" />
         </dt>
-        <dd className="col-sm-10">
+        <dd className="col-sm-8">
           {isRedemption ? (
             <FormattedMessage id="transactions.detail.type.redemption" />
           ) : (
@@ -174,19 +178,19 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
           )}
         </dd>
 
-        <dt className="col-sm-2">
+        <dt className="col-sm-4 mb-sm-2">
           <FormattedMessage id="transactions.detail.amount" />
         </dt>
-        <dd className="col-sm-10">
+        <dd className="col-sm-8">
           <Euro amount={transaction.amount} />
         </dd>
 
         {transaction.nav != null && (
           <>
-            <dt className="col-sm-2">
+            <dt className="col-sm-4 mb-sm-2">
               <FormattedMessage id="transactions.detail.nav" />
             </dt>
-            <dd className="col-sm-10">
+            <dd className="col-sm-8">
               <Euro amount={transaction.nav} fractionDigits={navScaleFor(transaction)} />
             </dd>
           </>
@@ -194,19 +198,19 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
 
         {isSavingsFund && transaction.priceDate && (
           <>
-            <dt className="col-sm-2">
+            <dt className="col-sm-4 mb-sm-2">
               <FormattedMessage id="transactions.detail.priceDate" />
             </dt>
-            <dd className="col-sm-10">{formatDateYear(transaction.priceDate)}</dd>
+            <dd className="col-sm-8">{formatDateYear(transaction.priceDate)}</dd>
           </>
         )}
 
         {transaction.units != null && (
           <>
-            <dt className="col-sm-2">
+            <dt className="col-sm-4 mb-sm-2">
               <FormattedMessage id="transactions.detail.units" />
             </dt>
-            <dd className="col-sm-10">
+            <dd className="col-sm-8">
               {transaction.units.toFixed(unitScaleFor(transaction.units))}
             </dd>
           </>
@@ -214,10 +218,10 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
 
         {isSavingsFund && (
           <>
-            <dt className="col-sm-2">
+            <dt className="col-sm-4 mb-sm-2">
               <FormattedMessage id="transactions.detail.fees" />
             </dt>
-            <dd className="col-sm-10">
+            <dd className="col-sm-8">
               <Euro amount={0} />
             </dd>
           </>
