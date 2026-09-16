@@ -481,6 +481,9 @@ export interface Transaction {
   amount: number;
   currency: Currency;
   time: string;
+  priceDate: string;
+  applicationTime: string | null;
+  counterpartyIban: string | null;
   isin: string;
   type: TransactionType;
   units: number;

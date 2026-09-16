@@ -5,6 +5,7 @@ import {
   formatDateRange,
   formatDateUntil,
   formatDateYear,
+  timeInTallinn,
 } from './dateFormatter';
 
 describe('DateFormatter functions', () => {
@@ -89,6 +90,14 @@ describe('DateFormatter functions', () => {
       expect(formatDateOn('2026-11-30T22:30:00Z')).toBe('1.\u00a0detsembril');
       expect(formatDateUntil('2026-11-30T22:30:00Z')).toBe('1.\u00a0detsembrini');
       expect(formatDateFrom('2026-12-31T22:30:00Z')).toBe('1.\u00a0jaanuarist');
+    });
+  });
+
+  describe('timeInTallinn', () => {
+    it('reads an instant as the clock time in Estonia', () => {
+      expect(timeInTallinn('2026-02-03T11:30:00Z')).toBe('13:30');
+      expect(timeInTallinn('2026-07-03T11:30:00Z')).toBe('14:30');
+      expect(timeInTallinn('2026-02-03T22:30:00Z')).toBe('00:30');
     });
   });
 });

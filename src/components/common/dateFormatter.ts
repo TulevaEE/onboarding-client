@@ -113,6 +113,17 @@ function tallinnDayParts(time: string): { year: string; month: string; day: stri
   return { year: valueOf('year'), month: valueOf('month'), day: valueOf('day') };
 }
 
+const TALLINN_TIME_FORMAT = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Europe/Tallinn',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+});
+
+export function timeInTallinn(time: string): string {
+  return TALLINN_TIME_FORMAT.format(new Date(time));
+}
+
 export function dayInTallinn(time: string): string {
   const { year, month, day } = tallinnDayParts(time);
   return `${year}-${month}-${day}`;

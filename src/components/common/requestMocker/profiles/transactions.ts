@@ -3,6 +3,8 @@ import { Transaction } from '../../apiModels';
 
 const SAVINGS_FUND_ISIN = 'EE0000003283';
 
+const previousDay = (time: string) => moment(time).subtract(1, 'day').format('YYYY-MM-DD');
+
 const yearsAgo = (years: number, month: number, day: number) =>
   moment().subtract(years, 'year').month(month).date(day).startOf('day').toISOString();
 
@@ -17,6 +19,9 @@ const savingsFundTransaction = (
   amount: Number((units * nav).toFixed(2)),
   currency: 'EUR',
   time,
+  priceDate: previousDay(time),
+  applicationTime: moment(time).subtract(1, 'day').toISOString(),
+  counterpartyIban: 'EE651010220306497226',
   isin: SAVINGS_FUND_ISIN,
   type,
   units,
@@ -30,6 +35,9 @@ export const transactionsProfiles: Record<string, Transaction[]> = {
       amount: 500,
       currency: 'EUR',
       time: moment().subtract(1, 'week').toISOString(),
+      priceDate: moment().subtract(1, 'week').subtract(1, 'day').format('YYYY-MM-DD'),
+      applicationTime: moment().subtract(1, 'week').subtract(1, 'day').toISOString(),
+      counterpartyIban: 'EE651010220306497226',
       isin: 'EE0000003283',
       type: 'CONTRIBUTION_CASH',
       units: 446.4,
@@ -40,6 +48,9 @@ export const transactionsProfiles: Record<string, Transaction[]> = {
       amount: 250,
       currency: 'EUR',
       time: moment().subtract(1, 'month').toISOString(),
+      priceDate: moment().subtract(1, 'month').subtract(1, 'day').format('YYYY-MM-DD'),
+      applicationTime: moment().subtract(1, 'month').subtract(1, 'day').toISOString(),
+      counterpartyIban: 'EE651010220306497226',
       isin: 'EE0000003283',
       type: 'CONTRIBUTION_CASH',
       units: 225.2,
