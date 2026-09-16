@@ -97,10 +97,10 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
           <FormattedMessage id="transactions.detail.back" />
         </Link>
       </div>
-      <dl className="row">
+      <dl className="row text-pretty">
         {isSavingsFund && (
           <>
-            <dt className="col-sm-4 mb-sm-2">
+            <dt className="col-sm-4 mb-sm-2 text-balance">
               <FormattedMessage id="transactions.detail.fundManager" />
             </dt>
             <dd className="col-sm-8">
@@ -111,7 +111,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
 
         {isSavingsFund && holder && (
           <>
-            <dt className="col-sm-4 mb-sm-2">
+            <dt className="col-sm-4 mb-sm-2 text-balance">
               <FormattedMessage id="transactions.detail.unitHolder" />
             </dt>
             <dd className="col-sm-8">{holder}</dd>
@@ -120,7 +120,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
 
         {isSavingsFund && transaction.applicationTime && (
           <>
-            <dt className="col-sm-4 mb-sm-2">
+            <dt className="col-sm-4 mb-sm-2 text-balance">
               <FormattedMessage id="transactions.detail.applicationTime" />
             </dt>
             <dd className="col-sm-8">
@@ -137,7 +137,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
 
         {isSavingsFund && (
           <>
-            <dt className="col-sm-4 mb-sm-2">
+            <dt className="col-sm-4 mb-sm-2 text-balance">
               <FormattedMessage id="transactions.detail.paymentMethod" />
             </dt>
             <dd className="col-sm-8">
@@ -157,17 +157,17 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
           </>
         )}
 
-        <dt className="col-sm-4 mb-sm-2">
+        <dt className="col-sm-4 mb-sm-2 text-balance">
           <FormattedMessage id="transactions.detail.date" />
         </dt>
         <dd className="col-sm-8">{formatDateYear(dayInTallinn(transaction.time))}</dd>
 
-        <dt className="col-sm-4 mb-sm-2">
+        <dt className="col-sm-4 mb-sm-2 text-balance">
           <FormattedMessage id="transactions.detail.fund" />
         </dt>
         <dd className="col-sm-8">{fund?.name ?? transaction.isin}</dd>
 
-        <dt className="col-sm-4 mb-sm-2">
+        <dt className="col-sm-4 mb-sm-2 text-balance">
           <FormattedMessage id="transactions.detail.type" />
         </dt>
         <dd className="col-sm-8">
@@ -178,7 +178,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
           )}
         </dd>
 
-        <dt className="col-sm-4 mb-sm-2">
+        <dt className="col-sm-4 mb-sm-2 text-balance">
           <FormattedMessage id="transactions.detail.amount" />
         </dt>
         <dd className="col-sm-8">
@@ -187,7 +187,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
 
         {transaction.nav != null && (
           <>
-            <dt className="col-sm-4 mb-sm-2">
+            <dt className="col-sm-4 mb-sm-2 text-balance">
               <FormattedMessage id="transactions.detail.nav" />
             </dt>
             <dd className="col-sm-8">
@@ -198,7 +198,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
 
         {isSavingsFund && transaction.priceDate && (
           <>
-            <dt className="col-sm-4 mb-sm-2">
+            <dt className="col-sm-4 mb-sm-2 text-balance">
               <FormattedMessage id="transactions.detail.priceDate" />
             </dt>
             <dd className="col-sm-8">{formatDateYear(transaction.priceDate)}</dd>
@@ -207,7 +207,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
 
         {transaction.units != null && (
           <>
-            <dt className="col-sm-4 mb-sm-2">
+            <dt className="col-sm-4 mb-sm-2 text-balance">
               <FormattedMessage id="transactions.detail.units" />
             </dt>
             <dd className="col-sm-8">
@@ -218,7 +218,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
 
         {isSavingsFund && (
           <>
-            <dt className="col-sm-4 mb-sm-2">
+            <dt className="col-sm-4 mb-sm-2 text-balance">
               <FormattedMessage id="transactions.detail.fees" />
             </dt>
             <dd className="col-sm-8">
