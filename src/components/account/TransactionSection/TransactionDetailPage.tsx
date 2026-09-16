@@ -143,12 +143,12 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
           </>
         )}
 
-        {isSavingsFund && transaction.priceDate && (
+        {isSavingsFund && transaction.priceCalculationDate && (
           <>
             <dt className="col-sm-4 mb-sm-2 text-balance">
-              <FormattedMessage id="transactions.detail.priceDate" />
+              <FormattedMessage id="transactions.detail.priceCalculationDate" />
             </dt>
-            <dd className="col-sm-8">{formatDateYear(transaction.priceDate)}</dd>
+            <dd className="col-sm-8">{formatDateYear(transaction.priceCalculationDate)}</dd>
           </>
         )}
 
@@ -170,7 +170,9 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
         )}
 
         <dt className="col-sm-4 mb-sm-2 text-balance">
-          <FormattedMessage id="transactions.detail.date" />
+          <FormattedMessage
+            id={isSavingsFund ? 'transactions.detail.executionDate' : 'transactions.detail.date'}
+          />
         </dt>
         <dd className="col-sm-8">{formatDateYear(dayInTallinn(transaction.time))}</dd>
 

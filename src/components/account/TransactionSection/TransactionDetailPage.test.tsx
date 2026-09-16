@@ -53,6 +53,11 @@ describe('TransactionDetailPage', () => {
     userBackend(server);
   });
 
+  function valueOf(label: string) {
+    const labels = screen.getAllByRole('term').map((term) => term.textContent);
+    return screen.getAllByRole('definition')[labels.indexOf(label)].textContent;
+  }
+
   function mockTransactions(transactions: Transaction[]) {
     server.use(
       rest.get('http://localhost/v1/transactions', (req, res, ctx) => {
@@ -71,7 +76,8 @@ describe('TransactionDetailPage', () => {
         amount: 500,
         currency: 'EUR',
         time: '2026-04-06T16:20:00Z',
-        priceDate: '2026-04-02',
+        navDate: '2026-04-02',
+        priceCalculationDate: null,
         applicationTime: null,
         counterpartyIban: null,
         isin: 'EE3600001707',
@@ -93,7 +99,8 @@ describe('TransactionDetailPage', () => {
         amount: 707.01,
         currency: 'EUR',
         time: '2026-04-14T14:57:11Z',
-        priceDate: '2026-04-11',
+        navDate: '2026-04-11',
+        priceCalculationDate: null,
         applicationTime: null,
         counterpartyIban: null,
         isin: 'EE3600109435',
@@ -115,7 +122,8 @@ describe('TransactionDetailPage', () => {
         amount: 100,
         currency: 'EUR',
         time: '2024-05-10T10:00:00Z',
-        priceDate: '2024-05-09',
+        navDate: '2024-05-09',
+        priceCalculationDate: null,
         applicationTime: null,
         counterpartyIban: null,
         isin: 'EE3600019758',
@@ -137,7 +145,8 @@ describe('TransactionDetailPage', () => {
         amount: 100,
         currency: 'EUR',
         time: '2024-05-10T10:00:00Z',
-        priceDate: '2024-05-09',
+        navDate: '2024-05-09',
+        priceCalculationDate: null,
         applicationTime: null,
         counterpartyIban: null,
         isin: 'EE9999999999',
@@ -159,7 +168,8 @@ describe('TransactionDetailPage', () => {
         amount: 2000,
         currency: 'EUR',
         time: '2026-02-02T14:56:21Z',
-        priceDate: '2026-02-01',
+        navDate: '2026-02-01',
+        priceCalculationDate: '2026-02-02',
         applicationTime: null,
         counterpartyIban: null,
         isin: 'EE0000003283',
@@ -181,7 +191,8 @@ describe('TransactionDetailPage', () => {
         amount: 2000,
         currency: 'EUR',
         time: '2026-02-05T14:00:00Z',
-        priceDate: '2026-02-04',
+        navDate: '2026-02-04',
+        priceCalculationDate: '2026-02-05',
         applicationTime: '2026-02-03T11:30:00Z',
         counterpartyIban: 'EE651010220306497226',
         isin: 'EE0000003283',
@@ -201,8 +212,8 @@ describe('TransactionDetailPage', () => {
     expect(
       await screen.findByText(/Bank transfer from account EE65\s1010\s2203\s0649\s7226/),
     ).toBeInTheDocument();
-    expect(await screen.findByText(/February\s*4,\s*2026/)).toBeInTheDocument();
-    expect(await screen.findByText(/February\s*5,\s*2026/)).toBeInTheDocument();
+    expect(valueOf('Price calculation date')).toMatch(/^February\s5,\s2026$/);
+    expect(valueOf('Execution date')).toMatch(/^February\s5,\s2026$/);
     expect(await screen.findByText(/^0\.00\s*€$/)).toBeInTheDocument();
   });
 
@@ -213,7 +224,8 @@ describe('TransactionDetailPage', () => {
         amount: 2000,
         currency: 'EUR',
         time: '2026-02-05T14:00:00Z',
-        priceDate: '2026-02-04',
+        navDate: '2026-02-04',
+        priceCalculationDate: '2026-02-05',
         applicationTime: '2026-02-03T11:30:00Z',
         counterpartyIban: 'EE651010220306497226',
         isin: 'EE0000003283',
@@ -234,7 +246,7 @@ describe('TransactionDetailPage', () => {
       'Unit price (NAV)',
       'Price calculation date',
       'Application received',
-      'Date',
+      'Execution date',
       'Payment method',
       'Subscription and redemption\u00a0fees',
       'Unit holder',
@@ -249,7 +261,8 @@ describe('TransactionDetailPage', () => {
         amount: 707.01,
         currency: 'EUR',
         time: '2026-04-14T14:57:11Z',
-        priceDate: '2026-04-11',
+        navDate: '2026-04-11',
+        priceCalculationDate: null,
         applicationTime: null,
         counterpartyIban: null,
         isin: 'EE3600109435',
@@ -279,7 +292,8 @@ describe('TransactionDetailPage', () => {
         amount: 2000,
         currency: 'EUR',
         time: '2026-02-05T14:00:00Z',
-        priceDate: '2026-02-04',
+        navDate: '2026-02-04',
+        priceCalculationDate: '2026-02-05',
         applicationTime: '2026-02-03T22:30:00Z',
         counterpartyIban: 'EE651010220306497226',
         isin: 'EE0000003283',
@@ -301,7 +315,8 @@ describe('TransactionDetailPage', () => {
         amount: -500,
         currency: 'EUR',
         time: '2026-02-05T14:00:00Z',
-        priceDate: '2026-02-04',
+        navDate: '2026-02-04',
+        priceCalculationDate: '2026-02-05',
         applicationTime: '2026-02-03T11:30:00Z',
         counterpartyIban: 'EE651010220306497226',
         isin: 'EE0000003283',
@@ -325,7 +340,8 @@ describe('TransactionDetailPage', () => {
         amount: 707.01,
         currency: 'EUR',
         time: '2026-04-14T14:57:11Z',
-        priceDate: '2026-04-11',
+        navDate: '2026-04-11',
+        priceCalculationDate: null,
         applicationTime: null,
         counterpartyIban: null,
         isin: 'EE3600109435',

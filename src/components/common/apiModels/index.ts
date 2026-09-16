@@ -481,7 +481,8 @@ export interface Transaction {
   amount: number;
   currency: Currency;
   time: string;
-  priceDate: string;
+  navDate: string;
+  priceCalculationDate: string | null;
   applicationTime: string | null;
   counterpartyIban: string | null;
   isin: string;

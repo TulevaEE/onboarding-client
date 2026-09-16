@@ -691,8 +691,9 @@
   "transactions.detail.paymentMethod.fromAccount": "Pangaülekanne kontolt {iban}",
   "transactions.detail.paymentMethod.toAccount": "Pangaülekanne kontole {iban}",
   "transactions.detail.paymentMethod.bankTransfer": "Pangaülekanne",
-  "transactions.detail.priceDate": "Hinna arvutamise kuupäev",
   "transactions.detail.fees": "Väljalaske- ja tagasivõtmistasud",
+  "transactions.detail.priceCalculationDate": "Hinna arvutamise kuupäev",
+  "transactions.detail.executionDate": "Täitmise kuupäev",
   "transactions.workplace": "Tööandja",
   "transactions.personal": "Eraisik",
 
