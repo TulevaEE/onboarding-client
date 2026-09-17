@@ -641,7 +641,7 @@
   "transactions.detail.units": "Units",
   "transactions.detail.back": "Back to transactions",
   "transactions.detail.fundManager": "Fund manager",
-  "transactions.detail.fundManager.value": "Tuleva Fondid AS, Telliskivi 60/1, 10412 Tallinn, Estonia",
+  "transactions.detail.fundManager.value": "Tuleva Fondid AS, Telliskivi 60/1, 10412 Tallinn",
   "transactions.detail.unitHolder": "Unit holder",
   "transactions.detail.applicationTime": "Application received",
   "transactions.detail.applicationTime.value": "{date} at {time}",

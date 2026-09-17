@@ -243,7 +243,7 @@ describe('TransactionDetailPage', () => {
     initializeComponent('tkf100-subscription');
 
     expect(
-      await screen.findByText(/Tuleva Fondid AS, Telliskivi\s*60\/1, 10412\s*Tallinn, Estonia/),
+      await screen.findByText(/^Tuleva Fondid AS, Telliskivi\s*60\/1, 10412\s*Tallinn$/),
     ).toBeInTheDocument();
     expect(await screen.findByText('John Doe')).toBeInTheDocument();
     expect(await screen.findByText(/February\s*3,\s*2026 at 13:30/)).toBeInTheDocument();
