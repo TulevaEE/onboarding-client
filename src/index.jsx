@@ -85,7 +85,13 @@ initializeConfiguration();
 
 window.config = config; // for debug only
 
-if (process.env.NODE_ENV !== 'test') {
+// A gift token opens a page naming a child and their personal code. It travels in the URL, and
+// every analytics tool reports the URL, so gift pages are not tracked at all.
+const isGiftPage = () => /^\/kingitus(\/|$)/.test(window.location.pathname);
+
+const withoutGiftToken = (path) => path.replace(/^\/kingitus\/[^/]+/, '/kingitus/:token');
+
+if (process.env.NODE_ENV !== 'test' && !isGiftPage()) {
   TagManager.initialize({
     gtmId: 'GTM-MRRG43',
   });
@@ -99,10 +105,6 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 const noop = () => null;
-
-// A gift token opens a page naming a child and their personal code, so it does not belong in the
-// event log.
-const withoutGiftToken = (path) => path.replace(/^\/kingitus\/[^/]+/, '/kingitus/:token');
 
 function trackPageView() {
   const path = withoutGiftToken(window.location.pathname.replace(/\/+$/g, ''));
