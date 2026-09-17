@@ -94,7 +94,7 @@ describe('SavingsFundOnboarding', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Terms/i })).toHaveAttribute(
       'href',
-      'https://tuleva.ee/wp-content/uploads/2026/05/TKF100-Tingimused-kehtib-alates-15.06.2026.pdf',
+      'https://tuleva.ee/wp-content/uploads/2026/08/TKF100-Tingimused-kehtivad-alates-18.09.2026.pdf',
     );
 
     savingsFundPersonOnboardingStatusBackend(server, 'COMPLETED');
