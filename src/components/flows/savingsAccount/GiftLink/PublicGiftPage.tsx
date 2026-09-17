@@ -22,7 +22,7 @@ export const PublicGiftPage: FC = () => {
   usePageTitle('giftLink.public.pageTitle');
   const { formatMessage } = useIntl();
   const { token = '' } = useParams<{ token: string }>();
-  const { data: giftLink, isLoading, isError } = usePublicGiftLink(token);
+  const { data: giftLink, isLoading, isError, error } = usePublicGiftLink(token);
 
   const [amount, setAmount] = useState<number | undefined>(undefined);
   const [message, setMessage] = useState('');
@@ -34,23 +34,35 @@ export const PublicGiftPage: FC = () => {
     return null;
   }
 
-  // The backend answers a closed token, a mistyped one and one that never existed identically.
   if (isError || !giftLink) {
+    // The backend answers a closed token, a mistyped one and one that never existed identically,
+    // so only a 404 means the link is gone. Anything else is ours and the link is probably fine.
+    const linkIsGone = (error as { status?: number } | null)?.status === 404;
     return (
       <GiftPageFrame>
         <div className="d-flex flex-column gap-3 text-center">
           <h1 className="m-0">
-            <FormattedMessage id="giftLink.public.notFound.title" />
+            <FormattedMessage
+              id={
+                linkIsGone ? 'giftLink.public.notFound.title' : 'giftLink.public.unavailable.title'
+              }
+            />
           </h1>
           <p className="m-0 text-body-secondary">
-            <FormattedMessage id="giftLink.public.notFound.description" />
+            <FormattedMessage
+              id={
+                linkIsGone
+                  ? 'giftLink.public.notFound.description'
+                  : 'giftLink.public.unavailable.description'
+              }
+            />
           </p>
         </div>
       </GiftPageFrame>
     );
   }
 
-  const payingByHand = bank === 'other' || (amount ?? 0) >= MONTONIO_MAX_AMOUNT;
+  const payingByHand = bank === 'other' || (amount ?? 0) > MONTONIO_MAX_AMOUNT;
   const canSubmit = !!bank && !payingByHand && (amount ?? 0) >= 1 && !submitting;
   // Only a payment we start ourselves has somewhere to carry a greeting; a bank transfer arrives
   // with nothing to join it to.
@@ -139,10 +151,14 @@ export const PublicGiftPage: FC = () => {
           </div>
         )}
 
-        <div className="form-section d-flex flex-column gap-3">
-          <label className="fs-3 fw-semibold" htmlFor="payment-method">
+        <div
+          className="form-section d-flex flex-column gap-3"
+          role="group"
+          aria-labelledby="gift-bank-label"
+        >
+          <span className="fs-3 fw-semibold" id="gift-bank-label">
             <FormattedMessage id="giftLink.public.bank.label" />
-          </label>
+          </span>
           <PaymentBankButtons paymentBank={bank} setPaymentBank={setBank} />
         </div>
 
@@ -150,7 +166,7 @@ export const PublicGiftPage: FC = () => {
           <GiftBankDetails
             amount={amount}
             paymentDescription={giftLink.paymentDescription}
-            overMontonioLimit={(amount ?? 0) >= MONTONIO_MAX_AMOUNT}
+            overMontonioLimit={(amount ?? 0) > MONTONIO_MAX_AMOUNT}
           />
         ) : (
           <div className="border-top pt-4 d-flex flex-column gap-3">

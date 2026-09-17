@@ -159,10 +159,32 @@ describe('the gift page a giver opens', () => {
     renderAt();
     await findSubtitle();
 
-    userEvent.type(amountInput(), '15000');
+    userEvent.type(amountInput(), '15001');
 
     expect(screen.queryByRole('button', { name: 'Give' })).not.toBeInTheDocument();
     expect(screen.getByText('38888888888')).toBeInTheDocument();
     expect(greetingField()).not.toBeInTheDocument();
+  });
+
+  it('still pays the ceiling amount itself through the bank, as the copy promises', async () => {
+    renderAt();
+    await findSubtitle();
+
+    userEvent.type(amountInput(), '15000');
+    userEvent.click(screen.getByRole('radio', { name: 'LHV' }));
+
+    expect(giveButton()).toBeEnabled();
+  });
+
+  it('does not call a working link dead when it is our own side that failed', async () => {
+    giftLinkBackend(500);
+
+    renderAt();
+
+    expect(
+      await screen.findByRole('heading', { name: 'This page is not loading right now' }),
+    ).toBeInTheDocument();
+    // Telling a giver to ask for a new link would be wrong: this link is probably fine.
+    expect(screen.queryByText(/does not exist/i)).not.toBeInTheDocument();
   });
 });

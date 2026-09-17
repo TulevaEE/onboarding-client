@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
@@ -14,16 +14,30 @@ export const GiftLinkPage: FC = () => {
   usePageTitle('giftLink.parent.pageTitle');
   const { formatMessage } = useIntl();
   const { data: user } = useMe();
-  const { data: giftLink } = useMyGiftLink();
+  const { data: giftLink, isError } = useMyGiftLink();
   const replaceLink = useReplaceGiftLink();
   const queryClient = useQueryClient();
+
+  const url = giftLink ? `${window.location.origin}/kingitus/${giftLink.token}` : '';
+  const invitation = formatMessage({ id: 'giftLink.parent.invitation' }, { url });
+  // Editable, so it has to be state; regenerated when the link changes, or a replaced link would
+  // leave the revoked url sitting in the message the parent copies.
+  const [editedInvitation, setEditedInvitation] = useState(invitation);
+  useEffect(() => setEditedInvitation(invitation), [invitation]);
+
+  if (isError) {
+    return (
+      <div className="col-12 col-md-10 col-lg-7 mx-auto">
+        <div className="alert alert-danger" role="alert">
+          <FormattedMessage id="giftLink.parent.error" />
+        </div>
+      </div>
+    );
+  }
 
   if (!user?.role || !giftLink) {
     return null;
   }
-
-  const url = `${window.location.origin}/kingitus/${giftLink.token}`;
-  const invitation = formatMessage({ id: 'giftLink.parent.invitation' }, { url });
 
   return (
     <div className="col-12 col-md-10 col-lg-7 mx-auto d-flex flex-column gap-5">
@@ -76,14 +90,15 @@ export const GiftLinkPage: FC = () => {
           id="gift-invitation"
           className="form-control"
           rows={5}
-          defaultValue={invitation}
+          value={editedInvitation}
+          onChange={(event) => setEditedInvitation(event.target.value)}
         />
         <p className="m-0 text-body-secondary">
           <FormattedMessage id="giftLink.parent.invitation.editIt" />
         </p>
         <div className="d-flex flex-wrap gap-3">
           <span className="btn btn-outline-primary d-inline-flex align-items-center gap-2">
-            <CopyButton textToCopy={invitation} />
+            <CopyButton textToCopy={editedInvitation} />
             <FormattedMessage id="giftLink.parent.invitation.copy" />
           </span>
           <a className="btn btn-outline-primary" href={url} target="_blank" rel="noreferrer">

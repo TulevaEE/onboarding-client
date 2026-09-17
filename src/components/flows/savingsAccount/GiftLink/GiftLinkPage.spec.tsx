@@ -1,6 +1,6 @@
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import { QueryClient } from '@tanstack/react-query';
@@ -136,6 +136,33 @@ describe('the page where a parent gets a gift link', () => {
     expect(
       screen.getByText('On its way. The money has not reached the account yet.'),
     ).toBeInTheDocument();
+  });
+
+  it('copies the message as the parent edited it, not as it was generated', async () => {
+    const writeText = jest.fn().mockResolvedValue(undefined);
+    Object.defineProperty(window.navigator, 'clipboard', { value: { writeText }, writable: true });
+
+    renderPage();
+    await findLinkField();
+
+    const invitation = screen.getByLabelText('A message you can send along');
+    userEvent.clear(invitation);
+    userEvent.type(invitation, 'Tere vanaema!');
+    userEvent.click(screen.getAllByRole('button', { name: /copy/i })[1]);
+
+    await waitFor(() => expect(writeText).toHaveBeenCalledWith('Tere vanaema!'));
+  });
+
+  it('says so when the link itself cannot be loaded, instead of showing a blank page', async () => {
+    server.use(
+      rest.post('http://localhost/v1/savings-fund/gift-links', (req, res, ctx) =>
+        res(ctx.status(500), ctx.json({})),
+      ),
+    );
+
+    renderPage(withoutRetries());
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/Could not load your gift link/);
   });
 
   it('keeps the link usable when the gift list fails to load', async () => {
