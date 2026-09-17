@@ -17,7 +17,6 @@ const NAV_SCALE_BY_ISIN: Record<string, number> = {
 };
 
 const MIN_NAV_SCALE = 5;
-const MIN_UNIT_SCALE = 3;
 
 function decimalPlaces(n: number): number {
   const str = String(n);
@@ -33,8 +32,9 @@ function navScaleFor(transaction: { isin: string; nav: number }): number {
   return Math.max(MIN_NAV_SCALE, decimalPlaces(transaction.nav));
 }
 
-function unitScaleFor(units: number): number {
-  return Math.max(MIN_UNIT_SCALE, decimalPlaces(units));
+function formatUnits(units: number): string {
+  const thousandths = Math.round(Number(Math.abs(units).toFixed(5).replace('.', '')) / 100);
+  return `${units < 0 ? '-' : ''}${(thousandths / 1000).toFixed(3)}`;
 }
 
 function getBackPath(fund?: Fund): string {
@@ -124,9 +124,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
             <dt className="col-sm-4 mb-sm-2 text-balance">
               <FormattedMessage id="transactions.detail.units" />
             </dt>
-            <dd className="col-sm-8">
-              {transaction.units.toFixed(unitScaleFor(transaction.units))}
-            </dd>
+            <dd className="col-sm-8">{formatUnits(transaction.units)}</dd>
           </>
         )}
 
