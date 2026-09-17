@@ -4,11 +4,11 @@ import { TranslationKey } from '../../../translations';
 // flows so they can't drift between them.
 export const TKF_DOCUMENTS: { href: string; labelId: TranslationKey }[] = [
   {
-    href: 'https://tuleva.ee/wp-content/uploads/2026/05/TKF100-Tingimused-kehtib-alates-15.06.2026.pdf',
+    href: 'https://tuleva.ee/wp-content/uploads/2026/08/TKF100-Tingimused-kehtivad-alates-18.09.2026.pdf',
     labelId: 'flows.savingsFundOnboarding.termsStep.linkText.terms',
   },
   {
-    href: 'https://tuleva.ee/wp-content/uploads/2026/05/TKF100-Prospekt-kehtib-alates-15.06.2026.pdf',
+    href: 'https://tuleva.ee/wp-content/uploads/2026/08/TKF100-Prospekt-alates-18.09.2026.pdf',
     labelId: 'flows.savingsFundOnboarding.termsStep.linkText.prospectus',
   },
   {
