@@ -12,7 +12,7 @@ export const TKF_DOCUMENTS: { href: string; labelId: TranslationKey }[] = [
     labelId: 'flows.savingsFundOnboarding.termsStep.linkText.prospectus',
   },
   {
-    href: 'https://tuleva.ee/wp-content/uploads/2026/06/TKF100-Pohiteave-kehtib-alates-15.06.2026.pdf',
+    href: 'https://tuleva.ee/wp-content/uploads/2026/09/TKF100-Pohiteave-kehtib-alates-18.09.2026.pdf',
     labelId: 'flows.savingsFundOnboarding.termsStep.linkText.keyInfo',
   },
 ];
