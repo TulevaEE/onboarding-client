@@ -1,0 +1,121 @@
+import { FC } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { Link } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
+import { useMe } from '../../../common/apiHooks';
+import { usePageTitle } from '../../../common/usePageTitle';
+import { CopyButton } from '../../../common/CopyButton';
+import { SimpleList, SimpleListItem } from '../../../common/simpleList';
+import { Deposit, Defer, Verify } from '../InfoSection/assets';
+import { ReceivedGifts } from './ReceivedGifts';
+import { useMyGiftLink, useReplaceGiftLink } from './api/giftLink.api';
+
+export const GiftLinkPage: FC = () => {
+  usePageTitle('giftLink.parent.pageTitle');
+  const { formatMessage } = useIntl();
+  const { data: user } = useMe();
+  const { data: giftLink } = useMyGiftLink();
+  const replaceLink = useReplaceGiftLink();
+  const queryClient = useQueryClient();
+
+  if (!user?.role || !giftLink) {
+    return null;
+  }
+
+  const url = `${window.location.origin}/kingitus/${giftLink.token}`;
+  const invitation = formatMessage({ id: 'giftLink.parent.invitation' }, { url });
+
+  return (
+    <div className="col-12 col-md-10 col-lg-7 mx-auto d-flex flex-column gap-5">
+      <div className="d-flex flex-column gap-4">
+        <h1 className="m-0 text-center">
+          <FormattedMessage id="giftLink.parent.title" />
+        </h1>
+        <p className="m-0 text-center fs-3 fw-medium">
+          <FormattedMessage id="giftLink.parent.account" values={{ name: user.role.name }} />
+        </p>
+      </div>
+
+      <div className="pt-4 pb-4 border-top border-bottom">
+        <SimpleList>
+          <SimpleListItem
+            media={<Deposit />}
+            title={<FormattedMessage id="giftLink.parent.noLoginNeeded" />}
+          />
+          <SimpleListItem
+            media={<Verify />}
+            title={<FormattedMessage id="giftLink.parent.reachesTheRightAccount" />}
+          />
+          <SimpleListItem
+            media={<Defer />}
+            title={<FormattedMessage id="giftLink.parent.neverExpires" />}
+          />
+        </SimpleList>
+      </div>
+
+      <div className="form-section d-flex flex-column gap-3">
+        <label htmlFor="gift-link-url" className="fs-3 fw-semibold">
+          <FormattedMessage id="giftLink.parent.yourLink" />
+        </label>
+        <div className="input-group input-group-lg">
+          <input id="gift-link-url" type="text" readOnly className="form-control" value={url} />
+          <span className="input-group-text">
+            <CopyButton textToCopy={url} />
+          </span>
+        </div>
+        <p className="m-0 text-body-secondary">
+          <FormattedMessage id="giftLink.parent.sendItTo" />
+        </p>
+      </div>
+
+      <div className="form-section d-flex flex-column gap-3">
+        <label htmlFor="gift-invitation" className="fs-3 fw-semibold">
+          <FormattedMessage id="giftLink.parent.invitation.label" />
+        </label>
+        <textarea
+          id="gift-invitation"
+          className="form-control"
+          rows={5}
+          defaultValue={invitation}
+        />
+        <p className="m-0 text-body-secondary">
+          <FormattedMessage id="giftLink.parent.invitation.editIt" />
+        </p>
+        <div className="d-flex flex-wrap gap-3">
+          <span className="btn btn-outline-primary d-inline-flex align-items-center gap-2">
+            <CopyButton textToCopy={invitation} />
+            <FormattedMessage id="giftLink.parent.invitation.copy" />
+          </span>
+          <a className="btn btn-outline-primary" href={url} target="_blank" rel="noreferrer">
+            <FormattedMessage id="giftLink.parent.seeWhatTheySee" />
+          </a>
+        </div>
+      </div>
+
+      <ReceivedGifts />
+
+      <div className="border-top pt-4 d-flex justify-content-between align-items-start">
+        <Link to="/account" className="btn btn-outline-primary">
+          <FormattedMessage id="giftLink.parent.back" />
+        </Link>
+        <div className="text-end">
+          <button
+            type="button"
+            className="btn btn-outline-secondary"
+            disabled={replaceLink.isLoading}
+            onClick={() =>
+              replaceLink.mutate(giftLink.id, {
+                onSuccess: () => queryClient.invalidateQueries({ queryKey: ['myGiftLink'] }),
+              })
+            }
+          >
+            <FormattedMessage id="giftLink.parent.replace" />
+          </button>
+          <p className="m-0 mt-2 small text-body-secondary">
+            <FormattedMessage id="giftLink.parent.replace.warning" />
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};

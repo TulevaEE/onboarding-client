@@ -48,6 +48,11 @@ export function RepresentedPartyAccountPage() {
           <Link className="icon-link" to="/savings-fund/withdraw">
             <FormattedMessage id="accountStatement.savingsFund.withdraw" />
           </Link>
+          {isRepresentedPerson && (
+            <Link className="icon-link" to="/savings-fund/gift-link">
+              <FormattedMessage id="accountStatement.savingsFund.giftLink" />
+            </Link>
+          )}
         </div>
       </SectionHeading>
       <AccountStatement funds={savingsFunds} showProfit />

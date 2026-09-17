@@ -31,6 +31,7 @@ import './polyfills';
 import LoggedInApp from './components/LoggedInApp';
 import { ScrollToTopOnNavigation } from './components/common/ScrollToTopOnNavigation';
 import { loginPath } from './components/login/LoginPage';
+import { GiftDonePage, PublicGiftPage } from './components/flows/savingsAccount/GiftLink';
 
 import { createTrackedEvent } from './components/common/api';
 import { shouldWriteTestMode, writeTestMode } from './components/common/test-mode';
@@ -99,10 +100,13 @@ if (process.env.NODE_ENV !== 'test') {
 
 const noop = () => null;
 
+// A gift token opens a page naming a child and their personal code, so it does not belong in the
+// event log.
+const withoutGiftToken = (path) => path.replace(/^\/kingitus\/[^/]+/, '/kingitus/:token');
+
 function trackPageView() {
-  createTrackedEvent('PAGE_VIEW', { path: window.location.pathname.replace(/\/+$/g, '') }).catch(
-    noop,
-  );
+  const path = withoutGiftToken(window.location.pathname.replace(/\/+$/g, ''));
+  createTrackedEvent('PAGE_VIEW', { path }).catch(noop);
 }
 
 trackPageView();
@@ -129,6 +133,8 @@ export class App extends Component {
               <Switch>
                 <Route path={loginPath} component={LoginPage} />
                 <Route path="/trigger-procedure" component={TriggerProcedure} />
+                <Route path="/kingitus/:token/tehtud" component={GiftDonePage} />
+                <Route path="/kingitus/:token" component={PublicGiftPage} />
                 <PrivateRoute exact path="" component={LoggedInApp} />
               </Switch>
             </ConnectedRouter>

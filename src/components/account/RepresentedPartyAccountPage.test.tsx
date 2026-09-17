@@ -106,6 +106,12 @@ describe('RepresentedPartyAccountPage', () => {
     expect(screen.queryByRole('heading', { name: /III\spillar/ })).not.toBeInTheDocument();
     expect(screen.queryByText('Tuleva III Samba Pensionifond')).not.toBeInTheDocument();
   });
+
+  test('does not offer a gift link for a represented company', async () => {
+    expect(await screen.findByText(additionalSavingsFund.fund.name)).toBeInTheDocument();
+    // Third-party deposits are only open for a child or a person under guardianship.
+    expect(screen.queryByRole('link', { name: 'Invite others to give' })).not.toBeInTheDocument();
+  });
 });
 
 describe('RepresentedPartyAccountPage for a represented child', () => {
@@ -131,6 +137,13 @@ describe('RepresentedPartyAccountPage for a represented child', () => {
     expect(await screen.findByText('Tuleva III Samba Pensionifond')).toBeInTheDocument();
     // The child/company page has no account summary, so profit is shown in the detail table.
     expect(screen.getByText(/1\s876\.54\s€/)).toBeInTheDocument();
+  });
+
+  test('offers a gift link for a represented child', async () => {
+    expect(await screen.findByRole('link', { name: 'Invite others to give' })).toHaveAttribute(
+      'href',
+      '/savings-fund/gift-link',
+    );
   });
 
   test('does not show second pillar funds for the child', async () => {
