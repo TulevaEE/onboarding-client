@@ -272,6 +272,12 @@ describe('a second deep link opened while the first is still resolving', () => {
   test('does not let the abandoned deep link redirect on top of the newer one', async () => {
     const session = initializeWithRoles(roles, personRole);
     const { requested, release } = holdFirstRoleSwitch(session, roles);
+    const rolesActingWhenLandedOnAccount: Role[] = [];
+    history.listen(({ pathname }) => {
+      if (pathname === '/account') {
+        rolesActingWhenLandedOnAccount.push(session.role);
+      }
+    });
 
     history.push('/account/company');
     await requested;
@@ -279,7 +285,9 @@ describe('a second deep link opened while the first is still resolving', () => {
     release();
 
     expect(await accountSwitcherFor(/Child Name/)).toBeInTheDocument();
+    expect(await representedPartyAccount()).toBeInTheDocument();
     expect(history.location.pathname).toBe('/account');
     expect(history.entries.map(({ pathname }) => pathname)).not.toContain('/account/child');
+    expect(rolesActingWhenLandedOnAccount).toEqual([childRole]);
   });
 });
