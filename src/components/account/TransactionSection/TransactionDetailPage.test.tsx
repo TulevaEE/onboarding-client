@@ -165,6 +165,40 @@ describe('TransactionDetailPage', () => {
     expect(await screen.findByText(/1\.46720\s*€/)).toBeInTheDocument();
   });
 
+  it.each([
+    [894.61442, '894.614'],
+    [879.97184, '879.972'],
+    [20288.09089, '20288.091'],
+    [2.0005, '2.001'],
+    [20288.0905, '20288.091'],
+    [2000, '2000.000'],
+  ])(
+    'shows %s units with three decimals rounded half up, as the fund rules state',
+    async (units, shown) => {
+      mockTransactions([
+        {
+          id: 'tkf100-units',
+          amount: 1000,
+          currency: 'EUR',
+          time: '2026-09-15T13:01:23Z',
+          navDate: '2026-09-14',
+          priceCalculationDate: '2026-09-15',
+          applicationTime: null,
+          counterpartyIban: null,
+          isin: 'EE0000003283',
+          type: 'CONTRIBUTION_CASH',
+          units,
+          nav: 1.1178,
+        },
+      ]);
+
+      initializeComponent('tkf100-units');
+
+      expect(await screen.findByText(/1\.1178\s*€/)).toBeInTheDocument();
+      expect(valueOf('Units')).toBe(shown);
+    },
+  );
+
   it('renders TKF100 NAV with 4 decimals', async () => {
     mockTransactions([
       {
