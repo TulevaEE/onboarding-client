@@ -75,6 +75,7 @@ import {
   isCompanyOnboardingEnabled,
 } from '../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
 import { SavingsFundPayment } from '../flows/savingsAccount/SavingsFundPayment';
+import { GiftLinkPage } from '../flows/savingsAccount/GiftLink';
 import SavingsFundPaymentSuccess from '../flows/savingsAccount/SavingsFundPayment/SavingsFundPaymentSuccess';
 import SavingsFundPaymentCancellation from '../flows/savingsAccount/SavingsFundPayment/SavingsFundPaymentCancellation';
 import {
@@ -149,6 +150,7 @@ export class LoggedInApp extends PureComponent {
                 <RoleDeepLink holder="company" onRoleSwitched={() => this.fetchAllUserData()} />
               )}
             />
+            <Route path="/savings-fund/gift-link" component={GiftLinkPage} />
             <Route path={ACCOUNT_PATH} component={AccountPage} />
             <Route path={AML_PATH} component={AmlPage} />
             <Route path="/join/success" component={MembershipSuccess} />

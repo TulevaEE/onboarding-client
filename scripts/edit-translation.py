@@ -29,6 +29,8 @@ import re
 import sys
 from pathlib import Path
 
+NBSP = " "
+
 ROOT = Path(__file__).resolve().parent.parent
 FILES = {
     "en": ROOT / "src/components/translations/translations.en.json",
@@ -66,8 +68,10 @@ def _visible(s: str) -> str:
 
 
 def _resolve_input(s: str) -> str:
-    # Accept literal   from the command line and resolve to NBSP.
-    return s.encode("utf-8").decode("unicode_escape") if "\\u" in s else s
+    # Accept literal   from the command line and resolve to NBSP. Replaced by hand rather
+    # than decoded with "unicode_escape", which reads every other byte as latin-1 and so
+    # double-encodes every non-ASCII letter in the same value.
+    return s.replace("\\u00A0", NBSP).replace("\\u00a0", NBSP)
 
 
 def cmd_get(args: argparse.Namespace) -> int:
