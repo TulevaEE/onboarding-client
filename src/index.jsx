@@ -28,6 +28,7 @@ import LoginPage, { actions as loginActions } from './components/login';
 import { actions as thirdPillarActions } from './components/thirdPillar';
 
 import './polyfills';
+import { withoutGiftToken } from './sentryEventFilter';
 import LoggedInApp from './components/LoggedInApp';
 import { ScrollToTopOnNavigation } from './components/common/ScrollToTopOnNavigation';
 import { loginPath } from './components/login/LoginPage';
@@ -85,11 +86,8 @@ initializeConfiguration();
 
 window.config = config; // for debug only
 
-// A gift token opens a page naming a child and their personal code. It travels in the URL, and
-// every analytics tool reports the URL, so gift pages are not tracked at all.
+// Analytics tools report the URL, and a gift URL carries a token that names a child.
 const isGiftPage = () => /^\/kingitus(\/|$)/.test(window.location.pathname);
-
-const withoutGiftToken = (path) => path.replace(/^\/kingitus\/[^/]+/, '/kingitus/:token');
 
 if (process.env.NODE_ENV !== 'test' && !isGiftPage()) {
   TagManager.initialize({

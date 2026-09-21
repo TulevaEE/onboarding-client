@@ -1,4 +1,4 @@
-import type { BrowserOptions } from '@sentry/browser';
+import type { Breadcrumb, BrowserOptions } from '@sentry/browser';
 import type { ErrorEvent } from '@sentry/types';
 
 const mockSentryInit = jest.fn();
@@ -74,6 +74,48 @@ describe('Sentry initialization in production', () => {
       },
     };
 
-    expect(filter(ourEvent)).toBe(ourEvent);
+    expect(filter(ourEvent)).toEqual(ourEvent);
+  });
+
+  it('keeps the gift token out of the addresses an event carries', () => {
+    const giftPageEvent: ErrorEvent = {
+      type: undefined,
+      request: {
+        url: 'https://pension.tuleva.ee/kingitus/SECRETTOKEN',
+        headers: { Referer: 'https://pension.tuleva.ee/kingitus/SECRETTOKEN' },
+      },
+      breadcrumbs: [
+        {
+          category: 'fetch',
+          data: { url: 'https://pension.tuleva.ee/v1/gift-links/SECRETTOKEN/payments' },
+        },
+      ],
+    };
+
+    expect(filter(giftPageEvent)).toEqual({
+      type: undefined,
+      request: {
+        url: 'https://pension.tuleva.ee/kingitus/:token',
+        headers: { Referer: 'https://pension.tuleva.ee/kingitus/:token' },
+      },
+      breadcrumbs: [
+        {
+          category: 'fetch',
+          data: { url: 'https://pension.tuleva.ee/v1/gift-links/:token/payments' },
+        },
+      ],
+    });
+  });
+
+  it('keeps the gift token out of a breadcrumb as it is recorded', () => {
+    const requestBreadcrumb: Breadcrumb = {
+      category: 'xhr',
+      data: { url: 'https://pension.tuleva.ee/v1/gift-links/SECRETTOKEN' },
+    };
+
+    expect(options.beforeBreadcrumb?.(requestBreadcrumb, {})).toEqual({
+      category: 'xhr',
+      data: { url: 'https://pension.tuleva.ee/v1/gift-links/:token' },
+    });
   });
 });
