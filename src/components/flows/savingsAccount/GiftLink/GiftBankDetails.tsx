@@ -59,7 +59,6 @@ export const GiftBankDetails: FC<{
           <PaymentAmountRow
             amount={amount?.toString() ?? ''}
             label={<FormattedMessage id="giftLink.bankTransfer.amount" />}
-            // Bank forms want a bare number, so the clipboard carries one without the currency.
             tooltip={<CopyButton textToCopy={amount?.toFixed(2) ?? ''} />}
           />
         </div>
