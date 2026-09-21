@@ -1,5 +1,5 @@
 import { setupServer } from 'msw/node';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { rest } from 'msw';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, MemoryHistory } from 'history';
@@ -101,6 +101,21 @@ describe('RepresentedPartyAccountPage', () => {
     expect(screen.getByText(/deposit to Additional Savings Fund/)).toBeInTheDocument();
   });
 
+  test('offers the company a statement it can save for its accountant', async () => {
+    expect(
+      await screen.findByRole('heading', { name: 'Transactions in the selected period', level: 2 }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save as PDF' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Download CSV' })).toBeInTheDocument();
+  });
+
+  test('lets the company pick the financial year the statement covers', async () => {
+    expect(
+      await screen.findByRole('heading', { name: 'Transactions in the selected period', level: 2 }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Last year' })).toBeInTheDocument();
+  });
+
   test('does not show a third pillar section for a represented company', async () => {
     expect(await screen.findByText(additionalSavingsFund.fund.name)).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: /III\spillar/ })).not.toBeInTheDocument();
@@ -178,8 +193,10 @@ describe('RepresentedPartyAccountPage with zero balance', () => {
     expect(
       await screen.findByText(new RegExp(additionalSavingsFund.fund.name)),
     ).toBeInTheDocument();
-    // Profit and value cells both render 0.00 € for a zero-balance fund.
-    expect(screen.getAllByText(/0.00\s€/)).toHaveLength(2);
+    const savingsFundRow = screen.getByRole('row', {
+      name: new RegExp(`^${additionalSavingsFund.fund.name}`),
+    });
+    expect(within(savingsFundRow).getAllByText(/0.00\s€/)).toHaveLength(2);
     expect(screen.getByRole('link', { name: 'Deposit' })).toHaveAttribute(
       'href',
       '/savings-fund/payment',
@@ -230,6 +247,6 @@ describe('RepresentedPartyAccountPage while the savings balance is loading', () 
   test('shows a shimmer in place of an empty savings table', async () => {
     expect(await screen.findByText('Hi, Acme OÜ representative')).toBeInTheDocument();
     expect(await screen.findByTestId('account-statement-loader')).toBeInTheDocument();
-    expect(screen.queryByText(/0.00\s€/)).not.toBeInTheDocument();
+    expect(screen.queryByText(additionalSavingsFund.fund.name)).not.toBeInTheDocument();
   });
 });

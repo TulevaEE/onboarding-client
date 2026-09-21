@@ -5,6 +5,7 @@ import { SectionHeading } from './SectionHeading';
 import { TransactionSection } from './TransactionSection/TransactionSection';
 import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { useMe, useSavingsFundBalance, useSourceFunds } from '../common/apiHooks';
+import { SavingsFundStatementSection } from './Portfolio/SavingsFundStatementSection';
 
 export function RepresentedPartyAccountPage() {
   const { data: user } = useMe();
@@ -51,6 +52,8 @@ export function RepresentedPartyAccountPage() {
         </div>
       </SectionHeading>
       <AccountStatement funds={savingsFunds} showProfit />
+
+      <SavingsFundStatementSection />
 
       <ApplicationSection />
 
