@@ -6,6 +6,7 @@ import { TransactionSection } from './TransactionSection/TransactionSection';
 import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { useMe, useSavingsFundBalance, useSourceFunds } from '../common/apiHooks';
 import { PII_CLASS } from '../tracking/piiMarkup';
+import { SavingsFundStatementSection } from './Portfolio/SavingsFundStatementSection';
 
 export function RepresentedPartyAccountPage() {
   const { data: user } = useMe();
@@ -57,6 +58,8 @@ export function RepresentedPartyAccountPage() {
         </div>
       </SectionHeading>
       <AccountStatement funds={savingsFunds} showProfit />
+
+      <SavingsFundStatementSection />
 
       <ApplicationSection />
 

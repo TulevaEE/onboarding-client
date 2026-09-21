@@ -27,10 +27,23 @@ const TYPE_LABEL: Record<TransactionType, TranslationKey> = {
   TRANSFER_OUT: 'savingsFund.statement.transactions.transferOut',
 };
 
+const isRedemption = (transaction: Transaction): boolean => transaction.type === 'SUBTRACTION';
+
 const navText = (transaction: Transaction): string =>
   transaction.nav === null ? '' : formatAmountForCount(transaction.nav, 5);
 
 const onDate = (transaction: Transaction): string => dayInTallinn(transaction.time);
+
+const withRunningBalance = (
+  transactions: Transaction[],
+  startingUnits: number,
+): { transaction: Transaction; balanceUnits: number }[] => {
+  let balanceUnits = startingUnits;
+  return transactions.map((transaction) => {
+    balanceUnits += signedUnits(transaction);
+    return { transaction, balanceUnits };
+  });
+};
 
 const isSavingsFund = (fund: Fund): boolean => fund.pillar === null;
 
@@ -80,6 +93,20 @@ export const StatementSection: React.FunctionComponent<{
     0,
   );
   const amountSum = periodTransactions.reduce((sum, transaction) => sum + transaction.amount, 0);
+
+  const contributionsTotal = periodTransactions
+    .filter((transaction) => !isRedemption(transaction))
+    .reduce((sum, transaction) => sum + transaction.amount, 0);
+  const withdrawalsTotal = periodTransactions
+    .filter(isRedemption)
+    .reduce((sum, transaction) => sum + transaction.amount, 0);
+
+  const documentRows = withRunningBalance(periodTransactions, openingUnits);
+
+  const valueChange =
+    summary.startValue === null || summary.endValue === null
+      ? null
+      : summary.endValue - summary.startValue - contributionsTotal - withdrawalsTotal;
 
   const typeLabel = (transaction: Transaction): string =>
     formatMessage({ id: TYPE_LABEL[transaction.type] });
@@ -235,22 +262,28 @@ export const StatementSection: React.FunctionComponent<{
               <th scope="col" className="text-end">
                 <FormattedMessage id="savingsFund.statement.transactions.amount" />
               </th>
+              <th scope="col" className="text-end">
+                <FormattedMessage id="savingsFund.statement.document.balanceUnits" />
+              </th>
+              <th scope="col" className="text-end">
+                <FormattedMessage id="savingsFund.statement.document.balanceValue" />
+              </th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td colSpan={2}>
+              <td colSpan={5}>
                 <FormattedMessage
                   id="savingsFund.statement.document.opening"
                   values={{ date: moment(from).format('DD.MM.YYYY') }}
                 />
               </td>
               <td className="text-end">{formatAmountForCount(openingUnits, 4)}</td>
-              <td colSpan={2} className="text-end">
+              <td className="text-end">
                 {summary.startValue !== null && <Euro amount={summary.startValue} />}
               </td>
             </tr>
-            {periodTransactions.map((transaction) => (
+            {documentRows.map(({ transaction, balanceUnits }) => (
               <tr key={transaction.id ?? transaction.time}>
                 <td>{formatDayInTallinn(transaction.time)}</td>
                 <td>{typeLabel(transaction)}</td>
@@ -259,20 +292,50 @@ export const StatementSection: React.FunctionComponent<{
                 <td className="text-end">
                   <Euro amount={transaction.amount} />
                 </td>
+                <td className="text-end">{formatAmountForCount(balanceUnits, 4)}</td>
+                <td className="text-end">
+                  {transaction.nav !== null && <Euro amount={balanceUnits * transaction.nav} />}
+                </td>
               </tr>
             ))}
+            <tr>
+              <td colSpan={4}>
+                <FormattedMessage id="savingsFund.statement.document.totalContributions" />
+              </td>
+              <td className="text-end">
+                <Euro amount={contributionsTotal} />
+              </td>
+            </tr>
+            <tr>
+              <td colSpan={4}>
+                <FormattedMessage id="savingsFund.statement.document.totalWithdrawals" />
+              </td>
+              <td className="text-end">
+                <Euro amount={withdrawalsTotal} />
+              </td>
+            </tr>
             <tr className="fw-bold">
-              <td colSpan={2}>
+              <td colSpan={5}>
                 <FormattedMessage
                   id="savingsFund.statement.document.closing"
                   values={{ date: moment(to).format('DD.MM.YYYY') }}
                 />
               </td>
               <td className="text-end">{formatAmountForCount(closingUnits, 4)}</td>
-              <td colSpan={2} className="text-end">
+              <td className="text-end">
                 {summary.endValue !== null && <Euro amount={summary.endValue} />}
               </td>
             </tr>
+            {valueChange !== null && (
+              <tr>
+                <td colSpan={6}>
+                  <FormattedMessage id="savingsFund.statement.document.valueChange" />
+                </td>
+                <td className="text-end">
+                  <Euro amount={valueChange} />
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
 
