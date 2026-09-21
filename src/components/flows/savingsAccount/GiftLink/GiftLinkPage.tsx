@@ -20,8 +20,6 @@ export const GiftLinkPage: FC = () => {
 
   const url = giftLink ? `${window.location.origin}/kingitus/${giftLink.token}` : '';
   const invitation = formatMessage({ id: 'giftLink.parent.invitation' }, { url });
-  // Editable, so it has to be state; regenerated when the link changes, or a replaced link would
-  // leave the revoked url sitting in the message the parent copies.
   const [editedInvitation, setEditedInvitation] = useState(invitation);
   useEffect(() => setEditedInvitation(invitation), [invitation]);
 

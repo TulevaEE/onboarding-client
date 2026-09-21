@@ -35,8 +35,6 @@ export const PublicGiftPage: FC = () => {
   }
 
   if (isError || !giftLink) {
-    // The backend answers a closed token, a mistyped one and one that never existed identically,
-    // so only a 404 means the link is gone. Anything else is ours and the link is probably fine.
     const linkIsGone = (error as { status?: number } | null)?.status === 404;
     return (
       <GiftPageFrame>
@@ -64,8 +62,6 @@ export const PublicGiftPage: FC = () => {
 
   const payingByHand = bank === 'other' || (amount ?? 0) > MONTONIO_MAX_AMOUNT;
   const canSubmit = !!bank && !payingByHand && (amount ?? 0) >= 1 && !submitting;
-  // Only a payment we start ourselves has somewhere to carry a greeting; a bank transfer arrives
-  // with nothing to join it to.
   const canCarryAGreeting = !payingByHand;
 
   const submit = async () => {
