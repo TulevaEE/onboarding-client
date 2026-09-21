@@ -2226,6 +2226,7 @@
   "giftLink.parent.back": "Tagasi",
   "giftLink.parent.replace": "Teen uue lingi",
   "giftLink.parent.replace.warning": "Vana link lõpetab siis kehtivuse.",
+  "giftLink.parent.replace.error": "Uue lingi tegemine ebaõnnestus. Vana link töötab edasi.",
   "giftLink.parent.error": "Kinkimislingi laadimine ebaõnnestus. Proovi hetke pärast uuesti.",
   "giftLink.gifts.title": "Laekunud kingitused",
   "giftLink.gifts.none": "Kingitusi ei ole veel tulnud.",
