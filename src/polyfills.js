@@ -1,7 +1,7 @@
 import { shim as shimFind } from 'array.prototype.find';
 import { enable as enableRejectionTracking } from 'promise/lib/rejection-tracking';
 import * as Sentry from '@sentry/browser';
-import { isFirstPartyEvent } from './sentryEventFilter';
+import { beforeBreadcrumb, isFirstPartyEvent, withoutGiftTokens } from './sentryEventFilter';
 
 shimFind();
 
@@ -13,7 +13,8 @@ if (isProduction) {
     environment: process.env.NODE_ENV,
     sampleRate: 1.0,
     denyUrls: [/^iabjs:\/\//, /extensions\//, /^chrome(-extension)?:\/\//, /^moz-extension:\/\//],
-    beforeSend: (event) => (isFirstPartyEvent(event) ? event : null),
+    beforeSend: (event) => (isFirstPartyEvent(event) ? withoutGiftTokens(event) : null),
+    beforeBreadcrumb,
   });
 
   // Rejection tracking prevents a common issue where React gets into an

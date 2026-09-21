@@ -39,8 +39,7 @@
   t.src=v;s=b.getElementsByTagName(e)[0];
   s.parentNode.insertBefore(t,s)}(window, document,'script',
   'https://connect.facebook.net/en_US/fbevents.js');
-  // A gift link URL carries a token that opens a page naming a child, and a pixel PageView would
-  // send the whole URL to Meta. Nothing on those pages is tracked.
+  // A PageView reports the URL, and a gift URL carries a token that names a child.
   if (!/^\/kingitus(\/|$)/.test(window.location.pathname)) {
     fbq('init', '264307013931375');
     fbq('track', 'PageView');
