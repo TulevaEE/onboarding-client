@@ -599,18 +599,7 @@ function emptyPortfolio(): Portfolio {
   return {
     from: today,
     to: today,
-    groups: [
-      {
-        group: 'SAVINGS_FUND',
-        startValue: 0,
-        endValue: 0,
-        contributions: 0,
-        withdrawals: 0,
-        gain: 0,
-        gainPercentage: 0,
-        annualReturnRate: null,
-      },
-    ],
+    groups: [],
     series: [],
   };
 }
