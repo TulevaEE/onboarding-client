@@ -11,6 +11,7 @@ import { formatDate } from '../../common/dateFormatter';
 import { formatAmountForCount, isActingAsSelf } from '../../common/utils';
 import { Breakpoint, TableColumn } from '../../common/table/Table';
 import { getOtherTransactionPages } from './getOtherTransactionPages';
+import { signedUnits } from '../../common/transactions';
 
 export const TransactionSection: React.FunctionComponent<{
   limit?: number;
@@ -65,9 +66,7 @@ export const TransactionSection: React.FunctionComponent<{
     }
     const allSameFund =
       fundTransactions.length > 0 && new Set(fundTransactions.map((t) => t.isin)).size === 1;
-    const unitsSum = sumBy(fundTransactions, (transaction) =>
-      transaction.type === 'SUBTRACTION' ? -(transaction.units ?? 0) : transaction.units ?? 0,
-    );
+    const unitsSum = sumBy(fundTransactions, signedUnits);
     return [
       {
         title: <FormattedMessage id="transactions.columns.units.title" />,
@@ -145,12 +144,7 @@ export const TransactionSection: React.FunctionComponent<{
           fund: <span>{transaction.fundName}</span>,
           ...(!limit &&
             transaction.units != null && {
-              // Backend returns positive units for subtractions (unlike amounts which are negative).
-              // Negate here to match the amount sign convention. Remove if backend starts returning signed units.
-              units: formatAmountForCount(
-                transaction.type === 'SUBTRACTION' ? -transaction.units : transaction.units,
-                2,
-              ),
+              units: formatAmountForCount(signedUnits(transaction), 2),
             }),
           amount: <Euro amount={transaction.amount} />,
           key: transaction.time,

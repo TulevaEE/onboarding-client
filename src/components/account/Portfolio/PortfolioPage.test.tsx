@@ -244,7 +244,7 @@ const pillarFund = {
 const savingsTransaction = (
   time: string,
   units: number,
-  nav: number,
+  nav: number | null,
   amount: number,
   type: Transaction['type'] = 'CONTRIBUTION_CASH',
 ): Transaction => ({
@@ -514,6 +514,10 @@ describe('the savings fund statement', () => {
 
   const justAfterMidnightInTallinn = savingsTransaction('2025-12-31T22:30:00Z', 3, 1.4, 4.2);
 
+  const unitsGivenAway = savingsTransaction('2025-09-01T10:00:00Z', 4, null, -4.8, 'TRANSFER_OUT');
+
+  const unitsReceived = savingsTransaction('2025-09-15T10:00:00Z', 6, null, 7.2, 'TRANSFER_IN');
+
   const downloadedCsv = async (): Promise<{ filename: string; text: string }> => {
     const [content, filename] = (download as jest.Mock).mock.calls[0];
     expect(content).toBeInstanceOf(Blob);
@@ -580,6 +584,40 @@ describe('the savings fund statement', () => {
     expect(screen.getAllByText(/10[.,]0000/)).not.toHaveLength(0);
     expect(screen.getByText('Closing balance 31.12.2025')).toBeInTheDocument();
     expect(screen.getAllByText(/25[.,]0000/)).not.toHaveLength(0);
+  });
+
+  it('takes units transferred away off the period total and the closing balance', async () => {
+    accountHolding([...holdingHistory, unitsGivenAway]);
+    initializeComponent();
+
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(await screen.findByText('Closing balance 31.12.2025')).toBeInTheDocument();
+    // 10 units held before the period; 20 bought, 5 redeemed and 4 given away within it.
+    expect(screen.getAllByText(/[−-]4[.,]0000/)).not.toHaveLength(0);
+    expect(screen.getAllByText(/11[.,]0000/)).not.toHaveLength(0);
+    expect(screen.getAllByText(/21[.,]0000/)).not.toHaveLength(0);
+  });
+
+  it('names transferred units rather than calling them a contribution', async () => {
+    accountHolding([...holdingHistory, unitsGivenAway, unitsReceived]);
+    initializeComponent();
+
+    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
+    expect(screen.getAllByText('Units transferred')).not.toHaveLength(0);
+    expect(screen.getAllByText('Units received')).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    expect(text).toContain('01.09.2025;Units transferred;-4,0000;;-4,80');
+    expect(text).toContain('15.09.2025;Units received;6,0000;;7,20');
   });
 
   it('downloads the period as CSV', async () => {

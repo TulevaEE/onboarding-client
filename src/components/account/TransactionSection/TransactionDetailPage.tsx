@@ -6,8 +6,17 @@ import { Euro } from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { dayInTallinn, formatDateYear, timeInTallinn } from '../../common/dateFormatter';
 import { usePageTitle } from '../../common/usePageTitle';
-import { Fund, User } from '../../common/apiModels';
+import { Fund, TransactionType, User } from '../../common/apiModels';
 import { getBankName } from '../../common/iban';
+import { TranslationKey } from '../../translations';
+
+const TYPE_LABEL: Record<TransactionType, TranslationKey> = {
+  CONTRIBUTION_CASH: 'transactions.detail.type.subscription',
+  CONTRIBUTION_CASH_WORKPLACE: 'transactions.detail.type.subscription',
+  SUBTRACTION: 'transactions.detail.type.redemption',
+  TRANSFER_IN: 'transactions.detail.type.transferIn',
+  TRANSFER_OUT: 'transactions.detail.type.transferOut',
+};
 
 const NAV_SCALE_BY_ISIN: Record<string, number> = {
   EE3600109435: 5, // TUK75
@@ -24,12 +33,12 @@ function decimalPlaces(n: number): number {
   return dotIndex === -1 ? 0 : str.length - dotIndex - 1;
 }
 
-function navScaleFor(transaction: { isin: string; nav: number }): number {
-  const known = NAV_SCALE_BY_ISIN[transaction.isin];
+function navScaleFor(isin: string, nav: number): number {
+  const known = NAV_SCALE_BY_ISIN[isin];
   if (known !== undefined) {
     return known;
   }
-  return Math.max(MIN_NAV_SCALE, decimalPlaces(transaction.nav));
+  return Math.max(MIN_NAV_SCALE, decimalPlaces(nav));
 }
 
 function formatUnits(units: number): string {
@@ -82,6 +91,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
   const fund = funds.find((f) => f.isin === transaction.isin);
   const isSavingsFund = fund?.pillar === null;
   const isRedemption = transaction.type === 'SUBTRACTION';
+  const isTransfer = transaction.type === 'TRANSFER_IN' || transaction.type === 'TRANSFER_OUT';
   const holder = unitHolderName(user);
   const bankName = transaction.counterpartyIban && getBankName(transaction.counterpartyIban);
 
@@ -100,11 +110,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
           <FormattedMessage id="transactions.detail.type" />
         </dt>
         <dd className="col-sm-8">
-          {isRedemption ? (
-            <FormattedMessage id="transactions.detail.type.redemption" />
-          ) : (
-            <FormattedMessage id="transactions.detail.type.subscription" />
-          )}
+          <FormattedMessage id={TYPE_LABEL[transaction.type]} />
         </dd>
 
         <dt className="col-sm-4 mb-sm-2 text-balance">
@@ -134,7 +140,21 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
               <FormattedMessage id="transactions.detail.nav" />
             </dt>
             <dd className="col-sm-8">
-              <Euro amount={transaction.nav} fractionDigits={navScaleFor(transaction)} />
+              <Euro
+                amount={transaction.nav}
+                fractionDigits={navScaleFor(transaction.isin, transaction.nav)}
+              />
+            </dd>
+          </>
+        )}
+
+        {transaction.acquisitionCost != null && (
+          <>
+            <dt className="col-sm-4 mb-sm-2 text-balance">
+              <FormattedMessage id="transactions.detail.acquisitionCost" />
+            </dt>
+            <dd className="col-sm-8">
+              <Euro amount={transaction.acquisitionCost} />
             </dd>
           </>
         )}
@@ -172,7 +192,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
         </dt>
         <dd className="col-sm-8">{formatDateYear(dayInTallinn(transaction.time))}</dd>
 
-        {isSavingsFund && (
+        {isSavingsFund && !isTransfer && (
           <>
             <dt className="col-sm-4 mb-sm-2 text-balance">
               <FormattedMessage id="transactions.detail.paymentMethod" />

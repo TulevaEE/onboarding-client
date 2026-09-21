@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { IntlProvider } from 'react-intl';
 import { TransactionSection } from './TransactionSection';
-import { contribution, subtraction } from './fixtures';
+import { contribution, subtraction, transferIn, transferOut } from './fixtures';
 import { fundsBackend, userBackend } from '../../../test/backend';
 import { initializeConfiguration } from '../../config/config';
 import { getAuthentication } from '../../common/authenticationManager';
@@ -140,6 +140,15 @@ describe('Transaction section', () => {
     initializeComponent({ pillar: 3 });
     expect(await screen.findByText('transactions.columns.units.title')).toBeInTheDocument();
     expect(screen.getAllByText('−10.00')).toHaveLength(2);
+  });
+
+  it('shows negative units for units transferred away and sums both transfers in the footer', async () => {
+    mockTransactions([transferIn, transferOut]);
+    initializeComponent({ pillar: null });
+    expect(await screen.findByText('transactions.columns.units.title')).toBeInTheDocument();
+    expect(screen.getByText('100.00')).toBeInTheDocument();
+    expect(screen.getByText('−40.00')).toBeInTheDocument();
+    expect(screen.getByText('60.00')).toBeInTheDocument();
   });
 
   it('does not show Osakud column when limit is set', async () => {

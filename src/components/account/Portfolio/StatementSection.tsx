@@ -8,11 +8,27 @@ import { Euro } from '../../common/Euro';
 import Table from '../../common/table';
 import { formatAmountForCount, isActingAsSelf } from '../../common/utils';
 import { dayInTallinn, formatDayInTallinn } from '../../common/dateFormatter';
-import { Fund, PortfolioGroupSummary, Transaction, User } from '../../common/apiModels';
+import {
+  Fund,
+  PortfolioGroupSummary,
+  Transaction,
+  TransactionType,
+  User,
+} from '../../common/apiModels';
+import { signedUnits } from '../../common/transactions';
+import { TranslationKey } from '../../translations';
 import styles from './Statement.module.scss';
 
-const signedUnits = (transaction: Transaction): number =>
-  transaction.type === 'SUBTRACTION' ? -transaction.units : transaction.units;
+const TYPE_LABEL: Record<TransactionType, TranslationKey> = {
+  CONTRIBUTION_CASH: 'savingsFund.statement.transactions.contribution',
+  CONTRIBUTION_CASH_WORKPLACE: 'savingsFund.statement.transactions.contribution',
+  SUBTRACTION: 'savingsFund.statement.transactions.redemption',
+  TRANSFER_IN: 'savingsFund.statement.transactions.transferIn',
+  TRANSFER_OUT: 'savingsFund.statement.transactions.transferOut',
+};
+
+const navText = (transaction: Transaction): string =>
+  transaction.nav === null ? '' : formatAmountForCount(transaction.nav, 5);
 
 const onDate = (transaction: Transaction): string => dayInTallinn(transaction.time);
 
@@ -66,12 +82,7 @@ export const StatementSection: React.FunctionComponent<{
   const amountSum = periodTransactions.reduce((sum, transaction) => sum + transaction.amount, 0);
 
   const typeLabel = (transaction: Transaction): string =>
-    formatMessage({
-      id:
-        transaction.type === 'SUBTRACTION'
-          ? 'savingsFund.statement.transactions.redemption'
-          : 'savingsFund.statement.transactions.contribution',
-    });
+    formatMessage({ id: TYPE_LABEL[transaction.type] });
 
   const downloadCsv = () => {
     const decimalComma = (value: number, fractionDigits: number) =>
@@ -87,7 +98,7 @@ export const StatementSection: React.FunctionComponent<{
       formatDayInTallinn(transaction.time),
       typeLabel(transaction),
       decimalComma(signedUnits(transaction), 4),
-      decimalComma(transaction.nav, 5),
+      transaction.nav === null ? '' : decimalComma(transaction.nav, 5),
       decimalComma(transaction.amount, 2),
     ]);
     const csv = [header, ...rows]
@@ -103,7 +114,7 @@ export const StatementSection: React.FunctionComponent<{
     date: <span className="text-nowrap">{formatDayInTallinn(transaction.time)}</span>,
     type: typeLabel(transaction),
     units: formatAmountForCount(signedUnits(transaction), 4),
-    nav: formatAmountForCount(transaction.nav, 5),
+    nav: navText(transaction),
     amount: <Euro amount={transaction.amount} />,
     key: transaction.id ?? transaction.time,
   }));
@@ -244,7 +255,7 @@ export const StatementSection: React.FunctionComponent<{
                 <td>{formatDayInTallinn(transaction.time)}</td>
                 <td>{typeLabel(transaction)}</td>
                 <td className="text-end">{formatAmountForCount(signedUnits(transaction), 4)}</td>
-                <td className="text-end">{formatAmountForCount(transaction.nav, 5)}</td>
+                <td className="text-end">{navText(transaction)}</td>
                 <td className="text-end">
                   <Euro amount={transaction.amount} />
                 </td>
