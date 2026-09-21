@@ -488,10 +488,16 @@ export interface Transaction {
   isin: string;
   type: TransactionType;
   units: number;
-  nav: number;
+  nav: number | null;
+  acquisitionCost?: number;
 }
 
-export type TransactionType = 'CONTRIBUTION_CASH' | 'CONTRIBUTION_CASH_WORKPLACE' | 'SUBTRACTION';
+export type TransactionType =
+  | 'CONTRIBUTION_CASH'
+  | 'CONTRIBUTION_CASH_WORKPLACE'
+  | 'SUBTRACTION'
+  | 'TRANSFER_IN'
+  | 'TRANSFER_OUT';
 export interface BaseContribution {
   time: string;
   sender: string;

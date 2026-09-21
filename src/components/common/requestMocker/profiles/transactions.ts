@@ -29,6 +29,29 @@ const savingsFundTransaction = (
   nav,
 });
 
+const savingsFundTransfer = (
+  id: string,
+  time: string,
+  units: number,
+  amount: number,
+  type: 'TRANSFER_IN' | 'TRANSFER_OUT',
+  acquisitionCost?: number,
+): Transaction => ({
+  id,
+  amount,
+  currency: 'EUR',
+  time,
+  navDate: previousDay(time),
+  priceCalculationDate: null,
+  applicationTime: null,
+  counterpartyIban: null,
+  isin: SAVINGS_FUND_ISIN,
+  type,
+  units,
+  nav: null,
+  ...(acquisitionCost !== undefined && { acquisitionCost }),
+});
+
 export const transactionsProfiles: Record<string, Transaction[]> = {
   SAVINGS_FUND_DEPOSITS: [
     {
@@ -69,6 +92,8 @@ export const transactionsProfiles: Record<string, Transaction[]> = {
     savingsFundTransaction('hist-5', yearsAgo(1, 10, 5), 30, 11.8, 'CONTRIBUTION_CASH'),
     savingsFundTransaction('hist-6', yearsAgo(0, 2, 12), 25, 12.5, 'CONTRIBUTION_CASH'),
     savingsFundTransaction('hist-7', yearsAgo(0, 4, 2), 20, 12.6, 'SUBTRACTION'),
+    savingsFundTransfer('hist-8', yearsAgo(0, 5, 18), 15, 168.75, 'TRANSFER_IN', 150),
+    savingsFundTransfer('hist-9', yearsAgo(0, 6, 4), 10, -112.5, 'TRANSFER_OUT'),
   ],
   EMPTY: [],
 };

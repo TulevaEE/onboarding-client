@@ -13,6 +13,7 @@ import { getAuthentication } from '../../common/authenticationManager';
 import { anAuthenticationManager } from '../../common/authenticationManagerFixture';
 import { Transaction } from '../../common/apiModels';
 import translations from '../../translations';
+import { inheritance, transferIn, transferOut } from './fixtures';
 
 jest.mock('react-redux');
 
@@ -396,6 +397,78 @@ describe('TransactionDetailPage', () => {
     expect(await screen.findByText(/FI2112345600000785/)).toBeInTheDocument();
     expect(valueOf('Payment method')).toMatch(/^Bank transfer from account\sFI2112345600000785$/);
   });
+
+  it.each([
+    ['TRANSFER_IN', transferIn, 'Units received'],
+    ['TRANSFER_OUT', transferOut, 'Units transferred'],
+  ])('names a %s by the direction the units moved', async (type, transaction, typeLabel) => {
+    mockTransactions([transaction]);
+
+    initializeComponent(transaction.id);
+
+    expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+    expect(valueOf('Type')).toBe(typeLabel);
+  });
+
+  it('states what the units received cost their new owner for tax purposes', async () => {
+    mockTransactions([transferIn]);
+
+    initializeComponent(transferIn.id);
+
+    expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+    expect(valueOf('Acquisition cost')).toMatch(/^420\.00\s€$/);
+  });
+
+  it('states the zero acquisition cost an heir has rather than leaving the row out', async () => {
+    mockTransactions([inheritance]);
+
+    initializeComponent(inheritance.id);
+
+    expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+    expect(valueOf('Acquisition cost')).toMatch(/^0\.00\s€$/);
+  });
+
+  it.each([
+    [
+      'TRANSFER_IN',
+      transferIn,
+      [
+        'Type',
+        'Fund',
+        'Amount',
+        'Units',
+        'Acquisition cost',
+        'Execution date',
+        'Subscription and redemption fees',
+        'Unit holder',
+        'Fund manager',
+      ],
+    ],
+    [
+      'TRANSFER_OUT',
+      transferOut,
+      [
+        'Type',
+        'Fund',
+        'Amount',
+        'Units',
+        'Execution date',
+        'Subscription and redemption fees',
+        'Unit holder',
+        'Fund manager',
+      ],
+    ],
+  ])(
+    'leaves a %s without the rows only a bank payment can fill',
+    async (type, transaction, terms) => {
+      mockTransactions([transaction]);
+
+      initializeComponent(transaction.id);
+
+      expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+      expect(screen.getAllByRole('term').map((term) => term.textContent)).toEqual(terms);
+    },
+  );
 
   it('leaves the fund manager and the unit holder out of a pension fund transaction', async () => {
     mockTransactions([
