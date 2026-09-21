@@ -268,6 +268,12 @@ describe('RepresentedPartyAccountPage while the savings balance is loading', () 
     history.push('/account');
   });
 
+  test('leaves the statement off until the register has answered about the savings fund', async () => {
+    expect(await screen.findByText('Hi, Acme OÜ representative')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Save as PDF' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Last year' })).not.toBeInTheDocument();
+  });
+
   test('shows a shimmer in place of an empty savings table', async () => {
     expect(await screen.findByText('Hi, Acme OÜ representative')).toBeInTheDocument();
     expect(await screen.findByTestId('account-statement-loader')).toBeInTheDocument();

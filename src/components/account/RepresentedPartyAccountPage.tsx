@@ -53,7 +53,7 @@ export function RepresentedPartyAccountPage() {
       </SectionHeading>
       <AccountStatement funds={savingsFunds} showProfit />
 
-      <SavingsFundStatementSection />
+      {savingsFundBalance && <SavingsFundStatementSection />}
 
       <ApplicationSection />
 

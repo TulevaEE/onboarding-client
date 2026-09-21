@@ -1474,6 +1474,7 @@
   "savingsFund.statement.document.totalContributions": "Sissemaksed kokku",
   "savingsFund.statement.document.totalWithdrawals": "Väljamaksed kokku",
   "savingsFund.statement.document.valueChange": "Väärtuse muutus perioodil",
+  "savingsFund.statement.document.pendingCash": "Raha, mis ei ole veel osakuteks tehtud",
   "savingsFund.statement.showDetails": "Näita detaile",
   "savingsFund.statement.hideDetails": "Peida detailid",
   "savingsFund.statement.tax.year": "Maksuaasta",

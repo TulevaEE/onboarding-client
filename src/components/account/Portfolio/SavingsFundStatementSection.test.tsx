@@ -418,9 +418,33 @@ describe('the savings fund statement', () => {
 
     const closing = screen.getByRole('row', { name: /Closing balance/ });
     expect(within(closing).getByText(/350[.,]00/)).toBeInTheDocument();
+    expect(within(closing).getByText('32.0000')).toBeInTheDocument();
+  });
 
+  it('keeps the money the register has not turned into units out of the value change', async () => {
+    registerHolding([], registerSavingsBalance(300, 50));
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    expect(await screen.findByText(/350[.,]00/)).toBeInTheDocument();
+
+    const pending = screen.getByRole('row', { name: /Money not yet turned into units/ });
+    expect(within(pending).getByText(/50[.,]00/)).toBeInTheDocument();
+
+    // 300 priced − 100 opening − 41.10 paid in + 6.00 taken out
     const change = screen.getByRole('row', { name: /Change in value/ });
-    expect(within(change).getByText(/214[.,]90/)).toBeInTheDocument();
+    expect(within(change).getByText(/164[.,]90/)).toBeInTheDocument();
+  });
+
+  it('leaves the pending money row off when the register holds none', async () => {
+    registerHolding([], registerSavingsBalance(300, 0));
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    expect(await screen.findByText(/300[.,]00/)).toBeInTheDocument();
+    expect(
+      screen.queryByRole('row', { name: /Money not yet turned into units/ }),
+    ).not.toBeInTheDocument();
   });
 
   it('says a period could not be served rather than leaving the one before it on screen', async () => {
@@ -436,12 +460,23 @@ describe('the savings fund statement', () => {
     expect(screen.queryByRole('row', { name: /Closing balance/ })).not.toBeInTheDocument();
   });
 
-  it('fills the start date with the first day the portfolio covers', async () => {
+  it('fills the start date with the period the statement covers, not the first priced day', async () => {
+    server.use(
+      rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
+        res(
+          ctx.json({
+            ...allTime,
+            from: '2019-03-01',
+            series: [{ date: '2020-01-01', values: { SAVINGS_FUND: 100 } }],
+          }),
+        ),
+      ),
+    );
     accountHolding(holdingHistory);
     initializeComponent();
 
     expect(await screen.findByRole('row', { name: /Closing balance/ })).toBeInTheDocument();
-    expect(screen.getByLabelText('from')).toHaveValue('2020-01-01');
+    expect(screen.getByLabelText('from')).toHaveValue('2019-03-01');
   });
 
   describe('the printed document', () => {

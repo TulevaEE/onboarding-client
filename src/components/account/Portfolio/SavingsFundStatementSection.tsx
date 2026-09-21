@@ -9,8 +9,6 @@ import { PeriodSelector } from './PeriodSelector';
 import { StatementSection } from './StatementSection';
 
 export const SavingsFundStatementSection: React.FunctionComponent = () => {
-  // Opens on the whole history: an undefined start lets the backend begin at the first
-  // price it has rather than a date the client would have to guess.
   const [period, setPeriod] = useState<{ from: string | undefined; to: string }>({
     from: undefined,
     to: moment().format('YYYY-MM-DD'),
@@ -26,10 +24,11 @@ export const SavingsFundStatementSection: React.FunctionComponent = () => {
   const savingsFundSummary = portfolio?.groups.find((group) => group.group === 'SAVINGS_FUND');
 
   const runsToToday = portfolio?.to === moment().format('YYYY-MM-DD');
-  const registerBalance =
-    runsToToday && savingsBalance.isSuccess
-      ? currentValueByGroup(undefined, savingsBalance.data).SAVINGS_FUND
-      : undefined;
+  const registerAnswered = runsToToday && savingsBalance.isSuccess;
+  const registerBalance = registerAnswered
+    ? currentValueByGroup(undefined, savingsBalance.data).SAVINGS_FUND
+    : undefined;
+  const pendingCash = registerAnswered ? savingsBalance.data?.unavailablePrice : undefined;
 
   return (
     <>
@@ -37,14 +36,11 @@ export const SavingsFundStatementSection: React.FunctionComponent = () => {
         <PeriodSelector
           from={period.from}
           to={period.to}
-          allTimeStartDate={portfolio?.series[0]?.date ?? portfolio?.from}
+          allTimeStartDate={portfolio?.from}
           onPeriodChange={onPeriodChange}
         />
       </div>
 
-      {/* A period the backend refused must take the statement off the page with it: the
-          previous period's document is kept in the cache, and printing it under the newly
-          chosen year would file the wrong numbers. */}
       {isError && (
         <div
           role="alert"
@@ -64,6 +60,7 @@ export const SavingsFundStatementSection: React.FunctionComponent = () => {
           summary={withCurrentValue(savingsFundSummary, registerBalance)}
           from={portfolio.from}
           to={portfolio.to}
+          pendingCash={pendingCash}
         />
       )}
     </>
