@@ -136,7 +136,7 @@ export const GiftLinkPage: FC = () => {
             disabled={replaceLink.isLoading}
             onClick={() =>
               replaceLink.mutate(giftLink.id, {
-                onSuccess: () => queryClient.invalidateQueries({ queryKey: ['myGiftLink'] }),
+                onSuccess: (link) => queryClient.setQueryData(['myGiftLink', childCode], link),
               })
             }
           >

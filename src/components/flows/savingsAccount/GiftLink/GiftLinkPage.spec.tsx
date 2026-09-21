@@ -1,6 +1,6 @@
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
-import { screen, waitFor } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import { QueryClient } from '@tanstack/react-query';
@@ -142,6 +142,48 @@ describe('the page where a parent gets a gift link', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/Could not make a new link/);
     expect((await findLinkField()).value).toContain('/kingitus/ABC123');
+  });
+
+  it('does not put a link made for one child on the page of another', async () => {
+    let releaseReplacement = () => {};
+    const replacementReleased = new Promise<void>((resolve) => {
+      releaseReplacement = resolve;
+    });
+    server.use(
+      rest.post(
+        'http://localhost/v1/savings-fund/gift-links/:id/replace',
+        async (req, res, ctx) => {
+          await replacementReleased;
+          return res(ctx.json({ id: 'link-2', token: 'FIRSTCHILD2' }));
+        },
+      ),
+    );
+    const queryClient = new QueryClient();
+
+    renderPage(queryClient);
+    await findLinkField();
+
+    userEvent.click(screen.getByRole('button', { name: 'Make a new link' }));
+
+    userBackend(server, { role: { type: 'PERSON', code: '48888888888', name: 'Jaan Tamm' } });
+    server.use(
+      rest.post('http://localhost/v1/savings-fund/gift-links', (req, res, ctx) =>
+        res(ctx.json({ id: 'link-b', token: 'SECONDCHILD1' })),
+      ),
+    );
+    await act(async () => {
+      await queryClient.resetQueries();
+    });
+
+    expect(await screen.findByText('Account: Jaan Tamm')).toBeInTheDocument();
+    expect((await findLinkField()).value).toContain('/kingitus/SECONDCHILD1');
+
+    releaseReplacement();
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Make a new link' })).toBeEnabled(),
+    );
+
+    expect((await findLinkField()).value).toContain('/kingitus/SECONDCHILD1');
   });
 
   it('says plainly that nothing has arrived yet', async () => {
