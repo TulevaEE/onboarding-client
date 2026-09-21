@@ -129,6 +129,19 @@ describe('the gift page a giver opens', () => {
     });
   });
 
+  it('names the bank the giver actually chose, not only the first one in the row', async () => {
+    giftPaymentBackend();
+
+    renderAt();
+    await findSubtitle();
+    userEvent.type(amountInput(), '50');
+    userEvent.click(screen.getByRole('radio', { name: 'Swedbank' }));
+    userEvent.click(giveButton());
+
+    await waitFor(() => expect(replace).toHaveBeenCalledWith('https://montonio.example/pay'));
+    expect(paymentRequest).toEqual({ amount: 50, paymentChannel: 'SWEDBANK' });
+  });
+
   it('says so when the payment cannot be started, instead of looking like it worked', async () => {
     giftPaymentBackend(500);
 
