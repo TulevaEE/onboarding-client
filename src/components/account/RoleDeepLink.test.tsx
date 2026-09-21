@@ -1,5 +1,5 @@
 import { setupServer } from 'msw/node';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { rest } from 'msw';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, MemoryHistory } from 'history';
@@ -33,10 +33,30 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 const personRole = mockUser.role;
-const acmeRole: Role = { type: 'LEGAL_ENTITY', code: '11111111', name: 'Acme OÜ' };
-const betaRole: Role = { type: 'LEGAL_ENTITY', code: '22222222', name: 'Beta OÜ' };
-const childRole: Role = { type: 'PERSON', code: '61506150006', name: 'Child Name' };
-const secondChildRole: Role = { type: 'PERSON', code: '61506150007', name: 'Second Child' };
+const acmeRole: Role = {
+  type: 'LEGAL_ENTITY',
+  code: '11111111',
+  name: 'Acme OÜ',
+  id: '11111111-1111-1111-1111-111111111111',
+};
+const betaRole: Role = {
+  type: 'LEGAL_ENTITY',
+  code: '22222222',
+  name: 'Beta OÜ',
+  id: '22222222-2222-2222-2222-222222222222',
+};
+const childRole: Role = {
+  type: 'PERSON',
+  code: '61506150006',
+  name: 'Child Name',
+  id: '33333333-3333-3333-3333-333333333333',
+};
+const secondChildRole: Role = {
+  type: 'PERSON',
+  code: '61506150007',
+  name: 'Second Child',
+  id: '44444444-4444-4444-4444-444444444444',
+};
 
 function roleSessionBackend(roles: Role[], initialRole: Role) {
   const session = { role: initialRole, switchedRole: null as SwitchRoleCommand | null };
@@ -250,6 +270,132 @@ describe('/account/child', () => {
 
     expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
     expect(session.switchedRole).toBeNull();
+  });
+});
+
+describe('/savings-fund/payment/child', () => {
+  test('switches to the child role and lands on the payment page', async () => {
+    const session = initializeWithRoles([personRole, childRole], personRole);
+
+    history.push('/savings-fund/payment/child');
+
+    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
+    expect(session.switchedRole).toEqual({ type: 'PERSON', code: '61506150006' });
+    expect(history.entries.map(({ pathname }) => pathname)).not.toContain(
+      '/savings-fund/payment/child',
+    );
+  });
+});
+
+describe('/savings-fund/payment/company', () => {
+  test('switches to the company role and lands on the payment page', async () => {
+    const session = initializeWithRoles([personRole, acmeRole], personRole);
+
+    history.push('/savings-fund/payment/company');
+
+    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
+    expect(session.switchedRole).toEqual({ type: 'LEGAL_ENTITY', code: '11111111' });
+  });
+
+  test('lands on the payment page without switching when already acting as the company', async () => {
+    const session = initializeWithRoles([personRole, acmeRole], acmeRole);
+
+    history.push('/savings-fund/payment/company');
+
+    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
+    expect(session.switchedRole).toBeNull();
+  });
+});
+
+describe('a payment deep link that names the account', () => {
+  test('switches to the named child even when another child sorts first', async () => {
+    const session = initializeWithRoles([personRole, childRole, secondChildRole], personRole);
+
+    history.push(`/savings-fund/payment/child/${secondChildRole.id}`);
+
+    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
+    expect(session.switchedRole).toEqual({ type: 'PERSON', code: secondChildRole.code });
+  });
+
+  test('switches to the named company even when another company sorts first', async () => {
+    const session = initializeWithRoles([personRole, acmeRole, betaRole], personRole);
+
+    history.push(`/savings-fund/payment/company/${betaRole.id}`);
+
+    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
+    expect(session.switchedRole).toEqual({ type: 'LEGAL_ENTITY', code: betaRole.code });
+  });
+
+  test('falls back to the first account of that kind when the id is no longer known', async () => {
+    const session = initializeWithRoles([personRole, childRole, secondChildRole], personRole);
+
+    history.push('/savings-fund/payment/child/99999999-9999-9999-9999-999999999999');
+
+    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
+    expect(session.switchedRole).toEqual({ type: 'PERSON', code: childRole.code });
+  });
+});
+
+describe('a payment deep link opened while acting as another account of the same kind', () => {
+  test('switches from one child to the child the link names', async () => {
+    const session = initializeWithRoles([personRole, childRole, secondChildRole], childRole);
+
+    history.push(`/savings-fund/payment/child/${secondChildRole.id}`);
+
+    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
+    expect(session.switchedRole).toEqual({ type: 'PERSON', code: secondChildRole.code });
+  });
+
+  test('does not switch when already acting as the child the link names', async () => {
+    const session = initializeWithRoles([personRole, childRole, secondChildRole], secondChildRole);
+
+    history.push(`/savings-fund/payment/child/${secondChildRole.id}`);
+
+    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
+    expect(session.switchedRole).toBeNull();
+  });
+});
+
+describe('a payment deep link that cannot reach the account it was opened for', () => {
+  test('stays on the account page when the member represents no child', async () => {
+    const session = initializeWithRoles([personRole], personRole);
+
+    history.push('/savings-fund/payment/child');
+
+    await waitFor(() => expect(history.location.pathname).toBe('/account'));
+    expect(session.switchedRole).toBeNull();
+  });
+
+  test('stays on the account page when the role switch fails', async () => {
+    const session = initializeWithRoles([personRole, childRole], personRole);
+    server.use(rest.post('http://localhost/v1/me/role', (_req, res, ctx) => res(ctx.status(500))));
+
+    history.push('/savings-fund/payment/child');
+
+    await waitFor(() => expect(history.location.pathname).toBe('/account'));
+    expect(session.role).toEqual(personRole);
+  });
+
+  test('carries the payment options through to the payment page', async () => {
+    initializeWithRoles([personRole, childRole], personRole);
+
+    history.push('/savings-fund/payment/child?type=RECURRING');
+
+    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
+    expect(history.location.search).toBe('?type=RECURRING');
+  });
+
+  test('opens the destination the member asked for last for the same holder', async () => {
+    const roles = [personRole, acmeRole];
+    const session = initializeWithRoles(roles, personRole);
+    const { requested, release } = holdFirstRoleSwitch(session, roles);
+
+    history.push('/account/company');
+    await requested;
+    history.push('/savings-fund/payment/company');
+    release();
+
+    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
   });
 });
 
