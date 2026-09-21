@@ -148,7 +148,7 @@ describe('the page where a parent gets a gift link', () => {
     const invitation = screen.getByLabelText('A message you can send along');
     userEvent.clear(invitation);
     userEvent.type(invitation, 'Tere vanaema!');
-    userEvent.click(screen.getAllByRole('button', { name: /copy/i })[1]);
+    userEvent.click(screen.getByRole('button', { name: 'Copy the message' }));
 
     await waitFor(() => expect(writeText).toHaveBeenCalledWith('Tere vanaema!'));
   });

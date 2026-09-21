@@ -95,10 +95,12 @@ export const GiftLinkPage: FC = () => {
           <FormattedMessage id="giftLink.parent.invitation.editIt" />
         </p>
         <div className="d-flex flex-wrap gap-3">
-          <span className="btn btn-outline-primary d-inline-flex align-items-center gap-2">
-            <CopyButton textToCopy={editedInvitation} />
+          <CopyButton
+            textToCopy={editedInvitation}
+            className="btn btn-outline-primary d-inline-flex align-items-center gap-2"
+          >
             <FormattedMessage id="giftLink.parent.invitation.copy" />
-          </span>
+          </CopyButton>
           <a className="btn btn-outline-primary" href={url} target="_blank" rel="noreferrer">
             <FormattedMessage id="giftLink.parent.seeWhatTheySee" />
           </a>
