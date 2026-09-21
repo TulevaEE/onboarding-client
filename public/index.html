@@ -4,6 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="theme-color" content="#00aeea">
+    <!--
+      This host is the application, not the public site: tuleva.ee is what belongs in a search
+      index. A gift URL carries a token that names a child, so it must never be indexed. The ban
+      lives here rather than in robots.txt on purpose: a crawler has to fetch the page to see it,
+      and a robots.txt that keeps crawlers out would also keep out the ones that build the link
+      preview shown when somebody shares a gift link in a chat.
+    -->
+    <meta name="robots" content="noindex, nofollow" />
     <meta property="og:image" content="https://tuleva.ee/wp-content/uploads/2018/11/account_1.png" />
     <meta property="og:title" content="Vaheta pensionifond tasuta otse telefonis" />
     <meta property="og:description" content="Sisene ID-kaardi, mobiil-ID või smart-ID abil." />
