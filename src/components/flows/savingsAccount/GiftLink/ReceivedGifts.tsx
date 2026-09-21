@@ -35,8 +35,8 @@ export const ReceivedGifts: FC = () => {
         </p>
       ) : (
         <div className="d-flex flex-column gap-3 mt-3">
-          {gifts.map((gift) => (
-            <div className="payment-details p-3 p-md-4" key={`${gift.receivedAt}-${gift.amount}`}>
+          {gifts.map((gift, index) => (
+            <div className="payment-details p-3 p-md-4" key={index}>
               <div className="d-flex flex-wrap column-gap-3 row-gap-1 align-items-baseline">
                 {gift.giverName ? (
                   <b>{gift.giverName}</b>

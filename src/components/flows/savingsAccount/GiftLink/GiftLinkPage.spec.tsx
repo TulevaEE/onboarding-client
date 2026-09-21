@@ -49,7 +49,10 @@ describe('the page where a parent gets a gift link', () => {
   const findLinkField = async () => (await screen.findByLabelText('Your link')) as HTMLInputElement;
 
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterEach(() => server.resetHandlers());
+  afterEach(() => {
+    server.resetHandlers();
+    jest.restoreAllMocks();
+  });
   afterAll(() => server.close());
 
   beforeEach(() => {
@@ -136,6 +139,23 @@ describe('the page where a parent gets a gift link', () => {
     expect(
       screen.getByText('On its way. The money has not reached the account yet.'),
     ).toBeInTheDocument();
+  });
+
+  it('lists two gifts of the same size that arrived in the same second as two gifts', async () => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const gift: ReceivedGift = {
+      receivedAt: '2026-09-15T10:00:00Z',
+      amount: 50,
+      giverName: 'Kristjan Tamm',
+      message: null,
+      confirmed: true,
+    };
+    giftsBackend([gift, gift]);
+
+    renderPage();
+
+    expect(await screen.findAllByText('50.00 €')).toHaveLength(2);
+    expect(consoleError).not.toHaveBeenCalled();
   });
 
   it('copies the message as the parent edited it, not as it was generated', async () => {
