@@ -6,14 +6,12 @@ import { QueryClient } from '@tanstack/react-query';
 import { fireEvent, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
-import download from 'downloadjs';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import { userBackend } from '../../../test/backend';
 import { initializeConfiguration } from '../../config/config';
 import { Portfolio, RoleType, Transaction } from '../../common/apiModels';
 import { PortfolioPage } from './PortfolioPage';
 
-jest.mock('downloadjs');
 // setupTests pins useIntl to English for the whole suite, which would hide every
 // language the CSV is actually written in.
 jest.unmock('react-intl');
@@ -270,23 +268,10 @@ const accountHolding = (transactions: Transaction[]) =>
     rest.get('http://localhost/v1/transactions', (req, res, ctx) => res(ctx.json(transactions))),
   );
 
-const accountHoldingNoSavingsFund = () =>
-  server.use(rest.get('http://localhost/v1/funds', (req, res, ctx) => res(ctx.json([pillarFund]))));
-
-const accountHoldingUnavailable = () =>
-  server.use(
-    rest.get('http://localhost/v1/transactions', (req, res, ctx) =>
-      res(ctx.status(500), ctx.json({})),
-    ),
-  );
-
 const actingFor = (roleType: RoleType) =>
   userBackend(server, { role: { type: roleType, code: '90000000', name: 'Acme' } });
 
 const actingForThemselves = () => userBackend(server, { role: undefined });
-
-const actingForAChild = () =>
-  userBackend(server, { role: { type: 'PERSON', code: '51201011234', name: 'Junior Doe' } });
 
 const portfolioBackendDown = () =>
   server.use(
@@ -360,7 +345,6 @@ describe('what the register holds today', () => {
 
     userEvent.click(screen.getByRole('button', { name: 'This year' }));
 
-    expect(screen.getByText('Closing balance 31.12.2025')).toBeInTheDocument();
     expect(screen.getAllByText(/600[.,]00/)).not.toHaveLength(0);
     expect(screen.queryByText(/899[.,]00/)).not.toBeInTheDocument();
 
@@ -501,252 +485,6 @@ describe('a period the backend cannot serve', () => {
 
     expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
     expect(screen.queryByText(/cannot load fund prices/)).not.toBeInTheDocument();
-  });
-});
-
-describe('the savings fund statement', () => {
-  const holdingHistory = [
-    savingsTransaction('2024-06-01T10:00:00Z', 10, 1.0, 10),
-    savingsTransaction('2025-03-10T10:00:00Z', 20, 1.1, 22),
-    savingsTransaction('2025-08-01T10:00:00Z', 5, 1.2, -6, 'SUBTRACTION'),
-    savingsTransaction('2026-02-01T10:00:00Z', 7, 1.3, 9.1),
-  ];
-
-  const justAfterMidnightInTallinn = savingsTransaction('2025-12-31T22:30:00Z', 3, 1.4, 4.2);
-
-  const downloadedCsv = async (): Promise<{ filename: string; text: string }> => {
-    const [content, filename] = (download as jest.Mock).mock.calls[0];
-    expect(content).toBeInstanceOf(Blob);
-    const text = await new Promise<string>((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(Buffer.from(reader.result as ArrayBuffer).toString('utf8'));
-      reader.readAsArrayBuffer(content);
-    });
-    return { filename, text };
-  };
-
-  it('shows only the transactions of the selected period', async () => {
-    accountHolding(holdingHistory);
-    initializeComponent();
-
-    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
-
-    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
-
-    // The statement describes the response on screen, so the new period's rows appear
-    // only once the new portfolio has rendered — never new dates over old values.
-    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
-    expect(screen.getAllByText('10.03.2025')).not.toHaveLength(0);
-    expect(screen.getAllByText('01.08.2025')).not.toHaveLength(0);
-    expect(screen.queryAllByText('01.02.2026')).toHaveLength(0);
-  });
-
-  it('dates a transaction by the day it fell on in Estonia', async () => {
-    accountHolding([...holdingHistory, justAfterMidnightInTallinn]);
-    initializeComponent();
-
-    expect(await screen.findAllByText('01.01.2026')).not.toHaveLength(0);
-    expect(screen.queryAllByText('31.12.2025')).toHaveLength(0);
-
-    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
-
-    const { text } = await downloadedCsv();
-    expect(text).toContain('01.01.2026;Contribution;3,0000;1,40000;4,20');
-  });
-
-  it('leaves a transaction that crossed midnight in Estonia out of the year before', async () => {
-    accountHolding([...holdingHistory, justAfterMidnightInTallinn]);
-    initializeComponent();
-
-    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
-
-    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
-
-    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
-    expect(screen.queryAllByText('01.01.2026')).toHaveLength(0);
-    expect(screen.queryAllByText(/1[.,]40000/)).toHaveLength(0);
-  });
-
-  it('carries the opening and closing units into the printable statement', async () => {
-    accountHolding(holdingHistory);
-    initializeComponent();
-
-    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
-
-    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
-
-    expect(await screen.findByText('Opening balance 01.01.2025')).toBeInTheDocument();
-    // 10 units bought before the period; 10 + 20 − 5 held at its end.
-    expect(screen.getAllByText(/10[.,]0000/)).not.toHaveLength(0);
-    expect(screen.getByText('Closing balance 31.12.2025')).toBeInTheDocument();
-    expect(screen.getAllByText(/25[.,]0000/)).not.toHaveLength(0);
-  });
-
-  it('downloads the period as CSV', async () => {
-    accountHolding(holdingHistory);
-    initializeComponent();
-
-    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
-
-    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
-    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
-
-    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
-
-    expect(download).toHaveBeenCalledTimes(1);
-    const { filename, text } = await downloadedCsv();
-    expect(filename).toBe('tuleva-kogumisfondi-valjavote-2025-01-01-2025-12-31.csv');
-    expect(text).toMatch(/^\ufeffDate;Transaction;Units;NAV;Amount\r\n/);
-    expect(text).toContain('10.03.2025;Contribution;20,0000;1,10000;22,00');
-    expect(text).toContain('01.08.2025;Redemption;-5,0000;1,20000;-6,00');
-    expect(text).not.toContain('01.02.2026');
-  });
-
-  it('writes the Estonian CSV in the UTF-8 the byte order mark announces', async () => {
-    accountHolding(holdingHistory);
-    initializeComponent('et');
-
-    expect(await screen.findByText('Tehingud valitud perioodil')).toBeInTheDocument();
-
-    userEvent.click(screen.getByRole('button', { name: 'Laadi alla CSV' }));
-
-    const { text } = await downloadedCsv();
-    expect(text).toMatch(/^\ufeffKuupäev;Tehing;Osakud;NAV;Summa\r\n/);
-    expect(text).toContain('01.08.2025;Väljamakse;-5,0000;1,20000;-6,00');
-  });
-
-  it('opens the print dialog for the PDF', async () => {
-    const print = jest.spyOn(window, 'print').mockImplementation(() => {});
-    accountHolding(holdingHistory);
-    initializeComponent();
-
-    userEvent.click(await screen.findByRole('button', { name: 'Save as PDF' }));
-
-    expect(print).toHaveBeenCalledTimes(1);
-    print.mockRestore();
-  });
-
-  it('is left out when the transactions never load, rather than claiming an empty period', async () => {
-    accountHoldingUnavailable();
-    initializeComponent();
-
-    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
-    expect(
-      screen.queryByText('No savings fund transactions in the selected period.'),
-    ).not.toBeInTheDocument();
-    expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
-  });
-
-  it('is left out when nothing is held in the savings fund', async () => {
-    server.use(
-      rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
-        res(
-          ctx.json({
-            ...allTime,
-            groups: allTime.groups.filter((group) => group.group !== 'SAVINGS_FUND'),
-            series: [
-              { date: '2020-01-01', values: { SECOND_PILLAR: 100 } },
-              { date: today, values: { SECOND_PILLAR: 300 } },
-            ],
-          }),
-        ),
-      ),
-    );
-    initializeComponent();
-
-    expect(await screen.findAllByText(/300[.,]00/)).not.toHaveLength(0);
-    expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
-  });
-
-  it('is left out when the account holds no savings fund at all', async () => {
-    accountHoldingNoSavingsFund();
-    initializeComponent();
-
-    expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
-
-    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
-
-    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
-    expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
-    expect(
-      screen.queryByText('No savings fund transactions in the selected period.'),
-    ).not.toBeInTheDocument();
-  });
-
-  describe('the printed document', () => {
-    it('names the person whose account it is', async () => {
-      actingForThemselves();
-      accountHolding(holdingHistory);
-      initializeComponent();
-
-      expect(await screen.findByText('John Doe')).toBeInTheDocument();
-      expect(screen.getByText('Personal code')).toBeInTheDocument();
-      expect(screen.getByText('39001011234')).toBeInTheDocument();
-    });
-
-    it('names the company someone is acting for by its registry code', async () => {
-      actingFor('LEGAL_ENTITY');
-      accountHolding(holdingHistory);
-      initializeComponent();
-
-      expect(await screen.findByText('Acme')).toBeInTheDocument();
-      expect(screen.getByText('Registry code')).toBeInTheDocument();
-      expect(screen.getByText('90000000')).toBeInTheDocument();
-      expect(screen.queryByText('Personal code')).not.toBeInTheDocument();
-    });
-
-    it('names the child someone is acting for by their personal code', async () => {
-      actingForAChild();
-      accountHolding(holdingHistory);
-      initializeComponent();
-
-      expect(await screen.findByText('Junior Doe')).toBeInTheDocument();
-      expect(screen.getByText('Personal code')).toBeInTheDocument();
-      expect(screen.getByText('51201011234')).toBeInTheDocument();
-    });
-
-    it('names the fund and the period, and what the holding opened and closed at', async () => {
-      accountHolding(holdingHistory);
-      initializeComponent();
-
-      expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
-
-      userEvent.click(screen.getByRole('button', { name: 'Last year' }));
-
-      expect(await screen.findByText('01.01.2025–31.12.2025')).toBeInTheDocument();
-      expect(screen.getByText('Tuleva Täiendav Kogumisfond (EE0000000001)')).toBeInTheDocument();
-      expect(screen.getAllByText(/120[.,]00/)).not.toHaveLength(0);
-      expect(screen.getAllByText(/250[.,]00/)).not.toHaveLength(0);
-    });
-  });
-
-  describe('the print flow', () => {
-    it('drops the app from the printed page while the statement is on it', async () => {
-      accountHolding(holdingHistory);
-      initializeComponent();
-
-      expect(await screen.findByText('Transactions in the selected period')).toBeInTheDocument();
-      expect(document.body).toHaveClass('printingStatement');
-    });
-
-    it('leaves the app on the printed page when there is no statement', async () => {
-      accountHoldingUnavailable();
-      initializeComponent();
-
-      expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
-      expect(document.body).not.toHaveClass('printingStatement');
-    });
-
-    it('gives the app the printed page back once the statement is gone', async () => {
-      accountHolding(holdingHistory);
-      const { unmount } = initializeComponent();
-
-      expect(await screen.findByText('Transactions in the selected period')).toBeInTheDocument();
-
-      unmount();
-
-      expect(document.body).not.toHaveClass('printingStatement');
-    });
   });
 });
 

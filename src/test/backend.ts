@@ -9,6 +9,7 @@ import {
   CapitalRow,
   Conversion,
   FundBalance,
+  Portfolio,
   Transaction,
   MemberCapitalListing,
   User,
@@ -574,6 +575,33 @@ export function transactionsBackend(
   server.use(
     rest.get('http://localhost/v1/transactions', (req, res, ctx) => res(ctx.json(transactions))),
   );
+}
+
+export function portfolioBackend(
+  server: SetupServerApi,
+  portfolio: Portfolio = emptyPortfolio(),
+): void {
+  server.use(
+    rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
+      res(
+        ctx.json({
+          ...portfolio,
+          from: req.url.searchParams.get('from') ?? portfolio.from,
+          to: req.url.searchParams.get('to') ?? portfolio.to,
+        }),
+      ),
+    ),
+  );
+}
+
+function emptyPortfolio(): Portfolio {
+  const today = moment().format('YYYY-MM-DD');
+  return {
+    from: today,
+    to: today,
+    groups: [],
+    series: [],
+  };
 }
 
 export function paymentLinkBackend(server: SetupServerApi): void {
@@ -1209,6 +1237,7 @@ const TEST_BACKENDS = {
   userCapital: userCapitalBackend,
   applications: applicationsBackend,
   transactions: transactionsBackend,
+  portfolio: portfolioBackend,
   paymentLink: paymentLinkBackend,
   secondPillarPaymentRate: secondPillarPaymentRateBackend,
   withdrawalsEligibility: withdrawalsEligibilityBackend,

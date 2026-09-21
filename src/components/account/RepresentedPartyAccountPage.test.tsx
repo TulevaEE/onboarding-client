@@ -1,5 +1,6 @@
 import { setupServer } from 'msw/node';
-import { screen } from '@testing-library/react';
+import moment from 'moment';
+import { screen, within } from '@testing-library/react';
 import { rest } from 'msw';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, MemoryHistory } from 'history';
@@ -11,6 +12,7 @@ import { mockUser } from '../../test/backend-responses';
 import { RepresentedPartyAccountPage } from './RepresentedPartyAccountPage';
 import {
   applicationsBackend,
+  portfolioBackend,
   savingsAccountStatementBackend,
   transactionsBackend,
   useTestBackendsExcept,
@@ -19,6 +21,27 @@ import {
 import { contribution } from './TransactionSection/fixtures';
 import { additionalSavingsFund } from './statusBox/fixtures';
 import { savingFundPaymentApplication } from './ApplicationSection/fixtures';
+
+const portfolioHoldingASavingsFund = {
+  from: '2020-01-01',
+  to: moment().format('YYYY-MM-DD'),
+  groups: [
+    {
+      group: 'SAVINGS_FUND' as const,
+      startValue: 0,
+      endValue: 5000,
+      contributions: 4500,
+      withdrawals: 0,
+      gain: 500,
+      gainPercentage: 11.1,
+      annualReturnRate: null,
+    },
+  ],
+  series: [
+    { date: '2020-01-01', values: { SAVINGS_FUND: 0 } },
+    { date: moment().format('YYYY-MM-DD'), values: { SAVINGS_FUND: 5000 } },
+  ],
+};
 
 const server = setupServer();
 
@@ -52,6 +75,7 @@ describe('RepresentedPartyAccountPage', () => {
       role: { type: 'LEGAL_ENTITY', code: '12345678', name: 'Acme OÜ' },
     });
     transactionsBackend(server, [contribution]);
+    portfolioBackend(server, portfolioHoldingASavingsFund);
     savingsAccountStatementBackend(server, {
       ...additionalSavingsFund,
       value: 5000,
@@ -99,6 +123,21 @@ describe('RepresentedPartyAccountPage', () => {
   test('renders pending savings fund applications', async () => {
     expect(await screen.findByText('Pending applications and transactions')).toBeInTheDocument();
     expect(screen.getByText(/deposit to Additional Savings Fund/)).toBeInTheDocument();
+  });
+
+  test('offers the company a statement it can save for its accountant', async () => {
+    expect(
+      await screen.findByRole('heading', { name: 'Transactions in the selected period', level: 2 }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Save as PDF' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Download CSV' })).toBeInTheDocument();
+  });
+
+  test('lets the company pick the financial year the statement covers', async () => {
+    expect(
+      await screen.findByRole('heading', { name: 'Transactions in the selected period', level: 2 }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Last year' })).toBeInTheDocument();
   });
 
   test('does not show a third pillar section for a represented company', async () => {
@@ -178,8 +217,10 @@ describe('RepresentedPartyAccountPage with zero balance', () => {
     expect(
       await screen.findByText(new RegExp(additionalSavingsFund.fund.name)),
     ).toBeInTheDocument();
-    // Profit and value cells both render 0.00 € for a zero-balance fund.
-    expect(screen.getAllByText(/0.00\s€/)).toHaveLength(2);
+    const savingsFundRow = screen.getByRole('row', {
+      name: new RegExp(`^${additionalSavingsFund.fund.name}`),
+    });
+    expect(within(savingsFundRow).getAllByText(/0.00\s€/)).toHaveLength(2);
     expect(screen.getByRole('link', { name: 'Deposit' })).toHaveAttribute(
       'href',
       '/savings-fund/payment',
@@ -227,9 +268,15 @@ describe('RepresentedPartyAccountPage while the savings balance is loading', () 
     history.push('/account');
   });
 
+  test('leaves the statement off until the register has answered about the savings fund', async () => {
+    expect(await screen.findByText('Hi, Acme OÜ representative')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Save as PDF' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Last year' })).not.toBeInTheDocument();
+  });
+
   test('shows a shimmer in place of an empty savings table', async () => {
     expect(await screen.findByText('Hi, Acme OÜ representative')).toBeInTheDocument();
     expect(await screen.findByTestId('account-statement-loader')).toBeInTheDocument();
-    expect(screen.queryByText(/0.00\s€/)).not.toBeInTheDocument();
+    expect(screen.queryByText(additionalSavingsFund.fund.name)).not.toBeInTheDocument();
   });
 });
