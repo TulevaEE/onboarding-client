@@ -6,7 +6,6 @@ import { PillButton } from '../../common/PillButton';
 import { TranslationKey } from '../../translations';
 import { Portfolio, PortfolioGroup, PortfolioGroupSummary } from '../../common/apiModels';
 import { PeriodSelector } from './PeriodSelector';
-import { StatementSection } from './StatementSection';
 import { buildChartSeries } from './chartSeries';
 import { ChartPoint, ValueChart } from './ValueChart';
 
@@ -80,8 +79,6 @@ export const PortfolioView: React.FunctionComponent<{
   const groups = portfolio.groups.map((summary) =>
     withCurrentValue(summary, currentValues?.[summary.group]),
   );
-
-  const savingsFundSummary = groups.find((summary) => summary.group === 'SAVINGS_FUND');
 
   const available = GROUPS.filter(({ id }) => groups.some((summary) => summary.group === id));
 
@@ -276,10 +273,6 @@ export const PortfolioView: React.FunctionComponent<{
           <FormattedMessage id="savingsFund.statement.money.explainer" />
         </p>
       </div>
-
-      {savingsFundSummary && (
-        <StatementSection summary={savingsFundSummary} from={portfolio.from} to={portfolio.to} />
-      )}
     </>
   );
 };
