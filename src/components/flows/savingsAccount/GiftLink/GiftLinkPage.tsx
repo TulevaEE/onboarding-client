@@ -3,18 +3,21 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useMe } from '../../../common/apiHooks';
+import { isChildRole } from '../../../common/utils';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { CopyButton } from '../../../common/CopyButton';
 import { SimpleList, SimpleListItem } from '../../../common/simpleList';
 import { Deposit, Defer, Verify } from '../InfoSection/assets';
 import { ReceivedGifts } from './ReceivedGifts';
-import { useMyGiftLink, useReplaceGiftLink } from './api/giftLink.api';
+import { useMyGiftLink, useReceivedGifts, useReplaceGiftLink } from './api/giftLink.api';
 
 export const GiftLinkPage: FC = () => {
   usePageTitle('giftLink.parent.pageTitle');
   const { formatMessage } = useIntl();
-  const { data: user } = useMe();
-  const { data: giftLink, isError } = useMyGiftLink();
+  const { data: user, isSuccess: userLoaded } = useMe();
+  const childCode = user?.role && isChildRole(user.role, user) ? user.role.code : undefined;
+  const { data: giftLink, isError } = useMyGiftLink(childCode);
+  const { data: gifts, isError: giftsFailed } = useReceivedGifts(childCode);
   const replaceLink = useReplaceGiftLink();
   const queryClient = useQueryClient();
 
@@ -22,6 +25,19 @@ export const GiftLinkPage: FC = () => {
   const invitation = formatMessage({ id: 'giftLink.parent.invitation' }, { url });
   const [editedInvitation, setEditedInvitation] = useState(invitation);
   useEffect(() => setEditedInvitation(invitation), [invitation]);
+
+  if (userLoaded && !childCode) {
+    return (
+      <div className="col-12 col-md-10 col-lg-7 mx-auto d-flex flex-column align-items-start gap-4">
+        <p className="m-0">
+          <FormattedMessage id="giftLink.parent.notForThisAccount" />
+        </p>
+        <Link to="/account" className="btn btn-outline-primary">
+          <FormattedMessage id="giftLink.parent.goToAccount" />
+        </Link>
+      </div>
+    );
+  }
 
   if (isError) {
     return (
@@ -107,7 +123,7 @@ export const GiftLinkPage: FC = () => {
         </div>
       </div>
 
-      <ReceivedGifts />
+      <ReceivedGifts gifts={gifts} isError={giftsFailed} />
 
       <div className="border-top pt-4 d-flex justify-content-between align-items-start">
         <Link to="/account" className="btn btn-outline-primary">

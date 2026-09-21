@@ -2,11 +2,12 @@ import { FC } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Euro } from '../../../common/Euro';
 import { formatDateYear } from '../../../common/dateFormatter';
-import { useReceivedGifts } from './api/giftLink.api';
+import { ReceivedGift } from './api/giftLink.api';
 
-export const ReceivedGifts: FC = () => {
-  const { data: gifts, isError } = useReceivedGifts();
-
+export const ReceivedGifts: FC<{ gifts: ReceivedGift[] | undefined; isError: boolean }> = ({
+  gifts,
+  isError,
+}) => {
   if (isError) {
     return (
       <div className="border-top pt-4">

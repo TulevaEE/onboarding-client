@@ -48,16 +48,24 @@ export function getMyGiftLink(): Promise<GiftLink> {
   return postWithAuthentication(getEndpoint('/v1/savings-fund/gift-links'), {});
 }
 
-export function useMyGiftLink(): UseQueryResult<GiftLink> {
-  return useQuery({ queryKey: ['myGiftLink'], queryFn: getMyGiftLink });
+export function useMyGiftLink(childCode: string | undefined): UseQueryResult<GiftLink> {
+  return useQuery({
+    queryKey: ['myGiftLink', childCode],
+    queryFn: getMyGiftLink,
+    enabled: !!childCode,
+  });
 }
 
 export function getReceivedGifts(): Promise<ReceivedGift[]> {
   return getWithAuthentication(getEndpoint('/v1/savings-fund/gift-links/gifts'), undefined);
 }
 
-export function useReceivedGifts(): UseQueryResult<ReceivedGift[]> {
-  return useQuery({ queryKey: ['receivedGifts'], queryFn: getReceivedGifts });
+export function useReceivedGifts(childCode: string | undefined): UseQueryResult<ReceivedGift[]> {
+  return useQuery({
+    queryKey: ['receivedGifts', childCode],
+    queryFn: getReceivedGifts,
+    enabled: !!childCode,
+  });
 }
 
 export function useReplaceGiftLink(): UseMutationResult<GiftLink, unknown, string> {
