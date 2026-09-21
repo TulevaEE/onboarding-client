@@ -129,6 +129,11 @@ export const GiftLinkPage: FC = () => {
           <p className="m-0 mt-2 small text-body-secondary">
             <FormattedMessage id="giftLink.parent.replace.warning" />
           </p>
+          {replaceLink.isError && (
+            <div className="alert alert-danger mt-3 mb-0 text-start" role="alert">
+              <FormattedMessage id="giftLink.parent.replace.error" />
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -94,6 +94,22 @@ describe('the page where a parent gets a gift link', () => {
     expect(replaceCalls).toBe(1);
   });
 
+  it('keeps the old link and says so when the replacement fails', async () => {
+    server.use(
+      rest.post('http://localhost/v1/savings-fund/gift-links/:id/replace', (req, res, ctx) =>
+        res(ctx.status(500), ctx.json({})),
+      ),
+    );
+
+    renderPage();
+    await findLinkField();
+
+    userEvent.click(screen.getByRole('button', { name: 'Make a new link' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/Could not make a new link/);
+    expect((await findLinkField()).value).toContain('/kingitus/ABC123');
+  });
+
   it('says plainly that nothing has arrived yet', async () => {
     renderPage();
 

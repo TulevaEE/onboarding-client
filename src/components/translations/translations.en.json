@@ -2136,6 +2136,7 @@
   "giftLink.parent.back": "Back",
   "giftLink.parent.replace": "Make a new link",
   "giftLink.parent.replace.warning": "The old link stops working.",
+  "giftLink.parent.replace.error": "Could not make a new link. The old one still works.",
   "giftLink.parent.error": "Could not load your gift link. Please try again in a moment.",
   "giftLink.gifts.title": "Gifts received",
   "giftLink.gifts.none": "No gifts have arrived yet.",
