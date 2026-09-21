@@ -2194,7 +2194,7 @@
   "giftLink.public.unavailable.description": "Meie poolel läks midagi viltu. Link on tõenäoliselt korras, proovi hetke pärast uuesti.",
   "giftLink.bankTransfer.title": "Tee pangaülekanne",
   "giftLink.bankTransfer.whenNoBank": "Kasuta seda, kui sinu panka nimekirjas ei ole.",
-  "giftLink.bankTransfer.whenOverLimit": "Üle 15 000 € makse tuleb teha pangaülekandena.",
+  "giftLink.bankTransfer.whenOverLimit": "Üle 15 000 € makse tuleb teha pangaülekandena.",
   "giftLink.bankTransfer.step1": "Logi oma internetipanka sisse",
   "giftLink.bankTransfer.step2": "Tee ülekanne järgmiste andmetega:",
   "giftLink.bankTransfer.step3": "Kinnita makse",
