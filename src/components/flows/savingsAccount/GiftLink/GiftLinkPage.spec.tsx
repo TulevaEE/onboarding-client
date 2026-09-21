@@ -15,12 +15,14 @@ describe('the page where a parent gets a gift link', () => {
 
   let tokens: string[] = [];
   let replaceCalls = 0;
+  let giftLinkRequests = 0;
 
   const giftLinkBackend = () =>
     server.use(
-      rest.post('http://localhost/v1/savings-fund/gift-links', (req, res, ctx) =>
-        res(ctx.json({ id: 'link-1', token: tokens[0] })),
-      ),
+      rest.post('http://localhost/v1/savings-fund/gift-links', (req, res, ctx) => {
+        giftLinkRequests += 1;
+        return res(ctx.json({ id: 'link-1', token: tokens[0] }));
+      }),
       rest.post('http://localhost/v1/savings-fund/gift-links/:id/replace', (req, res, ctx) => {
         replaceCalls += 1;
         tokens = tokens.slice(1);
@@ -30,9 +32,10 @@ describe('the page where a parent gets a gift link', () => {
 
   const giftsBackend = (gifts: ReceivedGift[] | 'fails') =>
     server.use(
-      rest.get('http://localhost/v1/savings-fund/gift-links/gifts', (req, res, ctx) =>
-        gifts === 'fails' ? res(ctx.status(500), ctx.json({})) : res(ctx.json(gifts)),
-      ),
+      rest.get('http://localhost/v1/savings-fund/gift-links/gifts', (req, res, ctx) => {
+        giftLinkRequests += 1;
+        return gifts === 'fails' ? res(ctx.status(500), ctx.json({})) : res(ctx.json(gifts));
+      }),
     );
 
   const renderPage = (queryClient?: QueryClient) => {
@@ -58,6 +61,7 @@ describe('the page where a parent gets a gift link', () => {
   beforeEach(() => {
     tokens = ['ABC123', 'DEF456'];
     replaceCalls = 0;
+    giftLinkRequests = 0;
     initializeConfiguration();
     userBackend(server, { role: { type: 'PERSON', code: '38888888888', name: 'Mari Tamm' } });
     giftLinkBackend();
@@ -92,6 +96,36 @@ describe('the page where a parent gets a gift link', () => {
 
     expect((await screen.findByDisplayValue(/\/kingitus\/DEF456$/)).tagName).toBe('INPUT');
     expect(replaceCalls).toBe(1);
+  });
+
+  it('sends a user looking at their own account to it, without asking for a gift link', async () => {
+    userBackend(server, {});
+
+    renderPage();
+
+    expect(await screen.findByText(/A gift link is for a child's account/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Go to account' })).toHaveAttribute('href', '/account');
+    expect(giftLinkRequests).toBe(0);
+  });
+
+  it('sends a user holding no role at all to their account, without asking for a gift link', async () => {
+    userBackend(server, { role: undefined });
+
+    renderPage();
+
+    expect(await screen.findByText(/A gift link is for a child's account/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Go to account' })).toHaveAttribute('href', '/account');
+    expect(giftLinkRequests).toBe(0);
+  });
+
+  it('sends someone acting for a company to the account, without asking for a gift link', async () => {
+    userBackend(server, { role: { type: 'LEGAL_ENTITY', code: '12345678', name: 'Acme OU' } });
+
+    renderPage();
+
+    expect(await screen.findByText(/A gift link is for a child's account/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Go to account' })).toHaveAttribute('href', '/account');
+    expect(giftLinkRequests).toBe(0);
   });
 
   it('keeps the old link and says so when the replacement fails', async () => {

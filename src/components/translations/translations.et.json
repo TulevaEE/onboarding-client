@@ -2228,6 +2228,8 @@
   "giftLink.parent.replace.warning": "Vana link lõpetab siis kehtivuse.",
   "giftLink.parent.replace.error": "Uue lingi tegemine ebaõnnestus. Vana link töötab edasi.",
   "giftLink.parent.error": "Kinkimislingi laadimine ebaõnnestus. Proovi hetke pärast uuesti.",
+  "giftLink.parent.notForThisAccount": "Kinkimislink on lapse konto jaoks. Vaheta lapse kontole ja ava see leht uuesti.",
+  "giftLink.parent.goToAccount": "Minu konto",
   "giftLink.gifts.title": "Laekunud kingitused",
   "giftLink.gifts.none": "Kingitusi ei ole veel tulnud.",
   "giftLink.gifts.noNameYet": "Pank ei ole veel kinkija nime saatnud",

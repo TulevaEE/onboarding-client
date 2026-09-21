@@ -2138,6 +2138,8 @@
   "giftLink.parent.replace.warning": "The old link stops working.",
   "giftLink.parent.replace.error": "Could not make a new link. The old one still works.",
   "giftLink.parent.error": "Could not load your gift link. Please try again in a moment.",
+  "giftLink.parent.notForThisAccount": "A gift link is for a child's account. Switch to your child's account and open this page again.",
+  "giftLink.parent.goToAccount": "Go to account",
   "giftLink.gifts.title": "Gifts received",
   "giftLink.gifts.none": "No gifts have arrived yet.",
   "giftLink.gifts.noNameYet": "The bank has not sent the giver's name yet",
