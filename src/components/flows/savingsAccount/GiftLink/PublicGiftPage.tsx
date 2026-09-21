@@ -18,6 +18,14 @@ import { startGiftPayment, usePublicGiftLink } from './api/giftLink.api';
 const MONTONIO_MAX_AMOUNT = 15000;
 const MAX_MESSAGE_LENGTH = 300;
 
+const PAYMENT_CHANNEL_BY_BANK: Record<BankKey, PaymentChannel> = {
+  swedbank: 'SWEDBANK',
+  seb: 'SEB',
+  lhv: 'LHV',
+  luminor: 'LUMINOR',
+  coop: 'COOP',
+};
+
 export const PublicGiftPage: FC = () => {
   usePageTitle('giftLink.public.pageTitle');
   const { formatMessage } = useIntl();
@@ -61,16 +69,20 @@ export const PublicGiftPage: FC = () => {
   }
 
   const payingByHand = bank === 'other' || (amount ?? 0) > MONTONIO_MAX_AMOUNT;
-  const canSubmit = !!bank && !payingByHand && (amount ?? 0) >= 1 && !submitting;
+  const paymentChannel = bank && bank !== 'other' ? PAYMENT_CHANNEL_BY_BANK[bank] : null;
+  const canSubmit = !!paymentChannel && !payingByHand && (amount ?? 0) >= 1 && !submitting;
   const canCarryAGreeting = !payingByHand;
 
   const submit = async () => {
+    if (!paymentChannel || amount === undefined) {
+      return;
+    }
     setSubmitError(false);
     setSubmitting(true);
     try {
       const { url } = await startGiftPayment(token, {
-        amount: amount as number,
-        paymentChannel: bank?.toUpperCase() as PaymentChannel,
+        amount,
+        paymentChannel,
         message: message.trim() || undefined,
       });
       window.location.replace(url);
