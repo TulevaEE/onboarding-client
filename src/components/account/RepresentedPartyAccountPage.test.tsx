@@ -1,4 +1,5 @@
 import { setupServer } from 'msw/node';
+import moment from 'moment';
 import { screen, within } from '@testing-library/react';
 import { rest } from 'msw';
 import { Route } from 'react-router-dom';
@@ -11,6 +12,7 @@ import { mockUser } from '../../test/backend-responses';
 import { RepresentedPartyAccountPage } from './RepresentedPartyAccountPage';
 import {
   applicationsBackend,
+  portfolioBackend,
   savingsAccountStatementBackend,
   transactionsBackend,
   useTestBackendsExcept,
@@ -19,6 +21,27 @@ import {
 import { contribution } from './TransactionSection/fixtures';
 import { additionalSavingsFund } from './statusBox/fixtures';
 import { savingFundPaymentApplication } from './ApplicationSection/fixtures';
+
+const portfolioHoldingASavingsFund = {
+  from: '2020-01-01',
+  to: moment().format('YYYY-MM-DD'),
+  groups: [
+    {
+      group: 'SAVINGS_FUND' as const,
+      startValue: 0,
+      endValue: 5000,
+      contributions: 4500,
+      withdrawals: 0,
+      gain: 500,
+      gainPercentage: 11.1,
+      annualReturnRate: null,
+    },
+  ],
+  series: [
+    { date: '2020-01-01', values: { SAVINGS_FUND: 0 } },
+    { date: moment().format('YYYY-MM-DD'), values: { SAVINGS_FUND: 5000 } },
+  ],
+};
 
 const server = setupServer();
 
@@ -52,6 +75,7 @@ describe('RepresentedPartyAccountPage', () => {
       role: { type: 'LEGAL_ENTITY', code: '12345678', name: 'Acme OÜ' },
     });
     transactionsBackend(server, [contribution]);
+    portfolioBackend(server, portfolioHoldingASavingsFund);
     savingsAccountStatementBackend(server, {
       ...additionalSavingsFund,
       value: 5000,

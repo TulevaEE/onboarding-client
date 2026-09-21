@@ -128,6 +128,38 @@ const pillarFund = {
   ongoingChargesFigure: 0.0039,
 };
 
+const registerSavingsBalance = (value: number, unavailableValue: number) => ({
+  fund: {
+    isin: 'EE0000000001',
+    name: 'Tuleva Täiendav Kogumisfond',
+    fundManager: { name: 'Tuleva' },
+    managementFeeRate: 0.0025,
+    pillar: null,
+    ongoingChargesFigure: 0.0025,
+  },
+  value,
+  unavailableValue,
+  currency: 'EUR',
+  activeContributions: true,
+  contributions: 0,
+  subtractions: 0,
+  profit: 0,
+  units: 1,
+});
+
+const portfolioRefusingNarrowedPeriods = () =>
+  server.use(
+    rest.get('http://localhost/v1/portfolio', (req, res, ctx) => {
+      requestedPeriods.push({
+        from: req.url.searchParams.get('from'),
+        to: req.url.searchParams.get('to'),
+      });
+      return req.url.searchParams.get('from')
+        ? res(ctx.status(500), ctx.json({}))
+        : res(ctx.json(allTime));
+    }),
+  );
+
 const savingsTransaction = (
   time: string,
   units: number,
@@ -330,7 +362,7 @@ describe('the savings fund statement', () => {
     accountHoldingUnavailable();
     initializeComponent();
 
-    await waitFor(() => expect(requestedPeriods).not.toHaveLength(0));
+    await waitFor(() => expect(screen.getByLabelText('from')).toHaveValue('2020-01-01'));
     expect(
       screen.queryByText('No savings fund transactions in the selected period.'),
     ).not.toBeInTheDocument();
@@ -358,7 +390,7 @@ describe('the savings fund statement', () => {
     );
     initializeComponent();
 
-    await waitFor(() => expect(requestedPeriods).not.toHaveLength(0));
+    await waitFor(() => expect(screen.getByLabelText('from')).toHaveValue('2020-01-01'));
     expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
   });
 
@@ -366,15 +398,50 @@ describe('the savings fund statement', () => {
     accountHoldingNoSavingsFund();
     initializeComponent();
 
-    await waitFor(() => expect(requestedPeriods).not.toHaveLength(0));
+    await waitFor(() => expect(screen.getByLabelText('from')).toHaveValue('2020-01-01'));
 
     userEvent.click(screen.getByRole('button', { name: 'Last year' }));
 
-    await waitFor(() => expect(requestedPeriods).toHaveLength(2));
+    await waitFor(() => expect(screen.getByLabelText('from')).toHaveValue('2025-01-01'));
     expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
     expect(
       screen.queryByText('No savings fund transactions in the selected period.'),
     ).not.toBeInTheDocument();
+  });
+
+  it('closes the statement at what the register holds when the period runs to today', async () => {
+    registerHolding([], registerSavingsBalance(300, 50));
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    expect(await screen.findByText(/350[.,]00/)).toBeInTheDocument();
+
+    const closing = screen.getByRole('row', { name: /Closing balance/ });
+    expect(within(closing).getByText(/350[.,]00/)).toBeInTheDocument();
+
+    const change = screen.getByRole('row', { name: /Change in value/ });
+    expect(within(change).getByText(/214[.,]90/)).toBeInTheDocument();
+  });
+
+  it('says a period could not be served rather than leaving the one before it on screen', async () => {
+    portfolioRefusingNarrowedPeriods();
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    expect(await screen.findByRole('row', { name: /Closing balance/ })).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(screen.queryByRole('row', { name: /Closing balance/ })).not.toBeInTheDocument();
+  });
+
+  it('fills the start date with the first day the portfolio covers', async () => {
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    expect(await screen.findByRole('row', { name: /Closing balance/ })).toBeInTheDocument();
+    expect(screen.getByLabelText('from')).toHaveValue('2020-01-01');
   });
 
   describe('the printed document', () => {
@@ -467,7 +534,7 @@ describe('the savings fund statement', () => {
       accountHoldingUnavailable();
       initializeComponent();
 
-      await waitFor(() => expect(requestedPeriods).not.toHaveLength(0));
+      await waitFor(() => expect(screen.getByLabelText('from')).toHaveValue('2020-01-01'));
       expect(document.body).not.toHaveClass('printingStatement');
     });
 
