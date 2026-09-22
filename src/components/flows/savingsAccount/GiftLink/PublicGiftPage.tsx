@@ -3,7 +3,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import { captureException } from '@sentry/browser';
 import { logo } from '../../../common';
-import styles from './GiftLink.module.scss';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { PaymentBankButtons } from '../../thirdPillar/ThirdPillarPayment/PaymentBankButtons';
 import { BankKey } from '../../thirdPillar/ThirdPillarPayment/types';
@@ -206,7 +205,7 @@ export const PublicGiftPage: FC = () => {
 };
 
 const GiftPageFrame: FC = ({ children }) => (
-  <div className={styles.giftPage}>
+  <div>
     <div className="container py-5">
       <div className="row justify-content-center">
         <div className="col-12 col-md-9 col-lg-7">
