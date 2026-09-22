@@ -56,6 +56,16 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({
   const onCallToAction = () => track('NUDGE_CLICK');
 
   switch (decision.key) {
+    case 'SECOND_PILLAR_START':
+      return (
+        <NudgeNotice
+          header="nudge.SECOND_PILLAR_START.header"
+          description="nudge.SECOND_PILLAR_START.description"
+          button="nudge.SECOND_PILLAR_START.button"
+          to="/2nd-pillar-flow"
+          onCallToAction={onCallToAction}
+        />
+      );
     case 'SECOND_PILLAR_TRANSFER':
       return decision.feeComparison ? (
         <FeeComparisonNudge

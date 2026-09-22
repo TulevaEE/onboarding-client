@@ -59,6 +59,7 @@ describe('Nudge decision contract', () => {
 
   it('covers every key the server can return', () => {
     expect(decisions.map(({ key }) => key)).toEqual([
+      'SECOND_PILLAR_START',
       'SECOND_PILLAR_TRANSFER',
       'SECOND_PILLAR_TRANSFER',
       'SECOND_PILLAR_PAYMENT_RATE',

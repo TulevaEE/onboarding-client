@@ -31,7 +31,7 @@ import {
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 import { FundPension } from '../../../common/apiModels/withdrawals';
 import { PaymentRateSubRow } from './PaymentRateSubRow';
-import { PaymentRateSeason } from '../../../common/apiModels/nudge';
+import { NudgeKey, PaymentRateSeason } from '../../../common/apiModels/nudge';
 import { TranslationKey } from '../../../translations';
 import styles from './SecondPillarStatusBox.module.scss';
 
@@ -45,6 +45,7 @@ export interface Props {
   pendingPaymentRate: number;
   activeFundIsin: string | undefined;
   paymentRateSeason?: PaymentRateSeason;
+  nudgeKey?: NudgeKey;
 }
 
 type RowProps = {
@@ -57,6 +58,7 @@ type RowProps = {
   mandateDeadlines: MandateDeadlines | undefined;
   leaveApplication?: Application | undefined;
   paymentRateSeason?: PaymentRateSeason;
+  nudgeKey?: NudgeKey;
 };
 
 export const SecondPillarStatusBox: React.FC<Props> = ({
@@ -69,6 +71,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   pendingPaymentRate,
   activeFundIsin,
   paymentRateSeason,
+  nudgeKey,
 }: Props) => {
   // TODO improve loading state handling here
   const { data: mandateDeadlines } = useMandateDeadlines();
@@ -91,6 +94,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     mandateDeadlines,
     leaveApplication,
     paymentRateSeason,
+    nudgeKey,
   };
 
   if (!secondPillarActive) {
@@ -467,17 +471,18 @@ const mapStateToProps = (state: State) => ({
   activeFundIsin: state.exchange.sourceFunds?.find((sourceFund) => sourceFund.activeFund)?.isin,
 });
 
-const SecondPillarMissing = ({ loading }: RowProps) => (
+const SecondPillarMissing = ({ loading, nudgeKey }: RowProps) => (
   <StatusBoxRow
     status="ERROR"
     showAction={!loading}
     name={<FormattedMessage id="account.status.choice.pillar.second" />}
     lines={[<FormattedMessage id="account.status.choice.pillar.second.missing.label" />]}
   >
-    {/* People who left the 2nd pillar can't rejoin for 10 years, so a CTA might be misleading */}
-    {/* <Link to="/2nd-pillar-flow" className="btn btn-primary"> */}
-    {/*  <FormattedMessage id="account.status.choice.pillar.second.missing.action" /> */}
-    {/* </Link> */}
+    {nudgeKey === 'SECOND_PILLAR_START' && (
+      <Link to="/2nd-pillar-flow" className="btn btn-primary">
+        <FormattedMessage id="account.status.choice.pillar.second.missing.action" />
+      </Link>
+    )}
   </StatusBoxRow>
 );
 

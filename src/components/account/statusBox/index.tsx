@@ -41,7 +41,7 @@ export const StatusBoxComponent: React.FunctionComponent<Props> = ({
 
       <div className="card card-secondary">
         <StatusBoxEmphasisProvider value={paymentRateLeads ? 'primary' : undefined}>
-          <SecondPillarStatusBox paymentRateSeason={paymentRateSeason} />
+          <SecondPillarStatusBox paymentRateSeason={paymentRateSeason} nudgeKey={decision?.key} />
         </StatusBoxEmphasisProvider>
         <StatusBoxEmphasisProvider value={paymentRateLeads ? 'secondary' : undefined}>
           <ThirdPillarStatusBox />
