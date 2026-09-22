@@ -2,7 +2,6 @@ import { FC } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import { logo } from '../../../common';
-import styles from './GiftLink.module.scss';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { usePublicGiftLink } from './api/giftLink.api';
 import { GiftDisclaimer } from './GiftDisclaimer';
@@ -13,7 +12,7 @@ export const GiftDonePage: FC = () => {
   const { data: giftLink } = usePublicGiftLink(token);
 
   return (
-    <div className={styles.giftPage}>
+    <div>
       <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-12 col-md-9 col-lg-7">
