@@ -627,12 +627,10 @@ describe('the page where a parent gets a gift link', () => {
 
     expect(await screen.findByText('Kristjan Tamm')).toBeInTheDocument();
     expect(screen.getByText(/Happy birthday!/)).toBeInTheDocument();
-    expect(
-      screen.queryByText('On its way. The money has not reached the account yet.'),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText('The money is on its way.')).not.toBeInTheDocument();
   });
 
-  it('does not invent a giver the bank has not named, and says a pending gift is pending', async () => {
+  it('shows an unnamed gift plainly and says a pending gift is on its way', async () => {
     giftsBackend([
       {
         receivedAt: '2026-09-15T10:00:00Z',
@@ -645,12 +643,8 @@ describe('the page where a parent gets a gift link', () => {
 
     openPage();
 
-    expect(
-      await screen.findByText("The bank has not sent the giver's name yet"),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText('On its way. The money has not reached the account yet.'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText('Gift')).toBeInTheDocument();
+    expect(screen.getByText('The money is on its way.')).toBeInTheDocument();
   });
 
   it('lists two gifts of the same size that arrived in the same second as two gifts', async () => {

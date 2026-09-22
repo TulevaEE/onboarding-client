@@ -2235,7 +2235,7 @@
   "giftLink.parent.pendingOnboarding": "Konto avamine on pooleli: {name}",
   "giftLink.gifts.title": "Laekunud kingitused",
   "giftLink.gifts.none": "Kingitusi ei ole veel tulnud.",
-  "giftLink.gifts.noNameYet": "Pank ei ole veel kinkija nime saatnud",
-  "giftLink.gifts.onItsWay": "Teel. Raha ei ole veel kontole jõudnud.",
+  "giftLink.gifts.noNameYet": "Kingitus",
+  "giftLink.gifts.onItsWay": "Raha on teel.",
   "giftLink.gifts.error": "Kingituste laadimine ebaõnnestus. Link ise töötab edasi."
 }
