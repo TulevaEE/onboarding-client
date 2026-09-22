@@ -3,6 +3,7 @@ import { Control, Controller, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useEligibleChildren, usePendingOnboardings } from '../../../../common/apiHooks';
 import { ChildOnboardingFormData } from '../types';
+import { pendingChildOnboardings } from '../onboardingFlows';
 import { isValidEstonianPersonalCode } from './personalCode';
 
 type ChildIdentityStepProps = {
@@ -14,7 +15,7 @@ export const ChildIdentityStep: FC<ChildIdentityStepProps> = ({ control }) => {
   const { data: eligibleChildren = [], isLoading } = useEligibleChildren();
   const { data: pendingOnboardings = [] } = usePendingOnboardings();
   const joinableChildCodes = new Set(
-    pendingOnboardings.filter(({ type }) => type === 'PERSON').map(({ code }) => code),
+    pendingChildOnboardings(pendingOnboardings).map(({ code }) => code),
   );
   const [manualEntry, setManualEntry] = useState(false);
   const childPersonalCode = useWatch({ control, name: 'childPersonalCode' });
