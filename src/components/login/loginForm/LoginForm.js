@@ -50,8 +50,8 @@ export const LoginForm = ({
 
 const isMaintenanceWindow = () => {
   const currentTime = new Date();
-  const maintenanceStart = new Date('April 21, 2026 20:00:00');
-  const maintenanceEnd = new Date('April 21, 2026 22:00:00');
+  const maintenanceStart = new Date('September 22, 2026 20:00:00');
+  const maintenanceEnd = new Date('September 22, 2026 22:00:00');
   return currentTime >= maintenanceStart && currentTime <= maintenanceEnd;
 };
 
