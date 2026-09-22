@@ -121,6 +121,12 @@ describe('Exchange actions', () => {
       sourceSelection,
       sourceSelectionExact: true,
     });
+    expect(actions.selectExchangeSources([], false, 'targetFundIsin')).toEqual({
+      type: SELECT_EXCHANGE_SOURCES,
+      sourceSelection: [],
+      sourceSelectionExact: false,
+      targetFundIsin: 'targetFundIsin',
+    });
   });
 
   it('can get target funds', async () => {

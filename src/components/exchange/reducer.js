@@ -86,10 +86,11 @@ export function isContributionsFundAlreadyActive(sourceFunds, isinToCompareTo) {
 }
 
 function getContributionFundIsin(action, state) {
-  if (!action.sourceSelectionExact && action.sourceSelection.length > 0) {
-    return action.sourceSelection[0].targetFundIsin;
+  if (action.sourceSelectionExact) {
+    return state.selectedFutureContributionsFundIsin;
   }
-  return state.selectedFutureContributionsFundIsin;
+  const targetFundIsin = action.targetFundIsin ?? action.sourceSelection[0]?.targetFundIsin;
+  return targetFundIsin ?? state.selectedFutureContributionsFundIsin;
 }
 
 function selectDefaultContributionsFund(targetFunds, sourceFunds) {
