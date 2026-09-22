@@ -2145,7 +2145,7 @@
   "giftLink.parent.pendingOnboarding": "Account opening in progress: {name}",
   "giftLink.gifts.title": "Gifts received",
   "giftLink.gifts.none": "No gifts have arrived yet.",
-  "giftLink.gifts.noNameYet": "The bank has not sent the giver's name yet",
-  "giftLink.gifts.onItsWay": "On its way. The money has not reached the account yet.",
+  "giftLink.gifts.noNameYet": "Gift",
+  "giftLink.gifts.onItsWay": "The money is on its way.",
   "giftLink.gifts.error": "Could not load the gifts. The link itself still works."
 }
