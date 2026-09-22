@@ -10,7 +10,7 @@ export const ReceivedGifts: FC<{ gifts: ReceivedGift[] | undefined; isError: boo
 }) => {
   if (isError) {
     return (
-      <div className="border-top pt-4">
+      <div>
         <h3>
           <FormattedMessage id="giftLink.gifts.title" />
         </h3>
@@ -26,7 +26,7 @@ export const ReceivedGifts: FC<{ gifts: ReceivedGift[] | undefined; isError: boo
   }
 
   return (
-    <div className="border-top pt-4">
+    <div>
       <h3>
         <FormattedMessage id="giftLink.gifts.title" />
       </h3>
@@ -35,9 +35,9 @@ export const ReceivedGifts: FC<{ gifts: ReceivedGift[] | undefined; isError: boo
           <FormattedMessage id="giftLink.gifts.none" />
         </p>
       ) : (
-        <div className="d-flex flex-column gap-3 mt-3">
+        <div className="mt-3">
           {gifts.map((gift, index) => (
-            <div className="payment-details p-3 p-md-4" key={index}>
+            <div className={`py-3 ${index > 0 ? 'border-top' : ''}`} key={index}>
               <div className="d-flex flex-wrap column-gap-3 row-gap-1 align-items-baseline">
                 {gift.giverName ? (
                   <b>{gift.giverName}</b>

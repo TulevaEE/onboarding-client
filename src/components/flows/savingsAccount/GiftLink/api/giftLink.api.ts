@@ -1,4 +1,11 @@
-import { useMutation, useQuery, UseMutationResult, UseQueryResult } from '@tanstack/react-query';
+import {
+  useIsMutating,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseMutationResult,
+  UseQueryResult,
+} from '@tanstack/react-query';
 import { getEndpoint } from '../../../../common/api';
 import { get, post, getWithAuthentication, postWithAuthentication } from '../../../../common/http';
 import { PaymentChannel } from '../../../../common/apiModels';
@@ -44,33 +51,61 @@ export function startGiftPayment(token: string, payment: GiftPayment): Promise<{
   return post(getEndpoint(`/v1/gift-links/${encodeURIComponent(token)}/payments`), payment);
 }
 
-export function getMyGiftLink(): Promise<GiftLink> {
-  return postWithAuthentication(getEndpoint('/v1/savings-fund/gift-links'), {});
+export function openGiftLink(childPersonalCode: string): Promise<GiftLink> {
+  return postWithAuthentication(getEndpoint('/v1/savings-fund/gift-links'), { childPersonalCode });
 }
 
 export function useMyGiftLink(childCode: string | undefined): UseQueryResult<GiftLink> {
   return useQuery({
     queryKey: ['myGiftLink', childCode],
-    queryFn: getMyGiftLink,
+    queryFn: () => openGiftLink(childCode as string),
     enabled: !!childCode,
   });
 }
 
-export function getReceivedGifts(): Promise<ReceivedGift[]> {
-  return getWithAuthentication(getEndpoint('/v1/savings-fund/gift-links/gifts'), undefined);
+export function getReceivedGifts(giftLinkId: string): Promise<ReceivedGift[]> {
+  return getWithAuthentication(
+    getEndpoint(`/v1/savings-fund/gift-links/${encodeURIComponent(giftLinkId)}/gifts`),
+    undefined,
+  );
 }
 
-export function useReceivedGifts(childCode: string | undefined): UseQueryResult<ReceivedGift[]> {
+export function useReceivedGifts(
+  childCode: string | undefined,
+  giftLinkId: string | undefined,
+): UseQueryResult<ReceivedGift[]> {
   return useQuery({
     queryKey: ['receivedGifts', childCode],
-    queryFn: getReceivedGifts,
-    enabled: !!childCode,
+    queryFn: () => getReceivedGifts(giftLinkId as string),
+    enabled: !!childCode && !!giftLinkId,
   });
 }
 
-export function useReplaceGiftLink(): UseMutationResult<GiftLink, unknown, string> {
+export interface ReplaceGiftLinkCommand {
+  id: string;
+  childPersonalCode: string;
+}
+
+const REPLACE_GIFT_LINK = ['replaceGiftLink'];
+
+export function useReplaceGiftLink(): UseMutationResult<GiftLink, unknown, ReplaceGiftLinkCommand> {
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) =>
-      postWithAuthentication(getEndpoint(`/v1/savings-fund/gift-links/${id}/replace`), {}),
+    mutationKey: REPLACE_GIFT_LINK,
+    mutationFn: ({ id }: ReplaceGiftLinkCommand) =>
+      postWithAuthentication(
+        getEndpoint(`/v1/savings-fund/gift-links/${encodeURIComponent(id)}/replace`),
+        {},
+      ),
+    onMutate: ({ childPersonalCode }) =>
+      queryClient.cancelQueries(['myGiftLink', childPersonalCode]),
+    onSuccess: async (link, { childPersonalCode }) => {
+      await queryClient.cancelQueries(['myGiftLink', childPersonalCode]);
+      queryClient.setQueryData(['myGiftLink', childPersonalCode], link);
+    },
   });
+}
+
+export function useIsReplacingAGiftLink(): boolean {
+  return useIsMutating({ mutationKey: REPLACE_GIFT_LINK }) > 0;
 }

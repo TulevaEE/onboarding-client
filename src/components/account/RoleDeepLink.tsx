@@ -7,6 +7,7 @@ import {
   AccountHolder,
   accountHolderFor,
   accountHolderForRole,
+  lowestByCode,
 } from '../flows/savingsAccount/accountHolder';
 import { AccountPageLoader } from './AccountPageLoader';
 
@@ -14,9 +15,6 @@ type Props = {
   holder: Exclude<AccountHolder, 'self'>;
   onRoleSwitched: () => Promise<void>;
 };
-
-const lowestByCode = (roles: Role[]): Role | undefined =>
-  [...roles].sort((a, b) => a.code.localeCompare(b.code))[0];
 
 const roleToSwitchTo = (user: User, roles: Role[], holder: AccountHolder): Role | undefined => {
   if (accountHolderFor(user) === holder) {

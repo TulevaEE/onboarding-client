@@ -52,7 +52,6 @@ const emptyChildOnboardingForm = (childPersonalCode: string): ChildOnboardingFor
 
 export const SavingsFundChildOnboarding = () => {
   const history = useHistory();
-  // Router state, never the URL: the minor's code must stay out of history and logs.
   const { state: locationState } = useLocation<{ childPersonalCode?: string } | undefined>();
   const switcherPickedChildCode = locationState?.childPersonalCode ?? '';
   const arrivedFromSwitcher = Boolean(switcherPickedChildCode);

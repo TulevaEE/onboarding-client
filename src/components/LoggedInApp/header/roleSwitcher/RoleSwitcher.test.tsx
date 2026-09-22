@@ -27,6 +27,7 @@ import { RoleSwitcher } from './RoleSwitcher';
 // work — and so child onboarding can be toggled (pending entries only show while
 // the child flow route is reachable).
 jest.mock('../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows', () => ({
+  ...jest.requireActual('../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows'),
   isCompanyOnboardingEnabled: jest.fn(() => true),
   isChildOnboardingEnabled: jest.fn(() => true),
 }));

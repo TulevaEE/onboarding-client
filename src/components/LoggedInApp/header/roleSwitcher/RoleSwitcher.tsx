@@ -8,8 +8,10 @@ import { AccountIcon, AccountIconKind } from '../../../common/AccountIcon';
 import { isChildRole } from '../../../common/utils';
 import LanguageSwitcher from '../languageSwitcher';
 import {
+  childOnboardingLocation,
   isChildOnboardingEnabled,
   isCompanyOnboardingEnabled,
+  pendingChildOnboardings,
 } from '../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
 
 type Props = {
@@ -126,8 +128,8 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
 
   const displayName = user?.role?.name ?? userName;
   const companyOnboardingEnabled = isCompanyOnboardingEnabled();
-  const pendingChildOnboardings = pendingOnboardings.filter(({ type }) => type === 'PERSON');
-  const hasPendingChildOnboardings = childOnboardingEnabled && pendingChildOnboardings.length > 0;
+  const pendingChildren = pendingChildOnboardings(pendingOnboardings);
+  const hasPendingChildren = childOnboardingEnabled && pendingChildren.length > 0;
 
   const handleRoleClick = async (command: SwitchRoleCommand, isCurrent: boolean) => {
     setOpen(false);
@@ -250,16 +252,12 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                   </button>
                 );
               })}
-              {hasPendingChildOnboardings &&
-                pendingChildOnboardings.map(({ code, name }) => (
+              {hasPendingChildren &&
+                pendingChildren.map(({ code, name }) => (
                   <Link
                     key={code}
                     className="dropdown-item text-wrap d-flex align-items-center gap-2"
-                    // Router state, never the URL: the minor's code must stay out of history and logs.
-                    to={{
-                      pathname: '/savings-fund/onboarding/child',
-                      state: { childPersonalCode: code },
-                    }}
+                    to={childOnboardingLocation(code)}
                     onClick={() => setOpen(false)}
                     onKeyDown={handleKeyDown}
                   >
