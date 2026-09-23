@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Role } from '../../../common/apiModels';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 
 type Props = {
   options: Role[];
@@ -15,7 +16,9 @@ export const ChildPicker: FC<Props> = ({ options, chosen, onChoose }) => (
         <span className="fs-3 fw-semibold">
           <FormattedMessage id="giftLink.parent.child" />
         </span>
-        <p className="form-control-plaintext form-control-lg m-0">{options[0].name}</p>
+        <p className={`form-control-plaintext form-control-lg m-0 ${PII_CLASS}`}>
+          {options[0].name}
+        </p>
       </>
     ) : (
       <>
@@ -24,7 +27,7 @@ export const ChildPicker: FC<Props> = ({ options, chosen, onChoose }) => (
         </label>
         <select
           id="gift-link-child"
-          className="form-select form-select-lg"
+          className={`form-select form-select-lg ${PII_CLASS}`}
           value={chosen}
           onChange={(event) => onChoose(event.target.value)}
         >

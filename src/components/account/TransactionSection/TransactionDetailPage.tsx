@@ -9,6 +9,7 @@ import { usePageTitle } from '../../common/usePageTitle';
 import { Fund, TransactionType, User } from '../../common/apiModels';
 import { getBankName } from '../../common/iban';
 import { TranslationKey } from '../../translations';
+import { PII_CLASS } from '../../tracking/piiMarkup';
 
 const TYPE_LABEL: Record<TransactionType, TranslationKey> = {
   CONTRIBUTION_CASH: 'transactions.detail.type.subscription',
@@ -105,7 +106,7 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
           <FormattedMessage id="transactions.detail.back" />
         </Link>
       </div>
-      <dl className="row text-pretty">
+      <dl className={`row text-pretty ${PII_CLASS}`}>
         <dt className="col-sm-4 mb-sm-2 text-balance">
           <FormattedMessage id="transactions.detail.type" />
         </dt>

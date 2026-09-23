@@ -5,6 +5,7 @@ import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import { initializeConfiguration } from '../../../config/config';
 import LoggedInApp from '../../../LoggedInApp';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import {
   pensionAccountStatementBackend,
@@ -89,6 +90,7 @@ describe('withdrawals flow with both pillars', () => {
     ).toBeInTheDocument();
 
     expect(await screen.findByText(/EE591254471322749514/i)).toBeInTheDocument();
+    expect(screen.getByText('EE591254471322749514')).toHaveClass(PII_CLASS);
     expect(await screen.findByText(/Citadele/)).toBeInTheDocument();
     expect(await screen.findByText('EST')).toBeInTheDocument();
 

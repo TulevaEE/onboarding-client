@@ -11,6 +11,7 @@ import { mockUser } from '../../../../test/backend-responses';
 import { Role } from '../../../common/apiModels';
 import { ReceivedGift } from './api/giftLink.api';
 import { GiftLinkPage } from './GiftLinkPage';
+import { isInsidePii } from '../../../tracking/piiMarkup';
 
 describe('the page where a parent gets a gift link', () => {
   const server = setupServer();
@@ -89,6 +90,52 @@ describe('the page where a parent gets a gift link', () => {
 
     expect(await screen.findByText('Mari Tamm')).toBeInTheDocument();
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+  });
+
+  it('marks the name of the one child as personal data for analytics', async () => {
+    openPage();
+
+    expect(isInsidePii(await screen.findByText('Mari Tamm'))).toBe(true);
+  });
+
+  it('marks the picker of several children as personal data for analytics', async () => {
+    rolesBackend(server, [self, jaan, mari]);
+
+    openPage();
+
+    expect(isInsidePii(await findChildPicker())).toBe(true);
+  });
+
+  it('marks an account opening named after the child as personal data for analytics', async () => {
+    rolesBackend(server, [self]);
+    pendingOnboardingsBackend(server, [
+      { type: 'PERSON', code: '61212120000', name: 'Liisa Tamm' },
+    ]);
+
+    openPage();
+
+    expect(
+      isInsidePii(
+        await screen.findByRole('link', { name: 'Account opening in progress: Liisa Tamm' }),
+      ),
+    ).toBe(true);
+  });
+
+  it('marks who gave a gift, how much and what they wrote as personal data for analytics', async () => {
+    giftsBackend([
+      {
+        receivedAt: '2026-09-15T10:00:00Z',
+        amount: 50,
+        giverName: 'Kristjan Tamm',
+        message: 'Happy birthday!',
+        confirmed: true,
+      },
+    ]);
+
+    openPage();
+
+    expect(isInsidePii(await screen.findByText('Kristjan Tamm'))).toBe(true);
+    expect(isInsidePii(screen.getByText(/Happy birthday!/))).toBe(true);
   });
 
   it('hands the parent a link they can copy, made for that child', async () => {

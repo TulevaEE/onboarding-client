@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWrapped } from '../../../../test/utils';
 import { OnboardingFlowLayout } from './OnboardingFlowLayout';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 
 const defaultProps = {
   currentStep: 3,
@@ -25,6 +26,12 @@ describe('OnboardingFlowLayout', () => {
     // eslint-disable-next-line testing-library/no-node-access
     const bar = progressBar.querySelector('.progress-bar');
     expect(bar).toHaveStyle({ width: '37.5%' });
+  });
+
+  it('marks the subtitle, which names the child, as personal data for analytics', () => {
+    renderLayout({ subtitle: 'Mari Maasikas' });
+
+    expect(screen.getByText('Mari Maasikas')).toHaveClass(PII_CLASS);
   });
 
   it('renders step counter text', () => {

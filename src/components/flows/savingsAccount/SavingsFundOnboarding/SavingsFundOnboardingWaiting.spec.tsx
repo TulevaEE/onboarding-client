@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { renderWrapped } from '../../../../test/utils';
 import { SavingsFundOnboardingWaiting } from './SavingsFundOnboardingWaiting';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 
 const renderWaiting = (unverifiedNames?: string[]) => {
   const history = createMemoryHistory();
@@ -25,6 +26,14 @@ describe('SavingsFundOnboardingWaiting', () => {
       screen.getByText('Identity verification still missing: Jaan Näidis'),
     ).toBeInTheDocument();
     expect(screen.getByText(/Please send them this link:/i)).toBeInTheDocument();
+  });
+
+  it('marks the names it waits for as personal data for analytics', () => {
+    renderWaiting(['Jaan Näidis']);
+
+    expect(screen.getByText('Identity verification still missing: Jaan Näidis')).toHaveClass(
+      PII_CLASS,
+    );
   });
 
   it('speaks of partners in the plural when more than one is outstanding', () => {

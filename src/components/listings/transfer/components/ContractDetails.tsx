@@ -6,6 +6,7 @@ import { getTotalBookValue } from '../status/utils';
 import { ContractDetailsProps, ContractStatusProgress } from '../create/types';
 import { formatDateYear } from '../../../common/dateFormatter';
 import { getBankName } from '../../../common/iban';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 
 export const ContractDetails = ({
   seller,
@@ -23,7 +24,7 @@ export const ContractDetails = ({
         <b>
           <FormattedMessage id="capital.transfer.details.seller.label" />
         </b>
-        <div>
+        <div className={PII_CLASS}>
           <div className="fs-3">{getFullName(seller)}</div>
           <div className="text-secondary">{seller.personalCode}</div>
         </div>
@@ -34,7 +35,7 @@ export const ContractDetails = ({
         <b>
           <FormattedMessage id="capital.transfer.details.buyer.label" />
         </b>
-        <div>
+        <div className={PII_CLASS}>
           <div className="fs-3">{getFullName(buyer)}</div>
           <div className="text-secondary">{buyer.personalCode}</div>
         </div>
@@ -64,7 +65,7 @@ export const ContractDetails = ({
           <FormattedMessage id="capital.transfer.details.bankAccount.label" />
         </b>
       </div>
-      <div className="col">
+      <div className={`col ${PII_CLASS}`}>
         {sellerIban}
         <div className="text-secondary">{getBankName(sellerIban)}</div>
       </div>

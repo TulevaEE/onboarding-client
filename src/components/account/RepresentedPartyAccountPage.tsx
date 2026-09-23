@@ -5,6 +5,7 @@ import { SectionHeading } from './SectionHeading';
 import { TransactionSection } from './TransactionSection/TransactionSection';
 import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { useMe, useSavingsFundBalance, useSourceFunds } from '../common/apiHooks';
+import { PII_CLASS } from '../tracking/piiMarkup';
 
 export function RepresentedPartyAccountPage() {
   const { data: user } = useMe();
@@ -28,7 +29,7 @@ export function RepresentedPartyAccountPage() {
   return (
     <section aria-label="represented-party-account">
       {user?.role && (
-        <p className="my-5 m-0 lead">
+        <p className={`my-5 m-0 lead ${PII_CLASS}`}>
           <FormattedMessage id="account.legalEntity.greeting" values={{ name: user.role.name }} />
         </p>
       )}

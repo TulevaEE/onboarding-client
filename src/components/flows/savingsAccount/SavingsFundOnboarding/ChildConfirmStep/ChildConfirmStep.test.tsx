@@ -3,6 +3,7 @@ import { IntlProvider } from 'react-intl';
 import { renderWrapped } from '../../../../../test/utils';
 import { ChildConfirmStep } from './ChildConfirmStep';
 import translations from '../../../../translations';
+import { isInsidePii } from '../../../../tracking/piiMarkup';
 
 const renderStep = () =>
   renderWrapped(
@@ -27,5 +28,12 @@ describe('ChildConfirmStep', () => {
 
     expect(screen.getByText(/Mammu Maasikas/)).toBeInTheDocument();
     expect(screen.getByText(/07\.09\.2015/)).toBeInTheDocument();
+  });
+
+  test('marks the name and the date of birth as personal data for analytics', () => {
+    renderStep();
+
+    expect(isInsidePii(screen.getByText(/Mammu Maasikas/))).toBe(true);
+    expect(isInsidePii(screen.getByText(/07\.09\.2015/))).toBe(true);
   });
 });

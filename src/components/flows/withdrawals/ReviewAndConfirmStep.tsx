@@ -34,6 +34,7 @@ import { ErrorResponse, MandateDeadlines } from '../../common/apiModels';
 import { TranslationKey } from '../../translations';
 import { useTestMode } from '../../common/test-mode';
 import { getBankName } from '../../common/iban';
+import { PII_CLASS } from '../../tracking/piiMarkup';
 
 export const ReviewAndConfirmStep = () => {
   const {
@@ -193,7 +194,7 @@ export const ReviewAndConfirmStep = () => {
             <FormattedMessage id="withdrawals.personalDetails.bankAccount.ibanLabel" />:
           </div>
           <div className="text-end">
-            <b>{personalDetails.bankAccountIban}</b>
+            <b className={PII_CLASS}>{personalDetails.bankAccountIban}</b>
             <div className="text-secondary">
               {personalDetails.bankAccountIban
                 ? getBankName(personalDetails.bankAccountIban)

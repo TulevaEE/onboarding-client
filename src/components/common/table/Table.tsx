@@ -1,5 +1,6 @@
 import React from 'react';
 import './Table.scss';
+import { PII_CLASS } from '../../tracking/piiMarkup';
 
 export interface TableColumn {
   title: React.ReactNode;
@@ -30,7 +31,7 @@ const Table: React.FC<Props> = ({ columns, dataSource }) => (
           ))}
         </tr>
       </thead>
-      <tbody>
+      <tbody className={PII_CLASS}>
         {dataSource.map(({ key, tooltip, ...data }) => (
           <tr key={key} title={tooltip}>
             {columns.map(({ dataIndex, hideOnBreakpoint, width, align }) => (
@@ -47,7 +48,7 @@ const Table: React.FC<Props> = ({ columns, dataSource }) => (
         ))}
       </tbody>
       {dataSource.length !== 1 && columns.some(({ footer }) => !!footer) && (
-        <tfoot>
+        <tfoot className={PII_CLASS}>
           <tr>
             {columns.map(({ dataIndex, footer, hideOnBreakpoint }) => (
               <td key={dataIndex} className={getBreakpointClass(hideOnBreakpoint)}>

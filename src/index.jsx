@@ -9,11 +9,9 @@ import { IntlProvider } from 'react-intl';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 import { ConnectedRouter, routerMiddleware } from 'connected-react-router';
-import ReactGA from 'react-ga4';
 import { QueryClientProvider } from '@tanstack/react-query';
 import moment from 'moment';
 import 'moment/locale/et';
-import TagManager from 'react-gtm-module';
 
 import createRootReducer from './reducers';
 import { queryClient } from './queryClient';
@@ -36,6 +34,7 @@ import { GiftDonePage, PublicGiftPage } from './components/flows/savingsAccount/
 
 import { createTrackedEvent } from './components/common/api';
 import { shouldWriteTestMode, writeTestMode } from './components/common/test-mode';
+import { startAnalytics } from './components/tracking/startAnalytics';
 
 const history = createBrowserHistory();
 
@@ -86,20 +85,8 @@ initializeConfiguration();
 
 window.config = config; // for debug only
 
-// Analytics tools report the URL, and a gift URL carries a token that names a child.
-const isGiftPage = () => /^\/kingitus(\/|$)/.test(window.location.pathname);
-
-if (process.env.NODE_ENV !== 'test' && !isGiftPage()) {
-  TagManager.initialize({
-    gtmId: 'GTM-MRRG43',
-  });
-  ReactGA.initialize('G-2LNCGK63HR', {
-    debug: false,
-    titleCase: false,
-    gaOptions: {
-      alwaysSendReferrer: true,
-    },
-  });
+if (process.env.NODE_ENV !== 'test') {
+  startAnalytics();
 }
 
 const noop = () => null;

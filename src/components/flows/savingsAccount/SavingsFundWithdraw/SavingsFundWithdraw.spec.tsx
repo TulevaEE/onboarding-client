@@ -10,6 +10,7 @@ import LoggedInApp from '../../../LoggedInApp';
 import { initializeConfiguration } from '../../../config/config';
 import { useTestBackends, userBackend } from '../../../../test/backend';
 import { SourceFund } from '../../../common/apiModels';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 
 const mockSavingsFundBalance: SourceFund = {
   fundManager: { name: 'Tuleva' },
@@ -131,6 +132,11 @@ describe(SavingsFundWithdraw, () => {
 
     expect(screen.getByText('0 €')).toBeInTheDocument();
     expect(screen.getByText(/1\s*000[,.]50\s*€/)).toBeInTheDocument();
+  });
+
+  it('marks the balance and the bank accounts as personal data for analytics', async () => {
+    expect(await screen.findByRole('combobox', { name: 'Bank account' })).toHaveClass(PII_CLASS);
+    expect(await screen.findByText(/1\s*000[,.]50\s*€/)).toHaveClass(PII_CLASS);
   });
 
   it('populates bank account dropdown with available accounts', async () => {

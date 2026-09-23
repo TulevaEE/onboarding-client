@@ -11,6 +11,7 @@ import { initializeConfiguration } from '../../../../config/config';
 import { ChildIdentityStep } from './ChildIdentityStep';
 import { ChildOnboardingFormData } from '../types';
 import translations from '../../../../translations';
+import { PII_CLASS } from '../../../../tracking/piiMarkup';
 
 const server = setupServer();
 
@@ -165,6 +166,14 @@ describe('ChildIdentityStep', () => {
         screen.getByRole('option', { name: 'Mari Maasikas (61506150006)' }),
       ).toBeInTheDocument();
       expect(screen.getByRole('option', { name: '61001010000' })).toBeInTheDocument();
+    });
+
+    test('marks the dropdown of children as personal data for analytics', async () => {
+      renderWrapped(<Wrapper />);
+
+      expect(await screen.findByRole('combobox', { name: /personal ID code/i })).toHaveClass(
+        PII_CLASS,
+      );
     });
 
     test('accepts a child selected from the dropdown', async () => {

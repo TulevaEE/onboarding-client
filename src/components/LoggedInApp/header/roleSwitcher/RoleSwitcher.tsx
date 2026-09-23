@@ -7,6 +7,7 @@ import { Role, SwitchRoleCommand, User } from '../../../common/apiModels';
 import { AccountIcon, AccountIconKind } from '../../../common/AccountIcon';
 import { isChildRole } from '../../../common/utils';
 import LanguageSwitcher from '../languageSwitcher';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 import {
   childOnboardingLocation,
   isChildOnboardingEnabled,
@@ -160,7 +161,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
           kind={user?.role ? accountIconKind(user.role, user) : 'person'}
           testIdPrefix="active-role-icon"
         />
-        {displayName}
+        <span className={PII_CLASS}>{displayName}</span>
         {/* Screen readers otherwise hear only a name, with no hint it opens anything. */}
         <span className="visually-hidden">
           <FormattedMessage id="roleSwitcher.accountMenu" />
@@ -231,7 +232,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                     onKeyDown={handleKeyDown}
                   >
                     <AccountIcon kind={accountIconKind(role, user)} size={18} />
-                    {role.name}
+                    <span className={PII_CLASS}>{role.name}</span>
                     {isCurrent && (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -262,7 +263,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                     onKeyDown={handleKeyDown}
                   >
                     <AccountIcon kind="child" size={18} testIdPrefix="pending-role-icon" />
-                    {name}
+                    <span className={PII_CLASS}>{name}</span>
                   </Link>
                 ))}
               {companyOnboardingEnabled && (

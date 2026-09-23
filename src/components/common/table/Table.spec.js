@@ -1,5 +1,7 @@
 import { shallow } from 'enzyme';
+import { render, screen } from '@testing-library/react';
 import Table from '.';
+import { isInsidePii } from '../../tracking/piiMarkup';
 
 describe('Table', () => {
   let component;
@@ -79,6 +81,25 @@ describe('Table', () => {
 
     expect(foot().exists()).toBe(true);
     expect(footers()).toStrictEqual(['', 'rainbow']);
+  });
+
+  it('marks the rows and the totals as personal data for analytics, but not the column titles', () => {
+    render(
+      <Table
+        columns={[
+          { title: 'Fund', dataIndex: 'fund' },
+          { title: 'Value', dataIndex: 'value', footer: '3 000.00 €' },
+        ]}
+        dataSource={[
+          { fund: 'World Stocks', value: '1 000.00 €', key: 'world' },
+          { fund: 'Bonds', value: '2 000.00 €', key: 'bonds' },
+        ]}
+      />,
+    );
+
+    expect(isInsidePii(screen.getByText('1 000.00 €'))).toBe(true);
+    expect(isInsidePii(screen.getByText('3 000.00 €'))).toBe(true);
+    expect(isInsidePii(screen.getByText('Value'))).toBe(false);
   });
 
   it('does not render footer when no column footers exist', () => {

@@ -12,6 +12,7 @@ import LoggedInApp from '../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../test/utils';
 import { initializeConfiguration } from '../config/config';
 import { mockUser } from '../../test/backend-responses';
+import { isInsidePii } from '../tracking/piiMarkup';
 import {
   CapitalTransferContract,
   CapitalTransferContractState,
@@ -45,6 +46,12 @@ describe('member capital listings with no listings', () => {
   beforeEach(() => {
     memberCapitalListingsBackend(server, []);
     capitalTransferContractBackend(server);
+  });
+
+  test('marks the contact email of a new listing as personal data for analytics', async () => {
+    userEvent.click(await screen.findByText(/Add listing/i));
+
+    expect(isInsidePii(await screen.findByText(mockUser.email as string))).toBe(true);
   });
 
   test('shows empty listings screen, allows to create listing', async () => {
@@ -127,6 +134,15 @@ describe('member capital listings with listings', () => {
     userEvent.click(await screen.findByText(/See all listings/i));
 
     expect(await screen.findByText(/Member capital transfer/i)).toBeInTheDocument();
+  });
+
+  test('marks what a SELL listing contact discloses as personal data for analytics', async () => {
+    const listings = await screen.findAllByTestId('listing');
+    userEvent.click(await within(listings[2]).findByText('Contact seller'));
+
+    expect(isInsidePii(await screen.findByText('Hello! Test message!'))).toBe(true);
+    expect(isInsidePii(screen.getByText(new RegExp(mockUser.phoneNumber as string)))).toBe(true);
+    expect(isInsidePii(screen.getByText(new RegExp(mockUser.personalCode)))).toBe(true);
   });
 
   test('allows to contact for SELL listing', async () => {
@@ -252,6 +268,17 @@ describe('member capital listings with pending transactions', () => {
       .flat();
     memberCapitalListingsBackend(server);
     capitalTransferContractBackend(server, { activeContracts });
+  });
+
+  test('marks pending transfers as personal data for analytics', async () => {
+    const contracts = await screen.findAllByTestId('active-capital-transfer-contract');
+
+    expect(screen.getAllByText('Awaiting buyer’s signature: Olev Ostja').every(isInsidePii)).toBe(
+      true,
+    );
+    expect(contracts.every((contract) => isInsidePii(within(contract).getByRole('link')))).toBe(
+      true,
+    );
   });
 
   test.each([

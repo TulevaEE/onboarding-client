@@ -10,6 +10,7 @@ import { initializeConfiguration } from '../../../../config/config';
 import { renderWrapped } from '../../../../../test/utils';
 import { CompanyOnboardingFormData } from '../types';
 import { RequirementsCheckStep } from './RequirementsCheckStep';
+import { isInsidePii } from '../../../../tracking/piiMarkup';
 
 const server = setupServer();
 
@@ -96,6 +97,33 @@ describe('RequirementsCheckStep', () => {
     );
 
     expect(await screen.findByText('Telliskivi 60/1, 10412 Tallinn')).toBeInTheDocument();
+  });
+
+  it('marks the company and the people connected to it as personal data for analytics', async () => {
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(isInsidePii(await screen.findByText('Person McPerson'))).toBe(true);
+    expect(isInsidePii(screen.getByText('40404049996'))).toBe(true);
+    expect(isInsidePii(screen.getByText('Test OÜ'))).toBe(true);
+    expect(isInsidePii(screen.getByText('Telliskivi 60/1, 10412 Tallinn'))).toBe(true);
+  });
+
+  it('marks the names of people still to verify their identity as personal data for analytics', async () => {
+    server.use(relatedPersonsError(OTHER_PERSONS_KYC_ERROR));
+
+    renderWrapped(
+      <RequirementsCheckStepWrapper
+        defaultValues={{ registryNumber: '11223344', registryName: 'Test OÜ' }}
+      />,
+    );
+
+    expect(
+      isInsidePii(await screen.findByText('Identity verification still missing: Person McPerson')),
+    ).toBe(true);
   });
 
   it('renders company data from a different registry code', async () => {

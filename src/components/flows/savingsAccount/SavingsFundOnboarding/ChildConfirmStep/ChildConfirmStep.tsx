@@ -1,6 +1,7 @@
 import { FC } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { VerifiedChild } from '../types';
+import { PII_CLASS } from '../../../../tracking/piiMarkup';
 
 type ChildConfirmStepProps = {
   child: VerifiedChild;
@@ -23,7 +24,7 @@ export const ChildConfirmStep: FC<ChildConfirmStepProps> = ({ child }) => (
       </h2>
     </div>
     <div className="section-content">
-      <dl className="card p-4 m-0 d-flex flex-column gap-3">
+      <dl className={`card p-4 m-0 d-flex flex-column gap-3 ${PII_CLASS}`}>
         <div className="d-flex justify-content-between gap-3">
           <dt className="fw-normal text-body-secondary m-0">
             <FormattedMessage id="flows.savingsFundChildOnboarding.confirmStep.name" />

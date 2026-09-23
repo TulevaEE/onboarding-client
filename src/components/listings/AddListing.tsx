@@ -12,6 +12,7 @@ import Slider from '../flows/withdrawals/Slider';
 import { usePageTitle } from '../common/usePageTitle';
 import { floorValueToSecondDecimal } from './transfer/create/utils';
 import { SimpleListItem, SimpleList } from '../common/simpleList';
+import { PII_CLASS } from '../tracking/piiMarkup';
 
 type StateFromContactDetailsRedirect = {
   listingType: MemberCapitalListingType;
@@ -271,7 +272,7 @@ const AssurancesSection = ({
           <>
             <FormattedMessage id="capital.listings.create.contactDetails" />
             <br />
-            {user?.email}{' '}
+            <span className={PII_CLASS}>{user?.email}</span>{' '}
             <span className="text-secondary">
               (
               <Link
