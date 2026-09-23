@@ -10,6 +10,7 @@ import { collectErrors, errorCode, errorMessage } from './collectValidationError
 import { IDENTITY_KYC_CODES, OTHER_RELATED_PERSONS_KYC_CODE, USER_KYC_CODE } from './kycErrorCodes';
 import { mayPassRequirementsStep } from './mayPassRequirementsStep';
 import { unverifiedRelatedPersonNames } from './unverifiedRelatedPersonNames';
+import { PII_CLASS } from '../../../../tracking/piiMarkup';
 
 type RequirementsCheckStepProps = {
   control: Control<CompanyOnboardingFormData>;
@@ -91,7 +92,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
           <div className="half-column fw-bold">
             <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.companyName" />
           </div>
-          <div className="half-column">{registryName}</div>
+          <div className={`half-column ${PII_CLASS}`}>{registryName}</div>
         </div>
         <div className="d-sm-flex gap-3 align-items-center">
           <div className="half-column fw-bold">
@@ -113,7 +114,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
               <div className="half-column fw-bold">
                 <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.companyAddress" />
               </div>
-              <div className="half-column">
+              <div className={`half-column ${PII_CLASS}`}>
                 {isSuccess && data ? data.address.value.fullAddress : <Shimmer />}
               </div>
             </div>
@@ -137,7 +138,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
                     <div className="fw-bold">
                       <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.relatedPerson" />
                     </div>
-                    <div>
+                    <div className={PII_CLASS}>
                       <div className="fs-3">{person.name}</div>
                       <div>{person.personalCode}</div>
                     </div>
@@ -186,7 +187,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
                 </div>
                 <div className="d-flex flex-column gap-1">
                   {unverifiedNames.length > 0 && (
-                    <span className="fw-bold">
+                    <span className={`fw-bold ${PII_CLASS}`}>
                       <FormattedMessage
                         id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.pending"
                         values={{ names: unverifiedNames.join(', ') }}

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { getFullName } from '../../common/utils';
+import { PII_CLASS } from '../../tracking/piiMarkup';
 
 export class GreetingBar extends Component {
   componentDidMount() {}
@@ -24,12 +25,12 @@ export class GreetingBar extends Component {
     }
     return (
       <div className="my-5 d-flex flex-wrap gap-3 row-gap-2 justify-content-between align-items-baseline">
-        <p className="m-0 lead">
+        <p className={`m-0 lead ${PII_CLASS}`}>
           <FormattedMessage id="account.greeting" />, {getFullName(user)}
         </p>
         <div className="d-flex flex-wrap gap-3 row-gap-1 align-items-baseline">
-          {user.email && <span>{user.email}</span>}
-          {user.phoneNumber && <span>{user.phoneNumber}</span>}
+          {user.email && <span className={PII_CLASS}>{user.email}</span>}
+          {user.phoneNumber && <span className={PII_CLASS}>{user.phoneNumber}</span>}
           <Link className="icon-link" to="/contact-details">
             <FormattedMessage id="account.update.contact" />
           </Link>

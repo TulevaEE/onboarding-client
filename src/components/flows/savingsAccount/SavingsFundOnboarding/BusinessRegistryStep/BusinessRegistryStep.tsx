@@ -3,6 +3,7 @@ import { Control, Controller } from 'react-hook-form';
 import { CompanyOnboardingFormData } from '../types';
 import { SelectOption, SelectWithAutocomplete } from '../../../../common/SelectWithAutocomplete';
 import { BusinessRegistrySearchResult } from '../types.api';
+import { PII_CLASS } from '../../../../tracking/piiMarkup';
 
 const BUSINESS_REGISTRY_API_URL = 'https://ariregister.rik.ee/est/api/autocomplete';
 
@@ -76,7 +77,7 @@ export const BusinessRegistryStep = ({ control }: BusinessRegistryStepProps) => 
             return (
               <div>
                 <SelectWithAutocomplete<BusinessRegistryOption>
-                  className="mb-2 form-select form-select-lg"
+                  className={`mb-2 form-select form-select-lg ${PII_CLASS}`}
                   lookup={fetchSuggestions}
                   options={previousSelectionOption}
                   defaultValue={previousSelectionValue}

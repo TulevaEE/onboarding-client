@@ -29,6 +29,7 @@ import { initializeConfiguration } from '../../config/config';
 import { getAuthentication } from '../../common/authenticationManager';
 import { anAuthenticationManager } from '../../common/authenticationManagerFixture';
 import translations from '../../translations';
+import { PII_CLASS } from '../../tracking/piiMarkup';
 
 jest.mock('react-redux');
 
@@ -381,6 +382,15 @@ describe('Application section', () => {
     expect(screen.getByText(application.details.iban)).toBeInTheDocument();
     expect(screen.getByText(/Amount/i)).toBeInTheDocument();
     expect(screen.getByText('500.50 €')).toBeInTheDocument();
+  });
+
+  it('marks the bank account of a savings fund withdrawal as personal data for analytics', async () => {
+    mockApplications([savingsFundWithdrawalApplication]);
+    initializeComponent();
+
+    expect(await screen.findByText(savingsFundWithdrawalApplication.details.iban)).toHaveClass(
+      PII_CLASS,
+    );
   });
 
   function waitForRequestToFinish() {

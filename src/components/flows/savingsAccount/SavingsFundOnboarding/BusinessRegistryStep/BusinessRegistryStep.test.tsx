@@ -7,6 +7,7 @@ import { businessRegistryBackend } from '../../../../../test/backend';
 import { renderWrapped } from '../../../../../test/utils';
 import { BusinessRegistryStep } from './BusinessRegistryStep';
 import { CompanyOnboardingFormData } from '../types';
+import { isInsidePii } from '../../../../tracking/piiMarkup';
 
 const onSubmitSpy = jest.fn();
 
@@ -137,6 +138,28 @@ describe('BusinessRegistryStep', () => {
       expect(onSubmitSpy).toHaveBeenCalledWith({
         registryLookup: { registryNumber: '12345678', registryName: 'Acme Corp' },
       });
+    });
+
+    it('marks the search and the companies it finds as personal data for analytics', async () => {
+      server.use(
+        rest.get(BUSINESS_REGISTRY_URL, (_req, res, ctx) =>
+          res(
+            ctx.json({
+              data: [{ company_id: 123, name: 'Acme Corp', reg_code: '12345678' }],
+            }),
+          ),
+        ),
+      );
+
+      renderWrapped(<BusinessRegistryStepWrapper />);
+
+      const input = screen.getByPlaceholderText('Search...');
+      userEvent.type(input, 'Acme');
+
+      expect(isInsidePii(input)).toBe(true);
+      expect(
+        isInsidePii(await screen.findByRole('option', { name: /Acme Corp \(12345678\)/ })),
+      ).toBe(true);
     });
 
     it('displays API results as formatted options', async () => {

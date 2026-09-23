@@ -19,6 +19,7 @@ import {
 import { contribution } from './TransactionSection/fixtures';
 import { additionalSavingsFund } from './statusBox/fixtures';
 import { savingFundPaymentApplication } from './ApplicationSection/fixtures';
+import { PII_CLASS } from '../tracking/piiMarkup';
 
 const server = setupServer();
 
@@ -66,6 +67,10 @@ describe('RepresentedPartyAccountPage', () => {
 
   test('greets the company representative', async () => {
     expect(await screen.findByText('Hi, Acme OÜ representative')).toBeInTheDocument();
+  });
+
+  test('marks the greeting that names the company as personal data for analytics', async () => {
+    expect(await screen.findByText('Hi, Acme OÜ representative')).toHaveClass(PII_CLASS);
   });
 
   test('renders savings fund overview with deposit and withdraw links', async () => {

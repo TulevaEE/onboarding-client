@@ -6,6 +6,7 @@ import {
   CHILD_ONBOARDING_ROUTE,
   childOnboardingLocation,
 } from '../SavingsFundOnboarding/onboardingFlows';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 
 type Props = {
   pendingOnboardings: PendingOnboarding[];
@@ -20,7 +21,7 @@ export const NoChildAccount: FC<Props> = ({ pendingOnboardings }) => (
       <FormattedMessage id="giftLink.parent.noChild" />
     </p>
     {pendingOnboardings.map(({ code, name }) => (
-      <Link key={code} to={childOnboardingLocation(code)}>
+      <Link key={code} className={PII_CLASS} to={childOnboardingLocation(code)}>
         <FormattedMessage id="giftLink.parent.pendingOnboarding" values={{ name }} />
       </Link>
     ))}

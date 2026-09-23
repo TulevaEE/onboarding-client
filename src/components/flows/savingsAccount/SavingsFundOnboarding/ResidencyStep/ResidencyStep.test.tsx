@@ -5,6 +5,8 @@ import { renderWrapped } from '../../../../../test/utils';
 import { ResidencyStep } from './ResidencyStep';
 import { IdentityFormFields } from '../types';
 import translations from '../../../../translations';
+import { mockInAadress } from '../../../../../test/identityStepFills';
+import { isInsidePii } from '../../../../tracking/piiMarkup';
 
 const ResidencyStepWrapper = ({ defaultCountryCode = 'FI' }: { defaultCountryCode?: string }) => {
   const { control } = useForm<IdentityFormFields>({
@@ -39,6 +41,29 @@ describe('ResidencyStep', () => {
     renderWrapped(<ResidencyStepWrapper />);
 
     expect(screen.getByText('Riik')).toBeInTheDocument();
+  });
+
+  test('marks the Estonian address search as personal data for analytics', async () => {
+    mockInAadress();
+    renderWrapped(<ResidencyStepWrapper defaultCountryCode="EE" />);
+
+    expect(isInsidePii(await screen.findByPlaceholderText('Enter address'))).toBe(true);
+  });
+
+  test('marks the popup the address search opens outside the form as personal data for analytics', async () => {
+    (global as any).InAadress = jest.fn().mockImplementation(({ container }) => {
+      const popup = document.createElement('div');
+      popup.id = `${container}_popup`;
+      popup.textContent = 'Telliskivi 60/1';
+      document.body.append(popup);
+      document.dispatchEvent(new Event('inaadressLoaded'));
+      return { destroy: jest.fn() };
+    });
+    renderWrapped(<ResidencyStepWrapper defaultCountryCode="EE" />);
+
+    const popup = await screen.findByText('Telliskivi 60/1');
+    expect(isInsidePii(popup)).toBe(true);
+    popup.remove();
   });
 
   test('renders address fields for non-Estonian residence', () => {

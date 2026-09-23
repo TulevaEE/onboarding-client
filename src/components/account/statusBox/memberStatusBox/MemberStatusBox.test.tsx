@@ -9,6 +9,7 @@ import LoggedInApp from '../../../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import { capitalEventsBackend, userBackend, useTestBackendsExcept } from '../../../../test/backend';
 import { mockUser } from '../../../../test/backend-responses';
+import { isInsidePii } from '../../../tracking/piiMarkup';
 
 const server = setupServer();
 let history: History;
@@ -56,6 +57,14 @@ describe('member status box with existing membership but no bonus', () => {
         /Since April 1, 2019, you earn a 0.05% annual membership bonus/,
       ),
     ).toBeInTheDocument();
+  });
+
+  it('marks the member number as personal data for analytics', async () => {
+    const memberStatusRow = await lastStatusBoxRow();
+
+    expect(
+      isInsidePii(await within(memberStatusRow).findByText('You are Tuleva member no. 987')),
+    ).toBe(true);
   });
 });
 

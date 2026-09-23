@@ -29,6 +29,7 @@ import {
 } from './ApplicationFunctions';
 import { TranslationKey } from '../../translations';
 import { Card } from '../../common/card/Card';
+import { PII_CLASS } from '../../tracking/piiMarkup';
 
 export const ApplicationCard: React.FunctionComponent<{
   application: Application;
@@ -235,7 +236,7 @@ const SavingsFundWithdrawalCard: FC<{
           [
             {
               key: 'applications.type.savingFundWithdrawal.account',
-              value: application.details.iban,
+              value: <span className={PII_CLASS}>{application.details.iban}</span>,
             },
             {
               key: 'applications.type.savingFundWithdrawal.amount',

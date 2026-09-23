@@ -15,6 +15,7 @@ import { AmountInput } from '../AmountInput';
 import { InfoSection } from '../InfoSection';
 import Card from '../../../common/card';
 import { Euro } from '../../../common/Euro';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 
 const parseAmount = (value: string | number | null | undefined): number => {
   if (!value) {
@@ -134,7 +135,7 @@ export const SavingsFundWithdraw: FC = () => {
                   />
                   <div className="mt-2 d-flex justify-content-between">
                     <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
-                    <div className="text-body-secondary">
+                    <div className={classNames('text-body-secondary', PII_CLASS)}>
                       {formatAmountForCurrency(savingsFundBalance.price, 2)}
                     </div>
                   </div>
@@ -166,7 +167,7 @@ export const SavingsFundWithdraw: FC = () => {
                   render={({ field, fieldState: { error } }) => (
                     <select
                       id="bank-account"
-                      className={classNames('form-select form-select-lg', {
+                      className={classNames('form-select form-select-lg', PII_CLASS, {
                         'border-danger focus-ring focus-ring-danger': !!error,
                       })}
                       {...field}

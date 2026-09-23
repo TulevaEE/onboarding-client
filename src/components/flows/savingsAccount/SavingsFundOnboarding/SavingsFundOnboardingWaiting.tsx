@@ -3,6 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 import { StatusAlert } from '../../../common/statusAlert';
 import { usePageTitle } from '../../../common/usePageTitle';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 
 type WaitingLocationState = { unverifiedNames?: string[] } | undefined;
 
@@ -36,7 +37,7 @@ export const SavingsFundOnboardingWaiting: FC = () => {
         }
       >
         {names.length > 0 && (
-          <p className="fw-bold m-0">
+          <p className={`fw-bold m-0 ${PII_CLASS}`}>
             <FormattedMessage
               id="savingsFund.onboarding.waiting.pending"
               values={{ names: names.join(', ') }}

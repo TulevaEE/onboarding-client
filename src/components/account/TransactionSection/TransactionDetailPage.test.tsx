@@ -14,6 +14,7 @@ import { anAuthenticationManager } from '../../common/authenticationManagerFixtu
 import { Transaction } from '../../common/apiModels';
 import translations from '../../translations';
 import { inheritance, transferIn, transferOut } from './fixtures';
+import { isInsidePii } from '../../tracking/piiMarkup';
 
 jest.mock('react-redux');
 
@@ -255,6 +256,32 @@ describe('TransactionDetailPage', () => {
     expect(valueOf('Price calculation date')).toMatch(/^February\s5,\s2026$/);
     expect(valueOf('Execution date')).toMatch(/^February\s5,\s2026$/);
     expect(await screen.findByText(/^0\.00\s*€$/)).toBeInTheDocument();
+  });
+
+  it('marks the notice as personal data for analytics', async () => {
+    mockTransactions([
+      {
+        id: 'tkf100-subscription',
+        amount: 2000,
+        currency: 'EUR',
+        time: '2026-02-05T14:00:00Z',
+        navDate: '2026-02-04',
+        priceCalculationDate: '2026-02-05',
+        applicationTime: '2026-02-03T11:30:00Z',
+        counterpartyIban: 'EE651010220306497226',
+        isin: 'EE0000003283',
+        type: 'CONTRIBUTION_CASH',
+        units: 2000,
+        nav: 1,
+      },
+    ]);
+
+    initializeComponent('tkf100-subscription');
+
+    expect(isInsidePii(await screen.findByText('John Doe'))).toBe(true);
+    expect(
+      isInsidePii(screen.getByText(/^Bank transfer from account\sEE651010220306497226$/)),
+    ).toBe(true);
   });
 
   it('orders a savings fund notice from what happened to who was involved', async () => {

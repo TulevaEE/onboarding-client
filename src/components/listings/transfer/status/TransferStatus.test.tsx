@@ -10,6 +10,7 @@ import LoggedInApp from '../../../LoggedInApp';
 import { mockUser } from '../../../../test/backend-responses';
 import { getFullName } from '../../../common/utils';
 import { getBuyerDetailsSection, getSellerDetailsSection } from '../testUtils';
+import { isInsidePii } from '../../../tracking/piiMarkup';
 
 const server = setupServer();
 let history: History;
@@ -63,6 +64,15 @@ describe('capital transfer buyer flow', () => {
       currentRole: 'BUYER', // TODO correlate with /me endpoint
     });
   });
+  test('marks the parties of the contract and the account as personal data for analytics', async () => {
+    const sellerSection = await screen.findByTestId('seller-details');
+    expect(isInsidePii(await within(sellerSection).findByText('Mairo Müüja'))).toBe(true);
+    expect(isInsidePii(within(sellerSection).getByText('30303039914'))).toBe(true);
+    const buyerSection = screen.getByTestId('buyer-details');
+    expect(isInsidePii(within(buyerSection).getByText(getFullName(mockUser)))).toBe(true);
+    expect(isInsidePii(screen.getByText('EE_TEST_IBAN'))).toBe(true);
+  });
+
   test('allows buyer to sign and confirm', async () => {
     const buyerSection = await screen.findByTestId('buyer-details');
     expect(await within(buyerSection).findByText(getFullName(mockUser))).toBeInTheDocument();
@@ -89,6 +99,8 @@ describe('capital transfer buyer flow', () => {
       await screen.findByText(/Make a bank transfer/i, {}, { timeout: 3000 }),
     ).toBeInTheDocument();
     expect(await screen.findByText(/EE_TEST_IBAN/i)).toBeInTheDocument();
+    expect(isInsidePii(screen.getByText(/EE_TEST_IBAN/i))).toBe(true);
+    expect(screen.getAllByText(/Mairo Müüja/).every(isInsidePii)).toBe(true);
 
     userEvent.click(await screen.findByLabelText(/I transferred.+/i));
 

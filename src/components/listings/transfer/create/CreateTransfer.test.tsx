@@ -10,6 +10,7 @@ import {
 } from '../../../../test/backend';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import { initializeConfiguration } from '../../../config/config';
+import { isInsidePii } from '../../../tracking/piiMarkup';
 import LoggedInApp from '../../../LoggedInApp';
 import { getBuyerDetailsSection, getSellerDetailsSection } from '../testUtils';
 import { getFullName } from '../../../common/utils';
@@ -81,6 +82,13 @@ describe('member capital transfer creation', () => {
         unitCount: 1,
       },
     ]);
+  });
+
+  test('marks the member the search finds as personal data for analytics', async () => {
+    userEvent.type(await screen.findByLabelText(/Enter buyer’s personal ID code/i), '30303039914');
+    userEvent.click(await screen.findByText(/Search/i));
+
+    expect(isInsidePii(await screen.findByText(/Olev Ostja/i))).toBe(true);
   });
 
   test('allows to create transfer', async () => {

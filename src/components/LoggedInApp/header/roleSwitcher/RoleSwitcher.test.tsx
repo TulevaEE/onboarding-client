@@ -20,6 +20,7 @@ import {
   isCompanyOnboardingEnabled,
 } from '../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
 import { RoleSwitcher } from './RoleSwitcher';
+import { isInsidePii } from '../../../tracking/piiMarkup';
 
 // Company onboarding is the other reason a single-role user gets a dropdown, and
 // it ships permanently on. Mock the flags so the "pending child opens the dropdown"
@@ -402,6 +403,21 @@ describe('RoleSwitcher', () => {
 
   describe('with a child the other parent is onboarding', () => {
     const pendingChild = { type: 'PERSON' as const, code: '61506150006', name: 'Mari Maasikas' };
+
+    it('marks every name in the toggle and the menu as personal data for analytics', async () => {
+      rolesBackend(server, multipleRoles);
+      userBackend(server, { role: personalRole });
+      pendingOnboardingsBackend(server, [pendingChild]);
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(isInsidePii(await screen.findByText('Mari Maasikas'))).toBe(true);
+      expect(isInsidePii(screen.getByText('Test OÜ'))).toBe(true);
+      expect(screen.getAllByText('John Doe')).toHaveLength(2);
+      expect(screen.getAllByText('John Doe').every(isInsidePii)).toBe(true);
+    });
 
     it('offers the child by name as a link into the child onboarding flow', async () => {
       rolesBackend(server, [personalRole]);

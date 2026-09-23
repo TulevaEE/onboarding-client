@@ -3,6 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { Euro } from '../../../common/Euro';
 import { formatDateYear } from '../../../common/dateFormatter';
 import { ReceivedGift } from './api/giftLink.api';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 
 export const ReceivedGifts: FC<{ gifts: ReceivedGift[] | undefined; isError: boolean }> = ({
   gifts,
@@ -37,7 +38,7 @@ export const ReceivedGifts: FC<{ gifts: ReceivedGift[] | undefined; isError: boo
       ) : (
         <div className="mt-3">
           {gifts.map((gift, index) => (
-            <div className={`py-3 ${index > 0 ? 'border-top' : ''}`} key={index}>
+            <div className={`py-3 ${index > 0 ? 'border-top' : ''} ${PII_CLASS}`} key={index}>
               <div className="d-flex flex-wrap column-gap-3 row-gap-1 align-items-baseline">
                 {gift.giverName ? (
                   <b>{gift.giverName}</b>

@@ -2,6 +2,7 @@ import { FC, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Loader } from '../../../common';
 import { TranslationKey } from '../../../translations';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 
 interface OnboardingFlowLayoutProps {
   currentStep: number;
@@ -52,7 +53,9 @@ export const OnboardingFlowLayout: FC<OnboardingFlowLayoutProps> = ({
           <h1 className="m-0">
             <FormattedMessage id={titleId} />
           </h1>
-          {subtitle ? <p className="m-0 fs-3 text-body-secondary">{subtitle}</p> : null}
+          {subtitle ? (
+            <p className={`m-0 fs-3 text-body-secondary ${PII_CLASS}`}>{subtitle}</p>
+          ) : null}
         </div>
       </div>
       {loading ? <Loader /> : children}

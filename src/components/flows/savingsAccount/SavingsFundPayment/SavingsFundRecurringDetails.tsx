@@ -9,6 +9,7 @@ import { PaymentStep } from '../../common/PaymentStep/PaymentStep';
 import { CopyButton } from '../../../common/CopyButton';
 import { formatAmountForCount, formatAmountForCurrency } from '../../../common/utils';
 import { AccountHolder } from '../accountHolder';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 
 export type BankKey = 'LHV' | 'COOP' | 'SWEDBANK' | 'SEB' | 'LUMINOR' | 'OTHER';
 
@@ -249,7 +250,7 @@ const CopyRow: FC<{ labelId: TranslationKey; value: string; copyValue?: string }
       <FormattedMessage id={labelId} />:
     </div>
     <div className="col d-flex justify-content-between align-items-center column-gap-2 text-break">
-      <b>{value}</b>
+      <b className={PII_CLASS}>{value}</b>
       <CopyButton textToCopy={copyValue ?? value} />
     </div>
   </div>
