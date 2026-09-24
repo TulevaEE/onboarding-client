@@ -8,6 +8,11 @@ const previousDay = (time: string) => moment(time).subtract(1, 'day').format('YY
 const yearsAgo = (years: number, month: number, day: number) =>
   moment().subtract(years, 'year').month(month).date(day).startOf('day').toISOString();
 
+const signedAmount = (units: number, nav: number, type: Transaction['type']) => {
+  const value = Number((units * nav).toFixed(2));
+  return type === 'SUBTRACTION' ? -value : value;
+};
+
 const savingsFundTransaction = (
   id: string,
   time: string,
@@ -16,7 +21,7 @@ const savingsFundTransaction = (
   type: Transaction['type'],
 ): Transaction => ({
   id,
-  amount: Number((units * nav).toFixed(2)),
+  amount: signedAmount(units, nav, type),
   currency: 'EUR',
   time,
   navDate: previousDay(time),
