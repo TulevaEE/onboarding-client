@@ -71,11 +71,13 @@ export function getAllSourceFunds() {
 export function selectExchangeSources(
   sourceSelection: SourceSelection[],
   sourceSelectionExact = false,
+  targetFundIsin?: string,
 ) {
   return {
     type: SELECT_EXCHANGE_SOURCES,
     sourceSelection,
     sourceSelectionExact,
+    targetFundIsin,
   };
 }
 

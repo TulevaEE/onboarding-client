@@ -252,6 +252,42 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
     });
   });
 
+  describe('without a second pillar', () => {
+    const noSecondPillar: Props = {
+      loading: false,
+      conversion: completeSecondPillarConversion.secondPillar,
+      sourceFunds: [],
+      targetFunds: [tulevaSecondPillarFund],
+      secondPillarActive: false,
+      pendingPaymentRate: 2,
+      currentPaymentRate: 2,
+      activeFundIsin: undefined,
+    };
+
+    it('invites a person the server decided may open a second pillar into the second pillar flow', () => {
+      renderWithIntl(<SecondPillarStatusBox {...noSecondPillar} nudgeKey="SECOND_PILLAR_START" />);
+
+      expect(screen.getByText(/You have no II\spillar/)).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^Open II\spillar$/ })).toHaveAttribute(
+        'href',
+        '/2nd-pillar-flow',
+      );
+    });
+
+    it('shows no call to action when the server decided against a second pillar nudge', () => {
+      renderWithIntl(<SecondPillarStatusBox {...noSecondPillar} nudgeKey="NONE" />);
+
+      expect(screen.getByText(/You have no II\spillar/)).toBeInTheDocument();
+      expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    });
+
+    it('shows no call to action while the nudge decision is unknown', () => {
+      renderWithIntl(<SecondPillarStatusBox {...noSecondPillar} />);
+
+      expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    });
+  });
+
   describe('InLowFeeFund component', () => {
     it('renders tax win component as separate line item in low fee fund', () => {
       const props: Props = {

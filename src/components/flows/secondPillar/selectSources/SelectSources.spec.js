@@ -120,6 +120,39 @@ describe('Select sources step', () => {
     ).toBe(true);
   });
 
+  it('with no source funds, choosing a target fund names it as the contributions fund', () => {
+    const onSelectExchangeSources = jest.fn();
+    const stockFund = { isin: 'c', fundManager: { name: 'Tuleva' } };
+    const bondFund = { isin: 'd', fundManager: { name: 'Tuleva' } };
+    component.setProps({
+      sourceFunds: [],
+      targetFunds: [stockFund, bondFund],
+      sourceSelection: [],
+      selectedFutureContributionsFundIsin: 'c',
+      onSelectExchangeSources,
+    });
+
+    component.find(TargetFundSelector).prop('onSelectFund')(bondFund);
+
+    expect(onSelectExchangeSources).toHaveBeenCalledTimes(1);
+    expect(onSelectExchangeSources).toHaveBeenCalledWith([], false, 'd');
+  });
+
+  it('with no source funds, highlights only the fund chosen for future contributions', () => {
+    const stockFund = { isin: 'c', fundManager: { name: 'Tuleva' } };
+    const bondFund = { isin: 'd', fundManager: { name: 'Tuleva' } };
+    component.setProps({
+      sourceFunds: [],
+      targetFunds: [stockFund, bondFund],
+      sourceSelection: [],
+      selectedFutureContributionsFundIsin: 'd',
+    });
+
+    const isSelected = component.find(TargetFundSelector).prop('isSelected');
+
+    expect([isSelected(stockFund), isSelected(bondFund)]).toEqual([false, true]);
+  });
+
   it('sets the full selection radio by default', () => {
     const fullSelectionRadio = () => component.find(Radio).first();
     component.setProps({

@@ -127,6 +127,21 @@ describe('Exchange reducer', () => {
     );
   });
 
+  it('with no source funds to exchange, an explicit target fund becomes the contributions fund', () => {
+    const action = {
+      type: SELECT_EXCHANGE_SOURCES,
+      sourceSelection: [],
+      sourceSelectionExact: false,
+      targetFundIsin: 'bondFundIsin',
+    };
+
+    const state = { selectedFutureContributionsFundIsin: 'stockFundIsin' };
+
+    expect(exchangeReducer(state, action).selectedFutureContributionsFundIsin).toEqual(
+      'bondFundIsin',
+    );
+  });
+
   it('defaulting contributions fund selection works with sourceFunds list', () => {
     const targetFundIsin = 'targetFundIsin';
     const state = {
