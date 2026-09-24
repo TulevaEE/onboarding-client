@@ -352,17 +352,6 @@ describe('the savings fund statement', () => {
     expect(text).toContain('01.08.2025;Väljamakse;-5,0000;1,20000;-6,00');
   });
 
-  it('opens the print dialog for the PDF', async () => {
-    const print = jest.spyOn(window, 'print').mockImplementation(() => {});
-    accountHolding(holdingHistory);
-    initializeComponent();
-
-    userEvent.click(await screen.findByRole('button', { name: 'Save as PDF' }));
-
-    expect(print).toHaveBeenCalledTimes(1);
-    print.mockRestore();
-  });
-
   it('is left out when the transactions never load, rather than claiming an empty period', async () => {
     accountHoldingUnavailable();
     initializeComponent();
@@ -581,12 +570,27 @@ describe('the savings fund statement', () => {
   });
 
   describe('the print flow', () => {
-    it('drops the app from the printed page while the statement is on it', async () => {
+    const statementIsOnThePrintedPage = () => document.body.classList.contains('printingStatement');
+
+    const finishPrinting = () => window.dispatchEvent(new Event('afterprint'));
+
+    const browserPrinting = (whilePrintDialogIsOpen: () => void = () => {}) =>
+      jest.spyOn(window, 'print').mockImplementation(() => {
+        whilePrintDialogIsOpen();
+        finishPrinting();
+      });
+
+    const browserPrintingInTheBackground = () =>
+      jest.spyOn(window, 'print').mockImplementation(() => {});
+
+    afterEach(() => jest.restoreAllMocks());
+
+    it('prints the page itself, not the statement, while the statement is merely on screen', async () => {
       accountHolding(holdingHistory);
       initializeComponent();
 
       expect(await screen.findByText('Transactions in the selected period')).toBeInTheDocument();
-      expect(document.body).toHaveClass('printingStatement');
+      expect(statementIsOnThePrintedPage()).toBe(false);
     });
 
     it('leaves the app on the printed page when there is no statement', async () => {
@@ -594,18 +598,56 @@ describe('the savings fund statement', () => {
       initializeComponent();
 
       await waitFor(() => expect(screen.getByLabelText('from')).toHaveValue('2020-01-01'));
-      expect(document.body).not.toHaveClass('printingStatement');
+      expect(statementIsOnThePrintedPage()).toBe(false);
     });
 
-    it('gives the app the printed page back once the statement is gone', async () => {
+    it('puts the statement on the printed page for the print Save as PDF opens', async () => {
+      let printedStatement = false;
+      const print = browserPrinting(() => {
+        printedStatement = statementIsOnThePrintedPage();
+      });
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      userEvent.click(await screen.findByRole('button', { name: 'Save as PDF' }));
+
+      expect(print).toHaveBeenCalledTimes(1);
+      expect(printedStatement).toBe(true);
+    });
+
+    it('gives the app the printed page back once the print dialog closes', async () => {
+      browserPrinting();
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      userEvent.click(await screen.findByRole('button', { name: 'Save as PDF' }));
+
+      expect(statementIsOnThePrintedPage()).toBe(false);
+    });
+
+    it('keeps the statement on the printed page until a print running in the background finishes', async () => {
+      browserPrintingInTheBackground();
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      userEvent.click(await screen.findByRole('button', { name: 'Save as PDF' }));
+
+      expect(statementIsOnThePrintedPage()).toBe(true);
+
+      finishPrinting();
+
+      expect(statementIsOnThePrintedPage()).toBe(false);
+    });
+
+    it('gives the app the printed page back if the statement goes away mid-print', async () => {
+      browserPrintingInTheBackground();
       accountHolding(holdingHistory);
       const { unmount } = initializeComponent();
 
-      expect(await screen.findByText('Transactions in the selected period')).toBeInTheDocument();
-
+      userEvent.click(await screen.findByRole('button', { name: 'Save as PDF' }));
       unmount();
 
-      expect(document.body).not.toHaveClass('printingStatement');
+      expect(statementIsOnThePrintedPage()).toBe(false);
     });
   });
 });

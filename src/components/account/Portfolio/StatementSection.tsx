@@ -174,11 +174,7 @@ export const StatementSection: React.FunctionComponent<{
             <FormattedMessage id="savingsFund.statement.transactions.heading" />
           </h2>
           <div className="d-flex gap-2">
-            <button
-              type="button"
-              className="btn btn-outline-primary"
-              onClick={() => window.print()}
-            >
+            <button type="button" className="btn btn-outline-primary" onClick={printStatement}>
               <FormattedMessage id="savingsFund.statement.export.pdf" />
             </button>
             <button type="button" className="btn btn-outline-primary" onClick={downloadCsv}>
@@ -338,13 +334,21 @@ export const StatementSection: React.FunctionComponent<{
   );
 };
 
+const stopPrintingStatement = () => {
+  document.body.classList.remove(styles.printingStatement);
+  window.removeEventListener('afterprint', stopPrintingStatement);
+};
+
+const printStatement = () => {
+  document.body.classList.add(styles.printingStatement);
+  window.addEventListener('afterprint', stopPrintingStatement);
+  window.print();
+};
+
 const PrintOnlyDocument: React.FunctionComponent<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  useEffect(() => {
-    document.body.classList.add(styles.printingStatement);
-    return () => document.body.classList.remove(styles.printingStatement);
-  }, []);
+  useEffect(() => stopPrintingStatement, []);
 
   return createPortal(<div className={styles.printOnly}>{children}</div>, document.body);
 };
