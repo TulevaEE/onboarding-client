@@ -3,11 +3,13 @@
 }
 
 @media print {
-  :global(body).printingStatement :global(#root) {
-    display: none;
-  }
+  :global(body).printingStatement {
+    :global(#root) {
+      display: none;
+    }
 
-  .printOnly {
-    display: block;
+    .printOnly {
+      display: block;
+    }
   }
 }
