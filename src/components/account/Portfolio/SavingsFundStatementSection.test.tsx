@@ -357,7 +357,7 @@ describe('the savings fund statement', () => {
     expect(screen.getAllByText(/25[.,]0000/)).not.toHaveLength(0);
   });
 
-  it('downloads the period as CSV', async () => {
+  it('downloads the period as a CSV with the rows and columns of the printed statement', async () => {
     accountHolding(holdingHistory);
     initializeComponent();
 
@@ -371,10 +371,18 @@ describe('the savings fund statement', () => {
     expect(download).toHaveBeenCalledTimes(1);
     const { filename, text } = await downloadedCsv();
     expect(filename).toBe('tuleva-kogumisfondi-valjavote-2025-01-01-2025-12-31.csv');
-    expect(text).toMatch(/^\ufeffDate;Transaction;Units;NAV;Amount\r\n/);
-    expect(text).toContain('10.03.2025;Contribution;20,0000;1,10000;22,00');
-    expect(text).toContain('01.08.2025;Redemption;-5,0000;1,20000;-6,00');
-    expect(text).not.toContain('01.02.2026');
+    expect(text).toBe(
+      [
+        '\ufeffDate;Transaction;Units;NAV;Amount;Balance (units);Balance value',
+        'Opening balance 01.01.2025;;;;;10,0000;120,00',
+        '10.03.2025;Contribution;20,0000;1,10000;22,00;30,0000;33,00',
+        '01.08.2025;Redemption;-5,0000;1,20000;-6,00;25,0000;30,00',
+        'Total contributions;;;;;;22,00',
+        'Total withdrawals;;;;;;-6,00',
+        'Closing balance 31.12.2025;;;;;25,0000;250,00',
+        'Change in value over the period;;;;;;114,00',
+      ].join('\r\n'),
+    );
   });
 
   it('writes the Estonian CSV in the UTF-8 the byte order mark announces', async () => {
@@ -383,11 +391,61 @@ describe('the savings fund statement', () => {
 
     expect(await screen.findByText('Tehingud valitud perioodil')).toBeInTheDocument();
 
+    userEvent.click(screen.getByRole('button', { name: 'Eelmine aasta' }));
+    expect(await screen.findAllByText(/250[.,]00/)).not.toHaveLength(0);
+
     userEvent.click(screen.getByRole('button', { name: 'Laadi alla CSV' }));
 
     const { text } = await downloadedCsv();
-    expect(text).toMatch(/^\ufeffKuupäev;Tehing;Osakud;NAV;Summa\r\n/);
-    expect(text).toContain('01.08.2025;Väljamakse;-5,0000;1,20000;-6,00');
+    expect(text).toBe(
+      [
+        '\ufeffKuupäev;Tehing;Osakud;NAV;Summa;Jääk (osakut);Jäägi väärtus',
+        'Algseis 01.01.2025;;;;;10,0000;120,00',
+        '10.03.2025;Sissemakse;20,0000;1,10000;22,00;30,0000;33,00',
+        '01.08.2025;Väljamakse;-5,0000;1,20000;-6,00;25,0000;30,00',
+        'Sissemaksed kokku;;;;;;22,00',
+        'Väljamaksed kokku;;;;;;-6,00',
+        'Lõppseis 31.12.2025;;;;;25,0000;250,00',
+        'Väärtuse muutus perioodil;;;;;;114,00',
+      ].join('\r\n'),
+    );
+  });
+
+  it('leaves the balance values it does not know empty in the CSV, and the change in value out', async () => {
+    server.use(
+      rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
+        res(
+          ctx.json({
+            ...allTime,
+            groups: allTime.groups.map((group) => ({ ...group, startValue: null, endValue: null })),
+          }),
+        ),
+      ),
+    );
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    userEvent.click(await screen.findByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    const lines = text.split('\r\n');
+    expect(lines).toContain('Opening balance 01.01.2020;;;;;0,0000;');
+    expect(lines).toContain(`Closing balance ${moment(today).format('DD.MM.YYYY')};;;;;32,0000;`);
+    expect(text).not.toContain('Change in value');
+  });
+
+  it('writes a holding redeemed down to nothing as zero in the CSV, not minus zero', async () => {
+    accountHolding([
+      savingsTransaction('2025-02-01T10:00:00Z', 0.3, 1.0, 0.3),
+      savingsTransaction('2025-03-01T10:00:00Z', 0.1, 1.0, -0.1, 'SUBTRACTION'),
+      savingsTransaction('2025-04-01T10:00:00Z', 0.2, 1.0, -0.2, 'SUBTRACTION'),
+    ]);
+    initializeComponent();
+
+    userEvent.click(await screen.findByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    expect(text.split('\r\n')).toContain('01.04.2025;Redemption;-0,2000;1,00000;-0,20;0,0000;0,00');
   });
 
   it('is left out when the transactions never load, rather than claiming an empty period', async () => {

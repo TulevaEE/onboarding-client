@@ -9,6 +9,7 @@ import Table from '../../common/table';
 import { formatAmountForCount, isActingAsSelf } from '../../common/utils';
 import { dayInTallinn, formatDayInTallinn } from '../../common/dateFormatter';
 import { Fund, PortfolioGroupSummary, Transaction, User } from '../../common/apiModels';
+import { TranslationKey } from '../../translations';
 import styles from './Statement.module.scss';
 
 const isRedemption = (transaction: Transaction): boolean => transaction.type === 'SUBTRACTION';
@@ -33,6 +34,144 @@ const isSavingsFund = (fund: Fund): boolean => fund.pillar === null;
 
 const UTF8_BYTE_ORDER_MARK = '\ufeff';
 const ESTONIAN_EXCEL_COLUMN_SEPARATOR = ';';
+
+type DocumentRow = {
+  key: string;
+  label: string;
+  type?: string;
+  units?: number;
+  nav?: number;
+  amount?: number;
+  balanceUnits?: number;
+  balanceValue?: number | null;
+  isClosing?: boolean;
+};
+
+type FigureColumn = {
+  field: 'units' | 'nav' | 'amount' | 'balanceUnits' | 'balanceValue';
+  heading: TranslationKey;
+  fractionDigits: number;
+  isEuro: boolean;
+};
+
+const textColumnHeadings: TranslationKey[] = [
+  'savingsFund.statement.transactions.date',
+  'savingsFund.statement.transactions.type',
+];
+
+const figureColumns: FigureColumn[] = [
+  {
+    field: 'units',
+    heading: 'savingsFund.statement.transactions.units',
+    fractionDigits: 4,
+    isEuro: false,
+  },
+  {
+    field: 'nav',
+    heading: 'savingsFund.statement.transactions.nav',
+    fractionDigits: 5,
+    isEuro: false,
+  },
+  {
+    field: 'amount',
+    heading: 'savingsFund.statement.transactions.amount',
+    fractionDigits: 2,
+    isEuro: true,
+  },
+  {
+    field: 'balanceUnits',
+    heading: 'savingsFund.statement.document.balanceUnits',
+    fractionDigits: 4,
+    isEuro: false,
+  },
+  {
+    field: 'balanceValue',
+    heading: 'savingsFund.statement.document.balanceValue',
+    fractionDigits: 2,
+    isEuro: true,
+  },
+];
+
+const documentColumnHeadings: TranslationKey[] = [
+  ...textColumnHeadings,
+  ...figureColumns.map(({ heading }) => heading),
+];
+
+const withoutMinusZero = (rounded: string): string =>
+  Number(rounded) === 0 ? rounded.replace('-', '') : rounded;
+
+const csvFigure = (value: number | null | undefined, fractionDigits: number): string =>
+  value === null || value === undefined
+    ? ''
+    : withoutMinusZero(value.toFixed(fractionDigits)).replace('.', ',');
+
+const csvCells = (row: DocumentRow): string[] => [
+  row.label,
+  row.type ?? '',
+  ...figureColumns.map(({ field, fractionDigits }) => csvFigure(row[field], fractionDigits)),
+];
+
+const printedFigure = (
+  value: number | null | undefined,
+  { fractionDigits, isEuro }: FigureColumn,
+): React.ReactNode => {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  return isEuro ? (
+    <Euro amount={value} fractionDigits={fractionDigits} />
+  ) : (
+    formatAmountForCount(value, fractionDigits)
+  );
+};
+
+const firstFigureColumn = (row: DocumentRow): number =>
+  figureColumns.findIndex(({ field }) => row[field] !== undefined);
+
+const DocumentTableRow: React.FunctionComponent<{ row: DocumentRow }> = ({ row }) => {
+  const figuresFrom = firstFigureColumn(row);
+  return (
+    <tr className={row.isClosing ? 'fw-bold' : undefined}>
+      {row.type === undefined ? (
+        <td colSpan={textColumnHeadings.length + figuresFrom}>{row.label}</td>
+      ) : (
+        <>
+          <td>{row.label}</td>
+          <td>{row.type}</td>
+        </>
+      )}
+      {figureColumns.slice(figuresFrom).map((column) => (
+        <td key={column.field} className="text-end">
+          {printedFigure(row[column.field], column)}
+        </td>
+      ))}
+    </tr>
+  );
+};
+
+const DocumentTable: React.FunctionComponent<{ rows: DocumentRow[] }> = ({ rows }) => (
+  <table className="table table-sm">
+    <thead>
+      <tr>
+        {textColumnHeadings.map((heading) => (
+          <th key={heading} scope="col">
+            <FormattedMessage id={heading} />
+          </th>
+        ))}
+        {figureColumns.map(({ field, heading }) => (
+          <th key={field} scope="col" className="text-end">
+            <FormattedMessage id={heading} />
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row) => (
+        <DocumentTableRow key={row.key} row={row} />
+      ))}
+    </tbody>
+  </table>
+);
 
 export const StatementSection: React.FunctionComponent<{
   summary: PortfolioGroupSummary;
@@ -86,8 +225,6 @@ export const StatementSection: React.FunctionComponent<{
     .filter(isRedemption)
     .reduce((sum, transaction) => sum + transaction.amount, 0);
 
-  const documentRows = withRunningBalance(periodTransactions, openingUnits);
-
   const valueChange =
     summary.startValue === null || summary.endValue === null
       ? null
@@ -100,25 +237,63 @@ export const StatementSection: React.FunctionComponent<{
         : 'savingsFund.statement.transactions.contribution',
     });
 
+  const documentRows: DocumentRow[] = [
+    {
+      key: 'opening',
+      label: formatMessage(
+        { id: 'savingsFund.statement.document.opening' },
+        { date: moment(from).format('DD.MM.YYYY') },
+      ),
+      balanceUnits: openingUnits,
+      balanceValue: summary.startValue,
+    },
+    ...withRunningBalance(periodTransactions, openingUnits).map(
+      ({ transaction, balanceUnits }) => ({
+        key: transaction.id ?? transaction.time,
+        label: formatDayInTallinn(transaction.time),
+        type: typeLabel(transaction),
+        units: signedUnits(transaction),
+        nav: transaction.nav,
+        amount: transaction.amount,
+        balanceUnits,
+        balanceValue: balanceUnits * transaction.nav,
+      }),
+    ),
+    {
+      key: 'totalContributions',
+      label: formatMessage({ id: 'savingsFund.statement.document.totalContributions' }),
+      balanceValue: contributionsTotal,
+    },
+    {
+      key: 'totalWithdrawals',
+      label: formatMessage({ id: 'savingsFund.statement.document.totalWithdrawals' }),
+      balanceValue: withdrawalsTotal,
+    },
+    {
+      key: 'closing',
+      label: formatMessage(
+        { id: 'savingsFund.statement.document.closing' },
+        { date: moment(to).format('DD.MM.YYYY') },
+      ),
+      balanceUnits: closingUnits,
+      balanceValue: summary.endValue,
+      isClosing: true,
+    },
+    ...(valueChange === null
+      ? []
+      : [
+          {
+            key: 'valueChange',
+            label: formatMessage({ id: 'savingsFund.statement.document.valueChange' }),
+            balanceValue: valueChange,
+          },
+        ]),
+  ];
+
   const downloadCsv = () => {
-    const decimalComma = (value: number, fractionDigits: number) =>
-      value.toFixed(fractionDigits).replace('.', ',');
-    const header = [
-      formatMessage({ id: 'savingsFund.statement.transactions.date' }),
-      formatMessage({ id: 'savingsFund.statement.transactions.type' }),
-      formatMessage({ id: 'savingsFund.statement.transactions.units' }),
-      formatMessage({ id: 'savingsFund.statement.transactions.nav' }),
-      formatMessage({ id: 'savingsFund.statement.transactions.amount' }),
-    ];
-    const rows = periodTransactions.map((transaction) => [
-      formatDayInTallinn(transaction.time),
-      typeLabel(transaction),
-      decimalComma(signedUnits(transaction), 4),
-      decimalComma(transaction.nav, 5),
-      decimalComma(transaction.amount, 2),
-    ]);
-    const csv = [header, ...rows]
-      .map((row) => row.join(ESTONIAN_EXCEL_COLUMN_SEPARATOR))
+    const header = documentColumnHeadings.map((id) => formatMessage({ id }));
+    const csv = [header, ...documentRows.map(csvCells)]
+      .map((cells) => cells.join(ESTONIAN_EXCEL_COLUMN_SEPARATOR))
       .join('\r\n');
     download(
       new Blob([UTF8_BYTE_ORDER_MARK, csv], { type: 'text/csv;charset=utf-8' }),
@@ -239,100 +414,7 @@ export const StatementSection: React.FunctionComponent<{
           </tbody>
         </table>
 
-        <table className="table table-sm">
-          <thead>
-            <tr>
-              <th scope="col">
-                <FormattedMessage id="savingsFund.statement.transactions.date" />
-              </th>
-              <th scope="col">
-                <FormattedMessage id="savingsFund.statement.transactions.type" />
-              </th>
-              <th scope="col" className="text-end">
-                <FormattedMessage id="savingsFund.statement.transactions.units" />
-              </th>
-              <th scope="col" className="text-end">
-                <FormattedMessage id="savingsFund.statement.transactions.nav" />
-              </th>
-              <th scope="col" className="text-end">
-                <FormattedMessage id="savingsFund.statement.transactions.amount" />
-              </th>
-              <th scope="col" className="text-end">
-                <FormattedMessage id="savingsFund.statement.document.balanceUnits" />
-              </th>
-              <th scope="col" className="text-end">
-                <FormattedMessage id="savingsFund.statement.document.balanceValue" />
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colSpan={5}>
-                <FormattedMessage
-                  id="savingsFund.statement.document.opening"
-                  values={{ date: moment(from).format('DD.MM.YYYY') }}
-                />
-              </td>
-              <td className="text-end">{formatAmountForCount(openingUnits, 4)}</td>
-              <td className="text-end">
-                {summary.startValue !== null && <Euro amount={summary.startValue} />}
-              </td>
-            </tr>
-            {documentRows.map(({ transaction, balanceUnits }) => (
-              <tr key={transaction.id ?? transaction.time}>
-                <td>{formatDayInTallinn(transaction.time)}</td>
-                <td>{typeLabel(transaction)}</td>
-                <td className="text-end">{formatAmountForCount(signedUnits(transaction), 4)}</td>
-                <td className="text-end">{formatAmountForCount(transaction.nav, 5)}</td>
-                <td className="text-end">
-                  <Euro amount={transaction.amount} />
-                </td>
-                <td className="text-end">{formatAmountForCount(balanceUnits, 4)}</td>
-                <td className="text-end">
-                  <Euro amount={balanceUnits * transaction.nav} />
-                </td>
-              </tr>
-            ))}
-            <tr>
-              <td colSpan={6}>
-                <FormattedMessage id="savingsFund.statement.document.totalContributions" />
-              </td>
-              <td className="text-end">
-                <Euro amount={contributionsTotal} />
-              </td>
-            </tr>
-            <tr>
-              <td colSpan={6}>
-                <FormattedMessage id="savingsFund.statement.document.totalWithdrawals" />
-              </td>
-              <td className="text-end">
-                <Euro amount={withdrawalsTotal} />
-              </td>
-            </tr>
-            <tr className="fw-bold">
-              <td colSpan={5}>
-                <FormattedMessage
-                  id="savingsFund.statement.document.closing"
-                  values={{ date: moment(to).format('DD.MM.YYYY') }}
-                />
-              </td>
-              <td className="text-end">{formatAmountForCount(closingUnits, 4)}</td>
-              <td className="text-end">
-                {summary.endValue !== null && <Euro amount={summary.endValue} />}
-              </td>
-            </tr>
-            {valueChange !== null && (
-              <tr>
-                <td colSpan={6}>
-                  <FormattedMessage id="savingsFund.statement.document.valueChange" />
-                </td>
-                <td className="text-end">
-                  <Euro amount={valueChange} />
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+        <DocumentTable rows={documentRows} />
 
         <p className="text-body-secondary small">
           <FormattedMessage
