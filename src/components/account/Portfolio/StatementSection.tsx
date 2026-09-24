@@ -299,7 +299,7 @@ export const StatementSection: React.FunctionComponent<{
               </tr>
             ))}
             <tr>
-              <td colSpan={4}>
+              <td colSpan={6}>
                 <FormattedMessage id="savingsFund.statement.document.totalContributions" />
               </td>
               <td className="text-end">
@@ -307,7 +307,7 @@ export const StatementSection: React.FunctionComponent<{
               </td>
             </tr>
             <tr>
-              <td colSpan={4}>
+              <td colSpan={6}>
                 <FormattedMessage id="savingsFund.statement.document.totalWithdrawals" />
               </td>
               <td className="text-end">
