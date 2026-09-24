@@ -14,7 +14,12 @@ export const SavingsFundStatementSection: React.FunctionComponent = () => {
     to: moment().format('YYYY-MM-DD'),
   });
 
-  const { data: portfolio, isError, refetch } = usePortfolio(period.from, period.to);
+  const {
+    data: portfolio,
+    isError,
+    isPreviousData,
+    refetch,
+  } = usePortfolio(period.from, period.to);
   const savingsBalance = useSavingsFundBalance();
 
   const onPeriodChange = useCallback((from: string | undefined, to: string) => {
@@ -59,6 +64,7 @@ export const SavingsFundStatementSection: React.FunctionComponent = () => {
           summary={withCurrentValue(savingsFundSummary, registerBalance)}
           from={portfolio.from}
           to={portfolio.to}
+          exportable={!isPreviousData}
         />
       )}
     </>

@@ -38,7 +38,8 @@ export const StatementSection: React.FunctionComponent<{
   summary: PortfolioGroupSummary;
   from: string;
   to: string;
-}> = ({ summary, from, to }) => {
+  exportable: boolean;
+}> = ({ summary, from, to, exportable }) => {
   const { formatMessage } = useIntl();
   const { data: transactions, isLoading: transactionsLoading } = useTransactions();
   const { data: funds, isLoading: fundsLoading } = useFunds();
@@ -174,10 +175,20 @@ export const StatementSection: React.FunctionComponent<{
             <FormattedMessage id="savingsFund.statement.transactions.heading" />
           </h2>
           <div className="d-flex gap-2">
-            <button type="button" className="btn btn-outline-primary" onClick={printStatement}>
+            <button
+              type="button"
+              className="btn btn-outline-primary"
+              onClick={printStatement}
+              disabled={!exportable}
+            >
               <FormattedMessage id="savingsFund.statement.export.pdf" />
             </button>
-            <button type="button" className="btn btn-outline-primary" onClick={downloadCsv}>
+            <button
+              type="button"
+              className="btn btn-outline-primary"
+              onClick={downloadCsv}
+              disabled={!exportable}
+            >
               <FormattedMessage id="savingsFund.statement.export.csv" />
             </button>
           </div>

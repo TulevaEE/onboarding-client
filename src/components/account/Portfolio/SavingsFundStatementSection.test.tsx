@@ -160,6 +160,23 @@ const portfolioRefusingNarrowedPeriods = () =>
     }),
   );
 
+const portfolioHoldingBackNarrowedPeriods = () => {
+  let release: () => void = () => {};
+  const released = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  server.use(
+    rest.get('http://localhost/v1/portfolio', async (req, res, ctx) => {
+      if (!req.url.searchParams.get('from')) {
+        return res(ctx.json(allTime));
+      }
+      await released;
+      return res(ctx.json(lastYear));
+    }),
+  );
+  return release;
+};
+
 const savingsTransaction = (
   time: string,
   units: number,
@@ -276,6 +293,27 @@ describe('the savings fund statement', () => {
     expect(screen.getAllByText('10.03.2025')).not.toHaveLength(0);
     expect(screen.getAllByText('01.08.2025')).not.toHaveLength(0);
     expect(screen.queryAllByText('01.02.2026')).toHaveLength(0);
+  });
+
+  it('keeps the previous period from being exported while the selected one loads', async () => {
+    const lastYearArrives = portfolioHoldingBackNarrowedPeriods();
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    expect(await screen.findByRole('button', { name: 'Download CSV' })).toBeEnabled();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Download CSV' })).toBeDisabled(),
+    );
+    expect(screen.getByRole('button', { name: 'Save as PDF' })).toBeDisabled();
+
+    lastYearArrives();
+
+    expect(await screen.findAllByText(/250[.,]00/)).not.toHaveLength(0);
+    expect(screen.getByRole('button', { name: 'Download CSV' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Save as PDF' })).toBeEnabled();
   });
 
   it('dates a transaction by the day it fell on in Estonia', async () => {
