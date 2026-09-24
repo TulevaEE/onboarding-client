@@ -421,30 +421,28 @@ describe('the savings fund statement', () => {
     expect(within(closing).getByText('32.0000')).toBeInTheDocument();
   });
 
-  it('keeps the money the register has not turned into units out of the value change', async () => {
+  it('closes at the register balance, units reserved for a withdrawal included, and counts them in the value change', async () => {
     registerHolding([], registerSavingsBalance(300, 50));
     accountHolding(holdingHistory);
     initializeComponent();
 
-    expect(await screen.findByText(/350[.,]00/)).toBeInTheDocument();
+    const closing = await screen.findByRole('row', { name: /Closing balance/ });
+    expect(within(closing).getByText(/350[.,]00/)).toBeInTheDocument();
 
-    const pending = screen.getByRole('row', { name: /Money not yet turned into units/ });
-    expect(within(pending).getByText(/50[.,]00/)).toBeInTheDocument();
-
-    // 300 priced − 100 opening − 41.10 paid in + 6.00 taken out
     const change = screen.getByRole('row', { name: /Change in value/ });
-    expect(within(change).getByText(/164[.,]90/)).toBeInTheDocument();
+    expect(within(change).getByText(/214[.,]90/)).toBeInTheDocument();
   });
 
-  it('leaves the pending money row off when the register holds none', async () => {
+  it('takes the change in value from the register balance when no units are reserved', async () => {
     registerHolding([], registerSavingsBalance(300, 0));
     accountHolding(holdingHistory);
     initializeComponent();
 
-    expect(await screen.findByText(/300[.,]00/)).toBeInTheDocument();
-    expect(
-      screen.queryByRole('row', { name: /Money not yet turned into units/ }),
-    ).not.toBeInTheDocument();
+    const closing = await screen.findByRole('row', { name: /Closing balance/ });
+    expect(within(closing).getByText(/300[.,]00/)).toBeInTheDocument();
+
+    const change = screen.getByRole('row', { name: /Change in value/ });
+    expect(within(change).getByText(/164[.,]90/)).toBeInTheDocument();
   });
 
   it('says a period could not be served rather than leaving the one before it on screen', async () => {

@@ -1384,7 +1384,6 @@
   "savingsFund.statement.document.totalContributions": "Total contributions",
   "savingsFund.statement.document.totalWithdrawals": "Total withdrawals",
   "savingsFund.statement.document.valueChange": "Change in value over the period",
-  "savingsFund.statement.document.pendingCash": "Money not yet turned into units",
   "savingsFund.statement.showDetails": "Show details",
   "savingsFund.statement.hideDetails": "Hide details",
   "savingsFund.statement.tax.year": "Tax year",

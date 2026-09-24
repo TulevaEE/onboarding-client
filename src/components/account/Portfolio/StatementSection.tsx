@@ -38,8 +38,7 @@ export const StatementSection: React.FunctionComponent<{
   summary: PortfolioGroupSummary;
   from: string;
   to: string;
-  pendingCash?: number;
-}> = ({ summary, from, to, pendingCash = 0 }) => {
+}> = ({ summary, from, to }) => {
   const { formatMessage } = useIntl();
   const { data: transactions, isLoading: transactionsLoading } = useTransactions();
   const { data: funds, isLoading: fundsLoading } = useFunds();
@@ -91,7 +90,7 @@ export const StatementSection: React.FunctionComponent<{
   const valueChange =
     summary.startValue === null || summary.endValue === null
       ? null
-      : summary.endValue - pendingCash - summary.startValue - contributionsTotal - withdrawalsTotal;
+      : summary.endValue - summary.startValue - contributionsTotal - withdrawalsTotal;
 
   const typeLabel = (transaction: Transaction): string =>
     formatMessage({
@@ -303,16 +302,6 @@ export const StatementSection: React.FunctionComponent<{
                 <Euro amount={withdrawalsTotal} />
               </td>
             </tr>
-            {pendingCash > 0 && (
-              <tr>
-                <td colSpan={4}>
-                  <FormattedMessage id="savingsFund.statement.document.pendingCash" />
-                </td>
-                <td className="text-end">
-                  <Euro amount={pendingCash} />
-                </td>
-              </tr>
-            )}
             <tr className="fw-bold">
               <td colSpan={5}>
                 <FormattedMessage

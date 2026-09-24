@@ -28,7 +28,6 @@ export const SavingsFundStatementSection: React.FunctionComponent = () => {
   const registerBalance = registerAnswered
     ? currentValueByGroup(undefined, savingsBalance.data).SAVINGS_FUND
     : undefined;
-  const pendingCash = registerAnswered ? savingsBalance.data?.unavailablePrice : undefined;
 
   return (
     <>
@@ -60,7 +59,6 @@ export const SavingsFundStatementSection: React.FunctionComponent = () => {
           summary={withCurrentValue(savingsFundSummary, registerBalance)}
           from={portfolio.from}
           to={portfolio.to}
-          pendingCash={pendingCash}
         />
       )}
     </>
