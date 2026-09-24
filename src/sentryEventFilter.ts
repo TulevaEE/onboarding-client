@@ -1,9 +1,13 @@
 import { Breadcrumb, Event } from '@sentry/browser';
+import {
+  redactPiiInAddress,
+  redactPiiInQuery,
+  redactPiiInText,
+} from './components/tracking/piiInAddress';
 
 const OWN_BUNDLE_PATH = '/static/js/';
-const GIFT_TOKEN_IN_ADDRESS = /(\/kingitus\/|\/v1\/gift-links\/)[^/?#]+/g;
-const TOKEN_PLACEHOLDER = ':token';
 const BREADCRUMB_ADDRESS_FIELDS = ['url', 'from', 'to'];
+const LOGGED_ARGUMENTS_FIELD = 'arguments';
 
 export function isFirstPartyEvent(event: Event): boolean {
   const frames = event.exception?.values?.[0]?.stacktrace?.frames;
@@ -15,40 +19,75 @@ export function isFirstPartyEvent(event: Event): boolean {
   return frames.some((frame) => frame.filename?.includes(OWN_BUNDLE_PATH));
 }
 
-export const withoutGiftToken = (address: string): string =>
-  address.replace(GIFT_TOKEN_IN_ADDRESS, `$1${TOKEN_PLACEHOLDER}`);
+const redactedIfText = <T>(value: T, redact: (text: string) => string): T | string =>
+  typeof value === 'string' ? redact(value) : value;
+
+const redactedLoggedArguments = (loggedArguments: unknown): unknown =>
+  Array.isArray(loggedArguments)
+    ? loggedArguments.map((argument) => redactedIfText(argument, redactPiiInText))
+    : loggedArguments;
+
+const redactedBreadcrumbData = (data: Breadcrumb['data']): Breadcrumb['data'] => {
+  if (!data) {
+    return data;
+  }
+  const redacted = { ...data };
+  BREADCRUMB_ADDRESS_FIELDS.filter((field) => field in redacted).forEach((field) => {
+    redacted[field] = redactedIfText(redacted[field], redactPiiInAddress);
+  });
+  if (LOGGED_ARGUMENTS_FIELD in redacted) {
+    redacted[LOGGED_ARGUMENTS_FIELD] = redactedLoggedArguments(redacted[LOGGED_ARGUMENTS_FIELD]);
+  }
+  return redacted;
+};
 
 export function beforeBreadcrumb(breadcrumb: Breadcrumb): Breadcrumb {
-  if (!breadcrumb.data) {
+  if (!breadcrumb.data && breadcrumb.message === undefined) {
     return breadcrumb;
   }
 
-  const data = { ...breadcrumb.data };
-  BREADCRUMB_ADDRESS_FIELDS.forEach((field) => {
-    if (typeof data[field] === 'string') {
-      data[field] = withoutGiftToken(data[field]);
-    }
-  });
-
-  return { ...breadcrumb, data };
+  return {
+    ...breadcrumb,
+    ...(breadcrumb.message !== undefined && {
+      message: redactPiiInText(breadcrumb.message),
+    }),
+    ...(breadcrumb.data && { data: redactedBreadcrumbData(breadcrumb.data) }),
+  };
 }
 
-export function withoutGiftTokens(event: Event): Event {
-  const scrubbed: Event = { ...event, breadcrumbs: event.breadcrumbs?.map(beforeBreadcrumb) };
-
-  if (!event.request) {
-    return scrubbed;
+const redactedRequest = (request: Event['request']): Event['request'] => {
+  if (!request) {
+    return request;
   }
 
-  const { url, headers } = event.request;
+  const { url, headers, query_string: queryString } = request;
   return {
-    ...scrubbed,
-    request: {
-      ...event.request,
-      url: url === undefined ? undefined : withoutGiftToken(url),
-      headers: headers?.Referer
-        ? { ...headers, Referer: withoutGiftToken(headers.Referer) }
-        : headers,
-    },
+    ...request,
+    ...(url !== undefined && { url: redactPiiInAddress(url) }),
+    ...(typeof queryString === 'string' && { query_string: redactPiiInQuery(queryString) }),
+    ...(headers?.Referer && {
+      headers: { ...headers, Referer: redactPiiInAddress(headers.Referer) },
+    }),
+  };
+};
+
+const redactedException = (exception: Event['exception']): Event['exception'] =>
+  exception?.values
+    ? {
+        ...exception,
+        values: exception.values.map((value) => ({
+          ...value,
+          ...(value.value !== undefined && { value: redactPiiInText(value.value) }),
+        })),
+      }
+    : exception;
+
+export function withoutPersonalData(event: Event): Event {
+  return {
+    ...event,
+    ...(event.message !== undefined && { message: redactPiiInText(event.message) }),
+    ...(event.exception && { exception: redactedException(event.exception) }),
+    ...(event.request && { request: redactedRequest(event.request) }),
+    ...(event.breadcrumbs && { breadcrumbs: event.breadcrumbs.map(beforeBreadcrumb) }),
   };
 }

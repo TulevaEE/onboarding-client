@@ -55,7 +55,7 @@ export const ContractDetails = ({
         </b>
       </div>
       <div className="col-auto col-sm text-nowrap text-end text-sm-start">
-        <b>{formatAmountForCurrency(totalPrice)}</b>
+        <b className={PII_CLASS}>{formatAmountForCurrency(totalPrice)}</b>
       </div>
     </div>
 

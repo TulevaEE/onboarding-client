@@ -7,6 +7,7 @@ import { initializeConfiguration } from '../../../config/config';
 import LoggedInApp from '../../../LoggedInApp';
 import { PII_CLASS } from '../../../tracking/piiMarkup';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
+import { watchFormattedAmounts } from '../../../../test/piiAmounts';
 import {
   pensionAccountStatementBackend,
   useTestBackendsExcept,
@@ -31,6 +32,7 @@ import {
 
 const server = setupServer();
 let history: History;
+let formattedAmounts: ReturnType<typeof watchFormattedAmounts>;
 
 function initializeComponent() {
   history = createMemoryHistory();
@@ -43,6 +45,11 @@ function initializeComponent() {
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
+
+beforeEach(() => {
+  formattedAmounts = watchFormattedAmounts();
+});
+afterEach(() => formattedAmounts.stop());
 
 beforeEach(async () => {
   initializeConfiguration();
@@ -58,6 +65,26 @@ describe('withdrawals flow with both pillars', () => {
     pensionAccountStatementBackend(server);
     withdrawalsEligibilityBackend(server);
   });
+
+  test('marks every amount the flow shows as personal data for analytics', async () => {
+    expect(
+      await screen.findByText(/Withdraw from the entire pension holding/i),
+    ).toBeInTheDocument();
+    userEvent.click(await singleWithdrawalCheckbox());
+    userEvent.type(await partialWithdrawalSizeInput(), '20000');
+    await assertFundPensionCalculations({ fundPensionMonthlySize: '~420 € per month' });
+
+    expect(formattedAmounts.amountsShownOutsidePii()).toStrictEqual([]);
+
+    userEvent.click(nextButton());
+    await enterIban('EE591254471322749514');
+    expect(await screen.findByText(/Citadele/)).toBeInTheDocument();
+    userEvent.click(nextButton());
+    await assertMandateCount(3);
+    await assertFundPensionMandate('SECOND', '420 €');
+
+    expect(formattedAmounts.amountsShownOutsidePii()).toStrictEqual([]);
+  }, 20_000);
 
   test('reaches final confirmation step to make partial withdrawal with fund pension', async () => {
     expect(await screen.findByText(/60 years old/i)).toBeInTheDocument();

@@ -26,7 +26,7 @@ import LoginPage, { actions as loginActions } from './components/login';
 import { actions as thirdPillarActions } from './components/thirdPillar';
 
 import './polyfills';
-import { withoutGiftToken } from './sentryEventFilter';
+import { withoutGiftToken } from './components/tracking/giftPage';
 import LoggedInApp from './components/LoggedInApp';
 import { ScrollToTopOnNavigation } from './components/common/ScrollToTopOnNavigation';
 import { loginPath } from './components/login/LoginPage';

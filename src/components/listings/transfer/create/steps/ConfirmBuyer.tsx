@@ -238,7 +238,7 @@ const SearchResponse = ({
         </span>
         <span>
           <span className={`d-block lead ${PII_CLASS}`}>{getFullName(searched)}</span>
-          <span className="d-block text-secondary">
+          <span className={`d-block text-secondary ${PII_CLASS}`}>
             {formatMessage(
               { id: 'capital.transfer.create.member.label' },
               { memberNumber: searched.memberNumber },

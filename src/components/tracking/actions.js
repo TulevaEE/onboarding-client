@@ -1,6 +1,6 @@
 import ReactGA from 'react-ga4';
 import { LOCATION_CHANGE } from 'connected-react-router';
-import { withoutGiftToken } from '../../sentryEventFilter';
+import { withoutGiftToken } from './giftPage';
 import { redactPii } from './piiPatterns';
 
 const reportedPath = (path) => withoutGiftToken(redactPii(path));

@@ -151,8 +151,10 @@ export const AddListing = () => {
                 ariaLabelledBy="book-value"
               />
               <div className="d-flex justify-content-between">
-                <span className="text-body-secondary">{formatAmountForCurrency(0, 0)}</span>
-                <span className="text-body-secondary">
+                <span className={`text-body-secondary ${PII_CLASS}`}>
+                  {formatAmountForCurrency(0, 0)}
+                </span>
+                <span className={`text-body-secondary ${PII_CLASS}`}>
                   {formatAmountForCurrency(totalBookValue ?? 0, 2)}
                 </span>
               </div>

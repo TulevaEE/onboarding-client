@@ -61,11 +61,52 @@ describe('redactPii', () => {
     it('replaces a short IBAN of another country', () => {
       expect(redactPii('NO9386011117947')).toBe('[iban]');
     });
+
+    it.each([
+      ['narrow no-break spaces', 'EE81\u202f2233\u202f9861\u202f7443\u202f1932'],
+      ['tabs', 'EE81\t2233\t9861\t7443\t1932'],
+      ['hyphens', 'EE81-2233-9861-7443-1932'],
+      ['two spaces', 'EE81  2233  9861  7443  1932'],
+    ])('replaces an IBAN grouped with %s', (_, iban) => {
+      expect(redactPii(iban)).toBe('[iban]');
+    });
+
+    it('replaces an IBAN glued to the word before it, as the text of a whole select joins them', () => {
+      expect(redactPii('KontoEE812233986174431932')).toBe('Konto[iban]');
+    });
+
+    it('replaces an IBAN written in lower case', () => {
+      expect(redactPii('ee812233986174431932')).toBe('[iban]');
+      expect(redactPii('ee81 2233 9861 7443 1932')).toBe('[iban]');
+    });
+
+    it('leaves lower-case text shaped like an IBAN alone when its check digits do not add up', () => {
+      expect(redactPii('ab12cdef345678901234')).toBe('ab12cdef345678901234');
+      expect(redactPii('ee3600109435ee3600109435')).toBe('ee3600109435ee3600109435');
+    });
   });
 
   describe('email addresses', () => {
     it('replaces an email address and keeps the sentence around it', () => {
       expect(redactPii('Kontakt: john.doe@example.com.')).toBe('Kontakt: [email].');
+    });
+
+    it('replaces an email address with Estonian letters in its domain', () => {
+      expect(redactPii('jaan@näide.ee')).toBe('[email]');
+    });
+
+    it('replaces an email address whose @ is percent-encoded', () => {
+      expect(redactPii('email=john.doe%40example.com')).toBe('email=[email]');
+    });
+
+    it('takes linear time on a long run of letters with no domain after it', () => {
+      const longRun = `${'a'.repeat(200000)}@`;
+      const startedAt = Date.now();
+
+      redactPii(longRun);
+      redactPii('1'.repeat(200000));
+
+      expect(Date.now() - startedAt).toBeLessThan(1000);
     });
   });
 
@@ -85,6 +126,27 @@ describe('redactPii', () => {
     it('leaves a bare run of digits that starts with five alone', () => {
       expect(redactPii('55667788')).toBe('55667788');
     });
+
+    it('replaces a mobile number grouped with a hyphen', () => {
+      expect(redactPii('5566-7788')).toBe('[phone]');
+    });
+
+    it('replaces a mobile number that starts with eight when it is grouped like one', () => {
+      expect(redactPii('Telefon: 8123 4567')).toBe('Telefon: [phone]');
+    });
+
+    it('replaces a number with the country code in brackets', () => {
+      expect(redactPii('Telefon (+372) 5566 7788')).toBe('Telefon [phone]');
+    });
+
+    it('leaves a bare run of digits that starts with eight alone', () => {
+      expect(redactPii('81234567')).toBe('81234567');
+    });
+
+    it('leaves a round amount followed by a year alone', () => {
+      expect(redactPii('Summa 5000 2026')).toBe('Summa 5000 2026');
+      expect(redactPii('Maksid 500 2026. aastal')).toBe('Maksid 500 2026. aastal');
+    });
   });
 
   describe('tokens', () => {
@@ -96,6 +158,24 @@ describe('redactPii', () => {
       ).toBe(
         'https://pension.tuleva.ee/trigger-procedure?handoverToken=[token]&provider=COOP_PANK',
       );
+    });
+
+    it('replaces a signed token cut off before its signature', () => {
+      expect(redactPii('eyJhbGciOiJSUzUxMiJ9.eyJzaWduaW5nTWV0aG9kIjoic21hcnRJZ')).toBe('[token]');
+    });
+
+    it('replaces the payload of a token cut off in its middle', () => {
+      expect(redactPii('x eyJzaWduaW5nTWV0aG9kIjoic21')).toBe('x [token]');
+    });
+
+    it('replaces the handover token parameter whatever its value looks like', () => {
+      expect(
+        redactPii('/trigger-procedure?provider=COOP_PANK&handoverToken=abc.def&procedure=account'),
+      ).toBe('/trigger-procedure?provider=COOP_PANK&handoverToken=[token]&procedure=account');
+    });
+
+    it('leaves a short word that starts like a token alone', () => {
+      expect(redactPii('eyJfoo')).toBe('eyJfoo');
     });
   });
 
