@@ -236,6 +236,11 @@ beforeEach(() => {
   actingFor('PERSON');
 });
 
+const columnOfLastCell = (row: HTMLElement) => {
+  const cells = within(row).getAllByRole('cell') as HTMLTableCellElement[];
+  return cells.slice(0, -1).reduce((column, cell) => column + cell.colSpan, 0);
+};
+
 describe('the savings fund statement', () => {
   const holdingHistory = [
     savingsTransaction('2024-06-01T10:00:00Z', 10, 1.0, 10),
@@ -551,6 +556,27 @@ describe('the savings fund statement', () => {
 
       const change = await screen.findByRole('row', { name: /Change in value/ });
       expect(within(change).getByText(/64[.,]90/)).toBeInTheDocument();
+    });
+
+    it('lines every figure of the reconciliation up under the balance value', async () => {
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      const headerRow = await screen.findByRole('row', { name: /Balance value/ });
+      const headers = within(headerRow).getAllByRole('columnheader');
+      const balanceValueColumn = headers.indexOf(
+        within(headerRow).getByRole('columnheader', { name: 'Balance value' }),
+      );
+
+      [
+        /Opening balance/,
+        /Total contributions/,
+        /Total withdrawals/,
+        /Closing balance/,
+        /Change in value/,
+      ].forEach((name) => {
+        expect(columnOfLastCell(screen.getByRole('row', { name }))).toEqual(balanceValueColumn);
+      });
     });
   });
 
