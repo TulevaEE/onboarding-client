@@ -7,10 +7,33 @@ import { PII_CLASS } from './piiMarkup';
 const gtmElementText = (element: Element) =>
   ((element as HTMLElement).innerText || element.textContent || '').trim();
 
+const META_BUTTONS_EXCEPT_LINKS = [
+  "input[type='button']",
+  "input[type='image']",
+  "input[type='submit']",
+  'button',
+  '[class*=btn]',
+  '[class*=Btn]',
+  '[class*=submit]',
+  '[class*=Submit]',
+  '[class*=button]',
+  '[class*=Button]',
+  '[role*=button]',
+  "[href^='tel:']",
+  "[href^='callto:']",
+  "[href^='mailto:']",
+  "[href^='sms:']",
+  "[href^='skype:']",
+  "[href^='whatsapp:']",
+  '[id*=btn]',
+  '[id*=Btn]',
+  '[id*=button]',
+  '[id*=Button]',
+].join(', ');
+
 const metaButtonText = (element: Element) =>
   // eslint-disable-next-line testing-library/no-node-access
-  element.closest('a, button, [role*="button"], [class*="btn"], [class*="button"]')?.textContent ??
-  '';
+  element.closest(META_BUTTONS_EXCEPT_LINKS)?.textContent ?? '';
 
 const preventNavigation = (event: React.MouseEvent) => event.preventDefault();
 
@@ -125,6 +148,43 @@ describe('installPiiClickGuard', () => {
     expect(gtmElementText(seen)).toBe('▾');
     expect(metaButtonText(seen)).not.toContain('John Doe');
   });
+
+  it('keeps the name on a button away from Meta when a plain link inside that button is clicked', () => {
+    render(
+      <div className="btn">
+        <span className={PII_CLASS}>John Doe</span>
+        <a href="/capital/transfer/1" onClick={preventNavigation}>
+          Open
+        </a>
+      </div>,
+    );
+
+    userEvent.click(screen.getByRole('link', { name: 'Open' }));
+
+    const [seen] = elementClicks.targets;
+    expect(gtmElementText(seen)).toBe('Open');
+    expect(metaButtonText(seen)).not.toContain('John Doe');
+  });
+
+  it.each([
+    ['a class that contains Button', { className: 'accountButton' }],
+    ['a class that contains Submit', { className: 'Submit-row' }],
+    ['an id that contains Btn', { id: 'accountBtn' }],
+    ['an id that contains button', { id: 'account-button' }],
+  ])(
+    'keeps a name away from Meta inside an element it counts as a button by %s',
+    (_, attributes) => {
+      render(
+        <div {...attributes}>
+          <span className={PII_CLASS}>John Doe</span> <span>▾</span>
+        </div>,
+      );
+
+      userEvent.click(screen.getByText('▾'));
+
+      expect(metaButtonText(elementClicks.targets[0])).not.toContain('John Doe');
+    },
+  );
 
   it('leaves a click without personal data untouched', () => {
     render(<button type="button">Continue</button>);

@@ -1,107 +1,132 @@
-import { redactPii } from './piiPatterns';
-import { withoutGiftToken } from '../../sentryEventFilter';
+import {
+  ParameterFilter,
+  redactPiiInAddress,
+  redactPiiInQuery,
+  redactPiiInText,
+} from './piiInAddress';
 
 interface Endpoint {
   host: RegExp;
   path: RegExp;
+  isUserData: ParameterFilter;
 }
 
 type Body = BodyInit | Document | null | undefined;
 
 const ANY_PATH = /^\//;
-const GOOGLE_TAG_PATH = /^\/(pagead|ads|ccm|g)\//;
-const PIXEL_PATH = /^\/tr\/?$/;
+const GOOGLE_TAG_PATH = /^\/(pagead|ads|ccm|g|rmkt|measurement|travel\/flights\/click)\//;
+const META_PIXEL_PATH = /^\/(tr\/?$|privacy_sandbox\/)/;
+const GOOGLE_HOST_OF_A_COUNTRY =
+  /^((www|adservice)\.)?google\.(com|co\.[a-z]{2}|com\.[a-z]{2}|[a-z]{2})$/;
+
+const GOOGLE_USER_DATA_PARAMETERS = ['em', 'emd', 'ecsid'];
+const META_USER_DATA_PARAMETERS = /^((ud|udff|udwv|udai|aud|audff)\[|(cud|cudff)$)/;
+
+const isGoogleUserData: ParameterFilter = (name) => GOOGLE_USER_DATA_PARAMETERS.includes(name);
+const isMetaUserData: ParameterFilter = (name) => META_USER_DATA_PARAMETERS.test(name);
 
 const ANALYTICS_ENDPOINTS: Endpoint[] = [
-  { host: /(^|\.)google-analytics\.com$/, path: ANY_PATH },
-  { host: /(^|\.)analytics\.google\.com$/, path: ANY_PATH },
-  { host: /(^|\.)doubleclick\.net$/, path: ANY_PATH },
-  { host: /(^|\.)googleadservices\.com$/, path: ANY_PATH },
-  { host: /(^|\.)googlesyndication\.com$/, path: ANY_PATH },
-  { host: /^(www|adservice)\.google\.[a-z.]+$/, path: GOOGLE_TAG_PATH },
-  { host: /(^|\.)(facebook|instagram)\.com$/, path: PIXEL_PATH },
+  { host: /(^|\.)google-analytics\.com$/, path: ANY_PATH, isUserData: isGoogleUserData },
+  { host: /(^|\.)analytics\.google\.com$/, path: ANY_PATH, isUserData: isGoogleUserData },
+  { host: /(^|\.)doubleclick\.net$/, path: ANY_PATH, isUserData: isGoogleUserData },
+  { host: /(^|\.)googleadservices\.com$/, path: ANY_PATH, isUserData: isGoogleUserData },
+  { host: /(^|\.)googlesyndication\.com$/, path: ANY_PATH, isUserData: isGoogleUserData },
+  { host: /(^|\.)googletagmanager\.com$/, path: ANY_PATH, isUserData: isGoogleUserData },
+  { host: GOOGLE_HOST_OF_A_COUNTRY, path: GOOGLE_TAG_PATH, isUserData: isGoogleUserData },
+  { host: /(^|\.)(facebook|instagram)\.com$/, path: META_PIXEL_PATH, isUserData: isMetaUserData },
+  { host: /(^|\.)facebook\.net$/, path: ANY_PATH, isUserData: isMetaUserData },
 ];
 
-const MAX_DECODING_ROUNDS = 3;
 const LINE_BREAK = /(\r?\n)/;
+const JSON_START = /^\s*[[{]/;
 
 let isInstalled = false;
 
-export const isAnalyticsEndpoint = (address: string): boolean => {
+const analyticsEndpointOf = (address: string): Endpoint | null => {
   try {
     const { hostname, pathname } = new URL(address, window.location.href);
-    return ANALYTICS_ENDPOINTS.some(({ host, path }) => host.test(hostname) && path.test(pathname));
+    return (
+      ANALYTICS_ENDPOINTS.find(({ host, path }) => host.test(hostname) && path.test(pathname)) ??
+      null
+    );
   } catch (error) {
-    return false;
+    return null;
   }
 };
 
-const decodedOnce = (text: string): string => {
+export const isAnalyticsEndpoint = (address: string): boolean =>
+  analyticsEndpointOf(address) !== null;
+
+const redactedJsonValue = (value: unknown): unknown => {
+  if (typeof value === 'string') {
+    return redactPiiInText(value);
+  }
+  if (Array.isArray(value)) {
+    return value.map(redactedJsonValue);
+  }
+  if (value !== null && typeof value === 'object') {
+    return Object.keys(value).reduce<Record<string, unknown>>(
+      (redacted, key) => ({
+        ...redacted,
+        [key]: redactedJsonValue((value as Record<string, unknown>)[key]),
+      }),
+      {},
+    );
+  }
+  return value;
+};
+
+const redactedJson = (body: string): string | null => {
+  if (!JSON_START.test(body)) {
+    return null;
+  }
   try {
-    return decodeURIComponent(text);
+    const parsed: unknown = JSON.parse(body);
+    const redacted = JSON.stringify(redactedJsonValue(parsed));
+    return redacted === JSON.stringify(parsed) ? body : redacted;
   } catch (error) {
-    return text;
+    return null;
   }
 };
 
-const fullyDecoded = (text: string, roundsLeft = MAX_DECODING_ROUNDS): string => {
-  const decoded = decodedOnce(text);
-  return decoded === text || roundsLeft === 1 ? decoded : fullyDecoded(decoded, roundsLeft - 1);
-};
+const redactedLines = (body: string, endpoint: Endpoint): string =>
+  body
+    .split(LINE_BREAK)
+    .map((line) => redactPiiInQuery(line, endpoint.isUserData))
+    .join('');
 
-const withoutPersonalData = (text: string): string => {
-  const decoded = fullyDecoded(text);
-  const redacted = withoutGiftToken(redactPii(decoded));
-  return redacted === decoded ? text : redacted;
-};
+const redactedText = (body: string, endpoint: Endpoint): string =>
+  redactedJson(body) ?? redactedLines(body, endpoint);
 
-const redactedComponent = (component: string): string => {
-  const decoded = decodedOnce(component.replace(/\+/g, ' '));
-  const redacted = withoutPersonalData(decoded);
-  return redacted === decoded ? component : encodeURIComponent(redacted);
-};
-
-const redactedParameter = (parameter: string): string => {
-  const valueStart = parameter.indexOf('=') + 1;
-  return valueStart === 0
-    ? parameter
-    : parameter.slice(0, valueStart) + redactedComponent(parameter.slice(valueStart));
-};
-
-const redactedQuery = (query: string): string => query.split('&').map(redactedParameter).join('&');
-
-const redactedLines = (body: string): string => body.split(LINE_BREAK).map(redactedQuery).join('');
-
-const redactedAddress = (address: string): string => {
-  const queryStart = address.indexOf('?') + 1;
-  return queryStart === 0
-    ? address
-    : address.slice(0, queryStart) + redactedQuery(address.slice(queryStart));
-};
-
-const redactedSearchParams = (params: URLSearchParams): URLSearchParams => {
+const redactedSearchParams = (params: URLSearchParams, endpoint: Endpoint): URLSearchParams => {
   const redacted = new URLSearchParams();
-  params.forEach((value, name) => redacted.append(name, withoutPersonalData(value)));
+  params.forEach((value, name) => {
+    if (!endpoint.isUserData(name)) {
+      redacted.append(name, redactPiiInText(value));
+    }
+  });
   return redacted;
 };
 
-const redactedFormData = (form: FormData): FormData => {
+const redactedFormData = (form: FormData, endpoint: Endpoint): FormData => {
   const redacted = new FormData();
-  form.forEach((value, name) =>
-    redacted.append(name, typeof value === 'string' ? withoutPersonalData(value) : value),
-  );
+  form.forEach((value, name) => {
+    if (!endpoint.isUserData(name)) {
+      redacted.append(name, typeof value === 'string' ? redactPiiInText(value) : value);
+    }
+  });
   return redacted;
 };
 
-const redactedBody = (body: Body): Body => {
+const redactedBody = (body: Body, endpoint: Endpoint): Body => {
   if (typeof body === 'string') {
-    return redactedLines(body);
+    return redactedText(body, endpoint);
   }
   if (body instanceof URLSearchParams) {
-    return redactedSearchParams(body);
+    return redactedSearchParams(body, endpoint);
   }
   if (body instanceof FormData) {
-    return redactedFormData(body);
+    return redactedFormData(body, endpoint);
   }
   return body;
 };
@@ -114,8 +139,8 @@ const readText = (blob: Blob): Promise<string> =>
     reader.readAsText(blob);
   });
 
-const redactedBlob = (blob: Blob): Promise<Blob> =>
-  readText(blob).then((text) => new Blob([redactedLines(text)], { type: blob.type }));
+const redactedBlob = (blob: Blob, endpoint: Endpoint): Promise<Blob> =>
+  readText(blob).then((text) => new Blob([redactedText(text, endpoint)], { type: blob.type }));
 
 const safely = <T>(redacted: () => T, original: () => T): T => {
   try {
@@ -125,33 +150,80 @@ const safely = <T>(redacted: () => T, original: () => T): T => {
   }
 };
 
+const isRequest = (input: unknown): input is Request =>
+  typeof Request === 'function' && input instanceof Request;
+
 const addressOf = (input: RequestInfo | URL): string | null => {
   if (typeof input === 'string') {
     return input;
   }
-  return input instanceof URL ? input.href : null;
+  if (input instanceof URL) {
+    return input.href;
+  }
+  return isRequest(input) ? input.url : null;
+};
+
+const METHODS_WITHOUT_BODY = ['GET', 'HEAD'];
+
+const redactedRequest = async (request: Request, endpoint: Endpoint): Promise<Request> => {
+  const hasBody = !METHODS_WITHOUT_BODY.includes(request.method.toUpperCase());
+  const body = hasBody ? redactedText(await request.clone().text(), endpoint) : undefined;
+  return new Request(redactPiiInAddress(request.url, endpoint.isUserData), {
+    method: request.method,
+    headers: request.headers,
+    body,
+    mode: request.mode,
+    credentials: request.credentials,
+    cache: request.cache,
+    redirect: request.redirect,
+    referrer: request.referrer,
+    referrerPolicy: request.referrerPolicy,
+    integrity: request.integrity,
+    keepalive: request.keepalive,
+    signal: request.signal,
+  });
+};
+
+type FetchArguments = Parameters<typeof window.fetch>;
+
+const redactedFetchArguments = async (
+  [input, init]: FetchArguments,
+  address: string,
+  endpoint: Endpoint,
+): Promise<FetchArguments> => {
+  const redactedInput = isRequest(input)
+    ? await redactedRequest(input, endpoint)
+    : redactPiiInAddress(address, endpoint.isUserData);
+  const body = init?.body;
+  const redactedInitBody =
+    body instanceof Blob ? await redactedBlob(body, endpoint) : redactedBody(body, endpoint);
+  return [redactedInput, init && { ...init, body: redactedInitBody as BodyInit }];
 };
 
 const scrubbedFetch = (originalFetch: typeof window.fetch): typeof window.fetch =>
-  function fetchWithoutPersonalData(...args: Parameters<typeof window.fetch>) {
+  function fetchWithoutPersonalData(...args: FetchArguments) {
     const [input, init] = args;
     const address = addressOf(input);
-    if (address === null || !isAnalyticsEndpoint(address)) {
+    const endpoint = address === null ? null : analyticsEndpointOf(address);
+    if (address === null || endpoint === null) {
       return originalFetch.apply(window, args);
     }
 
     const sendOriginal = () => originalFetch.call(window, input, init);
     return safely(() => {
-      const redactedInput = redactedAddress(address);
       const body = init?.body;
-      if (body instanceof Blob) {
-        return redactedBlob(body).then(
-          (blob) => originalFetch.call(window, redactedInput, { ...init, body: blob }),
+      const mustReadFirst = body instanceof Blob || isRequest(input);
+      if (mustReadFirst) {
+        return redactedFetchArguments(args, address, endpoint).then(
+          (redactedArguments) => originalFetch.apply(window, redactedArguments),
           sendOriginal,
         );
       }
-      const redactedInit = init && { ...init, body: redactedBody(body) as BodyInit };
-      return originalFetch.call(window, redactedInput, redactedInit);
+      return originalFetch.call(
+        window,
+        redactPiiInAddress(address, endpoint.isUserData),
+        init && { ...init, body: redactedBody(body, endpoint) as BodyInit },
+      );
     }, sendOriginal);
   };
 
@@ -159,25 +231,30 @@ const scrubbedSendBeacon = (originalSendBeacon: Navigator['sendBeacon']): Naviga
   function sendBeaconWithoutPersonalData(...args: Parameters<Navigator['sendBeacon']>) {
     const [url, data] = args;
     const address = String(url);
-    if (!isAnalyticsEndpoint(address)) {
+    const endpoint = analyticsEndpointOf(address);
+    if (endpoint === null) {
       return originalSendBeacon.apply(navigator, args);
     }
 
     const sendOriginal = () => originalSendBeacon.call(navigator, url, data);
     return safely(() => {
-      const redactedUrl = redactedAddress(address);
+      const redactedUrl = redactPiiInAddress(address, endpoint.isUserData);
       if (data instanceof Blob) {
-        redactedBlob(data).then(
+        redactedBlob(data, endpoint).then(
           (blob) => originalSendBeacon.call(navigator, redactedUrl, blob),
           sendOriginal,
         );
         return true;
       }
-      return originalSendBeacon.call(navigator, redactedUrl, redactedBody(data) as BodyInit);
+      return originalSendBeacon.call(
+        navigator,
+        redactedUrl,
+        redactedBody(data, endpoint) as BodyInit,
+      );
     }, sendOriginal);
   };
 
-const requestsToAnalytics = new WeakSet<XMLHttpRequest>();
+const endpointsOfRequests = new WeakMap<XMLHttpRequest, Endpoint>();
 
 type Open = (this: XMLHttpRequest, ...args: unknown[]) => void;
 type Send = (this: XMLHttpRequest, body?: Body) => void;
@@ -186,14 +263,16 @@ const scrubbedOpen = (originalOpen: Open): Open =>
   function openWithoutPersonalData(this: XMLHttpRequest, ...args: unknown[]) {
     const [method, url, ...rest] = args;
     const address = String(url);
-    if (!isAnalyticsEndpoint(address)) {
-      requestsToAnalytics.delete(this);
+    const endpoint = analyticsEndpointOf(address);
+    if (endpoint === null) {
+      endpointsOfRequests.delete(this);
       return originalOpen.apply(this, args);
     }
 
-    requestsToAnalytics.add(this);
+    endpointsOfRequests.set(this, endpoint);
     return safely(
-      () => originalOpen.call(this, method, redactedAddress(address), ...rest),
+      () =>
+        originalOpen.call(this, method, redactPiiInAddress(address, endpoint.isUserData), ...rest),
       () => originalOpen.apply(this, args),
     );
   };
@@ -201,50 +280,123 @@ const scrubbedOpen = (originalOpen: Open): Open =>
 const scrubbedSend = (originalSend: Send): Send =>
   function sendWithoutPersonalData(this: XMLHttpRequest, ...args: [Body?]) {
     const [body] = args;
-    if (!requestsToAnalytics.has(this)) {
+    const endpoint = endpointsOfRequests.get(this);
+    if (endpoint === undefined) {
       return originalSend.apply(this, args);
     }
 
     const sendOriginal = () => originalSend.apply(this, args);
     return safely(() => {
       if (body instanceof Blob) {
-        redactedBlob(body).then((blob) => originalSend.call(this, blob), sendOriginal);
+        redactedBlob(body, endpoint).then((blob) => originalSend.call(this, blob), sendOriginal);
         return undefined;
       }
-      return originalSend.call(this, redactedBody(body));
+      return originalSend.call(this, redactedBody(body, endpoint));
     }, sendOriginal);
   };
 
-const addressWithoutPersonalData = (address: string): string =>
+const sourceWithoutPersonalData = (source: unknown): unknown =>
   safely(
-    () => (isAnalyticsEndpoint(address) ? redactedAddress(address) : address),
-    () => address,
+    () => {
+      const address = String(source);
+      const endpoint = analyticsEndpointOf(address);
+      if (endpoint === null) {
+        return source;
+      }
+      const redacted = redactPiiInAddress(address, endpoint.isUserData);
+      return redacted === address ? source : redacted;
+    },
+    () => source,
   );
 
-const installImageScrubber = () => {
-  const source = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+const settingSourceWithoutPersonalData = (
+  setSource: (source: unknown) => void,
+  source: unknown,
+) => {
+  const redacted = sourceWithoutPersonalData(source);
+  if (redacted === source) {
+    setSource(source);
+    return;
+  }
+  try {
+    setSource(redacted);
+  } catch (error) {
+    setSource(source);
+  }
+};
+
+const elementsThatLoadASource = (): Array<{ prototype: HTMLElement }> =>
+  [
+    typeof HTMLImageElement === 'function' ? HTMLImageElement : undefined,
+    typeof HTMLScriptElement === 'function' ? HTMLScriptElement : undefined,
+    typeof HTMLIFrameElement === 'function' ? HTMLIFrameElement : undefined,
+  ].filter((element): element is NonNullable<typeof element> => element !== undefined);
+
+// A browser that refuses one hook must neither break page start-up nor leave the other transports open.
+const installEach = (hooks: Array<() => void>) =>
+  hooks.forEach((hook) => {
+    try {
+      hook();
+    } catch (error) {
+      // keep installing the remaining hooks
+    }
+  });
+
+const installSourceScrubber = (element: { prototype: HTMLElement }) => {
+  const source = Object.getOwnPropertyDescriptor(element.prototype, 'src');
   const setSource = source?.set;
   if (!source || !setSource) {
     return;
   }
-  Object.defineProperty(HTMLImageElement.prototype, 'src', {
+  Object.defineProperty(element.prototype, 'src', {
     ...source,
-    set(this: HTMLImageElement, address: string) {
-      setSource.call(this, addressWithoutPersonalData(String(address)));
+    set(this: HTMLElement, address: unknown) {
+      settingSourceWithoutPersonalData((value) => setSource.call(this, value), address);
     },
   });
 };
 
-const redactField = (field: Element) => {
-  const textField = field;
-  if (textField instanceof HTMLInputElement || textField instanceof HTMLTextAreaElement) {
-    textField.value = withoutPersonalData(textField.value);
+const loadsASource = (element: Element): boolean =>
+  elementsThatLoadASource().some(({ prototype }) =>
+    Object.prototype.isPrototypeOf.call(prototype, element),
+  );
+
+const isSourceAttribute = (name: unknown): boolean =>
+  typeof name === 'string' && name.length === 3 && name.toLowerCase() === 'src';
+
+const installSourceAttributeScrubber = () => {
+  const originalSetAttribute = Element.prototype.setAttribute;
+  Element.prototype.setAttribute = function setAttributeWithoutPersonalData(
+    this: Element,
+    ...args: Parameters<Element['setAttribute']>
+  ) {
+    const [name, value] = args;
+    if (!isSourceAttribute(name) || !loadsASource(this)) {
+      return originalSetAttribute.apply(this, args);
+    }
+    return settingSourceWithoutPersonalData(
+      (source) => originalSetAttribute.call(this, name, source as string),
+      value,
+    );
+  };
+};
+
+const redactField = (field: Element, endpoint: Endpoint) => {
+  if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement)) {
+    return;
   }
+  if (endpoint.isUserData(field.name)) {
+    field.remove();
+    return;
+  }
+  const textField = field;
+  textField.value = redactPiiInText(textField.value);
 };
 
 const redactFieldsOfAnalyticsForm = (form: HTMLFormElement) => {
-  if (isAnalyticsEndpoint(form.action)) {
-    Array.from(form.elements).forEach(redactField);
+  const endpoint = analyticsEndpointOf(form.action);
+  if (endpoint !== null) {
+    Array.from(form.elements).forEach((field) => redactField(field, endpoint));
   }
 };
 
@@ -263,14 +415,27 @@ export const installAnalyticsPiiScrubber = (): void => {
   }
   isInstalled = true;
 
-  if (typeof window.fetch === 'function') {
-    window.fetch = scrubbedFetch(window.fetch);
-  }
-  if (typeof navigator.sendBeacon === 'function') {
-    navigator.sendBeacon = scrubbedSendBeacon(navigator.sendBeacon);
-  }
-  XMLHttpRequest.prototype.open = scrubbedOpen(XMLHttpRequest.prototype.open as Open);
-  XMLHttpRequest.prototype.send = scrubbedSend(XMLHttpRequest.prototype.send as Send);
-  HTMLFormElement.prototype.submit = scrubbedSubmit(HTMLFormElement.prototype.submit);
-  installImageScrubber();
+  installEach([
+    () => {
+      if (typeof window.fetch === 'function') {
+        window.fetch = scrubbedFetch(window.fetch);
+      }
+    },
+    () => {
+      if (typeof navigator.sendBeacon === 'function') {
+        navigator.sendBeacon = scrubbedSendBeacon(navigator.sendBeacon);
+      }
+    },
+    () => {
+      XMLHttpRequest.prototype.open = scrubbedOpen(XMLHttpRequest.prototype.open as Open);
+    },
+    () => {
+      XMLHttpRequest.prototype.send = scrubbedSend(XMLHttpRequest.prototype.send as Send);
+    },
+    () => {
+      HTMLFormElement.prototype.submit = scrubbedSubmit(HTMLFormElement.prototype.submit);
+    },
+    ...elementsThatLoadASource().map((element) => () => installSourceScrubber(element)),
+    installSourceAttributeScrubber,
+  ]);
 };

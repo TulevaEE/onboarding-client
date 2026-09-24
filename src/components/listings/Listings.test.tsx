@@ -13,6 +13,7 @@ import { createDefaultStore, login, renderWrapped } from '../../test/utils';
 import { initializeConfiguration } from '../config/config';
 import { mockUser } from '../../test/backend-responses';
 import { isInsidePii } from '../tracking/piiMarkup';
+import { watchFormattedAmounts } from '../../test/piiAmounts';
 import {
   CapitalTransferContract,
   CapitalTransferContractState,
@@ -20,6 +21,7 @@ import {
 
 const server = setupServer();
 let history: History;
+let formattedAmounts: ReturnType<typeof watchFormattedAmounts>;
 
 function initializeComponent() {
   history = createMemoryHistory();
@@ -32,6 +34,11 @@ function initializeComponent() {
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
+
+beforeEach(() => {
+  formattedAmounts = watchFormattedAmounts();
+});
+afterEach(() => formattedAmounts.stop());
 
 beforeEach(async () => {
   initializeConfiguration();
@@ -52,6 +59,18 @@ describe('member capital listings with no listings', () => {
     userEvent.click(await screen.findByText(/Add listing/i));
 
     expect(isInsidePii(await screen.findByText(mockUser.email as string))).toBe(true);
+  });
+
+  test('marks every amount of a new sale listing as personal data for analytics', async () => {
+    userEvent.click(await screen.findByText(/Add listing/i));
+    userEvent.click(await screen.findByRole('button', { name: 'Selling' }));
+    userEvent.type(
+      await screen.findByLabelText(/How much member capital are you selling\?/i),
+      '100',
+    );
+
+    expect(await screen.findByLabelText(/At what price are you selling\?/i)).toBeInTheDocument();
+    expect(formattedAmounts.amountsShownOutsidePii()).toStrictEqual([]);
   });
 
   test('shows empty listings screen, allows to create listing', async () => {
@@ -108,6 +127,12 @@ describe('member capital listings with listings', () => {
     expect(await within(listings[2]).findByText('100.00 €')).toBeInTheDocument();
     expect(await within(listings[2]).findByText('250.00 €')).toBeInTheDocument();
     expect(await within(listings[2]).findByText('Contact seller')).toBeInTheDocument();
+  });
+
+  test('marks every amount of the listings as personal data for analytics', async () => {
+    expect(await screen.findAllByTestId('listing')).toHaveLength(3);
+
+    expect(formattedAmounts.amountsShownOutsidePii()).toStrictEqual([]);
   });
 
   test('allows to contact for BUY listing', async () => {

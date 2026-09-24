@@ -35,6 +35,7 @@ import { TranslationKey } from '../../translations';
 import { useTestMode } from '../../common/test-mode';
 import { getBankName } from '../../common/iban';
 import { PII_CLASS } from '../../tracking/piiMarkup';
+import { Pii } from '../../common/Pii';
 
 export const ReviewAndConfirmStep = () => {
   const {
@@ -382,7 +383,9 @@ const FundPensionMandateDescription = ({
             withdrawalDate: (
               <WithdrawalPaymentDate mandate={mandate} mandateDeadlines={mandateDeadlines} />
             ),
-            paymentSize: formatAmountForCurrency(fundPensionMonthlyPaymentFromPillar, 0),
+            paymentSize: (
+              <Pii>{formatAmountForCurrency(fundPensionMonthlyPaymentFromPillar, 0)}</Pii>
+            ),
             muted: (children: ReactChildren) => (
               <span className="text-body-secondary">{children}</span>
             ),
@@ -495,9 +498,8 @@ const PartialWithdrawalMandateDescription = ({
             values={{
               b: (children: ReactChildren) => <b>{children}</b>,
               warningText: (children: ReactChildren) => <b className="text-danger">{children}</b>,
-              estimatedWithdrawalSizeWithTax: formatAmountForCurrency(
-                estimatedWithdrawalSizeWithTax ?? undefined,
-                0,
+              estimatedWithdrawalSizeWithTax: (
+                <Pii>{formatAmountForCurrency(estimatedWithdrawalSizeWithTax ?? undefined, 0)}</Pii>
               ),
               withdrawalDate: (
                 <WithdrawalPaymentDate mandate={mandate} mandateDeadlines={mandateDeadlines} />

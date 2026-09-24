@@ -52,11 +52,12 @@ describe('ResidencyStep', () => {
 
   test('marks the popup the address search opens outside the form as personal data for analytics', async () => {
     (global as any).InAadress = jest.fn().mockImplementation(({ container }) => {
+      document.dispatchEvent(new Event('inaadressLoaded'));
       const popup = document.createElement('div');
       popup.id = `${container}_popup`;
+      popup.classList.add('in-ads-popup', 'hidden');
       popup.textContent = 'Telliskivi 60/1';
       document.body.append(popup);
-      document.dispatchEvent(new Event('inaadressLoaded'));
       return { destroy: jest.fn() };
     });
     renderWrapped(<ResidencyStepWrapper defaultCountryCode="EE" />);

@@ -8,6 +8,7 @@ import { exchangeHandoverTokenForAccessToken } from './exchangeHandoverToken';
 import { getQueryParams } from '../../utils';
 import { MOBILE_AUTHENTICATION_SUCCESS } from '../login/constants';
 import { finish, init, parseJwt } from './utils';
+import { forgetHandoverToken, storedHandoverToken } from './handoverTokenStorage';
 
 import './TriggerProcedure.scss';
 import { getAuthentication } from '../common/authenticationManager';
@@ -18,13 +19,19 @@ export const TriggerProcedure: React.FC = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [message, setMessage] = React.useState<null | string>(null);
+  const [tokenKeptForSession] = React.useState(storedHandoverToken);
+  const handoverTokenOfPage = query.handoverToken ?? tokenKeptForSession;
 
   React.useEffect(() => {
     setMessage(null);
     try {
-      const { provider, handoverToken, path } = init(query);
+      const { provider, handoverToken, path } = init({
+        ...query,
+        handoverToken: handoverTokenOfPage,
+      });
       exchangeHandoverTokenForAccessToken(handoverToken)
         .then((token) => {
+          forgetHandoverToken();
           if (!token) {
             throw new Error('Failed to receive accessToken');
           }
@@ -54,6 +61,7 @@ export const TriggerProcedure: React.FC = () => {
           // history.replace(path);
         })
         .catch((err: Error) => {
+          forgetHandoverToken();
           // eslint-disable-next-line no-console -- make this flow more debuggable for 3rd parties
           console.error('error on exchange', err);
           setMessage(intl.formatMessage({ id: 'partnerFlow.error' }));
@@ -67,7 +75,7 @@ export const TriggerProcedure: React.FC = () => {
         finish(undefined, err.message);
       }
     }
-  }, [query.handoverToken]);
+  }, [handoverTokenOfPage]);
 
   return (
     <div className="full-screen centered-contents">

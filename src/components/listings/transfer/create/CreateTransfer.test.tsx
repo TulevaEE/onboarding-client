@@ -16,9 +16,11 @@ import { getBuyerDetailsSection, getSellerDetailsSection } from '../testUtils';
 import { getFullName } from '../../../common/utils';
 import { mockUser } from '../../../../test/backend-responses';
 import { CapitalType } from '../../../common/apiModels';
+import { watchFormattedAmounts } from '../../../../test/piiAmounts';
 
 const server = setupServer();
 let history: History;
+let formattedAmounts: ReturnType<typeof watchFormattedAmounts>;
 
 function initializeComponent() {
   history = createMemoryHistory();
@@ -31,6 +33,11 @@ function initializeComponent() {
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
+
+beforeEach(() => {
+  formattedAmounts = watchFormattedAmounts();
+});
+afterEach(() => formattedAmounts.stop());
 
 beforeEach(async () => {
   initializeConfiguration();
@@ -89,6 +96,31 @@ describe('member capital transfer creation', () => {
     userEvent.click(await screen.findByText(/Search/i));
 
     expect(isInsidePii(await screen.findByText(/Olev Ostja/i))).toBe(true);
+    expect(isInsidePii(await screen.findByText(/Tuleva cooperative member #9999/i))).toBe(true);
+  });
+
+  test('marks every amount of the application as personal data for analytics', async () => {
+    userEvent.type(await screen.findByLabelText(/Enter buyer’s personal ID code/i), '30303039914');
+    userEvent.click(await screen.findByText(/Search/i));
+    expect(await screen.findByText(/Tuleva cooperative member #9999/i)).toBeInTheDocument();
+    userEvent.click(await screen.findByRole('button', { name: /Confirm buyer/i }, {}));
+    userEvent.type(
+      await screen.findByLabelText(/How much member capital are you selling\?/i),
+      '1077.78',
+    );
+    userEvent.type(await screen.findByLabelText(/Agreed sale price/i), '250');
+    userEvent.type(
+      await screen.findByLabelText(/Seller’s bank account \(IBAN\)/i),
+      'EE591254471322749514',
+    );
+    expect(await screen.findByText(/Citadele/)).toBeInTheDocument();
+
+    expect(formattedAmounts.amountsShownOutsidePii()).toStrictEqual([]);
+
+    userEvent.click(await screen.findByText(/Preview application/i));
+    expect(await screen.findByRole('button', { name: /Sign application/i })).toBeInTheDocument();
+
+    expect(formattedAmounts.amountsShownOutsidePii()).toStrictEqual([]);
   });
 
   test('allows to create transfer', async () => {

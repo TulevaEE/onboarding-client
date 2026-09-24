@@ -3,6 +3,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { CapitalRow, CapitalType } from '../../../../common/apiModels';
 import { CapitalTransferAmountInputState } from '../../../../common/apiModels/capital-transfer';
 import { formatAmountForCurrency } from '../../../../common/utils';
+import { PII_CLASS } from '../../../../tracking/piiMarkup';
 
 import styles from '../../../AddListing.module.scss';
 import { InfoTooltip } from '../../../../common/infoTooltip/InfoTooltip';
@@ -89,7 +90,7 @@ export const CapitalTypeInput = ({
             </InfoTooltip>
           )}
         </label>
-        <span className="d-block text-secondary small lh-sm">
+        <span className={`d-block text-secondary small lh-sm ${PII_CLASS}`}>
           max {formatAmountForCurrency(capitalRow.value)}
         </span>
       </div>

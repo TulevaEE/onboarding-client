@@ -1,14 +1,37 @@
 import { holdsPii, isInsidePii } from './piiMarkup';
 import { containsPii } from './piiPatterns';
-import { isGiftPage } from './giftPage';
-import { withoutGiftToken } from '../../sentryEventFilter';
+import { isGiftPage, withoutGiftToken } from './giftPage';
 
 type Listener = [EventTarget, string, (event: Event) => void, boolean];
 
 const PII_PLACEHOLDER = '[pii]';
 const LINK_SELECTOR = 'a, area';
-const CLICKABLE_SELECTOR =
-  'a, area, button, input[type="button"], input[type="submit"], [role*="button"], [class*="btn"], [class*="button"]';
+const META_BUTTON_SELECTORS = [
+  'input[type="button"]',
+  'input[type="image"]',
+  'input[type="submit"]',
+  'button',
+  '[class*="btn"]',
+  '[class*="Btn"]',
+  '[class*="submit"]',
+  '[class*="Submit"]',
+  '[class*="button"]',
+  '[class*="Button"]',
+  '[role*="button"]',
+  '[href^="tel:"]',
+  '[href^="callto:"]',
+  '[href^="mailto:"]',
+  '[href^="sms:"]',
+  '[href^="skype:"]',
+  '[href^="whatsapp:"]',
+  '[id*="btn"]',
+  '[id*="Btn"]',
+  '[id*="button"]',
+  '[id*="Button"]',
+  'a',
+];
+const TAG_MANAGER_LINK_SELECTORS = ['a', 'area'];
+const CLICKABLE_SELECTOR = [...META_BUTTON_SELECTORS, ...TAG_MANAGER_LINK_SELECTORS].join(', ');
 const CLICK_EVENTS = ['click', 'auxclick'];
 const KEPT_ATTRIBUTES = ['id', 'class', 'role', 'type', 'name', 'target', 'rel'];
 const QUERY_AND_HASH = /[?#].*$/;
@@ -51,10 +74,17 @@ const showListenersInstead = (event: Event, substitute: Element) => {
 const clickedElement = (event: Event): Element | null =>
   event.target instanceof Element ? event.target : null;
 
-const isInsidePersonalClickable = (element: Element): boolean => {
+const clickableAncestorsOf = (element: Element): Element[] => {
   const clickable = element.closest(CLICKABLE_SELECTOR);
-  return clickable !== null && isPersonal(clickable);
+  if (clickable === null) {
+    return [];
+  }
+  const outer = clickable.parentElement;
+  return [clickable, ...(outer ? clickableAncestorsOf(outer) : [])];
 };
+
+const isInsidePersonalClickable = (element: Element): boolean =>
+  clickableAncestorsOf(element).some(isPersonal);
 
 const maskForClickListeners = (event: Event) => {
   const element = clickedElement(event);

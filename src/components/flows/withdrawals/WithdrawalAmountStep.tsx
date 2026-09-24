@@ -2,6 +2,8 @@ import React, { ChangeEvent, ReactChildren, useEffect, useMemo, useState } from 
 import { FormattedMessage } from 'react-intl';
 import { Collapse } from 'react-bootstrap';
 import { formatAmountForCurrency } from '../../common/utils';
+import { Pii } from '../../common/Pii';
+import { PII_CLASS } from '../../tracking/piiMarkup';
 import { useMandateDeadlines, useWithdrawalsEligibility } from '../../common/apiHooks';
 import { Radio } from '../../common';
 import { PensionHoldings, PillarToWithdrawFrom } from './types';
@@ -297,8 +299,12 @@ const SingleWithdrawalSelectionBody = ({
             ariaLabelledBy="single-withdrawal-amount-label"
           />
           <div className="mt-2 d-flex justify-content-between">
-            <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>
-            <div className="text-body-secondary">{formatAmountForCurrency(totalAmount, 2)}</div>
+            <div className={`text-body-secondary ${PII_CLASS}`}>
+              {formatAmountForCurrency(0, 0)}
+            </div>
+            <div className={`text-body-secondary ${PII_CLASS}`}>
+              {formatAmountForCurrency(totalAmount, 2)}
+            </div>
           </div>
         </div>
         <p className={`m-0 mt-3 ${onlyThirdPillarPartialWithdrawal ? 'border-top pt-4' : ''}`}>
@@ -321,7 +327,9 @@ const SingleWithdrawalSelectionBody = ({
                     values={{ taxPercent }}
                   />
                   <div>
-                    <b>{formatAmountForCurrency(withdrawalAmountAfterTax, 2)}</b>
+                    <b className={PII_CLASS}>
+                      {formatAmountForCurrency(withdrawalAmountAfterTax, 2)}
+                    </b>
                   </div>
                 </div>
               )}
@@ -350,7 +358,11 @@ const SingleWithdrawalSelectionBody = ({
 };
 
 const TaxAmount = ({ amount }: { amount: number }) => (
-  <>{amount > 0 && <span className="text-danger">{formatAmountForCurrency(-amount, 2)}</span>}</>
+  <>
+    {amount > 0 && (
+      <span className={`text-danger ${PII_CLASS}`}>{formatAmountForCurrency(-amount, 2)}</span>
+    )}
+  </>
 );
 
 const FundPensionStatusBox = () => {
@@ -428,7 +440,9 @@ const FundPensionStatusBox = () => {
                   percentageLiquidated: (
                     <Percentage value={fundPension.percentageLiquidatedMonthly} alwaysSingleColor />
                   ),
-                  paymentAmount: formatAmountForCurrency(fundPension.estimatedMonthlyPayment, 0),
+                  paymentAmount: (
+                    <Pii>{formatAmountForCurrency(fundPension.estimatedMonthlyPayment, 0)}</Pii>
+                  ),
                 }}
               />{' '}
               <FormattedMessage id="withdrawals.withdrawalAmount.fundPensionPrecisePriceAtSaleDisclaimer" />
@@ -545,7 +559,7 @@ const SummaryBox = ({ pensionHoldings }: { pensionHoldings: PensionHoldings }) =
                 <span>
                   <FormattedMessage id="withdrawals.withdrawalAmount.summary.immediateWithdrawal" />
                 </span>
-                <span className="fw-bold">
+                <span className={`fw-bold ${PII_CLASS}`}>
                   {formatAmountForCurrency(
                     amountStep.singleWithdrawalAmount || 0,
                     amountStep.singleWithdrawalAmount ? 2 : 0,
@@ -559,7 +573,9 @@ const SummaryBox = ({ pensionHoldings }: { pensionHoldings: PensionHoldings }) =
                       <span>
                         <FormattedMessage id="withdrawals.withdrawalAmount.summary.fromThirdPillar" />
                       </span>
-                      <span>{formatAmountForCurrency(withdrawalAmountsByPillar.THIRD, 2)}</span>
+                      <span className={PII_CLASS}>
+                        {formatAmountForCurrency(withdrawalAmountsByPillar.THIRD, 2)}
+                      </span>
                     </p>
                   )}
                   {withdrawalAmountsByPillar.SECOND > 0 && (
@@ -567,7 +583,9 @@ const SummaryBox = ({ pensionHoldings }: { pensionHoldings: PensionHoldings }) =
                       <span>
                         <FormattedMessage id="withdrawals.withdrawalAmount.summary.fromSecondPillar" />
                       </span>
-                      <span>{formatAmountForCurrency(withdrawalAmountsByPillar.SECOND, 2)}</span>
+                      <span className={PII_CLASS}>
+                        {formatAmountForCurrency(withdrawalAmountsByPillar.SECOND, 2)}
+                      </span>
                     </p>
                   )}
                 </>
@@ -577,7 +595,7 @@ const SummaryBox = ({ pensionHoldings }: { pensionHoldings: PensionHoldings }) =
                   <span>
                     <FormattedMessage id="withdrawals.withdrawalAmount.summary.taxPayment" />
                   </span>{' '}
-                  <span className="fw-bold text-danger">
+                  <span className={`fw-bold text-danger ${PII_CLASS}`}>
                     {formatAmountForCurrency(-taxAmount, 2)}
                   </span>
                 </p>
@@ -591,7 +609,7 @@ const SummaryBox = ({ pensionHoldings }: { pensionHoldings: PensionHoldings }) =
                 {fundPension.maxMonthlyPayment > fundPension.estimatedMonthlyPayment &&
                   fundPensionEnabled && (
                     <>
-                      <del className="text-secondary fw-normal">
+                      <del className={`text-secondary fw-normal ${PII_CLASS}`}>
                         ~{formatAmountForCurrency(fundPension.maxMonthlyPayment, 0)}
                       </del>{' '}
                       <InfoTooltip
@@ -648,11 +666,11 @@ const EstimatedMonthlyPayment = () => {
     estimatedMonthlyPayment = 0;
   }
   return (
-    <>
+    <span className={PII_CLASS}>
       {estimatedMonthlyPayment > 0 ? '~' : ''}
       {formatAmountForCurrency(estimatedMonthlyPayment, 0)}&nbsp;
       <FormattedMessage id="withdrawals.perMonth" />
-    </>
+    </span>
   );
 };
 
@@ -689,7 +707,7 @@ const PillarSelection = ({
         <h3 className="m-0">
           <FormattedMessage id="withdrawals.withdrawalAmount.secondPillarTotal" />
         </h3>
-        <h3 className="m-0">{formatAmountForCurrency(secondPillarAmount, 2)}</h3>
+        <h3 className={`m-0 ${PII_CLASS}`}>{formatAmountForCurrency(secondPillarAmount, 2)}</h3>
       </div>
     );
   }
@@ -701,7 +719,7 @@ const PillarSelection = ({
           {' '}
           <FormattedMessage id="withdrawals.withdrawalAmount.thirdPillarTotal" />
         </h3>
-        <h3 className="m-0">{formatAmountForCurrency(thirdPillarAmount, 2)}</h3>
+        <h3 className={`m-0 ${PII_CLASS}`}>{formatAmountForCurrency(thirdPillarAmount, 2)}</h3>
       </div>
     );
   }
@@ -728,7 +746,9 @@ const PillarSelection = ({
           <span className="m-0">
             <FormattedMessage id="withdrawals.withdrawalAmount.useEntirePensionHoldings" />
           </span>
-          <span>{formatAmountForCurrency(secondPillarAmount + thirdPillarAmount, 2)}</span>
+          <span className={PII_CLASS}>
+            {formatAmountForCurrency(secondPillarAmount + thirdPillarAmount, 2)}
+          </span>
         </div>
       </Radio>
 
@@ -744,7 +764,7 @@ const PillarSelection = ({
           <span className="m-0">
             <FormattedMessage id="withdrawals.withdrawalAmount.withdrawOnlySecondPillar" />
           </span>
-          <span>{formatAmountForCurrency(secondPillarAmount, 2)}</span>
+          <span className={PII_CLASS}>{formatAmountForCurrency(secondPillarAmount, 2)}</span>
         </div>
       </Radio>
 
@@ -759,7 +779,7 @@ const PillarSelection = ({
           <span className="m-0">
             <FormattedMessage id="withdrawals.withdrawalAmount.withdrawOnlyThirdPillar" />
           </span>
-          <span>{formatAmountForCurrency(thirdPillarAmount, 2)}</span>
+          <span className={PII_CLASS}>{formatAmountForCurrency(thirdPillarAmount, 2)}</span>
         </div>
       </Radio>
     </div>

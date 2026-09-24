@@ -2,6 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <!--
+      The partner handover token is a login credential that carries the person's identity. It has to
+      leave the address before any other script runs, because the Meta Pixel, Tag Manager and Sentry
+      all report the page address. The app reads it from sessionStorage (TriggerProcedure).
+    -->
+    <script>
+      (function () {
+        try {
+          var address = window.location;
+          var token = /[?&]handoverToken=([^&#]*)/.exec(address.search);
+          if (address.pathname.indexOf('/trigger-procedure') !== 0 || !token) {
+            return;
+          }
+          window.sessionStorage.setItem('handoverToken', decodeURIComponent(token[1].replace(/\+/g, ' ')));
+          var search = address.search.replace(/([?&])handoverToken=[^&#]*(&|$)/, '$1').replace(/[?&]$/, '');
+          window.history.replaceState(window.history.state, '', address.pathname + search + address.hash);
+        } catch (error) {}
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="theme-color" content="#00aeea">
     <!--

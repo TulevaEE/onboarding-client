@@ -9,7 +9,6 @@ import './EstonianAddressForm.scss';
 
 const ADDRESS_CONTAINER_ID = 'maaAmetAddressComponent';
 const ADDRESS_INPUT_ID = 'estonianAddressInput';
-const ADDRESS_POPUP_ID = `${ADDRESS_CONTAINER_ID}_popup`;
 const APARTMENT_SELECT_ID = 'estonianApartmentSelect';
 const APARTMENT_LABEL_ID = 'estonianApartmentLabel';
 
@@ -164,8 +163,6 @@ export const EstonianAddressForm: FC<EstonianAddressFormProps> = ({ control }) =
           input.id = ADDRESS_INPUT_ID;
         }
       }
-
-      document.getElementById(ADDRESS_POPUP_ID)?.classList.add(PII_CLASS);
     };
 
     // Watch for DOM changes to handle apartment select being added/removed

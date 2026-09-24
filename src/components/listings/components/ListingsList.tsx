@@ -5,6 +5,7 @@ import { useDeleteMemberCapitalListing, useMemberCapitalListings } from '../../c
 import Loader from '../../common/loader';
 import { MemberCapitalListing } from '../../common/apiModels';
 import { formatAmountForCurrency } from '../../common/utils';
+import { PII_CLASS } from '../../tracking/piiMarkup';
 import { formatDateYear } from '../../common/dateFormatter';
 
 const sortListings = (listingA: MemberCapitalListing, listingB: MemberCapitalListing) => {
@@ -116,8 +117,8 @@ const ListingRow = ({
         )}{' '}
         <span className="text-secondary">#{listing.id}</span>
       </td>
-      <td>{formatAmountForCurrency(listing.bookValue)}</td>
-      <td>{formatAmountForCurrency(listing.totalPrice)}</td>
+      <td className={PII_CLASS}>{formatAmountForCurrency(listing.bookValue)}</td>
+      <td className={PII_CLASS}>{formatAmountForCurrency(listing.totalPrice)}</td>
       <td className="text-start text-nowrap">
         {listing.isOwnListing && (
           <div className="dropdown">
