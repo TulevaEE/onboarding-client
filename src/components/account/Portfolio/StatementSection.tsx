@@ -17,6 +17,7 @@ import {
 } from '../../common/apiModels';
 import { isAcquisition, signedUnits } from '../../common/transactions';
 import { TranslationKey } from '../../translations';
+import { PII_CLASS } from '../../tracking/piiMarkup';
 import styles from './Statement.module.scss';
 
 const TYPE_LABEL: Record<TransactionType, TranslationKey> = {
@@ -178,7 +179,7 @@ const DocumentTable: React.FunctionComponent<{ rows: DocumentRow[] }> = ({ rows 
         ))}
       </tr>
     </thead>
-    <tbody>
+    <tbody className={PII_CLASS}>
       {rows.map((row) => (
         <DocumentTableRow key={row.key} row={row} />
       ))}
@@ -396,13 +397,13 @@ export const StatementSection: React.FunctionComponent<{
               <th scope="row">
                 <FormattedMessage id="savingsFund.statement.document.owner" />
               </th>
-              <td>{owner.name}</td>
+              <td className={PII_CLASS}>{owner.name}</td>
             </tr>
             <tr>
               <th scope="row">
                 <FormattedMessage id={owner.codeLabel} />
               </th>
-              <td>{owner.code}</td>
+              <td className={PII_CLASS}>{owner.code}</td>
             </tr>
             <tr>
               <th scope="row">
