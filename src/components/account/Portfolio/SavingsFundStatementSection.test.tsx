@@ -10,6 +10,8 @@ import download from 'downloadjs';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import { userBackend } from '../../../test/backend';
 import { initializeConfiguration } from '../../config/config';
+import { isInsidePii } from '../../tracking/piiMarkup';
+import { watchFormattedAmounts } from '../../../test/piiAmounts';
 import { Portfolio, RoleType, Transaction } from '../../common/apiModels';
 import { SavingsFundStatementSection } from './SavingsFundStatementSection';
 
@@ -661,6 +663,29 @@ describe('the savings fund statement', () => {
       expect(await screen.findByText('Junior Doe')).toBeInTheDocument();
       expect(screen.getByText('Personal code')).toBeInTheDocument();
       expect(screen.getByText('51201011234')).toBeInTheDocument();
+    });
+
+    it('keeps the name and code of the account owner out of analytics', async () => {
+      actingFor('LEGAL_ENTITY');
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      expect(isInsidePii(await screen.findByText('Acme'))).toBe(true);
+      expect(isInsidePii(screen.getByText('90000000'))).toBe(true);
+    });
+
+    it('keeps every figure of the statement out of analytics', async () => {
+      const formattedAmounts = watchFormattedAmounts();
+      try {
+        accountHolding(holdingHistory);
+        initializeComponent();
+
+        await statementHasLoaded();
+
+        expect(formattedAmounts.amountsShownOutsidePii()).toStrictEqual([]);
+      } finally {
+        formattedAmounts.stop();
+      }
     });
 
     it('names the fund and the period, and what the holding opened and closed at', async () => {
