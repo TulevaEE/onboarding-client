@@ -15,7 +15,7 @@ import {
   TransactionType,
   User,
 } from '../../common/apiModels';
-import { signedUnits } from '../../common/transactions';
+import { isAcquisition, signedUnits } from '../../common/transactions';
 import { TranslationKey } from '../../translations';
 import styles from './Statement.module.scss';
 
@@ -26,8 +26,6 @@ const TYPE_LABEL: Record<TransactionType, TranslationKey> = {
   TRANSFER_IN: 'savingsFund.statement.transactions.transferIn',
   TRANSFER_OUT: 'savingsFund.statement.transactions.transferOut',
 };
-
-const isRedemption = (transaction: Transaction): boolean => transaction.type === 'SUBTRACTION';
 
 const navText = (transaction: Transaction): string =>
   transaction.nav === null ? '' : formatAmountForCount(transaction.nav, 5);
@@ -234,10 +232,10 @@ export const StatementSection: React.FunctionComponent<{
   const amountSum = periodTransactions.reduce((sum, transaction) => sum + transaction.amount, 0);
 
   const contributionsTotal = periodTransactions
-    .filter((transaction) => !isRedemption(transaction))
+    .filter(isAcquisition)
     .reduce((sum, transaction) => sum + transaction.amount, 0);
   const withdrawalsTotal = periodTransactions
-    .filter(isRedemption)
+    .filter((transaction) => !isAcquisition(transaction))
     .reduce((sum, transaction) => sum + transaction.amount, 0);
 
   const valueChange =
