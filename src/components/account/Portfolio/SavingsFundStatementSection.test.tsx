@@ -404,6 +404,28 @@ describe('the savings fund statement', () => {
     ]);
   });
 
+  it('counts units received as a contribution and units given away as a withdrawal', async () => {
+    accountHolding([...holdingHistory, unitsGivenAway, unitsReceived]);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(within(await lastYearsClosingBalance()).getByText('250.00 €')).toBeInTheDocument();
+    const contributions = screen.getByRole('row', { name: /Total contributions/ });
+    expect(within(contributions).getByText('29.20 €')).toBeInTheDocument();
+    const withdrawals = screen.getByRole('row', { name: /Total withdrawals/ });
+    expect(within(withdrawals).getByText('−10.80 €')).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    const lines = text.split('\r\n');
+    expect(lines).toContain('Total contributions;;;;;;29,20');
+    expect(lines).toContain('Total withdrawals;;;;;;-10,80');
+  });
+
   it('downloads the period as a CSV with the rows and columns of the printed statement', async () => {
     accountHolding(holdingHistory);
     initializeComponent();
