@@ -21,6 +21,8 @@ export function RepresentedPartyAccountPage() {
   });
   const thirdPillarFunds = (sourceFunds ?? []).filter((fund) => fund.pillar === 3);
   const showThirdPillar = isRepresentedPerson && thirdPillarFunds.length > 0;
+  // The statement is for a company's accountant; a child's account doesn't need one.
+  const isRepresentedCompany = user?.role?.type === 'LEGAL_ENTITY';
 
   // While the balance loads (e.g. right after a role switch), pass undefined so
   // AccountStatement shimmers instead of rendering an empty zero-balance table.
@@ -59,7 +61,7 @@ export function RepresentedPartyAccountPage() {
       </SectionHeading>
       <AccountStatement funds={savingsFunds} showProfit />
 
-      {savingsFundBalance && <SavingsFundStatementSection />}
+      {isRepresentedCompany && savingsFundBalance && <SavingsFundStatementSection />}
 
       <ApplicationSection />
 
