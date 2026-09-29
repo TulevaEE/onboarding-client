@@ -78,7 +78,11 @@ export const SelectSources = ({
   sourceFunds: SourceFund[] | null;
   targetFunds: Fund[] | null;
   sourceSelection: SourceSelection[];
-  onSelectExchangeSources: (selection: SourceSelection[], exact: boolean) => void;
+  onSelectExchangeSources: (
+    selection: SourceSelection[],
+    exact: boolean,
+    targetFundIsin?: string,
+  ) => void;
   onSelectFutureContributionsFund: (fundIsin: string | null) => void;
   error: ErrorResponse | null;
   nextPath: string;
@@ -188,7 +192,11 @@ export const SelectSources = ({
             <TargetFundSelector
               targetFunds={tulevaTargetFunds}
               onSelectFund={(targetFund: Fund) =>
-                onSelectExchangeSources(selectAllWithTarget(sourceFunds, targetFund), false)
+                onSelectExchangeSources(
+                  selectAllWithTarget(sourceFunds, targetFund),
+                  false,
+                  targetFund.isin,
+                )
               }
               isSelected={(targetFund: Fund) =>
                 JSON.stringify([...sourceSelection].sort()) ===

@@ -1,4 +1,5 @@
 [
+  { "key": "SECOND_PILLAR_START", "tag": "nudge_second_pillar_start" },
   {
     "key": "SECOND_PILLAR_TRANSFER",
     "tag": "nudge_second_pillar",
