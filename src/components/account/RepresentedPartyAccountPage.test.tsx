@@ -199,6 +199,35 @@ describe('RepresentedPartyAccountPage for a represented child', () => {
   });
 });
 
+describe('RepresentedPartyAccountPage for a represented child with savings', () => {
+  let portfolioRequests = 0;
+
+  beforeEach(() => {
+    portfolioRequests = 0;
+    initializeConfiguration();
+    useTestBackendsExcept(server, ['user']);
+    userBackend(server, {
+      role: { type: 'PERSON', code: '61508110000', name: 'Kid Doe' },
+    });
+    savingsAccountStatementBackend(server, additionalSavingsFund);
+    server.use(
+      rest.get('http://localhost/v1/portfolio', (_req, res, ctx) => {
+        portfolioRequests += 1;
+        return res(ctx.json(portfolioHoldingASavingsFund));
+      }),
+    );
+    initializeComponent();
+    history.push('/account');
+  });
+
+  test('does not offer the company statement for a represented child', async () => {
+    expect(await screen.findByText(additionalSavingsFund.fund.name)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Last year' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Save as PDF' })).not.toBeInTheDocument();
+    expect(portfolioRequests).toBe(0);
+  });
+});
+
 describe('RepresentedPartyAccountPage without savings fund balance', () => {
   beforeEach(() => {
     initializeConfiguration();
