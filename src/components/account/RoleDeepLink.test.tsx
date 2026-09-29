@@ -8,7 +8,7 @@ import { captureException } from '@sentry/browser';
 import { initializeConfiguration } from '../config/config';
 import LoggedInApp from '../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../test/utils';
-import { useTestBackendsExcept } from '../../test/backend';
+import { savingsFundOnboardingStatusBackend, useTestBackendsExcept } from '../../test/backend';
 import { mockUser } from '../../test/backend-responses';
 import { Role, SwitchRoleCommand } from '../common/apiModels';
 
@@ -263,6 +263,16 @@ describe('/account/child', () => {
     expect(history.location.pathname).toBe('/somewhere-else');
   });
 
+  test('stays with the child already being acted as, since the link names none', async () => {
+    const session = initializeWithRoles([personRole, childRole, secondChildRole], secondChildRole);
+
+    history.push('/account/child');
+
+    expect(await representedPartyAccount()).toBeInTheDocument();
+    expect(session.switchedRole).toBeNull();
+    expect(session.role).toEqual(secondChildRole);
+  });
+
   test('does not mistake the own person role for a child', async () => {
     const session = initializeWithRoles([personRole, acmeRole], personRole);
 
@@ -326,13 +336,48 @@ describe('a payment deep link that names the account', () => {
     expect(session.switchedRole).toEqual({ type: 'LEGAL_ENTITY', code: betaRole.code });
   });
 
-  test('falls back to the first account of that kind when the id is no longer known', async () => {
+  test('opens the recurring payment form for the named child, keeping the query string of the email', async () => {
+    const emailQuery = 'language=en&type=RECURRING&utm_content=nudge_savings_fund_recurring_child';
+    initializeWithRoles([personRole, childRole, secondChildRole], personRole);
+    savingsFundOnboardingStatusBackend(server, 'COMPLETED');
+
+    history.push(`/savings-fund/payment/child/${secondChildRole.id}?${emailQuery}`);
+
+    expect(await screen.findByText('Account: Second Child')).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /^Recurring\spayment/ })).toBeChecked();
+    expect(history.location.pathname).toBe('/savings-fund/payment');
+    expect(history.location.search).toBe(`?${emailQuery}`);
+  });
+});
+
+describe('a payment deep link that names an account the member does not represent', () => {
+  const unknownAccountId = '99999999-9999-9999-9999-999999999999';
+
+  test('stays on the account page without switching to another child', async () => {
     const session = initializeWithRoles([personRole, childRole, secondChildRole], personRole);
 
-    history.push('/savings-fund/payment/child/99999999-9999-9999-9999-999999999999');
+    history.push(`/savings-fund/payment/child/${unknownAccountId}?type=RECURRING`);
 
-    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
-    expect(session.switchedRole).toEqual({ type: 'PERSON', code: childRole.code });
+    await waitFor(() => expect(history.location.pathname).toBe('/account'));
+    expect(session.switchedRole).toBeNull();
+  });
+
+  test('stays on the account page without switching to another company', async () => {
+    const session = initializeWithRoles([personRole, acmeRole], personRole);
+
+    history.push(`/savings-fund/payment/company/${unknownAccountId}?type=RECURRING`);
+
+    await waitFor(() => expect(history.location.pathname).toBe('/account'));
+    expect(session.switchedRole).toBeNull();
+  });
+
+  test('does not open the payment page of the child already being acted as', async () => {
+    const session = initializeWithRoles([personRole, childRole], childRole);
+
+    history.push(`/savings-fund/payment/child/${unknownAccountId}?type=RECURRING`);
+
+    await waitFor(() => expect(history.location.pathname).toBe('/account'));
+    expect(session.switchedRole).toBeNull();
   });
 });
 
@@ -374,6 +419,19 @@ describe('a payment deep link that cannot reach the account it was opened for', 
 
     await waitFor(() => expect(history.location.pathname).toBe('/account'));
     expect(session.role).toEqual(personRole);
+  });
+
+  test('stays on the account page when the roles lookup fails while acting as another child', async () => {
+    initializeConfiguration();
+    useTestBackendsExcept(server, ['user', 'roles']);
+    const session = roleSessionBackend([personRole, childRole, secondChildRole], childRole);
+    server.use(rest.get('http://localhost/v1/me/roles', (_req, res, ctx) => res(ctx.status(500))));
+    initializeComponent();
+
+    history.push(`/savings-fund/payment/child/${secondChildRole.id}?type=RECURRING`);
+
+    await waitFor(() => expect(history.location.pathname).toBe('/account'));
+    expect(session.switchedRole).toBeNull();
   });
 
   test('carries the payment options through to the payment page', async () => {

@@ -19,20 +19,23 @@ type Props = {
   onRoleSwitched: () => Promise<void>;
 };
 
-// The id names the very account the link was sent about; without it, or once it no longer
-// exists, any account of that kind is a better landing place than none.
-const roleFor = (
+const roleToOpen = (
   user: User,
   roles: Role[],
   holder: AccountHolder,
   accountId: string | undefined,
 ): Role | undefined => {
   const ofHolder = roles.filter((role) => accountHolderForRole(role, user.personalCode) === holder);
-  const named = accountId ? ofHolder.find((role) => role.id === accountId) : undefined;
-  return named ?? lowestByCode(ofHolder);
+  if (accountId) {
+    return ofHolder.find((role) => role.id === accountId);
+  }
+  return ofHolder.find((role) => isCurrentRole(role, user)) ?? lowestByCode(ofHolder);
 };
 
-// The path names only the kind of account, never the account: a child's code is an
+const isActingAs = (user: User | undefined, holder: AccountHolder): boolean =>
+  !!user && accountHolderFor(user) === holder;
+
+// The path names an account only by its opaque role id, never by its code: a child's code is an
 // isikukood and must stay out of the URL, browser history and logs.
 export const RoleDeepLink = ({ holder, destination, accountId, onRoleSwitched }: Props) => {
   const history = useHistory();
@@ -65,10 +68,8 @@ export const RoleDeepLink = ({ holder, destination, accountId, onRoleSwitched }:
     openedRequest.current = request;
 
     const openAccount = async () => {
-      const target = user && roles ? roleFor(user, roles, holder, accountId) : undefined;
-      let opened = target
-        ? isCurrentRole(target, user)
-        : !!user && accountHolderFor(user) === holder;
+      const target = user && roles ? roleToOpen(user, roles, holder, accountId) : undefined;
+      let opened = target ? isCurrentRole(target, user) : !accountId && isActingAs(user, holder);
 
       if (target && !opened) {
         setSwitching(true);
