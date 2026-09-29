@@ -28,10 +28,12 @@ describe('loginLanding', () => {
     });
   });
 
-  it.each(['/capital/listings/42', '/account/child', '/2nd-pillar-payment-rate?utm_source=email'])(
-    'returns the deep link %s untouched, without the login flag',
-    (from) => {
-      expect(loginLanding(from)).toBe(from);
-    },
-  );
+  it.each([
+    '/capital/listings/42',
+    '/account/child',
+    '/2nd-pillar-payment-rate?utm_source=email',
+    '/savings-fund/payment/child/33333333-3333-3333-3333-333333333333?language=en&type=RECURRING',
+  ])('returns the deep link %s untouched, without the login flag', (from) => {
+    expect(loginLanding(from)).toBe(from);
+  });
 });

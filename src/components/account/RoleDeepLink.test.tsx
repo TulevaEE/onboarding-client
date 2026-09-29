@@ -295,6 +295,15 @@ describe('/savings-fund/payment/child', () => {
       '/savings-fund/payment/child',
     );
   });
+
+  test('carries the payment options through to the payment page', async () => {
+    initializeWithRoles([personRole, childRole], personRole);
+
+    history.push('/savings-fund/payment/child?type=RECURRING');
+
+    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
+    expect(history.location.search).toBe('?type=RECURRING');
+  });
 });
 
 describe('/savings-fund/payment/company', () => {
@@ -433,18 +442,12 @@ describe('a payment deep link that cannot reach the account it was opened for', 
     await waitFor(() => expect(history.location.pathname).toBe('/account'));
     expect(session.switchedRole).toBeNull();
   });
+});
 
-  test('carries the payment options through to the payment page', async () => {
-    initializeWithRoles([personRole, childRole], personRole);
-
-    history.push('/savings-fund/payment/child?type=RECURRING');
-
-    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
-    expect(history.location.search).toBe('?type=RECURRING');
-  });
+describe('a second deep link opened while the first is still resolving', () => {
+  const roles = [personRole, acmeRole, childRole];
 
   test('opens the destination the member asked for last for the same holder', async () => {
-    const roles = [personRole, acmeRole];
     const session = initializeWithRoles(roles, personRole);
     const { requested, release } = holdFirstRoleSwitch(session, roles);
 
@@ -455,10 +458,6 @@ describe('a payment deep link that cannot reach the account it was opened for', 
 
     await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
   });
-});
-
-describe('a second deep link opened while the first is still resolving', () => {
-  const roles = [personRole, acmeRole, childRole];
 
   test('opens the account the member asked for last', async () => {
     const session = initializeWithRoles(roles, personRole);
