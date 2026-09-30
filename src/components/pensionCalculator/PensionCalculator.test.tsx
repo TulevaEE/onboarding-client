@@ -793,6 +793,39 @@ describe('PensionCalculator', () => {
     expect(screen.getByTestId('return-warning')).toHaveTextContent(/0% annual return/);
   });
 
+  it('reads a shared inflation from the url, clamped into the slider range', () => {
+    renderCalculator('/calculator?inflation=4');
+    expect(screen.getByRole('slider', { name: /Inflation/i })).toHaveValue('4');
+
+    cleanup();
+    renderCalculator('/calculator?inflation=99');
+    expect(screen.getByRole('slider', { name: /Inflation/i })).toHaveValue('6');
+
+    cleanup();
+    renderCalculator('/calculator?inflation=abc');
+    expect(screen.getByRole('slider', { name: /Inflation/i })).toHaveValue('2');
+
+    cleanup();
+    renderCalculator('/calculator?inflation=');
+    expect(screen.getByRole('slider', { name: /Inflation/i })).toHaveValue('2');
+  });
+
+  it('opens on a payout strategy shared in the url', () => {
+    renderCalculator('/calculator?strategy=fourPercentRule');
+    expect(screen.getByLabelText(/biggest possible inheritance/i)).toBeChecked();
+    expect(screen.getByRole('slider', { name: /Payouts until/i })).toBeDisabled();
+
+    cleanup();
+    renderCalculator('/calculator?strategy=maxUtility');
+    expect(screen.getByLabelText(/biggest monthly payment from the start/i)).toBeChecked();
+
+    cleanup();
+    renderCalculator('/calculator?strategy=unknown');
+    expect(screen.getByLabelText(/biggest possible inheritance/i)).not.toBeChecked();
+    expect(screen.getByLabelText(/biggest monthly payment from the start/i)).not.toBeChecked();
+    expect(screen.getByRole('slider', { name: /Payouts until/i })).toBeEnabled();
+  });
+
   it('offers the historical-return link only on the untouched 0% default', () => {
     renderCalculator();
 
