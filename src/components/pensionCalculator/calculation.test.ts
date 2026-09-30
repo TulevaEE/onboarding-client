@@ -551,7 +551,7 @@ describe('projected retirement age and payout period', () => {
 });
 
 describe('max utility payout: annual renewal at the shortest tax-free period', () => {
-  it('pays more than the 4% rule at every age and spends the pot down by 100', () => {
+  it('pays more than the 4% rule at first, less by 100, and spends the pot down', () => {
     const fourPercent = project(
       inputs({
         payoutStrategy: 'fourPercentRule',
@@ -575,6 +575,7 @@ describe('max utility payout: annual renewal at the shortest tax-free period', (
       6,
     );
     expect(maxUtility.firstPayment.gross).toBeGreaterThan(fourPercent.firstPayment.gross);
+    expect(maxUtility.lastPayment.gross).toBeLessThan(fourPercent.lastPayment.gross);
     expect(maxUtility.pensionTaxRate).toBe(0);
 
     // Consumption, not inheritance: only a sliver is left at the horizon.

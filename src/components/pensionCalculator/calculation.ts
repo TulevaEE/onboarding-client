@@ -90,8 +90,8 @@ export function projectedRemainingYears(retirementAge: number, yearsToRetirement
 //   the principal is left as an inheritance.
 // - maxUtility: the tax-free minimum itself (your remaining statistical
 //   lifetime), which is also how Tuleva's own withdrawals flow sets a contract
-//   up today. The biggest legal tax-free payment at every age; the pot is
-//   consumed over your own lifetime.
+//   up today. The biggest tax-free payment the balance allows each year, so
+//   more goes out early and, in very old age, less than fourPercentRule pays.
 //
 // Both are tax free by construction and drawn to the age-100 horizon.
 export type PayoutStrategy = 'fixedPeriod' | 'fourPercentRule' | 'maxUtility';

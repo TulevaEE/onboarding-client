@@ -504,13 +504,13 @@ describe('PensionCalculator', () => {
     renderCalculator();
 
     userEvent.click(screen.getByLabelText(/biggest possible inheritance/i));
-    userEvent.click(screen.getByLabelText(/biggest pension that lasts/i));
+    userEvent.click(screen.getByLabelText(/biggest monthly payment from the start/i));
 
-    expect(screen.getByLabelText(/biggest pension that lasts/i)).toBeChecked();
+    expect(screen.getByLabelText(/biggest monthly payment from the start/i)).toBeChecked();
     expect(screen.getByLabelText(/biggest possible inheritance/i)).not.toBeChecked();
 
     // Switching the strategy off restores the classic fixed-period contract.
-    userEvent.click(screen.getByLabelText(/biggest pension that lasts/i));
+    userEvent.click(screen.getByLabelText(/biggest monthly payment from the start/i));
     expect(screen.getByRole('slider', { name: /Payouts until/i })).toBeEnabled();
   });
 
