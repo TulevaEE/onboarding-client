@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import { isWebEidSetupMessage, WebEidSetupMessage } from '../webEidSetupMessage/WebEidSetupMessage';
+import {
+  isIdEeInstructionsMessage,
+  IdEeInstructionsMessage,
+} from '../idEeInstructionsMessage/IdEeInstructionsMessage';
 
 export const ID_CARD_LOGIN_START_FAILED_ERROR = 'ID_CARD_LOGIN_START_FAILED';
 export const WEB_EID_USER_CANCELLED = 'WEB_EID_USER_CANCELLED';
@@ -50,10 +53,10 @@ class ErrorAlert extends Component {
       );
     }
 
-    if (isWebEidSetupMessage(description)) {
+    if (isIdEeInstructionsMessage(description)) {
       return (
         <div>
-          <WebEidSetupMessage id={description} />
+          <IdEeInstructionsMessage id={description} />
         </div>
       );
     }
