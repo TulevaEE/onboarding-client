@@ -205,7 +205,6 @@
   "error.payment-failed": "Makse ebaõnnestus.",
   "error.technical": "Midagi läks valesti. Palun proovi uuesti või võta meiega ühendust.",
   "id.card.signing.error": "ID-kaardiga allkirjastamine ebaõnnestus. Kontrolli, et kaardilugeja on ühendatud ning et nii ID-tarkvara kui ka Web eID brauserilaiendus on paigaldatud, ja proovi uuesti.",
-  "id.card.signing.cancelled": "Allkirjastamine katkestati.",
   "id.card.signing.extension.unavailable": "Web eID laiendus ei ole saadaval. Palun paigalda Web eID laiendus ja proovi uuesti.",
   "id.card.signing.certificate.invalid": "ID-kaardi allkirjastamise sertifikaati ei õnnestunud lugeda. Palun proovi uuesti.",
   "id.card.signing.certificate.mismatch": "See ID-kaart kuulub kellelegi teisele. Palun allkirjasta oma ID-kaardiga.",

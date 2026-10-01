@@ -17,6 +17,7 @@ import {
   startIdCardSignature,
 } from '../common/api';
 import { getIdCardSigningCertificate, signHashWithIdCard } from '../common/signing/signWithIdCard';
+import { SigningCancelledByUser } from '../common/signing/signingCancelledByUser';
 import {
   CHANGE_AGREEMENT_TO_TERMS,
   GET_SOURCE_FUNDS_ERROR,
@@ -302,7 +303,11 @@ export function signMandateWithIdCard(mandate: Mandate) {
         handleIdCardSignatureStatus(dispatch, statusCode, mandateId, mandatePillar),
       )
       .catch((error) => {
-        handleSaveMandateError(dispatch, error);
+        if (error instanceof SigningCancelledByUser) {
+          dispatch(cancelSigningMandate());
+        } else {
+          handleSaveMandateError(dispatch, error);
+        }
       });
   };
 }

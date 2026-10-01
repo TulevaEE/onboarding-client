@@ -20,6 +20,7 @@ import {
   SIGN_MANDATE_SUCCESS,
 } from './constants';
 import { getAuthentication } from '../common/authenticationManager';
+import { SigningCancelledByUser } from '../common/signing/signingCancelledByUser';
 
 const mockAuthentication = jest.createMockFromModule('../common/authenticationManager');
 
@@ -392,8 +393,25 @@ describe('Exchange actions', () => {
     });
   });
 
+  it('goes back to the sign button without an error when the user cancels the PIN dialog', async () => {
+    mockIdCard.getIdCardSigningCertificate = jest.fn(() =>
+      Promise.resolve({ certificate: 'certificate', supportedHashFunctions: ['SHA-256'] }),
+    );
+    mockApi.startIdCardSignature = jest.fn(() =>
+      Promise.resolve({ hash: 'hash', hashFunction: 'SHA-256' }),
+    );
+    mockIdCard.signHashWithIdCard = jest.fn(() => Promise.reject(new SigningCancelledByUser()));
+    mockApi.persistIdCardSignature = jest.fn();
+
+    const signMandate = createBoundAction(actions.signMandateWithIdCard);
+    await signMandate({ id: 'id', pillar: 2 });
+
+    expect(dispatch).toHaveBeenLastCalledWith({ type: SIGN_MANDATE_MOBILE_ID_CANCEL });
+    expect(mockApi.persistIdCardSignature).not.toHaveBeenCalled();
+  });
+
   it('stops with a start error when the id card signing certificate cannot be read', async () => {
-    const error = { body: { errors: [{ code: 'id.card.signing.cancelled' }] } };
+    const error = { body: { errors: [{ code: 'id.card.signing.extension.unavailable' }] } };
     mockIdCard.getIdCardSigningCertificate = jest.fn(() => Promise.reject(error));
     mockApi.saveMandateWithAuthentication = jest.fn(() => Promise.resolve({ id: 'id' }));
 

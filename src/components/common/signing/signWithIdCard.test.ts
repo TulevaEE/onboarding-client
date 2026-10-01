@@ -1,5 +1,6 @@
 import { ErrorCode } from '@web-eid/web-eid-library';
 import { signWithIdCard } from './signWithIdCard';
+import { SigningCancelledByUser } from './signingCancelledByUser';
 
 const mockGetSigningCertificate = jest.fn();
 const mockSign = jest.fn();
@@ -53,7 +54,6 @@ describe('signWithIdCard', () => {
   });
 
   it.each([
-    [ErrorCode.ERR_WEBEID_USER_CANCELLED, 'id.card.signing.cancelled'],
     [ErrorCode.ERR_WEBEID_EXTENSION_UNAVAILABLE, 'id.card.signing.extension.unavailable'],
     [ErrorCode.ERR_WEBEID_USER_TIMEOUT, 'id.card.signing.timeout'],
     [ErrorCode.ERR_WEBEID_ACTION_TIMEOUT, 'id.card.signing.timeout'],
@@ -66,11 +66,21 @@ describe('signWithIdCard', () => {
     });
   });
 
+  it('tells a PIN dialog the user cancelled apart from a failure', async () => {
+    mockSign.mockRejectedValue(webEidError(ErrorCode.ERR_WEBEID_USER_CANCELLED));
+
+    await expect(signWithIdCard({ id: 42 }, 'MANDATE_BATCH')).rejects.toBeInstanceOf(
+      SigningCancelledByUser,
+    );
+  });
+
   it('maps a Web eID error while reading the signing certificate', async () => {
-    mockGetSigningCertificate.mockRejectedValue(webEidError(ErrorCode.ERR_WEBEID_USER_CANCELLED));
+    mockGetSigningCertificate.mockRejectedValue(
+      webEidError(ErrorCode.ERR_WEBEID_EXTENSION_UNAVAILABLE),
+    );
 
     await expect(signWithIdCard({ id: 42 }, 'MANDATE_BATCH')).rejects.toMatchObject({
-      body: { errors: [{ code: 'id.card.signing.cancelled' }] },
+      body: { errors: [{ code: 'id.card.signing.extension.unavailable' }] },
     });
     expect(mockStartIdCardSignature).not.toHaveBeenCalled();
   });

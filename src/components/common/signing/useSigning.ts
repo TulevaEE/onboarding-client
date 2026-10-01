@@ -5,6 +5,7 @@ import { signWithIdCard } from './signWithIdCard';
 import { ErrorResponse } from '../apiModels';
 import { errorResponseWithCode, isErrorResponse } from '../errorResponse';
 import { SignableEntity } from './types';
+import { SigningCancelledByUser } from './signingCancelledByUser';
 import { pollForSignatureStatus, startSigningWithChallengeCode } from './signWithChallengeCode';
 
 const POLL_DELAY = 1000;
@@ -66,7 +67,11 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
         throw new Error(`Invalid signing method: ${signingMethod}`);
       }
     } catch (e) {
-      failWith(e);
+      if (e instanceof SigningCancelledByUser) {
+        cancelSigning();
+      } else {
+        failWith(e);
+      }
     }
   };
 
