@@ -17,11 +17,14 @@ const AUTHENTICATION_ERROR_MESSAGES = {
   'smart.id.timeout': 'login.error.smart.id.timeout',
   'smart.id.account.not.found': 'login.error.smart.id.account.not.found',
   'smart.id.unsupported.country': 'login.error.smart.id.unsupported.country',
+  'smart.id.wrong.verification.code': 'login.error.smart.id.wrong.verification.code',
+  'smart.id.certificate.revoked': 'login.error.smart.id.certificate.revoked',
   'mobile.id.cancelled': 'login.error.mobile.id.cancelled',
   'mobile.id.timeout': 'login.error.mobile.id.timeout',
   'mobile.id.no.signal': 'login.error.mobile.id.no.signal',
   'mobile.id.certificates.revoked': 'login.error.mobile.id.certificates.revoked',
   'id.card.document.type.not.allowed': 'login.error.id.card.document.type.not.allowed',
+  'auth.too.many.requests': 'login.error.auth.too.many.requests',
 };
 
 export const hasLoginErrorMessage = (code) => Boolean(AUTHENTICATION_ERROR_MESSAGES[code]);
