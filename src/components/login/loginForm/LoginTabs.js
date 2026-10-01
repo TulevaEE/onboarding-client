@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import LoginTab from './LoginTab';
 import { readPreferredLoginMethod, savePreferredLoginMethod } from './preferredLoginMethod';
+import { LoginTabPickedByUser } from './loginTabPickedByUser';
 
 const TABS_HIDDEN_ON_MOBILE_SHOWN_FROM = '(min-width: 768px)';
 
@@ -24,7 +25,7 @@ class LoginTabs extends Component {
   panelRef = createRef();
 
   // eslint-disable-next-line react/destructuring-assignment
-  state = { activeTab: initialTab(this.props.children) };
+  state = { activeTab: initialTab(this.props.children), pickedByUser: false };
 
   componentDidUpdate(_prevProps, { activeTab: prevActiveTab }) {
     const { activeTab } = this.state;
@@ -35,13 +36,13 @@ class LoginTabs extends Component {
 
   onClickTabItem = (tab) => {
     savePreferredLoginMethod(tab);
-    this.setState({ activeTab: tab });
+    this.setState({ activeTab: tab, pickedByUser: true });
   };
 
   render() {
     const {
       props: { children },
-      state: { activeTab },
+      state: { activeTab, pickedByUser },
       onClickTabItem,
     } = this;
 
@@ -69,12 +70,14 @@ class LoginTabs extends Component {
           aria-live="polite"
           ref={this.panelRef}
         >
-          {React.Children.map(children, (child) => {
-            if (child.props.label !== activeTab) {
-              return undefined;
-            }
-            return child.props.children;
-          })}
+          <LoginTabPickedByUser.Provider value={pickedByUser}>
+            {React.Children.map(children, (child) => {
+              if (child.props.label !== activeTab) {
+                return undefined;
+              }
+              return child.props.children;
+            })}
+          </LoginTabPickedByUser.Provider>
         </div>
       </>
     );
