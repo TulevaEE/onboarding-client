@@ -14,7 +14,7 @@
   "login.smart.id.qr.instructions": "Open the Smart‑ID app on your phone, choose Scan QR code and point the camera at this code.",
   "login.smart.id.qr.expired": "The QR code expired.",
   "login.smart.id.qr.refresh": "Show a new QR code",
-  "login.smart.id.open.app": "Open the Smart-ID app",
+  "login.smart.id.open.app": "Open the Smart‑ID app",
   "login.smart.id.mobile.instructions": "Open the Smart‑ID app and confirm the login there. You will be brought back here automatically.",
   "login.smart.id.callback.retry": "Try again",
   "login.smart.id.continue.as": "Continue as {firstName}",
