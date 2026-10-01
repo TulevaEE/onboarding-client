@@ -146,6 +146,7 @@ describe('When a user is logging in', () => {
     });
     expect(await screen.findByRole('button', { name: 'Log in with Smart-ID' })).toBeInTheDocument();
     userEvent.click(screen.getByText(/Mobile-ID/gi));
+    await waitFor(() => expect(screen.getByPlaceholderText(/Identity code/gi)).toHaveFocus());
     userEvent.type(screen.getByPlaceholderText(/Identity code/gi), identityCode);
     userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '5551 2345');
     userEvent.click(screen.getByText(/Log in$/gi));

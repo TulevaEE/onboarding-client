@@ -1,10 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { isValidPersonalCode } from '../../common/personalCode';
 import { TranslationKey } from '../../translations';
 import { useRememberedMobileIdNumber } from './useRememberedMobileIdNumber';
 import { normalizeMobileIdPhoneNumber } from './mobileIdPhoneNumber';
+import { isMobileDevice } from '../../common/isMobileDevice';
+import { LoginTabPickedByUser } from '../loginForm/loginTabPickedByUser';
 
 const PERSONAL_CODE_LENGTH = 11;
 export const MOBILE_ID_PHONE_NUMBER_REQUIRED = 'mobile.id.phone.number.required';
@@ -35,7 +37,10 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
   startError = null,
 }) => {
   const { formatMessage } = useIntl();
+  const personalCodeInput = useRef<HTMLInputElement>(null);
   const phoneNumberInput = useRef<HTMLInputElement>(null);
+  const submitButton = useRef<HTMLInputElement>(null);
+  const pickedByUser = useContext(LoginTabPickedByUser);
   const [submittedInvalidCode, setSubmittedInvalidCode] = useState(false);
   const [submittedNumberProblem, setSubmittedNumberProblem] = useState<
     'NOT_ESTONIAN' | 'INVALID' | null
@@ -44,6 +49,9 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
     startError === MOBILE_ID_PHONE_NUMBER_REQUIRED ? personalCode : null,
   );
 
+  const [focusFirstEmptyField] = useState(
+    () => phoneNumberRequiredFor !== null || pickedByUser || !isMobileDevice(),
+  );
   const phoneNumberRequired = phoneNumberRequiredFor === personalCode;
   const numberRemembered = useRememberedMobileIdNumber(
     personalCode,
@@ -62,10 +70,21 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
   }, [phoneNumber]);
 
   useEffect(() => {
-    if (phoneNumberRequiredFor !== null) {
-      phoneNumberInput.current?.focus();
+    if (!focusFirstEmptyField) {
+      return;
     }
-  }, [phoneNumberRequiredFor]);
+    if (!personalCodeInput.current?.value) {
+      personalCodeInput.current?.focus();
+    } else {
+      (phoneNumberInput.current ?? submitButton.current)?.focus();
+    }
+  }, [focusFirstEmptyField]);
+
+  useEffect(() => {
+    if (numberRemembered) {
+      submitButton.current?.focus();
+    }
+  }, [numberRemembered]);
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -94,6 +113,7 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
       <div className="mb-3">
         <input
           id="mobile-id-personal-code"
+          ref={personalCodeInput}
           type="text"
           inputMode="numeric"
           autoComplete="username"
@@ -136,6 +156,7 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
       <div className="d-grid mb-3">
         <input
           id="mobile-id-submit"
+          ref={submitButton}
           type="submit"
           className="btn btn-primary btn-lg"
           disabled={!personalCode || (!phoneNumber && !numberRemembered)}
