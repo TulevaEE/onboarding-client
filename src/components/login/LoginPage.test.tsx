@@ -136,7 +136,7 @@ describe('When a user is logging in', () => {
   });
 
   test('they can sign in with mobile id, showing the security code', async () => {
-    const identityCode = '396112341234';
+    const identityCode = '38001085718';
     const phoneNumber = '+372123456789';
     const backend = mobileIdAuthenticationBackend(server, {
       challengeCode: '4321',
@@ -162,7 +162,7 @@ describe('When a user is logging in', () => {
     });
     expect(await screen.findByRole('button', { name: 'Log in with Smart-ID' })).toBeInTheDocument();
     userEvent.click(screen.getByText(/Mobile-ID/gi));
-    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), '38888888888');
+    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), '38001085718');
     userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '+37255512345');
     userEvent.click(screen.getByText(/Log in$/gi));
     expect(await screen.findByText('4321')).toBeInTheDocument();

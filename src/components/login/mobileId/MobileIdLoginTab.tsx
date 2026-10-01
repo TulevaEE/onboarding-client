@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { lastDigits, rememberedMobileIdPhoneNumber } from './rememberedPhoneNumbers';
+import { isValidPersonalCode } from '../../common/personalCode';
+
+const PERSONAL_CODE_LENGTH = 11;
 
 interface MobileIdLoginTabProps {
   phoneNumber: string;
@@ -25,13 +28,19 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
   const { formatMessage } = useIntl();
   const [changingNumber, setChangingNumber] = useState(false);
   const [rememberPhoneNumber, setRememberPhoneNumber] = useState(true);
+  const [submittedInvalidCode, setSubmittedInvalidCode] = useState(false);
   const autoFilledNumber = useRef<string | null>(null);
 
   const rememberedNumber = rememberedMobileIdPhoneNumber(personalCode);
   const usingRememberedNumber = rememberedNumber !== null && !changingNumber;
 
+  const personalCodeValid = isValidPersonalCode(personalCode);
+  const showPersonalCodeError =
+    !personalCodeValid && (personalCode.length >= PERSONAL_CODE_LENGTH || submittedInvalidCode);
+
   useEffect(() => {
     setChangingNumber(false);
+    setSubmittedInvalidCode(false);
   }, [personalCode]);
 
   useEffect(() => {
@@ -47,6 +56,10 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
+    if (!personalCodeValid) {
+      setSubmittedInvalidCode(true);
+      return;
+    }
     onMobileIdSubmit(phoneNumber, personalCode, usingRememberedNumber || rememberPhoneNumber);
   };
 
@@ -60,10 +73,17 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
           autoComplete="username"
           value={personalCode}
           onChange={(event) => onPersonalCodeChange(event.target.value)}
-          className="form-control form-control-lg"
+          className={`form-control form-control-lg${showPersonalCodeError ? ' is-invalid' : ''}`}
           placeholder={formatMessage({ id: 'login.id.code' })}
           aria-label={formatMessage({ id: 'login.id.code' })}
+          aria-invalid={showPersonalCodeError}
+          aria-describedby={showPersonalCodeError ? 'mobile-id-personal-code-error' : undefined}
         />
+        {showPersonalCodeError && (
+          <div id="mobile-id-personal-code-error" className="invalid-feedback text-start">
+            <FormattedMessage id="login.mobile.id.personal.code.invalid" />
+          </div>
+        )}
       </div>
       {usingRememberedNumber ? (
         <p className="mb-3 text-body-secondary">
