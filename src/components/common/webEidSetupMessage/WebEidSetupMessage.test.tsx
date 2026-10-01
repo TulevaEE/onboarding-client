@@ -65,4 +65,11 @@ describe('WebEidSetupMessage', () => {
     expect(isWebEidSetupMessage('web.eid.update.required')).toBe(true);
     expect(isWebEidSetupMessage('id.card.signing.error')).toBe(false);
   });
+
+  it.each(['constructor', 'toString', 'hasOwnProperty'])(
+    'does not mistake the inherited object property %s for a setup message',
+    (code) => {
+      expect(isWebEidSetupMessage(code)).toBe(false);
+    },
+  );
 });

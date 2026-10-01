@@ -14,7 +14,7 @@ const INSTRUCTION_PAGES: Record<WebEidSetupMessageId, TranslationKey> = {
 };
 
 export const isWebEidSetupMessage = (id: string): id is WebEidSetupMessageId =>
-  id in INSTRUCTION_PAGES;
+  Object.hasOwn(INSTRUCTION_PAGES, id);
 
 const InstructionsLink = ({ urlId, children }: { urlId: TranslationKey; children: ReactNode }) => (
   <FormattedMessage id={urlId}>
