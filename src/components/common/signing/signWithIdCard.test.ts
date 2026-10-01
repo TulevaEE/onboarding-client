@@ -122,13 +122,18 @@ describe('signWithIdCard', () => {
     });
   });
 
-  it('wraps an error that is neither a Web eID error nor a backend error', async () => {
-    mockSign.mockRejectedValue(new TypeError('cannot read property of undefined'));
+  it.each([
+    ['reading the certificate', () => mockGetSigningCertificate],
+    ['signing the hash', () => mockSign],
+  ])(
+    'leaves a failure in %s that Web eID did not report for the caller to report as unexplained',
+    async (_step, webEidCall) => {
+      const bugInOurCode = new TypeError('cannot read property of undefined');
+      webEidCall().mockRejectedValue(bugInOurCode);
 
-    await expect(signWithIdCard({ id: 42 }, 'MANDATE_BATCH')).rejects.toMatchObject({
-      body: { errors: [{ code: 'id.card.signing.error' }] },
-    });
-  });
+      await expect(signWithIdCard({ id: 42 }, 'MANDATE_BATCH')).rejects.toBe(bugInOurCode);
+    },
+  );
 
   it('passes backend errors through unchanged', async () => {
     const backendError = { body: { errors: [{ code: 'id.card.signature.session.not.found' }] } };
