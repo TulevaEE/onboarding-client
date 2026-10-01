@@ -27,7 +27,11 @@ export const IdCardLoginTab: React.FC<IdCardLoginTabProps> = ({ onAuthenticateWi
 
   return (
     <div className="d-grid">
-      {error && <ErrorAlert description={error} />}
+      {error && (
+        <div className="text-start">
+          <ErrorAlert description={error} />
+        </div>
+      )}
       <button
         type="button"
         className="btn btn-primary btn-lg"

@@ -70,10 +70,10 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
           <FormattedMessage
             id="login.mobile.id.remembered.number"
             values={{ digits: lastDigits(rememberedNumber) }}
-          />{' '}
+          />
           <button
             type="button"
-            className="btn btn-link p-0 align-baseline"
+            className="btn btn-link p-0 d-block mt-1"
             onClick={() => setChangingNumber(true)}
           >
             <FormattedMessage id="login.mobile.id.change.number" />

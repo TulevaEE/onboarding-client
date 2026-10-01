@@ -31,7 +31,7 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
   onCancel,
 }) => (
   <SmartIdLoginCard>
-    <p className="m-0 mb-4">
+    <p className="m-0 mb-4 text-pretty">
       <FormattedMessage id="login.smart.id.mobile.instructions" />
     </p>
     <div className="d-grid mb-4">
@@ -55,7 +55,7 @@ const SmartIdQrCodeLogin: React.FC<{
   if (expired) {
     return (
       <SmartIdLoginCard>
-        <p className="m-0 mb-4">
+        <p className="m-0 mb-4 text-pretty">
           <FormattedMessage id="login.smart.id.qr.expired" />
         </p>
         <div className="d-grid">
@@ -74,7 +74,7 @@ const SmartIdQrCodeLogin: React.FC<{
 
   return (
     <SmartIdLoginCard>
-      <p className="m-0 mb-4">
+      <p className="m-0 mb-4 text-pretty">
         <FormattedMessage id="login.smart.id.qr.instructions" />
       </p>
       {deviceLink ? (
