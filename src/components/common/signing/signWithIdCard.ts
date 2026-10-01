@@ -1,7 +1,6 @@
 import { getSigningCertificate, sign } from '@web-eid/web-eid-library';
 import { startIdCardSignature } from '../api';
 import { ErrorResponse, IdCardSignatureResponse } from '../apiModels';
-import { isErrorResponse } from '../errorResponse';
 import { WebEidFailure, webEidFailureOf, webEidOptions, withWebEidDiagnosis } from '../webEid';
 import { SignableEntity } from './types';
 import { SigningCancelledByUser } from './signingCancelledByUser';
@@ -31,10 +30,7 @@ const toSigningError = (error: unknown): unknown => {
   if (webEidFailure === 'USER_CANCELLED') {
     return new SigningCancelledByUser();
   }
-  if (webEidFailure) {
-    return new IdCardSigningError(SIGNING_ERROR_CODES[webEidFailure]);
-  }
-  return isErrorResponse(error) ? error : new IdCardSigningError('id.card.signing.error');
+  return webEidFailure ? new IdCardSigningError(SIGNING_ERROR_CODES[webEidFailure]) : error;
 };
 
 export type SigningCertificate = { certificate: string; supportedHashFunctions: string[] };
