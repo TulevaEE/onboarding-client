@@ -1,9 +1,21 @@
 const STORAGE_KEY = 'mobileIdPhoneNumbers';
 const VISIBLE_DIGITS = 3;
+const MONTHS_KEPT_AFTER_LAST_LOGIN = 12;
 
-type PhoneNumbersByPersonalCode = Record<string, string>;
+type RememberedPhoneNumber = { phoneNumber: string; confirmedAt: number };
+type PhoneNumbersByPersonalCode = Record<string, RememberedPhoneNumber>;
 
-function readAll(): PhoneNumbersByPersonalCode {
+const isRememberedPhoneNumber = (entry: unknown): entry is RememberedPhoneNumber =>
+  typeof (entry as RememberedPhoneNumber)?.phoneNumber === 'string' &&
+  typeof (entry as RememberedPhoneNumber)?.confirmedAt === 'number';
+
+const expiresAt = ({ confirmedAt }: RememberedPhoneNumber): number => {
+  const expiry = new Date(confirmedAt);
+  expiry.setMonth(expiry.getMonth() + MONTHS_KEPT_AFTER_LAST_LOGIN);
+  return expiry.getTime();
+};
+
+function readStored(): Record<string, unknown> {
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     const parsed = stored ? JSON.parse(stored) : {};
@@ -22,16 +34,39 @@ function writeAll(phoneNumbers: PhoneNumbersByPersonalCode): boolean {
   }
 }
 
-export function rememberedMobileIdPhoneNumber(personalCode: string): string | null {
-  return readAll()[personalCode] ?? null;
+function readCurrent(now: Date): PhoneNumbersByPersonalCode {
+  const stored = readStored();
+  const current: PhoneNumbersByPersonalCode = Object.fromEntries(
+    Object.entries(stored).filter(
+      (entry): entry is [string, RememberedPhoneNumber] =>
+        isRememberedPhoneNumber(entry[1]) && expiresAt(entry[1]) > now.getTime(),
+    ),
+  );
+  if (Object.keys(current).length !== Object.keys(stored).length) {
+    writeAll(current);
+  }
+  return current;
 }
 
-export function rememberMobileIdPhoneNumber(personalCode: string, phoneNumber: string): void {
-  writeAll({ ...readAll(), [personalCode]: phoneNumber });
+export function rememberedMobileIdPhoneNumber(
+  personalCode: string,
+  now: Date = new Date(),
+): string | null {
+  return readCurrent(now)[personalCode]?.phoneNumber ?? null;
 }
 
-export function forgetMobileIdPhoneNumber(personalCode: string): void {
-  writeAll(Object.fromEntries(Object.entries(readAll()).filter(([code]) => code !== personalCode)));
+export function rememberMobileIdPhoneNumber(
+  personalCode: string,
+  phoneNumber: string,
+  now: Date = new Date(),
+): void {
+  writeAll({ ...readCurrent(now), [personalCode]: { phoneNumber, confirmedAt: now.getTime() } });
+}
+
+export function forgetMobileIdPhoneNumber(personalCode: string, now: Date = new Date()): void {
+  writeAll(
+    Object.fromEntries(Object.entries(readCurrent(now)).filter(([code]) => code !== personalCode)),
+  );
 }
 
 export function lastDigits(phoneNumber: string): string {
