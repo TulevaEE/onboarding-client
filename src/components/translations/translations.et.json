@@ -20,7 +20,6 @@
   "login.smart.id.callback.retry": "Proovi uuesti",
   "login.smart.id.callback.completing": "Lõpetame sisselogimist…",
   "login.smart.id.continue.as": "Jätka kui {firstName}",
-  "login.smart.id.push.intro": "Saadame sisselogimise päringu sinu telefoni Smart‑ID rakendusse.",
   "login.smart.id.not.you": "Pole sina? Logi sisse QR-koodiga",
   "login.smart.id.confirm.hint": "Smart‑ID rakendus palub sul kinnitada sisselogimist Tulevasse.",
   "login.id.card": "ID-kaart",

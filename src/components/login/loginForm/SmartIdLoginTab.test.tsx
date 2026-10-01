@@ -75,6 +75,14 @@ describe('Smart-ID login tab', () => {
     expect(screen.queryByText('Maasikas')).not.toBeInTheDocument();
   });
 
+  it('offers the remembered account nothing but the push login and the way out', async () => {
+    mockGetRememberedSmartIdAccount.mockResolvedValue({ firstName: 'Mari', lastName: 'Maasikas' });
+    const { container } = renderTab();
+
+    expect(await screen.findByRole('button', { name: 'Continue as Mari' })).toBeInTheDocument();
+    expect(container).toHaveTextContent(/^Continue as MariNot you\? Log in with a QR code$/);
+  });
+
   it('forgets the remembered account and falls back to the QR login for somebody else', async () => {
     mockGetRememberedSmartIdAccount.mockResolvedValue({ firstName: 'Mari', lastName: 'Maasikas' });
     renderTab();
