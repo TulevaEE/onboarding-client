@@ -15,8 +15,8 @@ function decimalPlaces(n: number): number {
   return dotIndex === -1 ? 0 : str.length - dotIndex - 1;
 }
 
-export function navScaleFor(isin: string, nav: number): number {
-  const known = NAV_SCALE_BY_ISIN[isin];
+export function navScaleFor(isin: string | undefined, nav: number): number {
+  const known = isin === undefined ? undefined : NAV_SCALE_BY_ISIN[isin];
   if (known !== undefined) {
     return known;
   }

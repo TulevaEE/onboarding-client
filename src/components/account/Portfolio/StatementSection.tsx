@@ -21,6 +21,7 @@ import {
   UNITS_FRACTION_DIGITS,
   formatUnits,
   isRoundedUnits,
+  navScaleFor,
   roundUnits,
 } from '../../common/fundPrecision';
 import { TranslationKey } from '../../translations';
@@ -59,6 +60,7 @@ type DocumentRow = {
   type?: string;
   units?: number;
   nav?: number | null;
+  isin?: string;
   amount?: number;
   balanceUnits?: number;
   balanceValue?: number | null;
@@ -68,8 +70,8 @@ type DocumentRow = {
 type FigureColumn = {
   field: 'units' | 'nav' | 'amount' | 'balanceUnits' | 'balanceValue';
   heading: TranslationKey;
-  printed: (value: number) => React.ReactNode;
-  csv: (value: number) => string;
+  printed: (value: number, row: DocumentRow) => React.ReactNode;
+  csv: (value: number, row: DocumentRow) => string;
 };
 
 const withoutMinusZero = (rounded: string): string =>
@@ -78,20 +80,19 @@ const withoutMinusZero = (rounded: string): string =>
 const csvDecimal = (value: number, fractionDigits: number): string =>
   withoutMinusZero(value.toFixed(fractionDigits)).replace('.', ',');
 
-const NAV_FRACTION_DIGITS = 5;
-
 const unitsFigure = {
   printed: formatUnits,
   csv: (units: number) => csvDecimal(roundUnits(units), UNITS_FRACTION_DIGITS),
 };
 
 const navFigure = {
-  printed: (nav: number) => formatAmountForCount(nav, NAV_FRACTION_DIGITS),
-  csv: (nav: number) => csvDecimal(nav, NAV_FRACTION_DIGITS),
+  printed: (nav: number, { isin }: DocumentRow) =>
+    formatAmountForCount(nav, navScaleFor(isin, nav)),
+  csv: (nav: number, { isin }: DocumentRow) => csvDecimal(nav, navScaleFor(isin, nav)),
 };
 
-const navText = (transaction: Transaction): string =>
-  transaction.nav === null ? '' : navFigure.printed(transaction.nav);
+const navText = ({ nav, isin }: Transaction): string =>
+  nav === null ? '' : formatAmountForCount(nav, navScaleFor(isin, nav));
 
 const euroFigure = {
   printed: (amount: number) => <Euro amount={amount} />,
@@ -124,19 +125,21 @@ const documentColumnHeadings: TranslationKey[] = [
   ...figureColumns.map(({ heading }) => heading),
 ];
 
-const csvFigure = (value: number | null | undefined, { csv }: FigureColumn): string =>
-  value === null || value === undefined ? '' : csv(value);
+const csvFigure = (row: DocumentRow, { field, csv }: FigureColumn): string => {
+  const value = row[field];
+  return value === null || value === undefined ? '' : csv(value, row);
+};
 
 const csvCells = (row: DocumentRow): string[] => [
   row.label,
   row.type ?? '',
-  ...figureColumns.map((column) => csvFigure(row[column.field], column)),
+  ...figureColumns.map((column) => csvFigure(row, column)),
 ];
 
-const printedFigure = (
-  value: number | null | undefined,
-  { printed }: FigureColumn,
-): React.ReactNode => (value === null || value === undefined ? null : printed(value));
+const printedFigure = (row: DocumentRow, { field, printed }: FigureColumn): React.ReactNode => {
+  const value = row[field];
+  return value === null || value === undefined ? null : printed(value, row);
+};
 
 const showsRoundedUnits = (row: DocumentRow): boolean =>
   [row.units, row.balanceUnits].some((units) => units !== undefined && isRoundedUnits(units));
@@ -158,7 +161,7 @@ const DocumentTableRow: React.FunctionComponent<{ row: DocumentRow }> = ({ row }
       )}
       {figureColumns.slice(figuresFrom).map((column) => (
         <td key={column.field} className="text-end">
-          {printedFigure(row[column.field], column)}
+          {printedFigure(row, column)}
         </td>
       ))}
     </tr>
@@ -266,6 +269,7 @@ export const StatementSection: React.FunctionComponent<{
         type: typeLabel(transaction),
         units: signedUnits(transaction),
         nav: transaction.nav,
+        isin: transaction.isin,
         amount: transaction.amount,
         balanceUnits,
         balanceValue: transaction.nav === null ? null : balanceUnits * transaction.nav,

@@ -469,6 +469,38 @@ describe('the savings fund statement', () => {
     expect(screen.queryByText(roundedUnitsPrintedNote)).not.toBeInTheDocument();
   });
 
+  it('shows the unit price to as many decimals as the fund rules state for that fund', async () => {
+    const tkf100 = { ...savingsFund, isin: 'EE0000003283' };
+    server.use(
+      rest.get('http://localhost/v1/funds', (req, res, ctx) => res(ctx.json([tkf100, pillarFund]))),
+      rest.get('http://localhost/v1/transactions', (req, res, ctx) =>
+        res(
+          ctx.json([
+            { ...boughtBeforeThePeriod, isin: tkf100.isin },
+            { ...savingsTransaction('2025-03-10T10:00:00Z', 2, 1.1178, 2.24), isin: tkf100.isin },
+          ]),
+        ),
+      ),
+    );
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    const purchaseRows = await screen.findAllByRole('row', { name: /^10\.03\.2025/ });
+    expect(purchaseRows.map(cellTexts)).toEqual([
+      ['10.03.2025', 'Contribution', '2.000', '1.1178', '2.24\u00a0€'],
+      ['10.03.2025', 'Contribution', '2.000', '1.1178', '2.24\u00a0€', '12.000', '13.41\u00a0€'],
+    ]);
+
+    await lastYearsClosingBalance();
+    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    expect(text.split('\r\n')).toContain('10.03.2025;Contribution;2,000;1,1178;2,24;12,000;13,41');
+  });
+
   it('names transferred units rather than calling them a contribution', async () => {
     accountHolding([...holdingHistory, unitsGivenAway, unitsReceived]);
     initializeComponent();
