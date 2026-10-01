@@ -24,7 +24,7 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
       <div className="d-grid gap-2">
         <button
           type="button"
-          className="btn btn-primary btn-lg"
+          className="btn btn-primary btn-lg text-wrap text-balance"
           onClick={() => onSmartIdLoginStart(language, 'NOTIFICATION')}
         >
           <FormattedMessage
@@ -34,7 +34,7 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
         </button>
         <button
           type="button"
-          className="btn btn-outline-primary btn-lg"
+          className="btn btn-outline-primary btn-lg text-wrap text-balance"
           onClick={() => forget().then(() => onSmartIdLoginStart(language, 'DEVICE_LINK'))}
         >
           <FormattedMessage id="login.smart.id.not.you" />
@@ -47,7 +47,7 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
     <div className="d-grid">
       <button
         type="button"
-        className="btn btn-primary btn-lg"
+        className="btn btn-primary btn-lg text-wrap text-balance"
         onClick={() => onSmartIdLoginStart(language, 'DEVICE_LINK')}
       >
         <FormattedMessage id="login.smart.id.start" />
