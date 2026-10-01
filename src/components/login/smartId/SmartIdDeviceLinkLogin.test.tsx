@@ -186,7 +186,7 @@ describe('Smart-ID device link login', () => {
 
     expect(
       screen.getByText(
-        'Confirm the login in the Smart-ID app. You will be brought back here automatically.',
+        'Open the Smart-ID app and confirm the login there. You will be brought back here automatically.',
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Open the Smart-ID app' })).toHaveAttribute(
