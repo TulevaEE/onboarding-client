@@ -5,12 +5,14 @@ import { TranslationKey } from '../../translations';
 export type IdEeInstructionsMessageId =
   | 'web.eid.extension.missing'
   | 'web.eid.id.software.missing'
-  | 'web.eid.update.required';
+  | 'web.eid.update.required'
+  | 'id.card.signing.certificate.revoked';
 
 const INSTRUCTION_PAGES: Record<IdEeInstructionsMessageId, TranslationKey> = {
   'web.eid.extension.missing': 'web.eid.help.browser.url',
   'web.eid.id.software.missing': 'web.eid.help.install.url',
   'web.eid.update.required': 'web.eid.help.install.url',
+  'id.card.signing.certificate.revoked': 'id.card.help.certificate.validity.url',
 };
 
 export const isIdEeInstructionsMessage = (id: string): id is IdEeInstructionsMessageId =>

@@ -34,6 +34,11 @@ describe('IdEeInstructionsMessage', () => {
       /ID.software needs updating/,
       'https://www.id.ee/en/article/install-id-software/',
     ],
+    [
+      'id.card.signing.certificate.revoked',
+      /signing certificate on your ID.card is not valid/,
+      'https://www.id.ee/en/article/validity-of-id-card-certificates/',
+    ],
   ])('explains %s and links to its id.ee instructions', (id, text, href) => {
     renderIn('en', id as IdEeInstructionsMessageId);
 
@@ -48,6 +53,10 @@ describe('IdEeInstructionsMessage', () => {
     ],
     ['web.eid.id.software.missing', 'https://www.id.ee/artikkel/paigalda-id-tarkvara/'],
     ['web.eid.update.required', 'https://www.id.ee/artikkel/paigalda-id-tarkvara/'],
+    [
+      'id.card.signing.certificate.revoked',
+      'https://www.id.ee/artikkel/id-kaardi-sertifikaatide-kehtivus/',
+    ],
   ])('links %s to the Estonian id.ee page in Estonian', (id, href) => {
     renderIn('et', id as IdEeInstructionsMessageId);
 
