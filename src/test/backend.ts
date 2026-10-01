@@ -214,6 +214,7 @@ export function smartIdAuthenticationBackend(
   server: SetupServerApi,
   options: {
     language?: string;
+    loseFirstCallbackAnswer?: boolean;
     rejectCallback?: boolean;
     rememberedAccount?: { firstName: string; lastName: string };
     verificationCode?: string;
@@ -297,6 +298,9 @@ export function smartIdAuthenticationBackend(
       }
       backend.acceptedCallbacks += 1;
       latestAuthenticationHash = smartIdCallbackRedemptionSecret(backend.acceptedCallbacks);
+      if (options.loseFirstCallbackAnswer && backend.acceptedCallbacks === 1) {
+        return new Promise<never>(() => {});
+      }
       return res(ctx.status(200), ctx.json({ authenticationHash: latestAuthenticationHash }));
     }),
 

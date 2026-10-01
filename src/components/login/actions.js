@@ -37,6 +37,7 @@ import { api } from '../common';
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 
 import { getAuthentication } from '../common/authenticationManager';
+import { forgetSmartIdCallbackParameters } from './smartId/smartIdCallbackParameters';
 
 const POLL_DELAY = 1000;
 let timeout;
@@ -152,6 +153,7 @@ function savePendingSmartIdAuthentication({
   controlCode,
   returnPath,
   language,
+  callbackAccepted,
 }) {
   if (!window.sessionStorage) {
     return;
@@ -165,6 +167,7 @@ function savePendingSmartIdAuthentication({
         controlCode,
         returnPath,
         language,
+        callbackAccepted,
         startedAt: Date.now(),
       }),
     );
@@ -203,14 +206,23 @@ export function getPendingSmartIdLanguage() {
   return pending?.language ?? null;
 }
 
+function loadUnexpiredPendingSmartIdAuthentication() {
+  const pending = loadPendingSmartIdAuthentication();
+  if (pending && Date.now() - pending.startedAt > PENDING_SMART_ID_TTL_MILLIS) {
+    clearPendingSmartIdAuthentication();
+    return null;
+  }
+  return pending;
+}
+
+export function hasAcceptedSmartIdCallback() {
+  return Boolean(loadUnexpiredPendingSmartIdAuthentication()?.callbackAccepted);
+}
+
 export function resumePendingSmartIdAuthentication() {
   return (dispatch, getState) => {
-    const pending = loadPendingSmartIdAuthentication();
+    const pending = loadUnexpiredPendingSmartIdAuthentication();
     if (!pending) {
-      return;
-    }
-    if (Date.now() - pending.startedAt > PENDING_SMART_ID_TTL_MILLIS) {
-      clearPendingSmartIdAuthentication();
       return;
     }
     if (getAuthentication().isAuthenticated()) {
@@ -393,18 +405,39 @@ export function completeSmartIdLogin(callback) {
     return api
       .completeSmartIdCallback(callback)
       .then((authenticationHash) => {
+        forgetSmartIdCallbackParameters();
         if (startSequence !== smartIdStartSequence) {
           return;
         }
+        const pending = loadPendingSmartIdAuthentication();
+        savePendingSmartIdAuthentication({
+          authenticationHash,
+          returnPath: pending?.returnPath,
+          language: pending?.language,
+          callbackAccepted: true,
+        });
         dispatch(getSmartIdTokens(authenticationHash));
       })
       .catch((error) => {
+        forgetSmartIdCallbackParameters();
         if (startSequence !== smartIdStartSequence) {
           return;
         }
         clearPendingSmartIdAuthentication();
         dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error });
       });
+  };
+}
+
+export function resumeAcceptedSmartIdCallback() {
+  return (dispatch) => {
+    const pending = loadUnexpiredPendingSmartIdAuthentication();
+    if (!pending?.callbackAccepted) {
+      return;
+    }
+    smartIdStartSequence += 1;
+    dispatch({ type: MOBILE_AUTHENTICATION_START });
+    dispatch(getSmartIdTokens(pending.authenticationHash));
   };
 }
 
@@ -477,6 +510,7 @@ export function cancelMobileAuthentication() {
   smartIdStartSequence += 1; // invalidate any /authenticate still in flight
   stopSmartIdPolling();
   clearPendingSmartIdAuthentication();
+  forgetSmartIdCallbackParameters();
   return { type: MOBILE_AUTHENTICATION_CANCEL };
 }
 
