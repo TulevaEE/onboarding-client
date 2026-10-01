@@ -68,10 +68,7 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
       }
     } catch (e) {
       setError(toErrorResponse(e));
-      return Promise.reject(e);
     }
-
-    return Promise.resolve();
   };
 
   const pollForIdCard = (entity: TSignableEntity) => {
