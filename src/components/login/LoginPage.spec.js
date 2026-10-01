@@ -83,16 +83,23 @@ describe('Login page', () => {
       onSmartIdLoginStart,
     });
 
-    expect(
-      component.contains(
-        <SmartIdDeviceLinkLogin
-          web2AppLink={web2AppLink}
-          onCancel={onCancelMobileAuthentication}
-          onSmartIdLoginStart={onSmartIdLoginStart}
-        />,
-      ),
-    ).toBe(true);
+    expect(component.find(SmartIdDeviceLinkLogin).props()).toEqual({
+      web2AppLink,
+      onCancel: onCancelMobileAuthentication,
+      onSmartIdLoginStart,
+      automaticRenewals: { take: expect.any(Function) },
+    });
     expect(component.find(AuthenticationLoader)).toHaveLength(0);
+  });
+
+  it('keeps one allowance of automatic QR code renewals for the whole page view', () => {
+    component.setProps({ loadingAuthentication: true, smartIdWeb2AppLink: 'first link' });
+    const firstAllowance = component.find(SmartIdDeviceLinkLogin).prop('automaticRenewals');
+
+    component.setProps({ smartIdWeb2AppLink: null });
+    component.setProps({ smartIdWeb2AppLink: 'second link' });
+
+    expect(component.find(SmartIdDeviceLinkLogin).prop('automaticRenewals')).toBe(firstAllowance);
   });
 
   it('drops the device link login while a new smart id session is starting', () => {

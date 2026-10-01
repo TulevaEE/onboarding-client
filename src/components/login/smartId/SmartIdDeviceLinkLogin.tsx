@@ -6,6 +6,7 @@ import { Loader } from '../../common';
 import { isMobileDevice } from '../../common/isMobileDevice';
 import { useLoginLanguage } from '../loginLanguage';
 import { useSmartIdQrCodeLink } from './useSmartIdQrCodeLink';
+import { AutomaticRenewalAllowance } from './automaticRenewalAllowance';
 
 const QR_CODE_SIZE_PIXELS = 256;
 
@@ -13,17 +14,23 @@ interface SmartIdDeviceLinkLoginProps {
   web2AppLink: string;
   onCancel: () => void;
   onSmartIdLoginStart: (language: string) => void;
+  automaticRenewals: AutomaticRenewalAllowance;
 }
 
 export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
   web2AppLink,
   onCancel,
   onSmartIdLoginStart,
+  automaticRenewals,
 }) =>
   isMobileDevice() ? (
     <SmartIdAppLogin web2AppLink={web2AppLink} onCancel={onCancel} />
   ) : (
-    <SmartIdQrCodeLogin onCancel={onCancel} onSmartIdLoginStart={onSmartIdLoginStart} />
+    <SmartIdQrCodeLogin
+      onCancel={onCancel}
+      onSmartIdLoginStart={onSmartIdLoginStart}
+      automaticRenewals={automaticRenewals}
+    />
   );
 
 const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> = ({
@@ -48,10 +55,17 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
 const SmartIdQrCodeLogin: React.FC<{
   onCancel: () => void;
   onSmartIdLoginStart: (language: string) => void;
-}> = ({ onCancel, onSmartIdLoginStart }) => {
+  automaticRenewals: AutomaticRenewalAllowance;
+}> = ({ onCancel, onSmartIdLoginStart, automaticRenewals }) => {
   const { formatMessage } = useIntl();
   const language = useLoginLanguage();
-  const { deviceLink, expired } = useSmartIdQrCodeLink();
+  const { deviceLink, expired } = useSmartIdQrCodeLink(() => {
+    if (!automaticRenewals.take()) {
+      return false;
+    }
+    onSmartIdLoginStart(language);
+    return true;
+  });
 
   if (expired) {
     return (

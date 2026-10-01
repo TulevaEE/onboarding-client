@@ -5,6 +5,7 @@ import { IntlProvider } from 'react-intl';
 
 import translations from '../../translations';
 import { SmartIdDeviceLinkLogin } from './SmartIdDeviceLinkLogin';
+import { automaticRenewalAllowance, AutomaticRenewalAllowance } from './automaticRenewalAllowance';
 import { getSmartIdQrCodeLink } from '../../common/api';
 
 jest.mock('../../common/api');
@@ -29,6 +30,8 @@ describe('Smart-ID device link login', () => {
   const setUserAgent = (userAgent: string) =>
     Object.defineProperty(navigator, 'userAgent', { value: userAgent, configurable: true });
 
+  let renewals: AutomaticRenewalAllowance;
+
   const renderDeviceLinkLogin = () =>
     render(
       <IntlProvider locale="en" messages={translations.en}>
@@ -36,9 +39,20 @@ describe('Smart-ID device link login', () => {
           web2AppLink={web2AppLink}
           onCancel={onCancel}
           onSmartIdLoginStart={onSmartIdLoginStart}
+          automaticRenewals={renewals}
         />
       </IntlProvider>,
     );
+
+  const setPageVisibility = (visibility: 'visible' | 'hidden') => {
+    Object.defineProperty(document, 'visibilityState', { value: visibility, configurable: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  };
+
+  const outliveTheSession = () =>
+    act(async () => {
+      jest.advanceTimersByTime(60000);
+    });
 
   const flushPendingRequests = () => act(async () => undefined);
   const advanceOneSecond = () =>
@@ -47,6 +61,8 @@ describe('Smart-ID device link login', () => {
     });
 
   beforeEach(() => {
+    renewals = automaticRenewalAllowance();
+    setPageVisibility('visible');
     sessionStorage.clear();
     jest.useFakeTimers();
     jest.clearAllMocks();
@@ -161,14 +177,49 @@ describe('Smart-ID device link login', () => {
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
   });
 
-  it('offers a new session once the QR code expires after a minute', async () => {
+  it('starts a new session by itself when the QR code expires while the page is in view', async () => {
     renderDeviceLinkLogin();
     await flushPendingRequests();
 
-    await act(async () => {
-      jest.advanceTimersByTime(60000);
-    });
+    await outliveTheSession();
 
+    expect(onSmartIdLoginStart).toHaveBeenCalledWith('en');
+    expect(screen.queryByText('The QR code expired.')).not.toBeInTheDocument();
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+  });
+
+  it('stops starting new sessions by itself after five, and offers the button instead', async () => {
+    const renewFiveTimes = async () => {
+      for (let renewal = 1; renewal <= 5; renewal += 1) {
+        const { unmount } = renderDeviceLinkLogin();
+        // eslint-disable-next-line no-await-in-loop
+        await flushPendingRequests();
+        // eslint-disable-next-line no-await-in-loop
+        await outliveTheSession();
+        unmount();
+      }
+    };
+    await renewFiveTimes();
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    await outliveTheSession();
+
+    expect(onSmartIdLoginStart).toHaveBeenCalledTimes(5);
+    expect(screen.getByText('The QR code expired.')).toBeInTheDocument();
+    userEvent.click(screen.getByRole('button', { name: 'Show a new QR code' }));
+    expect(onSmartIdLoginStart).toHaveBeenCalledTimes(6);
+  });
+
+  it('offers a new session, without starting one, when the QR code expires out of view', async () => {
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+    setPageVisibility('hidden');
+
+    await outliveTheSession();
+    act(() => setPageVisibility('visible'));
+
+    expect(onSmartIdLoginStart).not.toHaveBeenCalled();
     expect(screen.getByText('The QR code expired.')).toBeInTheDocument();
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
     const requestsBeforeExpiry = mockGetSmartIdQrCodeLink.mock.calls.length;
@@ -188,6 +239,7 @@ describe('Smart-ID device link login', () => {
     renderDeviceLinkLogin();
     await flushPendingRequests();
 
+    setPageVisibility('hidden');
     await act(async () => {
       jest.advanceTimersByTime(10000);
     });
@@ -204,6 +256,7 @@ describe('Smart-ID device link login', () => {
     await flushPendingRequests();
 
     expect(screen.getByText('The QR code expired.')).toBeInTheDocument();
+    expect(onSmartIdLoginStart).not.toHaveBeenCalled();
   });
 
   it('cancels the login from the QR code view', async () => {
