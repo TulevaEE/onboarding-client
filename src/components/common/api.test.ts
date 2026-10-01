@@ -124,7 +124,7 @@ describe('API calls', () => {
         refresh_token: expectedTokens.refreshToken,
       });
 
-      const result = await authenticateWithIdCardWebEid('et');
+      const result = await authenticateWithIdCardWebEid({ lang: 'et' });
 
       expect(mockHttp.post).toHaveBeenCalledWith('/authenticate', { type: 'ID_CARD' });
       expect(mockWebEidAuthenticate).toHaveBeenCalledWith(challengeCode, { lang: 'et' });
@@ -145,7 +145,9 @@ describe('API calls', () => {
       mockWebEidAuthenticate.mockResolvedValueOnce(mockAuthToken);
       mockHttp.postForm.mockRejectedValueOnce({ error: 'AUTHENTICATION_NOT_COMPLETE' });
 
-      await expect(authenticateWithIdCardWebEid('en')).rejects.toThrow('Authentication failed');
+      await expect(authenticateWithIdCardWebEid({ lang: 'en' })).rejects.toThrow(
+        'Authentication failed',
+      );
     });
   });
 

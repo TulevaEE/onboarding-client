@@ -1,8 +1,8 @@
-import { ErrorCode, getSigningCertificate, sign } from '@web-eid/web-eid-library';
-import config from 'react-global-configuration';
+import { getSigningCertificate, sign } from '@web-eid/web-eid-library';
 import { startIdCardSignature } from '../api';
 import { ErrorResponse, IdCardSignatureResponse } from '../apiModels';
 import { isErrorResponse } from '../errorResponse';
+import { WebEidFailure, webEidFailureOf, webEidOptions } from '../webEid';
 import { SignableEntity } from './types';
 
 export type SignedEntity<T> = { signature: string; entityId: T; entityType: SignableEntity };
@@ -17,24 +17,19 @@ export class IdCardSigningError extends Error {
   }
 }
 
-const WEB_EID_ERROR_CODES: Partial<Record<ErrorCode, string>> = {
-  [ErrorCode.ERR_WEBEID_USER_CANCELLED]: 'id.card.signing.cancelled',
-  [ErrorCode.ERR_WEBEID_EXTENSION_UNAVAILABLE]: 'id.card.signing.extension.unavailable',
-};
-
-const isWebEidError = (error: unknown): error is { code: ErrorCode } => {
-  const code = (error as { code?: unknown })?.code;
-  return typeof code === 'string' && code.startsWith('ERR_WEBEID_');
+const SIGNING_ERROR_CODES: Record<WebEidFailure, string> = {
+  USER_CANCELLED: 'id.card.signing.cancelled',
+  EXTENSION_UNAVAILABLE: 'id.card.signing.extension.unavailable',
+  FAILED: 'id.card.signing.error',
 };
 
 const toSigningError = (error: unknown): unknown => {
-  if (isWebEidError(error)) {
-    return new IdCardSigningError(WEB_EID_ERROR_CODES[error.code] ?? 'id.card.signing.error');
+  const webEidFailure = webEidFailureOf(error);
+  if (webEidFailure) {
+    return new IdCardSigningError(SIGNING_ERROR_CODES[webEidFailure]);
   }
   return isErrorResponse(error) ? error : new IdCardSigningError('id.card.signing.error');
 };
-
-const webEidOptions = () => ({ lang: config.get('language') || 'et' });
 
 export type SigningCertificate = { certificate: string; supportedHashFunctions: string[] };
 

@@ -1,5 +1,5 @@
 import config from 'react-global-configuration';
-import { authenticate as webEidAuthenticate } from '@web-eid/web-eid-library';
+import { ActionOptions, authenticate as webEidAuthenticate } from '@web-eid/web-eid-library';
 import {
   SwitchRoleCommand,
   AmlCheck,
@@ -126,9 +126,9 @@ export async function authenticateWithIdCardMtls(): Promise<boolean> {
   return success;
 }
 
-export async function authenticateWithIdCardWebEid(language: string): Promise<Token> {
+export async function authenticateWithIdCardWebEid(webEidOptions: ActionOptions): Promise<Token> {
   const { challengeCode } = await post(getEndpoint('/authenticate'), { type: 'ID_CARD' });
-  const authToken = await webEidAuthenticate(challengeCode, { lang: language });
+  const authToken = await webEidAuthenticate(challengeCode, webEidOptions);
   const tokens = await getTokensWithGrantType('ID_CARD', {
     authenticationHash: JSON.stringify(authToken),
   });

@@ -65,7 +65,7 @@ describe('Web eID Auth Integration', () => {
     userEvent.click(button);
 
     await waitFor(() => {
-      expect(mockAuthenticateWithIdCardWebEid).toHaveBeenCalledWith('et');
+      expect(mockAuthenticateWithIdCardWebEid).toHaveBeenCalledWith({ lang: 'et' });
     });
 
     await waitFor(() => {
@@ -143,7 +143,7 @@ describe('Web eID Auth Integration', () => {
     userEvent.click(button);
 
     await waitFor(() => {
-      expect(mockAuthenticateWithIdCardWebEid).toHaveBeenCalledWith('en');
+      expect(mockAuthenticateWithIdCardWebEid).toHaveBeenCalledWith({ lang: 'en' });
     });
   });
 
