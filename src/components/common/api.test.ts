@@ -337,12 +337,13 @@ describe('API calls', () => {
       userChallengeVerifier: 'a-verifier',
     };
 
-    it('posts the device link callback parameters', async () => {
-      mockHttp.post.mockResolvedValueOnce(undefined);
+    it('posts the device link callback parameters and returns the redemption secret of the accepted callback', async () => {
+      mockHttp.post.mockResolvedValueOnce({ authenticationHash: 'a-redemption-secret' });
 
-      await completeSmartIdCallback(callback);
+      const authenticationHash = await completeSmartIdCallback(callback);
 
       expect(mockHttp.post).toHaveBeenCalledWith('/v1/smart-id/login/callback', callback);
+      expect(authenticationHash).toBe('a-redemption-secret');
     });
 
     it('propagates an invalid callback error', async () => {
