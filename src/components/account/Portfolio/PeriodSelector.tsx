@@ -24,13 +24,18 @@ const stopWaiting = (timer: ReturnType<typeof setTimeout> | undefined) => {
 const shownDate = (isoDate: string): string =>
   isoDate === '' ? '' : moment(isoDate, ISO_DATE).format(SHOWN_DATE);
 
-const typedDate = (text: string): string | undefined => {
-  if (text === '') {
-    return '';
-  }
-  const parsed = moment(text, TYPED_DATES, true);
+const dateIn = (text: string, formats: string[]): string | undefined => {
+  const parsed = moment(text.trim(), formats, true);
   return parsed.isValid() && parsed.year() >= EARLIEST_YEAR ? parsed.format(ISO_DATE) : undefined;
 };
+
+const typedDate = (text: string): string | undefined =>
+  text.trim() === '' ? '' : dateIn(text, TYPED_DATES);
+
+const fullyTypedDate = (text: string): string | undefined => dateIn(text, [SHOWN_DATE]);
+
+const pickedDate = (isoDate: string): string | undefined =>
+  isoDate === '' ? '' : dateIn(isoDate, [ISO_DATE]);
 
 const showsPicker = (dateField: HTMLInputElement): boolean => {
   try {
@@ -122,7 +127,7 @@ const DateInput: React.FunctionComponent<{
               setTyped(text);
               stopWaiting(quietPeriod.current);
               quietPeriod.current = setTimeout(() => {
-                const date = typedDate(text);
+                const date = fullyTypedDate(text);
                 if (date && isCommittable(date)) {
                   commit(date);
                 }
@@ -155,7 +160,7 @@ const DateInput: React.FunctionComponent<{
           max={max}
           onClick={(event) => showsPicker(event.currentTarget)}
           onChange={(event) => {
-            commit(event.target.value);
+            commit(pickedDate(event.target.value));
             event.target.blur();
           }}
         />
@@ -197,15 +202,10 @@ export const PeriodSelector: React.FunctionComponent<{
     },
   ];
 
-  // All time has no start date of its own: the date box shows where the history it drew
-  // actually begins, and stays empty while there is no history to point at.
   const shownFrom = from ?? allTimeStartDate ?? '';
 
   return (
     <>
-      {/* On a phone the label takes its own line and the pills wrap as one group under
-          it. Left in a single row they break wherever they run out of width, which puts
-          the label on one line and the buttons in a staircase down the card. */}
       <div className="d-flex flex-column flex-sm-row flex-wrap align-items-start align-items-sm-center gap-2 mb-3">
         <span className="text-body-secondary me-1">
           <FormattedMessage id="savingsFund.statement.period.label" />

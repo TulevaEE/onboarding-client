@@ -172,6 +172,27 @@ describe('typing a date rather than picking it', () => {
     expect(onPeriodChange).toHaveBeenCalledWith('2025-01-15', '2025-08-15');
   });
 
+  it('asks for nothing when the typing pauses on a day still one digit short', () => {
+    renderSelector();
+
+    type('From', '1.01.2025');
+
+    waitForQuiet();
+
+    expect(onPeriodChange).not.toHaveBeenCalled();
+    expect(screen.getByLabelText('From')).toHaveValue('1.01.2025');
+  });
+
+  it('takes a date pasted with spaces around it', () => {
+    renderSelector();
+
+    type('From', ' 15.01.2013 ');
+
+    waitForQuiet();
+
+    expect(onPeriodChange).toHaveBeenCalledWith('2013-01-15', '2025-08-15');
+  });
+
   it('takes a date typed without leading zeros', () => {
     renderSelector();
 
@@ -400,6 +421,16 @@ describe('picking a date from the calendar', () => {
 
     expect(onPeriodChange).toHaveBeenCalledTimes(1);
     expect(onPeriodChange).toHaveBeenCalledWith('2025-03-05', '2025-08-15');
+  });
+
+  it('asks for nothing for a year before 1900 picked from the calendar', () => {
+    browserWithCalendar();
+    renderSelector();
+
+    userEvent.click(screen.getByRole('button', { name: 'Choose start date from calendar' }));
+    pick('0005-03-05');
+
+    expect(onPeriodChange).not.toHaveBeenCalled();
   });
 
   it('asks at once for the end date picked', () => {

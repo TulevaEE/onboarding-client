@@ -1,3 +1,5 @@
+@import '~bootstrap/scss/mixins/visually-hidden';
+
 .dates {
   display: grid;
   grid-template-columns: minmax(0, 11rem) auto minmax(0, 11rem);
@@ -20,31 +22,16 @@
   cursor: pointer;
 }
 
-.dateLabel {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+@media (min-width: 400px) {
+  .dateLabel {
+    @include visually-hidden;
+  }
 }
 
 @media (max-width: 399.98px) {
   .dates {
     grid-template-columns: max-content minmax(0, 1fr);
     column-gap: 0.75rem;
-  }
-
-  .dateLabel {
-    position: static;
-    width: auto;
-    height: auto;
-    margin: 0;
-    overflow: visible;
-    clip: auto;
   }
 
   .dash {
