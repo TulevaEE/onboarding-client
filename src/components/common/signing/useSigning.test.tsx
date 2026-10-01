@@ -145,6 +145,19 @@ describe('useSigning with an ID card', () => {
     expect(await screen.findByText('signature.error.unknown')).toBeInTheDocument();
   });
 
+  it('clears loading when the backend rejects with the same error object twice in a row', async () => {
+    const sessionExpired = { body: { errors: [{ code: 'id.card.signature.session.not.found' }] } };
+    mockSignWithIdCard.mockRejectedValue(sessionExpired);
+    render(<SigningHarness />);
+
+    userEvent.click(screen.getByRole('button', { name: 'sign' }));
+    expect(await screen.findByText('idle')).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'sign' }));
+    expect(await screen.findByText('signing')).toBeInTheDocument();
+    expect(await screen.findByText('idle')).toBeInTheDocument();
+  });
+
   it('clears loading when the same unknown error happens twice in a row', async () => {
     mockSignWithIdCard.mockRejectedValue(new Error('boom'));
     render(<SigningHarness />);
