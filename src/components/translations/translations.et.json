@@ -10,7 +10,7 @@
   "login.mobile.id.phone.number.not.estonian": "Mobiil-ID töötab ainult Eesti telefoninumbriga.",
   "login.mobile.id.phone.number.check": "Kontrolli telefoninumbrit.",
   "login.smart.id": "Smart-ID",
-  "login.smart.id.start": "Logi sisse Smart-ID-ga",
+  "login.smart.id.start": "Logi sisse Smart‑ID‑ga",
   "login.smart.id.qr.instructions": "Ava telefonis Smart‑ID rakendus, vali QR-koodi skaneerimine ja suuna kaamera sellele koodile.",
   "login.smart.id.qr.expired": "QR-kood aegus.",
   "login.smart.id.qr.refresh": "Näita uut QR-koodi",

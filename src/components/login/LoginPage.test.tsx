@@ -54,10 +54,12 @@ describe('When a user is logging in', () => {
 
   test('they can sign in with smart id by scanning the QR code', async () => {
     const backend = smartIdAuthenticationBackend(server, { language: 'en' });
-    expect(await screen.findByRole('button', { name: 'Log in with Smart-ID' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: /^Log in with Smart.ID$/ }),
+    ).toBeInTheDocument();
     expect(screen.queryByPlaceholderText(/Identity code/gi)).not.toBeInTheDocument();
 
-    userEvent.click(screen.getByRole('button', { name: 'Log in with Smart-ID' }));
+    userEvent.click(screen.getByRole('button', { name: /^Log in with Smart.ID$/ }));
 
     expect(
       await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
@@ -73,7 +75,7 @@ describe('When a user is logging in', () => {
 
   test('they sign in by scanning the QR code of the session that silently replaced an expired one', async () => {
     const backend = smartIdAuthenticationBackend(server, { language: 'en' });
-    userEvent.click(await screen.findByRole('button', { name: 'Log in with Smart-ID' }));
+    userEvent.click(await screen.findByRole('button', { name: /^Log in with Smart.ID$/ }));
     expect(
       await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
     ).toBeInTheDocument();
@@ -100,7 +102,7 @@ describe('When a user is logging in', () => {
       history.replace('/login', { from: '/capital' });
     });
     const backend = smartIdAuthenticationBackend(server, { language: 'en' });
-    userEvent.click(await screen.findByRole('button', { name: 'Log in with Smart-ID' }));
+    userEvent.click(await screen.findByRole('button', { name: /^Log in with Smart.ID$/ }));
     expect(
       await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
     ).toBeInTheDocument();
@@ -116,7 +118,7 @@ describe('When a user is logging in', () => {
       history.replace('/login', { from: '/' });
     });
     const backend = smartIdAuthenticationBackend(server, { language: 'en' });
-    userEvent.click(await screen.findByRole('button', { name: 'Log in with Smart-ID' }));
+    userEvent.click(await screen.findByRole('button', { name: /^Log in with Smart.ID$/ }));
     expect(
       await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
     ).toBeInTheDocument();
@@ -168,7 +170,9 @@ describe('When a user is logging in', () => {
       identityCode,
       phoneNumber: '+37255512345',
     });
-    expect(await screen.findByRole('button', { name: 'Log in with Smart-ID' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: /^Log in with Smart.ID$/ }),
+    ).toBeInTheDocument();
     userEvent.click(screen.getByText(/Mobile-ID/gi));
     await waitFor(() => expect(screen.getByPlaceholderText(/Identity code/gi)).toHaveFocus());
     userEvent.type(screen.getByPlaceholderText(/Identity code/gi), identityCode);
@@ -261,7 +265,9 @@ describe('When a user is logging in', () => {
       challengeCode: '4321',
       failWith: 'mobile.id.timeout',
     });
-    expect(await screen.findByRole('button', { name: 'Log in with Smart-ID' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: /^Log in with Smart.ID$/ }),
+    ).toBeInTheDocument();
     userEvent.click(screen.getByText(/Mobile-ID/gi));
     userEvent.type(screen.getByPlaceholderText(/Identity code/gi), '38001085718');
     userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '+37255512345');
@@ -303,7 +309,9 @@ describe('When a user is logging in', () => {
     const backend = idCardAuthenticationBackend(server);
     expect(backend.acceptedCertificate).toBeFalsy();
     expect(backend.authenticatedWithIdCard).toBeFalsy();
-    expect(await screen.findByRole('button', { name: 'Log in with Smart-ID' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: /^Log in with Smart.ID$/ }),
+    ).toBeInTheDocument();
     userEvent.click(screen.getByText(/ID-card/gi));
     userEvent.click(screen.getByText(/Log in$/gi));
 

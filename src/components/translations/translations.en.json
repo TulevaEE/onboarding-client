@@ -10,7 +10,7 @@
   "login.mobile.id.phone.number.not.estonian": "Mobile-ID works with Estonian phone numbers only.",
   "login.mobile.id.phone.number.check": "Check the phone number.",
   "login.smart.id": "Smart-ID",
-  "login.smart.id.start": "Log in with Smart-ID",
+  "login.smart.id.start": "Log in with Smart‑ID",
   "login.smart.id.qr.instructions": "Open the Smart‑ID app on your phone, choose Scan QR code and point the camera at this code.",
   "login.smart.id.qr.expired": "The QR code expired.",
   "login.smart.id.qr.refresh": "Show a new QR code",

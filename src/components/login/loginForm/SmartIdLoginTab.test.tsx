@@ -25,9 +25,9 @@ describe('Smart-ID login tab', () => {
   const setUserAgent = (userAgent: string) =>
     Object.defineProperty(navigator, 'userAgent', { value: userAgent, configurable: true });
 
-  const renderTab = () =>
+  const renderTab = (language: 'en' | 'et' = 'en') =>
     render(
-      <IntlProvider locale="en" messages={translations.en}>
+      <IntlProvider locale={language} messages={translations[language]}>
         <SmartIdLoginTab onSmartIdLoginStart={onSmartIdLoginStart} />
       </IntlProvider>,
     );
@@ -45,7 +45,7 @@ describe('Smart-ID login tab', () => {
     mockGetRememberedSmartIdAccount.mockResolvedValue(null);
     renderTab();
 
-    userEvent.click(await screen.findByRole('button', { name: 'Log in with Smart-ID' }));
+    userEvent.click(await screen.findByRole('button', { name: /^Log in with Smart.ID$/ }));
 
     expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK');
     expect(screen.queryByText(/Not you/)).not.toBeInTheDocument();
@@ -55,8 +55,20 @@ describe('Smart-ID login tab', () => {
     mockGetRememberedSmartIdAccount.mockResolvedValue(null);
     const { container } = renderTab();
 
-    expect(await screen.findByRole('button', { name: 'Log in with Smart-ID' })).toBeInTheDocument();
-    expect(container).toHaveTextContent(/^Log in with Smart-ID$/);
+    expect(
+      await screen.findByRole('button', { name: /^Log in with Smart.ID$/ }),
+    ).toBeInTheDocument();
+    expect(container).toHaveTextContent(/^Log in with Smart.ID$/);
+  });
+
+  it.each([
+    ['en', 'Log in with Smart\u2011ID'],
+    ['et', 'Logi sisse Smart\u2011ID\u2011ga'],
+  ] as const)('keeps Smart-ID in one piece on the login button in %s', async (language, label) => {
+    mockGetRememberedSmartIdAccount.mockResolvedValue(null);
+    renderTab(language);
+
+    expect(await screen.findByRole('button', { name: label })).toBeInTheDocument();
   });
 
   it('marks the remembered first name as personal data for analytics', async () => {
@@ -104,14 +116,16 @@ describe('Smart-ID login tab', () => {
 
     await waitFor(() => expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK'));
     expect(mockForgetRememberedSmartIdAccount).toHaveBeenCalled();
-    expect(await screen.findByRole('button', { name: 'Log in with Smart-ID' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: /^Log in with Smart.ID$/ }),
+    ).toBeInTheDocument();
   });
 
   it('never asks about remembered accounts on a phone, where the same-device link is used', () => {
     setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15');
     renderTab();
 
-    userEvent.click(screen.getByRole('button', { name: 'Log in with Smart-ID' }));
+    userEvent.click(screen.getByRole('button', { name: /^Log in with Smart.ID$/ }));
 
     expect(mockGetRememberedSmartIdAccount).not.toHaveBeenCalled();
     expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK');
@@ -121,6 +135,8 @@ describe('Smart-ID login tab', () => {
     mockGetRememberedSmartIdAccount.mockRejectedValue(new Error('offline'));
     renderTab();
 
-    expect(await screen.findByRole('button', { name: 'Log in with Smart-ID' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('button', { name: /^Log in with Smart.ID$/ }),
+    ).toBeInTheDocument();
   });
 });
