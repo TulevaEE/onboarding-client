@@ -10,6 +10,7 @@ import { Fund, TransactionType, User } from '../../common/apiModels';
 import { getBankName } from '../../common/iban';
 import { TranslationKey } from '../../translations';
 import { PII_CLASS } from '../../tracking/piiMarkup';
+import { formatUnits, navScaleFor } from '../../common/fundPrecision';
 
 const TYPE_LABEL: Record<TransactionType, TranslationKey> = {
   CONTRIBUTION_CASH: 'transactions.detail.type.subscription',
@@ -18,34 +19,6 @@ const TYPE_LABEL: Record<TransactionType, TranslationKey> = {
   TRANSFER_IN: 'transactions.detail.type.transferIn',
   TRANSFER_OUT: 'transactions.detail.type.transferOut',
 };
-
-const NAV_SCALE_BY_ISIN: Record<string, number> = {
-  EE3600109435: 5, // TUK75
-  EE3600109443: 5, // TUK00
-  EE3600001707: 4, // TUV100
-  EE0000003283: 4, // TKF100
-};
-
-const MIN_NAV_SCALE = 5;
-
-function decimalPlaces(n: number): number {
-  const str = String(n);
-  const dotIndex = str.indexOf('.');
-  return dotIndex === -1 ? 0 : str.length - dotIndex - 1;
-}
-
-function navScaleFor(isin: string, nav: number): number {
-  const known = NAV_SCALE_BY_ISIN[isin];
-  if (known !== undefined) {
-    return known;
-  }
-  return Math.max(MIN_NAV_SCALE, decimalPlaces(nav));
-}
-
-function formatUnits(units: number): string {
-  const thousandths = Math.round(Number(Math.abs(units).toFixed(5).replace('.', '')) / 100);
-  return `${units < 0 ? '-' : ''}${(thousandths / 1000).toFixed(3)}`;
-}
 
 function getBackPath(fund?: Fund): string {
   if (fund?.pillar === 2) {
