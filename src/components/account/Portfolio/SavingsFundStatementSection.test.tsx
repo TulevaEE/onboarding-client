@@ -373,10 +373,12 @@ describe('the savings fund statement', () => {
   const boughtBeforeThePeriod = savingsTransaction('2024-06-01T10:00:00Z', 10, 1.0, 10);
 
   const roundedUnitsNote =
-    'Units are shown to three decimal places, as the fund rules state; totals are added up from the exact quantities. Hover over a number to see its exact quantity.';
+    'Units are shown to three decimal places, as the fund rules state. Totals are added up from the exact quantities.';
+
+  const hoverForExactUnits = 'Hover over a number to see its exact quantity.';
 
   const roundedUnitsPrintedNote =
-    'Units are shown to three decimal places, as the fund rules state; balances are calculated from the exact quantities.';
+    'Units are shown to three decimal places, as the fund rules state. Balances are calculated from the exact quantities.';
 
   it('shows units to three decimals, rounded half up, on screen, in print and in the CSV', async () => {
     accountHolding([
@@ -441,6 +443,24 @@ describe('the savings fund statement', () => {
     ]);
   });
 
+  it('leaves the transaction type and the unit price off a phone screen, where they would push the amounts off it', async () => {
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    const [shownTable] = screen
+      .getAllByRole('table')
+      .filter((table) => within(table).queryByRole('columnheader', { name: 'Transaction' }));
+    const hiddenOnPhones = ['Transaction', 'NAV'].map((name) =>
+      within(shownTable).getByRole('columnheader', { name }),
+    );
+    hiddenOnPhones.forEach((header) => expect(header).toHaveClass('d-none', 'd-sm-table-cell'));
+    ['Date', 'Units', 'Amount'].forEach((name) =>
+      expect(within(shownTable).getByRole('columnheader', { name })).not.toHaveClass('d-none'),
+    );
+  });
+
   it('says on screen and in print that the units are rounded when a figure was', async () => {
     accountHolding([
       boughtBeforeThePeriod,
@@ -453,7 +473,26 @@ describe('the savings fund statement', () => {
     userEvent.click(screen.getByRole('button', { name: 'Last year' }));
 
     expect(await screen.findByText(roundedUnitsNote)).toBeInTheDocument();
+    expect(screen.getByText(hoverForExactUnits)).toBeInTheDocument();
     expect(screen.getByText(roundedUnitsPrintedNote)).toBeInTheDocument();
+  });
+
+  it('closes the CSV with the same word on rounding when a unit figure was rounded', async () => {
+    accountHolding([
+      boughtBeforeThePeriod,
+      savingsTransaction('2025-03-10T10:00:00Z', 2.0005, 1.1178, 2.24),
+    ]);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    await lastYearsClosingBalance();
+    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    expect(text.split('\r\n').at(-1)).toBe(roundedUnitsPrintedNote);
   });
 
   it('says nothing about rounding when every unit figure is shown in full', async () => {
@@ -467,6 +506,11 @@ describe('the savings fund statement', () => {
     await lastYearsClosingBalance();
     expect(screen.queryByText(roundedUnitsNote)).not.toBeInTheDocument();
     expect(screen.queryByText(roundedUnitsPrintedNote)).not.toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    expect(text).not.toContain(roundedUnitsPrintedNote);
   });
 
   it('shows the unit price to as many decimals as the fund rules state for that fund', async () => {

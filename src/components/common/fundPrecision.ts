@@ -1,10 +1,15 @@
 import { formatAmountForCount } from './utils';
 
+const TUK75_ISIN = 'EE3600109435';
+const TUK00_ISIN = 'EE3600109443';
+const TUV100_ISIN = 'EE3600001707';
+const TKF100_ISIN = 'EE0000003283';
+
 const NAV_SCALE_BY_ISIN: Record<string, number> = {
-  EE3600109435: 5, // TUK75
-  EE3600109443: 5, // TUK00
-  EE3600001707: 4, // TUV100
-  EE0000003283: 4, // TKF100
+  [TUK75_ISIN]: 5,
+  [TUK00_ISIN]: 5,
+  [TUV100_ISIN]: 4,
+  [TKF100_ISIN]: 4,
 };
 
 const MIN_NAV_SCALE = 5;

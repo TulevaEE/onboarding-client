@@ -191,6 +191,15 @@ describe('Transaction section', () => {
     expect(await screen.findByText('units.roundingNote.screen')).toBeInTheDocument();
   });
 
+  it('says the units are rounded only on screens wide enough to show the units', async () => {
+    mockTransactions([savingsFundContribution('first', 894.61442)]);
+    initializeComponent({ pillar: null });
+    expect(await screen.findByText('units.roundingNote.screen')).toHaveClass(
+      'd-none',
+      'd-md-block',
+    );
+  });
+
   it('says nothing about rounding when every figure is shown in full', async () => {
     mockTransactions([contribution]);
     initializeComponent({ pillar: 2 });

@@ -17,7 +17,7 @@ import {
   User,
 } from '../../common/apiModels';
 import { isAcquisition, signedUnits } from '../../common/transactions';
-import { Units } from '../../common/Units';
+import { Units, UnitsRoundingNote } from '../../common/Units';
 import {
   UNITS_FRACTION_DIGITS,
   formatUnits,
@@ -142,8 +142,8 @@ const printedFigure = (row: DocumentRow, { field, printed }: FigureColumn): Reac
   return value === null || value === undefined ? null : printed(value, row);
 };
 
-const showsRoundedUnits = (row: DocumentRow): boolean =>
-  [row.units, row.balanceUnits].some((units) => units !== undefined && isRoundedUnits(units));
+const unitFigures = ({ units, balanceUnits }: DocumentRow): number[] =>
+  [units, balanceUnits].filter((figure): figure is number => figure !== undefined);
 
 const firstFigureColumn = (row: DocumentRow): number =>
   figureColumns.findIndex(({ field }) => row[field] !== undefined);
@@ -307,9 +307,15 @@ export const StatementSection: React.FunctionComponent<{
         ]),
   ];
 
+  const documentUnits = documentRows.flatMap(unitFigures);
+
+  const csvRoundingNote = documentUnits.some(isRoundedUnits)
+    ? [[formatMessage({ id: 'units.roundingNote.printed' })]]
+    : [];
+
   const downloadCsv = () => {
     const header = documentColumnHeadings.map((id) => formatMessage({ id }));
-    const csv = [header, ...documentRows.map(csvCells)]
+    const csv = [header, ...documentRows.map(csvCells), ...csvRoundingNote]
       .map((cells) => cells.join(ESTONIAN_EXCEL_COLUMN_SEPARATOR))
       .join('\r\n');
     download(
@@ -359,10 +365,6 @@ export const StatementSection: React.FunctionComponent<{
     },
   ];
 
-  const showsRoundedUnitsOnScreen = periodTransactions.some((transaction) =>
-    isRoundedUnits(signedUnits(transaction)),
-  );
-
   const owner = statementOwner(user);
 
   return (
@@ -394,11 +396,7 @@ export const StatementSection: React.FunctionComponent<{
         {dataSource.length > 0 ? (
           <>
             <Table columns={columns} dataSource={dataSource} />
-            {showsRoundedUnitsOnScreen && (
-              <p className="text-body-secondary small mt-3 text-pretty">
-                <FormattedMessage id="units.roundingNote.screen" />
-              </p>
-            )}
+            <UnitsRoundingNote units={periodTransactions.map(signedUnits)} className="mt-3" />
           </>
         ) : (
           <p className="text-body-secondary">
@@ -446,11 +444,7 @@ export const StatementSection: React.FunctionComponent<{
 
         <DocumentTable rows={documentRows} />
 
-        {documentRows.some(showsRoundedUnits) && (
-          <p className="text-body-secondary small">
-            <FormattedMessage id="units.roundingNote.printed" />
-          </p>
-        )}
+        <UnitsRoundingNote units={documentUnits} printed />
 
         <p className="text-body-secondary small">
           <FormattedMessage

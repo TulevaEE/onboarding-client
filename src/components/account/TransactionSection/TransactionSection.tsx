@@ -12,8 +12,7 @@ import { isActingAsSelf } from '../../common/utils';
 import { Breakpoint, TableColumn } from '../../common/table/Table';
 import { getOtherTransactionPages } from './getOtherTransactionPages';
 import { signedUnits } from '../../common/transactions';
-import { Units } from '../../common/Units';
-import { isRoundedUnits } from '../../common/fundPrecision';
+import { Units, UnitsRoundingNote } from '../../common/Units';
 
 export const TransactionSection: React.FunctionComponent<{
   limit?: number;
@@ -61,12 +60,6 @@ export const TransactionSection: React.FunctionComponent<{
   const amountSum = sumBy(fundTransactions, (transaction) => transaction.amount);
 
   const hasPensionTransactions = fundTransactions.some((transaction) => transaction.pillar);
-
-  const showsRoundedUnits =
-    !limit &&
-    fundTransactions.some(
-      (transaction) => transaction.units != null && isRoundedUnits(transaction.units),
-    );
 
   const unitsColumn = (() => {
     if (limit) {
@@ -190,10 +183,11 @@ export const TransactionSection: React.FunctionComponent<{
         </div>
       )}
       <Table columns={columns} dataSource={dataSource} />
-      {showsRoundedUnits && (
-        <p className="text-body-secondary small mt-3 text-pretty">
-          <FormattedMessage id="units.roundingNote.screen" />
-        </p>
+      {!limit && (
+        <UnitsRoundingNote
+          units={fundTransactions.flatMap(({ units }) => (units == null ? [] : [units]))}
+          className="mt-3 d-none d-md-block"
+        />
       )}
     </section>
   );
