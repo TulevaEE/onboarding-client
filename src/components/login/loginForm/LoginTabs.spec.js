@@ -2,13 +2,15 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import LoginTabs from './LoginTabs';
 
+const TabHiddenOnMobile = () => null;
+
 describe('Login Tabs', () => {
   const renderTabs = () =>
     shallow(
       <LoginTabs>
         <div label="Smart ID" />
         <div label="Mobile ID" />
-        <div label="Id Card" />
+        <TabHiddenOnMobile label="Id Card" hideOnMobile />
       </LoginTabs>,
     );
 
@@ -33,6 +35,28 @@ describe('Login Tabs', () => {
 
   it('falls back to the first tab when the remembered one no longer exists', () => {
     localStorage.setItem('preferredLoginMethod', 'Carrier pigeon');
+
+    expect(activeTab(renderTabs())).toBe('Smart ID');
+  });
+
+  const atViewportWidth = (width) => {
+    window.matchMedia = (query) => ({
+      matches: Number(/min-width:\s*(\d+)px/.exec(query)[1]) <= width,
+      addListener: () => undefined,
+      removeListener: () => undefined,
+    });
+  };
+
+  it('opens the remembered tab when it is visible at this width', () => {
+    atViewportWidth(1280);
+    localStorage.setItem('preferredLoginMethod', 'Id Card');
+
+    expect(activeTab(renderTabs())).toBe('Id Card');
+  });
+
+  it('falls back to the first tab when the remembered one is hidden at this width', () => {
+    atViewportWidth(390);
+    localStorage.setItem('preferredLoginMethod', 'Id Card');
 
     expect(activeTab(renderTabs())).toBe('Smart ID');
   });

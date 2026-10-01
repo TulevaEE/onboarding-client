@@ -4,10 +4,16 @@ import PropTypes from 'prop-types';
 import LoginTab from './LoginTab';
 import { readPreferredLoginMethod, savePreferredLoginMethod } from './preferredLoginMethod';
 
+const TABS_HIDDEN_ON_MOBILE_SHOWN_FROM = '(min-width: 768px)';
+
+const isShownAtThisWidth = (child) =>
+  !child.props.hideOnMobile || window.matchMedia(TABS_HIDDEN_ON_MOBILE_SHOWN_FROM).matches;
+
 function initialTab(children) {
   const labels = children.map((child) => child.props.label);
+  const shownLabels = children.filter(isShownAtThisWidth).map((child) => child.props.label);
   const preferred = readPreferredLoginMethod();
-  return labels.includes(preferred) ? preferred : labels[0];
+  return shownLabels.includes(preferred) ? preferred : labels[0];
 }
 
 class LoginTabs extends Component {
