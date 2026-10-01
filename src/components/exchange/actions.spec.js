@@ -414,6 +414,39 @@ describe('Exchange actions', () => {
     });
   });
 
+  it('names the mandate when the id card signature status poll says it has not been signed yet', async () => {
+    mockIdCardSigningUntilPersisted();
+    mockApi.persistIdCardSignature = jest.fn(() => Promise.resolve('OUTSTANDING_TRANSACTION'));
+    mockApi.getIdCardSignatureStatus = jest.fn(() =>
+      Promise.reject({ body: { errors: [{ code: 'signature.not.signed' }] } }),
+    );
+
+    const signMandate = createBoundAction(actions.signMandateWithIdCard);
+    await signMandate({ id: 'id', pillar: 2 });
+    jest.runOnlyPendingTimers();
+    await nextTick();
+    await nextTick();
+
+    expect(dispatch).toHaveBeenLastCalledWith({
+      type: SIGN_MANDATE_ERROR,
+      error: { body: { errors: [{ code: 'signature.not.signed.mandate' }] } },
+    });
+  });
+
+  it('names the mandate when starting to sign it with smart id finds it already signed', async () => {
+    mockApi.getSmartIdSignatureChallengeCode = jest.fn(() =>
+      Promise.reject({ body: { errors: [{ code: 'signature.already.signed' }] } }),
+    );
+
+    const signMandate = createBoundAction(actions.signMandateWithSmartId);
+    await signMandate({ id: 'id', pillar: 2 });
+
+    expect(dispatch).toHaveBeenLastCalledWith({
+      type: SIGN_MANDATE_START_ERROR,
+      error: { body: { errors: [{ code: 'signature.already.signed.mandate' }] } },
+    });
+  });
+
   it('succeeds without polling when persisting the id card signature already reports it processed', async () => {
     const mandate = { id: 'id', pillar: 3 };
 
