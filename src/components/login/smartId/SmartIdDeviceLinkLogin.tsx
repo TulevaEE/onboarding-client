@@ -83,6 +83,7 @@ const SmartIdQrCodeLogin: React.FC<{
           size={QR_CODE_SIZE_PIXELS}
           level="L"
           bgColor="#ffffff"
+          style={{ maxWidth: '100%', height: 'auto', aspectRatio: '1' }}
           role="img"
           aria-label={formatMessage({ id: 'login.smart.id.qr.instructions' })}
         />
