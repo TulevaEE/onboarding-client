@@ -38,14 +38,19 @@ const categoryOf = (error: unknown, httpStatus: number | undefined): SigningFail
   return isAxiosError(error) ? 'network' : 'unexpected';
 };
 
+const UNEXPLAINED_FAILURE = 'Signing failed unexpectedly';
+
 const reportUnexplainedFailure = (error: unknown, entity: SignableEntity) => {
   const httpStatus = httpStatusOf(error);
-  captureException(new Error('Signing failed unexpectedly'), {
+  const category = categoryOf(error, httpStatus);
+  const statusIfAny = httpStatus !== undefined ? [String(httpStatus)] : [];
+  captureException(new Error(UNEXPLAINED_FAILURE), {
     tags: {
-      signingFailure: categoryOf(error, httpStatus),
+      signingFailure: category,
       signableEntity: entity,
       ...(httpStatus !== undefined && { httpStatus }),
     },
+    fingerprint: [UNEXPLAINED_FAILURE, category, entity, ...statusIfAny],
   });
 };
 
