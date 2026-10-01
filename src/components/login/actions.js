@@ -19,6 +19,8 @@ import {
   ID_CARD_AUTHENTICATION_START_ERROR,
   ID_CARD_AUTHENTICATION_SUCCESS,
   ID_CARD_AUTHENTICATION_ERROR,
+  WEB_EID_AUTHENTICATION_ERROR,
+  LOGIN_ERROR_CLEARED,
   GET_USER_START,
   GET_USER_SUCCESS,
   GET_USER_ERROR,
@@ -436,6 +438,14 @@ export function handleIdCardLogin(query) {
     };
   }
   return () => {};
+}
+
+export function failWebEidLogin(errorCode) {
+  return { type: WEB_EID_AUTHENTICATION_ERROR, errorCode };
+}
+
+export function clearLoginError() {
+  return { type: LOGIN_ERROR_CLEARED };
 }
 
 export function cancelMobileAuthentication() {

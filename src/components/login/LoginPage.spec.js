@@ -23,6 +23,7 @@ describe('Login page', () => {
       onMobileIdSubmit: jest.fn(),
       onSmartIdLoginStart: jest.fn(),
       onAuthenticateWithIdCard: jest.fn(),
+      onLoginMethodChange: jest.fn(),
       monthlyThirdPillarContribution: 500,
       exchangeExistingThirdPillarUnits: true,
     };
@@ -133,6 +134,7 @@ describe('Login page', () => {
       onMobileIdSubmit: jest.fn(),
       onSmartIdLoginStart: jest.fn(),
       onAuthenticateWithIdCard: jest.fn(),
+      onLoginMethodChange: jest.fn(),
       monthlyThirdPillarContribution: 500,
       exchangeExistingThirdPillarUnits: true,
     };

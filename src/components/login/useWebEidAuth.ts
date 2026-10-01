@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
+import { useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { authenticateWithIdCardWebEid } from '../common/api';
@@ -10,6 +11,7 @@ import {
 } from '../common/webEid';
 import { getGlobalErrorCode } from '../common/errorMessage/ErrorMessage';
 import { loginLanding } from './loginLanding';
+import { clearLoginError, failWebEidLogin } from './actions';
 import {
   ID_CARD_LOGIN_START_FAILED_ERROR,
   WEB_EID_TIMEOUT,
@@ -38,19 +40,24 @@ function mapWebEidError(error: unknown): string {
 export function useWebEidAuth() {
   const history = useHistory();
   const location = useLocation<{ from?: string } | undefined>();
+  const dispatch = useDispatch();
 
   const mutation = useMutation({
     mutationFn: () => withWebEidDiagnosis(() => authenticateWithIdCardWebEid(webEidOptions())),
+    onMutate: () => {
+      dispatch(clearLoginError());
+    },
     onSuccess: () => {
       const from = location.state?.from;
       history.replace(loginLanding(from));
+    },
+    onError: (error) => {
+      dispatch(failWebEidLogin(mapWebEidError(error)));
     },
   });
 
   return {
     authenticate: mutation.mutate,
     isLoading: mutation.isLoading,
-    error: mutation.error ? mapWebEidError(mutation.error) : null,
-    reset: mutation.reset,
   };
 }

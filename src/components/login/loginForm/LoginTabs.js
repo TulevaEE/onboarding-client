@@ -20,6 +20,11 @@ function initialTab(children) {
 class LoginTabs extends Component {
   static propTypes = {
     children: PropTypes.instanceOf(Array).isRequired,
+    onTabChange: PropTypes.func,
+  };
+
+  static defaultProps = {
+    onTabChange: () => undefined,
   };
 
   panelRef = createRef();
@@ -35,8 +40,10 @@ class LoginTabs extends Component {
   }
 
   onClickTabItem = (tab) => {
+    const { onTabChange } = this.props;
     savePreferredLoginMethod(tab);
     this.setState({ activeTab: tab, pickedByUser: true });
+    onTabChange();
   };
 
   render() {

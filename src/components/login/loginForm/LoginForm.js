@@ -17,6 +17,7 @@ export const LoginForm = ({
   onMobileIdSubmit,
   onSmartIdLoginStart,
   onAuthenticateWithIdCard,
+  onLoginMethodChange,
   monthlyThirdPillarContribution,
   exchangeExistingThirdPillarUnits,
 }) => (
@@ -39,6 +40,7 @@ export const LoginForm = ({
         phoneNumber,
         onPhoneNumberChange,
         onAuthenticateWithIdCard,
+        onLoginMethodChange,
         mobileIdStartError,
       )}
     </div>
@@ -62,6 +64,7 @@ const renderLoginForm = (
   phoneNumber,
   onPhoneNumberChange,
   onAuthenticateWithIdCard,
+  onLoginMethodChange,
   mobileIdStartError,
 ) => {
   const { formatMessage } = useIntl();
@@ -92,6 +95,7 @@ const renderLoginForm = (
         phoneNumber,
         onPhoneNumberChange,
         onAuthenticateWithIdCard,
+        onLoginMethodChange,
         mobileIdStartError,
       )}
 
@@ -142,9 +146,10 @@ const renderLoginTabs = (
   phoneNumber,
   onPhoneNumberChange,
   onAuthenticateWithIdCard,
+  onLoginMethodChange,
   mobileIdStartError,
 ) => (
-  <LoginTabs>
+  <LoginTabs onTabChange={onLoginMethodChange}>
     {/* eslint-disable-next-line react/no-unknown-property */}
     <div label="login.smart.id">
       <SmartIdLoginTab onSmartIdLoginStart={onSmartIdLoginStart} />
@@ -175,6 +180,7 @@ LoginForm.defaultProps = {
   onMobileIdSubmit: noop,
   onSmartIdLoginStart: noop,
   onAuthenticateWithIdCard: noop,
+  onLoginMethodChange: noop,
 
   phoneNumber: '',
   personalCode: '',
@@ -189,6 +195,7 @@ LoginForm.propTypes = {
   onMobileIdSubmit: Types.func,
   onSmartIdLoginStart: Types.func,
   onAuthenticateWithIdCard: Types.func,
+  onLoginMethodChange: Types.func,
 
   phoneNumber: Types.string,
   personalCode: Types.string,

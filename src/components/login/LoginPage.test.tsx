@@ -253,6 +253,22 @@ describe('When a user is logging in', () => {
     expect(screen.getByRole('tab', { name: 'Mobile-ID' })).toHaveClass('active');
   });
 
+  test('switching to another login method clears the error of a failed one', async () => {
+    mobileIdAuthenticationBackend(server, {
+      challengeCode: '4321',
+      failWith: 'mobile.id.timeout',
+    });
+    userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
+    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), '38001085718');
+    userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '+37255512345');
+    userEvent.click(screen.getByRole('button', { name: 'Log in' }));
+    expect(await screen.findByRole('alert', undefined, { timeout: 3000 })).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('tab', { name: 'Smart-ID' }));
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   test('they can sign in with id card via mTLS escape hatch (?mtls=true)', async () => {
     Object.defineProperty(window, 'location', {
       value: { search: '?mtls=true' },

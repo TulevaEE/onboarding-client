@@ -15,8 +15,6 @@ jest.mock('../useWebEidAuth', () => ({
   useWebEidAuth: () => ({
     authenticate: mockAuthenticate,
     isLoading: false,
-    error: null,
-    reset: jest.fn(),
   }),
 }));
 
