@@ -2,10 +2,20 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { isValidPersonalCode } from '../../common/personalCode';
+import { TranslationKey } from '../../translations';
 import { useRememberedMobileIdNumber } from './useRememberedMobileIdNumber';
+import { normalizeMobileIdPhoneNumber } from './mobileIdPhoneNumber';
 
 const PERSONAL_CODE_LENGTH = 11;
 export const MOBILE_ID_PHONE_NUMBER_REQUIRED = 'mobile.id.phone.number.required';
+
+type PhoneNumberProblem = 'REQUIRED' | 'NOT_ESTONIAN' | 'INVALID';
+
+const PHONE_NUMBER_PROBLEM_MESSAGES: Record<PhoneNumberProblem, TranslationKey> = {
+  REQUIRED: 'login.mobile.id.phone.number.required',
+  NOT_ESTONIAN: 'login.mobile.id.phone.number.not.estonian',
+  INVALID: 'login.mobile.id.phone.number.check',
+};
 
 interface MobileIdLoginTabProps {
   phoneNumber: string;
@@ -27,6 +37,9 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
   const { formatMessage } = useIntl();
   const phoneNumberInput = useRef<HTMLInputElement>(null);
   const [submittedInvalidCode, setSubmittedInvalidCode] = useState(false);
+  const [submittedNumberProblem, setSubmittedNumberProblem] = useState<
+    'NOT_ESTONIAN' | 'INVALID' | null
+  >(null);
   const [phoneNumberRequiredFor] = useState(
     startError === MOBILE_ID_PHONE_NUMBER_REQUIRED ? personalCode : null,
   );
@@ -45,6 +58,10 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
   }, [personalCode]);
 
   useEffect(() => {
+    setSubmittedNumberProblem(null);
+  }, [phoneNumber]);
+
+  useEffect(() => {
     if (phoneNumberRequiredFor !== null) {
       phoneNumberInput.current?.focus();
     }
@@ -56,10 +73,21 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
       setSubmittedInvalidCode(true);
       return;
     }
-    onMobileIdSubmit(numberRemembered ? '' : phoneNumber, personalCode);
+    if (numberRemembered) {
+      onMobileIdSubmit('', personalCode);
+      return;
+    }
+    const normalized = normalizeMobileIdPhoneNumber(phoneNumber);
+    if ('problem' in normalized) {
+      setSubmittedNumberProblem(normalized.problem);
+      phoneNumberInput.current?.focus();
+      return;
+    }
+    onMobileIdSubmit(normalized.phoneNumber, personalCode);
   };
 
-  const showPhoneNumberRequired = phoneNumberRequired && !phoneNumber;
+  const phoneNumberProblem: PhoneNumberProblem | null =
+    phoneNumberRequired && !phoneNumber ? 'REQUIRED' : submittedNumberProblem;
 
   return (
     <form onSubmit={submit}>
@@ -92,17 +120,15 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
             autoComplete="tel"
             value={phoneNumber}
             onChange={(event) => onPhoneNumberChange(event.target.value)}
-            className={`form-control form-control-lg${
-              showPhoneNumberRequired ? ' is-invalid' : ''
-            }`}
+            className={`form-control form-control-lg${phoneNumberProblem ? ' is-invalid' : ''}`}
             placeholder={formatMessage({ id: 'login.phone.number' })}
             aria-label={formatMessage({ id: 'login.phone.number' })}
-            aria-invalid={showPhoneNumberRequired}
-            aria-describedby={showPhoneNumberRequired ? 'mobile-id-number-error' : undefined}
+            aria-invalid={phoneNumberProblem !== null}
+            aria-describedby={phoneNumberProblem ? 'mobile-id-number-error' : undefined}
           />
-          {showPhoneNumberRequired && (
+          {phoneNumberProblem && (
             <div id="mobile-id-number-error" className="invalid-feedback text-start">
-              <FormattedMessage id="login.mobile.id.phone.number.required" />
+              <FormattedMessage id={PHONE_NUMBER_PROBLEM_MESSAGES[phoneNumberProblem]} />
             </div>
           )}
         </div>

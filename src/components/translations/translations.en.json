@@ -7,6 +7,8 @@
   "login.mobile.id": "Mobile-ID",
   "login.mobile.id.personal.code.invalid": "Check your identity code.",
   "login.mobile.id.phone.number.required": "Enter your current phone number.",
+  "login.mobile.id.phone.number.not.estonian": "Mobile-ID works with Estonian phone numbers only.",
+  "login.mobile.id.phone.number.check": "Check the phone number.",
   "login.smart.id": "Smart-ID",
   "login.smart.id.start": "Log in with Smart-ID",
   "login.smart.id.intro": "Log in from your own device. Nobody can start a Smart‑ID login for you remotely.",

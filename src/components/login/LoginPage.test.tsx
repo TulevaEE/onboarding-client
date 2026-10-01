@@ -135,20 +135,22 @@ describe('When a user is logging in', () => {
     expect(backend.startedFlows).toEqual(['DEVICE_LINK']);
   });
 
-  test('they can sign in with mobile id, showing the security code', async () => {
+  test('they can sign in with mobile id typing the number as they like, showing the security code', async () => {
     const identityCode = '38001085718';
-    const phoneNumber = '+372123456789';
     const backend = mobileIdAuthenticationBackend(server, {
       challengeCode: '4321',
       identityCode,
-      phoneNumber,
+      phoneNumber: '+37255512345',
     });
     expect(await screen.findByRole('button', { name: 'Log in with Smart-ID' })).toBeInTheDocument();
     userEvent.click(screen.getByText(/Mobile-ID/gi));
     userEvent.type(screen.getByPlaceholderText(/Identity code/gi), identityCode);
-    userEvent.type(screen.getByPlaceholderText(/Phone number/gi), phoneNumber);
+    userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '5551 2345');
     userEvent.click(screen.getByText(/Log in$/gi));
     expect(await screen.findByText('4321')).toBeInTheDocument();
+    expect(backend.startedLogins).toEqual([
+      { personalCode: identityCode, phoneNumber: '+37255512345' },
+    ]);
     backend.resolvePolling();
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
