@@ -10,6 +10,7 @@ import { createDefaultStore, renderWrapped } from '../../../test/utils';
 import { initializeConfiguration } from '../../config/config';
 import { smartIdAuthenticationBackend } from '../../../test/backend';
 import { getAuthentication } from '../../common/authenticationManager';
+import { anAuthenticationManager } from '../../common/authenticationManagerFixture';
 import { SmartIdCallbackPage } from './SmartIdCallbackPage';
 import { loginPath, smartIdCallbackPath } from '../constants';
 
@@ -260,6 +261,36 @@ describe('When the Smart-ID app returns to the browser', () => {
     expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);
     expect(sessionStorage.getItem('smartIdCallback')).toBeNull();
   });
+
+  test.each([
+    ['moved out of its address', arriveFromTheSmartIdAppWithTheCallbackMovedOutOfTheAddress],
+    [
+      'kept in memory',
+      () => {
+        window.smartIdCallback = {
+          value: 'a-callback-value',
+          sessionSecretDigest: 'a-digest',
+          userChallengeVerifier: 'a-verifier',
+        };
+        return openCallback('');
+      },
+    ],
+  ])(
+    'a browser that is already logged in forgets the callback parameters the page %s without submitting them',
+    async (_where, arrive) => {
+      const backend = smartIdAuthenticationBackend(server);
+      backend.startSession();
+      getAuthentication().update(anAuthenticationManager());
+
+      arrive();
+
+      expect(await screen.findByText(/mock account page/gi)).toBeInTheDocument();
+      await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+      expect(sessionStorage.getItem('smartIdCallback')).toBeNull();
+      expect(window.smartIdCallback).toBeUndefined();
+      expect(backend.acceptedCallbacks).toBe(0);
+    },
+  );
 
   test('a callback without parameters never reaches the backend', async () => {
     smartIdAuthenticationBackend(server, { rejectCallback: true });

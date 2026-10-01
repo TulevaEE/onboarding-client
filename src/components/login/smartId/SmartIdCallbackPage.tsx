@@ -16,7 +16,10 @@ import {
 import { loginPath } from '../constants';
 import { loginLanding } from '../loginLanding';
 import styles from '../LoginPage.module.scss';
-import { smartIdCallbackParameters } from './smartIdCallbackParameters';
+import {
+  forgetSmartIdCallbackParameters,
+  smartIdCallbackParameters,
+} from './smartIdCallbackParameters';
 
 const SLOW_COMPLETION_MILLIS = 20000;
 
@@ -29,6 +32,7 @@ export const SmartIdCallbackPage: React.FC = () => {
   const isAuthenticated = useSelector(() => getAuthentication().isAuthenticated());
   const loginError = useSelector((state: LoginState) => state.login.error);
   const authenticating = useSelector((state: LoginState) => state.login.loadingAuthentication);
+  const [arrivedLoggedIn] = useState(isAuthenticated);
   const [callback] = useState(() => smartIdCallbackParameters(search));
   const [callbackAccepted] = useState(() => !callback && hasAcceptedSmartIdCallback());
   const [destination] = useState(() => loginLanding(getPendingSmartIdReturnPath() ?? undefined));
@@ -36,12 +40,14 @@ export const SmartIdCallbackPage: React.FC = () => {
   const [slow, setSlow] = useState(false);
 
   useEffect(() => {
-    if (callback) {
+    if (arrivedLoggedIn) {
+      forgetSmartIdCallbackParameters();
+    } else if (callback) {
       dispatch(completeSmartIdLogin(callback));
     } else if (callbackAccepted) {
       dispatch(resumeAcceptedSmartIdCallback());
     }
-  }, [callback, callbackAccepted, dispatch]);
+  }, [arrivedLoggedIn, callback, callbackAccepted, dispatch]);
 
   useEffect(() => {
     if (authenticating) {
