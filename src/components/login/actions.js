@@ -216,7 +216,11 @@ export function resumePendingSmartIdAuthentication() {
       dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink: pending.web2AppLink });
     }
     if (pending.controlCode) {
-      dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode: pending.controlCode });
+      dispatch({
+        type: MOBILE_AUTHENTICATION_START_SUCCESS,
+        controlCode: pending.controlCode,
+        verificationCodeChoice: true,
+      });
     }
     dispatch(getSmartIdTokens());
   };
@@ -336,7 +340,11 @@ export function startSmartIdLogin(language, flow = 'DEVICE_LINK') {
         if (start.flow === 'NOTIFICATION') {
           const controlCode = start.verificationCode;
           savePendingSmartIdAuthentication({ controlCode, returnPath, language });
-          dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
+          dispatch({
+            type: MOBILE_AUTHENTICATION_START_SUCCESS,
+            controlCode,
+            verificationCodeChoice: true,
+          });
           dispatch(getSmartIdTokens());
           return;
         }

@@ -332,6 +332,7 @@ describe('Login actions', () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: MOBILE_AUTHENTICATION_START_SUCCESS,
       controlCode: '4321',
+      verificationCodeChoice: true,
     });
     expect(dispatch).not.toHaveBeenCalledWith(
       expect.objectContaining({ type: SMART_ID_LOGIN_START_SUCCESS }),
@@ -354,6 +355,7 @@ describe('Login actions', () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: MOBILE_AUTHENTICATION_START_SUCCESS,
       controlCode: '4321',
+      verificationCodeChoice: true,
     });
     expect(dispatch).not.toHaveBeenCalledWith(
       expect.objectContaining({ type: SMART_ID_LOGIN_START_SUCCESS }),

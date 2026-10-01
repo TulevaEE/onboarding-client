@@ -32,6 +32,7 @@ export const initialState = {
   phoneNumber: '',
   personalCode: '',
   controlCode: null,
+  verificationCodeChoice: false,
   smartIdWeb2AppLink: null,
   loadingAuthentication: false,
   error: null,
@@ -59,6 +60,7 @@ export default function loginReducer(state = initialState, action) {
       return {
         ...state,
         controlCode: action.controlCode,
+        verificationCodeChoice: action.verificationCodeChoice === true,
         error: null,
       };
     case SMART_ID_LOGIN_START_SUCCESS:

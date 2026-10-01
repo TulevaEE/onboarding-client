@@ -61,6 +61,17 @@ describe('Login reducer', () => {
     const newState = loginReducer(undefined, action);
     expect(newState.loadingAuthentication).toBe(false);
     expect(newState.controlCode).toBe(controlCode);
+    expect(newState.verificationCodeChoice).toBe(false);
+  });
+
+  it('remembers that the Smart-ID app asks to choose the verification code', () => {
+    const action = {
+      type: MOBILE_AUTHENTICATION_START_SUCCESS,
+      controlCode: '1234',
+      verificationCodeChoice: true,
+    };
+
+    expect(loginReducer(undefined, action).verificationCodeChoice).toBe(true);
   });
 
   it('saves the device link when a smart id session starts', () => {

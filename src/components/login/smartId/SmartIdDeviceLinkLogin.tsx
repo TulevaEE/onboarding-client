@@ -34,11 +34,12 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
     <p className="m-0 mb-4 text-pretty">
       <FormattedMessage id="login.smart.id.mobile.instructions" />
     </p>
-    <div className="d-grid mb-4">
+    <div className="d-grid mb-3">
       <a className="btn btn-primary btn-lg" href={web2AppLink}>
         <FormattedMessage id="login.smart.id.open.app" />
       </a>
     </div>
+    <ConfirmationHint className="mb-4" />
     <Loader className="align-middle" />
     <CancelButton onCancel={onCancel} />
   </SmartIdLoginCard>
@@ -90,10 +91,17 @@ const SmartIdQrCodeLogin: React.FC<{
       ) : (
         <Loader className="align-middle" />
       )}
+      <ConfirmationHint className="mt-3" />
       <CancelButton onCancel={onCancel} />
     </SmartIdLoginCard>
   );
 };
+
+const ConfirmationHint: React.FC<{ className: string }> = ({ className }) => (
+  <p className={`m-0 ${className} small text-body-secondary text-pretty`}>
+    <FormattedMessage id="login.smart.id.confirm.hint" />
+  </p>
+);
 
 const SmartIdLoginCard: React.FC = ({ children }) => (
   <div className="bg-white shadow-sm rounded-3 p-5 text-center">{children}</div>
