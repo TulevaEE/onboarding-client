@@ -47,6 +47,7 @@ describe('Smart-ID device link login', () => {
     });
 
   beforeEach(() => {
+    sessionStorage.clear();
     jest.useFakeTimers();
     jest.clearAllMocks();
     mockGetSmartIdQrCodeLink.mockResolvedValue({ deviceLink: qrCodeLinkAfter(0) });
@@ -167,6 +168,32 @@ describe('Smart-ID device link login', () => {
 
     userEvent.click(screen.getByRole('button', { name: 'Show a new QR code' }));
     expect(onSmartIdLoginStart).toHaveBeenCalledWith('en');
+  });
+
+  it('expires a resumed QR code a minute after its session started, not after the reload', async () => {
+    sessionStorage.setItem(
+      'pendingSmartIdAuthentication',
+      JSON.stringify({ web2AppLink, startedAt: Date.now() - 50000 }),
+    );
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    await act(async () => {
+      jest.advanceTimersByTime(10000);
+    });
+
+    expect(screen.getByText('The QR code expired.')).toBeInTheDocument();
+  });
+
+  it('shows the QR code as expired once the backend no longer knows the session', async () => {
+    mockGetSmartIdQrCodeLink.mockRejectedValue({
+      status: 401,
+      body: { errors: [{ code: 'auth.session.not.found' }] },
+    });
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    expect(screen.getByText('The QR code expired.')).toBeInTheDocument();
   });
 
   it('cancels the login from the QR code view', async () => {

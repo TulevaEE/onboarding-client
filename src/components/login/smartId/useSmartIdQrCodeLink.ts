@@ -1,17 +1,23 @@
 import { useEffect, useState } from 'react';
 
 import { getSmartIdQrCodeLink } from '../../common/api';
+import { getPendingSmartIdStartedAt } from '../actions';
 
 const REFRESH_INTERVAL_MILLIS = 1000;
 const MAX_LINK_AGE_MILLIS = 3000;
 const SESSION_LIFETIME_MILLIS = 60000;
+
+const isRefusedByBackend = (error: unknown): boolean => {
+  const status = (error as { status?: unknown })?.status;
+  return typeof status === 'number' && status >= 400 && status < 500;
+};
 
 export function useSmartIdQrCodeLink(): { deviceLink: string | null; expired: boolean } {
   const [deviceLink, setDeviceLink] = useState<string | null>(null);
   const [expired, setExpired] = useState(false);
 
   useEffect(() => {
-    const startedAt = Date.now();
+    const startedAt = getPendingSmartIdStartedAt() ?? Date.now();
     let refreshInterval: ReturnType<typeof setInterval>;
     let stalenessTimeout: ReturnType<typeof setTimeout>;
     let stopped = false;
@@ -29,16 +35,25 @@ export function useSmartIdQrCodeLink(): { deviceLink: string | null; expired: bo
       stalenessTimeout = setTimeout(() => setDeviceLink(null), MAX_LINK_AGE_MILLIS);
     };
 
+    const expire = () => {
+      stop();
+      setDeviceLink(null);
+      setExpired(true);
+    };
+
     const refresh = async () => {
       if (Date.now() - startedAt >= SESSION_LIFETIME_MILLIS) {
-        stop();
-        setDeviceLink(null);
-        setExpired(true);
+        expire();
         return;
       }
       latestRequest += 1;
       const request = latestRequest;
-      const qrCode = await getSmartIdQrCodeLink().catch(() => null);
+      const qrCode = await getSmartIdQrCodeLink().catch((error) => {
+        if (!stopped && isRefusedByBackend(error)) {
+          expire();
+        }
+        return null;
+      });
       if (stopped || !qrCode || request <= latestAcceptedRequest) {
         return;
       }
