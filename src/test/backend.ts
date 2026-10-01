@@ -39,6 +39,7 @@ import {
   mockUser,
   mockValidatedCompany,
   secondPillarAssetsResponse,
+  smartIdAuthenticationHash,
   smartIdQrDeviceLink,
   smartIdWeb2AppLink,
   secondPillarPaymentRateChangeResponse,
@@ -199,6 +200,14 @@ export function smartIdMandateBatchSigningBackend(
   return backend;
 }
 
+type SmartIdAuthenticationBackend = {
+  resolvePolling: () => void;
+  startSession: () => string;
+  startedSessions: number;
+  startedFlows: string[];
+  rememberedAccount: { firstName: string; lastName: string } | null;
+};
+
 export function smartIdAuthenticationBackend(
   server: SetupServerApi,
   options: {
@@ -207,21 +216,17 @@ export function smartIdAuthenticationBackend(
     rememberedAccount?: { firstName: string; lastName: string };
     verificationCode?: string;
   } = {},
-): {
-  resolvePolling: () => void;
-  startedSessions: number;
-  startedFlows: string[];
-  rememberedAccount: { firstName: string; lastName: string } | null;
-} {
+): SmartIdAuthenticationBackend {
   let pollingResolved = false;
   let elapsedSeconds = 0;
-  const backend: {
-    resolvePolling: () => void;
-    startedSessions: number;
-    startedFlows: string[];
-    rememberedAccount: { firstName: string; lastName: string } | null;
-  } = {
+  let latestAuthenticationHash: string | null = null;
+  const backend: SmartIdAuthenticationBackend = {
     resolvePolling: () => undefined,
+    startSession: () => {
+      backend.startedSessions += 1;
+      latestAuthenticationHash = smartIdAuthenticationHash(backend.startedSessions);
+      return latestAuthenticationHash;
+    },
     startedSessions: 0,
     startedFlows: [],
     rememberedAccount: options.rememberedAccount ?? null,
@@ -250,7 +255,7 @@ export function smartIdAuthenticationBackend(
       if (flow === 'NOTIFICATION' && !backend.rememberedAccount) {
         return res(ctx.status(401), ctx.json({ errors: [{ code: 'auth.session.not.found' }] }));
       }
-      backend.startedSessions += 1;
+      const authenticationHash = backend.startSession();
       backend.startedFlows.push(flow);
       if (flow === 'NOTIFICATION') {
         return res(
@@ -259,6 +264,7 @@ export function smartIdAuthenticationBackend(
             flow: 'NOTIFICATION',
             web2AppLink: null,
             verificationCode: options.verificationCode ?? '1234',
+            authenticationHash,
           }),
         );
       }
@@ -268,6 +274,7 @@ export function smartIdAuthenticationBackend(
           flow: 'DEVICE_LINK',
           web2AppLink: smartIdWeb2AppLink(language),
           verificationCode: null,
+          authenticationHash,
         }),
       );
     }),
@@ -297,6 +304,10 @@ export function smartIdAuthenticationBackend(
           ctx.status(401),
           ctx.json({ error: 'wrong grant type, client id or basic auth' }),
         );
+      }
+
+      if (!latestAuthenticationHash || body.authenticationHash !== latestAuthenticationHash) {
+        return res(ctx.status(401), ctx.json({ errors: [{ code: 'auth.session.not.found' }] }));
       }
 
       if (!pollingResolved) {

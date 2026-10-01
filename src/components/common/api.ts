@@ -220,8 +220,11 @@ export function getMobileIdTokens(): Promise<Token | null> {
   return getTokensWithGrantType('MOBILE_ID');
 }
 
-export function getSmartIdTokens(options: { signal?: AbortSignal } = {}): Promise<Token | null> {
-  return getTokensWithGrantType('SMART_ID', {}, options);
+export function getSmartIdTokens(
+  authenticationHash: string,
+  options: { signal?: AbortSignal } = {},
+): Promise<Token | null> {
+  return getTokensWithGrantType('SMART_ID', { authenticationHash }, options);
 }
 
 export function getIdCardTokens(): Promise<Token | null> {

@@ -71,6 +71,30 @@ describe('When a user is logging in', () => {
     expect(history.location.state).toEqual({ justLoggedIn: true });
   });
 
+  test('they sign in by scanning the QR code of the session that silently replaced an expired one', async () => {
+    const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+    userEvent.click(await screen.findByRole('button', { name: 'Log in with Smart-ID' }));
+    expect(
+      await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
+    ).toBeInTheDocument();
+
+    const sessionStart = Date.now();
+    const now = jest.spyOn(Date, 'now').mockImplementation(() => sessionStart + 61000);
+    try {
+      await waitFor(() => expect(backend.startedSessions).toBe(2), { timeout: 3000 });
+      expect(
+        await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
+      ).toBeInTheDocument();
+
+      backend.resolvePolling();
+      expect(
+        await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      ).toBeInTheDocument();
+    } finally {
+      now.mockRestore();
+    }
+  });
+
   test('they land on the page they came for, without the login landing flag', async () => {
     act(() => {
       history.replace('/login', { from: '/capital' });

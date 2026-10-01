@@ -247,7 +247,11 @@ describe('Smart-ID device link login', () => {
   it('expires a resumed QR code a minute after its session started, not after the reload', async () => {
     sessionStorage.setItem(
       'pendingSmartIdAuthentication',
-      JSON.stringify({ web2AppLink, startedAt: Date.now() - 50000 }),
+      JSON.stringify({
+        authenticationHash: 'an-authentication-hash',
+        web2AppLink,
+        startedAt: Date.now() - 50000,
+      }),
     );
     renderDeviceLinkLogin();
     await flushPendingRequests();

@@ -41,6 +41,7 @@ const actions = require('./actions'); // need to use require because of jest moc
 describe('Login actions', () => {
   const web2AppLink =
     'https://smart-id.com/device-link/?deviceLinkType=Web2App&sessionType=auth&lang=est';
+  const aDeviceLinkStart = { web2AppLink, authenticationHash: 'an-authentication-hash' };
   const desktopUserAgent = navigator.userAgent;
 
   let dispatch;
@@ -48,6 +49,22 @@ describe('Login actions', () => {
 
   function createBoundAction(action) {
     return (...args) => action(...args)(dispatch, () => state);
+  }
+
+  const aCallback = {
+    value: 'a-callback-value',
+    sessionSecretDigest: 'a-digest',
+    userChallengeVerifier: 'a-verifier',
+  };
+
+  const redeemedHashes = () => mockApi.getSmartIdTokens.mock.calls.map(([hash]) => String(hash));
+
+  async function startLoginBeforeTheAppRoundTrip() {
+    mockApi.startSmartIdLogin = jest.fn(() =>
+      Promise.resolve({ web2AppLink, authenticationHash: 'hash-of-the-started-session' }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    await createBoundAction(actions.startSmartIdLogin)('et');
   }
 
   function mockDispatch() {
@@ -88,7 +105,7 @@ describe('Login actions', () => {
   it('never writes tokens to the console while polling', async () => {
     const consoleLog = jest.spyOn(console, 'log').mockImplementation(() => undefined);
     const tokens = { accessToken: 'a secret access token', refreshToken: 'a secret refresh token' };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(tokens));
     await createBoundAction(actions.startSmartIdLogin)('et');
 
@@ -281,7 +298,7 @@ describe('Login actions', () => {
   });
 
   it('starts a smart id session in the current language and shares the device link', async () => {
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
 
@@ -303,7 +320,7 @@ describe('Login actions', () => {
       value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15',
       configurable: true,
     });
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
 
@@ -321,7 +338,12 @@ describe('Login actions', () => {
       configurable: true,
     });
     mockApi.startSmartIdLogin = jest.fn(() =>
-      Promise.resolve({ flow: 'NOTIFICATION', web2AppLink: null, verificationCode: '4321' }),
+      Promise.resolve({
+        flow: 'NOTIFICATION',
+        web2AppLink: null,
+        verificationCode: '4321',
+        authenticationHash: 'an-authentication-hash',
+      }),
     );
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
@@ -343,7 +365,12 @@ describe('Login actions', () => {
   it('resumes a pending push login with its control code after a page reload', async () => {
     state = { login: { loadingAuthentication: true } };
     mockApi.startSmartIdLogin = jest.fn(() =>
-      Promise.resolve({ flow: 'NOTIFICATION', web2AppLink: null, verificationCode: '4321' }),
+      Promise.resolve({
+        flow: 'NOTIFICATION',
+        web2AppLink: null,
+        verificationCode: '4321',
+        authenticationHash: 'an-authentication-hash',
+      }),
     );
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
     await createBoundAction(actions.startSmartIdLogin)('et', 'NOTIFICATION');
@@ -364,7 +391,7 @@ describe('Login actions', () => {
 
   it('remembers where the login was headed', async () => {
     state = { login: {}, router: { location: { state: { from: '/capital/listings/42' } } } };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
 
@@ -374,7 +401,7 @@ describe('Login actions', () => {
   });
 
   it('remembers the language the login was started in', async () => {
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
 
@@ -384,7 +411,7 @@ describe('Login actions', () => {
   });
 
   it('has no destination to remember for a login started from the login page', async () => {
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
 
@@ -395,7 +422,7 @@ describe('Login actions', () => {
 
   it('does not resume on the smart id callback route', async () => {
     state = { login: { loadingAuthentication: true } };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
     await startSmartIdLogin('et');
@@ -426,7 +453,7 @@ describe('Login actions', () => {
 
   it('stops polling when the smart id login is canceled', async () => {
     state = { login: { loadingAuthentication: true } };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     const poll = jest.fn(() => new Promise(() => {}));
     mockApi.getSmartIdTokens = poll;
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
@@ -438,12 +465,12 @@ describe('Login actions', () => {
 
     jest.runOnlyPendingTimers();
     expect(poll).toHaveBeenCalledTimes(1);
-    expect(poll.mock.calls[0][0].signal.aborted).toBe(true);
+    expect(poll.mock.calls[0][1].signal.aborted).toBe(true);
   });
 
   it('ignores a timeout from the previous poll while a new QR code session starts', async () => {
     state = { login: { loadingAuthentication: true } };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     let rejectOldPoll;
     mockApi.getSmartIdTokens = jest.fn(
       () =>
@@ -459,7 +486,7 @@ describe('Login actions', () => {
     mockApi.startSmartIdLogin = jest.fn(
       () =>
         new Promise((resolve) => {
-          finishNewStart = () => resolve({ web2AppLink });
+          finishNewStart = () => resolve(aDeviceLinkStart);
         }),
     );
     const newStart = startSmartIdLogin('et');
@@ -480,6 +507,7 @@ describe('Login actions', () => {
       userChallengeVerifier: 'a-verifier',
     };
     const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
+    await startLoginBeforeTheAppRoundTrip();
     mockApi.completeSmartIdCallback = jest.fn(() => Promise.resolve());
     mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(tokens));
     const completeSmartIdLogin = createBoundAction(actions.completeSmartIdLogin);
@@ -499,25 +527,176 @@ describe('Login actions', () => {
     });
   });
 
-  it('reports a rejected device link callback', async () => {
+  it('reports a rejected device link callback and forgets the pending login', async () => {
     const error = { status: 401, body: { errors: [{ code: 'smart.id.callback.invalid' }] } };
+    await startLoginBeforeTheAppRoundTrip();
     mockApi.completeSmartIdCallback = jest.fn(() => Promise.reject(error));
     mockApi.getSmartIdTokens = jest.fn();
     const completeSmartIdLogin = createBoundAction(actions.completeSmartIdLogin);
 
-    await completeSmartIdLogin({
-      value: 'a-callback-value',
-      sessionSecretDigest: 'a-digest',
-      userChallengeVerifier: 'a-verifier',
-    });
+    await completeSmartIdLogin(aCallback);
 
     expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START_ERROR, error });
     expect(mockApi.getSmartIdTokens).not.toHaveBeenCalled();
+    expect(actions.getPendingSmartIdStartedAt()).toBeNull();
+  });
+
+  it('polls a device link login with the authentication hash of the session it started', async () => {
+    mockApi.startSmartIdLogin = jest.fn(() =>
+      Promise.resolve({ web2AppLink, authenticationHash: 'hash-of-session-1' }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+
+    await createBoundAction(actions.startSmartIdLogin)('et');
+    jest.runOnlyPendingTimers();
+
+    expect(redeemedHashes()).toEqual(['hash-of-session-1']);
+  });
+
+  it('polls a push login with the authentication hash of the session it started', async () => {
+    mockApi.startSmartIdLogin = jest.fn(() =>
+      Promise.resolve({
+        flow: 'NOTIFICATION',
+        web2AppLink: null,
+        verificationCode: '4321',
+        authenticationHash: 'hash-of-push-session',
+      }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+
+    await createBoundAction(actions.startSmartIdLogin)('et', 'NOTIFICATION');
+    jest.runOnlyPendingTimers();
+
+    expect(redeemedHashes()).toEqual(['hash-of-push-session']);
+  });
+
+  it('polls with the authentication hash of a new session once it replaces the previous one', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.startSmartIdLogin = jest.fn(() =>
+      Promise.resolve({ web2AppLink, authenticationHash: 'hash-of-session-1' }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(null));
+    const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
+    await startSmartIdLogin('et');
+    jest.runOnlyPendingTimers();
+    await Promise.resolve();
+
+    mockApi.startSmartIdLogin = jest.fn(() =>
+      Promise.resolve({ web2AppLink, authenticationHash: 'hash-of-session-2' }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(null));
+    await startSmartIdLogin('et');
+    jest.runOnlyPendingTimers();
+    await Promise.resolve();
+    jest.runOnlyPendingTimers();
+
+    expect(redeemedHashes()).toEqual(['hash-of-session-2', 'hash-of-session-2']);
+  });
+
+  it('resumes a pending login after a page reload with the authentication hash of its session', async () => {
+    state = { login: { loadingAuthentication: true } };
+    await startLoginBeforeTheAppRoundTrip();
+
+    mockDispatch();
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    createBoundAction(actions.resumePendingSmartIdAuthentication)();
+    jest.runOnlyPendingTimers();
+
+    expect(redeemedHashes()).toEqual(['hash-of-the-started-session']);
+  });
+
+  it('completes a callback login with the authentication hash of the session this tab started', async () => {
+    await startLoginBeforeTheAppRoundTrip();
+    mockApi.completeSmartIdCallback = jest.fn(() => Promise.resolve());
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+
+    await createBoundAction(actions.completeSmartIdLogin)(aCallback);
+    jest.runOnlyPendingTimers();
+
+    expect(redeemedHashes()).toEqual(['hash-of-the-started-session']);
+  });
+
+  it('fails a callback login in a tab that did not start it, without redeeming it', async () => {
+    mockApi.completeSmartIdCallback = jest.fn(() => Promise.resolve());
+    mockApi.getSmartIdTokens = jest.fn();
+
+    await createBoundAction(actions.completeSmartIdLogin)(aCallback);
+    jest.runOnlyPendingTimers();
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: MOBILE_AUTHENTICATION_START_ERROR,
+      error: { body: { errors: [{ code: 'auth.session.not.found' }] } },
+    });
+    expect(mockApi.completeSmartIdCallback).not.toHaveBeenCalled();
+    expect(mockApi.getSmartIdTokens).not.toHaveBeenCalled();
+  });
+
+  it('keeps the authentication hash out of local storage, cookies and the console', async () => {
+    const consoleLog = jest.spyOn(console, 'log').mockImplementation(() => undefined);
+    try {
+      state = { login: { loadingAuthentication: true } };
+      await startLoginBeforeTheAppRoundTrip();
+      mockApi.getSmartIdTokens = jest.fn(() => Promise.reject(new TypeError('Failed to fetch')));
+      jest.runOnlyPendingTimers();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(Object.values(localStorage).join(' ')).not.toContain('hash-of-the-started-session');
+      expect(document.cookie).not.toContain('hash-of-the-started-session');
+      expect(consoleLog.mock.calls.flat().map(String).join(' ')).not.toContain(
+        'hash-of-the-started-session',
+      );
+    } finally {
+      consoleLog.mockRestore();
+    }
+  });
+
+  it('forgets the pending login when a new session fails to start', async () => {
+    await startLoginBeforeTheAppRoundTrip();
+    mockApi.startSmartIdLogin = jest.fn(() =>
+      Promise.reject({ status: 500, body: { errors: [{ code: 'smart.id.technical.error' }] } }),
+    );
+
+    await createBoundAction(actions.startSmartIdLogin)('et');
+
+    expect(actions.getPendingSmartIdStartedAt()).toBeNull();
+  });
+
+  it('forgets the pending login when the login fails', async () => {
+    state = { login: { loadingAuthentication: true } };
+    await startLoginBeforeTheAppRoundTrip();
+    mockApi.getSmartIdTokens = jest.fn(() =>
+      Promise.reject({ status: 401, body: { errors: [{ code: 'auth.session.not.found' }] } }),
+    );
+
+    jest.runOnlyPendingTimers();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(actions.getPendingSmartIdStartedAt()).toBeNull();
+  });
+
+  it('forgets the authentication hash of the previous session when the new one cannot be stored', async () => {
+    await startLoginBeforeTheAppRoundTrip();
+    mockApi.startSmartIdLogin = jest.fn(() =>
+      Promise.resolve({ web2AppLink, authenticationHash: 'hash-of-session-2' }),
+    );
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const setItem = jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError');
+    });
+    try {
+      await createBoundAction(actions.startSmartIdLogin)('et');
+    } finally {
+      setItem.mockRestore();
+    }
+
+    expect(sessionStorage.getItem('pendingSmartIdAuthentication')).toBeNull();
   });
 
   it('starts polling until succeeds when authenticating with smart id', () => {
     const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(null));
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
     return startSmartIdLogin('et')
@@ -543,7 +722,7 @@ describe('Login actions', () => {
 
   it('recovers with a fresh smart id login attempt after a poll request never settles', async () => {
     state = { login: { loadingAuthentication: true } };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     const strandedPoll = jest.fn(() => new Promise(() => {}));
     mockApi.getSmartIdTokens = strandedPoll;
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
@@ -553,7 +732,7 @@ describe('Login actions', () => {
     expect(strandedPoll).toHaveBeenCalledTimes(1);
 
     actions.cancelMobileAuthentication();
-    expect(strandedPoll.mock.calls[0][0].signal.aborted).toBe(true);
+    expect(strandedPoll.mock.calls[0][1].signal.aborted).toBe(true);
 
     const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
     mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(tokens));
@@ -578,7 +757,7 @@ describe('Login actions', () => {
     'polls immediately on %s during a pending smart id login',
     async (eventName, dispatchBrowserEvent) => {
       state = { login: { loadingAuthentication: true } };
-      mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+      mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
       const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
       mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(tokens));
       const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
@@ -612,12 +791,15 @@ describe('Login actions', () => {
 
     actions.cancelMobileAuthentication();
 
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
     mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(tokens));
     await startSmartIdLogin('et');
 
-    resolveFirstStart({ web2AppLink: 'https://smart-id.com/device-link/?stale' });
+    resolveFirstStart({
+      web2AppLink: 'https://smart-id.com/device-link/?stale',
+      authenticationHash: 'hash-of-the-canceled-session',
+    });
     await firstAttempt;
 
     jest.runOnlyPendingTimers();
@@ -626,7 +808,7 @@ describe('Login actions', () => {
     await Promise.resolve();
 
     expect(mockApi.getSmartIdTokens).toHaveBeenCalledTimes(1);
-    expect(mockApi.getSmartIdTokens).toHaveBeenCalledWith(expect.anything());
+    expect(redeemedHashes()).toEqual(['an-authentication-hash']);
     expect(dispatch).toHaveBeenCalledWith({
       type: MOBILE_AUTHENTICATION_SUCCESS,
       tokens,
@@ -636,7 +818,7 @@ describe('Login actions', () => {
 
   it('resumes a pending smart id login after a page reload', async () => {
     state = { login: { loadingAuthentication: true } };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
     await startSmartIdLogin('et');
@@ -655,7 +837,7 @@ describe('Login actions', () => {
     await Promise.resolve();
     await Promise.resolve();
 
-    expect(mockApi.getSmartIdTokens).toHaveBeenCalledWith(expect.anything());
+    expect(redeemedHashes()).toEqual(['an-authentication-hash']);
     expect(dispatch).toHaveBeenCalledWith({
       type: MOBILE_AUTHENTICATION_SUCCESS,
       tokens,
@@ -669,7 +851,7 @@ describe('Login actions', () => {
     ['NetworkError when attempting to fetch resource.'],
   ])('keeps polling after a transient network error: %s', async (message) => {
     state = { login: { loadingAuthentication: true } };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
     mockApi.getSmartIdTokens = jest
       .fn()
@@ -699,7 +881,7 @@ describe('Login actions', () => {
 
   it('keeps the pending login resumable after a transient network error', async () => {
     state = { login: { loadingAuthentication: true } };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     mockApi.getSmartIdTokens = jest.fn(() => Promise.reject(new TypeError('Failed to fetch')));
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
     await startSmartIdLogin('et');
@@ -718,7 +900,7 @@ describe('Login actions', () => {
 
   it('still starts polling when session storage writes fail', async () => {
     state = { login: { loadingAuthentication: true } };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
     const setItem = jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new Error('QuotaExceededError');
@@ -743,7 +925,7 @@ describe('Login actions', () => {
 
   it('does not resume while another authentication flow is already running', async () => {
     state = { login: { loadingAuthentication: true } };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
     await startSmartIdLogin('et');
@@ -758,7 +940,7 @@ describe('Login actions', () => {
 
   it('does not resume when the user is already authenticated and drops the pending login', async () => {
     state = { login: { loadingAuthentication: true } };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
     await startSmartIdLogin('et');
@@ -780,7 +962,7 @@ describe('Login actions', () => {
 
   it('does not resume on the partner handover route', async () => {
     state = { login: { loadingAuthentication: true } };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
     await startSmartIdLogin('et');
@@ -799,7 +981,7 @@ describe('Login actions', () => {
 
   it('does not resume a stale pending smart id login', async () => {
     state = { login: { loadingAuthentication: true } };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
     await startSmartIdLogin('et');
@@ -818,7 +1000,7 @@ describe('Login actions', () => {
 
   it('does not resume once the login has completed', async () => {
     state = { login: { loadingAuthentication: true } };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
     mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(tokens));
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
@@ -843,7 +1025,7 @@ describe('Login actions', () => {
 
   it('does not resume a canceled smart id login', async () => {
     state = { login: { loadingAuthentication: true } };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
     await startSmartIdLogin('et');
@@ -860,7 +1042,7 @@ describe('Login actions', () => {
 
   it('abandons a stuck poll request and retries immediately when the tab becomes visible', async () => {
     state = { login: { loadingAuthentication: true } };
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
     const strandedPoll = jest.fn(() => new Promise(() => {}));
     mockApi.getSmartIdTokens = strandedPoll;
     const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
@@ -876,7 +1058,7 @@ describe('Login actions', () => {
     await Promise.resolve();
     await Promise.resolve();
 
-    expect(strandedPoll.mock.calls[0][0].signal.aborted).toBe(true);
+    expect(strandedPoll.mock.calls[0][1].signal.aborted).toBe(true);
     expect(mockApi.getSmartIdTokens).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith({
       type: MOBILE_AUTHENTICATION_SUCCESS,
