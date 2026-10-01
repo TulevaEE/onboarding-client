@@ -6,6 +6,20 @@
   gap: 0.5rem;
 }
 
+.calendarButton,
+.calendarPicker {
+  width: 2.25rem;
+}
+
+.calendarButton {
+  padding-inline: 0;
+}
+
+.calendarPicker {
+  z-index: 6;
+  cursor: pointer;
+}
+
 .dateLabel {
   position: absolute;
   width: 1px;

@@ -412,6 +412,31 @@ describe('picking a date from the calendar', () => {
     expect(onPeriodChange).toHaveBeenCalledWith('2025-01-01', '2025-06-30');
   });
 
+  it('takes a tap on the calendar icon on the browser date field itself, which opens its own calendar', () => {
+    browserWithCalendar();
+    renderSelector();
+
+    const tappedField = screen.getByLabelText('Choose start date from calendar', {
+      selector: 'input',
+    });
+    userEvent.click(tappedField);
+
+    expect(openedCalendar()).toBe(tappedField);
+    pick('2025-03-05');
+    expect(onPeriodChange).toHaveBeenCalledWith('2025-03-05', '2025-08-15');
+  });
+
+  it('leaves the cursor where it is when a tapped browser cannot show its calendar on request', () => {
+    browserWithoutCalendar();
+    renderSelector();
+
+    userEvent.click(
+      screen.getByLabelText('Choose start date from calendar', { selector: 'input' }),
+    );
+
+    expect(screen.getByLabelText('From')).not.toHaveFocus();
+  });
+
   it('opens on the date in effect and offers only the days inside the period', () => {
     browserWithCalendar();
     renderSelector();

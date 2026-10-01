@@ -32,6 +32,15 @@ const typedDate = (text: string): string | undefined => {
   return parsed.isValid() && parsed.year() >= EARLIEST_YEAR ? parsed.format(ISO_DATE) : undefined;
 };
 
+const showsPicker = (dateField: HTMLInputElement): boolean => {
+  try {
+    dateField.showPicker();
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 const CalendarIcon: React.FunctionComponent = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -88,9 +97,7 @@ const DateInput: React.FunctionComponent<{
   };
 
   const openCalendar = () => {
-    try {
-      calendar.current?.showPicker();
-    } catch {
+    if (!calendar.current || !showsPicker(calendar.current)) {
       textBox.current?.focus();
     }
   };
@@ -129,7 +136,7 @@ const DateInput: React.FunctionComponent<{
           />
           <button
             type="button"
-            className="btn btn-outline-secondary"
+            className={`btn btn-outline-secondary ${styles.calendarButton}`}
             aria-label={formatMessage({ id: calendarLabel })}
             onClick={openCalendar}
           >
@@ -141,11 +148,16 @@ const DateInput: React.FunctionComponent<{
           type="date"
           tabIndex={-1}
           aria-hidden="true"
-          className="position-absolute top-0 start-0 w-100 h-100 opacity-0 pe-none"
+          aria-label={formatMessage({ id: calendarLabel })}
+          className={`position-absolute top-0 end-0 h-100 opacity-0 ${styles.calendarPicker}`}
           value={value}
           min={min}
           max={max}
-          onChange={(event) => commit(event.target.value)}
+          onClick={(event) => showsPicker(event.currentTarget)}
+          onChange={(event) => {
+            commit(event.target.value);
+            event.target.blur();
+          }}
         />
       </div>
     </>
