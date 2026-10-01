@@ -107,7 +107,15 @@ function getMobileIdTokens(onSuccess = () => undefined) {
   };
 }
 
-export function authenticateWithMobileId(phoneNumber, personalCode, rememberPhoneNumber = false) {
+function updateRememberedPhoneNumber(personalCode, phoneNumber, rememberPhoneNumber) {
+  if (rememberPhoneNumber === true) {
+    rememberMobileIdPhoneNumber(personalCode, phoneNumber);
+  } else if (rememberPhoneNumber === false) {
+    forgetMobileIdPhoneNumber(personalCode);
+  }
+}
+
+export function authenticateWithMobileId(phoneNumber, personalCode, rememberPhoneNumber) {
   return (dispatch) => {
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
@@ -115,13 +123,9 @@ export function authenticateWithMobileId(phoneNumber, personalCode, rememberPhon
       .then((controlCode) => {
         dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
         dispatch(
-          getMobileIdTokens(() => {
-            if (rememberPhoneNumber) {
-              rememberMobileIdPhoneNumber(personalCode, phoneNumber);
-            } else {
-              forgetMobileIdPhoneNumber(personalCode);
-            }
-          }),
+          getMobileIdTokens(() =>
+            updateRememberedPhoneNumber(personalCode, phoneNumber, rememberPhoneNumber),
+          ),
         );
       })
       .catch((error) => dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error }));
@@ -500,10 +504,10 @@ export function setLoginToRedirect() {
   return { type: SET_LOGIN_TO_REDIRECT };
 }
 
-export function useRedirectLoginWithPhoneNumber(phoneNumber, personalCode) {
+export function useRedirectLoginWithPhoneNumber(phoneNumber, personalCode, rememberPhoneNumber) {
   return (dispatch) => {
     dispatch(setLoginToRedirect());
-    dispatch(authenticateWithMobileId(phoneNumber, personalCode));
+    dispatch(authenticateWithMobileId(phoneNumber, personalCode, rememberPhoneNumber));
   };
 }
 
