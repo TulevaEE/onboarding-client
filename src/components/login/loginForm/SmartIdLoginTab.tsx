@@ -22,9 +22,6 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
   if (account) {
     return (
       <>
-        <p className="m-0 mb-3 text-body-secondary text-balance">
-          <FormattedMessage id="login.smart.id.push.intro" />
-        </p>
         <div className="d-grid">
           <button
             type="button"
