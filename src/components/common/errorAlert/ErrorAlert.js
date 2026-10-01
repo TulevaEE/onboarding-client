@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { FormattedMessage } from 'react-intl';
+import { isWebEidSetupMessage, WebEidSetupMessage } from '../webEidSetupMessage/WebEidSetupMessage';
 
 export const ID_CARD_LOGIN_START_FAILED_ERROR = 'ID_CARD_LOGIN_START_FAILED';
 export const WEB_EID_USER_CANCELLED = 'WEB_EID_USER_CANCELLED';
 export const WEB_EID_TIMEOUT = 'WEB_EID_TIMEOUT';
-export const WEB_EID_EXTENSION_UNAVAILABLE = 'WEB_EID_EXTENSION_UNAVAILABLE';
 const NOT_JOINED_ERROR_DESCRIPTION = 'INVALID_USER_CREDENTIALS';
 const INVALID_PERSONAL_CODE = 'ValidPersonalCode';
 
@@ -50,10 +50,10 @@ class ErrorAlert extends Component {
       );
     }
 
-    if (description === WEB_EID_EXTENSION_UNAVAILABLE) {
+    if (isWebEidSetupMessage(description)) {
       return (
         <div>
-          <FormattedMessage id="login.web.eid.extension.unavailable" />
+          <WebEidSetupMessage id={description} />
         </div>
       );
     }

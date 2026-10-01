@@ -2,7 +2,7 @@ import { getSigningCertificate, sign } from '@web-eid/web-eid-library';
 import { startIdCardSignature } from '../api';
 import { ErrorResponse, IdCardSignatureResponse } from '../apiModels';
 import { isErrorResponse } from '../errorResponse';
-import { WebEidFailure, webEidFailureOf, webEidOptions } from '../webEid';
+import { WebEidFailure, webEidFailureOf, webEidOptions, withWebEidDiagnosis } from '../webEid';
 import { SignableEntity } from './types';
 import { SigningCancelledByUser } from './signingCancelledByUser';
 
@@ -20,7 +20,9 @@ export class IdCardSigningError extends Error {
 
 const SIGNING_ERROR_CODES: Record<Exclude<WebEidFailure, 'USER_CANCELLED'>, string> = {
   TIMEOUT: 'id.card.signing.timeout',
-  EXTENSION_UNAVAILABLE: 'id.card.signing.extension.unavailable',
+  EXTENSION_MISSING: 'web.eid.extension.missing',
+  ID_SOFTWARE_MISSING: 'web.eid.id.software.missing',
+  UPDATE_REQUIRED: 'web.eid.update.required',
   FAILED: 'id.card.signing.error',
 };
 
@@ -39,8 +41,8 @@ export type SigningCertificate = { certificate: string; supportedHashFunctions: 
 
 export const getIdCardSigningCertificate = async (): Promise<SigningCertificate> => {
   try {
-    const { certificate, supportedSignatureAlgorithms } = await getSigningCertificate(
-      webEidOptions(),
+    const { certificate, supportedSignatureAlgorithms } = await withWebEidDiagnosis(() =>
+      getSigningCertificate(webEidOptions()),
     );
     return {
       certificate,
@@ -58,7 +60,9 @@ export const signHashWithIdCard = async (
   { hash, hashFunction }: IdCardSignatureResponse,
 ): Promise<string> => {
   try {
-    const { signature } = await sign(certificate, hash, hashFunction, webEidOptions());
+    const { signature } = await withWebEidDiagnosis(() =>
+      sign(certificate, hash, hashFunction, webEidOptions()),
+    );
     return signature;
   } catch (error) {
     throw toSigningError(error);

@@ -1,15 +1,22 @@
-import { ErrorCode } from '@web-eid/web-eid-library';
+import {
+  ErrorCode,
+  ExtensionUnavailableError,
+  NativeUnavailableError,
+  VersionMismatchError,
+} from '@web-eid/web-eid-library';
 import { signWithIdCard } from './signWithIdCard';
 import { SigningCancelledByUser } from './signingCancelledByUser';
 
 const mockGetSigningCertificate = jest.fn();
 const mockSign = jest.fn();
+const mockStatus = jest.fn();
 const mockStartIdCardSignature = jest.fn();
 
 jest.mock('@web-eid/web-eid-library', () => ({
   ...jest.requireActual('@web-eid/web-eid-library'),
   getSigningCertificate: (...args: unknown[]) => mockGetSigningCertificate(...args),
   sign: (...args: unknown[]) => mockSign(...args),
+  status: (...args: unknown[]) => mockStatus(...args),
 }));
 jest.mock('../api', () => ({
   startIdCardSignature: (...args: unknown[]) => mockStartIdCardSignature(...args),
@@ -54,10 +61,9 @@ describe('signWithIdCard', () => {
   });
 
   it.each([
-    [ErrorCode.ERR_WEBEID_EXTENSION_UNAVAILABLE, 'id.card.signing.extension.unavailable'],
     [ErrorCode.ERR_WEBEID_USER_TIMEOUT, 'id.card.signing.timeout'],
     [ErrorCode.ERR_WEBEID_ACTION_TIMEOUT, 'id.card.signing.timeout'],
-    [ErrorCode.ERR_WEBEID_NATIVE_UNAVAILABLE, 'id.card.signing.error'],
+    [ErrorCode.ERR_WEBEID_NATIVE_FATAL, 'id.card.signing.error'],
   ])('maps the Web eID signing error %s to %s', async (code, expectedCode) => {
     mockSign.mockRejectedValue(webEidError(code));
 
@@ -74,15 +80,46 @@ describe('signWithIdCard', () => {
     );
   });
 
-  it('maps a Web eID error while reading the signing certificate', async () => {
-    mockGetSigningCertificate.mockRejectedValue(
-      webEidError(ErrorCode.ERR_WEBEID_EXTENSION_UNAVAILABLE),
-    );
+  it.each([
+    ['web.eid.extension.missing', new ExtensionUnavailableError()],
+    ['web.eid.id.software.missing', new NativeUnavailableError()],
+    [
+      'web.eid.update.required',
+      new VersionMismatchError(
+        undefined,
+        { library: '2.1.0' },
+        { extension: true, nativeApp: false },
+      ),
+    ],
+  ])(
+    'explains with %s what the Web eID status check finds missing after reading the certificate fails',
+    async (expectedCode, statusError) => {
+      mockGetSigningCertificate.mockRejectedValue(new ExtensionUnavailableError());
+      mockStatus.mockRejectedValue(statusError);
+
+      await expect(signWithIdCard({ id: 42 }, 'MANDATE_BATCH')).rejects.toMatchObject({
+        body: { errors: [{ code: expectedCode }] },
+      });
+      expect(mockStartIdCardSignature).not.toHaveBeenCalled();
+    },
+  );
+
+  it('explains what the Web eID status check finds missing after signing the hash fails', async () => {
+    mockSign.mockRejectedValue(new NativeUnavailableError());
+    mockStatus.mockRejectedValue(new NativeUnavailableError());
 
     await expect(signWithIdCard({ id: 42 }, 'MANDATE_BATCH')).rejects.toMatchObject({
-      body: { errors: [{ code: 'id.card.signing.extension.unavailable' }] },
+      body: { errors: [{ code: 'web.eid.id.software.missing' }] },
     });
-    expect(mockStartIdCardSignature).not.toHaveBeenCalled();
+  });
+
+  it('reports a plain signing failure when the Web eID status check finds nothing missing', async () => {
+    mockSign.mockRejectedValue(new NativeUnavailableError());
+    mockStatus.mockResolvedValue({ library: '2.1.0', extension: '2.7.0', nativeApp: '2.7.0' });
+
+    await expect(signWithIdCard({ id: 42 }, 'MANDATE_BATCH')).rejects.toMatchObject({
+      body: { errors: [{ code: 'id.card.signing.error' }] },
+    });
   });
 
   it('wraps an error that is neither a Web eID error nor a backend error', async () => {

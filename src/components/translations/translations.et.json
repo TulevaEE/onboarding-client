@@ -9,7 +9,6 @@
   "login.id.card": "ID-kaart",
   "login.id.card.start.failed": "Palun kontrolli, et ID-kaart on lugejas ja lugeja ühendatud ning ID-kaardiga allkirjastamise laiendus töötab. Vajadusel tee veebilehitsejale restart ja proovi uuesti.",
   "login.web.eid.user.cancelled": "Autentimine katkestati.",
-  "login.web.eid.extension.unavailable": "Web eID laiendus ei ole saadaval. Palun paigalda Web eID laiendus ja proovi uuesti.",
   "login.web.eid.timeout": "PIN1-koodi sisestamise aeg sai läbi. Palun proovi uuesti.",
   "login.invalid.personal.code": "Vale isikukood. Palun proovi uuesti.",
   "login.phone.number": "Telefoninumber",
@@ -205,7 +204,6 @@
   "error.payment-failed": "Makse ebaõnnestus.",
   "error.technical": "Midagi läks valesti. Palun proovi uuesti või võta meiega ühendust.",
   "id.card.signing.error": "ID‑kaardiga allkirjastamine ebaõnnestus. Kontrolli, et kaardilugeja on ühendatud ning et nii ID‑tarkvara kui ka Web eID brauserilaiendus on paigaldatud, ja proovi uuesti.",
-  "id.card.signing.extension.unavailable": "Web eID laiendus ei ole saadaval. Palun paigalda Web eID laiendus ja proovi uuesti.",
   "id.card.signing.certificate.invalid": "ID‑kaardi allkirjastamise sertifikaati ei õnnestunud lugeda. Palun proovi uuesti.",
   "id.card.signing.certificate.mismatch": "See ID‑kaart kuulub kellelegi teisele. Palun allkirjasta oma ID‑kaardiga.",
   "id.card.signing.hash.function.unsupported": "Sinu ID‑kaart ei toeta selle dokumendi jaoks vajalikku allkirjatüüpi. Palun uuenda ID‑tarkvara ja proovi uuesti.",
@@ -2264,5 +2262,10 @@
   "units.roundingNote.hover": "Täpse koguse näed, kui viid kursori numbrile.",
   "signature.error.unknown": "Allkirjastamine ei jõudnud lõpuni. Palun proovi uuesti.",
   "signature.already.signed": "See on juba allkirjastatud.",
-  "signature.not.signed": "See ei ole veel allkirjastatud."
+  "signature.not.signed": "See ei ole veel allkirjastatud.",
+  "web.eid.extension.missing": "Sinu brauseris pole Web eID laiendust. Paigalda see <link>id.ee juhendi järgi</link> ja proovi uuesti.",
+  "web.eid.id.software.missing": "Selles arvutis pole ID‑tarkvara. <link>Paigalda see id.ee lehelt</link> ja proovi uuesti.",
+  "web.eid.update.required": "Sinu ID‑tarkvara vajab uuendamist. <link>Paigalda uusim versioon id.ee lehelt</link> ja proovi uuesti.",
+  "web.eid.help.browser.url": "https://www.id.ee/artikkel/veebibrauserite-seadistamine-id-kaardi-kasutamiseks/",
+  "web.eid.help.install.url": "https://www.id.ee/artikkel/paigalda-id-tarkvara/"
 }

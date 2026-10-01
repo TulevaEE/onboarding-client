@@ -6,12 +6,23 @@ import { Router } from 'react-router-dom';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import config from 'react-global-configuration';
 import { IntlProvider } from 'react-intl';
-import { ErrorCode } from '@web-eid/web-eid-library';
+import {
+  ErrorCode,
+  ExtensionUnavailableError,
+  NativeUnavailableError,
+  VersionMismatchError,
+} from '@web-eid/web-eid-library';
 
 import { IdCardLoginTab } from './loginForm/IdCardLoginTab';
 import translations from '../translations/translations.en.json';
 
 const mockAuthenticateWithIdCardWebEid = jest.fn();
+const mockWebEidStatus = jest.fn();
+
+jest.mock('@web-eid/web-eid-library', () => ({
+  ...jest.requireActual('@web-eid/web-eid-library'),
+  status: (...args: unknown[]) => mockWebEidStatus(...args),
+}));
 
 jest.mock('../common/api', () => ({
   authenticateWithIdCardWebEid: (...args: unknown[]) => mockAuthenticateWithIdCardWebEid(...args),
@@ -161,18 +172,65 @@ describe('Web eID Auth Integration', () => {
     });
   });
 
-  it('should display extension unavailable error', async () => {
-    mockAuthenticateWithIdCardWebEid.mockRejectedValueOnce({
-      code: ErrorCode.ERR_WEBEID_EXTENSION_UNAVAILABLE,
+  it.each([
+    [
+      'the browser extension is missing',
+      new ExtensionUnavailableError(),
+      /does not have the Web\seID extension/,
+      'https://www.id.ee/en/article/configuring-browsers-for-using-id-card/',
+    ],
+    [
+      'the ID software is missing',
+      new NativeUnavailableError(),
+      /ID.software is not installed/,
+      'https://www.id.ee/en/article/install-id-software/',
+    ],
+    [
+      'the ID software needs an update',
+      new VersionMismatchError(
+        undefined,
+        { library: '2.1.0' },
+        { extension: false, nativeApp: true },
+      ),
+      /ID.software needs updating/,
+      'https://www.id.ee/en/article/install-id-software/',
+    ],
+  ])(
+    'tells the user %s when the Web eID status check finds it after a failed login',
+    async (_, statusError, message, instructionsUrl) => {
+      mockAuthenticateWithIdCardWebEid.mockRejectedValueOnce(new ExtensionUnavailableError());
+      mockWebEidStatus.mockRejectedValueOnce(statusError);
+
+      renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+
+      userEvent.click(screen.getByRole('button'));
+
+      expect(await screen.findByText(message)).toBeInTheDocument();
+      expect(screen.getByRole('link')).toHaveAttribute('href', instructionsUrl);
+    },
+  );
+
+  it('asks to check the card reader when the Web eID status check finds nothing missing', async () => {
+    mockAuthenticateWithIdCardWebEid.mockRejectedValueOnce(new NativeUnavailableError());
+    mockWebEidStatus.mockResolvedValueOnce({
+      library: '2.1.0',
+      extension: '2.7.0',
+      nativeApp: '2.7.0',
     });
 
     renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
 
     userEvent.click(screen.getByRole('button'));
 
-    await waitFor(() => {
-      expect(screen.getByText(/Web eID extension is not available/i)).toBeInTheDocument();
-    });
+    expect(
+      await screen.findByText(/check that your ID.*card reader is connected/i),
+    ).toBeInTheDocument();
+  });
+
+  it('does not check the Web eID status before the user logs in', () => {
+    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+
+    expect(mockWebEidStatus).not.toHaveBeenCalled();
   });
 
   it.each([ErrorCode.ERR_WEBEID_USER_TIMEOUT, ErrorCode.ERR_WEBEID_ACTION_TIMEOUT])(
