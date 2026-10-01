@@ -5,6 +5,7 @@ import { Loader } from '../../common';
 import { SmartIdLoginFlow } from '../../common/apiModels';
 import { useLoginLanguage } from '../loginLanguage';
 import { useRememberedSmartIdAccount } from '../smartId/useRememberedSmartIdAccount';
+import { PII_CLASS } from '../../tracking/piiMarkup';
 
 interface SmartIdLoginTabProps {
   onSmartIdLoginStart: (language: string, flow?: SmartIdLoginFlow) => void;
@@ -32,7 +33,7 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
           >
             <FormattedMessage
               id="login.smart.id.continue.as"
-              values={{ firstName: account.firstName }}
+              values={{ firstName: <span className={PII_CLASS}>{account.firstName}</span> }}
             />
           </button>
         </div>
