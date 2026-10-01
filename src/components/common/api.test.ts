@@ -194,14 +194,14 @@ describe('API calls', () => {
   });
 
   describe('getSmartIdTokens', () => {
-    it('should retrieve smart ID tokens successfully', async () => {
+    it('redeems the login with the authentication hash of the session it started', async () => {
       const expectedToken = { accessToken: 'access-token', refreshToken: 'refresh-token' };
       mockHttp.postForm.mockResolvedValueOnce({
         access_token: expectedToken.accessToken,
         refresh_token: expectedToken.refreshToken,
       });
 
-      const token = await getSmartIdTokens();
+      const token = await getSmartIdTokens('an-authentication-hash');
 
       expect(token).toEqual(expectedToken);
       expect(mockHttp.postForm).toHaveBeenCalledWith(
@@ -209,6 +209,7 @@ describe('API calls', () => {
         {
           grant_type: 'SMART_ID',
           client_id: 'onboarding-client',
+          authenticationHash: 'an-authentication-hash',
         },
         expect.any(Object),
         expect.any(Object),
@@ -228,7 +229,7 @@ describe('API calls', () => {
       });
       const controller = new AbortController();
 
-      await getSmartIdTokens({ signal: controller.signal });
+      await getSmartIdTokens('an-authentication-hash', { signal: controller.signal });
 
       expect(mockHttp.postForm).toHaveBeenCalledWith(
         '/oauth/token',
@@ -242,7 +243,12 @@ describe('API calls', () => {
   describe('startSmartIdLogin', () => {
     it('starts a device link session in the given language', async () => {
       const web2AppLink = 'https://smart-id.com/device-link/?deviceLinkType=Web2App';
-      const start = { flow: 'DEVICE_LINK', web2AppLink, verificationCode: null };
+      const start = {
+        flow: 'DEVICE_LINK',
+        web2AppLink,
+        verificationCode: null,
+        authenticationHash: 'an-authentication-hash',
+      };
       mockHttp.post.mockResolvedValueOnce(start);
 
       expect(await startSmartIdLogin('en')).toEqual(start);
@@ -253,7 +259,12 @@ describe('API calls', () => {
     });
 
     it('starts a push notification session for the remembered account', async () => {
-      const start = { flow: 'NOTIFICATION', web2AppLink: null, verificationCode: '1234' };
+      const start = {
+        flow: 'NOTIFICATION',
+        web2AppLink: null,
+        verificationCode: '1234',
+        authenticationHash: 'an-authentication-hash',
+      };
       mockHttp.post.mockResolvedValueOnce(start);
 
       expect(await startSmartIdLogin('et', 'NOTIFICATION')).toEqual(start);

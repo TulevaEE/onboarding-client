@@ -428,6 +428,7 @@ export interface SmartIdLoginStart {
   flow: SmartIdLoginFlow;
   web2AppLink: string | null;
   verificationCode: string | null;
+  authenticationHash: string;
 }
 
 export interface RememberedSmartIdAccount {

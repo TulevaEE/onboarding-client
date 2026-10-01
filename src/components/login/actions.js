@@ -140,23 +140,37 @@ const TRANSIENT_POLL_ERRORS = [
   'NetworkError when attempting to fetch resource.', // Firefox
 ];
 
-function savePendingSmartIdAuthentication({ web2AppLink, controlCode, returnPath, language }) {
+function clearPendingSmartIdAuthentication() {
+  if (window.sessionStorage) {
+    sessionStorage.removeItem(PENDING_SMART_ID_KEY);
+  }
+}
+
+function savePendingSmartIdAuthentication({
+  authenticationHash,
+  web2AppLink,
+  controlCode,
+  returnPath,
+  language,
+}) {
   if (!window.sessionStorage) {
     return;
   }
   try {
     sessionStorage.setItem(
       PENDING_SMART_ID_KEY,
-      JSON.stringify({ web2AppLink, controlCode, returnPath, language, startedAt: Date.now() }),
+      JSON.stringify({
+        authenticationHash,
+        web2AppLink,
+        controlCode,
+        returnPath,
+        language,
+        startedAt: Date.now(),
+      }),
     );
   } catch (error) {
+    clearPendingSmartIdAuthentication();
     logPoll('pending-login-persistence-failed', error); // reload recovery degrades, login proceeds
-  }
-}
-
-function clearPendingSmartIdAuthentication() {
-  if (window.sessionStorage) {
-    sessionStorage.removeItem(PENDING_SMART_ID_KEY);
   }
 }
 
@@ -166,7 +180,7 @@ function loadPendingSmartIdAuthentication() {
   }
   try {
     const pending = JSON.parse(sessionStorage.getItem(PENDING_SMART_ID_KEY));
-    return pending && pending.startedAt ? pending : null;
+    return pending && pending.startedAt && pending.authenticationHash ? pending : null;
   } catch (error) {
     return null;
   }
@@ -224,7 +238,7 @@ export function resumePendingSmartIdAuthentication() {
         verificationCodeChoice: true,
       });
     }
-    dispatch(getSmartIdTokens());
+    dispatch(getSmartIdTokens(pending.authenticationHash));
   };
 }
 
@@ -244,7 +258,7 @@ function stopSmartIdPolling() {
   smartIdAttempt = null;
 }
 
-export const getSmartIdTokens = () => (dispatch, getState) => {
+export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => {
   stopSmartIdPolling();
 
   const attempt = {};
@@ -262,7 +276,7 @@ export const getSmartIdTokens = () => (dispatch, getState) => {
     logPoll('request-start');
 
     try {
-      const tokens = await api.getSmartIdTokens({ signal: controller.signal });
+      const tokens = await api.getSmartIdTokens(authenticationHash, { signal: controller.signal });
       if (attempt !== smartIdAttempt || controller !== attempt.controller) {
         return undefined; // superseded — ignore late replies
       }
@@ -339,35 +353,54 @@ export function startSmartIdLogin(language, flow = 'DEVICE_LINK') {
           return;
         }
         const returnPath = getState().router?.location?.state?.from;
+        const { authenticationHash } = start;
         if (start.flow === 'NOTIFICATION') {
           const controlCode = start.verificationCode;
-          savePendingSmartIdAuthentication({ controlCode, returnPath, language });
+          savePendingSmartIdAuthentication({
+            authenticationHash,
+            controlCode,
+            returnPath,
+            language,
+          });
           dispatch({
             type: MOBILE_AUTHENTICATION_START_SUCCESS,
             controlCode,
             verificationCodeChoice: true,
           });
-          dispatch(getSmartIdTokens());
+          dispatch(getSmartIdTokens(authenticationHash));
           return;
         }
         const { web2AppLink } = start;
-        savePendingSmartIdAuthentication({ web2AppLink, returnPath, language });
+        savePendingSmartIdAuthentication({ authenticationHash, web2AppLink, returnPath, language });
         dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink });
-        dispatch(getSmartIdTokens());
+        dispatch(getSmartIdTokens(authenticationHash));
       })
       .catch((error) => {
         if (canceledOrSuperseded()) {
           return;
         }
+        clearPendingSmartIdAuthentication();
         dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error });
       });
   };
 }
 
+const SMART_ID_LOGIN_NOT_STARTED_IN_THIS_TAB = {
+  body: { errors: [{ code: 'auth.session.not.found' }] },
+};
+
 export function completeSmartIdLogin(callback) {
   return (dispatch) => {
     smartIdStartSequence += 1;
     const startSequence = smartIdStartSequence;
+    const pending = loadPendingSmartIdAuthentication();
+    if (!pending) {
+      dispatch({
+        type: MOBILE_AUTHENTICATION_START_ERROR,
+        error: SMART_ID_LOGIN_NOT_STARTED_IN_THIS_TAB,
+      });
+      return Promise.resolve();
+    }
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
       .completeSmartIdCallback(callback)
@@ -375,12 +408,13 @@ export function completeSmartIdLogin(callback) {
         if (startSequence !== smartIdStartSequence) {
           return;
         }
-        dispatch(getSmartIdTokens());
+        dispatch(getSmartIdTokens(pending.authenticationHash));
       })
       .catch((error) => {
         if (startSequence !== smartIdStartSequence) {
           return;
         }
+        clearPendingSmartIdAuthentication();
         dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error });
       });
   };

@@ -34,14 +34,24 @@ describe('When the Smart-ID app returns to the browser', () => {
     );
   };
 
+  const aCallback =
+    '?value=a-callback-value&sessionSecretDigest=a-digest&userChallengeVerifier=a-verifier';
+
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
 
-  const rememberDestination = (returnPath: string) =>
+  const startLoginBeforeTheAppRoundTrip = (
+    backend: ReturnType<typeof smartIdAuthenticationBackend>,
+    returnPath?: string,
+  ) =>
     sessionStorage.setItem(
       'pendingSmartIdAuthentication',
-      JSON.stringify({ returnPath, startedAt: Date.now() }),
+      JSON.stringify({
+        authenticationHash: backend.startSession(),
+        returnPath,
+        startedAt: Date.now(),
+      }),
     );
 
   beforeEach(() => {
@@ -52,6 +62,7 @@ describe('When the Smart-ID app returns to the browser', () => {
 
   test('the login completes and the account page opens with the login landing flag', async () => {
     const backend = smartIdAuthenticationBackend(server);
+    startLoginBeforeTheAppRoundTrip(backend);
     backend.resolvePolling();
 
     openCallback(
@@ -66,6 +77,7 @@ describe('When the Smart-ID app returns to the browser', () => {
 
   test('the login completes from the parameters the page moved out of its address', async () => {
     const backend = smartIdAuthenticationBackend(server);
+    startLoginBeforeTheAppRoundTrip(backend);
     backend.resolvePolling();
     sessionStorage.setItem(
       'smartIdCallback',
@@ -87,7 +99,7 @@ describe('When the Smart-ID app returns to the browser', () => {
   test('a login headed for the app root lands on the account page with the login landing flag', async () => {
     const backend = smartIdAuthenticationBackend(server);
     backend.resolvePolling();
-    rememberDestination('/');
+    startLoginBeforeTheAppRoundTrip(backend, '/');
 
     openCallback(
       '?value=a-callback-value&sessionSecretDigest=a-digest&userChallengeVerifier=a-verifier',
@@ -102,7 +114,7 @@ describe('When the Smart-ID app returns to the browser', () => {
   test('the login continues to the page the person was heading for', async () => {
     const backend = smartIdAuthenticationBackend(server);
     backend.resolvePolling();
-    rememberDestination('/capital/listings/42');
+    startLoginBeforeTheAppRoundTrip(backend, '/capital/listings/42');
 
     openCallback(
       '?value=a-callback-value&sessionSecretDigest=a-digest&userChallengeVerifier=a-verifier',
@@ -114,8 +126,36 @@ describe('When the Smart-ID app returns to the browser', () => {
     expect(history.location.state).toBeUndefined();
   });
 
-  test('a rejected callback offers a way back to the login page', async () => {
-    smartIdAuthenticationBackend(server, { rejectCallback: true });
+  test('the login completes with the authentication hash of the latest start in this tab', async () => {
+    const backend = smartIdAuthenticationBackend(server);
+    startLoginBeforeTheAppRoundTrip(backend);
+    startLoginBeforeTheAppRoundTrip(backend);
+    backend.resolvePolling();
+
+    openCallback(aCallback);
+
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    expect(sessionStorage.getItem('pendingSmartIdAuthentication')).toBeNull();
+  });
+
+  test('a callback in a tab that did not start the login offers a way back to the login page', async () => {
+    const backend = smartIdAuthenticationBackend(server);
+    backend.startSession();
+    backend.resolvePolling();
+
+    openCallback(aCallback);
+
+    expect(
+      await screen.findByText('There appears to have been a mistake. Please try again.'),
+    ).toBeInTheDocument();
+    expect(getAuthentication().isAuthenticated()).toBe(false);
+  });
+
+  test('a rejected callback offers a way back to the login page and forgets the pending login', async () => {
+    const backend = smartIdAuthenticationBackend(server, { rejectCallback: true });
+    startLoginBeforeTheAppRoundTrip(backend);
 
     openCallback(
       '?value=a-callback-value&sessionSecretDigest=a-digest&userChallengeVerifier=a-verifier',
@@ -125,6 +165,7 @@ describe('When the Smart-ID app returns to the browser', () => {
       await screen.findByText('There appears to have been a mistake. Please try again.'),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);
+    expect(sessionStorage.getItem('pendingSmartIdAuthentication')).toBeNull();
   });
 
   test('a callback without parameters never reaches the backend', async () => {
@@ -138,11 +179,8 @@ describe('When the Smart-ID app returns to the browser', () => {
     expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);
   });
 
-  const aCallback =
-    '?value=a-callback-value&sessionSecretDigest=a-digest&userChallengeVerifier=a-verifier';
-
   test('shows nothing but a spinner while the login completes', () => {
-    smartIdAuthenticationBackend(server);
+    startLoginBeforeTheAppRoundTrip(smartIdAuthenticationBackend(server));
 
     const { container } = openCallback(aCallback);
 
@@ -151,7 +189,7 @@ describe('When the Smart-ID app returns to the browser', () => {
   });
 
   test('a callback request that fails on the way offers a way back instead of spinning', async () => {
-    smartIdAuthenticationBackend(server);
+    startLoginBeforeTheAppRoundTrip(smartIdAuthenticationBackend(server));
     server.use(
       rest.post('http://localhost/v1/smart-id/login/callback', (req, res) =>
         res.networkError('Failed to connect'),
@@ -167,7 +205,7 @@ describe('When the Smart-ID app returns to the browser', () => {
   });
 
   test('says why Smart-ID refused the login', async () => {
-    smartIdAuthenticationBackend(server);
+    startLoginBeforeTheAppRoundTrip(smartIdAuthenticationBackend(server));
     server.use(
       rest.post('http://localhost/oauth/token', (req, res, ctx) =>
         res(ctx.status(400), ctx.json({ errors: [{ code: 'smart.id.user.refused' }] })),
@@ -185,7 +223,7 @@ describe('When the Smart-ID app returns to the browser', () => {
 
   test('offers a way out when finishing the login takes too long', () => {
     jest.useFakeTimers();
-    smartIdAuthenticationBackend(server);
+    startLoginBeforeTheAppRoundTrip(smartIdAuthenticationBackend(server));
     server.use(
       rest.post('http://localhost/v1/smart-id/login/callback', () => new Promise<never>(() => {})),
     );
