@@ -90,7 +90,9 @@ describe('Smart-ID login tab', () => {
 
     expectStackedFullWidth(
       await screen.findByRole('button', { name: 'Continue as Mari' }),
-      screen.getByRole('button', { name: /Not you/ }),
+      screen.getByRole('button', {
+        name: 'Not you? Log\u00A0in\u00A0with\u00A0a\u00A0QR\u00A0code',
+      }),
     );
   });
 
