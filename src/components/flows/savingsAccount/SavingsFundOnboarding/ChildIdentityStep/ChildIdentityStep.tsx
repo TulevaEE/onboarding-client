@@ -4,7 +4,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useEligibleChildren, usePendingOnboardings } from '../../../../common/apiHooks';
 import { ChildOnboardingFormData } from '../types';
 import { pendingChildOnboardings } from '../onboardingFlows';
-import { isValidEstonianPersonalCode } from './personalCode';
+import { isValidPersonalCode } from '../../../../common/personalCode';
 import { PII_CLASS } from '../../../../tracking/piiMarkup';
 
 type ChildIdentityStepProps = {
@@ -53,7 +53,7 @@ export const ChildIdentityStep: FC<ChildIdentityStepProps> = ({ control }) => {
               }),
             },
             validate: (value) =>
-              isValidEstonianPersonalCode(value) ||
+              isValidPersonalCode(value) ||
               intl.formatMessage({
                 id: 'flows.savingsFundChildOnboarding.identityStep.invalid',
               }),

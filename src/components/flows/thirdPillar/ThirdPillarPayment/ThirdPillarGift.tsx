@@ -9,7 +9,7 @@ import { PaymentChannel } from '../../../common/apiModels';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { PaymentAmountInput } from './PaymentAmountInput';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
-import { isValidPersonalCode } from './PersonalCode';
+import { isValidPersonalCode } from '../../../common/personalCode';
 import { BankKey } from './types';
 import { PaymentBankButtons } from './PaymentBankButtons';
 
