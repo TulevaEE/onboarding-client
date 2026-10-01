@@ -6,6 +6,7 @@ import { IntlProvider } from 'react-intl';
 import translations from '../../translations';
 import { SmartIdLoginTab } from './SmartIdLoginTab';
 import { forgetRememberedSmartIdAccount, getRememberedSmartIdAccount } from '../../common/api';
+import { PII_CLASS } from '../../tracking/piiMarkup';
 
 jest.mock('../../common/api');
 
@@ -47,6 +48,13 @@ describe('Smart-ID login tab', () => {
 
     expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK');
     expect(screen.queryByText(/Not you/)).not.toBeInTheDocument();
+  });
+
+  it('marks the remembered first name as personal data for analytics', async () => {
+    mockGetRememberedSmartIdAccount.mockResolvedValue({ firstName: 'Mari', lastName: 'Maasikas' });
+    renderTab();
+
+    expect(await screen.findByText('Mari')).toHaveClass(PII_CLASS);
   });
 
   it('offers a push login to the remembered account', async () => {
