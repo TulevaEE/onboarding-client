@@ -200,7 +200,7 @@
   "id.card.signing.certificate.mismatch": "This ID‑card belongs to someone else. Please sign with your own ID‑card.",
   "id.card.signing.hash.function.unsupported": "Your ID‑card does not support the signature type required for this document. Please update your ID‑software and try again.",
   "id.card.signing.timeout": "The time to enter the PIN2 code ran out. Please try again.",
-  "id.card.signing.instruction": "Confirm the signature with your ID‑card PIN2.",
+  "id.card.signing.instruction": "Confirm the signature with your ID‑card PIN2.",
   "mandate.processing.error.epis.already.active.contributions.fund": "Selected contributions fund is already active",
   "mandate.processing.error.epis.unknown": "Unknown Estonian Pension Information system error",
   "mandate.processing.error.epis.technical.error": "Unknown Estonian Pension Information system technical error",
