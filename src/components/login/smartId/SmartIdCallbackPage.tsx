@@ -4,10 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, Redirect, useLocation } from 'react-router-dom';
 
 import { ErrorAlert, Loader, logo } from '../../common';
-import {
-  hasLoginErrorMessage,
-  SMART_ID_CALLBACK_FAILED_ERROR,
-} from '../../common/errorAlert/ErrorAlert';
 import { getAuthentication } from '../../common/authenticationManager';
 import { usePageTitle } from '../../common/usePageTitle';
 import {
@@ -72,13 +68,7 @@ export const SmartIdCallbackPage: React.FC = () => {
             <img width="146" height="66" src={logo} alt="Tuleva" className="d-block mx-auto mb-5" />
             {failed ? (
               <div className="bg-white shadow-sm rounded-3 p-5">
-                <ErrorAlert
-                  description={
-                    loginError && hasLoginErrorMessage(loginError)
-                      ? loginError
-                      : SMART_ID_CALLBACK_FAILED_ERROR
-                  }
-                />
+                <ErrorAlert description={loginError ?? undefined} />
                 <div className="d-grid">
                   <Link className="btn btn-primary btn-lg" to={loginPath}>
                     <FormattedMessage id="login.smart.id.callback.retry" />
@@ -87,9 +77,6 @@ export const SmartIdCallbackPage: React.FC = () => {
               </div>
             ) : (
               <div className="bg-white shadow-sm rounded-3 p-5 text-center">
-                <p className="m-0 mb-4 text-pretty">
-                  <FormattedMessage id="login.smart.id.callback.completing" />
-                </p>
                 <Loader className="align-middle" />
                 {slow && (
                   <div>

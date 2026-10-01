@@ -22,7 +22,7 @@ describe('When the Smart-ID app returns to the browser', () => {
 
   const openCallback = (search: string) => {
     history = createMemoryHistory({ initialEntries: [`${smartIdCallbackPath}${search}`] });
-    renderWrapped(
+    return renderWrapped(
       <Switch>
         <Route exact path="/account" render={() => <h1>Mock account page</h1>} />
         <Route exact path="/capital/listings/42" render={() => <h1>Mock listing page</h1>} />
@@ -122,7 +122,7 @@ describe('When the Smart-ID app returns to the browser', () => {
     );
 
     expect(
-      await screen.findByText('The login could not be completed. Please try again.'),
+      await screen.findByText('There appears to have been a mistake. Please try again.'),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);
   });
@@ -133,7 +133,7 @@ describe('When the Smart-ID app returns to the browser', () => {
     openCallback('');
 
     expect(
-      await screen.findByText('The login could not be completed. Please try again.'),
+      await screen.findByText('There appears to have been a mistake. Please try again.'),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);
   });
@@ -141,12 +141,13 @@ describe('When the Smart-ID app returns to the browser', () => {
   const aCallback =
     '?value=a-callback-value&sessionSecretDigest=a-digest&userChallengeVerifier=a-verifier';
 
-  test('says the login is being finished while it completes', async () => {
+  test('shows nothing but a spinner while the login completes', () => {
     smartIdAuthenticationBackend(server);
 
-    openCallback(aCallback);
+    const { container } = openCallback(aCallback);
 
-    expect(await screen.findByText('Finishing your login…')).toBeInTheDocument();
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(container).toHaveTextContent(/^$/);
   });
 
   test('a callback request that fails on the way offers a way back instead of spinning', async () => {
@@ -160,7 +161,7 @@ describe('When the Smart-ID app returns to the browser', () => {
     openCallback(aCallback);
 
     expect(
-      await screen.findByText('The login could not be completed. Please try again.'),
+      await screen.findByText('There appears to have been a mistake. Please try again.'),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);
   });
