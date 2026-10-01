@@ -38,6 +38,18 @@ describe('post', () => {
       apiFunctions.post('http://example.com/thing', { key: 'value' }),
     ).resolves.toBeUndefined();
   });
+
+  it('lets the caller abort the request', async () => {
+    global.fetch = jest.fn().mockResolvedValue({ ok: true, status: 204 });
+    const { signal } = new AbortController();
+
+    await apiFunctions.post('http://example.com/thing', { key: 'value' }, {}, { signal });
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      'http://example.com/thing',
+      expect.objectContaining({ signal }),
+    );
+  });
 });
 
 describe('Authenticated requests', () => {

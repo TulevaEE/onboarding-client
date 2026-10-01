@@ -28,10 +28,6 @@ import {
 
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 import { getAuthentication } from '../common/authenticationManager';
-import {
-  rememberMobileIdPhoneNumber,
-  rememberedMobileIdPhoneNumber,
-} from './mobileId/rememberedPhoneNumbers';
 
 const mockHttp = jest.genMockFromModule('../common/http');
 jest.mock('../common/http', () => mockHttp);
@@ -258,54 +254,6 @@ describe('Login actions', () => {
           method: 'MOBILE_ID',
         });
       });
-  });
-
-  it('remembers the phone number only after a mobile id login succeeds', () => {
-    localStorage.clear();
-    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
-    mockApi.authenticateWithMobileId = jest.fn(() => Promise.resolve('1337'));
-    mockApi.getMobileIdTokens = jest.fn(() => Promise.resolve(tokens));
-    const authenticateWithMobileId = createBoundAction(actions.authenticateWithMobileId);
-
-    return authenticateWithMobileId('+37255512345', '38888888888', true).then(() => {
-      expect(rememberedMobileIdPhoneNumber('38888888888')).toBeNull();
-      jest.runOnlyPendingTimers();
-      return Promise.resolve().then(() => {
-        expect(rememberedMobileIdPhoneNumber('38888888888')).toBe('+37255512345');
-      });
-    });
-  });
-
-  it('forgets a previously remembered phone number when the user opts out', () => {
-    localStorage.clear();
-    rememberMobileIdPhoneNumber('38888888888', '+37255500000');
-    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
-    mockApi.authenticateWithMobileId = jest.fn(() => Promise.resolve('1337'));
-    mockApi.getMobileIdTokens = jest.fn(() => Promise.resolve(tokens));
-    const authenticateWithMobileId = createBoundAction(actions.authenticateWithMobileId);
-
-    return authenticateWithMobileId('+37255512345', '38888888888', false).then(() => {
-      jest.runOnlyPendingTimers();
-      return Promise.resolve().then(() => {
-        expect(rememberedMobileIdPhoneNumber('38888888888')).toBeNull();
-      });
-    });
-  });
-
-  it('keeps a remembered phone number when the caller does not say whether to remember it', () => {
-    localStorage.clear();
-    rememberMobileIdPhoneNumber('38888888888', '+37255500000');
-    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
-    mockApi.authenticateWithMobileId = jest.fn(() => Promise.resolve('1337'));
-    mockApi.getMobileIdTokens = jest.fn(() => Promise.resolve(tokens));
-    const authenticateWithMobileId = createBoundAction(actions.authenticateWithMobileId);
-
-    return authenticateWithMobileId('+37255500000', '38888888888').then(() => {
-      jest.runOnlyPendingTimers();
-      return Promise.resolve().then(() => {
-        expect(rememberedMobileIdPhoneNumber('38888888888')).toBe('+37255500000');
-      });
-    });
   });
 
   it('starts polling until fails when authenticating with a phone number', () => {

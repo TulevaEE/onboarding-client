@@ -322,19 +322,56 @@ export function mobileIdAuthenticationBackend(
     identityCode?: string;
     phoneNumber?: string;
     failWith?: string;
+    rememberedPersonalCodes?: string[];
+    rememberedNumberStopsWorking?: boolean;
   } = {},
-): { resolvePolling: () => void } {
+): {
+  resolvePolling: () => void;
+  rememberedLookups: string[];
+  startedLogins: { personalCode?: string; phoneNumber?: string }[];
+} {
   let pollingResolved = false;
+  const rememberedPersonalCodes = new Set(options.rememberedPersonalCodes ?? []);
+  const backend = {
+    resolvePolling: () => {
+      pollingResolved = true;
+    },
+    rememberedLookups: [] as string[],
+    startedLogins: [] as { personalCode?: string; phoneNumber?: string }[],
+  };
 
   server.use(
+    rest.post('http://localhost/v1/mobile-id/login/remembered', (req, res, ctx) => {
+      const { personalCode } = req.body as { personalCode: string };
+      backend.rememberedLookups.push(personalCode);
+      return res(
+        ctx.status(200),
+        ctx.json({ remembered: rememberedPersonalCodes.has(personalCode) }),
+      );
+    }),
+
     rest.post('http://localhost/authenticate', (req, res, ctx) => {
       const body = req.body as DefaultRequestMultipartBody;
+      const { personalCode, phoneNumber } = body as { personalCode?: string; phoneNumber?: string };
       if (
         body.type !== 'MOBILE_ID' ||
-        (options.identityCode && body.personalCode !== options.identityCode) ||
-        (options.phoneNumber && body.phoneNumber !== options.phoneNumber)
+        (options.identityCode && personalCode !== options.identityCode)
       ) {
-        return res(ctx.status(401), ctx.json({ error: 'wrong method, id code or number' }));
+        return res(ctx.status(401), ctx.json({ error: 'wrong method or id code' }));
+      }
+      backend.startedLogins.push({ personalCode, phoneNumber });
+      if (!phoneNumber) {
+        const usableRememberedNumber =
+          rememberedPersonalCodes.has(personalCode ?? '') && !options.rememberedNumberStopsWorking;
+        if (!usableRememberedNumber) {
+          rememberedPersonalCodes.delete(personalCode ?? '');
+          return res(
+            ctx.status(400),
+            ctx.json({ errors: [{ code: 'mobile.id.phone.number.required' }] }),
+          );
+        }
+      } else if (options.phoneNumber && phoneNumber !== options.phoneNumber) {
+        return res(ctx.status(401), ctx.json({ error: 'wrong number' }));
       }
       return res(ctx.status(200), ctx.json(getMobileSignatureResponse(options.challengeCode)));
     }),
@@ -367,11 +404,7 @@ export function mobileIdAuthenticationBackend(
       );
     }),
   );
-  return {
-    resolvePolling() {
-      pollingResolved = true;
-    },
-  };
+  return backend;
 }
 
 export function idCardAuthenticationBackend(server: SetupServerApi): {

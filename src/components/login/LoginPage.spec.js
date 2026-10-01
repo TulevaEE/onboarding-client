@@ -27,7 +27,7 @@ describe('Login page', () => {
       exchangeExistingThirdPillarUnits: true,
     };
     component.setProps(formProps);
-    expect(component.contains(<LoginForm {...formProps} />)).toBe(true);
+    expect(component.contains(<LoginForm {...formProps} mobileIdStartError="" />)).toBe(true);
   });
 
   it('renders an authentication loader instead if loading', () => {
@@ -110,6 +110,12 @@ describe('Login page', () => {
     expect(component.find(AuthenticationLoader)).toHaveLength(1);
   });
 
+  it('leaves a missing Mobile-ID phone number for the Mobile-ID tab to explain', () => {
+    component.setProps({ errorDescription: 'mobile.id.phone.number.required' });
+
+    expect(component.find(ErrorAlert).exists()).toBe(false);
+  });
+
   it('passes an error forwards to ErrorAlert, shows login form and does not show other components', () => {
     const errorDescription = 'oh no something broke yo';
     const formProps = {
@@ -130,7 +136,9 @@ describe('Login page', () => {
     component.setProps({ errorDescription, ...formProps, ...authProps });
 
     expect(component.contains(<ErrorAlert description={errorDescription} />)).toBe(true);
-    expect(component.contains(<LoginForm {...formProps} />)).toBe(true);
+    expect(
+      component.contains(<LoginForm {...formProps} mobileIdStartError={errorDescription} />),
+    ).toBe(true);
     expect(component.contains(<AuthenticationLoader {...authProps} />)).toBe(false);
   });
 });

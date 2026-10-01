@@ -107,7 +107,12 @@ export async function downloadFileWithAuthentication(url: string, headers = {}):
     .then((response) => response.data);
 }
 
-export async function post(url: string, params = {}, headers = {}): Promise<any> {
+export async function post(
+  url: string,
+  params = {},
+  headers = {},
+  options: { signal?: AbortSignal } = {},
+): Promise<any> {
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -119,6 +124,7 @@ export async function post(url: string, params = {}, headers = {}): Promise<any>
     credentials: 'include',
     mode: 'cors',
     cache: 'default',
+    ...options,
   });
 
   return transformResponse(response);

@@ -63,6 +63,7 @@ describe('Error alert', () => {
     ['smart.id.wrong.verification.code', 'login.error.smart.id.wrong.verification.code'],
     ['smart.id.certificate.revoked', 'login.error.smart.id.certificate.revoked'],
     ['auth.too.many.requests', 'login.error.auth.too.many.requests'],
+    ['mobile.id.phone.number.invalid', 'login.error.mobile.id.phone.number.invalid'],
   ])('explains the backend error %s', (code, messageId) => {
     component.setProps({ description: code });
     expect(component.contains(<FormattedMessage id={messageId} />)).toBe(true);
