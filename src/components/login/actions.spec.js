@@ -527,6 +527,46 @@ describe('Login actions', () => {
     });
   });
 
+  it('redeems with the secret this tab started with when an older backend accepts the callback without one', async () => {
+    const callback = {
+      value: 'a-callback-value',
+      sessionSecretDigest: 'a-digest',
+      userChallengeVerifier: 'a-verifier',
+    };
+    await startLoginBeforeTheAppRoundTrip();
+    mockApi.completeSmartIdCallback = jest.fn(() => Promise.resolve(undefined));
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+
+    await createBoundAction(actions.completeSmartIdLogin)(callback);
+    jest.runOnlyPendingTimers();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(mockApi.getSmartIdTokens.mock.calls[0][0]).toBe('hash-of-the-started-session');
+  });
+
+  it('fails a callback that came back without a secret in a tab that never started a login', async () => {
+    const callback = {
+      value: 'a-callback-value',
+      sessionSecretDigest: 'a-digest',
+      userChallengeVerifier: 'a-verifier',
+    };
+    mockApi.completeSmartIdCallback = jest.fn(() => Promise.resolve(undefined));
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+
+    await createBoundAction(actions.completeSmartIdLogin)(callback);
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(mockApi.getSmartIdTokens).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: MOBILE_AUTHENTICATION_START_ERROR,
+        error: { body: { errors: [{ code: 'auth.session.not.found' }] } },
+      }),
+    );
+  });
+
   it('reports a rejected device link callback and forgets the pending login', async () => {
     const error = { status: 401, body: { errors: [{ code: 'smart.id.callback.invalid' }] } };
     await startLoginBeforeTheAppRoundTrip();
