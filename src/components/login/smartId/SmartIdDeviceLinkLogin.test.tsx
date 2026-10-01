@@ -292,7 +292,7 @@ describe('Smart-ID device link login', () => {
         /^Open the Smart.ID app and confirm the login there\. You will be brought back here automatically\.$/,
       ),
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Open the Smart-ID app' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Open the Smart\u2011ID app' })).toHaveAttribute(
       'href',
       web2AppLink,
     );
@@ -312,7 +312,7 @@ describe('Smart-ID device link login', () => {
     await flushPendingRequests();
 
     expectStackedFullWidth(
-      screen.getByRole('link', { name: 'Open the Smart-ID app' }),
+      screen.getByRole('link', { name: 'Open the Smart\u2011ID app' }),
       screen.getByRole('button', { name: 'Cancel' }),
     );
   });
