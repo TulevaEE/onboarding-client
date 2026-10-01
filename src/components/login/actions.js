@@ -194,6 +194,11 @@ export function getPendingSmartIdReturnPath() {
 
 const onSmartIdCallbackPage = () => window.location.pathname.startsWith(smartIdCallbackPath);
 
+export function getPendingSmartIdStartedAt() {
+  const pending = loadPendingSmartIdAuthentication();
+  return pending?.startedAt ?? null;
+}
+
 export function getPendingSmartIdLanguage() {
   const pending = loadPendingSmartIdAuthentication();
   return pending?.language ?? null;
