@@ -117,13 +117,10 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
   };
 
   const cancelSigning = () => {
-    // TODO cancel signing ID card as well? Mandate is already being processed then
-    if (signingType === 'MOBILE_ID' || signingType === 'SMART_ID') {
-      resetCurrentPolling();
-      setLoading(false);
-      setChallengeCode(null);
-      setError(null);
-    }
+    resetCurrentPolling();
+    setLoading(false);
+    setChallengeCode(null);
+    setError(null);
   };
 
   return {
