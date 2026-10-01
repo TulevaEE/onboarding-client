@@ -19,6 +19,7 @@ export class IdCardSigningError extends Error {
 
 const SIGNING_ERROR_CODES: Record<WebEidFailure, string> = {
   USER_CANCELLED: 'id.card.signing.cancelled',
+  TIMEOUT: 'id.card.signing.timeout',
   EXTENSION_UNAVAILABLE: 'id.card.signing.extension.unavailable',
   FAILED: 'id.card.signing.error',
 };
