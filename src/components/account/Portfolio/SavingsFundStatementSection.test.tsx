@@ -655,7 +655,7 @@ describe('the savings fund statement', () => {
     accountHoldingUnavailable();
     initializeComponent();
 
-    await waitFor(() => expect(screen.getByLabelText('from')).toHaveValue('2020-01-01'));
+    await waitFor(() => expect(screen.getByLabelText('From')).toHaveValue('01.01.2020'));
     expect(
       screen.queryByText('No savings fund transactions in the selected period.'),
     ).not.toBeInTheDocument();
@@ -679,7 +679,7 @@ describe('the savings fund statement', () => {
     );
     initializeComponent();
 
-    await waitFor(() => expect(screen.getByLabelText('from')).toHaveValue('2020-01-01'));
+    await waitFor(() => expect(screen.getByLabelText('From')).toHaveValue('01.01.2020'));
     expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
   });
 
@@ -687,11 +687,11 @@ describe('the savings fund statement', () => {
     accountHoldingNoSavingsFund();
     initializeComponent();
 
-    await waitFor(() => expect(screen.getByLabelText('from')).toHaveValue('2020-01-01'));
+    await waitFor(() => expect(screen.getByLabelText('From')).toHaveValue('01.01.2020'));
 
     userEvent.click(screen.getByRole('button', { name: 'Last year' }));
 
-    await waitFor(() => expect(screen.getByLabelText('from')).toHaveValue('2025-01-01'));
+    await waitFor(() => expect(screen.getByLabelText('From')).toHaveValue('01.01.2025'));
     expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
     expect(
       screen.queryByText('No savings fund transactions in the selected period.'),
@@ -761,7 +761,7 @@ describe('the savings fund statement', () => {
     initializeComponent();
 
     expect(await screen.findByRole('row', { name: /Closing balance/ })).toBeInTheDocument();
-    expect(screen.getByLabelText('from')).toHaveValue('2019-03-01');
+    expect(screen.getByLabelText('From')).toHaveValue('01.03.2019');
   });
 
   describe('the printed document', () => {
@@ -915,7 +915,7 @@ describe('the savings fund statement', () => {
       accountHoldingUnavailable();
       initializeComponent();
 
-      await waitFor(() => expect(screen.getByLabelText('from')).toHaveValue('2020-01-01'));
+      await waitFor(() => expect(screen.getByLabelText('From')).toHaveValue('01.01.2020'));
       expect(statementIsOnThePrintedPage()).toBe(false);
     });
 

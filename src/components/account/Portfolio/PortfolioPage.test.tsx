@@ -420,7 +420,7 @@ describe('a portfolio the backend has not answered with yet', () => {
 
     // eslint-disable-next-line testing-library/no-node-access
     expect(document.querySelector('.shimmerDefault')).toBeInTheDocument();
-    expect(screen.getByLabelText('from')).toBeInTheDocument();
+    expect(screen.getByLabelText('From')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'All time' })).toBeInTheDocument();
 
     expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
@@ -435,10 +435,9 @@ describe('a start date someone chose themselves', () => {
 
     expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
 
-    userEvent.type(screen.getByLabelText('from'), '2025-01-01');
-    // Leaving the box asks for the period at once, rather than waiting out the pause
-    // that a person still typing is given.
-    fireEvent.blur(screen.getByLabelText('from'));
+    userEvent.clear(screen.getByLabelText('From'));
+    userEvent.type(screen.getByLabelText('From'), '01.01.2025');
+    fireEvent.blur(screen.getByLabelText('From'));
 
     expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
     expect(requestedPeriods[requestedPeriods.length - 1]).toEqual({
@@ -479,7 +478,7 @@ describe('a period the backend cannot serve', () => {
     userEvent.click(screen.getByRole('button', { name: 'Last year' }));
 
     expect(await screen.findByText(/cannot load fund prices/)).toBeInTheDocument();
-    expect(screen.getByLabelText('from')).toBeInTheDocument();
+    expect(screen.getByLabelText('From')).toBeInTheDocument();
 
     userEvent.click(screen.getByRole('button', { name: 'All time' }));
 
@@ -501,7 +500,7 @@ describe('a portfolio the backend never gave', () => {
     initializeComponent();
 
     expect(await screen.findByText(/cannot load fund prices/)).toBeInTheDocument();
-    expect(screen.getByLabelText('from')).toBeInTheDocument();
+    expect(screen.getByLabelText('From')).toBeInTheDocument();
 
     portfolioBackend();
 
