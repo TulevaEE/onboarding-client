@@ -82,7 +82,7 @@ initializeConfiguration();
 window.config = config; // for debug only
 
 if (process.env.NODE_ENV !== 'test') {
-  startAnalytics();
+  startAnalytics(history);
 }
 
 const noop = () => null;

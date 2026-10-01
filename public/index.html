@@ -6,7 +6,8 @@
       The partner handover token and the Smart-ID callback parameters are login material. They have
       to leave the address before any other script runs, because the Meta Pixel, Tag Manager and
       Sentry all report the page address. The app reads them from sessionStorage (TriggerProcedure,
-      SmartIdCallbackPage).
+      SmartIdCallbackPage), or for a Smart-ID callback from window.smartIdCallback when the storage
+      refuses them.
     -->
     <script>
       (function () {
@@ -36,8 +37,12 @@
             callbackNames.forEach(function (name) {
               callback[name] = parameter(name);
             });
-            window.sessionStorage.setItem('smartIdCallback', JSON.stringify(callback));
             removeParameters(callbackNames);
+            try {
+              window.sessionStorage.setItem('smartIdCallback', JSON.stringify(callback));
+            } catch (storageRefused) {
+              window.smartIdCallback = callback;
+            }
           }
         } catch (error) {}
       })();
@@ -87,8 +92,8 @@
   t.src=v;s=b.getElementsByTagName(e)[0];
   s.parentNode.insertBefore(t,s)}(window, document,'script',
   'https://connect.facebook.net/en_US/fbevents.js');
-  // A PageView reports the URL, and a gift URL carries a token that names a child.
-  if (!/^\/kingitus(\/|$)/.test(window.location.pathname)) {
+  // A PageView reports the URL: a gift URL carries a token that names a child, and a Smart-ID callback URL carries login material.
+  if (!/^\/(kingitus(\/|$)|login\/smart-id\/callback)/.test(window.location.pathname)) {
     fbq('init', '264307013931375');
     fbq('track', 'PageView');
   }
