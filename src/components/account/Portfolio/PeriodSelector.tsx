@@ -101,6 +101,12 @@ const DateInput: React.FunctionComponent<{
     setTyped(null);
   };
 
+  const commitTyped = () => {
+    if (typed !== null) {
+      commit(typedDate(typed));
+    }
+  };
+
   const openCalendar = () => {
     if (!calendar.current || !showsPicker(calendar.current)) {
       textBox.current?.focus();
@@ -133,9 +139,10 @@ const DateInput: React.FunctionComponent<{
                 }
               }, QUIET_PERIOD_MS);
             }}
-            onBlur={() => {
-              if (typed !== null) {
-                commit(typedDate(typed));
+            onBlur={commitTyped}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                commitTyped();
               }
             }}
           />
@@ -153,7 +160,6 @@ const DateInput: React.FunctionComponent<{
           type="date"
           tabIndex={-1}
           aria-hidden="true"
-          aria-label={formatMessage({ id: calendarLabel })}
           className={`position-absolute top-0 end-0 h-100 opacity-0 ${styles.calendarPicker}`}
           value={value}
           min={min}

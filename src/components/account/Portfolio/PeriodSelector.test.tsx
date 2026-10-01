@@ -183,6 +183,16 @@ describe('typing a date rather than picking it', () => {
     expect(screen.getByLabelText('From')).toHaveValue('1.01.2025');
   });
 
+  it('takes a date typed without leading zeros once Enter is pressed', () => {
+    renderSelector();
+
+    type('From', '5.3.2025');
+    userEvent.type(screen.getByLabelText('From'), '{enter}');
+
+    expect(onPeriodChange).toHaveBeenCalledTimes(1);
+    expect(onPeriodChange).toHaveBeenCalledWith('2025-03-05', '2025-08-15');
+  });
+
   it('takes a date pasted with spaces around it', () => {
     renderSelector();
 
@@ -447,9 +457,7 @@ describe('picking a date from the calendar', () => {
     browserWithCalendar();
     renderSelector();
 
-    const tappedField = screen.getByLabelText('Choose start date from calendar', {
-      selector: 'input',
-    });
+    const tappedField = screen.getByDisplayValue('2025-01-01');
     userEvent.click(tappedField);
 
     expect(openedCalendar()).toBe(tappedField);
@@ -461,9 +469,7 @@ describe('picking a date from the calendar', () => {
     browserWithoutCalendar();
     renderSelector();
 
-    userEvent.click(
-      screen.getByLabelText('Choose start date from calendar', { selector: 'input' }),
-    );
+    userEvent.click(screen.getByDisplayValue('2025-01-01'));
 
     expect(screen.getByLabelText('From')).not.toHaveFocus();
   });

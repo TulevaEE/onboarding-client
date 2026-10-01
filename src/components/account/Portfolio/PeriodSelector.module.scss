@@ -19,7 +19,14 @@
 
 .calendarPicker {
   z-index: 6;
-  cursor: pointer;
+  pointer-events: none;
+}
+
+// iOS WebKit ignores showPicker() on date inputs (https://webkit.org/b/261703), so a tap has to land on the input itself
+@supports (-webkit-touch-callout: none) {
+  .calendarPicker {
+    pointer-events: auto;
+  }
 }
 
 @media (min-width: 400px) {
