@@ -58,6 +58,7 @@ describe('When the Smart-ID app returns to the browser', () => {
     initializeConfiguration();
     getAuthentication().remove();
     sessionStorage.clear();
+    delete window.smartIdCallback;
   });
 
   test('the login completes and the account page opens with the login landing flag', async () => {
@@ -94,6 +95,24 @@ describe('When the Smart-ID app returns to the browser', () => {
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
     ).toBeInTheDocument();
     expect(sessionStorage.getItem('smartIdCallback')).toBeNull();
+  });
+
+  test('the login completes from the parameters the page kept in memory when the session storage refused them', async () => {
+    const backend = smartIdAuthenticationBackend(server);
+    startLoginBeforeTheAppRoundTrip(backend);
+    backend.resolvePolling();
+    window.smartIdCallback = {
+      value: 'a-callback-value',
+      sessionSecretDigest: 'a-digest',
+      userChallengeVerifier: 'a-verifier',
+    };
+
+    openCallback('');
+
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    expect(window.smartIdCallback).toBeUndefined();
   });
 
   test('a login headed for the app root lands on the account page with the login landing flag', async () => {

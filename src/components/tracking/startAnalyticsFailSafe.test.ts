@@ -1,5 +1,6 @@
 import TagManager from 'react-gtm-module';
 import ReactGA from 'react-ga4';
+import { createBrowserHistory } from 'history';
 import { startAnalytics } from './startAnalytics';
 import { installPiiClickGuard } from './piiClickGuard';
 
@@ -17,7 +18,7 @@ describe('startAnalytics when something goes wrong', () => {
       throw new Error('refused');
     });
 
-    expect(() => startAnalytics()).not.toThrow();
+    expect(() => startAnalytics(createBrowserHistory())).not.toThrow();
     expect(TagManager.initialize).not.toHaveBeenCalled();
     expect(ReactGA.initialize).not.toHaveBeenCalled();
   });
@@ -27,6 +28,6 @@ describe('startAnalytics when something goes wrong', () => {
       throw new Error('blocked');
     });
 
-    expect(() => startAnalytics()).not.toThrow();
+    expect(() => startAnalytics(createBrowserHistory())).not.toThrow();
   });
 });

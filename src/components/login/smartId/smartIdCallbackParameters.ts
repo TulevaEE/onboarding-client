@@ -36,8 +36,13 @@ const callbackInQuery = (search: string): SmartIdLoginCallback | null => {
   });
 };
 
-export const smartIdCallbackParameters = (search: string): SmartIdLoginCallback | null =>
-  stashedCallback() ?? callbackInQuery(search);
+const callbackKeptInPage = (): SmartIdLoginCallback | null =>
+  toCallback(window.smartIdCallback ?? {});
 
-export const forgetSmartIdCallbackParameters = (): void =>
+export const smartIdCallbackParameters = (search: string): SmartIdLoginCallback | null =>
+  stashedCallback() ?? callbackKeptInPage() ?? callbackInQuery(search);
+
+export const forgetSmartIdCallbackParameters = (): void => {
+  delete window.smartIdCallback;
   withSessionStorage((storage) => storage.removeItem(STORAGE_KEY), undefined);
+};

@@ -9,6 +9,16 @@ const runAddressCleanup = () => {
   new Function(script)();
 };
 
+const runMetaPixel = () => {
+  const script = (indexHtml.match(/<script>[\s\S]*?<\/script>/g) ?? []).find((inline) =>
+    inline.includes("fbq('init'"),
+  );
+  // eslint-disable-next-line no-new-func
+  new Function((script ?? '').replace(/<\/?script>/g, ''))();
+};
+
+const pixelWindow = window as Window & { fbq?: jest.Mock };
+
 const openAddress = (address: string) => window.history.replaceState(null, '', address);
 
 const currentAddress = () => `${window.location.pathname}${window.location.search}`;
@@ -16,6 +26,12 @@ const currentAddress = () => `${window.location.pathname}${window.location.searc
 describe('the html every page is served from', () => {
   beforeEach(() => {
     sessionStorage.clear();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    delete window.smartIdCallback;
+    delete pixelWindow.fbq;
   });
 
   afterAll(() => openAddress('/'));
@@ -50,6 +66,42 @@ describe('the html every page is served from', () => {
       sessionSecretDigest: 'c3D4',
       userChallengeVerifier: 'e5F6',
     });
+  });
+
+  it('moves the Smart-ID callback parameters out of the address into the page when the session storage refuses them', () => {
+    jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('QuotaExceededError');
+    });
+    openAddress(
+      '/login/smart-id/callback?value=a1B2&sessionSecretDigest=c3D4&userChallengeVerifier=e5F6',
+    );
+
+    runAddressCleanup();
+
+    expect(currentAddress()).toBe('/login/smart-id/callback');
+    expect(window.smartIdCallback).toEqual({
+      value: 'a1B2',
+      sessionSecretDigest: 'c3D4',
+      userChallengeVerifier: 'e5F6',
+    });
+  });
+
+  it('keeps a Smart-ID callback page away from the Meta Pixel', () => {
+    pixelWindow.fbq = jest.fn();
+    openAddress('/login/smart-id/callback');
+
+    runMetaPixel();
+
+    expect(pixelWindow.fbq).not.toHaveBeenCalled();
+  });
+
+  it('reports any other page to the Meta Pixel', () => {
+    pixelWindow.fbq = jest.fn();
+    openAddress('/login');
+
+    runMetaPixel();
+
+    expect(pixelWindow.fbq).toHaveBeenCalledWith('track', 'PageView');
   });
 
   it('leaves the address of any other page alone', () => {
