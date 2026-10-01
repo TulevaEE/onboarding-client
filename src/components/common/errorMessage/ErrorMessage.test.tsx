@@ -25,15 +25,34 @@ describe('ErrorMessage', () => {
 
   it.each([
     [
-      'id.card.signing.certificate.revoked',
       'en',
-      /^The signing certificate on your ID.card has been revoked or suspended\. You can renew it at a Police and Border Guard Board service point\. Until then, log in with Smart.ID or Mobile.ID to sign\.$/,
+      /^The signing certificate on your ID.card is not valid/,
+      /^The signing certificate on your ID.card is not valid: it has been revoked or suspended\. Read what to do on id\.ee\. Meanwhile, log in with Smart.ID or Mobile.ID to sign\.$/,
+      /^Read what to do on id\.ee$/,
+      'https://www.id.ee/en/article/validity-of-id-card-certificates/',
     ],
     [
-      'id.card.signing.certificate.revoked',
       'et',
-      /^Sinu ID.kaardi allkirjastamise sertifikaat on tühistatud või peatatud\. Selle saab uuendada Politsei- ja Piirivalveameti teeninduses\. Seni logi allkirjastamiseks sisse Smart.ID või mobiil.ID.ga\.$/,
+      /^Sinu ID.kaardi allkirjastamise sertifikaat ei kehti/,
+      /^Sinu ID.kaardi allkirjastamise sertifikaat ei kehti: see on tühistatud või peatatud\. Mida edasi teha, loe id\.ee lehelt\. Seni logi allkirjastamiseks sisse Smart.ID või mobiil.ID.ga\.$/,
+      /^loe id\.ee lehelt$/,
+      'https://www.id.ee/artikkel/id-kaardi-sertifikaatide-kehtivus/',
     ],
+  ] as const)(
+    'explains in %s that the ID-card signing certificate is not valid and links to what id.ee says to do about it',
+    (language, opening, explanation, linkText, href) => {
+      render(
+        <IntlProvider locale={language} messages={MESSAGES[language]}>
+          <ErrorMessage errors={{ errors: [{ code: 'id.card.signing.certificate.revoked' }] }} />
+        </IntlProvider>,
+      );
+
+      expect(screen.getByText(opening)).toHaveTextContent(explanation);
+      expect(screen.getByRole('link', { name: linkText })).toHaveAttribute('href', href);
+    },
+  );
+
+  it.each([
     [
       'signature.not.awaited',
       'en',
