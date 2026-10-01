@@ -17,6 +17,8 @@
   "login.smart.id.open.app": "Ava Smart-ID rakendus",
   "login.smart.id.mobile.instructions": "Ava Smart-ID rakendus ja kinnita seal sisselogimine. Pärast kinnitamist jõuad automaatselt tagasi.",
   "login.smart.id.callback.failed": "Sisselogimist ei õnnestunud lõpetada. Palun proovi uuesti.",
+  "login.smart.id.callback.retry": "Proovi uuesti",
+  "login.smart.id.callback.completing": "Lõpetame sisselogimist…",
   "login.smart.id.continue.as": "Jätka kui {firstName}",
   "login.smart.id.push.intro": "Saadame sisselogimise päringu sinu telefoni Smart-ID rakendusse.",
   "login.smart.id.not.you": "Pole sina? Logi sisse QR-koodiga",

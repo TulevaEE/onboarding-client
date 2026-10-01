@@ -24,6 +24,8 @@ const AUTHENTICATION_ERROR_MESSAGES = {
   'id.card.document.type.not.allowed': 'login.error.id.card.document.type.not.allowed',
 };
 
+export const hasLoginErrorMessage = (code) => Boolean(AUTHENTICATION_ERROR_MESSAGES[code]);
+
 class ErrorAlert extends Component {
   errorMessage() {
     const { description } = this.props;
