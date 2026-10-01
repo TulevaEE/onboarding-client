@@ -496,6 +496,38 @@ describe('Login actions', () => {
     expect(poll.mock.calls[0][0].signal.aborted).toBe(true);
   });
 
+  it('ignores a timeout from the previous poll while a new QR code session starts', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    let rejectOldPoll;
+    mockApi.getSmartIdTokens = jest.fn(
+      () =>
+        new Promise((resolve, reject) => {
+          rejectOldPoll = reject;
+        }),
+    );
+    const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
+    await startSmartIdLogin('et');
+    jest.runOnlyPendingTimers();
+
+    let finishNewStart;
+    mockApi.startSmartIdLogin = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          finishNewStart = () => resolve({ web2AppLink });
+        }),
+    );
+    const newStart = startSmartIdLogin('et');
+    rejectOldPoll({ body: { errors: [{ code: 'smart.id.timeout' }] } });
+    await Promise.resolve();
+    finishNewStart();
+    await newStart;
+
+    expect(dispatch).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: MOBILE_AUTHENTICATION_ERROR }),
+    );
+  });
+
   it('completes a smart id login started from the device link callback', async () => {
     const callback = {
       value: 'a-callback-value',

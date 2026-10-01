@@ -332,6 +332,7 @@ export function startSmartIdLogin(language, flow = 'DEVICE_LINK') {
     smartIdStartSequence += 1;
     const startSequence = smartIdStartSequence;
     const canceledOrSuperseded = () => startSequence !== smartIdStartSequence;
+    stopSmartIdPolling();
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
       .startSmartIdLogin(language, flow)
