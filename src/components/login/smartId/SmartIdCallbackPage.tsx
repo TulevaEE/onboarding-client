@@ -10,14 +10,13 @@ import {
   cancelMobileAuthentication,
   completeSmartIdLogin,
   getPendingSmartIdReturnPath,
+  hasAcceptedSmartIdCallback,
+  resumeAcceptedSmartIdCallback,
 } from '../actions';
 import { loginPath } from '../constants';
 import { loginLanding } from '../loginLanding';
 import styles from '../LoginPage.module.scss';
-import {
-  forgetSmartIdCallbackParameters,
-  smartIdCallbackParameters,
-} from './smartIdCallbackParameters';
+import { smartIdCallbackParameters } from './smartIdCallbackParameters';
 
 const SLOW_COMPLETION_MILLIS = 20000;
 
@@ -31,16 +30,18 @@ export const SmartIdCallbackPage: React.FC = () => {
   const loginError = useSelector((state: LoginState) => state.login.error);
   const authenticating = useSelector((state: LoginState) => state.login.loadingAuthentication);
   const [callback] = useState(() => smartIdCallbackParameters(search));
+  const [callbackAccepted] = useState(() => !callback && hasAcceptedSmartIdCallback());
   const [destination] = useState(() => loginLanding(getPendingSmartIdReturnPath() ?? undefined));
   const [attemptStarted, setAttemptStarted] = useState(false);
   const [slow, setSlow] = useState(false);
 
   useEffect(() => {
-    forgetSmartIdCallbackParameters();
     if (callback) {
       dispatch(completeSmartIdLogin(callback));
+    } else if (callbackAccepted) {
+      dispatch(resumeAcceptedSmartIdCallback());
     }
-  }, [callback, dispatch]);
+  }, [callback, callbackAccepted, dispatch]);
 
   useEffect(() => {
     if (authenticating) {
@@ -58,7 +59,7 @@ export const SmartIdCallbackPage: React.FC = () => {
   }
 
   const attemptEnded = attemptStarted && !authenticating;
-  const failed = !callback || Boolean(loginError) || attemptEnded;
+  const failed = (!callback && !callbackAccepted) || Boolean(loginError) || attemptEnded;
 
   return (
     <div className={styles.loginPage}>

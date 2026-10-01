@@ -1,7 +1,7 @@
 import React from 'react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { act, screen } from '@testing-library/react';
+import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Switch } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
@@ -32,6 +32,23 @@ describe('When the Smart-ID app returns to the browser', () => {
       history as never,
       createDefaultStore(history as never),
     );
+  };
+
+  const arriveFromTheSmartIdAppWithTheCallbackMovedOutOfTheAddress = () => {
+    sessionStorage.setItem(
+      'smartIdCallback',
+      JSON.stringify({
+        value: 'a-callback-value',
+        sessionSecretDigest: 'a-digest',
+        userChallengeVerifier: 'a-verifier',
+      }),
+    );
+    return openCallback('');
+  };
+
+  const reload = (firstLoad: ReturnType<typeof openCallback>) => {
+    firstLoad.unmount();
+    return openCallback('');
   };
 
   const aCallback =
@@ -196,6 +213,52 @@ describe('When the Smart-ID app returns to the browser', () => {
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);
     expect(sessionStorage.getItem('pendingSmartIdAuthentication')).toBeNull();
+  });
+
+  test('a reload while the accepted callback waits for the tokens resumes the login without submitting the callback again', async () => {
+    const backend = smartIdAuthenticationBackend(server);
+    backend.startSession();
+    const firstLoad = arriveFromTheSmartIdAppWithTheCallbackMovedOutOfTheAddress();
+    await waitFor(() => expect(backend.acceptedCallbacks).toBe(1));
+    await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+
+    reload(firstLoad);
+    backend.resolvePolling();
+
+    expect(screen.queryByRole('link', { name: 'Try again' })).not.toBeInTheDocument();
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    expect(backend.acceptedCallbacks).toBe(1);
+  });
+
+  test('a reload before the callback was answered submits it once more and completes the login', async () => {
+    const backend = smartIdAuthenticationBackend(server, { loseFirstCallbackAnswer: true });
+    backend.startSession();
+    const firstLoad = arriveFromTheSmartIdAppWithTheCallbackMovedOutOfTheAddress();
+    await waitFor(() => expect(backend.acceptedCallbacks).toBe(1));
+
+    reload(firstLoad);
+    backend.resolvePolling();
+
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    expect(backend.acceptedCallbacks).toBe(2);
+  });
+
+  test('a reload after a rejected callback does not submit it again', async () => {
+    const backend = smartIdAuthenticationBackend(server, { rejectCallback: true });
+    backend.startSession();
+    const firstLoad = arriveFromTheSmartIdAppWithTheCallbackMovedOutOfTheAddress();
+    expect(
+      await screen.findByText('There appears to have been a mistake. Please try again.'),
+    ).toBeInTheDocument();
+
+    reload(firstLoad);
+
+    expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);
+    expect(sessionStorage.getItem('smartIdCallback')).toBeNull();
   });
 
   test('a callback without parameters never reaches the backend', async () => {

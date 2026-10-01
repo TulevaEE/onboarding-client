@@ -627,6 +627,46 @@ describe('Login actions', () => {
     expect(redeemedHashes()).toEqual(['a-redemption-secret']);
   });
 
+  it('leaves no accepted callback to resume when the person cancelled before the callback was answered', async () => {
+    let answerCallback;
+    mockApi.completeSmartIdCallback = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          answerCallback = () => resolve('a-redemption-secret');
+        }),
+    );
+    mockApi.getSmartIdTokens = jest.fn();
+    const completion = createBoundAction(actions.completeSmartIdLogin)(aCallback);
+
+    actions.cancelMobileAuthentication();
+    answerCallback();
+    await completion;
+
+    expect(actions.hasAcceptedSmartIdCallback()).toBe(false);
+    expect(mockApi.getSmartIdTokens).not.toHaveBeenCalled();
+  });
+
+  it('forgets callback parameters still waiting for an answer when the person cancels', () => {
+    sessionStorage.setItem('smartIdCallback', JSON.stringify(aCallback));
+
+    actions.cancelMobileAuthentication();
+
+    expect(sessionStorage.getItem('smartIdCallback')).toBeNull();
+  });
+
+  it('resumes an accepted callback with its redemption secret', async () => {
+    mockApi.completeSmartIdCallback = jest.fn(() => Promise.resolve('a-redemption-secret'));
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    await createBoundAction(actions.completeSmartIdLogin)(aCallback);
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+
+    createBoundAction(actions.resumeAcceptedSmartIdCallback)();
+    jest.runOnlyPendingTimers();
+
+    expect(actions.hasAcceptedSmartIdCallback()).toBe(true);
+    expect(redeemedHashes()).toEqual(['a-redemption-secret']);
+  });
+
   it('keeps the authentication hash out of local storage, cookies and the console', async () => {
     const consoleLog = jest.spyOn(console, 'log').mockImplementation(() => undefined);
     try {
