@@ -125,10 +125,11 @@ export function startSmartIdLogin(
   return post(getEndpoint('/v1/smart-id/login'), { flow, language });
 }
 
+const nullWhenNoContent = <T>(body: T | undefined | ''): T | null =>
+  body && typeof body === 'object' ? body : null;
+
 export async function getRememberedSmartIdAccount(): Promise<RememberedSmartIdAccount | null> {
-  // A browser with nothing remembered answers 204, which axios hands back as an empty string.
-  const account = await get(getEndpoint('/v1/smart-id/login/remembered-account'));
-  return account && typeof account === 'object' ? account : null;
+  return nullWhenNoContent(await get(getEndpoint('/v1/smart-id/login/remembered-account')));
 }
 
 export async function forgetRememberedSmartIdAccount(): Promise<void> {

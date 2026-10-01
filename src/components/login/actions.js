@@ -128,9 +128,11 @@ export function authenticateWithMobileId(phoneNumber, personalCode, rememberPhon
   };
 }
 
+const isProductionBuild = () => process.env.NODE_ENV === 'production';
+
 const logPoll = (stage, value = '') => {
-  if (process.env.NODE_ENV === 'production') {
-    return; // the poll trace carries tokens and login state, so it never ships
+  if (isProductionBuild()) {
+    return;
   }
   // eslint-disable-next-line no-console
   console.log(`[poll] ${stage}`, value, Date.now());
@@ -187,6 +189,8 @@ export function getPendingSmartIdReturnPath() {
   return pending?.returnPath ?? null;
 }
 
+const onSmartIdCallbackPage = () => window.location.pathname.startsWith(smartIdCallbackPath);
+
 export function resumePendingSmartIdAuthentication() {
   return (dispatch, getState) => {
     const pending = loadPendingSmartIdAuthentication();
@@ -207,8 +211,8 @@ export function resumePendingSmartIdAuthentication() {
     if (window.location.pathname.startsWith('/trigger-procedure')) {
       return; // partner handover brings its own token
     }
-    if (window.location.pathname.startsWith(smartIdCallbackPath)) {
-      return; // the callback page completes the login itself
+    if (onSmartIdCallbackPage()) {
+      return;
     }
     logPoll('resume-pending-login');
     dispatch({ type: MOBILE_AUTHENTICATION_START });
@@ -323,12 +327,13 @@ export function startSmartIdLogin(language, flow = 'DEVICE_LINK') {
   return (dispatch, getState) => {
     smartIdStartSequence += 1;
     const startSequence = smartIdStartSequence;
+    const canceledOrSuperseded = () => startSequence !== smartIdStartSequence;
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
       .startSmartIdLogin(language, flow)
       .then((start) => {
-        if (startSequence !== smartIdStartSequence) {
-          return; // canceled or superseded while the session start was pending
+        if (canceledOrSuperseded()) {
+          return;
         }
         const returnPath = getState().router?.location?.state?.from;
         if (start.flow === 'NOTIFICATION') {
@@ -347,7 +352,7 @@ export function startSmartIdLogin(language, flow = 'DEVICE_LINK') {
         }
       })
       .catch((error) => {
-        if (startSequence !== smartIdStartSequence) {
+        if (canceledOrSuperseded()) {
           return;
         }
         dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error });
