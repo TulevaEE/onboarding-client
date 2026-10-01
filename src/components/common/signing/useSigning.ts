@@ -31,7 +31,7 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
   }, [signed]);
 
   const failWith = (failure: unknown) => {
-    setError(toSigningErrorResponse(failure));
+    setError(toSigningErrorResponse(failure, entityType));
     setSigned(false);
     setLoading(false);
     setChallengeCode(null);

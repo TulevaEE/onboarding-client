@@ -135,7 +135,7 @@ function pollForMobileIdSignature(mandateId: number, pillar: 2 | 3) {
           }
         })
         .catch((error) =>
-          dispatch({ type: SIGN_MANDATE_ERROR, error: toSigningErrorResponse(error) }),
+          dispatch({ type: SIGN_MANDATE_ERROR, error: toSigningErrorResponse(error, 'MANDATE') }),
         );
     }, POLL_DELAY);
   };
@@ -164,7 +164,7 @@ function pollForSmartIdSignature(mandateId: number, pillar: 2 | 3) {
           }
         })
         .catch((error) =>
-          dispatch({ type: SIGN_MANDATE_ERROR, error: toSigningErrorResponse(error) }),
+          dispatch({ type: SIGN_MANDATE_ERROR, error: toSigningErrorResponse(error, 'MANDATE') }),
         );
     }, POLL_DELAY);
   };
@@ -182,7 +182,7 @@ function handleSaveMandateError(dispatch: Dispatch<unknown>, error: unknown) {
 }
 
 function handleSigningError(dispatch: Dispatch<unknown>, error: unknown) {
-  handleSaveMandateError(dispatch, toSigningErrorResponse(error));
+  handleSaveMandateError(dispatch, toSigningErrorResponse(error, 'MANDATE'));
 }
 
 export function previewMandate(mandate: Mandate, amlChecks?: unknown) {
@@ -266,7 +266,7 @@ function pollForIdCardSignature(mandateId: number, pillar: 2 | 3) {
       getIdCardSignatureStatus({ entityId: mandateId.toString() })
         .then((statusCode) => handleIdCardSignatureStatus(dispatch, statusCode, mandateId, pillar))
         .catch((error) =>
-          dispatch({ type: SIGN_MANDATE_ERROR, error: toSigningErrorResponse(error) }),
+          dispatch({ type: SIGN_MANDATE_ERROR, error: toSigningErrorResponse(error, 'MANDATE') }),
         );
     }, POLL_DELAY);
   };

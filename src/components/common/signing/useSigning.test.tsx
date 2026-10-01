@@ -178,6 +178,18 @@ describe('useSigning with an ID card', () => {
     expect(await screen.findByText('signature.error.unknown')).toBeInTheDocument();
   });
 
+  it('names the mandate batch when the backend says it has not been signed yet', async () => {
+    mockPersistIdCardSignature.mockResolvedValue('OUTSTANDING_TRANSACTION');
+    mockGetIdCardSignatureStatus.mockRejectedValue({
+      body: { errors: [{ code: 'signature.not.signed' }] },
+    });
+    render(<SigningHarness />);
+
+    userEvent.click(screen.getByRole('button', { name: 'sign' }));
+
+    expect(await screen.findByText('signature.not.signed.mandateBatch')).toBeInTheDocument();
+  });
+
   it('clears loading when the backend rejects with the same error object twice in a row', async () => {
     const sessionExpired = { body: { errors: [{ code: 'id.card.signature.session.not.found' }] } };
     mockSignWithIdCard.mockRejectedValue(sessionExpired);
