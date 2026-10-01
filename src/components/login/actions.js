@@ -155,14 +155,14 @@ const TRANSIENT_POLL_ERRORS = [
   'NetworkError when attempting to fetch resource.', // Firefox
 ];
 
-function savePendingSmartIdAuthentication({ web2AppLink, controlCode, returnPath }) {
+function savePendingSmartIdAuthentication({ web2AppLink, controlCode, returnPath, language }) {
   if (!window.sessionStorage) {
     return;
   }
   try {
     sessionStorage.setItem(
       PENDING_SMART_ID_KEY,
-      JSON.stringify({ web2AppLink, controlCode, returnPath, startedAt: Date.now() }),
+      JSON.stringify({ web2AppLink, controlCode, returnPath, language, startedAt: Date.now() }),
     );
   } catch (error) {
     logPoll('pending-login-persistence-failed', error); // reload recovery degrades, login proceeds
@@ -193,6 +193,11 @@ export function getPendingSmartIdReturnPath() {
 }
 
 const onSmartIdCallbackPage = () => window.location.pathname.startsWith(smartIdCallbackPath);
+
+export function getPendingSmartIdLanguage() {
+  const pending = loadPendingSmartIdAuthentication();
+  return pending?.language ?? null;
+}
 
 export function resumePendingSmartIdAuthentication() {
   return (dispatch, getState) => {
@@ -342,13 +347,13 @@ export function startSmartIdLogin(language, flow = 'DEVICE_LINK') {
         const returnPath = getState().router?.location?.state?.from;
         if (start.flow === 'NOTIFICATION') {
           const controlCode = start.verificationCode;
-          savePendingSmartIdAuthentication({ controlCode, returnPath });
+          savePendingSmartIdAuthentication({ controlCode, returnPath, language });
           dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
           dispatch(getSmartIdTokens());
           return;
         }
         const { web2AppLink } = start;
-        savePendingSmartIdAuthentication({ web2AppLink, returnPath });
+        savePendingSmartIdAuthentication({ web2AppLink, returnPath, language });
         dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink });
         dispatch(getSmartIdTokens());
       })

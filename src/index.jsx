@@ -17,6 +17,7 @@ import createRootReducer from './reducers';
 import { queryClient } from './queryClient';
 import { getQueryParams } from './utils';
 import { initializeConfiguration, updateLanguage } from './components/config/config';
+import { pageLanguage } from './components/config/pageLanguage';
 import translations from './components/translations';
 import './components/index.scss';
 
@@ -67,14 +68,7 @@ function applyTestModeForSession() {
 }
 
 function applyLanguage() {
-  const params = window.location.search;
-
-  let language = 'et';
-  if (params.indexOf('language=et') >= 0) {
-    language = 'et';
-  } else if (params.indexOf('language=en') >= 0) {
-    language = 'en';
-  }
+  const language = pageLanguage(window.location, loginActions.getPendingSmartIdLanguage);
   updateLanguage(language);
   moment.locale(language);
 

@@ -423,6 +423,16 @@ describe('Login actions', () => {
     expect(actions.getPendingSmartIdReturnPath()).toBe('/capital/listings/42');
   });
 
+  it('remembers the language the login was started in', async () => {
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
+
+    await startSmartIdLogin('en');
+
+    expect(actions.getPendingSmartIdLanguage()).toBe('en');
+  });
+
   it('has no destination to remember for a login started from the login page', async () => {
     mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
