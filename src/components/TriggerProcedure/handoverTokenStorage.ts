@@ -9,10 +9,11 @@ const withSessionStorage = <T>(use: (storage: Storage) => T, whenUnavailable: T)
 };
 
 export const storedHandoverToken = (): string | undefined =>
+  window.handoverToken ??
   withSessionStorage(
     (storage) => storage.getItem(HANDOVER_TOKEN_STORAGE_KEY) ?? undefined,
     undefined,
-  ) ?? window.handoverToken;
+  );
 
 export const forgetHandoverToken = (): void => {
   delete window.handoverToken;
