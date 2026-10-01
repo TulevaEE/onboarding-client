@@ -457,7 +457,7 @@ describe('Exchange actions', () => {
   });
 
   it('stops with a start error when the id card signing certificate cannot be read', async () => {
-    const error = { body: { errors: [{ code: 'id.card.signing.extension.unavailable' }] } };
+    const error = { body: { errors: [{ code: 'web.eid.extension.missing' }] } };
     mockIdCard.getIdCardSigningCertificate = jest.fn(() => Promise.reject(error));
     mockApi.saveMandateWithAuthentication = jest.fn(() => Promise.resolve({ id: 'id' }));
 
