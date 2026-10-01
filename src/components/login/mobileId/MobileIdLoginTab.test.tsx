@@ -153,6 +153,35 @@ describe('Mobile-ID login tab', () => {
     expect(screen.getByText('Check your identity code.')).toBeInTheDocument();
   });
 
+  it('sends the number in its international form however it was typed', () => {
+    renderTab();
+    userEvent.type(phoneNumber(), '5551 2345');
+    userEvent.type(identityCode(), OTHER_VALID_CODE);
+
+    userEvent.click(logIn());
+
+    expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255512345', OTHER_VALID_CODE);
+  });
+
+  it.each([
+    ['+358 40 123 4567', 'Mobile-ID works with Estonian phone numbers only.'],
+    ['5551', 'Check the phone number.'],
+  ])('does not start a login with %p and explains why', (typed, message) => {
+    renderTab();
+    userEvent.type(phoneNumber(), typed);
+    userEvent.type(identityCode(), OTHER_VALID_CODE);
+
+    userEvent.click(logIn());
+
+    expect(onMobileIdSubmit).not.toHaveBeenCalled();
+    expect(screen.getByText(message)).toBeInTheDocument();
+    expect(phoneNumber()).toHaveAttribute('aria-invalid', 'true');
+    expect(phoneNumber()).toHaveFocus();
+
+    userEvent.type(phoneNumber(), '0');
+    expect(screen.queryByText(message)).not.toBeInTheDocument();
+  });
+
   it('keeps the login button disabled until both fields are filled', () => {
     renderTab();
     expect(logIn()).toBeDisabled();

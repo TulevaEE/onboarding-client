@@ -7,6 +7,8 @@
   "login.mobile.id": "Mobiil-ID",
   "login.mobile.id.personal.code.invalid": "Kontrolli isikukoodi.",
   "login.mobile.id.phone.number.required": "Sisesta oma praegune telefoninumber.",
+  "login.mobile.id.phone.number.not.estonian": "Mobiil-ID töötab ainult Eesti telefoninumbriga.",
+  "login.mobile.id.phone.number.check": "Kontrolli telefoninumbrit.",
   "login.smart.id": "Smart-ID",
   "login.smart.id.start": "Logi sisse Smart-ID-ga",
   "login.smart.id.intro": "Logi sisse oma seadmest. Keegi ei saa Smart‑ID sisselogimist sinu eest eemalt alustada.",
