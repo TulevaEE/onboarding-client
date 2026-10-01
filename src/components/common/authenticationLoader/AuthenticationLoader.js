@@ -5,7 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import { Loader } from '..'; // eslint-disable-line import/no-cycle
 import './AuthenticationLoader.scss';
 
-const AuthenticationLoader = ({ controlCode, onCancel, overlayed }) => {
+const AuthenticationLoader = ({ controlCode, onCancel, overlayed, signingWithIdCard }) => {
   const content = (
     <div className="bg-white shadow-sm rounded-3 p-5 text-center">
       {controlCode ? (
@@ -17,6 +17,11 @@ const AuthenticationLoader = ({ controlCode, onCancel, overlayed }) => {
         </>
       ) : (
         ''
+      )}
+      {signingWithIdCard && (
+        <p className="m-0 mb-4 text-pretty">
+          <FormattedMessage id="id.card.signing.instruction" />
+        </p>
       )}
       <Loader className="align-middle" />
 
@@ -45,12 +50,14 @@ AuthenticationLoader.defaultProps = {
   controlCode: null,
   onCancel: noop,
   overlayed: false,
+  signingWithIdCard: false,
 };
 
 AuthenticationLoader.propTypes = {
   controlCode: Types.string,
   onCancel: Types.func,
   overlayed: Types.bool,
+  signingWithIdCard: Types.bool,
 };
 
 export default AuthenticationLoader;

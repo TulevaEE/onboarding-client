@@ -72,4 +72,14 @@ describe('Authentication Management', () => {
     const authManager = authenticationManagerModule.getAuthentication();
     expect(authManager.isAuthenticated()).toBe(false);
   });
+
+  test.each([
+    ['ID_CARD', true],
+    ['SMART_ID', false],
+    ['MOBILE_ID', false],
+  ])('isSigningWithIdCard for a %s session is %s', (signingMethod, expected) => {
+    (config.get as jest.Mock).mockReturnValue({ ...mockAuthentication, signingMethod });
+
+    expect(authenticationManagerModule.isSigningWithIdCard()).toBe(expected);
+  });
 });

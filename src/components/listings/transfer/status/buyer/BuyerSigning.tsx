@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../../../common';
+import { isSigningWithIdCard } from '../../../../common/authenticationManager';
 import { useMe } from '../../../../common/apiHooks';
 import { Steps } from '../../../../common/steps';
 import { ContractDetails } from '../../components/ContractDetails';
@@ -62,7 +63,12 @@ export const BuyerSigning = ({
       </div>
 
       {(signingInProgress || challengeCode) && (
-        <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
+        <AuthenticationLoader
+          signingWithIdCard={isSigningWithIdCard()}
+          controlCode={challengeCode}
+          onCancel={cancelSigning}
+          overlayed
+        />
       )}
       {signingError && (
         <ErrorMessage errors={signingError.body} onCancel={cancelSigning} overlayed />

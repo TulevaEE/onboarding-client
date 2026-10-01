@@ -7,6 +7,11 @@ import { ConfirmThirdPillarMandate } from './ConfirmThirdPillarMandate';
 import { FundTransferTable } from '../../secondPillar/confirmMandate/fundTransferTable/FundTransferTable';
 import { AuthenticationLoader, Loader } from '../../../common';
 
+jest.mock('../../../common/authenticationManager', () => ({
+  ...jest.requireActual('../../../common/authenticationManager'),
+  isSigningWithIdCard: jest.fn(() => false),
+}));
+
 describe('ConfirmThirdPillarMandate', () => {
   let component;
   beforeEach(() => {

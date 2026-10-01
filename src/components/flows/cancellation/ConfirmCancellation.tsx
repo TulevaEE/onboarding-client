@@ -3,6 +3,7 @@ import { Redirect, useParams } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { useApplication } from '../../common/apiHooks';
 import { AuthenticationLoader } from '../../common';
+import { isSigningWithIdCard } from '../../common/authenticationManager';
 import { Loader } from '../../common/loader/Loader';
 import { ApplicationCard } from '../../account/ApplicationSection/ApplicationCards';
 import { useCancellationPreview, useCancellationWithSigning } from './cancellationHooks';
@@ -44,7 +45,12 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
   return (
     <>
       {(signing || challengeCode) && (
-        <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
+        <AuthenticationLoader
+          signingWithIdCard={isSigningWithIdCard()}
+          controlCode={challengeCode}
+          onCancel={cancelSigning}
+          overlayed
+        />
       )}
       <p>
         <FormattedMessage id="cancellation.flow.confirm.content" />
