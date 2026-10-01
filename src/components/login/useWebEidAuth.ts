@@ -1,9 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { useHistory, useLocation } from 'react-router-dom';
-import config from 'react-global-configuration';
-import { ErrorCode } from '@web-eid/web-eid-library';
 
 import { authenticateWithIdCardWebEid } from '../common/api';
+import { WebEidFailure, webEidFailureOf, webEidOptions } from '../common/webEid';
 import { loginLanding } from './loginLanding';
 import {
   ID_CARD_LOGIN_START_FAILED_ERROR,
@@ -11,15 +10,15 @@ import {
   WEB_EID_USER_CANCELLED,
 } from '../common/errorAlert/ErrorAlert';
 
+const LOGIN_ERRORS: Record<WebEidFailure, string> = {
+  USER_CANCELLED: WEB_EID_USER_CANCELLED,
+  EXTENSION_UNAVAILABLE: WEB_EID_EXTENSION_UNAVAILABLE,
+  FAILED: ID_CARD_LOGIN_START_FAILED_ERROR,
+};
+
 function mapWebEidError(error: unknown): string {
-  const webEidError = error as { code?: string };
-  if (webEidError?.code === ErrorCode.ERR_WEBEID_USER_CANCELLED) {
-    return WEB_EID_USER_CANCELLED;
-  }
-  if (webEidError?.code === ErrorCode.ERR_WEBEID_EXTENSION_UNAVAILABLE) {
-    return WEB_EID_EXTENSION_UNAVAILABLE;
-  }
-  return ID_CARD_LOGIN_START_FAILED_ERROR;
+  const webEidFailure = webEidFailureOf(error);
+  return webEidFailure ? LOGIN_ERRORS[webEidFailure] : ID_CARD_LOGIN_START_FAILED_ERROR;
 }
 
 export function useWebEidAuth() {
@@ -27,7 +26,7 @@ export function useWebEidAuth() {
   const location = useLocation<{ from?: string } | undefined>();
 
   const mutation = useMutation({
-    mutationFn: () => authenticateWithIdCardWebEid(config.get('language') || 'et'),
+    mutationFn: () => authenticateWithIdCardWebEid(webEidOptions()),
     onSuccess: () => {
       const from = location.state?.from;
       history.replace(loginLanding(from));
