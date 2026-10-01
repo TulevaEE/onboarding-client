@@ -3,16 +3,13 @@ import { getAuthentication } from '../authenticationManager';
 import { getIdCardSignatureStatus, persistIdCardSignature } from '../api';
 import { signWithIdCard } from './signWithIdCard';
 import { ErrorResponse } from '../apiModels';
-import { errorResponseWithCode, isErrorResponse } from '../errorResponse';
+import { toSigningErrorResponse } from './signingErrorResponse';
 import { SignableEntity } from './types';
 import { SigningCancelledByUser } from './signingCancelledByUser';
 import { pollForSignatureStatus, startSigningWithChallengeCode } from './signWithChallengeCode';
 
 const POLL_DELAY = 1000;
 const SIGNATURE_DONE_STATUS = 'SIGNATURE';
-
-const toErrorResponse = (error: unknown): ErrorResponse =>
-  isErrorResponse(error) ? error : errorResponseWithCode('signature.error.unknown');
 
 export const useSigning = <TSignableEntity extends { id: number | string }>(
   entityType: SignableEntity,
@@ -34,7 +31,7 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
   }, [signed]);
 
   const failWith = (failure: unknown) => {
-    setError(toErrorResponse(failure));
+    setError(toSigningErrorResponse(failure));
     setSigned(false);
     setLoading(false);
     setChallengeCode(null);

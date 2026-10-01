@@ -18,6 +18,7 @@ import {
 } from '../common/api';
 import { getIdCardSigningCertificate, signHashWithIdCard } from '../common/signing/signWithIdCard';
 import { SigningCancelledByUser } from '../common/signing/signingCancelledByUser';
+import { toSigningErrorResponse } from '../common/signing/signingErrorResponse';
 import {
   CHANGE_AGREEMENT_TO_TERMS,
   GET_SOURCE_FUNDS_ERROR,
@@ -133,7 +134,9 @@ function pollForMobileIdSignature(mandateId: number, pillar: 2 | 3) {
             });
           }
         })
-        .catch((error) => dispatch({ type: SIGN_MANDATE_ERROR, error }));
+        .catch((error) =>
+          dispatch({ type: SIGN_MANDATE_ERROR, error: toSigningErrorResponse(error) }),
+        );
     }, POLL_DELAY);
   };
 }
@@ -160,7 +163,9 @@ function pollForSmartIdSignature(mandateId: number, pillar: 2 | 3) {
             });
           }
         })
-        .catch((error) => dispatch({ type: SIGN_MANDATE_ERROR, error }));
+        .catch((error) =>
+          dispatch({ type: SIGN_MANDATE_ERROR, error: toSigningErrorResponse(error) }),
+        );
     }, POLL_DELAY);
   };
 }
@@ -174,6 +179,10 @@ function handleSaveMandateError(dispatch: Dispatch<unknown>, error: unknown) {
   } else {
     dispatch({ type: SIGN_MANDATE_START_ERROR, error });
   }
+}
+
+function handleSigningError(dispatch: Dispatch<unknown>, error: unknown) {
+  handleSaveMandateError(dispatch, toSigningErrorResponse(error));
 }
 
 export function previewMandate(mandate: Mandate, amlChecks?: unknown) {
@@ -209,7 +218,7 @@ export function signMandateWithMobileId(mandate: Mandate) {
         dispatch(pollForMobileIdSignature(mandateId, mandatePillar));
       })
       .catch((error) => {
-        handleSaveMandateError(dispatch, error);
+        handleSigningError(dispatch, error);
       });
   };
 }
@@ -230,7 +239,7 @@ export function signMandateWithSmartId(mandate: Mandate) {
         dispatch(pollForSmartIdSignature(mandateId, mandatePillar));
       })
       .catch((error) => {
-        handleSaveMandateError(dispatch, error);
+        handleSigningError(dispatch, error);
       });
   };
 }
@@ -256,7 +265,9 @@ function pollForIdCardSignature(mandateId: number, pillar: 2 | 3) {
     timeout = window.setTimeout(() => {
       getIdCardSignatureStatus({ entityId: mandateId.toString() })
         .then((statusCode) => handleIdCardSignatureStatus(dispatch, statusCode, mandateId, pillar))
-        .catch((error) => dispatch({ type: SIGN_MANDATE_ERROR, error }));
+        .catch((error) =>
+          dispatch({ type: SIGN_MANDATE_ERROR, error: toSigningErrorResponse(error) }),
+        );
     }, POLL_DELAY);
   };
 }
@@ -306,7 +317,7 @@ export function signMandateWithIdCard(mandate: Mandate) {
         if (error instanceof SigningCancelledByUser) {
           dispatch(cancelSigningMandate());
         } else {
-          handleSaveMandateError(dispatch, error);
+          handleSigningError(dispatch, error);
         }
       });
   };
@@ -333,7 +344,7 @@ export function signMandate(mandate: Mandate, amlChecks?: unknown) {
         throw new Error(`Invalid signing method: ${signingMethod}`);
       })
       .catch((error: AxiosError) => {
-        handleSaveMandateError(dispatch, error);
+        handleSigningError(dispatch, error);
       });
   };
 }
