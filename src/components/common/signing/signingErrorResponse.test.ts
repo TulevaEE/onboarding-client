@@ -4,33 +4,36 @@ import { AxiosError, AxiosHeaders } from 'axios';
 import { toSigningErrorResponse } from './signingErrorResponse';
 import { errorResponseWithCode } from '../errorResponse';
 import { withoutPersonalData } from '../../../sentryEventFilter';
+import { SignableEntity } from './types';
 
 jest.mock('@sentry/browser', () => ({ captureException: jest.fn() }));
 
 const SYNTHETIC_PERSONAL_CODE = '38888888888';
 const SYNTHETIC_EMAIL = 'saver@example.com';
 
-const eventSentryWouldSendFor = async (
-  ...captureArguments: Parameters<typeof captureException>
-): Promise<Event> => {
-  const realSentry = jest.requireActual<typeof import('@sentry/browser')>('@sentry/browser');
+const eventsSentryWouldSendFor = async (
+  captures: Parameters<typeof captureException>[],
+): Promise<Event[]> => {
+  let pageLoadSentry!: typeof import('@sentry/browser');
+  jest.isolateModules(() => {
+    pageLoadSentry = jest.requireActual<typeof import('@sentry/browser')>('@sentry/browser');
+  });
   const sentEvents: Event[] = [];
-  realSentry.init({
+  pageLoadSentry.init({
     dsn: 'https://public@sentry.example.com/1',
-    defaultIntegrations: false,
     beforeSend: (event) => {
       sentEvents.push(withoutPersonalData(event));
       return null;
     },
   });
-  realSentry.captureException(...captureArguments);
-  await realSentry.flush();
-  await realSentry.close();
-  return sentEvents[0];
+  captures.forEach((capture) => pageLoadSentry.captureException(...capture));
+  await pageLoadSentry.flush();
+  await pageLoadSentry.close();
+  return sentEvents;
 };
 
 const capturedArguments = () =>
-  (captureException as jest.Mock).mock.calls[0] as Parameters<typeof captureException>;
+  (captureException as jest.Mock).mock.calls as Parameters<typeof captureException>[];
 
 describe('toSigningErrorResponse', () => {
   beforeEach(() => {
@@ -45,6 +48,7 @@ describe('toSigningErrorResponse', () => {
     });
     expect(captureException).toHaveBeenCalledWith(new Error('Signing failed unexpectedly'), {
       tags: { signingFailure: 'unexpected', signableEntity: 'MANDATE' },
+      fingerprint: ['Signing failed unexpectedly', 'unexpected', 'MANDATE'],
     });
   });
 
@@ -59,6 +63,7 @@ describe('toSigningErrorResponse', () => {
     );
     expect(captureException).toHaveBeenCalledWith(new Error('Signing failed unexpectedly'), {
       tags: { signingFailure: 'http', signableEntity: 'MANDATE_BATCH', httpStatus: 500 },
+      fingerprint: ['Signing failed unexpectedly', 'http', 'MANDATE_BATCH', '500'],
     });
   });
 
@@ -73,6 +78,7 @@ describe('toSigningErrorResponse', () => {
 
     expect(captureException).toHaveBeenCalledWith(new Error('Signing failed unexpectedly'), {
       tags: { signingFailure: 'network', signableEntity: 'CAPITAL_TRANSFER_CONTRACT' },
+      fingerprint: ['Signing failed unexpectedly', 'network', 'CAPITAL_TRANSFER_CONTRACT'],
     });
   });
 
@@ -108,13 +114,41 @@ describe('toSigningErrorResponse', () => {
     async (_description, failure) => {
       toSigningErrorResponse(failure, 'MANDATE');
 
-      const sentEvent = JSON.stringify(await eventSentryWouldSendFor(...capturedArguments()));
+      const sentEvent = JSON.stringify(await eventsSentryWouldSendFor(capturedArguments()));
 
       expect(sentEvent).toContain('Signing failed unexpectedly');
       expect(sentEvent).not.toContain(SYNTHETIC_PERSONAL_CODE);
       expect(sentEvent).not.toContain(SYNTHETIC_EMAIL);
     },
   );
+
+  it('sends distinct failures in a row from one place as separate events, each without personal data', async () => {
+    const failures: [unknown, SignableEntity][] = [
+      [
+        { status: 500, body: { personalCode: SYNTHETIC_PERSONAL_CODE, email: SYNTHETIC_EMAIL } },
+        'MANDATE',
+      ],
+      [
+        new AxiosError(
+          `Request terminated: url=/v1/mandates/1/signature?email=${SYNTHETIC_EMAIL}`,
+          AxiosError.ERR_NETWORK,
+        ),
+        'MANDATE',
+      ],
+      [new Error(`Unexpected signer: personalCode=${SYNTHETIC_PERSONAL_CODE}`), 'MANDATE_BATCH'],
+    ];
+    failures.forEach(([failure, entity]) => toSigningErrorResponse(failure, entity));
+
+    const sentEvents = await eventsSentryWouldSendFor(capturedArguments());
+
+    expect(sentEvents.map(({ fingerprint }) => fingerprint)).toEqual([
+      ['Signing failed unexpectedly', 'http', 'MANDATE', '500'],
+      ['Signing failed unexpectedly', 'network', 'MANDATE'],
+      ['Signing failed unexpectedly', 'unexpected', 'MANDATE_BATCH'],
+    ]);
+    expect(JSON.stringify(sentEvents)).not.toContain(SYNTHETIC_PERSONAL_CODE);
+    expect(JSON.stringify(sentEvents)).not.toContain(SYNTHETIC_EMAIL);
+  });
 
   it('passes a backend error response through without reporting it', () => {
     const backendError = { body: { errors: [{ code: 'id.card.signing.certificate.mismatch' }] } };
