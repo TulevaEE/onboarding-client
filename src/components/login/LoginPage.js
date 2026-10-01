@@ -21,6 +21,9 @@ import {
 } from './actions';
 import { getAuthentication } from '../common/authenticationManager';
 import { loginLanding } from './loginLanding';
+import { MOBILE_ID_PHONE_NUMBER_REQUIRED } from './mobileId/MobileIdLoginTab';
+
+const ERRORS_SHOWN_BESIDE_THEIR_FIELD = [MOBILE_ID_PHONE_NUMBER_REQUIRED];
 
 export const LoginPage = ({
   isAuthenticated,
@@ -56,7 +59,11 @@ export const LoginPage = ({
         <div className="row justify-content-center">
           <div className="col-12 col-md-9 col-lg-7">
             <img width="146" height="66" src={logo} alt="Tuleva" className="d-block mx-auto mb-5" />
-            {errorDescription ? <ErrorAlert description={errorDescription} /> : ''}
+            {errorDescription && !ERRORS_SHOWN_BESIDE_THEIR_FIELD.includes(errorDescription) ? (
+              <ErrorAlert description={errorDescription} />
+            ) : (
+              ''
+            )}
             {!authenticating ? (
               <LoginForm
                 onMobileIdSubmit={onMobileIdSubmit}
@@ -64,6 +71,7 @@ export const LoginPage = ({
                 onPersonalCodeChange={onPersonalCodeChange}
                 phoneNumber={phoneNumber}
                 personalCode={personalCode}
+                mobileIdStartError={errorDescription}
                 onSmartIdLoginStart={onSmartIdLoginStart}
                 onAuthenticateWithIdCard={onAuthenticateWithIdCard}
                 monthlyThirdPillarContribution={monthlyThirdPillarContribution}

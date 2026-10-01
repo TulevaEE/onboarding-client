@@ -1,6 +1,6 @@
 import React from 'react';
 import { setupServer } from 'msw/node';
-import { screen, act } from '@testing-library/react';
+import { screen, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Switch } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
@@ -153,6 +153,74 @@ describe('When a user is logging in', () => {
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
     ).toBeInTheDocument();
+  });
+
+  test('a person whose Mobile-ID number the service remembers logs in with only the identity code', async () => {
+    const backend = mobileIdAuthenticationBackend(server, {
+      challengeCode: '4321',
+      rememberedPersonalCodes: ['38001085718'],
+    });
+    userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
+    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), '38001085718');
+
+    await waitFor(() =>
+      expect(screen.queryByPlaceholderText(/Phone number/gi)).not.toBeInTheDocument(),
+    );
+    userEvent.click(screen.getByRole('button', { name: 'Log in' }));
+
+    expect(await screen.findByText('4321')).toBeInTheDocument();
+    expect(backend.startedLogins).toEqual([{ personalCode: '38001085718' }]);
+    backend.resolvePolling();
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+  });
+
+  test('a remembered number that no longer works brings back the phone field', async () => {
+    const backend = mobileIdAuthenticationBackend(server, {
+      challengeCode: '4321',
+      rememberedPersonalCodes: ['38001085718'],
+      rememberedNumberStopsWorking: true,
+    });
+    userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
+    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), '38001085718');
+    await waitFor(() =>
+      expect(screen.queryByPlaceholderText(/Phone number/gi)).not.toBeInTheDocument(),
+    );
+
+    userEvent.click(screen.getByRole('button', { name: 'Log in' }));
+
+    const phoneField = await screen.findByPlaceholderText(/Phone number/gi);
+    expect(phoneField).toHaveFocus();
+    expect(screen.getByText('Enter your current phone number.')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+
+    userEvent.type(phoneField, '+37255512345');
+    userEvent.click(screen.getByRole('button', { name: 'Log in' }));
+
+    expect(await screen.findByText('4321')).toBeInTheDocument();
+    expect(backend.startedLogins).toEqual([
+      { personalCode: '38001085718' },
+      { personalCode: '38001085718', phoneNumber: '+37255512345' },
+    ]);
+  });
+
+  test('a number typed before the identity code is used without asking whether one is remembered', async () => {
+    const backend = mobileIdAuthenticationBackend(server, {
+      challengeCode: '4321',
+      rememberedPersonalCodes: ['38001085718'],
+    });
+    userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
+    userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '+37255512345');
+    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), '38001085718');
+
+    userEvent.click(screen.getByRole('button', { name: 'Log in' }));
+
+    expect(await screen.findByText('4321')).toBeInTheDocument();
+    expect(backend.rememberedLookups).toEqual([]);
+    expect(backend.startedLogins).toEqual([
+      { personalCode: '38001085718', phoneNumber: '+37255512345' },
+    ]);
   });
 
   test('a failed Mobile-ID login explains what happened and stays on the Mobile-ID tab', async () => {

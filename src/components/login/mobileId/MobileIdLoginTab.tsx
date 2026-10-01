@@ -1,21 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { lastDigits, rememberedMobileIdPhoneNumber } from './rememberedPhoneNumbers';
 import { isValidPersonalCode } from '../../common/personalCode';
+import { useRememberedMobileIdNumber } from './useRememberedMobileIdNumber';
 
 const PERSONAL_CODE_LENGTH = 11;
+export const MOBILE_ID_PHONE_NUMBER_REQUIRED = 'mobile.id.phone.number.required';
 
 interface MobileIdLoginTabProps {
   phoneNumber: string;
   personalCode: string;
   onPhoneNumberChange: (phoneNumber: string) => void;
   onPersonalCodeChange: (personalCode: string) => void;
-  onMobileIdSubmit: (
-    phoneNumber: string,
-    personalCode: string,
-    rememberPhoneNumber: boolean,
-  ) => void;
+  onMobileIdSubmit: (phoneNumber: string, personalCode: string) => void;
+  startError?: string | null;
 }
 
 export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
@@ -24,35 +22,33 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
   onPhoneNumberChange,
   onPersonalCodeChange,
   onMobileIdSubmit,
+  startError = null,
 }) => {
   const { formatMessage } = useIntl();
-  const [changingNumber, setChangingNumber] = useState(false);
-  const [rememberPhoneNumber, setRememberPhoneNumber] = useState(true);
+  const phoneNumberInput = useRef<HTMLInputElement>(null);
   const [submittedInvalidCode, setSubmittedInvalidCode] = useState(false);
-  const autoFilledNumber = useRef<string | null>(null);
+  const [phoneNumberRequiredFor] = useState(
+    startError === MOBILE_ID_PHONE_NUMBER_REQUIRED ? personalCode : null,
+  );
 
-  const rememberedNumber = rememberedMobileIdPhoneNumber(personalCode);
-  const usingRememberedNumber = rememberedNumber !== null && !changingNumber;
-
+  const phoneNumberRequired = phoneNumberRequiredFor === personalCode;
+  const numberRemembered = useRememberedMobileIdNumber(
+    personalCode,
+    phoneNumberRequired || phoneNumber !== '',
+  );
   const personalCodeValid = isValidPersonalCode(personalCode);
   const showPersonalCodeError =
     !personalCodeValid && (personalCode.length >= PERSONAL_CODE_LENGTH || submittedInvalidCode);
 
   useEffect(() => {
-    setChangingNumber(false);
     setSubmittedInvalidCode(false);
   }, [personalCode]);
 
   useEffect(() => {
-    if (usingRememberedNumber && phoneNumber !== rememberedNumber) {
-      autoFilledNumber.current = rememberedNumber;
-      onPhoneNumberChange(rememberedNumber);
+    if (phoneNumberRequiredFor !== null) {
+      phoneNumberInput.current?.focus();
     }
-    if (!usingRememberedNumber && autoFilledNumber.current === phoneNumber) {
-      autoFilledNumber.current = null;
-      onPhoneNumberChange('');
-    }
-  }, [usingRememberedNumber, rememberedNumber, phoneNumber, onPhoneNumberChange]);
+  }, [phoneNumberRequiredFor]);
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -60,8 +56,10 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
       setSubmittedInvalidCode(true);
       return;
     }
-    onMobileIdSubmit(phoneNumber, personalCode, usingRememberedNumber || rememberPhoneNumber);
+    onMobileIdSubmit(numberRemembered ? '' : phoneNumber, personalCode);
   };
+
+  const showPhoneNumberRequired = phoneNumberRequired && !phoneNumber;
 
   return (
     <form onSubmit={submit}>
@@ -85,54 +83,36 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
           </div>
         )}
       </div>
-      {usingRememberedNumber ? (
-        <p className="mb-3 text-body-secondary">
-          <FormattedMessage
-            id="login.mobile.id.remembered.number"
-            values={{ digits: lastDigits(rememberedNumber) }}
+      {!numberRemembered && (
+        <div className="mb-3">
+          <input
+            id="mobile-id-number"
+            ref={phoneNumberInput}
+            type="tel"
+            autoComplete="tel"
+            value={phoneNumber}
+            onChange={(event) => onPhoneNumberChange(event.target.value)}
+            className={`form-control form-control-lg${
+              showPhoneNumberRequired ? ' is-invalid' : ''
+            }`}
+            placeholder={formatMessage({ id: 'login.phone.number' })}
+            aria-label={formatMessage({ id: 'login.phone.number' })}
+            aria-invalid={showPhoneNumberRequired}
+            aria-describedby={showPhoneNumberRequired ? 'mobile-id-number-error' : undefined}
           />
-          <button
-            type="button"
-            className="btn btn-link p-0 d-block mx-auto mt-1"
-            onClick={() => setChangingNumber(true)}
-          >
-            <FormattedMessage id="login.mobile.id.change.number" />
-          </button>
-        </p>
-      ) : (
-        <>
-          <div className="mb-3">
-            <input
-              id="mobile-id-number"
-              type="tel"
-              autoComplete="tel"
-              value={phoneNumber}
-              onChange={(event) => onPhoneNumberChange(event.target.value)}
-              className="form-control form-control-lg"
-              placeholder={formatMessage({ id: 'login.phone.number' })}
-              aria-label={formatMessage({ id: 'login.phone.number' })}
-            />
-          </div>
-          <div className="form-check text-start mb-3">
-            <input
-              id="mobile-id-remember-number"
-              type="checkbox"
-              className="form-check-input"
-              checked={rememberPhoneNumber}
-              onChange={(event) => setRememberPhoneNumber(event.target.checked)}
-            />
-            <label className="form-check-label" htmlFor="mobile-id-remember-number">
-              <FormattedMessage id="login.mobile.id.remember.number" />
-            </label>
-          </div>
-        </>
+          {showPhoneNumberRequired && (
+            <div id="mobile-id-number-error" className="invalid-feedback text-start">
+              <FormattedMessage id="login.mobile.id.phone.number.required" />
+            </div>
+          )}
+        </div>
       )}
       <div className="d-grid mb-3">
         <input
           id="mobile-id-submit"
           type="submit"
           className="btn btn-primary btn-lg"
-          disabled={!phoneNumber || !personalCode}
+          disabled={!personalCode || (!phoneNumber && !numberRemembered)}
           value={formatMessage({ id: 'login.enter' })}
         />
       </div>

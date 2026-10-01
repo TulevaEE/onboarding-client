@@ -111,11 +111,24 @@ export async function authenticateWithMobileId(
   personalCode: string,
 ): Promise<string> {
   const { challengeCode } = await post(getEndpoint('/authenticate'), {
-    phoneNumber,
+    ...(phoneNumber ? { phoneNumber } : {}),
     personalCode,
     type: 'MOBILE_ID',
   });
   return challengeCode;
+}
+
+export async function isMobileIdNumberRemembered(
+  personalCode: string,
+  signal: AbortSignal,
+): Promise<boolean> {
+  const { remembered } = await post(
+    getEndpoint('/v1/mobile-id/login/remembered'),
+    { personalCode },
+    {},
+    { signal },
+  );
+  return remembered === true;
 }
 
 export function startSmartIdLogin(

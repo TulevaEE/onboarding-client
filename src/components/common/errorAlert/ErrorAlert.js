@@ -25,6 +25,7 @@ const AUTHENTICATION_ERROR_MESSAGES = {
   'mobile.id.certificates.revoked': 'login.error.mobile.id.certificates.revoked',
   'id.card.document.type.not.allowed': 'login.error.id.card.document.type.not.allowed',
   'auth.too.many.requests': 'login.error.auth.too.many.requests',
+  'mobile.id.phone.number.invalid': 'login.error.mobile.id.phone.number.invalid',
 };
 
 export const hasLoginErrorMessage = (code) => Boolean(AUTHENTICATION_ERROR_MESSAGES[code]);

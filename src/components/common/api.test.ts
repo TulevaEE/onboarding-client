@@ -3,6 +3,7 @@ import {
   authenticateWithIdCardMtls,
   authenticateWithIdCardWebEid,
   authenticateWithMobileId,
+  isMobileIdNumberRemembered,
   completeSmartIdCallback,
   createAmlCheck,
   createApplicationCancellation,
@@ -380,6 +381,29 @@ describe('API calls', () => {
       personalCode,
       type: 'MOBILE_ID',
     });
+  });
+
+  it('starts a Mobile-ID login without a phone number when the service remembers it', async () => {
+    mockHttp.post.mockResolvedValueOnce({ challengeCode: '1234' });
+
+    expect(await authenticateWithMobileId('', '38001085718')).toBe('1234');
+    expect(mockHttp.post).toHaveBeenCalledWith('/authenticate', {
+      personalCode: '38001085718',
+      type: 'MOBILE_ID',
+    });
+  });
+
+  it('asks whether the service remembers a Mobile-ID number for a personal code', async () => {
+    mockHttp.post.mockResolvedValueOnce({ remembered: true });
+    const { signal } = new AbortController();
+
+    expect(await isMobileIdNumberRemembered('38001085718', signal)).toBe(true);
+    expect(mockHttp.post).toHaveBeenCalledWith(
+      '/v1/mobile-id/login/remembered',
+      { personalCode: '38001085718' },
+      {},
+      { signal },
+    );
   });
 
   describe('getTokensWithGrantType', () => {

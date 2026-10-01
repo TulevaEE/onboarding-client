@@ -35,10 +35,6 @@ import { api } from '../common';
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 
 import { getAuthentication } from '../common/authenticationManager';
-import {
-  forgetMobileIdPhoneNumber,
-  rememberMobileIdPhoneNumber,
-} from './mobileId/rememberedPhoneNumbers';
 
 const POLL_DELAY = 1000;
 let timeout;
@@ -83,14 +79,13 @@ function handleLogin() {
   };
 }
 
-function getMobileIdTokens(onSuccess = () => undefined) {
+function getMobileIdTokens() {
   return (dispatch, getState) => {
     timeout = setTimeout(() => {
       api
         .getMobileIdTokens()
         .then((tokens) => {
           if (isTokenPresent(tokens)) {
-            onSuccess();
             dispatch({
               type: MOBILE_AUTHENTICATION_SUCCESS,
               tokens,
@@ -98,7 +93,7 @@ function getMobileIdTokens(onSuccess = () => undefined) {
             });
             dispatch(handleLogin());
           } else if (getState().login.loadingAuthentication) {
-            dispatch(getMobileIdTokens(onSuccess));
+            dispatch(getMobileIdTokens());
           }
         })
         .catch((error) => dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error }));
@@ -106,26 +101,14 @@ function getMobileIdTokens(onSuccess = () => undefined) {
   };
 }
 
-function updateRememberedPhoneNumber(personalCode, phoneNumber, rememberPhoneNumber) {
-  if (rememberPhoneNumber === true) {
-    rememberMobileIdPhoneNumber(personalCode, phoneNumber);
-  } else if (rememberPhoneNumber === false) {
-    forgetMobileIdPhoneNumber(personalCode);
-  }
-}
-
-export function authenticateWithMobileId(phoneNumber, personalCode, rememberPhoneNumber) {
+export function authenticateWithMobileId(phoneNumber, personalCode) {
   return (dispatch) => {
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
       .authenticateWithMobileId(phoneNumber, personalCode)
       .then((controlCode) => {
         dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
-        dispatch(
-          getMobileIdTokens(() =>
-            updateRememberedPhoneNumber(personalCode, phoneNumber, rememberPhoneNumber),
-          ),
-        );
+        dispatch(getMobileIdTokens());
       })
       .catch((error) => dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error }));
   };
@@ -511,10 +494,10 @@ export function setLoginToRedirect() {
   return { type: SET_LOGIN_TO_REDIRECT };
 }
 
-export function useRedirectLoginWithPhoneNumber(phoneNumber, personalCode, rememberPhoneNumber) {
+export function useRedirectLoginWithPhoneNumber(phoneNumber, personalCode) {
   return (dispatch) => {
     dispatch(setLoginToRedirect());
-    dispatch(authenticateWithMobileId(phoneNumber, personalCode, rememberPhoneNumber));
+    dispatch(authenticateWithMobileId(phoneNumber, personalCode));
   };
 }
 

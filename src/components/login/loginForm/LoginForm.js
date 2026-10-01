@@ -11,6 +11,7 @@ import { Maintenance } from '../Maintenance';
 export const LoginForm = ({
   phoneNumber,
   personalCode,
+  mobileIdStartError,
   onPhoneNumberChange,
   onPersonalCodeChange,
   onMobileIdSubmit,
@@ -38,6 +39,7 @@ export const LoginForm = ({
         phoneNumber,
         onPhoneNumberChange,
         onAuthenticateWithIdCard,
+        mobileIdStartError,
       )}
     </div>
   </>
@@ -60,6 +62,7 @@ const renderLoginForm = (
   phoneNumber,
   onPhoneNumberChange,
   onAuthenticateWithIdCard,
+  mobileIdStartError,
 ) => {
   const { formatMessage } = useIntl();
 
@@ -89,6 +92,7 @@ const renderLoginForm = (
         phoneNumber,
         onPhoneNumberChange,
         onAuthenticateWithIdCard,
+        mobileIdStartError,
       )}
 
       <p className="m-0 mt-4 text-body-secondary">
@@ -138,6 +142,7 @@ const renderLoginTabs = (
   phoneNumber,
   onPhoneNumberChange,
   onAuthenticateWithIdCard,
+  mobileIdStartError,
 ) => (
   <LoginTabs>
     {/* eslint-disable-next-line react/no-unknown-property */}
@@ -152,6 +157,7 @@ const renderLoginTabs = (
         onPhoneNumberChange={onPhoneNumberChange}
         onPersonalCodeChange={onPersonalCodeChange}
         onMobileIdSubmit={onMobileIdSubmit}
+        startError={mobileIdStartError}
       />
     </div>
     {/* eslint-disable-next-line react/no-unknown-property */}
@@ -172,6 +178,7 @@ LoginForm.defaultProps = {
 
   phoneNumber: '',
   personalCode: '',
+  mobileIdStartError: null,
   monthlyThirdPillarContribution: null,
   exchangeExistingThirdPillarUnits: false,
 };
@@ -185,6 +192,7 @@ LoginForm.propTypes = {
 
   phoneNumber: Types.string,
   personalCode: Types.string,
+  mobileIdStartError: Types.string,
   monthlyThirdPillarContribution: Types.number,
   exchangeExistingThirdPillarUnits: Types.bool,
 };
