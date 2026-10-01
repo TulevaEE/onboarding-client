@@ -2263,8 +2263,8 @@
   "signature.error.unknown": "Allkirjastamine ei jõudnud lõpuni. Palun proovi uuesti.",
   "signature.already.signed": "See on juba allkirjastatud.",
   "signature.not.signed": "See ei ole veel allkirjastatud.",
-  "web.eid.extension.missing": "Sinu brauseris pole Web eID laiendust. Paigalda see <link>id.ee juhendi järgi</link> ja proovi uuesti.",
-  "web.eid.id.software.missing": "Selles arvutis pole ID‑tarkvara. <link>Paigalda see id.ee lehelt</link> ja proovi uuesti.",
+  "web.eid.extension.missing": "Sinu brauseris pole Web eID laiendust. Paigalda see <link>id.ee juhendi järgi</link> ja proovi uuesti.",
+  "web.eid.id.software.missing": "Selles arvutis pole ID‑tarkvara. <link>Paigalda see id.ee lehelt</link> ja proovi uuesti.",
   "web.eid.update.required": "Sinu ID‑tarkvara vajab uuendamist. <link>Paigalda uusim versioon id.ee lehelt</link> ja proovi uuesti.",
   "web.eid.help.browser.url": "https://www.id.ee/artikkel/veebibrauserite-seadistamine-id-kaardi-kasutamiseks/",
   "web.eid.help.install.url": "https://www.id.ee/artikkel/paigalda-id-tarkvara/"

@@ -14,7 +14,7 @@ describe('ErrorMessage', () => {
     );
 
     expect(screen.getByText(/ID.software is not installed/)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Install it from id.ee' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /^Install\sit from id\.ee$/ })).toHaveAttribute(
       'href',
       'https://www.id.ee/en/article/install-id-software/',
     );

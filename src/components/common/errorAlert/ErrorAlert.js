@@ -71,7 +71,7 @@ class ErrorAlert extends Component {
 
   render() {
     return (
-      <div className="alert alert-danger" role="alert">
+      <div className="alert alert-danger text-pretty" role="alert">
         {this.errorMessage()}
       </div>
     );
