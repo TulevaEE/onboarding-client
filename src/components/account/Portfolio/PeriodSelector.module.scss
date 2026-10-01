@@ -29,6 +29,13 @@
   }
 }
 
+// iOS Safari zooms the page into any text field set below 16px when it gets focus
+@supports (-webkit-touch-callout: none) {
+  .dates :global(.input-group) > .dateText {
+    font-size: 1rem;
+  }
+}
+
 @media (min-width: 400px) {
   .dateLabel {
     @include visually-hidden;

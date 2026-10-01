@@ -156,7 +156,7 @@ const DateInput: React.FunctionComponent<{
             type="text"
             size={10}
             placeholder={formatMessage({ id: 'savingsFund.statement.period.dateFormat' })}
-            className="form-control"
+            className={`form-control ${styles.dateText}`}
             value={typed ?? shownDate(value)}
             onChange={(event) => {
               const text = event.target.value;
