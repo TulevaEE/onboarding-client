@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect, useHistory, useLocation } from 'react-router-dom';
 import { AuthenticationLoader, ErrorMessage, Loader, Radio } from '../../common';
+import { isSigningWithIdCard } from '../../common/authenticationManager';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { Recommended } from '../../common/Recommended';
 import { usePageTitle } from '../../common/usePageTitle';
@@ -100,7 +101,12 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
   return (
     <div className="col-12 col-md-11 col-lg-8 mx-auto">
       {(signing || challengeCode) && (
-        <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
+        <AuthenticationLoader
+          signingWithIdCard={isSigningWithIdCard()}
+          controlCode={challengeCode}
+          onCancel={cancelSigning}
+          overlayed
+        />
       )}
 
       {error && <ErrorMessage errors={error.body} onCancel={resetError} overlayed />}

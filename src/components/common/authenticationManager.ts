@@ -75,3 +75,5 @@ export function getAuthentication(): AuthenticationManager {
     isAuthenticated,
   };
 }
+
+export const isSigningWithIdCard = (): boolean => getAuthentication().signingMethod === 'ID_CARD';

@@ -12,6 +12,7 @@ import { actions as exchangeActions } from '../../../exchange';
 import { FundTransferTable } from '../../secondPillar/confirmMandate/fundTransferTable/FundTransferTable';
 import ResidencyAgreement from '../../../aml/ResidencyAgreement';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../../common';
+import { isSigningWithIdCard } from '../../../common/authenticationManager';
 import { hasAddress as isAddressFilled } from '../../../common/user/address';
 import OccupationAgreement from '../../../aml/OccupationAgreement';
 import { hasContactDetailsAmlCheck as isContactDetailsAmlCheckPassed } from '../../../aml';
@@ -58,6 +59,7 @@ export const ConfirmThirdPillarMandate = ({
       )}
       {loadingMandate || mandateSigningControlCode ? (
         <AuthenticationLoader
+          signingWithIdCard={isSigningWithIdCard()}
           controlCode={mandateSigningControlCode}
           onCancel={onCancelSigningMandate}
           overlayed

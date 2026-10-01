@@ -6,6 +6,7 @@ import { Link, Redirect } from 'react-router-dom';
 
 import { FormattedMessage } from 'react-intl';
 import { AuthenticationLoader, ErrorMessage, Loader, utils } from '../../../common';
+import { isSigningWithIdCard } from '../../../common/authenticationManager';
 
 import {
   cancelSigningMandate,
@@ -146,6 +147,7 @@ export const ConfirmMandate = ({
 
       {exchange.loadingMandate || exchange.mandateSigningControlCode ? (
         <AuthenticationLoader
+          signingWithIdCard={isSigningWithIdCard()}
           controlCode={exchange.mandateSigningControlCode}
           onCancel={onCancelSigningMandate}
           overlayed

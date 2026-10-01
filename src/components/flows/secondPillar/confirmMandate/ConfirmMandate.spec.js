@@ -7,6 +7,12 @@ import { ConfirmMandate } from './ConfirmMandate';
 import { FundTransferTable } from './fundTransferTable/FundTransferTable';
 import MandateNotFilledAlert from './mandateNotFilledAlert';
 import { Loader, AuthenticationLoader, ErrorMessage } from '../../../common';
+import { isSigningWithIdCard } from '../../../common/authenticationManager';
+
+jest.mock('../../../common/authenticationManager', () => ({
+  ...jest.requireActual('../../../common/authenticationManager'),
+  isSigningWithIdCard: jest.fn(() => false),
+}));
 
 describe('Confirm mandate step', () => {
   let component;
@@ -217,6 +223,20 @@ describe('Confirm mandate step', () => {
         targetFundName: 'd',
       },
     ]);
+  });
+
+  it('tells an ID-card signer how to confirm while the mandate is being signed', () => {
+    isSigningWithIdCard.mockReturnValue(true);
+    component.setProps({
+      exchange: {
+        loadingMandate: true,
+        sourceSelection: [],
+        selectedFutureContributionsFundIsin: 'asd',
+      },
+      selectedFutureContributionsFund: { isin: 'asd' },
+    });
+
+    expect(component.find(AuthenticationLoader).prop('signingWithIdCard')).toBe(true);
   });
 
   it('renders an overlayed authentication loader when you are signing the mandate', () => {

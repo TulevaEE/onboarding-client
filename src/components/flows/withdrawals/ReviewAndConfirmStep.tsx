@@ -30,6 +30,7 @@ import {
 import { formatDate, formatDateRange, formatDateTime } from '../../common/dateFormatter';
 import { useMandateBatchSigning } from './signing/useMandateBatchSigning';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../common';
+import { isSigningWithIdCard } from '../../common/authenticationManager';
 import { ErrorResponse, MandateDeadlines } from '../../common/apiModels';
 import { TranslationKey } from '../../translations';
 import { useTestMode } from '../../common/test-mode';
@@ -162,7 +163,12 @@ export const ReviewAndConfirmStep = () => {
   return (
     <div>
       {(signingInProgress || challengeCode) && (
-        <AuthenticationLoader controlCode={challengeCode} onCancel={cancelSigning} overlayed />
+        <AuthenticationLoader
+          signingWithIdCard={isSigningWithIdCard()}
+          controlCode={challengeCode}
+          onCancel={cancelSigning}
+          overlayed
+        />
       )}
       {signingError && (
         <ErrorMessage errors={signingError.body} onCancel={cancelSigning} overlayed />
