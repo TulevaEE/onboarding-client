@@ -4,6 +4,7 @@ import { ErrorResponse, IdCardSignatureResponse } from '../apiModels';
 import { isErrorResponse } from '../errorResponse';
 import { WebEidFailure, webEidFailureOf, webEidOptions } from '../webEid';
 import { SignableEntity } from './types';
+import { SigningCancelledByUser } from './signingCancelledByUser';
 
 export type SignedEntity<T> = { signature: string; entityId: T; entityType: SignableEntity };
 
@@ -17,8 +18,7 @@ export class IdCardSigningError extends Error {
   }
 }
 
-const SIGNING_ERROR_CODES: Record<WebEidFailure, string> = {
-  USER_CANCELLED: 'id.card.signing.cancelled',
+const SIGNING_ERROR_CODES: Record<Exclude<WebEidFailure, 'USER_CANCELLED'>, string> = {
   TIMEOUT: 'id.card.signing.timeout',
   EXTENSION_UNAVAILABLE: 'id.card.signing.extension.unavailable',
   FAILED: 'id.card.signing.error',
@@ -26,6 +26,9 @@ const SIGNING_ERROR_CODES: Record<WebEidFailure, string> = {
 
 const toSigningError = (error: unknown): unknown => {
   const webEidFailure = webEidFailureOf(error);
+  if (webEidFailure === 'USER_CANCELLED') {
+    return new SigningCancelledByUser();
+  }
   if (webEidFailure) {
     return new IdCardSigningError(SIGNING_ERROR_CODES[webEidFailure]);
   }

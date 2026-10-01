@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useSigning } from './useSigning';
+import { SigningCancelledByUser } from './signingCancelledByUser';
 
 const mockSignWithIdCard = jest.fn();
 const mockPersistIdCardSignature = jest.fn();
@@ -109,13 +110,13 @@ describe('useSigning with an ID card', () => {
 
   it('surfaces the signing error and stops', async () => {
     mockSignWithIdCard.mockRejectedValue({
-      body: { errors: [{ code: 'id.card.signing.cancelled' }] },
+      body: { errors: [{ code: 'id.card.signing.certificate.mismatch' }] },
     });
     render(<SigningHarness />);
 
     userEvent.click(screen.getByRole('button', { name: 'sign' }));
 
-    expect(await screen.findByText('id.card.signing.cancelled')).toBeInTheDocument();
+    expect(await screen.findByText('id.card.signing.certificate.mismatch')).toBeInTheDocument();
     expect(await screen.findByText('idle')).toBeInTheDocument();
     expect(mockPersistIdCardSignature).not.toHaveBeenCalled();
   });
@@ -133,6 +134,18 @@ describe('useSigning with an ID card', () => {
 
     expect(screen.queryByText('id.card.signing.error')).not.toBeInTheDocument();
     expect(screen.getByText('idle')).toBeInTheDocument();
+  });
+
+  it('goes back to idle without an error when the user cancels the PIN dialog', async () => {
+    mockSignWithIdCard.mockRejectedValue(new SigningCancelledByUser());
+    render(<SigningHarness />);
+
+    userEvent.click(screen.getByRole('button', { name: 'sign' }));
+
+    expect(await screen.findByText('start resolved')).toBeInTheDocument();
+    expect(screen.getByText('idle')).toBeInTheDocument();
+    expect(screen.queryByText(/error|cancel/)).not.toBeInTheDocument();
+    expect(mockPersistIdCardSignature).not.toHaveBeenCalled();
   });
 
   it('surfaces a generic error when signing fails without an error response', async () => {
