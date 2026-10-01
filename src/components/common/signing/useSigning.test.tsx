@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useSigning } from './useSigning';
@@ -34,13 +34,20 @@ const describeStatus = (signed: boolean, loading: boolean) => {
 
 const SigningHarness = () => {
   const { startSigning, signed, loading, error } = useSigning<{ id: number }>('MANDATE_BATCH');
+  const [outcome, setOutcome] = useState('');
   const status = describeStatus(signed, loading);
+  const sign = () =>
+    startSigning({ id: 7 }).then(
+      () => setOutcome('start resolved'),
+      () => setOutcome('start rejected'),
+    );
   return (
     <>
-      <button type="button" onClick={() => startSigning({ id: 7 }).catch(() => undefined)}>
+      <button type="button" onClick={sign}>
         sign
       </button>
       <output>{status}</output>
+      <span>{outcome}</span>
       {error && <p>{error.body.errors[0].code}</p>}
     </>
   );
@@ -116,6 +123,16 @@ describe('useSigning with an ID card', () => {
 
     expect(await screen.findByText('signature.error.unknown')).toBeInTheDocument();
     expect(await screen.findByText('idle')).toBeInTheDocument();
+  });
+
+  it('keeps a failure in state instead of rejecting the caller', async () => {
+    mockSignWithIdCard.mockRejectedValue(new Error('boom'));
+    render(<SigningHarness />);
+
+    userEvent.click(screen.getByRole('button', { name: 'sign' }));
+
+    expect(await screen.findByText('signature.error.unknown')).toBeInTheDocument();
+    expect(await screen.findByText('start resolved')).toBeInTheDocument();
   });
 
   it('surfaces a generic error when the status poll rejects without an error response', async () => {
