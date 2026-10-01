@@ -3,12 +3,18 @@ import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, Redirect, useLocation } from 'react-router-dom';
 
-import { ErrorAlert, logo } from '../../common';
-import { SMART_ID_CALLBACK_FAILED_ERROR } from '../../common/errorAlert/ErrorAlert';
-import AuthenticationLoader from '../../common/authenticationLoader/AuthenticationLoader';
+import { ErrorAlert, Loader, logo } from '../../common';
+import {
+  hasLoginErrorMessage,
+  SMART_ID_CALLBACK_FAILED_ERROR,
+} from '../../common/errorAlert/ErrorAlert';
 import { getAuthentication } from '../../common/authenticationManager';
 import { usePageTitle } from '../../common/usePageTitle';
-import { completeSmartIdLogin, getPendingSmartIdReturnPath } from '../actions';
+import {
+  cancelMobileAuthentication,
+  completeSmartIdLogin,
+  getPendingSmartIdReturnPath,
+} from '../actions';
 import { loginPath } from '../constants';
 import { loginLanding } from '../loginLanding';
 import styles from '../LoginPage.module.scss';
@@ -17,14 +23,21 @@ import {
   smartIdCallbackParameters,
 } from './smartIdCallbackParameters';
 
+const SLOW_COMPLETION_MILLIS = 20000;
+
+type LoginState = { login: { error: string | null; loadingAuthentication: boolean } };
+
 export const SmartIdCallbackPage: React.FC = () => {
   usePageTitle('pageTitle.loginPage');
   const dispatch = useDispatch();
   const { search } = useLocation();
   const isAuthenticated = useSelector(() => getAuthentication().isAuthenticated());
-  const loginError = useSelector((state: { login: { error: string | null } }) => state.login.error);
+  const loginError = useSelector((state: LoginState) => state.login.error);
+  const authenticating = useSelector((state: LoginState) => state.login.loadingAuthentication);
   const [callback] = useState(() => smartIdCallbackParameters(search));
   const [destination] = useState(() => loginLanding(getPendingSmartIdReturnPath() ?? undefined));
+  const [attemptStarted, setAttemptStarted] = useState(false);
+  const [slow, setSlow] = useState(false);
 
   useEffect(() => {
     forgetSmartIdCallbackParameters();
@@ -33,9 +46,23 @@ export const SmartIdCallbackPage: React.FC = () => {
     }
   }, [callback, dispatch]);
 
+  useEffect(() => {
+    if (authenticating) {
+      setAttemptStarted(true);
+    }
+  }, [authenticating]);
+
+  useEffect(() => {
+    const slowCompletion = setTimeout(() => setSlow(true), SLOW_COMPLETION_MILLIS);
+    return () => clearTimeout(slowCompletion);
+  }, []);
+
   if (isAuthenticated) {
     return <Redirect to={destination} />;
   }
+
+  const attemptEnded = attemptStarted && !authenticating;
+  const failed = !callback || Boolean(loginError) || attemptEnded;
 
   return (
     <div className={styles.loginPage}>
@@ -43,17 +70,39 @@ export const SmartIdCallbackPage: React.FC = () => {
         <div className="row justify-content-center">
           <div className="col-12 col-md-9 col-lg-7">
             <img width="146" height="66" src={logo} alt="Tuleva" className="d-block mx-auto mb-5" />
-            {!callback || loginError ? (
-              <>
-                <ErrorAlert description={SMART_ID_CALLBACK_FAILED_ERROR} />
+            {failed ? (
+              <div className="bg-white shadow-sm rounded-3 p-5">
+                <ErrorAlert
+                  description={
+                    loginError && hasLoginErrorMessage(loginError)
+                      ? loginError
+                      : SMART_ID_CALLBACK_FAILED_ERROR
+                  }
+                />
                 <div className="d-grid">
                   <Link className="btn btn-primary btn-lg" to={loginPath}>
-                    <FormattedMessage id="login.enter" />
+                    <FormattedMessage id="login.smart.id.callback.retry" />
                   </Link>
                 </div>
-              </>
+              </div>
             ) : (
-              <AuthenticationLoader />
+              <div className="bg-white shadow-sm rounded-3 p-5 text-center">
+                <p className="m-0 mb-4">
+                  <FormattedMessage id="login.smart.id.callback.completing" />
+                </p>
+                <Loader className="align-middle" />
+                {slow && (
+                  <div>
+                    <Link
+                      className="btn btn-outline-primary mt-4"
+                      to={loginPath}
+                      onClick={() => dispatch(cancelMobileAuthentication())}
+                    >
+                      <FormattedMessage id="login.stop" />
+                    </Link>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
