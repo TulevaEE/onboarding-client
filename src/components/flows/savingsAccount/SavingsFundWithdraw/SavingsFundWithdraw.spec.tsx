@@ -195,7 +195,7 @@ describe(SavingsFundWithdraw, () => {
       currency: 'EUR',
       iban: mockBankAccounts[0],
     });
-    expect(history.location.pathname).toBe('/savings-fund/withdraw/success');
+    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/withdraw/success'));
   });
 
   it('displays error message when withdrawal fails', async () => {
@@ -288,7 +288,7 @@ describe(SavingsFundWithdraw, () => {
 
     await waitFor(() => expect(submittedData).toBeTruthy());
     expect(submittedData.amount).toBe(123.45);
-    expect(history.location.pathname).toBe('/savings-fund/withdraw/success');
+    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/withdraw/success'));
   });
 
   describe('when acting as a company', () => {
