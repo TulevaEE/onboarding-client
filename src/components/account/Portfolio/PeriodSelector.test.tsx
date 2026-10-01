@@ -443,6 +443,35 @@ describe('picking a date from the calendar', () => {
     expect(onPeriodChange).not.toHaveBeenCalled();
   });
 
+  it('waits for a day to be chosen while the open calendar is being moved through', () => {
+    browserWithCalendar();
+    renderSelector();
+
+    userEvent.click(screen.getByRole('button', { name: 'Choose end date from calendar' }));
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.input(openedCalendar(), { target: { value: '2025-08-14' } });
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.input(openedCalendar(), { target: { value: '2025-08-13' } });
+
+    expect(onPeriodChange).not.toHaveBeenCalled();
+
+    pick('2025-08-13');
+
+    expect(onPeriodChange).toHaveBeenCalledTimes(1);
+    expect(onPeriodChange).toHaveBeenCalledWith('2025-01-01', '2025-08-13');
+  });
+
+  it('opens again on the date in effect after a day outside the period was refused', () => {
+    browserWithCalendar();
+    renderSelector();
+
+    userEvent.click(screen.getByRole('button', { name: 'Choose end date from calendar' }));
+    pick('2025-09-01');
+
+    expect(onPeriodChange).not.toHaveBeenCalled();
+    expect(openedCalendar()).toHaveValue('2025-08-15');
+  });
+
   it('asks at once for the end date picked', () => {
     browserWithCalendar();
     renderSelector();

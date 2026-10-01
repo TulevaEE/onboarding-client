@@ -107,6 +107,28 @@ const DateInput: React.FunctionComponent<{
     }
   };
 
+  const takePickedDate = useRef(() => {});
+  takePickedDate.current = () => {
+    if (calendar.current) {
+      commit(pickedDate(calendar.current.value));
+      calendar.current.value = value;
+      calendar.current.blur();
+    }
+  };
+
+  useEffect(() => {
+    if (calendar.current) {
+      calendar.current.value = value;
+    }
+  }, [value]);
+
+  useEffect(() => {
+    const dateField = calendar.current;
+    const onDayChosen = () => takePickedDate.current();
+    dateField?.addEventListener('change', onDayChosen);
+    return () => dateField?.removeEventListener('change', onDayChosen);
+  }, []);
+
   const openCalendar = () => {
     if (!calendar.current || !showsPicker(calendar.current)) {
       textBox.current?.focus();
@@ -161,14 +183,10 @@ const DateInput: React.FunctionComponent<{
           tabIndex={-1}
           aria-hidden="true"
           className={`position-absolute top-0 end-0 h-100 opacity-0 ${styles.calendarPicker}`}
-          value={value}
+          defaultValue={value}
           min={min}
           max={max}
           onClick={(event) => showsPicker(event.currentTarget)}
-          onChange={(event) => {
-            commit(pickedDate(event.target.value));
-            event.target.blur();
-          }}
         />
       </div>
     </>
