@@ -174,6 +174,20 @@ describe('redactPii', () => {
       ).toBe('/trigger-procedure?provider=COOP_PANK&handoverToken=[token]&procedure=account');
     });
 
+    it('replaces the whole query of the Smart-ID callback page', () => {
+      expect(
+        redactPii(
+          'https://pension.tuleva.ee/login/smart-id/callback?value=a1B2&sessionSecretDigest=c3D4&userChallengeVerifier=e5F6',
+        ),
+      ).toBe('https://pension.tuleva.ee/login/smart-id/callback?[token]');
+    });
+
+    it('replaces the Smart-ID callback secrets wherever they appear', () => {
+      expect(redactPii('sessionSecretDigest=c3D4 userChallengeVerifier=e5F6')).toBe(
+        'sessionSecretDigest=[token] userChallengeVerifier=[token]',
+      );
+    });
+
     it('leaves a short word that starts like a token alone', () => {
       expect(redactPii('eyJfoo')).toBe('eyJfoo');
     });

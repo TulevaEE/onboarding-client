@@ -1,4 +1,9 @@
-import { isSecretParameter, redactPii, TOKEN_PLACEHOLDER } from './piiPatterns';
+import {
+  isSecretParameter,
+  isSmartIdCallbackSecret,
+  redactPii,
+  TOKEN_PLACEHOLDER,
+} from './piiPatterns';
 import { withoutGiftToken } from './giftPage';
 
 export type ParameterFilter = (name: string) => boolean;
@@ -43,7 +48,13 @@ const redactedComponent = (component: string): string => {
   return redacted === decoded ? scrubbed(component) : encodeURIComponent(redacted);
 };
 
-const redactedParameter = (parameter: string, isDropped: ParameterFilter): string | null => {
+const nameOf = (parameter: string): string => fullyDecoded(parameter.split('=')[0]);
+
+const redactedParameter = (
+  parameter: string,
+  isDropped: ParameterFilter,
+  isSecret: ParameterFilter,
+): string | null => {
   const valueStart = parameter.indexOf('=') + 1;
   const name = valueStart === 0 ? parameter : parameter.slice(0, valueStart - 1);
   const decodedName = fullyDecoded(name);
@@ -53,22 +64,27 @@ const redactedParameter = (parameter: string, isDropped: ParameterFilter): strin
   if (valueStart === 0) {
     return redactedComponent(parameter);
   }
-  const value = isSecretParameter(decodedName)
+  const value = isSecret(decodedName)
     ? encodeURIComponent(TOKEN_PLACEHOLDER)
     : redactedComponent(parameter.slice(valueStart));
   return `${redactedComponent(name)}=${value}`;
 };
 
+const everyParameter: ParameterFilter = () => true;
+
 const redactedParameters = (
   parameters: string,
   separator: string,
   isDropped: ParameterFilter,
-): string =>
-  parameters
-    .split(separator)
-    .map((parameter) => redactedParameter(parameter, isDropped))
+): string => {
+  const all = parameters.split(separator);
+  const isSmartIdCallback = all.some((parameter) => isSmartIdCallbackSecret(nameOf(parameter)));
+  const isSecret = isSmartIdCallback ? everyParameter : isSecretParameter;
+  return all
+    .map((parameter) => redactedParameter(parameter, isDropped, isSecret))
     .filter((parameter): parameter is string => parameter !== null)
     .join(separator);
+};
 
 export const redactPiiInQuery = (
   query: string,

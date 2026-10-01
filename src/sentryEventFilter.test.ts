@@ -96,6 +96,29 @@ describe('withoutPersonalData', () => {
     });
   });
 
+  it('replaces every value the Smart-ID callback page carries in its address', () => {
+    const event: Event = {
+      request: {
+        url: 'https://pension.tuleva.ee/login/smart-id/callback?value=a1B2&sessionSecretDigest=c3D4&userChallengeVerifier=e5F6',
+        query_string: 'value=a1B2&sessionSecretDigest=c3D4&userChallengeVerifier=e5F6',
+      },
+    };
+
+    expect(withoutPersonalData(event).request).toStrictEqual({
+      url: 'https://pension.tuleva.ee/login/smart-id/callback?value=%5Btoken%5D&sessionSecretDigest=%5Btoken%5D&userChallengeVerifier=%5Btoken%5D',
+      query_string:
+        'value=%5Btoken%5D&sessionSecretDigest=%5Btoken%5D&userChallengeVerifier=%5Btoken%5D',
+    });
+  });
+
+  it('keeps a value parameter on a page that is not the Smart-ID callback', () => {
+    const event: Event = { request: { query_string: 'value=42&fund=TUK75' } };
+
+    expect(withoutPersonalData(event).request).toStrictEqual({
+      query_string: 'value=42&fund=TUK75',
+    });
+  });
+
   it('replaces personal data in the message and the error of an event', () => {
     const event: Event = {
       message: 'Lookup failed for 39001011234',
