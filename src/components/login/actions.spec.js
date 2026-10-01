@@ -344,7 +344,7 @@ describe('Login actions', () => {
     expect(dispatch).toHaveBeenCalledWith({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink });
   });
 
-  it('opens the Smart-ID app right away on a phone', async () => {
+  it('leaves opening the Smart-ID app to the user on a phone', async () => {
     const assign = jest.fn();
     Object.defineProperty(window, 'location', {
       value: { assign, search: '', pathname: '/login' },
@@ -361,23 +361,8 @@ describe('Login actions', () => {
 
     await startSmartIdLogin('et');
 
-    expect(assign).toHaveBeenCalledWith(web2AppLink);
-  });
-
-  it('leaves the browser alone when the session starts on a computer', async () => {
-    const assign = jest.fn();
-    Object.defineProperty(window, 'location', {
-      value: { assign, search: '', pathname: '/login' },
-      writable: true,
-      configurable: true,
-    });
-    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve({ web2AppLink }));
-    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
-    const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
-
-    await startSmartIdLogin('et');
-
     expect(assign).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink });
   });
 
   it('shows the control code and polls when the remembered account is pushed a notification', async () => {

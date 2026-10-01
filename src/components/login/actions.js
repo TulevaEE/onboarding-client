@@ -35,7 +35,6 @@ import { api } from '../common';
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 
 import { getAuthentication } from '../common/authenticationManager';
-import { isMobileDevice } from '../common/isMobileDevice';
 import {
   forgetMobileIdPhoneNumber,
   rememberMobileIdPhoneNumber,
@@ -352,9 +351,6 @@ export function startSmartIdLogin(language, flow = 'DEVICE_LINK') {
         savePendingSmartIdAuthentication({ web2AppLink, returnPath });
         dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink });
         dispatch(getSmartIdTokens());
-        if (isMobileDevice()) {
-          window.location.assign(web2AppLink);
-        }
       })
       .catch((error) => {
         if (canceledOrSuperseded()) {

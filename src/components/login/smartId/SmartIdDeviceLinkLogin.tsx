@@ -34,12 +34,12 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
     <p className="m-0 mb-4">
       <FormattedMessage id="login.smart.id.mobile.instructions" />
     </p>
-    <Loader className="align-middle" />
-    <div className="d-grid mt-4">
+    <div className="d-grid mb-4">
       <a className="btn btn-primary btn-lg" href={web2AppLink}>
         <FormattedMessage id="login.smart.id.open.app" />
       </a>
     </div>
+    <Loader className="align-middle" />
     <CancelButton onCancel={onCancel} />
   </SmartIdLoginCard>
 );

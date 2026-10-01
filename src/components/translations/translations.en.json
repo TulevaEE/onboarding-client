@@ -15,7 +15,7 @@
   "login.smart.id.qr.expired": "The QR code expired.",
   "login.smart.id.qr.refresh": "Show a new QR code",
   "login.smart.id.open.app": "Open the Smart-ID app",
-  "login.smart.id.mobile.instructions": "Confirm the login in the Smart-ID app. You will be brought back here automatically.",
+  "login.smart.id.mobile.instructions": "Open the Smart-ID app and confirm the login there. You will be brought back here automatically.",
   "login.smart.id.callback.failed": "The login could not be completed. Please try again.",
   "login.smart.id.continue.as": "Continue as {firstName}",
   "login.smart.id.push.intro": "We will send a login request to the Smart-ID app on your phone.",
