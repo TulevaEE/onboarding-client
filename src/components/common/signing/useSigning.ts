@@ -26,19 +26,18 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
   const [error, setError] = useState<ErrorResponse | null>(null);
 
   useEffect(() => {
-    if (error) {
-      setSigned(false);
-      setLoading(false);
-      setChallengeCode(null);
-    }
-  }, [error]);
-
-  useEffect(() => {
     if (signed) {
       setLoading(false);
       setChallengeCode(null);
     }
   }, [signed]);
+
+  const failWith = (failure: unknown) => {
+    setError(toErrorResponse(failure));
+    setSigned(false);
+    setLoading(false);
+    setChallengeCode(null);
+  };
 
   const startSigning = async (entity: TSignableEntity) => {
     const { signingMethod } = getAuthentication();
@@ -67,7 +66,7 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
         throw new Error(`Invalid signing method: ${signingMethod}`);
       }
     } catch (e) {
-      setError(toErrorResponse(e));
+      failWith(e);
     }
   };
 
@@ -87,7 +86,7 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
           pollForIdCard(entity);
         }
       } catch (e) {
-        setError(toErrorResponse(e));
+        failWith(e);
       }
     }, POLL_DELAY);
   };
@@ -106,7 +105,7 @@ export const useSigning = <TSignableEntity extends { id: number | string }>(
           poll(entity, signingMethod);
         }
       } catch (e) {
-        setError(toErrorResponse(e));
+        failWith(e);
       }
     }, POLL_DELAY);
   };
