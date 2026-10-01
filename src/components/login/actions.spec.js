@@ -508,7 +508,7 @@ describe('Login actions', () => {
     };
     const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
     await startLoginBeforeTheAppRoundTrip();
-    mockApi.completeSmartIdCallback = jest.fn(() => Promise.resolve());
+    mockApi.completeSmartIdCallback = jest.fn(() => Promise.resolve('a-redemption-secret'));
     mockApi.getSmartIdTokens = jest.fn(() => Promise.resolve(tokens));
     const completeSmartIdLogin = createBoundAction(actions.completeSmartIdLogin);
 
@@ -605,30 +605,26 @@ describe('Login actions', () => {
     expect(redeemedHashes()).toEqual(['hash-of-the-started-session']);
   });
 
-  it('completes a callback login with the authentication hash of the session this tab started', async () => {
+  it('completes a callback login with the redemption secret the accepted callback returned', async () => {
     await startLoginBeforeTheAppRoundTrip();
-    mockApi.completeSmartIdCallback = jest.fn(() => Promise.resolve());
+    mockApi.completeSmartIdCallback = jest.fn(() => Promise.resolve('a-redemption-secret'));
     mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
 
     await createBoundAction(actions.completeSmartIdLogin)(aCallback);
     jest.runOnlyPendingTimers();
 
-    expect(redeemedHashes()).toEqual(['hash-of-the-started-session']);
+    expect(redeemedHashes()).toEqual(['a-redemption-secret']);
   });
 
-  it('fails a callback login in a tab that did not start it, without redeeming it', async () => {
-    mockApi.completeSmartIdCallback = jest.fn(() => Promise.resolve());
-    mockApi.getSmartIdTokens = jest.fn();
+  it('completes a callback login in a new tab that did not start it', async () => {
+    mockApi.completeSmartIdCallback = jest.fn(() => Promise.resolve('a-redemption-secret'));
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
 
     await createBoundAction(actions.completeSmartIdLogin)(aCallback);
     jest.runOnlyPendingTimers();
 
-    expect(dispatch).toHaveBeenCalledWith({
-      type: MOBILE_AUTHENTICATION_START_ERROR,
-      error: { body: { errors: [{ code: 'auth.session.not.found' }] } },
-    });
-    expect(mockApi.completeSmartIdCallback).not.toHaveBeenCalled();
-    expect(mockApi.getSmartIdTokens).not.toHaveBeenCalled();
+    expect(mockApi.completeSmartIdCallback).toHaveBeenCalledWith(aCallback);
+    expect(redeemedHashes()).toEqual(['a-redemption-secret']);
   });
 
   it('keeps the authentication hash out of local storage, cookies and the console', async () => {

@@ -40,6 +40,7 @@ import {
   mockValidatedCompany,
   secondPillarAssetsResponse,
   smartIdAuthenticationHash,
+  smartIdCallbackRedemptionSecret,
   smartIdQrDeviceLink,
   smartIdWeb2AppLink,
   secondPillarPaymentRateChangeResponse,
@@ -204,6 +205,7 @@ type SmartIdAuthenticationBackend = {
   resolvePolling: () => void;
   startSession: () => string;
   startedSessions: number;
+  acceptedCallbacks: number;
   startedFlows: string[];
   rememberedAccount: { firstName: string; lastName: string } | null;
 };
@@ -228,6 +230,7 @@ export function smartIdAuthenticationBackend(
       return latestAuthenticationHash;
     },
     startedSessions: 0,
+    acceptedCallbacks: 0,
     startedFlows: [],
     rememberedAccount: options.rememberedAccount ?? null,
   };
@@ -286,10 +289,15 @@ export function smartIdAuthenticationBackend(
 
     rest.post('http://localhost/v1/smart-id/login/callback', (req, res, ctx) => {
       const body = req.body as { value?: string };
+      if (!latestAuthenticationHash) {
+        return res(ctx.status(401), ctx.json({ errors: [{ code: 'auth.session.not.found' }] }));
+      }
       if (options.rejectCallback || !body.value) {
         return res(ctx.status(401), ctx.json({ errors: [{ code: 'smart.id.callback.invalid' }] }));
       }
-      return res(ctx.status(204));
+      backend.acceptedCallbacks += 1;
+      latestAuthenticationHash = smartIdCallbackRedemptionSecret(backend.acceptedCallbacks);
+      return res(ctx.status(200), ctx.json({ authenticationHash: latestAuthenticationHash }));
     }),
 
     rest.post('http://localhost/oauth/token', (req, res, ctx) => {

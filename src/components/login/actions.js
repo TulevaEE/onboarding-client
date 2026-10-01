@@ -385,30 +385,18 @@ export function startSmartIdLogin(language, flow = 'DEVICE_LINK') {
   };
 }
 
-const SMART_ID_LOGIN_NOT_STARTED_IN_THIS_TAB = {
-  body: { errors: [{ code: 'auth.session.not.found' }] },
-};
-
 export function completeSmartIdLogin(callback) {
   return (dispatch) => {
     smartIdStartSequence += 1;
     const startSequence = smartIdStartSequence;
-    const pending = loadPendingSmartIdAuthentication();
-    if (!pending) {
-      dispatch({
-        type: MOBILE_AUTHENTICATION_START_ERROR,
-        error: SMART_ID_LOGIN_NOT_STARTED_IN_THIS_TAB,
-      });
-      return Promise.resolve();
-    }
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
       .completeSmartIdCallback(callback)
-      .then(() => {
+      .then((authenticationHash) => {
         if (startSequence !== smartIdStartSequence) {
           return;
         }
-        dispatch(getSmartIdTokens(pending.authenticationHash));
+        dispatch(getSmartIdTokens(authenticationHash));
       })
       .catch((error) => {
         if (startSequence !== smartIdStartSequence) {

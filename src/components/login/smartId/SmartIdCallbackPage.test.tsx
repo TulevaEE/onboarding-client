@@ -145,9 +145,21 @@ describe('When the Smart-ID app returns to the browser', () => {
     expect(history.location.state).toBeUndefined();
   });
 
-  test('the login completes with the authentication hash of the latest start in this tab', async () => {
+  test('the login completes in a new tab the Smart-ID app opened, which has no pending login of its own', async () => {
     const backend = smartIdAuthenticationBackend(server);
-    startLoginBeforeTheAppRoundTrip(backend);
+    backend.startSession();
+    backend.resolvePolling();
+
+    openCallback(aCallback);
+
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    expect(history.location.state).toEqual({ justLoggedIn: true });
+  });
+
+  test('the login completes with the redemption secret of the accepted callback, not the hash the login started with', async () => {
+    const backend = smartIdAuthenticationBackend(server);
     startLoginBeforeTheAppRoundTrip(backend);
     backend.resolvePolling();
 
@@ -156,13 +168,12 @@ describe('When the Smart-ID app returns to the browser', () => {
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
     ).toBeInTheDocument();
+    expect(backend.acceptedCallbacks).toBe(1);
     expect(sessionStorage.getItem('pendingSmartIdAuthentication')).toBeNull();
   });
 
-  test('a callback in a tab that did not start the login offers a way back to the login page', async () => {
-    const backend = smartIdAuthenticationBackend(server);
-    backend.startSession();
-    backend.resolvePolling();
+  test('a callback the backend has no login for offers a way back to the login page', async () => {
+    smartIdAuthenticationBackend(server);
 
     openCallback(aCallback);
 

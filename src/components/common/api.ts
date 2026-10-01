@@ -153,8 +153,9 @@ export function getSmartIdQrCodeLink(): Promise<SmartIdQrCode> {
   return get(getEndpoint('/v1/smart-id/login/qr-code'));
 }
 
-export async function completeSmartIdCallback(callback: SmartIdLoginCallback): Promise<void> {
-  await post(getEndpoint('/v1/smart-id/login/callback'), callback);
+export async function completeSmartIdCallback(callback: SmartIdLoginCallback): Promise<string> {
+  const { authenticationHash } = await post(getEndpoint('/v1/smart-id/login/callback'), callback);
+  return authenticationHash;
 }
 
 export async function authenticateWithIdCardMtls(): Promise<boolean> {

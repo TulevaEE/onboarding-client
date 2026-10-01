@@ -31,6 +31,9 @@ export const smartIdWeb2AppLink = (language: string): string =>
 export const smartIdAuthenticationHash = (session: number): string =>
   `authentication-hash-of-smart-id-session-${session}`.padEnd(43, '_');
 
+export const smartIdCallbackRedemptionSecret = (callback: number): string =>
+  `redemption-secret-of-smart-id-callback-${callback}`.padEnd(43, '_');
+
 export const smartIdQrDeviceLink = (elapsedSeconds: number): string =>
   `https://smart-id.com/device-link/?deviceLinkType=QR&elapsedSeconds=${elapsedSeconds}&sessionToken=a-session-token&sessionType=auth&version=1.0&lang=est&authCode=an-auth-code`;
 
