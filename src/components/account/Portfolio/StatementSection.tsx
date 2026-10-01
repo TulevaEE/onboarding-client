@@ -6,6 +6,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useFunds, useMe, useTransactions } from '../../common/apiHooks';
 import { Euro } from '../../common/Euro';
 import Table from '../../common/table';
+import { Breakpoint } from '../../common/table/Table';
 import { formatAmountForCount, isActingAsSelf } from '../../common/utils';
 import { dayInTallinn, formatDayInTallinn } from '../../common/dateFormatter';
 import {
@@ -339,6 +340,7 @@ export const StatementSection: React.FunctionComponent<{
       title: <FormattedMessage id="savingsFund.statement.transactions.type" />,
       dataIndex: 'type',
       align: 'left' as const,
+      hideOnBreakpoint: ['xs'] as Breakpoint[],
     },
     {
       title: <FormattedMessage id="savingsFund.statement.transactions.units" />,
@@ -348,6 +350,7 @@ export const StatementSection: React.FunctionComponent<{
     {
       title: <FormattedMessage id="savingsFund.statement.transactions.nav" />,
       dataIndex: 'nav',
+      hideOnBreakpoint: ['xs'] as Breakpoint[],
     },
     {
       title: <FormattedMessage id="savingsFund.statement.transactions.amount" />,
