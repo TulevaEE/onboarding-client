@@ -3,21 +3,42 @@
   <head>
     <meta charset="utf-8">
     <!--
-      The partner handover token is a login credential that carries the person's identity. It has to
-      leave the address before any other script runs, because the Meta Pixel, Tag Manager and Sentry
-      all report the page address. The app reads it from sessionStorage (TriggerProcedure).
+      The partner handover token and the Smart-ID callback parameters are login material. They have
+      to leave the address before any other script runs, because the Meta Pixel, Tag Manager and
+      Sentry all report the page address. The app reads them from sessionStorage (TriggerProcedure,
+      SmartIdCallbackPage).
     -->
     <script>
       (function () {
-        try {
+        function parameter(name) {
+          var match = new RegExp('[?&]' + name + '=([^&#]*)').exec(window.location.search);
+          return match ? decodeURIComponent(match[1].replace(/\+/g, ' ')) : null;
+        }
+        function removeParameters(names) {
           var address = window.location;
-          var token = /[?&]handoverToken=([^&#]*)/.exec(address.search);
-          if (address.pathname.indexOf('/trigger-procedure') !== 0 || !token) {
-            return;
-          }
-          window.sessionStorage.setItem('handoverToken', decodeURIComponent(token[1].replace(/\+/g, ' ')));
-          var search = address.search.replace(/([?&])handoverToken=[^&#]*(&|$)/, '$1').replace(/[?&]$/, '');
+          var search = names
+            .reduce(function (rest, name) {
+              return rest.replace(new RegExp('([?&])' + name + '=[^&#]*(&|$)'), '$1');
+            }, address.search)
+            .replace(/[?&]$/, '');
           window.history.replaceState(window.history.state, '', address.pathname + search + address.hash);
+        }
+        try {
+          var path = window.location.pathname;
+          var handoverToken = parameter('handoverToken');
+          if (path.indexOf('/trigger-procedure') === 0 && handoverToken !== null) {
+            window.sessionStorage.setItem('handoverToken', handoverToken);
+            removeParameters(['handoverToken']);
+          }
+          if (path.indexOf('/login/smart-id/callback') === 0 && parameter('value') !== null) {
+            var callbackNames = ['value', 'sessionSecretDigest', 'userChallengeVerifier'];
+            var callback = {};
+            callbackNames.forEach(function (name) {
+              callback[name] = parameter(name);
+            });
+            window.sessionStorage.setItem('smartIdCallback', JSON.stringify(callback));
+            removeParameters(callbackNames);
+          }
         } catch (error) {}
       })();
     </script>
