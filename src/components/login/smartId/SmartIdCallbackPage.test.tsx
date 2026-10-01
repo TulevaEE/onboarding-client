@@ -176,7 +176,7 @@ describe('When the Smart-ID app returns to the browser', () => {
     openCallback(aCallback);
 
     expect(
-      await screen.findByText('You cancelled the login in the Smart-ID app.', undefined, {
+      await screen.findByText(/^You cancelled the login in the Smart.ID app\.$/, undefined, {
         timeout: 3000,
       }),
     ).toBeInTheDocument();
