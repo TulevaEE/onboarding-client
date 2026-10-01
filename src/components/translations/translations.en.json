@@ -8,6 +8,7 @@
   "login.mobile.id.remembered.number": "Phone number ending in {digits}.",
   "login.mobile.id.change.number": "Change number",
   "login.mobile.id.remember.number": "Remember my number",
+  "login.mobile.id.personal.code.invalid": "Check your identity code.",
   "login.smart.id": "Smart-ID",
   "login.smart.id.start": "Log in with Smart-ID",
   "login.smart.id.intro": "Log in from your own device. Nobody can start a Smart‑ID login for you remotely.",
