@@ -4,6 +4,7 @@ import { TranslationKey } from '../components/translations';
 declare global {
   interface Window {
     smartIdCallback?: SmartIdLoginCallback;
+    handoverToken?: string;
   }
 
   namespace FormatjsIntl {

@@ -96,6 +96,21 @@ describe('When an external provider process is triggered', () => {
     });
   });
 
+  describe('... and the page kept the handover token in memory because the session refused it', () => {
+    afterEach(() => {
+      delete window.handoverToken;
+    });
+
+    test('logs in with the token the page kept and then forgets it', async () => {
+      window.handoverToken = aHandoverToken;
+      initializeComponent('?provider=COOP_PANK&procedure=account');
+
+      expect(await screen.findByText('redirecting to', { exact: false })).toBeInTheDocument();
+      expect(getAuthentication().accessToken).toBe(anAuthenticationManager().accessToken);
+      expect(window.handoverToken).toBeUndefined();
+    });
+  });
+
   describe('... and the page has moved the handover token out of the address', () => {
     test('logs in with the token it kept for the session', async () => {
       sessionStorage.setItem(HANDOVER_TOKEN_STORAGE_KEY, aHandoverToken);

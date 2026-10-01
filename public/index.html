@@ -6,7 +6,7 @@
       The partner handover token and the Smart-ID callback parameters are login material. They have
       to leave the address before any other script runs, because the Meta Pixel, Tag Manager and
       Sentry all report the page address. The app reads them from sessionStorage (TriggerProcedure,
-      SmartIdCallbackPage), or for a Smart-ID callback from window.smartIdCallback when the storage
+      SmartIdCallbackPage), or from window.handoverToken and window.smartIdCallback when the storage
       refuses them.
     -->
     <script>
@@ -28,8 +28,12 @@
           var path = window.location.pathname;
           var handoverToken = parameter('handoverToken');
           if (path.indexOf('/trigger-procedure') === 0 && handoverToken !== null) {
-            window.sessionStorage.setItem('handoverToken', handoverToken);
             removeParameters(['handoverToken']);
+            try {
+              window.sessionStorage.setItem('handoverToken', handoverToken);
+            } catch (storageRefused) {
+              window.handoverToken = handoverToken;
+            }
           }
           if (path.indexOf('/login/smart-id/callback') === 0 && parameter('value') !== null) {
             var callbackNames = ['value', 'sessionSecretDigest', 'userChallengeVerifier'];
