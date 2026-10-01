@@ -73,7 +73,7 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
           />
           <button
             type="button"
-            className="btn btn-link p-0 d-block mt-1"
+            className="btn btn-link p-0 d-block mx-auto mt-1"
             onClick={() => setChangingNumber(true)}
           >
             <FormattedMessage id="login.mobile.id.change.number" />
