@@ -701,7 +701,7 @@ describe('the savings fund statement', () => {
 
     await waitFor(() => expect(screen.getByLabelText('From')).toHaveValue('01.01.2020'));
     expect(
-      screen.queryByText('No savings fund transactions in the selected period.'),
+      screen.queryByText('No investment fund transactions in the selected period.'),
     ).not.toBeInTheDocument();
     expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
   });
@@ -738,7 +738,7 @@ describe('the savings fund statement', () => {
     await waitFor(() => expect(screen.getByLabelText('From')).toHaveValue('01.01.2025'));
     expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
     expect(
-      screen.queryByText('No savings fund transactions in the selected period.'),
+      screen.queryByText('No investment fund transactions in the selected period.'),
     ).not.toBeInTheDocument();
   });
 
