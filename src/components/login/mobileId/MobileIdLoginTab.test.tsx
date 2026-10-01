@@ -42,7 +42,7 @@ describe('Mobile-ID login tab', () => {
     userEvent.type(identityCode(), '38888888888');
     userEvent.type(phoneNumber(), '+37255512345');
 
-    expect(screen.getByRole('checkbox', { name: /Remember my phone number/ })).toBeChecked();
+    expect(screen.getByRole('checkbox', { name: /Remember my number/ })).toBeChecked();
 
     userEvent.click(logIn());
 
@@ -53,7 +53,7 @@ describe('Mobile-ID login tab', () => {
     renderTab();
     userEvent.type(identityCode(), '38888888888');
     userEvent.type(phoneNumber(), '+37255512345');
-    userEvent.click(screen.getByRole('checkbox', { name: /Remember my phone number/ }));
+    userEvent.click(screen.getByRole('checkbox', { name: /Remember my number/ }));
 
     userEvent.click(logIn());
 

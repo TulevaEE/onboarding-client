@@ -7,7 +7,7 @@
   "login.mobile.id": "Mobiil-ID",
   "login.mobile.id.remembered.number": "Telefoninumber lõpuga {digits}.",
   "login.mobile.id.change.number": "Muuda numbrit",
-  "login.mobile.id.remember.number": "Jäta telefoninumber selles seadmes meelde",
+  "login.mobile.id.remember.number": "Jäta number meelde",
   "login.smart.id": "Smart-ID",
   "login.smart.id.start": "Logi sisse Smart-ID-ga",
   "login.smart.id.intro": "Logi sisse oma seadmest. Keegi ei saa Smart-ID sisselogimist sinu eest eemalt alustada.",
