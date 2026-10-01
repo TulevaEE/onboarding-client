@@ -2,7 +2,10 @@ import React from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 
-import { isWebEidSetupMessage, WebEidSetupMessage } from '../webEidSetupMessage/WebEidSetupMessage';
+import {
+  isIdEeInstructionsMessage,
+  IdEeInstructionsMessage,
+} from '../idEeInstructionsMessage/IdEeInstructionsMessage';
 import './ErrorMessage.scss';
 
 const noop = () => null;
@@ -21,8 +24,8 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
             className="error-message__detail mx-auto text-body-secondary small text-pretty"
             key={index}
           >
-            {isWebEidSetupMessage(error.code) ? (
-              <WebEidSetupMessage id={error.code} />
+            {isIdEeInstructionsMessage(error.code) ? (
+              <IdEeInstructionsMessage id={error.code} />
             ) : (
               <FormattedMessage id={error.code} />
             )}{' '}

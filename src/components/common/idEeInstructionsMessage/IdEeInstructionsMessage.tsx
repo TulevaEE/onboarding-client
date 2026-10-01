@@ -2,18 +2,18 @@ import React, { ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../../translations';
 
-export type WebEidSetupMessageId =
+export type IdEeInstructionsMessageId =
   | 'web.eid.extension.missing'
   | 'web.eid.id.software.missing'
   | 'web.eid.update.required';
 
-const INSTRUCTION_PAGES: Record<WebEidSetupMessageId, TranslationKey> = {
+const INSTRUCTION_PAGES: Record<IdEeInstructionsMessageId, TranslationKey> = {
   'web.eid.extension.missing': 'web.eid.help.browser.url',
   'web.eid.id.software.missing': 'web.eid.help.install.url',
   'web.eid.update.required': 'web.eid.help.install.url',
 };
 
-export const isWebEidSetupMessage = (id: string): id is WebEidSetupMessageId =>
+export const isIdEeInstructionsMessage = (id: string): id is IdEeInstructionsMessageId =>
   Object.hasOwn(INSTRUCTION_PAGES, id);
 
 const InstructionsLink = ({ urlId, children }: { urlId: TranslationKey; children: ReactNode }) => (
@@ -26,7 +26,7 @@ const InstructionsLink = ({ urlId, children }: { urlId: TranslationKey; children
   </FormattedMessage>
 );
 
-export const WebEidSetupMessage = ({ id }: { id: WebEidSetupMessageId }) => (
+export const IdEeInstructionsMessage = ({ id }: { id: IdEeInstructionsMessageId }) => (
   <FormattedMessage
     id={id}
     values={{
