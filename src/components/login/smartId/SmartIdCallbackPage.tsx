@@ -87,7 +87,7 @@ export const SmartIdCallbackPage: React.FC = () => {
               </div>
             ) : (
               <div className="bg-white shadow-sm rounded-3 p-5 text-center">
-                <p className="m-0 mb-4">
+                <p className="m-0 mb-4 text-pretty">
                   <FormattedMessage id="login.smart.id.callback.completing" />
                 </p>
                 <Loader className="align-middle" />
