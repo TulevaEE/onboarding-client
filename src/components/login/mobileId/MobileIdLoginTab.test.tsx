@@ -91,13 +91,15 @@ describe('Mobile-ID login tab', () => {
     expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255512345', OTHER_VALID_CODE);
   });
 
-  it('hides the phone field without hinting at the number when the service remembers one', async () => {
-    renderTab();
+  it('hides the phone field without hinting at the number or offering to change it when the service remembers one', async () => {
+    const { container } = renderTab();
     userEvent.type(identityCode(), REMEMBERED_CODE);
 
     await waitForPhoneFieldToHide();
 
-    expect(screen.queryByText(/ending in/)).not.toBeInTheDocument();
+    expect(container).toHaveTextContent(/^$/);
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('button')).toEqual([logIn()]);
     userEvent.click(logIn());
     expect(onMobileIdSubmit).toHaveBeenCalledWith('', REMEMBERED_CODE);
   });
