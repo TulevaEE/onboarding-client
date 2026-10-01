@@ -64,7 +64,7 @@ describe('Smart-ID device link login', () => {
 
     expect(
       screen.getByText(
-        'Open the Smart-ID app on your phone, choose Scan QR code and point the camera at this code.',
+        /^Open the Smart.ID app on your phone, choose Scan QR code and point the camera at this code\.$/,
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('img')).toHaveAttribute('data-value', qrCodeLinkAfter(0));
@@ -213,7 +213,7 @@ describe('Smart-ID device link login', () => {
 
     expect(
       screen.getByText(
-        'Open the Smart-ID app and confirm the login there. You will be brought back here automatically.',
+        /^Open the Smart.ID app and confirm the login there\. You will be brought back here automatically\.$/,
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Open the Smart-ID app' })).toHaveAttribute(
