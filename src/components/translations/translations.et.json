@@ -11,7 +11,6 @@
   "login.mobile.id.phone.number.check": "Kontrolli telefoninumbrit.",
   "login.smart.id": "Smart-ID",
   "login.smart.id.start": "Logi sisse Smart-ID-ga",
-  "login.smart.id.intro": "Logi sisse oma seadmest. Keegi ei saa Smart‑ID sisselogimist sinu eest eemalt alustada.",
   "login.smart.id.qr.instructions": "Ava telefonis Smart‑ID rakendus, vali QR-koodi skaneerimine ja suuna kaamera sellele koodile.",
   "login.smart.id.qr.expired": "QR-kood aegus.",
   "login.smart.id.qr.refresh": "Näita uut QR-koodi",

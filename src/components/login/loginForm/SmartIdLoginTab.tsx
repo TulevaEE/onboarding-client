@@ -49,19 +49,14 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
   }
 
   return (
-    <>
-      <p className="m-0 mb-3 text-body-secondary text-balance">
-        <FormattedMessage id="login.smart.id.intro" />
-      </p>
-      <div className="d-grid">
-        <button
-          type="button"
-          className="btn btn-primary btn-lg"
-          onClick={() => onSmartIdLoginStart(language, 'DEVICE_LINK')}
-        >
-          <FormattedMessage id="login.smart.id.start" />
-        </button>
-      </div>
-    </>
+    <div className="d-grid">
+      <button
+        type="button"
+        className="btn btn-primary btn-lg"
+        onClick={() => onSmartIdLoginStart(language, 'DEVICE_LINK')}
+      >
+        <FormattedMessage id="login.smart.id.start" />
+      </button>
+    </div>
   );
 };
