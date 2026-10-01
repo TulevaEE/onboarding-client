@@ -23,6 +23,7 @@ const currentAddress = () =>
 describe('the first script of the page', () => {
   afterEach(() => {
     sessionStorage.clear();
+    delete window.handoverToken;
     jest.restoreAllMocks();
     window.history.replaceState(null, '', '/');
   });
@@ -57,15 +58,14 @@ describe('the first script of the page', () => {
     expect(sessionStorage.getItem(HANDOVER_TOKEN_STORAGE_KEY)).toBeNull();
   });
 
-  it('keeps the token in the address when the session cannot hold it, so the login still works', () => {
+  it('moves the token out of the address into the page when the session cannot hold it, so the login still works', () => {
     jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
       throw new Error('QuotaExceededError');
     });
 
     loadPageAt('/trigger-procedure?provider=COOP_PANK&handoverToken=eyJhbGci.eyJzdWIi.c2ln');
 
-    expect(currentAddress()).toBe(
-      '/trigger-procedure?provider=COOP_PANK&handoverToken=eyJhbGci.eyJzdWIi.c2ln',
-    );
+    expect(currentAddress()).toBe('/trigger-procedure?provider=COOP_PANK');
+    expect(window.handoverToken).toBe('eyJhbGci.eyJzdWIi.c2ln');
   });
 });

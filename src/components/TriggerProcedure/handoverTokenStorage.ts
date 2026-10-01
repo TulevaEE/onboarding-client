@@ -12,7 +12,9 @@ export const storedHandoverToken = (): string | undefined =>
   withSessionStorage(
     (storage) => storage.getItem(HANDOVER_TOKEN_STORAGE_KEY) ?? undefined,
     undefined,
-  );
+  ) ?? window.handoverToken;
 
-export const forgetHandoverToken = (): void =>
+export const forgetHandoverToken = (): void => {
+  delete window.handoverToken;
   withSessionStorage((storage) => storage.removeItem(HANDOVER_TOKEN_STORAGE_KEY), undefined);
+};
