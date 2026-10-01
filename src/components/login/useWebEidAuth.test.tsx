@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, waitFor, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import config from 'react-global-configuration';
@@ -164,6 +164,25 @@ describe('Web eID Auth Integration', () => {
     expect(await screen.findByRole('alert')).toBeInTheDocument();
 
     userEvent.click(screen.getByRole('tab', { name: 'Smart-ID' }));
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('ignores the failure of an ID-card login the user left for another login method', async () => {
+    let failIdCardLogin: (error: unknown) => void = () => {};
+    mockAuthenticateWithIdCardWebEid.mockReturnValueOnce(
+      new Promise((resolve, reject) => {
+        failIdCardLogin = reject;
+      }),
+    );
+    openLoginPage();
+    logInWithIdCard();
+    await waitFor(() => expect(mockAuthenticateWithIdCardWebEid).toHaveBeenCalled());
+    userEvent.click(screen.getByRole('tab', { name: 'Smart-ID' }));
+    await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+
+    failIdCardLogin({ code: ErrorCode.ERR_WEBEID_USER_CANCELLED });
+    await act(() => new Promise((resolve) => setTimeout(resolve, 50)));
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });

@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -51,13 +52,30 @@ export function useWebEidAuth() {
       const from = location.state?.from;
       history.replace(loginLanding(from));
     },
-    onError: (error) => {
-      dispatch(failWebEidLogin(mapWebEidError(error)));
-    },
   });
 
+  const latestAttempt = useRef(0);
+  useEffect(
+    () => () => {
+      latestAttempt.current += 1;
+    },
+    [],
+  );
+
+  const authenticate = () => {
+    latestAttempt.current += 1;
+    const attempt = latestAttempt.current;
+    mutation.mutate(undefined, {
+      onError: (error) => {
+        if (attempt === latestAttempt.current) {
+          dispatch(failWebEidLogin(mapWebEidError(error)));
+        }
+      },
+    });
+  };
+
   return {
-    authenticate: mutation.mutate,
+    authenticate,
     isLoading: mutation.isLoading,
   };
 }
