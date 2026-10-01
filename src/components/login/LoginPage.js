@@ -36,6 +36,7 @@ export const LoginPage = ({
   phoneNumber,
   personalCode,
   controlCode,
+  verificationCodeChoice,
   smartIdWeb2AppLink,
   loadingAuthentication,
   loadingUserConversion,
@@ -93,6 +94,7 @@ export const LoginPage = ({
               <AuthenticationLoader
                 onCancel={onCancelMobileAuthentication}
                 controlCode={controlCode}
+                verificationCodeChoice={verificationCodeChoice}
               />
             ) : (
               ''
@@ -118,6 +120,7 @@ LoginPage.defaultProps = {
   phoneNumber: '',
   personalCode: '',
   controlCode: '',
+  verificationCodeChoice: false,
   smartIdWeb2AppLink: null,
   loadingAuthentication: false,
   loadingUserConversion: false,
@@ -140,6 +143,7 @@ LoginPage.propTypes = {
   phoneNumber: Types.string,
   personalCode: Types.string,
   controlCode: Types.string,
+  verificationCodeChoice: Types.bool,
   smartIdWeb2AppLink: Types.string,
   loadingAuthentication: Types.bool,
   loadingUserConversion: Types.bool,
@@ -155,6 +159,7 @@ const mapStateToProps = (state) => ({
   phoneNumber: state.login.phoneNumber,
   personalCode: state.login.personalCode,
   controlCode: state.login.controlCode,
+  verificationCodeChoice: state.login.verificationCodeChoice,
   smartIdWeb2AppLink: state.login.smartIdWeb2AppLink,
   loadingAuthentication: state.login.loadingAuthentication,
   loadingUserConversion: state.login.loadingUserConversion,

@@ -70,6 +70,16 @@ describe('Smart-ID device link login', () => {
     expect(screen.getByRole('img')).toHaveAttribute('data-value', qrCodeLinkAfter(0));
   });
 
+  it('tells what the Smart-ID app will ask under the QR code', async () => {
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    expect(screen.getByRole('img')).toBeInTheDocument();
+    expect(
+      screen.getByText(/^The Smart.ID app will ask you to confirm logging in to Tuleva\.$/),
+    ).toBeInTheDocument();
+  });
+
   it('renders a fresh QR code every second', async () => {
     mockGetSmartIdQrCodeLink
       .mockResolvedValueOnce({ deviceLink: qrCodeLinkAfter(0) })
@@ -220,6 +230,9 @@ describe('Smart-ID device link login', () => {
       'href',
       web2AppLink,
     );
+    expect(
+      screen.getByText(/^The Smart.ID app will ask you to confirm logging in to Tuleva\.$/),
+    ).toBeInTheDocument();
     expect(mockGetSmartIdQrCodeLink).not.toHaveBeenCalled();
 
     userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
