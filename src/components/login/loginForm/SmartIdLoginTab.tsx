@@ -50,7 +50,7 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
         className="btn btn-primary btn-lg text-wrap text-balance"
         onClick={() => onSmartIdLoginStart(language, 'DEVICE_LINK')}
       >
-        <FormattedMessage id="login.smart.id.start" />
+        <FormattedMessage id="login.enter" />
       </button>
     </div>
   );
