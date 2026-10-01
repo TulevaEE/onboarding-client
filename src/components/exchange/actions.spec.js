@@ -40,6 +40,8 @@ function nextTick() {
   return Promise.resolve();
 }
 
+const unknownSigningError = { body: { errors: [{ code: 'signature.error.unknown' }] } };
+
 describe('Exchange actions', () => {
   let dispatch;
   let state;
@@ -306,7 +308,7 @@ describe('Exchange actions', () => {
 
     expect(dispatch).toHaveBeenCalledWith({
       type: SIGN_MANDATE_ERROR,
-      error,
+      error: unknownSigningError,
     });
   });
 
@@ -321,7 +323,7 @@ describe('Exchange actions', () => {
     expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenCalledWith({
       type: SIGN_MANDATE_START_ERROR,
-      error,
+      error: unknownSigningError,
     });
   });
 
@@ -365,6 +367,50 @@ describe('Exchange actions', () => {
       type: SIGN_MANDATE_SUCCESS,
       signedMandateId: mandate.id,
       pillar: mandate.pillar,
+    });
+  });
+
+  function mockIdCardSigningUntilPersisted() {
+    mockIdCard.getIdCardSigningCertificate = jest.fn(() =>
+      Promise.resolve({ certificate: 'certificate', supportedHashFunctions: ['SHA-256'] }),
+    );
+    mockApi.startIdCardSignature = jest.fn(() =>
+      Promise.resolve({ hash: 'hash', hashFunction: 'SHA-256' }),
+    );
+    mockIdCard.signHashWithIdCard = jest.fn(() => Promise.resolve('signature'));
+  }
+
+  it('gives a reason when persisting the id card signature fails without an error response', async () => {
+    mockIdCardSigningUntilPersisted();
+    mockApi.persistIdCardSignature = jest.fn(() =>
+      Promise.reject(new Error('Unexpected signature status: SOMETHING_ELSE')),
+    );
+
+    const signMandate = createBoundAction(actions.signMandateWithIdCard);
+    await signMandate({ id: 'id', pillar: 2 });
+
+    expect(dispatch).toHaveBeenLastCalledWith({
+      type: SIGN_MANDATE_START_ERROR,
+      error: unknownSigningError,
+    });
+  });
+
+  it('gives a reason when the id card signature status poll fails without an error response', async () => {
+    mockIdCardSigningUntilPersisted();
+    mockApi.persistIdCardSignature = jest.fn(() => Promise.resolve('OUTSTANDING_TRANSACTION'));
+    mockApi.getIdCardSignatureStatus = jest.fn(() =>
+      Promise.reject(new TypeError('Failed to fetch')),
+    );
+
+    const signMandate = createBoundAction(actions.signMandateWithIdCard);
+    await signMandate({ id: 'id', pillar: 2 });
+    jest.runOnlyPendingTimers();
+    await nextTick();
+    await nextTick();
+
+    expect(dispatch).toHaveBeenLastCalledWith({
+      type: SIGN_MANDATE_ERROR,
+      error: unknownSigningError,
     });
   });
 
@@ -423,8 +469,7 @@ describe('Exchange actions', () => {
   });
 
   it('can handle unprocessable entity errors when saving the mandate', async () => {
-    const error = new Error('oh no it failed 2');
-    error.status = 400;
+    const error = { status: 400, body: { errors: [{ code: 'mandate.invalid' }] } };
     mockApi.saveMandateWithAuthentication = jest.fn(() => {
       dispatch.mockClear();
       return Promise.reject(error);
@@ -539,13 +584,8 @@ describe('Exchange actions', () => {
 
     expect(dispatch).toHaveBeenCalledWith({
       type: SIGN_MANDATE_START_ERROR,
-      error: expect.any(Error),
+      error: unknownSigningError,
     });
-    expect(dispatch).toHaveBeenCalledWith(
-      expect.objectContaining({
-        error: expect.objectContaining({ message: 'Invalid signing method: INVALID_METHOD' }),
-      }),
-    );
   });
 
   it('does not create new mandate if one is already provided when signing with smart id', async () => {
