@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, Redirect, useLocation } from 'react-router-dom';
@@ -8,11 +8,14 @@ import { SMART_ID_CALLBACK_FAILED_ERROR } from '../../common/errorAlert/ErrorAle
 import AuthenticationLoader from '../../common/authenticationLoader/AuthenticationLoader';
 import { getAuthentication } from '../../common/authenticationManager';
 import { usePageTitle } from '../../common/usePageTitle';
-import { SmartIdLoginCallback } from '../../common/apiModels';
 import { completeSmartIdLogin, getPendingSmartIdReturnPath } from '../actions';
 import { loginPath } from '../constants';
 import { loginLanding } from '../loginLanding';
 import styles from '../LoginPage.module.scss';
+import {
+  forgetSmartIdCallbackParameters,
+  smartIdCallbackParameters,
+} from './smartIdCallbackParameters';
 
 export const SmartIdCallbackPage: React.FC = () => {
   usePageTitle('pageTitle.loginPage');
@@ -20,10 +23,11 @@ export const SmartIdCallbackPage: React.FC = () => {
   const { search } = useLocation();
   const isAuthenticated = useSelector(() => getAuthentication().isAuthenticated());
   const loginError = useSelector((state: { login: { error: string | null } }) => state.login.error);
-  const callback = useMemo(() => parseCallback(search), [search]);
+  const [callback] = useState(() => smartIdCallbackParameters(search));
   const [destination] = useState(() => loginLanding(getPendingSmartIdReturnPath() ?? undefined));
 
   useEffect(() => {
+    forgetSmartIdCallbackParameters();
     if (callback) {
       dispatch(completeSmartIdLogin(callback));
     }
@@ -57,14 +61,3 @@ export const SmartIdCallbackPage: React.FC = () => {
     </div>
   );
 };
-
-function parseCallback(search: string): SmartIdLoginCallback | null {
-  const parameters = new URLSearchParams(search);
-  const value = parameters.get('value');
-  const sessionSecretDigest = parameters.get('sessionSecretDigest');
-  const userChallengeVerifier = parameters.get('userChallengeVerifier');
-
-  return value && sessionSecretDigest && userChallengeVerifier
-    ? { value, sessionSecretDigest, userChallengeVerifier }
-    : null;
-}

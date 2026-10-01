@@ -62,6 +62,26 @@ describe('When the Smart-ID app returns to the browser', () => {
     expect(history.location.state).toEqual({ justLoggedIn: true });
   });
 
+  test('the login completes from the parameters the page moved out of its address', async () => {
+    const backend = smartIdAuthenticationBackend(server);
+    backend.resolvePolling();
+    sessionStorage.setItem(
+      'smartIdCallback',
+      JSON.stringify({
+        value: 'a-callback-value',
+        sessionSecretDigest: 'a-digest',
+        userChallengeVerifier: 'a-verifier',
+      }),
+    );
+
+    openCallback('');
+
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    expect(sessionStorage.getItem('smartIdCallback')).toBeNull();
+  });
+
   test('a login headed for the app root lands on the account page with the login landing flag', async () => {
     const backend = smartIdAuthenticationBackend(server);
     backend.resolvePolling();
