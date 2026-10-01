@@ -18,6 +18,7 @@ const AUTHENTICATION_ERROR_MESSAGES = {
   'smart.id.unsupported.country': 'login.error.smart.id.unsupported.country',
   'smart.id.wrong.verification.code': 'login.error.smart.id.wrong.verification.code',
   'smart.id.certificate.revoked': 'login.error.smart.id.certificate.revoked',
+  'smart.id.account.unusable': 'login.error.smart.id.account.unusable',
   'mobile.id.cancelled': 'login.error.mobile.id.cancelled',
   'mobile.id.timeout': 'login.error.mobile.id.timeout',
   'mobile.id.no.signal': 'login.error.mobile.id.no.signal',
