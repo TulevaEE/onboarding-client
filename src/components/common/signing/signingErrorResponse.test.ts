@@ -150,4 +150,22 @@ describe('toSigningErrorResponse', () => {
       );
     },
   );
+
+  it.each([
+    ['id.card.signing.certificate.revoked', 'Signing certificate is revoked or suspended'],
+    ['signature.not.awaited', 'Capital transfer contract does not await this signature: id=1'],
+    [
+      'signature.session.entity.mismatch',
+      'Signing session was started for another entity: entity=Mandate, id=1',
+    ],
+  ])(
+    'shows only the explanation written for the user when the backend refuses with %s',
+    (backendCode, logMessage) => {
+      const backendError = { body: { errors: [{ code: backendCode, message: logMessage }] } };
+
+      expect(toSigningErrorResponse(backendError, 'CAPITAL_TRANSFER_CONTRACT')).toEqual(
+        errorResponseWithCode(backendCode),
+      );
+    },
+  );
 });

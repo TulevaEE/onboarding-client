@@ -6,14 +6,20 @@ import { SignableEntity } from './types';
 
 const SIGNATURE_STATE_CODES = ['signature.already.signed', 'signature.not.signed'];
 
+const REFUSALS_EXPLAINED_IN_OWN_WORDS = [
+  'id.card.signing.certificate.revoked',
+  'signature.not.awaited',
+  'signature.session.entity.mismatch',
+];
+
 const ENTITY_MESSAGE_SUFFIX: Record<SignableEntity, string> = {
   MANDATE: 'mandate',
   MANDATE_BATCH: 'mandateBatch',
   CAPITAL_TRANSFER_CONTRACT: 'capitalTransferContract',
 };
 
-const signatureStateCode = (error: ErrorResponse) =>
-  error.body.errors.map(({ code }) => code).find((code) => SIGNATURE_STATE_CODES.includes(code));
+const firstCodeAmong = (error: ErrorResponse, codes: string[]) =>
+  error.body.errors.map(({ code }) => code).find((code) => codes.includes(code));
 
 type SigningFailureCategory = 'http' | 'network' | 'unexpected';
 
@@ -45,10 +51,12 @@ const reportUnexplainedFailure = (error: unknown, entity: SignableEntity) => {
 
 export const toSigningErrorResponse = (error: unknown, entity: SignableEntity): ErrorResponse => {
   if (isErrorResponse(error)) {
-    const stateCode = signatureStateCode(error);
-    return stateCode
-      ? errorResponseWithCode(`${stateCode}.${ENTITY_MESSAGE_SUFFIX[entity]}`)
-      : error;
+    const stateCode = firstCodeAmong(error, SIGNATURE_STATE_CODES);
+    if (stateCode) {
+      return errorResponseWithCode(`${stateCode}.${ENTITY_MESSAGE_SUFFIX[entity]}`);
+    }
+    const refusalCode = firstCodeAmong(error, REFUSALS_EXPLAINED_IN_OWN_WORDS);
+    return refusalCode ? errorResponseWithCode(refusalCode) : error;
   }
   reportUnexplainedFailure(error, entity);
   return errorResponseWithCode('signature.error.unknown');
