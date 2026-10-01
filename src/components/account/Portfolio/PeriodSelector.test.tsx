@@ -472,6 +472,40 @@ describe('picking a date from the calendar', () => {
     expect(openedCalendar()).toHaveValue('2025-08-15');
   });
 
+  it('opens on the date in effect after the calendar was closed without a day chosen', () => {
+    browserWithCalendar();
+    renderSelector();
+
+    userEvent.click(screen.getByRole('button', { name: 'Choose end date from calendar' }));
+    // eslint-disable-next-line testing-library/prefer-user-event
+    fireEvent.input(openedCalendar(), { target: { value: '2025-08-10' } });
+    userEvent.click(screen.getByRole('button', { name: 'Choose end date from calendar' }));
+
+    expect(openedCalendar()).toHaveValue('2025-08-15');
+  });
+
+  it('opens on the end date the period moved to', () => {
+    browserWithCalendar();
+    const { rerender } = renderSelector();
+
+    userEvent.click(screen.getByRole('button', { name: 'Choose end date from calendar' }));
+    pick('2025-09-01');
+    rerender(<PeriodSelector from="2025-01-01" to="2025-06-30" onPeriodChange={onPeriodChange} />);
+
+    expect(openedCalendar()).toHaveValue('2025-06-30');
+  });
+
+  it('refuses a start date picked after the end the period moved to', () => {
+    browserWithCalendar();
+    const { rerender } = renderSelector();
+    rerender(<PeriodSelector from="2025-01-01" to="2025-06-01" onPeriodChange={onPeriodChange} />);
+
+    userEvent.click(screen.getByRole('button', { name: 'Choose start date from calendar' }));
+    pick('2025-07-01');
+
+    expect(onPeriodChange).not.toHaveBeenCalled();
+  });
+
   it('asks at once for the end date picked', () => {
     browserWithCalendar();
     renderSelector();
