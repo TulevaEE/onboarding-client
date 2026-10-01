@@ -2155,5 +2155,7 @@
   "giftLink.gifts.none": "No gifts have arrived yet.",
   "giftLink.gifts.noNameYet": "Gift",
   "giftLink.gifts.onItsWay": "The money is on its way.",
-  "giftLink.gifts.error": "Could not load the gifts. The link itself still works."
+  "giftLink.gifts.error": "Could not load the gifts. The link itself still works.",
+  "units.roundingNote.screen": "Units are shown to three decimal places, as the fund rules state; totals are added up from the exact quantities. Hover over a number to see its exact quantity.",
+  "units.roundingNote.printed": "Units are shown to three decimal places, as the fund rules state; balances are calculated from the exact quantities."
 }

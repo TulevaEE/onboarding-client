@@ -1,3 +1,5 @@
+import { formatAmountForCount } from './utils';
+
 const NAV_SCALE_BY_ISIN: Record<string, number> = {
   EE3600109435: 5, // TUK75
   EE3600109443: 5, // TUK00
@@ -21,7 +23,31 @@ export function navScaleFor(isin: string, nav: number): number {
   return Math.max(MIN_NAV_SCALE, decimalPlaces(nav));
 }
 
+const REGISTER_UNITS_FRACTION_DIGITS = 5;
+export const UNITS_FRACTION_DIGITS = 3;
+
+function hundredThousandths(units: number): number {
+  return Number(Math.abs(units).toFixed(REGISTER_UNITS_FRACTION_DIGITS).replace('.', ''));
+}
+
+function registerUnits(units: number): number {
+  return Number(units.toFixed(REGISTER_UNITS_FRACTION_DIGITS));
+}
+
+export function roundUnits(units: number): number {
+  const thousandths = Math.round(hundredThousandths(units) / 100);
+  return (Math.sign(units) * thousandths) / 1000;
+}
+
+export function isRoundedUnits(units: number): boolean {
+  return roundUnits(units) !== registerUnits(units);
+}
+
 export function formatUnits(units: number): string {
-  const thousandths = Math.round(Number(Math.abs(units).toFixed(5).replace('.', '')) / 100);
-  return `${units < 0 ? '-' : ''}${(thousandths / 1000).toFixed(3)}`;
+  return formatAmountForCount(roundUnits(units), UNITS_FRACTION_DIGITS);
+}
+
+export function formatExactUnits(units: number): string {
+  const exact = registerUnits(units);
+  return formatAmountForCount(exact, Math.max(UNITS_FRACTION_DIGITS, decimalPlaces(exact)));
 }

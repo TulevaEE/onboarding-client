@@ -10,7 +10,8 @@ import { Fund, TransactionType, User } from '../../common/apiModels';
 import { getBankName } from '../../common/iban';
 import { TranslationKey } from '../../translations';
 import { PII_CLASS } from '../../tracking/piiMarkup';
-import { formatUnits, navScaleFor } from '../../common/fundPrecision';
+import { navScaleFor } from '../../common/fundPrecision';
+import { Units } from '../../common/Units';
 
 const TYPE_LABEL: Record<TransactionType, TranslationKey> = {
   CONTRIBUTION_CASH: 'transactions.detail.type.subscription',
@@ -104,7 +105,9 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
             <dt className="col-sm-4 mb-sm-2 text-balance">
               <FormattedMessage id="transactions.detail.units" />
             </dt>
-            <dd className="col-sm-8">{formatUnits(transaction.units)}</dd>
+            <dd className="col-sm-8">
+              <Units units={transaction.units} />
+            </dd>
           </>
         )}
 

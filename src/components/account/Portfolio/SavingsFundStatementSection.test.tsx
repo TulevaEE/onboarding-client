@@ -324,7 +324,7 @@ describe('the savings fund statement', () => {
     userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
 
     const { text } = await downloadedCsv();
-    expect(text).toContain('01.01.2026;Contribution;3,0000;1,40000;4,20');
+    expect(text).toContain('01.01.2026;Contribution;3,000;1,40000;4,20');
   });
 
   it('leaves a transaction that crossed midnight in Estonia out of the year before', async () => {
@@ -350,9 +350,9 @@ describe('the savings fund statement', () => {
 
     // 10 units bought before the period; 10 + 20 − 5 held at its end.
     const opening = await screen.findByRole('row', { name: /Opening balance 01\.01\.2025/ });
-    expect(within(opening).getByText('10.0000')).toBeInTheDocument();
+    expect(within(opening).getByText('10.000')).toBeInTheDocument();
     const closing = screen.getByRole('row', { name: /Closing balance 31\.12\.2025/ });
-    expect(within(closing).getByText('25.0000')).toBeInTheDocument();
+    expect(within(closing).getByText('25.000')).toBeInTheDocument();
   });
 
   it('takes units transferred away off the period total and the closing balance', async () => {
@@ -365,9 +365,108 @@ describe('the savings fund statement', () => {
 
     // 10 units held before the period; 20 bought, 5 redeemed and 4 given away within it.
     const closing = await lastYearsClosingBalance();
-    expect(within(closing).getByText('21.0000')).toBeInTheDocument();
-    const periodTotal = screen.getByRole('row', { name: /^Total\s+11\.0000/ });
-    expect(cellTexts(periodTotal)).toEqual(['Total', '', '11.0000', '', '11.20\u00a0€']);
+    expect(within(closing).getByText('21.000')).toBeInTheDocument();
+    const periodTotal = screen.getByRole('row', { name: /^Total\s+11\.000/ });
+    expect(cellTexts(periodTotal)).toEqual(['Total', '', '11.000', '', '11.20\u00a0€']);
+  });
+
+  const boughtBeforeThePeriod = savingsTransaction('2024-06-01T10:00:00Z', 10, 1.0, 10);
+
+  const roundedUnitsNote =
+    'Units are shown to three decimal places, as the fund rules state; totals are added up from the exact quantities. Hover over a number to see its exact quantity.';
+
+  const roundedUnitsPrintedNote =
+    'Units are shown to three decimal places, as the fund rules state; balances are calculated from the exact quantities.';
+
+  it('shows units to three decimals, rounded half up, on screen, in print and in the CSV', async () => {
+    accountHolding([
+      boughtBeforeThePeriod,
+      savingsTransaction('2025-03-10T10:00:00Z', 2.0005, 1.1178, 2.24),
+    ]);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    const purchaseRows = await screen.findAllByRole('row', { name: /^10\.03\.2025/ });
+    expect(purchaseRows.map(cellTexts)).toEqual([
+      ['10.03.2025', 'Contribution', '2.001', '1.11780', '2.24\u00a0€'],
+      ['10.03.2025', 'Contribution', '2.001', '1.11780', '2.24\u00a0€', '12.001', '13.41\u00a0€'],
+    ]);
+
+    await lastYearsClosingBalance();
+    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    expect(text.split('\r\n')).toContain('10.03.2025;Contribution;2,001;1,11780;2,24;12,001;13,41');
+  });
+
+  it('shows the exact units behind a rounded figure on hover', async () => {
+    accountHolding([
+      boughtBeforeThePeriod,
+      savingsTransaction('2025-03-10T10:00:00Z', 2.0005, 1.1178, 2.24),
+    ]);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    const [shownPurchase] = await screen.findAllByRole('row', { name: /^10\.03\.2025/ });
+    expect(within(shownPurchase).getByTitle('2.0005')).toHaveTextContent('2.001');
+  });
+
+  it('adds the units of the period up from their exact quantities, not from the rounded rows', async () => {
+    accountHolding([
+      boughtBeforeThePeriod,
+      savingsTransaction('2025-03-10T10:00:00Z', 1.0004, 1.2, 1.2),
+      savingsTransaction('2025-08-01T10:00:00Z', 1.0004, 1.2, 1.2),
+    ]);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    await lastYearsClosingBalance();
+
+    const periodTotal = screen.getByRole('row', { name: /^Total\s+\d/ });
+    expect(cellTexts(periodTotal)).toEqual(['Total', '', '2.001', '', '2.40\u00a0€']);
+    expect(screen.getAllByRole('row', { name: /^(10\.03|01\.08)\.2025/ }).map(cellTexts)).toEqual([
+      ['01.08.2025', 'Contribution', '1.000', '1.20000', '1.20\u00a0€'],
+      ['10.03.2025', 'Contribution', '1.000', '1.20000', '1.20\u00a0€'],
+      ['10.03.2025', 'Contribution', '1.000', '1.20000', '1.20\u00a0€', '11.000', '13.20\u00a0€'],
+      ['01.08.2025', 'Contribution', '1.000', '1.20000', '1.20\u00a0€', '12.001', '14.40\u00a0€'],
+    ]);
+  });
+
+  it('says on screen and in print that the units are rounded when a figure was', async () => {
+    accountHolding([
+      boughtBeforeThePeriod,
+      savingsTransaction('2025-03-10T10:00:00Z', 2.0005, 1.1178, 2.24),
+    ]);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(await screen.findByText(roundedUnitsNote)).toBeInTheDocument();
+    expect(screen.getByText(roundedUnitsPrintedNote)).toBeInTheDocument();
+  });
+
+  it('says nothing about rounding when every unit figure is shown in full', async () => {
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    await lastYearsClosingBalance();
+    expect(screen.queryByText(roundedUnitsNote)).not.toBeInTheDocument();
+    expect(screen.queryByText(roundedUnitsPrintedNote)).not.toBeInTheDocument();
   });
 
   it('names transferred units rather than calling them a contribution', async () => {
@@ -386,8 +485,8 @@ describe('the savings fund statement', () => {
 
     const { text } = await downloadedCsv();
     const lines = text.split('\r\n');
-    expect(lines).toContain('01.09.2025;Units transferred;-4,0000;;-4,80;21,0000;');
-    expect(lines).toContain('15.09.2025;Units received;6,0000;;7,20;27,0000;');
+    expect(lines).toContain('01.09.2025;Units transferred;-4,000;;-4,80;21,000;');
+    expect(lines).toContain('15.09.2025;Units received;6,000;;7,20;27,000;');
   });
 
   it('leaves the unit price and the balance value of transferred units empty', async () => {
@@ -396,13 +495,13 @@ describe('the savings fund statement', () => {
 
     const transferredRows = await screen.findAllByRole('row', { name: /^01\.09\.2025/ });
     expect(transferredRows.map(cellTexts)).toEqual([
-      ['01.09.2025', 'Units transferred', '−4.0000', '', '−4.80\u00a0€'],
-      ['01.09.2025', 'Units transferred', '−4.0000', '', '−4.80\u00a0€', '21.0000', ''],
+      ['01.09.2025', 'Units transferred', '−4.000', '', '−4.80\u00a0€'],
+      ['01.09.2025', 'Units transferred', '−4.000', '', '−4.80\u00a0€', '21.000', ''],
     ]);
     const receivedRows = screen.getAllByRole('row', { name: /^15\.09\.2025/ });
     expect(receivedRows.map(cellTexts)).toEqual([
-      ['15.09.2025', 'Units received', '6.0000', '', '7.20\u00a0€'],
-      ['15.09.2025', 'Units received', '6.0000', '', '7.20\u00a0€', '27.0000', ''],
+      ['15.09.2025', 'Units received', '6.000', '', '7.20\u00a0€'],
+      ['15.09.2025', 'Units received', '6.000', '', '7.20\u00a0€', '27.000', ''],
     ]);
   });
 
@@ -445,12 +544,12 @@ describe('the savings fund statement', () => {
     expect(text).toBe(
       [
         '\ufeffDate;Transaction;Units;NAV;Amount;Balance (units);Balance value',
-        'Opening balance 01.01.2025;;;;;10,0000;120,00',
-        '10.03.2025;Contribution;20,0000;1,10000;22,00;30,0000;33,00',
-        '01.08.2025;Redemption;-5,0000;1,20000;-6,00;25,0000;30,00',
+        'Opening balance 01.01.2025;;;;;10,000;120,00',
+        '10.03.2025;Contribution;20,000;1,10000;22,00;30,000;33,00',
+        '01.08.2025;Redemption;-5,000;1,20000;-6,00;25,000;30,00',
         'Total contributions;;;;;;22,00',
         'Total withdrawals;;;;;;-6,00',
-        'Closing balance 31.12.2025;;;;;25,0000;250,00',
+        'Closing balance 31.12.2025;;;;;25,000;250,00',
         'Change in value over the period;;;;;;114,00',
       ].join('\r\n'),
     );
@@ -472,12 +571,12 @@ describe('the savings fund statement', () => {
     expect(text).toBe(
       [
         '\ufeffKuupäev;Tehing;Osakud;NAV;Summa;Jääk (osakut);Jäägi väärtus',
-        'Algseis 01.01.2025;;;;;10,0000;120,00',
-        '10.03.2025;Sissemakse;20,0000;1,10000;22,00;30,0000;33,00',
-        '01.08.2025;Väljamakse;-5,0000;1,20000;-6,00;25,0000;30,00',
+        'Algseis 01.01.2025;;;;;10,000;120,00',
+        '10.03.2025;Sissemakse;20,000;1,10000;22,00;30,000;33,00',
+        '01.08.2025;Väljamakse;-5,000;1,20000;-6,00;25,000;30,00',
         'Sissemaksed kokku;;;;;;22,00',
         'Väljamaksed kokku;;;;;;-6,00',
-        'Lõppseis 31.12.2025;;;;;25,0000;250,00',
+        'Lõppseis 31.12.2025;;;;;25,000;250,00',
         'Väärtuse muutus perioodil;;;;;;114,00',
       ].join('\r\n'),
     );
@@ -501,8 +600,8 @@ describe('the savings fund statement', () => {
 
     const { text } = await downloadedCsv();
     const lines = text.split('\r\n');
-    expect(lines).toContain('Opening balance 01.01.2020;;;;;0,0000;');
-    expect(lines).toContain(`Closing balance ${moment(today).format('DD.MM.YYYY')};;;;;32,0000;`);
+    expect(lines).toContain('Opening balance 01.01.2020;;;;;0,000;');
+    expect(lines).toContain(`Closing balance ${moment(today).format('DD.MM.YYYY')};;;;;32,000;`);
     expect(text).not.toContain('Change in value');
   });
 
@@ -517,7 +616,7 @@ describe('the savings fund statement', () => {
     userEvent.click(await screen.findByRole('button', { name: 'Download CSV' }));
 
     const { text } = await downloadedCsv();
-    expect(text.split('\r\n')).toContain('01.04.2025;Redemption;-0,2000;1,00000;-0,20;0,0000;0,00');
+    expect(text.split('\r\n')).toContain('01.04.2025;Redemption;-0,200;1,00000;-0,20;0,000;0,00');
   });
 
   it('is left out when the transactions never load, rather than claiming an empty period', async () => {
@@ -574,7 +673,7 @@ describe('the savings fund statement', () => {
 
     const closing = await screen.findByRole('row', { name: /Closing balance/ });
     expect(within(closing).getByText('350.00 €')).toBeInTheDocument();
-    expect(within(closing).getByText('32.0000')).toBeInTheDocument();
+    expect(within(closing).getByText('32.000')).toBeInTheDocument();
   });
 
   it('closes at the register balance, units reserved for a withdrawal included, and counts them in the value change', async () => {
@@ -720,9 +819,9 @@ describe('the savings fund statement', () => {
       initializeComponent();
 
       const secondPurchase = await screen.findByRole('row', {
-        name: /10\.03\.2025.*30\.0000/,
+        name: /10\.03\.2025.*30\.000/,
       });
-      expect(within(secondPurchase).getByText('30.0000')).toBeInTheDocument();
+      expect(within(secondPurchase).getByText('30.000')).toBeInTheDocument();
       expect(within(secondPurchase).getByText('33.00 €')).toBeInTheDocument();
     });
 

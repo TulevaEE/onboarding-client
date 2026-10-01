@@ -2245,5 +2245,7 @@
   "giftLink.gifts.none": "Kingitusi ei ole veel tulnud.",
   "giftLink.gifts.noNameYet": "Kingitus",
   "giftLink.gifts.onItsWay": "Raha on teel.",
-  "giftLink.gifts.error": "Kingituste laadimine ebaõnnestus. Link ise töötab edasi."
+  "giftLink.gifts.error": "Kingituste laadimine ebaõnnestus. Link ise töötab edasi.",
+  "units.roundingNote.screen": "Osakud on näidatud fondi tingimuste kohaselt täpsusega kolm kohta pärast koma, summad on arvutatud täpsetest kogustest. Täpse koguse näed, kui viid kursori numbrile.",
+  "units.roundingNote.printed": "Osakud on näidatud fondi tingimuste kohaselt täpsusega kolm kohta pärast koma, saldod on arvutatud täpsetest kogustest."
 }

@@ -65,6 +65,13 @@ describe('the tax report the backend calculated', () => {
     expect(screen.getByText(/Nothing to declare/)).toBeInTheDocument();
   });
 
+  it('lists the units redeemed to three decimals rounded half up, the exact quantity on hover', () => {
+    const [redemption] = report().redemptions;
+    render(report({ redemptions: [{ ...redemption, units: 2.0005 }] }), { detailsOpen: true });
+
+    expect(screen.getByTitle('2.0005')).toHaveTextContent('2.001');
+  });
+
   it('asks for the details and lists each redemption once they are open', () => {
     const onDetailsToggle = jest.fn();
     const { rerender } = render(report(), { onDetailsToggle });

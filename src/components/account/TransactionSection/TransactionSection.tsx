@@ -8,10 +8,12 @@ import Table from '../../common/table';
 import { Euro } from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { formatDate } from '../../common/dateFormatter';
-import { formatAmountForCount, isActingAsSelf } from '../../common/utils';
+import { isActingAsSelf } from '../../common/utils';
 import { Breakpoint, TableColumn } from '../../common/table/Table';
 import { getOtherTransactionPages } from './getOtherTransactionPages';
 import { signedUnits } from '../../common/transactions';
+import { Units } from '../../common/Units';
+import { isRoundedUnits } from '../../common/fundPrecision';
 
 export const TransactionSection: React.FunctionComponent<{
   limit?: number;
@@ -60,6 +62,12 @@ export const TransactionSection: React.FunctionComponent<{
 
   const hasPensionTransactions = fundTransactions.some((transaction) => transaction.pillar);
 
+  const showsRoundedUnits =
+    !limit &&
+    fundTransactions.some(
+      (transaction) => transaction.units != null && isRoundedUnits(transaction.units),
+    );
+
   const unitsColumn = (() => {
     if (limit) {
       return [];
@@ -73,7 +81,7 @@ export const TransactionSection: React.FunctionComponent<{
         dataIndex: 'units',
         hideOnBreakpoint: ['xs', 'sm'] as Breakpoint[],
         ...(allSameFund && {
-          footer: formatAmountForCount(unitsSum, 2),
+          footer: <Units units={unitsSum} />,
         }),
       },
     ];
@@ -144,7 +152,7 @@ export const TransactionSection: React.FunctionComponent<{
           fund: <span>{transaction.fundName}</span>,
           ...(!limit &&
             transaction.units != null && {
-              units: formatAmountForCount(signedUnits(transaction), 2),
+              units: <Units units={signedUnits(transaction)} />,
             }),
           amount: <Euro amount={transaction.amount} />,
           key: transaction.time,
@@ -182,6 +190,11 @@ export const TransactionSection: React.FunctionComponent<{
         </div>
       )}
       <Table columns={columns} dataSource={dataSource} />
+      {showsRoundedUnits && (
+        <p className="text-body-secondary small mt-3 text-pretty">
+          <FormattedMessage id="units.roundingNote.screen" />
+        </p>
+      )}
     </section>
   );
 };
