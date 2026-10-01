@@ -1,11 +1,8 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Router } from 'react-router-dom';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import config from 'react-global-configuration';
-import { IntlProvider } from 'react-intl';
 import {
   ErrorCode,
   ExtensionUnavailableError,
@@ -13,8 +10,9 @@ import {
   VersionMismatchError,
 } from '@web-eid/web-eid-library';
 
-import { IdCardLoginTab } from './loginForm/IdCardLoginTab';
-import translations from '../translations/translations.en.json';
+import { createDefaultStore, renderWrapped } from '../../test/utils';
+// eslint-disable-next-line import/no-named-as-default
+import LoginPage from './LoginPage';
 
 const mockAuthenticateWithIdCardWebEid = jest.fn();
 const mockWebEidStatus = jest.fn();
@@ -26,39 +24,28 @@ jest.mock('@web-eid/web-eid-library', () => ({
 
 jest.mock('../common/api', () => ({
   authenticateWithIdCardWebEid: (...args: unknown[]) => mockAuthenticateWithIdCardWebEid(...args),
+  getRememberedSmartIdAccount: () => Promise.resolve(null),
 }));
 
 const configOptions = { freeze: false, assign: false };
 
 describe('Web eID Auth Integration', () => {
-  let queryClient: QueryClient;
   let history: MemoryHistory;
 
-  const renderWithProviders = (ui: React.ReactElement, searchParams = '') => {
-    queryClient = new QueryClient({
-      defaultOptions: {
-        queries: { retry: false },
-        mutations: { retry: false },
-      },
-    });
-    history = createMemoryHistory();
-    history.push({ search: searchParams });
-
-    // Mock window.location.search
+  const openLoginPage = () => {
     Object.defineProperty(window, 'location', {
-      value: { search: searchParams },
+      value: { search: '' },
       writable: true,
     });
+    history = createMemoryHistory({ initialEntries: ['/login'] });
+    return renderWrapped(<LoginPage />, history as never, createDefaultStore(history as never));
+  };
 
-    return render(
-      <QueryClientProvider client={queryClient}>
-        <Router history={history}>
-          <IntlProvider locale="en" messages={translations}>
-            {ui}
-          </IntlProvider>
-        </Router>
-      </QueryClientProvider>,
-    );
+  const idCardLogIn = () => screen.getByRole('button', { name: 'Log in' });
+
+  const logInWithIdCard = () => {
+    userEvent.click(screen.getByRole('tab', { name: 'ID-card' }));
+    userEvent.click(idCardLogIn());
   };
 
   beforeEach(() => {
@@ -70,10 +57,9 @@ describe('Web eID Auth Integration', () => {
     const mockTokens = { accessToken: 'access-token', refreshToken: 'refresh-token' };
     mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce(mockTokens);
 
-    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    openLoginPage();
 
-    const button = screen.getByRole('button', { name: /log in/i });
-    userEvent.click(button);
+    logInWithIdCard();
 
     await waitFor(() => {
       expect(mockAuthenticateWithIdCardWebEid).toHaveBeenCalledWith({ lang: 'et' });
@@ -88,11 +74,11 @@ describe('Web eID Auth Integration', () => {
   it('replaces the login entry so going back does not hand out a new landing', async () => {
     mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce({});
 
-    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    openLoginPage();
     history.replace({ pathname: '/login' });
     const entriesOnTheLoginPage = history.length;
 
-    userEvent.click(screen.getByRole('button'));
+    logInWithIdCard();
 
     await waitFor(() => {
       expect(history.location.pathname).toBe('/account');
@@ -104,10 +90,10 @@ describe('Web eID Auth Integration', () => {
   it('should redirect to location.state.from when set by PrivateRoute', async () => {
     mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce({});
 
-    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    openLoginPage();
     history.replace({ pathname: '/login', state: { from: '/capital/listings/42' } });
 
-    userEvent.click(screen.getByRole('button'));
+    logInWithIdCard();
 
     await waitFor(() => {
       expect(history.location.pathname).toBe('/capital/listings/42');
@@ -118,10 +104,10 @@ describe('Web eID Auth Integration', () => {
   it('should treat a redirect from the app root as the ordinary account landing', async () => {
     mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce({});
 
-    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    openLoginPage();
     history.replace({ pathname: '/login', state: { from: '/' } });
 
-    userEvent.click(screen.getByRole('button'));
+    logInWithIdCard();
 
     await waitFor(() => {
       expect(history.location.pathname).toBe('/account');
@@ -132,10 +118,10 @@ describe('Web eID Auth Integration', () => {
   it('keeps the query string of an account landing recorded by PrivateRoute', async () => {
     mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce({});
 
-    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    openLoginPage();
     history.replace({ pathname: '/login', state: { from: '/account?language=en' } });
 
-    userEvent.click(screen.getByRole('button'));
+    logInWithIdCard();
 
     await waitFor(() => {
       expect(history.location.pathname).toBe('/account');
@@ -148,14 +134,51 @@ describe('Web eID Auth Integration', () => {
     config.set({ language: 'en' }, configOptions);
     mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce({});
 
-    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    openLoginPage();
 
-    const button = screen.getByRole('button');
-    userEvent.click(button);
+    logInWithIdCard();
 
     await waitFor(() => {
       expect(mockAuthenticateWithIdCardWebEid).toHaveBeenCalledWith({ lang: 'en' });
     });
+  });
+
+  it('shows a failed ID-card login in the page alert, not inside the tab', async () => {
+    mockAuthenticateWithIdCardWebEid.mockRejectedValueOnce({
+      code: ErrorCode.ERR_WEBEID_USER_CANCELLED,
+    });
+    openLoginPage();
+
+    logInWithIdCard();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/Authentication was cancelled/i);
+    expect(within(screen.getByRole('tabpanel')).queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('clears a failed ID-card login when the user switches to another login method', async () => {
+    mockAuthenticateWithIdCardWebEid.mockRejectedValueOnce({
+      code: ErrorCode.ERR_WEBEID_USER_CANCELLED,
+    });
+    openLoginPage();
+    logInWithIdCard();
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('tab', { name: 'Smart-ID' }));
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('clears a failed ID-card login when the user tries again', async () => {
+    mockAuthenticateWithIdCardWebEid
+      .mockRejectedValueOnce({ code: ErrorCode.ERR_WEBEID_USER_CANCELLED })
+      .mockReturnValueOnce(new Promise(() => {}));
+    openLoginPage();
+    logInWithIdCard();
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+
+    userEvent.click(idCardLogIn());
+
+    await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument());
   });
 
   it('should display user cancelled error', async () => {
@@ -163,9 +186,9 @@ describe('Web eID Auth Integration', () => {
       code: ErrorCode.ERR_WEBEID_USER_CANCELLED,
     });
 
-    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    openLoginPage();
 
-    userEvent.click(screen.getByRole('button'));
+    logInWithIdCard();
 
     await waitFor(() => {
       expect(screen.getByText(/Authentication was cancelled/i)).toBeInTheDocument();
@@ -201,12 +224,15 @@ describe('Web eID Auth Integration', () => {
       mockAuthenticateWithIdCardWebEid.mockRejectedValueOnce(new ExtensionUnavailableError());
       mockWebEidStatus.mockRejectedValueOnce(statusError);
 
-      renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+      openLoginPage();
 
-      userEvent.click(screen.getByRole('button'));
+      logInWithIdCard();
 
       expect(await screen.findByText(message)).toBeInTheDocument();
-      expect(screen.getByRole('link')).toHaveAttribute('href', instructionsUrl);
+      expect(within(screen.getByRole('alert')).getByRole('link')).toHaveAttribute(
+        'href',
+        instructionsUrl,
+      );
     },
   );
 
@@ -218,9 +244,9 @@ describe('Web eID Auth Integration', () => {
       nativeApp: '2.7.0',
     });
 
-    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    openLoginPage();
 
-    userEvent.click(screen.getByRole('button'));
+    logInWithIdCard();
 
     expect(
       await screen.findByText(/check that your ID.*card reader is connected/i),
@@ -228,7 +254,8 @@ describe('Web eID Auth Integration', () => {
   });
 
   it('does not check the Web eID status before the user logs in', () => {
-    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    openLoginPage();
+    userEvent.click(screen.getByRole('tab', { name: 'ID-card' }));
 
     expect(mockWebEidStatus).not.toHaveBeenCalled();
   });
@@ -238,9 +265,9 @@ describe('Web eID Auth Integration', () => {
     async (code) => {
       mockAuthenticateWithIdCardWebEid.mockRejectedValueOnce({ code });
 
-      renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+      openLoginPage();
 
-      userEvent.click(screen.getByRole('button'));
+      logInWithIdCard();
 
       expect(await screen.findByText(/time to enter the PIN1 code ran out/i)).toBeInTheDocument();
     },
@@ -252,9 +279,9 @@ describe('Web eID Auth Integration', () => {
       body: { errors: [{ code: 'id.card.document.type.not.allowed' }] },
     });
 
-    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    openLoginPage();
 
-    userEvent.click(screen.getByRole('button'));
+    logInWithIdCard();
 
     await waitFor(() => {
       expect(
@@ -266,26 +293,13 @@ describe('Web eID Auth Integration', () => {
   it('should display generic error for unknown errors', async () => {
     mockAuthenticateWithIdCardWebEid.mockRejectedValueOnce(new Error('Network error'));
 
-    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    openLoginPage();
 
-    userEvent.click(screen.getByRole('button'));
+    logInWithIdCard();
 
     await waitFor(() => {
       expect(screen.getByText(/check that your ID.*card reader is connected/i)).toBeInTheDocument();
     });
-  });
-
-  it('should call mTLS handler when ?mtls=true is set', () => {
-    const onAuthenticateWithIdCardMtls = jest.fn();
-    renderWithProviders(
-      <IdCardLoginTab onAuthenticateWithIdCardMtls={onAuthenticateWithIdCardMtls} />,
-      '?mtls=true',
-    );
-
-    userEvent.click(screen.getByRole('button'));
-
-    expect(onAuthenticateWithIdCardMtls).toHaveBeenCalledTimes(1);
-    expect(mockAuthenticateWithIdCardWebEid).not.toHaveBeenCalled();
   });
 
   it('should show loading state while authenticating', async () => {
@@ -295,10 +309,10 @@ describe('Web eID Auth Integration', () => {
     });
     mockAuthenticateWithIdCardWebEid.mockReturnValueOnce(authPromise);
 
-    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    openLoginPage();
 
-    const button = screen.getByRole('button');
-    userEvent.click(button);
+    logInWithIdCard();
+    const button = idCardLogIn();
 
     await waitFor(() => {
       expect(button).toBeDisabled();

@@ -12,6 +12,8 @@ import {
   ID_CARD_AUTHENTICATION_START_ERROR,
   ID_CARD_AUTHENTICATION_SUCCESS,
   ID_CARD_AUTHENTICATION_ERROR,
+  WEB_EID_AUTHENTICATION_ERROR,
+  LOGIN_ERROR_CLEARED,
   GET_USER_START,
   GET_USER_SUCCESS,
   GET_USER_ERROR,
@@ -121,6 +123,12 @@ export default function loginReducer(state = initialState, action) {
         loadingAuthentication: false,
         error: null,
       };
+
+    case WEB_EID_AUTHENTICATION_ERROR:
+      return { ...state, error: action.errorCode };
+
+    case LOGIN_ERROR_CLEARED:
+      return { ...state, error: null };
 
     case GET_USER_START:
       return { ...state, loadingUser: true, userError: null };

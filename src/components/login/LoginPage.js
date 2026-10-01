@@ -19,6 +19,7 @@ import {
   cancelMobileAuthentication,
   authenticateWithIdCard,
   startSmartIdLogin,
+  clearLoginError,
 } from './actions';
 import { getAuthentication } from '../common/authenticationManager';
 import { loginLanding } from './loginLanding';
@@ -34,6 +35,7 @@ export const LoginPage = ({
   onCancelMobileAuthentication,
   onSmartIdLoginStart,
   onAuthenticateWithIdCard,
+  onLoginMethodChange,
   phoneNumber,
   personalCode,
   controlCode,
@@ -77,6 +79,7 @@ export const LoginPage = ({
                 mobileIdStartError={errorDescription}
                 onSmartIdLoginStart={onSmartIdLoginStart}
                 onAuthenticateWithIdCard={onAuthenticateWithIdCard}
+                onLoginMethodChange={onLoginMethodChange}
                 monthlyThirdPillarContribution={monthlyThirdPillarContribution}
                 exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
               />
@@ -118,6 +121,7 @@ LoginPage.defaultProps = {
   onCancelMobileAuthentication: noop,
   onSmartIdLoginStart: noop,
   onAuthenticateWithIdCard: noop,
+  onLoginMethodChange: noop,
 
   isAuthenticated: false,
   phoneNumber: '',
@@ -141,6 +145,7 @@ LoginPage.propTypes = {
   onCancelMobileAuthentication: Types.func,
   onSmartIdLoginStart: Types.func,
   onAuthenticateWithIdCard: Types.func,
+  onLoginMethodChange: Types.func,
 
   isAuthenticated: Types.bool,
   phoneNumber: Types.string,
@@ -179,6 +184,7 @@ const mapDispatchToProps = (dispatch) =>
       onCancelMobileAuthentication: cancelMobileAuthentication,
       onSmartIdLoginStart: startSmartIdLogin,
       onAuthenticateWithIdCard: authenticateWithIdCard,
+      onLoginMethodChange: clearLoginError,
     },
     dispatch,
   );

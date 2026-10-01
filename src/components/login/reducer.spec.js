@@ -13,6 +13,8 @@ import {
   ID_CARD_AUTHENTICATION_SUCCESS,
   ID_CARD_AUTHENTICATION_ERROR,
   ID_CARD_AUTHENTICATION_START_ERROR,
+  WEB_EID_AUTHENTICATION_ERROR,
+  LOGIN_ERROR_CLEARED,
   GET_USER_START,
   GET_USER_SUCCESS,
   GET_USER_ERROR,
@@ -165,6 +167,22 @@ describe('Login reducer', () => {
     const newState = loginReducer(undefined, action);
 
     expect(newState.error).toBe('oh noes!!1');
+  });
+
+  it('keeps the error of a failed Web eID login without leaving the login form', () => {
+    const action = { type: WEB_EID_AUTHENTICATION_ERROR, errorCode: 'web.eid.extension.missing' };
+
+    const newState = loginReducer(initialState, action);
+
+    expect(newState).toEqual({ ...initialState, error: 'web.eid.extension.missing' });
+  });
+
+  it('clears the error when asked to', () => {
+    const action = { type: LOGIN_ERROR_CLEARED };
+
+    const newState = loginReducer({ ...initialState, error: 'smart.id.timeout' }, action);
+
+    expect(newState).toEqual(initialState);
   });
 
   it('starts loading when user when starting to get the user', () => {

@@ -2,7 +2,6 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { useWebEidAuth } from '../useWebEidAuth';
-import { ErrorAlert } from '../../common';
 
 function isLegacyMtlsRequested(): boolean {
   const params = new URLSearchParams(window.location.search);
@@ -14,24 +13,18 @@ interface IdCardLoginTabProps {
 }
 
 export const IdCardLoginTab: React.FC<IdCardLoginTabProps> = ({ onAuthenticateWithIdCardMtls }) => {
-  const { authenticate, isLoading, error, reset } = useWebEidAuth();
+  const { authenticate, isLoading } = useWebEidAuth();
 
   const handleClick = () => {
     if (isLegacyMtlsRequested()) {
       onAuthenticateWithIdCardMtls();
     } else {
-      reset();
       authenticate();
     }
   };
 
   return (
     <div className="d-grid">
-      {error && (
-        <div className="text-start">
-          <ErrorAlert description={error} />
-        </div>
-      )}
       <button
         type="button"
         className="btn btn-primary btn-lg"
