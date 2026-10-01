@@ -3,10 +3,19 @@ type Redaction = (text: string) => string;
 export const TOKEN_PLACEHOLDER = '[token]';
 const IBAN_PLACEHOLDER = '[iban]';
 
-const SECRET_PARAMETER_NAMES = ['handoverToken'];
+const SMART_ID_CALLBACK_SECRET_NAMES = ['sessionSecretDigest', 'userChallengeVerifier'];
 
-export const isSecretParameter = (name: string): boolean =>
-  SECRET_PARAMETER_NAMES.some((secret) => secret.toLowerCase() === name.toLowerCase());
+const SECRET_PARAMETER_NAMES = ['handoverToken', ...SMART_ID_CALLBACK_SECRET_NAMES];
+
+const isOneOf = (names: string[], name: string): boolean =>
+  names.some((candidate) => candidate.toLowerCase() === name.toLowerCase());
+
+export const isSecretParameter = (name: string): boolean => isOneOf(SECRET_PARAMETER_NAMES, name);
+
+export const isSmartIdCallbackSecret = (name: string): boolean =>
+  isOneOf(SMART_ID_CALLBACK_SECRET_NAMES, name);
+
+const SMART_ID_CALLBACK_QUERY = /(\/login\/smart-id\/callback(?:\?|%3F))[^#\s"']+/gi;
 
 const SECRET_PARAMETER = new RegExp(
   `((?:${SECRET_PARAMETER_NAMES.join('|')})(?:=|%3D))[^&#\\s"']+`,
@@ -86,6 +95,7 @@ const redactIbansStartingAWord =
   };
 
 const REDACTIONS: Redaction[] = [
+  replacing(SMART_ID_CALLBACK_QUERY, `$1${TOKEN_PLACEHOLDER}`),
   replacing(SECRET_PARAMETER, `$1${TOKEN_PLACEHOLDER}`),
   replacing(SIGNED_TOKEN, TOKEN_PLACEHOLDER),
   replacing(EMAIL_ADDRESS, '$1[email]'),

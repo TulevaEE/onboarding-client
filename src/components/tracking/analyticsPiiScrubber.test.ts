@@ -90,6 +90,19 @@ describe('fetch', () => {
     expect(address.searchParams.get('dr')).toBe('https://pension.tuleva.ee/kingitus/:token');
   });
 
+  it('redacts the Smart-ID callback parameters from the page address a hit reports', async () => {
+    const callbackPage = encodeURIComponent(
+      'https://pension.tuleva.ee/login/smart-id/callback?value=a1B2&sessionSecretDigest=c3D4&userChallengeVerifier=e5F6',
+    );
+
+    await window.fetch(`${GA4_COLLECT}?v=2&dl=${callbackPage}`);
+
+    const address = new URL(fetchSpy.mock.calls[0][0] as string);
+    expect(address.searchParams.get('dl')).toBe(
+      'https://pension.tuleva.ee/login/smart-id/callback?[token]',
+    );
+  });
+
   it('redacts an email address that the page address carries percent-encoded twice', async () => {
     const page = encodeURIComponent(
       `https://pension.tuleva.ee/account?email=${encodeURIComponent('john.doe@example.com')}`,
