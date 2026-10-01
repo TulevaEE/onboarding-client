@@ -33,7 +33,9 @@ const describeStatus = (signed: boolean, loading: boolean) => {
 };
 
 const SigningHarness = () => {
-  const { startSigning, signed, loading, error } = useSigning<{ id: number }>('MANDATE_BATCH');
+  const { startSigning, cancelSigning, signed, loading, error } = useSigning<{ id: number }>(
+    'MANDATE_BATCH',
+  );
   const [outcome, setOutcome] = useState('');
   const status = describeStatus(signed, loading);
   const sign = () =>
@@ -45,6 +47,9 @@ const SigningHarness = () => {
     <>
       <button type="button" onClick={sign}>
         sign
+      </button>
+      <button type="button" onClick={cancelSigning}>
+        close
       </button>
       <output>{status}</output>
       <span>{outcome}</span>
@@ -113,6 +118,21 @@ describe('useSigning with an ID card', () => {
     expect(await screen.findByText('id.card.signing.cancelled')).toBeInTheDocument();
     expect(await screen.findByText('idle')).toBeInTheDocument();
     expect(mockPersistIdCardSignature).not.toHaveBeenCalled();
+  });
+
+  it('closes the error so the user can sign again', async () => {
+    mockSignWithIdCard.mockRejectedValue({
+      body: { errors: [{ code: 'id.card.signing.error' }] },
+    });
+    render(<SigningHarness />);
+
+    userEvent.click(screen.getByRole('button', { name: 'sign' }));
+    expect(await screen.findByText('id.card.signing.error')).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'close' }));
+
+    expect(screen.queryByText('id.card.signing.error')).not.toBeInTheDocument();
+    expect(screen.getByText('idle')).toBeInTheDocument();
   });
 
   it('surfaces a generic error when signing fails without an error response', async () => {
