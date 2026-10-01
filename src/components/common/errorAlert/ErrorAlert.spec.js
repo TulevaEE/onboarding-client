@@ -59,6 +59,15 @@ describe('Error alert', () => {
     ).toBe(true);
   });
 
+  it.each([
+    ['smart.id.wrong.verification.code', 'login.error.smart.id.wrong.verification.code'],
+    ['smart.id.certificate.revoked', 'login.error.smart.id.certificate.revoked'],
+    ['auth.too.many.requests', 'login.error.auth.too.many.requests'],
+  ])('explains the backend error %s', (code, messageId) => {
+    component.setProps({ description: code });
+    expect(component.contains(<FormattedMessage id={messageId} />)).toBe(true);
+  });
+
   it('shows id card login start failed error message', () => {
     component.setProps({ description: 'ID_CARD_LOGIN_START_FAILED' });
     expect(component.contains(<FormattedMessage id="login.id.card.start.failed" />)).toBe(true);
