@@ -346,6 +346,14 @@ describe('API calls', () => {
       expect(authenticationHash).toBe('a-redemption-secret');
     });
 
+    it('returns no redemption secret when an older backend answers the callback without a body', async () => {
+      mockHttp.post.mockResolvedValueOnce('');
+
+      const authenticationHash = await completeSmartIdCallback(callback);
+
+      expect(authenticationHash).toBeUndefined();
+    });
+
     it('propagates an invalid callback error', async () => {
       const error = { status: 401, body: { errors: [{ code: 'smart.id.callback.invalid' }] } };
       mockHttp.post.mockRejectedValueOnce(error);

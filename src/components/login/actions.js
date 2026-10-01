@@ -397,6 +397,8 @@ export function startSmartIdLogin(language, flow = 'DEVICE_LINK') {
   };
 }
 
+const SMART_ID_SESSION_NOT_FOUND = { body: { errors: [{ code: 'auth.session.not.found' }] } };
+
 export function completeSmartIdLogin(callback) {
   return (dispatch) => {
     smartIdStartSequence += 1;
@@ -404,12 +406,18 @@ export function completeSmartIdLogin(callback) {
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
       .completeSmartIdCallback(callback)
-      .then((authenticationHash) => {
+      .then((acceptedAuthenticationHash) => {
         forgetSmartIdCallbackParameters();
         if (startSequence !== smartIdStartSequence) {
           return;
         }
         const pending = loadPendingSmartIdAuthentication();
+        const authenticationHash = acceptedAuthenticationHash ?? pending?.authenticationHash;
+        if (!authenticationHash) {
+          clearPendingSmartIdAuthentication();
+          dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error: SMART_ID_SESSION_NOT_FOUND });
+          return;
+        }
         savePendingSmartIdAuthentication({
           authenticationHash,
           returnPath: pending?.returnPath,
