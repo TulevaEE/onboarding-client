@@ -34,7 +34,7 @@
   "login.enter": "Log in",
   "login.control.code": "Make sure that the verification code received on your phone is the same:",
   "login.control.code.choice": "In the Smart‑ID app, choose this code:",
-  "login.control.code.name.hint": "The request should also name Tuleva. If anything is different, do not confirm it.",
+  "login.control.code.name.hint": "The request should also name Tuleva. If anything is different, do not confirm it.",
   "login.stop": "Cancel",
   "login.error.invalid.user.credentials": "Sadly you are not a member of Tuleva yet.",
   "login.error.generic": "There appears to have been a mistake. Please try again.",

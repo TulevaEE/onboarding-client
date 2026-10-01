@@ -16,7 +16,7 @@ const AuthenticationLoader = ({
     <div className="bg-white shadow-sm rounded-3 p-5 text-center">
       {controlCode ? (
         <>
-          <p className="m-0 mb-4">
+          <p className="m-0 mb-4 text-balance">
             <FormattedMessage
               id={verificationCodeChoice ? 'login.control.code.choice' : 'login.control.code'}
             />
