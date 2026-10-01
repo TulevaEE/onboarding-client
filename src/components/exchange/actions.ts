@@ -46,7 +46,7 @@ import {
 import { actions as amlActions } from '../aml';
 import { getAuthentication } from '../common/authenticationManager';
 import { RootState } from '../account/ComparisonCalculator/types';
-import { Mandate } from '../common/apiModels';
+import { Mandate, SignatureStatus } from '../common/apiModels';
 import { SourceSelection } from './types';
 
 const POLL_DELAY = 1000;
@@ -236,16 +236,14 @@ export function signMandateWithSmartId(mandate: Mandate) {
 
 function handleIdCardSignatureStatus(
   dispatch: Dispatch<unknown>,
-  statusCode: string,
+  statusCode: SignatureStatus,
   mandateId: number,
   pillar: 2 | 3,
 ) {
   if (statusCode === SIGNATURE_DONE_STATUS) {
     dispatch({ type: SIGN_MANDATE_SUCCESS, signedMandateId: mandateId, pillar });
-  } else if (statusCode === SIGNING_IN_PROGRESS_STATUS) {
-    dispatch(pollForIdCardSignature(mandateId, pillar));
   } else {
-    dispatch({ type: SIGN_MANDATE_ERROR, statusCode });
+    dispatch(pollForIdCardSignature(mandateId, pillar));
   }
 }
 
