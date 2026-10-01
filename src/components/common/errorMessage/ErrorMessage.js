@@ -16,7 +16,10 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
       </p>
       {errors.errors &&
         errors.errors.map((error, index) => (
-          <p className="text-body-secondary small" key={index}>
+          <p
+            className="error-message__detail mx-auto text-body-secondary small text-pretty"
+            key={index}
+          >
             <FormattedMessage id={error.code} /> {error.message}
           </p>
         ))}
