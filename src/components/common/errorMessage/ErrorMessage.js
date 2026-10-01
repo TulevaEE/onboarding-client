@@ -35,9 +35,7 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
   if (overlayed) {
     return (
       <div className="tv-modal">
-        <div className="container">
-          <div className="row mt-4 pt-4 justify-content-center">{content}</div>
-        </div>
+        <div className="container mt-4 pt-4 px-3">{content}</div>
       </div>
     );
   }
