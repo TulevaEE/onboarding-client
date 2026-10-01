@@ -6,6 +6,7 @@ import { useMe } from '../../../../common/apiHooks';
 import { MemberLookup } from '../../../../common/apiModels';
 import { getMemberLookup } from '../../../../common/api';
 import { getFullName } from '../../../../common/utils';
+import { PII_CLASS } from '../../../../tracking/piiMarkup';
 
 export const ConfirmBuyer = () => {
   const history = useHistory();
@@ -236,8 +237,8 @@ const SearchResponse = ({
           </svg>
         </span>
         <span>
-          <span className="d-block lead">{getFullName(searched)}</span>
-          <span className="d-block text-secondary">
+          <span className={`d-block lead ${PII_CLASS}`}>{getFullName(searched)}</span>
+          <span className={`d-block text-secondary ${PII_CLASS}`}>
             {formatMessage(
               { id: 'capital.transfer.create.member.label' },
               { memberNumber: searched.memberNumber },

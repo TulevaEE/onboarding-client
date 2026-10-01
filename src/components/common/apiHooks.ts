@@ -6,7 +6,13 @@ import {
   UseQueryResult,
 } from '@tanstack/react-query';
 
-import { HackathonRegistration, HackathonRegistrationCommand } from './apiModels/hackathon';
+import {
+  HackathonIdea,
+  HackathonIdeaCommand,
+  HackathonIdeas,
+  HackathonRegistration,
+  HackathonRegistrationCommand,
+} from './apiModels/hackathon';
 
 import {
   cancelSavingsFundWithdrawal,
@@ -26,19 +32,21 @@ import {
   getEligibleChildren,
   getContributions,
   getFundPensionStatus,
+  getHackathonIdeas,
   getHackathonRegistration,
   saveHackathonRegistration,
+  submitHackathonIdea,
   getKycIdentity,
   getFunds,
   getMandateDeadlines,
   getMemberCapitalListingCount,
   getMemberCapitalListings,
   getMyCapitalTransferContracts,
+  getNudge,
   getPendingApplications,
   getPendingOnboardings,
   getSavingsFundBalance,
   getSavingsFundBankAccounts,
-  getSavingsFundCompanyOnboardingStatus,
   getSavingsFundOnboardingStatus,
   getSavingsFundPersonOnboardingStatus,
   getSecondPillarAssets,
@@ -86,6 +94,7 @@ import {
   MandateBatchDto,
   WithdrawalsEligibility,
 } from './apiModels/withdrawals';
+import { NudgeContext, NudgeDecision } from './apiModels/nudge';
 import {
   CapitalTransferContract,
   CreateCapitalTransferDto,
@@ -195,6 +204,17 @@ export function useWithdrawalsEligibility(): UseQueryResult<WithdrawalsEligibili
 
 export function useFundPensionStatus(): UseQueryResult<FundPensionStatus> {
   return useQuery({ queryKey: ['fundPensionStatus'], queryFn: () => getFundPensionStatus() });
+}
+
+export function useNudge(context: NudgeContext): UseQueryResult<NudgeDecision> {
+  const { data: user } = useMe();
+  return useQuery({
+    queryKey: ['nudge', context, user?.personalCode, user?.role?.code],
+    queryFn: () => getNudge(context),
+    enabled: !!user,
+    retry: false,
+    staleTime: 2 * 60 * 1000,
+  });
 }
 
 export function useConversion(): UseQueryResult<UserConversion> {
@@ -338,16 +358,6 @@ export function useCreateMemberCapitalListing(): UseMutationResult<
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['memberCapitalListings'] });
     },
-  });
-}
-
-export function useSavingsFundCompanyOnboardingStatus(
-  registryCode: string | undefined,
-): UseQueryResult<SavingsFundOnboardingStatus> {
-  return useQuery({
-    queryKey: ['savingsFundCompanyOnboardingStatus', registryCode],
-    queryFn: () => getSavingsFundCompanyOnboardingStatus(registryCode ?? ''),
-    enabled: Boolean(registryCode),
   });
 }
 
@@ -508,6 +518,30 @@ export function useSaveHackathonRegistration(): UseMutationResult<
     },
     onError: () => {
       queryClient.invalidateQueries({ queryKey: ['hackathonRegistration'] });
+    },
+  });
+}
+
+export function useHackathonIdeas(enabled: boolean): UseQueryResult<HackathonIdeas, ErrorResponse> {
+  return useQuery({
+    queryKey: ['hackathonIdeas'],
+    queryFn: () => getHackathonIdeas(),
+    enabled,
+    retry: false,
+  });
+}
+
+export function useSubmitHackathonIdea(): UseMutationResult<
+  HackathonIdea,
+  ErrorResponse,
+  HackathonIdeaCommand,
+  unknown
+> {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (command: HackathonIdeaCommand) => submitHackathonIdea(command),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['hackathonIdeas'] });
     },
   });
 }

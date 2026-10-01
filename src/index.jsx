@@ -9,11 +9,9 @@ import { IntlProvider } from 'react-intl';
 import { Provider as ReduxProvider } from 'react-redux';
 import { Route, Switch } from 'react-router-dom';
 import { ConnectedRouter, routerMiddleware } from 'connected-react-router';
-import ReactGA from 'react-ga4';
 import { QueryClientProvider } from '@tanstack/react-query';
 import moment from 'moment';
 import 'moment/locale/et';
-import TagManager from 'react-gtm-module';
 
 import createRootReducer from './reducers';
 import { queryClient } from './queryClient';
@@ -28,12 +26,15 @@ import LoginPage, { actions as loginActions } from './components/login';
 import { actions as thirdPillarActions } from './components/thirdPillar';
 
 import './polyfills';
+import { withoutGiftToken } from './components/tracking/giftPage';
 import LoggedInApp from './components/LoggedInApp';
 import { ScrollToTopOnNavigation } from './components/common/ScrollToTopOnNavigation';
 import { loginPath } from './components/login/LoginPage';
+import { GiftDonePage, PublicGiftPage } from './components/flows/savingsAccount/GiftLink';
 
 import { createTrackedEvent } from './components/common/api';
 import { shouldWriteTestMode, writeTestMode } from './components/common/test-mode';
+import { startAnalytics } from './components/tracking/startAnalytics';
 
 const history = createBrowserHistory();
 
@@ -85,24 +86,14 @@ initializeConfiguration();
 window.config = config; // for debug only
 
 if (process.env.NODE_ENV !== 'test') {
-  TagManager.initialize({
-    gtmId: 'GTM-MRRG43',
-  });
-  ReactGA.initialize('G-2LNCGK63HR', {
-    debug: false,
-    titleCase: false,
-    gaOptions: {
-      alwaysSendReferrer: true,
-    },
-  });
+  startAnalytics();
 }
 
 const noop = () => null;
 
 function trackPageView() {
-  createTrackedEvent('PAGE_VIEW', { path: window.location.pathname.replace(/\/+$/g, '') }).catch(
-    noop,
-  );
+  const path = withoutGiftToken(window.location.pathname.replace(/\/+$/g, ''));
+  createTrackedEvent('PAGE_VIEW', { path }).catch(noop);
 }
 
 trackPageView();
@@ -129,6 +120,8 @@ export class App extends Component {
               <Switch>
                 <Route path={loginPath} component={LoginPage} />
                 <Route path="/trigger-procedure" component={TriggerProcedure} />
+                <Route path="/kingitus/:token/tehtud" component={GiftDonePage} />
+                <Route path="/kingitus/:token" component={PublicGiftPage} />
                 <PrivateRoute exact path="" component={LoggedInApp} />
               </Switch>
             </ConnectedRouter>

@@ -2,6 +2,7 @@ import React from 'react';
 import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
 import { Euro } from '../../common/Euro';
+import { Units } from '../../common/Units';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { CostBasisMethod, SavingsFundTaxReport } from '../../common/apiModels';
 import { MethodSelector } from './MethodSelector';
@@ -158,7 +159,9 @@ export const TaxReportView: React.FunctionComponent<{
                 report.redemptions.map((gain) => (
                   <tr key={gain.time}>
                     <td>{moment(gain.time).format('DD.MM.YYYY')}</td>
-                    <td className="text-end">{gain.units.toFixed(3)}</td>
+                    <td className="text-end">
+                      <Units units={gain.units} />
+                    </td>
                     <td className="text-end">
                       <Euro amount={gain.acquisitionCost} />
                     </td>

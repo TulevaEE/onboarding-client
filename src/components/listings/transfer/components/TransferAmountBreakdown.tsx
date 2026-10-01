@@ -2,6 +2,7 @@ import { FormattedMessage } from 'react-intl';
 import { CapitalType } from '../../../common/apiModels';
 import { CapitalTransferAmount } from '../../../common/apiModels/capital-transfer';
 import { formatAmountForCurrency } from '../../../common/utils';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 import { sortTransferAmounts } from '../create/utils';
 import { isTranslationKey } from '../../../translations';
 
@@ -28,7 +29,7 @@ export const TransferAmountBreakdown = ({
             </span>
           </div>
           <div className="col-auto col-sm text-nowrap text-end text-sm-start">
-            <b>{formatAmountForCurrency(totalBookValue)}</b>
+            <b className={PII_CLASS}>{formatAmountForCurrency(totalBookValue)}</b>
           </div>
         </div>
       </>
@@ -44,7 +45,7 @@ export const TransferAmountBreakdown = ({
           </b>
         </div>
         <div className="col-auto col-sm text-nowrap text-end text-sm-start">
-          <b>{formatAmountForCurrency(totalBookValue)}</b>
+          <b className={PII_CLASS}>{formatAmountForCurrency(totalBookValue)}</b>
         </div>
       </div>
 
@@ -53,7 +54,7 @@ export const TransferAmountBreakdown = ({
           <div className="col pe-0">
             – <TransferAmountName type={amount.type} />
           </div>
-          <div className="col-auto col-sm text-nowrap text-end text-sm-start">
+          <div className={`col-auto col-sm text-nowrap text-end text-sm-start ${PII_CLASS}`}>
             {formatAmountForCurrency(amount.bookValue)}
           </div>
         </div>

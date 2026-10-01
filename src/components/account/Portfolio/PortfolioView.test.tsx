@@ -404,9 +404,9 @@ describe('the period someone types into the date inputs', () => {
     const onPeriodChange = jest.fn();
     renderWithPeriodChange(onPeriodChange);
 
-    userEvent.type(screen.getByLabelText('from'), '2025-03-01');
-    // A date is acted on when the typing stops, so half a year never reaches the backend.
-    fireEvent.blur(screen.getByLabelText('from'));
+    userEvent.clear(screen.getByLabelText('From'));
+    userEvent.type(screen.getByLabelText('From'), '01.03.2025');
+    fireEvent.blur(screen.getByLabelText('From'));
 
     expect(onPeriodChange).toHaveBeenCalledWith('2025-03-01', '2025-12-31');
   });
@@ -415,8 +415,8 @@ describe('the period someone types into the date inputs', () => {
     const onPeriodChange = jest.fn();
     renderWithPeriodChange(onPeriodChange);
 
-    userEvent.clear(screen.getByLabelText('from'));
-    fireEvent.blur(screen.getByLabelText('from'));
+    userEvent.clear(screen.getByLabelText('From'));
+    fireEvent.blur(screen.getByLabelText('From'));
 
     expect(onPeriodChange).toHaveBeenCalledWith(undefined, '2025-12-31');
   });
@@ -425,7 +425,7 @@ describe('the period someone types into the date inputs', () => {
     const onPeriodChange = jest.fn();
     renderWithPeriodChange(onPeriodChange);
 
-    userEvent.clear(screen.getByLabelText('to'));
+    userEvent.clear(screen.getByLabelText('To'));
 
     expect(onPeriodChange).not.toHaveBeenCalled();
   });

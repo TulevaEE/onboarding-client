@@ -12,6 +12,7 @@ import { Loader } from '../common';
 import styles from './ListingDetails.module.scss';
 import { StatusAlert } from '../common/statusAlert';
 import { usePageTitle } from '../common/usePageTitle';
+import { PII_CLASS } from '../tracking/piiMarkup';
 
 export const ListingDetails = () => {
   const { id: urlId } = useParams<{ id: string }>();
@@ -136,7 +137,7 @@ export const ListingDetails = () => {
             </div>
           ) : (
             <div
-              className="card p-3 bg-gray-1 d-inline-block"
+              className={`card p-3 bg-gray-1 d-inline-block ${PII_CLASS}`}
               // eslint-disable-next-line react/no-danger
               dangerouslySetInnerHTML={{ __html: message }}
             />
@@ -170,7 +171,7 @@ export const ListingDetails = () => {
               className="form-check-input"
               id="add-phone-checkbox"
             />
-            <label className="form-check-label" htmlFor="add-phone-checkbox">
+            <label className={`form-check-label ${PII_CLASS}`} htmlFor="add-phone-checkbox">
               <FormattedMessage
                 id="capital.listings.details.attachPhoneNumber"
                 values={{ phoneNumber: me.phoneNumber }}
@@ -186,7 +187,10 @@ export const ListingDetails = () => {
                 className="form-check-input"
                 id="add-personal-code-checkbox"
               />
-              <label className="form-check-label" htmlFor="add-personal-code-checkbox">
+              <label
+                className={`form-check-label ${PII_CLASS}`}
+                htmlFor="add-personal-code-checkbox"
+              >
                 <FormattedMessage
                   id="capital.listings.details.attachPersonalCode"
                   values={{ personalCode: me.personalCode }}

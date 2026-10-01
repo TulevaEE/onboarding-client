@@ -9,12 +9,18 @@ import { createMemoryHistory } from 'history';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import { userBackend } from '../../../test/backend';
 import { initializeConfiguration } from '../../config/config';
-import { Portfolio, RoleType } from '../../common/apiModels';
+import { Portfolio, RoleType, Transaction } from '../../common/apiModels';
 import { PortfolioPage } from './PortfolioPage';
+
+// setupTests pins useIntl to English for the whole suite, which would hide every
+// language the CSV is actually written in.
+jest.unmock('react-intl');
+
+const today = moment().format('YYYY-MM-DD');
 
 const allTime: Portfolio = {
   from: '2020-01-01',
-  to: '2026-08-07',
+  to: today,
   groups: [
     {
       group: 'SAVINGS_FUND',
@@ -39,7 +45,7 @@ const allTime: Portfolio = {
   ],
   series: [
     { date: '2020-01-01', values: { SAVINGS_FUND: 100, SECOND_PILLAR: 100 } },
-    { date: '2026-08-07', values: { SAVINGS_FUND: 200, SECOND_PILLAR: 300 } },
+    { date: today, values: { SAVINGS_FUND: 200, SECOND_PILLAR: 300 } },
   ],
 };
 
@@ -71,6 +77,41 @@ const lastYear: Portfolio = {
   series: [
     { date: '2025-01-01', values: { SAVINGS_FUND: 120, SECOND_PILLAR: 180 } },
     { date: '2025-12-31', values: { SAVINGS_FUND: 250, SECOND_PILLAR: 350 } },
+  ],
+};
+
+const thisYearStart = moment().startOf('year').format('YYYY-MM-DD');
+
+const lastYearStart = moment().subtract(1, 'year').startOf('year').format('YYYY-MM-DD');
+
+const thisYear: Portfolio = {
+  from: thisYearStart,
+  to: today,
+  groups: [
+    {
+      group: 'SAVINGS_FUND',
+      startValue: 210,
+      endValue: 260,
+      contributions: 20,
+      withdrawals: 0,
+      gain: 30,
+      gainPercentage: 14.0,
+      annualReturnRate: null,
+    },
+    {
+      group: 'SECOND_PILLAR',
+      startValue: 310,
+      endValue: 360,
+      contributions: 20,
+      withdrawals: 0,
+      gain: 30,
+      gainPercentage: 9.0,
+      annualReturnRate: null,
+    },
+  ],
+  series: [
+    { date: thisYearStart, values: { SAVINGS_FUND: 210, SECOND_PILLAR: 310 } },
+    { date: today, values: { SAVINGS_FUND: 260, SECOND_PILLAR: 360 } },
   ],
 };
 
@@ -108,6 +149,46 @@ const portfolioBackend = () =>
     }),
   );
 
+const portfolioBackendHoldingBackThisYear = () => {
+  let answerThisYear: () => void = () => {};
+  const answered = new Promise<void>((resolve) => {
+    answerThisYear = resolve;
+  });
+
+  server.use(
+    rest.get('http://localhost/v1/portfolio', async (req, res, ctx) => {
+      const from = req.url.searchParams.get('from');
+      if (from === thisYearStart) {
+        await answered;
+        return res(ctx.json(thisYear));
+      }
+      return res(ctx.json(from ? lastYear : allTime));
+    }),
+  );
+
+  return () => answerThisYear();
+};
+
+const portfolioBackendHoldingBackLastYear = () => {
+  let answerLastYear: () => void = () => {};
+  const answered = new Promise<void>((resolve) => {
+    answerLastYear = resolve;
+  });
+
+  server.use(
+    rest.get('http://localhost/v1/portfolio', async (req, res, ctx) => {
+      const from = req.url.searchParams.get('from');
+      if (from === lastYearStart) {
+        await answered;
+        return res(ctx.json(lastYear));
+      }
+      return res(ctx.json(from ? lastYear : allTime));
+    }),
+  );
+
+  return () => answerLastYear();
+};
+
 const portfolioBackendRefusingNarrowedPeriods = () =>
   server.use(
     rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
@@ -140,6 +221,53 @@ const registerRefusingTheSavingsBalance = (funds: unknown[]) =>
     ),
   );
 
+const savingsFund = {
+  isin: 'EE0000000001',
+  name: 'Tuleva Täiendav Kogumisfond',
+  fundManager: { name: 'Tuleva' },
+  managementFeeRate: 0.0025,
+  pillar: null,
+  ongoingChargesFigure: 0.0025,
+};
+
+const pillarFund = {
+  isin: 'EE3600109435',
+  name: 'Tuleva World Stocks Pension Fund',
+  fundManager: { name: 'Tuleva' },
+  managementFeeRate: 0.0034,
+  pillar: 2,
+  ongoingChargesFigure: 0.0039,
+};
+
+const savingsTransaction = (
+  time: string,
+  units: number,
+  nav: number | null,
+  amount: number,
+  type: Transaction['type'] = 'CONTRIBUTION_CASH',
+): Transaction => ({
+  id: time,
+  amount,
+  currency: 'EUR',
+  time,
+  navDate: time.slice(0, 10),
+  priceCalculationDate: null,
+  applicationTime: null,
+  counterpartyIban: null,
+  isin: savingsFund.isin,
+  type,
+  units,
+  nav,
+});
+
+const accountHolding = (transactions: Transaction[]) =>
+  server.use(
+    rest.get('http://localhost/v1/funds', (req, res, ctx) =>
+      res(ctx.json([savingsFund, pillarFund])),
+    ),
+    rest.get('http://localhost/v1/transactions', (req, res, ctx) => res(ctx.json(transactions))),
+  );
+
 const actingFor = (roleType: RoleType) =>
   userBackend(server, { role: { type: roleType, code: '90000000', name: 'Acme' } });
 
@@ -152,16 +280,17 @@ const portfolioBackendDown = () =>
     ),
   );
 
-function initializeComponent() {
+function initializeComponent(language: 'en' | 'et' = 'en') {
   const history = createMemoryHistory();
   const store = createDefaultStore(history as any);
   login(store);
 
-  renderWrapped(
+  return renderWrapped(
     <PortfolioPage />,
     history as any,
     store,
     new QueryClient({ defaultOptions: { queries: { retry: false } } }),
+    language,
   );
 }
 
@@ -171,10 +300,12 @@ afterAll(() => server.close());
 
 beforeEach(() => {
   initializeConfiguration();
+  jest.clearAllMocks();
   requestedPeriods.length = 0;
   statementRequests.length = 0;
   portfolioBackend();
   registerHolding([], null);
+  accountHolding([]);
   actingFor('PERSON');
 });
 
@@ -198,6 +329,51 @@ describe('what the register holds today', () => {
 
     expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
     expect(screen.queryByText(/899[.,]00/)).not.toBeInTheDocument();
+  });
+
+  it('is left off the period still on screen while the next one is on its way', async () => {
+    const answerThisYear = portfolioBackendHoldingBackThisYear();
+    registerHolding([fundBalance(2, 700, 77)], fundBalance(null, 111, 11));
+    accountHolding([savingsTransaction('2025-03-10T10:00:00Z', 20, 1.1, 22)]);
+    initializeComponent();
+
+    expect(await screen.findAllByText(/899[.,]00/)).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'This year' }));
+
+    expect(screen.getAllByText(/600[.,]00/)).not.toHaveLength(0);
+    expect(screen.queryByText(/899[.,]00/)).not.toBeInTheDocument();
+
+    answerThisYear();
+
+    expect(await screen.findAllByText(/899[.,]00/)).not.toHaveLength(0);
+  });
+
+  it('dates the period still on screen by its own end while the next one is on its way', async () => {
+    const answerLastYear = portfolioBackendHoldingBackLastYear();
+    registerHolding([fundBalance(2, 700, 77)], fundBalance(null, 111, 11));
+    initializeComponent();
+
+    expect(await screen.findAllByText(/899[.,]00/)).not.toHaveLength(0);
+    expect(
+      screen.getByText(`Your money as of ${moment().format('DD.MM.YYYY')}`),
+    ).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(
+      screen.getByText(`Your money as of ${moment().format('DD.MM.YYYY')}`),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText(/899[.,]00/)).not.toHaveLength(0);
+
+    answerLastYear();
+
+    expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
+    expect(screen.getByText('Your money as of 31.12.2025')).toBeInTheDocument();
   });
 
   it('waits for the whole register answer rather than mixing it with rebuilt values', async () => {
@@ -244,7 +420,7 @@ describe('a portfolio the backend has not answered with yet', () => {
 
     // eslint-disable-next-line testing-library/no-node-access
     expect(document.querySelector('.shimmerDefault')).toBeInTheDocument();
-    expect(screen.getByLabelText('from')).toBeInTheDocument();
+    expect(screen.getByLabelText('From')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'All time' })).toBeInTheDocument();
 
     expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
@@ -259,10 +435,9 @@ describe('a start date someone chose themselves', () => {
 
     expect(await screen.findAllByText(/500[.,]00/)).not.toHaveLength(0);
 
-    userEvent.type(screen.getByLabelText('from'), '2025-01-01');
-    // Leaving the box asks for the period at once, rather than waiting out the pause
-    // that a person still typing is given.
-    fireEvent.blur(screen.getByLabelText('from'));
+    userEvent.clear(screen.getByLabelText('From'));
+    userEvent.type(screen.getByLabelText('From'), '01.01.2025');
+    fireEvent.blur(screen.getByLabelText('From'));
 
     expect(await screen.findAllByText(/600[.,]00/)).not.toHaveLength(0);
     expect(requestedPeriods[requestedPeriods.length - 1]).toEqual({
@@ -303,7 +478,7 @@ describe('a period the backend cannot serve', () => {
     userEvent.click(screen.getByRole('button', { name: 'Last year' }));
 
     expect(await screen.findByText(/cannot load fund prices/)).toBeInTheDocument();
-    expect(screen.getByLabelText('from')).toBeInTheDocument();
+    expect(screen.getByLabelText('From')).toBeInTheDocument();
 
     userEvent.click(screen.getByRole('button', { name: 'All time' }));
 
@@ -325,7 +500,7 @@ describe('a portfolio the backend never gave', () => {
     initializeComponent();
 
     expect(await screen.findByText(/cannot load fund prices/)).toBeInTheDocument();
-    expect(screen.getByLabelText('from')).toBeInTheDocument();
+    expect(screen.getByLabelText('From')).toBeInTheDocument();
 
     portfolioBackend();
 

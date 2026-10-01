@@ -1,4 +1,6 @@
 import React, { FC } from 'react';
+import { useStatusBoxEmphasis } from '../statusBoxEmphasis';
+import styles from './StatusBoxRow.module.scss';
 
 type Status = 'SUCCESS' | 'ERROR' | 'WARNING' | 'TODO';
 type StatusBoxIconProps = {
@@ -140,6 +142,16 @@ const StatusBoxIcon: FC<StatusBoxIconProps> = ({ status }) => {
   }
 };
 
+const outlinedAction = (children: React.ReactNode): React.ReactNode =>
+  React.Children.map(children, (child) => {
+    if (!React.isValidElement<{ className?: string }>(child) || !child.props.className) {
+      return child;
+    }
+    return React.cloneElement(child, {
+      className: child.props.className.replace('btn-primary', 'btn-outline-primary'),
+    });
+  });
+
 export const StatusBoxRow: React.FunctionComponent<{
   name?: React.ReactNode;
   lines?: React.ReactNode[];
@@ -147,23 +159,34 @@ export const StatusBoxRow: React.FunctionComponent<{
   status?: Status;
   last?: boolean;
   children?: React.ReactNode;
-}> = ({ name = '', lines = [], showAction = false, status, children = '', last = false }) => (
-  <div className={`status-box-row ${!last ? 'tv-table__row' : ''}`} data-testid="status-box-row">
-    <div className="d-flex gap-3 flex-column flex-sm-row justify-content-between p-3">
-      <div className="d-flex gap-3">
-        <StatusBoxIcon status={status || null} />
-        <div className="d-flex flex-column justify-content-center">
-          <h3 className="mb-1 h4">{name}</h3>
-          {lines.map((line) => (
-            <p className="m-0">{line}</p>
-          ))}
+}> = ({ name = '', lines = [], showAction = false, status, children = '', last = false }) => {
+  const emphasis = useStatusBoxEmphasis();
+  const visibleLines = emphasis === 'secondary' ? lines.slice(0, 1) : lines;
+  const action = emphasis === 'secondary' ? outlinedAction(children) : children;
+
+  return (
+    <div
+      className={`status-box-row ${!last ? 'tv-table__row' : ''} ${
+        emphasis ? styles[emphasis] : ''
+      }`}
+      data-testid="status-box-row"
+    >
+      <div className="d-flex gap-3 flex-column flex-sm-row justify-content-between p-3">
+        <div className="d-flex gap-3">
+          <StatusBoxIcon status={status || null} />
+          <div className="d-flex flex-column justify-content-center">
+            <h3 className="mb-1 h4">{name}</h3>
+            {visibleLines.map((line) => (
+              <p className="m-0">{line}</p>
+            ))}
+          </div>
         </div>
+        {showAction && children && (
+          <div className="d-flex flex-column justify-content-center text-nowrap">{action}</div>
+        )}
       </div>
-      {showAction && children && (
-        <div className="d-flex flex-column justify-content-center text-nowrap">{children}</div>
-      )}
     </div>
-  </div>
-);
+  );
+};
 
 export default StatusBoxRow;

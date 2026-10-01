@@ -36,7 +36,7 @@ export const PortfolioPage: React.FunctionComponent = () => {
   const registerAnswered =
     (holdsPillars ? pensionBalance.isSuccess : user !== undefined) && savingsBalance.isSuccess;
   const currentValues =
-    period.to === moment().format('YYYY-MM-DD') && registerAnswered
+    portfolio?.to === moment().format('YYYY-MM-DD') && registerAnswered
       ? currentValueByGroup(pensionBalance.data, savingsBalance.data)
       : undefined;
 

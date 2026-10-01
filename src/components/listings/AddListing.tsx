@@ -12,6 +12,7 @@ import Slider from '../flows/withdrawals/Slider';
 import { usePageTitle } from '../common/usePageTitle';
 import { floorValueToSecondDecimal } from './transfer/create/utils';
 import { SimpleListItem, SimpleList } from '../common/simpleList';
+import { PII_CLASS } from '../tracking/piiMarkup';
 
 type StateFromContactDetailsRedirect = {
   listingType: MemberCapitalListingType;
@@ -150,8 +151,10 @@ export const AddListing = () => {
                 ariaLabelledBy="book-value"
               />
               <div className="d-flex justify-content-between">
-                <span className="text-body-secondary">{formatAmountForCurrency(0, 0)}</span>
-                <span className="text-body-secondary">
+                <span className={`text-body-secondary ${PII_CLASS}`}>
+                  {formatAmountForCurrency(0, 0)}
+                </span>
+                <span className={`text-body-secondary ${PII_CLASS}`}>
                   {formatAmountForCurrency(totalBookValue ?? 0, 2)}
                 </span>
               </div>
@@ -271,7 +274,7 @@ const AssurancesSection = ({
           <>
             <FormattedMessage id="capital.listings.create.contactDetails" />
             <br />
-            {user?.email}{' '}
+            <span className={PII_CLASS}>{user?.email}</span>{' '}
             <span className="text-secondary">
               (
               <Link

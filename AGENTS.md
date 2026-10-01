@@ -145,3 +145,28 @@ Repeat in small increments. Each cycle should be minutes, not hours.
 - Never write more production code than is sufficient to pass the currently failing test
 - Run tests after every change — both after writing the test (must fail) and after writing the code (must pass)
 - If you find yourself writing production code "just to be safe" without a test, stop and write the test first
+
+# Pull Requests: Show the UI
+
+Every pull request that changes what a user sees puts screenshots in its description, so the design gets reviewed
+along with the code. Tests pass on a label that wraps into the next row, an account number printed as one unbroken
+string, or a time torn from "kell" at the end of a line. Only looking at the rendered page catches those.
+
+- **What**: every screen and state the change adds or alters, in Estonian. Add English when the change is mostly copy.
+- **Viewports**: desktop (1280 px wide) and mobile (390 px wide). Capture with `deviceScaleFactor: 2`.
+- **Changed existing UI**: a before and an after of the same state, side by side.
+- **Look before you post**: read the screenshots as a reviewer would and fix what they show first: labels wrapping into
+  the next row, crowded rows, and text overflowing its column.
+- **Line breaks are part of the design**: check where every changed text breaks at 360, 390, 600, 800 and 1280 px in both
+  languages, and choose the break points instead of accepting them:
+  - Keep units together with NBSPs (see Editing Translation JSON): a company form and its name ("Fondid AS"), a
+    street and its number, "kell 13:42", a preposition and the account it introduces ("kontolt EE65 …"), and IBANs
+    grouped in fours.
+  - Short multi-line labels and headings get `.text-balance`, so a label never leaves one word alone on its second line.
+  - Running text and values get `text-wrap: pretty`, which avoids a lone word on the last line.
+  - Nothing may overflow at 320 px.
+- **Mock data only**: open the page with `?dev` and pick mock profiles (`src/components/common/requestMocker/README.md`).
+  For a state no profile covers, answer the API with Playwright `page.route()`. Never screenshot real customer data;
+  pull requests on this repository are public.
+- **Attach, don't commit**: drag the images into the pull request description on GitHub, which hosts them as
+  `github.com/user-attachments` links. Never commit screenshots to the repository.

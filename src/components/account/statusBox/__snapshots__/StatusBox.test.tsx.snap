@@ -6,10 +6,14 @@ exports[`Status Box renders all subcomponents when present 1`] = `
   <div
     className="card card-secondary"
   >
-    <Connect(SecondPillarStatusBox) />
-    <Connect(ThirdPillarStatusBox) />
-    <Connect(SavingsFundStatusBox) />
-    <Connect(MemberStatusBox) />
+    <ContextProvider>
+      <Connect(SecondPillarStatusBox) />
+    </ContextProvider>
+    <ContextProvider>
+      <Connect(ThirdPillarStatusBox) />
+      <Connect(SavingsFundStatusBox) />
+      <Connect(MemberStatusBox) />
+    </ContextProvider>
   </div>
 </Fragment>
 `;

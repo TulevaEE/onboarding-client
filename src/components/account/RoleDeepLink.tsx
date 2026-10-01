@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { captureException } from '@sentry/browser';
 import { Role, User } from '../common/apiModels';
 import { useMe, useRoles, useSwitchRole } from '../common/apiHooks';
@@ -7,41 +7,51 @@ import {
   AccountHolder,
   accountHolderFor,
   accountHolderForRole,
+  lowestByCode,
 } from '../flows/savingsAccount/accountHolder';
+import { isCurrentRole } from '../common/utils';
 import { AccountPageLoader } from './AccountPageLoader';
 
 type Props = {
   holder: Exclude<AccountHolder, 'self'>;
+  destination: string;
+  accountId?: string;
   onRoleSwitched: () => Promise<void>;
 };
 
-const lowestByCode = (roles: Role[]): Role | undefined =>
-  [...roles].sort((a, b) => a.code.localeCompare(b.code))[0];
-
-const roleToSwitchTo = (user: User, roles: Role[], holder: AccountHolder): Role | undefined => {
-  if (accountHolderFor(user) === holder) {
-    return undefined;
+const roleToOpen = (
+  user: User,
+  roles: Role[],
+  holder: AccountHolder,
+  accountId: string | undefined,
+): Role | undefined => {
+  const ofHolder = roles.filter((role) => accountHolderForRole(role, user.personalCode) === holder);
+  if (accountId) {
+    return ofHolder.find((role) => role.id === accountId);
   }
-  return lowestByCode(
-    roles.filter((role) => accountHolderForRole(role, user.personalCode) === holder),
-  );
+  return ofHolder.find((role) => isCurrentRole(role, user)) ?? lowestByCode(ofHolder);
 };
 
-// The path names only the kind of account, never the account: a child's code is an
+const isActingAs = (user: User | undefined, holder: AccountHolder): boolean =>
+  !!user && accountHolderFor(user) === holder;
+
+// The path names an account only by its opaque role id, never by its code: a child's code is an
 // isikukood and must stay out of the URL, browser history and logs.
-export const RoleDeepLink = ({ holder, onRoleSwitched }: Props) => {
+export const RoleDeepLink = ({ holder, destination, accountId, onRoleSwitched }: Props) => {
   const history = useHistory();
+  const { search } = useLocation();
   const { data: user, isError: userFailed } = useMe();
   const { data: roles, isError: rolesFailed } = useRoles();
   const switchRole = useSwitchRole();
   const [switching, setSwitching] = useState(false);
-  const openedHolder = useRef<AccountHolder | null>(null);
-  const requestedHolder = useRef(holder);
+  const request = `${holder} ${destination} ${accountId ?? ''} ${search}`;
+  const openedRequest = useRef<string | null>(null);
+  const requestedRequest = useRef(request);
   const leftPage = useRef(false);
 
   useEffect(() => {
-    requestedHolder.current = holder;
-  }, [holder]);
+    requestedRequest.current = request;
+  }, [request]);
 
   useEffect(
     () => () => {
@@ -52,19 +62,21 @@ export const RoleDeepLink = ({ holder, onRoleSwitched }: Props) => {
 
   useEffect(() => {
     const lookupSettled = (user || userFailed) && (roles || rolesFailed);
-    if (switching || openedHolder.current === holder || !lookupSettled) {
+    if (switching || openedRequest.current === request || !lookupSettled) {
       return;
     }
-    openedHolder.current = holder;
+    openedRequest.current = request;
 
     const openAccount = async () => {
-      const target = user && roles ? roleToSwitchTo(user, roles, holder) : undefined;
+      const target = user && roles ? roleToOpen(user, roles, holder, accountId) : undefined;
+      let opened = target ? isCurrentRole(target, user) : !accountId && isActingAs(user, holder);
 
-      if (target) {
+      if (target && !opened) {
         setSwitching(true);
         try {
           await switchRole.mutateAsync({ type: target.type, code: target.code });
           await onRoleSwitched();
+          opened = true;
         } catch (error) {
           captureException(error);
         } finally {
@@ -74,8 +86,8 @@ export const RoleDeepLink = ({ holder, onRoleSwitched }: Props) => {
         }
       }
 
-      if (requestedHolder.current === holder && !leftPage.current) {
-        history.replace('/account');
+      if (requestedRequest.current === request && !leftPage.current) {
+        history.replace({ pathname: opened ? destination : '/account', search });
       }
     };
 
@@ -86,6 +98,10 @@ export const RoleDeepLink = ({ holder, onRoleSwitched }: Props) => {
     roles,
     rolesFailed,
     holder,
+    destination,
+    accountId,
+    request,
+    search,
     switching,
     history,
     onRoleSwitched,

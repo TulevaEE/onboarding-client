@@ -1,5 +1,6 @@
 import { FormattedMessage } from 'react-intl';
 import { Radio } from '../../../common';
+import { Recommended } from '../../../common/Recommended';
 
 export type SavingsFundPaymentType = 'SINGLE' | 'RECURRING';
 
@@ -25,7 +26,9 @@ export const PaymentTypeSelection = ({ paymentType, setPaymentType }: Props) => 
         onSelect={() => setPaymentType('SINGLE')}
       >
         <p className="m-0">
-          <FormattedMessage id="savingsFund.payment.form.paymentType.single" />
+          <span className="fs-3 lh-sm fw-medium">
+            <FormattedMessage id="savingsFund.payment.form.paymentType.single" />
+          </span>
         </p>
       </Radio>
       <Radio
@@ -34,8 +37,14 @@ export const PaymentTypeSelection = ({ paymentType, setPaymentType }: Props) => 
         selected={paymentType === 'RECURRING'}
         onSelect={() => setPaymentType('RECURRING')}
       >
-        <p className="m-0">
-          <FormattedMessage id="savingsFund.payment.form.paymentType.recurring" />
+        <p className="mb-1">
+          <span className="fs-3 lh-sm fw-medium me-2">
+            <FormattedMessage id="savingsFund.payment.form.paymentType.recurring" />
+          </span>
+          <Recommended />
+        </p>
+        <p className="m-0 text-body-secondary">
+          <FormattedMessage id="savingsFund.payment.form.paymentType.recurring.description" />
         </p>
       </Radio>
     </div>

@@ -16,7 +16,7 @@ import { Line } from 'react-chartjs-2';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 import { usePageTitle } from '../common/usePageTitle';
-import { formatAmountForCurrency } from '../common/utils';
+import { createClamper, formatAmountForCurrency } from '../common/utils';
 import { CurrencyInput } from '../common/input/CurrencyInput';
 import { EditableEuro } from '../common/input/EditableEuro';
 import { InfoTooltip } from '../common/infoTooltip/InfoTooltip';
@@ -50,6 +50,8 @@ import {
   DEFAULT_RETURN_PERCENT,
   MAX_SALARY,
   MEMBERSHIP_BONUS_RATE,
+  PAYOUT_STRATEGIES,
+  PayoutStrategy,
   project,
   projectedRemainingYears,
   projectedRetirementAge,
@@ -118,6 +120,7 @@ const DEFAULT_GROSS_SALARY = 2000;
 // A whole-percent slider models a 30-year AVERAGE, and averages are coarse: the euro
 // area has never sustained multi-decade deflation (the ECB targets 2%), so the floor
 // is 0, and a 6% lifetime average is already the grim end of realistic.
+const INFLATION_MIN = 0;
 const INFLATION_MAX = 6;
 const INFLATION_STEP = 1;
 
@@ -261,15 +264,21 @@ const Slider: React.FC<{
   );
 };
 
-// A shared link can carry the return assumption (?return=7). The page still
-// DEFAULTS to 0% — following a link that names a return is the reader's own
-// choice, the same click as the historical-return link on the page.
-const sharedReturn = (search: string): number => {
-  const raw = new URLSearchParams(search).get('return');
-  const parsed = raw === null ? NaN : Number(raw);
-  return Number.isFinite(parsed)
-    ? Math.min(Math.max(Math.round(parsed), RETURN_MIN), RETURN_MAX)
-    : DEFAULT_RETURN_PERCENT;
+type SharedPercentBounds = { min: number; max: number; fallback: number };
+
+const sharedWholePercent = (
+  search: string,
+  name: string,
+  { min, max, fallback }: SharedPercentBounds,
+): number => {
+  const raw = new URLSearchParams(search).get(name)?.trim();
+  const parsed = raw ? Number(raw) : NaN;
+  return Number.isFinite(parsed) ? createClamper(min, max)(Math.round(parsed)) : fallback;
+};
+
+const sharedPayoutStrategy = (search: string): PayoutStrategy => {
+  const raw = new URLSearchParams(search).get('strategy');
+  return PAYOUT_STRATEGIES.find((strategy) => strategy === raw) ?? 'fixedPeriod';
 };
 
 export const PensionCalculator: React.FC = () => {
@@ -423,7 +432,11 @@ export const PensionCalculator: React.FC = () => {
         // non-member with the same three-pillar chart as before.
         memberCapitalBalance: isMember ? memberCapitalSeed : undefined,
         memberCapitalBasis: isMember ? ownCapitalContributions : undefined,
-        annualReturnPercent: sharedReturn(search),
+        annualReturnPercent: sharedWholePercent(search, 'return', {
+          min: RETURN_MIN,
+          max: RETURN_MAX,
+          fallback: DEFAULT_RETURN_PERCENT,
+        }),
         // The saver's current weighted-average fund fee, so the projection reflects
         // what they actually pay today.
         feePercent: Math.min(Math.max(toPercent(conversion.weightedAverageFee), 0), feeBounds.max),
@@ -431,8 +444,12 @@ export const PensionCalculator: React.FC = () => {
         // The default payout IS the tax-free bar: your projected remaining years at
         // the age you start — the standard fondipension setup.
         withdrawalYears: projectedRemainingYears(retirementAge, retirementAge - user.age),
-        payoutStrategy: 'fixedPeriod',
-        inflationPercent: DEFAULT_INFLATION_PERCENT,
+        payoutStrategy: sharedPayoutStrategy(search),
+        inflationPercent: sharedWholePercent(search, 'inflation', {
+          min: INFLATION_MIN,
+          max: INFLATION_MAX,
+          fallback: DEFAULT_INFLATION_PERCENT,
+        }),
         todaysMoney: true,
       });
     }
@@ -917,7 +934,7 @@ export const PensionCalculator: React.FC = () => {
                   label={<FormattedMessage id="pensionCalculator.input.inflation" />}
                   value={`${inflationPercent}%`}
                   valueText={`${inflationPercent}%`}
-                  min={0}
+                  min={INFLATION_MIN}
                   max={INFLATION_MAX}
                   step={INFLATION_STEP}
                   current={inflationPercent}

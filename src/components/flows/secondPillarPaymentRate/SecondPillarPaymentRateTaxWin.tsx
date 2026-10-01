@@ -9,15 +9,23 @@ type SecondPillarPaymentRateTaxWinProps = {
   variant?: 'default' | 'inline';
 };
 
+export const useSecondPillarTaxWin = (): { taxWin: number | null; loading: boolean } => {
+  const { data: contributions } = useContributions();
+  if (!contributions || !Array.isArray(contributions)) {
+    return { taxWin: null, loading: true };
+  }
+  const taxWin = yearToDateTaxWin(contributions);
+  return { taxWin: taxWin > 0 ? taxWin : null, loading: false };
+};
+
 export const SecondPillarPaymentRateTaxWin = ({
   variant = 'default',
 }: SecondPillarPaymentRateTaxWinProps = {}) => {
-  const { data: contributions } = useContributions();
-  if (!contributions || !Array.isArray(contributions)) {
+  const { taxWin, loading } = useSecondPillarTaxWin();
+  if (loading) {
     return variant === 'inline' ? null : <Shimmer height={24} />;
   }
-  const taxWin = yearToDateTaxWin(contributions);
-  if (taxWin <= 0) {
+  if (taxWin === null) {
     return null;
   }
   return (

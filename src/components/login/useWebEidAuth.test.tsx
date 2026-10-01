@@ -55,7 +55,7 @@ describe('Web eID Auth Integration', () => {
     config.set({ language: 'et' }, configOptions);
   });
 
-  it('should authenticate successfully and redirect to home', async () => {
+  it('should authenticate successfully and land on the account page', async () => {
     const mockTokens = { accessToken: 'access-token', refreshToken: 'refresh-token' };
     mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce(mockTokens);
 
@@ -69,8 +69,25 @@ describe('Web eID Auth Integration', () => {
     });
 
     await waitFor(() => {
-      expect(history.location.pathname).toBe('/');
+      expect(history.location.pathname).toBe('/account');
     });
+    expect(history.location.state).toEqual({ justLoggedIn: true });
+  });
+
+  it('replaces the login entry so going back does not hand out a new landing', async () => {
+    mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce({});
+
+    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    history.replace({ pathname: '/login' });
+    const entriesOnTheLoginPage = history.length;
+
+    userEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/account');
+    });
+    expect(history.length).toBe(entriesOnTheLoginPage);
+    expect(history.action).toBe('REPLACE');
   });
 
   it('should redirect to location.state.from when set by PrivateRoute', async () => {
@@ -84,6 +101,36 @@ describe('Web eID Auth Integration', () => {
     await waitFor(() => {
       expect(history.location.pathname).toBe('/capital/listings/42');
     });
+    expect(history.location.state).toBeUndefined();
+  });
+
+  it('should treat a redirect from the app root as the ordinary account landing', async () => {
+    mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce({});
+
+    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    history.replace({ pathname: '/login', state: { from: '/' } });
+
+    userEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/account');
+    });
+    expect(history.location.state).toEqual({ justLoggedIn: true });
+  });
+
+  it('keeps the query string of an account landing recorded by PrivateRoute', async () => {
+    mockAuthenticateWithIdCardWebEid.mockResolvedValueOnce({});
+
+    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    history.replace({ pathname: '/login', state: { from: '/account?language=en' } });
+
+    userEvent.click(screen.getByRole('button'));
+
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/account');
+    });
+    expect(history.location.search).toBe('?language=en');
+    expect(history.location.state).toEqual({ justLoggedIn: true });
   });
 
   it('should use configured language', async () => {

@@ -10,6 +10,7 @@ import LoggedInApp from '../../../LoggedInApp';
 import { initializeConfiguration } from '../../../config/config';
 import { useTestBackends, userBackend } from '../../../../test/backend';
 import { SourceFund } from '../../../common/apiModels';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 
 const mockSavingsFundBalance: SourceFund = {
   fundManager: { name: 'Tuleva' },
@@ -131,6 +132,11 @@ describe(SavingsFundWithdraw, () => {
 
     expect(screen.getByText('0 €')).toBeInTheDocument();
     expect(screen.getByText(/1\s*000[,.]50\s*€/)).toBeInTheDocument();
+  });
+
+  it('marks the balance and the bank accounts as personal data for analytics', async () => {
+    expect(await screen.findByRole('combobox', { name: 'Bank account' })).toHaveClass(PII_CLASS);
+    expect(await screen.findByText(/1\s*000[,.]50\s*€/)).toHaveClass(PII_CLASS);
   });
 
   it('populates bank account dropdown with available accounts', async () => {
@@ -330,6 +336,35 @@ describe(SavingsFundWithdraw, () => {
       expect(
         screen.getByText(
           /You can only withdraw to a company bank account from which you have previously made a deposit to the Additional Investment Fund\./i,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(
+          /You can only withdraw to your own bank account from which you have previously made a deposit/i,
+        ),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  describe('when representing a child', () => {
+    beforeEach(async () => {
+      cleanup();
+      userBackend(server, {
+        role: { type: 'PERSON', code: '51201011234', name: 'Junior Doe' },
+      });
+
+      initApp();
+      history.push('/savings-fund/withdraw');
+    });
+
+    it('shows the child-bank IBAN description instead of the personal one', async () => {
+      expect(
+        await screen.findByRole('heading', { name: 'Withdraw from Additional Investment Fund' }),
+      ).toBeInTheDocument();
+
+      expect(
+        screen.getByText(
+          /You can only withdraw to a bank account in the child.s name from which a deposit to the Additional Investment Fund has previously been made\./i,
         ),
       ).toBeInTheDocument();
       expect(

@@ -1,13 +1,13 @@
 import moment from 'moment';
 import { Redirect, useLocation } from 'react-router-dom';
 import { PropsWithChildren } from 'react';
-import { LocationDescriptor } from 'history';
+import { LocationDescriptor, LocationDescriptorObject } from 'history';
 import { useSelector } from 'react-redux';
 import { User } from '../common/apiModels';
 import { State } from '../../types';
 
 export type ContactDetailsRedirectState = {
-  from: string;
+  from: LocationDescriptorObject;
   mandatoryUpdate: true;
 };
 
@@ -24,7 +24,10 @@ export const ContactDetailsGatekeep = ({ children }: PropsWithChildren<unknown>)
   if (!areContactDetailsUpToDate(user) && hasPensionAccount(user)) {
     const redirectLocation: LocationDescriptor<ContactDetailsRedirectState> = {
       pathname: '/contact-details',
-      state: { from: location.pathname, mandatoryUpdate: true },
+      state: {
+        from: { pathname: location.pathname, search: location.search, state: location.state },
+        mandatoryUpdate: true,
+      },
     };
 
     return <Redirect to={redirectLocation} />;

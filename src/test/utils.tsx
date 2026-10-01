@@ -24,11 +24,12 @@ export function renderWrapped(
   history = createMemoryHistory(),
   store = createDefaultStore(history as any),
   queryClient = new QueryClient(),
+  language: keyof typeof translations = 'en',
 ): RenderResult {
   const wrapper = (component: React.ReactNode) => (
     <IntlProvider
-      locale="en"
-      messages={translations.en}
+      locale={language}
+      messages={translations[language]}
       defaultLocale="et"
       onError={(err) => {
         if (err.code === 'MISSING_TRANSLATION') {

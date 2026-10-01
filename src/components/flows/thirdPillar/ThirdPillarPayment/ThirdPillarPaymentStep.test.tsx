@@ -6,7 +6,7 @@ import { createMemoryHistory, History } from 'history';
 import userEvent from '@testing-library/user-event';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import { initializeConfiguration } from '../../../config/config';
-import { useTestBackends, useTestBackendsExcept, userBackend } from '../../../../test/backend';
+import { nudgeBackend, useTestBackends } from '../../../../test/backend';
 import LoggedInApp from '../../../LoggedInApp';
 
 describe('When a user is making a third pillar payment', () => {
@@ -143,8 +143,9 @@ describe('When a user is making a third pillar payment', () => {
     windowOpen.mockRestore();
   });
 
-  test('confirming the recurring payment shows support with a second pillar nudge and cancels the payment reminder', async () => {
+  test('confirming the recurring payment shows the nudge from the server and cancels the payment reminder', async () => {
     const reminderCancellation = jest.fn();
+    nudgeBackend(server, { key: 'SECOND_PILLAR_PAYMENT_RATE', tag: 'nudge_payment_rate' });
     server.use(
       rest.post(
         'http://localhost/v1/third-pillar-payment-reminders/cancellations',
@@ -175,11 +176,7 @@ describe('When a user is making a third pillar payment', () => {
     windowOpen.mockRestore();
   });
 
-  test('does not nudge a recurring payment right after the user confirmed setting one up', async () => {
-    useTestBackendsExcept(server, ['user']);
-    userBackend(server, {
-      secondPillarPaymentRates: { current: 6, pending: null },
-    });
+  test('shows the account button and no nudge when the server decides on none', async () => {
     const fakeWindow = { location: { replace: jest.fn() }, document: { write: jest.fn() } };
     const windowOpen = jest.spyOn(window, 'open').mockReturnValue(fakeWindow as unknown as Window);
 
@@ -199,7 +196,7 @@ describe('When a user is making a third pillar payment', () => {
       '/account',
     );
     expect(
-      main.queryByRole('link', { name: 'Set up a recurring payment' }),
+      main.queryByRole('link', { name: 'Increase your contribution' }),
     ).not.toBeInTheDocument();
     windowOpen.mockRestore();
   });
@@ -230,6 +227,16 @@ describe('When a user is making a third pillar payment', () => {
 
     expect(
       await screen.findByRole('heading', { name: 'Recurring payment set up' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'From now on you save into your third pillar automatically, without having to remember it.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'The first payment is on the date you chose, and you can change the amount in your internet bank whenever you need.',
+      ),
     ).toBeInTheDocument();
   });
 
@@ -262,6 +269,14 @@ describe('When a user is making a third pillar payment', () => {
     userEvent.click(await confirmDoneLink());
 
     expect(await screen.findByRole('heading', { name: 'Payment done' })).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'That puts you among the top 30% of people in Estonia who save in the third pillar.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('New fund units will reach your account within 2 working days.'),
+    ).toBeInTheDocument();
   });
 
   test('can switch between Single and Recurring payment', async () => {
@@ -281,8 +296,9 @@ describe('When a user is making a third pillar payment', () => {
     expect(await makePaymentButton()).toBeInTheDocument();
   });
 
-  const singlePaymentOption = async () => screen.findByLabelText('Single payment');
-  const recurringPaymentOption = async () => screen.findByLabelText('Recurring payment');
+  const singlePaymentOption = async () => screen.findByRole('radio', { name: /^Single\spayment/ });
+  const recurringPaymentOption = async () =>
+    screen.findByRole('radio', { name: /^Recurring\spayment/ });
   const amountInput: () => Promise<HTMLInputElement> = async () =>
     screen.findByLabelText('What is the payment amount?', {
       exact: false,

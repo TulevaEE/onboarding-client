@@ -1,4 +1,5 @@
 import React from 'react';
+import { PII_CLASS } from '../../../../../tracking/piiMarkup';
 
 interface PaymentDetailRowProps {
   label: React.ReactNode;
@@ -20,11 +21,11 @@ export const PaymentDetailRow: React.FunctionComponent<PaymentDetailRowProps> = 
     <div className={`col-12 col-md-${valueCol}`}>
       {tooltip ? (
         <div className="d-flex justify-content-between align-items-center column-gap-2">
-          <b className="text-break">{value}</b>
+          <b className={`text-break ${PII_CLASS}`}>{value}</b>
           {tooltip}
         </div>
       ) : (
-        <b>{value}</b>
+        <b className={PII_CLASS}>{value}</b>
       )}
     </div>
   </div>

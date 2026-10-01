@@ -3,6 +3,7 @@ import { Control, Controller, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { CompanyOnboardingFormData } from '../types';
 import { Radio } from '../../../../common';
+import { PII_CLASS } from '../../../../tracking/piiMarkup';
 
 type CompanyAddressStepProps = {
   control: Control<CompanyOnboardingFormData>;
@@ -36,7 +37,9 @@ export const CompanyAddressStep: FC<CompanyAddressStepProps> = ({ control }) => 
                   htmlFor="company-address-reuse"
                 >
                   <FormattedMessage id="flows.savingsFundOnboarding.companyAddressStep.reUseAddress" />
-                  <div className="fs-xs">{companyValidatedData?.address.value.fullAddress}</div>
+                  <div className={`fs-xs ${PII_CLASS}`}>
+                    {companyValidatedData?.address.value.fullAddress}
+                  </div>
                 </label>
               </Radio>
             </div>

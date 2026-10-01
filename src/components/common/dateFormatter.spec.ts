@@ -1,5 +1,12 @@
 import moment from 'moment';
-import { formatDateRange, formatDateYear } from './dateFormatter';
+import {
+  formatDateFrom,
+  formatDateOn,
+  formatDateRange,
+  formatDateUntil,
+  formatDateYear,
+  timeInTallinn,
+} from './dateFormatter';
 
 describe('DateFormatter functions', () => {
   describe('English locale', () => {
@@ -55,6 +62,42 @@ describe('DateFormatter functions', () => {
         const dateString = '2024-01-21T15:00:00+02:00';
         expect(formatDateYear(dateString)).toBe('21. jaanuar 2024');
       });
+    });
+  });
+
+  describe('season deadline forms', () => {
+    it('inflects the Estonian month for "from" and "until"', () => {
+      moment.locale('et');
+
+      expect(formatDateFrom('2027-01-01')).toBe('1.\u00a0jaanuarist');
+      expect(formatDateOn('2026-11-30')).toBe('30.\u00a0novembril');
+      expect(formatDateUntil('2026-11-30')).toBe('30.\u00a0novembrini');
+      expect(formatDateUntil('2026-05-31')).toBe('31.\u00a0maini');
+    });
+
+    it('keeps the plain date in English', () => {
+      moment.locale('en');
+
+      expect(formatDateFrom('2027-01-01')).toBe('January\u00a01');
+      expect(formatDateOn('2026-11-30')).toBe('November\u00a030');
+      expect(formatDateUntil('2026-11-30')).toBe('November\u00a030');
+    });
+
+    it('reads an instant as the calendar day it falls on in Estonia', () => {
+      moment.locale('et');
+
+      expect(formatDateOn('2026-11-30T21:59:59.999999999Z')).toBe('30.\u00a0novembril');
+      expect(formatDateOn('2026-11-30T22:30:00Z')).toBe('1.\u00a0detsembril');
+      expect(formatDateUntil('2026-11-30T22:30:00Z')).toBe('1.\u00a0detsembrini');
+      expect(formatDateFrom('2026-12-31T22:30:00Z')).toBe('1.\u00a0jaanuarist');
+    });
+  });
+
+  describe('timeInTallinn', () => {
+    it('reads an instant as the clock time in Estonia', () => {
+      expect(timeInTallinn('2026-02-03T11:30:00Z')).toBe('13:30');
+      expect(timeInTallinn('2026-07-03T11:30:00Z')).toBe('14:30');
+      expect(timeInTallinn('2026-02-03T22:30:00Z')).toBe('00:30');
     });
   });
 });

@@ -462,6 +462,18 @@ describe('selectSavingsFundPayments', () => {
     ]);
   });
 
+  it('leaves transferred units out, since receiving a gift is no saving habit', () => {
+    const payments = selectSavingsFundPayments(
+      [savingsFund],
+      [
+        transaction('EE0000003283', 100),
+        transaction('EE0000003283', 500, 'TRANSFER_IN'),
+        transaction('EE0000003283', -400, 'TRANSFER_OUT'),
+      ],
+    );
+    expect(payments).toEqual([{ time: '2026-06-01T00:00:00Z', amount: 100 }]);
+  });
+
   it('keeps withdrawals when selecting all flows, so the past can dip', () => {
     const flows = selectSavingsFundFlows(
       [savingsFund, pensionFund],
@@ -474,6 +486,22 @@ describe('selectSavingsFundPayments', () => {
     expect(flows).toEqual([
       { time: '2026-06-01T00:00:00Z', amount: 100 },
       { time: '2026-06-01T00:00:00Z', amount: -50 },
+    ]);
+  });
+
+  it('counts transferred units among the flows, since they move real value', () => {
+    const flows = selectSavingsFundFlows(
+      [savingsFund],
+      [
+        transaction('EE0000003283', 100),
+        transaction('EE0000003283', 500, 'TRANSFER_IN'),
+        transaction('EE0000003283', -400, 'TRANSFER_OUT'),
+      ],
+    );
+    expect(flows).toEqual([
+      { time: '2026-06-01T00:00:00Z', amount: 100 },
+      { time: '2026-06-01T00:00:00Z', amount: 500 },
+      { time: '2026-06-01T00:00:00Z', amount: -400 },
     ]);
   });
 });

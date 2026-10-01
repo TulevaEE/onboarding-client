@@ -9,6 +9,7 @@ import {
 import { getFullName } from '../../common/utils';
 import { getMyRole } from './status/utils';
 import { isTranslationKey, TranslationKey } from '../../translations';
+import { PII_CLASS } from '../../tracking/piiMarkup';
 
 export const TransferList = () => {
   const { data: contracts, isLoading: isLoadingContracts } = useMyCapitalTransferContracts();
@@ -107,7 +108,7 @@ const TransferItem = ({ contract, me }: { contract: CapitalTransferContract; me:
             </svg>
           )}
         </span>
-        <span>
+        <span className={PII_CLASS}>
           <FormattedMessage
             id={stateDescription}
             values={{
@@ -117,7 +118,7 @@ const TransferItem = ({ contract, me }: { contract: CapitalTransferContract; me:
           />
         </span>
       </span>
-      <Link className="ms-4 ms-sm-0" to={`/capital/transfer/${contract.id}`}>
+      <Link className={`ms-4 ms-sm-0 ${PII_CLASS}`} to={`/capital/transfer/${contract.id}`}>
         <FormattedMessage
           id={getStateActionLinkText(contract, myRole)}
           values={{

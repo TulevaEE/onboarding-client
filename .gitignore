@@ -40,3 +40,6 @@ test-results/
 
 # Playwright MCP runtime artifacts
 .playwright-mcp/
+
+# Transient git worktrees used by coding agents
+.claude/worktrees/

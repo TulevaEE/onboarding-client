@@ -16,6 +16,8 @@ import {
   getIdCardSignatureStatus,
   getIdCardTokens,
   getMandateDeadlines,
+  getNudge,
+  postPaymentRateRedirect,
   getMissingAmlChecks,
   getMobileIdSignatureChallengeCode,
   getMobileIdSignatureStatus,
@@ -52,6 +54,10 @@ import {
   User,
   UserConversion,
 } from './apiModels';
+import { writeMockModeConfiguration } from './requestMocker';
+import { mandateDeadlinesProfiles } from './requestMocker/profiles/mandateDeadlines';
+import { nudgeProfiles } from './requestMocker/profiles/nudge';
+import { paymentRateRedirectProfiles } from './requestMocker/profiles/paymentRateRedirect';
 
 import * as authenticationManager from './authenticationManager';
 import Mock = jest.Mock;
@@ -1029,6 +1035,10 @@ describe('API calls', () => {
         amount: 100,
         currency: 'EUR',
         time: '2020-01-01T00:00:00Z',
+        navDate: '2019-12-31',
+        priceCalculationDate: null,
+        applicationTime: null,
+        counterpartyIban: null,
         isin: 'EE3600109435',
         type: 'CONTRIBUTION_CASH',
         units: 10.0,
@@ -1096,6 +1106,66 @@ describe('API calls', () => {
         '/v1/mandate-deadlines',
         undefined,
       );
+    });
+
+    it('returns the selected mock mode profile without calling the backend', async () => {
+      writeMockModeConfiguration({ mandateDeadlines: 'NOVEMBER_2026_BEFORE_DEADLINE' });
+
+      const mandateDeadlines = await getMandateDeadlines();
+
+      expect(mandateDeadlines).toBe(mandateDeadlinesProfiles.NOVEMBER_2026_BEFORE_DEADLINE);
+      expect(mockHttp.getWithAuthentication).not.toHaveBeenCalled();
+      writeMockModeConfiguration(null);
+    });
+  });
+
+  describe('postPaymentRateRedirect', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      mockHttp.postWithAuthentication.mockResolvedValue({ redirect: false });
+    });
+
+    it('asks the backend once for the redirect decision', async () => {
+      const decision = await postPaymentRateRedirect();
+
+      expect(decision).toEqual({ redirect: false });
+      expect(mockHttp.postWithAuthentication).toHaveBeenCalledWith('/v1/me/payment-rate-redirect');
+    });
+
+    it('returns the selected mock mode profile without calling the backend', async () => {
+      writeMockModeConfiguration({ paymentRateRedirect: 'TREATMENT' });
+
+      const decision = await postPaymentRateRedirect();
+
+      expect(decision).toBe(paymentRateRedirectProfiles.TREATMENT);
+      expect(mockHttp.postWithAuthentication).not.toHaveBeenCalled();
+      writeMockModeConfiguration(null);
+    });
+  });
+
+  describe('getNudge', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      mockHttp.getWithAuthentication.mockResolvedValue(nudgeProfiles.NONE);
+    });
+
+    it('retrieves the nudge decision for a context', async () => {
+      const decision = await getNudge('THIRD_PILLAR_PAYMENT');
+
+      expect(decision).toEqual(nudgeProfiles.NONE);
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v1/me/nudge', {
+        context: 'THIRD_PILLAR_PAYMENT',
+      });
+    });
+
+    it('returns the selected mock mode profile without calling the backend', async () => {
+      writeMockModeConfiguration({ nudge: 'THIRD_PILLAR_START' });
+
+      const decision = await getNudge('THIRD_PILLAR_PAYMENT');
+
+      expect(decision).toBe(nudgeProfiles.THIRD_PILLAR_START);
+      expect(mockHttp.getWithAuthentication).not.toHaveBeenCalled();
+      writeMockModeConfiguration(null);
     });
   });
 

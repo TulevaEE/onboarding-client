@@ -85,7 +85,7 @@ describe('SavingsFundIdentityVerification', () => {
     expect(types).not.toContain('TERMS');
   });
 
-  it('tells the person their part is done and someone else continues the application', async () => {
+  it('tells the person their part is done and the account still needs the application submitted', async () => {
     renderWrapped(<SavingsFundIdentityVerification />);
 
     expect(await screen.findByText('1/4')).toBeInTheDocument();
@@ -95,7 +95,9 @@ describe('SavingsFundIdentityVerification', () => {
       await screen.findByRole('heading', { name: 'Identity verification complete' }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/whoever started the company's application can now continue it/i),
+      screen.getByText(
+        /the company account opens automatically once the company's application has been submitted and everyone connected to the company has verified their identity/i,
+      ),
     ).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument();
   });
@@ -107,6 +109,11 @@ describe('SavingsFundIdentityVerification', () => {
 
     expect(
       await screen.findByRole('heading', { name: 'Your identity is already verified' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /the company account opens automatically once the company's application has been submitted and everyone connected to the company has verified their identity/i,
+      ),
     ).toBeInTheDocument();
     expect(screen.queryByText('1/4')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument();

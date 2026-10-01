@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { IntlProvider } from 'react-intl';
 import { TransactionSection } from './TransactionSection';
-import { contribution, subtraction } from './fixtures';
+import { contribution, subtraction, transferIn, transferOut } from './fixtures';
 import { fundsBackend, userBackend } from '../../../test/backend';
 import { initializeConfiguration } from '../../config/config';
 import { getAuthentication } from '../../common/authenticationManager';
@@ -109,7 +109,7 @@ describe('Transaction section', () => {
     mockTransactions([contribution]);
     initializeComponent({ pillar: 2 });
     expect(await screen.findByText('transactions.columns.units.title')).toBeInTheDocument();
-    expect(screen.getAllByText('31.36')).toHaveLength(2);
+    expect(screen.getAllByText('31.357')).toHaveLength(2);
   });
 
   it('shows unit total in footer when all transactions are from the same fund', async () => {
@@ -123,23 +123,89 @@ describe('Transaction section', () => {
     mockTransactions([contribution, secondContribution]);
     initializeComponent({ pillar: 2 });
     expect(await screen.findByText('transactions.columns.units.title')).toBeInTheDocument();
-    expect(screen.getByText('51.36')).toBeInTheDocument();
+    expect(screen.getByText('51.357')).toBeInTheDocument();
   });
 
   it('does not show unit total when transactions are from different funds', async () => {
     mockTransactions([contribution, subtraction]);
     initializeComponent();
     expect(await screen.findByText('transactions.columns.units.title')).toBeInTheDocument();
-    expect(screen.getByText('31.36')).toBeInTheDocument();
-    expect(screen.queryByText('41.36')).not.toBeInTheDocument();
-    expect(screen.queryByText('21.36')).not.toBeInTheDocument();
+    expect(screen.getByText('31.357')).toBeInTheDocument();
+    expect(screen.queryByText('41.357')).not.toBeInTheDocument();
+    expect(screen.queryByText('21.357')).not.toBeInTheDocument();
   });
 
   it('shows negative units for subtraction transactions', async () => {
     mockTransactions([subtraction]);
     initializeComponent({ pillar: 3 });
     expect(await screen.findByText('transactions.columns.units.title')).toBeInTheDocument();
-    expect(screen.getAllByText('−10.00')).toHaveLength(2);
+    expect(screen.getAllByText('−10.000')).toHaveLength(2);
+  });
+
+  it('shows negative units for units transferred away and sums both transfers in the footer', async () => {
+    mockTransactions([transferIn, transferOut]);
+    initializeComponent({ pillar: null });
+    expect(await screen.findByText('transactions.columns.units.title')).toBeInTheDocument();
+    expect(screen.getByText('100.000')).toBeInTheDocument();
+    expect(screen.getByText('−40.000')).toBeInTheDocument();
+    expect(screen.getByText('60.000')).toBeInTheDocument();
+  });
+
+  const savingsFundContribution = (id: string, units: number) => ({
+    ...transferIn,
+    id,
+    type: 'CONTRIBUTION_CASH',
+    units,
+    nav: 1.1178,
+  });
+
+  it('shows units to three decimals, rounded half up, as the fund rules state', async () => {
+    mockTransactions([
+      savingsFundContribution('first', 894.61442),
+      { ...savingsFundContribution('second', 2.0005), time: '2026-03-12T12:00:00Z' },
+    ]);
+    initializeComponent({ pillar: null });
+    expect(await screen.findByText('894.614')).toBeInTheDocument();
+    expect(screen.getByText('2.001')).toBeInTheDocument();
+  });
+
+  it('shows the exact units behind a rounded figure on hover', async () => {
+    mockTransactions([savingsFundContribution('first', 894.61442)]);
+    initializeComponent({ pillar: null });
+    expect(await screen.findAllByTitle('894.61442')).toHaveLength(2);
+  });
+
+  it('adds the units up from their exact quantities, not from the rounded rows', async () => {
+    mockTransactions([
+      savingsFundContribution('first', 1.0004),
+      { ...savingsFundContribution('second', 1.0004), time: '2026-03-12T12:00:00Z' },
+    ]);
+    initializeComponent({ pillar: null });
+    expect(await screen.findAllByText('1.000')).toHaveLength(2);
+    expect(screen.getByText('2.001')).toHaveAttribute('title', '2.0008');
+  });
+
+  it('says the units are rounded and the total is exact when a figure was rounded', async () => {
+    mockTransactions([savingsFundContribution('first', 894.61442)]);
+    initializeComponent({ pillar: null });
+    expect(await screen.findByText('units.roundingNote.screen')).toBeInTheDocument();
+  });
+
+  it('says the units are rounded only on screens wide enough to show the units', async () => {
+    mockTransactions([savingsFundContribution('first', 894.61442)]);
+    initializeComponent({ pillar: null });
+    expect(await screen.findByText('units.roundingNote.screen')).toHaveClass(
+      'd-none',
+      'd-md-block',
+    );
+  });
+
+  it('says nothing about rounding when every figure is shown in full', async () => {
+    mockTransactions([contribution]);
+    initializeComponent({ pillar: 2 });
+    const figures = await screen.findAllByText('31.357');
+    figures.forEach((figure) => expect(figure).not.toHaveAttribute('title'));
+    expect(screen.queryByText('units.roundingNote.screen')).not.toBeInTheDocument();
   });
 
   it('does not show Osakud column when limit is set', async () => {

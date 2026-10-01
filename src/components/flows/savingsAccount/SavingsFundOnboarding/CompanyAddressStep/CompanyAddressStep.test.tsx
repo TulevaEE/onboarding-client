@@ -4,6 +4,7 @@ import { renderWrapped } from '../../../../../test/utils';
 import { mockValidatedCompany } from '../../../../../test/backend-responses';
 import { CompanyAddressStep } from './CompanyAddressStep';
 import { CompanyOnboardingFormData } from '../types';
+import { PII_CLASS } from '../../../../tracking/piiMarkup';
 
 const CompanyAddressStepWrapper = () => {
   const { control } = useForm<CompanyOnboardingFormData>({
@@ -41,6 +42,12 @@ describe('CompanyAddressStep', () => {
     expect(
       screen.getByText(/the data must be updated in the business registry/i),
     ).toBeInTheDocument();
+  });
+
+  it('marks the company address as personal data for analytics', () => {
+    renderWrapped(<CompanyAddressStepWrapper />);
+
+    expect(screen.getByText('Telliskivi 60/1, 10412 Tallinn')).toHaveClass(PII_CLASS);
   });
 
   it('renders a radio button with the company address from validated data', () => {

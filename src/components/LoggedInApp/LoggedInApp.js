@@ -23,6 +23,7 @@ import { ContactDetailsPage } from '../contact-details/ContactDetailsPage';
 import { ContactDetailsGatekeep } from '../contact-details/ContactDetailsGatekeep';
 import AmlPage, { actions as amlActions } from '../aml';
 import SignUpPage from '../newUserFlow';
+import { MembershipSuccess } from '../newUserFlow/MembershipSuccess';
 import { TransactionPageThirdPillar } from '../account/TransactionSection/TransactionPageThirdPillar';
 import { ContributionPageThirdPillar } from '../contribution/ContributionPageThirdPillar';
 import Gift from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarGift';
@@ -51,6 +52,7 @@ import SecondPillarGrowth from '../secondPillarGrowth/SecondPillarGrowth';
 import { MillionaireCalculator } from '../millionaire/MillionaireCalculator';
 import { PensionCalculator } from '../pensionCalculator/PensionCalculator';
 import { HackathonRegistrationPage } from '../hackathon/HackathonRegistrationPage';
+import { HackathonIdeaPage } from '../hackathon/HackathonIdeaPage';
 import { Listings } from '../listings/Listings';
 import { MembersOnlyGatekeep } from '../common/MembersOnlyGatekeep';
 import { SavingsFundOnboardingGatekeep } from '../common/SavingsFundOnboardingGatekeep';
@@ -65,6 +67,7 @@ import {
   SavingsFundOnboarding,
   SavingsFundOnboardingChooser,
   SavingsFundOnboardingPending,
+  SavingsFundOnboardingWaiting,
   SavingsFundOnboardingSuccess,
 } from '../flows/savingsAccount/SavingsFundOnboarding';
 import {
@@ -72,6 +75,7 @@ import {
   isCompanyOnboardingEnabled,
 } from '../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
 import { SavingsFundPayment } from '../flows/savingsAccount/SavingsFundPayment';
+import { GiftLinkPage } from '../flows/savingsAccount/GiftLink';
 import SavingsFundPaymentSuccess from '../flows/savingsAccount/SavingsFundPayment/SavingsFundPaymentSuccess';
 import SavingsFundPaymentCancellation from '../flows/savingsAccount/SavingsFundPayment/SavingsFundPaymentCancellation';
 import {
@@ -119,7 +123,8 @@ export class LoggedInApp extends PureComponent {
   }
 
   render() {
-    const { user, loading, onLogout } = this.props;
+    const { user, loading, onLogout, location } = this.props;
+    const isHackathonPage = location.pathname.startsWith('/hackathon');
 
     return (
       <div className="container">
@@ -128,6 +133,7 @@ export class LoggedInApp extends PureComponent {
           loading={loading}
           onLogout={onLogout}
           onRoleSwitch={() => this.handleRoleSwitch()}
+          hackathon={isHackathonPage}
         />
         {this.isDevelopmentMode() && <DevSidebar />}
         <main id="main" className="pb-5">
@@ -135,17 +141,27 @@ export class LoggedInApp extends PureComponent {
             <Route
               path={`${ACCOUNT_PATH}/child`}
               render={() => (
-                <RoleDeepLink holder="child" onRoleSwitched={() => this.fetchAllUserData()} />
+                <RoleDeepLink
+                  holder="child"
+                  destination={ACCOUNT_PATH}
+                  onRoleSwitched={() => this.fetchAllUserData()}
+                />
               )}
             />
             <Route
               path={`${ACCOUNT_PATH}/company`}
               render={() => (
-                <RoleDeepLink holder="company" onRoleSwitched={() => this.fetchAllUserData()} />
+                <RoleDeepLink
+                  holder="company"
+                  destination={ACCOUNT_PATH}
+                  onRoleSwitched={() => this.fetchAllUserData()}
+                />
               )}
             />
+            <Route path="/savings-fund/gift-link" component={GiftLinkPage} />
             <Route path={ACCOUNT_PATH} component={AccountPage} />
             <Route path={AML_PATH} component={AmlPage} />
+            <Route path="/join/success" component={MembershipSuccess} />
             <Route path="/join" component={SignUpPage} />
             <Route path="/contact-details" component={ContactDetailsPage} />
             <Route
@@ -197,6 +213,10 @@ export class LoggedInApp extends PureComponent {
             <Route
               path="/savings-fund/onboarding/pending"
               component={SavingsFundOnboardingPending}
+            />
+            <Route
+              path="/savings-fund/onboarding/waiting"
+              component={SavingsFundOnboardingWaiting}
             />
             <Route exact path="/savings-fund/onboarding/person" component={SavingsFundOnboarding} />
             <Route
@@ -311,6 +331,28 @@ export class LoggedInApp extends PureComponent {
               )}
             />
             <Route
+              path="/savings-fund/payment/child/:accountId?"
+              render={({ match }) => (
+                <RoleDeepLink
+                  holder="child"
+                  destination="/savings-fund/payment"
+                  accountId={match.params.accountId}
+                  onRoleSwitched={() => this.fetchAllUserData()}
+                />
+              )}
+            />
+            <Route
+              path="/savings-fund/payment/company/:accountId?"
+              render={({ match }) => (
+                <RoleDeepLink
+                  holder="company"
+                  destination="/savings-fund/payment"
+                  accountId={match.params.accountId}
+                  onRoleSwitched={() => this.fetchAllUserData()}
+                />
+              )}
+            />
+            <Route
               path="/savings-fund/payment/:paymentId/cancellation"
               render={() => <SavingsFundPaymentCancellation />}
             />
@@ -368,12 +410,13 @@ export class LoggedInApp extends PureComponent {
             <Route path="/1st-vs-2nd-pillar" render={() => <FirstVsSecondPillarComparison />} />
             <Route path="/millionaire" component={MillionaireCalculator} />
             <Route path="/calculator" component={PensionCalculator} />
+            <Route path="/hackathon/idea" component={HackathonIdeaPage} />
             <Route path="/hackathon" component={HackathonRegistrationPage} />
 
             <Redirect exact path="/" to={ACCOUNT_PATH} />
           </Switch>
         </main>
-        <Footer />
+        <Footer cooperative={isHackathonPage} />
       </div>
     );
   }
@@ -386,6 +429,7 @@ LoggedInApp.defaultProps = {
   hasError: false,
   loading: false,
   shouldLoadAllUserData: false,
+  location: { pathname: '' },
 
   onLogout: noop,
   onGetUserConversion: noop,
@@ -400,6 +444,7 @@ LoggedInApp.propTypes = {
   hasError: Types.bool,
   loading: Types.bool,
   shouldLoadAllUserData: Types.bool,
+  location: Types.shape({ pathname: Types.string }),
 
   onLogout: Types.func,
   onGetUserConversion: Types.func,

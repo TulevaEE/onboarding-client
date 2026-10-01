@@ -282,6 +282,10 @@ small {
   text-wrap: balance;
 }
 
+.text-pretty {
+  text-wrap: pretty;
+}
+
 .items-count-badge {
   min-width: $font-size-base * 0.75 + $spacer * 0.25 + $spacer * 0.25;
   margin-left: $spacer * 0.125;
@@ -301,6 +305,14 @@ small {
   .brand-logo {
     width: auto;
     height: 60px;
+  }
+
+  // Logo and an optional label beside it (e.g. "Liikmete Häkaton"), aligned by the last
+  // baseline so the label's bottom line stands on the same line as the wordmark
+  .app-header__brand {
+    display: flex;
+    align-items: flex-end;
+    align-items: last baseline;
   }
 
   @media (max-width: 576px) {

@@ -1,14 +1,17 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import moment from 'moment';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
+import uniqueId from 'lodash/uniqueId';
 import { PillButton } from '../../common/PillButton';
+import { TranslationKey } from '../../translations';
+import styles from './PeriodSelector.module.scss';
 
-const today = () => moment().format('YYYY-MM-DD');
+const ISO_DATE = 'YYYY-MM-DD';
+const SHOWN_DATE = 'DD.MM.YYYY';
+const TYPED_DATES = ['D.M.YYYY', 'DD.MM.YYYY', 'D.MM.YYYY', 'DD.M.YYYY'];
 
-// A date input reports every keystroke, and a half-typed year is still a whole date:
-// typing 2013 passes through 0002, 0020 and 0201. Asking the backend for each of those
-// redraws the chart under the person while they are still typing, so a date is only
-// acted on once the typing stops — or at once when they leave the field.
+const today = () => moment().format(ISO_DATE);
+
 const QUIET_PERIOD_MS = 500;
 const EARLIEST_YEAR = 1900;
 
@@ -18,94 +21,182 @@ const stopWaiting = (timer: ReturnType<typeof setTimeout> | undefined) => {
   }
 };
 
-const isWholeDate = (value: string): boolean => {
-  const parsed = moment(value, 'YYYY-MM-DD', true);
-  return parsed.isValid() && parsed.year() >= EARLIEST_YEAR;
+const shownDate = (isoDate: string): string =>
+  isoDate === '' ? '' : moment(isoDate, ISO_DATE).format(SHOWN_DATE);
+
+const dateIn = (text: string, formats: string[]): string | undefined => {
+  const parsed = moment(text.trim(), formats, true);
+  return parsed.isValid() && parsed.year() >= EARLIEST_YEAR ? parsed.format(ISO_DATE) : undefined;
 };
 
+const typedDate = (text: string): string | undefined =>
+  text.trim() === '' ? '' : dateIn(text, TYPED_DATES);
+
+const fullyTypedDate = (text: string): string | undefined => dateIn(text, [SHOWN_DATE]);
+
+const pickedDate = (isoDate: string): string | undefined =>
+  isoDate === '' ? '' : dateIn(isoDate, [ISO_DATE]);
+
+const showsPicker = (dateField: HTMLInputElement): boolean => {
+  try {
+    dateField.showPicker();
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const CalendarIcon: React.FunctionComponent = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    fill="currentColor"
+    viewBox="0 0 16 16"
+    aria-hidden="true"
+  >
+    <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2M1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857z" />
+    <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2m3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2" />
+  </svg>
+);
+
 const DateInput: React.FunctionComponent<{
-  label: string;
+  label: TranslationKey;
+  calendarLabel: TranslationKey;
   value: string;
   min?: string;
   max?: string;
   emptyMeansAllTime?: boolean;
   onCommit: (value: string) => void;
-}> = ({ label, value, min, max, emptyMeansAllTime, onCommit }) => {
+}> = ({ label, calendarLabel, value, min, max, emptyMeansAllTime, onCommit }) => {
+  const { formatMessage } = useIntl();
+  const [id] = useState(() => uniqueId('period-date-'));
   const [typed, setTyped] = useState<string | null>(null);
-  const [discarded, setDiscarded] = useState(0);
   const quietPeriod = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const textBox = useRef<HTMLInputElement>(null);
+  const calendar = useRef<HTMLInputElement>(null);
 
   useEffect(() => () => stopWaiting(quietPeriod.current), []);
 
-  // A period chosen elsewhere — a preset, or the start the backend resolved — replaces
-  // whatever was being typed. The wait has to be called off in the same breath as the
-  // value changing, before a timer that is already due can slip in and commit the old date.
   useLayoutEffect(() => {
     stopWaiting(quietPeriod.current);
     setTyped(null);
   }, [value]);
 
-  // The min and max on the box only colour a date outside them: whatever is typed still
-  // arrives here. A start after the end of the period, or an end before its start, is
-  // not a period anyone can be shown — it is left standing like half a date rather than
-  // sent on for the backend to refuse.
-  const isPeriodBoundary = (next: string) =>
-    isWholeDate(next) && (!min || next >= min) && (!max || next <= max);
-
-  const isCommittable = (next: string) =>
-    next === '' ? Boolean(emptyMeansAllTime) : isPeriodBoundary(next);
-
-  const commit = (next: string) => {
-    stopWaiting(quietPeriod.current);
-
-    if (isCommittable(next)) {
-      // The new period goes out first. React does not batch these two when the quiet
-      // period runs them, so letting go of what was typed beforehand would put the old
-      // date back into the box for one pass — and writing a date input's value throws
-      // away the segment the cursor was sitting in. Letting go afterwards is only left
-      // to do at all when the date committed is the one already in effect.
-      onCommit(next);
-      setTyped(null);
-      return;
+  const isCommittable = (date: string | undefined): date is string => {
+    if (date === undefined) {
+      return false;
     }
-    // Half a date is not a period. The box goes back to the one actually in effect
-    // rather than standing there showing a year nobody asked for. A date input keeps
-    // whatever was typed into it, so the box is remounted to take the value back.
+    if (date === '') {
+      return Boolean(emptyMeansAllTime);
+    }
+    return (!min || date >= min) && (!max || date <= max);
+  };
+
+  const commit = (date: string | undefined) => {
+    stopWaiting(quietPeriod.current);
+    if (isCommittable(date)) {
+      onCommit(date);
+    }
     setTyped(null);
-    setDiscarded((count) => count + 1);
+  };
+
+  const commitTyped = () => {
+    if (typed !== null) {
+      commit(typedDate(typed));
+    }
+  };
+
+  useEffect(() => {
+    if (calendar.current) {
+      calendar.current.value = value;
+    }
+  }, [value]);
+
+  useEffect(() => {
+    const dateField = calendar.current;
+    if (!dateField) {
+      return undefined;
+    }
+    const onDayChosen = () => {
+      const picked = pickedDate(dateField.value);
+      dateField.value = value;
+      dateField.blur();
+      commit(picked);
+    };
+    dateField.addEventListener('change', onDayChosen);
+    return () => dateField.removeEventListener('change', onDayChosen);
+  });
+
+  const openOnDateInEffect = (): boolean => {
+    const dateField = calendar.current;
+    if (!dateField) {
+      return false;
+    }
+    dateField.value = value;
+    return showsPicker(dateField);
+  };
+
+  const openCalendar = () => {
+    if (!openOnDateInEffect()) {
+      textBox.current?.focus();
+    }
   };
 
   return (
-    <input
-      key={discarded}
-      type="date"
-      aria-label={label}
-      className="form-control form-control-sm w-auto flex-fill"
-      value={typed ?? value}
-      min={min}
-      max={max}
-      onChange={(event) => {
-        const next = event.target.value;
-        setTyped(next);
-        stopWaiting(quietPeriod.current);
-        // A pause between keystrokes is not the end of the typing: a date that is not
-        // whole yet is left standing in the box, with the cursor still in it. An empty
-        // box only means all time once the person leaves it — clearing a date to type
-        // another one empties the box for as long as they take to start typing.
-        quietPeriod.current = setTimeout(() => {
-          if (isPeriodBoundary(next)) {
-            commit(next);
-          }
-        }, QUIET_PERIOD_MS);
-      }}
-      // Nothing typed is nothing to act on: the box shows the start the backend resolved
-      // for all time, and merely passing through it must not turn that into a chosen date.
-      onBlur={() => {
-        if (typed !== null) {
-          commit(typed);
-        }
-      }}
-    />
+    <>
+      <label htmlFor={id} className={`${styles.dateLabel} text-body-secondary`}>
+        <FormattedMessage id={label} />
+      </label>
+      <div className="position-relative">
+        <div className="input-group input-group-sm">
+          <input
+            ref={textBox}
+            id={id}
+            type="text"
+            size={10}
+            placeholder={formatMessage({ id: 'savingsFund.statement.period.dateFormat' })}
+            className={`form-control ${styles.dateText}`}
+            value={typed ?? shownDate(value)}
+            onChange={(event) => {
+              const text = event.target.value;
+              setTyped(text);
+              stopWaiting(quietPeriod.current);
+              quietPeriod.current = setTimeout(() => {
+                const date = fullyTypedDate(text);
+                if (date && isCommittable(date)) {
+                  commit(date);
+                }
+              }, QUIET_PERIOD_MS);
+            }}
+            onBlur={commitTyped}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                commitTyped();
+              }
+            }}
+          />
+          <button
+            type="button"
+            className={`btn btn-outline-secondary ${styles.calendarButton}`}
+            aria-label={formatMessage({ id: calendarLabel })}
+            onClick={openCalendar}
+          >
+            <CalendarIcon />
+          </button>
+        </div>
+        <input
+          ref={calendar}
+          type="date"
+          tabIndex={-1}
+          aria-hidden="true"
+          className={`position-absolute top-0 end-0 h-100 opacity-0 ${styles.calendarPicker}`}
+          min={min}
+          max={max}
+          onClick={openOnDateInEffect}
+        />
+      </div>
+    </>
   );
 };
 
@@ -119,19 +210,19 @@ export const PeriodSelector: React.FunctionComponent<{
     {
       id: 'thisYear',
       label: <FormattedMessage id="savingsFund.statement.period.thisYear" />,
-      from: moment().startOf('year').format('YYYY-MM-DD'),
+      from: moment().startOf('year').format(ISO_DATE),
       to: today(),
     },
     {
       id: 'lastYear',
       label: <FormattedMessage id="savingsFund.statement.period.lastYear" />,
-      from: moment().subtract(1, 'year').startOf('year').format('YYYY-MM-DD'),
-      to: moment().subtract(1, 'year').endOf('year').format('YYYY-MM-DD'),
+      from: moment().subtract(1, 'year').startOf('year').format(ISO_DATE),
+      to: moment().subtract(1, 'year').endOf('year').format(ISO_DATE),
     },
     {
       id: 'twelveMonths',
       label: <FormattedMessage id="savingsFund.statement.period.twelveMonths" />,
-      from: moment().subtract(12, 'month').format('YYYY-MM-DD'),
+      from: moment().subtract(12, 'month').format(ISO_DATE),
       to: today(),
     },
     {
@@ -142,15 +233,10 @@ export const PeriodSelector: React.FunctionComponent<{
     },
   ];
 
-  // All time has no start date of its own: the date box shows where the history it drew
-  // actually begins, and stays empty while there is no history to point at.
   const shownFrom = from ?? allTimeStartDate ?? '';
 
   return (
     <>
-      {/* On a phone the label takes its own line and the pills wrap as one group under
-          it. Left in a single row they break wherever they run out of width, which puts
-          the label on one line and the buttons in a staircase down the card. */}
       <div className="d-flex flex-column flex-sm-row flex-wrap align-items-start align-items-sm-center gap-2 mb-3">
         <span className="text-body-secondary me-1">
           <FormattedMessage id="savingsFund.statement.period.label" />
@@ -168,19 +254,19 @@ export const PeriodSelector: React.FunctionComponent<{
         </div>
       </div>
 
-      {/* A date box is as wide as the date it holds, so on a narrow screen the two of
-          them share the row rather than pushing the second one off the card. */}
-      <div className="d-flex flex-wrap gap-2 align-items-center">
+      <div className={styles.dates}>
         <DateInput
-          label="from"
+          label="savingsFund.statement.period.start"
+          calendarLabel="savingsFund.statement.period.startCalendar"
           value={shownFrom}
           max={to}
           emptyMeansAllTime
           onCommit={(value) => onPeriodChange(value || undefined, to)}
         />
-        <span className="text-body-secondary">–</span>
+        <span className={`${styles.dash} text-body-secondary`}>–</span>
         <DateInput
-          label="to"
+          label="savingsFund.statement.period.end"
+          calendarLabel="savingsFund.statement.period.endCalendar"
           value={to}
           min={shownFrom}
           max={today()}

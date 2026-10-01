@@ -37,7 +37,14 @@ import {
   User,
   UserConversion,
 } from './apiModels/index';
-import { HackathonRegistration, HackathonRegistrationCommand } from './apiModels/hackathon';
+import {
+  HackathonIdea,
+  HackathonIdeaCommand,
+  HackathonIdeas,
+  HackathonRegistration,
+  HackathonRegistrationCommand,
+} from './apiModels/hackathon';
+import { NudgeContext, NudgeDecision, PaymentRateRedirect } from './apiModels/nudge';
 import {
   deleteWithAuthentication,
   downloadFileWithAuthentication,
@@ -303,9 +310,12 @@ export function postSavingsFundCompanyOnboardingSurvey(
 
 export function getCompanyBusinessRegistryValidation(
   companyRegistryCode: string,
+  signal?: AbortSignal,
 ): Promise<BusinessRegistryValidatedData> {
   return getWithAuthentication(
     getEndpoint(`/v1/kyb/surveys/initial-validation?registry-code=${companyRegistryCode}`),
+    {},
+    { signal },
   );
 }
 
@@ -479,6 +489,24 @@ export function getUserConversionWithToken(): Promise<UserConversion> {
   );
 }
 
+export function getNudge(context: NudgeContext): Promise<NudgeDecision> {
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/me/nudge'), { context }),
+    'nudge',
+  );
+}
+
+export function postPaymentRateRedirect(): Promise<PaymentRateRedirect> {
+  return mockRequestInMockMode(
+    () => postWithAuthentication(getEndpoint('/v1/me/payment-rate-redirect')),
+    'paymentRateRedirect',
+  );
+}
+
+export function postPaymentRateRedirectDismissal(): Promise<void> {
+  return postWithAuthentication(getEndpoint('/v1/me/payment-rate-redirect/dismissal'));
+}
+
 export function getCapitalRowsWithToken(): Promise<CapitalRow[]> {
   return mockRequestInMockMode(
     () => getWithAuthentication(getEndpoint('/v1/me/capital'), undefined),
@@ -578,7 +606,10 @@ export function getSecondPillarAssets(): Promise<SecondPillarAssets> {
 }
 
 export function getMandateDeadlines(): Promise<MandateDeadlines> {
-  return getWithAuthentication(getEndpoint('/v1/mandate-deadlines'), undefined);
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/mandate-deadlines'), undefined),
+    'mandateDeadlines',
+  );
 }
 
 export function createApplicationCancellation(applicationId: number): Promise<CancellationMandate> {
@@ -591,6 +622,26 @@ export function createSavingsFundPaymentCancellation(paymentId: string): Promise
 
 export function createTrackedEvent(type: string, data: Record<string, unknown>): Promise<unknown> {
   return postWithAuthentication(getEndpoint('/v1/t'), { type, data });
+}
+
+// For events fired right before the page unloads (a click on a link that navigates away):
+// a keepalive request outlives the document, a regular request may be cancelled with it.
+export function createTrackedEventBeforeUnload(
+  type: string,
+  data: Record<string, unknown>,
+): Promise<unknown> {
+  const { accessToken } = getAuthentication();
+  return fetch(getEndpoint('/v1/t'), {
+    method: 'POST',
+    keepalive: true,
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      Authorization: `Bearer ${accessToken}`,
+      'Accept-Language': config.get('language'),
+    },
+    body: JSON.stringify({ type, data }),
+  });
 }
 
 export function getPaymentLink(payment: Payment): Promise<PaymentLink> {
@@ -690,4 +741,12 @@ export function saveHackathonRegistration(
   command: HackathonRegistrationCommand,
 ): Promise<HackathonRegistration> {
   return postWithAuthentication(getEndpoint('/v1/hackathon-registration'), command);
+}
+
+export function getHackathonIdeas(): Promise<HackathonIdeas> {
+  return getWithAuthentication(getEndpoint('/v1/hackathon-ideas'));
+}
+
+export function submitHackathonIdea(command: HackathonIdeaCommand): Promise<HackathonIdea> {
+  return postWithAuthentication(getEndpoint('/v1/hackathon-ideas'), command);
 }

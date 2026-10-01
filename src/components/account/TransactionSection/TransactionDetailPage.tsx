@@ -1,40 +1,25 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect, useParams } from 'react-router-dom';
-import { useFunds, useTransactions } from '../../common/apiHooks';
+import { useFunds, useMe, useTransactions } from '../../common/apiHooks';
 import { Euro } from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
-import { formatDateYear } from '../../common/dateFormatter';
+import { dayInTallinn, formatDateYear, timeInTallinn } from '../../common/dateFormatter';
 import { usePageTitle } from '../../common/usePageTitle';
-import { Fund } from '../../common/apiModels';
+import { Fund, TransactionType, User } from '../../common/apiModels';
+import { getBankName } from '../../common/iban';
+import { TranslationKey } from '../../translations';
+import { PII_CLASS } from '../../tracking/piiMarkup';
+import { navScaleFor } from '../../common/fundPrecision';
+import { Units } from '../../common/Units';
 
-const NAV_SCALE_BY_ISIN: Record<string, number> = {
-  EE3600109435: 5, // TUK75
-  EE3600109443: 5, // TUK00
-  EE3600001707: 4, // TUV100
-  EE0000003283: 4, // TKF100
+const TYPE_LABEL: Record<TransactionType, TranslationKey> = {
+  CONTRIBUTION_CASH: 'transactions.detail.type.subscription',
+  CONTRIBUTION_CASH_WORKPLACE: 'transactions.detail.type.subscription',
+  SUBTRACTION: 'transactions.detail.type.redemption',
+  TRANSFER_IN: 'transactions.detail.type.transferIn',
+  TRANSFER_OUT: 'transactions.detail.type.transferOut',
 };
-
-const MIN_NAV_SCALE = 5;
-const MIN_UNIT_SCALE = 3;
-
-function decimalPlaces(n: number): number {
-  const str = String(n);
-  const dotIndex = str.indexOf('.');
-  return dotIndex === -1 ? 0 : str.length - dotIndex - 1;
-}
-
-function navScaleFor(transaction: { isin: string; nav: number }): number {
-  const known = NAV_SCALE_BY_ISIN[transaction.isin];
-  if (known !== undefined) {
-    return known;
-  }
-  return Math.max(MIN_NAV_SCALE, decimalPlaces(transaction.nav));
-}
-
-function unitScaleFor(units: number): number {
-  return Math.max(MIN_UNIT_SCALE, decimalPlaces(units));
-}
 
 function getBackPath(fund?: Fund): string {
   if (fund?.pillar === 2) {
@@ -49,14 +34,22 @@ function getBackPath(fund?: Fund): string {
   return '/account';
 }
 
+function unitHolderName(user?: User): string | null {
+  if (!user) {
+    return null;
+  }
+  return user.role?.name ?? `${user.firstName} ${user.lastName}`;
+}
+
 export const TransactionDetailPage: React.FunctionComponent = () => {
   usePageTitle('pageTitle.transactionDetail');
 
   const { id } = useParams<{ id: string }>();
   const { data: transactions, isLoading: transactionsLoading } = useTransactions();
   const { data: funds = [], isLoading: fundsLoading } = useFunds();
+  const { data: user, isLoading: userLoading } = useMe();
 
-  if (transactionsLoading || fundsLoading) {
+  if (transactionsLoading || fundsLoading || userLoading) {
     return (
       <section className="mt-5">
         <Shimmer height={200} />
@@ -71,6 +64,11 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
   }
 
   const fund = funds.find((f) => f.isin === transaction.isin);
+  const isSavingsFund = fund?.pillar === null;
+  const isRedemption = transaction.type === 'SUBTRACTION';
+  const isTransfer = transaction.type === 'TRANSFER_IN' || transaction.type === 'TRANSFER_OUT';
+  const holder = unitHolderName(user);
+  const bankName = transaction.counterpartyIban && getBankName(transaction.counterpartyIban);
 
   return (
     <section className="mt-5">
@@ -82,53 +80,147 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
           <FormattedMessage id="transactions.detail.back" />
         </Link>
       </div>
-      <dl className="row">
-        <dt className="col-sm-2">
-          <FormattedMessage id="transactions.detail.date" />
-        </dt>
-        <dd className="col-sm-10">{formatDateYear(transaction.time)}</dd>
-
-        <dt className="col-sm-2">
-          <FormattedMessage id="transactions.detail.fund" />
-        </dt>
-        <dd className="col-sm-10">{fund?.name ?? transaction.isin}</dd>
-
-        <dt className="col-sm-2">
+      <dl className={`row text-pretty ${PII_CLASS}`}>
+        <dt className="col-sm-4 mb-sm-2 text-balance">
           <FormattedMessage id="transactions.detail.type" />
         </dt>
-        <dd className="col-sm-10">
-          {transaction.type === 'SUBTRACTION' ? (
-            <FormattedMessage id="transactions.detail.type.redemption" />
-          ) : (
-            <FormattedMessage id="transactions.detail.type.subscription" />
-          )}
+        <dd className="col-sm-8">
+          <FormattedMessage id={TYPE_LABEL[transaction.type]} />
         </dd>
 
-        <dt className="col-sm-2">
+        <dt className="col-sm-4 mb-sm-2 text-balance">
+          <FormattedMessage id="transactions.detail.fund" />
+        </dt>
+        <dd className="col-sm-8">{fund?.name ?? transaction.isin}</dd>
+
+        <dt className="col-sm-4 mb-sm-2 text-balance">
           <FormattedMessage id="transactions.detail.amount" />
         </dt>
-        <dd className="col-sm-10">
+        <dd className="col-sm-8">
           <Euro amount={transaction.amount} />
         </dd>
 
-        {transaction.nav != null && (
+        {transaction.units != null && (
           <>
-            <dt className="col-sm-2">
-              <FormattedMessage id="transactions.detail.nav" />
+            <dt className="col-sm-4 mb-sm-2 text-balance">
+              <FormattedMessage id="transactions.detail.units" />
             </dt>
-            <dd className="col-sm-10">
-              <Euro amount={transaction.nav} fractionDigits={navScaleFor(transaction)} />
+            <dd className="col-sm-8">
+              <Units units={transaction.units} />
             </dd>
           </>
         )}
 
-        {transaction.units != null && (
+        {transaction.nav != null && (
           <>
-            <dt className="col-sm-2">
-              <FormattedMessage id="transactions.detail.units" />
+            <dt className="col-sm-4 mb-sm-2 text-balance">
+              <FormattedMessage id="transactions.detail.nav" />
             </dt>
-            <dd className="col-sm-10">
-              {transaction.units.toFixed(unitScaleFor(transaction.units))}
+            <dd className="col-sm-8">
+              <Euro
+                amount={transaction.nav}
+                fractionDigits={navScaleFor(transaction.isin, transaction.nav)}
+              />
+            </dd>
+          </>
+        )}
+
+        {transaction.acquisitionCost != null && (
+          <>
+            <dt className="col-sm-4 mb-sm-2 text-balance">
+              <FormattedMessage id="transactions.detail.acquisitionCost" />
+            </dt>
+            <dd className="col-sm-8">
+              <Euro amount={transaction.acquisitionCost} />
+            </dd>
+          </>
+        )}
+
+        {isSavingsFund && transaction.applicationTime && (
+          <>
+            <dt className="col-sm-4 mb-sm-2 text-balance">
+              <FormattedMessage id="transactions.detail.applicationTime" />
+            </dt>
+            <dd className="col-sm-8">
+              <FormattedMessage
+                id="transactions.detail.applicationTime.value"
+                values={{
+                  date: formatDateYear(dayInTallinn(transaction.applicationTime)),
+                  time: timeInTallinn(transaction.applicationTime),
+                }}
+              />
+            </dd>
+          </>
+        )}
+
+        {isSavingsFund && transaction.priceCalculationDate && (
+          <>
+            <dt className="col-sm-4 mb-sm-2 text-balance">
+              <FormattedMessage id="transactions.detail.priceCalculationDate" />
+            </dt>
+            <dd className="col-sm-8">{formatDateYear(transaction.priceCalculationDate)}</dd>
+          </>
+        )}
+
+        <dt className="col-sm-4 mb-sm-2 text-balance">
+          <FormattedMessage
+            id={isSavingsFund ? 'transactions.detail.executionDate' : 'transactions.detail.date'}
+          />
+        </dt>
+        <dd className="col-sm-8">{formatDateYear(dayInTallinn(transaction.time))}</dd>
+
+        {isSavingsFund && !isTransfer && (
+          <>
+            <dt className="col-sm-4 mb-sm-2 text-balance">
+              <FormattedMessage id="transactions.detail.paymentMethod" />
+            </dt>
+            <dd className="col-sm-8">
+              {transaction.counterpartyIban ? (
+                <>
+                  <FormattedMessage
+                    id={
+                      isRedemption
+                        ? 'transactions.detail.paymentMethod.toAccount'
+                        : 'transactions.detail.paymentMethod.fromAccount'
+                    }
+                    values={{ iban: transaction.counterpartyIban }}
+                  />
+                  {bankName && <div className="text-secondary">{bankName}</div>}
+                </>
+              ) : (
+                <FormattedMessage id="transactions.detail.paymentMethod.bankTransfer" />
+              )}
+            </dd>
+          </>
+        )}
+
+        {isSavingsFund && (
+          <>
+            <dt className="col-sm-4 mb-sm-2 text-balance">
+              <FormattedMessage id="transactions.detail.fees" />
+            </dt>
+            <dd className="col-sm-8">
+              <Euro amount={0} />
+            </dd>
+          </>
+        )}
+
+        {isSavingsFund && holder && (
+          <>
+            <dt className="col-sm-4 mb-sm-2 text-balance">
+              <FormattedMessage id="transactions.detail.unitHolder" />
+            </dt>
+            <dd className="col-sm-8">{holder}</dd>
+          </>
+        )}
+
+        {isSavingsFund && (
+          <>
+            <dt className="col-sm-4 mb-sm-2 text-balance">
+              <FormattedMessage id="transactions.detail.fundManager" />
+            </dt>
+            <dd className="col-sm-8">
+              <FormattedMessage id="transactions.detail.fundManager.value" />
             </dd>
           </>
         )}

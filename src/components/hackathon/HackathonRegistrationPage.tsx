@@ -5,52 +5,36 @@ import { Link } from 'react-router-dom';
 import { useHackathonRegistration, useMe, useSaveHackathonRegistration } from '../common/apiHooks';
 import {
   HackathonChallenge,
-  HackathonParticipation,
   HackathonSkill,
+  HackathonTshirtColor,
+  HackathonTshirtSize,
 } from '../common/apiModels/hackathon';
 import Checkbox from '../common/checkbox/Checkbox';
-import Radio from '../common/radio/Radio';
 import { Loader } from '../common';
 import { usePageTitle } from '../common/usePageTitle';
-import { TranslationKey } from '../translations';
+import {
+  CHALLENGES,
+  FieldError,
+  HackathonHeading,
+  HackathonMembersOnly,
+  OtherSkillsField,
+  SkillCheckboxes,
+  TermsField,
+  toggle,
+  trimmedOrNull,
+  TshirtFields,
+} from './HackathonFormFields';
 
 type HackathonFormData = {
   email: string;
-  phoneNumber: string;
   skills: HackathonSkill[];
+  otherSkills: string;
   challenges: HackathonChallenge[];
-  participation: HackathonParticipation | null;
-  idea: string;
   linkedinUrl: string;
+  tshirtColor: HackathonTshirtColor | null;
+  tshirtSize: HackathonTshirtSize | '';
+  termsAccepted: boolean;
 };
-
-const PARTICIPATIONS: { value: HackathonParticipation; labelId: TranslationKey }[] = [
-  { value: 'WITH_TEAM', labelId: 'hackathon.participation.withTeam' },
-  { value: 'WITH_IDEA', labelId: 'hackathon.participation.withIdea' },
-  { value: 'LOOKING_FOR_TEAM', labelId: 'hackathon.participation.lookingForTeam' },
-];
-
-const SKILLS: { value: HackathonSkill; labelId: TranslationKey }[] = [
-  { value: 'SOFTWARE_DEVELOPMENT', labelId: 'hackathon.skill.softwareDevelopment' },
-  { value: 'DESIGN', labelId: 'hackathon.skill.design' },
-  { value: 'DATA_AND_AI', labelId: 'hackathon.skill.dataAndAi' },
-  { value: 'LAW_AND_REGULATION', labelId: 'hackathon.skill.lawAndRegulation' },
-  { value: 'BUSINESS_AND_PRODUCT', labelId: 'hackathon.skill.businessAndProduct' },
-  { value: 'MARKETING_AND_COMMUNICATION', labelId: 'hackathon.skill.marketingAndCommunication' },
-  { value: 'FINANCE_AND_INSURANCE', labelId: 'hackathon.skill.financeAndInsurance' },
-];
-
-const CHALLENGES: { value: HackathonChallenge; labelId: TranslationKey }[] = [
-  { value: 'FAIR_LENDING', labelId: 'hackathon.challenge.fairLending' },
-  { value: 'INSURANCE', labelId: 'hackathon.challenge.insurance' },
-  { value: 'COLLECTIVE_BUYING_POWER', labelId: 'hackathon.challenge.collectiveBuyingPower' },
-  { value: 'WEALTH_AND_INHERITANCE', labelId: 'hackathon.challenge.wealthAndInheritance' },
-];
-
-const toggle = <T,>(values: T[], value: T, checked: boolean): T[] =>
-  checked ? [...values, value] : values.filter((item) => item !== value);
-
-const trimmedOrNull = (value: string): string | null => value.trim() || null;
 
 export const HackathonRegistrationPage = () => {
   usePageTitle('pageTitle.hackathon');
@@ -66,16 +50,17 @@ export const HackathonRegistrationPage = () => {
     isSuccess: isSaved,
   } = useSaveHackathonRegistration();
 
-  const { control, handleSubmit, reset } = useForm<HackathonFormData>({
+  const { control, handleSubmit, reset, trigger, formState } = useForm<HackathonFormData>({
     mode: 'onChange',
     defaultValues: {
       email: '',
-      phoneNumber: '',
       skills: [],
+      otherSkills: '',
       challenges: [],
-      participation: null,
-      idea: '',
       linkedinUrl: '',
+      tshirtColor: null,
+      tshirtSize: '',
+      termsAccepted: false,
     },
   });
 
@@ -86,12 +71,13 @@ export const HackathonRegistrationPage = () => {
       setPrefilled(true);
       reset({
         email: registration.email ?? '',
-        phoneNumber: registration.phoneNumber ?? '',
         skills: registration.skills,
+        otherSkills: registration.otherSkills ?? '',
         challenges: registration.challenges,
-        participation: registration.participation,
-        idea: registration.idea ?? '',
         linkedinUrl: registration.linkedinUrl ?? '',
+        tshirtColor: registration.tshirtColor,
+        tshirtSize: registration.tshirtSize ?? '',
+        termsAccepted: registration.termsAccepted,
       });
     }
   }, [registration, prefilled, reset]);
@@ -99,35 +85,22 @@ export const HackathonRegistrationPage = () => {
   const submit = handleSubmit((data) =>
     saveRegistration({
       email: data.email.trim(),
-      phoneNumber: trimmedOrNull(data.phoneNumber),
+      phoneNumber: registration?.phoneNumber ?? null,
       role: registration?.role ?? 'PARTICIPANT',
       skills: data.skills,
+      otherSkills: trimmedOrNull(data.otherSkills),
       challenges: data.challenges,
-      participation: data.participation as HackathonParticipation,
-      idea: trimmedOrNull(data.idea),
+      participation: registration?.participation ?? 'LOOKING_FOR_TEAM',
+      idea: registration?.idea ?? null,
       linkedinUrl: trimmedOrNull(data.linkedinUrl),
+      tshirtColor: data.tshirtColor as HackathonTshirtColor,
+      tshirtSize: data.tshirtColor === 'NONE' ? null : data.tshirtSize || null,
+      termsAccepted: data.termsAccepted,
     }).catch(() => null),
   );
 
   if (user && !isMember) {
-    return (
-      <div className="col-12 col-md-11 col-lg-8 mx-auto py-4">
-        <HackathonHeading />
-        <div className="card p-4 mt-4">
-          <h2 className="mt-0 mb-2 fs-3">
-            <FormattedMessage id="hackathon.membersOnly.title" />
-          </h2>
-          <p className="m-0">
-            <FormattedMessage id="hackathon.membersOnly.description" />
-          </p>
-          <div className="mt-4">
-            <a className="btn btn-primary" href="https://tuleva.ee/tulundusyhistu/">
-              <FormattedMessage id="hackathon.membersOnly.action" />
-            </a>
-          </div>
-        </div>
-      </div>
-    );
+    return <HackathonMembersOnly titleId="hackathon.title" />;
   }
 
   if (isLoading) {
@@ -137,7 +110,7 @@ export const HackathonRegistrationPage = () => {
   if (isError || !registration) {
     return (
       <div className="col-12 col-md-11 col-lg-8 mx-auto py-4">
-        <HackathonHeading />
+        <HackathonHeading titleId="hackathon.title" />
         <div className="alert alert-danger mt-4" role="alert">
           <FormattedMessage id="hackathon.loadFailed" />
         </div>
@@ -157,7 +130,7 @@ export const HackathonRegistrationPage = () => {
   if (!registration.open) {
     return (
       <div className="col-12 col-md-11 col-lg-8 mx-auto py-4">
-        <HackathonHeading />
+        <HackathonHeading titleId="hackathon.title" />
         <div className="card p-4 mt-4">
           <h2 className="mt-0 mb-2 fs-3">
             <FormattedMessage id="hackathon.closed.title" />
@@ -184,15 +157,44 @@ export const HackathonRegistrationPage = () => {
 
   return (
     <div className="col-12 col-md-11 col-lg-8 mx-auto py-4">
-      <HackathonHeading />
+      <HackathonHeading titleId="hackathon.title" />
 
       {registration.registered && (
         <div className="alert alert-success mt-4" role="status">
-          <FormattedMessage id="hackathon.alreadyRegistered" values={{ deadline }} />
+          <FormattedMessage
+            id={
+              registration.participation === 'WITH_IDEA'
+                ? 'hackathon.alreadyRegisteredWithIdea'
+                : 'hackathon.alreadyRegistered'
+            }
+            values={{ deadline }}
+          />
         </div>
       )}
 
+      <div className="card p-4 mt-4 d-flex flex-column flex-sm-row gap-3 align-items-sm-center justify-content-between">
+        <div>
+          <h2 className="m-0 fs-3">
+            <FormattedMessage id="hackathon.ideaInvite.title" />
+          </h2>
+          <p className="mt-1 mb-0 text-body-secondary">
+            <FormattedMessage id="hackathon.ideaInvite.description" />
+          </p>
+        </div>
+        <div className="d-flex flex-column align-items-sm-center gap-1">
+          <Link className="btn btn-primary text-nowrap" to="/hackathon/idea">
+            <FormattedMessage id="hackathon.ideaInvite.action" />
+          </Link>
+          <small className="text-body-secondary">
+            <FormattedMessage id="hackathon.ideaInvite.deadline" />
+          </small>
+        </div>
+      </div>
+
       <form onSubmit={submit} className="d-flex flex-column gap-4 mt-4">
+        <p className="m-0 text-body-secondary">
+          <FormattedMessage id="hackathon.required.hint" />
+        </p>
         <section className="d-flex flex-column gap-2">
           <h2 className="m-0 fs-3">
             <FormattedMessage id="hackathon.contact.title" />
@@ -202,7 +204,7 @@ export const HackathonRegistrationPage = () => {
           </p>
           <div className="row g-3 mt-0">
             <div className="col-12 col-sm-6">
-              <label className="form-label" htmlFor="hackathon-email">
+              <label className="form-label hackathon-required" htmlFor="hackathon-email">
                 <FormattedMessage id="hackathon.contact.email" />
               </label>
               <Controller
@@ -222,88 +224,26 @@ export const HackathonRegistrationPage = () => {
                       id="hackathon-email"
                       type="email"
                       className="form-control form-control-lg"
+                      aria-required
                       aria-invalid={error ? true : undefined}
                       aria-describedby={error ? 'hackathon-email-error' : undefined}
                     />
-                    {error?.message && (
-                      <p
-                        className="mt-1 mb-0 text-danger fs-base"
-                        role="alert"
-                        id="hackathon-email-error"
-                      >
-                        {error.message}
-                      </p>
-                    )}
+                    <div className="mt-1">
+                      <FieldError id="hackathon-email-error" message={error?.message} />
+                    </div>
                   </>
-                )}
-              />
-            </div>
-            <div className="col-12 col-sm-6">
-              <label className="form-label" htmlFor="hackathon-phone">
-                <FormattedMessage id="hackathon.contact.phoneNumber" />
-              </label>
-              <Controller
-                control={control}
-                name="phoneNumber"
-                render={({ field }) => (
-                  <input
-                    {...field}
-                    id="hackathon-phone"
-                    type="tel"
-                    className="form-control form-control-lg"
-                  />
                 )}
               />
             </div>
           </div>
         </section>
 
-        <section className="d-flex flex-column gap-2">
-          <h2 className="m-0 fs-3" id="hackathon-participation-title">
-            <FormattedMessage id="hackathon.participation.title" />
-          </h2>
-          <Controller
-            control={control}
-            name="participation"
-            rules={{
-              required: intl.formatMessage({ id: 'hackathon.participation.required' }),
-            }}
-            render={({ field, fieldState: { error } }) => (
-              <div
-                className="d-flex flex-column gap-2"
-                role="radiogroup"
-                aria-labelledby="hackathon-participation-title"
-                aria-describedby={error ? 'hackathon-participation-error' : undefined}
-              >
-                {PARTICIPATIONS.map(({ value, labelId }) => (
-                  <Radio
-                    key={value}
-                    name="hackathon-participation"
-                    id={`hackathon-participation-${value}`}
-                    selected={field.value === value}
-                    onSelect={() => field.onChange(value)}
-                  >
-                    <span className="fs-3 lh-sm">
-                      <FormattedMessage id={labelId} />
-                    </span>
-                  </Radio>
-                ))}
-                {error?.message && (
-                  <p
-                    className="m-0 text-danger fs-base"
-                    role="alert"
-                    id="hackathon-participation-error"
-                  >
-                    {error.message}
-                  </p>
-                )}
-              </div>
-            )}
-          />
-        </section>
+        <div className="alert alert-info m-0">
+          <FormattedMessage id="hackathon.skills.intro" />
+        </div>
 
         <section className="d-flex flex-column gap-2">
-          <h2 className="m-0 fs-3" id="hackathon-skills-title">
+          <h2 className="m-0 fs-3 hackathon-required" id="hackathon-skills-title">
             <FormattedMessage id="hackathon.skills.title" />
           </h2>
           <p className="m-0 text-body-secondary">
@@ -312,31 +252,42 @@ export const HackathonRegistrationPage = () => {
           <Controller
             control={control}
             name="skills"
+            rules={{
+              validate: (skills, values) =>
+                skills.length > 0 ||
+                values.otherSkills.trim() !== '' ||
+                intl.formatMessage({ id: 'hackathon.skills.required' }),
+            }}
             render={({ field }) => (
-              <div
-                className="d-flex flex-column gap-2"
-                role="group"
-                aria-labelledby="hackathon-skills-title"
-              >
-                {SKILLS.map(({ value, labelId }) => (
-                  <Checkbox
-                    key={value}
-                    id={`hackathon-skill-${value}`}
-                    checked={field.value.includes(value)}
-                    onToggle={(checked) => field.onChange(toggle(field.value, value, checked))}
-                  >
-                    <span className="fs-3 lh-sm">
-                      <FormattedMessage id={labelId} />
-                    </span>
-                  </Checkbox>
-                ))}
-              </div>
+              <SkillCheckboxes
+                idPrefix="hackathon-skill"
+                labelledBy="hackathon-skills-title"
+                value={field.value}
+                onChange={field.onChange}
+              />
             )}
           />
+          <Controller
+            control={control}
+            name="otherSkills"
+            render={({ field }) => (
+              <OtherSkillsField
+                idPrefix="hackathon-skill"
+                value={field.value}
+                onChange={(otherSkills) => {
+                  field.onChange(otherSkills);
+                  if (formState.isSubmitted) {
+                    trigger('skills');
+                  }
+                }}
+              />
+            )}
+          />
+          <FieldError id="hackathon-skills-error" message={formState.errors.skills?.message} />
         </section>
 
         <section className="d-flex flex-column gap-2">
-          <h2 className="m-0 fs-3" id="hackathon-challenges-title">
+          <h2 className="m-0 fs-3 hackathon-required" id="hackathon-challenges-title">
             <FormattedMessage id="hackathon.challenges.title" />
           </h2>
           <p className="m-0 text-body-secondary">
@@ -345,11 +296,17 @@ export const HackathonRegistrationPage = () => {
           <Controller
             control={control}
             name="challenges"
-            render={({ field }) => (
+            rules={{
+              validate: (challenges) =>
+                challenges.length > 0 ||
+                intl.formatMessage({ id: 'hackathon.challenges.required' }),
+            }}
+            render={({ field, fieldState: { error } }) => (
               <div
                 className="d-flex flex-column gap-2"
                 role="group"
                 aria-labelledby="hackathon-challenges-title"
+                aria-describedby={error ? 'hackathon-challenges-error' : undefined}
               >
                 {CHALLENGES.map(({ value, labelId }) => (
                   <Checkbox
@@ -363,53 +320,79 @@ export const HackathonRegistrationPage = () => {
                     </span>
                   </Checkbox>
                 ))}
+                <FieldError id="hackathon-challenges-error" message={error?.message} />
               </div>
             )}
           />
         </section>
 
-        <section className="d-flex flex-column gap-3">
-          <div>
-            <label className="form-label" htmlFor="hackathon-idea">
-              <FormattedMessage id="hackathon.idea.label" />
-            </label>
-            <Controller
-              control={control}
-              name="idea"
-              rules={{ maxLength: 500 }}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  id="hackathon-idea"
-                  type="text"
-                  maxLength={500}
-                  className="form-control form-control-lg"
-                  placeholder={intl.formatMessage({ id: 'hackathon.idea.placeholder' })}
-                />
-              )}
-            />
-          </div>
-          <div>
-            <label className="form-label" htmlFor="hackathon-linkedin">
-              <FormattedMessage id="hackathon.linkedin.label" />
-            </label>
-            <Controller
-              control={control}
-              name="linkedinUrl"
-              rules={{ maxLength: 500 }}
-              render={({ field }) => (
-                <input
-                  {...field}
-                  id="hackathon-linkedin"
-                  type="text"
-                  maxLength={500}
-                  className="form-control form-control-lg"
-                  placeholder="https://linkedin.com/in/..."
-                />
-              )}
-            />
-          </div>
+        <section>
+          <label className="form-label" htmlFor="hackathon-linkedin">
+            <FormattedMessage id="hackathon.linkedin.label" />
+          </label>
+          <Controller
+            control={control}
+            name="linkedinUrl"
+            rules={{ maxLength: 500 }}
+            render={({ field }) => (
+              <input
+                {...field}
+                id="hackathon-linkedin"
+                type="text"
+                maxLength={500}
+                className="form-control form-control-lg"
+                placeholder="https://linkedin.com/in/..."
+              />
+            )}
+          />
         </section>
+
+        <Controller
+          control={control}
+          name="tshirtColor"
+          rules={{ required: intl.formatMessage({ id: 'hackathon.tshirt.required' }) }}
+          render={({ field: colorField, fieldState: { error: colorError } }) => (
+            <Controller
+              control={control}
+              name="tshirtSize"
+              rules={{
+                validate: (size, values) =>
+                  !values.tshirtColor ||
+                  values.tshirtColor === 'NONE' ||
+                  Boolean(size) ||
+                  intl.formatMessage({ id: 'hackathon.tshirt.size.required' }),
+              }}
+              render={({ field: sizeField, fieldState: { error: sizeError } }) => (
+                <TshirtFields
+                  color={colorField.value}
+                  size={sizeField.value}
+                  onColorChange={colorField.onChange}
+                  onSizeChange={sizeField.onChange}
+                  colorError={colorError?.message}
+                  sizeError={sizeError?.message}
+                  required
+                />
+              )}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="termsAccepted"
+          rules={{
+            validate: (accepted) =>
+              accepted || intl.formatMessage({ id: 'hackathon.terms.required' }),
+          }}
+          render={({ field, fieldState: { error } }) => (
+            <TermsField
+              checked={field.value}
+              onChange={field.onChange}
+              error={error?.message}
+              required
+            />
+          )}
+        />
 
         {isSaveError && (
           <div className="alert alert-danger" role="alert">
@@ -435,14 +418,3 @@ export const HackathonRegistrationPage = () => {
     </div>
   );
 };
-
-const HackathonHeading = () => (
-  <>
-    <h1 className="m-0">
-      <FormattedMessage id="hackathon.title" />
-    </h1>
-    <p className="mt-2 mb-0 text-body-secondary">
-      <FormattedMessage id="hackathon.subtitle" />
-    </p>
-  </>
-);

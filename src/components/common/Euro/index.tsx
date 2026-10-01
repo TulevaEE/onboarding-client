@@ -1,4 +1,5 @@
 import { formatAmountForCurrency } from '../utils';
+import { PII_CLASS } from '../../tracking/piiMarkup';
 
 interface Props {
   amount: number;
@@ -7,7 +8,11 @@ interface Props {
 }
 
 export const Euro = ({ amount, fractionDigits = 2, className }: Props) => (
-  <span className={`${className || ''} ${amount === 0 ? 'text-body-secondary' : ''} text-nowrap`}>
+  <span
+    className={`${className || ''} ${
+      amount === 0 ? 'text-body-secondary' : ''
+    } text-nowrap ${PII_CLASS}`}
+  >
     {formatAmountForCurrency(amount, fractionDigits)}
   </span>
 );

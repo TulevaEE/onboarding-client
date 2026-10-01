@@ -9,6 +9,7 @@ import {
   CapitalRow,
   Conversion,
   FundBalance,
+  Portfolio,
   Transaction,
   MemberCapitalListing,
   User,
@@ -46,10 +47,14 @@ import {
   UpdateCapitalTransferContractDto,
 } from '../components/common/apiModels/capital-transfer';
 import {
+  HackathonIdea,
+  HackathonIdeaCommand,
+  HackathonIdeas,
   HackathonRegistration,
   HackathonRegistrationCommand,
 } from '../components/common/apiModels/hackathon';
 import { KycIdentity } from '../components/flows/savingsAccount/SavingsFundOnboarding/types.api';
+import { NudgeDecision, PaymentRateRedirect } from '../components/common/apiModels/nudge';
 
 export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
@@ -572,6 +577,33 @@ export function transactionsBackend(
   );
 }
 
+export function portfolioBackend(
+  server: SetupServerApi,
+  portfolio: Portfolio = emptyPortfolio(),
+): void {
+  server.use(
+    rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
+      res(
+        ctx.json({
+          ...portfolio,
+          from: req.url.searchParams.get('from') ?? portfolio.from,
+          to: req.url.searchParams.get('to') ?? portfolio.to,
+        }),
+      ),
+    ),
+  );
+}
+
+function emptyPortfolio(): Portfolio {
+  const today = moment().format('YYYY-MM-DD');
+  return {
+    from: today,
+    to: today,
+    groups: [],
+    series: [],
+  };
+}
+
 export function paymentLinkBackend(server: SetupServerApi): void {
   server.use(
     rest.get('http://localhost/v1/payments/link', (req, res, ctx) => {
@@ -1059,17 +1091,22 @@ export function hackathonRegistrationBackend(
   registration: HackathonRegistration = {
     registered: false,
     open: true,
-    deadline: '2026-09-20T20:59:59Z',
+    deadline: '2026-10-05T20:59:59Z',
     email: mockUser.email,
     phoneNumber: mockUser.phoneNumber,
     role: null,
     skills: [],
+    otherSkills: null,
     challenges: [],
     participation: null,
     idea: null,
     linkedinUrl: null,
+    tshirtColor: null,
+    tshirtSize: null,
+    termsAccepted: false,
   },
-): void {
+): { registrations: HackathonRegistrationCommand[] } {
+  const backend = { registrations: [] as HackathonRegistrationCommand[] };
   let current = registration;
   server.use(
     rest.get('http://localhost/v1/hackathon-registration', (req, res, ctx) =>
@@ -1078,11 +1115,43 @@ export function hackathonRegistrationBackend(
     rest.post(
       'http://localhost/v1/hackathon-registration',
       (req: RestRequest<HackathonRegistrationCommand>, res, ctx) => {
+        backend.registrations.push(req.body);
         current = { ...current, ...req.body, registered: true };
         return res(ctx.json(current));
       },
     ),
   );
+  return backend;
+}
+
+export function hackathonIdeasBackend(
+  server: SetupServerApi,
+  ideas: HackathonIdeas = {
+    open: true,
+    deadline: '2026-09-30T20:59:59Z',
+    registered: false,
+    ideas: [],
+  },
+): { submitted: HackathonIdeaCommand[] } {
+  const backend = { submitted: [] as HackathonIdeaCommand[] };
+  let current = ideas;
+  server.use(
+    rest.get('http://localhost/v1/hackathon-ideas', (req, res, ctx) => res(ctx.json(current))),
+    rest.post(
+      'http://localhost/v1/hackathon-ideas',
+      (req: RestRequest<HackathonIdeaCommand>, res, ctx) => {
+        backend.submitted.push(req.body);
+        const idea: HackathonIdea = {
+          ...req.body,
+          id: current.ideas.length + 1,
+          createdTime: '2026-09-15T10:00:00Z',
+        };
+        current = { ...current, registered: true, ideas: [...current.ideas, idea] };
+        return res(ctx.json(idea));
+      },
+    ),
+  );
+  return backend;
 }
 
 export function savingsAccountStatementBackend(
@@ -1112,6 +1181,38 @@ export function companyValidationBackend(server: SetupServerApi): void {
   );
 }
 
+export function nudgeBackend(
+  server: SetupServerApi,
+  decision: NudgeDecision = { key: 'NONE', tag: 'nudge_none' },
+): void {
+  server.use(
+    rest.get('http://localhost/v1/me/nudge', (req, res, ctx) =>
+      req.url.searchParams.get('context')
+        ? res(ctx.json(decision))
+        : res(ctx.status(400), ctx.json({ errors: [{ code: 'context.missing' }] })),
+    ),
+  );
+}
+
+export function paymentRateRedirectBackend(
+  server: SetupServerApi,
+  decision: PaymentRateRedirect = { redirect: false },
+): { count: () => number; dismissals: () => number } {
+  let count = 0;
+  let dismissals = 0;
+  server.use(
+    rest.post('http://localhost/v1/me/payment-rate-redirect/dismissal', (req, res, ctx) => {
+      dismissals += 1;
+      return res(ctx.status(204));
+    }),
+    rest.post('http://localhost/v1/me/payment-rate-redirect', (req, res, ctx) => {
+      count += 1;
+      return res(ctx.json(decision));
+    }),
+  );
+  return { count: () => count, dismissals: () => dismissals };
+}
+
 export function trackedEventsBackend(server: SetupServerApi): void {
   server.use(rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))));
 }
@@ -1136,6 +1237,7 @@ const TEST_BACKENDS = {
   userCapital: userCapitalBackend,
   applications: applicationsBackend,
   transactions: transactionsBackend,
+  portfolio: portfolioBackend,
   paymentLink: paymentLinkBackend,
   secondPillarPaymentRate: secondPillarPaymentRateBackend,
   withdrawalsEligibility: withdrawalsEligibilityBackend,
@@ -1157,6 +1259,9 @@ const TEST_BACKENDS = {
   savingsFundOnboardingStatus: savingsFundOnboardingStatusBackend,
   savingsFundPersonOnboardingStatus: savingsFundPersonOnboardingStatusBackend,
   hackathonRegistration: hackathonRegistrationBackend,
+  hackathonIdeas: hackathonIdeasBackend,
+  nudge: nudgeBackend,
+  paymentRateRedirect: paymentRateRedirectBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

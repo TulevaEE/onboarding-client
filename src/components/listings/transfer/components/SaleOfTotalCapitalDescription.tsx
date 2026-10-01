@@ -2,6 +2,7 @@ import { FormattedMessage } from 'react-intl';
 import { Loader } from '../../../common';
 import { useCapitalTotal } from '../../../common/apiHooks';
 import { formatAmountForCount, formatAmountForCurrency } from '../../../common/utils';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 
 export type ListingTypeProps =
   | {
@@ -31,7 +32,7 @@ export const SaleOfTotalCapitalDescription = ({
 
   if (type === 'TRANSFER') {
     return (
-      <p className="m-0 text-secondary">
+      <p className={`m-0 text-secondary ${PII_CLASS}`}>
         <FormattedMessage
           id="capital.transfer.saleOfTotalCapitalDescription.TRANSFER.SELL"
           values={{
@@ -49,7 +50,7 @@ export const SaleOfTotalCapitalDescription = ({
 
   // have to repeat this for TS
   return (
-    <p className="m-0 text-secondary">
+    <p className={`m-0 text-secondary ${PII_CLASS}`}>
       <FormattedMessage
         id={`capital.transfer.saleOfTotalCapitalDescription.LISTING.${transactionType}`}
         values={{

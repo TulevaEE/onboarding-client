@@ -150,6 +150,17 @@ export const mockFunds: Fund[] = [
     nav: 0.59311,
     inceptionDate: moment().subtract(2, 'years').format(),
   },
+  {
+    fundManager: { name: 'Tuleva' },
+    isin: 'EE0000003283',
+    name: 'Tuleva Täiendav Kogumisfond',
+    managementFeeRate: 0.0039,
+    pillar: null,
+    ongoingChargesFigure: 0.0049,
+    status: 'ACTIVE',
+    nav: 1.1178,
+    inceptionDate: moment().subtract(1, 'years').format(),
+  },
 ];
 
 export const capitalRowsResponse: CapitalRow[] = [

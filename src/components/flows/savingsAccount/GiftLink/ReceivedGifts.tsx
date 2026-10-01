@@ -1,0 +1,67 @@
+import { FC } from 'react';
+import { FormattedMessage } from 'react-intl';
+import { Euro } from '../../../common/Euro';
+import { formatDateYear } from '../../../common/dateFormatter';
+import { ReceivedGift } from './api/giftLink.api';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
+
+export const ReceivedGifts: FC<{ gifts: ReceivedGift[] | undefined; isError: boolean }> = ({
+  gifts,
+  isError,
+}) => {
+  if (isError) {
+    return (
+      <div>
+        <h3>
+          <FormattedMessage id="giftLink.gifts.title" />
+        </h3>
+        <div className="alert alert-danger" role="alert">
+          <FormattedMessage id="giftLink.gifts.error" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!gifts) {
+    return null;
+  }
+
+  return (
+    <div>
+      <h3>
+        <FormattedMessage id="giftLink.gifts.title" />
+      </h3>
+      {gifts.length === 0 ? (
+        <p className="m-0 mt-3 text-body-secondary">
+          <FormattedMessage id="giftLink.gifts.none" />
+        </p>
+      ) : (
+        <div className="mt-3">
+          {gifts.map((gift, index) => (
+            <div className={`py-3 ${index > 0 ? 'border-top' : ''} ${PII_CLASS}`} key={index}>
+              <div className="d-flex flex-wrap column-gap-3 row-gap-1 align-items-baseline">
+                {gift.giverName ? (
+                  <b>{gift.giverName}</b>
+                ) : (
+                  <span className="text-body-secondary">
+                    <FormattedMessage id="giftLink.gifts.noNameYet" />
+                  </span>
+                )}
+                <span className="text-body-secondary">{formatDateYear(gift.receivedAt)}</span>
+                <b className="ms-auto">
+                  <Euro amount={gift.amount} />
+                </b>
+              </div>
+              {!gift.confirmed && (
+                <p className="m-0 mt-2 small text-body-secondary">
+                  <FormattedMessage id="giftLink.gifts.onItsWay" />
+                </p>
+              )}
+              {gift.message && <p className="m-0 mt-2 text-body-secondary">„{gift.message}“</p>}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};

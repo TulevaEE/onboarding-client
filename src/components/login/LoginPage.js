@@ -19,6 +19,7 @@ import {
   authenticateWithIdCode,
 } from './actions';
 import { getAuthentication } from '../common/authenticationManager';
+import { loginLanding } from './loginLanding';
 
 export const LoginPage = ({
   isAuthenticated,
@@ -41,7 +42,8 @@ export const LoginPage = ({
   usePageTitle('pageTitle.loginPage');
 
   if (isAuthenticated) {
-    return <Redirect to={location.state && location.state.from ? location.state.from : '/'} />;
+    const from = location.state && location.state.from;
+    return <Redirect to={loginLanding(from)} />;
   }
 
   return (

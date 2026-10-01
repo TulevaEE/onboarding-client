@@ -233,85 +233,7 @@ describe('2nd pillar flow', () => {
   }, 20_000);
 });
 
-describe('payment rate upsell', () => {
-  test(`doesn't upsell II pillar payment rate when change is already pending`, async () => {
-    userBackend(server, { secondPillarPaymentRates: { current: 2, pending: 6 } });
-    expect(
-      await screen.findByText(/Your pension account overview/i, undefined, { timeout: 1000 }),
-    ).toBeInTheDocument();
-
-    userEvent.click(nextButton());
-
-    const selectionSentence = await screen.findByText(/I transfer future fund payments to/i);
-    expect(
-      within(selectionSentence).getByText('Tuleva World Stocks Pension Fund'),
-    ).toBeInTheDocument();
-
-    expect(signButton()).toBeDisabled();
-
-    userEvent.click(confirmationCheckbox());
-    expect(signButton()).toBeEnabled();
-
-    const expectedRequest = {
-      fundTransferExchanges: [
-        {
-          amount: 1,
-          sourceFundIsin: 'EE3600019758',
-          targetFundIsin: 'EE3600109435',
-        },
-      ],
-      futureContributionFundIsin: 'EE3600109435',
-      address: { countryCode: 'EE' },
-    };
-    mandatesBackend(server, expectedRequest, 2);
-
-    userEvent.click(signButton());
-
-    await expectSuccessScreen(true, true, false);
-  }, 20_000);
-
-  test(`doesn't upsell II pillar payment rate when it is already changed`, async () => {
-    userBackend(server, { secondPillarPaymentRates: { current: 6, pending: null } });
-    expect(
-      await screen.findByText(/Your pension account overview/i, undefined, { timeout: 1000 }),
-    ).toBeInTheDocument();
-
-    userEvent.click(nextButton());
-
-    const selectionSentence = await screen.findByText(/I transfer future fund payments to/i);
-    expect(
-      within(selectionSentence).getByText('Tuleva World Stocks Pension Fund'),
-    ).toBeInTheDocument();
-
-    expect(signButton()).toBeDisabled();
-
-    userEvent.click(confirmationCheckbox());
-    expect(signButton()).toBeEnabled();
-
-    const expectedRequest = {
-      fundTransferExchanges: [
-        {
-          amount: 1,
-          sourceFundIsin: 'EE3600019758',
-          targetFundIsin: 'EE3600109435',
-        },
-      ],
-      futureContributionFundIsin: 'EE3600109435',
-      address: { countryCode: 'EE' },
-    };
-    mandatesBackend(server, expectedRequest, 2);
-
-    userEvent.click(signButton());
-
-    await expectSuccessScreen(true, true, false);
-  }, 20_000);
-});
-
-async function expectSuccessScreen(
-  withCurrentFundUnits = true,
-  withFutureContributions = true,
-  withPaymentRateUpsell = true,
-) {
+async function expectSuccessScreen(withCurrentFundUnits = true, withFutureContributions = true) {
   expect(
     await screen.findByRole('heading', { name: 'Application finished' }, { timeout: 10_000 }),
   ).toBeInTheDocument();
@@ -336,12 +258,6 @@ async function expectSuccessScreen(
     expect(
       await screen.findByText('starting from the next payment', { exact: false }),
     ).toBeInTheDocument();
-  }
-
-  if (withPaymentRateUpsell) {
-    expect(await screen.findByText('Increase contribution', { exact: false })).toBeInTheDocument();
-  } else {
-    expect(screen.queryByText('Increase contribution', { exact: false })).not.toBeInTheDocument();
   }
 }
 

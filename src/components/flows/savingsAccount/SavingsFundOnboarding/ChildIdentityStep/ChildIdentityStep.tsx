@@ -3,7 +3,9 @@ import { Control, Controller, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useEligibleChildren, usePendingOnboardings } from '../../../../common/apiHooks';
 import { ChildOnboardingFormData } from '../types';
+import { pendingChildOnboardings } from '../onboardingFlows';
 import { isValidEstonianPersonalCode } from './personalCode';
+import { PII_CLASS } from '../../../../tracking/piiMarkup';
 
 type ChildIdentityStepProps = {
   control: Control<ChildOnboardingFormData>;
@@ -14,7 +16,7 @@ export const ChildIdentityStep: FC<ChildIdentityStepProps> = ({ control }) => {
   const { data: eligibleChildren = [], isLoading } = useEligibleChildren();
   const { data: pendingOnboardings = [] } = usePendingOnboardings();
   const joinableChildCodes = new Set(
-    pendingOnboardings.filter(({ type }) => type === 'PERSON').map(({ code }) => code),
+    pendingChildOnboardings(pendingOnboardings).map(({ code }) => code),
   );
   const [manualEntry, setManualEntry] = useState(false);
   const childPersonalCode = useWatch({ control, name: 'childPersonalCode' });
@@ -63,7 +65,11 @@ export const ChildIdentityStep: FC<ChildIdentityStepProps> = ({ control }) => {
                   <FormattedMessage id="flows.savingsFundChildOnboarding.identityStep.label" />
                 </label>
                 {showDropdown ? (
-                  <select {...field} id={field.name} className="form-select form-select-lg">
+                  <select
+                    {...field}
+                    id={field.name}
+                    className={`form-select form-select-lg ${PII_CLASS}`}
+                  >
                     <option value="">
                       {intl.formatMessage({
                         id: 'flows.savingsFundChildOnboarding.identityStep.selectPlaceholder',

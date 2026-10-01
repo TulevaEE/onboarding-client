@@ -1,9 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import ReactTooltip from 'react-tooltip';
 import { InfoTooltip } from './infoTooltip/InfoTooltip';
 
-export const CopyButton = ({ textToCopy }: { textToCopy: string }) => {
+export const CopyButton = ({
+  textToCopy,
+  className,
+  children,
+}: PropsWithChildren<{ textToCopy: string; className?: string }>) => {
   const [copied, setCopied] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const intl = useIntl();
@@ -54,15 +58,17 @@ export const CopyButton = ({ textToCopy }: { textToCopy: string }) => {
 
   const copiedText = intl.formatMessage({ id: 'global.copied' });
   const copyText = intl.formatMessage({ id: 'global.copy' });
+  const tooltipText = copied ? copiedText : copyText;
+  const iconOnlyClassName = `btn p-1 border-0 focus-ring d-flex align-items-center position-relative ${
+    copied ? 'text-success' : 'text-primary'
+  }`;
 
   return (
     <button
       type="button"
-      className={`btn p-1 border-0 focus-ring d-flex align-items-center position-relative ${
-        copied ? 'text-success' : 'text-primary'
-      }`}
+      className={className ?? iconOnlyClassName}
       onClick={handleClick}
-      aria-label={copied ? copiedText : copyText}
+      aria-label={children ? undefined : tooltipText}
       aria-describedby={showTooltip ? idRef.current : undefined}
       ref={targetRef}
       data-tip
@@ -112,9 +118,12 @@ export const CopyButton = ({ textToCopy }: { textToCopy: string }) => {
           />
         </svg>
       )}
-      <InfoTooltip name={idRef.current} place="right" noTrigger>
-        {copied ? copiedText : copyText}
-      </InfoTooltip>
+      {children}
+      <span aria-hidden="true">
+        <InfoTooltip name={idRef.current} place="right" noTrigger>
+          {tooltipText}
+        </InfoTooltip>
+      </span>
     </button>
   );
 };

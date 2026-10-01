@@ -9,6 +9,10 @@ import { initializeConfiguration } from '../config/config';
 import { createDefaultStore, renderWrapped } from '../../test/utils';
 import { getAuthentication } from '../common/authenticationManager';
 import { anAuthenticationManager } from '../common/authenticationManagerFixture';
+import { HANDOVER_TOKEN_STORAGE_KEY } from './handoverTokenStorage';
+
+const aHandoverToken =
+  'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzaWduaW5nTWV0aG9kIjoic21hcnRJZCJ9.V-eWT1WG1CKKAsUkPOOU8zL9SbGNdv9RIO5viE9V_vORSu48UqnYKk5wHUQxOK2EvG1O64RRnc1aBTrkr0zxpHgUxshPtAYOY7SThLWLjxBbQ7T4EnZp1wJjGkpsucOmdSw7YSDdGpEn7uIrqPAaxrKzO9YKkvXYNfbS1fYAcc9mckHxf0_IyYBnrg1vxBzlSdwwmNUvhJELaKSdhrrmqZRU8zg0IHrHf0RQTZrpK8q5Pz29IgjoZNHFkuI6RW0AmypCSneoXUdPGIPxLJkyw2j1xVDHBVa37rCnZ3GNiMOAiGREld80ZXyYR4cfOT5Z4LYghWB5Pkgjxi1KcHhxoA';
 
 describe('When an external provider process is triggered', () => {
   const server = setupServer();
@@ -38,6 +42,7 @@ describe('When an external provider process is triggered', () => {
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
   afterEach(() => server.resetHandlers());
   afterEach(() => consoleError?.mockRestore());
+  afterEach(() => sessionStorage.clear());
   afterAll(() => server.close());
 
   beforeEach(() => {
@@ -88,6 +93,35 @@ describe('When an external provider process is triggered', () => {
 
       expect(await screen.findByText('unexpected error', { exact: false })).toBeInTheDocument();
       expectConsoledError(/invalid handover/i);
+    });
+  });
+
+  describe('... and the page has moved the handover token out of the address', () => {
+    test('logs in with the token it kept for the session', async () => {
+      sessionStorage.setItem(HANDOVER_TOKEN_STORAGE_KEY, aHandoverToken);
+      initializeComponent('?provider=COOP_PANK&procedure=account');
+
+      expect(await screen.findByText('redirecting to', { exact: false })).toBeInTheDocument();
+      expect(getAuthentication().accessToken).toBe(anAuthenticationManager().accessToken);
+    });
+
+    test('forgets the token once it has been exchanged', async () => {
+      sessionStorage.setItem(HANDOVER_TOKEN_STORAGE_KEY, aHandoverToken);
+      initializeComponent('?provider=COOP_PANK&procedure=account');
+
+      expect(await screen.findByText('redirecting to', { exact: false })).toBeInTheDocument();
+      expect(sessionStorage.getItem(HANDOVER_TOKEN_STORAGE_KEY)).toBeNull();
+    });
+
+    test('forgets the token when the exchange fails', async () => {
+      server.use(
+        rest.post('http://localhost/oauth/token', (req, res, ctx) => res(ctx.status(401))),
+      );
+      sessionStorage.setItem(HANDOVER_TOKEN_STORAGE_KEY, aHandoverToken);
+      initializeComponent('?provider=COOP_PANK&procedure=account');
+
+      expect(await screen.findByText('unexpected error', { exact: false })).toBeInTheDocument();
+      expect(sessionStorage.getItem(HANDOVER_TOKEN_STORAGE_KEY)).toBeNull();
     });
   });
 

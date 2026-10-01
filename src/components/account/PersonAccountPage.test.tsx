@@ -1,0 +1,127 @@
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { screen, waitFor } from '@testing-library/react';
+import { Route } from 'react-router-dom';
+import { createMemoryHistory, History } from 'history';
+import { initializeConfiguration } from '../config/config';
+import LoggedInApp from '../LoggedInApp';
+import { createDefaultStore, login, renderWrapped } from '../../test/utils';
+import {
+  paymentRateRedirectBackend,
+  useTestBackends,
+  useTestBackendsExcept,
+} from '../../test/backend';
+
+const server = setupServer();
+
+let history: History;
+
+function initializeComponent() {
+  history = createMemoryHistory();
+  const store = createDefaultStore(history as any);
+  login(store);
+
+  renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
+}
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+beforeEach(() => initializeConfiguration());
+
+describe('landing on the account page right after logging in', () => {
+  test('redirects to the payment rate page with the nudge state when the server says so', async () => {
+    useTestBackendsExcept(server, ['paymentRateRedirect']);
+    const requests = paymentRateRedirectBackend(server, {
+      redirect: true,
+      arm: 'TREATMENT',
+      seasonYear: 2026,
+    });
+    initializeComponent();
+
+    history.push('/account', { justLoggedIn: true });
+
+    await waitFor(() => expect(history.location.pathname).toBe('/2nd-pillar-payment-rate'));
+    expect(
+      await screen.findByRole('heading', {
+        name: /Your next logical step: contribute more to your II\spillar/,
+      }),
+    ).toBeInTheDocument();
+    expect(requests.count()).toBe(1);
+  });
+
+  test('stays on the account page when the server declines', async () => {
+    useTestBackendsExcept(server, ['paymentRateRedirect']);
+    const requests = paymentRateRedirectBackend(server, { redirect: false });
+    initializeComponent();
+
+    history.push('/account', { justLoggedIn: true });
+
+    expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
+    await waitFor(() => expect(requests.count()).toBe(1));
+    expect(history.location.pathname).toBe('/account');
+  });
+
+  test('clears the landing flag so a remount asks only once', async () => {
+    useTestBackendsExcept(server, ['paymentRateRedirect']);
+    const requests = paymentRateRedirectBackend(server, { redirect: false });
+    initializeComponent();
+
+    history.push('/account', { justLoggedIn: true });
+
+    await waitFor(() => expect(requests.count()).toBe(1));
+    expect(history.location.state).toBeUndefined();
+  });
+});
+
+describe('landing on the account page while an AML check is still due', () => {
+  test('lets the AML page take over without recording an exposure', async () => {
+    useTestBackendsExcept(server, ['paymentRateRedirect', 'amlChecks']);
+    server.use(
+      rest.get('http://localhost/v1/amlchecks', (req, res, ctx) =>
+        res(
+          ctx.delay(100),
+          ctx.json([{ type: 'RESIDENCY_MANUAL', success: false, createdTime: '2026-01-01' }]),
+        ),
+      ),
+    );
+    const requests = paymentRateRedirectBackend(server, {
+      redirect: true,
+      arm: 'TREATMENT',
+      seasonYear: 2026,
+    });
+    initializeComponent();
+
+    history.push('/account', { justLoggedIn: true });
+
+    await waitFor(() => expect(history.location.pathname).toBe('/aml'));
+    expect(requests.count()).toBe(0);
+  });
+});
+
+describe('navigating to the account page without logging in', () => {
+  test('asks for no redirect', async () => {
+    useTestBackendsExcept(server, ['paymentRateRedirect']);
+    const requests = paymentRateRedirectBackend(server, { redirect: true, arm: 'TREATMENT' });
+    initializeComponent();
+
+    history.push('/account');
+
+    expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
+    expect(requests.count()).toBe(0);
+    expect(history.location.pathname).toBe('/account');
+  });
+});
+
+describe('the default backends', () => {
+  test('decline the redirect', async () => {
+    useTestBackends(server);
+    initializeComponent();
+
+    history.push('/account', { justLoggedIn: true });
+
+    expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
+    expect(history.location.pathname).toBe('/account');
+  });
+});

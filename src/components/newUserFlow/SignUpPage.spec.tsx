@@ -3,7 +3,6 @@ import { shallow, ShallowWrapper } from 'enzyme';
 
 import { Redirect } from 'react-router-dom';
 import { SignUpPage } from './SignUpPage';
-import { ACCOUNT_PATH } from '../LoggedInApp';
 import InlineSignUpForm from './inlineSignUp/inlineSignUpForm';
 
 describe('Sign up page', () => {
@@ -13,8 +12,8 @@ describe('Sign up page', () => {
     component = shallow(<SignUpPage isMember saveUser={() => {}} />);
   });
 
-  it('redirects to account page when already a member', () => {
-    const redirects = () => component.contains(<Redirect to={ACCOUNT_PATH} />);
+  it('redirects to the membership success page when already a member', () => {
+    const redirects = () => component.contains(<Redirect to="/join/success" />);
 
     component.setProps({ isMember: true });
     expect(redirects()).toBe(true);

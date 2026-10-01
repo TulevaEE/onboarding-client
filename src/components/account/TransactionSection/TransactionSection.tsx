@@ -8,9 +8,11 @@ import Table from '../../common/table';
 import { Euro } from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { formatDate } from '../../common/dateFormatter';
-import { formatAmountForCount, isActingAsSelf } from '../../common/utils';
+import { isActingAsSelf } from '../../common/utils';
 import { Breakpoint, TableColumn } from '../../common/table/Table';
 import { getOtherTransactionPages } from './getOtherTransactionPages';
+import { signedUnits } from '../../common/transactions';
+import { Units, UnitsRoundingNote } from '../../common/Units';
 
 export const TransactionSection: React.FunctionComponent<{
   limit?: number;
@@ -65,16 +67,14 @@ export const TransactionSection: React.FunctionComponent<{
     }
     const allSameFund =
       fundTransactions.length > 0 && new Set(fundTransactions.map((t) => t.isin)).size === 1;
-    const unitsSum = sumBy(fundTransactions, (transaction) =>
-      transaction.type === 'SUBTRACTION' ? -(transaction.units ?? 0) : transaction.units ?? 0,
-    );
+    const unitsSum = sumBy(fundTransactions, signedUnits);
     return [
       {
         title: <FormattedMessage id="transactions.columns.units.title" />,
         dataIndex: 'units',
         hideOnBreakpoint: ['xs', 'sm'] as Breakpoint[],
         ...(allSameFund && {
-          footer: formatAmountForCount(unitsSum, 2),
+          footer: <Units units={unitsSum} />,
         }),
       },
     ];
@@ -145,12 +145,7 @@ export const TransactionSection: React.FunctionComponent<{
           fund: <span>{transaction.fundName}</span>,
           ...(!limit &&
             transaction.units != null && {
-              // Backend returns positive units for subtractions (unlike amounts which are negative).
-              // Negate here to match the amount sign convention. Remove if backend starts returning signed units.
-              units: formatAmountForCount(
-                transaction.type === 'SUBTRACTION' ? -transaction.units : transaction.units,
-                2,
-              ),
+              units: <Units units={signedUnits(transaction)} />,
             }),
           amount: <Euro amount={transaction.amount} />,
           key: transaction.time,
@@ -188,6 +183,12 @@ export const TransactionSection: React.FunctionComponent<{
         </div>
       )}
       <Table columns={columns} dataSource={dataSource} />
+      {!limit && (
+        <UnitsRoundingNote
+          units={fundTransactions.flatMap(({ units }) => (units == null ? [] : [units]))}
+          className="mt-3 d-none d-md-block"
+        />
+      )}
     </section>
   );
 };

@@ -4,6 +4,7 @@ import { Control, useController } from 'react-hook-form';
 
 import { IdentityFormFields } from '../../types';
 
+import { PII_CLASS } from '../../../../../tracking/piiMarkup';
 import './EstonianAddressForm.scss';
 
 const ADDRESS_CONTAINER_ID = 'maaAmetAddressComponent';
@@ -212,7 +213,7 @@ export const EstonianAddressForm: FC<EstonianAddressFormProps> = ({ control }) =
       <label htmlFor={ADDRESS_INPUT_ID} className="form-label w-100">
         <FormattedMessage id="flows.savingsFundOnboarding.residencyStep.street.label" />
       </label>
-      <div id={ADDRESS_CONTAINER_ID} />
+      <div id={ADDRESS_CONTAINER_ID} className={PII_CLASS} />
       {error && error.message ? (
         <p className="m-0 text-danger fs-base" role="alert">
           {error.message}

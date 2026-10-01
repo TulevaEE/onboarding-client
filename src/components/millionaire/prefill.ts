@@ -5,6 +5,7 @@ import {
   SourceFund,
   ThirdPillarContribution,
   Transaction,
+  TransactionType,
   User,
 } from '../common/apiModels';
 import {
@@ -149,15 +150,18 @@ const savingsFundTransactions = (funds: Fund[], transactions: Transaction[]): Tr
   return transactions.filter((transaction) => savingsFundIsins.has(transaction.isin));
 };
 
-// Only the inflows: for recognising a saving habit, a withdrawal says nothing.
+const CONTRIBUTION_TYPES: TransactionType[] = ['CONTRIBUTION_CASH', 'CONTRIBUTION_CASH_WORKPLACE'];
+
+// Only money the saver themselves paid in: a withdrawal says nothing about a saving
+// habit, and units given or inherited say just as little.
 export function selectSavingsFundPayments(funds: Fund[], transactions: Transaction[]): Payment[] {
   return savingsFundTransactions(funds, transactions)
-    .filter((transaction) => transaction.type !== 'SUBTRACTION')
+    .filter((transaction) => CONTRIBUTION_TYPES.includes(transaction.type))
     .map((transaction) => ({ time: transaction.time, amount: transaction.amount }));
 }
 
-// Every movement, withdrawals included (their amounts come negative): for drawing the
-// past, a redemption must show as a dip, not vanish.
+// Every movement, withdrawals and transferred units included (outgoing amounts come
+// negative): for drawing the past, a redemption must show as a dip, not vanish.
 export function selectSavingsFundFlows(funds: Fund[], transactions: Transaction[]): Payment[] {
   return savingsFundTransactions(funds, transactions).map((transaction) => ({
     time: transaction.time,

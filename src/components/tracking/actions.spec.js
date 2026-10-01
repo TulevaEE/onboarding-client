@@ -25,6 +25,27 @@ describe('trackEvent', () => {
     });
   });
 
+  it('reports a page without the gift token or a personal code in its path', () => {
+    process.env.NODE_ENV = 'production';
+
+    trackEvent(LOCATION_CHANGE, { path: '/kingitus/SECRETTOKEN/tehtud' });
+    trackEvent(LOCATION_CHANGE, { path: '/lookup/39001011234' });
+
+    expect(ReactGA.send).toHaveBeenNthCalledWith(1, {
+      hitType: 'pageview',
+      page: '/kingitus/:token/tehtud',
+    });
+    expect(ReactGA.event).toHaveBeenNthCalledWith(1, {
+      category: 'application',
+      action: LOCATION_CHANGE,
+      label: '/kingitus/:token/tehtud',
+    });
+    expect(ReactGA.send).toHaveBeenNthCalledWith(2, {
+      hitType: 'pageview',
+      page: '/lookup/[isikukood]',
+    });
+  });
+
   it('sends only application event when NODE_ENV is production and type is not LOCATION_CHANGE', () => {
     process.env.NODE_ENV = 'production';
     const type = 'SOME_OTHER_TYPE';

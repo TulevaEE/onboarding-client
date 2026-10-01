@@ -5,6 +5,8 @@ import { SectionHeading } from './SectionHeading';
 import { TransactionSection } from './TransactionSection/TransactionSection';
 import { ApplicationSection } from './ApplicationSection/ApplicationSection';
 import { useMe, useSavingsFundBalance, useSourceFunds } from '../common/apiHooks';
+import { PII_CLASS } from '../tracking/piiMarkup';
+import { SavingsFundStatementSection } from './Portfolio/SavingsFundStatementSection';
 
 export function RepresentedPartyAccountPage() {
   const { data: user } = useMe();
@@ -19,6 +21,8 @@ export function RepresentedPartyAccountPage() {
   });
   const thirdPillarFunds = (sourceFunds ?? []).filter((fund) => fund.pillar === 3);
   const showThirdPillar = isRepresentedPerson && thirdPillarFunds.length > 0;
+  // The statement is for a company's accountant; a child's account doesn't need one.
+  const isRepresentedCompany = user?.role?.type === 'LEGAL_ENTITY';
 
   // While the balance loads (e.g. right after a role switch), pass undefined so
   // AccountStatement shimmers instead of rendering an empty zero-balance table.
@@ -28,7 +32,7 @@ export function RepresentedPartyAccountPage() {
   return (
     <section aria-label="represented-party-account">
       {user?.role && (
-        <p className="my-5 m-0 lead">
+        <p className={`my-5 m-0 lead ${PII_CLASS}`}>
           <FormattedMessage id="account.legalEntity.greeting" values={{ name: user.role.name }} />
         </p>
       )}
@@ -48,9 +52,16 @@ export function RepresentedPartyAccountPage() {
           <Link className="icon-link" to="/savings-fund/withdraw">
             <FormattedMessage id="accountStatement.savingsFund.withdraw" />
           </Link>
+          {isRepresentedPerson && (
+            <Link className="icon-link" to="/savings-fund/gift-link">
+              <FormattedMessage id="accountStatement.savingsFund.giftLink" />
+            </Link>
+          )}
         </div>
       </SectionHeading>
       <AccountStatement funds={savingsFunds} showProfit />
+
+      {isRepresentedCompany && savingsFundBalance && <SavingsFundStatementSection />}
 
       <ApplicationSection />
 

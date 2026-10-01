@@ -7,6 +7,7 @@ import { formatDateYear } from '../../../common/dateFormatter';
 import { useCapitalEvents } from '../../../common/apiHooks';
 import { Euro } from '../../../common/Euro';
 import { InfoTooltip } from '../../../common/infoTooltip/InfoTooltip';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 
 interface Props {
   loading: boolean;
@@ -27,7 +28,9 @@ export const MemberStatusBox: React.FunctionComponent<Props> = ({
   const isTulevaMember = memberNumber != null;
   const tulevaData = isTulevaMember
     ? [
-        <FormattedMessage id="account.member.statement" values={{ memberNumber }} />,
+        <span className={PII_CLASS}>
+          <FormattedMessage id="account.member.statement" values={{ memberNumber }} />
+        </span>,
         <span className="text-body-secondary">
           {lastMembershipBonus ? (
             <FormattedMessage

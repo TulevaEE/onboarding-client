@@ -6,18 +6,11 @@ import { useCompanyBusinessRegistryValidation } from '../../../../common/apiHook
 import { formatDateYear } from '../../../../common/dateFormatter';
 import { Shimmer } from '../../../../common/shimmer/Shimmer';
 import { CompanyOnboardingFormData } from '../types';
-import { errorCode, errorMessage } from './collectValidationErrors';
-import { hasNoValidationErrors } from './hasNoValidationErrors';
+import { collectErrors, errorCode, errorMessage } from './collectValidationErrors';
+import { IDENTITY_KYC_CODES, OTHER_RELATED_PERSONS_KYC_CODE, USER_KYC_CODE } from './kycErrorCodes';
+import { mayPassRequirementsStep } from './mayPassRequirementsStep';
 import { unverifiedRelatedPersonNames } from './unverifiedRelatedPersonNames';
-
-// Identity-verification codes the backend sets on the relatedPersons field.
-// USER_KYC: the logged-in user's own verification did not pass automatically — the
-// flow has already collected their identity, so this is a manual-review dead end.
-// OTHER_RELATED_PERSONS_KYC: someone else connected to the company is unverified
-// (offer a shareable link).
-const USER_KYC_CODE = 'USER_KYC';
-const OTHER_RELATED_PERSONS_KYC_CODE = 'OTHER_RELATED_PERSONS_KYC';
-const IDENTITY_KYC_CODES = [USER_KYC_CODE, OTHER_RELATED_PERSONS_KYC_CODE];
+import { PII_CLASS } from '../../../../tracking/piiMarkup';
 
 type RequirementsCheckStepProps = {
   control: Control<CompanyOnboardingFormData>;
@@ -44,7 +37,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
           return 'No data';
         }
 
-        return hasNoValidationErrors(companyData) || 'Validation failed';
+        return mayPassRequirementsStep(companyData) || 'Validation failed';
       },
     },
   });
@@ -65,7 +58,8 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
   // them, addressing everyone when it does not. Any other relatedPersons error (e.g.
   // ownership structure) is a genuine "company does not fit" reason and flows to
   // the generic list below.
-  const relatedPersonErrorCodes = (data?.relatedPersons.errors ?? []).map(errorCode);
+  const relatedPersonErrors = data?.relatedPersons?.errors ?? [];
+  const relatedPersonErrorCodes = relatedPersonErrors.map(errorCode);
   const userIdentityIncomplete = relatedPersonErrorCodes.includes(USER_KYC_CODE);
   const otherPersonsIdentityIncomplete = relatedPersonErrorCodes.includes(
     OTHER_RELATED_PERSONS_KYC_CODE,
@@ -73,13 +67,12 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
   const identityIncomplete =
     isSuccess && (userIdentityIncomplete || otherPersonsIdentityIncomplete);
   const identityVerificationUrl = `${window.location.origin}/savings-fund/onboarding/identity`;
-  const unverifiedNames = data ? unverifiedRelatedPersonNames(data.relatedPersons.errors) : [];
+  const unverifiedNames = unverifiedRelatedPersonNames(relatedPersonErrors);
 
   // Every validation error except the identity-KYC ones (which have their own
   // dedicated dead-end block) — these are genuine "company does not fit" reasons.
   const otherRequirementErrors = data
-    ? Object.values(data)
-        .flatMap((validatedField) => validatedField.errors)
+    ? collectErrors(data)
         .filter((validationError) => !IDENTITY_KYC_CODES.includes(errorCode(validationError)))
         .map(errorMessage)
     : [];
@@ -99,7 +92,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
           <div className="half-column fw-bold">
             <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.companyName" />
           </div>
-          <div className="half-column">{registryName}</div>
+          <div className={`half-column ${PII_CLASS}`}>{registryName}</div>
         </div>
         <div className="d-sm-flex gap-3 align-items-center">
           <div className="half-column fw-bold">
@@ -121,7 +114,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
               <div className="half-column fw-bold">
                 <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.label.companyAddress" />
               </div>
-              <div className="half-column">
+              <div className={`half-column ${PII_CLASS}`}>
                 {isSuccess && data ? data.address.value.fullAddress : <Shimmer />}
               </div>
             </div>
@@ -140,12 +133,12 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
             <div className="border-top border-gray-2" />
             <div className="d-flex flex-column d-sm-grid flex-wrap gap-3 half-column-grid">
               {isSuccess && data ? (
-                data.relatedPersons.value.map((person) => (
+                (data.relatedPersons?.value ?? []).map((person) => (
                   <div key={person.personalCode} className="d-flex flex-column gap-1">
                     <div className="fw-bold">
                       <FormattedMessage id="flows.savingsFundOnboarding.businessValidationStep.relatedPerson" />
                     </div>
-                    <div>
+                    <div className={PII_CLASS}>
                       <div className="fs-3">{person.name}</div>
                       <div>{person.personalCode}</div>
                     </div>
@@ -194,7 +187,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
                 </div>
                 <div className="d-flex flex-column gap-1">
                   {unverifiedNames.length > 0 && (
-                    <span className="fw-bold">
+                    <span className={`fw-bold ${PII_CLASS}`}>
                       <FormattedMessage
                         id="flows.savingsFundOnboarding.businessValidationStep.identityIncomplete.pending"
                         values={{ names: unverifiedNames.join(', ') }}

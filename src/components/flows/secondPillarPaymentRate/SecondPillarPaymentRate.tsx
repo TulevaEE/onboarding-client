@@ -1,18 +1,46 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, Redirect } from 'react-router-dom';
+import { Link, Redirect, useHistory, useLocation } from 'react-router-dom';
 import { AuthenticationLoader, ErrorMessage, Loader, Radio } from '../../common';
 import { Shimmer } from '../../common/shimmer/Shimmer';
+import { Recommended } from '../../common/Recommended';
 import { usePageTitle } from '../../common/usePageTitle';
 import { useSecondPillarPaymentRate } from './hooks';
 import { PaymentRate } from './types';
 import { useMandateDeadlines, useMe } from '../../common/apiHooks';
-import { formatDateYear } from '../../common/dateFormatter';
+import { formatDateOn, formatDateYear } from '../../common/dateFormatter';
+import { PaymentRateNudge } from '../../common/apiModels/nudge';
+import { postPaymentRateRedirectDismissal } from '../../common/api';
+import { trackNudgeEvent } from '../../common/nudge/tracking';
+import styles from './SecondPillarPaymentRate.module.scss';
 
 export const SecondPillarPaymentRate: React.FunctionComponent = () => {
   usePageTitle('pageTitle.secondPillarPayment');
 
   const { data: user } = useMe();
+  const history = useHistory();
+  const { pathname, search, state } = useLocation<{ nudge?: PaymentRateNudge } | undefined>();
+  const [nudge] = useState(() => state?.nudge);
+  const trackedView = useRef(false);
+
+  const trackedEventData = (paymentRateNudge: PaymentRateNudge) => ({
+    context: 'PAYMENT_RATE_REDIRECT',
+    key: 'SECOND_PILLAR_PAYMENT_RATE',
+    tag: 'nudge_payment_rate',
+    path: pathname,
+    channel: 'SCREEN',
+    ...paymentRateNudge,
+  });
+
+  useEffect(() => {
+    if (!nudge || trackedView.current) {
+      return;
+    }
+    trackedView.current = true;
+    history.replace({ pathname, search });
+    trackNudgeEvent('NUDGE_VIEW', trackedEventData(nudge));
+  }, [nudge]);
+
   const pendingPaymentRate =
     user?.secondPillarPaymentRates?.pending ?? user?.secondPillarPaymentRates?.current ?? null;
 
@@ -30,6 +58,18 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
   } = useSecondPillarPaymentRate();
 
   const { data: mandateDeadlines } = useMandateDeadlines();
+
+  const dismissNudge = () => {
+    postPaymentRateRedirectDismissal().catch(() => {});
+    history.replace('/account');
+  };
+
+  const signPaymentRate = (rate: PaymentRate) => {
+    if (nudge) {
+      trackNudgeEvent('NUDGE_CLICK', trackedEventData(nudge));
+    }
+    changePaymentRate(rate);
+  };
 
   if (!user) {
     return <Loader className="align-middle my-4" />;
@@ -65,34 +105,70 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
 
       {error && <ErrorMessage errors={error.body} onCancel={resetError} overlayed />}
 
-      <h1 className="mb-3">
-        <FormattedMessage
-          id={
-            isDecreasingScenario
-              ? 'secondPillarPaymentRate.contributionChange.decrease'
-              : 'secondPillarPaymentRate.contributionChange.increase'
-          }
-        />
-      </h1>
-      <p className="mb-5">
-        {!mandateDeadlines ? (
-          <Shimmer height={24} />
-        ) : (
-          <FormattedMessage
-            id={
-              isDecreasingScenario
-                ? 'secondPillarPaymentRate.applicationDeadline.decrease'
-                : 'secondPillarPaymentRate.applicationDeadline.increase'
-            }
-            values={{
-              paymentRateFulfillmentDate: formatDateYear(
-                mandateDeadlines?.paymentRateFulfillmentDate,
-              ),
-              a: (chunks: string) => <Link to="/2nd-pillar-tax-win">{chunks}</Link>,
-            }}
-          />
-        )}
-      </p>
+      {nudge ? (
+        <>
+          <h1 className={`mb-3 ${styles.balancedHeading}`}>
+            <FormattedMessage id="secondPillarPaymentRate.nudge.heading" />
+          </h1>
+          <p className="mb-3">
+            <FormattedMessage id="secondPillarPaymentRate.nudge.lead" />
+          </p>
+          <p className="mb-3">
+            <FormattedMessage id="secondPillarPaymentRate.nudge.body" />
+          </p>
+          <p className="mb-5">
+            {!mandateDeadlines ? (
+              <Shimmer height={24} />
+            ) : (
+              <>
+                <b>
+                  <FormattedMessage
+                    id="secondPillarPaymentRate.nudge.deadline"
+                    values={{ deadline: formatDateOn(mandateDeadlines.paymentRateDeadline) }}
+                  />
+                </b>{' '}
+                <FormattedMessage
+                  id="secondPillarPaymentRate.nudge.fulfillment"
+                  values={{
+                    fulfillmentDate: formatDateYear(mandateDeadlines.paymentRateFulfillmentDate),
+                  }}
+                />
+              </>
+            )}
+          </p>
+        </>
+      ) : (
+        <>
+          <h1 className="mb-3">
+            <FormattedMessage
+              id={
+                isDecreasingScenario
+                  ? 'secondPillarPaymentRate.contributionChange.decrease'
+                  : 'secondPillarPaymentRate.contributionChange.increase'
+              }
+            />
+          </h1>
+          <p className="mb-5">
+            {!mandateDeadlines ? (
+              <Shimmer height={24} />
+            ) : (
+              <FormattedMessage
+                id={
+                  isDecreasingScenario
+                    ? 'secondPillarPaymentRate.applicationDeadline.decrease'
+                    : 'secondPillarPaymentRate.applicationDeadline.increase'
+                }
+                values={{
+                  paymentRateFulfillmentDate: formatDateYear(
+                    mandateDeadlines?.paymentRateFulfillmentDate,
+                  ),
+                  a: (chunks: string) => <Link to="/2nd-pillar-tax-win">{chunks}</Link>,
+                }}
+              />
+            )}
+          </p>
+        </>
+      )}
       <p className="mb-4">
         <FormattedMessage id="secondPillarPaymentRate.chooseContributionRate" />
       </p>
@@ -146,7 +222,7 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
             <span className="fs-3 lh-sm fw-medium me-2">
               <FormattedMessage id="secondPillarPaymentRate.option.6Percent" />
             </span>
-            <Recommended />
+            <Recommended className="me-1" />
             {pendingPaymentRate === 6 && <Currently />}
           </p>
           <p className="mb-1">
@@ -162,14 +238,20 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
       </div>
 
       <div className="mt-5 d-flex flex-column-reverse flex-md-row justify-content-between">
-        <Link className="btn btn-light mt-2" to="/account">
-          <FormattedMessage id="secondPillarPaymentRate.cancel" />
-        </Link>
+        {nudge ? (
+          <button type="button" className="btn btn-outline-primary mt-2" onClick={dismissNudge}>
+            <FormattedMessage id="secondPillarPaymentRate.nudge.dismiss" />
+          </button>
+        ) : (
+          <Link className="btn btn-light mt-2" to="/account">
+            <FormattedMessage id="secondPillarPaymentRate.cancel" />
+          </Link>
+        )}
         <button
           type="button"
           className="btn btn-primary mt-2"
           disabled={!paymentRate || paymentRate === pendingPaymentRate}
-          onClick={() => paymentRate && changePaymentRate(paymentRate)}
+          onClick={() => paymentRate && signPaymentRate(paymentRate)}
         >
           <FormattedMessage id="secondPillarPaymentRate.confirm.mandate.sign" />
         </button>
@@ -181,11 +263,5 @@ export const SecondPillarPaymentRate: React.FunctionComponent = () => {
 const Currently = () => (
   <span className="badge rounded-pill text-bg-secondary align-text-bottom">
     <FormattedMessage id="secondPillarPaymentRate.current" />
-  </span>
-);
-
-const Recommended = () => (
-  <span className="me-1 badge rounded-pill text-bg-primary align-text-bottom">
-    <FormattedMessage id="secondPillarPaymentRate.recommended" />
   </span>
 );

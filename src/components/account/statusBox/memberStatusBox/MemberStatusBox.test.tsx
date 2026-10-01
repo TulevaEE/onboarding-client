@@ -9,9 +9,15 @@ import LoggedInApp from '../../../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import { capitalEventsBackend, userBackend, useTestBackendsExcept } from '../../../../test/backend';
 import { mockUser } from '../../../../test/backend-responses';
+import { isInsidePii } from '../../../tracking/piiMarkup';
 
 const server = setupServer();
 let history: History;
+
+async function lastStatusBoxRow() {
+  const rows = await screen.findAllByTestId('status-box-row');
+  return rows[rows.length - 1];
+}
 
 function initializeComponent() {
   history = createMemoryHistory();
@@ -41,7 +47,7 @@ describe('member status box with existing membership but no bonus', () => {
   });
 
   it('renders member number and upcoming membership bonus %', async () => {
-    const memberStatusRow = (await screen.findAllByTestId('status-box-row'))[2];
+    const memberStatusRow = await lastStatusBoxRow();
 
     expect(
       await within(memberStatusRow).findByText('You are Tuleva member no. 987'),
@@ -51,6 +57,14 @@ describe('member status box with existing membership but no bonus', () => {
         /Since April 1, 2019, you earn a 0.05% annual membership bonus/,
       ),
     ).toBeInTheDocument();
+  });
+
+  it('marks the member number as personal data for analytics', async () => {
+    const memberStatusRow = await lastStatusBoxRow();
+
+    expect(
+      isInsidePii(await within(memberStatusRow).findByText('You are Tuleva member no. 987')),
+    ).toBe(true);
   });
 });
 
@@ -74,7 +88,7 @@ describe('member status box with existing membership and latest received members
   });
 
   it('renders existing membership bonus', async () => {
-    const memberStatusRow = (await screen.findAllByTestId('status-box-row'))[2];
+    const memberStatusRow = await lastStatusBoxRow();
 
     expect(
       await within(memberStatusRow).findByText('You are Tuleva member no. 987'),
@@ -106,7 +120,7 @@ describe('member status box with existing membership and membership bonus sale',
   });
 
   it('renders the only the last received membership bonus', async () => {
-    const memberStatusRow = (await screen.findAllByTestId('status-box-row'))[2];
+    const memberStatusRow = await lastStatusBoxRow();
 
     expect(
       await within(memberStatusRow).findByText('You are Tuleva member no. 987'),
@@ -130,7 +144,7 @@ describe('member status box without membership', () => {
   });
 
   it('allows to join', async () => {
-    const memberStatusRow = (await screen.findAllByTestId('status-box-row'))[2];
+    const memberStatusRow = await lastStatusBoxRow();
 
     expect(
       await within(memberStatusRow).findByText('Not a member and not earning any membership bonus'),

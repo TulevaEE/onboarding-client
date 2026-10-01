@@ -2,8 +2,35 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <!--
+      The partner handover token is a login credential that carries the person's identity. It has to
+      leave the address before any other script runs, because the Meta Pixel, Tag Manager and Sentry
+      all report the page address. The app reads it from sessionStorage (TriggerProcedure).
+    -->
+    <script>
+      (function () {
+        try {
+          var address = window.location;
+          var token = /[?&]handoverToken=([^&#]*)/.exec(address.search);
+          if (address.pathname.indexOf('/trigger-procedure') !== 0 || !token) {
+            return;
+          }
+          window.sessionStorage.setItem('handoverToken', decodeURIComponent(token[1].replace(/\+/g, ' ')));
+          var search = address.search.replace(/([?&])handoverToken=[^&#]*(&|$)/, '$1').replace(/[?&]$/, '');
+          window.history.replaceState(window.history.state, '', address.pathname + search + address.hash);
+        } catch (error) {}
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="theme-color" content="#00aeea">
+    <!--
+      This host is the application, not the public site: tuleva.ee is what belongs in a search
+      index. A gift URL carries a token that names a child, so it must never be indexed. The ban
+      lives here rather than in robots.txt on purpose: a crawler has to fetch the page to see it,
+      and a robots.txt that keeps crawlers out would also keep out the ones that build the link
+      preview shown when somebody shares a gift link in a chat.
+    -->
+    <meta name="robots" content="noindex, nofollow" />
     <meta property="og:image" content="https://tuleva.ee/wp-content/uploads/2018/11/account_1.png" />
     <meta property="og:title" content="Vaheta pensionifond tasuta otse telefonis" />
     <meta property="og:description" content="Sisene ID-kaardi, mobiil-ID või smart-ID abil." />
@@ -39,8 +66,11 @@
   t.src=v;s=b.getElementsByTagName(e)[0];
   s.parentNode.insertBefore(t,s)}(window, document,'script',
   'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', '264307013931375');
-  fbq('track', 'PageView');
+  // A PageView reports the URL, and a gift URL carries a token that names a child.
+  if (!/^\/kingitus(\/|$)/.test(window.location.pathname)) {
+    fbq('init', '264307013931375');
+    fbq('track', 'PageView');
+  }
 </script>
 <script type="text/javascript" src="https://inaadress.maaamet.ee/inaadress/js/inaadress.min.js?d=20220510"></script>
 <noscript><img height="1" width="1" style="display:none"

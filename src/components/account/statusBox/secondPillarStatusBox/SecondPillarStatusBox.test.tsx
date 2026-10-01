@@ -13,6 +13,8 @@ import {
   tulevaSecondPillarFund,
 } from '../fixtures';
 
+let mockContributionsAreLoaded = true;
+
 // TODO: Figure out a cleaner way to mock the hooks
 jest.mock('../../../common/apiHooks', () => ({
   usePendingApplications: () => ({ data: [{ type: 'WITHDRAWAL' }] }),
@@ -21,15 +23,21 @@ jest.mock('../../../common/apiHooks', () => ({
   useMandateDeadlines: () => ({ data: { periodEnding: '2024-07-31T00:59:59.999999999Z' } }),
   useFundPensionStatus: () => ({ fundPensions: [] }),
   useContributions: () => ({
-    data: [
-      {
-        pillar: 2,
-        time: new Date().toISOString(),
-        employeeWithheldPortion: 100,
-      },
-    ],
+    data: mockContributionsAreLoaded
+      ? [
+          {
+            pillar: 2,
+            time: new Date().toISOString(),
+            employeeWithheldPortion: 100,
+          },
+        ]
+      : undefined,
   }),
 }));
+
+afterEach(() => {
+  mockContributionsAreLoaded = true;
+});
 
 jest.useFakeTimers();
 jest.setSystemTime(new Date('2024-07-22T10:36:00Z'));
@@ -131,27 +139,27 @@ describe('SecondPillarStatusBox', () => {
   });
 });
 
+const renderWithIntl = (component: React.ReactElement) =>
+  render(
+    <BrowserRouter>
+      <IntlProvider
+        locale="en"
+        messages={translations.en}
+        defaultLocale="et"
+        onError={(err) => {
+          if (err.code === 'MISSING_TRANSLATION') {
+            return;
+          }
+          throw err;
+        }}
+      >
+        {component}
+      </IntlProvider>
+    </BrowserRouter>,
+  );
+
 // Test with React Testing Library for deep rendering
 describe('SecondPillarStatusBox - Component Integration Tests', () => {
-  const renderWithIntl = (component: React.ReactElement) =>
-    render(
-      <BrowserRouter>
-        <IntlProvider
-          locale="en"
-          messages={translations.en}
-          defaultLocale="et"
-          onError={(err) => {
-            if (err.code === 'MISSING_TRANSLATION') {
-              return;
-            }
-            throw err;
-          }}
-        >
-          {component}
-        </IntlProvider>
-      </BrowserRouter>,
-    );
-
   describe('branch order: transfer nudge comes before the payment rate nudge', () => {
     const baseProps: Props = {
       loading: false,
@@ -179,6 +187,24 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
       );
 
       expect(screen.getByRole('link', { name: 'Choose Tuleva' })).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Increase contribution' })).not.toBeInTheDocument();
+    });
+
+    it('counts a fee of exactly 0.3% as high, the way the server decides it', () => {
+      renderWithIntl(
+        <SecondPillarStatusBox
+          {...baseProps}
+          sourceFunds={[highFeeSecondPillar]}
+          conversion={{
+            ...completeSecondPillarConversion.secondPillar,
+            selectionComplete: false,
+            transfersComplete: false,
+            weightedAverageFee: 0.003,
+          }}
+        />,
+      );
+
+      expect(screen.getByText(/in a high cost fund/)).toBeInTheDocument();
       expect(screen.queryByRole('link', { name: 'Increase contribution' })).not.toBeInTheDocument();
     });
 
@@ -223,6 +249,42 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
 
       expect(screen.getByRole('link', { name: 'Increase contribution' })).toBeInTheDocument();
       expect(screen.queryByRole('link', { name: 'Choose Tuleva' })).not.toBeInTheDocument();
+    });
+  });
+
+  describe('without a second pillar', () => {
+    const noSecondPillar: Props = {
+      loading: false,
+      conversion: completeSecondPillarConversion.secondPillar,
+      sourceFunds: [],
+      targetFunds: [tulevaSecondPillarFund],
+      secondPillarActive: false,
+      pendingPaymentRate: 2,
+      currentPaymentRate: 2,
+      activeFundIsin: undefined,
+    };
+
+    it('invites a person the server decided may open a second pillar into the second pillar flow', () => {
+      renderWithIntl(<SecondPillarStatusBox {...noSecondPillar} nudgeKey="SECOND_PILLAR_START" />);
+
+      expect(screen.getByText(/You have no II\spillar/)).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^Open II\spillar$/ })).toHaveAttribute(
+        'href',
+        '/2nd-pillar-flow',
+      );
+    });
+
+    it('shows no call to action when the server decided against a second pillar nudge', () => {
+      renderWithIntl(<SecondPillarStatusBox {...noSecondPillar} nudgeKey="NONE" />);
+
+      expect(screen.getByText(/You have no II\spillar/)).toBeInTheDocument();
+      expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    });
+
+    it('shows no call to action while the nudge decision is unknown', () => {
+      renderWithIntl(<SecondPillarStatusBox {...noSecondPillar} />);
+
+      expect(screen.queryByRole('link')).not.toBeInTheDocument();
     });
   });
 
@@ -363,5 +425,180 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
 
       expect(screen.queryByRole('button')).not.toBeInTheDocument();
     });
+  });
+});
+
+const byTextContent = (pattern: string | RegExp) => {
+  const regex =
+    pattern instanceof RegExp
+      ? pattern
+      : new RegExp(`^${pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`);
+  const matching = screen.getAllByText((_, element) => regex.test(element?.textContent ?? ''));
+  return matching[matching.length - 1];
+};
+
+describe('SecondPillarStatusBox in the payment rate season', () => {
+  const paymentRateSeason = {
+    deadline: '2026-11-30',
+    fulfillmentDate: '2027-01-01',
+    mode: 'SEASON' as const,
+  };
+
+  const seasonProps = (currentPaymentRate: number, pendingPaymentRate: number): Props => ({
+    loading: false,
+    conversion: completeSecondPillarConversion.secondPillar,
+    sourceFunds: [activeSecondPillar],
+    targetFunds: [tulevaSecondPillarFund],
+    secondPillarActive: true,
+    currentPaymentRate,
+    pendingPaymentRate,
+    activeFundIsin: 'EE000123',
+    paymentRateSeason,
+  });
+
+  it('highlights the target rate inside the pill', () => {
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(2, 2)} />);
+
+    expect(byTextContent('up to 6%')).toHaveClass('text-primary');
+  });
+
+  it('links the tax win to the tax win page and shows the amount in bold', () => {
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(2, 2)} />);
+
+    expect(screen.getByRole('link', { name: /saved 22\s€ in income tax/ })).toHaveAttribute(
+      'href',
+      '/2nd-pillar-tax-win',
+    );
+    expect(byTextContent(/^22\s€$/).tagName).toBe('B');
+  });
+
+  it.each([
+    [2, 2, 'Now 2% → up to 6%'],
+    [4, 4, 'Now 4% → up to 6%'],
+  ])('shows the pill and the raise copy for %s%%', (current, pending, pill) => {
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(current, pending)} />);
+
+    expect(byTextContent(pill)).toBeInTheDocument();
+    expect(
+      byTextContent(/From January\s1 you can contribute up to 6% straight from your gross salary/),
+    ).toBeInTheDocument();
+    expect(
+      byTextContent(
+        /This year you saved 22\s€ in income tax, the application deadline is November\s30/,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Increase contribution' })).toBeInTheDocument();
+  });
+
+  it('congratulates the maximum contributor without an action', () => {
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(6, 6)} />);
+
+    expect(
+      byTextContent(/You contribute the maximum to II\spillar, 6% of your gross salary/),
+    ).toBeInTheDocument();
+    expect(
+      byTextContent(
+        /This year you saved 22\s€ in income tax, your decision works for you every month/,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([
+      '/2nd-pillar-tax-win',
+    ]);
+    expect(screen.queryByText(/→/)).not.toBeInTheDocument();
+  });
+
+  it.each([
+    [2, 6],
+    [4, 6],
+  ])('confirms a pending raise from %s%% to 6%% without an action', (current, pending) => {
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(current, pending)} />);
+
+    expect(
+      byTextContent(/From January\s1 you will contribute 6% of your gross salary to II\spillar/),
+    ).toBeInTheDocument();
+    expect(
+      byTextContent(
+        /This year you saved 22\s€ in income tax, the application is in and there is nothing more to do/,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([
+      '/2nd-pillar-tax-win',
+    ]);
+  });
+
+  it('invites a pending 4% raise to go further', () => {
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(2, 4)} />);
+
+    expect(
+      byTextContent(/From January\s1 you will contribute 4% of your gross salary to II\spillar/),
+    ).toBeInTheDocument();
+    expect(
+      byTextContent(
+        /This year you saved 22\s€ in income tax, until November\s30 you can raise it to 6%/,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Increase contribution' })).toBeInTheDocument();
+  });
+
+  it.each([
+    [4, 2],
+    [6, 4],
+    [6, 2],
+  ])('describes a pending decrease from %s%% to %s%%', (current, pending) => {
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(current, pending)} />);
+
+    expect(
+      byTextContent(
+        new RegExp(
+          `From January\\s1 you will contribute ${pending}% of your gross salary to II\\spillar, now ${current}%`,
+        ),
+      ),
+    ).toBeInTheDocument();
+    expect(
+      byTextContent(
+        /This year you saved 22\s€ in income tax, you can change your choice until November\s30/,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Change contribution' })).toBeInTheDocument();
+    expect(screen.getByTestId('status-icon-warning')).toBeInTheDocument();
+  });
+
+  it('emphasizes the deadline fact in the last days', () => {
+    renderWithIntl(
+      <SecondPillarStatusBox
+        {...seasonProps(2, 2)}
+        paymentRateSeason={{ ...paymentRateSeason, mode: 'LAST_DAYS' }}
+      />,
+    );
+
+    expect(byTextContent(/^the application deadline is November\s30$/).tagName).toBe('B');
+  });
+
+  it('shimmers the tax win line instead of guessing while the contributions load', () => {
+    mockContributionsAreLoaded = false;
+
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(2, 2)} />);
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(document.querySelector('.shimmerDefault')).toBeInTheDocument();
+    expect(screen.queryByText(/This year you saved/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/The application deadline is/)).not.toBeInTheDocument();
+  });
+
+  it('keeps the transfer call to action for a saver whose second pillar is elsewhere', () => {
+    renderWithIntl(
+      <SecondPillarStatusBox
+        {...seasonProps(6, 6)}
+        conversion={{
+          ...completeSecondPillarConversion.secondPillar,
+          selectionComplete: false,
+          transfersComplete: false,
+          weightedAverageFee: 0.0029,
+        }}
+      />,
+    );
+
+    expect(screen.getByRole('link', { name: 'Choose Tuleva' })).toBeInTheDocument();
+    expect(screen.queryByText(/You contribute the maximum to II\spillar/)).not.toBeInTheDocument();
   });
 });

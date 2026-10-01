@@ -13,6 +13,7 @@ import { CapitalTransferContract } from '../../../../common/apiModels/capital-tr
 import { useUpdateCapitalTransferContract } from '../../../../common/apiHooks';
 import { CopyButton } from '../../../../common/CopyButton';
 import { getTotalPrice, getTotalBookValue } from '../utils';
+import { PII_CLASS } from '../../../../tracking/piiMarkup';
 
 export const BuyerPayment = ({
   contract,
@@ -74,7 +75,7 @@ export const BuyerPayment = ({
           <h2 className="m-0">
             <FormattedMessage id="capital.transfer.details.contract.title" />
           </h2>
-          <p className="m-0">
+          <p className={`m-0 ${PII_CLASS}`}>
             <FormattedMessage
               id="capital.transfer.details.contract.description"
               values={{
@@ -100,7 +101,7 @@ export const BuyerPayment = ({
                 <FormattedMessage id="capital.transfer.details.payment.receiverName" />
               </div>
               <div className="col-8 col-sm-7 d-flex justify-content-between column-gap-2 text-break">
-                <span>{getFullName(contract.seller)}</span>
+                <span className={PII_CLASS}>{getFullName(contract.seller)}</span>
                 <CopyButton textToCopy={getFullName(contract.seller)} />
               </div>
             </div>
@@ -109,7 +110,8 @@ export const BuyerPayment = ({
                 <FormattedMessage id="capital.transfer.details.payment.receiverIban" />
               </div>
               <div className="col-8 col-sm-7 d-flex justify-content-between column-gap-2 text-break">
-                <span>{contract.iban}</span> <CopyButton textToCopy={contract.iban} />
+                <span className={PII_CLASS}>{contract.iban}</span>{' '}
+                <CopyButton textToCopy={contract.iban} />
               </div>
             </div>
             <div className="d-flex align-items-baseline">
@@ -146,7 +148,7 @@ export const BuyerPayment = ({
                 className="form-check-input"
                 id="agree-to-terms-checkbox"
               />
-              <label className="form-check-label" htmlFor="agree-to-terms-checkbox">
+              <label className={`form-check-label ${PII_CLASS}`} htmlFor="agree-to-terms-checkbox">
                 <FormattedMessage
                   id="capital.transfer.details.confirm.checkbox"
                   values={{

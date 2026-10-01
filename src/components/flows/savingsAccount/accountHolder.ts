@@ -18,3 +18,7 @@ export const accountHolderPersonalCode = (user: User): string =>
   user.role?.code ?? user.personalCode;
 
 export const accountHolderName = (user: User): string => user.role?.name ?? getFullName(user);
+
+export const byCode = (a: Role, b: Role): number => a.code.localeCompare(b.code);
+
+export const lowestByCode = (roles: Role[]): Role | undefined => [...roles].sort(byCode)[0];

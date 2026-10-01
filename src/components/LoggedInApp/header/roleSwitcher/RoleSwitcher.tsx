@@ -5,11 +5,14 @@ import config from 'react-global-configuration';
 import { useMe, usePendingOnboardings, useRoles, useSwitchRole } from '../../../common/apiHooks';
 import { Role, SwitchRoleCommand, User } from '../../../common/apiModels';
 import { AccountIcon, AccountIconKind } from '../../../common/AccountIcon';
-import { isChildRole } from '../../../common/utils';
+import { isChildRole, isCurrentRole } from '../../../common/utils';
 import LanguageSwitcher from '../languageSwitcher';
+import { PII_CLASS } from '../../../tracking/piiMarkup';
 import {
+  childOnboardingLocation,
   isChildOnboardingEnabled,
   isCompanyOnboardingEnabled,
+  pendingChildOnboardings,
 } from '../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
 
 type Props = {
@@ -29,16 +32,6 @@ const accountIconKind = (role: Role, user: User | undefined): AccountIconKind =>
     return 'company';
   }
   return isChildRole(role, user) ? 'child' : 'person';
-};
-
-const isCurrentRole = (role: Role, user: User | undefined): boolean => {
-  if (!user) {
-    return false;
-  }
-  if (user.role) {
-    return user.role.type === role.type && user.role.code === role.code;
-  }
-  return role.type === 'PERSON' && role.code === user.personalCode;
 };
 
 // The menu is wide enough for the longest row rather than sized to the name, so the
@@ -126,8 +119,8 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
 
   const displayName = user?.role?.name ?? userName;
   const companyOnboardingEnabled = isCompanyOnboardingEnabled();
-  const pendingChildOnboardings = pendingOnboardings.filter(({ type }) => type === 'PERSON');
-  const hasPendingChildOnboardings = childOnboardingEnabled && pendingChildOnboardings.length > 0;
+  const pendingChildren = pendingChildOnboardings(pendingOnboardings);
+  const hasPendingChildren = childOnboardingEnabled && pendingChildren.length > 0;
 
   const handleRoleClick = async (command: SwitchRoleCommand, isCurrent: boolean) => {
     setOpen(false);
@@ -158,7 +151,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
           kind={user?.role ? accountIconKind(user.role, user) : 'person'}
           testIdPrefix="active-role-icon"
         />
-        {displayName}
+        <span className={PII_CLASS}>{displayName}</span>
         {/* Screen readers otherwise hear only a name, with no hint it opens anything. */}
         <span className="visually-hidden">
           <FormattedMessage id="roleSwitcher.accountMenu" />
@@ -229,7 +222,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                     onKeyDown={handleKeyDown}
                   >
                     <AccountIcon kind={accountIconKind(role, user)} size={18} />
-                    {role.name}
+                    <span className={PII_CLASS}>{role.name}</span>
                     {isCurrent && (
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -250,21 +243,17 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                   </button>
                 );
               })}
-              {hasPendingChildOnboardings &&
-                pendingChildOnboardings.map(({ code, name }) => (
+              {hasPendingChildren &&
+                pendingChildren.map(({ code, name }) => (
                   <Link
                     key={code}
                     className="dropdown-item text-wrap d-flex align-items-center gap-2"
-                    // Router state, never the URL: the minor's code must stay out of history and logs.
-                    to={{
-                      pathname: '/savings-fund/onboarding/child',
-                      state: { childPersonalCode: code },
-                    }}
+                    to={childOnboardingLocation(code)}
                     onClick={() => setOpen(false)}
                     onKeyDown={handleKeyDown}
                   >
                     <AccountIcon kind="child" size={18} testIdPrefix="pending-role-icon" />
-                    {name}
+                    <span className={PII_CLASS}>{name}</span>
                   </Link>
                 ))}
               {companyOnboardingEnabled && (

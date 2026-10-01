@@ -2,6 +2,7 @@ import { ChangeEventHandler, useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { formatAmountForCurrency, useNumberInput } from '../../../../common/utils';
+import { PII_CLASS } from '../../../../tracking/piiMarkup';
 import { useCreateCapitalTransferContext } from '../hooks';
 import { getBankName, isValidIban } from '../../../../common/iban';
 import { SaleOfTotalCapitalDescription } from '../../components/SaleOfTotalCapitalDescription';
@@ -212,8 +213,10 @@ export const EnterData = () => {
               ariaLabelledBy="book-value"
             />
             <div className="d-flex justify-content-between">
-              <span className="text-body-secondary">{formatAmountForCurrency(0, 0)}</span>
-              <span className="text-body-secondary">
+              <span className={`text-body-secondary ${PII_CLASS}`}>
+                {formatAmountForCurrency(0, 0)}
+              </span>
+              <span className={`text-body-secondary ${PII_CLASS}`}>
                 {formatAmountForCurrency(totalBookValue ?? 0, 2)}
               </span>
             </div>

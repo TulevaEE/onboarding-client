@@ -1,0 +1,1015 @@
+import React from 'react';
+import moment from 'moment';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+import { QueryClient } from '@tanstack/react-query';
+import { screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { createMemoryHistory } from 'history';
+import download from 'downloadjs';
+import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
+import { userBackend } from '../../../test/backend';
+import { initializeConfiguration } from '../../config/config';
+import { isInsidePii } from '../../tracking/piiMarkup';
+import { watchFormattedAmounts } from '../../../test/piiAmounts';
+import { Portfolio, RoleType, Transaction } from '../../common/apiModels';
+import { SavingsFundStatementSection } from './SavingsFundStatementSection';
+
+jest.mock('downloadjs');
+// setupTests pins useIntl to English for the whole suite, which would hide every
+// language the CSV is actually written in.
+jest.unmock('react-intl');
+
+const today = moment().format('YYYY-MM-DD');
+
+const allTime: Portfolio = {
+  from: '2020-01-01',
+  to: today,
+  groups: [
+    {
+      group: 'SAVINGS_FUND',
+      startValue: 100,
+      endValue: 200,
+      contributions: 50,
+      withdrawals: 0,
+      gain: 50,
+      gainPercentage: 33.33,
+      annualReturnRate: null,
+    },
+    {
+      group: 'SECOND_PILLAR',
+      startValue: 100,
+      endValue: 300,
+      contributions: 50,
+      withdrawals: 0,
+      gain: 70,
+      gainPercentage: 30.0,
+      annualReturnRate: null,
+    },
+  ],
+  series: [
+    { date: '2020-01-01', values: { SAVINGS_FUND: 100, SECOND_PILLAR: 100 } },
+    { date: today, values: { SAVINGS_FUND: 200, SECOND_PILLAR: 300 } },
+  ],
+};
+
+const lastYear: Portfolio = {
+  from: '2025-01-01',
+  to: '2025-12-31',
+  groups: [
+    {
+      group: 'SAVINGS_FUND',
+      startValue: 120,
+      endValue: 250,
+      contributions: 30,
+      withdrawals: 0,
+      gain: 100,
+      gainPercentage: 40.0,
+      annualReturnRate: null,
+    },
+    {
+      group: 'SECOND_PILLAR',
+      startValue: 180,
+      endValue: 350,
+      contributions: 40,
+      withdrawals: 0,
+      gain: 130,
+      gainPercentage: 41.0,
+      annualReturnRate: null,
+    },
+  ],
+  series: [
+    { date: '2025-01-01', values: { SAVINGS_FUND: 120, SECOND_PILLAR: 180 } },
+    { date: '2025-12-31', values: { SAVINGS_FUND: 250, SECOND_PILLAR: 350 } },
+  ],
+};
+
+const server = setupServer();
+
+const portfolioBackend = () =>
+  server.use(
+    rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
+      res(ctx.json(req.url.searchParams.get('from') ? lastYear : allTime)),
+    ),
+  );
+
+const registerHolding = (savingsFund: unknown | null) =>
+  server.use(
+    rest.get('http://localhost/v1/savings-account-statement', (req, res, ctx) =>
+      res(ctx.json(savingsFund)),
+    ),
+  );
+
+const savingsFund = {
+  isin: 'EE0000000001',
+  name: 'Tuleva Täiendav Kogumisfond',
+  fundManager: { name: 'Tuleva' },
+  managementFeeRate: 0.0025,
+  pillar: null,
+  ongoingChargesFigure: 0.0025,
+};
+
+const pillarFund = {
+  isin: 'EE3600109435',
+  name: 'Tuleva World Stocks Pension Fund',
+  fundManager: { name: 'Tuleva' },
+  managementFeeRate: 0.0034,
+  pillar: 2,
+  ongoingChargesFigure: 0.0039,
+};
+
+const registerSavingsBalance = (value: number, unavailableValue: number) => ({
+  fund: {
+    isin: 'EE0000000001',
+    name: 'Tuleva Täiendav Kogumisfond',
+    fundManager: { name: 'Tuleva' },
+    managementFeeRate: 0.0025,
+    pillar: null,
+    ongoingChargesFigure: 0.0025,
+  },
+  value,
+  unavailableValue,
+  currency: 'EUR',
+  activeContributions: true,
+  contributions: 0,
+  subtractions: 0,
+  profit: 0,
+  units: 1,
+});
+
+const portfolioRefusingNarrowedPeriods = () =>
+  server.use(
+    rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
+      req.url.searchParams.get('from')
+        ? res(ctx.status(500), ctx.json({}))
+        : res(ctx.json(allTime)),
+    ),
+  );
+
+const portfolioHoldingBackNarrowedPeriods = () => {
+  let release: () => void = () => {};
+  const released = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  server.use(
+    rest.get('http://localhost/v1/portfolio', async (req, res, ctx) => {
+      if (!req.url.searchParams.get('from')) {
+        return res(ctx.json(allTime));
+      }
+      await released;
+      return res(ctx.json(lastYear));
+    }),
+  );
+  return release;
+};
+
+const savingsTransaction = (
+  time: string,
+  units: number,
+  nav: number | null,
+  amount: number,
+  type: Transaction['type'] = 'CONTRIBUTION_CASH',
+): Transaction => ({
+  id: time,
+  amount,
+  currency: 'EUR',
+  time,
+  navDate: time.slice(0, 10),
+  priceCalculationDate: null,
+  applicationTime: null,
+  counterpartyIban: null,
+  isin: savingsFund.isin,
+  type,
+  units,
+  nav,
+});
+
+const accountHolding = (transactions: Transaction[]) =>
+  server.use(
+    rest.get('http://localhost/v1/funds', (req, res, ctx) =>
+      res(ctx.json([savingsFund, pillarFund])),
+    ),
+    rest.get('http://localhost/v1/transactions', (req, res, ctx) => res(ctx.json(transactions))),
+  );
+
+const accountHoldingNoSavingsFund = () =>
+  server.use(rest.get('http://localhost/v1/funds', (req, res, ctx) => res(ctx.json([pillarFund]))));
+
+const accountHoldingUnavailable = () =>
+  server.use(
+    rest.get('http://localhost/v1/transactions', (req, res, ctx) =>
+      res(ctx.status(500), ctx.json({})),
+    ),
+  );
+
+const actingFor = (roleType: RoleType) =>
+  userBackend(server, { role: { type: roleType, code: '90000000', name: 'Acme' } });
+
+const actingForThemselves = () => userBackend(server, { role: undefined });
+
+const actingForAChild = () =>
+  userBackend(server, { role: { type: 'PERSON', code: '51201011234', name: 'Junior Doe' } });
+
+function initializeComponent(language: 'en' | 'et' = 'en') {
+  const history = createMemoryHistory();
+  const store = createDefaultStore(history as any);
+  login(store);
+
+  return renderWrapped(
+    <SavingsFundStatementSection />,
+    history as any,
+    store,
+    new QueryClient({ defaultOptions: { queries: { retry: false } } }),
+    language,
+  );
+}
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+
+beforeEach(() => {
+  initializeConfiguration();
+  jest.clearAllMocks();
+  portfolioBackend();
+  registerHolding(null);
+  accountHolding([]);
+  actingFor('PERSON');
+});
+
+const columnOfLastCell = (row: HTMLElement) => {
+  const cells = within(row).getAllByRole('cell') as HTMLTableCellElement[];
+  return cells.slice(0, -1).reduce((column, cell) => column + cell.colSpan, 0);
+};
+
+describe('the savings fund statement', () => {
+  const holdingHistory = [
+    savingsTransaction('2024-06-01T10:00:00Z', 10, 1.0, 10),
+    savingsTransaction('2025-03-10T10:00:00Z', 20, 1.1, 22),
+    savingsTransaction('2025-08-01T10:00:00Z', 5, 1.2, -6, 'SUBTRACTION'),
+    savingsTransaction('2026-02-01T10:00:00Z', 7, 1.3, 9.1),
+  ];
+
+  const justAfterMidnightInTallinn = savingsTransaction('2025-12-31T22:30:00Z', 3, 1.4, 4.2);
+
+  const unitsGivenAway = savingsTransaction('2025-09-01T10:00:00Z', 4, null, -4.8, 'TRANSFER_OUT');
+
+  const unitsReceived = savingsTransaction('2025-09-15T10:00:00Z', 6, null, 7.2, 'TRANSFER_IN');
+
+  const cellTexts = (row: HTMLElement) =>
+    within(row)
+      .getAllByRole('cell')
+      .map((cell) => cell.textContent);
+
+  const statementHasLoaded = () => screen.findByRole('row', { name: /Closing balance/ });
+
+  const lastYearsClosingBalance = () =>
+    screen.findByRole('row', { name: /Closing balance 31\.12\.2025/ });
+
+  const downloadedCsv = async (): Promise<{ filename: string; text: string }> => {
+    const [content, filename] = (download as jest.Mock).mock.calls[0];
+    expect(content).toBeInstanceOf(Blob);
+    const text = await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(Buffer.from(reader.result as ArrayBuffer).toString('utf8'));
+      reader.readAsArrayBuffer(content);
+    });
+    return { filename, text };
+  };
+
+  it('shows only the transactions of the selected period', async () => {
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    // The statement describes the response on screen, so the new period's rows appear
+    // only once the new portfolio has rendered — never new dates over old values.
+    expect(within(await lastYearsClosingBalance()).getByText('250.00 €')).toBeInTheDocument();
+    expect(screen.getAllByText('10.03.2025')).not.toHaveLength(0);
+    expect(screen.getAllByText('01.08.2025')).not.toHaveLength(0);
+    expect(screen.queryAllByText('01.02.2026')).toHaveLength(0);
+  });
+
+  it('keeps the previous period from being exported while the selected one loads', async () => {
+    const lastYearArrives = portfolioHoldingBackNarrowedPeriods();
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    expect(await screen.findByRole('button', { name: 'Download CSV' })).toBeEnabled();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Download CSV' })).toBeDisabled(),
+    );
+    expect(screen.getByRole('button', { name: 'Save as PDF' })).toBeDisabled();
+
+    lastYearArrives();
+
+    expect(within(await lastYearsClosingBalance()).getByText('250.00 €')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Download CSV' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Save as PDF' })).toBeEnabled();
+  });
+
+  it('dates a transaction by the day it fell on in Estonia', async () => {
+    accountHolding([...holdingHistory, justAfterMidnightInTallinn]);
+    initializeComponent();
+
+    expect(await screen.findAllByText('01.01.2026')).not.toHaveLength(0);
+    expect(screen.queryAllByText('31.12.2025')).toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    expect(text).toContain('01.01.2026;Contribution;3,000;1,40000;4,20');
+  });
+
+  it('leaves a transaction that crossed midnight in Estonia out of the year before', async () => {
+    accountHolding([...holdingHistory, justAfterMidnightInTallinn]);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(within(await lastYearsClosingBalance()).getByText('250.00 €')).toBeInTheDocument();
+    expect(screen.queryAllByText('01.01.2026')).toHaveLength(0);
+    expect(screen.queryAllByText(/1[.,]40000/)).toHaveLength(0);
+  });
+
+  it('carries the opening and closing units into the printable statement', async () => {
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    // 10 units bought before the period; 10 + 20 − 5 held at its end.
+    const opening = await screen.findByRole('row', { name: /Opening balance 01\.01\.2025/ });
+    expect(within(opening).getByText('10.000')).toBeInTheDocument();
+    const closing = screen.getByRole('row', { name: /Closing balance 31\.12\.2025/ });
+    expect(within(closing).getByText('25.000')).toBeInTheDocument();
+  });
+
+  it('takes units transferred away off the period total and the closing balance', async () => {
+    accountHolding([...holdingHistory, unitsGivenAway]);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    // 10 units held before the period; 20 bought, 5 redeemed and 4 given away within it.
+    const closing = await lastYearsClosingBalance();
+    expect(within(closing).getByText('21.000')).toBeInTheDocument();
+    const periodTotal = screen.getByRole('row', { name: /^Total\s+11\.000/ });
+    expect(cellTexts(periodTotal)).toEqual(['Total', '', '11.000', '', '11.20\u00a0€']);
+  });
+
+  const boughtBeforeThePeriod = savingsTransaction('2024-06-01T10:00:00Z', 10, 1.0, 10);
+
+  const roundedUnitsNote =
+    'Units are shown to three decimal places, as the fund rules state. Totals are added up from the exact quantities.';
+
+  const hoverForExactUnits = 'Hover over a number to see its exact quantity.';
+
+  const roundedUnitsPrintedNote =
+    'Units are shown to three decimal places, as the fund rules state. Balances are calculated from the exact quantities.';
+
+  it('shows units to three decimals, rounded half up, on screen, in print and in the CSV', async () => {
+    accountHolding([
+      boughtBeforeThePeriod,
+      savingsTransaction('2025-03-10T10:00:00Z', 2.0005, 1.1178, 2.24),
+    ]);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    const purchaseRows = await screen.findAllByRole('row', { name: /^10\.03\.2025/ });
+    expect(purchaseRows.map(cellTexts)).toEqual([
+      ['10.03.2025', 'Contribution', '2.001', '1.11780', '2.24\u00a0€'],
+      ['10.03.2025', 'Contribution', '2.001', '1.11780', '2.24\u00a0€', '12.001', '13.41\u00a0€'],
+    ]);
+
+    await lastYearsClosingBalance();
+    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    expect(text.split('\r\n')).toContain('10.03.2025;Contribution;2,001;1,11780;2,24;12,001;13,41');
+  });
+
+  it('shows the exact units behind a rounded figure on hover', async () => {
+    accountHolding([
+      boughtBeforeThePeriod,
+      savingsTransaction('2025-03-10T10:00:00Z', 2.0005, 1.1178, 2.24),
+    ]);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    const [shownPurchase] = await screen.findAllByRole('row', { name: /^10\.03\.2025/ });
+    expect(within(shownPurchase).getByTitle('2.0005')).toHaveTextContent('2.001');
+  });
+
+  it('adds the units of the period up from their exact quantities, not from the rounded rows', async () => {
+    accountHolding([
+      boughtBeforeThePeriod,
+      savingsTransaction('2025-03-10T10:00:00Z', 1.0004, 1.2, 1.2),
+      savingsTransaction('2025-08-01T10:00:00Z', 1.0004, 1.2, 1.2),
+    ]);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    await lastYearsClosingBalance();
+
+    const periodTotal = screen.getByRole('row', { name: /^Total\s+\d/ });
+    expect(cellTexts(periodTotal)).toEqual(['Total', '', '2.001', '', '2.40\u00a0€']);
+    expect(screen.getAllByRole('row', { name: /^(10\.03|01\.08)\.2025/ }).map(cellTexts)).toEqual([
+      ['01.08.2025', 'Contribution', '1.000', '1.20000', '1.20\u00a0€'],
+      ['10.03.2025', 'Contribution', '1.000', '1.20000', '1.20\u00a0€'],
+      ['10.03.2025', 'Contribution', '1.000', '1.20000', '1.20\u00a0€', '11.000', '13.20\u00a0€'],
+      ['01.08.2025', 'Contribution', '1.000', '1.20000', '1.20\u00a0€', '12.001', '14.40\u00a0€'],
+    ]);
+  });
+
+  it('leaves the transaction type and the unit price off a phone screen, where they would push the amounts off it', async () => {
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    const [shownTable] = screen
+      .getAllByRole('table')
+      .filter((table) => within(table).queryByRole('columnheader', { name: 'Transaction' }));
+    const hiddenOnPhones = ['Transaction', 'NAV'].map((name) =>
+      within(shownTable).getByRole('columnheader', { name }),
+    );
+    hiddenOnPhones.forEach((header) => expect(header).toHaveClass('d-none', 'd-sm-table-cell'));
+    ['Date', 'Units', 'Amount'].forEach((name) =>
+      expect(within(shownTable).getByRole('columnheader', { name })).not.toHaveClass('d-none'),
+    );
+  });
+
+  it('says on screen and in print that the units are rounded when a figure was', async () => {
+    accountHolding([
+      boughtBeforeThePeriod,
+      savingsTransaction('2025-03-10T10:00:00Z', 2.0005, 1.1178, 2.24),
+    ]);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(await screen.findByText(roundedUnitsNote)).toBeInTheDocument();
+    expect(screen.getByText(hoverForExactUnits)).toBeInTheDocument();
+    expect(screen.getByText(roundedUnitsPrintedNote)).toBeInTheDocument();
+  });
+
+  it('closes the CSV with the same word on rounding when a unit figure was rounded', async () => {
+    accountHolding([
+      boughtBeforeThePeriod,
+      savingsTransaction('2025-03-10T10:00:00Z', 2.0005, 1.1178, 2.24),
+    ]);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    await lastYearsClosingBalance();
+    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    expect(text.split('\r\n').at(-1)).toBe(roundedUnitsPrintedNote);
+  });
+
+  it('says nothing about rounding when every unit figure is shown in full', async () => {
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    await lastYearsClosingBalance();
+    expect(screen.queryByText(roundedUnitsNote)).not.toBeInTheDocument();
+    expect(screen.queryByText(roundedUnitsPrintedNote)).not.toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    expect(text).not.toContain(roundedUnitsPrintedNote);
+  });
+
+  it('shows the unit price to as many decimals as the fund rules state for that fund', async () => {
+    const tkf100 = { ...savingsFund, isin: 'EE0000003283' };
+    server.use(
+      rest.get('http://localhost/v1/funds', (req, res, ctx) => res(ctx.json([tkf100, pillarFund]))),
+      rest.get('http://localhost/v1/transactions', (req, res, ctx) =>
+        res(
+          ctx.json([
+            { ...boughtBeforeThePeriod, isin: tkf100.isin },
+            { ...savingsTransaction('2025-03-10T10:00:00Z', 2, 1.1178, 2.24), isin: tkf100.isin },
+          ]),
+        ),
+      ),
+    );
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    const purchaseRows = await screen.findAllByRole('row', { name: /^10\.03\.2025/ });
+    expect(purchaseRows.map(cellTexts)).toEqual([
+      ['10.03.2025', 'Contribution', '2.000', '1.1178', '2.24\u00a0€'],
+      ['10.03.2025', 'Contribution', '2.000', '1.1178', '2.24\u00a0€', '12.000', '13.41\u00a0€'],
+    ]);
+
+    await lastYearsClosingBalance();
+    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    expect(text.split('\r\n')).toContain('10.03.2025;Contribution;2,000;1,1178;2,24;12,000;13,41');
+  });
+
+  it('names transferred units rather than calling them a contribution', async () => {
+    accountHolding([...holdingHistory, unitsGivenAway, unitsReceived]);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(within(await lastYearsClosingBalance()).getByText('250.00 €')).toBeInTheDocument();
+    expect(screen.getAllByText('Units transferred')).not.toHaveLength(0);
+    expect(screen.getAllByText('Units received')).not.toHaveLength(0);
+
+    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    const lines = text.split('\r\n');
+    expect(lines).toContain('01.09.2025;Units transferred;-4,000;;-4,80;21,000;');
+    expect(lines).toContain('15.09.2025;Units received;6,000;;7,20;27,000;');
+  });
+
+  it('leaves the unit price and the balance value of transferred units empty', async () => {
+    accountHolding([...holdingHistory, unitsGivenAway, unitsReceived]);
+    initializeComponent();
+
+    const transferredRows = await screen.findAllByRole('row', { name: /^01\.09\.2025/ });
+    expect(transferredRows.map(cellTexts)).toEqual([
+      ['01.09.2025', 'Units transferred', '−4.000', '', '−4.80\u00a0€'],
+      ['01.09.2025', 'Units transferred', '−4.000', '', '−4.80\u00a0€', '21.000', ''],
+    ]);
+    const receivedRows = screen.getAllByRole('row', { name: /^15\.09\.2025/ });
+    expect(receivedRows.map(cellTexts)).toEqual([
+      ['15.09.2025', 'Units received', '6.000', '', '7.20\u00a0€'],
+      ['15.09.2025', 'Units received', '6.000', '', '7.20\u00a0€', '27.000', ''],
+    ]);
+  });
+
+  it('counts units received as a contribution and units given away as a withdrawal', async () => {
+    accountHolding([...holdingHistory, unitsGivenAway, unitsReceived]);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(within(await lastYearsClosingBalance()).getByText('250.00 €')).toBeInTheDocument();
+    const contributions = screen.getByRole('row', { name: /Total contributions/ });
+    expect(within(contributions).getByText('29.20 €')).toBeInTheDocument();
+    const withdrawals = screen.getByRole('row', { name: /Total withdrawals/ });
+    expect(within(withdrawals).getByText('−10.80 €')).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    const lines = text.split('\r\n');
+    expect(lines).toContain('Total contributions;;;;;;29,20');
+    expect(lines).toContain('Total withdrawals;;;;;;-10,80');
+  });
+
+  it('downloads the period as a CSV with the rows and columns of the printed statement', async () => {
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    await statementHasLoaded();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+    expect(within(await lastYearsClosingBalance()).getByText('250.00 €')).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Download CSV' }));
+
+    expect(download).toHaveBeenCalledTimes(1);
+    const { filename, text } = await downloadedCsv();
+    expect(filename).toBe('tuleva-kogumisfondi-valjavote-2025-01-01-2025-12-31.csv');
+    expect(text).toBe(
+      [
+        '\ufeffDate;Transaction;Units;NAV;Amount;Balance (units);Balance value',
+        'Opening balance 01.01.2025;;;;;10,000;120,00',
+        '10.03.2025;Contribution;20,000;1,10000;22,00;30,000;33,00',
+        '01.08.2025;Redemption;-5,000;1,20000;-6,00;25,000;30,00',
+        'Total contributions;;;;;;22,00',
+        'Total withdrawals;;;;;;-6,00',
+        'Closing balance 31.12.2025;;;;;25,000;250,00',
+        'Change in value over the period;;;;;;114,00',
+      ].join('\r\n'),
+    );
+  });
+
+  it('writes the Estonian CSV in the UTF-8 the byte order mark announces', async () => {
+    accountHolding(holdingHistory);
+    initializeComponent('et');
+
+    expect(await screen.findByText('Tehingud valitud perioodil')).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Eelmine aasta' }));
+    const closing = await screen.findByRole('row', { name: /Lõppseis 31\.12\.2025/ });
+    expect(within(closing).getByText('250.00 €')).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Laadi alla CSV' }));
+
+    const { text } = await downloadedCsv();
+    expect(text).toBe(
+      [
+        '\ufeffKuupäev;Tehing;Osakud;NAV;Summa;Jääk (osakut);Jäägi väärtus',
+        'Algseis 01.01.2025;;;;;10,000;120,00',
+        '10.03.2025;Sissemakse;20,000;1,10000;22,00;30,000;33,00',
+        '01.08.2025;Väljamakse;-5,000;1,20000;-6,00;25,000;30,00',
+        'Sissemaksed kokku;;;;;;22,00',
+        'Väljamaksed kokku;;;;;;-6,00',
+        'Lõppseis 31.12.2025;;;;;25,000;250,00',
+        'Väärtuse muutus perioodil;;;;;;114,00',
+      ].join('\r\n'),
+    );
+  });
+
+  it('leaves the balance values it does not know empty in the CSV, and the change in value out', async () => {
+    server.use(
+      rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
+        res(
+          ctx.json({
+            ...allTime,
+            groups: allTime.groups.map((group) => ({ ...group, startValue: null, endValue: null })),
+          }),
+        ),
+      ),
+    );
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    userEvent.click(await screen.findByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    const lines = text.split('\r\n');
+    expect(lines).toContain('Opening balance 01.01.2020;;;;;0,000;');
+    expect(lines).toContain(`Closing balance ${moment(today).format('DD.MM.YYYY')};;;;;32,000;`);
+    expect(text).not.toContain('Change in value');
+  });
+
+  it('writes a holding redeemed down to nothing as zero in the CSV, not minus zero', async () => {
+    accountHolding([
+      savingsTransaction('2025-02-01T10:00:00Z', 0.3, 1.0, 0.3),
+      savingsTransaction('2025-03-01T10:00:00Z', 0.1, 1.0, -0.1, 'SUBTRACTION'),
+      savingsTransaction('2025-04-01T10:00:00Z', 0.2, 1.0, -0.2, 'SUBTRACTION'),
+    ]);
+    initializeComponent();
+
+    userEvent.click(await screen.findByRole('button', { name: 'Download CSV' }));
+
+    const { text } = await downloadedCsv();
+    expect(text.split('\r\n')).toContain('01.04.2025;Redemption;-0,200;1,00000;-0,20;0,000;0,00');
+  });
+
+  it('is left out when the transactions never load, rather than claiming an empty period', async () => {
+    accountHoldingUnavailable();
+    initializeComponent();
+
+    await waitFor(() => expect(screen.getByLabelText('From')).toHaveValue('01.01.2020'));
+    expect(
+      screen.queryByText('No savings fund transactions in the selected period.'),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
+  });
+
+  it('is left out when nothing is held in the savings fund', async () => {
+    server.use(
+      rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
+        res(
+          ctx.json({
+            ...allTime,
+            groups: allTime.groups.filter((group) => group.group !== 'SAVINGS_FUND'),
+            series: [
+              { date: '2020-01-01', values: { SECOND_PILLAR: 100 } },
+              { date: today, values: { SECOND_PILLAR: 300 } },
+            ],
+          }),
+        ),
+      ),
+    );
+    initializeComponent();
+
+    await waitFor(() => expect(screen.getByLabelText('From')).toHaveValue('01.01.2020'));
+    expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
+  });
+
+  it('is left out when the account holds no savings fund at all', async () => {
+    accountHoldingNoSavingsFund();
+    initializeComponent();
+
+    await waitFor(() => expect(screen.getByLabelText('From')).toHaveValue('01.01.2020'));
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    await waitFor(() => expect(screen.getByLabelText('From')).toHaveValue('01.01.2025'));
+    expect(screen.queryByText('Transactions in the selected period')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('No savings fund transactions in the selected period.'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('closes the statement at what the register holds when the period runs to today', async () => {
+    registerHolding(registerSavingsBalance(300, 50));
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    const closing = await screen.findByRole('row', { name: /Closing balance/ });
+    expect(within(closing).getByText('350.00 €')).toBeInTheDocument();
+    expect(within(closing).getByText('32.000')).toBeInTheDocument();
+  });
+
+  it('closes at the register balance, units reserved for a withdrawal included, and counts them in the value change', async () => {
+    registerHolding(registerSavingsBalance(300, 50));
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    const closing = await screen.findByRole('row', { name: /Closing balance/ });
+    expect(within(closing).getByText('350.00 €')).toBeInTheDocument();
+
+    const change = screen.getByRole('row', { name: /Change in value/ });
+    expect(within(change).getByText('214.90 €')).toBeInTheDocument();
+  });
+
+  it('takes the change in value from the register balance when no units are reserved', async () => {
+    registerHolding(registerSavingsBalance(300, 0));
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    const closing = await screen.findByRole('row', { name: /Closing balance/ });
+    expect(within(closing).getByText('300.00 €')).toBeInTheDocument();
+
+    const change = screen.getByRole('row', { name: /Change in value/ });
+    expect(within(change).getByText('164.90 €')).toBeInTheDocument();
+  });
+
+  it('says a period could not be served rather than leaving the one before it on screen', async () => {
+    portfolioRefusingNarrowedPeriods();
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    expect(await screen.findByRole('row', { name: /Closing balance/ })).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(screen.queryByRole('row', { name: /Closing balance/ })).not.toBeInTheDocument();
+  });
+
+  it('fills the start date with the period the statement covers, not the first priced day', async () => {
+    server.use(
+      rest.get('http://localhost/v1/portfolio', (req, res, ctx) =>
+        res(
+          ctx.json({
+            ...allTime,
+            from: '2019-03-01',
+            series: [{ date: '2020-01-01', values: { SAVINGS_FUND: 100 } }],
+          }),
+        ),
+      ),
+    );
+    accountHolding(holdingHistory);
+    initializeComponent();
+
+    expect(await screen.findByRole('row', { name: /Closing balance/ })).toBeInTheDocument();
+    expect(screen.getByLabelText('From')).toHaveValue('01.03.2019');
+  });
+
+  describe('the printed document', () => {
+    it('names the person whose account it is', async () => {
+      actingForThemselves();
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      expect(await screen.findByText('John Doe')).toBeInTheDocument();
+      expect(screen.getByText('Personal code')).toBeInTheDocument();
+      expect(screen.getByText('39001011234')).toBeInTheDocument();
+    });
+
+    it('names the company someone is acting for by its registry code', async () => {
+      actingFor('LEGAL_ENTITY');
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      expect(await screen.findByText('Acme')).toBeInTheDocument();
+      expect(screen.getByText('Registry code')).toBeInTheDocument();
+      expect(screen.getByText('90000000')).toBeInTheDocument();
+      expect(screen.queryByText('Personal code')).not.toBeInTheDocument();
+    });
+
+    it('names the child someone is acting for by their personal code', async () => {
+      actingForAChild();
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      expect(await screen.findByText('Junior Doe')).toBeInTheDocument();
+      expect(screen.getByText('Personal code')).toBeInTheDocument();
+      expect(screen.getByText('51201011234')).toBeInTheDocument();
+    });
+
+    it('keeps the name and code of the account owner out of analytics', async () => {
+      actingFor('LEGAL_ENTITY');
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      expect(isInsidePii(await screen.findByText('Acme'))).toBe(true);
+      expect(isInsidePii(screen.getByText('90000000'))).toBe(true);
+    });
+
+    it('keeps every figure of the statement out of analytics', async () => {
+      const formattedAmounts = watchFormattedAmounts();
+      try {
+        accountHolding(holdingHistory);
+        initializeComponent();
+
+        await statementHasLoaded();
+
+        expect(formattedAmounts.amountsShownOutsidePii()).toStrictEqual([]);
+      } finally {
+        formattedAmounts.stop();
+      }
+    });
+
+    it('names the fund and the period, and what the holding opened and closed at', async () => {
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      await statementHasLoaded();
+
+      userEvent.click(screen.getByRole('button', { name: 'Last year' }));
+
+      expect(await screen.findByText('01.01.2025–31.12.2025')).toBeInTheDocument();
+      expect(screen.getByText('Tuleva Täiendav Kogumisfond (EE0000000001)')).toBeInTheDocument();
+      const opening = screen.getByRole('row', { name: /Opening balance 01\.01\.2025/ });
+      expect(within(opening).getByText('120.00 €')).toBeInTheDocument();
+      const closing = screen.getByRole('row', { name: /Closing balance 31\.12\.2025/ });
+      expect(within(closing).getByText('250.00 €')).toBeInTheDocument();
+    });
+
+    it('adds the contributions and the withdrawals of the period up separately', async () => {
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      const contributions = await screen.findByRole('row', { name: /Total contributions/ });
+      expect(within(contributions).getByText('41.10 €')).toBeInTheDocument();
+
+      const withdrawals = screen.getByRole('row', { name: /Total withdrawals/ });
+      expect(within(withdrawals).getByText('−6.00 €')).toBeInTheDocument();
+    });
+
+    it('carries a running holding and what it was worth onto every transaction row', async () => {
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      const secondPurchase = await screen.findByRole('row', {
+        name: /10\.03\.2025.*30\.000/,
+      });
+      expect(within(secondPurchase).getByText('30.000')).toBeInTheDocument();
+      expect(within(secondPurchase).getByText('33.00 €')).toBeInTheDocument();
+    });
+
+    it('shows the change in value the period brought, over and above the money put in', async () => {
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      const change = await screen.findByRole('row', { name: /Change in value/ });
+      expect(within(change).getByText('64.90 €')).toBeInTheDocument();
+    });
+
+    it('lines every figure of the reconciliation up under the balance value', async () => {
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      const headerRow = await screen.findByRole('row', { name: /Balance value/ });
+      const headers = within(headerRow).getAllByRole('columnheader');
+      const balanceValueColumn = headers.indexOf(
+        within(headerRow).getByRole('columnheader', { name: 'Balance value' }),
+      );
+
+      [
+        /Opening balance/,
+        /Total contributions/,
+        /Total withdrawals/,
+        /Closing balance/,
+        /Change in value/,
+      ].forEach((name) => {
+        expect(columnOfLastCell(screen.getByRole('row', { name }))).toEqual(balanceValueColumn);
+      });
+    });
+  });
+
+  describe('the print flow', () => {
+    const statementIsOnThePrintedPage = () => document.body.classList.contains('printingStatement');
+
+    const finishPrinting = () => window.dispatchEvent(new Event('afterprint'));
+
+    const browserPrinting = (whilePrintDialogIsOpen: () => void = () => {}) =>
+      jest.spyOn(window, 'print').mockImplementation(() => {
+        whilePrintDialogIsOpen();
+        finishPrinting();
+      });
+
+    const browserPrintingInTheBackground = () =>
+      jest.spyOn(window, 'print').mockImplementation(() => {});
+
+    afterEach(() => jest.restoreAllMocks());
+
+    it('prints the page itself, not the statement, while the statement is merely on screen', async () => {
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      expect(await screen.findByText('Transactions in the selected period')).toBeInTheDocument();
+      expect(statementIsOnThePrintedPage()).toBe(false);
+    });
+
+    it('leaves the app on the printed page when there is no statement', async () => {
+      accountHoldingUnavailable();
+      initializeComponent();
+
+      await waitFor(() => expect(screen.getByLabelText('From')).toHaveValue('01.01.2020'));
+      expect(statementIsOnThePrintedPage()).toBe(false);
+    });
+
+    it('puts the statement on the printed page for the print Save as PDF opens', async () => {
+      let printedStatement = false;
+      const print = browserPrinting(() => {
+        printedStatement = statementIsOnThePrintedPage();
+      });
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      userEvent.click(await screen.findByRole('button', { name: 'Save as PDF' }));
+
+      expect(print).toHaveBeenCalledTimes(1);
+      expect(printedStatement).toBe(true);
+    });
+
+    it('gives the app the printed page back once the print dialog closes', async () => {
+      browserPrinting();
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      userEvent.click(await screen.findByRole('button', { name: 'Save as PDF' }));
+
+      expect(statementIsOnThePrintedPage()).toBe(false);
+    });
+
+    it('keeps the statement on the printed page until a print running in the background finishes', async () => {
+      browserPrintingInTheBackground();
+      accountHolding(holdingHistory);
+      initializeComponent();
+
+      userEvent.click(await screen.findByRole('button', { name: 'Save as PDF' }));
+
+      expect(statementIsOnThePrintedPage()).toBe(true);
+
+      finishPrinting();
+
+      expect(statementIsOnThePrintedPage()).toBe(false);
+    });
+
+    it('gives the app the printed page back if the statement goes away mid-print', async () => {
+      browserPrintingInTheBackground();
+      accountHolding(holdingHistory);
+      const { unmount } = initializeComponent();
+
+      userEvent.click(await screen.findByRole('button', { name: 'Save as PDF' }));
+      unmount();
+
+      expect(statementIsOnThePrintedPage()).toBe(false);
+    });
+  });
+});
