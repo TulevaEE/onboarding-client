@@ -292,6 +292,22 @@ describe('Login actions', () => {
     });
   });
 
+  it('keeps a remembered phone number when the caller does not say whether to remember it', () => {
+    localStorage.clear();
+    rememberMobileIdPhoneNumber('38888888888', '+37255500000');
+    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
+    mockApi.authenticateWithMobileId = jest.fn(() => Promise.resolve('1337'));
+    mockApi.getMobileIdTokens = jest.fn(() => Promise.resolve(tokens));
+    const authenticateWithMobileId = createBoundAction(actions.authenticateWithMobileId);
+
+    return authenticateWithMobileId('+37255500000', '38888888888').then(() => {
+      jest.runOnlyPendingTimers();
+      return Promise.resolve().then(() => {
+        expect(rememberedMobileIdPhoneNumber('38888888888')).toBe('+37255500000');
+      });
+    });
+  });
+
   it('starts polling until fails when authenticating with a phone number', () => {
     const error = new Error('oh no!');
     mockApi.authenticateWithMobileId = jest.fn(() => Promise.resolve('1337'));
