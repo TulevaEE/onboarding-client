@@ -41,14 +41,14 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
     <p className="m-0 mb-4 text-pretty">
       <FormattedMessage id="login.smart.id.mobile.instructions" />
     </p>
-    <div className="d-grid mb-3">
+    <Loader className="align-middle" />
+    <ConfirmationHint className="mt-3" />
+    <div className="d-grid gap-2 mt-4">
       <a className="btn btn-primary btn-lg" href={web2AppLink}>
         <FormattedMessage id="login.smart.id.open.app" />
       </a>
+      <StackedCancelButton onCancel={onCancel} />
     </div>
-    <ConfirmationHint className="mb-4" />
-    <Loader className="align-middle" />
-    <CancelButton onCancel={onCancel} />
   </SmartIdLoginCard>
 );
 
@@ -73,7 +73,7 @@ const SmartIdQrCodeLogin: React.FC<{
         <p className="m-0 mb-4 text-pretty">
           <FormattedMessage id="login.smart.id.qr.expired" />
         </p>
-        <div className="d-grid">
+        <div className="d-grid gap-2">
           <button
             type="button"
             className="btn btn-primary btn-lg"
@@ -81,8 +81,8 @@ const SmartIdQrCodeLogin: React.FC<{
           >
             <FormattedMessage id="login.smart.id.qr.refresh" />
           </button>
+          <StackedCancelButton onCancel={onCancel} />
         </div>
-        <CancelButton onCancel={onCancel} />
       </SmartIdLoginCard>
     );
   }
@@ -127,4 +127,10 @@ const CancelButton: React.FC<{ onCancel: () => void }> = ({ onCancel }) => (
       <FormattedMessage id="login.stop" />
     </button>
   </div>
+);
+
+const StackedCancelButton: React.FC<{ onCancel: () => void }> = ({ onCancel }) => (
+  <button type="button" className="btn btn-outline-primary btn-lg" onClick={onCancel}>
+    <FormattedMessage id="login.stop" />
+  </button>
 );

@@ -7,6 +7,7 @@ import translations from '../../translations';
 import { SmartIdDeviceLinkLogin } from './SmartIdDeviceLinkLogin';
 import { automaticRenewalAllowance, AutomaticRenewalAllowance } from './automaticRenewalAllowance';
 import { getSmartIdQrCodeLink } from '../../common/api';
+import { expectStackedFullWidth } from '../../../test/expectStackedFullWidth';
 
 jest.mock('../../common/api');
 jest.mock('qrcode.react', () => ({
@@ -231,6 +232,18 @@ describe('Smart-ID device link login', () => {
     expect(onSmartIdLoginStart).toHaveBeenCalledWith('en');
   });
 
+  it('stacks the new QR code button above an equally wide Cancel', async () => {
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+    setPageVisibility('hidden');
+    await outliveTheSession();
+
+    expectStackedFullWidth(
+      screen.getByRole('button', { name: 'Show a new QR code' }),
+      screen.getByRole('button', { name: 'Cancel' }),
+    );
+  });
+
   it('expires a resumed QR code a minute after its session started, not after the reload', async () => {
     sessionStorage.setItem(
       'pendingSmartIdAuthentication',
@@ -290,5 +303,17 @@ describe('Smart-ID device link login', () => {
 
     userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
+  it('stacks the Smart-ID app link above an equally wide Cancel on a phone', async () => {
+    setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15');
+
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    expectStackedFullWidth(
+      screen.getByRole('link', { name: 'Open the Smart-ID app' }),
+      screen.getByRole('button', { name: 'Cancel' }),
+    );
   });
 });

@@ -7,6 +7,7 @@ import translations from '../../translations';
 import { SmartIdLoginTab } from './SmartIdLoginTab';
 import { forgetRememberedSmartIdAccount, getRememberedSmartIdAccount } from '../../common/api';
 import { PII_CLASS } from '../../tracking/piiMarkup';
+import { expectStackedFullWidth } from '../../../test/expectStackedFullWidth';
 
 jest.mock('../../common/api');
 
@@ -81,6 +82,16 @@ describe('Smart-ID login tab', () => {
 
     expect(await screen.findByRole('button', { name: 'Continue as Mari' })).toBeInTheDocument();
     expect(container).toHaveTextContent(/^Continue as MariNot you\? Log in with a QR code$/);
+  });
+
+  it('stacks the push login above an equally wide way out for somebody else', async () => {
+    mockGetRememberedSmartIdAccount.mockResolvedValue({ firstName: 'Mari', lastName: 'Maasikas' });
+    renderTab();
+
+    expectStackedFullWidth(
+      await screen.findByRole('button', { name: 'Continue as Mari' }),
+      screen.getByRole('button', { name: /Not you/ }),
+    );
   });
 
   it('forgets the remembered account and falls back to the QR login for somebody else', async () => {

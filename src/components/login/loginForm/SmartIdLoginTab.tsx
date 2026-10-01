@@ -21,27 +21,25 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
 
   if (account) {
     return (
-      <>
-        <div className="d-grid">
-          <button
-            type="button"
-            className="btn btn-primary btn-lg"
-            onClick={() => onSmartIdLoginStart(language, 'NOTIFICATION')}
-          >
-            <FormattedMessage
-              id="login.smart.id.continue.as"
-              values={{ firstName: <span className={PII_CLASS}>{account.firstName}</span> }}
-            />
-          </button>
-        </div>
+      <div className="d-grid gap-2">
         <button
           type="button"
-          className="btn btn-link mt-3"
+          className="btn btn-primary btn-lg"
+          onClick={() => onSmartIdLoginStart(language, 'NOTIFICATION')}
+        >
+          <FormattedMessage
+            id="login.smart.id.continue.as"
+            values={{ firstName: <span className={PII_CLASS}>{account.firstName}</span> }}
+          />
+        </button>
+        <button
+          type="button"
+          className="btn btn-outline-primary btn-lg"
           onClick={() => forget().then(() => onSmartIdLoginStart(language, 'DEVICE_LINK'))}
         >
           <FormattedMessage id="login.smart.id.not.you" />
         </button>
-      </>
+      </div>
     );
   }
 
