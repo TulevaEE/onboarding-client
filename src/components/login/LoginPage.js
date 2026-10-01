@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { Redirect, withRouter } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
@@ -11,6 +11,7 @@ import { loginPath } from './constants';
 
 import LoginForm from './loginForm';
 import { SmartIdDeviceLinkLogin } from './smartId/SmartIdDeviceLinkLogin';
+import { automaticRenewalAllowance } from './smartId/automaticRenewalAllowance';
 import {
   changePhoneNumber,
   changePersonalCode,
@@ -46,6 +47,7 @@ export const LoginPage = ({
   location,
 }) => {
   usePageTitle('pageTitle.loginPage');
+  const [qrCodeRenewals] = useState(automaticRenewalAllowance);
 
   if (isAuthenticated) {
     const from = location.state && location.state.from;
@@ -86,6 +88,7 @@ export const LoginPage = ({
                 web2AppLink={smartIdWeb2AppLink}
                 onCancel={onCancelMobileAuthentication}
                 onSmartIdLoginStart={onSmartIdLoginStart}
+                automaticRenewals={qrCodeRenewals}
               />
             ) : (
               ''
