@@ -55,6 +55,8 @@ describe('signWithIdCard', () => {
   it.each([
     [ErrorCode.ERR_WEBEID_USER_CANCELLED, 'id.card.signing.cancelled'],
     [ErrorCode.ERR_WEBEID_EXTENSION_UNAVAILABLE, 'id.card.signing.extension.unavailable'],
+    [ErrorCode.ERR_WEBEID_USER_TIMEOUT, 'id.card.signing.timeout'],
+    [ErrorCode.ERR_WEBEID_ACTION_TIMEOUT, 'id.card.signing.timeout'],
     [ErrorCode.ERR_WEBEID_NATIVE_UNAVAILABLE, 'id.card.signing.error'],
   ])('maps the Web eID signing error %s to %s', async (code, expectedCode) => {
     mockSign.mockRejectedValue(webEidError(code));

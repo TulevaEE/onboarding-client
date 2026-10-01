@@ -175,6 +175,19 @@ describe('Web eID Auth Integration', () => {
     });
   });
 
+  it.each([ErrorCode.ERR_WEBEID_USER_TIMEOUT, ErrorCode.ERR_WEBEID_ACTION_TIMEOUT])(
+    'says the PIN1 entry timed out on %s',
+    async (code) => {
+      mockAuthenticateWithIdCardWebEid.mockRejectedValueOnce({ code });
+
+      renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+
+      userEvent.click(screen.getByRole('button'));
+
+      expect(await screen.findByText(/time to enter the PIN1 code ran out/i)).toBeInTheDocument();
+    },
+  );
+
   it('should display generic error for unknown errors', async () => {
     mockAuthenticateWithIdCardWebEid.mockRejectedValueOnce(new Error('Network error'));
 

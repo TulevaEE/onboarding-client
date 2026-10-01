@@ -1,10 +1,12 @@
 import { ActionOptions, ErrorCode } from '@web-eid/web-eid-library';
 import config from 'react-global-configuration';
 
-export type WebEidFailure = 'USER_CANCELLED' | 'EXTENSION_UNAVAILABLE' | 'FAILED';
+export type WebEidFailure = 'USER_CANCELLED' | 'TIMEOUT' | 'EXTENSION_UNAVAILABLE' | 'FAILED';
 
 const FAILURES_BY_CODE: Partial<Record<ErrorCode, WebEidFailure>> = {
   [ErrorCode.ERR_WEBEID_USER_CANCELLED]: 'USER_CANCELLED',
+  [ErrorCode.ERR_WEBEID_USER_TIMEOUT]: 'TIMEOUT',
+  [ErrorCode.ERR_WEBEID_ACTION_TIMEOUT]: 'TIMEOUT',
   [ErrorCode.ERR_WEBEID_EXTENSION_UNAVAILABLE]: 'EXTENSION_UNAVAILABLE',
 };
 
