@@ -127,7 +127,7 @@ describe('RepresentedPartyAccountPage', () => {
 
   test('renders pending savings fund applications', async () => {
     expect(await screen.findByText('Pending applications and transactions')).toBeInTheDocument();
-    expect(screen.getByText(/deposit to Additional Savings Fund/)).toBeInTheDocument();
+    expect(screen.getByText(/deposit to Additional Investment Fund/)).toBeInTheDocument();
   });
 
   test('offers the company a statement it can save for its accountant', async () => {
