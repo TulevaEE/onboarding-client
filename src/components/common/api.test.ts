@@ -38,8 +38,11 @@ import {
   persistIdCardSignature,
   redirectToPayment,
   saveMandateWithAuthentication,
+  forgetRememberedMobileIdPerson,
   forgetRememberedSmartIdAccount,
+  getRememberedMobileIdPerson,
   getRememberedSmartIdAccount,
+  startRememberedMobileIdLogin,
   startIdCardSignature,
   startSmartIdLogin,
   updateUserWithToken,
@@ -321,6 +324,43 @@ describe('API calls', () => {
       await forgetRememberedSmartIdAccount();
 
       expect(mockHttp.deleteRequest).toHaveBeenCalledWith('/v1/smart-id/login/remembered-account');
+    });
+  });
+
+  describe('getRememberedMobileIdPerson', () => {
+    it('returns the first name of the person the browser remembers for Mobile-ID', async () => {
+      mockHttp.get.mockResolvedValueOnce({ firstName: 'Aadu' });
+
+      expect(await getRememberedMobileIdPerson()).toEqual({ firstName: 'Aadu' });
+      expect(mockHttp.get).toHaveBeenCalledWith('/v1/mobile-id/login/remembered-person');
+    });
+
+    it.each([[undefined], [null], ['']])(
+      'returns null when the browser remembers nobody for Mobile-ID: %p',
+      async (noContent) => {
+        mockHttp.get.mockResolvedValueOnce(noContent);
+
+        expect(await getRememberedMobileIdPerson()).toBeNull();
+      },
+    );
+  });
+
+  describe('startRememberedMobileIdLogin', () => {
+    it("starts the remembered person's Mobile-ID login and returns its challenge code", async () => {
+      mockHttp.post.mockResolvedValueOnce({ challengeCode: '4321' });
+
+      expect(await startRememberedMobileIdLogin()).toBe('4321');
+      expect(mockHttp.post).toHaveBeenCalledWith('/v1/mobile-id/login/remembered-person');
+    });
+  });
+
+  describe('forgetRememberedMobileIdPerson', () => {
+    it('forgets the person the browser remembers for Mobile-ID', async () => {
+      mockHttp.deleteRequest.mockResolvedValueOnce(undefined);
+
+      await forgetRememberedMobileIdPerson();
+
+      expect(mockHttp.deleteRequest).toHaveBeenCalledWith('/v1/mobile-id/login/remembered-person');
     });
   });
 

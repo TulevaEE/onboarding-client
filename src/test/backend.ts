@@ -361,11 +361,14 @@ export function mobileIdAuthenticationBackend(
     failWith?: string;
     rememberedPersonalCodes?: string[];
     rememberedNumberStopsWorking?: boolean;
+    rememberedPerson?: { firstName: string };
   } = {},
 ): {
   resolvePolling: () => void;
   rememberedLookups: string[];
   startedLogins: MobileIdLoginStart[];
+  rememberedPerson: { firstName: string } | null;
+  rememberedPersonLogins: number;
 } {
   let pollingResolved = false;
   const rememberedPersonalCodes = new Set(options.rememberedPersonalCodes ?? []);
@@ -375,9 +378,33 @@ export function mobileIdAuthenticationBackend(
     },
     rememberedLookups: [] as string[],
     startedLogins: [] as MobileIdLoginStart[],
+    rememberedPerson: options.rememberedPerson ?? null,
+    rememberedPersonLogins: 0,
   };
 
   server.use(
+    rest.get('http://localhost/v1/mobile-id/login/remembered-person', (req, res, ctx) =>
+      backend.rememberedPerson
+        ? res(ctx.status(200), ctx.json(backend.rememberedPerson))
+        : res(ctx.status(204)),
+    ),
+
+    rest.delete('http://localhost/v1/mobile-id/login/remembered-person', (req, res, ctx) => {
+      backend.rememberedPerson = null;
+      return res(ctx.status(204));
+    }),
+
+    rest.post('http://localhost/v1/mobile-id/login/remembered-person', (req, res, ctx) => {
+      if (!backend.rememberedPerson) {
+        return res(
+          ctx.status(400),
+          ctx.json({ errors: [{ code: 'mobile.id.phone.number.required' }] }),
+        );
+      }
+      backend.rememberedPersonLogins += 1;
+      return res(ctx.status(200), ctx.json(getMobileSignatureResponse(options.challengeCode)));
+    }),
+
     rest.post('http://localhost/v1/mobile-id/login/remembered', (req, res, ctx) => {
       const { personalCode } = req.body as { personalCode: string };
       backend.rememberedLookups.push(personalCode);

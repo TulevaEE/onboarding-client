@@ -104,17 +104,26 @@ function getMobileIdTokens() {
   };
 }
 
-export function authenticateWithMobileId(phoneNumber, personalCode, rememberMe = false) {
+function startMobileIdLogin(start) {
   return (dispatch) => {
     dispatch({ type: MOBILE_AUTHENTICATION_START });
-    return api
-      .authenticateWithMobileId(phoneNumber, personalCode, rememberMe)
+    return start()
       .then((controlCode) => {
         dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
         dispatch(getMobileIdTokens());
       })
       .catch((error) => dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error }));
   };
+}
+
+export function authenticateWithMobileId(phoneNumber, personalCode, rememberMe = false) {
+  return startMobileIdLogin(() =>
+    api.authenticateWithMobileId(phoneNumber, personalCode, rememberMe),
+  );
+}
+
+export function authenticateWithRememberedMobileId() {
+  return startMobileIdLogin(() => api.startRememberedMobileIdLogin());
 }
 
 const isProductionBuild = () => process.env.NODE_ENV === 'production';

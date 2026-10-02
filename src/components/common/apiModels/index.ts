@@ -431,6 +431,10 @@ export interface SmartIdLoginStart {
   authenticationHash: string;
 }
 
+export interface RememberedMobileIdPerson {
+  firstName: string;
+}
+
 export interface RememberedSmartIdAccount {
   firstName: string;
   lastName: string;

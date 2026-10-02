@@ -213,7 +213,7 @@ describe('When a user is logging in', () => {
     expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
     userEvent.click(screen.getByText(/Mobile-ID/gi));
     await waitFor(() => expect(screen.getByPlaceholderText(/Identity code/gi)).toHaveFocus());
-    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), identityCode);
+    userEvent.type(await screen.findByPlaceholderText(/Identity code/gi), identityCode);
     userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '5551 2345');
     userEvent.click(screen.getByText(/Log in$/gi));
     expect(await screen.findByText('4321')).toBeInTheDocument();
@@ -233,7 +233,7 @@ describe('When a user is logging in', () => {
   test('a Mobile-ID login remembers the number on this browser when they ask for it', async () => {
     const backend = mobileIdAuthenticationBackend(server, { challengeCode: '4321' });
     userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
-    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), '38001085718');
+    userEvent.type(await screen.findByPlaceholderText(/Identity code/gi), '38001085718');
     userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '+37255512345');
     expect(screen.getByRole('checkbox', { name: 'Remember me' })).not.toBeChecked();
 
@@ -252,7 +252,7 @@ describe('When a user is logging in', () => {
       rememberedPersonalCodes: ['38001085718'],
     });
     userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
-    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), '38001085718');
+    userEvent.type(await screen.findByPlaceholderText(/Identity code/gi), '38001085718');
 
     await waitFor(() =>
       expect(screen.queryByPlaceholderText(/Phone number/gi)).not.toBeInTheDocument(),
@@ -268,6 +268,39 @@ describe('When a user is logging in', () => {
     ).toBeInTheDocument();
   });
 
+  test('a person this browser remembers for Mobile-ID logs in as their first name without typing anything', async () => {
+    const backend = mobileIdAuthenticationBackend(server, {
+      challengeCode: '4321',
+      rememberedPerson: { firstName: 'Aadu' },
+    });
+    userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
+
+    userEvent.click(await screen.findByRole('button', { name: 'Continue as Aadu' }));
+
+    expect(await screen.findByText('4321')).toBeInTheDocument();
+    expect(backend.rememberedPersonLogins).toBe(1);
+    expect(backend.startedLogins).toEqual([]);
+    backend.resolvePolling();
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+  });
+
+  test('somebody else on a browser that remembers a Mobile-ID person gets the empty form after Not you', async () => {
+    const backend = mobileIdAuthenticationBackend(server, {
+      rememberedPerson: { firstName: 'Aadu' },
+    });
+    userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
+
+    userEvent.click(await screen.findByRole('button', { name: 'Not you?' }));
+
+    expect(await screen.findByPlaceholderText(/Identity code/gi)).toHaveValue('');
+    expect(screen.getByRole('checkbox', { name: 'Remember me' })).not.toBeChecked();
+    expect(screen.queryByText(/Aadu/)).not.toBeInTheDocument();
+    expect(backend.rememberedPerson).toBeNull();
+    expect(backend.rememberedPersonLogins).toBe(0);
+  });
+
   test('a remembered number that no longer works brings back the phone field', async () => {
     const backend = mobileIdAuthenticationBackend(server, {
       challengeCode: '4321',
@@ -275,7 +308,7 @@ describe('When a user is logging in', () => {
       rememberedNumberStopsWorking: true,
     });
     userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
-    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), '38001085718');
+    userEvent.type(await screen.findByPlaceholderText(/Identity code/gi), '38001085718');
     await waitFor(() =>
       expect(screen.queryByPlaceholderText(/Phone number/gi)).not.toBeInTheDocument(),
     );
@@ -303,8 +336,8 @@ describe('When a user is logging in', () => {
       rememberedPersonalCodes: ['38001085718'],
     });
     userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
-    userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '+37255512345');
-    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), '38001085718');
+    userEvent.type(await screen.findByPlaceholderText(/Phone number/gi), '+37255512345');
+    userEvent.type(await screen.findByPlaceholderText(/Identity code/gi), '38001085718');
 
     userEvent.click(screen.getByRole('button', { name: 'Log in' }));
 
@@ -322,7 +355,7 @@ describe('When a user is logging in', () => {
     });
     expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
     userEvent.click(screen.getByText(/Mobile-ID/gi));
-    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), '38001085718');
+    userEvent.type(await screen.findByPlaceholderText(/Identity code/gi), '38001085718');
     userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '+37255512345');
     userEvent.click(screen.getByText(/Log in$/gi));
     expect(await screen.findByText('4321')).toBeInTheDocument();
@@ -332,7 +365,7 @@ describe('When a user is logging in', () => {
         timeout: 3000,
       }),
     ).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/Phone number/gi)).toBeInTheDocument();
+    expect(await screen.findByPlaceholderText(/Phone number/gi)).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Mobile-ID' })).toHaveClass('active');
   });
 
@@ -342,7 +375,7 @@ describe('When a user is logging in', () => {
       failWith: 'mobile.id.timeout',
     });
     userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
-    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), '38001085718');
+    userEvent.type(await screen.findByPlaceholderText(/Identity code/gi), '38001085718');
     userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '+37255512345');
     userEvent.click(screen.getByRole('button', { name: 'Log in' }));
     expect(await screen.findByRole('alert', undefined, { timeout: 3000 })).toBeInTheDocument();

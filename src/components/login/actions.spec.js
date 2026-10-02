@@ -169,6 +169,38 @@ describe('Login actions', () => {
     });
   });
 
+  it('starts the Mobile-ID login of the person this browser remembers and polls for its tokens', () => {
+    const controlCode = '4321';
+    mockApi.startRememberedMobileIdLogin = jest.fn(() => {
+      expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START });
+      dispatch.mockClear();
+      return Promise.resolve(controlCode);
+    });
+    const authenticateWithRememberedMobileId = createBoundAction(
+      actions.authenticateWithRememberedMobileId,
+    );
+
+    return authenticateWithRememberedMobileId().then(() => {
+      expect(dispatch).toHaveBeenCalledTimes(2);
+      expect(dispatch).toHaveBeenCalledWith({
+        type: MOBILE_AUTHENTICATION_START_SUCCESS,
+        controlCode,
+      });
+    });
+  });
+
+  it('reports a failed start of the remembered Mobile-ID login', () => {
+    const error = { body: { errors: [{ code: 'mobile.id.phone.number.required' }] } };
+    mockApi.startRememberedMobileIdLogin = jest.fn(() => Promise.reject(error));
+    const authenticateWithRememberedMobileId = createBoundAction(
+      actions.authenticateWithRememberedMobileId,
+    );
+
+    return authenticateWithRememberedMobileId().then(() => {
+      expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START_ERROR, error });
+    });
+  });
+
   it('can authenticate with an id card (mTLS)', () => {
     const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
     mockApi.authenticateWithIdCardMtls = jest.fn(() => {

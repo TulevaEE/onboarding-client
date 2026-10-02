@@ -32,6 +32,7 @@ import {
   SavingsFundOnboardingStatus,
   SecondPillarAssets,
   SigningMethod,
+  RememberedMobileIdPerson,
   RememberedSmartIdAccount,
   SmartIdLoginCallback,
   SmartIdLoginFlow,
@@ -144,6 +145,19 @@ export function startSmartIdLogin(
 
 const nullWhenNoContent = <T>(body: T | undefined | ''): T | null =>
   body && typeof body === 'object' ? body : null;
+
+export async function getRememberedMobileIdPerson(): Promise<RememberedMobileIdPerson | null> {
+  return nullWhenNoContent(await get(getEndpoint('/v1/mobile-id/login/remembered-person')));
+}
+
+export async function startRememberedMobileIdLogin(): Promise<string> {
+  const { challengeCode } = await post(getEndpoint('/v1/mobile-id/login/remembered-person'));
+  return challengeCode;
+}
+
+export async function forgetRememberedMobileIdPerson(): Promise<void> {
+  await deleteRequest(getEndpoint('/v1/mobile-id/login/remembered-person'));
+}
 
 export async function getRememberedSmartIdAccount(): Promise<RememberedSmartIdAccount | null> {
   return nullWhenNoContent(await get(getEndpoint('/v1/smart-id/login/remembered-account')));
