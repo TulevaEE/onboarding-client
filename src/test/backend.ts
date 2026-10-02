@@ -350,6 +350,8 @@ export function smartIdAuthenticationBackend(
   return backend;
 }
 
+type MobileIdLoginStart = { personalCode?: string; phoneNumber?: string; rememberMe?: boolean };
+
 export function mobileIdAuthenticationBackend(
   server: SetupServerApi,
   options: {
@@ -363,7 +365,7 @@ export function mobileIdAuthenticationBackend(
 ): {
   resolvePolling: () => void;
   rememberedLookups: string[];
-  startedLogins: { personalCode?: string; phoneNumber?: string }[];
+  startedLogins: MobileIdLoginStart[];
 } {
   let pollingResolved = false;
   const rememberedPersonalCodes = new Set(options.rememberedPersonalCodes ?? []);
@@ -372,7 +374,7 @@ export function mobileIdAuthenticationBackend(
       pollingResolved = true;
     },
     rememberedLookups: [] as string[],
-    startedLogins: [] as { personalCode?: string; phoneNumber?: string }[],
+    startedLogins: [] as MobileIdLoginStart[],
   };
 
   server.use(
@@ -387,14 +389,21 @@ export function mobileIdAuthenticationBackend(
 
     rest.post('http://localhost/authenticate', (req, res, ctx) => {
       const body = req.body as DefaultRequestMultipartBody;
-      const { personalCode, phoneNumber } = body as { personalCode?: string; phoneNumber?: string };
+      const { personalCode, phoneNumber, rememberMe } = body as {
+        personalCode?: string;
+        phoneNumber?: string;
+        rememberMe?: unknown;
+      };
       if (
         body.type !== 'MOBILE_ID' ||
         (options.identityCode && personalCode !== options.identityCode)
       ) {
         return res(ctx.status(401), ctx.json({ error: 'wrong method or id code' }));
       }
-      backend.startedLogins.push({ personalCode, phoneNumber });
+      if (rememberMe !== undefined && typeof rememberMe !== 'boolean') {
+        return res(ctx.status(400), ctx.json({ errors: [{ code: 'remember.me.invalid' }] }));
+      }
+      backend.startedLogins.push({ personalCode, phoneNumber, rememberMe });
       if (!phoneNumber) {
         const usableRememberedNumber =
           rememberedPersonalCodes.has(personalCode ?? '') && !options.rememberedNumberStopsWorking;

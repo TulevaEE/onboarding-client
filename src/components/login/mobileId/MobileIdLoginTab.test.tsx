@@ -68,6 +68,7 @@ describe('Mobile-ID login tab', () => {
     render(<Harness onMobileIdSubmit={onMobileIdSubmit} startError={startError} />);
 
   const identityCode = () => screen.getByLabelText('Identity code');
+  const rememberMe = () => screen.getByRole('checkbox', { name: 'Remember me' });
   const phoneNumber = () => screen.getByLabelText('Phone number');
   const queryPhoneNumber = () => screen.queryByLabelText('Phone number');
   const logIn = () => screen.getByRole('button', { name: 'Log in' });
@@ -88,7 +89,7 @@ describe('Mobile-ID login tab', () => {
 
     userEvent.click(logIn());
 
-    expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255512345', OTHER_VALID_CODE);
+    expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255512345', OTHER_VALID_CODE, false);
   });
 
   it('hides the phone field without hinting at the number or offering to change it when the service remembers one', async () => {
@@ -97,11 +98,13 @@ describe('Mobile-ID login tab', () => {
 
     await waitForPhoneFieldToHide();
 
-    expect(container).toHaveTextContent(/^$/);
+    expect(container).toHaveTextContent(
+      /^Remember meThis uses a cookie\. Do not choose it on a public computer\.$/,
+    );
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
     expect(screen.getAllByRole('button')).toEqual([logIn()]);
     userEvent.click(logIn());
-    expect(onMobileIdSubmit).toHaveBeenCalledWith('', REMEMBERED_CODE);
+    expect(onMobileIdSubmit).toHaveBeenCalledWith('', REMEMBERED_CODE, false);
   });
 
   it('shows the phone field again for another identity code', async () => {
@@ -124,13 +127,32 @@ describe('Mobile-ID login tab', () => {
 
     expect(phoneNumber()).toHaveValue('+37255512345');
     expect(mockIsMobileIdNumberRemembered).not.toHaveBeenCalled();
-    expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255512345', REMEMBERED_CODE);
+    expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255512345', REMEMBERED_CODE, false);
   });
 
-  it('offers no checkbox to remember the number on this device', () => {
+  it('leaves the remember me box unticked until the person ticks it', () => {
     renderTab();
 
-    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+    expect(rememberMe()).not.toBeChecked();
+  });
+
+  it('starts a login that remembers the number when the person ticks the box', () => {
+    renderTab();
+    userEvent.type(identityCode(), OTHER_VALID_CODE);
+    userEvent.type(phoneNumber(), '+37255512345');
+
+    userEvent.click(rememberMe());
+    userEvent.click(logIn());
+
+    expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255512345', OTHER_VALID_CODE, true);
+  });
+
+  it('warns under the remember me box that it uses a cookie', () => {
+    renderTab();
+
+    expect(rememberMe()).toHaveAccessibleDescription(
+      /^This uses a cookie\. Do not choose it on a public\scomputer\.$/,
+    );
   });
 
   it('asks for the current phone number when the remembered one no longer works', async () => {
@@ -144,7 +166,7 @@ describe('Mobile-ID login tab', () => {
     userEvent.type(phoneNumber(), '+37255598765');
     userEvent.click(logIn());
 
-    expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255598765', REMEMBERED_CODE);
+    expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255598765', REMEMBERED_CODE, false);
   });
 
   it('asks to check an identity code once all 11 digits are typed and do not form a valid code', () => {
@@ -180,7 +202,7 @@ describe('Mobile-ID login tab', () => {
 
     userEvent.click(logIn());
 
-    expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255512345', OTHER_VALID_CODE);
+    expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255512345', OTHER_VALID_CODE, false);
   });
 
   it.each([
@@ -255,6 +277,6 @@ describe('Mobile-ID login tab', () => {
     userEvent.type(phoneNumber(), '+37255512345');
     userEvent.type(identityCode(), `${OTHER_VALID_CODE}{enter}`);
 
-    expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255512345', OTHER_VALID_CODE);
+    expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255512345', OTHER_VALID_CODE, false);
   });
 });

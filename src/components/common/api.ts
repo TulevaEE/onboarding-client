@@ -109,11 +109,13 @@ export function getEndpoint(endpoint: string): string {
 export async function authenticateWithMobileId(
   phoneNumber: string,
   personalCode: string,
+  rememberMe: boolean,
 ): Promise<string> {
   const { challengeCode } = await post(getEndpoint('/authenticate'), {
     ...(phoneNumber ? { phoneNumber } : {}),
     personalCode,
     type: 'MOBILE_ID',
+    rememberMe,
   });
   return challengeCode;
 }

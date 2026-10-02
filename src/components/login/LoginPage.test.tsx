@@ -222,12 +222,28 @@ describe('When a user is logging in', () => {
     ).toBeInTheDocument();
     expect(screen.getByText(/The request should also name Tuleva/)).toBeInTheDocument();
     expect(backend.startedLogins).toEqual([
-      { personalCode: identityCode, phoneNumber: '+37255512345' },
+      { personalCode: identityCode, phoneNumber: '+37255512345', rememberMe: false },
     ]);
     backend.resolvePolling();
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
     ).toBeInTheDocument();
+  });
+
+  test('a Mobile-ID login remembers the number on this browser when they ask for it', async () => {
+    const backend = mobileIdAuthenticationBackend(server, { challengeCode: '4321' });
+    userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
+    userEvent.type(screen.getByPlaceholderText(/Identity code/gi), '38001085718');
+    userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '+37255512345');
+    expect(screen.getByRole('checkbox', { name: 'Remember me' })).not.toBeChecked();
+
+    userEvent.click(screen.getByRole('checkbox', { name: 'Remember me' }));
+    userEvent.click(screen.getByRole('button', { name: 'Log in' }));
+
+    expect(await screen.findByText('4321')).toBeInTheDocument();
+    expect(backend.startedLogins).toEqual([
+      { personalCode: '38001085718', phoneNumber: '+37255512345', rememberMe: true },
+    ]);
   });
 
   test('a person whose Mobile-ID number the service remembers logs in with only the identity code', async () => {
@@ -244,7 +260,7 @@ describe('When a user is logging in', () => {
     userEvent.click(screen.getByRole('button', { name: 'Log in' }));
 
     expect(await screen.findByText('4321')).toBeInTheDocument();
-    expect(backend.startedLogins).toEqual([{ personalCode: '38001085718' }]);
+    expect(backend.startedLogins).toEqual([{ personalCode: '38001085718', rememberMe: false }]);
     backend.resolvePolling();
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
@@ -275,8 +291,8 @@ describe('When a user is logging in', () => {
 
     expect(await screen.findByText('4321')).toBeInTheDocument();
     expect(backend.startedLogins).toEqual([
-      { personalCode: '38001085718' },
-      { personalCode: '38001085718', phoneNumber: '+37255512345' },
+      { personalCode: '38001085718', rememberMe: false },
+      { personalCode: '38001085718', phoneNumber: '+37255512345', rememberMe: false },
     ]);
   });
 
@@ -294,7 +310,7 @@ describe('When a user is logging in', () => {
     expect(await screen.findByText('4321')).toBeInTheDocument();
     expect(backend.rememberedLookups).toEqual([]);
     expect(backend.startedLogins).toEqual([
-      { personalCode: '38001085718', phoneNumber: '+37255512345' },
+      { personalCode: '38001085718', phoneNumber: '+37255512345', rememberMe: false },
     ]);
   });
 

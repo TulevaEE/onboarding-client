@@ -407,22 +407,24 @@ describe('API calls', () => {
     const expectedChallengeCode = '1234';
     mockHttp.post.mockResolvedValueOnce({ challengeCode: expectedChallengeCode });
 
-    const challengeCode = await authenticateWithMobileId(phoneNumber, personalCode);
+    const challengeCode = await authenticateWithMobileId(phoneNumber, personalCode, false);
     expect(challengeCode).toBe(expectedChallengeCode);
     expect(mockHttp.post).toHaveBeenCalledWith('/authenticate', {
       phoneNumber,
       personalCode,
       type: 'MOBILE_ID',
+      rememberMe: false,
     });
   });
 
   it('starts a Mobile-ID login without a phone number when the service remembers it', async () => {
     mockHttp.post.mockResolvedValueOnce({ challengeCode: '1234' });
 
-    expect(await authenticateWithMobileId('', '38001085718')).toBe('1234');
+    expect(await authenticateWithMobileId('', '38001085718', true)).toBe('1234');
     expect(mockHttp.post).toHaveBeenCalledWith('/authenticate', {
       personalCode: '38001085718',
       type: 'MOBILE_ID',
+      rememberMe: true,
     });
   });
 

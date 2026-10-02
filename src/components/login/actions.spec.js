@@ -251,6 +251,32 @@ describe('Login actions', () => {
     });
   });
 
+  it('starts a Mobile-ID login with the choice to be remembered', async () => {
+    mockApi.authenticateWithMobileId = jest.fn(() => Promise.resolve('1337'));
+    mockApi.getMobileIdTokens = jest.fn(() => new Promise(() => {}));
+
+    await createBoundAction(actions.authenticateWithMobileId)('+37255512345', '38001085718', true);
+
+    expect(mockApi.authenticateWithMobileId).toHaveBeenCalledWith(
+      '+37255512345',
+      '38001085718',
+      true,
+    );
+  });
+
+  it('starts a Mobile-ID login that is not remembered unless the person chose so', async () => {
+    mockApi.authenticateWithMobileId = jest.fn(() => Promise.resolve('1337'));
+    mockApi.getMobileIdTokens = jest.fn(() => new Promise(() => {}));
+
+    await createBoundAction(actions.authenticateWithMobileId)('+37255512345', '38001085718');
+
+    expect(mockApi.authenticateWithMobileId).toHaveBeenCalledWith(
+      '+37255512345',
+      '38001085718',
+      false,
+    );
+  });
+
   it('starts polling until succeeds when authenticating with a phone number', () => {
     const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
     mockApi.authenticateWithMobileId = jest.fn(() => Promise.resolve('1337'));

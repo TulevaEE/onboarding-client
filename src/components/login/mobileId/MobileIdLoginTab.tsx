@@ -7,6 +7,7 @@ import { useRememberedMobileIdNumber } from './useRememberedMobileIdNumber';
 import { normalizeMobileIdPhoneNumber } from './mobileIdPhoneNumber';
 import { isMobileDevice } from '../../common/isMobileDevice';
 import { LoginTabPickedByUser } from '../loginForm/loginTabPickedByUser';
+import { RememberMeCheckbox } from '../loginForm/RememberMeCheckbox';
 
 const PERSONAL_CODE_LENGTH = 11;
 export const MOBILE_ID_PHONE_NUMBER_REQUIRED = 'mobile.id.phone.number.required';
@@ -24,7 +25,7 @@ interface MobileIdLoginTabProps {
   personalCode: string;
   onPhoneNumberChange: (phoneNumber: string) => void;
   onPersonalCodeChange: (personalCode: string) => void;
-  onMobileIdSubmit: (phoneNumber: string, personalCode: string) => void;
+  onMobileIdSubmit: (phoneNumber: string, personalCode: string, rememberMe: boolean) => void;
   startError?: string | null;
 }
 
@@ -42,6 +43,7 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
   const submitButton = useRef<HTMLInputElement>(null);
   const pickedByUser = useContext(LoginTabPickedByUser);
   const [submittedInvalidCode, setSubmittedInvalidCode] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [submittedNumberProblem, setSubmittedNumberProblem] = useState<
     'NOT_ESTONIAN' | 'INVALID' | null
   >(null);
@@ -93,7 +95,7 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
       return;
     }
     if (numberRemembered) {
-      onMobileIdSubmit('', personalCode);
+      onMobileIdSubmit('', personalCode, rememberMe);
       return;
     }
     const normalized = normalizeMobileIdPhoneNumber(phoneNumber);
@@ -102,7 +104,7 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
       phoneNumberInput.current?.focus();
       return;
     }
-    onMobileIdSubmit(normalized.phoneNumber, personalCode);
+    onMobileIdSubmit(normalized.phoneNumber, personalCode, rememberMe);
   };
 
   const phoneNumberProblem: PhoneNumberProblem | null =
@@ -153,6 +155,13 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
           )}
         </div>
       )}
+      <div className="mb-3">
+        <RememberMeCheckbox
+          id="mobile-id-remember-me"
+          checked={rememberMe}
+          onChange={setRememberMe}
+        />
+      </div>
       <div className="d-grid mb-3">
         <input
           id="mobile-id-submit"

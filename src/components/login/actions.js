@@ -104,11 +104,11 @@ function getMobileIdTokens() {
   };
 }
 
-export function authenticateWithMobileId(phoneNumber, personalCode) {
+export function authenticateWithMobileId(phoneNumber, personalCode, rememberMe = false) {
   return (dispatch) => {
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
-      .authenticateWithMobileId(phoneNumber, personalCode)
+      .authenticateWithMobileId(phoneNumber, personalCode, rememberMe)
       .then((controlCode) => {
         dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
         dispatch(getMobileIdTokens());
