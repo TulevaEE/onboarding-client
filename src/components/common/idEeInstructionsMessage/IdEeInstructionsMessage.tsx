@@ -16,7 +16,7 @@ const INSTRUCTION_PAGES: Record<IdEeInstructionsMessageId, TranslationKey> = {
 };
 
 export const isIdEeInstructionsMessage = (id: string): id is IdEeInstructionsMessageId =>
-  Object.hasOwn(INSTRUCTION_PAGES, id);
+  Object.prototype.hasOwnProperty.call(INSTRUCTION_PAGES, id);
 
 const InstructionsLink = ({ urlId, children }: { urlId: TranslationKey; children: ReactNode }) => (
   <FormattedMessage id={urlId}>
