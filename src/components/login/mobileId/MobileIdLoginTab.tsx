@@ -8,6 +8,7 @@ import { normalizeMobileIdPhoneNumber } from './mobileIdPhoneNumber';
 import { isMobileDevice } from '../../common/isMobileDevice';
 import { LoginTabPickedByUser } from '../loginForm/loginTabPickedByUser';
 import { RememberMeCheckbox } from '../loginForm/RememberMeCheckbox';
+import { readRememberMeChoice, saveRememberMeChoice } from '../loginForm/rememberMeChoice';
 
 const PERSONAL_CODE_LENGTH = 11;
 export const MOBILE_ID_PHONE_NUMBER_REQUIRED = 'mobile.id.phone.number.required';
@@ -43,7 +44,7 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
   const submitButton = useRef<HTMLInputElement>(null);
   const pickedByUser = useContext(LoginTabPickedByUser);
   const [submittedInvalidCode, setSubmittedInvalidCode] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(readRememberMeChoice);
   const [submittedNumberProblem, setSubmittedNumberProblem] = useState<
     'NOT_ESTONIAN' | 'INVALID' | null
   >(null);
@@ -83,8 +84,13 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
   }, [focusFirstEmptyField]);
 
   useEffect(() => {
-    setRememberMe(numberRemembered);
+    setRememberMe(numberRemembered || readRememberMeChoice());
   }, [numberRemembered]);
+
+  const chooseRememberMe = (choice: boolean) => {
+    saveRememberMeChoice(choice);
+    setRememberMe(choice);
+  };
 
   useEffect(() => {
     if (numberRemembered) {
@@ -163,7 +169,7 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
         <RememberMeCheckbox
           id="mobile-id-remember-me"
           checked={rememberMe}
-          onChange={setRememberMe}
+          onChange={chooseRememberMe}
         />
       </div>
       <div className="d-grid mb-3">

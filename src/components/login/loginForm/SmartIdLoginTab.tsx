@@ -7,6 +7,7 @@ import { useLoginLanguage } from '../loginLanguage';
 import { useRememberedSmartIdAccount } from '../smartId/useRememberedSmartIdAccount';
 import { PII_CLASS } from '../../tracking/piiMarkup';
 import { RememberMeCheckbox } from './RememberMeCheckbox';
+import { readRememberMeChoice, saveRememberMeChoice } from './rememberMeChoice';
 
 interface SmartIdLoginTabProps {
   onSmartIdLoginStart: (language: string, flow?: SmartIdLoginFlow, rememberMe?: boolean) => void;
@@ -15,7 +16,12 @@ interface SmartIdLoginTabProps {
 export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLoginStart }) => {
   const language = useLoginLanguage();
   const { account, loading, forget } = useRememberedSmartIdAccount();
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(readRememberMeChoice);
+
+  const chooseRememberMe = (choice: boolean) => {
+    saveRememberMeChoice(choice);
+    setRememberMe(choice);
+  };
 
   if (loading) {
     return <Loader className="align-middle" />;
@@ -37,7 +43,10 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
         <button
           type="button"
           className="btn btn-outline-primary btn-lg text-wrap text-balance"
-          onClick={() => forget().then(() => onSmartIdLoginStart(language, 'DEVICE_LINK'))}
+          onClick={() => {
+            saveRememberMeChoice(false);
+            forget().then(() => onSmartIdLoginStart(language, 'DEVICE_LINK'));
+          }}
         >
           <FormattedMessage id="login.smart.id.not.you" />
         </button>
@@ -47,7 +56,11 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
 
   return (
     <div className="d-grid gap-3">
-      <RememberMeCheckbox id="smart-id-remember-me" checked={rememberMe} onChange={setRememberMe} />
+      <RememberMeCheckbox
+        id="smart-id-remember-me"
+        checked={rememberMe}
+        onChange={chooseRememberMe}
+      />
       <button
         type="button"
         className="btn btn-primary btn-lg text-wrap text-balance"

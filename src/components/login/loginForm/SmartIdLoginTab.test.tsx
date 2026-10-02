@@ -39,7 +39,12 @@ describe('Smart-ID login tab', () => {
     mockForgetRememberedSmartIdAccount.mockResolvedValue(undefined);
   });
 
-  afterEach(() => setUserAgent(desktopUserAgent));
+  afterEach(() => {
+    setUserAgent(desktopUserAgent);
+    window.localStorage.clear();
+  });
+
+  const rememberMe = () => screen.findByRole('checkbox', { name: 'Remember me' });
 
   it('offers the QR login when the browser remembers no account', async () => {
     mockGetRememberedSmartIdAccount.mockResolvedValue(null);
@@ -66,6 +71,46 @@ describe('Smart-ID login tab', () => {
     userEvent.click(screen.getByRole('button', { name: /^Log in$/ }));
 
     expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', true);
+  });
+
+  it('keeps the remember me choice for the next login on this browser', async () => {
+    mockGetRememberedSmartIdAccount.mockResolvedValue(null);
+    const { unmount } = renderTab();
+    userEvent.click(await rememberMe());
+    unmount();
+
+    renderTab();
+
+    expect(await rememberMe()).toBeChecked();
+  });
+
+  it('keeps an untick as the choice for the next login on this browser', async () => {
+    mockGetRememberedSmartIdAccount.mockResolvedValue(null);
+    const { unmount: leave } = renderTab();
+    userEvent.click(await rememberMe());
+    userEvent.click(await rememberMe());
+    leave();
+
+    renderTab();
+
+    expect(await rememberMe()).not.toBeChecked();
+  });
+
+  it('forgets the remember me choice when somebody else logs in after the remembered account', async () => {
+    mockGetRememberedSmartIdAccount.mockResolvedValue(null);
+    const { unmount: leave } = renderTab();
+    userEvent.click(await rememberMe());
+    leave();
+    mockGetRememberedSmartIdAccount.mockResolvedValue({ firstName: 'Mari', lastName: 'Maasikas' });
+    const { unmount: leaveAgain } = renderTab();
+    userEvent.click(await screen.findByRole('button', { name: 'Not you?' }));
+    await waitFor(() => expect(onSmartIdLoginStart).toHaveBeenCalled());
+    leaveAgain();
+    mockGetRememberedSmartIdAccount.mockResolvedValue(null);
+
+    renderTab();
+
+    expect(await rememberMe()).not.toBeChecked();
   });
 
   it('warns under the remember me box that it uses a cookie', async () => {

@@ -62,6 +62,7 @@ describe('Mobile-ID login tab', () => {
 
   afterEach(() => {
     Object.defineProperty(navigator, 'userAgent', { value: desktopUserAgent, configurable: true });
+    window.localStorage.clear();
   });
 
   const renderTab = (startError?: string) =>
@@ -145,6 +146,42 @@ describe('Mobile-ID login tab', () => {
     userEvent.click(logIn());
 
     expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255512345', OTHER_VALID_CODE, true);
+  });
+
+  it('keeps the remember me choice for the next login on this browser', () => {
+    const { unmount: leave } = renderTab();
+    userEvent.click(rememberMe());
+    leave();
+
+    renderTab();
+
+    expect(rememberMe()).toBeChecked();
+  });
+
+  it('keeps an untick as the choice for the next login on this browser', async () => {
+    const { unmount: leave } = renderTab();
+    userEvent.click(rememberMe());
+    userEvent.type(identityCode(), REMEMBERED_CODE);
+    await waitForPhoneFieldToHide();
+    userEvent.click(rememberMe());
+    leave();
+
+    renderTab();
+
+    expect(rememberMe()).not.toBeChecked();
+  });
+
+  it('goes back to the kept choice for another identity code', async () => {
+    const { unmount: leave } = renderTab();
+    userEvent.click(rememberMe());
+    leave();
+    renderTab();
+    userEvent.type(identityCode(), REMEMBERED_CODE);
+    await waitForPhoneFieldToHide();
+
+    userEvent.type(identityCode(), '{backspace}');
+
+    expect(rememberMe()).toBeChecked();
   });
 
   it('ticks the remember me box for an identity code whose number is remembered', async () => {
