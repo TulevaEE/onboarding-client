@@ -23,7 +23,7 @@ import {
 } from './actions';
 import { getAuthentication } from '../common/authenticationManager';
 import { loginLanding } from './loginLanding';
-import { MOBILE_ID_PHONE_NUMBER_REQUIRED } from './mobileId/MobileIdLoginTab';
+import { MOBILE_ID_PHONE_NUMBER_REQUIRED } from './mobileId/MobileIdLoginForm';
 
 const ERRORS_SHOWN_BESIDE_THEIR_FIELD = [MOBILE_ID_PHONE_NUMBER_REQUIRED];
 

@@ -36,7 +36,7 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
           onClick={() => onSmartIdLoginStart(language, 'NOTIFICATION')}
         >
           <FormattedMessage
-            id="login.smart.id.continue.as"
+            id="login.continue.as"
             values={{ firstName: <span className={PII_CLASS}>{account.firstName}</span> }}
           />
         </button>
@@ -48,7 +48,7 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
             forget().then(() => onSmartIdLoginStart(language, 'DEVICE_LINK'));
           }}
         >
-          <FormattedMessage id="login.smart.id.not.you" />
+          <FormattedMessage id="login.not.you" />
         </button>
       </div>
     );

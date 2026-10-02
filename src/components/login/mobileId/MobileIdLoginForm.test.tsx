@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 
 import translations from '../../translations';
-import { MobileIdLoginTab } from './MobileIdLoginTab';
+import { MobileIdLoginForm } from './MobileIdLoginForm';
 import { LoginTabPickedByUser } from '../loginForm/loginTabPickedByUser';
 
 const mockIsMobileIdNumberRemembered = jest.fn();
@@ -29,7 +29,7 @@ const Harness: React.FC<{
   return (
     <IntlProvider locale="en" messages={translations.en}>
       <LoginTabPickedByUser.Provider value={pickedByUser}>
-        <MobileIdLoginTab
+        <MobileIdLoginForm
           phoneNumber={phoneNumber}
           personalCode={personalCode}
           onPhoneNumberChange={setPhoneNumber}
@@ -49,7 +49,7 @@ const pretendToBeOnAPhone = () =>
     configurable: true,
   });
 
-describe('Mobile-ID login tab', () => {
+describe('Mobile-ID login form', () => {
   const onMobileIdSubmit = jest.fn();
 
   beforeEach(() => {
