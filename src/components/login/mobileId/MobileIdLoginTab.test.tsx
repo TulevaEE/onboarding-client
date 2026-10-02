@@ -104,7 +104,7 @@ describe('Mobile-ID login tab', () => {
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
     expect(screen.getAllByRole('button')).toEqual([logIn()]);
     userEvent.click(logIn());
-    expect(onMobileIdSubmit).toHaveBeenCalledWith('', REMEMBERED_CODE, false);
+    expect(onMobileIdSubmit).toHaveBeenCalledWith('', REMEMBERED_CODE, true);
   });
 
   it('shows the phone field again for another identity code', async () => {
@@ -145,6 +145,36 @@ describe('Mobile-ID login tab', () => {
     userEvent.click(logIn());
 
     expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255512345', OTHER_VALID_CODE, true);
+  });
+
+  it('ticks the remember me box for an identity code whose number is remembered', async () => {
+    renderTab();
+    userEvent.type(identityCode(), REMEMBERED_CODE);
+
+    await waitForPhoneFieldToHide();
+
+    expect(rememberMe()).toBeChecked();
+  });
+
+  it('forgets the remembered number when the person unticks the box', async () => {
+    renderTab();
+    userEvent.type(identityCode(), REMEMBERED_CODE);
+    await waitForPhoneFieldToHide();
+
+    userEvent.click(rememberMe());
+    userEvent.click(logIn());
+
+    expect(onMobileIdSubmit).toHaveBeenCalledWith('', REMEMBERED_CODE, false);
+  });
+
+  it('unticks the remember me box again for another identity code', async () => {
+    renderTab();
+    userEvent.type(identityCode(), REMEMBERED_CODE);
+    await waitForPhoneFieldToHide();
+
+    userEvent.type(identityCode(), '{backspace}');
+
+    expect(rememberMe()).not.toBeChecked();
   });
 
   it('warns under the remember me box that it uses a cookie', () => {

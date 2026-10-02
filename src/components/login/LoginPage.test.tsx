@@ -257,10 +257,11 @@ describe('When a user is logging in', () => {
     await waitFor(() =>
       expect(screen.queryByPlaceholderText(/Phone number/gi)).not.toBeInTheDocument(),
     );
+    expect(screen.getByRole('checkbox', { name: 'Remember me' })).toBeChecked();
     userEvent.click(screen.getByRole('button', { name: 'Log in' }));
 
     expect(await screen.findByText('4321')).toBeInTheDocument();
-    expect(backend.startedLogins).toEqual([{ personalCode: '38001085718', rememberMe: false }]);
+    expect(backend.startedLogins).toEqual([{ personalCode: '38001085718', rememberMe: true }]);
     backend.resolvePolling();
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
@@ -291,7 +292,7 @@ describe('When a user is logging in', () => {
 
     expect(await screen.findByText('4321')).toBeInTheDocument();
     expect(backend.startedLogins).toEqual([
-      { personalCode: '38001085718', rememberMe: false },
+      { personalCode: '38001085718', rememberMe: true },
       { personalCode: '38001085718', phoneNumber: '+37255512345', rememberMe: false },
     ]);
   });

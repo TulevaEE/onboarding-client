@@ -83,6 +83,10 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
   }, [focusFirstEmptyField]);
 
   useEffect(() => {
+    setRememberMe(numberRemembered);
+  }, [numberRemembered]);
+
+  useEffect(() => {
     if (numberRemembered) {
       submitButton.current?.focus();
     }
