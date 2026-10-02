@@ -36,6 +36,7 @@ export const initialState = {
   controlCode: null,
   verificationCodeChoice: false,
   smartIdWeb2AppLink: null,
+  smartIdRememberMe: false,
   loadingAuthentication: false,
   error: null,
   user: null,
@@ -69,6 +70,7 @@ export default function loginReducer(state = initialState, action) {
       return {
         ...state,
         smartIdWeb2AppLink: action.web2AppLink,
+        smartIdRememberMe: action.rememberMe,
         error: null,
       };
     case MOBILE_AUTHENTICATION_START_ERROR:

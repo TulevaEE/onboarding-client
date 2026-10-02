@@ -306,7 +306,11 @@ describe('Login actions', () => {
 
     expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
     expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START });
-    expect(dispatch).toHaveBeenCalledWith({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: SMART_ID_LOGIN_START_SUCCESS,
+      web2AppLink,
+      rememberMe: false,
+    });
   });
 
   it('starts a smart id session that remembers the browser when the person chose so', async () => {
@@ -317,6 +321,11 @@ describe('Login actions', () => {
     await startSmartIdLogin('et', 'DEVICE_LINK', true);
 
     expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('et', 'DEVICE_LINK', true);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: SMART_ID_LOGIN_START_SUCCESS,
+      web2AppLink,
+      rememberMe: true,
+    });
   });
 
   it('leaves opening the Smart-ID app to the user on a phone', async () => {
@@ -337,7 +346,11 @@ describe('Login actions', () => {
     await startSmartIdLogin('et');
 
     expect(assign).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalledWith({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: SMART_ID_LOGIN_START_SUCCESS,
+      web2AppLink,
+      rememberMe: false,
+    });
   });
 
   it('shows the control code and polls when the remembered account is pushed a notification', async () => {
@@ -902,6 +915,22 @@ describe('Login actions', () => {
     });
   });
 
+  it('resumes a pending smart id login after a page reload with its choice to be remembered', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    await createBoundAction(actions.startSmartIdLogin)('et', 'DEVICE_LINK', true);
+
+    mockDispatch();
+    createBoundAction(actions.resumePendingSmartIdAuthentication)();
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: SMART_ID_LOGIN_START_SUCCESS,
+      web2AppLink,
+      rememberMe: true,
+    });
+  });
+
   it('resumes a pending smart id login after a page reload', async () => {
     state = { login: { loadingAuthentication: true } };
     mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
@@ -916,7 +945,11 @@ describe('Login actions', () => {
     resume();
 
     expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START });
-    expect(dispatch).toHaveBeenCalledWith({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: SMART_ID_LOGIN_START_SUCCESS,
+      web2AppLink,
+      rememberMe: false,
+    });
 
     jest.runOnlyPendingTimers();
     await Promise.resolve();
@@ -999,6 +1032,7 @@ describe('Login actions', () => {
       expect(dispatch).toHaveBeenCalledWith({
         type: SMART_ID_LOGIN_START_SUCCESS,
         web2AppLink,
+        rememberMe: false,
       });
       expect(mockApi.getSmartIdTokens).toHaveBeenCalled();
       expect(dispatch).not.toHaveBeenCalledWith(

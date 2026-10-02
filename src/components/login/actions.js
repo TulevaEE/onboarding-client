@@ -150,6 +150,7 @@ function clearPendingSmartIdAuthentication() {
 function savePendingSmartIdAuthentication({
   authenticationHash,
   web2AppLink,
+  rememberMe,
   controlCode,
   returnPath,
   language,
@@ -164,6 +165,7 @@ function savePendingSmartIdAuthentication({
       JSON.stringify({
         authenticationHash,
         web2AppLink,
+        rememberMe,
         controlCode,
         returnPath,
         language,
@@ -241,7 +243,11 @@ export function resumePendingSmartIdAuthentication() {
     logPoll('resume-pending-login');
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     if (pending.web2AppLink) {
-      dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink: pending.web2AppLink });
+      dispatch({
+        type: SMART_ID_LOGIN_START_SUCCESS,
+        web2AppLink: pending.web2AppLink,
+        rememberMe: pending.rememberMe === true,
+      });
     }
     if (pending.controlCode) {
       dispatch({
@@ -383,8 +389,14 @@ export function startSmartIdLogin(language, flow = 'DEVICE_LINK', rememberMe = f
           return;
         }
         const { web2AppLink } = start;
-        savePendingSmartIdAuthentication({ authenticationHash, web2AppLink, returnPath, language });
-        dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink });
+        savePendingSmartIdAuthentication({
+          authenticationHash,
+          web2AppLink,
+          rememberMe,
+          returnPath,
+          language,
+        });
+        dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink, rememberMe });
         dispatch(getSmartIdTokens(authenticationHash));
       })
       .catch((error) => {

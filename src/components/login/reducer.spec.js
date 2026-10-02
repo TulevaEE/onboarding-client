@@ -86,6 +86,16 @@ describe('Login reducer', () => {
     expect(newState.error).toBe(null);
   });
 
+  it('saves the choice to be remembered when a smart id session starts', () => {
+    const action = {
+      type: SMART_ID_LOGIN_START_SUCCESS,
+      web2AppLink: 'https://smart-id.com/device-link/?deviceLinkType=Web2App',
+      rememberMe: true,
+    };
+
+    expect(loginReducer(undefined, action).smartIdRememberMe).toBe(true);
+  });
+
   it.each([
     [MOBILE_AUTHENTICATION_START, {}],
     [MOBILE_AUTHENTICATION_CANCEL, {}],

@@ -41,6 +41,7 @@ export const LoginPage = ({
   controlCode,
   verificationCodeChoice,
   smartIdWeb2AppLink,
+  smartIdRememberMe,
   loadingAuthentication,
   loadingUserConversion,
   errorDescription,
@@ -89,6 +90,7 @@ export const LoginPage = ({
             {!errorDescription && authenticating && smartIdWeb2AppLink ? (
               <SmartIdDeviceLinkLogin
                 web2AppLink={smartIdWeb2AppLink}
+                rememberMe={smartIdRememberMe}
                 onCancel={onCancelMobileAuthentication}
                 onSmartIdLoginStart={onSmartIdLoginStart}
                 automaticRenewals={qrCodeRenewals}
@@ -129,6 +131,7 @@ LoginPage.defaultProps = {
   controlCode: '',
   verificationCodeChoice: false,
   smartIdWeb2AppLink: null,
+  smartIdRememberMe: false,
   loadingAuthentication: false,
   loadingUserConversion: false,
   errorDescription: '',
@@ -153,6 +156,7 @@ LoginPage.propTypes = {
   controlCode: Types.string,
   verificationCodeChoice: Types.bool,
   smartIdWeb2AppLink: Types.string,
+  smartIdRememberMe: Types.bool,
   loadingAuthentication: Types.bool,
   loadingUserConversion: Types.bool,
   errorDescription: Types.string,
@@ -169,6 +173,7 @@ const mapStateToProps = (state) => ({
   controlCode: state.login.controlCode,
   verificationCodeChoice: state.login.verificationCodeChoice,
   smartIdWeb2AppLink: state.login.smartIdWeb2AppLink,
+  smartIdRememberMe: state.login.smartIdRememberMe,
   loadingAuthentication: state.login.loadingAuthentication,
   loadingUserConversion: state.login.loadingUserConversion,
   errorDescription: state.login.error || state.login.userConversionError,

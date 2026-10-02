@@ -7,18 +7,23 @@ import { isMobileDevice } from '../../common/isMobileDevice';
 import { useLoginLanguage } from '../loginLanguage';
 import { useSmartIdQrCodeLink } from './useSmartIdQrCodeLink';
 import { AutomaticRenewalAllowance } from './automaticRenewalAllowance';
+import { SmartIdLoginFlow } from '../../common/apiModels';
 
 const QR_CODE_SIZE_PIXELS = 256;
 
+type SmartIdLoginStart = (language: string, flow: SmartIdLoginFlow, rememberMe: boolean) => void;
+
 interface SmartIdDeviceLinkLoginProps {
   web2AppLink: string;
+  rememberMe: boolean;
   onCancel: () => void;
-  onSmartIdLoginStart: (language: string) => void;
+  onSmartIdLoginStart: SmartIdLoginStart;
   automaticRenewals: AutomaticRenewalAllowance;
 }
 
 export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
   web2AppLink,
+  rememberMe,
   onCancel,
   onSmartIdLoginStart,
   automaticRenewals,
@@ -27,6 +32,7 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
     <SmartIdAppLogin web2AppLink={web2AppLink} onCancel={onCancel} />
   ) : (
     <SmartIdQrCodeLogin
+      rememberMe={rememberMe}
       onCancel={onCancel}
       onSmartIdLoginStart={onSmartIdLoginStart}
       automaticRenewals={automaticRenewals}
@@ -53,17 +59,19 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
 );
 
 const SmartIdQrCodeLogin: React.FC<{
+  rememberMe: boolean;
   onCancel: () => void;
-  onSmartIdLoginStart: (language: string) => void;
+  onSmartIdLoginStart: SmartIdLoginStart;
   automaticRenewals: AutomaticRenewalAllowance;
-}> = ({ onCancel, onSmartIdLoginStart, automaticRenewals }) => {
+}> = ({ rememberMe, onCancel, onSmartIdLoginStart, automaticRenewals }) => {
   const { formatMessage } = useIntl();
   const language = useLoginLanguage();
+  const startNewSession = () => onSmartIdLoginStart(language, 'DEVICE_LINK', rememberMe);
   const { deviceLink, expired } = useSmartIdQrCodeLink(() => {
     if (!automaticRenewals.take()) {
       return false;
     }
-    onSmartIdLoginStart(language);
+    startNewSession();
     return true;
   });
 
@@ -77,7 +85,7 @@ const SmartIdQrCodeLogin: React.FC<{
           <button
             type="button"
             className="btn btn-primary btn-lg text-wrap text-balance"
-            onClick={() => onSmartIdLoginStart(language)}
+            onClick={startNewSession}
           >
             <FormattedMessage id="login.smart.id.qr.refresh" />
           </button>

@@ -80,12 +80,14 @@ describe('Login page', () => {
     component.setProps({
       loadingAuthentication: true,
       smartIdWeb2AppLink: web2AppLink,
+      smartIdRememberMe: true,
       onCancelMobileAuthentication,
       onSmartIdLoginStart,
     });
 
     expect(component.find(SmartIdDeviceLinkLogin).props()).toEqual({
       web2AppLink,
+      rememberMe: true,
       onCancel: onCancelMobileAuthentication,
       onSmartIdLoginStart,
       automaticRenewals: { take: expect.any(Function) },

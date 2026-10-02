@@ -119,6 +119,24 @@ describe('When a user is logging in', () => {
     }
   });
 
+  test('the session that silently replaces an expired QR code keeps their choice to be remembered', async () => {
+    const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+    userEvent.click(await screen.findByRole('checkbox', { name: 'Remember me' }));
+    userEvent.click(screen.getByRole('button', { name: /^Log in$/ }));
+    expect(
+      await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
+    ).toBeInTheDocument();
+
+    const sessionStart = Date.now();
+    const now = jest.spyOn(Date, 'now').mockImplementation(() => sessionStart + 61000);
+    try {
+      await waitFor(() => expect(backend.startedSessions).toBe(2), { timeout: 3000 });
+      expect(backend.deviceLinkRememberMeChoices).toEqual([true, true]);
+    } finally {
+      now.mockRestore();
+    }
+  });
+
   test('they land on the page they came for, without the login landing flag', async () => {
     act(() => {
       history.replace('/login', { from: '/capital' });

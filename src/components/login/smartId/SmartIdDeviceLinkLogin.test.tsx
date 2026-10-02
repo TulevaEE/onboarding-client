@@ -33,11 +33,12 @@ describe('Smart-ID device link login', () => {
 
   let renewals: AutomaticRenewalAllowance;
 
-  const renderDeviceLinkLogin = () =>
+  const renderDeviceLinkLogin = ({ rememberMe = false } = {}) =>
     render(
       <IntlProvider locale="en" messages={translations.en}>
         <SmartIdDeviceLinkLogin
           web2AppLink={web2AppLink}
+          rememberMe={rememberMe}
           onCancel={onCancel}
           onSmartIdLoginStart={onSmartIdLoginStart}
           automaticRenewals={renewals}
@@ -184,9 +185,30 @@ describe('Smart-ID device link login', () => {
 
     await outliveTheSession();
 
-    expect(onSmartIdLoginStart).toHaveBeenCalledWith('en');
+    expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
     expect(screen.queryByText('The QR code expired.')).not.toBeInTheDocument();
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
+  });
+
+  it('starts the new session by itself with the choice to be remembered the expired one had', async () => {
+    renderDeviceLinkLogin({ rememberMe: true });
+    await flushPendingRequests();
+
+    await outliveTheSession();
+
+    expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', true);
+  });
+
+  it('offers a new session with the choice to be remembered the expired one had', async () => {
+    renderDeviceLinkLogin({ rememberMe: true });
+    await flushPendingRequests();
+    setPageVisibility('hidden');
+    await outliveTheSession();
+    act(() => setPageVisibility('visible'));
+
+    userEvent.click(screen.getByRole('button', { name: 'Show a new QR code' }));
+
+    expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', true);
   });
 
   it('stops starting new sessions by itself after five, and offers the button instead', async () => {
@@ -229,7 +251,7 @@ describe('Smart-ID device link login', () => {
     expect(mockGetSmartIdQrCodeLink).toHaveBeenCalledTimes(requestsBeforeExpiry);
 
     userEvent.click(screen.getByRole('button', { name: 'Show a new QR code' }));
-    expect(onSmartIdLoginStart).toHaveBeenCalledWith('en');
+    expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
   });
 
   it('stacks the new QR code button above an equally wide Cancel', async () => {
