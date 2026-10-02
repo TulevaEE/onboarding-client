@@ -304,9 +304,19 @@ describe('Login actions', () => {
 
     await startSmartIdLogin('en');
 
-    expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('en', 'DEVICE_LINK');
+    expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
     expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START });
     expect(dispatch).toHaveBeenCalledWith({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink });
+  });
+
+  it('starts a smart id session that remembers the browser when the person chose so', async () => {
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    const startSmartIdLogin = createBoundAction(actions.startSmartIdLogin);
+
+    await startSmartIdLogin('et', 'DEVICE_LINK', true);
+
+    expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('et', 'DEVICE_LINK', true);
   });
 
   it('leaves opening the Smart-ID app to the user on a phone', async () => {
@@ -350,7 +360,7 @@ describe('Login actions', () => {
 
     await startSmartIdLogin('et', 'NOTIFICATION');
 
-    expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('et', 'NOTIFICATION');
+    expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('et', 'NOTIFICATION', false);
     expect(dispatch).toHaveBeenCalledWith({
       type: MOBILE_AUTHENTICATION_START_SUCCESS,
       controlCode: '4321',

@@ -255,6 +255,19 @@ describe('API calls', () => {
       expect(mockHttp.post).toHaveBeenCalledWith('/v1/smart-id/login', {
         flow: 'DEVICE_LINK',
         language: 'en',
+        rememberMe: false,
+      });
+    });
+
+    it('asks to remember the browser when the person chose so for a device link session', async () => {
+      mockHttp.post.mockResolvedValueOnce({});
+
+      await startSmartIdLogin('et', 'DEVICE_LINK', true);
+
+      expect(mockHttp.post).toHaveBeenCalledWith('/v1/smart-id/login', {
+        flow: 'DEVICE_LINK',
+        language: 'et',
+        rememberMe: true,
       });
     });
 

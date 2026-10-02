@@ -207,6 +207,7 @@ type SmartIdAuthenticationBackend = {
   startedSessions: number;
   acceptedCallbacks: number;
   startedFlows: string[];
+  deviceLinkRememberMeChoices: (boolean | undefined)[];
   rememberedAccount: { firstName: string; lastName: string } | null;
 };
 
@@ -233,6 +234,7 @@ export function smartIdAuthenticationBackend(
     startedSessions: 0,
     acceptedCallbacks: 0,
     startedFlows: [],
+    deviceLinkRememberMeChoices: [],
     rememberedAccount: options.rememberedAccount ?? null,
   };
 
@@ -249,9 +251,16 @@ export function smartIdAuthenticationBackend(
     }),
 
     rest.post('http://localhost/v1/smart-id/login', (req, res, ctx) => {
-      const { flow, language = 'et' } = req.body as { flow?: string; language?: string };
+      const {
+        flow,
+        language = 'et',
+        rememberMe,
+      } = req.body as { flow?: string; language?: string; rememberMe?: unknown };
       if (!flow) {
         return res(ctx.status(400), ctx.json({ errors: [{ code: 'flow.required' }] }));
+      }
+      if (rememberMe !== undefined && typeof rememberMe !== 'boolean') {
+        return res(ctx.status(400), ctx.json({ errors: [{ code: 'remember.me.invalid' }] }));
       }
       if (options.language && language !== options.language) {
         return res(ctx.status(400), ctx.json({ errors: [{ code: 'smart.id.technical.error' }] }));
@@ -261,6 +270,9 @@ export function smartIdAuthenticationBackend(
       }
       const authenticationHash = backend.startSession();
       backend.startedFlows.push(flow);
+      if (flow === 'DEVICE_LINK') {
+        backend.deviceLinkRememberMeChoices.push(rememberMe);
+      }
       if (flow === 'NOTIFICATION') {
         return res(
           ctx.status(200),

@@ -47,16 +47,46 @@ describe('Smart-ID login tab', () => {
 
     userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
 
-    expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK');
+    expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
     expect(screen.queryByText(/Not you/)).not.toBeInTheDocument();
   });
 
-  it('offers the QR login with nothing but its button', async () => {
+  it('leaves the remember me box unticked until the person ticks it', async () => {
+    mockGetRememberedSmartIdAccount.mockResolvedValue(null);
+    renderTab();
+
+    expect(await screen.findByRole('checkbox', { name: 'Remember me' })).not.toBeChecked();
+  });
+
+  it('starts a login that remembers the browser when the person ticks the box', async () => {
+    mockGetRememberedSmartIdAccount.mockResolvedValue(null);
+    renderTab();
+
+    userEvent.click(await screen.findByRole('checkbox', { name: 'Remember me' }));
+    userEvent.click(screen.getByRole('button', { name: /^Log in$/ }));
+
+    expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', true);
+  });
+
+  it('warns under the remember me box that it uses a cookie', async () => {
+    mockGetRememberedSmartIdAccount.mockResolvedValue(null);
+    renderTab();
+
+    expect(
+      await screen.findByRole('checkbox', { name: 'Remember me' }),
+    ).toHaveAccessibleDescription(
+      /^This uses a cookie\. Do not choose it on a public\scomputer\.$/,
+    );
+  });
+
+  it('offers the QR login with nothing but the remember me choice and its button', async () => {
     mockGetRememberedSmartIdAccount.mockResolvedValue(null);
     const { container } = renderTab();
 
     expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
-    expect(container).toHaveTextContent(/^Log in$/);
+    expect(container).toHaveTextContent(
+      /^Remember meThis uses a cookie\. Do not choose it on a public computer\.Log in$/,
+    );
   });
 
   it.each([
@@ -92,6 +122,7 @@ describe('Smart-ID login tab', () => {
 
     expect(await screen.findByRole('button', { name: 'Continue as Mari' })).toBeInTheDocument();
     expect(container).toHaveTextContent(/^Continue as MariNot you\?$/);
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
   });
 
   it('stacks the push login above an equally wide way out for somebody else', async () => {
@@ -124,7 +155,7 @@ describe('Smart-ID login tab', () => {
     userEvent.click(screen.getByRole('button', { name: /^Log in$/ }));
 
     expect(mockGetRememberedSmartIdAccount).not.toHaveBeenCalled();
-    expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK');
+    expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
   });
 
   it('treats a failed remembered account lookup as no account', async () => {

@@ -54,6 +54,8 @@
   "login.not.member": "Sa pole veel Tuleva liige?",
   "login.apply.link": "Täida liitumisavaldus",
   "login.epis_maintenance": "Pensionikontole sisenemine ei pruugi olla praegu võimalik, sest Pensionikeskuse töös on planeeritud katkestus.",
+  "login.remember.me": "Jäta mind meelde",
+  "login.remember.me.note": "Sel juhul kasutame küpsist. Ära vali seda avalikus arvutis.",
   "log.out": "Väljun",
   "steps.next": "Järgmine samm",
   "steps.previous": "Eelmine samm",

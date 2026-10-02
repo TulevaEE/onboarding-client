@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { Loader } from '../../common';
@@ -6,14 +6,16 @@ import { SmartIdLoginFlow } from '../../common/apiModels';
 import { useLoginLanguage } from '../loginLanguage';
 import { useRememberedSmartIdAccount } from '../smartId/useRememberedSmartIdAccount';
 import { PII_CLASS } from '../../tracking/piiMarkup';
+import { RememberMeCheckbox } from './RememberMeCheckbox';
 
 interface SmartIdLoginTabProps {
-  onSmartIdLoginStart: (language: string, flow?: SmartIdLoginFlow) => void;
+  onSmartIdLoginStart: (language: string, flow?: SmartIdLoginFlow, rememberMe?: boolean) => void;
 }
 
 export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLoginStart }) => {
   const language = useLoginLanguage();
   const { account, loading, forget } = useRememberedSmartIdAccount();
+  const [rememberMe, setRememberMe] = useState(false);
 
   if (loading) {
     return <Loader className="align-middle" />;
@@ -44,11 +46,12 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
   }
 
   return (
-    <div className="d-grid">
+    <div className="d-grid gap-3">
+      <RememberMeCheckbox id="smart-id-remember-me" checked={rememberMe} onChange={setRememberMe} />
       <button
         type="button"
         className="btn btn-primary btn-lg text-wrap text-balance"
-        onClick={() => onSmartIdLoginStart(language, 'DEVICE_LINK')}
+        onClick={() => onSmartIdLoginStart(language, 'DEVICE_LINK', rememberMe)}
       >
         <FormattedMessage id="login.enter" />
       </button>

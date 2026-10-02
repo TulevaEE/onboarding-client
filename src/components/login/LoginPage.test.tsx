@@ -71,6 +71,30 @@ describe('When a user is logging in', () => {
     expect(history.location.state).toEqual({ justLoggedIn: true });
   });
 
+  test('a Smart-ID login is not remembered on this browser unless they ask for it', async () => {
+    const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+    expect(await screen.findByRole('checkbox', { name: 'Remember me' })).not.toBeChecked();
+
+    userEvent.click(screen.getByRole('button', { name: /^Log in$/ }));
+
+    expect(
+      await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
+    ).toBeInTheDocument();
+    expect(backend.deviceLinkRememberMeChoices).toEqual([false]);
+  });
+
+  test('a Smart-ID login is remembered on this browser when they ask for it', async () => {
+    const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+    userEvent.click(await screen.findByRole('checkbox', { name: 'Remember me' }));
+
+    userEvent.click(screen.getByRole('button', { name: /^Log in$/ }));
+
+    expect(
+      await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
+    ).toBeInTheDocument();
+    expect(backend.deviceLinkRememberMeChoices).toEqual([true]);
+  });
+
   test('they sign in by scanning the QR code of the session that silently replaced an expired one', async () => {
     const backend = smartIdAuthenticationBackend(server, { language: 'en' });
     userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));

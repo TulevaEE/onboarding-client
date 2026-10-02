@@ -134,8 +134,10 @@ export async function isMobileIdNumberRemembered(
 export function startSmartIdLogin(
   language: string,
   flow: SmartIdLoginFlow = 'DEVICE_LINK',
+  rememberMe = false,
 ): Promise<SmartIdLoginStart> {
-  return post(getEndpoint('/v1/smart-id/login'), { flow, language });
+  const rememberMeChoice = flow === 'DEVICE_LINK' ? { rememberMe } : {};
+  return post(getEndpoint('/v1/smart-id/login'), { flow, language, ...rememberMeChoice });
 }
 
 const nullWhenNoContent = <T>(body: T | undefined | ''): T | null =>

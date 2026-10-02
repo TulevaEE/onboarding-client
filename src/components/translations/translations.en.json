@@ -54,6 +54,8 @@
   "login.not.member": "You aren’t a member of Tuleva yet?",
   "login.apply.link": "Fill out a membership application",
   "login.epis_maintenance": "Accessing your pension account may not be possible right now due to scheduled maintenance at Pensionikeskus.",
+  "login.remember.me": "Remember me",
+  "login.remember.me.note": "This uses a cookie. Do not choose it on a public computer.",
   "log.out": "Log out",
   "steps.next": "Next step",
   "steps.previous": "Previous step",

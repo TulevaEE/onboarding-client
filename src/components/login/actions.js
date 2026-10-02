@@ -351,7 +351,7 @@ export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => 
   attempt.timeout = setTimeout(poll, POLL_DELAY);
 };
 
-export function startSmartIdLogin(language, flow = 'DEVICE_LINK') {
+export function startSmartIdLogin(language, flow = 'DEVICE_LINK', rememberMe = false) {
   return (dispatch, getState) => {
     smartIdStartSequence += 1;
     const startSequence = smartIdStartSequence;
@@ -359,7 +359,7 @@ export function startSmartIdLogin(language, flow = 'DEVICE_LINK') {
     stopSmartIdPolling();
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
-      .startSmartIdLogin(language, flow)
+      .startSmartIdLogin(language, flow, rememberMe)
       .then((start) => {
         if (canceledOrSuperseded()) {
           return;
