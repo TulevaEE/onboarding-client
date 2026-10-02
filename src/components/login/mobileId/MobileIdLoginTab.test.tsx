@@ -181,7 +181,7 @@ describe('Mobile-ID login tab', () => {
     renderTab();
 
     expect(rememberMe()).toHaveAccessibleDescription(
-      /^This uses a cookie\. Do not choose it on a public\scomputer\.$/,
+      /^This uses a cookie\. Do not choose it on a\spublic\scomputer\.$/,
     );
   });
 

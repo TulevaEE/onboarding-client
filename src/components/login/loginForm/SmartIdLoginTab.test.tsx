@@ -75,7 +75,7 @@ describe('Smart-ID login tab', () => {
     expect(
       await screen.findByRole('checkbox', { name: 'Remember me' }),
     ).toHaveAccessibleDescription(
-      /^This uses a cookie\. Do not choose it on a public\scomputer\.$/,
+      /^This uses a cookie\. Do not choose it on a\spublic\scomputer\.$/,
     );
   });
 
