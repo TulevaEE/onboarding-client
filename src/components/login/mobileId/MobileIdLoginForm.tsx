@@ -44,7 +44,7 @@ export const MobileIdLoginForm: React.FC<MobileIdLoginFormProps> = ({
   const submitButton = useRef<HTMLInputElement>(null);
   const pickedByUser = useContext(LoginTabPickedByUser);
   const [submittedInvalidCode, setSubmittedInvalidCode] = useState(false);
-  const [rememberMe, setRememberMe] = useState(readRememberMeChoice);
+  const [chosenRememberMe, setChosenRememberMe] = useState(readRememberMeChoice);
   const [submittedNumberProblem, setSubmittedNumberProblem] = useState<
     'NOT_ESTONIAN' | 'INVALID' | null
   >(null);
@@ -83,13 +83,11 @@ export const MobileIdLoginForm: React.FC<MobileIdLoginFormProps> = ({
     }
   }, [focusFirstEmptyField]);
 
-  useEffect(() => {
-    setRememberMe(numberRemembered || readRememberMeChoice());
-  }, [numberRemembered]);
+  const rememberMe = chosenRememberMe ?? numberRemembered;
 
   const chooseRememberMe = (choice: boolean) => {
     saveRememberMeChoice(choice);
-    setRememberMe(choice);
+    setChosenRememberMe(choice);
   };
 
   useEffect(() => {

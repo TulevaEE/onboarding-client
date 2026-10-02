@@ -62,6 +62,7 @@ describe('Mobile-ID login form', () => {
 
   afterEach(() => {
     Object.defineProperty(navigator, 'userAgent', { value: desktopUserAgent, configurable: true });
+    jest.restoreAllMocks();
     window.localStorage.clear();
   });
 
@@ -167,6 +168,33 @@ describe('Mobile-ID login form', () => {
     leave();
 
     renderTab();
+
+    expect(rememberMe()).not.toBeChecked();
+  });
+
+  it('keeps an untick made before typing an identity code whose number is remembered', async () => {
+    const { unmount: leave } = renderTab();
+    userEvent.click(rememberMe());
+    userEvent.click(rememberMe());
+    leave();
+    renderTab();
+
+    userEvent.type(identityCode(), REMEMBERED_CODE);
+    await waitForPhoneFieldToHide();
+
+    expect(rememberMe()).not.toBeChecked();
+  });
+
+  it('keeps an untick on this page even when the browser cannot store the choice', async () => {
+    jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('storage blocked');
+    });
+    renderTab();
+    userEvent.click(rememberMe());
+    userEvent.click(rememberMe());
+
+    userEvent.type(identityCode(), REMEMBERED_CODE);
+    await waitForPhoneFieldToHide();
 
     expect(rememberMe()).not.toBeChecked();
   });

@@ -1,10 +1,11 @@
 const STORAGE_KEY = 'rememberMe';
 
-export function readRememberMeChoice(): boolean {
+export function readRememberMeChoice(): boolean | null {
   try {
-    return window.localStorage.getItem(STORAGE_KEY) === 'true';
+    const choice = window.localStorage.getItem(STORAGE_KEY);
+    return choice === null ? null : choice === 'true';
   } catch (error) {
-    return false;
+    return null;
   }
 }
 

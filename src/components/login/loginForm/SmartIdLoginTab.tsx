@@ -16,7 +16,7 @@ interface SmartIdLoginTabProps {
 export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLoginStart }) => {
   const language = useLoginLanguage();
   const { account, loading, forget } = useRememberedSmartIdAccount();
-  const [rememberMe, setRememberMe] = useState(readRememberMeChoice);
+  const [rememberMe, setRememberMe] = useState(() => readRememberMeChoice() ?? false);
 
   const chooseRememberMe = (choice: boolean) => {
     saveRememberMeChoice(choice);
