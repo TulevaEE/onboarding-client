@@ -46,6 +46,7 @@ interface SmartIdDeviceLinkLoginProps {
   onCancel: () => void;
   onSmartIdLoginStart: SmartIdLoginStart;
   onExpire: () => void;
+  onAppOpen: () => void;
   automaticRenewals: AutomaticRenewalAllowance;
 }
 
@@ -56,6 +57,7 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
   onCancel,
   onSmartIdLoginStart,
   onExpire,
+  onAppOpen,
   automaticRenewals,
 }) => {
   if (opensTheSmartIdApp({ qrCodeRequested })) {
@@ -72,7 +74,7 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
       sizePixels={MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE * qrCodePixelsPerModule(device)}
     >
       {device === 'tablet' && (
-        <QuietLink href={web2AppLink}>
+        <QuietLink href={web2AppLink} onClick={onAppOpen}>
           <FormattedMessage id="login.smart.id.open.app" />
         </QuietLink>
       )}

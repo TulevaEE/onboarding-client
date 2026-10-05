@@ -157,6 +157,7 @@ describe('Login page', () => {
     const onCancelMobileAuthentication = jest.fn();
     const onSmartIdLoginStart = jest.fn();
     const onSmartIdQrCodeExpire = jest.fn();
+    const onSmartIdAppOpen = jest.fn();
     component.setProps({
       loadingAuthentication: true,
       smartIdWeb2AppLink: web2AppLink,
@@ -164,6 +165,7 @@ describe('Login page', () => {
       onCancelMobileAuthentication,
       onSmartIdLoginStart,
       onSmartIdQrCodeExpire,
+      onSmartIdAppOpen,
     });
 
     expect(pendingLogin().type).toBe(SmartIdDeviceLinkLogin);
@@ -174,6 +176,7 @@ describe('Login page', () => {
       onCancel: onCancelMobileAuthentication,
       onSmartIdLoginStart,
       onExpire: onSmartIdQrCodeExpire,
+      onAppOpen: onSmartIdAppOpen,
       automaticRenewals: { take: expect.any(Function) },
     });
   });

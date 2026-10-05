@@ -22,6 +22,7 @@ import {
   startSmartIdLogin,
   startSmartIdLoginInTheApp,
   expireSmartIdQrCode,
+  markSmartIdAppOpened,
 } from './actions';
 import { getAuthentication } from '../common/authenticationManager';
 import { loginLanding } from './loginLanding';
@@ -39,6 +40,7 @@ export const LoginPage = ({
   onSmartIdLoginStart,
   onSmartIdAppLoginStart,
   onSmartIdQrCodeExpire,
+  onSmartIdAppOpen,
   onAuthenticateWithIdCard,
   onLoginMethodChange,
   phoneNumber,
@@ -92,6 +94,7 @@ export const LoginPage = ({
           onCancel={onCancelMobileAuthentication}
           onSmartIdLoginStart={onSmartIdLoginStart}
           onExpire={onSmartIdQrCodeExpire}
+          onAppOpen={onSmartIdAppOpen}
           automaticRenewals={qrCodeRenewals}
         />
       );
@@ -143,6 +146,7 @@ LoginPage.defaultProps = {
   onSmartIdLoginStart: noop,
   onSmartIdAppLoginStart: noop,
   onSmartIdQrCodeExpire: noop,
+  onSmartIdAppOpen: noop,
   onAuthenticateWithIdCard: noop,
   onLoginMethodChange: noop,
 
@@ -172,6 +176,7 @@ LoginPage.propTypes = {
   onSmartIdLoginStart: Types.func,
   onSmartIdAppLoginStart: Types.func,
   onSmartIdQrCodeExpire: Types.func,
+  onSmartIdAppOpen: Types.func,
   onAuthenticateWithIdCard: Types.func,
   onLoginMethodChange: Types.func,
 
@@ -219,6 +224,7 @@ const mapDispatchToProps = (dispatch) =>
       onSmartIdLoginStart: startSmartIdLogin,
       onSmartIdAppLoginStart: startSmartIdLoginInTheApp,
       onSmartIdQrCodeExpire: expireSmartIdQrCode,
+      onSmartIdAppOpen: markSmartIdAppOpened,
       onAuthenticateWithIdCard: authenticateWithIdCard,
       onLoginMethodChange: cancelMobileAuthentication,
     },

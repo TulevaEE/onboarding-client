@@ -661,6 +661,19 @@ describe('When a user is logging in', () => {
         await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
       ).toBeInTheDocument();
     });
+
+    test('a login the Smart-ID app they opened from the link finished in a new tab brings this tab back to Log in, without an error', async () => {
+      const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+      userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+      userEvent.click(await screen.findByRole('link', { name: /^Open the Smart.ID app$/ }));
+
+      backend.acceptCallbackInAnotherTab();
+
+      expect(
+        await screen.findByRole('button', { name: /^Log in$/ }, { timeout: 3000 }),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
   });
 
   test('they can sign in with mobile id typing the number as they like, showing the security code', async () => {
