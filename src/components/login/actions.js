@@ -38,6 +38,7 @@ import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAler
 
 import { getAuthentication } from '../common/authenticationManager';
 import { forgetSmartIdCallbackParameters } from './smartId/smartIdCallbackParameters';
+import { pageInView } from './smartId/pageInView';
 
 const POLL_DELAY = 1000;
 let timeout;
@@ -352,7 +353,7 @@ export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => 
     if (attempt !== smartIdAttempt || !getState().login.loadingAuthentication) {
       return;
     }
-    if (document.visibilityState !== 'visible') {
+    if (!pageInView()) {
       return;
     }
     logPoll('tab-visible → poll-now');
