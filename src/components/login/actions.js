@@ -420,50 +420,48 @@ function startSmartIdSession(
     const canceledOrSuperseded = beginLoginStart();
     stopSmartIdPolling();
     dispatch({ type: MOBILE_AUTHENTICATION_START });
-    return api
-      .startSmartIdLogin(language, flow, rememberMe)
-      .then((start) => {
-        if (canceledOrSuperseded()) {
-          return;
-        }
-        const returnPath = getState().router?.location?.state?.from;
-        const { authenticationHash } = start;
-        if (start.flow === 'NOTIFICATION') {
-          const controlCode = start.verificationCode;
-          savePendingSmartIdAuthentication({
-            authenticationHash,
-            controlCode,
-            returnPath,
-            language,
-          });
-          dispatch({
-            type: MOBILE_AUTHENTICATION_START_SUCCESS,
-            controlCode,
-            verificationCodeChoice: true,
-          });
-          dispatch(getSmartIdTokens(authenticationHash));
-          return;
-        }
-        const { web2AppLink } = start;
+    const failToStart = (error) => {
+      if (canceledOrSuperseded()) {
+        return;
+      }
+      clearPendingSmartIdAuthentication();
+      dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error });
+    };
+    return api.startSmartIdLogin(language, flow, rememberMe).then((start) => {
+      if (canceledOrSuperseded()) {
+        return;
+      }
+      const returnPath = getState().router?.location?.state?.from;
+      const { authenticationHash } = start;
+      if (start.flow === 'NOTIFICATION') {
+        const controlCode = start.verificationCode;
         savePendingSmartIdAuthentication({
           authenticationHash,
-          web2AppLink,
-          rememberMe,
-          qrCodeRequested,
+          controlCode,
           returnPath,
           language,
         });
-        dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink, rememberMe, qrCodeRequested });
+        dispatch({
+          type: MOBILE_AUTHENTICATION_START_SUCCESS,
+          controlCode,
+          verificationCodeChoice: true,
+        });
         dispatch(getSmartIdTokens(authenticationHash));
-        afterDeviceLinkStarted(web2AppLink);
-      })
-      .catch((error) => {
-        if (canceledOrSuperseded()) {
-          return;
-        }
-        clearPendingSmartIdAuthentication();
-        dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error });
+        return;
+      }
+      const { web2AppLink } = start;
+      savePendingSmartIdAuthentication({
+        authenticationHash,
+        web2AppLink,
+        rememberMe,
+        qrCodeRequested,
+        returnPath,
+        language,
       });
+      dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink, rememberMe, qrCodeRequested });
+      dispatch(getSmartIdTokens(authenticationHash));
+      afterDeviceLinkStarted(web2AppLink);
+    }, failToStart);
   };
 }
 

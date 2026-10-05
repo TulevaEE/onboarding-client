@@ -509,6 +509,23 @@ describe('Login actions', () => {
       });
     });
 
+    it('keeps waiting for a started login when the browser refuses to open the Smart-ID app', async () => {
+      mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
+      const refusal = new Error('the browser refused to open the app');
+      openSmartIdApp.mockImplementation(() => {
+        throw refusal;
+      });
+
+      await expect(createBoundAction(actions.startSmartIdLoginInTheApp)('en')).rejects.toBe(
+        refusal,
+      );
+
+      expect(dispatch).not.toHaveBeenCalledWith(
+        expect.objectContaining({ type: MOBILE_AUTHENTICATION_START_ERROR }),
+      );
+      expect(sessionStorage.getItem('pendingSmartIdAuthentication')).not.toBeNull();
+    });
+
     it('opens no Smart-ID app when the session could not start', async () => {
       mockApi.startSmartIdLogin = jest.fn(() => Promise.reject(new Error('no session')));
 
