@@ -96,6 +96,16 @@ describe('Login reducer', () => {
     expect(loginReducer(undefined, action).smartIdRememberMe).toBe(true);
   });
 
+  it('keeps whether the smart id session shows its QR code', () => {
+    const action = {
+      type: SMART_ID_LOGIN_START_SUCCESS,
+      web2AppLink: 'https://smart-id.com/device-link/?deviceLinkType=Web2App',
+      qrCodeRequested: true,
+    };
+
+    expect(loginReducer(undefined, action).smartIdQrCodeRequested).toBe(true);
+  });
+
   it('numbers each smart id session, so a new one is told apart from the one it replaces', () => {
     const action = { type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink: 'https://smart-id.com/same' };
 

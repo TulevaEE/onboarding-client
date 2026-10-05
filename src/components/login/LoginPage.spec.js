@@ -48,22 +48,14 @@ describe('Login page', () => {
     expect(onSmartIdLoginStart).toHaveBeenCalledWith('et', 'DEVICE_LINK', true);
   });
 
-  it('shows the QR code a person on a phone asked for, until they start a login without one', () => {
-    const onSmartIdLoginStart = jest.fn();
+  it('shows the QR code of a smart id session started for its QR code', () => {
     component.setProps({
-      onSmartIdLoginStart,
       loadingAuthentication: true,
       smartIdWeb2AppLink: 'https://smart-id.com/device-link/?deviceLinkType=Web2App',
+      smartIdQrCodeRequested: true,
     });
 
-    component.find(LoginForm).prop('onSmartIdLoginStart')('en', 'DEVICE_LINK', false, true);
-
-    expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
     expect(pendingLogin().props.qrCodeRequested).toBe(true);
-
-    component.find(LoginForm).prop('onSmartIdLoginStart')('en', 'DEVICE_LINK', false);
-
-    expect(pendingLogin().props.qrCodeRequested).toBe(false);
   });
 
   describe('the device link login started from the Smart-ID tab', () => {

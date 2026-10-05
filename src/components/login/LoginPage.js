@@ -47,6 +47,7 @@ export const LoginPage = ({
   verificationCodeChoice,
   smartIdWeb2AppLink,
   smartIdRememberMe,
+  smartIdQrCodeRequested,
   smartIdSession,
   loadingAuthentication,
   loadingUserConversion,
@@ -57,7 +58,6 @@ export const LoginPage = ({
 }) => {
   usePageTitle('pageTitle.loginPage');
   const [qrCodeRenewals] = useState(automaticRenewalAllowance);
-  const [smartIdQrCodeRequested, setSmartIdQrCodeRequested] = useState(false);
 
   if (isAuthenticated) {
     const from = location.state && location.state.from;
@@ -65,7 +65,6 @@ export const LoginPage = ({
   }
 
   const startSmartIdLoginFromTheTab = (language, flow, rememberMe, qrCodeRequested = false) => {
-    setSmartIdQrCodeRequested(qrCodeRequested);
     if (flow === 'DEVICE_LINK' && opensTheSmartIdApp({ qrCodeRequested })) {
       onSmartIdAppLoginStart(language);
       return;
@@ -154,6 +153,7 @@ LoginPage.defaultProps = {
   verificationCodeChoice: false,
   smartIdWeb2AppLink: null,
   smartIdRememberMe: false,
+  smartIdQrCodeRequested: false,
   smartIdSession: 0,
   loadingAuthentication: false,
   loadingUserConversion: false,
@@ -182,6 +182,7 @@ LoginPage.propTypes = {
   verificationCodeChoice: Types.bool,
   smartIdWeb2AppLink: Types.string,
   smartIdRememberMe: Types.bool,
+  smartIdQrCodeRequested: Types.bool,
   smartIdSession: Types.number,
   loadingAuthentication: Types.bool,
   loadingUserConversion: Types.bool,
@@ -200,6 +201,7 @@ const mapStateToProps = (state) => ({
   verificationCodeChoice: state.login.verificationCodeChoice,
   smartIdWeb2AppLink: state.login.smartIdWeb2AppLink,
   smartIdRememberMe: state.login.smartIdRememberMe,
+  smartIdQrCodeRequested: state.login.smartIdQrCodeRequested,
   smartIdSession: state.login.smartIdSession,
   loadingAuthentication: state.login.loadingAuthentication,
   loadingUserConversion: state.login.loadingUserConversion,

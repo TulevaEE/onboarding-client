@@ -416,6 +416,7 @@ describe('Login actions', () => {
       type: SMART_ID_LOGIN_START_SUCCESS,
       web2AppLink,
       rememberMe: false,
+      qrCodeRequested: true,
     });
   });
 
@@ -431,6 +432,7 @@ describe('Login actions', () => {
       type: SMART_ID_LOGIN_START_SUCCESS,
       web2AppLink,
       rememberMe: true,
+      qrCodeRequested: true,
     });
   });
 
@@ -456,6 +458,7 @@ describe('Login actions', () => {
       type: SMART_ID_LOGIN_START_SUCCESS,
       web2AppLink,
       rememberMe: false,
+      qrCodeRequested: true,
     });
   });
 
@@ -482,6 +485,7 @@ describe('Login actions', () => {
         type: SMART_ID_LOGIN_START_SUCCESS,
         web2AppLink,
         rememberMe: false,
+        qrCodeRequested: false,
       });
       expect(openSmartIdApp).toHaveBeenCalledTimes(1);
       expect(openSmartIdApp).toHaveBeenCalledWith(web2AppLink);
@@ -1106,7 +1110,40 @@ describe('Login actions', () => {
       type: SMART_ID_LOGIN_START_SUCCESS,
       web2AppLink,
       rememberMe: true,
+      qrCodeRequested: true,
     });
+  });
+
+  it('resumes a pending QR code login after a page reload as a QR code', async () => {
+    state = { login: { loadingAuthentication: true } };
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    await createBoundAction(actions.startSmartIdLogin)('et');
+
+    mockDispatch();
+    createBoundAction(actions.resumePendingSmartIdAuthentication)();
+
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({ type: SMART_ID_LOGIN_START_SUCCESS, qrCodeRequested: true }),
+    );
+  });
+
+  it('resumes a pending login in the Smart-ID app after a page reload without its QR code', async () => {
+    Object.defineProperty(window, 'location', {
+      value: { assign: jest.fn(), search: '', pathname: '/login' },
+      writable: true,
+      configurable: true,
+    });
+    mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
+    mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    await createBoundAction(actions.startSmartIdLoginInTheApp)('et');
+
+    mockDispatch();
+    createBoundAction(actions.resumePendingSmartIdAuthentication)();
+
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({ type: SMART_ID_LOGIN_START_SUCCESS, qrCodeRequested: false }),
+    );
   });
 
   it('resumes a pending smart id login after a page reload', async () => {
@@ -1127,6 +1164,7 @@ describe('Login actions', () => {
       type: SMART_ID_LOGIN_START_SUCCESS,
       web2AppLink,
       rememberMe: false,
+      qrCodeRequested: true,
     });
 
     jest.runOnlyPendingTimers();
@@ -1211,6 +1249,7 @@ describe('Login actions', () => {
         type: SMART_ID_LOGIN_START_SUCCESS,
         web2AppLink,
         rememberMe: false,
+        qrCodeRequested: true,
       });
       expect(mockApi.getSmartIdTokens).toHaveBeenCalled();
       expect(dispatch).not.toHaveBeenCalledWith(

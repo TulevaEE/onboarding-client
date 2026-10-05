@@ -37,6 +37,7 @@ export const initialState = {
   verificationCodeChoice: false,
   smartIdWeb2AppLink: null,
   smartIdRememberMe: false,
+  smartIdQrCodeRequested: false,
   smartIdSession: 0,
   loadingAuthentication: false,
   error: null,
@@ -72,6 +73,7 @@ export default function loginReducer(state = initialState, action) {
         ...state,
         smartIdWeb2AppLink: action.web2AppLink,
         smartIdRememberMe: action.rememberMe,
+        smartIdQrCodeRequested: action.qrCodeRequested === true,
         smartIdSession: state.smartIdSession + 1,
         error: null,
       };
