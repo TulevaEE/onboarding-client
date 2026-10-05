@@ -366,7 +366,19 @@ export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => 
   attempt.timeout = setTimeout(poll, POLL_DELAY);
 };
 
+const stayOnThePage = () => {};
+
+const openTheSmartIdApp = (web2AppLink) => window.location.assign(web2AppLink);
+
 export function startSmartIdLogin(language, flow = 'DEVICE_LINK', rememberMe = false) {
+  return startSmartIdSession(language, flow, rememberMe, stayOnThePage);
+}
+
+export function startSmartIdLoginInTheApp(language) {
+  return startSmartIdSession(language, 'DEVICE_LINK', false, openTheSmartIdApp);
+}
+
+function startSmartIdSession(language, flow, rememberMe, afterDeviceLinkStarted) {
   return (dispatch, getState) => {
     smartIdStartSequence += 1;
     const startSequence = smartIdStartSequence;
@@ -407,6 +419,7 @@ export function startSmartIdLogin(language, flow = 'DEVICE_LINK', rememberMe = f
         });
         dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink, rememberMe });
         dispatch(getSmartIdTokens(authenticationHash));
+        afterDeviceLinkStarted(web2AppLink);
       })
       .catch((error) => {
         if (canceledOrSuperseded()) {

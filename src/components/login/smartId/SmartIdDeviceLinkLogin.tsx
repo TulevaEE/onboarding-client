@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -11,6 +11,9 @@ import { useLoginLanguage } from '../loginLanguage';
 import { useSmartIdQrCodeLink } from './useSmartIdQrCodeLink';
 import { AutomaticRenewalAllowance } from './automaticRenewalAllowance';
 import { SmartIdLoginFlow } from '../../common/apiModels';
+import { opensTheSmartIdApp } from './opensTheSmartIdApp';
+import { useStillOnThisPage } from './useStillOnThisPage';
+import { IconBeforeLabel, SmartIdMarkIcon } from './icons';
 
 const MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE = 53;
 const QR_CODE_PIXELS_PER_MODULE: Record<DeviceClass, number> = {
@@ -40,10 +43,10 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
   onExpire,
   automaticRenewals,
 }) => {
-  const device = deviceClass();
-  if (device === 'phone' && !qrCodeRequested) {
+  if (opensTheSmartIdApp(qrCodeRequested)) {
     return <SmartIdAppLogin web2AppLink={web2AppLink} onCancel={onCancel} />;
   }
+  const device = deviceClass();
   return (
     <SmartIdQrCodeLogin
       rememberMe={rememberMe}
@@ -65,21 +68,35 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
 const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> = ({
   web2AppLink,
   onCancel,
-}) => (
-  <>
-    <FocusedParagraph className="m-0 mb-4 text-pretty">
-      <FormattedMessage id="login.smart.id.mobile.instructions" />
-    </FocusedParagraph>
-    <Loader className="align-middle" />
-    <ConfirmationHint className="mt-3" />
-    <div className="d-grid gap-2 mt-4">
-      <a className="btn btn-primary btn-lg text-wrap text-balance" href={web2AppLink}>
-        <FormattedMessage id="login.smart.id.open.app" />
-      </a>
-      <CancelButton onCancel={onCancel} />
-    </div>
-  </>
-);
+}) => {
+  const stillOnThisPage = useStillOnThisPage();
+  const appButton = useRef<HTMLAnchorElement>(null);
+  const cancelButton = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    (stillOnThisPage ? appButton : cancelButton).current?.focus();
+  }, [stillOnThisPage]);
+
+  return (
+    <>
+      <Loader className="align-middle" />
+      <div className="d-grid gap-2 mt-4">
+        {stillOnThisPage && (
+          <a
+            ref={appButton}
+            className="btn btn-primary btn-lg text-wrap text-balance"
+            href={web2AppLink}
+          >
+            <IconBeforeLabel icon={<SmartIdMarkIcon />}>
+              <FormattedMessage id="login.smart.id.open.app" />
+            </IconBeforeLabel>
+          </a>
+        )}
+        <CancelButton ref={cancelButton} onCancel={onCancel} />
+      </div>
+    </>
+  );
+};
 
 const SmartIdQrCodeLogin: React.FC<{
   rememberMe: boolean;
@@ -157,9 +174,3 @@ const SmartIdQrCodeLogin: React.FC<{
     </>
   );
 };
-
-const ConfirmationHint: React.FC<{ className: string }> = ({ className }) => (
-  <p className={`m-0 ${className} small text-body-secondary text-pretty`}>
-    <FormattedMessage id="login.smart.id.confirm.hint" />
-  </p>
-);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, render, screen } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 
@@ -144,14 +144,6 @@ describe('Smart-ID device link login', () => {
     expect(screen.getByText('The QR code expired.')).toHaveFocus();
   });
 
-  it('moves the focus to the instruction when a phone is sent to the Smart-ID app', async () => {
-    setUserAgent(phoneUserAgent);
-    renderDeviceLinkLogin();
-    await flushPendingRequests();
-
-    expect(screen.getByText(/^Open the Smart.ID app and confirm the login there\./)).toHaveFocus();
-  });
-
   it('draws no card of its own around the QR code, so it can sit inside the login card', async () => {
     const { container } = renderDeviceLinkLogin();
     await flushPendingRequests();
@@ -169,7 +161,7 @@ describe('Smart-ID device link login', () => {
     expectNoCardOfItsOwn(container);
   });
 
-  it('draws no card of its own around the Smart-ID app link on a phone', async () => {
+  it('draws no card of its own around the wait for the Smart-ID app on a phone', async () => {
     setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15');
     const { container } = renderDeviceLinkLogin();
     await flushPendingRequests();
@@ -483,39 +475,119 @@ describe('Smart-ID device link login', () => {
     expectFullWidthCancel(screen.getByRole('button', { name: 'Cancel' }));
   });
 
-  it('offers the Smart-ID app link and instructions on a phone', async () => {
-    setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15');
+  describe('on a phone, which has left for the Smart-ID app', () => {
+    const appButton = () => screen.queryByRole('link', { name: 'Open the Smart\u2011ID app' });
+    const waitInView = (millis: number) =>
+      act(() => {
+        jest.advanceTimersByTime(millis);
+      });
 
-    renderDeviceLinkLogin();
-    await flushPendingRequests();
+    beforeEach(() => setUserAgent(phoneUserAgent));
 
-    expect(
-      screen.getByText(
-        /^Open the Smart.ID app and confirm the login there\. You will be brought back here automatically\.$/,
-      ),
-    ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Open the Smart\u2011ID app' })).toHaveAttribute(
-      'href',
-      web2AppLink,
-    );
-    expect(
-      screen.getByText(/^The Smart.ID app will ask you to confirm logging in to Tuleva\.$/),
-    ).toBeInTheDocument();
-    expect(mockGetSmartIdQrCodeLink).not.toHaveBeenCalled();
+    it('shows nothing but a spinner and Cancel while the Smart-ID app opens', async () => {
+      const { container } = renderDeviceLinkLogin();
+      await flushPendingRequests();
 
-    userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
-    expect(onCancel).toHaveBeenCalledTimes(1);
-  });
+      expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
+      expect(container).toHaveTextContent(/^Cancel$/);
+      expect(appButton()).not.toBeInTheDocument();
+      expect(mockGetSmartIdQrCodeLink).not.toHaveBeenCalled();
+    });
 
-  it('stacks the Smart-ID app link above an equally wide Cancel on a phone', async () => {
-    setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15');
+    it('moves the focus to Cancel, so keyboard users are not left on the page itself', async () => {
+      renderDeviceLinkLogin();
+      await flushPendingRequests();
 
-    renderDeviceLinkLogin();
-    await flushPendingRequests();
+      expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus();
+    });
 
-    expectStackedFullWidth(
-      screen.getByRole('link', { name: 'Open the Smart\u2011ID app' }),
-      screen.getByRole('button', { name: 'Cancel' }),
-    );
+    it('cancels the login while the Smart-ID app opens', async () => {
+      renderDeviceLinkLogin();
+      await flushPendingRequests();
+
+      userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+      expect(onCancel).toHaveBeenCalledTimes(1);
+    });
+
+    it('offers a button into the Smart-ID app when the page stays in view for 2 seconds', async () => {
+      renderDeviceLinkLogin();
+      await flushPendingRequests();
+
+      waitInView(1999);
+      expect(appButton()).not.toBeInTheDocument();
+
+      waitInView(1);
+      expect(appButton()).toHaveAttribute('href', web2AppLink);
+    });
+
+    it.each([
+      ['en', 'Open the Smart\u2011ID app'],
+      ['et', 'Ava Smart\u2011ID rakendus'],
+    ] as const)('names the button into the Smart-ID app in %s', async (language, name) => {
+      renderDeviceLinkLogin({ language });
+      await flushPendingRequests();
+
+      waitInView(2000);
+
+      expect(screen.getByRole('link', { name })).toBeInTheDocument();
+    });
+
+    it('offers no button into the Smart-ID app when the page went out of view within 2 seconds', async () => {
+      renderDeviceLinkLogin();
+      await flushPendingRequests();
+
+      waitInView(1000);
+      act(() => setPageVisibility('hidden'));
+      waitInView(5000);
+
+      expect(appButton()).not.toBeInTheDocument();
+    });
+
+    it('offers the button into the Smart-ID app when they come back from the app without finishing', async () => {
+      renderDeviceLinkLogin();
+      await flushPendingRequests();
+      act(() => setPageVisibility('hidden'));
+      waitInView(5000);
+
+      act(() => setPageVisibility('visible'));
+
+      expect(appButton()).toHaveAttribute('href', web2AppLink);
+    });
+
+    it('moves the focus to the button into the Smart-ID app when it appears', async () => {
+      renderDeviceLinkLogin();
+      await flushPendingRequests();
+
+      waitInView(2000);
+
+      expect(appButton()).toHaveFocus();
+    });
+
+    it('stacks the button into the Smart-ID app above an equally wide Cancel', async () => {
+      renderDeviceLinkLogin();
+      await flushPendingRequests();
+
+      waitInView(2000);
+
+      expectStackedFullWidth(
+        screen.getByRole('link', { name: 'Open the Smart\u2011ID app' }),
+        screen.getByRole('button', { name: 'Cancel' }),
+      );
+    });
+
+    it('marks the button into the Smart-ID app with the Smart-ID mark before its label', async () => {
+      renderDeviceLinkLogin();
+      await flushPendingRequests();
+
+      waitInView(2000);
+
+      const button = screen.getByRole('link', { name: 'Open the Smart\u2011ID app' });
+      const mark = within(button).getByTestId('smart-id-mark-icon');
+      expect(mark).toHaveAttribute('aria-hidden', 'true');
+      expect(
+        mark.compareDocumentPosition(within(button).getByText('Open the Smart\u2011ID app')),
+      ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    });
   });
 });
