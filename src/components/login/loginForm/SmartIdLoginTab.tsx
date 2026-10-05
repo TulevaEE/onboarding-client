@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { Loader } from '../../common';
 import { SmartIdLoginFlow } from '../../common/apiModels';
@@ -22,6 +22,7 @@ interface SmartIdLoginTabProps {
 }
 
 export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLoginStart }) => {
+  const { formatMessage } = useIntl();
   const language = useLoginLanguage();
   const { account, loading, pushLoginAvailable, forget } = useRememberedSmartIdAccount();
   const [rememberMe, setRememberMe] = useState(() => readRememberMeChoice() ?? false);
@@ -67,9 +68,10 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
       className="btn btn-primary btn-lg text-wrap text-balance"
       onClick={() => onSmartIdLoginStart(language, 'DEVICE_LINK', pushLoginAvailable && rememberMe)}
     >
-      <IconBeforeLabel icon={onAPhone ? <SmartIdMarkIcon /> : <QrCodeIcon />}>
-        <FormattedMessage id="login.enter" />
-      </IconBeforeLabel>
+      <IconBeforeLabel
+        icon={onAPhone ? <SmartIdMarkIcon /> : <QrCodeIcon />}
+        label={formatMessage({ id: 'login.enter' })}
+      />
     </button>
   );
 

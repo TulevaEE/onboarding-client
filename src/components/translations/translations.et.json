@@ -14,7 +14,7 @@
   "login.smart.id.qr.expired": "QR-kood aegus.",
   "login.smart.id.qr.refresh": "Näita uut QR-koodi",
   "login.smart.id.qr.show": "Näita QR-koodi",
-  "login.smart.id.open.app": "Ava Smart‑ID rakendus",
+  "login.smart.id.open.app": "Ava Smart‑ID rakendus",
   "login.smart.id.callback.retry": "Proovi uuesti",
   "login.smart.id.confirm.in.app": "Kinnita sisselogimine Smart‑ID rakenduses.",
   "login.continue.as": "Jätka kui {firstName}",

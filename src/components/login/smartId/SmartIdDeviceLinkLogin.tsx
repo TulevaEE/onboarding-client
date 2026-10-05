@@ -84,6 +84,7 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
   web2AppLink,
   onCancel,
 }) => {
+  const { formatMessage } = useIntl();
   const stillOnThisPage = useStillOnThisPage();
   const appButton = useRef<HTMLAnchorElement>(null);
 
@@ -106,9 +107,10 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
             className="btn btn-primary btn-lg text-wrap text-balance"
             href={web2AppLink}
           >
-            <IconBeforeLabel icon={<SmartIdMarkIcon />}>
-              <FormattedMessage id="login.smart.id.open.app" />
-            </IconBeforeLabel>
+            <IconBeforeLabel
+              icon={<SmartIdMarkIcon />}
+              label={formatMessage({ id: 'login.smart.id.open.app' })}
+            />
           </a>
         )}
         <CancelButton onCancel={onCancel} />
