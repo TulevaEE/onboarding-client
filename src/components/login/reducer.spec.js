@@ -66,6 +66,17 @@ describe('Login reducer', () => {
     expect(newState.verificationCodeChoice).toBe(false);
   });
 
+  it('leaves no QR code of an earlier smart id session beside a new verification code', () => {
+    const action = { type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode: '1234' };
+
+    const newState = loginReducer(
+      { smartIdWeb2AppLink: 'https://smart-id.com/device-link/?earlier' },
+      action,
+    );
+
+    expect(newState.smartIdWeb2AppLink).toBe(null);
+  });
+
   it('remembers that the Smart-ID app asks to choose the verification code', () => {
     const action = {
       type: MOBILE_AUTHENTICATION_START_SUCCESS,
