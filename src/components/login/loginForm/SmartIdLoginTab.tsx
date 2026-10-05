@@ -3,6 +3,7 @@ import { FormattedMessage } from 'react-intl';
 
 import { Loader } from '../../common';
 import { SmartIdLoginFlow } from '../../common/apiModels';
+import { deviceClass } from '../../common/deviceClass';
 import { useLoginLanguage } from '../loginLanguage';
 import { useRememberedSmartIdAccount } from '../smartId/useRememberedSmartIdAccount';
 import { PII_CLASS } from '../../tracking/piiMarkup';
@@ -11,7 +12,12 @@ import { RememberMeCheckbox } from './RememberMeCheckbox';
 import { readRememberMeChoice, saveRememberMeChoice } from './rememberMeChoice';
 
 interface SmartIdLoginTabProps {
-  onSmartIdLoginStart: (language: string, flow?: SmartIdLoginFlow, rememberMe?: boolean) => void;
+  onSmartIdLoginStart: (
+    language: string,
+    flow?: SmartIdLoginFlow,
+    rememberMe?: boolean,
+    qrCodeRequested?: boolean,
+  ) => void;
 }
 
 export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLoginStart }) => {
@@ -53,6 +59,16 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
     );
   }
 
+  const logInButton = (
+    <button
+      type="button"
+      className="btn btn-primary btn-lg text-wrap text-balance"
+      onClick={() => onSmartIdLoginStart(language, 'DEVICE_LINK', pushLoginAvailable && rememberMe)}
+    >
+      <FormattedMessage id="login.enter" />
+    </button>
+  );
+
   return (
     <div className="d-grid gap-3">
       {pushLoginAvailable && (
@@ -62,15 +78,18 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
           onChange={chooseRememberMe}
         />
       )}
-      <button
-        type="button"
-        className="btn btn-primary btn-lg text-wrap text-balance"
-        onClick={() =>
-          onSmartIdLoginStart(language, 'DEVICE_LINK', pushLoginAvailable && rememberMe)
-        }
-      >
-        <FormattedMessage id="login.enter" />
-      </button>
+      {deviceClass() === 'phone' ? (
+        <div className="d-grid gap-2">
+          {logInButton}
+          <QuietLinkButton
+            onClick={() => onSmartIdLoginStart(language, 'DEVICE_LINK', false, true)}
+          >
+            <FormattedMessage id="login.smart.id.qr.show" />
+          </QuietLinkButton>
+        </div>
+      ) : (
+        logInButton
+      )}
     </div>
   );
 };

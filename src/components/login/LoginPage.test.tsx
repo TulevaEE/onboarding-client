@@ -305,6 +305,76 @@ describe('When a user is logging in', () => {
     expect(backend.startedFlows).toEqual(['DEVICE_LINK']);
   });
 
+  describe('on a phone', () => {
+    pretendToBeOn('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15');
+
+    test('they can show a QR code instead, to scan with the Smart-ID app on another device', async () => {
+      const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+      expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+      expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+
+      userEvent.click(screen.getByRole('button', { name: 'Show QR code' }));
+
+      expectInTheOpenTabUnderTheLoginTitle(
+        'Smart-ID',
+        await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+      );
+      expect(
+        screen.queryByRole('link', { name: /^Open the Smart.ID app$/ }),
+      ).not.toBeInTheDocument();
+      expect(backend.startedSessions).toBe(1);
+      expect(backend.deviceLinkRememberMeChoices).toEqual([false]);
+
+      backend.resolvePolling();
+      expect(
+        await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      ).toBeInTheDocument();
+    });
+
+    test('Log in after a cancelled QR code opens the Smart-ID app screen of a new session', async () => {
+      const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+      userEvent.click(await screen.findByRole('button', { name: 'Show QR code' }));
+      expect(
+        await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+      ).toBeInTheDocument();
+      userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+      userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+
+      expect(await screen.findByRole('link', { name: /^Open the Smart.ID app$/ })).toHaveAttribute(
+        'href',
+        smartIdWeb2AppLink('en'),
+      );
+      expect(
+        screen.queryByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+      ).not.toBeInTheDocument();
+      expect(backend.startedSessions).toBe(2);
+    });
+
+    test('the QR code they asked for stays while the next session silently replaces an expired one', async () => {
+      const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+      userEvent.click(await screen.findByRole('button', { name: 'Show QR code' }));
+      expect(
+        await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+      ).toBeInTheDocument();
+
+      const sessionStart = Date.now();
+      const now = jest.spyOn(Date, 'now').mockImplementation(() => sessionStart + 61000);
+      try {
+        await waitFor(() => expect(backend.startedSessions).toBe(2), { timeout: 3000 });
+
+        expect(
+          await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+        ).toBeInTheDocument();
+        expect(
+          screen.queryByRole('link', { name: /^Open the Smart.ID app$/ }),
+        ).not.toBeInTheDocument();
+      } finally {
+        now.mockRestore();
+      }
+    });
+  });
+
   describe('on a tablet', () => {
     pretendToBeOn('Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15');
 

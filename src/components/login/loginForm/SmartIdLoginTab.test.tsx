@@ -212,6 +212,53 @@ describe('Smart-ID login tab', () => {
     },
   );
 
+  describe('on a phone', () => {
+    beforeEach(() =>
+      setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15'),
+    );
+
+    it('offers a quiet link under Log in that shows a QR code to scan from another device', () => {
+      renderTab();
+
+      expectQuietLinkUnder(
+        screen.getByRole('button', { name: /^Log in$/ }),
+        screen.getByRole('button', { name: 'Show QR code' }),
+      );
+    });
+
+    it.each([
+      ['en', 'Show QR code'],
+      ['et', 'Näita QR-koodi'],
+    ] as const)('names the QR code link in %s', (language, label) => {
+      renderTab(language);
+
+      expect(screen.getByRole('button', { name: label })).toBeInTheDocument();
+    });
+
+    it('starts an unremembered login that asks for its QR code', () => {
+      renderTab();
+
+      userEvent.click(screen.getByRole('button', { name: 'Show QR code' }));
+
+      expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', false, true);
+    });
+  });
+
+  it.each([
+    ['computer', navigator.userAgent],
+    ['tablet', 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15'],
+  ])(
+    'offers no QR code link on a %s, where Log in shows the QR code',
+    async (device, userAgent) => {
+      setUserAgent(userAgent);
+      mockGetRememberedSmartIdAccount.mockResolvedValue(null);
+      renderTab();
+
+      expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Show QR code' })).not.toBeInTheDocument();
+    },
+  );
+
   it('treats a failed remembered account lookup as no account', async () => {
     mockGetRememberedSmartIdAccount.mockRejectedValue(new Error('offline'));
     renderTab();

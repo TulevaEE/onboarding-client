@@ -22,6 +22,7 @@ type SmartIdLoginStart = (language: string, flow: SmartIdLoginFlow, rememberMe: 
 interface SmartIdDeviceLinkLoginProps {
   web2AppLink: string;
   rememberMe: boolean;
+  qrCodeRequested: boolean;
   onCancel: () => void;
   onSmartIdLoginStart: SmartIdLoginStart;
   onExpire: () => void;
@@ -31,13 +32,14 @@ interface SmartIdDeviceLinkLoginProps {
 export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
   web2AppLink,
   rememberMe,
+  qrCodeRequested,
   onCancel,
   onSmartIdLoginStart,
   onExpire,
   automaticRenewals,
 }) => {
   const device = deviceClass();
-  if (device === 'phone') {
+  if (device === 'phone' && !qrCodeRequested) {
     return <SmartIdAppLogin web2AppLink={web2AppLink} onCancel={onCancel} />;
   }
   return (
