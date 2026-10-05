@@ -71,14 +71,18 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
 }) => {
   const stillOnThisPage = useStillOnThisPage();
   const appButton = useRef<HTMLAnchorElement>(null);
-  const cancelButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    (stillOnThisPage ? appButton : cancelButton).current?.focus();
+    if (stillOnThisPage) {
+      appButton.current?.focus();
+    }
   }, [stillOnThisPage]);
 
   return (
     <>
+      <FocusedParagraph className="visually-hidden">
+        <FormattedMessage id="login.smart.id.confirm.in.app" />
+      </FocusedParagraph>
       <Loader className="align-middle" />
       <div className="d-grid gap-2 mt-4">
         {stillOnThisPage && (
@@ -92,7 +96,7 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
             </IconBeforeLabel>
           </a>
         )}
-        <CancelButton ref={cancelButton} onCancel={onCancel} />
+        <CancelButton onCancel={onCancel} />
       </div>
     </>
   );

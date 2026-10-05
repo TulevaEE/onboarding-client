@@ -16,6 +16,7 @@
   "login.smart.id.qr.show": "Show QR code",
   "login.smart.id.open.app": "Open the Smart‑ID app",
   "login.smart.id.callback.retry": "Try again",
+  "login.smart.id.confirm.in.app": "Confirm the login in the Smart‑ID app.",
   "login.continue.as": "Continue as {firstName}",
   "login.not.you": "Not you?",
   "login.id.card": "ID-card",

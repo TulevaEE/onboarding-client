@@ -444,7 +444,9 @@ describe('When the Smart-ID app returns to the browser', () => {
       expect(screen.getByRole('tabpanel')).toContainElement(
         screen.getByRole('status', { name: 'Loading' }),
       );
-      expect(screen.getByRole('tabpanel')).toHaveTextContent(/^Cancel$/);
+      expect(screen.getByRole('tabpanel')).toHaveTextContent(
+        /^Confirm the login in the Smart.ID app\.\s*Cancel$/,
+      );
 
       backend.resolvePolling();
       expect(
