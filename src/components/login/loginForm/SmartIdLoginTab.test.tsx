@@ -8,7 +8,9 @@ import { SmartIdLoginTab } from './SmartIdLoginTab';
 import { forgetRememberedSmartIdAccount, getRememberedSmartIdAccount } from '../../common/api';
 import { PII_CLASS } from '../../tracking/piiMarkup';
 import { expectQuietLinkUnder } from '../../../test/expectQuietLinkUnder';
+import { expectIconOnTheLineOfItsFirstWord } from '../../../test/expectIconOnTheLineOfItsFirstWord';
 
+jest.unmock('react-intl');
 jest.mock('../../common/api');
 
 const mockGetRememberedSmartIdAccount = getRememberedSmartIdAccount as jest.MockedFunction<
@@ -259,20 +261,12 @@ describe('Smart-ID login tab', () => {
     },
   );
 
-  const expectIconBeforeLabel = (button: HTMLElement, icon: string, label: string) => {
-    const shownIcon = within(button).getByTestId(icon);
-    expect(shownIcon).toHaveAttribute('aria-hidden', 'true');
-    expect(shownIcon.compareDocumentPosition(within(button).getByText(label))).toBe(
-      Node.DOCUMENT_POSITION_FOLLOWING,
-    );
-  };
-
-  it('marks Log in on a phone with the Smart-ID mark before its label, as it opens the app', () => {
+  it('marks Log in on a phone with the Smart-ID mark on the line of its first word, as it opens the app', () => {
     setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15');
     renderTab();
 
     const logIn = screen.getByRole('button', { name: /^Log in$/ });
-    expectIconBeforeLabel(logIn, 'smart-id-mark-icon', 'Log in');
+    expectIconOnTheLineOfItsFirstWord(logIn, 'smart-id-mark-icon', 'Log in');
     expect(within(logIn).queryByTestId('qr-code-icon')).not.toBeInTheDocument();
   });
 
@@ -280,14 +274,14 @@ describe('Smart-ID login tab', () => {
     ['computer', navigator.userAgent],
     ['tablet', 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15'],
   ])(
-    'marks Log in on a %s with a QR code icon before its label, as it shows the QR code',
+    'marks Log in on a %s with a QR code icon on the line of its first word, as it shows the QR code',
     async (device, userAgent) => {
       setUserAgent(userAgent);
       mockGetRememberedSmartIdAccount.mockResolvedValue(null);
       renderTab();
 
       const logIn = await screen.findByRole('button', { name: /^Log in$/ });
-      expectIconBeforeLabel(logIn, 'qr-code-icon', 'Log in');
+      expectIconOnTheLineOfItsFirstWord(logIn, 'qr-code-icon', 'Log in');
       expect(within(logIn).queryByTestId('smart-id-mark-icon')).not.toBeInTheDocument();
     },
   );

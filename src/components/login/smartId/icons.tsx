@@ -13,7 +13,7 @@ export const SmartIdMarkIcon: React.FC = () => (
     strokeWidth="1.5"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="flex-shrink-0"
+    className="me-2 align-middle"
     aria-hidden="true"
     data-testid="smart-id-mark-icon"
   >
@@ -34,7 +34,7 @@ export const QrCodeIcon: React.FC = () => (
     strokeWidth="1.6"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="flex-shrink-0"
+    className="me-2 align-middle"
     aria-hidden="true"
     data-testid="qr-code-icon"
   >
@@ -50,12 +50,18 @@ export const QrCodeIcon: React.FC = () => (
   </svg>
 );
 
-export const IconBeforeLabel: React.FC<{ icon: React.ReactNode; children: React.ReactNode }> = ({
+export const IconBeforeLabel: React.FC<{ icon: React.ReactNode; label: string }> = ({
   icon,
-  children,
-}) => (
-  <span className="d-inline-flex align-items-center gap-2">
-    {icon}
-    <span>{children}</span>
-  </span>
-);
+  label,
+}) => {
+  const [firstWord, ...otherWords] = label.split(' ');
+  return (
+    <>
+      <span className="text-nowrap">
+        {icon}
+        {firstWord}
+      </span>
+      {otherWords.length > 0 && ` ${otherWords.join(' ')}`}
+    </>
+  );
+};

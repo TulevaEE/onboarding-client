@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, render, screen, within } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 
@@ -10,6 +10,7 @@ import { getSmartIdQrCodeLink } from '../../common/api';
 import { expectStackedFullWidth } from '../../../test/expectStackedFullWidth';
 import { expectFullWidthCancel } from '../../../test/expectFullWidthCancel';
 import { expectNoCardOfItsOwn } from '../../../test/expectNoCardOfItsOwn';
+import { expectIconOnTheLineOfItsFirstWord } from '../../../test/expectIconOnTheLineOfItsFirstWord';
 import {
   forgetTheLayout,
   layOutAboveTheFold,
@@ -601,7 +602,7 @@ describe('Smart-ID device link login', () => {
 
     it.each([
       ['en', 'Open the Smart\u2011ID app'],
-      ['et', 'Ava Smart\u2011ID rakendus'],
+      ['et', 'Ava Smart\u2011ID\u00a0rakendus'],
     ] as const)('names the button into the Smart-ID app in %s', async (language, name) => {
       renderDeviceLinkLogin({ language });
       await flushPendingRequests();
@@ -654,18 +655,23 @@ describe('Smart-ID device link login', () => {
       );
     });
 
-    it('marks the button into the Smart-ID app with the Smart-ID mark before its label', async () => {
-      renderDeviceLinkLogin();
-      await flushPendingRequests();
+    it.each([
+      ['en', 'Open the Smart\u2011ID app'],
+      ['et', 'Ava Smart\u2011ID\u00a0rakendus'],
+    ] as const)(
+      'marks the button into the Smart-ID app in %s with the Smart-ID mark on the line of its first word, so a wrapped label keeps them together',
+      async (language, label) => {
+        renderDeviceLinkLogin({ language });
+        await flushPendingRequests();
 
-      waitInView(2000);
+        waitInView(2000);
 
-      const button = screen.getByRole('link', { name: 'Open the Smart\u2011ID app' });
-      const mark = within(button).getByTestId('smart-id-mark-icon');
-      expect(mark).toHaveAttribute('aria-hidden', 'true');
-      expect(
-        mark.compareDocumentPosition(within(button).getByText('Open the Smart\u2011ID app')),
-      ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
-    });
+        expectIconOnTheLineOfItsFirstWord(
+          screen.getByRole('link', { name: label }),
+          'smart-id-mark-icon',
+          label,
+        );
+      },
+    );
   });
 });
