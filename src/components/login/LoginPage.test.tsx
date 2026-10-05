@@ -19,6 +19,7 @@ import { smartIdWeb2AppLink } from '../../test/backend-responses';
 import { getAuthentication } from '../common/authenticationManager';
 import { replaceWindowLocationAssign } from '../../test/windowLocationAssign';
 import { resumePendingSmartIdAuthentication } from './actions';
+import { forgetTheLayout, layOutBelowTheFold, watchScrollingIntoView } from '../../test/fold';
 
 jest.unmock('react-intl');
 
@@ -280,6 +281,66 @@ describe('When a user is logging in', () => {
     } finally {
       now.mockRestore();
     }
+  });
+
+  describe('with the QR code opening below the fold', () => {
+    let scrollIntoView: jest.Mock;
+    beforeEach(() => {
+      scrollIntoView = watchScrollingIntoView();
+      layOutBelowTheFold();
+    });
+    afterEach(forgetTheLayout);
+
+    test('the page stays where they scrolled while the next session silently replaces an expired QR code', async () => {
+      const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+      userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+      expect(
+        await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+      ).toBeInTheDocument();
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+
+      const sessionStart = Date.now();
+      const now = jest.spyOn(Date, 'now').mockImplementation(() => sessionStart + 61000);
+      try {
+        await waitFor(() => expect(backend.startedSessions).toBe(2), { timeout: 3000 });
+        await waitLongerThanAPoll();
+
+        expect(
+          screen.getByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+        ).toBeInTheDocument();
+        expect(scrollIntoView).toHaveBeenCalledTimes(1);
+      } finally {
+        now.mockRestore();
+      }
+    });
+
+    test('the new QR code they ask for after one expired comes into view with Cancel', async () => {
+      const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+      userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+      expect(
+        await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+      ).toBeInTheDocument();
+      setPageVisibility('hidden');
+      const sessionStart = Date.now();
+      const now = jest.spyOn(Date, 'now').mockImplementation(() => sessionStart + 61000);
+      try {
+        expect(
+          await screen.findByText('The QR code expired.', undefined, { timeout: 3000 }),
+        ).toBeInTheDocument();
+        setPageVisibility('visible');
+
+        userEvent.click(screen.getByRole('button', { name: 'Show a new QR code' }));
+
+        expect(
+          await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+        ).toBeInTheDocument();
+        expect(backend.startedSessions).toBe(2);
+        expect(scrollIntoView).toHaveBeenCalledTimes(2);
+      } finally {
+        now.mockRestore();
+        setPageVisibility('visible');
+      }
+    });
   });
 
   test('an expired QR code stays until they act, even after the session it showed times out', async () => {
