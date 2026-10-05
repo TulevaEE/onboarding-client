@@ -170,6 +170,7 @@ describe('Login page', () => {
 
     expect(pendingLogin().type).toBe(SmartIdDeviceLinkLogin);
     expect(pendingLogin().props).toEqual({
+      session: 0,
       web2AppLink,
       rememberMe: true,
       qrCodeRequested: false,
@@ -200,19 +201,6 @@ describe('Login page', () => {
     });
 
     expect(pendingLogin().type).toBe(SmartIdDeviceLinkLogin);
-  });
-
-  it('starts a fresh device link login for every new smart id session', () => {
-    component.setProps({
-      loadingAuthentication: true,
-      smartIdWeb2AppLink: 'https://smart-id.com/device-link/?deviceLinkType=Web2App',
-      smartIdSession: 1,
-    });
-    const firstSessionKey = pendingLogin().key;
-
-    component.setProps({ smartIdSession: 2 });
-
-    expect(pendingLogin().key).not.toBe(firstSessionKey);
   });
 
   it('leaves a missing Mobile-ID phone number for the Mobile-ID tab to explain', () => {

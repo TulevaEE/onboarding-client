@@ -71,6 +71,7 @@ describe('Smart-ID device link login', () => {
     render(
       <IntlProvider locale={language} messages={translations[language]}>
         <SmartIdDeviceLinkLogin
+          session={1}
           web2AppLink={web2AppLink}
           rememberMe={rememberMe}
           qrCodeRequested={qrCodeRequested}

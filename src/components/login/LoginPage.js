@@ -87,7 +87,7 @@ export const LoginPage = ({
     if (smartIdWeb2AppLink) {
       return (
         <SmartIdDeviceLinkLogin
-          key={smartIdSession}
+          session={smartIdSession}
           web2AppLink={smartIdWeb2AppLink}
           rememberMe={smartIdRememberMe}
           qrCodeRequested={smartIdQrCodeRequested}

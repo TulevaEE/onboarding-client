@@ -40,6 +40,7 @@ const qrCodePixelsPerModule = (device: DeviceClass) => {
 type SmartIdLoginStart = (language: string, flow: SmartIdLoginFlow, rememberMe: boolean) => void;
 
 interface SmartIdDeviceLinkLoginProps {
+  session: number;
   web2AppLink: string;
   rememberMe: boolean;
   qrCodeRequested: boolean;
@@ -51,6 +52,7 @@ interface SmartIdDeviceLinkLoginProps {
 }
 
 export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
+  session,
   web2AppLink,
   rememberMe,
   qrCodeRequested,
@@ -66,6 +68,7 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
   const device = deviceClass();
   return (
     <SmartIdQrCodeLogin
+      session={session}
       rememberMe={rememberMe}
       onCancel={onCancel}
       onSmartIdLoginStart={onSmartIdLoginStart}
@@ -122,6 +125,7 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
 };
 
 const SmartIdQrCodeLogin: React.FC<{
+  session: number;
   rememberMe: boolean;
   onCancel: () => void;
   onSmartIdLoginStart: SmartIdLoginStart;
@@ -130,6 +134,7 @@ const SmartIdQrCodeLogin: React.FC<{
   sizePixels: number;
   children: React.ReactNode;
 }> = ({
+  session,
   rememberMe,
   onCancel,
   onSmartIdLoginStart,
@@ -141,13 +146,17 @@ const SmartIdQrCodeLogin: React.FC<{
   const { formatMessage } = useIntl();
   const language = useLoginLanguage();
   const startNewSession = () => onSmartIdLoginStart(language, 'DEVICE_LINK', rememberMe);
-  const { deviceLink, expired } = useSmartIdQrCodeLink(() => {
-    if (!automaticRenewals.take()) {
-      return false;
-    }
-    startNewSession();
-    return true;
-  }, onExpire);
+  const { deviceLink, expired } = useSmartIdQrCodeLink(
+    session,
+    () => {
+      if (!automaticRenewals.take()) {
+        return false;
+      }
+      startNewSession();
+      return true;
+    },
+    onExpire,
+  );
 
   if (expired) {
     return (

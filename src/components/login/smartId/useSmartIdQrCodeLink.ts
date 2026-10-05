@@ -14,6 +14,7 @@ const isRefusedByBackend = (error: unknown): boolean => {
 };
 
 export function useSmartIdQrCodeLink(
+  session: number,
   renewSilently: () => boolean,
   onExpire: () => void,
 ): {
@@ -28,6 +29,8 @@ export function useSmartIdQrCodeLink(
   latestOnExpire.current = onExpire;
 
   useEffect(() => {
+    setDeviceLink(null);
+    setExpired(false);
     const startedAt = getPendingSmartIdStartedAt() ?? Date.now();
     let refreshInterval: ReturnType<typeof setInterval>;
     let stalenessTimeout: ReturnType<typeof setTimeout>;
@@ -91,7 +94,7 @@ export function useSmartIdQrCodeLink(
     refresh();
 
     return stop;
-  }, []);
+  }, [session]);
 
   return { deviceLink, expired };
 }
