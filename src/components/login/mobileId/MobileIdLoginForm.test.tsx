@@ -100,9 +100,7 @@ describe('Mobile-ID login form', () => {
 
     await waitForPhoneFieldToHide();
 
-    expect(container).toHaveTextContent(
-      /^Remember meThis uses a cookie\. Do not choose it on a public computer\.$/,
-    );
+    expect(container).toHaveTextContent(/^Remember me$/);
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
     expect(screen.getAllByRole('button')).toEqual([logIn()]);
     userEvent.click(logIn());
@@ -242,12 +240,10 @@ describe('Mobile-ID login form', () => {
     expect(rememberMe()).not.toBeChecked();
   });
 
-  it('warns under the remember me box that it uses a cookie', () => {
+  it('leaves the remember me box without a note to read', () => {
     renderTab();
 
-    expect(rememberMe()).toHaveAccessibleDescription(
-      /^This uses a cookie\. Do not choose it on a\spublic\scomputer\.$/,
-    );
+    expect(rememberMe()).not.toHaveAccessibleDescription();
   });
 
   it('asks for the current phone number when the remembered one no longer works', async () => {

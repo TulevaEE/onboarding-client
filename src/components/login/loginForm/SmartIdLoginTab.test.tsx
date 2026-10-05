@@ -113,15 +113,11 @@ describe('Smart-ID login tab', () => {
     expect(await rememberMe()).not.toBeChecked();
   });
 
-  it('warns under the remember me box that it uses a cookie', async () => {
+  it('leaves the remember me box without a note to read', async () => {
     mockGetRememberedSmartIdAccount.mockResolvedValue(null);
     renderTab();
 
-    expect(
-      await screen.findByRole('checkbox', { name: 'Remember me' }),
-    ).toHaveAccessibleDescription(
-      /^This uses a cookie\. Do not choose it on a\spublic\scomputer\.$/,
-    );
+    expect(await rememberMe()).not.toHaveAccessibleDescription();
   });
 
   it('offers the QR login with nothing but the remember me choice and its button', async () => {
@@ -129,9 +125,7 @@ describe('Smart-ID login tab', () => {
     const { container } = renderTab();
 
     expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
-    expect(container).toHaveTextContent(
-      /^Remember meThis uses a cookie\. Do not choose it on a public computer\.Log in$/,
-    );
+    expect(container).toHaveTextContent(/^Remember meLog in$/);
   });
 
   it.each([
