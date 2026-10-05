@@ -308,7 +308,7 @@ describe('When the Smart-ID app returns to the browser', () => {
 
     const { container } = openCallback(aCallback);
 
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
     expect(container).toHaveTextContent(/^$/);
   });
 

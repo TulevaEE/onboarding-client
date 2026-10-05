@@ -1350,6 +1350,7 @@
   "common.back": "Back",
   "common.myAccount": "My Account",
   "common.recommended": "Recommended",
+  "common.loading": "Loading",
 
   "savingsFund.paymentCancellation.pageTitle": "Cancel deposit",
   "savingsFund.paymentCancellation.title": "Cancel deposit",

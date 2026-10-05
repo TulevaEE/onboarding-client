@@ -229,7 +229,7 @@ describe('Smart-ID device link login', () => {
   it('holds the place of the QR code at its size while no fresh code is there to show', async () => {
     renderDeviceLinkLogin();
     /* eslint-disable testing-library/no-node-access */
-    const placeOfTheQrCode = screen.getByRole('progressbar').parentElement;
+    const placeOfTheQrCode = screen.getByRole('status', { name: 'Loading' }).parentElement;
     expect(placeOfTheQrCode).toHaveStyle({ width: '371px', maxWidth: '100%' });
 
     await flushPendingRequests();
@@ -316,7 +316,7 @@ describe('Smart-ID device link login', () => {
 
     await advanceOneSecond();
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
   });
 
   it('starts a new session by itself when the QR code expires while the page is in view', async () => {
@@ -327,7 +327,7 @@ describe('Smart-ID device link login', () => {
 
     expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
     expect(screen.queryByText('The QR code expired.')).not.toBeInTheDocument();
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
     expect(onExpire).not.toHaveBeenCalled();
   });
 
