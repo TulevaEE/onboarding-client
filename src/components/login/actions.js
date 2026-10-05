@@ -43,7 +43,7 @@ import { pageInView } from './smartId/pageInView';
 const POLL_DELAY = 1000;
 let timeout;
 let smartIdAttempt = null;
-let smartIdStartSequence = 0;
+let loginStartSequence = 0;
 
 export function changePhoneNumber(phoneNumber) {
   return { type: CHANGE_PHONE_NUMBER, phoneNumber };
@@ -105,15 +105,34 @@ function getMobileIdTokens() {
   };
 }
 
+function abandonLoginStartsInFlight() {
+  loginStartSequence += 1;
+}
+
+function beginLoginStart() {
+  abandonLoginStartsInFlight();
+  const startSequence = loginStartSequence;
+  return () => startSequence !== loginStartSequence;
+}
+
 function startMobileIdLogin(start) {
   return (dispatch) => {
+    const canceledOrSuperseded = beginLoginStart();
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return start()
       .then((controlCode) => {
+        if (canceledOrSuperseded()) {
+          return;
+        }
         dispatch({ type: MOBILE_AUTHENTICATION_START_SUCCESS, controlCode });
         dispatch(getMobileIdTokens());
       })
-      .catch((error) => dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error }));
+      .catch((error) => {
+        if (canceledOrSuperseded()) {
+          return;
+        }
+        dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error });
+      });
   };
 }
 
@@ -381,9 +400,7 @@ export function startSmartIdLoginInTheApp(language) {
 
 function startSmartIdSession(language, flow, rememberMe, afterDeviceLinkStarted) {
   return (dispatch, getState) => {
-    smartIdStartSequence += 1;
-    const startSequence = smartIdStartSequence;
-    const canceledOrSuperseded = () => startSequence !== smartIdStartSequence;
+    const canceledOrSuperseded = beginLoginStart();
     stopSmartIdPolling();
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
@@ -436,14 +453,13 @@ const SMART_ID_SESSION_NOT_FOUND = { body: { errors: [{ code: 'auth.session.not.
 
 export function completeSmartIdLogin(callback) {
   return (dispatch) => {
-    smartIdStartSequence += 1;
-    const startSequence = smartIdStartSequence;
+    const canceledOrSuperseded = beginLoginStart();
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return api
       .completeSmartIdCallback(callback)
       .then((acceptedAuthenticationHash) => {
         forgetSmartIdCallbackParameters();
-        if (startSequence !== smartIdStartSequence) {
+        if (canceledOrSuperseded()) {
           return;
         }
         const pending = loadPendingSmartIdAuthentication();
@@ -463,7 +479,7 @@ export function completeSmartIdLogin(callback) {
       })
       .catch((error) => {
         forgetSmartIdCallbackParameters();
-        if (startSequence !== smartIdStartSequence) {
+        if (canceledOrSuperseded()) {
           return;
         }
         clearPendingSmartIdAuthentication();
@@ -478,7 +494,7 @@ export function resumeAcceptedSmartIdCallback() {
     if (!pending?.callbackAccepted) {
       return;
     }
-    smartIdStartSequence += 1;
+    abandonLoginStartsInFlight();
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     dispatch(getSmartIdTokens(pending.authenticationHash));
   };
@@ -554,7 +570,7 @@ export function cancelMobileAuthentication() {
   if (timeout) {
     clearTimeout(timeout);
   }
-  smartIdStartSequence += 1; // invalidate any /authenticate still in flight
+  abandonLoginStartsInFlight();
   stopSmartIdPolling();
   clearPendingSmartIdAuthentication();
   forgetSmartIdCallbackParameters();
