@@ -72,7 +72,7 @@ describe('When a user is cancelling an application', () => {
     await waitFor(() => {
       expect(screen.getByText('9876')).toBeInTheDocument(); // signing code is shown
     });
-    expect(screen.getByText(/The request should also name Tuleva/)).toBeInTheDocument();
+    expect(screen.getByText(/Make sure the request says Tuleva/)).toBeInTheDocument();
     expect(cancellation.cancellationCreated).toBe(true);
   });
 

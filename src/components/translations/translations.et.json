@@ -29,7 +29,7 @@
   "login.enter": "Sisenen",
   "login.control.code": "Veendu, et sinu telefoni saabunud kontrollkood oleks sama:",
   "login.control.code.choice": "Vali Smart‑ID rakenduses see kood:",
-  "login.control.code.name.hint": "Päringus peab olema ka nimi Tuleva. Kui midagi erineb, ära seda kinnita.",
+  "login.control.code.name.hint": "Veendu, et päringus oleks kirjas Tuleva.",
   "login.stop": "Katkestan",
   "login.error.invalid.user.credentials": "Sa pole veel Tuleva liige",
   "login.error.generic": "Sisselogimisel tekkis viga. Palun proovi uuesti.",

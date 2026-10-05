@@ -179,7 +179,7 @@ describe('When a user is logging in', () => {
 
     expect(await screen.findByText('5678')).toBeInTheDocument();
     expect(screen.getByText(/In the Smart.ID app, choose this code:/)).toBeInTheDocument();
-    expect(screen.getByText(/The request should also name Tuleva/)).toBeInTheDocument();
+    expect(screen.getByText(/Make sure the request says Tuleva/)).toBeInTheDocument();
     expect(backend.startedFlows).toEqual(['NOTIFICATION']);
 
     backend.resolvePolling();
@@ -220,7 +220,7 @@ describe('When a user is logging in', () => {
     expect(
       screen.getByText(/Make sure that the verification code received on your phone is the same/),
     ).toBeInTheDocument();
-    expect(screen.getByText(/The request should also name Tuleva/)).toBeInTheDocument();
+    expect(screen.getByText(/Make sure the request says Tuleva/)).toBeInTheDocument();
     expect(backend.startedLogins).toEqual([
       { personalCode: identityCode, phoneNumber: '+37255512345', rememberMe: false },
     ]);
