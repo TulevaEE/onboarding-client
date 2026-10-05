@@ -33,6 +33,24 @@ describe('Login Tabs', () => {
     expect(activeTab(renderTabs())).toBe('Mobile ID');
   });
 
+  it('tells about a tab change only when another tab is picked', () => {
+    const onTabChange = jest.fn();
+    const component = shallow(
+      <LoginTabs onTabChange={onTabChange}>
+        <div label="Smart ID" />
+        <div label="Mobile ID" />
+      </LoginTabs>,
+    );
+    const clickTab = (index, label) =>
+      component.find('ul').children().at(index).prop('onClick')(label);
+
+    clickTab(0, 'Smart ID');
+    expect(onTabChange).not.toHaveBeenCalled();
+
+    clickTab(1, 'Mobile ID');
+    expect(onTabChange).toHaveBeenCalledTimes(1);
+  });
+
   it('falls back to the first tab when the remembered one no longer exists', () => {
     localStorage.setItem('preferredLoginMethod', 'Carrier pigeon');
 

@@ -8,6 +8,7 @@ import { SmartIdDeviceLinkLogin } from './SmartIdDeviceLinkLogin';
 import { automaticRenewalAllowance, AutomaticRenewalAllowance } from './automaticRenewalAllowance';
 import { getSmartIdQrCodeLink } from '../../common/api';
 import { expectStackedFullWidth } from '../../../test/expectStackedFullWidth';
+import { expectNoCardOfItsOwn } from '../../../test/expectNoCardOfItsOwn';
 
 jest.unmock('react-intl');
 jest.mock('../../common/api');
@@ -118,6 +119,31 @@ describe('Smart-ID device link login', () => {
 
     expect(screen.getByRole('img')).toBeInTheDocument();
     expect(container).toHaveTextContent(/^Scan with the Smart.ID appCancel$/);
+  });
+
+  it('draws no card of its own around the QR code, so it can sit inside the login card', async () => {
+    const { container } = renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    expectNoCardOfItsOwn(container);
+  });
+
+  it('draws no card of its own around the expired QR code', async () => {
+    const { container } = renderDeviceLinkLogin();
+    await flushPendingRequests();
+    setPageVisibility('hidden');
+    await outliveTheSession();
+
+    expect(screen.getByText('The QR code expired.')).toBeInTheDocument();
+    expectNoCardOfItsOwn(container);
+  });
+
+  it('draws no card of its own around the Smart-ID app link on a phone', async () => {
+    setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15');
+    const { container } = renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    expectNoCardOfItsOwn(container);
   });
 
   it('draws the QR code of a full device link at least 6 px per module, but never wider than the screen', async () => {

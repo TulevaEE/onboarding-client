@@ -9,12 +9,15 @@ describe('Login page', () => {
   let props;
   let component;
 
+  const pendingLogin = () => component.find(LoginForm).prop('pendingLogin');
+  const alert = () => component.find(LoginForm).prop('alert');
+
   beforeEach(() => {
     props = {};
     component = shallow(<LoginPage {...props} />);
   });
 
-  it('renders a login form if no actions have not been taken', () => {
+  it('renders a login form with nothing pending if no actions have not been taken', () => {
     const formProps = {
       phoneNumber: 'number',
       personalCode: 'code',
@@ -28,52 +31,47 @@ describe('Login page', () => {
       exchangeExistingThirdPillarUnits: true,
     };
     component.setProps(formProps);
-    expect(component.contains(<LoginForm {...formProps} mobileIdStartError="" />)).toBe(true);
-  });
-
-  it('renders an authentication loader instead if loading', () => {
-    const onCancelMobileAuthentication = jest.fn();
-    component.setProps({ onCancelMobileAuthentication });
-
     expect(
       component.contains(
-        <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
-      ),
-    ).toBe(false);
-    component.setProps({ loadingAuthentication: true });
-    expect(
-      component.contains(
-        <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
+        <LoginForm {...formProps} mobileIdStartError="" alert={null} pendingLogin={null} />,
       ),
     ).toBe(true);
   });
 
-  it('renders an authentication loader instead if has control code', () => {
+  it('keeps the login form and shows an authentication loader in it while loading', () => {
     const onCancelMobileAuthentication = jest.fn();
-    component.setProps({ onCancelMobileAuthentication });
+    component.setProps({ onCancelMobileAuthentication, loadingAuthentication: true });
 
-    component.setProps({ controlCode: '1337' });
-    expect(
-      component.contains(
-        <AuthenticationLoader controlCode="1337" onCancel={onCancelMobileAuthentication} />,
-      ),
-    ).toBe(true);
+    expect(component.find(LoginForm)).toHaveLength(1);
+    expect(pendingLogin()).toEqual(
+      <AuthenticationLoader
+        controlCode=""
+        verificationCodeChoice={false}
+        onCancel={onCancelMobileAuthentication}
+      />,
+    );
   });
 
-  it('renders an authentication loader instead if loading user conversion', () => {
+  it('shows the control code in the login form', () => {
     const onCancelMobileAuthentication = jest.fn();
-    component.setProps({
-      onCancelMobileAuthentication,
-      loadingUserConversion: true,
-    });
-    expect(
-      component.contains(
-        <AuthenticationLoader controlCode="" onCancel={onCancelMobileAuthentication} />,
-      ),
-    ).toBe(true);
+    component.setProps({ onCancelMobileAuthentication, controlCode: '1337' });
+
+    expect(pendingLogin()).toEqual(
+      <AuthenticationLoader
+        controlCode="1337"
+        verificationCodeChoice={false}
+        onCancel={onCancelMobileAuthentication}
+      />,
+    );
   });
 
-  it('renders the smart id device link login while a smart id session is running', () => {
+  it('shows an authentication loader in the login form while loading user conversion', () => {
+    component.setProps({ loadingUserConversion: true });
+
+    expect(pendingLogin().type).toBe(AuthenticationLoader);
+  });
+
+  it('shows the smart id device link login in the login form while a smart id session is running', () => {
     const web2AppLink = 'https://smart-id.com/device-link/?deviceLinkType=Web2App';
     const onCancelMobileAuthentication = jest.fn();
     const onSmartIdLoginStart = jest.fn();
@@ -87,7 +85,8 @@ describe('Login page', () => {
       onSmartIdQrCodeExpire,
     });
 
-    expect(component.find(SmartIdDeviceLinkLogin).props()).toEqual({
+    expect(pendingLogin().type).toBe(SmartIdDeviceLinkLogin);
+    expect(pendingLogin().props).toEqual({
       web2AppLink,
       rememberMe: true,
       onCancel: onCancelMobileAuthentication,
@@ -95,17 +94,16 @@ describe('Login page', () => {
       onExpire: onSmartIdQrCodeExpire,
       automaticRenewals: { take: expect.any(Function) },
     });
-    expect(component.find(AuthenticationLoader)).toHaveLength(0);
   });
 
   it('keeps one allowance of automatic QR code renewals for the whole page view', () => {
     component.setProps({ loadingAuthentication: true, smartIdWeb2AppLink: 'first link' });
-    const firstAllowance = component.find(SmartIdDeviceLinkLogin).prop('automaticRenewals');
+    const firstAllowance = pendingLogin().props.automaticRenewals;
 
     component.setProps({ smartIdWeb2AppLink: null });
     component.setProps({ smartIdWeb2AppLink: 'second link' });
 
-    expect(component.find(SmartIdDeviceLinkLogin).prop('automaticRenewals')).toBe(firstAllowance);
+    expect(pendingLogin().props.automaticRenewals).toBe(firstAllowance);
   });
 
   it('drops the device link login while a new smart id session is starting', () => {
@@ -113,46 +111,25 @@ describe('Login page', () => {
       loadingAuthentication: true,
       smartIdWeb2AppLink: 'https://smart-id.com/device-link/?deviceLinkType=Web2App',
     });
-    expect(component.find(SmartIdDeviceLinkLogin)).toHaveLength(1);
+    expect(pendingLogin().type).toBe(SmartIdDeviceLinkLogin);
 
-    // Starting again clears the link, which unmounts the QR view and with it the expired
-    // polling state, so the fresh session is shown a fresh QR code.
     component.setProps({ smartIdWeb2AppLink: null });
 
-    expect(component.find(SmartIdDeviceLinkLogin)).toHaveLength(0);
-    expect(component.find(AuthenticationLoader)).toHaveLength(1);
+    expect(pendingLogin().type).toBe(AuthenticationLoader);
   });
 
   it('leaves a missing Mobile-ID phone number for the Mobile-ID tab to explain', () => {
     component.setProps({ errorDescription: 'mobile.id.phone.number.required' });
 
-    expect(component.find(ErrorAlert).exists()).toBe(false);
+    expect(alert()).toBeNull();
   });
 
-  it('passes an error forwards to ErrorAlert, shows login form and does not show other components', () => {
+  it('shows an error in the login form instead of anything pending', () => {
     const errorDescription = 'oh no something broke yo';
-    const formProps = {
-      phoneNumber: 'number',
-      personalCode: 'idCode',
-      onPhoneNumberChange: jest.fn(),
-      onPersonalCodeChange: jest.fn(),
-      onMobileIdSubmit: jest.fn(),
-      onSmartIdLoginStart: jest.fn(),
-      onAuthenticateWithIdCard: jest.fn(),
-      onLoginMethodChange: jest.fn(),
-      monthlyThirdPillarContribution: 500,
-      exchangeExistingThirdPillarUnits: true,
-    };
-    const authProps = {
-      controlCode: null,
-      onCancel: jest.fn(),
-    };
-    component.setProps({ errorDescription, ...formProps, ...authProps });
+    component.setProps({ errorDescription, loadingAuthentication: true });
 
-    expect(component.contains(<ErrorAlert description={errorDescription} />)).toBe(true);
-    expect(
-      component.contains(<LoginForm {...formProps} mobileIdStartError={errorDescription} />),
-    ).toBe(true);
-    expect(component.contains(<AuthenticationLoader {...authProps} />)).toBe(false);
+    expect(alert()).toEqual(<ErrorAlert description={errorDescription} />);
+    expect(component.find(LoginForm).prop('mobileIdStartError')).toBe(errorDescription);
+    expect(pendingLogin()).toBeNull();
   });
 });

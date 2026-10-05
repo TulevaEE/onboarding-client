@@ -41,9 +41,12 @@ class LoginTabs extends Component {
 
   onClickTabItem = (tab) => {
     const { onTabChange } = this.props;
+    const { activeTab } = this.state;
     savePreferredLoginMethod(tab);
     this.setState({ activeTab: tab, pickedByUser: true });
-    onTabChange();
+    if (tab !== activeTab) {
+      onTabChange();
+    }
   };
 
   render() {

@@ -20,6 +20,8 @@ export const LoginForm = ({
   onLoginMethodChange,
   monthlyThirdPillarContribution,
   exchangeExistingThirdPillarUnits,
+  alert,
+  pendingLogin,
 }) => (
   <>
     {isMaintenanceWindow() ? (
@@ -42,6 +44,8 @@ export const LoginForm = ({
         onAuthenticateWithIdCard,
         onLoginMethodChange,
         mobileIdStartError,
+        alert,
+        pendingLogin,
       )}
     </div>
   </>
@@ -66,6 +70,8 @@ const renderLoginForm = (
   onAuthenticateWithIdCard,
   onLoginMethodChange,
   mobileIdStartError,
+  alert,
+  pendingLogin,
 ) => {
   const { formatMessage } = useIntl();
 
@@ -97,6 +103,8 @@ const renderLoginForm = (
         onAuthenticateWithIdCard,
         onLoginMethodChange,
         mobileIdStartError,
+        alert,
+        pendingLogin,
       )}
 
       <p className="m-0 mt-4 text-body-secondary">
@@ -148,29 +156,42 @@ const renderLoginTabs = (
   onAuthenticateWithIdCard,
   onLoginMethodChange,
   mobileIdStartError,
-) => (
-  <LoginTabs onTabChange={onLoginMethodChange}>
-    {/* eslint-disable-next-line react/no-unknown-property */}
-    <div label="login.smart.id">
-      <SmartIdLoginTab onSmartIdLoginStart={onSmartIdLoginStart} />
-    </div>
-    {/* eslint-disable-next-line react/no-unknown-property */}
-    <div label="login.mobile.id">
-      <MobileIdLoginTab
-        phoneNumber={phoneNumber}
-        personalCode={personalCode}
-        onPhoneNumberChange={onPhoneNumberChange}
-        onPersonalCodeChange={onPersonalCodeChange}
-        onMobileIdSubmit={onMobileIdSubmit}
-        startError={mobileIdStartError}
-      />
-    </div>
-    {/* eslint-disable-next-line react/no-unknown-property */}
-    <div label="login.id.card" hideOnMobile>
-      <IdCardLoginTab onAuthenticateWithIdCardMtls={onAuthenticateWithIdCard} />
-    </div>
-  </LoginTabs>
-);
+  alert,
+  pendingLogin,
+) => {
+  const panel = (tabContent) => (
+    <>
+      {alert}
+      {pendingLogin || tabContent}
+    </>
+  );
+
+  return (
+    <LoginTabs onTabChange={onLoginMethodChange}>
+      {/* eslint-disable-next-line react/no-unknown-property */}
+      <div label="login.smart.id">
+        {panel(<SmartIdLoginTab onSmartIdLoginStart={onSmartIdLoginStart} />)}
+      </div>
+      {/* eslint-disable-next-line react/no-unknown-property */}
+      <div label="login.mobile.id">
+        {panel(
+          <MobileIdLoginTab
+            phoneNumber={phoneNumber}
+            personalCode={personalCode}
+            onPhoneNumberChange={onPhoneNumberChange}
+            onPersonalCodeChange={onPersonalCodeChange}
+            onMobileIdSubmit={onMobileIdSubmit}
+            startError={mobileIdStartError}
+          />,
+        )}
+      </div>
+      {/* eslint-disable-next-line react/no-unknown-property */}
+      <div label="login.id.card" hideOnMobile>
+        {panel(<IdCardLoginTab onAuthenticateWithIdCardMtls={onAuthenticateWithIdCard} />)}
+      </div>
+    </LoginTabs>
+  );
+};
 
 const noop = () => null;
 
@@ -187,6 +208,8 @@ LoginForm.defaultProps = {
   mobileIdStartError: null,
   monthlyThirdPillarContribution: null,
   exchangeExistingThirdPillarUnits: false,
+  alert: null,
+  pendingLogin: null,
 };
 
 LoginForm.propTypes = {
@@ -202,6 +225,8 @@ LoginForm.propTypes = {
   mobileIdStartError: Types.string,
   monthlyThirdPillarContribution: Types.number,
   exchangeExistingThirdPillarUnits: Types.bool,
+  alert: Types.node,
+  pendingLogin: Types.node,
 };
 
 export default LoginForm;

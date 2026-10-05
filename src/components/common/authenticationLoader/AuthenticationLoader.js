@@ -13,7 +13,7 @@ const AuthenticationLoader = ({
   signingWithIdCard,
 }) => {
   const content = (
-    <div className="bg-white shadow-sm rounded-3 p-5 text-center">
+    <>
       {controlCode ? (
         <>
           <p className="m-0 mb-4 text-balance">
@@ -43,16 +43,18 @@ const AuthenticationLoader = ({
       ) : (
         ''
       )}
-    </div>
+    </>
   );
   if (overlayed) {
     return (
       <div className="tv-modal">
-        <div className="col-12 col-sm-10 col-md-7 col-lg-5 mx-auto mt-4 pt-4 px-3">{content}</div>
+        <div className="col-12 col-sm-10 col-md-7 col-lg-5 mx-auto mt-4 pt-4 px-3">
+          <div className="bg-white shadow-sm rounded-3 p-5 text-center">{content}</div>
+        </div>
       </div>
     );
   }
-  return <>{content}</>;
+  return content;
 };
 
 const noop = () => null;
