@@ -195,6 +195,23 @@ describe('Smart-ID login tab', () => {
     expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
   });
 
+  it.each([
+    ['phone', 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15'],
+    ['tablet', 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15'],
+  ])(
+    'leaves remember me off a %s, which is never offered the push login it would enable',
+    (device, userAgent) => {
+      setUserAgent(userAgent);
+      window.localStorage.setItem('rememberMe', 'true');
+      renderTab();
+
+      userEvent.click(screen.getByRole('button', { name: /^Log in$/ }));
+
+      expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+      expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
+    },
+  );
+
   it('treats a failed remembered account lookup as no account', async () => {
     mockGetRememberedSmartIdAccount.mockRejectedValue(new Error('offline'));
     renderTab();

@@ -16,7 +16,7 @@ interface SmartIdLoginTabProps {
 
 export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLoginStart }) => {
   const language = useLoginLanguage();
-  const { account, loading, forget } = useRememberedSmartIdAccount();
+  const { account, loading, pushLoginAvailable, forget } = useRememberedSmartIdAccount();
   const [rememberMe, setRememberMe] = useState(() => readRememberMeChoice() ?? false);
 
   const chooseRememberMe = (choice: boolean) => {
@@ -53,15 +53,19 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
 
   return (
     <div className="d-grid gap-3">
-      <RememberMeCheckbox
-        id="smart-id-remember-me"
-        checked={rememberMe}
-        onChange={chooseRememberMe}
-      />
+      {pushLoginAvailable && (
+        <RememberMeCheckbox
+          id="smart-id-remember-me"
+          checked={rememberMe}
+          onChange={chooseRememberMe}
+        />
+      )}
       <button
         type="button"
         className="btn btn-primary btn-lg text-wrap text-balance"
-        onClick={() => onSmartIdLoginStart(language, 'DEVICE_LINK', rememberMe)}
+        onClick={() =>
+          onSmartIdLoginStart(language, 'DEVICE_LINK', pushLoginAvailable && rememberMe)
+        }
       >
         <FormattedMessage id="login.enter" />
       </button>

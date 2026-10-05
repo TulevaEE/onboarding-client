@@ -147,6 +147,18 @@ describe('Mobile-ID login form', () => {
     expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255512345', OTHER_VALID_CODE, true);
   });
 
+  it('offers remember me on a phone too, where the remembered number saves typing', () => {
+    pretendToBeOnAPhone();
+    renderTab();
+    userEvent.type(identityCode(), OTHER_VALID_CODE);
+    userEvent.type(phoneNumber(), '+37255512345');
+
+    userEvent.click(rememberMe());
+    userEvent.click(logIn());
+
+    expect(onMobileIdSubmit).toHaveBeenCalledWith('+37255512345', OTHER_VALID_CODE, true);
+  });
+
   it('keeps the remember me choice for the next login on this browser', () => {
     const { unmount: leave } = renderTab();
     userEvent.click(rememberMe());

@@ -10,6 +10,7 @@ interface RememberedSmartIdAccountState {
 }
 
 export function useRememberedSmartIdAccount(): RememberedSmartIdAccountState & {
+  pushLoginAvailable: boolean;
   forget: () => Promise<void>;
 } {
   const pushLoginAvailable = deviceClass() === 'computer';
@@ -43,5 +44,5 @@ export function useRememberedSmartIdAccount(): RememberedSmartIdAccountState & {
     [],
   );
 
-  return { ...state, forget };
+  return { ...state, pushLoginAvailable, forget };
 }
