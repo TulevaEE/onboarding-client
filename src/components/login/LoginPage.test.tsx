@@ -394,6 +394,20 @@ describe('When a user is logging in', () => {
     );
   });
 
+  test('a Smart-ID session the service no longer knows while the QR code shows still says something went wrong', async () => {
+    const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+    userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+    expect(
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+    ).toBeInTheDocument();
+
+    backend.acceptCallbackInAnotherTab();
+
+    expect(await screen.findByRole('alert', undefined, { timeout: 3000 })).toHaveTextContent(
+      /^There appears to have been a mistake/,
+    );
+  });
+
   test('they land on the page they came for, without the login landing flag', async () => {
     act(() => {
       history.replace('/login', { from: '/capital' });
@@ -491,6 +505,37 @@ describe('When a user is logging in', () => {
       expect(
         await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
       ).toBeInTheDocument();
+    });
+
+    test('a login the Smart-ID app finished in a new tab brings this tab back to Log in, without an error', async () => {
+      const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+      userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+      await waitFor(() => expect(locationAssign).toHaveBeenCalledTimes(1));
+      expect(screen.queryByRole('button', { name: /^Log in$/ })).not.toBeInTheDocument();
+
+      backend.acceptCallbackInAnotherTab();
+
+      expect(
+        await screen.findByRole('button', { name: /^Log in$/ }, { timeout: 3000 }),
+      ).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: 'Smart-ID' })).toHaveAttribute(
+        'aria-selected',
+        'true',
+      );
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(sessionStorage.getItem('pendingSmartIdAuthentication')).toBeNull();
+    });
+
+    test('any other end to a Smart-ID login in the app still says what happened', async () => {
+      const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+      userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+      await waitFor(() => expect(locationAssign).toHaveBeenCalledTimes(1));
+
+      backend.failPollingWith('smart.id.timeout');
+
+      expect(await screen.findByRole('alert', undefined, { timeout: 3000 })).toHaveTextContent(
+        /^Smart.ID did not get a confirmation in time/,
+      );
     });
 
     test('they can show a QR code instead, to scan with the Smart-ID app on another device', async () => {
