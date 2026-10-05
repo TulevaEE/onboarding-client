@@ -309,6 +309,54 @@ describe('Login actions', () => {
     );
   });
 
+  it('ignores the verification code of a Mobile-ID login cancelled before its start was answered', async () => {
+    state = { login: { loadingAuthentication: false } };
+    let answerTheStart;
+    mockApi.authenticateWithMobileId = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          answerTheStart = resolve;
+        }),
+    );
+    mockApi.getMobileIdTokens = jest.fn(() => new Promise(() => {}));
+    const start = createBoundAction(actions.authenticateWithMobileId)(
+      '+37255512345',
+      '38001085718',
+    );
+
+    actions.cancelMobileAuthentication();
+    answerTheStart('1337');
+    await start;
+    jest.runOnlyPendingTimers();
+
+    expect(dispatch).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: MOBILE_AUTHENTICATION_START_SUCCESS }),
+    );
+    expect(mockApi.getMobileIdTokens).not.toHaveBeenCalled();
+  });
+
+  it('ignores a failed start of a Mobile-ID login cancelled before it was answered', async () => {
+    let failTheStart;
+    mockApi.authenticateWithMobileId = jest.fn(
+      () =>
+        new Promise((resolve, reject) => {
+          failTheStart = reject;
+        }),
+    );
+    const start = createBoundAction(actions.authenticateWithMobileId)(
+      '+37255512345',
+      '38001085718',
+    );
+
+    actions.cancelMobileAuthentication();
+    failTheStart({ body: { errors: [{ code: 'mobile.id.no.signal' }] } });
+    await start;
+
+    expect(dispatch).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: MOBILE_AUTHENTICATION_START_ERROR }),
+    );
+  });
+
   it('starts polling until succeeds when authenticating with a phone number', () => {
     const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
     mockApi.authenticateWithMobileId = jest.fn(() => Promise.resolve('1337'));
