@@ -160,6 +160,30 @@ describe('When a user is logging in', () => {
     }
   });
 
+  test('the QR code keeps its place while the next session silently replaces an expired one', async () => {
+    const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+    userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+    expect(
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+    ).toBeInTheDocument();
+
+    const releaseSessionStart = backend.holdSessionStarts();
+    const sessionStart = Date.now();
+    const now = jest.spyOn(Date, 'now').mockImplementation(() => sessionStart + 61000);
+    try {
+      await waitFor(() => expect(backend.heldSessionStarts).toBe(1), { timeout: 3000 });
+
+      expect(screen.getByText(/^Scan with the Smart.ID app$/)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+      releaseSessionStart();
+      expect(
+        await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+      ).toBeInTheDocument();
+    } finally {
+      now.mockRestore();
+    }
+  });
+
   test('the session that silently replaces an expired QR code keeps their choice to be remembered', async () => {
     const backend = smartIdAuthenticationBackend(server, { language: 'en' });
     userEvent.click(await screen.findByRole('checkbox', { name: 'Remember me' }));

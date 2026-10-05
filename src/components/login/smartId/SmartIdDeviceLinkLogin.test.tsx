@@ -157,6 +157,18 @@ describe('Smart-ID device link login', () => {
     expect(qrCode).toHaveStyle({ maxWidth: '100%' });
   });
 
+  it('holds the place of the QR code at its size while no fresh code is there to show', async () => {
+    renderDeviceLinkLogin();
+    /* eslint-disable testing-library/no-node-access */
+    const placeOfTheQrCode = screen.getByRole('progressbar').parentElement;
+    expect(placeOfTheQrCode).toHaveStyle({ width: '371px', maxWidth: '100%' });
+
+    await flushPendingRequests();
+
+    expect(screen.getByRole('img').parentElement).toBe(placeOfTheQrCode);
+    /* eslint-enable testing-library/no-node-access */
+  });
+
   it('renders a fresh QR code every second', async () => {
     mockGetSmartIdQrCodeLink
       .mockResolvedValueOnce({ deviceLink: qrCodeLinkAfter(0) })

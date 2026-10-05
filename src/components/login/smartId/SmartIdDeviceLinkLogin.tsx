@@ -106,19 +106,24 @@ const SmartIdQrCodeLogin: React.FC<{
       <p className="m-0 mb-4 text-pretty">
         <FormattedMessage id="login.smart.id.qr.instructions" />
       </p>
-      {deviceLink ? (
-        <QRCodeSVG
-          value={deviceLink}
-          size={QR_CODE_SIZE_PIXELS}
-          level="L"
-          bgColor="#ffffff"
-          style={{ maxWidth: '100%', height: 'auto', aspectRatio: '1' }}
-          role="img"
-          aria-label={formatMessage({ id: 'login.smart.id.qr.instructions' })}
-        />
-      ) : (
-        <Loader className="align-middle" />
-      )}
+      <div
+        className="d-flex align-items-center justify-content-center mx-auto"
+        style={{ width: QR_CODE_SIZE_PIXELS, maxWidth: '100%', aspectRatio: '1' }}
+      >
+        {deviceLink ? (
+          <QRCodeSVG
+            value={deviceLink}
+            size={QR_CODE_SIZE_PIXELS}
+            level="L"
+            bgColor="#ffffff"
+            style={{ maxWidth: '100%', height: 'auto', aspectRatio: '1' }}
+            role="img"
+            aria-label={formatMessage({ id: 'login.smart.id.qr.instructions' })}
+          />
+        ) : (
+          <Loader />
+        )}
+      </div>
       <CancelButton onCancel={onCancel} />
     </>
   );

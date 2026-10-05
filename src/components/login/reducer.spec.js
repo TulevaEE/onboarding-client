@@ -96,8 +96,24 @@ describe('Login reducer', () => {
     expect(loginReducer(undefined, action).smartIdRememberMe).toBe(true);
   });
 
+  it('numbers each smart id session, so a new one is told apart from the one it replaces', () => {
+    const action = { type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink: 'https://smart-id.com/same' };
+
+    const firstSession = loginReducer(undefined, action);
+    const secondSession = loginReducer(firstSession, action);
+
+    expect(secondSession.smartIdSession).not.toBe(firstSession.smartIdSession);
+  });
+
+  it('keeps the device link of the running smart id session while the next one starts', () => {
+    const previousState = { ...initialState, smartIdWeb2AppLink: 'https://smart-id.com/old' };
+
+    expect(
+      loginReducer(previousState, { type: MOBILE_AUTHENTICATION_START }).smartIdWeb2AppLink,
+    ).toBe('https://smart-id.com/old');
+  });
+
   it.each([
-    [MOBILE_AUTHENTICATION_START, {}],
     [MOBILE_AUTHENTICATION_CANCEL, {}],
     [MOBILE_AUTHENTICATION_SUCCESS, { method: 'SMART_ID' }],
     [MOBILE_AUTHENTICATION_ERROR, { error: { body: { errors: [{ code: 'oh no!' }] } } }],
