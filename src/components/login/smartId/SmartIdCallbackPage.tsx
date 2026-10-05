@@ -13,10 +13,13 @@ import {
   getPendingSmartIdReturnPath,
   hasAcceptedSmartIdCallback,
   resumeAcceptedSmartIdCallback,
+  startSmartIdLoginInTheApp,
 } from '../actions';
 import { loginPath } from '../constants';
 import { loginLanding } from '../loginLanding';
 import { cancelledInTheApp } from '../cancelledInTheApp';
+import { useLoginLanguage } from '../loginLanguage';
+import { opensTheSmartIdApp } from './opensTheSmartIdApp';
 import styles from '../LoginPage.module.scss';
 import {
   forgetSmartIdCallbackParameters,
@@ -30,6 +33,7 @@ type LoginState = { login: { error: string | null; loadingAuthentication: boolea
 export const SmartIdCallbackPage: React.FC = () => {
   usePageTitle('pageTitle.loginPage');
   const dispatch = useDispatch();
+  const language = useLoginLanguage();
   const { search } = useLocation();
   const isAuthenticated = useSelector(() => getAuthentication().isAuthenticated());
   const loginError = useSelector((state: LoginState) => state.login.error);
@@ -70,6 +74,12 @@ export const SmartIdCallbackPage: React.FC = () => {
     return <Redirect to={loginPath} />;
   }
 
+  const tryAgain = () => {
+    if (opensTheSmartIdApp({ qrCodeRequested: false })) {
+      dispatch(startSmartIdLoginInTheApp(language));
+    }
+  };
+
   const attemptEnded = attemptStarted && !authenticating;
   const failed = (!callback && !callbackAccepted) || Boolean(loginError) || attemptEnded;
 
@@ -83,7 +93,7 @@ export const SmartIdCallbackPage: React.FC = () => {
               <div className="bg-white shadow-sm rounded-3 p-5">
                 <ErrorAlert description={loginError ?? undefined} />
                 <div className="d-grid">
-                  <Link className="btn btn-primary btn-lg" to={loginPath}>
+                  <Link className="btn btn-primary btn-lg" to={loginPath} onClick={tryAgain}>
                     <FormattedMessage id="login.smart.id.callback.retry" />
                   </Link>
                 </div>

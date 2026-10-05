@@ -14,6 +14,10 @@ import { anAuthenticationManager } from '../../common/authenticationManagerFixtu
 import { SmartIdCallbackPage } from './SmartIdCallbackPage';
 import { loginPath, smartIdCallbackPath } from '../constants';
 import { expectFullWidthCancel } from '../../../test/expectFullWidthCancel';
+import { replaceWindowLocationAssign } from '../../../test/windowLocationAssign';
+import { smartIdWeb2AppLink } from '../../../test/backend-responses';
+// eslint-disable-next-line import/no-named-as-default
+import LoginPage from '../LoginPage';
 
 jest.unmock('react-intl');
 
@@ -384,5 +388,105 @@ describe('When the Smart-ID app returns to the browser', () => {
 
     expect(screen.getByText(/mock login page/i)).toBeInTheDocument();
     jest.useRealTimers();
+  });
+
+  describe('trying again', () => {
+    const desktopUserAgent = navigator.userAgent;
+    const phoneUserAgent =
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15';
+    const tabletUserAgent = 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15';
+    const locationAssign = jest.fn();
+    let restoreLocation: () => void;
+
+    const pretendToBeOn = (userAgent: string) =>
+      Object.defineProperty(navigator, 'userAgent', { value: userAgent, configurable: true });
+
+    const openFailedCallbackBeforeTheLoginPage = (language: 'en' | 'et' = 'en') => {
+      history = createMemoryHistory({ initialEntries: [`${smartIdCallbackPath}${aCallback}`] });
+      return renderWrapped(
+        <Switch>
+          <Route exact path="/account" render={() => <h1>Mock account page</h1>} />
+          <Route exact path={loginPath} component={LoginPage} />
+          <Route exact path={smartIdCallbackPath} component={SmartIdCallbackPage} />
+        </Switch>,
+        history as never,
+        createDefaultStore(history as never),
+        undefined,
+        language,
+      );
+    };
+
+    beforeEach(() => {
+      locationAssign.mockReset();
+      restoreLocation = replaceWindowLocationAssign(locationAssign);
+    });
+
+    afterEach(() => {
+      restoreLocation();
+      pretendToBeOn(desktopUserAgent);
+    });
+
+    test('on a phone one tap starts a new session, opens its Smart-ID app and waits for it on the login page', async () => {
+      pretendToBeOn(phoneUserAgent);
+      const backend = smartIdAuthenticationBackend(server, {
+        rejectCallback: true,
+        language: 'en',
+      });
+      startLoginBeforeTheAppRoundTrip(backend);
+      openFailedCallbackBeforeTheLoginPage();
+
+      userEvent.click(await screen.findByRole('link', { name: 'Try again' }));
+
+      await waitFor(() => expect(locationAssign).toHaveBeenCalledWith(smartIdWeb2AppLink('en')));
+      expect(locationAssign).toHaveBeenCalledTimes(1);
+      expect(backend.startedSessions).toBe(2);
+      expect(history.location.pathname).toBe(loginPath);
+      expect(screen.getByRole('tabpanel')).toContainElement(
+        screen.getByRole('status', { name: 'Loading' }),
+      );
+      expect(screen.getByRole('tabpanel')).toHaveTextContent(/^Cancel$/);
+
+      backend.resolvePolling();
+      expect(
+        await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      ).toBeInTheDocument();
+    });
+
+    test('on a phone the new session keeps the language of the login', async () => {
+      pretendToBeOn(phoneUserAgent);
+      const backend = smartIdAuthenticationBackend(server, {
+        rejectCallback: true,
+        language: 'et',
+      });
+      startLoginBeforeTheAppRoundTrip(backend);
+      openFailedCallbackBeforeTheLoginPage('et');
+
+      userEvent.click(await screen.findByRole('link', { name: 'Proovi uuesti' }));
+
+      await waitFor(() => expect(locationAssign).toHaveBeenCalledWith(smartIdWeb2AppLink('et')));
+    });
+
+    test.each([
+      ['tablet', tabletUserAgent],
+      ['computer', desktopUserAgent],
+    ])(
+      'on a %s it goes back to the login page without starting a session',
+      async (device, userAgent) => {
+        pretendToBeOn(userAgent);
+        const backend = smartIdAuthenticationBackend(server, {
+          rejectCallback: true,
+          language: 'en',
+        });
+        startLoginBeforeTheAppRoundTrip(backend);
+        openFailedCallbackBeforeTheLoginPage();
+
+        userEvent.click(await screen.findByRole('link', { name: 'Try again' }));
+
+        expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+        expect(history.location.pathname).toBe(loginPath);
+        expect(backend.startedSessions).toBe(1);
+        expect(locationAssign).not.toHaveBeenCalled();
+      },
+    );
   });
 });
