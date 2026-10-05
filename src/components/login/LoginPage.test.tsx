@@ -15,12 +15,23 @@ import {
   mobileIdAuthenticationBackend,
   idCardAuthenticationBackend,
 } from '../../test/backend';
+import { smartIdWeb2AppLink } from '../../test/backend-responses';
 import { getAuthentication } from '../common/authenticationManager';
 
 jest.unmock('react-intl');
 
 const setPageVisibility = (visibility: 'visible' | 'hidden') =>
   Object.defineProperty(document, 'visibilityState', { value: visibility, configurable: true });
+
+const desktopUserAgent = navigator.userAgent;
+const pretendToBeOn = (userAgent: string) => {
+  beforeAll(() =>
+    Object.defineProperty(navigator, 'userAgent', { value: userAgent, configurable: true }),
+  );
+  afterAll(() =>
+    Object.defineProperty(navigator, 'userAgent', { value: desktopUserAgent, configurable: true }),
+  );
+};
 
 const waitLongerThanAPoll = () => act(() => new Promise((resolve) => setTimeout(resolve, 1500)));
 
@@ -292,6 +303,34 @@ describe('When a user is logging in', () => {
     ).toBeInTheDocument();
     expect(backend.rememberedAccount).toBeNull();
     expect(backend.startedFlows).toEqual(['DEVICE_LINK']);
+  });
+
+  describe('on a tablet', () => {
+    pretendToBeOn('Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15');
+
+    test('they scan the QR code, or open the Smart-ID app of the same session from the link under it', async () => {
+      const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+      expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+      expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+
+      userEvent.click(screen.getByRole('button', { name: /^Log in$/ }));
+
+      expectInTheOpenTabUnderTheLoginTitle(
+        'Smart-ID',
+        await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+      );
+      expect(screen.getByRole('link', { name: /^Open the Smart.ID app$/ })).toHaveAttribute(
+        'href',
+        smartIdWeb2AppLink('en'),
+      );
+      expect(backend.startedSessions).toBe(1);
+      expect(backend.deviceLinkRememberMeChoices).toEqual([false]);
+
+      backend.resolvePolling();
+      expect(
+        await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      ).toBeInTheDocument();
+    });
   });
 
   test('they can sign in with mobile id typing the number as they like, showing the security code', async () => {
