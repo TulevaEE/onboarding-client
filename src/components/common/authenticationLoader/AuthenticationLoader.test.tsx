@@ -1,10 +1,12 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 
 import translations from '../../translations';
 import AuthenticationLoader from './AuthenticationLoader';
 import { expectNoCardOfItsOwn } from '../../../test/expectNoCardOfItsOwn';
+import { expectFullWidthCancel } from '../../../test/expectFullWidthCancel';
 
 const renderLoader = (props: Record<string, unknown>, language: 'en' | 'et' = 'en') =>
   render(
@@ -48,6 +50,27 @@ describe('AuthenticationLoader', () => {
     const { container } = renderLoader({ controlCode: '1337' });
 
     expectNoCardOfItsOwn(container);
+  });
+
+  it('cancels the login from the verification code', () => {
+    const onCancel = jest.fn();
+    renderLoader({ controlCode: '1337', onCancel });
+
+    userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
+  it('offers no Cancel before there is a verification code', () => {
+    renderLoader({});
+
+    expect(screen.queryByRole('button', { name: 'Cancel' })).not.toBeInTheDocument();
+  });
+
+  it('offers the same full-width Cancel under the verification code as on every other login screen', () => {
+    renderLoader({ controlCode: '1337' });
+
+    expectFullWidthCancel(screen.getByRole('button', { name: 'Cancel' }));
   });
 
   it('has nothing to compare while there is no verification code', () => {

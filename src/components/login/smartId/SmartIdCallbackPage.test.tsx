@@ -13,6 +13,7 @@ import { getAuthentication } from '../../common/authenticationManager';
 import { anAuthenticationManager } from '../../common/authenticationManagerFixture';
 import { SmartIdCallbackPage } from './SmartIdCallbackPage';
 import { loginPath, smartIdCallbackPath } from '../constants';
+import { expectFullWidthCancel } from '../../../test/expectFullWidthCancel';
 
 jest.unmock('react-intl');
 
@@ -358,6 +359,7 @@ describe('When the Smart-ID app returns to the browser', () => {
     act(() => {
       jest.advanceTimersByTime(20000);
     });
+    expectFullWidthCancel(screen.getByRole('link', { name: 'Cancel' }));
     userEvent.click(screen.getByRole('link', { name: 'Cancel' }));
 
     expect(screen.getByText(/mock login page/i)).toBeInTheDocument();

@@ -3,6 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 
 import { FormattedMessage } from 'react-intl';
 import { Loader } from '..'; // eslint-disable-line import/no-cycle
+import { CancelButton } from '../cancelButton/CancelButton';
 import './AuthenticationLoader.scss';
 
 const AuthenticationLoader = ({
@@ -36,13 +37,7 @@ const AuthenticationLoader = ({
       )}
       <Loader className="align-middle" />
 
-      {controlCode ? (
-        <button type="button" className="btn btn-outline-primary mt-4" onClick={onCancel}>
-          <FormattedMessage id="login.stop" />
-        </button>
-      ) : (
-        ''
-      )}
+      {controlCode ? <CancelButton onCancel={onCancel} className="mt-4" /> : ''}
     </>
   );
   if (overlayed) {

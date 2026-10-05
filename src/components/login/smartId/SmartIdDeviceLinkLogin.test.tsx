@@ -8,6 +8,7 @@ import { SmartIdDeviceLinkLogin } from './SmartIdDeviceLinkLogin';
 import { automaticRenewalAllowance, AutomaticRenewalAllowance } from './automaticRenewalAllowance';
 import { getSmartIdQrCodeLink } from '../../common/api';
 import { expectStackedFullWidth } from '../../../test/expectStackedFullWidth';
+import { expectFullWidthCancel } from '../../../test/expectFullWidthCancel';
 import { expectNoCardOfItsOwn } from '../../../test/expectNoCardOfItsOwn';
 
 jest.unmock('react-intl');
@@ -448,6 +449,13 @@ describe('Smart-ID device link login', () => {
     userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
     expect(onCancel).toHaveBeenCalledTimes(1);
+  });
+
+  it('offers the same full-width Cancel under the QR code as on every other login screen', async () => {
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    expectFullWidthCancel(screen.getByRole('button', { name: 'Cancel' }));
   });
 
   it('offers the Smart-ID app link and instructions on a phone', async () => {
