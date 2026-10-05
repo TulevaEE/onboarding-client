@@ -66,6 +66,7 @@ export default function loginReducer(state = initialState, action) {
         ...state,
         controlCode: action.controlCode,
         verificationCodeChoice: action.verificationCodeChoice === true,
+        smartIdWeb2AppLink: null,
         error: null,
       };
     case SMART_ID_LOGIN_START_SUCCESS:
