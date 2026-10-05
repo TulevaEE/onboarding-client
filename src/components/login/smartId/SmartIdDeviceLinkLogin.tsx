@@ -43,7 +43,7 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
   onExpire,
   automaticRenewals,
 }) => {
-  if (opensTheSmartIdApp(qrCodeRequested)) {
+  if (opensTheSmartIdApp({ qrCodeRequested })) {
     return <SmartIdAppLogin web2AppLink={web2AppLink} onCancel={onCancel} />;
   }
   const device = deviceClass();
