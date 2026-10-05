@@ -22,13 +22,6 @@ describe('Authenticaion loader', () => {
     expect(component.contains(<FormattedMessage id="login.control.code" />)).toBe(false);
   });
 
-  it('shows the control code and the control code message if the code is given', () => {
-    const controlCode = '1337';
-    component.setProps({ controlCode });
-    expect(component.text()).toContain(controlCode);
-    expect(component.contains(<FormattedMessage id="login.control.code" />)).toBe(true);
-  });
-
   it('tells an ID-card signer to confirm with their PIN2', () => {
     const hint = <FormattedMessage id="id.card.signing.instruction" />;
     expect(component.contains(hint)).toBe(false);

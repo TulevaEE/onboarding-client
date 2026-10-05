@@ -286,6 +286,10 @@ small {
   text-wrap: pretty;
 }
 
+.scroll-margin-bottom {
+  scroll-margin-bottom: $spacer * 1.5;
+}
+
 .items-count-badge {
   min-width: $font-size-base * 0.75 + $spacer * 0.25 + $spacer * 0.25;
   margin-left: $spacer * 0.125;

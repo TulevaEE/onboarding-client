@@ -7,6 +7,13 @@ import translations from '../../translations';
 import AuthenticationLoader from './AuthenticationLoader';
 import { expectNoCardOfItsOwn } from '../../../test/expectNoCardOfItsOwn';
 import { expectFullWidthCancel } from '../../../test/expectFullWidthCancel';
+import {
+  forgetTheLayout,
+  layOutAboveTheFold,
+  layOutBelowTheFold,
+  scrolledIntoView,
+  watchScrollingIntoView,
+} from '../../../test/fold';
 
 const renderLoader = (props: Record<string, unknown>, language: 'en' | 'et' = 'en') =>
   render(
@@ -18,6 +25,8 @@ const renderLoader = (props: Record<string, unknown>, language: 'en' | 'et' = 'e
 const NAME_HINT = 'Make sure the request says Tuleva.';
 
 describe('AuthenticationLoader', () => {
+  afterEach(forgetTheLayout);
+
   it('asks to compare the verification code and to check that the request names Tuleva', () => {
     renderLoader({ controlCode: '1337' });
 
@@ -85,6 +94,33 @@ describe('AuthenticationLoader', () => {
     expect(
       screen.getByText('Make sure that the verification code received on your phone is the same:'),
     ).toHaveFocus();
+  });
+
+  it('brings the verification code and Cancel into view when the code arrives below the fold', () => {
+    const scrollIntoView = watchScrollingIntoView();
+    const { rerender } = renderLoader({});
+    layOutBelowTheFold();
+
+    rerender(
+      <IntlProvider locale="en" messages={translations.en}>
+        <AuthenticationLoader controlCode="1337" />
+      </IntlProvider>,
+    );
+
+    expect(scrollIntoView).toHaveBeenCalledTimes(1);
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' });
+    const [scrolled] = scrolledIntoView(scrollIntoView);
+    expect(scrolled).toHaveTextContent('1337');
+    expect(scrolled).toContainElement(screen.getByRole('button', { name: 'Cancel' }));
+  });
+
+  it('leaves the page where it is when the verification code and Cancel arrive in view', () => {
+    const scrollIntoView = watchScrollingIntoView();
+    layOutAboveTheFold();
+
+    renderLoader({ controlCode: '1337' });
+
+    expect(scrollIntoView).not.toHaveBeenCalled();
   });
 
   it('has nothing to compare while there is no verification code', () => {
