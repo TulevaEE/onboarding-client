@@ -14,7 +14,10 @@ const isRefusedByBackend = (error: unknown): boolean => {
 
 const pageInView = () => document.visibilityState === 'visible';
 
-export function useSmartIdQrCodeLink(renewSilently: () => boolean): {
+export function useSmartIdQrCodeLink(
+  renewSilently: () => boolean,
+  onExpire: () => void,
+): {
   deviceLink: string | null;
   expired: boolean;
 } {
@@ -22,6 +25,8 @@ export function useSmartIdQrCodeLink(renewSilently: () => boolean): {
   const [expired, setExpired] = useState(false);
   const latestRenewSilently = useRef(renewSilently);
   latestRenewSilently.current = renewSilently;
+  const latestOnExpire = useRef(onExpire);
+  latestOnExpire.current = onExpire;
 
   useEffect(() => {
     const startedAt = getPendingSmartIdStartedAt() ?? Date.now();
@@ -42,10 +47,15 @@ export function useSmartIdQrCodeLink(renewSilently: () => boolean): {
       stalenessTimeout = setTimeout(() => setDeviceLink(null), MAX_LINK_AGE_MILLIS);
     };
 
+    const showExpired = () => {
+      setExpired(true);
+      latestOnExpire.current();
+    };
+
     const expire = () => {
       stop();
       setDeviceLink(null);
-      setExpired(true);
+      showExpired();
     };
 
     const outlive = () => {
@@ -53,7 +63,7 @@ export function useSmartIdQrCodeLink(renewSilently: () => boolean): {
       setDeviceLink(null);
       const renewed = pageInView() && latestRenewSilently.current();
       if (!renewed) {
-        setExpired(true);
+        showExpired();
       }
     };
 

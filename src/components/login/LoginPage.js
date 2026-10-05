@@ -19,6 +19,7 @@ import {
   cancelMobileAuthentication,
   authenticateWithIdCard,
   startSmartIdLogin,
+  stopPollingSmartIdSession,
   clearLoginError,
 } from './actions';
 import { getAuthentication } from '../common/authenticationManager';
@@ -34,6 +35,7 @@ export const LoginPage = ({
   onPersonalCodeChange,
   onCancelMobileAuthentication,
   onSmartIdLoginStart,
+  onSmartIdQrCodeExpire,
   onAuthenticateWithIdCard,
   onLoginMethodChange,
   phoneNumber,
@@ -93,6 +95,7 @@ export const LoginPage = ({
                 rememberMe={smartIdRememberMe}
                 onCancel={onCancelMobileAuthentication}
                 onSmartIdLoginStart={onSmartIdLoginStart}
+                onExpire={onSmartIdQrCodeExpire}
                 automaticRenewals={qrCodeRenewals}
               />
             ) : (
@@ -122,6 +125,7 @@ LoginPage.defaultProps = {
   onMobileIdSubmit: noop,
   onCancelMobileAuthentication: noop,
   onSmartIdLoginStart: noop,
+  onSmartIdQrCodeExpire: noop,
   onAuthenticateWithIdCard: noop,
   onLoginMethodChange: noop,
 
@@ -147,6 +151,7 @@ LoginPage.propTypes = {
   onMobileIdSubmit: Types.func,
   onCancelMobileAuthentication: Types.func,
   onSmartIdLoginStart: Types.func,
+  onSmartIdQrCodeExpire: Types.func,
   onAuthenticateWithIdCard: Types.func,
   onLoginMethodChange: Types.func,
 
@@ -188,6 +193,7 @@ const mapDispatchToProps = (dispatch) =>
       onMobileIdSubmit: authenticateWithMobileId,
       onCancelMobileAuthentication: cancelMobileAuthentication,
       onSmartIdLoginStart: startSmartIdLogin,
+      onSmartIdQrCodeExpire: stopPollingSmartIdSession,
       onAuthenticateWithIdCard: authenticateWithIdCard,
       onLoginMethodChange: clearLoginError,
     },

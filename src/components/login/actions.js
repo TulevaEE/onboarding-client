@@ -532,6 +532,10 @@ export function clearLoginError() {
   return { type: LOGIN_ERROR_CLEARED };
 }
 
+export function stopPollingSmartIdSession() {
+  return () => stopSmartIdPolling();
+}
+
 export function cancelMobileAuthentication() {
   if (timeout) {
     clearTimeout(timeout);

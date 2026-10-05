@@ -19,6 +19,9 @@ import { getAuthentication } from '../common/authenticationManager';
 
 jest.unmock('react-intl');
 
+const setPageVisibility = (visibility: 'visible' | 'hidden') =>
+  Object.defineProperty(document, 'visibilityState', { value: visibility, configurable: true });
+
 describe('When a user is logging in', () => {
   const server = setupServer();
   let history: History;
@@ -134,6 +137,32 @@ describe('When a user is logging in', () => {
       expect(backend.deviceLinkRememberMeChoices).toEqual([true, true]);
     } finally {
       now.mockRestore();
+    }
+  });
+
+  test('an expired QR code stays until they act, even after the session it showed times out', async () => {
+    const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+    userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+    expect(
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+    ).toBeInTheDocument();
+
+    setPageVisibility('hidden');
+    const sessionStart = Date.now();
+    const now = jest.spyOn(Date, 'now').mockImplementation(() => sessionStart + 61000);
+    try {
+      expect(
+        await screen.findByText('The QR code expired.', undefined, { timeout: 3000 }),
+      ).toBeInTheDocument();
+
+      backend.failPollingWith('smart.id.timeout');
+      await act(() => new Promise((resolve) => setTimeout(resolve, 1500)));
+
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(screen.getByText('The QR code expired.')).toBeInTheDocument();
+    } finally {
+      now.mockRestore();
+      setPageVisibility('visible');
     }
   });
 
