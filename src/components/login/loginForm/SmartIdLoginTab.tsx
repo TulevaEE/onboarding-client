@@ -6,6 +6,7 @@ import { SmartIdLoginFlow } from '../../common/apiModels';
 import { deviceClass } from '../../common/deviceClass';
 import { useLoginLanguage } from '../loginLanguage';
 import { useRememberedSmartIdAccount } from '../smartId/useRememberedSmartIdAccount';
+import { IconBeforeLabel, QrCodeIcon, SmartIdMarkIcon } from '../smartId/icons';
 import { PII_CLASS } from '../../tracking/piiMarkup';
 import { QuietLinkButton } from './QuietLink';
 import { RememberMeCheckbox } from './RememberMeCheckbox';
@@ -59,13 +60,16 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
     );
   }
 
+  const onAPhone = deviceClass() === 'phone';
   const logInButton = (
     <button
       type="button"
       className="btn btn-primary btn-lg text-wrap text-balance"
       onClick={() => onSmartIdLoginStart(language, 'DEVICE_LINK', pushLoginAvailable && rememberMe)}
     >
-      <FormattedMessage id="login.enter" />
+      <IconBeforeLabel icon={onAPhone ? <SmartIdMarkIcon /> : <QrCodeIcon />}>
+        <FormattedMessage id="login.enter" />
+      </IconBeforeLabel>
     </button>
   );
 
@@ -78,7 +82,7 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
           onChange={chooseRememberMe}
         />
       )}
-      {deviceClass() === 'phone' ? (
+      {onAPhone ? (
         <div className="d-grid gap-2">
           {logInButton}
           <QuietLinkButton
