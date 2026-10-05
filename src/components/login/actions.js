@@ -319,7 +319,7 @@ const waitsForTheSmartIdAppOnThisPhone = ({ login }) =>
   Boolean(login.smartIdWeb2AppLink) &&
   opensTheSmartIdApp({ qrCodeRequested: login.smartIdQrCodeRequested });
 
-const callbackTakenByAnotherTab = (error, state) =>
+const sessionGoneWhileWaitingForTheApp = (error, state) =>
   isSmartIdSessionNotFound(error) && waitsForTheSmartIdAppOnThisPhone(state);
 
 export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => {
@@ -381,7 +381,7 @@ export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => 
       if (attempt.qrCodeExpired && isSmartIdTimeout(error)) {
         return undefined;
       }
-      if (callbackTakenByAnotherTab(error, getState())) {
+      if (sessionGoneWhileWaitingForTheApp(error, getState())) {
         return dispatch({ type: MOBILE_AUTHENTICATION_CANCEL });
       }
       return dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error });
