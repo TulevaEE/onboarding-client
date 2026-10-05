@@ -204,6 +204,8 @@ export function smartIdMandateBatchSigningBackend(
 type SmartIdAuthenticationBackend = {
   resolvePolling: () => void;
   failPollingWith: (errorCode: string) => void;
+  holdSessionStarts: () => () => void;
+  heldSessionStarts: number;
   startSession: () => string;
   startedSessions: number;
   acceptedCallbacks: number;
@@ -224,6 +226,7 @@ export function smartIdAuthenticationBackend(
 ): SmartIdAuthenticationBackend {
   let pollingResolved = false;
   let pollingFailure: string | null = null;
+  let sessionStartHold: Promise<void> | null = null;
   let elapsedSeconds = 0;
   let latestAuthenticationHash: string | null = null;
   const backend: SmartIdAuthenticationBackend = {
@@ -231,6 +234,17 @@ export function smartIdAuthenticationBackend(
     failPollingWith: (errorCode) => {
       pollingFailure = errorCode;
     },
+    holdSessionStarts: () => {
+      let release = () => {};
+      sessionStartHold = new Promise((resolve) => {
+        release = () => {
+          sessionStartHold = null;
+          resolve();
+        };
+      });
+      return release;
+    },
+    heldSessionStarts: 0,
     startSession: () => {
       backend.startedSessions += 1;
       latestAuthenticationHash = smartIdAuthenticationHash(backend.startedSessions);
@@ -255,7 +269,11 @@ export function smartIdAuthenticationBackend(
       return res(ctx.status(204));
     }),
 
-    rest.post('http://localhost/v1/smart-id/login', (req, res, ctx) => {
+    rest.post('http://localhost/v1/smart-id/login', async (req, res, ctx) => {
+      if (sessionStartHold) {
+        backend.heldSessionStarts += 1;
+        await sessionStartHold;
+      }
       const {
         flow,
         language = 'et',
