@@ -5,6 +5,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Loader } from '../../common';
 import { CancelButton } from '../../common/cancelButton/CancelButton';
 import { FocusedParagraph } from '../../common/focusedParagraph/FocusedParagraph';
+import { BroughtIntoView } from '../../common/broughtIntoView/BroughtIntoView';
 import { DeviceClass, deviceClass } from '../../common/deviceClass';
 import { QuietLink } from '../loginForm/QuietLink';
 import { useLoginLanguage } from '../loginLanguage';
@@ -16,10 +17,24 @@ import { useStillOnThisPage } from './useStillOnThisPage';
 import { IconBeforeLabel, SmartIdMarkIcon } from './icons';
 
 const MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE = 53;
-const QR_CODE_PIXELS_PER_MODULE: Record<DeviceClass, number> = {
-  computer: 7,
-  tablet: 10,
-  phone: 10,
+const SMART_ID_MINIMUM_PIXELS_PER_MODULE = 6;
+const TOUCH_SCREEN_PIXELS_PER_MODULE = 10;
+const SCREEN_HEIGHT_FOR_THE_INSTRUCTION_APP_LINK_AND_CANCEL = 180;
+
+const pixelsPerModuleToFitTheScreenHeight = () =>
+  Math.floor(
+    (window.innerHeight - SCREEN_HEIGHT_FOR_THE_INSTRUCTION_APP_LINK_AND_CANCEL) /
+      MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE,
+  );
+
+const qrCodePixelsPerModule = (device: DeviceClass) => {
+  if (device === 'computer') {
+    return SMART_ID_MINIMUM_PIXELS_PER_MODULE;
+  }
+  return Math.max(
+    SMART_ID_MINIMUM_PIXELS_PER_MODULE,
+    Math.min(TOUCH_SCREEN_PIXELS_PER_MODULE, pixelsPerModuleToFitTheScreenHeight()),
+  );
 };
 
 type SmartIdLoginStart = (language: string, flow: SmartIdLoginFlow, rememberMe: boolean) => void;
@@ -54,7 +69,7 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
       onSmartIdLoginStart={onSmartIdLoginStart}
       onExpire={onExpire}
       automaticRenewals={automaticRenewals}
-      sizePixels={MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE * QR_CODE_PIXELS_PER_MODULE[device]}
+      sizePixels={MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE * qrCodePixelsPerModule(device)}
     >
       {device === 'tablet' && (
         <QuietLink href={web2AppLink}>
@@ -151,7 +166,7 @@ const SmartIdQrCodeLogin: React.FC<{
   }
 
   return (
-    <>
+    <BroughtIntoView>
       <FocusedParagraph className="m-0 mb-4 text-pretty">
         <FormattedMessage id="login.smart.id.qr.instructions" />
       </FocusedParagraph>
@@ -175,6 +190,6 @@ const SmartIdQrCodeLogin: React.FC<{
       </div>
       {children}
       <CancelButton onCancel={onCancel} className="mt-4" />
-    </>
+    </BroughtIntoView>
   );
 };

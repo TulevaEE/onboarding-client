@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import { Loader } from '..'; // eslint-disable-line import/no-cycle
 import { CancelButton } from '../cancelButton/CancelButton';
 import { FocusedParagraph } from '../focusedParagraph/FocusedParagraph';
+import { BroughtIntoView } from '../broughtIntoView/BroughtIntoView';
 import './AuthenticationLoader.scss';
 
 const AuthenticationLoader = ({
@@ -49,6 +50,9 @@ const AuthenticationLoader = ({
         </div>
       </div>
     );
+  }
+  if (controlCode) {
+    return <BroughtIntoView>{content}</BroughtIntoView>;
   }
   return content;
 };

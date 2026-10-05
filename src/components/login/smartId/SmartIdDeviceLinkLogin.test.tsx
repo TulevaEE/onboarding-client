@@ -10,6 +10,14 @@ import { getSmartIdQrCodeLink } from '../../common/api';
 import { expectStackedFullWidth } from '../../../test/expectStackedFullWidth';
 import { expectFullWidthCancel } from '../../../test/expectFullWidthCancel';
 import { expectNoCardOfItsOwn } from '../../../test/expectNoCardOfItsOwn';
+import {
+  forgetTheLayout,
+  layOutAboveTheFold,
+  layOutBelowTheFold,
+  scrolledIntoView,
+  setViewportHeight,
+  watchScrollingIntoView,
+} from '../../../test/fold';
 
 jest.unmock('react-intl');
 jest.mock('../../common/api');
@@ -100,7 +108,13 @@ describe('Smart-ID device link login', () => {
   afterEach(() => {
     jest.useRealTimers();
     setUserAgent(desktopUserAgent);
+    forgetTheLayout();
   });
+
+  const pixelsPerModuleOf = (qrCode: HTMLElement) => {
+    const [, , modules] = (qrCode.getAttribute('viewBox') ?? '').split(' ').map(Number);
+    return Number(qrCode.getAttribute('width')) / modules;
+  };
 
   it.each([
     ['en', 'Scan with the Smart\u2011ID app'],
@@ -169,15 +183,38 @@ describe('Smart-ID device link login', () => {
     expectNoCardOfItsOwn(container);
   });
 
-  it('draws the QR code of a full device link at least 6 px per module, but never wider than the screen', async () => {
+  it('draws the QR code of a full device link at the 6 px per module Smart-ID asks for at least, so it fits a laptop screen, but never wider than the screen', async () => {
     mockGetSmartIdQrCodeLink.mockResolvedValue({ deviceLink: qrCodeLinkAsTheBackendBuildsIt });
     renderDeviceLinkLogin();
     await flushPendingRequests();
 
     const qrCode = screen.getByRole('img');
-    const [, , modules] = (qrCode.getAttribute('viewBox') ?? '').split(' ').map(Number);
-    expect(Number(qrCode.getAttribute('width')) / modules).toBeGreaterThanOrEqual(6);
+    expect(pixelsPerModuleOf(qrCode)).toBe(6);
     expect(qrCode).toHaveStyle({ maxWidth: '100%' });
+  });
+
+  it('brings the QR code and Cancel into view when they open below the fold', async () => {
+    const scrollIntoView = watchScrollingIntoView();
+    layOutBelowTheFold();
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    expect(scrollIntoView).toHaveBeenCalledTimes(1);
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' });
+    const [scrolled] = scrolledIntoView(scrollIntoView);
+    expect(scrolled).toContainElement(screen.getByRole('img'));
+    expect(scrolled).toContainElement(screen.getByRole('button', { name: 'Cancel' }));
+    expect(scrolled).toHaveClass('scroll-margin-bottom');
+  });
+
+  it('leaves the page where it is when the QR code and Cancel open in view', async () => {
+    const scrollIntoView = watchScrollingIntoView();
+    layOutAboveTheFold();
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    expect(screen.getByRole('img')).toBeInTheDocument();
+    expect(scrollIntoView).not.toHaveBeenCalled();
   });
 
   it('draws the QR code of a full device link at 10 px per module on a tablet, but never wider than the screen', async () => {
@@ -187,11 +224,30 @@ describe('Smart-ID device link login', () => {
     await flushPendingRequests();
 
     const qrCode = screen.getByRole('img');
-    const [, , modules] = (qrCode.getAttribute('viewBox') ?? '').split(' ').map(Number);
-    expect(Number(qrCode.getAttribute('width')) / modules).toBe(10);
+    expect(pixelsPerModuleOf(qrCode)).toBe(10);
     expect(qrCode).toHaveStyle({ maxWidth: '100%' });
     /* eslint-disable-next-line testing-library/no-node-access */
     expect(qrCode.parentElement).toHaveStyle({ width: '530px', maxWidth: '100%' });
+  });
+
+  it('draws the QR code smaller on a tablet whose screen is too short for 10 px per module, so the instruction, the code, the link and Cancel fit on it', async () => {
+    setUserAgent(tabletUserAgent);
+    setViewportHeight(600);
+    mockGetSmartIdQrCodeLink.mockResolvedValue({ deviceLink: qrCodeLinkAsTheBackendBuildsIt });
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    expect(pixelsPerModuleOf(screen.getByRole('img'))).toBe(7);
+  });
+
+  it('never draws the QR code of a tablet below 6 px per module, however short its screen', async () => {
+    setUserAgent(tabletUserAgent);
+    setViewportHeight(400);
+    mockGetSmartIdQrCodeLink.mockResolvedValue({ deviceLink: qrCodeLinkAsTheBackendBuildsIt });
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    expect(pixelsPerModuleOf(screen.getByRole('img'))).toBe(6);
   });
 
   it('offers a tablet a quiet link under the QR code that opens the Smart-ID app of the same session', async () => {
@@ -229,10 +285,19 @@ describe('Smart-ID device link login', () => {
     await flushPendingRequests();
 
     const qrCode = screen.getByRole('img');
-    const [, , modules] = (qrCode.getAttribute('viewBox') ?? '').split(' ').map(Number);
-    expect(Number(qrCode.getAttribute('width')) / modules).toBe(10);
+    expect(pixelsPerModuleOf(qrCode)).toBe(10);
     /* eslint-disable-next-line testing-library/no-node-access */
     expect(qrCode.parentElement).toHaveStyle({ width: '530px', maxWidth: '100%' });
+  });
+
+  it('draws the QR code a phone asked for smaller when its screen is too short for 10 px per module', async () => {
+    setUserAgent(phoneUserAgent);
+    setViewportHeight(560);
+    mockGetSmartIdQrCodeLink.mockResolvedValue({ deviceLink: qrCodeLinkAsTheBackendBuildsIt });
+    renderDeviceLinkLogin({ qrCodeRequested: true });
+    await flushPendingRequests();
+
+    expect(pixelsPerModuleOf(screen.getByRole('img'))).toBe(7);
   });
 
   it('shows a phone the QR code it asked for with nothing around it but the instruction and the way out', async () => {
@@ -248,7 +313,7 @@ describe('Smart-ID device link login', () => {
     renderDeviceLinkLogin();
     /* eslint-disable testing-library/no-node-access */
     const placeOfTheQrCode = screen.getByRole('status', { name: 'Loading' }).parentElement;
-    expect(placeOfTheQrCode).toHaveStyle({ width: '371px', maxWidth: '100%' });
+    expect(placeOfTheQrCode).toHaveStyle({ width: '318px', maxWidth: '100%' });
 
     await flushPendingRequests();
 
