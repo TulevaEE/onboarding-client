@@ -3,6 +3,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { QRCodeSVG } from 'qrcode.react';
 
 import { Loader } from '../../common';
+import { CancelButton } from '../../common/cancelButton/CancelButton';
 import { DeviceClass, deviceClass } from '../../common/deviceClass';
 import { QuietLink } from '../loginForm/QuietLink';
 import { useLoginLanguage } from '../loginLanguage';
@@ -74,7 +75,7 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
       <a className="btn btn-primary btn-lg text-wrap text-balance" href={web2AppLink}>
         <FormattedMessage id="login.smart.id.open.app" />
       </a>
-      <StackedCancelButton onCancel={onCancel} />
+      <CancelButton onCancel={onCancel} />
     </div>
   </>
 );
@@ -121,7 +122,7 @@ const SmartIdQrCodeLogin: React.FC<{
           >
             <FormattedMessage id="login.smart.id.qr.refresh" />
           </button>
-          <StackedCancelButton onCancel={onCancel} />
+          <CancelButton onCancel={onCancel} />
         </div>
       </>
     );
@@ -151,7 +152,7 @@ const SmartIdQrCodeLogin: React.FC<{
         )}
       </div>
       {children}
-      <CancelButton onCancel={onCancel} />
+      <CancelButton onCancel={onCancel} className="mt-4" />
     </>
   );
 };
@@ -160,22 +161,4 @@ const ConfirmationHint: React.FC<{ className: string }> = ({ className }) => (
   <p className={`m-0 ${className} small text-body-secondary text-pretty`}>
     <FormattedMessage id="login.smart.id.confirm.hint" />
   </p>
-);
-
-const CancelButton: React.FC<{ onCancel: () => void }> = ({ onCancel }) => (
-  <div>
-    <button type="button" className="btn btn-outline-primary mt-4" onClick={onCancel}>
-      <FormattedMessage id="login.stop" />
-    </button>
-  </div>
-);
-
-const StackedCancelButton: React.FC<{ onCancel: () => void }> = ({ onCancel }) => (
-  <button
-    type="button"
-    className="btn btn-outline-primary btn-lg text-wrap text-balance"
-    onClick={onCancel}
-  >
-    <FormattedMessage id="login.stop" />
-  </button>
 );

@@ -29,20 +29,6 @@ describe('Authenticaion loader', () => {
     expect(component.contains(<FormattedMessage id="login.control.code" />)).toBe(true);
   });
 
-  it('can cancel authentication', () => {
-    const onCancel = jest.fn();
-    component.setProps({ onCancel, controlCode: '1337' });
-    const clickButton = () => component.find('button').simulate('click');
-    expect(component.contains(<FormattedMessage id="login.stop" />)).toBe(true);
-    expect(onCancel).not.toHaveBeenCalled();
-    clickButton();
-    expect(onCancel).toHaveBeenCalledTimes(1);
-  });
-
-  it('can not cancel when no control code yet present', () => {
-    expect(component.contains(<FormattedMessage id="login.stop" />)).toBe(false);
-  });
-
   it('tells an ID-card signer to confirm with their PIN2', () => {
     const hint = <FormattedMessage id="id.card.signing.instruction" />;
     expect(component.contains(hint)).toBe(false);

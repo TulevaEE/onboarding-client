@@ -6,6 +6,7 @@ import { Link, Redirect, useLocation } from 'react-router-dom';
 import { ErrorAlert, Loader, logo } from '../../common';
 import { getAuthentication } from '../../common/authenticationManager';
 import { usePageTitle } from '../../common/usePageTitle';
+import { CANCEL_BUTTON_CLASS } from '../../common/cancelButton/CancelButton';
 import {
   cancelMobileAuthentication,
   completeSmartIdLogin,
@@ -86,15 +87,13 @@ export const SmartIdCallbackPage: React.FC = () => {
               <div className="bg-white shadow-sm rounded-3 p-5 text-center">
                 <Loader className="align-middle" />
                 {slow && (
-                  <div>
-                    <Link
-                      className="btn btn-outline-primary mt-4"
-                      to={loginPath}
-                      onClick={() => dispatch(cancelMobileAuthentication())}
-                    >
-                      <FormattedMessage id="login.stop" />
-                    </Link>
-                  </div>
+                  <Link
+                    className={`${CANCEL_BUTTON_CLASS} mt-4`}
+                    to={loginPath}
+                    onClick={() => dispatch(cancelMobileAuthentication())}
+                  >
+                    <FormattedMessage id="login.stop" />
+                  </Link>
                 )}
               </div>
             )}
