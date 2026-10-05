@@ -127,6 +127,31 @@ describe('Smart-ID device link login', () => {
     expect(container).toHaveTextContent(/^Scan with the Smart.ID appCancel$/);
   });
 
+  it('moves the focus to the instruction when the QR code view opens, so a screen reader reads it', async () => {
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    expect(screen.getByText(/^Scan with the Smart.ID app$/)).toHaveFocus();
+  });
+
+  it('moves the focus to the news that the QR code expired', async () => {
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+    setPageVisibility('hidden');
+
+    await outliveTheSession();
+
+    expect(screen.getByText('The QR code expired.')).toHaveFocus();
+  });
+
+  it('moves the focus to the instruction when a phone is sent to the Smart-ID app', async () => {
+    setUserAgent(phoneUserAgent);
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    expect(screen.getByText(/^Open the Smart.ID app and confirm the login there\./)).toHaveFocus();
+  });
+
   it('draws no card of its own around the QR code, so it can sit inside the login card', async () => {
     const { container } = renderDeviceLinkLogin();
     await flushPendingRequests();

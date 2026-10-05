@@ -4,6 +4,7 @@ import { PropTypes as Types } from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { Loader } from '..'; // eslint-disable-line import/no-cycle
 import { CancelButton } from '../cancelButton/CancelButton';
+import { FocusedParagraph } from '../focusedParagraph/FocusedParagraph';
 import './AuthenticationLoader.scss';
 
 const AuthenticationLoader = ({
@@ -17,11 +18,11 @@ const AuthenticationLoader = ({
     <>
       {controlCode ? (
         <>
-          <p className="m-0 mb-4 text-balance">
+          <FocusedParagraph className="m-0 mb-4 text-balance">
             <FormattedMessage
               id={verificationCodeChoice ? 'login.control.code.choice' : 'login.control.code'}
             />
-          </p>
+          </FocusedParagraph>
           <div className="display-2 fw-bold mb-2">{controlCode}</div>
           <p className="authentication-loader__hint mx-auto mb-4 small text-body-secondary text-pretty">
             <FormattedMessage id="login.control.code.name.hint" />
