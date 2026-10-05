@@ -7,7 +7,7 @@ import translations from '../../translations';
 import { MobileIdLoginTab } from './MobileIdLoginTab';
 import { MOBILE_ID_PHONE_NUMBER_REQUIRED } from './MobileIdLoginForm';
 import { PII_CLASS } from '../../tracking/piiMarkup';
-import { expectStackedFullWidth } from '../../../test/expectStackedFullWidth';
+import { expectQuietLinkUnder } from '../../../test/expectQuietLinkUnder';
 import { forgetRememberedMobileIdPerson, getRememberedMobileIdPerson } from '../../common/api';
 
 jest.mock('../../common/api');
@@ -73,11 +73,11 @@ describe('Mobile-ID login tab', () => {
     expect(mockDispatch).toHaveBeenCalledTimes(1);
   });
 
-  it('stacks the login as the remembered person above an equally wide way out', async () => {
+  it('offers somebody else a quiet link under the login as the remembered person', async () => {
     mockGetRememberedMobileIdPerson.mockResolvedValue({ firstName: 'Aadu' });
     renderTab();
 
-    expectStackedFullWidth(
+    expectQuietLinkUnder(
       await screen.findByRole('button', { name: 'Continue as Aadu' }),
       screen.getByRole('button', { name: 'Not you?' }),
     );
