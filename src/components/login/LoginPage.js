@@ -21,7 +21,7 @@ import {
   authenticateWithIdCard,
   startSmartIdLogin,
   startSmartIdLoginInTheApp,
-  stopPollingSmartIdSession,
+  expireSmartIdQrCode,
 } from './actions';
 import { getAuthentication } from '../common/authenticationManager';
 import { loginLanding } from './loginLanding';
@@ -216,7 +216,7 @@ const mapDispatchToProps = (dispatch) =>
       onCancelMobileAuthentication: cancelMobileAuthentication,
       onSmartIdLoginStart: startSmartIdLogin,
       onSmartIdAppLoginStart: startSmartIdLoginInTheApp,
-      onSmartIdQrCodeExpire: stopPollingSmartIdSession,
+      onSmartIdQrCodeExpire: expireSmartIdQrCode,
       onAuthenticateWithIdCard: authenticateWithIdCard,
       onLoginMethodChange: cancelMobileAuthentication,
     },

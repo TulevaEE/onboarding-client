@@ -265,6 +265,59 @@ describe('When a user is logging in', () => {
     }
   });
 
+  test('a login confirmed in the app after the QR code expired still completes', async () => {
+    const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+    userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+    expect(
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+    ).toBeInTheDocument();
+
+    setPageVisibility('hidden');
+    const sessionStart = Date.now();
+    const now = jest.spyOn(Date, 'now').mockImplementation(() => sessionStart + 61000);
+    try {
+      expect(
+        await screen.findByText('The QR code expired.', undefined, { timeout: 3000 }),
+      ).toBeInTheDocument();
+
+      backend.resolvePolling();
+
+      expect(
+        await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      ).toBeInTheDocument();
+    } finally {
+      now.mockRestore();
+      setPageVisibility('visible');
+    }
+  });
+
+  test('cancelling in the Smart-ID app after the QR code expired brings back the Smart-ID tab', async () => {
+    const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+    userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+    expect(
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+    ).toBeInTheDocument();
+
+    setPageVisibility('hidden');
+    const sessionStart = Date.now();
+    const now = jest.spyOn(Date, 'now').mockImplementation(() => sessionStart + 61000);
+    try {
+      expect(
+        await screen.findByText('The QR code expired.', undefined, { timeout: 3000 }),
+      ).toBeInTheDocument();
+
+      backend.failPollingWith('smart.id.user.refused');
+
+      expect(
+        await screen.findByRole('button', { name: /^Log in$/ }, { timeout: 3000 }),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    } finally {
+      now.mockRestore();
+      setPageVisibility('visible');
+    }
+  });
+
   test('cancelling in the Smart-ID app brings back the Smart-ID tab as it was, without an error', async () => {
     const backend = smartIdAuthenticationBackend(server, { language: 'en' });
     userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
