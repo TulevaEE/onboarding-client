@@ -4,6 +4,7 @@ import { IntlProvider } from 'react-intl';
 
 import translations from '../../translations';
 import AuthenticationLoader from './AuthenticationLoader';
+import { expectNoCardOfItsOwn } from '../../../test/expectNoCardOfItsOwn';
 
 const renderLoader = (props: Record<string, unknown>, language: 'en' | 'et' = 'en') =>
   render(
@@ -41,6 +42,12 @@ describe('AuthenticationLoader', () => {
     renderLoader({ controlCode: '1337' }, 'et');
 
     expect(screen.getByText('Veendu, et päringus oleks kirjas Tuleva.')).toBeInTheDocument();
+  });
+
+  it('draws no card of its own unless it is overlayed, so it can sit inside the login card', () => {
+    const { container } = renderLoader({ controlCode: '1337' });
+
+    expectNoCardOfItsOwn(container);
   });
 
   it('has nothing to compare while there is no verification code', () => {

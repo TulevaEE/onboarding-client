@@ -20,7 +20,6 @@ import {
   authenticateWithIdCard,
   startSmartIdLogin,
   stopPollingSmartIdSession,
-  clearLoginError,
 } from './actions';
 import { getAuthentication } from '../common/authenticationManager';
 import { loginLanding } from './loginLanding';
@@ -60,6 +59,33 @@ export const LoginPage = ({
   }
 
   const authenticating = loadingAuthentication || controlCode || loadingUserConversion;
+  const showsAlert =
+    errorDescription && !ERRORS_SHOWN_BESIDE_THEIR_FIELD.includes(errorDescription);
+
+  const pendingLogin = () => {
+    if (errorDescription || !authenticating) {
+      return null;
+    }
+    if (smartIdWeb2AppLink) {
+      return (
+        <SmartIdDeviceLinkLogin
+          web2AppLink={smartIdWeb2AppLink}
+          rememberMe={smartIdRememberMe}
+          onCancel={onCancelMobileAuthentication}
+          onSmartIdLoginStart={onSmartIdLoginStart}
+          onExpire={onSmartIdQrCodeExpire}
+          automaticRenewals={qrCodeRenewals}
+        />
+      );
+    }
+    return (
+      <AuthenticationLoader
+        onCancel={onCancelMobileAuthentication}
+        controlCode={controlCode}
+        verificationCodeChoice={verificationCodeChoice}
+      />
+    );
+  };
 
   return (
     <div className={styles.loginPage}>
@@ -67,49 +93,21 @@ export const LoginPage = ({
         <div className="row justify-content-center">
           <div className="col-12 col-md-9 col-lg-7">
             <img width="146" height="66" src={logo} alt="Tuleva" className="d-block mx-auto mb-5" />
-            {errorDescription && !ERRORS_SHOWN_BESIDE_THEIR_FIELD.includes(errorDescription) ? (
-              <ErrorAlert description={errorDescription} />
-            ) : (
-              ''
-            )}
-            {!authenticating ? (
-              <LoginForm
-                onMobileIdSubmit={onMobileIdSubmit}
-                onPhoneNumberChange={onPhoneNumberChange}
-                onPersonalCodeChange={onPersonalCodeChange}
-                phoneNumber={phoneNumber}
-                personalCode={personalCode}
-                mobileIdStartError={errorDescription}
-                onSmartIdLoginStart={onSmartIdLoginStart}
-                onAuthenticateWithIdCard={onAuthenticateWithIdCard}
-                onLoginMethodChange={onLoginMethodChange}
-                monthlyThirdPillarContribution={monthlyThirdPillarContribution}
-                exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
-              />
-            ) : (
-              ''
-            )}
-            {!errorDescription && authenticating && smartIdWeb2AppLink ? (
-              <SmartIdDeviceLinkLogin
-                web2AppLink={smartIdWeb2AppLink}
-                rememberMe={smartIdRememberMe}
-                onCancel={onCancelMobileAuthentication}
-                onSmartIdLoginStart={onSmartIdLoginStart}
-                onExpire={onSmartIdQrCodeExpire}
-                automaticRenewals={qrCodeRenewals}
-              />
-            ) : (
-              ''
-            )}
-            {!errorDescription && authenticating && !smartIdWeb2AppLink ? (
-              <AuthenticationLoader
-                onCancel={onCancelMobileAuthentication}
-                controlCode={controlCode}
-                verificationCodeChoice={verificationCodeChoice}
-              />
-            ) : (
-              ''
-            )}
+            <LoginForm
+              onMobileIdSubmit={onMobileIdSubmit}
+              onPhoneNumberChange={onPhoneNumberChange}
+              onPersonalCodeChange={onPersonalCodeChange}
+              phoneNumber={phoneNumber}
+              personalCode={personalCode}
+              mobileIdStartError={errorDescription}
+              onSmartIdLoginStart={onSmartIdLoginStart}
+              onAuthenticateWithIdCard={onAuthenticateWithIdCard}
+              onLoginMethodChange={onLoginMethodChange}
+              monthlyThirdPillarContribution={monthlyThirdPillarContribution}
+              exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
+              alert={showsAlert ? <ErrorAlert description={errorDescription} /> : null}
+              pendingLogin={pendingLogin()}
+            />
           </div>
         </div>
       </div>
@@ -195,7 +193,7 @@ const mapDispatchToProps = (dispatch) =>
       onSmartIdLoginStart: startSmartIdLogin,
       onSmartIdQrCodeExpire: stopPollingSmartIdSession,
       onAuthenticateWithIdCard: authenticateWithIdCard,
-      onLoginMethodChange: clearLoginError,
+      onLoginMethodChange: cancelMobileAuthentication,
     },
     dispatch,
   );

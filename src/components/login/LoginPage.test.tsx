@@ -1,6 +1,6 @@
 import React from 'react';
 import { setupServer } from 'msw/node';
-import { screen, act, waitFor } from '@testing-library/react';
+import { screen, act, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Switch } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
@@ -21,6 +21,14 @@ jest.unmock('react-intl');
 
 const setPageVisibility = (visibility: 'visible' | 'hidden') =>
   Object.defineProperty(document, 'visibilityState', { value: visibility, configurable: true });
+
+const waitLongerThanAPoll = () => act(() => new Promise((resolve) => setTimeout(resolve, 1500)));
+
+const expectInTheOpenTabUnderTheLoginTitle = (tabName: string, element: HTMLElement) => {
+  expect(screen.getByRole('heading', { name: 'Log in to your account' })).toBeInTheDocument();
+  expect(screen.getByRole('tab', { name: tabName })).toHaveClass('active');
+  expect(screen.getByRole('tabpanel')).toContainElement(element);
+};
 
 describe('When a user is logging in', () => {
   const server = setupServer();
@@ -72,6 +80,36 @@ describe('When a user is logging in', () => {
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
     ).toBeInTheDocument();
     expect(history.location.state).toEqual({ justLoggedIn: true });
+  });
+
+  test('the QR code takes the place of the Smart-ID tab content, under the same title and tabs', async () => {
+    smartIdAuthenticationBackend(server, { language: 'en' });
+    userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+
+    const qrCode = await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ });
+
+    expectInTheOpenTabUnderTheLoginTitle('Smart-ID', qrCode);
+    expect(screen.getByText(/^Anyone can log in/)).toBeInTheDocument();
+  });
+
+  test('switching to another tab while the QR code shows stops that login', async () => {
+    const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+    userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+    expect(
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+    ).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('tab', { name: 'Mobile-ID' }));
+
+    expect(await screen.findByPlaceholderText(/Identity code/gi)).toBeInTheDocument();
+    backend.resolvePolling();
+    await waitLongerThanAPoll();
+    expect(screen.queryByText(/mock account page/gi)).not.toBeInTheDocument();
+    userEvent.click(screen.getByRole('tab', { name: 'Smart-ID' }));
+    expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+    expect(
+      screen.queryByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+    ).not.toBeInTheDocument();
   });
 
   test('a Smart-ID login is not remembered on this browser unless they ask for it', async () => {
@@ -156,7 +194,7 @@ describe('When a user is logging in', () => {
       ).toBeInTheDocument();
 
       backend.failPollingWith('smart.id.timeout');
-      await act(() => new Promise((resolve) => setTimeout(resolve, 1500)));
+      await waitLongerThanAPoll();
 
       expect(screen.queryByRole('alert')).not.toBeInTheDocument();
       expect(screen.getByText('The QR code expired.')).toBeInTheDocument();
@@ -206,7 +244,7 @@ describe('When a user is logging in', () => {
 
     userEvent.click(await screen.findByRole('button', { name: 'Continue as Mari' }));
 
-    expect(await screen.findByText('5678')).toBeInTheDocument();
+    expectInTheOpenTabUnderTheLoginTitle('Smart-ID', await screen.findByText('5678'));
     expect(screen.getByText(/In the Smart.ID app, choose this code:/)).toBeInTheDocument();
     expect(screen.getByText(/Make sure the request says Tuleva/)).toBeInTheDocument();
     expect(backend.startedFlows).toEqual(['NOTIFICATION']);
@@ -245,7 +283,7 @@ describe('When a user is logging in', () => {
     userEvent.type(await screen.findByPlaceholderText(/Identity code/gi), identityCode);
     userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '5551 2345');
     userEvent.click(screen.getByText(/Log in$/gi));
-    expect(await screen.findByText('4321')).toBeInTheDocument();
+    expectInTheOpenTabUnderTheLoginTitle('Mobile-ID', await screen.findByText('4321'));
     expect(
       screen.getByText(/Make sure that the verification code received on your phone is the same/),
     ).toBeInTheDocument();
@@ -389,13 +427,14 @@ describe('When a user is logging in', () => {
     userEvent.click(screen.getByText(/Log in$/gi));
     expect(await screen.findByText('4321')).toBeInTheDocument();
 
-    expect(
-      await screen.findByText(/Mobile-ID did not get a confirmation in time/, undefined, {
-        timeout: 3000,
-      }),
-    ).toBeInTheDocument();
-    expect(await screen.findByPlaceholderText(/Phone number/gi)).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'Mobile-ID' })).toHaveClass('active');
+    const alert = await screen.findByRole('alert', undefined, { timeout: 3000 });
+    expect(alert).toHaveTextContent(/^Mobile-ID did not get a confirmation in time/);
+    const phoneField = await screen.findByPlaceholderText(/Phone number/gi);
+    expectInTheOpenTabUnderTheLoginTitle('Mobile-ID', alert);
+    expect(within(screen.getByRole('tabpanel')).getByPlaceholderText(/Phone number/gi)).toBe(
+      phoneField,
+    );
+    expect(alert.compareDocumentPosition(phoneField)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
   test('switching to another login method clears the error of a failed one', async () => {

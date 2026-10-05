@@ -143,7 +143,7 @@ describe('Web eID Auth Integration', () => {
     });
   });
 
-  it('shows a failed ID-card login in the page alert, not inside the tab', async () => {
+  it('shows a failed ID-card login once, above the ID-card tab content', async () => {
     mockAuthenticateWithIdCardWebEid.mockRejectedValueOnce({
       code: ErrorCode.ERR_WEBEID_USER_CANCELLED,
     });
@@ -151,8 +151,11 @@ describe('Web eID Auth Integration', () => {
 
     logInWithIdCard();
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(/Authentication was cancelled/i);
-    expect(within(screen.getByRole('tabpanel')).queryByRole('alert')).not.toBeInTheDocument();
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent(/Authentication was cancelled/i);
+    expect(screen.getAllByRole('alert')).toEqual([alert]);
+    expect(within(screen.getByRole('tabpanel')).getByRole('alert')).toBe(alert);
+    expect(alert.compareDocumentPosition(idCardLogIn())).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 
   it('clears a failed ID-card login when the user switches to another login method', async () => {
