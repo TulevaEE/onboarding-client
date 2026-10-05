@@ -1,6 +1,6 @@
 import React from 'react';
 import { setupServer } from 'msw/node';
-import { screen, act, waitFor, within } from '@testing-library/react';
+import { screen, act, waitFor, within, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Switch } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
@@ -18,6 +18,7 @@ import {
 import { smartIdWeb2AppLink } from '../../test/backend-responses';
 import { getAuthentication } from '../common/authenticationManager';
 import { replaceWindowLocationAssign } from '../../test/windowLocationAssign';
+import { resumePendingSmartIdAuthentication } from './actions';
 
 jest.unmock('react-intl');
 
@@ -51,6 +52,7 @@ describe('When a user is logging in', () => {
   function initializeComponent() {
     history = createMemoryHistory();
     const store = createDefaultStore(history as any);
+    store.dispatch(resumePendingSmartIdAuthentication() as any);
 
     renderWrapped(
       <Switch>
@@ -62,7 +64,16 @@ describe('When a user is logging in', () => {
       store,
     );
   }
+  const reloadThePage = () => {
+    cleanup();
+    initializeComponent();
+    act(() => {
+      history.push('/login');
+    });
+  };
+
   beforeEach(() => {
+    sessionStorage.clear();
     locationAssign.mockReset();
     restoreLocation = replaceWindowLocationAssign(locationAssign);
     localStorage.clear();
@@ -470,6 +481,37 @@ describe('When a user is logging in', () => {
       expect(
         await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
       ).toBeInTheDocument();
+    });
+
+    test('the QR code they asked for comes back when the page reloads', async () => {
+      smartIdAuthenticationBackend(server, { language: 'en' });
+      userEvent.click(await screen.findByRole('button', { name: 'Show QR code' }));
+      expect(
+        await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+      ).toBeInTheDocument();
+
+      reloadThePage();
+
+      expect(
+        await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+      ).toBeInTheDocument();
+      expect(locationAssign).not.toHaveBeenCalled();
+    });
+
+    test('the Smart-ID app they left for still waits for them when the page reloads', async () => {
+      const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+      userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+      await waitFor(() => expect(locationAssign).toHaveBeenCalledTimes(1));
+
+      reloadThePage();
+
+      expect(
+        await screen.findByRole('link', { name: /^Open the Smart.ID app$/ }, { timeout: 3000 }),
+      ).toHaveAttribute('href', smartIdWeb2AppLink('en'));
+      expect(
+        screen.queryByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+      ).not.toBeInTheDocument();
+      expect(backend.startedSessions).toBe(1);
     });
 
     test('Log in after a cancelled QR code opens the Smart-ID app of a new session', async () => {

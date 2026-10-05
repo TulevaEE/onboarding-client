@@ -181,6 +181,7 @@ function savePendingSmartIdAuthentication({
   authenticationHash,
   web2AppLink,
   rememberMe,
+  qrCodeRequested,
   controlCode,
   returnPath,
   language,
@@ -196,6 +197,7 @@ function savePendingSmartIdAuthentication({
         authenticationHash,
         web2AppLink,
         rememberMe,
+        qrCodeRequested,
         controlCode,
         returnPath,
         language,
@@ -277,6 +279,7 @@ export function resumePendingSmartIdAuthentication() {
         type: SMART_ID_LOGIN_START_SUCCESS,
         web2AppLink: pending.web2AppLink,
         rememberMe: pending.rememberMe === true,
+        qrCodeRequested: pending.qrCodeRequested === true,
       });
     }
     if (pending.controlCode) {
@@ -392,19 +395,27 @@ export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => 
   attempt.timeout = setTimeout(poll, POLL_DELAY);
 };
 
-const stayOnThePage = () => {};
+const showTheQrCode = { qrCodeRequested: true, afterDeviceLinkStarted: () => {} };
 
-const openTheSmartIdApp = (web2AppLink) => window.location.assign(web2AppLink);
+const openTheSmartIdApp = {
+  qrCodeRequested: false,
+  afterDeviceLinkStarted: (web2AppLink) => window.location.assign(web2AppLink),
+};
 
 export function startSmartIdLogin(language, flow = 'DEVICE_LINK', rememberMe = false) {
-  return startSmartIdSession(language, flow, rememberMe, stayOnThePage);
+  return startSmartIdSession(language, flow, rememberMe, showTheQrCode);
 }
 
 export function startSmartIdLoginInTheApp(language) {
   return startSmartIdSession(language, 'DEVICE_LINK', false, openTheSmartIdApp);
 }
 
-function startSmartIdSession(language, flow, rememberMe, afterDeviceLinkStarted) {
+function startSmartIdSession(
+  language,
+  flow,
+  rememberMe,
+  { qrCodeRequested, afterDeviceLinkStarted },
+) {
   return (dispatch, getState) => {
     const canceledOrSuperseded = beginLoginStart();
     stopSmartIdPolling();
@@ -438,10 +449,11 @@ function startSmartIdSession(language, flow, rememberMe, afterDeviceLinkStarted)
           authenticationHash,
           web2AppLink,
           rememberMe,
+          qrCodeRequested,
           returnPath,
           language,
         });
-        dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink, rememberMe });
+        dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink, rememberMe, qrCodeRequested });
         dispatch(getSmartIdTokens(authenticationHash));
         afterDeviceLinkStarted(web2AppLink);
       })
