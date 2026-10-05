@@ -121,6 +121,15 @@ describe('When a user is logging in', () => {
     expect(screen.getByText(/^Anyone can log in/)).toBeInTheDocument();
   });
 
+  test('the subtitle and the permission note leave no word alone on their last line, and privacy policy stays in one piece', async () => {
+    smartIdAuthenticationBackend(server, { language: 'en' });
+    expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+
+    expect(screen.getByText(/^Anyone can log in/)).toHaveClass('text-pretty');
+    expect(screen.getByText(/^By logging in/)).toHaveClass('text-pretty');
+    expect(screen.getByRole('link', { name: 'privacy\u00a0policy' })).toBeInTheDocument();
+  });
+
   test('the focus moves from Log in to the instruction of the QR code that replaces it', async () => {
     smartIdAuthenticationBackend(server, { language: 'en' });
     userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
