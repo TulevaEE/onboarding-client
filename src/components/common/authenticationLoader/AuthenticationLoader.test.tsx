@@ -73,6 +73,20 @@ describe('AuthenticationLoader', () => {
     expectFullWidthCancel(screen.getByRole('button', { name: 'Cancel' }));
   });
 
+  it('moves the focus to the instruction once the verification code arrives, so a screen reader reads it', () => {
+    const { rerender } = renderLoader({});
+
+    rerender(
+      <IntlProvider locale="en" messages={translations.en}>
+        <AuthenticationLoader controlCode="1337" />
+      </IntlProvider>,
+    );
+
+    expect(
+      screen.getByText('Make sure that the verification code received on your phone is the same:'),
+    ).toHaveFocus();
+  });
+
   it('has nothing to compare while there is no verification code', () => {
     renderLoader({});
 

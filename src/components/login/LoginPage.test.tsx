@@ -103,6 +103,25 @@ describe('When a user is logging in', () => {
     expect(screen.getByText(/^Anyone can log in/)).toBeInTheDocument();
   });
 
+  test('the focus moves from Log in to the instruction of the QR code that replaces it', async () => {
+    smartIdAuthenticationBackend(server, { language: 'en' });
+    userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+
+    await waitFor(() => expect(screen.getByText(/^Scan with the Smart.ID app$/)).toHaveFocus());
+  });
+
+  test('the focus moves to the instruction above the verification code of a push login', async () => {
+    smartIdAuthenticationBackend(server, {
+      rememberedAccount: { firstName: 'Mari', lastName: 'Maasikas' },
+    });
+
+    userEvent.click(await screen.findByRole('button', { name: 'Continue as Mari' }));
+
+    await waitFor(() =>
+      expect(screen.getByText(/In the Smart.ID app, choose this code:/)).toHaveFocus(),
+    );
+  });
+
   test('switching to another tab while the QR code shows stops that login', async () => {
     const backend = smartIdAuthenticationBackend(server, { language: 'en' });
     userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));

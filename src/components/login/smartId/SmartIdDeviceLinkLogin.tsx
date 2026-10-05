@@ -4,6 +4,7 @@ import { QRCodeSVG } from 'qrcode.react';
 
 import { Loader } from '../../common';
 import { CancelButton } from '../../common/cancelButton/CancelButton';
+import { FocusedParagraph } from '../../common/focusedParagraph/FocusedParagraph';
 import { DeviceClass, deviceClass } from '../../common/deviceClass';
 import { QuietLink } from '../loginForm/QuietLink';
 import { useLoginLanguage } from '../loginLanguage';
@@ -66,9 +67,9 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
   onCancel,
 }) => (
   <>
-    <p className="m-0 mb-4 text-pretty">
+    <FocusedParagraph className="m-0 mb-4 text-pretty">
       <FormattedMessage id="login.smart.id.mobile.instructions" />
-    </p>
+    </FocusedParagraph>
     <Loader className="align-middle" />
     <ConfirmationHint className="mt-3" />
     <div className="d-grid gap-2 mt-4">
@@ -111,9 +112,9 @@ const SmartIdQrCodeLogin: React.FC<{
   if (expired) {
     return (
       <>
-        <p className="m-0 mb-4 text-pretty">
+        <FocusedParagraph className="m-0 mb-4 text-pretty">
           <FormattedMessage id="login.smart.id.qr.expired" />
-        </p>
+        </FocusedParagraph>
         <div className="d-grid gap-2">
           <button
             type="button"
@@ -130,9 +131,9 @@ const SmartIdQrCodeLogin: React.FC<{
 
   return (
     <>
-      <p className="m-0 mb-4 text-pretty">
+      <FocusedParagraph className="m-0 mb-4 text-pretty">
         <FormattedMessage id="login.smart.id.qr.instructions" />
-      </p>
+      </FocusedParagraph>
       <div
         className="d-flex align-items-center justify-content-center mx-auto"
         style={{ width: sizePixels, maxWidth: '100%', aspectRatio: '1' }}
