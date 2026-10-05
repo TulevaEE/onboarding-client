@@ -87,7 +87,7 @@ const renderLoginForm = (
           <h2 className="m-0">
             <FormattedMessage id="login.title" />
           </h2>
-          <p className="m-0 mt-2 text-body-secondary">
+          <p className="m-0 mt-2 text-body-secondary text-pretty">
             <FormattedMessage id="login.subtitle" />
           </p>
         </>
@@ -107,7 +107,7 @@ const renderLoginForm = (
         pendingLogin,
       )}
 
-      <p className="m-0 mt-4 text-body-secondary">
+      <p className="m-0 mt-4 text-body-secondary text-pretty">
         <FormattedMessage
           id="login.permission.note"
           values={{
