@@ -9,6 +9,7 @@ import { automaticRenewalAllowance, AutomaticRenewalAllowance } from './automati
 import { getSmartIdQrCodeLink } from '../../common/api';
 import { expectStackedFullWidth } from '../../../test/expectStackedFullWidth';
 
+jest.unmock('react-intl');
 jest.mock('../../common/api');
 jest.mock('qrcode.react', () => ({
   QRCodeSVG: ({ value, 'aria-label': label }: { value: string; 'aria-label': string }) => (
@@ -33,9 +34,12 @@ describe('Smart-ID device link login', () => {
 
   let renewals: AutomaticRenewalAllowance;
 
-  const renderDeviceLinkLogin = ({ rememberMe = false } = {}) =>
+  const renderDeviceLinkLogin = ({
+    rememberMe = false,
+    language = 'en',
+  }: { rememberMe?: boolean; language?: 'en' | 'et' } = {}) =>
     render(
-      <IntlProvider locale="en" messages={translations.en}>
+      <IntlProvider locale={language} messages={translations[language]}>
         <SmartIdDeviceLinkLogin
           web2AppLink={web2AppLink}
           rememberMe={rememberMe}
@@ -76,26 +80,29 @@ describe('Smart-ID device link login', () => {
     setUserAgent(desktopUserAgent);
   });
 
-  it('shows a QR code and scanning instructions on a computer', async () => {
-    renderDeviceLinkLogin();
-    await flushPendingRequests();
+  it.each([
+    ['en', 'Scan with the Smart\u2011ID app'],
+    ['et', 'Skanni Smart\u2011ID rakendusega'],
+  ] as const)(
+    'asks in %s to scan the QR code with the Smart-ID app',
+    async (language, instruction) => {
+      renderDeviceLinkLogin({ language });
+      await flushPendingRequests();
 
-    expect(
-      screen.getByText(
-        /^Open the Smart.ID app on your phone, choose Scan QR code and point the camera at this code\.$/,
-      ),
-    ).toBeInTheDocument();
-    expect(screen.getByRole('img')).toHaveAttribute('data-value', qrCodeLinkAfter(0));
-  });
+      expect(screen.getByText(instruction)).toBeInTheDocument();
+      expect(screen.getByRole('img', { name: instruction })).toHaveAttribute(
+        'data-value',
+        qrCodeLinkAfter(0),
+      );
+    },
+  );
 
-  it('tells what the Smart-ID app will ask under the QR code', async () => {
-    renderDeviceLinkLogin();
+  it('shows the QR code with nothing around it but the instruction and the way out', async () => {
+    const { container } = renderDeviceLinkLogin();
     await flushPendingRequests();
 
     expect(screen.getByRole('img')).toBeInTheDocument();
-    expect(
-      screen.getByText(/^The Smart.ID app will ask you to confirm logging in to Tuleva\.$/),
-    ).toBeInTheDocument();
+    expect(container).toHaveTextContent(/^Scan with the Smart.ID appCancel$/);
   });
 
   it('renders a fresh QR code every second', async () => {
