@@ -3,7 +3,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { QRCodeSVG } from 'qrcode.react';
 
 import { Loader } from '../../common';
-import { isMobileDevice } from '../../common/isMobileDevice';
+import { deviceClass } from '../../common/deviceClass';
 import { useLoginLanguage } from '../loginLanguage';
 import { useSmartIdQrCodeLink } from './useSmartIdQrCodeLink';
 import { AutomaticRenewalAllowance } from './automaticRenewalAllowance';
@@ -32,9 +32,7 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
   onExpire,
   automaticRenewals,
 }) =>
-  isMobileDevice() ? (
-    <SmartIdAppLogin web2AppLink={web2AppLink} onCancel={onCancel} />
-  ) : (
+  deviceClass() === 'computer' ? (
     <SmartIdQrCodeLogin
       rememberMe={rememberMe}
       onCancel={onCancel}
@@ -42,6 +40,8 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
       onExpire={onExpire}
       automaticRenewals={automaticRenewals}
     />
+  ) : (
+    <SmartIdAppLogin web2AppLink={web2AppLink} onCancel={onCancel} />
   );
 
 const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> = ({

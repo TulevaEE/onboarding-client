@@ -5,7 +5,7 @@ import { isValidPersonalCode } from '../../common/personalCode';
 import { TranslationKey } from '../../translations';
 import { useRememberedMobileIdNumber } from './useRememberedMobileIdNumber';
 import { normalizeMobileIdPhoneNumber } from './mobileIdPhoneNumber';
-import { isMobileDevice } from '../../common/isMobileDevice';
+import { deviceClass } from '../../common/deviceClass';
 import { LoginTabPickedByUser } from '../loginForm/loginTabPickedByUser';
 import { RememberMeCheckbox } from '../loginForm/RememberMeCheckbox';
 import { readRememberMeChoice, saveRememberMeChoice } from '../loginForm/rememberMeChoice';
@@ -53,7 +53,7 @@ export const MobileIdLoginForm: React.FC<MobileIdLoginFormProps> = ({
   );
 
   const [focusFirstEmptyField] = useState(
-    () => phoneNumberRequiredFor !== null || pickedByUser || !isMobileDevice(),
+    () => phoneNumberRequiredFor !== null || pickedByUser || deviceClass() === 'computer',
   );
   const phoneNumberRequired = phoneNumberRequiredFor === personalCode;
   const numberRemembered = useRememberedMobileIdNumber(

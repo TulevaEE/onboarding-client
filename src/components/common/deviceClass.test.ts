@@ -1,6 +1,6 @@
-import { isMobileDevice } from './isMobileDevice';
+import { deviceClass } from './deviceClass';
 
-describe('isMobileDevice', () => {
+describe('deviceClass', () => {
   const originalUserAgent = navigator.userAgent;
   const macUserAgent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15';
 
@@ -19,29 +19,44 @@ describe('isMobileDevice', () => {
 
   it.each([
     'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15',
-    'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15',
     'Mozilla/5.0 (iPod touch; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15',
-    'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36',
-  ])('recognizes %s as a mobile device', (userAgent) => {
+    'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 Chrome/126.0 Mobile Safari/537.36',
+  ])('recognizes %s as a phone', (userAgent) => {
     setUserAgent(userAgent);
 
-    expect(isMobileDevice()).toBe(true);
+    expect(deviceClass()).toBe('phone');
+  });
+
+  it.each([
+    'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15',
+    'Mozilla/5.0 (Linux; Android 14; SM-X710) AppleWebKit/537.36 Chrome/126.0 Safari/537.36',
+  ])('recognizes %s as a tablet', (userAgent) => {
+    setUserAgent(userAgent);
+
+    expect(deviceClass()).toBe('tablet');
   });
 
   it.each([
     macUserAgent,
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
     'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36',
-  ])('recognizes %s as a desktop device', (userAgent) => {
+  ])('recognizes %s as a computer', (userAgent) => {
     setUserAgent(userAgent);
 
-    expect(isMobileDevice()).toBe(false);
+    expect(deviceClass()).toBe('computer');
   });
 
   it('recognizes a touch screen behind a desktop user agent as an iPad', () => {
     setUserAgent(macUserAgent);
     setTouchPoints(5);
 
-    expect(isMobileDevice()).toBe(true);
+    expect(deviceClass()).toBe('tablet');
+  });
+
+  it('keeps a touch screen behind a Windows user agent a computer', () => {
+    setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36');
+    setTouchPoints(10);
+
+    expect(deviceClass()).toBe('computer');
   });
 });

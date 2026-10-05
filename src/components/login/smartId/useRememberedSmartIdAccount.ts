@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { forgetRememberedSmartIdAccount, getRememberedSmartIdAccount } from '../../common/api';
 import { RememberedSmartIdAccount } from '../../common/apiModels';
-import { isMobileDevice } from '../../common/isMobileDevice';
+import { deviceClass } from '../../common/deviceClass';
 
 interface RememberedSmartIdAccountState {
   account: RememberedSmartIdAccount | null;
@@ -12,7 +12,7 @@ interface RememberedSmartIdAccountState {
 export function useRememberedSmartIdAccount(): RememberedSmartIdAccountState & {
   forget: () => Promise<void>;
 } {
-  const pushLoginAvailable = !isMobileDevice();
+  const pushLoginAvailable = deviceClass() === 'computer';
   const [state, setState] = useState<RememberedSmartIdAccountState>({
     account: null,
     loading: pushLoginAvailable,
