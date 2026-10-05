@@ -1432,6 +1432,7 @@
   "common.back": "Tagasi",
   "common.myAccount": "Minu konto",
   "common.recommended": "Soovitame",
+  "common.loading": "Laadin",
 
   "savingsFund.paymentCancellation.pageTitle": "Katkesta sissemakse",
   "savingsFund.paymentCancellation.title": "Sissemakse katkestamine",

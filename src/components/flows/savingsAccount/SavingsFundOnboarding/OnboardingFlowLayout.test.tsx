@@ -68,7 +68,7 @@ describe('OnboardingFlowLayout', () => {
   it('renders loader instead of children when loading', () => {
     renderLayout({ loading: true });
 
-    expect(screen.getByRole('progressbar', { name: /loading/i })).toBeInTheDocument();
+    expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
     expect(screen.queryByText('Step content')).not.toBeInTheDocument();
   });
 

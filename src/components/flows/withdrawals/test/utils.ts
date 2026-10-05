@@ -169,7 +169,7 @@ export const assertFundPensionMandate = async (
     ).toBeInTheDocument();
   }
 
-  const loader = within(fundPensionSection).queryByRole('progressbar');
+  const loader = within(fundPensionSection).queryByRole('status', { name: 'Loading' });
   if (loader) {
     await waitForElementToBeRemoved(loader);
   }
@@ -240,7 +240,7 @@ export const assertPartialWithdrawalMandate = async ({
     ).toBeInTheDocument();
   }
 
-  const loader = within(partialWithdrawalSection).queryByRole('progressbar');
+  const loader = within(partialWithdrawalSection).queryByRole('status', { name: 'Loading' });
   if (loader) {
     await waitForElementToBeRemoved(loader);
   }
