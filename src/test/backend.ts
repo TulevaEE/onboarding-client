@@ -204,6 +204,7 @@ export function smartIdMandateBatchSigningBackend(
 type SmartIdAuthenticationBackend = {
   resolvePolling: () => void;
   failPollingWith: (errorCode: string) => void;
+  acceptCallbackInAnotherTab: () => void;
   holdSessionStarts: () => () => void;
   heldSessionStarts: number;
   startSession: () => string;
@@ -233,6 +234,10 @@ export function smartIdAuthenticationBackend(
     resolvePolling: () => undefined,
     failPollingWith: (errorCode) => {
       pollingFailure = errorCode;
+    },
+    acceptCallbackInAnotherTab: () => {
+      backend.acceptedCallbacks += 1;
+      latestAuthenticationHash = smartIdCallbackRedemptionSecret(backend.acceptedCallbacks);
     },
     holdSessionStarts: () => {
       let release = () => {};

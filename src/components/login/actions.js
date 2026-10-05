@@ -40,6 +40,7 @@ import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAler
 import { getAuthentication } from '../common/authenticationManager';
 import { forgetSmartIdCallbackParameters } from './smartId/smartIdCallbackParameters';
 import { pageInView } from './smartId/pageInView';
+import { opensTheSmartIdApp } from './smartId/opensTheSmartIdApp';
 
 const POLL_DELAY = 1000;
 let timeout;
@@ -311,6 +312,16 @@ function stopSmartIdPolling() {
 
 const isSmartIdTimeout = (error) => getGlobalErrorCode(error?.body) === 'smart.id.timeout';
 
+const isSmartIdSessionNotFound = (error) =>
+  getGlobalErrorCode(error?.body) === 'auth.session.not.found';
+
+const waitsForTheSmartIdAppOnThisPhone = ({ login }) =>
+  Boolean(login.smartIdWeb2AppLink) &&
+  opensTheSmartIdApp({ qrCodeRequested: login.smartIdQrCodeRequested });
+
+const callbackTakenByAnotherTab = (error, state) =>
+  isSmartIdSessionNotFound(error) && waitsForTheSmartIdAppOnThisPhone(state);
+
 export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => {
   stopSmartIdPolling();
 
@@ -369,6 +380,9 @@ export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => 
       logPoll('fatal-error → STOP');
       if (attempt.qrCodeExpired && isSmartIdTimeout(error)) {
         return undefined;
+      }
+      if (callbackTakenByAnotherTab(error, getState())) {
+        return dispatch({ type: MOBILE_AUTHENTICATION_CANCEL });
       }
       return dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error });
     }
