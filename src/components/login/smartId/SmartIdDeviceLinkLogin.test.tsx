@@ -40,6 +40,7 @@ describe('Smart-ID device link login', () => {
     `authCode=${hmacSha256InUnpaddedBase64Url}`,
   ].join('&');
   const desktopUserAgent = navigator.userAgent;
+  const tabletUserAgent = 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15';
   const onCancel = jest.fn();
   const onSmartIdLoginStart = jest.fn();
   const onExpire = jest.fn();
@@ -155,6 +156,48 @@ describe('Smart-ID device link login', () => {
     const [, , modules] = (qrCode.getAttribute('viewBox') ?? '').split(' ').map(Number);
     expect(Number(qrCode.getAttribute('width')) / modules).toBeGreaterThanOrEqual(6);
     expect(qrCode).toHaveStyle({ maxWidth: '100%' });
+  });
+
+  it('draws the QR code of a full device link at 10 px per module on a tablet, but never wider than the screen', async () => {
+    setUserAgent(tabletUserAgent);
+    mockGetSmartIdQrCodeLink.mockResolvedValue({ deviceLink: qrCodeLinkAsTheBackendBuildsIt });
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    const qrCode = screen.getByRole('img');
+    const [, , modules] = (qrCode.getAttribute('viewBox') ?? '').split(' ').map(Number);
+    expect(Number(qrCode.getAttribute('width')) / modules).toBe(10);
+    expect(qrCode).toHaveStyle({ maxWidth: '100%' });
+    /* eslint-disable-next-line testing-library/no-node-access */
+    expect(qrCode.parentElement).toHaveStyle({ width: '530px', maxWidth: '100%' });
+  });
+
+  it('offers a tablet a quiet link under the QR code that opens the Smart-ID app of the same session', async () => {
+    setUserAgent(tabletUserAgent);
+    const { container } = renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    const appLink = screen.getByRole('link', { name: 'Open the Smart\u2011ID app' });
+    expect(appLink).toHaveAttribute('href', web2AppLink);
+    expect(appLink).toHaveClass('btn', 'btn-link');
+    expect(appLink).not.toHaveClass('btn-primary');
+    expect(appLink).toHaveStyle({ minHeight: '44px' });
+    expect(container).toHaveTextContent(/^Scan with the Smart.ID appOpen the Smart.ID appCancel$/);
+    expect(screen.getByRole('img').compareDocumentPosition(appLink)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
+  });
+
+  it('offers a tablet no link into the app of a session whose QR code expired', async () => {
+    setUserAgent(tabletUserAgent);
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+    setPageVisibility('hidden');
+
+    await outliveTheSession();
+
+    expect(screen.getByText('The QR code expired.')).toBeInTheDocument();
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
   it('holds the place of the QR code at its size while no fresh code is there to show', async () => {

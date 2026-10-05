@@ -3,15 +3,19 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { QRCodeSVG } from 'qrcode.react';
 
 import { Loader } from '../../common';
-import { deviceClass } from '../../common/deviceClass';
+import { DeviceClass, deviceClass } from '../../common/deviceClass';
+import { QuietLink } from '../loginForm/QuietLink';
 import { useLoginLanguage } from '../loginLanguage';
 import { useSmartIdQrCodeLink } from './useSmartIdQrCodeLink';
 import { AutomaticRenewalAllowance } from './automaticRenewalAllowance';
 import { SmartIdLoginFlow } from '../../common/apiModels';
 
 const MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE = 53;
-const PIXELS_PER_MODULE = 7;
-const QR_CODE_SIZE_PIXELS = MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE * PIXELS_PER_MODULE;
+const QR_CODE_PIXELS_PER_MODULE: Record<DeviceClass, number> = {
+  computer: 7,
+  tablet: 10,
+  phone: 10,
+};
 
 type SmartIdLoginStart = (language: string, flow: SmartIdLoginFlow, rememberMe: boolean) => void;
 
@@ -31,18 +35,28 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
   onSmartIdLoginStart,
   onExpire,
   automaticRenewals,
-}) =>
-  deviceClass() === 'computer' ? (
+}) => {
+  const device = deviceClass();
+  if (device === 'phone') {
+    return <SmartIdAppLogin web2AppLink={web2AppLink} onCancel={onCancel} />;
+  }
+  return (
     <SmartIdQrCodeLogin
       rememberMe={rememberMe}
       onCancel={onCancel}
       onSmartIdLoginStart={onSmartIdLoginStart}
       onExpire={onExpire}
       automaticRenewals={automaticRenewals}
-    />
-  ) : (
-    <SmartIdAppLogin web2AppLink={web2AppLink} onCancel={onCancel} />
+      sizePixels={MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE * QR_CODE_PIXELS_PER_MODULE[device]}
+    >
+      {device === 'tablet' && (
+        <QuietLink href={web2AppLink}>
+          <FormattedMessage id="login.smart.id.open.app" />
+        </QuietLink>
+      )}
+    </SmartIdQrCodeLogin>
   );
+};
 
 const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> = ({
   web2AppLink,
@@ -69,7 +83,17 @@ const SmartIdQrCodeLogin: React.FC<{
   onSmartIdLoginStart: SmartIdLoginStart;
   onExpire: () => void;
   automaticRenewals: AutomaticRenewalAllowance;
-}> = ({ rememberMe, onCancel, onSmartIdLoginStart, onExpire, automaticRenewals }) => {
+  sizePixels: number;
+  children: React.ReactNode;
+}> = ({
+  rememberMe,
+  onCancel,
+  onSmartIdLoginStart,
+  onExpire,
+  automaticRenewals,
+  sizePixels,
+  children,
+}) => {
   const { formatMessage } = useIntl();
   const language = useLoginLanguage();
   const startNewSession = () => onSmartIdLoginStart(language, 'DEVICE_LINK', rememberMe);
@@ -108,12 +132,12 @@ const SmartIdQrCodeLogin: React.FC<{
       </p>
       <div
         className="d-flex align-items-center justify-content-center mx-auto"
-        style={{ width: QR_CODE_SIZE_PIXELS, maxWidth: '100%', aspectRatio: '1' }}
+        style={{ width: sizePixels, maxWidth: '100%', aspectRatio: '1' }}
       >
         {deviceLink ? (
           <QRCodeSVG
             value={deviceLink}
-            size={QR_CODE_SIZE_PIXELS}
+            size={sizePixels}
             level="L"
             bgColor="#ffffff"
             style={{ maxWidth: '100%', height: 'auto', aspectRatio: '1' }}
@@ -124,6 +148,7 @@ const SmartIdQrCodeLogin: React.FC<{
           <Loader />
         )}
       </div>
+      {children}
       <CancelButton onCancel={onCancel} />
     </>
   );
