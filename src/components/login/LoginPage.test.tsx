@@ -451,7 +451,9 @@ describe('When a user is logging in', () => {
         'Smart-ID',
         screen.getByRole('status', { name: 'Loading' }),
       );
-      expect(screen.getByRole('tabpanel')).toHaveTextContent(/^Cancel$/);
+      expect(screen.getByRole('tabpanel')).toHaveTextContent(
+        /^Confirm the login in the Smart.ID app\.\s*Cancel$/,
+      );
 
       backend.resolvePolling();
       expect(

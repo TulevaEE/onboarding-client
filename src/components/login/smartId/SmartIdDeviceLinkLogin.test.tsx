@@ -489,16 +489,29 @@ describe('Smart-ID device link login', () => {
       await flushPendingRequests();
 
       expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
-      expect(container).toHaveTextContent(/^Cancel$/);
+      expect(screen.getByText(/^Confirm the login in the Smart.ID app\.$/)).toHaveClass(
+        'visually-hidden',
+      );
+      expect(container).toHaveTextContent(/^Confirm the login in the Smart.ID app\.\s*Cancel$/);
       expect(appButton()).not.toBeInTheDocument();
       expect(mockGetSmartIdQrCodeLink).not.toHaveBeenCalled();
     });
 
-    it('moves the focus to Cancel, so keyboard users are not left on the page itself', async () => {
+    it('moves the focus to what to do in the Smart-ID app, which only screen readers hear, so a tap on the focus does not cancel', async () => {
       renderDeviceLinkLogin();
       await flushPendingRequests();
 
-      expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus();
+      expect(screen.getByText(/^Confirm the login in the Smart.ID app\.$/)).toHaveFocus();
+    });
+
+    it.each([
+      ['en', /^Confirm the login in the Smart\u2011ID app\.$/],
+      ['et', /^Kinnita sisselogimine Smart\u2011ID rakenduses\.$/],
+    ] as const)('says what to do in the Smart-ID app in %s', async (language, text) => {
+      renderDeviceLinkLogin({ language });
+      await flushPendingRequests();
+
+      expect(screen.getByText(text)).toBeInTheDocument();
     });
 
     it('cancels the login while the Smart-ID app opens', async () => {
