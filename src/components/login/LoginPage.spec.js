@@ -24,18 +24,46 @@ describe('Login page', () => {
       onPhoneNumberChange: jest.fn(),
       onPersonalCodeChange: jest.fn(),
       onMobileIdSubmit: jest.fn(),
-      onSmartIdLoginStart: jest.fn(),
       onAuthenticateWithIdCard: jest.fn(),
       onLoginMethodChange: jest.fn(),
       monthlyThirdPillarContribution: 500,
       exchangeExistingThirdPillarUnits: true,
     };
     component.setProps(formProps);
-    expect(
-      component.contains(
-        <LoginForm {...formProps} mobileIdStartError="" alert={null} pendingLogin={null} />,
-      ),
-    ).toBe(true);
+    expect(component.find(LoginForm).props()).toEqual({
+      ...formProps,
+      onSmartIdLoginStart: expect.any(Function),
+      mobileIdStartError: '',
+      alert: null,
+      pendingLogin: null,
+    });
+  });
+
+  it('starts the smart id login the login form asks for', () => {
+    const onSmartIdLoginStart = jest.fn();
+    component.setProps({ onSmartIdLoginStart });
+
+    component.find(LoginForm).prop('onSmartIdLoginStart')('et', 'DEVICE_LINK', true);
+
+    expect(onSmartIdLoginStart).toHaveBeenCalledWith('et', 'DEVICE_LINK', true);
+  });
+
+  it('shows the QR code a person on a phone asked for, until they start a login without one', () => {
+    const onSmartIdLoginStart = jest.fn();
+    component.setProps({
+      onSmartIdLoginStart,
+      loadingAuthentication: true,
+      smartIdWeb2AppLink: 'https://smart-id.com/device-link/?deviceLinkType=Web2App',
+    });
+
+    component.find(LoginForm).prop('onSmartIdLoginStart')('en', 'DEVICE_LINK', false, true);
+
+    expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
+    expect(pendingLogin().props.qrCodeRequested).toBe(true);
+
+    component.find(LoginForm).prop('onSmartIdLoginStart')('en', 'DEVICE_LINK', false);
+
+    expect(pendingLogin().props.qrCodeRequested).toBe(false);
   });
 
   it('keeps the login form and shows an authentication loader in it while loading', () => {
@@ -89,6 +117,7 @@ describe('Login page', () => {
     expect(pendingLogin().props).toEqual({
       web2AppLink,
       rememberMe: true,
+      qrCodeRequested: false,
       onCancel: onCancelMobileAuthentication,
       onSmartIdLoginStart,
       onExpire: onSmartIdQrCodeExpire,

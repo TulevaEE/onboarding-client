@@ -41,6 +41,8 @@ describe('Smart-ID device link login', () => {
   ].join('&');
   const desktopUserAgent = navigator.userAgent;
   const tabletUserAgent = 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15';
+  const phoneUserAgent =
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15';
   const onCancel = jest.fn();
   const onSmartIdLoginStart = jest.fn();
   const onExpire = jest.fn();
@@ -52,13 +54,15 @@ describe('Smart-ID device link login', () => {
 
   const renderDeviceLinkLogin = ({
     rememberMe = false,
+    qrCodeRequested = false,
     language = 'en',
-  }: { rememberMe?: boolean; language?: 'en' | 'et' } = {}) =>
+  }: { rememberMe?: boolean; qrCodeRequested?: boolean; language?: 'en' | 'et' } = {}) =>
     render(
       <IntlProvider locale={language} messages={translations[language]}>
         <SmartIdDeviceLinkLogin
           web2AppLink={web2AppLink}
           rememberMe={rememberMe}
+          qrCodeRequested={qrCodeRequested}
           onCancel={onCancel}
           onSmartIdLoginStart={onSmartIdLoginStart}
           onExpire={onExpire}
@@ -198,6 +202,28 @@ describe('Smart-ID device link login', () => {
 
     expect(screen.getByText('The QR code expired.')).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
+  });
+
+  it('shows a phone the QR code it asked for at 10 px per module, but never wider than the screen', async () => {
+    setUserAgent(phoneUserAgent);
+    mockGetSmartIdQrCodeLink.mockResolvedValue({ deviceLink: qrCodeLinkAsTheBackendBuildsIt });
+    renderDeviceLinkLogin({ qrCodeRequested: true });
+    await flushPendingRequests();
+
+    const qrCode = screen.getByRole('img');
+    const [, , modules] = (qrCode.getAttribute('viewBox') ?? '').split(' ').map(Number);
+    expect(Number(qrCode.getAttribute('width')) / modules).toBe(10);
+    /* eslint-disable-next-line testing-library/no-node-access */
+    expect(qrCode.parentElement).toHaveStyle({ width: '530px', maxWidth: '100%' });
+  });
+
+  it('shows a phone the QR code it asked for with nothing around it but the instruction and the way out', async () => {
+    setUserAgent(phoneUserAgent);
+    const { container } = renderDeviceLinkLogin({ qrCodeRequested: true });
+    await flushPendingRequests();
+
+    expect(screen.getByRole('img')).toBeInTheDocument();
+    expect(container).toHaveTextContent(/^Scan with the Smart.ID appCancel$/);
   });
 
   it('holds the place of the QR code at its size while no fresh code is there to show', async () => {

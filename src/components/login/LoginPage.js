@@ -53,11 +53,17 @@ export const LoginPage = ({
 }) => {
   usePageTitle('pageTitle.loginPage');
   const [qrCodeRenewals] = useState(automaticRenewalAllowance);
+  const [smartIdQrCodeRequested, setSmartIdQrCodeRequested] = useState(false);
 
   if (isAuthenticated) {
     const from = location.state && location.state.from;
     return <Redirect to={loginLanding(from)} />;
   }
+
+  const startSmartIdLoginFromTheTab = (language, flow, rememberMe, qrCodeRequested = false) => {
+    setSmartIdQrCodeRequested(qrCodeRequested);
+    onSmartIdLoginStart(language, flow, rememberMe);
+  };
 
   const authenticating = loadingAuthentication || controlCode || loadingUserConversion;
   const showsAlert =
@@ -73,6 +79,7 @@ export const LoginPage = ({
           key={smartIdSession}
           web2AppLink={smartIdWeb2AppLink}
           rememberMe={smartIdRememberMe}
+          qrCodeRequested={smartIdQrCodeRequested}
           onCancel={onCancelMobileAuthentication}
           onSmartIdLoginStart={onSmartIdLoginStart}
           onExpire={onSmartIdQrCodeExpire}
@@ -102,7 +109,7 @@ export const LoginPage = ({
               phoneNumber={phoneNumber}
               personalCode={personalCode}
               mobileIdStartError={errorDescription}
-              onSmartIdLoginStart={onSmartIdLoginStart}
+              onSmartIdLoginStart={startSmartIdLoginFromTheTab}
               onAuthenticateWithIdCard={onAuthenticateWithIdCard}
               onLoginMethodChange={onLoginMethodChange}
               monthlyThirdPillarContribution={monthlyThirdPillarContribution}
