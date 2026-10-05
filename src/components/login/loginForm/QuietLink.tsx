@@ -13,11 +13,12 @@ export const QuietLinkButton: React.FC<{ onClick: () => void; children: React.Re
   </button>
 );
 
-export const QuietLink: React.FC<{ href: string; children: React.ReactNode }> = ({
-  href,
-  children,
-}) => (
-  <a className={QUIET_LINK_CLASS} style={QUIET_LINK_STYLE} href={href}>
+export const QuietLink: React.FC<{
+  href: string;
+  onClick?: () => void;
+  children: React.ReactNode;
+}> = ({ href, onClick, children }) => (
+  <a className={QUIET_LINK_CLASS} style={QUIET_LINK_STYLE} href={href} onClick={onClick}>
     {children}
   </a>
 );

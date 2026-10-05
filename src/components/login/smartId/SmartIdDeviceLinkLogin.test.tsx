@@ -56,6 +56,7 @@ describe('Smart-ID device link login', () => {
   const onCancel = jest.fn();
   const onSmartIdLoginStart = jest.fn();
   const onExpire = jest.fn();
+  const onAppOpen = jest.fn();
 
   const setUserAgent = (userAgent: string) =>
     Object.defineProperty(navigator, 'userAgent', { value: userAgent, configurable: true });
@@ -76,6 +77,7 @@ describe('Smart-ID device link login', () => {
           onCancel={onCancel}
           onSmartIdLoginStart={onSmartIdLoginStart}
           onExpire={onExpire}
+          onAppOpen={onAppOpen}
           automaticRenewals={renewals}
         />
       </IntlProvider>,

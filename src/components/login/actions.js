@@ -319,8 +319,11 @@ const waitsForTheSmartIdAppOnThisPhone = ({ login }) =>
   Boolean(login.smartIdWeb2AppLink) &&
   opensTheSmartIdApp({ qrCodeRequested: login.smartIdQrCodeRequested });
 
-const sessionGoneWhileWaitingForTheApp = (error, state) =>
-  isSmartIdSessionNotFound(error) && waitsForTheSmartIdAppOnThisPhone(state);
+const waitsForTheSmartIdApp = (attempt, state) =>
+  attempt.appOpened || waitsForTheSmartIdAppOnThisPhone(state);
+
+const sessionGoneWhileWaitingForTheApp = (error, attempt, state) =>
+  isSmartIdSessionNotFound(error) && waitsForTheSmartIdApp(attempt, state);
 
 export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => {
   stopSmartIdPolling();
@@ -381,7 +384,7 @@ export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => 
       if (attempt.qrCodeExpired && isSmartIdTimeout(error)) {
         return undefined;
       }
-      if (sessionGoneWhileWaitingForTheApp(error, getState())) {
+      if (sessionGoneWhileWaitingForTheApp(error, attempt, getState())) {
         return dispatch({ type: MOBILE_AUTHENTICATION_CANCEL });
       }
       return dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error });
@@ -596,6 +599,14 @@ export function expireSmartIdQrCode() {
   return () => {
     if (smartIdAttempt) {
       smartIdAttempt.qrCodeExpired = true;
+    }
+  };
+}
+
+export function markSmartIdAppOpened() {
+  return () => {
+    if (smartIdAttempt) {
+      smartIdAttempt.appOpened = true;
     }
   };
 }
