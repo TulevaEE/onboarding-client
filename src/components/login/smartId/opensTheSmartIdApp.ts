@@ -1,4 +1,4 @@
 import { deviceClass } from '../../common/deviceClass';
 
-export const opensTheSmartIdApp = (qrCodeRequested: boolean): boolean =>
+export const opensTheSmartIdApp = ({ qrCodeRequested }: { qrCodeRequested: boolean }): boolean =>
   deviceClass() === 'phone' && !qrCodeRequested;

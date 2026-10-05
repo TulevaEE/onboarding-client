@@ -66,7 +66,7 @@ export const LoginPage = ({
 
   const startSmartIdLoginFromTheTab = (language, flow, rememberMe, qrCodeRequested = false) => {
     setSmartIdQrCodeRequested(qrCodeRequested);
-    if (flow === 'DEVICE_LINK' && opensTheSmartIdApp(qrCodeRequested)) {
+    if (flow === 'DEVICE_LINK' && opensTheSmartIdApp({ qrCodeRequested })) {
       onSmartIdAppLoginStart(language);
       return;
     }
