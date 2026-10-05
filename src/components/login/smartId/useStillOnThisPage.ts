@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 
-const MILLIS_FOR_THE_SMART_ID_APP_TO_TAKE_OVER = 2000;
+import { pageInView } from './pageInView';
 
-const pageInView = () => document.visibilityState === 'visible';
+const MILLIS_FOR_THE_SMART_ID_APP_TO_TAKE_OVER = 2000;
 
 export function useStillOnThisPage(): boolean {
   const [stillOnThisPage, setStillOnThisPage] = useState(false);

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { getSmartIdQrCodeLink } from '../../common/api';
 import { getPendingSmartIdStartedAt } from '../actions';
+import { pageInView } from './pageInView';
 
 const REFRESH_INTERVAL_MILLIS = 1000;
 const MAX_LINK_AGE_MILLIS = 3000;
@@ -11,8 +12,6 @@ const isRefusedByBackend = (error: unknown): boolean => {
   const status = (error as { status?: unknown })?.status;
   return typeof status === 'number' && status >= 400 && status < 500;
 };
-
-const pageInView = () => document.visibilityState === 'visible';
 
 export function useSmartIdQrCodeLink(
   renewSilently: () => boolean,
