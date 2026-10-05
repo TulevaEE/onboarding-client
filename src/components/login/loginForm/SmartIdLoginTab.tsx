@@ -6,7 +6,7 @@ import { SmartIdLoginFlow } from '../../common/apiModels';
 import { useLoginLanguage } from '../loginLanguage';
 import { useRememberedSmartIdAccount } from '../smartId/useRememberedSmartIdAccount';
 import { PII_CLASS } from '../../tracking/piiMarkup';
-import { NotYouButton } from './NotYouButton';
+import { QuietLinkButton } from './QuietLink';
 import { RememberMeCheckbox } from './RememberMeCheckbox';
 import { readRememberMeChoice, saveRememberMeChoice } from './rememberMeChoice';
 
@@ -41,12 +41,14 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
             values={{ firstName: <span className={PII_CLASS}>{account.firstName}</span> }}
           />
         </button>
-        <NotYouButton
+        <QuietLinkButton
           onClick={() => {
             saveRememberMeChoice(false);
             forget().then(() => onSmartIdLoginStart(language, 'DEVICE_LINK'));
           }}
-        />
+        >
+          <FormattedMessage id="login.not.you" />
+        </QuietLinkButton>
       </div>
     );
   }
