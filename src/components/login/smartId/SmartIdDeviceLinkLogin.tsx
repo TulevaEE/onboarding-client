@@ -20,6 +20,7 @@ interface SmartIdDeviceLinkLoginProps {
   rememberMe: boolean;
   onCancel: () => void;
   onSmartIdLoginStart: SmartIdLoginStart;
+  onExpire: () => void;
   automaticRenewals: AutomaticRenewalAllowance;
 }
 
@@ -28,6 +29,7 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
   rememberMe,
   onCancel,
   onSmartIdLoginStart,
+  onExpire,
   automaticRenewals,
 }) =>
   isMobileDevice() ? (
@@ -37,6 +39,7 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
       rememberMe={rememberMe}
       onCancel={onCancel}
       onSmartIdLoginStart={onSmartIdLoginStart}
+      onExpire={onExpire}
       automaticRenewals={automaticRenewals}
     />
   );
@@ -64,8 +67,9 @@ const SmartIdQrCodeLogin: React.FC<{
   rememberMe: boolean;
   onCancel: () => void;
   onSmartIdLoginStart: SmartIdLoginStart;
+  onExpire: () => void;
   automaticRenewals: AutomaticRenewalAllowance;
-}> = ({ rememberMe, onCancel, onSmartIdLoginStart, automaticRenewals }) => {
+}> = ({ rememberMe, onCancel, onSmartIdLoginStart, onExpire, automaticRenewals }) => {
   const { formatMessage } = useIntl();
   const language = useLoginLanguage();
   const startNewSession = () => onSmartIdLoginStart(language, 'DEVICE_LINK', rememberMe);
@@ -75,7 +79,7 @@ const SmartIdQrCodeLogin: React.FC<{
     }
     startNewSession();
     return true;
-  });
+  }, onExpire);
 
   if (expired) {
     return (

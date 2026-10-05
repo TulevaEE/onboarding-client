@@ -203,6 +203,7 @@ export function smartIdMandateBatchSigningBackend(
 
 type SmartIdAuthenticationBackend = {
   resolvePolling: () => void;
+  failPollingWith: (errorCode: string) => void;
   startSession: () => string;
   startedSessions: number;
   acceptedCallbacks: number;
@@ -222,10 +223,14 @@ export function smartIdAuthenticationBackend(
   } = {},
 ): SmartIdAuthenticationBackend {
   let pollingResolved = false;
+  let pollingFailure: string | null = null;
   let elapsedSeconds = 0;
   let latestAuthenticationHash: string | null = null;
   const backend: SmartIdAuthenticationBackend = {
     resolvePolling: () => undefined,
+    failPollingWith: (errorCode) => {
+      pollingFailure = errorCode;
+    },
     startSession: () => {
       backend.startedSessions += 1;
       latestAuthenticationHash = smartIdAuthenticationHash(backend.startedSessions);
@@ -332,6 +337,10 @@ export function smartIdAuthenticationBackend(
 
       if (!latestAuthenticationHash || body.authenticationHash !== latestAuthenticationHash) {
         return res(ctx.status(401), ctx.json({ errors: [{ code: 'auth.session.not.found' }] }));
+      }
+
+      if (pollingFailure) {
+        return res(ctx.status(400), ctx.json({ errors: [{ code: pollingFailure }] }));
       }
 
       if (!pollingResolved) {
