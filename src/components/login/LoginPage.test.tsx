@@ -258,6 +258,39 @@ describe('When a user is logging in', () => {
     }
   });
 
+  test('cancelling in the Smart-ID app brings back the Smart-ID tab as it was, without an error', async () => {
+    const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+    userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+    expect(
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+    ).toBeInTheDocument();
+
+    backend.failPollingWith('smart.id.user.refused');
+
+    expect(
+      await screen.findByRole('button', { name: /^Log in$/ }, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Smart-ID' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+    ).not.toBeInTheDocument();
+  });
+
+  test('any other end to a Smart-ID login in the app still says what happened', async () => {
+    const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+    userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+    expect(
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+    ).toBeInTheDocument();
+
+    backend.failPollingWith('smart.id.wrong.verification.code');
+
+    expect(await screen.findByRole('alert', undefined, { timeout: 3000 })).toHaveTextContent(
+      /^You chose the wrong verification code in the Smart.ID app/,
+    );
+  });
+
   test('they land on the page they came for, without the login landing flag', async () => {
     act(() => {
       history.replace('/login', { from: '/capital' });
@@ -587,6 +620,26 @@ describe('When a user is logging in', () => {
       phoneField,
     );
     expect(alert.compareDocumentPosition(phoneField)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+
+  test('cancelling on the phone brings back the filled Mobile-ID form, without an error', async () => {
+    mobileIdAuthenticationBackend(server, {
+      challengeCode: '4321',
+      failWith: 'mobile.id.cancelled',
+    });
+    userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
+    userEvent.type(await screen.findByPlaceholderText(/Identity code/gi), '38001085718');
+    userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '+37255512345');
+    userEvent.click(screen.getByRole('button', { name: 'Log in' }));
+    expect(await screen.findByText('4321')).toBeInTheDocument();
+
+    expect(
+      await screen.findByRole('button', { name: 'Log in' }, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Mobile-ID' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.getByPlaceholderText(/Identity code/gi)).toHaveValue('38001085718');
+    expect(screen.getByPlaceholderText(/Phone number/gi)).toHaveValue('+37255512345');
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
   test('switching to another login method clears the error of a failed one', async () => {
