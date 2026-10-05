@@ -66,6 +66,67 @@ describe('Login page', () => {
     expect(pendingLogin().props.qrCodeRequested).toBe(false);
   });
 
+  describe('the device link login started from the Smart-ID tab', () => {
+    const desktopUserAgent = navigator.userAgent;
+    const phoneUserAgent =
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15';
+    const tabletUserAgent = 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15';
+    const onSmartIdLoginStart = jest.fn();
+    const onSmartIdAppLoginStart = jest.fn();
+
+    const pretendToBeOn = (userAgent) =>
+      Object.defineProperty(navigator, 'userAgent', { value: userAgent, configurable: true });
+    const startFromTheTab = (...args) =>
+      component.find(LoginForm).prop('onSmartIdLoginStart')(...args);
+
+    beforeEach(() => {
+      onSmartIdLoginStart.mockReset();
+      onSmartIdAppLoginStart.mockReset();
+      component.setProps({ onSmartIdLoginStart, onSmartIdAppLoginStart });
+    });
+
+    afterEach(() => pretendToBeOn(desktopUserAgent));
+
+    it('opens the Smart-ID app on a phone', () => {
+      pretendToBeOn(phoneUserAgent);
+
+      startFromTheTab('en', 'DEVICE_LINK', false);
+
+      expect(onSmartIdAppLoginStart).toHaveBeenCalledWith('en');
+      expect(onSmartIdLoginStart).not.toHaveBeenCalled();
+    });
+
+    it('shows the QR code a phone asked for, without opening the Smart-ID app', () => {
+      pretendToBeOn(phoneUserAgent);
+
+      startFromTheTab('en', 'DEVICE_LINK', false, true);
+
+      expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
+      expect(onSmartIdAppLoginStart).not.toHaveBeenCalled();
+    });
+
+    it('starts a push login on a phone without opening the Smart-ID app', () => {
+      pretendToBeOn(phoneUserAgent);
+
+      startFromTheTab('en', 'NOTIFICATION');
+
+      expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'NOTIFICATION', undefined);
+      expect(onSmartIdAppLoginStart).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      ['tablet', tabletUserAgent],
+      ['computer', desktopUserAgent],
+    ])('shows the QR code on a %s, without opening the Smart-ID app', (device, userAgent) => {
+      pretendToBeOn(userAgent);
+
+      startFromTheTab('en', 'DEVICE_LINK', false);
+
+      expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
+      expect(onSmartIdAppLoginStart).not.toHaveBeenCalled();
+    });
+  });
+
   it('keeps the login form and shows an authentication loader in it while loading', () => {
     const onCancelMobileAuthentication = jest.fn();
     component.setProps({ onCancelMobileAuthentication, loadingAuthentication: true });

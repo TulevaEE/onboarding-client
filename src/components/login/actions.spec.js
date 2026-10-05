@@ -386,7 +386,7 @@ describe('Login actions', () => {
     });
   });
 
-  it('leaves opening the Smart-ID app to the user on a phone', async () => {
+  it('leaves the Smart-ID app closed when a device link session starts for the QR code, even on a phone', async () => {
     const assign = jest.fn();
     Object.defineProperty(window, 'location', {
       value: { assign, search: '', pathname: '/login' },
@@ -408,6 +408,78 @@ describe('Login actions', () => {
       type: SMART_ID_LOGIN_START_SUCCESS,
       web2AppLink,
       rememberMe: false,
+    });
+  });
+
+  describe('starting a login in the Smart-ID app', () => {
+    const openSmartIdApp = jest.fn();
+
+    beforeEach(() => {
+      openSmartIdApp.mockReset();
+      Object.defineProperty(window, 'location', {
+        value: { assign: openSmartIdApp, search: '', pathname: '/login' },
+        writable: true,
+        configurable: true,
+      });
+      mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+    });
+
+    it('starts an unremembered device link session and then opens the Smart-ID app of it', async () => {
+      mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
+
+      await createBoundAction(actions.startSmartIdLoginInTheApp)('en');
+
+      expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
+      expect(dispatch).toHaveBeenCalledWith({
+        type: SMART_ID_LOGIN_START_SUCCESS,
+        web2AppLink,
+        rememberMe: false,
+      });
+      expect(openSmartIdApp).toHaveBeenCalledTimes(1);
+      expect(openSmartIdApp).toHaveBeenCalledWith(web2AppLink);
+    });
+
+    it('saves the pending login before it leaves for the Smart-ID app', async () => {
+      mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
+      let loginSavedWhenTheAppOpened = null;
+      openSmartIdApp.mockImplementation(() => {
+        loginSavedWhenTheAppOpened = JSON.parse(
+          sessionStorage.getItem('pendingSmartIdAuthentication'),
+        );
+      });
+
+      await createBoundAction(actions.startSmartIdLoginInTheApp)('en');
+
+      expect(loginSavedWhenTheAppOpened).toMatchObject({
+        authenticationHash: 'an-authentication-hash',
+        web2AppLink,
+        language: 'en',
+      });
+    });
+
+    it('opens no Smart-ID app when the session could not start', async () => {
+      mockApi.startSmartIdLogin = jest.fn(() => Promise.reject(new Error('no session')));
+
+      await createBoundAction(actions.startSmartIdLoginInTheApp)('en');
+
+      expect(openSmartIdApp).not.toHaveBeenCalled();
+    });
+
+    it('opens no Smart-ID app for a login cancelled before its session started', async () => {
+      let answerTheStart;
+      mockApi.startSmartIdLogin = jest.fn(
+        () =>
+          new Promise((resolve) => {
+            answerTheStart = resolve;
+          }),
+      );
+      const start = createBoundAction(actions.startSmartIdLoginInTheApp)('en');
+
+      actions.cancelMobileAuthentication();
+      answerTheStart(aDeviceLinkStart);
+      await start;
+
+      expect(openSmartIdApp).not.toHaveBeenCalled();
     });
   });
 

@@ -17,6 +17,7 @@ import {
 } from '../../test/backend';
 import { smartIdWeb2AppLink } from '../../test/backend-responses';
 import { getAuthentication } from '../common/authenticationManager';
+import { replaceWindowLocationAssign } from '../../test/windowLocationAssign';
 
 jest.unmock('react-intl');
 
@@ -43,6 +44,8 @@ const expectInTheOpenTabUnderTheLoginTitle = (tabName: string, element: HTMLElem
 
 describe('When a user is logging in', () => {
   const server = setupServer();
+  const locationAssign = jest.fn();
+  let restoreLocation: () => void;
   let history: History;
 
   function initializeComponent() {
@@ -60,6 +63,8 @@ describe('When a user is logging in', () => {
     );
   }
   beforeEach(() => {
+    locationAssign.mockReset();
+    restoreLocation = replaceWindowLocationAssign(locationAssign);
     localStorage.clear();
     initializeConfiguration();
     getAuthentication().remove();
@@ -71,6 +76,7 @@ describe('When a user is logging in', () => {
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
   afterEach(() => {
     server.resetHandlers();
+    restoreLocation();
   });
   afterAll(() => server.close());
 
@@ -85,6 +91,7 @@ describe('When a user is logging in', () => {
       await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
     ).toBeInTheDocument();
     expect(backend.startedSessions).toBe(1);
+    expect(locationAssign).not.toHaveBeenCalled();
 
     backend.resolvePolling();
     expect(
@@ -360,6 +367,34 @@ describe('When a user is logging in', () => {
   describe('on a phone', () => {
     pretendToBeOn('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15');
 
+    test('one tap on Log in starts the session, saves it and opens the Smart-ID app of that session', async () => {
+      const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+      const loginSavedWhenTheAppOpened: (string | null)[] = [];
+      locationAssign.mockImplementation(() =>
+        loginSavedWhenTheAppOpened.push(sessionStorage.getItem('pendingSmartIdAuthentication')),
+      );
+
+      userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+
+      await waitFor(() => expect(locationAssign).toHaveBeenCalledWith(smartIdWeb2AppLink('en')));
+      expect(locationAssign).toHaveBeenCalledTimes(1);
+      expect(backend.startedSessions).toBe(1);
+      expect(JSON.parse(loginSavedWhenTheAppOpened[0] ?? 'null')).toMatchObject({
+        web2AppLink: smartIdWeb2AppLink('en'),
+        language: 'en',
+      });
+      expectInTheOpenTabUnderTheLoginTitle(
+        'Smart-ID',
+        screen.getByRole('status', { name: 'Loading' }),
+      );
+      expect(screen.getByRole('tabpanel')).toHaveTextContent(/^Cancel$/);
+
+      backend.resolvePolling();
+      expect(
+        await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      ).toBeInTheDocument();
+    });
+
     test('they can show a QR code instead, to scan with the Smart-ID app on another device', async () => {
       const backend = smartIdAuthenticationBackend(server, { language: 'en' });
       expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
@@ -376,6 +411,7 @@ describe('When a user is logging in', () => {
       ).not.toBeInTheDocument();
       expect(backend.startedSessions).toBe(1);
       expect(backend.deviceLinkRememberMeChoices).toEqual([false]);
+      expect(locationAssign).not.toHaveBeenCalled();
 
       backend.resolvePolling();
       expect(
@@ -383,7 +419,7 @@ describe('When a user is logging in', () => {
       ).toBeInTheDocument();
     });
 
-    test('Log in after a cancelled QR code opens the Smart-ID app screen of a new session', async () => {
+    test('Log in after a cancelled QR code opens the Smart-ID app of a new session', async () => {
       const backend = smartIdAuthenticationBackend(server, { language: 'en' });
       userEvent.click(await screen.findByRole('button', { name: 'Show QR code' }));
       expect(
@@ -393,10 +429,7 @@ describe('When a user is logging in', () => {
 
       userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
 
-      expect(await screen.findByRole('link', { name: /^Open the Smart.ID app$/ })).toHaveAttribute(
-        'href',
-        smartIdWeb2AppLink('en'),
-      );
+      await waitFor(() => expect(locationAssign).toHaveBeenCalledWith(smartIdWeb2AppLink('en')));
       expect(
         screen.queryByRole('img', { name: /^Scan with the Smart.ID app$/ }),
       ).not.toBeInTheDocument();
@@ -447,6 +480,7 @@ describe('When a user is logging in', () => {
       );
       expect(backend.startedSessions).toBe(1);
       expect(backend.deviceLinkRememberMeChoices).toEqual([false]);
+      expect(locationAssign).not.toHaveBeenCalled();
 
       backend.resolvePolling();
       expect(

@@ -12,6 +12,7 @@ import { loginPath } from './constants';
 import LoginForm from './loginForm';
 import { SmartIdDeviceLinkLogin } from './smartId/SmartIdDeviceLinkLogin';
 import { automaticRenewalAllowance } from './smartId/automaticRenewalAllowance';
+import { opensTheSmartIdApp } from './smartId/opensTheSmartIdApp';
 import {
   changePhoneNumber,
   changePersonalCode,
@@ -19,6 +20,7 @@ import {
   cancelMobileAuthentication,
   authenticateWithIdCard,
   startSmartIdLogin,
+  startSmartIdLoginInTheApp,
   stopPollingSmartIdSession,
 } from './actions';
 import { getAuthentication } from '../common/authenticationManager';
@@ -35,6 +37,7 @@ export const LoginPage = ({
   onPersonalCodeChange,
   onCancelMobileAuthentication,
   onSmartIdLoginStart,
+  onSmartIdAppLoginStart,
   onSmartIdQrCodeExpire,
   onAuthenticateWithIdCard,
   onLoginMethodChange,
@@ -63,6 +66,10 @@ export const LoginPage = ({
 
   const startSmartIdLoginFromTheTab = (language, flow, rememberMe, qrCodeRequested = false) => {
     setSmartIdQrCodeRequested(qrCodeRequested);
+    if (flow === 'DEVICE_LINK' && opensTheSmartIdApp(qrCodeRequested)) {
+      onSmartIdAppLoginStart(language);
+      return;
+    }
     onSmartIdLoginStart(language, flow, rememberMe);
   };
 
@@ -135,6 +142,7 @@ LoginPage.defaultProps = {
   onMobileIdSubmit: noop,
   onCancelMobileAuthentication: noop,
   onSmartIdLoginStart: noop,
+  onSmartIdAppLoginStart: noop,
   onSmartIdQrCodeExpire: noop,
   onAuthenticateWithIdCard: noop,
   onLoginMethodChange: noop,
@@ -162,6 +170,7 @@ LoginPage.propTypes = {
   onMobileIdSubmit: Types.func,
   onCancelMobileAuthentication: Types.func,
   onSmartIdLoginStart: Types.func,
+  onSmartIdAppLoginStart: Types.func,
   onSmartIdQrCodeExpire: Types.func,
   onAuthenticateWithIdCard: Types.func,
   onLoginMethodChange: Types.func,
@@ -206,6 +215,7 @@ const mapDispatchToProps = (dispatch) =>
       onMobileIdSubmit: authenticateWithMobileId,
       onCancelMobileAuthentication: cancelMobileAuthentication,
       onSmartIdLoginStart: startSmartIdLogin,
+      onSmartIdAppLoginStart: startSmartIdLoginInTheApp,
       onSmartIdQrCodeExpire: stopPollingSmartIdSession,
       onAuthenticateWithIdCard: authenticateWithIdCard,
       onLoginMethodChange: cancelMobileAuthentication,
