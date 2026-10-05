@@ -16,6 +16,7 @@ import {
 } from '../actions';
 import { loginPath } from '../constants';
 import { loginLanding } from '../loginLanding';
+import { cancelledInTheApp } from '../cancelledInTheApp';
 import styles from '../LoginPage.module.scss';
 import {
   forgetSmartIdCallbackParameters,
@@ -63,6 +64,10 @@ export const SmartIdCallbackPage: React.FC = () => {
 
   if (isAuthenticated) {
     return <Redirect to={destination} />;
+  }
+
+  if (cancelledInTheApp(loginError)) {
+    return <Redirect to={loginPath} />;
   }
 
   const attemptEnded = attemptStarted && !authenticating;

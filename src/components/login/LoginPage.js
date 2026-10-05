@@ -24,6 +24,7 @@ import {
 import { getAuthentication } from '../common/authenticationManager';
 import { loginLanding } from './loginLanding';
 import { MOBILE_ID_PHONE_NUMBER_REQUIRED } from './mobileId/MobileIdLoginForm';
+import { cancelledInTheApp } from './cancelledInTheApp';
 
 const ERRORS_SHOWN_BESIDE_THEIR_FIELD = [MOBILE_ID_PHONE_NUMBER_REQUIRED];
 
@@ -67,7 +68,9 @@ export const LoginPage = ({
 
   const authenticating = loadingAuthentication || controlCode || loadingUserConversion;
   const showsAlert =
-    errorDescription && !ERRORS_SHOWN_BESIDE_THEIR_FIELD.includes(errorDescription);
+    errorDescription &&
+    !ERRORS_SHOWN_BESIDE_THEIR_FIELD.includes(errorDescription) &&
+    !cancelledInTheApp(errorDescription);
 
   const pendingLogin = () => {
     if (errorDescription || !authenticating) {

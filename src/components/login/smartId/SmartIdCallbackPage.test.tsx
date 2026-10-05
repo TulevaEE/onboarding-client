@@ -329,7 +329,7 @@ describe('When the Smart-ID app returns to the browser', () => {
     expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);
   });
 
-  test('says why Smart-ID refused the login', async () => {
+  test('cancelling in the Smart-ID app goes back to the login page without an error', async () => {
     startLoginBeforeTheAppRoundTrip(smartIdAuthenticationBackend(server));
     server.use(
       rest.post('http://localhost/oauth/token', (req, res, ctx) =>
@@ -340,10 +340,30 @@ describe('When the Smart-ID app returns to the browser', () => {
     openCallback(aCallback);
 
     expect(
-      await screen.findByText(/^You cancelled the login in the Smart.ID app\.$/, undefined, {
-        timeout: 3000,
-      }),
+      await screen.findByText(/mock login page/i, undefined, { timeout: 3000 }),
     ).toBeInTheDocument();
+  });
+
+  test('says why Smart-ID ended the login any other way', async () => {
+    startLoginBeforeTheAppRoundTrip(smartIdAuthenticationBackend(server));
+    server.use(
+      rest.post('http://localhost/oauth/token', (req, res, ctx) =>
+        res(ctx.status(400), ctx.json({ errors: [{ code: 'smart.id.wrong.verification.code' }] })),
+      ),
+    );
+
+    openCallback(aCallback);
+
+    expect(
+      await screen.findByText(
+        /^You chose the wrong verification code in the Smart.ID app/,
+        undefined,
+        {
+          timeout: 3000,
+        },
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);
   });
 
   test('offers a way out when finishing the login takes too long', () => {
