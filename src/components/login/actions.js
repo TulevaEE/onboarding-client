@@ -33,6 +33,7 @@ import {
 } from './constants';
 
 import { api } from '../common';
+import { getGlobalErrorCode } from '../common/errorMessage';
 
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 
@@ -305,6 +306,8 @@ function stopSmartIdPolling() {
   smartIdAttempt = null;
 }
 
+const isSmartIdTimeout = (error) => getGlobalErrorCode(error?.body) === 'smart.id.timeout';
+
 export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => {
   stopSmartIdPolling();
 
@@ -361,6 +364,9 @@ export const getSmartIdTokens = (authenticationHash) => (dispatch, getState) => 
       stopSmartIdPolling();
       clearPendingSmartIdAuthentication();
       logPoll('fatal-error → STOP');
+      if (attempt.qrCodeExpired && isSmartIdTimeout(error)) {
+        return undefined;
+      }
       return dispatch({ type: MOBILE_AUTHENTICATION_ERROR, error });
     }
     return undefined;
@@ -562,8 +568,12 @@ export function clearLoginError() {
   return { type: LOGIN_ERROR_CLEARED };
 }
 
-export function stopPollingSmartIdSession() {
-  return () => stopSmartIdPolling();
+export function expireSmartIdQrCode() {
+  return () => {
+    if (smartIdAttempt) {
+      smartIdAttempt.qrCodeExpired = true;
+    }
+  };
 }
 
 export function cancelMobileAuthentication() {
