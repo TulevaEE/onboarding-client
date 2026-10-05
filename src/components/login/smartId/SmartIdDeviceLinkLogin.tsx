@@ -113,7 +113,6 @@ const SmartIdQrCodeLogin: React.FC<{
       ) : (
         <Loader className="align-middle" />
       )}
-      <ConfirmationHint className="mt-3" />
       <CancelButton onCancel={onCancel} />
     </SmartIdLoginCard>
   );

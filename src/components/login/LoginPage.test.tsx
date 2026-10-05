@@ -60,7 +60,7 @@ describe('When a user is logging in', () => {
     userEvent.click(screen.getByRole('button', { name: /^Log in$/ }));
 
     expect(
-      await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
     ).toBeInTheDocument();
     expect(backend.startedSessions).toBe(1);
 
@@ -78,7 +78,7 @@ describe('When a user is logging in', () => {
     userEvent.click(screen.getByRole('button', { name: /^Log in$/ }));
 
     expect(
-      await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
     ).toBeInTheDocument();
     expect(backend.deviceLinkRememberMeChoices).toEqual([false]);
   });
@@ -90,7 +90,7 @@ describe('When a user is logging in', () => {
     userEvent.click(screen.getByRole('button', { name: /^Log in$/ }));
 
     expect(
-      await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
     ).toBeInTheDocument();
     expect(backend.deviceLinkRememberMeChoices).toEqual([true]);
   });
@@ -99,7 +99,7 @@ describe('When a user is logging in', () => {
     const backend = smartIdAuthenticationBackend(server, { language: 'en' });
     userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
     expect(
-      await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
     ).toBeInTheDocument();
 
     const sessionStart = Date.now();
@@ -107,7 +107,7 @@ describe('When a user is logging in', () => {
     try {
       await waitFor(() => expect(backend.startedSessions).toBe(2), { timeout: 3000 });
       expect(
-        await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
+        await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
       ).toBeInTheDocument();
 
       backend.resolvePolling();
@@ -124,7 +124,7 @@ describe('When a user is logging in', () => {
     userEvent.click(await screen.findByRole('checkbox', { name: 'Remember me' }));
     userEvent.click(screen.getByRole('button', { name: /^Log in$/ }));
     expect(
-      await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
     ).toBeInTheDocument();
 
     const sessionStart = Date.now();
@@ -144,7 +144,7 @@ describe('When a user is logging in', () => {
     const backend = smartIdAuthenticationBackend(server, { language: 'en' });
     userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
     expect(
-      await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
     ).toBeInTheDocument();
     backend.resolvePolling();
     expect(
@@ -160,7 +160,7 @@ describe('When a user is logging in', () => {
     const backend = smartIdAuthenticationBackend(server, { language: 'en' });
     userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
     expect(
-      await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
     ).toBeInTheDocument();
     backend.resolvePolling();
     expect(
@@ -197,7 +197,7 @@ describe('When a user is logging in', () => {
     userEvent.click(screen.getByRole('button', { name: /Not you/ }));
 
     expect(
-      await screen.findByRole('img', { name: /Open the Smart.ID\sapp on your phone/ }),
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
     ).toBeInTheDocument();
     expect(backend.rememberedAccount).toBeNull();
     expect(backend.startedFlows).toEqual(['DEVICE_LINK']);
