@@ -2,18 +2,17 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 
-import translations from '../../translations/translations.en.json';
+import translations from '../../translations';
 import AuthenticationLoader from './AuthenticationLoader';
 
-const renderLoader = (props: Record<string, unknown>) =>
+const renderLoader = (props: Record<string, unknown>, language: 'en' | 'et' = 'en') =>
   render(
-    <IntlProvider locale="en" messages={translations}>
+    <IntlProvider locale={language} messages={translations[language]}>
       <AuthenticationLoader {...props} />
     </IntlProvider>,
   );
 
-const NAME_HINT =
-  'The request should also name Tuleva. If anything is different, do not confirm it.';
+const NAME_HINT = 'Make sure the request says Tuleva.';
 
 describe('AuthenticationLoader', () => {
   it('asks to compare the verification code and to check that the request names Tuleva', () => {
@@ -35,7 +34,13 @@ describe('AuthenticationLoader', () => {
   it('shows the hint below the code it is about', () => {
     const { container } = renderLoader({ controlCode: '1337' });
 
-    expect(container).toHaveTextContent(/1337The request should also name Tuleva/);
+    expect(container).toHaveTextContent(/1337Make sure the request says Tuleva\./);
+  });
+
+  it('asks in Estonian to check that the request says Tuleva', () => {
+    renderLoader({ controlCode: '1337' }, 'et');
+
+    expect(screen.getByText('Veendu, et päringus oleks kirjas Tuleva.')).toBeInTheDocument();
   });
 
   it('has nothing to compare while there is no verification code', () => {
