@@ -452,6 +452,37 @@ describe('When the Smart-ID app returns to the browser', () => {
       ).toBeInTheDocument();
     });
 
+    test.each([
+      ['smart.id.account.not.found'],
+      ['smart.id.unsupported.country'],
+      ['smart.id.certificate.revoked'],
+      ['smart.id.account.unusable'],
+    ])(
+      'on a phone %s, which a new session cannot fix, goes back to the login page with its explanation and no session',
+      async (errorCode) => {
+        pretendToBeOn(phoneUserAgent);
+        const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+        server.use(
+          rest.post('http://localhost/oauth/token', (req, res, ctx) =>
+            res(ctx.status(400), ctx.json({ errors: [{ code: errorCode }] })),
+          ),
+        );
+        startLoginBeforeTheAppRoundTrip(backend);
+        openFailedCallbackBeforeTheLoginPage();
+        const explanation = (
+          await screen.findByRole('alert', undefined, { timeout: 3000 })
+        ).textContent?.replace(/\s+/g, ' ');
+
+        userEvent.click(screen.getByRole('link', { name: 'Try again' }));
+
+        expect(await screen.findByRole('tabpanel')).toBeInTheDocument();
+        expect(history.location.pathname).toBe(loginPath);
+        expect(screen.getByRole('alert')).toHaveTextContent(explanation ?? 'no explanation');
+        expect(backend.startedSessions).toBe(1);
+        expect(locationAssign).not.toHaveBeenCalled();
+      },
+    );
+
     test('on a phone the new session keeps the language of the login', async () => {
       pretendToBeOn(phoneUserAgent);
       const backend = smartIdAuthenticationBackend(server, {

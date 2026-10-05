@@ -27,6 +27,12 @@ import {
 } from './smartIdCallbackParameters';
 
 const SLOW_COMPLETION_MILLIS = 20000;
+const ERRORS_OF_THE_SMART_ID_ACCOUNT_ITSELF = [
+  'smart.id.account.not.found',
+  'smart.id.unsupported.country',
+  'smart.id.certificate.revoked',
+  'smart.id.account.unusable',
+];
 
 type LoginState = { login: { error: string | null; loadingAuthentication: boolean } };
 
@@ -74,8 +80,10 @@ export const SmartIdCallbackPage: React.FC = () => {
     return <Redirect to={loginPath} />;
   }
 
+  const aNewSessionCanFixIt = !ERRORS_OF_THE_SMART_ID_ACCOUNT_ITSELF.includes(loginError ?? '');
+
   const tryAgain = () => {
-    if (opensTheSmartIdApp({ qrCodeRequested: false })) {
+    if (aNewSessionCanFixIt && opensTheSmartIdApp({ qrCodeRequested: false })) {
       dispatch(startSmartIdLoginInTheApp(language));
     }
   };
