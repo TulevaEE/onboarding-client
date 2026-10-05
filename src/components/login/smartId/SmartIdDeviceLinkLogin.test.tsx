@@ -11,11 +11,14 @@ import { expectStackedFullWidth } from '../../../test/expectStackedFullWidth';
 
 jest.unmock('react-intl');
 jest.mock('../../common/api');
-jest.mock('qrcode.react', () => ({
-  QRCodeSVG: ({ value, 'aria-label': label }: { value: string; 'aria-label': string }) => (
-    <svg role="img" aria-label={label} data-value={value} />
-  ),
-}));
+jest.mock('qrcode.react', () => {
+  const { QRCodeSVG } = jest.requireActual('qrcode.react');
+  return {
+    QRCodeSVG: ({ value, ...props }: { value: string }) => (
+      <QRCodeSVG value={value} data-value={value} {...props} />
+    ),
+  };
+});
 
 const mockGetSmartIdQrCodeLink = getSmartIdQrCodeLink as jest.MockedFunction<
   typeof getSmartIdQrCodeLink
@@ -25,6 +28,16 @@ describe('Smart-ID device link login', () => {
   const web2AppLink = 'https://smart-id.com/device-link/?deviceLinkType=Web2App&sessionType=auth';
   const qrCodeLinkAfter = (elapsedSeconds: number) =>
     `https://smart-id.com/device-link/?deviceLinkType=QR&elapsedSeconds=${elapsedSeconds}`;
+  const sessionTokenOfSmartIdLength = 'T'.repeat(24);
+  const hmacSha256InUnpaddedBase64Url = 'A'.repeat(43);
+  const qrCodeLinkAsTheBackendBuildsIt = [
+    qrCodeLinkAfter(59),
+    `sessionToken=${sessionTokenOfSmartIdLength}`,
+    'sessionType=auth',
+    'version=1.0',
+    'lang=est',
+    `authCode=${hmacSha256InUnpaddedBase64Url}`,
+  ].join('&');
   const desktopUserAgent = navigator.userAgent;
   const onCancel = jest.fn();
   const onSmartIdLoginStart = jest.fn();
@@ -103,6 +116,17 @@ describe('Smart-ID device link login', () => {
 
     expect(screen.getByRole('img')).toBeInTheDocument();
     expect(container).toHaveTextContent(/^Scan with the Smart.ID appCancel$/);
+  });
+
+  it('draws the QR code of a full device link at least 6 px per module, but never wider than the screen', async () => {
+    mockGetSmartIdQrCodeLink.mockResolvedValue({ deviceLink: qrCodeLinkAsTheBackendBuildsIt });
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    const qrCode = screen.getByRole('img');
+    const [, , modules] = (qrCode.getAttribute('viewBox') ?? '').split(' ').map(Number);
+    expect(Number(qrCode.getAttribute('width')) / modules).toBeGreaterThanOrEqual(6);
+    expect(qrCode).toHaveStyle({ maxWidth: '100%' });
   });
 
   it('renders a fresh QR code every second', async () => {

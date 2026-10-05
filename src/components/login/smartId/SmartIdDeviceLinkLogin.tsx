@@ -9,7 +9,9 @@ import { useSmartIdQrCodeLink } from './useSmartIdQrCodeLink';
 import { AutomaticRenewalAllowance } from './automaticRenewalAllowance';
 import { SmartIdLoginFlow } from '../../common/apiModels';
 
-const QR_CODE_SIZE_PIXELS = 256;
+const MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE = 53;
+const PIXELS_PER_MODULE = 7;
+const QR_CODE_SIZE_PIXELS = MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE * PIXELS_PER_MODULE;
 
 type SmartIdLoginStart = (language: string, flow: SmartIdLoginFlow, rememberMe: boolean) => void;
 
