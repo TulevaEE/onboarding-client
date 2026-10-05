@@ -7,7 +7,7 @@ import translations from '../../translations';
 import { SmartIdLoginTab } from './SmartIdLoginTab';
 import { forgetRememberedSmartIdAccount, getRememberedSmartIdAccount } from '../../common/api';
 import { PII_CLASS } from '../../tracking/piiMarkup';
-import { expectStackedFullWidth } from '../../../test/expectStackedFullWidth';
+import { expectQuietLinkUnder } from '../../../test/expectQuietLinkUnder';
 
 jest.mock('../../common/api');
 
@@ -164,15 +164,13 @@ describe('Smart-ID login tab', () => {
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
   });
 
-  it('stacks the push login above an equally wide way out for somebody else', async () => {
+  it('offers somebody else a quiet link under the push login', async () => {
     mockGetRememberedSmartIdAccount.mockResolvedValue({ firstName: 'Mari', lastName: 'Maasikas' });
     renderTab();
 
-    expectStackedFullWidth(
+    expectQuietLinkUnder(
       await screen.findByRole('button', { name: 'Continue as Mari' }),
-      screen.getByRole('button', {
-        name: 'Not you?',
-      }),
+      screen.getByRole('button', { name: 'Not you?' }),
     );
   });
 

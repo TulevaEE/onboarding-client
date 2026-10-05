@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { Loader } from '../../common';
 import { PII_CLASS } from '../../tracking/piiMarkup';
 import { authenticateWithRememberedMobileId } from '../actions';
+import { NotYouButton } from '../loginForm/NotYouButton';
 import { saveRememberMeChoice } from '../loginForm/rememberMeChoice';
 import { MOBILE_ID_PHONE_NUMBER_REQUIRED, MobileIdLoginForm } from './MobileIdLoginForm';
 import { useRememberedMobileIdPerson } from './useRememberedMobileIdPerson';
@@ -39,16 +40,12 @@ export const MobileIdLoginTab: React.FC<MobileIdLoginTabProps> = ({
             values={{ firstName: <span className={PII_CLASS}>{person.firstName}</span> }}
           />
         </button>
-        <button
-          type="button"
-          className="btn btn-outline-primary btn-lg text-wrap text-balance"
+        <NotYouButton
           onClick={() => {
             saveRememberMeChoice(false);
             forget();
           }}
-        >
-          <FormattedMessage id="login.not.you" />
-        </button>
+        />
       </div>
     );
   }
