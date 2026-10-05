@@ -1,7 +1,7 @@
 import React, { Component, createRef } from 'react';
 import PropTypes from 'prop-types';
 
-import LoginTab from './LoginTab';
+import LoginTab, { LOGIN_TAB_PANEL_ID, loginTabId } from './LoginTab';
 import { readPreferredLoginMethod, savePreferredLoginMethod } from './preferredLoginMethod';
 import { LoginTabPickedByUser } from './loginTabPickedByUser';
 
@@ -9,6 +9,13 @@ const TABS_HIDDEN_ON_MOBILE_SHOWN_FROM = '(min-width: 768px)';
 
 const isShownAtThisWidth = (child) =>
   !child.props.hideOnMobile || window.matchMedia(TABS_HIDDEN_ON_MOBILE_SHOWN_FROM).matches;
+
+const TAB_INDEX_AFTER_KEY = {
+  ArrowRight: (index, count) => (index + 1) % count,
+  ArrowLeft: (index, count) => (index - 1 + count) % count,
+  Home: () => 0,
+  End: (index, count) => count - 1,
+};
 
 function initialTab(children) {
   const labels = children.map((child) => child.props.label);
@@ -28,6 +35,8 @@ class LoginTabs extends Component {
   };
 
   panelRef = createRef();
+
+  tabButtons = new Map();
 
   // eslint-disable-next-line react/destructuring-assignment
   state = { activeTab: initialTab(this.props.children), pickedByUser: false };
@@ -49,16 +58,36 @@ class LoginTabs extends Component {
     }
   };
 
+  onTabListKeyDown = (event) => {
+    const tabIndexAfterKey = TAB_INDEX_AFTER_KEY[event.key];
+    if (!tabIndexAfterKey) {
+      return;
+    }
+    event.preventDefault();
+    const { children } = this.props;
+    const shownLabels = children.filter(isShownAtThisWidth).map((child) => child.props.label);
+    const focusedIndex = shownLabels.findIndex(
+      (label) => this.tabButtons.get(label) === event.target,
+    );
+    const nextLabel = shownLabels[tabIndexAfterKey(focusedIndex, shownLabels.length)];
+    this.tabButtons.get(nextLabel)?.focus();
+  };
+
   render() {
     const {
       props: { children },
       state: { activeTab, pickedByUser },
       onClickTabItem,
+      onTabListKeyDown,
     } = this;
 
     return (
       <>
-        <ul className="mt-4 mt-sm-5 mb-4 nav nav-tabs nav-fill" role="tablist">
+        <ul
+          className="mt-4 mt-sm-5 mb-4 nav nav-tabs nav-fill"
+          role="tablist"
+          onKeyDown={onTabListKeyDown}
+        >
           {React.Children.map(children, (child) => {
             const { label, hideOnMobile } = child.props;
 
@@ -69,12 +98,15 @@ class LoginTabs extends Component {
                 label={label}
                 onClick={onClickTabItem}
                 hideOnMobile={hideOnMobile}
+                buttonRef={(button) => this.tabButtons.set(label, button)}
               />
             );
           })}
         </ul>
         <div
           className="tab-content"
+          id={LOGIN_TAB_PANEL_ID}
+          aria-labelledby={loginTabId(activeTab)}
           role="tabpanel"
           tabIndex="-1"
           aria-live="polite"
