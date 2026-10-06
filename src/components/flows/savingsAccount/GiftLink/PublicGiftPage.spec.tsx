@@ -49,7 +49,7 @@ describe('the gift page a giver opens', () => {
   };
 
   const findSubtitle = () =>
-    screen.findByText('Mari Tamm is saving in the Tuleva Supplementary Fund');
+    screen.findByText('Mari Tamm is saving in the Tuleva Additional Investment Fund');
   const giveButton = () => screen.getByRole('button', { name: 'Give' });
   const amountInput = () => screen.getByLabelText('Amount');
   const greetingField = () => screen.queryByLabelText(/a wish or a greeting/i);
