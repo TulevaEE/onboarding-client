@@ -14,7 +14,7 @@
   "login.smart.id.qr.expired": "The QR code expired.",
   "login.smart.id.qr.refresh": "Show a new QR code",
   "login.smart.id.qr.show": "Show QR code",
-  "login.smart.id.open.app": "Open the Smart‑ID app",
+  "login.smart.id.open.app": "Open Smart‑ID",
   "login.smart.id.callback.retry": "Try again",
   "login.smart.id.confirm.in.app": "Confirm the login in the Smart‑ID app.",
   "login.continue.as": "Continue as {firstName}",

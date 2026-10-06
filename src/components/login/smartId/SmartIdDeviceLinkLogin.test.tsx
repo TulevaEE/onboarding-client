@@ -286,12 +286,12 @@ describe('Smart-ID device link login', () => {
     const { container } = renderDeviceLinkLogin();
     await flushPendingRequests();
 
-    const appLink = screen.getByRole('link', { name: 'Open the Smart\u2011ID app' });
+    const appLink = screen.getByRole('link', { name: 'Open Smart\u2011ID' });
     expect(appLink).toHaveAttribute('href', web2AppLink);
     expect(appLink).toHaveClass('btn', 'btn-link');
     expect(appLink).not.toHaveClass('btn-primary');
     expect(appLink).toHaveStyle({ minHeight: '44px' });
-    expect(container).toHaveTextContent(/^Scan with the Smart.ID appOpen the Smart.ID appCancel$/);
+    expect(container).toHaveTextContent(/^Scan with the Smart.ID appOpen Smart.IDCancel$/);
     expect(screen.getByRole('img').compareDocumentPosition(appLink)).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING,
     );
@@ -572,7 +572,7 @@ describe('Smart-ID device link login', () => {
   });
 
   describe('on a phone, which has left for the Smart-ID app', () => {
-    const appButton = () => screen.queryByRole('link', { name: 'Open the Smart\u2011ID app' });
+    const appButton = () => screen.queryByRole('link', { name: 'Open Smart\u2011ID' });
     const waitInView = (millis: number) =>
       act(() => {
         jest.advanceTimersByTime(millis);
@@ -631,8 +631,8 @@ describe('Smart-ID device link login', () => {
     });
 
     it.each([
-      ['en', 'Open the Smart\u2011ID app'],
-      ['et', 'Ava Smart\u2011ID\u00a0rakendus'],
+      ['en', 'Open Smart\u2011ID'],
+      ['et', 'Ava Smart\u2011ID'],
     ] as const)('names the button into the Smart-ID app in %s', async (language, name) => {
       renderDeviceLinkLogin({ language });
       await flushPendingRequests();
@@ -680,14 +680,14 @@ describe('Smart-ID device link login', () => {
       waitInView(2000);
 
       expectStackedFullWidth(
-        screen.getByRole('link', { name: 'Open the Smart\u2011ID app' }),
+        screen.getByRole('link', { name: 'Open Smart\u2011ID' }),
         screen.getByRole('button', { name: 'Cancel' }),
       );
     });
 
     it.each([
-      ['en', 'Open the Smart\u2011ID app'],
-      ['et', 'Ava Smart\u2011ID\u00a0rakendus'],
+      ['en', 'Open Smart\u2011ID'],
+      ['et', 'Ava Smart\u2011ID'],
     ] as const)(
       'marks the button into the Smart-ID app in %s with the Smart-ID mark on the line of its first word, so a wrapped label keeps them together',
       async (language, label) => {
