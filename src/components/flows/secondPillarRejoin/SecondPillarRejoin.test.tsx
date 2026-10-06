@@ -51,10 +51,10 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
 
     const disclaimers = screen.getByRole('note');
     expect(disclaimers).toHaveTextContent(restriction);
-    expect(within(disclaimers).getByRole('link', { name: /^I\spillar$/ })).toHaveAttribute(
-      'href',
-      '/1st-vs-2nd-pillar',
+    expect(disclaimers).toHaveTextContent(
+      'Social tax paid into the II pillar also has a small effect on your I pillar.',
     );
+    expect(within(disclaimers).queryByRole('link')).not.toBeInTheDocument();
   });
 
   test('leaves the disclaimers out of the public calculator', async () => {
@@ -198,7 +198,7 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
     expect(screen.getByLabelText('Gross salary')).toHaveValue('2000');
     expect(screen.queryByText('€', { selector: '.input-group-text' })).not.toBeInTheDocument();
     expect(calculation()).toHaveTextContent(/Into your II\spillar\s*\+200\s€ a month/);
-    expect(calculation()).toHaveTextContent(/From your net salary\s*−94\s€ a month/);
+    expect(calculation()).toHaveTextContent(/Your net salary\s*−94\s€ a month/);
     expect(calculation()).toHaveTextContent(/In 10 years\s*24\s000\s€/);
     expect(calculation()).toHaveTextContent(/of which from the state\s*9\s600\s€/);
   });
@@ -240,7 +240,7 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
     userEvent.clear(salary);
     userEvent.type(salary, '500');
 
-    expect(calculation()).toHaveTextContent(/From your net salary\s*−30\s€ a month/);
+    expect(calculation()).toHaveTextContent(/Your net salary\s*−30\s€ a month/);
   });
 
   test('starts the application from the calculator with 6% preselected', async () => {

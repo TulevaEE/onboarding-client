@@ -2224,7 +2224,7 @@
   "secondPillarRejoin.lead": "The state adds <b>4% of your salary on top</b>. Apply by <b>30 November</b> and saving starts on 1 May 2027.",
   "secondPillarRejoin.calculation.label": "Calculation",
   "secondPillarRejoin.calculation.salary": "Gross salary",
-  "secondPillarRejoin.calculation.netSalaryCost": "From your net salary",
+  "secondPillarRejoin.calculation.netSalaryCost": "Your net salary",
   "secondPillarRejoin.calculation.intoPillar": "Into your II pillar",
   "secondPillarRejoin.calculation.perMonth": "{amount} a month",
   "secondPillarRejoin.calculation.tenYears": "In 10 years",
@@ -2246,5 +2246,6 @@
   "secondPillarRejoin.restriction.summary": "You can use the money from age 60 and cannot withdraw it a second time before that.",
   "secondPillarRejoin.calculator.start": "Start saving again",
   "secondPillarRejoin.calculator.eyebrow": "Rejoining the II pillar",
-  "secondPillarRejoin.calculator.assumption": "The calculation assumes you contribute {rate}% of your gross salary."
+  "secondPillarRejoin.calculator.assumption": "The calculation assumes you contribute {rate}% of your gross salary.",
+  "secondPillarRejoin.firstPillarNote": "Social tax paid into the II pillar also has a small effect on your I pillar."
 }
