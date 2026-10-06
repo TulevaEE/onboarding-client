@@ -10,6 +10,8 @@ type CurrencyInputProps = {
   placeholder?: string;
   max?: number;
   className?: string;
+  withEuroSign?: boolean;
+  alignEnd?: boolean;
 };
 
 export function CurrencyInput({
@@ -20,6 +22,8 @@ export function CurrencyInput({
   placeholder = '0',
   max,
   className,
+  withEuroSign = true,
+  alignEnd = false,
 }: CurrencyInputProps) {
   const [inputValue, setInputValue] = useState('');
 
@@ -73,10 +77,11 @@ export function CurrencyInput({
         placeholder={placeholder}
         className={classNames('form-control form-control-lg fw-semibold', {
           'border-danger focus-ring focus-ring-danger': error,
+          'text-end': alignEnd,
         })}
         onChange={(e) => handleChange(e.target.value)}
       />
-      <span className="input-group-text fw-semibold">€</span>
+      {withEuroSign && <span className="input-group-text fw-semibold">€</span>}
     </div>
   );
 }

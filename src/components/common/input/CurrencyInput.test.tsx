@@ -22,6 +22,27 @@ function getOutputValue(): string {
 }
 
 describe('CurrencyInput', () => {
+  describe('euro sign', () => {
+    it('shows the euro sign by default', () => {
+      render(<CurrencyInput value={2000} onChange={() => {}} />);
+
+      expect(screen.getByText('€')).toBeInTheDocument();
+    });
+
+    it('can leave the euro sign out', () => {
+      render(<CurrencyInput value={2000} onChange={() => {}} withEuroSign={false} />);
+
+      expect(screen.queryByText('€')).not.toBeInTheDocument();
+      expect(getInput()).toHaveValue('2000');
+    });
+
+    it('can align the amount to the end', () => {
+      render(<CurrencyInput value={2000} onChange={() => {}} alignEnd />);
+
+      expect(getInput()).toHaveClass('text-end');
+    });
+  });
+
   describe('typing amounts', () => {
     it('can type a whole number', () => {
       render(<TestWrapper />);
