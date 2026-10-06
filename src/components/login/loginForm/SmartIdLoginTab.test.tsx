@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 
 import translations from '../../translations';
+import { RememberWhoThisBrowserRemembers } from '../rememberedPeople';
 import { SmartIdLoginTab } from './SmartIdLoginTab';
 import {
   forgetRememberedMobileIdPerson,
@@ -34,7 +35,9 @@ describe('Smart-ID login tab', () => {
   const renderTab = (language: 'en' | 'et' = 'en') =>
     render(
       <IntlProvider locale={language} messages={translations[language]}>
-        <SmartIdLoginTab onSmartIdLoginStart={onSmartIdLoginStart} />
+        <RememberWhoThisBrowserRemembers>
+          <SmartIdLoginTab onSmartIdLoginStart={onSmartIdLoginStart} />
+        </RememberWhoThisBrowserRemembers>
       </IntlProvider>,
     );
 

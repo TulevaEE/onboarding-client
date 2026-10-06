@@ -1,43 +1,26 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 
-import { getRememberedMobileIdPerson } from '../../common/api';
-import { forgetThisBrowsersPerson } from '../forgetThisBrowsersPerson';
 import { RememberedMobileIdPerson } from '../../common/apiModels';
+import { KnownRememberedPeople } from '../rememberedPeople';
 
-interface RememberedMobileIdPersonState {
+export function useRememberedMobileIdPerson(): {
   person: RememberedMobileIdPerson | null;
   loading: boolean;
-}
-
-export function useRememberedMobileIdPerson(): RememberedMobileIdPersonState & {
   forget: () => Promise<void>;
 } {
-  const [state, setState] = useState<RememberedMobileIdPersonState>({
-    person: null,
-    loading: true,
-  });
+  const people = useContext(KnownRememberedPeople);
+  if (!people) {
+    throw new Error('useRememberedMobileIdPerson needs RememberWhoThisBrowserRemembers');
+  }
+  const { state, ensure, forget } = people;
 
   useEffect(() => {
-    let cancelled = false;
-    getRememberedMobileIdPerson()
-      .catch(() => null)
-      .then((person) => {
-        if (!cancelled) {
-          setState({ person, loading: false });
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    ensure('mobileIdPerson');
+  }, [ensure]);
 
-  const forget = useCallback(
-    () =>
-      forgetThisBrowsersPerson()
-        .catch(() => undefined)
-        .then(() => setState({ person: null, loading: false })),
-    [],
-  );
-
-  return { ...state, forget };
+  return {
+    person: state.mobileIdPerson ?? null,
+    loading: state.mobileIdPerson === undefined,
+    forget,
+  };
 }

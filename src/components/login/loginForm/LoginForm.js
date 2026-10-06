@@ -7,6 +7,7 @@ import { IdCardLoginTab } from './IdCardLoginTab';
 import { SmartIdLoginTab } from './SmartIdLoginTab';
 import { MobileIdLoginTab } from '../mobileId/MobileIdLoginTab';
 import { RememberKnownMobileIdNumbers } from '../mobileId/knownMobileIdNumbers';
+import { RememberWhoThisBrowserRemembers } from '../rememberedPeople';
 import { Maintenance } from '../Maintenance';
 
 export const LoginForm = ({
@@ -168,31 +169,33 @@ const renderLoginTabs = (
   );
 
   return (
-    <RememberKnownMobileIdNumbers>
-      <LoginTabs onTabChange={onLoginMethodChange}>
-        {/* eslint-disable-next-line react/no-unknown-property */}
-        <div label="login.smart.id">
-          {panel(<SmartIdLoginTab onSmartIdLoginStart={onSmartIdLoginStart} />)}
-        </div>
-        {/* eslint-disable-next-line react/no-unknown-property */}
-        <div label="login.mobile.id">
-          {panel(
-            <MobileIdLoginTab
-              phoneNumber={phoneNumber}
-              personalCode={personalCode}
-              onPhoneNumberChange={onPhoneNumberChange}
-              onPersonalCodeChange={onPersonalCodeChange}
-              onMobileIdSubmit={onMobileIdSubmit}
-              startError={mobileIdStartError}
-            />,
-          )}
-        </div>
-        {/* eslint-disable-next-line react/no-unknown-property */}
-        <div label="login.id.card" hideOnMobile>
-          {panel(<IdCardLoginTab onAuthenticateWithIdCardMtls={onAuthenticateWithIdCard} />)}
-        </div>
-      </LoginTabs>
-    </RememberKnownMobileIdNumbers>
+    <RememberWhoThisBrowserRemembers>
+      <RememberKnownMobileIdNumbers>
+        <LoginTabs onTabChange={onLoginMethodChange}>
+          {/* eslint-disable-next-line react/no-unknown-property */}
+          <div label="login.smart.id">
+            {panel(<SmartIdLoginTab onSmartIdLoginStart={onSmartIdLoginStart} />)}
+          </div>
+          {/* eslint-disable-next-line react/no-unknown-property */}
+          <div label="login.mobile.id">
+            {panel(
+              <MobileIdLoginTab
+                phoneNumber={phoneNumber}
+                personalCode={personalCode}
+                onPhoneNumberChange={onPhoneNumberChange}
+                onPersonalCodeChange={onPersonalCodeChange}
+                onMobileIdSubmit={onMobileIdSubmit}
+                startError={mobileIdStartError}
+              />,
+            )}
+          </div>
+          {/* eslint-disable-next-line react/no-unknown-property */}
+          <div label="login.id.card" hideOnMobile>
+            {panel(<IdCardLoginTab onAuthenticateWithIdCardMtls={onAuthenticateWithIdCard} />)}
+          </div>
+        </LoginTabs>
+      </RememberKnownMobileIdNumbers>
+    </RememberWhoThisBrowserRemembers>
   );
 };
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { screen, act, waitFor, within, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -517,6 +518,31 @@ describe('When a user is logging in', () => {
     expect(
       await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
     ).toBeInTheDocument();
+  });
+
+  test('switching tabs shows who the browser remembers at once, without a spinner or asking the server again', async () => {
+    const lookups = { smartId: 0, mobileId: 0 };
+    server.use(
+      rest.get('http://localhost/v1/smart-id/login/remembered-account', (req, res, ctx) => {
+        lookups.smartId += 1;
+        return res(ctx.status(200), ctx.json({ firstName: 'Mari', lastName: 'Maasikas' }));
+      }),
+      rest.get('http://localhost/v1/mobile-id/login/remembered-person', (req, res, ctx) => {
+        lookups.mobileId += 1;
+        return res(ctx.status(204));
+      }),
+    );
+    expect(await screen.findByRole('button', { name: 'Continue as Mari' })).toBeInTheDocument();
+    userEvent.click(screen.getByRole('tab', { name: 'Mobile-ID' }));
+    expect(await screen.findByPlaceholderText(/Identity code/gi)).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('tab', { name: 'Smart-ID' }));
+    expect(screen.getByRole('button', { name: 'Continue as Mari' })).toBeInTheDocument();
+    userEvent.click(screen.getByRole('tab', { name: 'Mobile-ID' }));
+    expect(screen.getByPlaceholderText(/Identity code/gi)).toBeInTheDocument();
+
+    expect(screen.queryByRole('status', { name: 'Loading' })).not.toBeInTheDocument();
+    expect(lookups).toEqual({ smartId: 1, mobileId: 1 });
   });
 
   test('somebody else is forgotten into Log in by Not you?, and gets the QR code only when they log in', async () => {
