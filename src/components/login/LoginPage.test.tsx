@@ -146,7 +146,7 @@ describe('When a user is logging in', () => {
     userEvent.click(await screen.findByRole('button', { name: 'Continue as Mari' }));
 
     await waitFor(() =>
-      expect(screen.getByText(/In the Smart.ID app, choose this code:/)).toHaveFocus(),
+      expect(screen.getByText(/^Choose this code if the request names Tuleva:$/)).toHaveFocus(),
     );
   });
 
@@ -510,8 +510,7 @@ describe('When a user is logging in', () => {
     userEvent.click(await screen.findByRole('button', { name: 'Continue as Mari' }));
 
     expectInTheOpenTabUnderTheLoginTitle('Smart-ID', await screen.findByText('5678'));
-    expect(screen.getByText(/In the Smart.ID app, choose this code:/)).toBeInTheDocument();
-    expect(screen.getByText(/Make sure the request says Tuleva/)).toBeInTheDocument();
+    expect(screen.getByText(/^Choose this code if the request names Tuleva:$/)).toBeInTheDocument();
     expect(backend.startedFlows).toEqual(['NOTIFICATION']);
 
     backend.resolvePolling();
@@ -753,9 +752,8 @@ describe('When a user is logging in', () => {
     userEvent.click(screen.getByText(/Log in$/gi));
     expectInTheOpenTabUnderTheLoginTitle('Mobile-ID', await screen.findByText('4321'));
     expect(
-      screen.getByText(/Make sure that the verification code received on your phone is the same/),
+      screen.getByText(/Make sure your phone shows this code and the name Tuleva:/),
     ).toBeInTheDocument();
-    expect(screen.getByText(/Make sure the request says Tuleva/)).toBeInTheDocument();
     expect(backend.startedLogins).toEqual([
       { personalCode: identityCode, phoneNumber: '+37255512345', rememberMe: false },
     ]);
