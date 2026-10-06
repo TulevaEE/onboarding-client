@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { forgetRememberedMobileIdPerson, getRememberedMobileIdPerson } from '../../common/api';
+import { getRememberedMobileIdPerson } from '../../common/api';
+import { forgetThisBrowsersPerson } from '../forgetThisBrowsersPerson';
 import { RememberedMobileIdPerson } from '../../common/apiModels';
 
 interface RememberedMobileIdPersonState {
@@ -32,7 +33,7 @@ export function useRememberedMobileIdPerson(): RememberedMobileIdPersonState & {
 
   const forget = useCallback(
     () =>
-      forgetRememberedMobileIdPerson()
+      forgetThisBrowsersPerson()
         .catch(() => undefined)
         .then(() => setState({ person: null, loading: false })),
     [],

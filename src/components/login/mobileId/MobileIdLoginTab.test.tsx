@@ -8,7 +8,11 @@ import { MobileIdLoginTab } from './MobileIdLoginTab';
 import { MOBILE_ID_PHONE_NUMBER_REQUIRED } from './MobileIdLoginForm';
 import { PII_CLASS } from '../../tracking/piiMarkup';
 import { expectQuietLinkUnder } from '../../../test/expectQuietLinkUnder';
-import { forgetRememberedMobileIdPerson, getRememberedMobileIdPerson } from '../../common/api';
+import {
+  forgetRememberedMobileIdPerson,
+  forgetRememberedSmartIdAccount,
+  getRememberedMobileIdPerson,
+} from '../../common/api';
 
 jest.mock('../../common/api');
 
@@ -96,6 +100,16 @@ describe('Mobile-ID login tab', () => {
     renderTab();
 
     expect(await screen.findByLabelText('Identity code')).toBeInTheDocument();
+  });
+
+  it('forgets the remembered person for Smart-ID on this browser too when they say Not you?', async () => {
+    mockGetRememberedMobileIdPerson.mockResolvedValue({ firstName: 'Aadu' });
+    renderTab();
+
+    userEvent.click(await screen.findByRole('button', { name: 'Not you?' }));
+
+    expect(await screen.findByLabelText('Identity code')).toBeInTheDocument();
+    expect(forgetRememberedSmartIdAccount).toHaveBeenCalled();
   });
 
   it('forgets the remembered person and their remember me choice for somebody else', async () => {
