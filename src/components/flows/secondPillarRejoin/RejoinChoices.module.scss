@@ -1,0 +1,24 @@
+.choices {
+  display: grid;
+  grid-template-rows: 1fr;
+  animation: unfold 160ms ease-out;
+}
+
+.choicesContent {
+  min-height: 0;
+  overflow: hidden;
+  padding: 0.25rem;
+  margin: -0.25rem;
+}
+
+@keyframes unfold {
+  from {
+    grid-template-rows: 0fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .choices {
+    animation: none;
+  }
+}

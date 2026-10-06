@@ -5,6 +5,7 @@ import { Recommended } from '../../common/Recommended';
 import { Fees } from '../../common/Percentage/Fees';
 import { Fund } from '../../common/apiModels';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
+import styles from './RejoinChoices.module.scss';
 
 type ChoiceRowProps = {
   id: string;
@@ -34,7 +35,11 @@ const ChoiceRow = ({ id, label, value, open, onToggle, children }: ChoiceRowProp
         <FormattedMessage id={open ? 'secondPillarRejoin.done' : 'secondPillarRejoin.change'} />
       </button>
     </div>
-    {open && <div className="d-flex flex-column gap-2 mt-3">{children}</div>}
+    {open && (
+      <div className={`${styles.choices} mt-3`}>
+        <div className={`${styles.choicesContent} d-flex flex-column gap-2`}>{children}</div>
+      </div>
+    )}
   </div>
 );
 
