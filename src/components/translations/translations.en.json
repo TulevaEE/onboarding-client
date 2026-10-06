@@ -49,7 +49,7 @@
   "login.error.auth.too.many.requests": "Too many login attempts right now. Please wait a moment and try again.",
   "login.join.tuleva": "Join!",
   "login.or": "or",
-  "login.permission.note": "By logging in, you allow a one-time request for your data from the pension register and agree to Tuleva’s <a>privacy policy</a>.",
+  "login.permission.note": "By logging in, you allow a one-time query of your pension register data and acknowledge Tuleva’s <a>privacy policy</a>.",
   "login.permission.note.url": "https://tuleva.ee/privaatsuspoliitika-ja-veebilehe-kasutustingimused/",
   "login.not.member": "You aren’t a member of Tuleva yet?",
   "login.apply.link": "Fill out a membership application",
