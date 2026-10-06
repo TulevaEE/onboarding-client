@@ -2,6 +2,7 @@ import React from 'react';
 import { act, render, screen } from '@testing-library/react';
 
 import { useRememberedMobileIdNumber } from './useRememberedMobileIdNumber';
+import { KnownMobileIdNumbers } from './knownMobileIdNumbers';
 
 const mockIsMobileIdNumberRemembered = jest.fn();
 
@@ -47,6 +48,40 @@ describe('useRememberedMobileIdNumber', () => {
 
   afterEach(() => {
     jest.useRealTimers();
+  });
+
+  const inTheLoginCard = (knownNumbers: Map<string, boolean>, props: Props) => (
+    <KnownMobileIdNumbers.Provider value={knownNumbers}>
+      <Lookup {...props} />
+    </KnownMobileIdNumbers.Provider>
+  );
+
+  it('answers at once for an identity code the login card already asked about, so coming back to the tab does not flash the phone field', async () => {
+    const knownNumbers = new Map<string, boolean>();
+    const { unmount: leaveTheTab } = render(
+      inTheLoginCard(knownNumbers, { personalCode: REMEMBERED_CODE, phoneNumberNeeded: false }),
+    );
+    await settle();
+    leaveTheTab();
+
+    render(
+      inTheLoginCard(knownNumbers, { personalCode: REMEMBERED_CODE, phoneNumberNeeded: false }),
+    );
+
+    expect(screen.getByRole('status')).toHaveTextContent('true');
+  });
+
+  it('still asks again when the tab comes back, and follows the new answer', async () => {
+    const knownNumbers = new Map<string, boolean>([[REMEMBERED_CODE, true]]);
+    mockIsMobileIdNumberRemembered.mockResolvedValue(false);
+
+    render(
+      inTheLoginCard(knownNumbers, { personalCode: REMEMBERED_CODE, phoneNumberNeeded: false }),
+    );
+    await settle();
+
+    expect(screen.getByRole('status')).toHaveTextContent('false');
+    expect(knownNumbers.get(REMEMBERED_CODE)).toBe(false);
   });
 
   it('reports a remembered number for a valid identity code', async () => {
