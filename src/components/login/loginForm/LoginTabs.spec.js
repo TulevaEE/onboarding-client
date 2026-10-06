@@ -20,6 +20,14 @@ describe('Login Tabs', () => {
     localStorage.clear();
   });
 
+  it('keeps the tabs as close to the heading above as to the login below, on every screen width', () => {
+    const tabList = renderTabs().find('ul');
+
+    expect(tabList.hasClass('mt-4')).toBe(true);
+    expect(tabList.hasClass('mb-4')).toBe(true);
+    expect(tabList.prop('className')).not.toMatch(/\bmt-(sm|md|lg)-/);
+  });
+
   it('should make first tab active', () => {
     expect(activeTab(renderTabs())).toBe('Smart ID');
   });

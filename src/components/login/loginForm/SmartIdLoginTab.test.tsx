@@ -115,6 +115,14 @@ describe('Smart-ID login tab', () => {
     expect(await rememberMe()).not.toBeChecked();
   });
 
+  it('leaves no extra space under the remember me box, so it sits as close to Log in as form fields sit to each other', async () => {
+    mockGetRememberedSmartIdAccount.mockResolvedValue(null);
+    renderTab();
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect((await rememberMe()).closest('.form-check')).toHaveClass('mb-0');
+  });
+
   it('leaves the remember me box without a note to read', async () => {
     mockGetRememberedSmartIdAccount.mockResolvedValue(null);
     renderTab();
