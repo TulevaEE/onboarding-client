@@ -83,7 +83,11 @@ class LoginTabs extends Component {
 
     return (
       <>
-        <ul className="mt-4 mb-4 nav nav-tabs nav-fill" role="tablist" onKeyDown={onTabListKeyDown}>
+        <ul
+          className="mt-4 pt-2 mt-sm-5 pt-sm-0 mb-4 nav nav-tabs nav-fill"
+          role="tablist"
+          onKeyDown={onTabListKeyDown}
+        >
           {React.Children.map(children, (child) => {
             const { label, hideOnMobile } = child.props;
 
@@ -100,7 +104,7 @@ class LoginTabs extends Component {
           })}
         </ul>
         <div
-          className="tab-content"
+          className="tab-content pt-2"
           id={LOGIN_TAB_PANEL_ID}
           aria-labelledby={loginTabId(activeTab)}
           role="tabpanel"
