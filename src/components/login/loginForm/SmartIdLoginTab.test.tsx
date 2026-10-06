@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 
@@ -98,7 +98,7 @@ describe('Smart-ID login tab', () => {
     expect(await rememberMe()).not.toBeChecked();
   });
 
-  it('forgets the remember me choice when somebody else logs in after the remembered account', async () => {
+  it('forgets the remember me choice when somebody else says Not you? to the remembered account', async () => {
     mockGetRememberedSmartIdAccount.mockResolvedValue(null);
     const { unmount: leave } = renderTab();
     userEvent.click(await rememberMe());
@@ -106,7 +106,7 @@ describe('Smart-ID login tab', () => {
     mockGetRememberedSmartIdAccount.mockResolvedValue({ firstName: 'Mari', lastName: 'Maasikas' });
     const { unmount: leaveAgain } = renderTab();
     userEvent.click(await screen.findByRole('button', { name: 'Not you?' }));
-    await waitFor(() => expect(onSmartIdLoginStart).toHaveBeenCalled());
+    expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
     leaveAgain();
     mockGetRememberedSmartIdAccount.mockResolvedValue(null);
 
@@ -176,15 +176,28 @@ describe('Smart-ID login tab', () => {
     );
   });
 
-  it('forgets the remembered account and falls back to the QR login for somebody else', async () => {
+  it('forgets the remembered account on Not you? and leaves somebody else at Log in, without starting a login', async () => {
     mockGetRememberedSmartIdAccount.mockResolvedValue({ firstName: 'Mari', lastName: 'Maasikas' });
     renderTab();
 
     userEvent.click(await screen.findByRole('button', { name: /Not you/ }));
 
-    await waitFor(() => expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK'));
-    expect(mockForgetRememberedSmartIdAccount).toHaveBeenCalled();
     expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+    expect(mockForgetRememberedSmartIdAccount).toHaveBeenCalled();
+    expect(onSmartIdLoginStart).not.toHaveBeenCalled();
+  });
+
+  it('offers somebody else the remember me box unticked after Not you?, whatever the remembered person chose', async () => {
+    mockGetRememberedSmartIdAccount.mockResolvedValue(null);
+    const { unmount: leave } = renderTab();
+    userEvent.click(await rememberMe());
+    leave();
+    mockGetRememberedSmartIdAccount.mockResolvedValue({ firstName: 'Mari', lastName: 'Maasikas' });
+    renderTab();
+
+    userEvent.click(await screen.findByRole('button', { name: /Not you/ }));
+
+    expect(await rememberMe()).not.toBeChecked();
   });
 
   it('never asks about remembered accounts on a phone, where the same-device link is used', () => {

@@ -520,7 +520,7 @@ describe('When a user is logging in', () => {
     ).toBeInTheDocument();
   });
 
-  test('somebody else can switch from the remembered account to the QR code', async () => {
+  test('somebody else is forgotten into Log in by Not you?, and gets the QR code only when they log in', async () => {
     const backend = smartIdAuthenticationBackend(server, {
       rememberedAccount: { firstName: 'Mari', lastName: 'Maasikas' },
     });
@@ -528,10 +528,15 @@ describe('When a user is logging in', () => {
 
     userEvent.click(screen.getByRole('button', { name: /Not you/ }));
 
+    expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+    expect(backend.rememberedAccount).toBeNull();
+    expect(backend.startedFlows).toEqual([]);
+
+    userEvent.click(screen.getByRole('button', { name: /^Log in$/ }));
+
     expect(
       await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
     ).toBeInTheDocument();
-    expect(backend.rememberedAccount).toBeNull();
     expect(backend.startedFlows).toEqual(['DEVICE_LINK']);
   });
 
