@@ -53,7 +53,7 @@ describe('the page the bank sends a giver back to', () => {
     renderPage();
 
     expect(
-      await screen.findByText('Your gift is on its way to the Tuleva Supplementary Fund.'),
+      await screen.findByText('Your gift is on its way to the Tuleva Additional Investment Fund.'),
     ).toBeInTheDocument();
     // The page is reached before the money is; claiming otherwise would be a claim we cannot make.
     expect(screen.queryByText(/arrived|received/i)).not.toBeInTheDocument();
