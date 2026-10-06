@@ -51,8 +51,8 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
         </button>
         <QuietLinkButton
           onClick={() => {
-            saveRememberMeChoice(false);
-            forget().then(() => onSmartIdLoginStart(language, 'DEVICE_LINK'));
+            chooseRememberMe(false);
+            forget();
           }}
         >
           <FormattedMessage id="login.not.you" />
