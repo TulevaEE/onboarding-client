@@ -840,6 +840,24 @@ describe('When a user is logging in', () => {
     expect(backend.rememberedPersonLogins).toBe(0);
   });
 
+  test('the phone field of a remembered number stays hidden when they come back to the Mobile-ID tab', async () => {
+    mobileIdAuthenticationBackend(server, {
+      challengeCode: '4321',
+      rememberedPersonalCodes: ['38001085718'],
+    });
+    userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
+    userEvent.type(await screen.findByPlaceholderText(/Identity code/gi), '38001085718');
+    await waitFor(() =>
+      expect(screen.queryByPlaceholderText(/Phone number/gi)).not.toBeInTheDocument(),
+    );
+
+    userEvent.click(screen.getByRole('tab', { name: 'Smart-ID' }));
+    userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
+
+    expect(await screen.findByPlaceholderText(/Identity code/gi)).toHaveValue('38001085718');
+    expect(screen.queryByPlaceholderText(/Phone number/gi)).not.toBeInTheDocument();
+  });
+
   test('a remembered number that no longer works brings back the phone field', async () => {
     const backend = mobileIdAuthenticationBackend(server, {
       challengeCode: '4321',
