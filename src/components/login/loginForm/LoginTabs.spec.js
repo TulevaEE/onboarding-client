@@ -20,12 +20,14 @@ describe('Login Tabs', () => {
     localStorage.clear();
   });
 
-  it('keeps the tabs as close to the heading above as to the login below, on every screen width', () => {
-    const tabList = renderTabs().find('ul');
+  it('sets the tabs apart with 32 px under the heading on a phone and 48 px on wider screens, and 32 px down to the login', () => {
+    const component = renderTabs();
+    const tabList = component.find('ul');
 
-    expect(tabList.hasClass('mt-4')).toBe(true);
-    expect(tabList.hasClass('mb-4')).toBe(true);
-    expect(tabList.prop('className')).not.toMatch(/\bmt-(sm|md|lg)-/);
+    ['mt-4', 'pt-2', 'mt-sm-5', 'pt-sm-0', 'mb-4'].forEach((spacing) =>
+      expect(tabList.hasClass(spacing)).toBe(true),
+    );
+    expect(component.find('.tab-content').hasClass('pt-2')).toBe(true);
   });
 
   it('should make first tab active', () => {
