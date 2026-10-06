@@ -1,49 +1,32 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 
-import { getRememberedSmartIdAccount } from '../../common/api';
-import { forgetThisBrowsersPerson } from '../forgetThisBrowsersPerson';
 import { RememberedSmartIdAccount } from '../../common/apiModels';
 import { deviceClass } from '../../common/deviceClass';
+import { KnownRememberedPeople } from '../rememberedPeople';
 
-interface RememberedSmartIdAccountState {
+export function useRememberedSmartIdAccount(): {
   account: RememberedSmartIdAccount | null;
   loading: boolean;
-}
-
-export function useRememberedSmartIdAccount(): RememberedSmartIdAccountState & {
   pushLoginAvailable: boolean;
   forget: () => Promise<void>;
 } {
   const pushLoginAvailable = deviceClass() === 'computer';
-  const [state, setState] = useState<RememberedSmartIdAccountState>({
-    account: null,
-    loading: pushLoginAvailable,
-  });
+  const people = useContext(KnownRememberedPeople);
+  if (!people) {
+    throw new Error('useRememberedSmartIdAccount needs RememberWhoThisBrowserRemembers');
+  }
+  const { state, ensure, forget } = people;
 
   useEffect(() => {
-    if (!pushLoginAvailable) {
-      return undefined;
+    if (pushLoginAvailable) {
+      ensure('smartIdAccount');
     }
-    let cancelled = false;
-    getRememberedSmartIdAccount()
-      .catch(() => null)
-      .then((account) => {
-        if (!cancelled) {
-          setState({ account, loading: false });
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [pushLoginAvailable]);
+  }, [pushLoginAvailable, ensure]);
 
-  const forget = useCallback(
-    () =>
-      forgetThisBrowsersPerson()
-        .catch(() => undefined)
-        .then(() => setState({ account: null, loading: false })),
-    [],
-  );
-
-  return { ...state, pushLoginAvailable, forget };
+  return {
+    account: state.smartIdAccount ?? null,
+    loading: pushLoginAvailable && state.smartIdAccount === undefined,
+    pushLoginAvailable,
+    forget,
+  };
 }

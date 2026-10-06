@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 
 import translations from '../../translations';
+import { RememberWhoThisBrowserRemembers } from '../rememberedPeople';
 import { MobileIdLoginTab } from './MobileIdLoginTab';
 import { MOBILE_ID_PHONE_NUMBER_REQUIRED } from './MobileIdLoginForm';
 import { PII_CLASS } from '../../tracking/piiMarkup';
@@ -33,14 +34,16 @@ describe('Mobile-ID login tab', () => {
   const renderTab = (startError?: string) =>
     render(
       <IntlProvider locale="en" messages={translations.en}>
-        <MobileIdLoginTab
-          phoneNumber=""
-          personalCode=""
-          onPhoneNumberChange={jest.fn()}
-          onPersonalCodeChange={jest.fn()}
-          onMobileIdSubmit={jest.fn()}
-          startError={startError}
-        />
+        <RememberWhoThisBrowserRemembers>
+          <MobileIdLoginTab
+            phoneNumber=""
+            personalCode=""
+            onPhoneNumberChange={jest.fn()}
+            onPersonalCodeChange={jest.fn()}
+            onMobileIdSubmit={jest.fn()}
+            startError={startError}
+          />
+        </RememberWhoThisBrowserRemembers>
       </IntlProvider>,
     );
 
