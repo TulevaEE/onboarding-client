@@ -24,10 +24,7 @@ const AuthenticationLoader = ({
               id={verificationCodeChoice ? 'login.control.code.choice' : 'login.control.code'}
             />
           </FocusedParagraph>
-          <div className="display-2 fw-bold mb-2">{controlCode}</div>
-          <p className="authentication-loader__hint mx-auto mb-4 small text-body-secondary text-pretty">
-            <FormattedMessage id="login.control.code.name.hint" />
-          </p>
+          <div className="display-2 fw-bold mb-4">{controlCode}</div>
         </>
       ) : (
         ''

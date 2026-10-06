@@ -22,38 +22,36 @@ const renderLoader = (props: Record<string, unknown>, language: 'en' | 'et' = 'e
     </IntlProvider>,
   );
 
-const NAME_HINT = 'Make sure the request says Tuleva.';
-
 describe('AuthenticationLoader', () => {
   afterEach(forgetTheLayout);
 
-  it('asks to compare the verification code and to check that the request names Tuleva', () => {
-    renderLoader({ controlCode: '1337' });
-
-    expect(
-      screen.getByText('Make sure that the verification code received on your phone is the same:'),
-    ).toBeInTheDocument();
-    expect(screen.getByText(NAME_HINT)).toBeInTheDocument();
-  });
-
-  it('asks to choose the verification code when the Smart-ID app offers a choice', () => {
-    renderLoader({ controlCode: '1337', verificationCodeChoice: true });
-
-    expect(screen.getByText(/In the Smart.ID app, choose this code:/)).toBeInTheDocument();
-    expect(screen.getByText(NAME_HINT)).toBeInTheDocument();
-  });
-
-  it('shows the hint below the code it is about', () => {
+  it('asks in one sentence above the code to compare it and to check that the request names Tuleva', () => {
     const { container } = renderLoader({ controlCode: '1337' });
 
-    expect(container).toHaveTextContent(/1337Make sure the request says Tuleva\./);
+    expect(
+      screen.getByText('Make sure your phone shows this code and the name Tuleva:'),
+    ).toBeInTheDocument();
+    expect(container).toHaveTextContent(/Tuleva:1337/);
+    expect(screen.queryByText(/request says Tuleva/)).not.toBeInTheDocument();
   });
 
-  it('asks in Estonian to check that the request says Tuleva', () => {
-    renderLoader({ controlCode: '1337' }, 'et');
+  it('asks in one sentence to choose the code in the Smart-ID app when the request names Tuleva', () => {
+    renderLoader({ controlCode: '1337', verificationCodeChoice: true });
 
-    expect(screen.getByText('Veendu, et päringus oleks kirjas Tuleva.')).toBeInTheDocument();
+    expect(screen.getByText(/^Choose this code if the request names Tuleva:$/)).toBeInTheDocument();
   });
+
+  it.each([
+    [false, 'Veendu, et telefonis on see kood ja nimi Tuleva:'],
+    [true, 'Vali see kood, kui päringus on nimi Tuleva:'],
+  ] as const)(
+    'asks in Estonian in one sentence (code choice: %s)',
+    (verificationCodeChoice, text) => {
+      renderLoader({ controlCode: '1337', verificationCodeChoice }, 'et');
+
+      expect(screen.getByText(text)).toBeInTheDocument();
+    },
+  );
 
   it('draws no card of its own unless it is overlayed, so it can sit inside the login card', () => {
     const { container } = renderLoader({ controlCode: '1337' });
@@ -92,7 +90,7 @@ describe('AuthenticationLoader', () => {
     );
 
     expect(
-      screen.getByText('Make sure that the verification code received on your phone is the same:'),
+      screen.getByText('Make sure your phone shows this code and the name Tuleva:'),
     ).toHaveFocus();
   });
 
@@ -126,6 +124,6 @@ describe('AuthenticationLoader', () => {
   it('has nothing to compare while there is no verification code', () => {
     renderLoader({});
 
-    expect(screen.queryByText(NAME_HINT)).not.toBeInTheDocument();
+    expect(screen.queryByText(/the name Tuleva/)).not.toBeInTheDocument();
   });
 });
