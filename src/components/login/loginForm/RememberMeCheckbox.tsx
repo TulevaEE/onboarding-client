@@ -12,7 +12,7 @@ export const RememberMeCheckbox: React.FC<RememberMeCheckboxProps> = ({
   checked,
   onChange,
 }) => (
-  <div className="form-check text-start">
+  <div className="form-check text-start mb-0">
     <input
       id={id}
       type="checkbox"
