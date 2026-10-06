@@ -80,6 +80,14 @@ export const LoginPage = ({
     !ERRORS_SHOWN_BESIDE_THEIR_FIELD.includes(errorDescription) &&
     !cancelledInTheApp(errorDescription);
 
+  const waitsForConfirmationOnThePhone =
+    !errorDescription &&
+    Boolean(authenticating) &&
+    Boolean(
+      controlCode ||
+        (smartIdWeb2AppLink && opensTheSmartIdApp({ qrCodeRequested: smartIdQrCodeRequested })),
+    );
+
   const pendingLogin = () => {
     if (errorDescription || !authenticating) {
       return null;
@@ -128,6 +136,7 @@ export const LoginPage = ({
               exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
               alert={showsAlert ? <ErrorAlert description={errorDescription} /> : null}
               pendingLogin={pendingLogin()}
+              tabsHidden={waitsForConfirmationOnThePhone}
             />
           </div>
         </div>

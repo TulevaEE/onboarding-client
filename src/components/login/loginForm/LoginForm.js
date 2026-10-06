@@ -24,6 +24,7 @@ export const LoginForm = ({
   exchangeExistingThirdPillarUnits,
   alert,
   pendingLogin,
+  tabsHidden,
 }) => (
   <>
     {isMaintenanceWindow() ? (
@@ -48,6 +49,7 @@ export const LoginForm = ({
         mobileIdStartError,
         alert,
         pendingLogin,
+        tabsHidden,
       )}
     </div>
   </>
@@ -74,6 +76,7 @@ const renderLoginForm = (
   mobileIdStartError,
   alert,
   pendingLogin,
+  tabsHidden,
 ) => {
   const { formatMessage } = useIntl();
 
@@ -107,6 +110,7 @@ const renderLoginForm = (
         mobileIdStartError,
         alert,
         pendingLogin,
+        tabsHidden,
       )}
 
       <p className="m-0 mt-4 text-body-secondary text-pretty">
@@ -160,6 +164,7 @@ const renderLoginTabs = (
   mobileIdStartError,
   alert,
   pendingLogin,
+  tabsHidden,
 ) => {
   const panel = (tabContent) => (
     <>
@@ -171,7 +176,7 @@ const renderLoginTabs = (
   return (
     <RememberWhoThisBrowserRemembers>
       <RememberKnownMobileIdNumbers>
-        <LoginTabs onTabChange={onLoginMethodChange}>
+        <LoginTabs onTabChange={onLoginMethodChange} tabsHidden={tabsHidden}>
           {/* eslint-disable-next-line react/no-unknown-property */}
           <div label="login.smart.id">
             {panel(<SmartIdLoginTab onSmartIdLoginStart={onSmartIdLoginStart} />)}
@@ -216,6 +221,7 @@ LoginForm.defaultProps = {
   exchangeExistingThirdPillarUnits: false,
   alert: null,
   pendingLogin: null,
+  tabsHidden: false,
 };
 
 LoginForm.propTypes = {
@@ -232,6 +238,7 @@ LoginForm.propTypes = {
   monthlyThirdPillarContribution: Types.number,
   exchangeExistingThirdPillarUnits: Types.bool,
   alert: Types.node,
+  tabsHidden: Types.bool,
   pendingLogin: Types.node,
 };
 

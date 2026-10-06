@@ -36,6 +36,7 @@ describe('Login page', () => {
       mobileIdStartError: '',
       alert: null,
       pendingLogin: null,
+      tabsHidden: false,
     });
   });
 

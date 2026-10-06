@@ -45,6 +45,12 @@ const expectInTheOpenTabUnderTheLoginTitle = (tabName: string, element: HTMLElem
   expect(screen.getByRole('tabpanel')).toContainElement(element);
 };
 
+const expectWithoutTabsUnderTheLoginTitle = (method: string, element: HTMLElement) => {
+  expect(screen.getByRole('heading', { name: 'Log in to your account' })).toBeInTheDocument();
+  expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+  expect(screen.getByRole('region', { name: method })).toContainElement(element);
+};
+
 describe('When a user is logging in', () => {
   const server = setupServer();
   const locationAssign = jest.fn();
@@ -510,7 +516,7 @@ describe('When a user is logging in', () => {
 
     userEvent.click(await screen.findByRole('button', { name: 'Continue as Mari' }));
 
-    expectInTheOpenTabUnderTheLoginTitle('Smart-ID', await screen.findByText('5678'));
+    expectWithoutTabsUnderTheLoginTitle('Smart-ID', await screen.findByText('5678'));
     expect(screen.getByText(/^Choose this code if the request names Tuleva:$/)).toBeInTheDocument();
     expect(backend.startedFlows).toEqual(['NOTIFICATION']);
 
@@ -543,6 +549,20 @@ describe('When a user is logging in', () => {
 
     expect(screen.queryByRole('status', { name: 'Loading' })).not.toBeInTheDocument();
     expect(lookups).toEqual({ smartId: 1, mobileId: 1 });
+  });
+
+  test('the tabs come back when they cancel a push login, so they can pick another way', async () => {
+    smartIdAuthenticationBackend(server, {
+      rememberedAccount: { firstName: 'Mari', lastName: 'Maasikas' },
+      verificationCode: '5678',
+    });
+    userEvent.click(await screen.findByRole('button', { name: 'Continue as Mari' }));
+    expect(await screen.findByText('5678')).toBeInTheDocument();
+    expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(await screen.findByRole('tab', { name: 'Smart-ID' })).toHaveClass('active');
   });
 
   test('somebody else is forgotten into Log in by Not you?, and gets the QR code only when they log in', async () => {
@@ -584,12 +604,12 @@ describe('When a user is logging in', () => {
         web2AppLink: smartIdWeb2AppLink('en'),
         language: 'en',
       });
-      expectInTheOpenTabUnderTheLoginTitle(
+      expectWithoutTabsUnderTheLoginTitle(
         'Smart-ID',
         screen.getByRole('status', { name: 'Loading' }),
       );
-      expect(screen.getByRole('tabpanel')).toHaveTextContent(
-        /^Confirm the login in the Smart.ID app\.\s*Cancel$/,
+      expect(screen.getByRole('region', { name: 'Smart-ID' })).toHaveTextContent(
+        /Confirm the login in the Smart.ID app\.\s*Cancel$/,
       );
 
       backend.resolvePolling();
@@ -776,7 +796,7 @@ describe('When a user is logging in', () => {
     userEvent.type(await screen.findByPlaceholderText(/Identity code/gi), identityCode);
     userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '5551 2345');
     userEvent.click(screen.getByText(/Log in$/gi));
-    expectInTheOpenTabUnderTheLoginTitle('Mobile-ID', await screen.findByText('4321'));
+    expectWithoutTabsUnderTheLoginTitle('Mobile-ID', await screen.findByText('4321'));
     expect(
       screen.getByText(/Make sure your phone shows this code and the name Tuleva:/),
     ).toBeInTheDocument();
