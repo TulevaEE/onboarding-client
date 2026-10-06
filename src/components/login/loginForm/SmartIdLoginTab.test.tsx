@@ -5,7 +5,11 @@ import { IntlProvider } from 'react-intl';
 
 import translations from '../../translations';
 import { SmartIdLoginTab } from './SmartIdLoginTab';
-import { forgetRememberedSmartIdAccount, getRememberedSmartIdAccount } from '../../common/api';
+import {
+  forgetRememberedMobileIdPerson,
+  forgetRememberedSmartIdAccount,
+  getRememberedSmartIdAccount,
+} from '../../common/api';
 import { PII_CLASS } from '../../tracking/piiMarkup';
 import { expectQuietLinkUnder } from '../../../test/expectQuietLinkUnder';
 import { expectIconOnTheLineOfItsFirstWord } from '../../../test/expectIconOnTheLineOfItsFirstWord';
@@ -193,6 +197,16 @@ describe('Smart-ID login tab', () => {
     expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
     expect(mockForgetRememberedSmartIdAccount).toHaveBeenCalled();
     expect(onSmartIdLoginStart).not.toHaveBeenCalled();
+  });
+
+  it('forgets the remembered person for Mobile-ID on this browser too when they say Not you?', async () => {
+    mockGetRememberedSmartIdAccount.mockResolvedValue({ firstName: 'Mari', lastName: 'Maasikas' });
+    renderTab();
+
+    userEvent.click(await screen.findByRole('button', { name: /Not you/ }));
+
+    expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+    expect(forgetRememberedMobileIdPerson).toHaveBeenCalled();
   });
 
   it('offers somebody else the remember me box unticked after Not you?, whatever the remembered person chose', async () => {

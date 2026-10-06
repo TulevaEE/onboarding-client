@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { forgetRememberedSmartIdAccount, getRememberedSmartIdAccount } from '../../common/api';
+import { getRememberedSmartIdAccount } from '../../common/api';
+import { forgetThisBrowsersPerson } from '../forgetThisBrowsersPerson';
 import { RememberedSmartIdAccount } from '../../common/apiModels';
 import { deviceClass } from '../../common/deviceClass';
 
@@ -38,7 +39,7 @@ export function useRememberedSmartIdAccount(): RememberedSmartIdAccountState & {
 
   const forget = useCallback(
     () =>
-      forgetRememberedSmartIdAccount()
+      forgetThisBrowsersPerson()
         .catch(() => undefined)
         .then(() => setState({ account: null, loading: false })),
     [],
