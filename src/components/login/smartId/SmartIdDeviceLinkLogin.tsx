@@ -11,6 +11,7 @@ import { QuietLink } from '../loginForm/QuietLink';
 import { useLoginLanguage } from '../loginLanguage';
 import { useSmartIdQrCodeLink } from './useSmartIdQrCodeLink';
 import { AutomaticRenewalAllowance } from './automaticRenewalAllowance';
+import { ScanFrame } from './ScanFrame';
 import { SmartIdLoginFlow } from '../../common/apiModels';
 import { opensTheSmartIdApp } from './opensTheSmartIdApp';
 import { useStillOnThisPage } from './useStillOnThisPage';
@@ -75,6 +76,7 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
       onExpire={onExpire}
       automaticRenewals={automaticRenewals}
       sizePixels={MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE * qrCodePixelsPerModule(device)}
+      scanFrame={device === 'computer'}
     >
       {device === 'tablet' && (
         <QuietLink href={web2AppLink} onClick={onAppOpen}>
@@ -132,6 +134,7 @@ const SmartIdQrCodeLogin: React.FC<{
   onExpire: () => void;
   automaticRenewals: AutomaticRenewalAllowance;
   sizePixels: number;
+  scanFrame: boolean;
   children: React.ReactNode;
 }> = ({
   session,
@@ -141,6 +144,7 @@ const SmartIdQrCodeLogin: React.FC<{
   onExpire,
   automaticRenewals,
   sizePixels,
+  scanFrame,
   children,
 }) => {
   const { formatMessage } = useIntl();
@@ -178,29 +182,33 @@ const SmartIdQrCodeLogin: React.FC<{
     );
   }
 
+  const qrCode = (
+    <div
+      className="d-flex align-items-center justify-content-center mx-auto"
+      style={{ width: sizePixels, maxWidth: '100%', aspectRatio: '1' }}
+    >
+      {deviceLink ? (
+        <QRCodeSVG
+          value={deviceLink}
+          size={sizePixels}
+          level="L"
+          bgColor="#ffffff"
+          style={{ maxWidth: '100%', height: 'auto', aspectRatio: '1' }}
+          role="img"
+          aria-label={formatMessage({ id: 'login.smart.id.qr.instructions' })}
+        />
+      ) : (
+        <Loader />
+      )}
+    </div>
+  );
+
   return (
     <BroughtIntoView>
       <FocusedParagraph className="m-0 mb-4 text-pretty">
         <FormattedMessage id="login.smart.id.qr.instructions" />
       </FocusedParagraph>
-      <div
-        className="d-flex align-items-center justify-content-center mx-auto"
-        style={{ width: sizePixels, maxWidth: '100%', aspectRatio: '1' }}
-      >
-        {deviceLink ? (
-          <QRCodeSVG
-            value={deviceLink}
-            size={sizePixels}
-            level="L"
-            bgColor="#ffffff"
-            style={{ maxWidth: '100%', height: 'auto', aspectRatio: '1' }}
-            role="img"
-            aria-label={formatMessage({ id: 'login.smart.id.qr.instructions' })}
-          />
-        ) : (
-          <Loader />
-        )}
-      </div>
+      {scanFrame ? <ScanFrame>{qrCode}</ScanFrame> : qrCode}
       {children}
       <CancelButton onCancel={onCancel} className="mt-4" />
     </BroughtIntoView>

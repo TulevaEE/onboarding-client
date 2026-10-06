@@ -145,6 +145,33 @@ describe('Smart-ID device link login', () => {
     expect(container).toHaveTextContent(/^Scan with the Smart.ID appCancel$/);
   });
 
+  it('frames the QR code on a computer with scan corners that keep clear of its quiet zone', async () => {
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    const scanFrame = screen.getByTestId('qr-scan-frame');
+    expect(scanFrame).toContainElement(screen.getByRole('img'));
+    expect(scanFrame).toHaveStyle({ padding: '32px' });
+  });
+
+  it('leaves the QR code a phone asked for unframed, so the code keeps the width of the screen', async () => {
+    setUserAgent(phoneUserAgent);
+    renderDeviceLinkLogin({ qrCodeRequested: true });
+    await flushPendingRequests();
+
+    expect(screen.getByRole('img')).toBeInTheDocument();
+    expect(screen.queryByTestId('qr-scan-frame')).not.toBeInTheDocument();
+  });
+
+  it('leaves the QR code of a tablet unframed, so the code keeps the width of the screen', async () => {
+    setUserAgent(tabletUserAgent);
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    expect(screen.getByRole('img')).toBeInTheDocument();
+    expect(screen.queryByTestId('qr-scan-frame')).not.toBeInTheDocument();
+  });
+
   it('moves the focus to the instruction when the QR code view opens, so a screen reader reads it', async () => {
     renderDeviceLinkLogin();
     await flushPendingRequests();
