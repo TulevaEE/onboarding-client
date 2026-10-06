@@ -122,7 +122,7 @@ describe('Smart-ID device link login', () => {
 
   it.each([
     ['en', 'Scan with the Smart\u2011ID app'],
-    ['et', 'Skanni Smart\u2011ID rakendusega'],
+    ['et', 'Skänni Smart\u2011ID rakendusega'],
   ] as const)(
     'asks in %s to scan the QR code with the Smart-ID app',
     async (language, instruction) => {
