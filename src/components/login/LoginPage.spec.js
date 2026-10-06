@@ -36,7 +36,6 @@ describe('Login page', () => {
       mobileIdStartError: '',
       alert: null,
       pendingLogin: null,
-      tabsHidden: false,
     });
   });
 
@@ -134,17 +133,16 @@ describe('Login page', () => {
     );
   });
 
-  it('shows the control code in the login form', () => {
+  it('shows the control code on a card of its own instead of the login form', () => {
     const onCancelMobileAuthentication = jest.fn();
     component.setProps({ onCancelMobileAuthentication, controlCode: '1337' });
 
-    expect(pendingLogin()).toEqual(
-      <AuthenticationLoader
-        controlCode="1337"
-        verificationCodeChoice={false}
-        onCancel={onCancelMobileAuthentication}
-      />,
-    );
+    expect(component.find(LoginForm).exists()).toBe(false);
+    expect(component.find('section').find(AuthenticationLoader).props()).toMatchObject({
+      controlCode: '1337',
+      verificationCodeChoice: false,
+      onCancel: onCancelMobileAuthentication,
+    });
   });
 
   it('shows an authentication loader in the login form while loading user conversion', () => {

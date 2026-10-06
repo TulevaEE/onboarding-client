@@ -45,10 +45,11 @@ const expectInTheOpenTabUnderTheLoginTitle = (tabName: string, element: HTMLElem
   expect(screen.getByRole('tabpanel')).toContainElement(element);
 };
 
-const expectWithoutTabsUnderTheLoginTitle = (method: string, element: HTMLElement) => {
-  expect(screen.getByRole('heading', { name: 'Log in to your account' })).toBeInTheDocument();
-  expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+const expectOnItsOwnCard = (method: string, element: HTMLElement) => {
   expect(screen.getByRole('region', { name: method })).toContainElement(element);
+  expect(screen.queryByRole('heading', { name: 'Log in to your account' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'privacy policy' })).not.toBeInTheDocument();
 };
 
 describe('When a user is logging in', () => {
@@ -516,7 +517,7 @@ describe('When a user is logging in', () => {
 
     userEvent.click(await screen.findByRole('button', { name: 'Continue as Mari' }));
 
-    expectWithoutTabsUnderTheLoginTitle('Smart-ID', await screen.findByText('5678'));
+    expectOnItsOwnCard('Smart-ID', await screen.findByText('5678'));
     expect(screen.getByText(/^Choose this code if the request names Tuleva:$/)).toBeInTheDocument();
     expect(backend.startedFlows).toEqual(['NOTIFICATION']);
 
@@ -604,10 +605,7 @@ describe('When a user is logging in', () => {
         web2AppLink: smartIdWeb2AppLink('en'),
         language: 'en',
       });
-      expectWithoutTabsUnderTheLoginTitle(
-        'Smart-ID',
-        screen.getByRole('status', { name: 'Loading' }),
-      );
+      expectOnItsOwnCard('Smart-ID', screen.getByRole('status', { name: 'Loading' }));
       expect(screen.getByRole('region', { name: 'Smart-ID' })).toHaveTextContent(
         /Confirm the login in the Smart.ID app\.\s*Cancel$/,
       );
@@ -796,7 +794,7 @@ describe('When a user is logging in', () => {
     userEvent.type(await screen.findByPlaceholderText(/Identity code/gi), identityCode);
     userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '5551 2345');
     userEvent.click(screen.getByText(/Log in$/gi));
-    expectWithoutTabsUnderTheLoginTitle('Mobile-ID', await screen.findByText('4321'));
+    expectOnItsOwnCard('Mobile-ID', await screen.findByText('4321'));
     expect(
       screen.getByText(/Make sure your phone shows this code and the name Tuleva:/),
     ).toBeInTheDocument();
