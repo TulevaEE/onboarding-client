@@ -615,9 +615,7 @@ describe('When a user is logging in', () => {
         'Smart-ID',
         await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
       );
-      expect(
-        screen.queryByRole('link', { name: /^Open the Smart.ID app$/ }),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: /^Open Smart.ID$/ })).not.toBeInTheDocument();
       expect(backend.startedSessions).toBe(1);
       expect(backend.deviceLinkRememberMeChoices).toEqual([false]);
       expect(locationAssign).not.toHaveBeenCalled();
@@ -651,7 +649,7 @@ describe('When a user is logging in', () => {
       reloadThePage();
 
       expect(
-        await screen.findByRole('link', { name: /^Open the Smart.ID app$/ }, { timeout: 3000 }),
+        await screen.findByRole('link', { name: /^Open Smart.ID$/ }, { timeout: 3000 }),
       ).toHaveAttribute('href', smartIdWeb2AppLink('en'));
       expect(
         screen.queryByRole('img', { name: /^Scan with the Smart.ID app$/ }),
@@ -691,9 +689,7 @@ describe('When a user is logging in', () => {
         expect(
           await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
         ).toBeInTheDocument();
-        expect(
-          screen.queryByRole('link', { name: /^Open the Smart.ID app$/ }),
-        ).not.toBeInTheDocument();
+        expect(screen.queryByRole('link', { name: /^Open Smart.ID$/ })).not.toBeInTheDocument();
       } finally {
         now.mockRestore();
       }
@@ -714,7 +710,7 @@ describe('When a user is logging in', () => {
         'Smart-ID',
         await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
       );
-      expect(screen.getByRole('link', { name: /^Open the Smart.ID app$/ })).toHaveAttribute(
+      expect(screen.getByRole('link', { name: /^Open Smart.ID$/ })).toHaveAttribute(
         'href',
         smartIdWeb2AppLink('en'),
       );
@@ -731,7 +727,7 @@ describe('When a user is logging in', () => {
     test('a login the Smart-ID app they opened from the link finished in a new tab brings this tab back to Log in, without an error', async () => {
       const backend = smartIdAuthenticationBackend(server, { language: 'en' });
       userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
-      userEvent.click(await screen.findByRole('link', { name: /^Open the Smart.ID app$/ }));
+      userEvent.click(await screen.findByRole('link', { name: /^Open Smart.ID$/ }));
 
       backend.acceptCallbackInAnotherTab();
 
