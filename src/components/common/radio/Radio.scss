@@ -11,8 +11,8 @@
 
   transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
 
-  &:not(&--selected):not(&--disabled),
-  &:not(&--selected):not(&--disabled) > * {
+  &:not(&--disabled),
+  &:not(&--disabled) > * {
     cursor: pointer;
   }
 
@@ -26,7 +26,6 @@
     background-color: $blue-bg-2;
     border-color: $blue;
     border-width: 2px;
-    cursor: auto;
 
     & .row {
       border-width: 0;
