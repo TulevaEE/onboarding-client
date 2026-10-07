@@ -3,6 +3,7 @@ import { PropTypes as Types } from 'prop-types';
 import { Redirect, withRouter } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { useIntl } from 'react-intl';
 
 import { logo, AuthenticationLoader, ErrorAlert } from '../common';
 import { usePageTitle } from '../common/usePageTitle';
@@ -59,6 +60,7 @@ export const LoginPage = ({
   location,
 }) => {
   usePageTitle('pageTitle.loginPage');
+  const { formatMessage } = useIntl();
   const [qrCodeRenewals] = useState(automaticRenewalAllowance);
 
   if (isAuthenticated) {
@@ -79,6 +81,17 @@ export const LoginPage = ({
     errorDescription &&
     !ERRORS_SHOWN_BESIDE_THEIR_FIELD.includes(errorDescription) &&
     !cancelledInTheApp(errorDescription);
+
+  const waitsForConfirmationOnThePhone =
+    !errorDescription &&
+    Boolean(authenticating) &&
+    Boolean(
+      controlCode ||
+        (smartIdWeb2AppLink && opensTheSmartIdApp({ qrCodeRequested: smartIdQrCodeRequested })),
+    );
+
+  const confirmingWith =
+    controlCode && !verificationCodeChoice ? 'login.mobile.id' : 'login.smart.id';
 
   const pendingLogin = () => {
     if (errorDescription || !authenticating) {
@@ -114,21 +127,31 @@ export const LoginPage = ({
         <div className="row justify-content-center">
           <div className="col-12 col-md-9 col-lg-7">
             <img width="146" height="66" src={logo} alt="Tuleva" className="d-block mx-auto mb-5" />
-            <LoginForm
-              onMobileIdSubmit={onMobileIdSubmit}
-              onPhoneNumberChange={onPhoneNumberChange}
-              onPersonalCodeChange={onPersonalCodeChange}
-              phoneNumber={phoneNumber}
-              personalCode={personalCode}
-              mobileIdStartError={errorDescription}
-              onSmartIdLoginStart={startSmartIdLoginFromTheTab}
-              onAuthenticateWithIdCard={onAuthenticateWithIdCard}
-              onLoginMethodChange={onLoginMethodChange}
-              monthlyThirdPillarContribution={monthlyThirdPillarContribution}
-              exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
-              alert={showsAlert ? <ErrorAlert description={errorDescription} /> : null}
-              pendingLogin={pendingLogin()}
-            />
+            {waitsForConfirmationOnThePhone && (
+              <section
+                className="bg-white shadow-sm rounded-3 p-4 p-sm-5 text-center"
+                aria-label={formatMessage({ id: confirmingWith })}
+              >
+                {pendingLogin()}
+              </section>
+            )}
+            <div hidden={waitsForConfirmationOnThePhone}>
+              <LoginForm
+                onMobileIdSubmit={onMobileIdSubmit}
+                onPhoneNumberChange={onPhoneNumberChange}
+                onPersonalCodeChange={onPersonalCodeChange}
+                phoneNumber={phoneNumber}
+                personalCode={personalCode}
+                mobileIdStartError={errorDescription}
+                onSmartIdLoginStart={startSmartIdLoginFromTheTab}
+                onAuthenticateWithIdCard={onAuthenticateWithIdCard}
+                onLoginMethodChange={onLoginMethodChange}
+                monthlyThirdPillarContribution={monthlyThirdPillarContribution}
+                exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
+                alert={showsAlert ? <ErrorAlert description={errorDescription} /> : null}
+                pendingLogin={waitsForConfirmationOnThePhone ? null : pendingLogin()}
+              />
+            </div>
           </div>
         </div>
       </div>

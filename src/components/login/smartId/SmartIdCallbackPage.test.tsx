@@ -441,11 +441,12 @@ describe('When the Smart-ID app returns to the browser', () => {
       expect(locationAssign).toHaveBeenCalledTimes(1);
       expect(backend.startedSessions).toBe(2);
       expect(history.location.pathname).toBe(loginPath);
-      expect(screen.getByRole('tabpanel')).toContainElement(
+      expect(screen.queryByRole('tab')).not.toBeInTheDocument();
+      expect(screen.getByRole('region', { name: 'Smart-ID' })).toContainElement(
         screen.getByRole('status', { name: 'Loading' }),
       );
-      expect(screen.getByRole('tabpanel')).toHaveTextContent(
-        /^Confirm the login in the Smart.ID app\.\s*Cancel$/,
+      expect(screen.getByRole('region', { name: 'Smart-ID' })).toHaveTextContent(
+        /Confirm the login in the Smart.ID app\.\s*Cancel$/,
       );
 
       backend.resolvePolling();
