@@ -781,6 +781,21 @@ describe('When a user is logging in', () => {
     });
   });
 
+  test('Cancel on a Mobile-ID code brings back the Mobile-ID form as they filled it, even when the browser lost the stored open tab', async () => {
+    mobileIdAuthenticationBackend(server, { challengeCode: '4321' });
+    userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
+    userEvent.type(await screen.findByPlaceholderText(/Identity code/gi), '38001085718');
+    userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '+37255512345');
+    userEvent.click(screen.getByRole('button', { name: 'Log in' }));
+    expect(await screen.findByText('4321')).toBeInTheDocument();
+    localStorage.clear();
+
+    userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(await screen.findByRole('tab', { name: 'Mobile-ID' })).toHaveClass('active');
+    expect(screen.getByPlaceholderText(/Identity code/gi)).toHaveValue('38001085718');
+  });
+
   test('they can sign in with mobile id typing the number as they like, showing the security code', async () => {
     const identityCode = '38001085718';
     const backend = mobileIdAuthenticationBackend(server, {

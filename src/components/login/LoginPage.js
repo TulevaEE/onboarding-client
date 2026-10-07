@@ -127,14 +127,15 @@ export const LoginPage = ({
         <div className="row justify-content-center">
           <div className="col-12 col-md-9 col-lg-7">
             <img width="146" height="66" src={logo} alt="Tuleva" className="d-block mx-auto mb-5" />
-            {waitsForConfirmationOnThePhone ? (
+            {waitsForConfirmationOnThePhone && (
               <section
                 className="bg-white shadow-sm rounded-3 p-4 p-sm-5 text-center"
                 aria-label={formatMessage({ id: confirmingWith })}
               >
                 {pendingLogin()}
               </section>
-            ) : (
+            )}
+            <div hidden={waitsForConfirmationOnThePhone}>
               <LoginForm
                 onMobileIdSubmit={onMobileIdSubmit}
                 onPhoneNumberChange={onPhoneNumberChange}
@@ -148,9 +149,9 @@ export const LoginPage = ({
                 monthlyThirdPillarContribution={monthlyThirdPillarContribution}
                 exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
                 alert={showsAlert ? <ErrorAlert description={errorDescription} /> : null}
-                pendingLogin={pendingLogin()}
+                pendingLogin={waitsForConfirmationOnThePhone ? null : pendingLogin()}
               />
-            )}
+            </div>
           </div>
         </div>
       </div>
