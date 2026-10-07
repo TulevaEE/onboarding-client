@@ -1,16 +1,13 @@
 import { ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrencyInput } from '../../common/input/CurrencyInput';
-import { formatAmountForCount } from '../../common/utils';
+import { Euro } from '../../common/Euro';
+import { PII_CLASS } from '../../tracking/piiMarkup';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
 import { rejoinContributions } from './rejoinContributions';
+import { ContributionBreakdown } from './ContributionBreakdown';
 
 const bold = (chunks: ReactNode) => <b>{chunks}</b>;
-
-const euros = (amount: number) => `${formatAmountForCount(Math.round(amount), 0)} €`;
-
-const signedEuros = (amount: number) =>
-  `${formatAmountForCount(Math.round(amount), 0, { isSigned: true })}\u00A0€`;
 
 const DetailLine = ({ label, value }: { label: ReactNode; value: ReactNode }) => (
   <div className="d-flex justify-content-between gap-3 small text-secondary">
@@ -19,26 +16,10 @@ const DetailLine = ({ label, value }: { label: ReactNode; value: ReactNode }) =>
   </div>
 );
 
-type ResultPairProps = {
-  label: ReactNode;
-  value: ReactNode;
-  detailLabel: ReactNode;
-  detailValue: ReactNode;
-};
-
-const ResultPair = ({ label, value, detailLabel, detailValue }: ResultPairProps) => (
-  <>
-    <div className="d-flex justify-content-between align-items-baseline gap-3 text-navy">
-      <span className="fs-5 fw-medium">{label}</span>
-      <span className="fs-3 fw-bold text-nowrap">{value}</span>
-    </div>
-    <DetailLine label={detailLabel} value={detailValue} />
-  </>
-);
-
 type RejoinCalculatorProps = {
   grossSalary: number | undefined;
   onGrossSalaryChange: (grossSalary: number | undefined) => void;
+  exampleSalary: number;
   paymentRate: PaymentRate;
   onStart: () => void;
 };
@@ -46,16 +27,17 @@ type RejoinCalculatorProps = {
 export const RejoinCalculator = ({
   grossSalary,
   onGrossSalaryChange,
+  exampleSalary,
   paymentRate,
   onStart,
 }: RejoinCalculatorProps) => {
   const { formatMessage } = useIntl();
-  const contributions = rejoinContributions(grossSalary ?? 0, paymentRate);
+  const contributions = rejoinContributions(grossSalary ?? exampleSalary, paymentRate);
 
   return (
     <div className="row align-items-center gy-5 gx-xl-5">
       <div className="col-lg-6 text-center text-lg-start text-navy">
-        <p className="small fw-bold text-primary text-uppercase mb-3">
+        <p className="fw-medium text-primary mb-3">
           <FormattedMessage id="secondPillarRejoin.calculator.eyebrow" />
         </p>
         <h1 className="mb-4 text-balance">
@@ -77,8 +59,9 @@ export const RejoinCalculator = ({
                 <div className="col-sm-6">
                   <CurrencyInput
                     id="rejoin-gross-salary"
-                    className="mw-100"
+                    className={`mw-100 ${PII_CLASS}`}
                     value={grossSalary}
+                    placeholder={String(exampleSalary)}
                     onChange={onGrossSalaryChange}
                     withEuroSign={false}
                     alignEnd
@@ -92,30 +75,28 @@ export const RejoinCalculator = ({
               role="group"
               aria-label={formatMessage({ id: 'secondPillarRejoin.calculation.label' })}
             >
-              <ResultPair
-                label={<FormattedMessage id="secondPillarRejoin.calculation.intoPillar" />}
-                value={
+              <div className="d-flex justify-content-between align-items-baseline gap-3 text-navy">
+                <span className="fs-5 fw-medium">
+                  <FormattedMessage id="secondPillarRejoin.calculation.intoPillar" />
+                </span>
+                <span className="fs-3 fw-bold text-nowrap">
                   <FormattedMessage
                     id="secondPillarRejoin.calculation.perMonth"
-                    values={{ amount: signedEuros(contributions.intoPillarPerMonth) }}
+                    values={{
+                      amount: <Euro amount={contributions.intoPillarPerMonth} fractionDigits={0} />,
+                    }}
                   />
-                }
-                detailLabel={<FormattedMessage id="secondPillarRejoin.calculation.netSalaryCost" />}
-                detailValue={
-                  <FormattedMessage
-                    id="secondPillarRejoin.calculation.perMonth"
-                    values={{ amount: signedEuros(-contributions.netSalaryCostPerMonth) }}
-                  />
-                }
-              />
+                </span>
+              </div>
+              <ContributionBreakdown contributions={contributions} />
               <div className="border-top mt-3 pt-3">
                 <DetailLine
                   label={<FormattedMessage id="secondPillarRejoin.calculation.tenYears" />}
-                  value={euros(contributions.tenYearTotal)}
+                  value={<Euro amount={contributions.tenYearTotal} fractionDigits={0} />}
                 />
                 <DetailLine
                   label={<FormattedMessage id="secondPillarRejoin.calculation.stateShare" />}
-                  value={euros(contributions.tenYearStateShare)}
+                  value={<Euro amount={contributions.tenYearStateShare} fractionDigits={0} />}
                 />
               </div>
               <button type="button" className="btn btn-primary btn-lg w-100 mt-4" onClick={onStart}>
@@ -125,10 +106,15 @@ export const RejoinCalculator = ({
           </div>
         </div>
         <p className="small text-secondary text-center mt-3 mb-0">
-          <FormattedMessage
-            id="secondPillarRejoin.calculator.assumption"
-            values={{ rate: paymentRate }}
-          />
+          <span>
+            <FormattedMessage
+              id="secondPillarRejoin.calculator.assumption"
+              values={{ rate: paymentRate }}
+            />
+          </span>{' '}
+          <span>
+            <FormattedMessage id="secondPillarRejoin.firstPillarNote" />
+          </span>
         </p>
       </div>
     </div>

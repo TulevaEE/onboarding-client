@@ -7,6 +7,7 @@ import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import { initializeConfiguration } from '../../config/config';
 import { useTestBackends } from '../../../test/backend';
 import LoggedInApp from '../../LoggedInApp';
+import { isInsidePii } from '../../tracking/piiMarkup';
 
 describe('When an eligible person rejoins the II pillar in the prototype', () => {
   const server = setupServer();
@@ -57,16 +58,23 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
     expect(within(disclaimers).queryByRole('link')).not.toBeInTheDocument();
   });
 
-  test('leaves the disclaimers out of the public calculator', async () => {
+  test('notes the I pillar effect under the calculator, and leaves the restriction to the application', async () => {
     await renderAt('/2nd-pillar-rejoin?view=calculator');
 
-    expect(screen.queryByRole('note')).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Social tax paid into the II pillar also has a small effect on your I pillar.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(restriction)).not.toBeInTheDocument();
   });
 
   test('opens the application with 6% and the Tuleva stock fund preselected and collapsed', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
     expect(paymentRateRow()).toHaveTextContent('6% of gross salary');
+    expect(paymentRateRow()).not.toHaveTextContent('salary:');
+    expect(paymentRateRow()).not.toHaveTextContent('a month');
     expect(fundRow()).toHaveTextContent('Tuleva World Stocks Pension Fund');
     expect(fundRow()).toHaveTextContent(/Fees\s*0\.39%/);
     expect(screen.queryByRole('radio')).not.toBeInTheDocument();
@@ -79,17 +87,18 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
     expect(screen.getByRole('link', { name: 'Cancel' })).toHaveAttribute('href', '/account');
   });
 
-  test('explains what each payment rate means', async () => {
+  test('explains what each payment rate means, in the words of the payment rate page', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
     userEvent.click(within(paymentRateRow()).getByRole('button', { name: 'Change' }));
 
-    expect(screen.getByRole('radio', { name: /^2% of Gross Salary/i })).toHaveAccessibleName(
-      /You contribute 2% and the state\s4%, totaling\s6%/,
+    expect(screen.getByRole('radio', { name: /^2% of gross salary/i })).toHaveAccessibleName(
+      /^2% of gross salary\s*You contribute 2% and the state\s4%, totaling\s6%$/i,
     );
-    expect(screen.getByRole('radio', { name: /^6% of Gross Salary/i })).toHaveAccessibleName(
-      /totaling\s10%.*greatest tax benefit/,
+    expect(screen.getByRole('radio', { name: /^6% of gross salary/i })).toHaveAccessibleName(
+      /^6% of gross salary\s*Recommended\s*You contribute 6% and the state\s4%, totaling\s10%.*greatest tax benefit/i,
     );
+    expect(within(paymentRateRow()).queryByLabelText('Gross salary')).not.toBeInTheDocument();
   });
 
   test('signing the defaults summarizes what happens from May', async () => {
@@ -105,7 +114,7 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
     await renderAt('/2nd-pillar-rejoin');
 
     userEvent.click(within(paymentRateRow()).getByRole('button', { name: 'Change' }));
-    userEvent.click(screen.getByRole('radio', { name: /^2% of Gross Salary/i }));
+    userEvent.click(screen.getByRole('radio', { name: /^2% of gross salary/i }));
 
     expect(paymentRateRow()).toHaveTextContent('2% of gross salary');
 
@@ -134,11 +143,11 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
     await renderAt('/2nd-pillar-rejoin');
 
     userEvent.click(within(paymentRateRow()).getByRole('button', { name: 'Change' }));
-    userEvent.click(screen.getByRole('radio', { name: /^4% of Gross Salary/i }));
+    userEvent.click(screen.getByRole('radio', { name: /^4% of gross salary/i }));
 
     expect(paymentRateRow()).toHaveTextContent('4% of gross salary');
     expect(within(paymentRateRow()).getAllByRole('radio')).toHaveLength(3);
-    expect(screen.getByRole('radio', { name: /^4% of Gross Salary/i })).toBeChecked();
+    expect(screen.getByRole('radio', { name: /^4% of gross salary/i })).toBeChecked();
   });
 
   test('explains the default fund and its fees right in the choice, without recommending it', async () => {
@@ -197,8 +206,8 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
 
     expect(screen.getByLabelText('Gross salary')).toHaveValue('2000');
     expect(screen.queryByText('€', { selector: '.input-group-text' })).not.toBeInTheDocument();
-    expect(calculation()).toHaveTextContent(/Into your II\spillar\s*\+200\s€ a month/);
-    expect(calculation()).toHaveTextContent(/Your net salary\s*−94\s€ a month/);
+    expect(calculation()).toHaveTextContent(/Into your II\spillar\s*200\s€ a month/);
+    expectBreakdown(['94 € from net salary', '26 € income tax benefit', '80 € from the state']);
     expect(calculation()).toHaveTextContent(/In 10 years\s*24\s000\s€/);
     expect(calculation()).toHaveTextContent(/of which from the state\s*9\s600\s€/);
   });
@@ -210,7 +219,24 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
     userEvent.clear(salary);
     userEvent.type(salary, '3000');
 
-    expect(calculation()).toHaveTextContent(/Into your II\spillar\s*\+300\s€ a month/);
+    expect(calculation()).toHaveTextContent(/Into your II\spillar\s*300\s€ a month/);
+  });
+
+  test('calculates on the 2000 € example while the salary field is empty', async () => {
+    await renderAt('/2nd-pillar-rejoin?view=calculator');
+
+    const salary = screen.getByLabelText('Gross salary');
+    userEvent.clear(salary);
+
+    expect(salary).toHaveAttribute('placeholder', '2000');
+    expect(calculation()).toHaveTextContent(/Into your II\spillar\s*200\s€ a month/);
+  });
+
+  test('marks the salary and the amounts it gives as personal data for analytics', async () => {
+    await renderAt('/2nd-pillar-rejoin?view=calculator');
+
+    expect(screen.getByText(/^200\s€$/)).toHaveClass('pii');
+    expect(isInsidePii(screen.getByLabelText('Gross salary'))).toBe(true);
   });
 
   test('calculates at the 6% contribution and says so, leaving the choice to the application', async () => {
@@ -230,7 +256,7 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
     userEvent.type(salary, '2500,50');
 
     expect(screen.getByLabelText('Gross salary')).toHaveValue('2500.50');
-    expect(calculation()).toHaveTextContent(/Into your II\spillar\s*\+250\s€ a month/);
+    expect(calculation()).toHaveTextContent(/Into your II\spillar\s*250\s€ a month/);
   });
 
   test('gives no income tax saving on the part of the salary the basic exemption covers', async () => {
@@ -240,7 +266,7 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
     userEvent.clear(salary);
     userEvent.type(salary, '500');
 
-    expect(calculation()).toHaveTextContent(/Your net salary\s*−30\s€ a month/);
+    expectBreakdown(['30 € from net salary', '0 € income tax benefit', '20 € from the state']);
   });
 
   test('starts the application from the calculator with 6% preselected', async () => {
@@ -280,6 +306,13 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
     expect(items[1]).toHaveTextContent(`Your contribution ${contribution} of gross salary`);
     expect(items[2]).toHaveTextContent('The state adds 4% of gross salary');
     expect(items[3]).toHaveTextContent(`Fund ${fund}`);
+  };
+  const expectBreakdown = (parts: string[]) => {
+    const items = within(
+      screen.getByRole('list', { name: 'What the monthly amount consists of' }),
+    ).getAllByRole('listitem');
+    expect(items).toHaveLength(parts.length);
+    parts.forEach((part, index) => expect(items[index]).toHaveTextContent(part));
   };
   const radiosNamed = (names: (string | RegExp)[]) =>
     names.map((name) => screen.getByRole('radio', { name }));

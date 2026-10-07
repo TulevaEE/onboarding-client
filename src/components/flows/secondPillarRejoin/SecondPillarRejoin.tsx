@@ -14,7 +14,7 @@ import { RejoinDisclaimers } from './RejoinDisclaimers';
 import { STATE_CONTRIBUTION_PERCENT } from './rejoinContributions';
 import { useView, View } from './variants';
 
-const DEFAULT_GROSS_SALARY = 2000;
+const EXAMPLE_GROSS_SALARY = 2000;
 const DEFAULT_PAYMENT_RATE: PaymentRate = 6;
 const RECOMMENDED_FUND_ISIN: TulevaSecondPillarStockFund = 'EE3600109435';
 
@@ -36,7 +36,7 @@ const RejoinHeader = () => (
 export const SecondPillarRejoin = () => {
   const [view, setView] = useView();
   const { data: funds } = useFunds();
-  const [grossSalary, setGrossSalary] = useState<number | undefined>(DEFAULT_GROSS_SALARY);
+  const [grossSalary, setGrossSalary] = useState<number | undefined>(EXAMPLE_GROSS_SALARY);
   const [paymentRate, setPaymentRate] = useState<PaymentRate>(DEFAULT_PAYMENT_RATE);
   const [fundIsin, setFundIsin] = useState<string>(RECOMMENDED_FUND_ISIN);
   const [isPaymentRateOpen, setPaymentRateOpen] = useState(false);
@@ -71,6 +71,7 @@ export const SecondPillarRejoin = () => {
         <RejoinCalculator
           grossSalary={grossSalary}
           onGrossSalaryChange={setGrossSalary}
+          exampleSalary={EXAMPLE_GROSS_SALARY}
           paymentRate={DEFAULT_PAYMENT_RATE}
           onStart={() => changeView('application')}
         />

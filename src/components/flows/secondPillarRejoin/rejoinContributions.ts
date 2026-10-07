@@ -7,7 +7,9 @@ const UNEMPLOYMENT_INSURANCE_RATE = 0.016;
 const MONTHS_IN_TEN_YEARS = 120;
 
 export type RejoinContributions = {
+  statePerMonth: number;
   netSalaryCostPerMonth: number;
+  incomeTaxSavedPerMonth: number;
   intoPillarPerMonth: number;
   tenYearTotal: number;
   tenYearStateShare: number;
@@ -27,8 +29,12 @@ export const rejoinContributions = (
   const stateContribution = (grossMonthlySalary * STATE_CONTRIBUTION_PERCENT) / 100;
   const intoPillarPerMonth = ownContribution + stateContribution;
 
+  const incomeTaxSavedPerMonth = incomeTaxSaved(grossMonthlySalary, ownContribution);
+
   return {
-    netSalaryCostPerMonth: ownContribution - incomeTaxSaved(grossMonthlySalary, ownContribution),
+    statePerMonth: stateContribution,
+    netSalaryCostPerMonth: ownContribution - incomeTaxSavedPerMonth,
+    incomeTaxSavedPerMonth,
     intoPillarPerMonth,
     tenYearTotal: intoPillarPerMonth * MONTHS_IN_TEN_YEARS,
     tenYearStateShare: stateContribution * MONTHS_IN_TEN_YEARS,
