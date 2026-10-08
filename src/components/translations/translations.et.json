@@ -484,8 +484,8 @@
   "aml.occupation.unemployed": "Hetkel ei tööta",
 
   "thirdPillarPayment.title": "Sissemakse Tuleva III samba fondi",
-  "thirdPillarPayment.giftTitle": "Kingitus lähedase III samba fondi",
-  "thirdPillarPayment.giftDescription": "Kas teadsid, et saad III samba tööle panna mitte ainult enda tuleviku tarbeks, vaid ka oma kõige kallimate jaoks? Jah, sissemakseid on võimalik teha ka teise inimese III sambasse.",
+  "thirdPillarPayment.giftTitle": "Kingitus lähedase III sambasse",
+  "thirdPillarPayment.giftDescription": "III sambasse saad sissemakse teha ka oma lähedase eest. Enne kinkimist küsi temalt üle, kas tal on III sammas avatud, sest muidu tuleb raha tagasi. Tulumaksu saab tagasi kingi saaja.",
 
   "thirdPillarPayment.RECURRING.swedbank": "Püsimakse juhend Swedbankis",
   "thirdPillarPayment.RECURRING.swedbank.login": "Vajuta allolevat nuppu ning logi sisse Swedbanki netipanka",
@@ -552,7 +552,7 @@
   "thirdPillarPayment.giftRecipient": "Kellele soovid kingituse teha?",
   "thirdPillarPayment.singlePaymentAmount": "Kui suures summas soovid sissemakset teha?",
   "thirdPillarPayment.recurringPaymentAmount": "Kui suures summas soovid püsimakset teha?",
-  "thirdPillarPayment.giftPaymentAmount": "Kui suures summas soovid kingituse teha?",
+  "thirdPillarPayment.giftPaymentAmount": "Kui palju soovid kinkida?",
   "thirdPillarPayment.perMonth": " kuus",
   "thirdPillarPayment.warningAmountExceeded": "Oled tegemas sissemakset, mis ületab III samba maksuvabastuse piiri. Pane tähele, et III samba sissemaksetele kehtib tulumaksusoodustus kuni 15% ulatuses Eestis maksustatavast brutotulust, kuid mitte rohkem kui {max} € aastas.",
   "thirdPillarPayment.paymentType": "Millist tüüpi makset soovid teha?",

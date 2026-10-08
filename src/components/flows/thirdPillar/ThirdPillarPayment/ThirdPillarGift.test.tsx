@@ -42,9 +42,19 @@ describe('When a user is making a third pillar gift', () => {
   });
 
   test('gift page is being shown', async () => {
-    expect(await screen.findByText(/A.gift.to.a.loved.one’s.III.pillar.fund/)).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: /^A gift to a loved one’s III\spillar$/ }),
+    ).toBeInTheDocument();
     const makePayment = await makePaymentButton();
     expect(makePayment).toBeDisabled();
+  });
+
+  test('tells the giver to check that the recipient has a III pillar and who gets the tax refund', async () => {
+    expect(
+      await screen.findByText(
+        'You can also contribute to a loved one’s III pillar. Before you do, check that their III pillar is open, otherwise the money comes back. The income tax refund goes to the recipient.',
+      ),
+    ).toBeInTheDocument();
   });
 
   test('can fill in amount', async () => {
@@ -100,6 +110,12 @@ describe('When a user is making a third pillar gift', () => {
     ).toHaveTextContent('30101119828, IK:49001011238, EE3600001707');
     expect(screen.queryByText('Payment reference:')).not.toBeInTheDocument();
     expect(screen.queryByText('9876543210')).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Your payment will reach Tuleva III Pillar Pension Fund within 2 business days.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/your third pillar account/)).not.toBeInTheDocument();
   });
 
   test('can go back to account page after seeing the other bank payment details', async () => {
