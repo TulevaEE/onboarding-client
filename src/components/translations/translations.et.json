@@ -598,8 +598,11 @@
   "thirdPillarPayment.confirmation.done.message.recurring.firstPayment": "Esimene makse toimub sinu valitud kuupäeval ja summat saad vajadusel internetipangas muuta.",
 
   "thirdPillarSuccess.done": "Sissemakse tehtud",
-  "thirdPillarSuccess.message": "Uued osakud jõuavad sinu kontole 2 tööpäeva jooksul.",
-  "thirdPillarSuccess.message.topSavers": "Sellega oled 30% tublimate Eesti inimeste seas, kes koguvad III sambas.",
+  "thirdPillarSuccess.message": "Uued osakud jõuavad sinu kontole 2 tööpäeva jooksul.",
+  "thirdPillarSuccess.message.topSavers": "III sambas kogub vaid 30% Eesti inimestest. Sina kuulud nende hulka ja panustad teadlikult oma tuleviku heaks.",
+  "thirdPillarSuccess.gift.done": "Kingitus on teel",
+  "thirdPillarSuccess.gift.message": "Uued osakud jõuavad saaja pensionikontole 2 tööpäeva jooksul.",
+  "thirdPillarSuccess.gift.thanks": "Aitäh, et panustad lähedase tulevikku.",
   "thirdPillarSuccess.notice.header": "Tasudeks makstud eurod tootlust ei teeni",
   "thirdPillarSuccess.notice.description": "Kogud II sammast kõrge tasuga fondides ({currentFundsFee}% aastas). Sel aastal maksad tasudeks {currentFundsFeeAmount}€, Tuleva fondis maksaksid {ourFundFeeAmount}€. Säästaksid {savingsAmount}€ aastas, mis teenib sulle täiendavalt tulu.",
   "thirdPillarSuccess.button.account": "Minu konto",

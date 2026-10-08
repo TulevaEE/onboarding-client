@@ -120,7 +120,7 @@ describe('When a user is making a third pillar gift', () => {
       exact: false,
     });
   const amountInput: () => Promise<HTMLInputElement> = async () =>
-    screen.findByLabelText('What is the gift payment amount?', {
+    screen.findByLabelText('How much would you like to give?', {
       exact: false,
     });
   const lhvButton: () => Promise<HTMLInputElement> = async () => screen.findByLabelText('LHV');
