@@ -271,7 +271,7 @@ describe('When a user is making a third pillar payment', () => {
     expect(await screen.findByRole('heading', { name: 'Payment done' })).toBeInTheDocument();
     expect(
       screen.getByText(
-        'That puts you among the top 30% of people in Estonia who save in the third pillar.',
+        'Only 30% of people in Estonia save in the third pillar. You are one of them, and you are deliberately putting money aside for your future.',
       ),
     ).toBeInTheDocument();
     expect(

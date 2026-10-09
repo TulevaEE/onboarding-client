@@ -27,7 +27,9 @@ import { MembershipSuccess } from '../newUserFlow/MembershipSuccess';
 import { TransactionPageThirdPillar } from '../account/TransactionSection/TransactionPageThirdPillar';
 import { ContributionPageThirdPillar } from '../contribution/ContributionPageThirdPillar';
 import Gift from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarGift';
-import ThirdPillarSuccess from '../flows/thirdPillar/ThirdPillarSuccess';
+import ThirdPillarSuccess, {
+  ThirdPillarGiftSuccess,
+} from '../flows/thirdPillar/ThirdPillarSuccess';
 import { EmployerPaymentDetails } from '../flows/thirdPillar/ThirdPillarPayment/paymentDetails/EmployerPaymentDetails';
 import { ContributionPageSecondPillar } from '../contribution/ContributionPageSecondPillar';
 import { TransactionPageSecondPillar } from '../account/TransactionSection/TransactionPageSecondPillar';
@@ -265,6 +267,7 @@ export class LoggedInApp extends PureComponent {
             />
             <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />
             <Route path="/3rd-pillar-success" component={ThirdPillarSuccess} />
+            <Route path="/3rd-pillar-gift-success" component={ThirdPillarGiftSuccess} />
             <Route path="/3rd-pillar-gift" component={Gift} />
             <Route path="/3rd-pillar-employer" component={EmployerPaymentDetails} />
             <Route path="/2nd-pillar-transactions" component={TransactionPageSecondPillar} />

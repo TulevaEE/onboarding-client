@@ -53,7 +53,7 @@ describe('Third pillar success screen', () => {
     expect(await screen.findByRole('heading', { name: 'Payment done' })).toBeInTheDocument();
     expect(
       screen.getByText(
-        'That puts you among the top 30% of people in Estonia who save in the third pillar.',
+        'Only 30% of people in Estonia save in the third pillar. You are one of them, and you are deliberately putting money aside for your future.',
       ),
     ).toBeInTheDocument();
     expect(
@@ -75,6 +75,65 @@ describe('Third pillar success screen', () => {
         },
       }),
     );
+  });
+
+  test('tells the giver the gift goes to the recipient instead of their own account', async () => {
+    const trackedEvents: unknown[] = [];
+    useTestBackendsExcept(server, ['trackedEvents', 'nudge']);
+    nudgeBackend(server, { key: 'SECOND_PILLAR_PAYMENT_RATE', tag: 'nudge_payment_rate' });
+    server.use(
+      rest.post('http://localhost/v1/t', (req, res, ctx) => {
+        trackedEvents.push(req.body);
+        return res(ctx.json({}));
+      }),
+    );
+    initializeComponent();
+    history.push('/3rd-pillar-gift-success');
+
+    expect(
+      await screen.findByRole('heading', { name: 'Your gift is on its way' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'The new fund units will reach the recipient’s pension account within 2 working days.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText('Thank you for helping someone close to you save for their future.'),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/your account within/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/save in the third pillar/)).not.toBeInTheDocument();
+    expect(await main().findByRole('link', { name: 'Increase your contribution' })).toHaveAttribute(
+      'href',
+      '/2nd-pillar-payment-rate',
+    );
+    expect(main().getByRole('link', { name: 'My account' })).toHaveAttribute('href', '/account');
+    await waitFor(() =>
+      expect(trackedEvents).toContainEqual({
+        type: 'NUDGE_VIEW',
+        data: {
+          context: 'THIRD_PILLAR_PAYMENT',
+          key: 'SECOND_PILLAR_PAYMENT_RATE',
+          tag: 'nudge_payment_rate',
+          path: '/3rd-pillar-gift-success',
+          channel: 'SCREEN',
+        },
+      }),
+    );
+  });
+
+  test('confirms the gift even when the giver has a pending transfer of their own', async () => {
+    useTestBackendsExcept(server, ['applications']);
+    applicationsBackend(server, [pendingThirdPillarTransfer]);
+    initializeComponent();
+    history.push('/3rd-pillar-gift-success');
+
+    expect(
+      await screen.findByRole('heading', { name: 'Your gift is on its way' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Application submitted' }),
+    ).not.toBeInTheDocument();
   });
 
   test('shows the fee comparison the server sent with the transfer nudge', async () => {
