@@ -29,6 +29,7 @@ import {
   PaymentType,
   PendingOnboarding,
   Role,
+  SavingsFundAccountClosure,
   SavingsFundOnboardingStatus,
   SecondPillarAssets,
   SigningMethod,
@@ -328,6 +329,14 @@ export function getSavingsFundOnboardingStatus(): Promise<SavingsFundOnboardingS
     () => getWithAuthentication(getEndpoint('/v1/savings/onboarding/status')),
     'savingsFundOnboardingStatus',
   );
+}
+
+export function getSavingsFundAccountClosure(): Promise<SavingsFundAccountClosure> {
+  return getWithAuthentication(getEndpoint('/v1/savings/account-closure'));
+}
+
+export function closeSavingsFundAccount(): Promise<void> {
+  return postWithAuthentication(getEndpoint('/v1/savings/account-closure'));
 }
 
 export function getSavingsFundPersonOnboardingStatus(): Promise<SavingsFundOnboardingStatus> {

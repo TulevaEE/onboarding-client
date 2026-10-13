@@ -168,7 +168,8 @@ export const SavingsFundCompanyOnboarding = () => {
         history.push('/savings-fund/onboarding/pending');
         return;
       case null:
-        throw new Error('Company onboarding has no status after the survey was submitted');
+      case 'CLOSED':
+        throw new Error(`Company onboarding has no open status after the survey: ${status}`);
       default: {
         const unhandledStatus: never = status;
         throw new Error(`Unhandled company onboarding status: ${String(unhandledStatus)}`);
