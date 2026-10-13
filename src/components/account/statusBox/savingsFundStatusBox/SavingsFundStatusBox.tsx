@@ -3,7 +3,11 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import StatusBoxRow from '../statusBoxRow';
-import { useSavingsFundBalance, useSavingsFundOnboardingStatus } from '../../../common/apiHooks';
+import {
+  useSavingsFundAccountClosure,
+  useSavingsFundBalance,
+  useSavingsFundOnboardingStatus,
+} from '../../../common/apiHooks';
 import { Login } from '../../../login/types';
 import { Euro } from '../../../common/Euro';
 import { Shimmer } from '../../../common/shimmer/Shimmer';
@@ -17,6 +21,8 @@ const SavingsFundStatusBox: FC<SavingsFundStatusBoxProps> = ({ loading, last }) 
   const intl = useIntl();
   const { data: onboardingStatus } = useSavingsFundOnboardingStatus();
   const { data: savingsFundBalance, isLoading } = useSavingsFundBalance();
+  const isAccountOpen = onboardingStatus?.status === 'COMPLETED';
+  const { data: accountClosure } = useSavingsFundAccountClosure(isAccountOpen);
 
   if (!onboardingStatus) {
     return null;
@@ -76,10 +82,17 @@ const SavingsFundStatusBox: FC<SavingsFundStatusBoxProps> = ({ loading, last }) 
         lines={getLines()}
         last={last}
       >
-        {onboardingStatus?.status === 'COMPLETED' ? (
-          <Link to="/savings-fund/payment" className="btn btn-outline-primary">
-            <FormattedMessage id="savingsFund.status.makeDeposit.label" />
-          </Link>
+        {isAccountOpen ? (
+          <>
+            <Link to="/savings-fund/payment" className="btn btn-outline-primary">
+              <FormattedMessage id="savingsFund.status.makeDeposit.label" />
+            </Link>
+            {accountClosure?.closable && (
+              <Link to="/savings-fund/close" className="btn btn-link">
+                <FormattedMessage id="savingsFund.status.closeAccount.label" />
+              </Link>
+            )}
+          </>
         ) : (
           <Link to="/savings-fund/onboarding" className="btn btn-outline-primary">
             <FormattedMessage id="savingsFund.status.startSaving.label" />

@@ -86,6 +86,7 @@ import {
   SavingsFundWithdrawSuccess,
   SavingsFundWithdrawCancellation,
 } from '../flows/savingsAccount/SavingsFundWithdraw';
+import { SavingsFundAccountClosure } from '../flows/savingsAccount/SavingsFundAccountClosure/SavingsFundAccountClosure';
 
 export { ACCOUNT_PATH, AML_PATH } from '../paths';
 
@@ -389,6 +390,7 @@ export class LoggedInApp extends PureComponent {
                 </SavingsFundOnboardingGatekeep>
               )}
             />
+            <Route path="/savings-fund/close" render={() => <SavingsFundAccountClosure />} />
             <Redirect exact path="/savings-fund" to="/" />
             <Route
               path="/2nd-pillar-payment-rate-success"
