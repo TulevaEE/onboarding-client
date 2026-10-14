@@ -1,0 +1,42 @@
+name: LoginE2E
+options:
+  bundleIdPrefix: ee.tuleva.e2e
+  deploymentTarget:
+    iOS: "26.0"
+settings:
+  base:
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "-"
+    DEVELOPMENT_TEAM: ""
+    GENERATE_INFOPLIST_FILE: YES
+    SWIFT_VERSION: "5.0"
+    TARGETED_DEVICE_FAMILY: "1"
+targets:
+  InAppBrowser:
+    type: application
+    platform: iOS
+    sources: [InAppBrowser]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ee.tuleva.e2e.InAppBrowser
+        INFOPLIST_FILE: InAppBrowser-Info.plist
+        INFOPLIST_KEY_CFBundleDisplayName: In-app browser
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+  LoginE2EUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [UITests]
+    dependencies:
+      - target: InAppBrowser
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ee.tuleva.e2e.LoginE2EUITests
+        TEST_TARGET_NAME: InAppBrowser
+schemes:
+  LoginE2E:
+    build:
+      targets:
+        InAppBrowser: all
+        LoginE2EUITests: [test]
+    test:
+      targets: [LoginE2EUITests]

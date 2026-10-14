@@ -58,12 +58,17 @@
     "develop-production-win": "set PROXY_TARGET=https://onboarding-service.tuleva.ee&&set HTTPS=true&&set HOST=local.tuleva.ee&&npm run develop",
     "lint": "eslint --ext .js,.ts,.jsx,.tsx src/ --max-warnings=0",
     "test": "TZ=UTC react-scripts test --coverage --json --outputFile=test-results.json --reporters=default --reporters=tdd-guard-jest",
+    "lint:e2e": "eslint --ext .ts,.js e2e --max-warnings=0",
+    "test:e2e": "playwright test --config e2e/playwright.config.ts",
+    "test:e2e:android": "e2e/android/run.sh",
+    "test:e2e:ios": "e2e/ios/run.sh",
     "update-snapshot": "react-scripts test --updateSnapshot",
     "eject": "react-scripts eject",
     "format": "eslint --ext .js,.ts,.jsx,.tsx src/ --fix --max-warnings=0",
     "prepare": "husky"
   },
   "devDependencies": {
+    "@playwright/test": "1.63.0",
     "@tanstack/react-query-devtools": "^4.41.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.0",
