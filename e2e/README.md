@@ -99,16 +99,14 @@ or an in-app browser is the project's engine with that browser's user agent.
 | … after "Proovi uuesti" there, finishing by QR code instead: back on the deep link | iphone-safari, android-chrome | the login page Try again opens keeps the deep link | passes |
 | Smart-ID returns a login to a browser that holds an unfinished login of its own: told to log in there | iphone-safari, android-chrome | `smart.id.callback.invalid` (another login of that browser) gets the same message as `auth.session.not.found` | passes |
 | A login started in Safari keeps returning to a new private tab: told again after "Proovi uuesti" | iphone-safari | the iOS private-tab loop is a known limitation; the page keeps telling the truth | passes |
-| In-app browsers offer the shared link in the phone browser | iphone-safari: Facebook, Messenger, Instagram, Threads, Google app; android-chrome: Facebook, Messenger, TikTok | Release 2 way out, keeping the path and the full query | expected failure: Release 2 |
-| In-app browsers keep "Jätka siin", which opens the Smart-ID app with one tap | same | Release 2 keeps today's flow | expected failure: Release 2 |
-| Until Release 2, in-app browsers get only the Smart-ID button | same | today's behavior on record | passes; delete these with Release 2 |
+| In-app browsers offer the shared link in the phone browser | iphone-safari: Facebook, Messenger, Instagram, Threads, Google app; android-chrome: Facebook, Messenger, TikTok | the way out, keeping the path and the full query | passes |
+| In-app browsers keep "Jätka siin", which opens the Smart-ID app with one tap | same | the way out never takes today's flow away | passes |
 | Normal browsers offer no way out | iphone-safari: Safari on iOS 26 and 27, Chrome; android-chrome: Chrome, Samsung Internet; desktop-chrome | the way out stays invisible outside in-app browsers, even for a link carrying `fbclid` | passes |
 
-### Release 2: what the in-app scenarios expect
+### In-app browsers: what the scenarios expect
 
 `support/wayOutOfInAppBrowsers.ts` holds the contract. For a person sent from `/3rd-pillar-payment?utm_source=e2e&fbclid=abc`
-to the login page, the Smart-ID tab shows "Ava brauseris" and "Jätka siin" (proposed copy: change
-`OPEN_IN_THE_BROWSER` and `CONTINUE_HERE` if the translations end up different). The way out opens the page the person
+to the login page, the Smart-ID tab shows "Ava brauseris" and "Jätka siin" (`OPEN_IN_THE_BROWSER` and `CONTINUE_HERE`). The way out opens the page the person
 was sent from, with its full query, always over `https` (`H` is the tested host):
 
 | In-app browser | Control | Address |
@@ -118,9 +116,8 @@ was sent from, with its full query, always over `https` (`H` is the tested host)
 | iPhone Facebook, Threads | link or button calling `window.open` | `x-safari-https://H/3rd-pillar-payment?utm_source=e2e&fbclid=abc` |
 | iPhone Instagram | link | `instagram://extbrowser/?url=https%3A%2F%2FH%2F3rd-pillar-payment%3Futm_source%3De2e%26fbclid%3Dabc` |
 
-LinkedIn (`LinkedInApp`) is in the detection list but has no scenario until its way out is decided. The "until
-Release 2" scenarios fail the day any way out appears in an in-app browser, which is the reminder to delete them
-together with the `test.fail` lines.
+On an iPhone, LinkedIn and TikTok have no known way to Safari, so they get "Kopeeri link" instead; the client's unit
+tests cover that, and there is no scenario for it here.
 
 ### Expected failures
 

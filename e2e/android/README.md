@@ -106,10 +106,7 @@ The run reads only the foreground activity's name while it waits, and reads or c
 Messenger's in-app browser (`com.facebook.browser.lite.BrowserLiteActivity`) is in front. It then checks:
 
 - the login page loads in the in-app browser;
-- Release 2 (expected failure): "Ava brauseris" is offered; tapping it and Messenger's "CONTINUE" brings Chrome
+- "Ava brauseris" is offered; tapping it and Messenger's "CONTINUE" brings Chrome
   to the front on the same path and query. Release 2's `intent://` link uses `scheme=https`, so against the plain
   HTTP dev server Chrome shows a connection error for `https://localhost:3200/…`; the scenario checks only the
-  address;
-- until Release 2: no way out is offered, the login starts with the in-app browser's user agent (`FB_IAB/`) and
-  the in-app browser stays in front on SK's page. Without the demo Smart-ID app every browser ends on SK's page,
-  so this does not prove that the in-app browser keeps the Smart-ID app from opening; that needs SK's demo app.
+  address.

@@ -1,7 +1,8 @@
 import React from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
+import { MemoryRouter } from 'react-router-dom';
 
 import translations from '../../translations';
 import { RememberWhoThisBrowserRemembers } from '../rememberedPeople';
@@ -331,6 +332,302 @@ describe('Smart-ID login tab', () => {
     const continueAs = await screen.findByRole('button', { name: 'Continue as Mari' });
     expect(within(continueAs).queryByTestId('qr-code-icon')).not.toBeInTheDocument();
     expect(within(continueAs).queryByTestId('smart-id-mark-icon')).not.toBeInTheDocument();
+  });
+
+  describe('inside the browser of another app on a phone', () => {
+    const userAgents = {
+      facebookAndroid:
+        'Mozilla/5.0 (Linux; Android 16; SM-S921B Build/BP4A.251205.006; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/156.0.8078.25 Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/530.0.0.47.76;]',
+      messengerAndroid:
+        'Mozilla/5.0 (Linux; Android 16; SM-S921B Build/BP4A.251205.006; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/156.0.8078.25 Mobile Safari/537.36 [FB_IAB/Orca-Android;FBAV/582.0.0.61.92;]',
+      messengerAndroidNamingItselfFacebook:
+        'Mozilla/5.0 (Linux; Android 16; SM-S921B Build/BP4A.251205.006; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/156.0.8078.25 Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/582.0.0.61.92;]',
+      tikTokAndroid:
+        'Mozilla/5.0 (Linux; Android 15; Pixel 9 Build/AP4A.250205.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/156.0.7795.64 Mobile Safari/537.36 musical_ly_2026090030 JsSdk/1.0 NetType/WIFI Channel/googleplay AppName/musical_ly app_version/42.9.3 BytedanceWebview/d8a21c6',
+      facebookIphone:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 [FBAN/FBIOS;FBAV/530.0.0.38.105;FBBV/773006580;FBDV/iPhone17,1;FBMD/iPhone;FBSN/iOS;FBSV/26.4;FBSS/3;FBCR/;FBID/phone;FBLC/et_EE;FBOP/80]',
+      messengerIphone:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 [FBAN/MessengerForiOS;FBAV/530.0.0.30.109;FBBV/771122334;FBDV/iPhone17,1;FBMD/iPhone;FBSN/iOS;FBSV/26.4;FBSS/3;FBCR/;FBID/phone;FBLC/et_EE;FBOP/5]',
+      instagramIphone:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 400.0.0.38.94 (iPhone17,1; iOS 26_4; et_EE; et; scale=3.00; 1206x2622; 812345678; IABMV/1)',
+      threadsIphone:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Barcelona 400.0.0.25.92 (iPhone17,1; iOS 26_4; et_EE; et; scale=3.00; 1206x2622; 812345679)',
+      googleAppIphone:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) GSA/390.0.789012345 Mobile/15E148 Safari/604.1',
+      linkedInIphone:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 [LinkedInApp]/9.31.1450',
+      tikTokIphone:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 musical_ly_42.9.0 JsSdk/2.0 NetType/WIFI Channel/App Store ByteLocale/et Region/EE BytedanceWebview/d8a21c6',
+      facebookIpad:
+        'Mozilla/5.0 (iPad; CPU OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 [FBAN/FBIOS;FBAV/530.0.0.38.105;FBDV/iPad13,1;FBMD/iPad;FBSN/iPadOS;FBSV/26.4]',
+      safariIphone:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.4 Mobile/15E148 Safari/604.1',
+      chromeIphone:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/156.0.7795.64 Mobile/15E148 Safari/604.1',
+      chromeAndroid:
+        'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Mobile Safari/537.36',
+      samsungInternet:
+        'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/29.0 Chrome/136.0.0.0 Mobile Safari/537.36',
+    };
+
+    const pageTheAdLinkedTo = '/3rd-pillar-payment';
+    const queryTheAdCarried = '?utm_source=facebook&fbclid=abc&amount=50';
+    const httpsAddressTheAdLinkedTo = `https://localhost${pageTheAdLinkedTo}${queryTheAdCarried}`;
+    const safariAddressTheAdLinkedTo = `x-safari-https://localhost${pageTheAdLinkedTo}${queryTheAdCarried}`;
+    const androidIntentToTheAddressTheAdLinkedTo = [
+      `intent://localhost${pageTheAdLinkedTo}${queryTheAdCarried}#Intent`,
+      'scheme=https',
+      'action=android.intent.action.VIEW',
+      'category=android.intent.category.BROWSABLE',
+      `S.browser_fallback_url=${encodeURIComponent(httpsAddressTheAdLinkedTo)}`,
+      'end',
+    ].join(';');
+
+    const renderTabOnTheLoginPage = (
+      loginPage: { pathname: string; search: string; state?: { from: string } },
+      language: 'en' | 'et' = 'en',
+    ) =>
+      render(
+        <MemoryRouter initialEntries={[loginPage]}>
+          <IntlProvider locale={language} messages={translations[language]}>
+            <RememberWhoThisBrowserRemembers>
+              <SmartIdLoginTab onSmartIdLoginStart={onSmartIdLoginStart} />
+            </RememberWhoThisBrowserRemembers>
+          </IntlProvider>
+        </MemoryRouter>,
+      );
+
+    const renderTabReachedFromAnAd = (language: 'en' | 'et' = 'en') =>
+      renderTabOnTheLoginPage(
+        {
+          pathname: '/login',
+          search: queryTheAdCarried,
+          state: { from: `${pageTheAdLinkedTo}?amount=50` },
+        },
+        language,
+      );
+
+    const offerTheClipboard = (clipboard: Pick<Clipboard, 'writeText'> | undefined) =>
+      Object.defineProperty(navigator, 'clipboard', { value: clipboard, configurable: true });
+
+    const openInTheBrowserLink = () => screen.getByRole('link', { name: 'Open in browser' });
+
+    let windowOpen: jest.SpyInstance;
+
+    beforeEach(() => {
+      windowOpen = jest.spyOn(window, 'open').mockImplementation(() => null);
+    });
+
+    afterEach(() => {
+      windowOpen.mockRestore();
+      Reflect.deleteProperty(navigator, 'clipboard');
+    });
+
+    it.each([
+      ['Facebook', userAgents.facebookAndroid],
+      ['Messenger', userAgents.messengerAndroid],
+      ['Messenger naming itself Facebook', userAgents.messengerAndroidNamingItselfFacebook],
+      ['TikTok', userAgents.tikTokAndroid],
+    ])(
+      'offers to open the page the ad linked to, with its whole query, in the default browser of Android from %s',
+      (app, userAgent) => {
+        setUserAgent(userAgent);
+        renderTabReachedFromAnAd();
+
+        expect(openInTheBrowserLink()).toHaveAttribute(
+          'href',
+          androidIntentToTheAddressTheAdLinkedTo,
+        );
+      },
+    );
+
+    it.each([
+      ['Messenger', userAgents.messengerIphone],
+      ['the Google app', userAgents.googleAppIphone],
+    ])(
+      'offers to open the page the ad linked to in Safari with a link from %s on an iPhone',
+      (app, userAgent) => {
+        setUserAgent(userAgent);
+        renderTabReachedFromAnAd();
+
+        expect(openInTheBrowserLink()).toHaveAttribute('href', safariAddressTheAdLinkedTo);
+      },
+    );
+
+    it.each([
+      ['Facebook', userAgents.facebookIphone],
+      ['Threads', userAgents.threadsIphone],
+    ])(
+      'opens the page the ad linked to in Safari through a new window from %s on an iPhone, which ignores links to other apps',
+      (app, userAgent) => {
+        setUserAgent(userAgent);
+        renderTabReachedFromAnAd();
+        expect(windowOpen).not.toHaveBeenCalled();
+
+        userEvent.click(screen.getByRole('button', { name: 'Open in browser' }));
+
+        expect(windowOpen).toHaveBeenCalledTimes(1);
+        expect(windowOpen).toHaveBeenCalledWith(safariAddressTheAdLinkedTo);
+      },
+    );
+
+    it('offers to open the page the ad linked to in the default browser through Instagram on an iPhone', () => {
+      setUserAgent(userAgents.instagramIphone);
+      renderTabReachedFromAnAd();
+
+      expect(openInTheBrowserLink()).toHaveAttribute(
+        'href',
+        `instagram://extbrowser/?url=${encodeURIComponent(httpsAddressTheAdLinkedTo)}`,
+      );
+    });
+
+    it.each([
+      ['LinkedIn', userAgents.linkedInIphone],
+      ['TikTok', userAgents.tikTokIphone],
+    ])(
+      'copies the address of the page the ad linked to from %s on an iPhone, which has no way to open Safari, and says where to paste it',
+      async (app, userAgent) => {
+        setUserAgent(userAgent);
+        const writeText = jest.fn(() => Promise.resolve());
+        offerTheClipboard({ writeText });
+        renderTabReachedFromAnAd();
+        const announcement = screen.getByRole('status');
+        expect(announcement).toBeEmptyDOMElement();
+
+        userEvent.click(screen.getByRole('button', { name: 'Copy link' }));
+
+        expect(writeText).toHaveBeenCalledWith(httpsAddressTheAdLinkedTo);
+        await waitFor(() =>
+          expect(announcement).toHaveTextContent('Link copied. Paste it into Safari.'),
+        );
+      },
+    );
+
+    it.each([
+      ['refuses the clipboard', { writeText: () => Promise.reject(new Error('refused')) }],
+      ['has no clipboard', undefined],
+    ])(
+      'announces the address with a request to copy it by hand when the app %s',
+      async (situation, clipboard) => {
+        setUserAgent(userAgents.linkedInIphone);
+        offerTheClipboard(clipboard);
+        renderTabReachedFromAnAd();
+        const announcement = screen.getByRole('status');
+
+        userEvent.click(screen.getByRole('button', { name: 'Copy link' }));
+
+        await waitFor(() =>
+          expect(announcement).toHaveTextContent(/^Copy this link and paste it into Safari\./),
+        );
+        expect(within(announcement).getByText(httpsAddressTheAdLinkedTo)).toHaveClass(
+          'user-select-all',
+        );
+      },
+    );
+
+    it.each([
+      ['Facebook on Android', userAgents.facebookAndroid],
+      ['Facebook on an iPhone', userAgents.facebookIphone],
+      ['LinkedIn on an iPhone', userAgents.linkedInIphone],
+    ])('still starts the Smart-ID login here in one tap inside %s', (app, userAgent) => {
+      setUserAgent(userAgent);
+      renderTabReachedFromAnAd();
+
+      userEvent.click(screen.getByRole('button', { name: 'Continue here' }));
+
+      expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
+    });
+
+    it('says why the browser works better and offers the browser first, continuing here as a quiet link under it', () => {
+      setUserAgent(userAgents.facebookAndroid);
+      renderTabReachedFromAnAd();
+
+      expect(
+        screen.getByText('Smart‑ID login works more reliably in your browser.'),
+      ).toBeInTheDocument();
+      expectQuietLinkUnder(
+        openInTheBrowserLink(),
+        screen.getByRole('button', { name: 'Continue here' }),
+      );
+      expect(screen.queryByRole('button', { name: /^Log in$/ })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Show QR code' })).not.toBeInTheDocument();
+    });
+
+    it('names the way out and the way on in Estonian', () => {
+      setUserAgent(userAgents.facebookAndroid);
+      renderTabReachedFromAnAd('et');
+
+      expect(screen.getByRole('link', { name: 'Ava brauseris' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Jätka siin' })).toBeInTheDocument();
+      expect(
+        screen.getByText('Smart‑ID sisselogimine õnnestub kindlamalt brauseris.'),
+      ).toBeInTheDocument();
+    });
+
+    it('leaves the person where they are until they tap', () => {
+      setUserAgent(userAgents.facebookIphone);
+      renderTabReachedFromAnAd();
+
+      expect(windowOpen).not.toHaveBeenCalled();
+      expect(onSmartIdLoginStart).not.toHaveBeenCalled();
+    });
+
+    it('opens the login page itself, with its query, when the person came to log in directly', () => {
+      setUserAgent(userAgents.messengerIphone);
+      renderTabOnTheLoginPage({ pathname: '/login', search: '?utm_source=messenger' });
+
+      expect(openInTheBrowserLink()).toHaveAttribute(
+        'href',
+        'x-safari-https://localhost/login?utm_source=messenger',
+      );
+    });
+
+    it.each([['//evil.example/x'], ['https://evil.example/x'], ['/\\evil.example/x']])(
+      'opens the login page itself when the page the person was sent from, %s, is on another site',
+      (from) => {
+        setUserAgent(userAgents.messengerIphone);
+        renderTabOnTheLoginPage({
+          pathname: '/login',
+          search: '?utm_source=messenger',
+          state: { from },
+        });
+
+        expect(openInTheBrowserLink()).toHaveAttribute(
+          'href',
+          'x-safari-https://localhost/login?utm_source=messenger',
+        );
+      },
+    );
+
+    it('keeps the query of the page the person was sent from when the login page has none', () => {
+      setUserAgent(userAgents.messengerIphone);
+      renderTabOnTheLoginPage({
+        pathname: '/login',
+        search: '',
+        state: { from: '/3rd-pillar-payment?amount=50' },
+      });
+
+      expect(openInTheBrowserLink()).toHaveAttribute(
+        'href',
+        'x-safari-https://localhost/3rd-pillar-payment?amount=50',
+      );
+    });
+
+    it.each([
+      ['Safari on an iPhone', userAgents.safariIphone],
+      ['Chrome on an iPhone', userAgents.chromeIphone],
+      ['Chrome on Android', userAgents.chromeAndroid],
+      ['Samsung Internet', userAgents.samsungInternet],
+      ['Facebook on an iPad', userAgents.facebookIpad],
+    ])('offers no way out of %s, where Log in opens the Smart-ID app', (browser, userAgent) => {
+      setUserAgent(userAgent);
+      renderTabReachedFromAnAd();
+
+      expect(screen.getByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+      expect(screen.queryByText('Open in browser')).not.toBeInTheDocument();
+      expect(screen.queryByText('Continue here')).not.toBeInTheDocument();
+      expect(screen.queryByText('Copy link')).not.toBeInTheDocument();
+    });
   });
 
   it('treats a failed remembered account lookup as no account', async () => {

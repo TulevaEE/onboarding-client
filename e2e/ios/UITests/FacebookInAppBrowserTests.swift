@@ -29,7 +29,7 @@ final class FacebookInAppBrowserTests: SafariLoginTestCase {
       "IN_APP_BROWSER_USER_AGENT": UserAgents.facebookIos,
     ]
     inAppBrowser.launch()
-    XCTAssertTrue(inAppLoginPage.waitUntilShown(), "Login page did not load in the in-app browser")
+    XCTAssertTrue(inAppLoginPage.waitUntilShownInsideAnApp(), "Login page did not load in the in-app browser")
   }
 
   override func tearDown() {
@@ -37,10 +37,10 @@ final class FacebookInAppBrowserTests: SafariLoginTestCase {
     super.tearDown()
   }
 
-  func testTappingSisenenLeavesThePersonOnSmartIdsCouldNotOpenTheAppPageInsideTheInAppBrowser() throws {
+  func testContinuingHereLeavesThePersonOnSmartIdsCouldNotOpenTheAppPageInsideTheInAppBrowser() throws {
     evidence.screenshot("login-page-in-the-facebook-in-app-browser")
 
-    inAppLoginPage.tapLogInToOpenTheSmartIdApp()
+    inAppLoginPage.tapContinueHereToOpenTheSmartIdApp()
     let web2AppLink = try XCTUnwrap(waitForTheInAppAddress(Pages.isWeb2AppLink))
     sleep(Self.secondsAnotherAppWouldNeedToComeForward)
     evidence.screenshot("in-app-browser-shows-the-device-link-page")
@@ -54,7 +54,7 @@ final class FacebookInAppBrowserTests: SafariLoginTestCase {
   }
 
   func testSmartIdAppReturningToSafariTellsThePersonToLogInThere() throws {
-    inAppLoginPage.tapLogInToOpenTheSmartIdApp()
+    inAppLoginPage.tapContinueHereToOpenTheSmartIdApp()
     let web2AppLink = try XCTUnwrap(waitForTheInAppAddress(Pages.isWeb2AppLink))
 
     let returned = try smartIdAppConfirmsAndReturnsToSafari(web2AppLink: web2AppLink, leaving: [])
@@ -72,7 +72,7 @@ final class FacebookInAppBrowserTests: SafariLoginTestCase {
     evidence.screenshot("safari-left-with-an-unfinished-login")
     inAppBrowser.activate()
     XCTAssertTrue(inAppBrowser.wait(for: .runningForeground, timeout: 10), "In-app browser did not come back")
-    inAppLoginPage.tapLogInToOpenTheSmartIdApp()
+    inAppLoginPage.tapContinueHereToOpenTheSmartIdApp()
     let web2AppLink = try XCTUnwrap(waitForTheInAppAddress(Pages.isWeb2AppLink))
 
     let returned = try smartIdAppConfirmsAndReturnsToSafari(web2AppLink: web2AppLink, leaving: [safariTab])
@@ -84,7 +84,6 @@ final class FacebookInAppBrowserTests: SafariLoginTestCase {
   }
 
   func testOffersToOpenTheSameLoginAddressInSafari() throws {
-    XCTExpectFailure(ExpectedFailures.release2OpenInSafariFromTheInAppBrowser)
     inAppLoginPage.chooseSmartId()
     evidence.screenshot("smart-id-tab-in-the-facebook-in-app-browser")
     let openInSafari = inAppBrowser.webViews.firstMatch.descendants(matching: .any)
