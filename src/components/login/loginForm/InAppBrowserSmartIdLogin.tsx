@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 
-import { QuietLinkButton } from './QuietLink';
 import { PRIMARY_LOGIN_BUTTON_CLASS } from './loginButtonClasses';
 import { PageAddress, WayOutOfTheInAppBrowser } from '../smartId/wayOutOfTheInAppBrowser';
 
@@ -27,16 +26,7 @@ const useAddressOfThePageThePersonWasSentTo = (): PageAddress => {
 
 type CopyOutcome = 'not copied' | 'copied' | 'refused';
 
-const ContinueHere: React.FC<{ onContinueHere: () => void }> = ({ onContinueHere }) => (
-  <QuietLinkButton onClick={onContinueHere}>
-    <FormattedMessage id="login.smart.id.continue.here" />
-  </QuietLinkButton>
-);
-
-const CopyLink: React.FC<{ address: string; onContinueHere: () => void }> = ({
-  address,
-  onContinueHere,
-}) => {
+const CopyLink: React.FC<{ address: string }> = ({ address }) => {
   const [outcome, setOutcome] = useState<CopyOutcome>('not copied');
   const copy = () => {
     try {
@@ -54,7 +44,6 @@ const CopyLink: React.FC<{ address: string; onContinueHere: () => void }> = ({
       <button type="button" className={PRIMARY_LOGIN_BUTTON_CLASS} onClick={copy}>
         <FormattedMessage id="login.smart.id.copy.link" />
       </button>
-      <ContinueHere onContinueHere={onContinueHere} />
       <div role="status" className="text-pretty">
         {outcome === 'copied' && (
           <p className="m-0">
@@ -94,8 +83,7 @@ const OpenInTheBrowser: React.FC<{ opensWith: 'link' | 'window'; address: string
 
 export const InAppBrowserSmartIdLogin: React.FC<{
   wayOut: WayOutOfTheInAppBrowser;
-  onContinueHere: () => void;
-}> = ({ wayOut: { opensWith, addressOf }, onContinueHere }) => {
+}> = ({ wayOut: { opensWith, addressOf } }) => {
   const address = addressOf(useAddressOfThePageThePersonWasSentTo());
 
   return (
@@ -104,12 +92,9 @@ export const InAppBrowserSmartIdLogin: React.FC<{
         <FormattedMessage id="login.smart.id.in.app.browser" />
       </p>
       {opensWith === 'clipboard' ? (
-        <CopyLink address={address} onContinueHere={onContinueHere} />
+        <CopyLink address={address} />
       ) : (
-        <div className="d-grid gap-2">
-          <OpenInTheBrowser opensWith={opensWith} address={address} />
-          <ContinueHere onContinueHere={onContinueHere} />
-        </div>
+        <OpenInTheBrowser opensWith={opensWith} address={address} />
       )}
     </>
   );

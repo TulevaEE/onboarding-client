@@ -73,7 +73,7 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
   if (wayOut) {
     return (
       <div className="d-grid gap-3">
-        <InAppBrowserSmartIdLogin wayOut={wayOut} onContinueHere={startLogin} />
+        <InAppBrowserSmartIdLogin wayOut={wayOut} />
       </div>
     );
   }

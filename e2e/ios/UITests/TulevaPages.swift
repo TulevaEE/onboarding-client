@@ -15,7 +15,6 @@ struct LoginPage {
 
   var smartIdTab: XCUIElement { page.buttons["Smart-ID"].firstMatch }
   var logIn: XCUIElement { page.buttons["Sisenen"].firstMatch }
-  var continueHere: XCUIElement { page.buttons["Jätka siin"].firstMatch }
   var showQrCode: XCUIElement { page.buttons["Näita QR-koodi"].firstMatch }
   var qrCode: XCUIElement { page.images.matching(Self.qrCodeImage).firstMatch }
 
@@ -23,8 +22,8 @@ struct LoginPage {
     logIn.waitForExistence(timeout: timeout)
   }
 
-  func waitUntilShownInsideAnApp(timeout: TimeInterval = 60) -> Bool {
-    continueHere.waitForExistence(timeout: timeout)
+  func waitUntilTheSmartIdTabIsShown(timeout: TimeInterval = 60) -> Bool {
+    smartIdTab.waitForExistence(timeout: timeout)
   }
 
   func chooseSmartId() {
@@ -37,12 +36,6 @@ struct LoginPage {
     chooseSmartId()
     XCTAssertTrue(Self.waitUntilHittable(logIn), "Sisenen cannot be tapped")
     logIn.tap()
-  }
-
-  func tapContinueHereToOpenTheSmartIdApp() {
-    chooseSmartId()
-    XCTAssertTrue(Self.waitUntilHittable(continueHere), "Jätka siin cannot be tapped")
-    continueHere.tap()
   }
 
   private static func waitUntilHittable(_ element: XCUIElement, timeout: TimeInterval = 10) -> Bool {

@@ -279,7 +279,7 @@ describe('When the Smart-ID app returns to the browser', () => {
 
     expect(
       await screen.findByText(
-        /^Smart.ID opened Tuleva in a different browser or window\. Tap Try again to log in here\. Login does not work in a private window\.$/,
+        /^Smart.ID opened Tuleva in a different browser or window\. Tap Try again\. Login does not work in a private window\.$/,
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);
@@ -313,7 +313,7 @@ describe('When the Smart-ID app returns to the browser', () => {
 
     expect(
       await screen.findByText(
-        /^Smart.ID opened Tuleva in a different browser or window\. Tap Try again to log in here\. Login does not work in a private window\.$/,
+        /^Smart.ID opened Tuleva in a different browser or window\. Tap Try again\. Login does not work in a private window\.$/,
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);

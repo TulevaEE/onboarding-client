@@ -69,7 +69,7 @@ The Chrome cookies the run leaves for `localhost:<port>` are the local stack's.
 | Scenario | Proves | Today |
 | --- | --- | --- |
 | QR code shown in Chrome on the phone | a phone completes a login against this stack and lands back on the deep link `/3rd-pillar-payment`; the logged-in check works on the device | passes |
-| Login started in Chrome, the default browser: Chrome opens the Smart-ID app link and offers no way out of Chrome | the device link Chrome navigates to is the one the backend issued; no "Ava brauseris" or "Jätka siin" in a normal browser | passes |
+| Login started in Chrome, the default browser: Chrome opens the Smart-ID app link and offers no way out of Chrome | the device link Chrome navigates to is the one the backend issued; no "Ava brauseris" in a normal browser | passes |
 | ... Chrome sends the callback with the session cookie that started the login | the callback the Smart-ID app hands to the default browser lands in a new Chrome tab and is accepted (HTTP 200) | passes |
 | ... logs the person in on the account page | Web2App end to end | expected failure: Mock Service |
 | Login started in Samsung Internet, Chrome holds no login of its own: Samsung Internet opens the Smart-ID app link | the start request carries Samsung Internet's user agent; no way out of Samsung Internet | passes |

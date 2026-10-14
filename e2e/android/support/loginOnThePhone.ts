@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 
 import { environment } from '../../support/environment';
 import { SmartIdApp } from '../../support/smartIdApp';
-import { CONTINUE_HERE, OPEN_IN_THE_BROWSER } from '../../support/wayOutOfInAppBrowsers';
+import { OPEN_IN_THE_BROWSER } from '../../support/wayOutOfInAppBrowsers';
 import { LoginExchange, LoginTraffic } from './loginTraffic';
 import { Browser, CHROME, Phone, withoutScheme } from './phone';
 import { anyOf, findNode } from './screen';
@@ -13,7 +13,7 @@ const SCAN_WITH_THE_SMART_ID_APP = /^Skänni Smart.ID rakendusega$/;
 export const TRY_AGAIN = 'Proovi uuesti';
 export const SK_PAGE_WHEN_THE_SMART_ID_APP_DOES_NOT_OPEN = 'Ei saanud avada Smart-ID rakendust!';
 export const TOLD_TO_LOG_IN_IN_THE_BROWSER_SMART_ID_OPENED =
-  /^Smart.ID avas Tuleva teises brauseris või aknas\. Vajuta .Proovi uuesti., et siin sisse logida\. Privaatses aknas sisselogimine ei õnnestu\.$/;
+  /^Smart.ID avas Tuleva teises brauseris või aknas\. Vajuta .Proovi uuesti.\. Privaatses aknas sisselogimine ei õnnestu\.$/;
 
 const SKIP_LINK_OF_THE_LOGGED_IN_PAGES = 'Liigu edasi sisu juurde';
 const SAMSUNG_INTERNET_OFFERS_TO_BECOME_THE_DEFAULT_BROWSER =
@@ -49,7 +49,6 @@ export async function expectNoWayOutOfThisBrowser(phone: Phone): Promise<void> {
   await phone.waitFor(LOG_IN);
   const nodes = await phone.screen();
   expect(findNode(nodes, OPEN_IN_THE_BROWSER)).toBeUndefined();
-  expect(findNode(nodes, CONTINUE_HERE)).toBeUndefined();
 }
 
 export async function expectTheBrowserToShowTheSmartIdAppLink(

@@ -1,9 +1,7 @@
 import { test } from '../../support/test';
-import { openTheSmartIdLoginFrom, web2AppLinkOpenedBy } from '../../support/loginPage';
+import { openTheSmartIdLoginFrom } from '../../support/loginPage';
 import {
-  CONTINUE_HERE,
-  continueHereOf,
-  expectRenderedWithTheLoginTab,
+  expectNoSmartIdLoginInsideTheApp,
   expectToBeOfferedTheWayOut,
   instagramExternalBrowserLinkTo,
   safariLinkTo,
@@ -48,14 +46,10 @@ import { userAgents } from '../../support/userAgents';
       await expectToBeOfferedTheWayOut(page, smartIdTab, wayOut);
     });
 
-    test(`still opens the Smart-ID app inside ${app} when the person taps ${CONTINUE_HERE}`, async ({
-      page,
-    }) => {
+    test(`offers no Smart-ID login inside ${app}, where it cannot finish`, async ({ page }) => {
       const smartIdTab = await openTheSmartIdLoginFrom(page, LINK_SHARED_IN_AN_APP);
-      const continueHere = continueHereOf(smartIdTab);
-      await expectRenderedWithTheLoginTab(continueHere).toBeVisible();
 
-      await web2AppLinkOpenedBy(page, () => continueHere.click());
+      await expectNoSmartIdLoginInsideTheApp(smartIdTab);
     });
   });
 });

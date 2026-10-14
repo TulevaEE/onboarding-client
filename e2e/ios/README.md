@@ -67,10 +67,9 @@ the exact token error, without reading Safari's address bar or network. It is th
 | `SafariNormalTabTests` QR code shown on the phone logs the person in on the account page | a full login in Safari against this stack | passes |
 | `SafariPrivateTabTests` Smart-ID app returns to a new private tab which tells the person to log in there | iOS opens the callback in another private tab, isolated from the one that started the login; the PR #1663 message and "Proovi uuesti" | passes |
 | `SafariPrivateTabTests` Try again in the private tab Smart-ID opened loops into yet another private tab | "Proovi uuesti" starts a new login in that private tab, its callback lands in a third private tab with the same message | passes: the known private-tab limitation on record |
-| `FacebookInAppBrowserTests` continuing here leaves the person on SK's could-not-open-the-app page inside the in-app browser | after "Jätka siin" the in-app browser loads the Web2App link itself, hands nothing to iOS, and Safari stays in the background | passes: the dead end "Ava brauseris" avoids, on record |
-| `FacebookInAppBrowserTests` Smart-ID app returning to Safari tells the person to log in there | Safari has no session from the in-app browser: the PR #1663 message | passes |
-| `FacebookInAppBrowserTests` Smart-ID app returning to a Safari with an unfinished login of its own tells the person to log in there | the backend answers `smart.id.callback.invalid` ("Callback token mismatch") instead of `auth.session.not.found`, and the page shows the same "Smart‑ID avas Tuleva teises brauseris või aknas…" | passes |
-| `FacebookInAppBrowserTests` offers to open the same login address in Safari | "Ava brauseris" on the Smart-ID tab hands `/login?utm_source=e2e` to Safari | passes |
+| `UndetectedInAppBrowserTests` Smart-ID app returning to Safari tells the person to log in there | a login started in an in-app browser without a known user-agent token (Sisenen is shown there) returns to Safari, which has no session from it: the PR #1663 message | passes |
+| `UndetectedInAppBrowserTests` Smart-ID app returning to a Safari with an unfinished login of its own tells the person to log in there | the backend answers `smart.id.callback.invalid` ("Callback token mismatch") instead of `auth.session.not.found`, and the page shows the same "Smart‑ID avas Tuleva teises brauseris või aknas…" | passes |
+| `FacebookInAppBrowserTests` offers to open the same login address in Safari | the Smart-ID tab shows "Ava brauseris" and no "Sisenen", and the tap hands `/login?utm_source=e2e` to Safari | passes |
 
 ### Expected failures
 
@@ -83,8 +82,9 @@ The normal-tab Web2App scenario expects the failure only when the token request 
 generic login error). Any other answer fails the run, and the scenario starts passing on its own once SK fixes the
 Mock Service.
 
-The in-app login page shows "Ava brauseris" and "Jätka siin" instead of "Sisenen", so the in-app scenarios wait for
-and tap "Jätka siin". The way-out scenario taps "Ava brauseris" (`support/wayOutOfInAppBrowsers.ts`) and compares Safari's address with the in-app address without the scheme:
+The Facebook in-app login page shows "Ava brauseris" instead of "Sisenen", so the in-app scenarios wait for the
+Smart-ID tab. Scenarios that need a login started inside an app use a user agent we do not detect, where "Sisenen" is
+still shown, as in apps that open links in their own web view without a known token. The way-out scenario taps "Ava brauseris" (`support/wayOutOfInAppBrowsers.ts`) and compares Safari's address with the in-app address without the scheme:
 `x-safari-https://` always opens `https`, while the local dev server serves `http`.
 
 ### Known slowness

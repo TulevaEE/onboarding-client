@@ -529,39 +529,34 @@ describe('Smart-ID login tab', () => {
       ['Facebook on Android', userAgents.facebookAndroid],
       ['Facebook on an iPhone', userAgents.facebookIphone],
       ['LinkedIn on an iPhone', userAgents.linkedInIphone],
-    ])('still starts the Smart-ID login here in one tap inside %s', (app, userAgent) => {
-      setUserAgent(userAgent);
-      renderTabReachedFromAnAd();
+    ])(
+      'offers no Smart-ID login inside %s, where it cannot finish, only the way out',
+      (app, userAgent) => {
+        setUserAgent(userAgent);
+        renderTabReachedFromAnAd();
 
-      userEvent.click(screen.getByRole('button', { name: 'Continue here' }));
+        expect(screen.queryByRole('button', { name: /^Log in$/ })).not.toBeInTheDocument();
+        expect(screen.queryByText('Continue here')).not.toBeInTheDocument();
+        expect(screen.queryByRole('button', { name: 'Show QR code' })).not.toBeInTheDocument();
+        expect(onSmartIdLoginStart).not.toHaveBeenCalled();
+      },
+    );
 
-      expect(onSmartIdLoginStart).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
-    });
-
-    it('says why the browser works better and offers the browser first, continuing here as a quiet link under it', () => {
+    it('says that Smart-ID does not work inside the app and offers the browser', () => {
       setUserAgent(userAgents.facebookAndroid);
       renderTabReachedFromAnAd();
 
-      expect(
-        screen.getByText('Smart‑ID login works more reliably in your browser.'),
-      ).toBeInTheDocument();
-      expectQuietLinkUnder(
-        openInTheBrowserLink(),
-        screen.getByRole('button', { name: 'Continue here' }),
-      );
-      expect(screen.queryByRole('button', { name: /^Log in$/ })).not.toBeInTheDocument();
-      expect(screen.queryByRole('button', { name: 'Show QR code' })).not.toBeInTheDocument();
+      expect(screen.getByText('Smart‑ID does not work inside this app.')).toBeInTheDocument();
+      expect(openInTheBrowserLink()).toBeInTheDocument();
     });
 
-    it('names the way out and the way on in Estonian', () => {
+    it('names the way out in Estonian', () => {
       setUserAgent(userAgents.facebookAndroid);
       renderTabReachedFromAnAd('et');
 
       expect(screen.getByRole('link', { name: 'Ava brauseris' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Jätka siin' })).toBeInTheDocument();
-      expect(
-        screen.getByText('Smart‑ID sisselogimine õnnestub kindlamalt brauseris.'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Smart‑ID ei tööta selle rakenduse sees.')).toBeInTheDocument();
+      expect(screen.queryByText('Jätka siin')).not.toBeInTheDocument();
     });
 
     it('leaves the person where they are until they tap', () => {

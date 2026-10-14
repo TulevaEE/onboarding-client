@@ -4,7 +4,7 @@ import { environment } from './environment';
 import { logInButtonOf } from './loginPage';
 
 export const OPEN_IN_THE_BROWSER = 'Ava brauseris';
-export const CONTINUE_HERE = 'Jätka siin';
+const SMART_ID_DOES_NOT_WORK_INSIDE_THE_APP = /^Smart.ID ei tööta selle rakenduse sees\.$/;
 
 const RENDERED_WITH_THE_LOGIN_TAB_MILLIS = 5000;
 const LINKS_THAT_LEAVE_AN_IN_APP_BROWSER =
@@ -60,9 +60,6 @@ export const androidIntentLinkTo = (pathAndQuery: string): WayOut => ({
 const controlNamed = (smartIdTab: Locator, name: string): Locator =>
   smartIdTab.getByRole('link', { name }).or(smartIdTab.getByRole('button', { name }));
 
-export const continueHereOf = (smartIdTab: Locator): Locator =>
-  controlNamed(smartIdTab, CONTINUE_HERE);
-
 const recordTheAddressesWindowOpenOpens = (page: Page): Promise<void> =>
   page.evaluate(() => {
     const recorder = window as unknown as Window & RecordsWindowOpen;
@@ -109,6 +106,12 @@ export async function expectToBeOfferedTheWayOut(
 export async function expectNoWayOutOfTheBrowser(page: Page, smartIdTab: Locator): Promise<void> {
   await expect(logInButtonOf(smartIdTab)).toBeVisible();
   await expect(page.getByText(OPEN_IN_THE_BROWSER, { exact: true })).toHaveCount(0);
-  await expect(page.getByText(CONTINUE_HERE, { exact: true })).toHaveCount(0);
   await expect(page.locator(LINKS_THAT_LEAVE_AN_IN_APP_BROWSER)).toHaveCount(0);
+}
+
+export async function expectNoSmartIdLoginInsideTheApp(smartIdTab: Locator): Promise<void> {
+  await expectRenderedWithTheLoginTab(
+    smartIdTab.getByText(SMART_ID_DOES_NOT_WORK_INSIDE_THE_APP),
+  ).toBeVisible();
+  await expect(logInButtonOf(smartIdTab)).toHaveCount(0);
 }
