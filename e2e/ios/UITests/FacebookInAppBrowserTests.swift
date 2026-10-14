@@ -66,7 +66,7 @@ final class FacebookInAppBrowserTests: SafariLoginTestCase {
     XCTAssertEqual(outcome, .sentToLogInInTheBrowserSmartIdOpened)
   }
 
-  func testSmartIdAppReturningToASafariWithAnUnfinishedLoginOfItsOwnShowsOnlyTheGenericError() throws {
+  func testSmartIdAppReturningToASafariWithAnUnfinishedLoginOfItsOwnTellsThePersonToLogInThere() throws {
     let safariTab = try openTheLoginPage(privately: false)
     _ = try web2AppLinkOfTheLoginStartedBy { loginPage.tapLogInToOpenTheSmartIdApp() }
     evidence.screenshot("safari-left-with-an-unfinished-login")
@@ -80,7 +80,7 @@ final class FacebookInAppBrowserTests: SafariLoginTestCase {
     evidence.screenshot("callback-in-safari-that-has-its-own-unfinished-login")
 
     XCTAssertEqual(try callbackErrorCode(of: returned), "smart.id.callback.invalid")
-    XCTAssertEqual(outcome, .failedWithTheGenericLoginError)
+    XCTAssertEqual(outcome, .sentToLogInInTheBrowserSmartIdOpened)
   }
 
   func testOffersToOpenTheSameLoginAddressInSafari() throws {

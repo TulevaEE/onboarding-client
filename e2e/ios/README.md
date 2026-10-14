@@ -69,7 +69,7 @@ the exact token error, without reading Safari's address bar or network. It is th
 | `SafariPrivateTabTests` Try again in the private tab Smart-ID opened loops into yet another private tab | "Proovi uuesti" starts a new login in that private tab, its callback lands in a third private tab with the same message | passes: the known private-tab limitation on record |
 | `FacebookInAppBrowserTests` tapping Sisenen leaves the person on SK's could-not-open-the-app page inside the in-app browser | the in-app browser loads the Web2App link itself, hands nothing to iOS, and Safari stays in the background | passes: today's dead end on record |
 | `FacebookInAppBrowserTests` Smart-ID app returning to Safari tells the person to log in there | Safari has no session from the in-app browser: the PR #1663 message | passes |
-| `FacebookInAppBrowserTests` Smart-ID app returning to a Safari with an unfinished login of its own shows only the generic error | the backend answers `smart.id.callback.invalid` ("Callback token mismatch") instead of `auth.session.not.found`, and the page shows "Sisselogimisel tekkis viga" without the PR #1663 hint | passes: a gap on record |
+| `FacebookInAppBrowserTests` Smart-ID app returning to a Safari with an unfinished login of its own tells the person to log in there | the backend answers `smart.id.callback.invalid` ("Callback token mismatch") instead of `auth.session.not.found`, and the page shows the same "Smart‑ID avas Tuleva teises brauseris või aknas…" | passes |
 | `FacebookInAppBrowserTests` offers to open the same login address in Safari | Release 2: "Ava brauseris" on the Smart-ID tab hands `/login?utm_source=e2e` to Safari | expected failure: Release 2 |
 
 ### Expected failures

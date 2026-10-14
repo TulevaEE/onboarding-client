@@ -60,6 +60,9 @@ describe('When the Smart-ID app returns to the browser', () => {
   const aCallback =
     '?value=a-callback-value&sessionSecretDigest=a-digest&userChallengeVerifier=a-verifier';
 
+  const aCallbackReturningTo = (returnPath: string) =>
+    `?returnPath=${encodeURIComponent(returnPath)}&${aCallback.slice(1)}`;
+
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
@@ -181,6 +184,80 @@ describe('When the Smart-ID app returns to the browser', () => {
     expect(history.location.state).toEqual({ justLoggedIn: true });
   });
 
+  test('the login completes in a new tab the Smart-ID app opened and continues to the page the login started from', async () => {
+    const backend = smartIdAuthenticationBackend(server);
+    backend.startSession();
+    backend.resolvePolling();
+
+    openCallback(aCallbackReturningTo('/capital/listings/42'));
+
+    expect(
+      await screen.findByText(/mock listing page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+  });
+
+  test('the page the callback address carries wins over the one an older login left in this tab', async () => {
+    const backend = smartIdAuthenticationBackend(server);
+    sessionStorage.setItem(
+      'pendingSmartIdAuthentication',
+      JSON.stringify({
+        authenticationHash: 'an-older-login',
+        returnPath: '/account',
+        startedAt: Date.now() - 60 * 60 * 1000,
+      }),
+    );
+    backend.startSession();
+    backend.resolvePolling();
+
+    openCallback(aCallbackReturningTo('/capital/listings/42'));
+
+    expect(
+      await screen.findByText(/mock listing page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+  });
+
+  test('a page an expired login left in this tab is not where a callback without one lands', async () => {
+    const backend = smartIdAuthenticationBackend(server);
+    sessionStorage.setItem(
+      'pendingSmartIdAuthentication',
+      JSON.stringify({
+        authenticationHash: 'an-older-login',
+        returnPath: '/capital/listings/42',
+        startedAt: Date.now() - 60 * 60 * 1000,
+      }),
+    );
+    backend.startSession();
+    backend.resolvePolling();
+
+    openCallback(aCallback);
+
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+  });
+
+  test.each([
+    ['//evil.example/account'],
+    ['/\\evil.example/account'],
+    ['https://evil.example/account'],
+    ['/%5Cevil.example/account'],
+    ['/capital/listings/%E0%A4%A'],
+  ])(
+    'a return path %s in the callback address that leaves the site or cannot be decoded lands on the account page instead',
+    async (returnPath) => {
+      const backend = smartIdAuthenticationBackend(server);
+      backend.startSession();
+      backend.resolvePolling();
+
+      openCallback(aCallbackReturningTo(returnPath));
+
+      expect(
+        await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      ).toBeInTheDocument();
+      expect(history.location.state).toEqual({ justLoggedIn: true });
+    },
+  );
+
   test('the login completes with the redemption secret of the accepted callback, not the hash the login started with', async () => {
     const backend = smartIdAuthenticationBackend(server);
     startLoginBeforeTheAppRoundTrip(backend);
@@ -226,7 +303,7 @@ describe('When the Smart-ID app returns to the browser', () => {
     expect(backend.acceptedCallbacks).toBe(1);
   });
 
-  test('a rejected callback offers a way back to the login page and forgets the pending login', async () => {
+  test('a callback the login in this browser does not accept, because another login started here since, offers to log in here and forgets the pending login', async () => {
     const backend = smartIdAuthenticationBackend(server, { rejectCallback: true });
     startLoginBeforeTheAppRoundTrip(backend);
 
@@ -235,7 +312,9 @@ describe('When the Smart-ID app returns to the browser', () => {
     );
 
     expect(
-      await screen.findByText('There appears to have been a mistake. Please try again.'),
+      await screen.findByText(
+        /^Smart.ID opened Tuleva in a different browser or window\. Tap Try again to log in here\. Login does not work in a private window\.$/,
+      ),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);
     expect(sessionStorage.getItem('pendingSmartIdAuthentication')).toBeNull();
@@ -278,7 +357,7 @@ describe('When the Smart-ID app returns to the browser', () => {
     backend.startSession();
     const firstLoad = arriveFromTheSmartIdAppWithTheCallbackMovedOutOfTheAddress();
     expect(
-      await screen.findByText('There appears to have been a mistake. Please try again.'),
+      await screen.findByText(/^Smart.ID opened Tuleva in a different browser or window\./),
     ).toBeInTheDocument();
 
     reload(firstLoad);
@@ -421,11 +500,15 @@ describe('When the Smart-ID app returns to the browser', () => {
     const pretendToBeOn = (userAgent: string) =>
       Object.defineProperty(navigator, 'userAgent', { value: userAgent, configurable: true });
 
-    const openFailedCallbackBeforeTheLoginPage = (language: 'en' | 'et' = 'en') => {
-      history = createMemoryHistory({ initialEntries: [`${smartIdCallbackPath}${aCallback}`] });
+    const openFailedCallbackBeforeTheLoginPage = (
+      language: 'en' | 'et' = 'en',
+      callback: string = aCallback,
+    ) => {
+      history = createMemoryHistory({ initialEntries: [`${smartIdCallbackPath}${callback}`] });
       return renderWrapped(
         <Switch>
           <Route exact path="/account" render={() => <h1>Mock account page</h1>} />
+          <Route exact path="/capital/listings/42" render={() => <h1>Mock listing page</h1>} />
           <Route exact path={loginPath} component={LoginPage} />
           <Route exact path={smartIdCallbackPath} component={SmartIdCallbackPage} />
         </Switch>,
@@ -503,6 +586,44 @@ describe('When the Smart-ID app returns to the browser', () => {
         expect(screen.getByRole('alert')).toHaveTextContent(explanation ?? 'no explanation');
         expect(backend.startedSessions).toBe(1);
         expect(locationAssign).not.toHaveBeenCalled();
+      },
+    );
+
+    test('on a phone in a browser that did not start the login, one tap starts a new session that continues to the page the login started from', async () => {
+      pretendToBeOn(phoneUserAgent);
+      const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+      openFailedCallbackBeforeTheLoginPage('en', aCallbackReturningTo('/capital/listings/42'));
+
+      userEvent.click(await screen.findByRole('link', { name: 'Try again' }));
+
+      await waitFor(() => expect(locationAssign).toHaveBeenCalledWith(smartIdWeb2AppLink('en')));
+      expect(backend.deviceLinkReturnPaths).toEqual(['/capital/listings/42']);
+      backend.resolvePolling();
+      expect(
+        await screen.findByText(/mock listing page/gi, undefined, { timeout: 3000 }),
+      ).toBeInTheDocument();
+    });
+
+    test.each([
+      ['tablet', tabletUserAgent],
+      ['computer', desktopUserAgent],
+    ])(
+      'on a %s in a browser that did not start the login, the login page it goes back to continues to the page the login started from',
+      async (device, userAgent) => {
+        pretendToBeOn(userAgent);
+        const backend = smartIdAuthenticationBackend(server, { language: 'en' });
+        openFailedCallbackBeforeTheLoginPage('en', aCallbackReturningTo('/capital/listings/42'));
+
+        userEvent.click(await screen.findByRole('link', { name: 'Try again' }));
+        userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+
+        await waitFor(() =>
+          expect(backend.deviceLinkReturnPaths).toEqual(['/capital/listings/42']),
+        );
+        backend.resolvePolling();
+        expect(
+          await screen.findByText(/mock listing page/gi, undefined, { timeout: 3000 }),
+        ).toBeInTheDocument();
       },
     );
 

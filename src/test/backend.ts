@@ -212,8 +212,11 @@ type SmartIdAuthenticationBackend = {
   acceptedCallbacks: number;
   startedFlows: string[];
   deviceLinkRememberMeChoices: (boolean | undefined)[];
+  deviceLinkReturnPaths: (string | undefined)[];
   rememberedAccount: { firstName: string; lastName: string } | null;
 };
+
+const PATH_ON_THIS_SITE_LIKE_THE_BACKEND_ACCEPTS = /^\/(?![/\\])\S{0,2047}$/;
 
 export function smartIdAuthenticationBackend(
   server: SetupServerApi,
@@ -259,6 +262,7 @@ export function smartIdAuthenticationBackend(
     acceptedCallbacks: 0,
     startedFlows: [],
     deviceLinkRememberMeChoices: [],
+    deviceLinkReturnPaths: [],
     rememberedAccount: options.rememberedAccount ?? null,
   };
 
@@ -283,9 +287,21 @@ export function smartIdAuthenticationBackend(
         flow,
         language = 'et',
         rememberMe,
-      } = req.body as { flow?: string; language?: string; rememberMe?: unknown };
+        returnPath,
+      } = req.body as {
+        flow?: string;
+        language?: string;
+        rememberMe?: unknown;
+        returnPath?: string;
+      };
       if (!flow) {
         return res(ctx.status(400), ctx.json({ errors: [{ code: 'flow.required' }] }));
+      }
+      if (
+        returnPath !== undefined &&
+        !PATH_ON_THIS_SITE_LIKE_THE_BACKEND_ACCEPTS.test(returnPath)
+      ) {
+        return res(ctx.status(400), ctx.json({ errors: [{ code: 'Pattern' }] }));
       }
       if (rememberMe !== undefined && typeof rememberMe !== 'boolean') {
         return res(ctx.status(400), ctx.json({ errors: [{ code: 'remember.me.invalid' }] }));
@@ -300,6 +316,7 @@ export function smartIdAuthenticationBackend(
       backend.startedFlows.push(flow);
       if (flow === 'DEVICE_LINK') {
         backend.deviceLinkRememberMeChoices.push(rememberMe);
+        backend.deviceLinkReturnPaths.push(returnPath);
       }
       if (flow === 'NOTIFICATION') {
         return res(

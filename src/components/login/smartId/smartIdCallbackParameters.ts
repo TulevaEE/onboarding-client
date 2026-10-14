@@ -1,4 +1,5 @@
 import { SmartIdLoginCallback } from '../../common/apiModels';
+import { pathOnThisSite } from '../pathOnThisSite';
 
 const STORAGE_KEY = 'smartIdCallback';
 
@@ -46,3 +47,6 @@ export const forgetSmartIdCallbackParameters = (): void => {
   delete window.smartIdCallback;
   withSessionStorage((storage) => storage.removeItem(STORAGE_KEY), undefined);
 };
+
+export const returnPathInCallbackAddress = (search: string): string | undefined =>
+  pathOnThisSite(new URLSearchParams(search).get('returnPath'));

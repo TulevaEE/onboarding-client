@@ -11,18 +11,12 @@ import {
   logInWithTheQrCodeInChrome,
   tapLogInToOpenTheSmartIdApp,
 } from '../support/loginOnThePhone';
-import {
-  ANOTHER_LOGIN_OF_THIS_BROWSER_REJECTS_THE_CALLBACK,
-  ONLY_A_MISSING_SESSION_IS_TOLD_TO_LOG_IN_HERE,
-} from '../support/expectedFailures';
-import {
-  RELEASE_1_TRY_AGAIN_KEEPS_THE_PAGE_THE_LOGIN_STARTED_FROM,
-  expectSmartIdLoginCompletedUnlessTheMockServiceRejectsIt,
-} from '../../support/expectedFailures';
+import { expectSmartIdLoginCompletedUnlessTheMockServiceRejectsIt } from '../../support/expectedFailures';
 import { PAGE_A_NEWSLETTER_LINKS_TO } from '../../support/links';
 import { SmartIdApp } from '../../support/smartIdApp';
 
 const SESSION_THE_LOGIN_STARTED_IN_IS_MISSING = 'auth.session.not.found';
+const ANOTHER_LOGIN_OF_THIS_BROWSER_REJECTS_THE_CALLBACK = 'smart.id.callback.invalid';
 const SAMSUNG_INTERNET_USER_AGENT_TOKEN = 'SamsungBrowser/';
 
 async function startTheLoginInSamsungInternet(
@@ -125,7 +119,6 @@ test.describe
     phone,
     loginTraffic,
   }) => {
-    test.fail(true, RELEASE_1_TRY_AGAIN_KEEPS_THE_PAGE_THE_LOGIN_STARTED_FROM);
     expectSmartIdLoginCompletedUnlessTheMockServiceRejectsIt(
       await loginTraffic.finalTokenAnswerSince(callbackOpenedAfterTryAgain),
     );
@@ -160,10 +153,7 @@ test.describe
       smartIdApp,
       web2AppLink,
     );
-    test.fail(
-      callbackAnswer.errorCode === ANOTHER_LOGIN_OF_THIS_BROWSER_REJECTS_THE_CALLBACK,
-      ONLY_A_MISSING_SESSION_IS_TOLD_TO_LOG_IN_HERE,
-    );
+    expect(callbackAnswer.errorCode).toBe(ANOTHER_LOGIN_OF_THIS_BROWSER_REJECTS_THE_CALLBACK);
 
     await expectToldToLogInHere(phone);
   });

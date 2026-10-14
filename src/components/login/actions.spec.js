@@ -410,7 +410,7 @@ describe('Login actions', () => {
 
     await startSmartIdLogin('en');
 
-    expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
+    expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('en', 'DEVICE_LINK', false, undefined);
     expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START });
     expect(dispatch).toHaveBeenCalledWith({
       type: SMART_ID_LOGIN_START_SUCCESS,
@@ -427,7 +427,7 @@ describe('Login actions', () => {
 
     await startSmartIdLogin('et', 'DEVICE_LINK', true);
 
-    expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('et', 'DEVICE_LINK', true);
+    expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('et', 'DEVICE_LINK', true, undefined);
     expect(dispatch).toHaveBeenCalledWith({
       type: SMART_ID_LOGIN_START_SUCCESS,
       web2AppLink,
@@ -480,7 +480,7 @@ describe('Login actions', () => {
 
       await createBoundAction(actions.startSmartIdLoginInTheApp)('en');
 
-      expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('en', 'DEVICE_LINK', false);
+      expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('en', 'DEVICE_LINK', false, undefined);
       expect(dispatch).toHaveBeenCalledWith({
         type: SMART_ID_LOGIN_START_SUCCESS,
         web2AppLink,
@@ -572,7 +572,7 @@ describe('Login actions', () => {
 
     await startSmartIdLogin('et', 'NOTIFICATION');
 
-    expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('et', 'NOTIFICATION', false);
+    expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('et', 'NOTIFICATION', false, undefined);
     expect(dispatch).toHaveBeenCalledWith({
       type: MOBILE_AUTHENTICATION_START_SUCCESS,
       controlCode: '4321',
@@ -620,7 +620,27 @@ describe('Login actions', () => {
     await startSmartIdLogin('et');
 
     expect(actions.getPendingSmartIdReturnPath()).toBe('/capital/listings/42');
+    expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith(
+      'et',
+      'DEVICE_LINK',
+      false,
+      '/capital/listings/42',
+    );
   });
+
+  it.each([['//evil.example/account'], ['https://evil.example/account']])(
+    'neither remembers nor sends a destination %s that leaves the site',
+    async (from) => {
+      state = { login: {}, router: { location: { state: { from } } } };
+      mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
+      mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+
+      await createBoundAction(actions.startSmartIdLogin)('et');
+
+      expect(actions.getPendingSmartIdReturnPath()).toBeNull();
+      expect(mockApi.startSmartIdLogin).toHaveBeenCalledWith('et', 'DEVICE_LINK', false, undefined);
+    },
+  );
 
   it('remembers the language the login was started in', async () => {
     mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
@@ -789,7 +809,7 @@ describe('Login actions', () => {
     );
   });
 
-  it('reports a rejected device link callback and forgets the pending login', async () => {
+  it('reports a device link callback that another login in this browser rejected as returning to another browser, and forgets the pending login', async () => {
     const error = { status: 401, body: { errors: [{ code: 'smart.id.callback.invalid' }] } };
     await startLoginBeforeTheAppRoundTrip();
     mockApi.completeSmartIdCallback = jest.fn(() => Promise.reject(error));
@@ -798,7 +818,10 @@ describe('Login actions', () => {
 
     await completeSmartIdLogin(aCallback);
 
-    expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START_ERROR, error });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: MOBILE_AUTHENTICATION_START_ERROR,
+      error: { body: { errors: [{ code: 'smart.id.callback.in.another.browser' }] } },
+    });
     expect(mockApi.getSmartIdTokens).not.toHaveBeenCalled();
     expect(actions.getPendingSmartIdStartedAt()).toBeNull();
   });

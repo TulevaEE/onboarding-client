@@ -4,6 +4,7 @@ import {
   TokenAnswer,
   finalTokenAnswer,
   isSmartIdCallback,
+  showTheSmartIdQrCodeOnThePhone,
   tapLogInToOpenTheSmartIdApp,
   web2AppLinkOpenedBy,
 } from './loginPage';
@@ -38,9 +39,12 @@ export async function logInWithTheSmartIdCallbackIn(
   return { tab, tokenAnswer: await tokenAnswer };
 }
 
-export async function expectToldToLogInHere({ tab, callbackAnswer }: ReturnedTab): Promise<void> {
+export async function expectToldToLogInHere(
+  { tab, callbackAnswer }: ReturnedTab,
+  whyTheCallbackWasRefused: string = SESSION_THE_LOGIN_STARTED_IN_IS_MISSING,
+): Promise<void> {
   expect(await callbackAnswer.json()).toEqual({
-    errors: [expect.objectContaining({ code: SESSION_THE_LOGIN_STARTED_IN_IS_MISSING })],
+    errors: [expect.objectContaining({ code: whyTheCallbackWasRefused })],
   });
   await expect(tab.getByRole('alert')).toHaveText(TOLD_TO_LOG_IN_IN_THE_BROWSER_SMART_ID_OPENED);
   await expect(tryAgainLinkOf(tab)).toBeVisible();
@@ -60,4 +64,20 @@ export async function tryAgainWhereSmartIdReturnedTheLogin(
   const returned = await openTheSmartIdCallbackIn(returningBrowser, callbackUrl);
   await expectToldToLogInHere(returned);
   return smartIdApp.confirmAndReturn(await tapTryAgainToOpenTheSmartIdApp(returned.tab));
+}
+
+export async function finishTheLoginByQrCodeAfterTryingAgainWhereSmartIdReturnedIt(
+  startingTab: Page,
+  returningBrowser: BrowserContext,
+  smartIdApp: SmartIdApp,
+): Promise<Page> {
+  const callbackUrl = await smartIdApp.confirmAndReturn(
+    await tapLogInToOpenTheSmartIdApp(startingTab),
+  );
+  const returned = await openTheSmartIdCallbackIn(returningBrowser, callbackUrl);
+  await expectToldToLogInHere(returned);
+  await tapTryAgainToOpenTheSmartIdApp(returned.tab);
+  await returned.tab.getByRole('button', { name: 'Katkestan' }).click();
+  await smartIdApp.confirm(await showTheSmartIdQrCodeOnThePhone(returned.tab));
+  return returned.tab;
 }

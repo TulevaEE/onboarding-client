@@ -75,22 +75,19 @@ The Chrome cookies the run leaves for `localhost:<port>` are the local stack's.
 | Login started in Samsung Internet, Chrome holds no login of its own: Samsung Internet opens the Smart-ID app link | the start request carries Samsung Internet's user agent; no way out of Samsung Internet | passes |
 | ... tells the person in Chrome to log in there | callback answers `auth.session.not.found`; Chrome shows "Smart‑ID avas Tuleva teises brauseris või aknas…" and "Proovi uuesti" | passes |
 | ... logs the person in in Chrome after Proovi uuesti | one tap starts a new login in Chrome; its callback is accepted | expected failure: Mock Service |
-| ... brings the person back to `/3rd-pillar-payment` after Proovi uuesti | Release 1 | expected failure: Release 1 and Mock Service |
-| Login started in Samsung Internet, Chrome holds an unfinished login of its own: tells the person in Chrome to log in there | see below | expected failure: callback answers `smart.id.callback.invalid` |
+| ... brings the person back to `/3rd-pillar-payment` after Proovi uuesti | Web2App end to end with the return path | expected failure: Mock Service |
+| Login started in Samsung Internet, Chrome holds an unfinished login of its own: tells the person in Chrome to log in there | callback answers `smart.id.callback.invalid`; Chrome shows the same "Smart‑ID avas Tuleva teises brauseris või aknas…" and "Proovi uuesti" | passes |
 | Messenger's in-app browser (attended) | see below | not run |
 
 "Chrome holds no login of its own" is arranged by logging in with the QR code in Chrome first, because a
 completed login is the only way to clear the backend session without touching Chrome's data.
 
-### A finding: an unfinished login in the default browser hides the PR #1663 message
+### An unfinished login in the default browser
 
 The backend keeps a Smart-ID login in the browser's HTTP session until a token is issued; a failed or abandoned
-login stays there, and the callback endpoint does not check its age. When the Smart-ID app returns a login that
-another browser started to a browser holding such a login, `POST /v1/smart-id/login/callback` answers
-`smart.id.callback.invalid` ("Callback token mismatch") instead of `auth.session.not.found`, and the page shows
-the generic "Sisselogimisel tekkis viga. Palun proovi uuesti." "Proovi uuesti" still starts a new login, so the
-person can recover, but they are not told why. The scenario is an expected failure only while the callback
-answers exactly that code (`support/expectedFailures.ts`).
+login stays there. When the Smart-ID app returns a login that another browser started to a browser holding such a
+login, `POST /v1/smart-id/login/callback` answers `smart.id.callback.invalid` ("Callback token mismatch") instead
+of `auth.session.not.found`. The page tells the person to log in there for both answers.
 
 ### Messenger's in-app browser: attended
 
