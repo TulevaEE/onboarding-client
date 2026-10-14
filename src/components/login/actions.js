@@ -483,6 +483,9 @@ function startSmartIdSession(
 }
 
 const SMART_ID_SESSION_NOT_FOUND = { body: { errors: [{ code: 'auth.session.not.found' }] } };
+const SMART_ID_CALLBACK_IN_ANOTHER_BROWSER = {
+  body: { errors: [{ code: 'smart.id.callback.in.another.browser' }] },
+};
 
 export function completeSmartIdLogin(callback) {
   return (dispatch) => {
@@ -516,7 +519,10 @@ export function completeSmartIdLogin(callback) {
           return;
         }
         clearPendingSmartIdAuthentication();
-        dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error });
+        dispatch({
+          type: MOBILE_AUTHENTICATION_START_ERROR,
+          error: isSmartIdSessionNotFound(error) ? SMART_ID_CALLBACK_IN_ANOTHER_BROWSER : error,
+        });
       });
   };
 }
