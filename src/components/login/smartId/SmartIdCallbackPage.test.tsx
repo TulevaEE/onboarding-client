@@ -195,15 +195,35 @@ describe('When the Smart-ID app returns to the browser', () => {
     expect(sessionStorage.getItem('pendingSmartIdAuthentication')).toBeNull();
   });
 
-  test('a callback the backend has no login for offers a way back to the login page', async () => {
+  test('a callback in a browser that did not start the login offers to log in here and says a private window cannot', async () => {
     smartIdAuthenticationBackend(server);
+
+    openCallback(aCallback);
+
+    expect(
+      await screen.findByText(
+        /^Smart.ID opened Tuleva in a different browser or window\. Tap Try again to log in here\. Login does not work in a private window\.$/,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);
+    expect(getAuthentication().isAuthenticated()).toBe(false);
+  });
+
+  test('a login that loses its session after the callback was accepted does not blame the browser', async () => {
+    const backend = smartIdAuthenticationBackend(server);
+    startLoginBeforeTheAppRoundTrip(backend);
+    server.use(
+      rest.post('http://localhost/oauth/token', (req, res, ctx) =>
+        res(ctx.status(401), ctx.json({ errors: [{ code: 'auth.session.not.found' }] })),
+      ),
+    );
 
     openCallback(aCallback);
 
     expect(
       await screen.findByText('There appears to have been a mistake. Please try again.'),
     ).toBeInTheDocument();
-    expect(getAuthentication().isAuthenticated()).toBe(false);
+    expect(backend.acceptedCallbacks).toBe(1);
   });
 
   test('a rejected callback offers a way back to the login page and forgets the pending login', async () => {

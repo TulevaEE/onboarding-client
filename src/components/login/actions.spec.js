@@ -803,6 +803,20 @@ describe('Login actions', () => {
     expect(actions.getPendingSmartIdStartedAt()).toBeNull();
   });
 
+  it('reports a callback that reached a browser without the login session as returning to another browser', async () => {
+    const sessionNotFound = { status: 401, body: { errors: [{ code: 'auth.session.not.found' }] } };
+    mockApi.completeSmartIdCallback = jest.fn(() => Promise.reject(sessionNotFound));
+    mockApi.getSmartIdTokens = jest.fn();
+
+    await createBoundAction(actions.completeSmartIdLogin)(aCallback);
+
+    expect(dispatch).toHaveBeenCalledWith({
+      type: MOBILE_AUTHENTICATION_START_ERROR,
+      error: { body: { errors: [{ code: 'smart.id.callback.in.another.browser' }] } },
+    });
+    expect(mockApi.getSmartIdTokens).not.toHaveBeenCalled();
+  });
+
   it('polls a device link login with the authentication hash of the session it started', async () => {
     mockApi.startSmartIdLogin = jest.fn(() =>
       Promise.resolve({ web2AppLink, authenticationHash: 'hash-of-session-1' }),
