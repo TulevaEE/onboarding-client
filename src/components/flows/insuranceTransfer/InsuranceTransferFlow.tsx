@@ -84,7 +84,7 @@ export const InsuranceTransferFlow = () => {
   }
 
   const steps = stepPaths.map((path, index) =>
-    toFlowStep(path, `${flowPath}/${stepPaths[index + 1] ?? path}`),
+    toFlowStep(path, `${flowPath}/${stepPaths[index + 1] ?? path}${search}`),
   );
 
   return <ConnectedFlow flowPath={flowPath} steps={steps} />;

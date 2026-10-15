@@ -206,6 +206,17 @@ describe('III pillar insurance contract transfer', () => {
       expect(screen.queryByText(/^Choose Tuleva III\spillar$/)).not.toBeInTheDocument();
     });
 
+    test('keeps the insurer from the address through the signing', async () => {
+      openFlow('/3rd-pillar-insurance?insurer=ERGO');
+      await answerAllAgreements();
+      pensionAccountOpenedWhenAskedNext();
+
+      userEvent.click(signButton());
+
+      await requestStepOpened();
+      expect(await screen.findByRole('radio', { name: 'Ergo' })).toBeChecked();
+    }, 20_000);
+
     test('says when the signing fails and lets the person close the message', async () => {
       server.use(
         rest.post('http://localhost/v1/mandates', (req, res, ctx) =>
