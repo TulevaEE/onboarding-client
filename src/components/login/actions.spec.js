@@ -466,6 +466,13 @@ describe('Login actions', () => {
   describe('starting a login in the Smart-ID app', () => {
     const openSmartIdApp = jest.fn();
 
+    afterEach(() => {
+      Object.defineProperty(navigator, 'userAgent', {
+        value: desktopUserAgent,
+        configurable: true,
+      });
+    });
+
     beforeEach(() => {
       openSmartIdApp.mockReset();
       Object.defineProperty(window, 'location', {
@@ -502,10 +509,6 @@ describe('Login actions', () => {
 
       await createBoundAction(actions.startSmartIdLoginInTheApp)('en');
 
-      Object.defineProperty(navigator, 'userAgent', {
-        value: desktopUserAgent,
-        configurable: true,
-      });
       expect(openSmartIdApp).toHaveBeenCalledWith(
         `intent://smart-id.com/device-link/?deviceLinkType=Web2App&sessionType=auth&lang=est#Intent;scheme=https;package=com.smart_id;S.browser_fallback_url=${encodeURIComponent(
           web2AppLink,

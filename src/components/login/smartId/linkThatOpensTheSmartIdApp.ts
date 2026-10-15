@@ -14,13 +14,11 @@ export function linkThatOpensTheSmartIdApp(
   web2AppLink: string,
   userAgent: string = navigator.userAgent,
 ): string {
+  if (!inSamsungInternet(userAgent)) {
+    return web2AppLink;
+  }
   const link = new URL(web2AppLink);
-  const keepsPlainAppLinksInTheBrowser = inSamsungInternet(userAgent);
-  if (
-    !keepsPlainAppLinksInTheBrowser ||
-    link.protocol !== 'https:' ||
-    link.host !== LIVE_SMART_ID_APP_LINK_HOST
-  ) {
+  if (link.protocol !== 'https:' || link.host !== LIVE_SMART_ID_APP_LINK_HOST) {
     return web2AppLink;
   }
   return intentForTheSmartIdApp(web2AppLink, link);
