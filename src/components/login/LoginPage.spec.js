@@ -24,7 +24,6 @@ describe('Login page', () => {
       onPhoneNumberChange: jest.fn(),
       onPersonalCodeChange: jest.fn(),
       onMobileIdSubmit: jest.fn(),
-      onAuthenticateWithIdCard: jest.fn(),
       onLoginMethodChange: jest.fn(),
       monthlyThirdPillarContribution: 500,
       exchangeExistingThirdPillarUnits: true,

@@ -19,7 +19,6 @@ import {
   changePersonalCode,
   authenticateWithMobileId,
   cancelMobileAuthentication,
-  authenticateWithIdCard,
   startSmartIdLogin,
   startSmartIdLoginInTheApp,
   expireSmartIdQrCode,
@@ -42,7 +41,6 @@ export const LoginPage = ({
   onSmartIdAppLoginStart,
   onSmartIdQrCodeExpire,
   onSmartIdAppOpen,
-  onAuthenticateWithIdCard,
   onLoginMethodChange,
   phoneNumber,
   personalCode,
@@ -144,7 +142,6 @@ export const LoginPage = ({
                 personalCode={personalCode}
                 mobileIdStartError={errorDescription}
                 onSmartIdLoginStart={startSmartIdLoginFromTheTab}
-                onAuthenticateWithIdCard={onAuthenticateWithIdCard}
                 onLoginMethodChange={onLoginMethodChange}
                 monthlyThirdPillarContribution={monthlyThirdPillarContribution}
                 exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
@@ -170,7 +167,6 @@ LoginPage.defaultProps = {
   onSmartIdAppLoginStart: noop,
   onSmartIdQrCodeExpire: noop,
   onSmartIdAppOpen: noop,
-  onAuthenticateWithIdCard: noop,
   onLoginMethodChange: noop,
 
   isAuthenticated: false,
@@ -200,7 +196,6 @@ LoginPage.propTypes = {
   onSmartIdAppLoginStart: Types.func,
   onSmartIdQrCodeExpire: Types.func,
   onSmartIdAppOpen: Types.func,
-  onAuthenticateWithIdCard: Types.func,
   onLoginMethodChange: Types.func,
 
   isAuthenticated: Types.bool,
@@ -248,7 +243,6 @@ const mapDispatchToProps = (dispatch) =>
       onSmartIdAppLoginStart: startSmartIdLoginInTheApp,
       onSmartIdQrCodeExpire: expireSmartIdQrCode,
       onSmartIdAppOpen: markSmartIdAppOpened,
-      onAuthenticateWithIdCard: authenticateWithIdCard,
       onLoginMethodChange: cancelMobileAuthentication,
     },
     dispatch,

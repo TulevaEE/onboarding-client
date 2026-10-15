@@ -3,32 +3,15 @@ import { FormattedMessage } from 'react-intl';
 
 import { useWebEidAuth } from '../useWebEidAuth';
 
-function isLegacyMtlsRequested(): boolean {
-  const params = new URLSearchParams(window.location.search);
-  return params.get('mtls') === 'true';
-}
-
-interface IdCardLoginTabProps {
-  onAuthenticateWithIdCardMtls: () => void;
-}
-
-export const IdCardLoginTab: React.FC<IdCardLoginTabProps> = ({ onAuthenticateWithIdCardMtls }) => {
+export const IdCardLoginTab: React.FC = () => {
   const { authenticate, isLoading } = useWebEidAuth();
-
-  const handleClick = () => {
-    if (isLegacyMtlsRequested()) {
-      onAuthenticateWithIdCardMtls();
-    } else {
-      authenticate();
-    }
-  };
 
   return (
     <div className="d-grid">
       <button
         type="button"
         className="btn btn-primary btn-lg"
-        onClick={handleClick}
+        onClick={() => authenticate()}
         disabled={isLoading}
       >
         {isLoading ? (

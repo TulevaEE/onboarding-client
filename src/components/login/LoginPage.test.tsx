@@ -11,11 +11,7 @@ import { initializeConfiguration } from '../config/config';
 
 // eslint-disable-next-line import/no-named-as-default
 import LoginPage, { loginPath } from './LoginPage';
-import {
-  smartIdAuthenticationBackend,
-  mobileIdAuthenticationBackend,
-  idCardAuthenticationBackend,
-} from '../../test/backend';
+import { smartIdAuthenticationBackend, mobileIdAuthenticationBackend } from '../../test/backend';
 import { smartIdWeb2AppLink } from '../../test/backend-responses';
 import { getAuthentication } from '../common/authenticationManager';
 import { replaceWindowLocationAssign } from '../../test/windowLocationAssign';
@@ -1069,26 +1065,5 @@ describe('When a user is logging in', () => {
 
       expect(await screen.findByText('Allow cookies for this site to log in.')).toBeInTheDocument();
     });
-  });
-
-  test('they can sign in with id card via mTLS escape hatch (?mtls=true)', async () => {
-    Object.defineProperty(window, 'location', {
-      value: { search: '?mtls=true' },
-      writable: true,
-      configurable: true,
-    });
-
-    const backend = idCardAuthenticationBackend(server);
-    expect(backend.acceptedCertificate).toBeFalsy();
-    expect(backend.authenticatedWithIdCard).toBeFalsy();
-    expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
-    userEvent.click(screen.getByText(/ID-card/gi));
-    userEvent.click(screen.getByText(/Log in$/gi));
-
-    expect(
-      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
-    ).toBeInTheDocument();
-    expect(backend.acceptedCertificate).toBeFalsy();
-    expect(backend.authenticatedWithIdCard).toBeTruthy();
   });
 });

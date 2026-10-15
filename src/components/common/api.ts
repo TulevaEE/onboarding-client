@@ -64,7 +64,6 @@ import {
   postForm,
   postWithAuthentication,
   putWithAuthentication,
-  simpleFetch,
 } from './http';
 import { getAuthentication } from './authenticationManager';
 import {
@@ -180,12 +179,6 @@ export async function completeSmartIdCallback(
   return accepted?.authenticationHash || undefined;
 }
 
-export async function authenticateWithIdCardMtls(): Promise<boolean> {
-  const idCardUrl = config.get('idCardUrl');
-  const { success } = await simpleFetch('POST', `${idCardUrl}/idLogin`);
-  return success;
-}
-
 export async function authenticateWithIdCardWebEid(webEidOptions: ActionOptions): Promise<Token> {
   const { challengeCode } = await post(getEndpoint('/authenticate'), { type: 'ID_CARD' });
   const authToken = await webEidAuthenticate(challengeCode, webEidOptions);
@@ -248,10 +241,6 @@ export function getSmartIdTokens(
   options: { signal?: AbortSignal } = {},
 ): Promise<Token | null> {
   return getTokensWithGrantType('SMART_ID', { authenticationHash }, options);
-}
-
-export function getIdCardTokens(): Promise<Token | null> {
-  return getTokensWithGrantType('ID_CARD');
 }
 
 export function downloadMandatePreviewWithId(entityId: string): Promise<Blob> {

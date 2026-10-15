@@ -8,10 +8,6 @@ import {
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
   MOBILE_AUTHENTICATION_CANCEL,
-  ID_CARD_AUTHENTICATION_START,
-  ID_CARD_AUTHENTICATION_START_ERROR,
-  ID_CARD_AUTHENTICATION_SUCCESS,
-  ID_CARD_AUTHENTICATION_ERROR,
   WEB_EID_AUTHENTICATION_ERROR,
   LOGIN_ERROR_CLEARED,
   GET_USER_START,
@@ -79,7 +75,6 @@ export default function loginReducer(state = initialState, action) {
         error: null,
       };
     case MOBILE_AUTHENTICATION_START_ERROR:
-    case ID_CARD_AUTHENTICATION_START_ERROR:
       return {
         ...state,
         error: getGlobalErrorCode(action.error.body),
@@ -99,7 +94,6 @@ export default function loginReducer(state = initialState, action) {
         phoneNumber: '',
         personalCode: '',
       };
-    case ID_CARD_AUTHENTICATION_ERROR:
     case MOBILE_AUTHENTICATION_ERROR:
       return {
         ...state,
@@ -118,17 +112,6 @@ export default function loginReducer(state = initialState, action) {
         controlCode: null,
         smartIdWeb2AppLink: null,
         loadingUser: false,
-      };
-
-    case ID_CARD_AUTHENTICATION_START:
-      return { ...state, loadingAuthentication: true, error: null };
-
-    case ID_CARD_AUTHENTICATION_SUCCESS:
-      return {
-        // reset all state so page is clean when entered again.
-        ...state,
-        loadingAuthentication: false,
-        error: null,
       };
 
     case WEB_EID_AUTHENTICATION_ERROR:

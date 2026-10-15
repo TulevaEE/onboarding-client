@@ -1243,6 +1243,7 @@
   "global.skipToContent": "Liigu edasi sisu juurde",
   "global.copy": "Kopeerin",
   "global.copied": "Kopeeritud",
+  "global.copyFailed": "Kopeeri käsitsi",
 
   "pageTitle.loginPage": "Sisene",
   "pageTitle.accountPage": "Minu konto",
@@ -2064,6 +2065,7 @@
   "pageTitle.hackathon": "Häkatonile registreerumine",
   "pageTitle.savingsFundTaxReport": "Maksuaruanne",
   "pageTitle.savingsFundIdentityVerification": "Isikutuvastus",
+  "pageTitle.pensionAccountNumber": "Pensionikonto number",
   "pensionCalculator.title": "Kas rahast jätkub elu lõpuni?",
   "pensionCalculator.intro": "Näed, kui palju saad pensionil iga kuu kasutada ja kas kogutu saab otsa või jääb lähedastele.",
   "pensionCalculator.years": "{years} a",
@@ -2354,5 +2356,15 @@
   "secondPillarRejoin.calculator.start": "Hakkan uuesti koguma",
   "secondPillarRejoin.calculator.eyebrow": "II sambaga taasliitumine",
   "secondPillarRejoin.calculator.assumption": "Arvutuses on sinu panus {rate}% brutopalgast.",
-  "secondPillarRejoin.firstPillarNote": "II sambasse makstud sotsiaalmaks mõjutab vähesel määral ka I sammast."
+  "secondPillarRejoin.firstPillarNote": "II sambasse makstud sotsiaalmaks mõjutab vähesel määral ka I sammast.",
+  "pensionAccountNumber.title": "Sinu pensionikonto number",
+  "pensionAccountNumber.whenNeeded": "Millal seda vaja läheb",
+  "pensionAccountNumber.whenNeeded.employer": "Tööandja maksab sinu III sambasse otse palgast.",
+  "pensionAccountNumber.whenNeeded.employerLink": "Avaldus tööandjale",
+  "pensionAccountNumber.whenNeeded.insuranceContract": "Tood III samba kindlustuslepingu üle pensionifondi.",
+  "pensionAccountNumber.whenNeeded.bankTransfer": "Sina või keegi teine maksab sinu III sambasse pangaülekandega.",
+  "pensionAccountNumber.whenNeeded.mistakenContribution": "Tühistad ekslikult tehtud III samba sissemakse.",
+  "pensionAccountNumber.otherNames": "Sama number kehtib II ja III sambas. Seda küsitakse sageli ka viitenumbri nime all.",
+  "pensionAccountNumber.noAccountYet": "Sul ei ole veel pensionikontot. See avatakse, kui liitud II või III sambaga.",
+  "pensionAccountNumber.unavailable": "Numbrit ei õnnestunud laadida. Proovi hiljem uuesti."
 }
