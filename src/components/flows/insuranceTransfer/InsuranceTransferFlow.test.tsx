@@ -194,6 +194,18 @@ describe('III pillar insurance contract transfer', () => {
       expect(history.location.pathname).toBe('/3rd-pillar-insurance/selection');
     }, 20_000);
 
+    test('asks for no new signature when the person comes back once the selection has gone through', async () => {
+      openFlow();
+      expect(await screen.findByText(/^Choose Tuleva III\spillar$/)).toBeInTheDocument();
+      history.push('/pension-account-number');
+      userConversionBackend(server, {}, { selectionComplete: true });
+
+      history.push('/3rd-pillar-insurance');
+
+      await waitFor(() => expect(history.location.pathname).toBe('/3rd-pillar-insurance/request'));
+      expect(screen.queryByText(/^Choose Tuleva III\spillar$/)).not.toBeInTheDocument();
+    });
+
     test('says when the signing fails and lets the person close the message', async () => {
       server.use(
         rest.post('http://localhost/v1/mandates', (req, res, ctx) =>
@@ -254,6 +266,20 @@ describe('III pillar insurance contract transfer', () => {
   describe('when Tuleva III pillar is already selected', () => {
     beforeEach(() => {
       userConversionBackend(server, {}, { selectionComplete: true });
+    });
+
+    test('keeps the insurer from the address when opened at the start', async () => {
+      openFlow('/3rd-pillar-insurance?insurer=SEB');
+
+      expect(await screen.findByRole('radio', { name: 'SEB' })).toBeChecked();
+      expect(history.location.pathname).toBe('/3rd-pillar-insurance/request');
+    });
+
+    test('moves on from the address of a step this person does not need, keeping the insurer', async () => {
+      openFlow('/3rd-pillar-insurance/selection?insurer=SWEDBANK');
+
+      expect(await screen.findByRole('radio', { name: 'Swedbank' })).toBeChecked();
+      expect(history.location.pathname).toBe('/3rd-pillar-insurance/request');
     });
 
     test('offers the five insurers and shows no guide before one is chosen', async () => {

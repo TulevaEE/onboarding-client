@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
+import { Redirect, useLocation } from 'react-router-dom';
 import ConnectedFlow, { FlowStep } from '../common/Flow';
 import AddressStep from '../common/AddressStep';
 import { useConversion } from '../../common/apiHooks';
@@ -19,11 +20,11 @@ export const flowPath = '/3rd-pillar-insurance';
 const useStepPathsFixedOnceLoaded = () => {
   const user = useSelector((state: State) => state.login.user);
   const missingAmlChecks = useSelector((state: State) => state.aml.missingAmlChecks);
-  const { data: conversion } = useConversion();
+  const { data: conversion, isFetching: refreshingConversion } = useConversion();
   const [stepPaths, setStepPaths] = useState<InsuranceTransferStepPath[] | null>(null);
 
   useEffect(() => {
-    if (stepPaths || !user || !missingAmlChecks || !conversion) {
+    if (stepPaths || !user || !missingAmlChecks || !conversion || refreshingConversion) {
       return;
     }
     setStepPaths(
@@ -32,7 +33,7 @@ const useStepPathsFixedOnceLoaded = () => {
         selectionComplete: conversion.thirdPillar.selectionComplete,
       }),
     );
-  }, [stepPaths, user, missingAmlChecks, conversion]);
+  }, [stepPaths, user, missingAmlChecks, conversion, refreshingConversion]);
 
   return stepPaths;
 };
@@ -66,6 +67,7 @@ const toFlowStep = (path: InsuranceTransferStepPath, nextPath: string): FlowStep
 
 export const InsuranceTransferFlow = () => {
   usePageTitle('pageTitle.thirdPillarInsurance');
+  const { pathname, search } = useLocation();
   const stepPaths = useStepPathsFixedOnceLoaded();
 
   if (!stepPaths) {
@@ -74,6 +76,11 @@ export const InsuranceTransferFlow = () => {
         <Shimmer height={400} />
       </div>
     );
+  }
+
+  const addressedStep = pathname.split('/').pop();
+  if (!stepPaths.some((path) => path === addressedStep)) {
+    return <Redirect to={{ pathname: `${flowPath}/${stepPaths[0]}`, search }} />;
   }
 
   const steps = stepPaths.map((path, index) =>
