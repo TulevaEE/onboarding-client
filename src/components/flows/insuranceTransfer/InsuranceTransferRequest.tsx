@@ -32,7 +32,8 @@ const useRequestStateInAddress = () => {
     chooseInsurer: (insurer: InsurerCode) =>
       history.replace(changedSearch((changed) => changed.set(INSURER_PARAMETER, insurer))),
     askIfSent: () => history.push(changedSearch((changed) => changed.set(CONFIRM_PARAMETER, '1'))),
-    showStepsAgain: () => history.goBack(),
+    showStepsAgain: () =>
+      history.replace(changedSearch((changed) => changed.delete(CONFIRM_PARAMETER))),
   };
 };
 

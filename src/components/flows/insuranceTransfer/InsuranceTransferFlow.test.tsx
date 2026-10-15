@@ -490,6 +490,16 @@ describe('III pillar insurance contract transfer', () => {
       expect(history.location.search).toBe('?insurer=SEB');
     });
 
+    test('shows the steps again when the question whether the request went out was opened from a link', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB&confirm=1');
+
+      userEvent.click(await screen.findByRole('button', { name: 'Show the steps again' }));
+
+      expect(await screen.findByRole('region', { name: 'SEB' })).toBeInTheDocument();
+      expect(history.location.pathname).toBe('/3rd-pillar-insurance/request');
+      expect(history.location.search).toBe('?insurer=SEB');
+    });
+
     test('records the sent request and says the insurer moves the money within two months', async () => {
       const trackedEvents = trackedEventsBackend();
       openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
