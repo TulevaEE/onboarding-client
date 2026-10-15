@@ -1,20 +1,28 @@
 import React from 'react';
 import { useIntl } from 'react-intl';
 import { BankKey, bankKeyToBankNameMap } from './types';
+import { TranslationKey } from '../../../translations';
 
 type Props = {
   bankKey: BankKey | 'other';
   paymentBank: BankKey | 'other' | null;
   setPaymentBank: (paymentBank: BankKey | 'other' | null) => void;
   disabled?: boolean;
+  otherLabel?: TranslationKey;
 };
 
-export const BankButton = ({ bankKey, paymentBank, setPaymentBank, disabled = false }: Props) => {
+export const BankButton = ({
+  bankKey,
+  paymentBank,
+  setPaymentBank,
+  disabled = false,
+  otherLabel = 'thirdPillarPayment.paymentInfo',
+}: Props) => {
   const { formatMessage } = useIntl();
 
   const getBankName = (key: Props['bankKey']) => {
     if (key === 'other') {
-      return formatMessage({ id: 'thirdPillarPayment.paymentInfo' });
+      return formatMessage({ id: otherLabel });
     }
 
     return bankKeyToBankNameMap[key];
