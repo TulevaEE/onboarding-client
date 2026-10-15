@@ -132,7 +132,7 @@ const RequestToInsurer = ({
             <p className="mt-3 mb-0 text-body-secondary text-pretty">
               <FormattedMessage id="insuranceTransfer.fairness" />
             </p>
-            <InsurerGuide insurer={insurer} request={request} />
+            <InsurerGuide insurer={insurer} request={request} onSend={askIfSent} />
             <div className="mt-4 d-flex flex-column flex-sm-row justify-content-end">
               <a
                 className="btn btn-primary btn-lg"

@@ -14,13 +14,21 @@ const bold = (chunks: ReactNode) => <b>{chunks}</b>;
 const subjectOnlyMailto = (email: string, subject: string) =>
   `mailto:${email}?subject=${encodeURIComponent(subject)}`;
 
-const SignedRequestByEmail = ({ email, subject }: { email: string; subject: string }) => (
+const SignedRequestByEmail = ({
+  email,
+  subject,
+  onSend,
+}: {
+  email: string;
+  subject: string;
+  onSend: () => void;
+}) => (
   <p className="small text-body-secondary mt-3 mb-0">
     <FormattedMessage
       id="insuranceTransfer.guide.signedEmail"
       values={{
         email: (
-          <a className="text-break" href={subjectOnlyMailto(email, subject)}>
+          <a className="text-break" href={subjectOnlyMailto(email, subject)} onClick={onSend}>
             {email}
           </a>
         ),
@@ -51,9 +59,11 @@ const CopyRequestStep = ({ request }: { request: TransferRequest }) => (
 export const InsurerGuide = ({
   insurer,
   request,
+  onSend,
 }: {
   insurer: InsurerCode;
   request: TransferRequest;
+  onSend: () => void;
 }) => {
   const { name, stepMessageIds, signedRequestEmail } = insurers[insurer];
   return (
@@ -68,7 +78,11 @@ export const InsurerGuide = ({
         </PaymentStep>
       ))}
       {signedRequestEmail && (
-        <SignedRequestByEmail email={signedRequestEmail} subject={request.subject} />
+        <SignedRequestByEmail
+          email={signedRequestEmail}
+          subject={request.subject}
+          onSend={onSend}
+        />
       )}
     </section>
   );

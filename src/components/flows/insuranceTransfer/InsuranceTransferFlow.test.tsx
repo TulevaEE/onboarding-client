@@ -518,6 +518,17 @@ describe('III pillar insurance contract transfer', () => {
       expect(history.location.search).toBe('?insurer=SEB');
     });
 
+    test('asks whether the request went out once the signed request is emailed instead', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
+
+      userEvent.click(await screen.findByRole('link', { name: 'kindlustus@artea.ee' }));
+
+      expect(
+        screen.getByRole('heading', { name: 'Did you send the request?' }),
+      ).toBeInTheDocument();
+      expect(history.location.search).toBe('?insurer=ARTEA&confirm=1');
+    });
+
     test('shows the steps again when the question whether the request went out was opened from a link', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=SEB&confirm=1');
 
