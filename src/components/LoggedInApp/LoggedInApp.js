@@ -12,6 +12,10 @@ import AccountPage from '../account';
 import { RoleDeepLink } from '../account/RoleDeepLink';
 import SecondPillarFlow from '../flows/secondPillar';
 import ThirdPillarFlow from '../flows/thirdPillar';
+import {
+  InsuranceTransferFlow,
+  flowPath as insuranceTransferFlowPath,
+} from '../flows/insuranceTransfer/InsuranceTransferFlow';
 import PartnerSecondPillarFlow from '../flows/partner/PartnerSecondPillarFlow';
 import PartnerThirdPillarFlow from '../flows/partner/PartnerThirdPillarFlow';
 import {
@@ -181,6 +185,14 @@ export class LoggedInApp extends PureComponent {
               render={() => (
                 <ContactDetailsGatekeep>
                   <ThirdPillarFlow />
+                </ContactDetailsGatekeep>
+              )}
+            />
+            <Route
+              path={insuranceTransferFlowPath}
+              render={() => (
+                <ContactDetailsGatekeep>
+                  <InsuranceTransferFlow />
                 </ContactDetailsGatekeep>
               )}
             />

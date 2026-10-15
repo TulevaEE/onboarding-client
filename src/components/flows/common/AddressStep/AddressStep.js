@@ -43,6 +43,7 @@ AddressStep.propTypes = {
   pillar: Types.number.isRequired,
   hasAddress: Types.bool,
   hasContactDetailsAmlCheck: Types.bool,
+  updateOnlyEmailAndPhone: Types.bool,
   updateEmailAndPhone: Types.func,
   updateFullUser: Types.func,
 };
@@ -50,6 +51,7 @@ AddressStep.propTypes = {
 AddressStep.defaultProps = {
   hasAddress: false,
   hasContactDetailsAmlCheck: false,
+  updateOnlyEmailAndPhone: false,
   updateEmailAndPhone: noop,
   updateFullUser: noop,
 };
