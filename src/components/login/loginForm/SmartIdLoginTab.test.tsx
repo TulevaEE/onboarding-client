@@ -670,7 +670,7 @@ describe('Smart-ID login tab', () => {
 
       expect(
         await screen.findByText(
-          /^Smart.ID does not work in a private window\. Tap ⋯, choose New Tab and open pension\.tuleva\.ee there\.$/,
+          /^Smart.ID does not work in a private window\. Tap ⋯ or press and hold the Tabs button, choose New Tab and open pension\.tuleva\.ee there\.$/,
         ),
       ).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
@@ -683,10 +683,30 @@ describe('Smart-ID login tab', () => {
 
       expect(
         await screen.findByText(
-          /^Privaatses aknas Smart.ID ei tööta\. Vajuta ⋯, vali „New Tab“ ja ava seal pension\.tuleva\.ee\.$/,
+          /^Privaatses aknas Smart.ID ei tööta\. Vajuta ⋯ või vajuta ja hoia vahelehtede nuppu, vali „New Tab“ ja ava seal pension\.tuleva\.ee\.$/,
         ),
       ).toBeInTheDocument();
     });
+
+    it.each([
+      [
+        'en',
+        /^Smart.ID does not work in a private window\. Press and hold the Tabs button at the bottom right, choose New Tab and open pension\.tuleva\.ee there\.$/,
+      ],
+      [
+        'et',
+        /^Privaatses aknas Smart.ID ei tööta\. Vajuta ja hoia paremal all olevat vahelehtede nuppu, vali „New Tab“ ja ava seal pension\.tuleva\.ee\.$/,
+      ],
+    ] as const)(
+      'tells Safari 27 in %s to press and hold the Tabs button, as it has no ⋯ button with New Tab',
+      async (language, instruction) => {
+        setUserAgent(safariIphone.replace('Version/26.4', 'Version/27.0'));
+        browseInAPrivateTab();
+        renderTab(language);
+
+        expect(await screen.findByText(instruction)).toBeInTheDocument();
+      },
+    );
 
     it.each([
       ['Chrome on an iPhone', chromeIphone],

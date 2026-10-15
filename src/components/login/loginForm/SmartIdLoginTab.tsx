@@ -15,6 +15,7 @@ import { InAppBrowserSmartIdLogin } from './InAppBrowserSmartIdLogin';
 import { wayOutOfTheInAppBrowser } from '../smartId/wayOutOfTheInAppBrowser';
 import { PRIMARY_LOGIN_BUTTON_CLASS } from './loginButtonClasses';
 import { usePrivateSafariTabOnAnIphone } from '../smartId/usePrivateSafariTabOnAnIphone';
+import { PrivateSafariTabInstruction } from '../smartId/PrivateSafariTabInstruction';
 
 interface SmartIdLoginTabProps {
   onSmartIdLoginStart: (
@@ -102,7 +103,7 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
         <div className="d-grid gap-2">
           {inAPrivateSafariTab && (
             <p className="m-0 text-pretty">
-              <FormattedMessage id="login.smart.id.private.safari.tab" />
+              <PrivateSafariTabInstruction />
             </p>
           )}
           {logInButton}

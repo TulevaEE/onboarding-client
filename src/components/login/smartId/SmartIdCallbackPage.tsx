@@ -21,6 +21,7 @@ import { cancelledInTheApp } from '../cancelledInTheApp';
 import { useLoginLanguage } from '../loginLanguage';
 import { opensTheSmartIdApp } from './opensTheSmartIdApp';
 import { usePrivateSafariTabOnAnIphone } from './usePrivateSafariTabOnAnIphone';
+import { PrivateSafariTabInstruction } from './PrivateSafariTabInstruction';
 import styles from '../LoginPage.module.scss';
 import {
   forgetSmartIdCallbackParameters,
@@ -30,7 +31,6 @@ import {
 
 const SLOW_COMPLETION_MILLIS = 20000;
 const CALLBACK_IN_ANOTHER_BROWSER = 'smart.id.callback.in.another.browser';
-const CALLBACK_IN_A_PRIVATE_SAFARI_TAB = 'smart.id.callback.in.a.private.safari.tab';
 const ERRORS_OF_THE_SMART_ID_ACCOUNT_ITSELF = [
   'smart.id.account.not.found',
   'smart.id.unsupported.country',
@@ -109,13 +109,13 @@ export const SmartIdCallbackPage: React.FC = () => {
             <img width="146" height="66" src={logo} alt="Tuleva" className="d-block mx-auto mb-5" />
             {failed ? (
               <div className="bg-white shadow-sm rounded-3 p-5">
-                <ErrorAlert
-                  description={
-                    tryingAgainHereFailsTheSameWay
-                      ? CALLBACK_IN_A_PRIVATE_SAFARI_TAB
-                      : loginError ?? undefined
-                  }
-                />
+                {tryingAgainHereFailsTheSameWay ? (
+                  <div className="alert alert-danger text-pretty" role="alert">
+                    <PrivateSafariTabInstruction />
+                  </div>
+                ) : (
+                  <ErrorAlert description={loginError ?? undefined} />
+                )}
                 {!tryingAgainHereFailsTheSameWay && (
                   <div className="d-grid">
                     <Link

@@ -328,7 +328,7 @@ describe('When the Smart-ID app returns to the browser', () => {
 
       expect(
         await screen.findByText(
-          /^Smart.ID does not work in a private window\. Tap ⋯, choose New Tab and open pension\.tuleva\.ee there\.$/,
+          /^Smart.ID does not work in a private window\. Tap ⋯ or press and hold the Tabs button, choose New Tab and open pension\.tuleva\.ee there\.$/,
         ),
       ).toBeInTheDocument();
       expect(screen.queryByRole('link', { name: 'Try again' })).not.toBeInTheDocument();

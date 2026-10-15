@@ -20,7 +20,6 @@ const AUTHENTICATION_ERROR_MESSAGES = {
   'smart.id.certificate.revoked': 'login.error.smart.id.certificate.revoked',
   'smart.id.account.unusable': 'login.error.smart.id.account.unusable',
   'smart.id.callback.in.another.browser': 'login.error.smart.id.callback.in.another.browser',
-  'smart.id.callback.in.a.private.safari.tab': 'login.smart.id.private.safari.tab',
   'mobile.id.cancelled': 'login.error.mobile.id.cancelled',
   'mobile.id.timeout': 'login.error.mobile.id.timeout',
   'mobile.id.no.signal': 'login.error.mobile.id.no.signal',
