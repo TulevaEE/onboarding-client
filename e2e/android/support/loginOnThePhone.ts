@@ -12,8 +12,6 @@ const SHOW_THE_QR_CODE = 'Näita QR-koodi';
 const SCAN_WITH_THE_SMART_ID_APP = /^Skänni Smart.ID rakendusega$/;
 export const TRY_AGAIN = 'Proovi uuesti';
 export const SK_PAGE_WHEN_THE_SMART_ID_APP_DOES_NOT_OPEN = 'Ei saanud avada Smart-ID rakendust!';
-export const TOLD_TO_LOG_IN_IN_THE_BROWSER_SMART_ID_OPENED =
-  /^Smart.ID avas Tuleva teises brauseris või aknas\. Vajuta .Proovi uuesti.\. Privaatses aknas sisselogimine ei õnnestu\.$/;
 
 const SKIP_LINK_OF_THE_LOGGED_IN_PAGES = 'Liigu edasi sisu juurde';
 const SAMSUNG_INTERNET_OFFERS_TO_BECOME_THE_DEFAULT_BROWSER =

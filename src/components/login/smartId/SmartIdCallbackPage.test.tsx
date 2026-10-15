@@ -272,14 +272,14 @@ describe('When the Smart-ID app returns to the browser', () => {
     expect(sessionStorage.getItem('pendingSmartIdAuthentication')).toBeNull();
   });
 
-  test('a callback in a browser that did not start the login offers to log in here and says a private window cannot', async () => {
+  test('a callback in a browser that did not start the login offers to log in here, says why a private window cannot and what to do instead', async () => {
     smartIdAuthenticationBackend(server);
 
     openCallback(aCallback);
 
     expect(
       await screen.findByText(
-        /^Smart.ID opened Tuleva in a different browser or window\. Tap Try again\. Login does not work in a private window\.$/,
+        /^Smart.ID opened Tuleva in a different browser or window\. Tap Try again\. Logging in does not work in a private window, because the Smart.ID app cannot bring you back to it\. Open Tuleva in a normal window instead\.$/,
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);
@@ -312,9 +312,7 @@ describe('When the Smart-ID app returns to the browser', () => {
     );
 
     expect(
-      await screen.findByText(
-        /^Smart.ID opened Tuleva in a different browser or window\. Tap Try again\. Login does not work in a private window\.$/,
-      ),
+      await screen.findByText(/^Smart.ID opened Tuleva in a different browser or window\./),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);
     expect(sessionStorage.getItem('pendingSmartIdAuthentication')).toBeNull();

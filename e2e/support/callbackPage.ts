@@ -14,8 +14,8 @@ export type ReturnedTab = { tab: Page; callbackAnswer: Response };
 
 const SESSION_THE_LOGIN_STARTED_IN_IS_MISSING = 'auth.session.not.found';
 
-const TOLD_TO_LOG_IN_IN_THE_BROWSER_SMART_ID_OPENED =
-  /Smart.ID avas Tuleva teises brauseris või aknas\. Vajuta .Proovi uuesti.\. Privaatses aknas sisselogimine ei õnnestu\./;
+export const TOLD_TO_LOG_IN_IN_THE_BROWSER_SMART_ID_OPENED =
+  /^Smart.ID avas Tuleva teises brauseris või aknas\. Vajuta .Proovi\suuesti.\. Privaatses aknas sisselogimine ei õnnestu, sest Smart.ID rakendus ei saa sind privaatsesse aknasse tagasi saata\. Ava Tuleva siis tavalises aknas\.$/;
 
 const tryAgainLinkOf = (tab: Page) => tab.getByRole('link', { name: 'Proovi uuesti' });
 

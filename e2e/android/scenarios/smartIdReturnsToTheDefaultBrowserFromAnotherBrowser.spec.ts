@@ -2,7 +2,6 @@ import { expect, test } from '../support/test';
 import { CHROME, Phone, SAMSUNG_INTERNET } from '../support/phone';
 import { LoginExchange, LoginTraffic } from '../support/loginTraffic';
 import {
-  TOLD_TO_LOG_IN_IN_THE_BROWSER_SMART_ID_OPENED,
   TRY_AGAIN,
   addressOf,
   expectLoggedIn,
@@ -11,6 +10,7 @@ import {
   logInWithTheQrCodeInChrome,
   tapLogInToOpenTheSmartIdApp,
 } from '../support/loginOnThePhone';
+import { TOLD_TO_LOG_IN_IN_THE_BROWSER_SMART_ID_OPENED } from '../../support/callbackPage';
 import { expectSmartIdLoginCompletedUnlessTheMockServiceRejectsIt } from '../../support/expectedFailures';
 import { PAGE_A_NEWSLETTER_LINKS_TO } from '../../support/links';
 import { SmartIdApp } from '../../support/smartIdApp';
