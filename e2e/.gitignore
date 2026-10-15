@@ -1,0 +1,7 @@
+.stack/
+playwright-report/
+test-results/
+ios/build/
+ios/results/
+ios/LoginE2E.xcodeproj/
+android/out/

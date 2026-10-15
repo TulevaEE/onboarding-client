@@ -259,6 +259,19 @@ describe('API calls', () => {
       });
     });
 
+    it('carries the page the login started from in a device link session, so the callback can return there', async () => {
+      mockHttp.post.mockResolvedValueOnce({});
+
+      await startSmartIdLogin('et', 'DEVICE_LINK', false, '/capital/listings/42');
+
+      expect(mockHttp.post).toHaveBeenCalledWith('/v1/smart-id/login', {
+        flow: 'DEVICE_LINK',
+        language: 'et',
+        rememberMe: false,
+        returnPath: '/capital/listings/42',
+      });
+    });
+
     it('starts a push notification session for the remembered account', async () => {
       const start = {
         flow: 'NOTIFICATION',

@@ -137,9 +137,11 @@ export function startSmartIdLogin(
   language: string,
   flow: SmartIdLoginFlow = 'DEVICE_LINK',
   rememberMe = false,
+  returnPath?: string,
 ): Promise<SmartIdLoginStart> {
-  const rememberMeChoice = flow === 'DEVICE_LINK' ? { rememberMe } : {};
-  return post(getEndpoint('/v1/smart-id/login'), { flow, language, ...rememberMeChoice });
+  const deviceLinkChoices =
+    flow === 'DEVICE_LINK' ? { rememberMe, ...(returnPath ? { returnPath } : {}) } : {};
+  return post(getEndpoint('/v1/smart-id/login'), { flow, language, ...deviceLinkChoices });
 }
 
 const nullWhenNoContent = <T>(body: T | undefined | ''): T | null =>

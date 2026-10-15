@@ -31,9 +31,13 @@ import { api } from '../common';
 import { getGlobalErrorCode } from '../common/errorMessage';
 
 import { getAuthentication } from '../common/authenticationManager';
+import { withSessionStorage } from '../common/siteStorage';
 import { forgetSmartIdCallbackParameters } from './smartId/smartIdCallbackParameters';
 import { pageInView } from './smartId/pageInView';
 import { opensTheSmartIdApp } from './smartId/opensTheSmartIdApp';
+import { linkThatOpensTheSmartIdApp } from './smartId/linkThatOpensTheSmartIdApp';
+import { departForTheSmartIdLink } from './smartId/useSmartIdAppDidNotOpen';
+import { pathOnThisSite } from './pathOnThisSite';
 
 const POLL_DELAY = 1000;
 let timeout;
@@ -166,9 +170,7 @@ const TRANSIENT_POLL_ERRORS = [
 ];
 
 function clearPendingSmartIdAuthentication() {
-  if (window.sessionStorage) {
-    sessionStorage.removeItem(PENDING_SMART_ID_KEY);
-  }
+  withSessionStorage((storage) => storage.removeItem(PENDING_SMART_ID_KEY), undefined);
 }
 
 function savePendingSmartIdAuthentication({
@@ -181,9 +183,6 @@ function savePendingSmartIdAuthentication({
   language,
   callbackAccepted,
 }) {
-  if (!window.sessionStorage) {
-    return;
-  }
   try {
     sessionStorage.setItem(
       PENDING_SMART_ID_KEY,
@@ -206,9 +205,6 @@ function savePendingSmartIdAuthentication({
 }
 
 function loadPendingSmartIdAuthentication() {
-  if (!window.sessionStorage) {
-    return null;
-  }
   try {
     const pending = JSON.parse(sessionStorage.getItem(PENDING_SMART_ID_KEY));
     return pending && pending.startedAt && pending.authenticationHash ? pending : null;
@@ -218,7 +214,7 @@ function loadPendingSmartIdAuthentication() {
 }
 
 export function getPendingSmartIdReturnPath() {
-  const pending = loadPendingSmartIdAuthentication();
+  const pending = loadUnexpiredPendingSmartIdAuthentication();
   return pending?.returnPath ?? null;
 }
 
@@ -409,15 +405,18 @@ const showTheQrCode = { qrCodeRequested: true, afterDeviceLinkStarted: () => {} 
 
 const openTheSmartIdApp = {
   qrCodeRequested: false,
-  afterDeviceLinkStarted: (web2AppLink) => window.location.assign(web2AppLink),
+  afterDeviceLinkStarted: (web2AppLink) => {
+    departForTheSmartIdLink();
+    window.location.assign(linkThatOpensTheSmartIdApp(web2AppLink));
+  },
 };
 
 export function startSmartIdLogin(language, flow = 'DEVICE_LINK', rememberMe = false) {
   return startSmartIdSession(language, flow, rememberMe, showTheQrCode);
 }
 
-export function startSmartIdLoginInTheApp(language) {
-  return startSmartIdSession(language, 'DEVICE_LINK', false, openTheSmartIdApp);
+export function startSmartIdLoginInTheApp(language, returnPath) {
+  return startSmartIdSession(language, 'DEVICE_LINK', false, openTheSmartIdApp, returnPath);
 }
 
 function startSmartIdSession(
@@ -425,8 +424,12 @@ function startSmartIdSession(
   flow,
   rememberMe,
   { qrCodeRequested, afterDeviceLinkStarted },
+  pageTheLoginStartedFrom,
 ) {
   return (dispatch, getState) => {
+    const returnPath = pathOnThisSite(
+      pageTheLoginStartedFrom ?? getState().router?.location?.state?.from,
+    );
     const canceledOrSuperseded = beginLoginStart();
     stopSmartIdPolling();
     dispatch({ type: MOBILE_AUTHENTICATION_START });
@@ -437,11 +440,10 @@ function startSmartIdSession(
       clearPendingSmartIdAuthentication();
       dispatch({ type: MOBILE_AUTHENTICATION_START_ERROR, error });
     };
-    return api.startSmartIdLogin(language, flow, rememberMe).then((start) => {
+    return api.startSmartIdLogin(language, flow, rememberMe, returnPath).then((start) => {
       if (canceledOrSuperseded()) {
         return;
       }
-      const returnPath = getState().router?.location?.state?.from;
       const { authenticationHash } = start;
       if (start.flow === 'NOTIFICATION') {
         const controlCode = start.verificationCode;
@@ -480,6 +482,9 @@ const SMART_ID_CALLBACK_IN_ANOTHER_BROWSER = {
   body: { errors: [{ code: 'smart.id.callback.in.another.browser' }] },
 };
 
+const belongsToALoginStartedElsewhere = (error) =>
+  ['auth.session.not.found', 'smart.id.callback.invalid'].includes(getGlobalErrorCode(error?.body));
+
 export function completeSmartIdLogin(callback) {
   return (dispatch) => {
     const canceledOrSuperseded = beginLoginStart();
@@ -514,7 +519,9 @@ export function completeSmartIdLogin(callback) {
         clearPendingSmartIdAuthentication();
         dispatch({
           type: MOBILE_AUTHENTICATION_START_ERROR,
-          error: isSmartIdSessionNotFound(error) ? SMART_ID_CALLBACK_IN_ANOTHER_BROWSER : error,
+          error: belongsToALoginStartedElsewhere(error)
+            ? SMART_ID_CALLBACK_IN_ANOTHER_BROWSER
+            : error,
         });
       });
   };

@@ -14,6 +14,9 @@ import { AutomaticRenewalAllowance } from './automaticRenewalAllowance';
 import { ScanFrame } from './ScanFrame';
 import { SmartIdLoginFlow } from '../../common/apiModels';
 import { opensTheSmartIdApp } from './opensTheSmartIdApp';
+import { linkThatOpensTheSmartIdApp } from './linkThatOpensTheSmartIdApp';
+import { departForTheSmartIdLink, useSmartIdAppDidNotOpen } from './useSmartIdAppDidNotOpen';
+import { SmartIdAppDidNotOpen } from './SmartIdAppDidNotOpen';
 import { useStillOnThisPage } from './useStillOnThisPage';
 import { IconBeforeLabel, SmartIdMarkIcon } from './icons';
 
@@ -79,7 +82,7 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
       scanFrame={device === 'computer'}
     >
       {device === 'tablet' && (
-        <QuietLink href={web2AppLink} onClick={onAppOpen}>
+        <QuietLink href={linkThatOpensTheSmartIdApp(web2AppLink)} onClick={onAppOpen}>
           <FormattedMessage id="login.smart.id.open.app" />
         </QuietLink>
       )}
@@ -93,26 +96,31 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
 }) => {
   const { formatMessage } = useIntl();
   const stillOnThisPage = useStillOnThisPage();
+  const appDidNotOpen = useSmartIdAppDidNotOpen(web2AppLink);
+  const offerTheAppButton = stillOnThisPage || appDidNotOpen;
   const appButton = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
-    if (stillOnThisPage) {
+    if (offerTheAppButton) {
       appButton.current?.focus();
     }
-  }, [stillOnThisPage]);
+  }, [offerTheAppButton]);
 
   return (
     <>
       <FocusedParagraph className="visually-hidden">
         <FormattedMessage id="login.smart.id.confirm.in.app" />
       </FocusedParagraph>
-      <Loader className="align-middle" />
+      <div role="status">
+        {appDidNotOpen ? <SmartIdAppDidNotOpen /> : <Loader className="align-middle" />}
+      </div>
       <div className="d-grid gap-2 mt-4">
-        {stillOnThisPage && (
+        {offerTheAppButton && (
           <a
             ref={appButton}
             className="btn btn-primary btn-lg text-wrap text-balance"
-            href={web2AppLink}
+            href={linkThatOpensTheSmartIdApp(web2AppLink)}
+            onClick={departForTheSmartIdLink}
           >
             <IconBeforeLabel
               icon={<SmartIdMarkIcon />}

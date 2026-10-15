@@ -5,6 +5,7 @@ import { IntlProvider } from 'react-intl';
 
 import translations from '../../translations';
 import { SmartIdDeviceLinkLogin } from './SmartIdDeviceLinkLogin';
+import { departForTheSmartIdLink } from './useSmartIdAppDidNotOpen';
 import { automaticRenewalAllowance, AutomaticRenewalAllowance } from './automaticRenewalAllowance';
 import { getSmartIdQrCodeLink } from '../../common/api';
 import { expectStackedFullWidth } from '../../../test/expectStackedFullWidth';
@@ -67,12 +68,18 @@ describe('Smart-ID device link login', () => {
     rememberMe = false,
     qrCodeRequested = false,
     language = 'en',
-  }: { rememberMe?: boolean; qrCodeRequested?: boolean; language?: 'en' | 'et' } = {}) =>
+    link = web2AppLink,
+  }: {
+    rememberMe?: boolean;
+    qrCodeRequested?: boolean;
+    language?: 'en' | 'et';
+    link?: string;
+  } = {}) =>
     render(
       <IntlProvider locale={language} messages={translations[language]}>
         <SmartIdDeviceLinkLogin
           session={1}
-          web2AppLink={web2AppLink}
+          web2AppLink={link}
           rememberMe={rememberMe}
           qrCodeRequested={qrCodeRequested}
           onCancel={onCancel}
@@ -630,6 +637,23 @@ describe('Smart-ID device link login', () => {
       expect(appButton()).toHaveAttribute('href', web2AppLink);
     });
 
+    it('asks Android for the Smart-ID app by name from the button in Samsung Internet, which keeps plain links to apps inside the browser', async () => {
+      setUserAgent(
+        'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/30.0 Chrome/143.0.0.0 Mobile Safari/537.36',
+      );
+      renderDeviceLinkLogin();
+      await flushPendingRequests();
+
+      waitInView(2000);
+
+      expect(appButton()).toHaveAttribute(
+        'href',
+        `intent://smart-id.com/device-link/?deviceLinkType=Web2App&sessionType=auth#Intent;scheme=https;package=com.smart_id;S.browser_fallback_url=${encodeURIComponent(
+          web2AppLink,
+        )};end`,
+      );
+    });
+
     it.each([
       ['en', 'Open Smart\u2011ID'],
       ['et', 'Ava Smart\u2011ID'],
@@ -662,6 +686,206 @@ describe('Smart-ID device link login', () => {
       act(() => setPageVisibility('visible'));
 
       expect(appButton()).toHaveAttribute('href', web2AppLink);
+    });
+
+    describe('when the link opened as a web page instead of the Smart-ID app', () => {
+      const phoneLanguage = Object.getOwnPropertyDescriptor(navigator, 'language');
+      const samsungInternet =
+        'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/30.0 Chrome/143.0.0.0 Mobile Safari/537.36';
+      const chromeAndroid =
+        'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Mobile Safari/537.36';
+
+      const leaveForTheLinkAsAWebPage = () =>
+        act(() => {
+          departForTheSmartIdLink();
+          window.dispatchEvent(new Event('pagehide'));
+        });
+      const reloadThePage = () =>
+        act(() => {
+          window.dispatchEvent(new Event('pagehide'));
+        });
+      const comeBack = () =>
+        act(() => {
+          window.dispatchEvent(new Event('pageshow'));
+        });
+      const setPhoneLanguage = (language: string) =>
+        Object.defineProperty(navigator, 'language', { value: language, configurable: true });
+      const useBrave = () =>
+        Object.defineProperty(navigator, 'brave', {
+          value: { isBrave: () => true },
+          configurable: true,
+        });
+
+      afterEach(() => {
+        if (phoneLanguage) {
+          Object.defineProperty(navigator, 'language', phoneLanguage);
+        }
+        delete (navigator as { brave?: unknown }).brave;
+      });
+
+      it('tells the person the app did not open and how to log in from another device', async () => {
+        renderDeviceLinkLogin();
+        await flushPendingRequests();
+
+        leaveForTheLinkAsAWebPage();
+        comeBack();
+
+        expect(screen.getByText(/^The Smart.ID app did not open\.$/)).toBeInTheDocument();
+        expect(
+          screen.getByText(
+            /^If Smart.ID is on another device, tap Cancel and choose Show QR code\.$/,
+          ),
+        ).toBeInTheDocument();
+        expect(appButton()).toHaveAttribute('href', web2AppLink);
+      });
+
+      it('announces that the app did not open in a live region that was there before, so a screen reader reads it', async () => {
+        renderDeviceLinkLogin();
+        await flushPendingRequests();
+        const [liveRegion] = screen.getAllByRole('status');
+
+        leaveForTheLinkAsAWebPage();
+        comeBack();
+
+        expect(liveRegion).toHaveTextContent(/^The Smart.ID app did not open\./);
+        expect(screen.getAllByRole('status')[0]).toBe(liveRegion);
+      });
+
+      it('says nothing about it when the Smart-ID app took the link and the person came back', async () => {
+        renderDeviceLinkLogin();
+        await flushPendingRequests();
+
+        act(() => {
+          departForTheSmartIdLink();
+        });
+        act(() => setPageVisibility('hidden'));
+        act(() => setPageVisibility('visible'));
+        comeBack();
+
+        expect(screen.queryByText(/did not open/)).not.toBeInTheDocument();
+      });
+
+      it('still tells it when coming back reloads the page', async () => {
+        const { unmount: unloadThePage } = renderDeviceLinkLogin();
+        await flushPendingRequests();
+        leaveForTheLinkAsAWebPage();
+        unloadThePage();
+
+        renderDeviceLinkLogin();
+        await flushPendingRequests();
+
+        expect(screen.getByText(/^The Smart.ID app did not open\.$/)).toBeInTheDocument();
+      });
+
+      it('says nothing about it after the waiting page is reloaded', async () => {
+        const { unmount: unloadThePage } = renderDeviceLinkLogin();
+        await flushPendingRequests();
+        reloadThePage();
+        unloadThePage();
+
+        renderDeviceLinkLogin();
+        await flushPendingRequests();
+
+        expect(screen.queryByText(/did not open/)).not.toBeInTheDocument();
+      });
+
+      it('says nothing about it when the person came back from the app and then reloaded the page', async () => {
+        const { unmount: unloadThePage } = renderDeviceLinkLogin();
+        await flushPendingRequests();
+        act(() => {
+          departForTheSmartIdLink();
+        });
+        act(() => setPageVisibility('hidden'));
+        act(() => setPageVisibility('visible'));
+        reloadThePage();
+        unloadThePage();
+
+        renderDeviceLinkLogin();
+        await flushPendingRequests();
+
+        expect(screen.queryByText(/did not open/)).not.toBeInTheDocument();
+      });
+
+      it('does not carry it over to a new login', async () => {
+        const { unmount: unloadThePage } = renderDeviceLinkLogin();
+        await flushPendingRequests();
+        leaveForTheLinkAsAWebPage();
+        unloadThePage();
+
+        renderDeviceLinkLogin({ link: `${web2AppLink}&sessionToken=another` });
+        await flushPendingRequests();
+
+        expect(screen.queryByText(/did not open/)).not.toBeInTheDocument();
+      });
+
+      it.each([
+        [
+          'en',
+          'en-GB',
+          /^If Smart.ID is on this phone, open the Samsung Internet menu ☰, choose Privacy and turn off Block opening external apps\.$/,
+        ],
+        [
+          'et',
+          'et-EE',
+          /^Kui Smart.ID on selles telefonis, ava Samsung Internetis menüü ☰, vali „Privaatsus“ ja lülita välja „Blokeeri avanevad välised rakendused“\.$/,
+        ],
+        [
+          'et',
+          'en-US',
+          /^Kui Smart.ID on selles telefonis, ava Samsung Internetis menüü ☰, vali „Privacy“ ja lülita välja „Block opening external apps“\.$/,
+        ],
+      ] as const)(
+        'names the Samsung Internet setting that keeps links to apps in the browser, on a %s page of a phone in %s, in the language of the phone',
+        async (language, phone, instruction) => {
+          setUserAgent(samsungInternet);
+          setPhoneLanguage(phone);
+          renderDeviceLinkLogin({ language });
+          await flushPendingRequests();
+
+          leaveForTheLinkAsAWebPage();
+          comeBack();
+
+          expect(screen.getByText(instruction)).toBeInTheDocument();
+        },
+      );
+
+      it.each([
+        [
+          'en',
+          'en-GB',
+          /^If Smart.ID is on this phone, open the Brave menu ⋮, choose Settings and Brave Shields & privacy, and turn on Allow app links to open in apps outside of Brave\.$/,
+        ],
+        [
+          'et',
+          'et-EE',
+          /^Kui Smart.ID on selles telefonis, ava Brave'is menüü ⋮, vali „Seaded“ ja „Brave'i kaitsed ja privaatsus“ ning lülita sisse „Luba rakenduse linkide avamine Brave'i välistes rakendustes“\.$/,
+        ],
+      ] as const)(
+        'names the Brave setting that lets app links open apps, on a %s page of a phone in %s',
+        async (language, phone, instruction) => {
+          setUserAgent(chromeAndroid);
+          useBrave();
+          setPhoneLanguage(phone);
+          renderDeviceLinkLogin({ language });
+          await flushPendingRequests();
+
+          leaveForTheLinkAsAWebPage();
+          comeBack();
+
+          expect(screen.getByText(instruction)).toBeInTheDocument();
+        },
+      );
+
+      it('names no browser setting in Chrome, which opens the app whenever it is installed', async () => {
+        setUserAgent(chromeAndroid);
+        renderDeviceLinkLogin();
+        await flushPendingRequests();
+
+        leaveForTheLinkAsAWebPage();
+        comeBack();
+
+        expect(screen.queryByText(/on this phone/)).not.toBeInTheDocument();
+      });
     });
 
     it('moves the focus to the button into the Smart-ID app when it appears', async () => {

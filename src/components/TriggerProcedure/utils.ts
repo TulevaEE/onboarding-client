@@ -1,5 +1,6 @@
 import { getPaymentLink } from '../common/api';
 import { getAuthentication } from '../common/authenticationManager';
+import { withSessionStorage } from '../common/siteStorage';
 
 export const EXTERNAL_AUTHENTICATOR_PROVIDER = 'EXTERNAL_AUTHENTICATOR_PROVIDER';
 export const EXTERNAL_AUTHENTICATOR_REDIRECT_URI = 'EXTERNAL_AUTHENTICATOR_REDIRECT_URI';
@@ -67,8 +68,14 @@ export const finish = async (
   error?: string,
   personalCode?: string,
 ): Promise<void> => {
-  const provider = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_PROVIDER);
-  const redirectUri = sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI);
+  const provider = withSessionStorage(
+    (storage) => storage.getItem(EXTERNAL_AUTHENTICATOR_PROVIDER),
+    null,
+  );
+  const redirectUri = withSessionStorage(
+    (storage) => storage.getItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI),
+    null,
+  );
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const webView = (window as any).ReactNativeWebView;
 
@@ -159,8 +166,10 @@ export const init = (query: {
   const procedure = validateProcedure(query.procedure);
   const handoverToken = validateHandoverToken(query.handoverToken);
 
-  sessionStorage.setItem(EXTERNAL_AUTHENTICATOR_PROVIDER, provider);
-  sessionStorage.setItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI, query.redirectUri || '');
+  withSessionStorage((storage) => {
+    storage.setItem(EXTERNAL_AUTHENTICATOR_PROVIDER, provider);
+    storage.setItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI, query.redirectUri || '');
+  }, undefined);
 
   return {
     provider,

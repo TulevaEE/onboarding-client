@@ -9,6 +9,7 @@ import { MobileIdLoginTab } from '../mobileId/MobileIdLoginTab';
 import { RememberKnownMobileIdNumbers } from '../mobileId/knownMobileIdNumbers';
 import { RememberWhoThisBrowserRemembers } from '../rememberedPeople';
 import { Maintenance } from '../Maintenance';
+import { AllowCookiesToLogIn } from './AllowCookiesToLogIn';
 
 export const LoginForm = ({
   phoneNumber,
@@ -91,6 +92,8 @@ const renderLoginForm = (
           </p>
         </>
       )}
+
+      <AllowCookiesToLogIn />
 
       {renderLoginTabs(
         onSmartIdLoginStart,

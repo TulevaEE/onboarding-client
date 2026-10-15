@@ -1,24 +1,24 @@
 import config from 'react-global-configuration';
 import { AuthenticationPrincipal } from './apiModels';
+import { isSessionStorageBlocked, withSessionStorage } from './siteStorage';
 
 const AUTHENTICATION_CONFIGURATION_KEY = 'AUTHENTICATION_CONFIGURATION_KEY';
 export function restoreAuthenticationFromSession(): void {
-  if (window.sessionStorage) {
-    const item = sessionStorage.getItem(AUTHENTICATION_CONFIGURATION_KEY);
-    if (item) {
-      const authenticationPrincipal = JSON.parse(item);
-      setAuthenticationInConfiguration(authenticationPrincipal);
-    }
+  const item = withSessionStorage(
+    (storage) => storage.getItem(AUTHENTICATION_CONFIGURATION_KEY),
+    null,
+  );
+  if (item) {
+    const authenticationPrincipal = JSON.parse(item);
+    setAuthenticationInConfiguration(authenticationPrincipal);
   }
 }
 
 function updateSessionStorage(authentication: AuthenticationPrincipal) {
-  if (window.sessionStorage) {
-    sessionStorage.setItem(AUTHENTICATION_CONFIGURATION_KEY, JSON.stringify(authentication));
-  } else {
-    // eslint-disable-next-line no-console
-    console.error('No session storage present');
+  if (isSessionStorageBlocked() || !window.sessionStorage) {
+    return;
   }
+  window.sessionStorage.setItem(AUTHENTICATION_CONFIGURATION_KEY, JSON.stringify(authentication));
 }
 
 function setAuthenticationInConfiguration(newAuthentication: AuthenticationPrincipal) {
@@ -40,9 +40,7 @@ function removeAuthenticationInConfiguration() {
 }
 
 function removeAuthenticationFromSessionStorage() {
-  if (window.sessionStorage) {
-    sessionStorage.removeItem(AUTHENTICATION_CONFIGURATION_KEY);
-  }
+  withSessionStorage((storage) => storage.removeItem(AUTHENTICATION_CONFIGURATION_KEY), undefined);
 }
 export interface AuthenticationManager extends AuthenticationPrincipal {
   update: (authentication: AuthenticationPrincipal) => void;

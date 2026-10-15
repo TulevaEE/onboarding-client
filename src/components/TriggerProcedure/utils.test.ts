@@ -1,10 +1,13 @@
 import {
   finish,
+  init,
   EXTERNAL_AUTHENTICATOR_PROVIDER,
   EXTERNAL_AUTHENTICATOR_REDIRECT_URI,
 } from './utils';
 import { getPaymentLink } from '../common/api';
 import { getAuthentication } from '../common/authenticationManager';
+import { isSessionStorageBlocked } from '../common/siteStorage';
+import { blockSiteStorage } from '../../test/siteStorage';
 
 jest.mock('../common/api');
 jest.mock('../common/authenticationManager');
@@ -82,5 +85,74 @@ describe('finish', () => {
     await expect(finish('newRecurringPayment', undefined, '38812121215')).rejects.toThrow(
       /provider/,
     );
+  });
+
+  describe('when the browser blocks session storage', () => {
+    let unblockSiteStorage: () => void;
+
+    beforeEach(() => {
+      unblockSiteStorage = blockSiteStorage();
+      expect(isSessionStorageBlocked()).toBe(true);
+    });
+
+    afterEach(() => unblockSiteStorage());
+
+    it('still posts the error message to the partner app', async () => {
+      const postMessage = jest.fn();
+      (window as unknown as { ReactNativeWebView: unknown }).ReactNativeWebView = { postMessage };
+
+      await finish(undefined, 'handover failed');
+
+      expect(JSON.parse(postMessage.mock.calls[0][0])).toEqual({
+        errorMessage: 'handover failed',
+        time: expect.any(String),
+      });
+    });
+  });
+});
+
+describe('init', () => {
+  afterEach(() => sessionStorage.clear());
+
+  it('keeps the provider and the redirect address for the session', () => {
+    init({
+      provider: 'COOP_PANK',
+      procedure: 'account',
+      handoverToken: 'aHandoverToken',
+      redirectUri: 'https://partner.example/',
+    });
+
+    expect(sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_PROVIDER)).toBe('COOP_PANK');
+    expect(sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI)).toBe(
+      'https://partner.example/',
+    );
+  });
+
+  describe('when the browser blocks session storage', () => {
+    let unblockSiteStorage: () => void;
+
+    beforeEach(() => {
+      unblockSiteStorage = blockSiteStorage();
+      expect(isSessionStorageBlocked()).toBe(true);
+    });
+
+    afterEach(() => unblockSiteStorage());
+
+    it('still starts the procedure', () => {
+      expect(
+        init({
+          provider: 'COOP_PANK',
+          procedure: 'account',
+          handoverToken: 'aHandoverToken',
+          redirectUri: 'https://partner.example/',
+        }),
+      ).toEqual({
+        provider: 'COOP_PANK',
+        procedure: 'account',
+        handoverToken: 'aHandoverToken',
+        redirectUri: 'https://partner.example/',
+        path: '/account',
+      });
+    });
   });
 });

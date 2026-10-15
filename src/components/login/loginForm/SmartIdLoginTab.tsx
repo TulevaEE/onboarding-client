@@ -11,6 +11,11 @@ import { PII_CLASS } from '../../tracking/piiMarkup';
 import { QuietLinkButton } from './QuietLink';
 import { RememberMeCheckbox } from './RememberMeCheckbox';
 import { readRememberMeChoice, saveRememberMeChoice } from './rememberMeChoice';
+import { InAppBrowserSmartIdLogin } from './InAppBrowserSmartIdLogin';
+import { wayOutOfTheInAppBrowser } from '../smartId/wayOutOfTheInAppBrowser';
+import { PRIMARY_LOGIN_BUTTON_CLASS } from './loginButtonClasses';
+import { usePrivateSafariTabOnAnIphone } from '../smartId/usePrivateSafariTabOnAnIphone';
+import { PrivateSafariTabInstruction } from '../smartId/PrivateSafariTabInstruction';
 
 interface SmartIdLoginTabProps {
   onSmartIdLoginStart: (
@@ -26,6 +31,7 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
   const language = useLoginLanguage();
   const { account, loading, pushLoginAvailable, forget } = useRememberedSmartIdAccount();
   const [rememberMe, setRememberMe] = useState(() => readRememberMeChoice() ?? false);
+  const inAPrivateSafariTab = usePrivateSafariTabOnAnIphone();
 
   const chooseRememberMe = (choice: boolean) => {
     saveRememberMeChoice(choice);
@@ -41,7 +47,7 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
       <div className="d-grid gap-2">
         <button
           type="button"
-          className="btn btn-primary btn-lg text-wrap text-balance"
+          className={PRIMARY_LOGIN_BUTTON_CLASS}
           onClick={() => onSmartIdLoginStart(language, 'NOTIFICATION')}
         >
           <FormattedMessage
@@ -62,12 +68,21 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
   }
 
   const onAPhone = deviceClass() === 'phone';
+  const startLogin = () =>
+    onSmartIdLoginStart(language, 'DEVICE_LINK', pushLoginAvailable && rememberMe);
+
+  const wayOut = onAPhone ? wayOutOfTheInAppBrowser(navigator.userAgent) : null;
+
+  if (wayOut) {
+    return (
+      <div className="d-grid gap-3">
+        <InAppBrowserSmartIdLogin wayOut={wayOut} />
+      </div>
+    );
+  }
+
   const logInButton = (
-    <button
-      type="button"
-      className="btn btn-primary btn-lg text-wrap text-balance"
-      onClick={() => onSmartIdLoginStart(language, 'DEVICE_LINK', pushLoginAvailable && rememberMe)}
-    >
+    <button type="button" className={PRIMARY_LOGIN_BUTTON_CLASS} onClick={startLogin}>
       <IconBeforeLabel
         icon={onAPhone ? <SmartIdMarkIcon /> : <QrCodeIcon />}
         label={formatMessage({ id: 'login.enter' })}
@@ -86,6 +101,11 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
       )}
       {onAPhone ? (
         <div className="d-grid gap-2">
+          {inAPrivateSafariTab && (
+            <p className="m-0 text-pretty">
+              <PrivateSafariTabInstruction />
+            </p>
+          )}
           {logInButton}
           <QuietLinkButton
             onClick={() => onSmartIdLoginStart(language, 'DEVICE_LINK', false, true)}
