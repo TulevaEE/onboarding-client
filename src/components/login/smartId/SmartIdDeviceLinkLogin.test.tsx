@@ -5,6 +5,7 @@ import { IntlProvider } from 'react-intl';
 
 import translations from '../../translations';
 import { SmartIdDeviceLinkLogin } from './SmartIdDeviceLinkLogin';
+import { departForTheSmartIdLink } from './useSmartIdAppDidNotOpen';
 import { automaticRenewalAllowance, AutomaticRenewalAllowance } from './automaticRenewalAllowance';
 import { getSmartIdQrCodeLink } from '../../common/api';
 import { expectStackedFullWidth } from '../../../test/expectStackedFullWidth';
@@ -696,6 +697,11 @@ describe('Smart-ID device link login', () => {
 
       const leaveForTheLinkAsAWebPage = () =>
         act(() => {
+          departForTheSmartIdLink();
+          window.dispatchEvent(new Event('pagehide'));
+        });
+      const reloadThePage = () =>
+        act(() => {
           window.dispatchEvent(new Event('pagehide'));
         });
       const comeBack = () =>
@@ -754,6 +760,35 @@ describe('Smart-ID device link login', () => {
         await flushPendingRequests();
 
         expect(screen.getByText(/^The Smart.ID app did not open\.$/)).toBeInTheDocument();
+      });
+
+      it('says nothing about it after the waiting page is reloaded', async () => {
+        const { unmount: unloadThePage } = renderDeviceLinkLogin();
+        await flushPendingRequests();
+        reloadThePage();
+        unloadThePage();
+
+        renderDeviceLinkLogin();
+        await flushPendingRequests();
+
+        expect(screen.queryByText(/did not open/)).not.toBeInTheDocument();
+      });
+
+      it('says nothing about it when the person came back from the app and then reloaded the page', async () => {
+        const { unmount: unloadThePage } = renderDeviceLinkLogin();
+        await flushPendingRequests();
+        act(() => {
+          departForTheSmartIdLink();
+        });
+        act(() => setPageVisibility('hidden'));
+        act(() => setPageVisibility('visible'));
+        reloadThePage();
+        unloadThePage();
+
+        renderDeviceLinkLogin();
+        await flushPendingRequests();
+
+        expect(screen.queryByText(/did not open/)).not.toBeInTheDocument();
       });
 
       it('does not carry it over to a new login', async () => {

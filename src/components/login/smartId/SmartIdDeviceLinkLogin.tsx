@@ -15,7 +15,7 @@ import { ScanFrame } from './ScanFrame';
 import { SmartIdLoginFlow } from '../../common/apiModels';
 import { opensTheSmartIdApp } from './opensTheSmartIdApp';
 import { linkThatOpensTheSmartIdApp } from './linkThatOpensTheSmartIdApp';
-import { useSmartIdAppDidNotOpen } from './useSmartIdAppDidNotOpen';
+import { departForTheSmartIdLink, useSmartIdAppDidNotOpen } from './useSmartIdAppDidNotOpen';
 import { SmartIdAppDidNotOpen } from './SmartIdAppDidNotOpen';
 import { useStillOnThisPage } from './useStillOnThisPage';
 import { IconBeforeLabel, SmartIdMarkIcon } from './icons';
@@ -118,6 +118,7 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
             ref={appButton}
             className="btn btn-primary btn-lg text-wrap text-balance"
             href={linkThatOpensTheSmartIdApp(web2AppLink)}
+            onClick={departForTheSmartIdLink}
           >
             <IconBeforeLabel
               icon={<SmartIdMarkIcon />}

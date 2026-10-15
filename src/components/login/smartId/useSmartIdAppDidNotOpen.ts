@@ -2,6 +2,12 @@ import { useEffect, useState } from 'react';
 
 const LINK_OPENED_AS_A_WEB_PAGE = 'smartIdLinkOpenedAsAWebPage';
 
+let departedForTheSmartIdLink = false;
+
+export const departForTheSmartIdLink = (): void => {
+  departedForTheSmartIdLink = true;
+};
+
 const linkOpenedAsAWebPage = (): string | null => {
   try {
     return sessionStorage.getItem(LINK_OPENED_AS_A_WEB_PAGE);
@@ -25,19 +31,29 @@ export function useSmartIdAppDidNotOpen(web2AppLink: string): boolean {
   useEffect(() => {
     let leftAsAWebPage = false;
     const onPageHide = () => {
-      leftAsAWebPage = true;
-      rememberTheLinkOpenedAsAWebPage(web2AppLink);
+      if (departedForTheSmartIdLink) {
+        leftAsAWebPage = true;
+        rememberTheLinkOpenedAsAWebPage(web2AppLink);
+      }
     };
     const onPageShow = () => {
       if (leftAsAWebPage || linkOpenedAsAWebPage() === web2AppLink) {
         setDidNotOpen(true);
       }
     };
+    const onBackInViewWithoutLeaving = () => {
+      if (document.visibilityState === 'visible') {
+        departedForTheSmartIdLink = false;
+      }
+    };
     window.addEventListener('pagehide', onPageHide);
     window.addEventListener('pageshow', onPageShow);
+    document.addEventListener('visibilitychange', onBackInViewWithoutLeaving);
     return () => {
       window.removeEventListener('pagehide', onPageHide);
       window.removeEventListener('pageshow', onPageShow);
+      document.removeEventListener('visibilitychange', onBackInViewWithoutLeaving);
+      departedForTheSmartIdLink = false;
     };
   }, [web2AppLink]);
 

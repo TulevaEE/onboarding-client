@@ -42,6 +42,7 @@ import { forgetSmartIdCallbackParameters } from './smartId/smartIdCallbackParame
 import { pageInView } from './smartId/pageInView';
 import { opensTheSmartIdApp } from './smartId/opensTheSmartIdApp';
 import { linkThatOpensTheSmartIdApp } from './smartId/linkThatOpensTheSmartIdApp';
+import { departForTheSmartIdLink } from './smartId/useSmartIdAppDidNotOpen';
 import { pathOnThisSite } from './pathOnThisSite';
 
 const POLL_DELAY = 1000;
@@ -418,8 +419,10 @@ const showTheQrCode = { qrCodeRequested: true, afterDeviceLinkStarted: () => {} 
 
 const openTheSmartIdApp = {
   qrCodeRequested: false,
-  afterDeviceLinkStarted: (web2AppLink) =>
-    window.location.assign(linkThatOpensTheSmartIdApp(web2AppLink)),
+  afterDeviceLinkStarted: (web2AppLink) => {
+    departForTheSmartIdLink();
+    window.location.assign(linkThatOpensTheSmartIdApp(web2AppLink));
+  },
 };
 
 export function startSmartIdLogin(language, flow = 'DEVICE_LINK', rememberMe = false) {
