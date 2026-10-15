@@ -4,7 +4,6 @@ import { restoreAuthenticationFromSession } from '../common/authenticationManage
 const BASE_CONFIG = {
   clientCredentialsAccessToken: undefined,
   language: 'et',
-  idCardUrl: 'https://id.tuleva.ee',
 } as const;
 
 const ENV_CONFIGS = {
@@ -22,7 +21,6 @@ const ENV_CONFIGS = {
     ...BASE_CONFIG,
     applicationUrl: 'https://staging.tuleva.ee',
     clientCredentialsAccessToken: '6b338ba2-805c-4300-9341-b38bb4ad34a9',
-    idCardUrl: 'https://id-staging.tuleva.ee',
   },
   test: {
     ...BASE_CONFIG,

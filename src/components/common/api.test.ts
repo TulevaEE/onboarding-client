@@ -1,6 +1,5 @@
 import config from 'react-global-configuration';
 import {
-  authenticateWithIdCardMtls,
   authenticateWithIdCardWebEid,
   authenticateWithMobileId,
   isMobileIdNumberRemembered,
@@ -14,7 +13,6 @@ import {
   getContributions,
   getFunds,
   getIdCardSignatureStatus,
-  getIdCardTokens,
   getMandateDeadlines,
   getNudge,
   postPaymentRateRedirect,
@@ -88,7 +86,7 @@ describe('API calls', () => {
   const mockAuthenticationUpdate = jest.fn();
   const mockAuthenticationRemove = jest.fn();
   beforeEach(() => {
-    config.set({ idCardUrl: 'https://id.tuleva.ee' }, { freeze: false, assign: false });
+    config.set({}, { freeze: false, assign: false });
     jest.clearAllMocks();
     (authenticationManager.getAuthentication as Mock).mockReturnValue({
       update: mockAuthenticationUpdate,
@@ -99,19 +97,6 @@ describe('API calls', () => {
   afterEach(() => {
     jest.restoreAllMocks();
     jest.resetModules();
-  });
-
-  describe('authenticateWithIdCardMtls', () => {
-    it('should authenticate using ID card successfully via ALB mTLS', async () => {
-      config.set({ idCardUrl: 'https://id.tuleva.ee' }, { freeze: false, assign: false });
-      mockHttp.simpleFetch.mockResolvedValueOnce({ success: true });
-
-      const result = await authenticateWithIdCardMtls();
-
-      expect(result).toBe(true);
-      expect(mockHttp.simpleFetch).toHaveBeenCalledWith('POST', 'https://id.tuleva.ee/idLogin');
-      expect(mockHttp.simpleFetch).toHaveBeenCalledTimes(1);
-    });
   });
 
   describe('authenticateWithIdCardWebEid', () => {
@@ -412,32 +397,6 @@ describe('API calls', () => {
       mockHttp.post.mockRejectedValueOnce(error);
 
       await expect(completeSmartIdCallback(callback)).rejects.toEqual(error);
-    });
-  });
-
-  describe('getIdCardTokens', () => {
-    it('should retrieve ID card tokens successfully', async () => {
-      const expectedToken = { accessToken: 'access-token', refreshToken: 'refresh-token' };
-      mockHttp.postForm.mockResolvedValueOnce({
-        access_token: expectedToken.accessToken,
-        refresh_token: expectedToken.refreshToken,
-      });
-
-      const token = await getIdCardTokens();
-
-      expect(token).toEqual(expectedToken);
-      expect(mockHttp.postForm).toHaveBeenCalledWith(
-        '/oauth/token',
-        expect.any(Object),
-        expect.any(Object),
-        expect.any(Object),
-      );
-      expect(mockAuthenticationUpdate).toHaveBeenCalledWith({
-        accessToken: expectedToken.accessToken,
-        refreshToken: expectedToken.refreshToken,
-        loginMethod: 'ID_CARD',
-        signingMethod: 'ID_CARD',
-      });
     });
   });
 

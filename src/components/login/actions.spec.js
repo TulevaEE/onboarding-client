@@ -10,11 +10,6 @@ import {
   MOBILE_AUTHENTICATION_CANCEL,
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
-  ID_CARD_AUTHENTICATION_START,
-  ID_CARD_AUTHENTICATION_START_SUCCESS,
-  ID_CARD_AUTHENTICATION_START_ERROR,
-  ID_CARD_AUTHENTICATION_ERROR,
-  ID_CARD_AUTHENTICATION_SUCCESS,
   GET_USER_START,
   GET_USER_SUCCESS,
   GET_USER_ERROR,
@@ -26,7 +21,6 @@ import {
   CHANGE_PERSONAL_CODE,
 } from './constants';
 
-import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 import { getAuthentication } from '../common/authenticationManager';
 
 const mockHttp = jest.genMockFromModule('../common/http');
@@ -86,7 +80,6 @@ describe('Login actions', () => {
     mockApi.startSmartIdLogin = () => Promise.reject();
     mockApi.getMobileIdTokens = () => Promise.reject();
     mockApi.getSmartIdTokens = () => Promise.reject();
-    mockApi.getIdCardTokens = () => Promise.reject();
   });
 
   afterEach(() => {
@@ -198,88 +191,6 @@ describe('Login actions', () => {
 
     return authenticateWithRememberedMobileId().then(() => {
       expect(dispatch).toHaveBeenCalledWith({ type: MOBILE_AUTHENTICATION_START_ERROR, error });
-    });
-  });
-
-  it('can authenticate with an id card (mTLS)', () => {
-    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
-    mockApi.authenticateWithIdCardMtls = jest.fn(() => {
-      expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith({
-        type: ID_CARD_AUTHENTICATION_START,
-      });
-      dispatch.mockClear();
-      return Promise.resolve();
-    });
-    const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
-    expect(dispatch).not.toHaveBeenCalled();
-    mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(tokens));
-    return authenticateWithIdCard().then(() => {
-      expect(dispatch).toHaveBeenCalledTimes(2);
-      expect(dispatch).toHaveBeenCalledWith({
-        type: ID_CARD_AUTHENTICATION_START_SUCCESS,
-      });
-    });
-  });
-
-  it('can handle id card login with query parameter', () => {
-    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
-    const handleIdCardLogin = createBoundAction(actions.handleIdCardLogin);
-    expect(dispatch).not.toHaveBeenCalled();
-    mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(tokens));
-
-    handleIdCardLogin({ login: 'ID_CARD' });
-
-    expect(dispatch).toHaveBeenCalledTimes(3);
-    expect(dispatch).toHaveBeenCalledWith({
-      type: ID_CARD_AUTHENTICATION_START,
-    });
-    expect(dispatch).toHaveBeenCalledWith({
-      type: ID_CARD_AUTHENTICATION_START_SUCCESS,
-    });
-  });
-
-  it('thunk uses mTLS and never calls WebEid api regardless of ?webeid=true flag', () => {
-    Object.defineProperty(window, 'location', {
-      value: { search: '?webeid=true' },
-      writable: true,
-      configurable: true,
-    });
-
-    mockApi.authenticateWithIdCardMtls = jest.fn(() => Promise.resolve());
-    mockApi.authenticateWithIdCardWebEid = jest.fn(() =>
-      Promise.resolve({ accessToken: 't', refreshToken: 'r' }),
-    );
-    mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(null));
-    const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
-
-    return authenticateWithIdCard().then(() => {
-      expect(mockApi.authenticateWithIdCardMtls).toHaveBeenCalled();
-      expect(mockApi.authenticateWithIdCardWebEid).not.toHaveBeenCalled();
-    });
-  });
-
-  it('can handle authenticate with an id card start error (mTLS)', () => {
-    const initialError = new Error('oh no!');
-    const actualBroadcastedError = {
-      body: { errors: [{ code: ID_CARD_LOGIN_START_FAILED_ERROR }] },
-    };
-
-    mockApi.authenticateWithIdCardMtls = jest.fn(() => {
-      expect(dispatch).toHaveBeenCalledTimes(1);
-      expect(dispatch).toHaveBeenCalledWith({
-        type: ID_CARD_AUTHENTICATION_START,
-      });
-      dispatch.mockClear();
-      return Promise.reject(initialError);
-    });
-    const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
-    expect(dispatch).not.toHaveBeenCalled();
-    return authenticateWithIdCard().then(() => {
-      expect(dispatch).toHaveBeenCalledWith({
-        type: ID_CARD_AUTHENTICATION_START_ERROR,
-        error: actualBroadcastedError,
-      });
     });
   });
 
@@ -1435,51 +1346,6 @@ describe('Login actions', () => {
     });
   });
 
-  it('starts polling until succeeds when authenticating with id card (mTLS)', () => {
-    const tokens = { accessToken: 'token', refreshToken: 'refreshToken' };
-    mockApi.authenticateWithIdCardMtls = jest.fn(() => Promise.resolve());
-    mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(null));
-    const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
-    return authenticateWithIdCard()
-      .then(() => {
-        dispatch.mockClear();
-        mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(tokens));
-        jest.runOnlyPendingTimers();
-        expect(dispatch).not.toHaveBeenCalled();
-        expect(mockApi.getIdCardTokens).toHaveBeenCalled();
-      })
-      .then(() => {
-        expect(dispatch).toHaveBeenCalledWith({
-          type: ID_CARD_AUTHENTICATION_SUCCESS,
-          tokens,
-        });
-      });
-  });
-
-  it('starts polling until fails when authenticating with id card (mTLS)', () => {
-    const error = new Error('oh no!');
-    mockApi.authenticateWithIdCardMtls = jest.fn(() => Promise.resolve());
-    mockApi.getIdCardTokens = jest.fn(() => Promise.resolve(null));
-    const authenticateWithIdCard = createBoundAction(actions.authenticateWithIdCard);
-    return authenticateWithIdCard()
-      .then(() => {
-        dispatch.mockClear();
-        mockApi.getIdCardTokens = jest.fn(() => Promise.reject(error));
-        jest.runOnlyPendingTimers();
-        expect(dispatch).not.toHaveBeenCalled();
-        expect(mockApi.getIdCardTokens).toHaveBeenCalled();
-      })
-      .then(() => {
-        jest.runOnlyPendingTimers();
-      })
-      .then(() => {
-        expect(dispatch).toHaveBeenCalledWith({
-          type: ID_CARD_AUTHENTICATION_ERROR,
-          error,
-        });
-      });
-  });
-
   it('can handle errors when authenticating with a phone number', () => {
     const phoneNumber = '12345';
     const error = new Error('oh no!');
@@ -1610,16 +1476,6 @@ describe('Login actions', () => {
     expect(dispatch).toHaveBeenCalledWith({ type: SET_LOGIN_TO_REDIRECT });
     expect(dispatch).toHaveBeenCalledWith({
       type: MOBILE_AUTHENTICATION_START,
-    });
-  });
-
-  it('can handle redirect login with id card (mTLS)', () => {
-    mockApi.authenticateWithIdCardMtls = jest.fn(() => Promise.resolve());
-    const useRedirectLoginWithIdCard = createBoundAction(actions.useRedirectLoginWithIdCard);
-    useRedirectLoginWithIdCard();
-    expect(dispatch).toHaveBeenCalledWith({ type: SET_LOGIN_TO_REDIRECT });
-    expect(dispatch).toHaveBeenCalledWith({
-      type: ID_CARD_AUTHENTICATION_START,
     });
   });
 

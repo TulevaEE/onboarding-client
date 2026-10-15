@@ -56,7 +56,6 @@ const store = createStore(
 
 function applyRouting() {
   const queryParams = getQueryParams();
-  store.dispatch(loginActions.handleIdCardLogin(queryParams));
   store.dispatch(loginActions.resumePendingSmartIdAuthentication());
   store.dispatch(thirdPillarActions.addDataFromQueryParams(queryParams));
 }

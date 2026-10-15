@@ -179,20 +179,6 @@ export async function head(url: string): Promise<any> {
   return response;
 }
 
-export async function simpleFetch(method: string, url: string): Promise<any> {
-  const response = await fetch(url, {
-    method,
-    headers: {
-      'Content-Type': 'text/plain', // for Firefox CORS:
-      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS?redirectlocale=en-US&redirectslug=HTTP_access_control#Simple_requests
-    },
-    mode: 'cors',
-    credentials: 'include',
-    cache: 'default',
-  });
-  return transformResponse(response);
-}
-
 function createLanguageHeaders(): Record<string, string> {
   return {
     'Accept-Language': config.get('language'),
