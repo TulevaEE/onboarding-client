@@ -119,10 +119,7 @@ const ParentGiftLink: FC<{ user: User }> = ({ user }) => {
               <FormattedMessage id="giftLink.parent.invitation.editIt" />
             </p>
             <div>
-              <CopyButton
-                textToCopy={editedInvitation}
-                className="btn btn-lg btn-primary d-inline-flex align-items-center gap-2"
-              >
+              <CopyButton textToCopy={editedInvitation} prominent>
                 <FormattedMessage id="giftLink.parent.invitation.copy" />
               </CopyButton>
             </div>

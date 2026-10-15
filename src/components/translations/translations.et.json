@@ -1231,6 +1231,7 @@
   "global.skipToContent": "Liigu edasi sisu juurde",
   "global.copy": "Kopeerin",
   "global.copied": "Kopeeritud",
+  "global.copyFailed": "Kopeeri käsitsi",
 
   "pageTitle.loginPage": "Sisene",
   "pageTitle.accountPage": "Minu konto",
@@ -2352,5 +2353,6 @@
   "pensionAccountNumber.whenNeeded.bankTransfer": "Sina või keegi teine maksab sinu III sambasse pangaülekandega.",
   "pensionAccountNumber.whenNeeded.mistakenContribution": "Tühistad ekslikult tehtud III samba sissemakse.",
   "pensionAccountNumber.otherNames": "Sama number kehtib II ja III sambas. Seda küsitakse sageli ka viitenumbri nime all.",
-  "pensionAccountNumber.noAccountYet": "Sul ei ole veel pensionikontot. See avatakse, kui liitud II või III sambaga."
+  "pensionAccountNumber.noAccountYet": "Sul ei ole veel pensionikontot. See avatakse, kui liitud II või III sambaga.",
+  "pensionAccountNumber.unavailable": "Numbrit ei õnnestunud laadida. Proovi hiljem uuesti."
 }

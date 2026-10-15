@@ -726,6 +726,19 @@ describe('the page where a parent gets a gift link', () => {
     await waitFor(() => expect(writeText).toHaveBeenCalledWith('Tere vanaema!'));
   });
 
+  it('sees on the message button itself that the message was copied', async () => {
+    Object.defineProperty(window.navigator, 'clipboard', {
+      value: { writeText: jest.fn().mockResolvedValue(undefined) },
+      writable: true,
+    });
+
+    openPage();
+    await findLinkField();
+    userEvent.click(screen.getByRole('button', { name: 'Copy the message' }));
+
+    expect(await screen.findByRole('button', { name: 'Copied' })).toBeInTheDocument();
+  });
+
   it('says so when the link itself cannot be loaded, instead of showing a blank page', async () => {
     server.use(
       rest.post('http://localhost/v1/savings-fund/gift-links', (req, res, ctx) =>

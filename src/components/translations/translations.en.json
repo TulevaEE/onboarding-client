@@ -1152,6 +1152,7 @@
   "global.skipToContent": "Skip to content",
   "global.copy": "Copy",
   "global.copied": "Copied",
+  "global.copyFailed": "Copy it yourself",
 
   "pageTitle.loginPage": "Log in",
   "pageTitle.accountPage": "My account",
@@ -2262,5 +2263,6 @@
   "pensionAccountNumber.whenNeeded.bankTransfer": "You or someone else pays into your III pillar by bank transfer.",
   "pensionAccountNumber.whenNeeded.mistakenContribution": "You cancel a III pillar contribution made by mistake.",
   "pensionAccountNumber.otherNames": "The same number is used for the II and III pillar. It is often asked for as a reference number.",
-  "pensionAccountNumber.noAccountYet": "You do not have a pension account yet. It opens when you join the II or III pillar."
+  "pensionAccountNumber.noAccountYet": "You do not have a pension account yet. It opens when you join the II or III pillar.",
+  "pensionAccountNumber.unavailable": "Your number could not be loaded. Try again later."
 }
