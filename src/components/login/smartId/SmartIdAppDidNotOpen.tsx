@@ -51,7 +51,7 @@ export const SmartIdAppDidNotOpen: React.FC = () => {
   const { formatMessage } = useIntl();
 
   return (
-    <div role="status" className="d-grid gap-2 text-pretty">
+    <div className="d-grid gap-2 text-pretty">
       <p className="m-0">
         <FormattedMessage id="login.smart.id.app.did.not.open" />
       </p>

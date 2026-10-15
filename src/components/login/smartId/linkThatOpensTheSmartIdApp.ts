@@ -10,6 +10,14 @@ const intentForTheSmartIdApp = (web2AppLink: string, link: URL) =>
     web2AppLink,
   )};end`;
 
+const readableLink = (address: string): URL | null => {
+  try {
+    return new URL(address);
+  } catch (unreadable) {
+    return null;
+  }
+};
+
 export function linkThatOpensTheSmartIdApp(
   web2AppLink: string,
   userAgent: string = navigator.userAgent,
@@ -17,8 +25,8 @@ export function linkThatOpensTheSmartIdApp(
   if (!inSamsungInternet(userAgent)) {
     return web2AppLink;
   }
-  const link = new URL(web2AppLink);
-  if (link.protocol !== 'https:' || link.host !== LIVE_SMART_ID_APP_LINK_HOST) {
+  const link = readableLink(web2AppLink);
+  if (!link || link.protocol !== 'https:' || link.host !== LIVE_SMART_ID_APP_LINK_HOST) {
     return web2AppLink;
   }
   return intentForTheSmartIdApp(web2AppLink, link);

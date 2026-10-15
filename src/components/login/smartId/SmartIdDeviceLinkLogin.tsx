@@ -111,7 +111,9 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
       <FocusedParagraph className="visually-hidden">
         <FormattedMessage id="login.smart.id.confirm.in.app" />
       </FocusedParagraph>
-      {appDidNotOpen ? <SmartIdAppDidNotOpen /> : <Loader className="align-middle" />}
+      <div role="status">
+        {appDidNotOpen ? <SmartIdAppDidNotOpen /> : <Loader className="align-middle" />}
+      </div>
       <div className="d-grid gap-2 mt-4">
         {offerTheAppButton && (
           <a

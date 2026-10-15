@@ -35,6 +35,10 @@ describe('the link that opens the Smart-ID app', () => {
     expect(linkThatOpensTheSmartIdApp(web2AppLink, userAgent)).toBe(web2AppLink);
   });
 
+  it('keeps a link it cannot read as it is', () => {
+    expect(linkThatOpensTheSmartIdApp('not a link', userAgents.samsungInternet)).toBe('not a link');
+  });
+
   it('keeps a link of another Smart-ID environment as it is, since only the live app is asked for by name', () => {
     const demoLink = 'https://sid.demo.sk.ee/device-link?deviceLinkType=Web2App&sessionToken=T';
 

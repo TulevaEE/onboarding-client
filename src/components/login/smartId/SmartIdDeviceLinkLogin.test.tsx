@@ -739,14 +739,16 @@ describe('Smart-ID device link login', () => {
         expect(appButton()).toHaveAttribute('href', web2AppLink);
       });
 
-      it('announces that the app did not open to a screen reader', async () => {
+      it('announces that the app did not open in a live region that was there before, so a screen reader reads it', async () => {
         renderDeviceLinkLogin();
         await flushPendingRequests();
+        const [liveRegion] = screen.getAllByRole('status');
 
         leaveForTheLinkAsAWebPage();
         comeBack();
 
-        expect(screen.getByRole('status')).toHaveTextContent(/^The Smart.ID app did not open\./);
+        expect(liveRegion).toHaveTextContent(/^The Smart.ID app did not open\./);
+        expect(screen.getAllByRole('status')[0]).toBe(liveRegion);
       });
 
       it('says nothing about it when the Smart-ID app took the link and the person came back', async () => {
