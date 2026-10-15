@@ -1,29 +1,34 @@
 import { test } from '../../support/test';
 import {
-  expectToldToLogInHere,
+  expectToldToOpenANormalSafariTab,
+  expectWarnedBeforeThePinThatSmartIdCannotFinishInAPrivateTab,
   openTheSmartIdCallbackIn,
-  tryAgainWhereSmartIdReturnedTheLogin,
 } from '../../support/callbackPage';
+import { chooseSmartId, tapLogInToOpenTheSmartIdApp } from '../../support/loginPage';
 import { PAGE_A_NEWSLETTER_LINKS_TO } from '../../support/links';
 
-test.describe('Smart-ID app returns a login started in Safari to a new private tab every time', () => {
-  test('tells the person again when the login Try again starts in a private tab returns to yet another private tab', async ({
+test.describe('A login started in a private Safari tab, which Smart-ID returns to a new private tab', () => {
+  test.use({ privateSafariTabs: true });
+
+  test('warns before the PIN that Smart-ID cannot finish in a private tab, and still offers Sisenen', async ({
+    page,
+  }) => {
+    await page.goto(PAGE_A_NEWSLETTER_LINKS_TO);
+    await chooseSmartId(page);
+
+    await expectWarnedBeforeThePinThatSmartIdCannotFinishInAPrivateTab(page);
+  });
+
+  test('tells the person in the private tab Smart-ID opened to open a normal tab, with no Try again that would fail the same way', async ({
     page,
     smartIdApp,
     anotherBrowser,
   }) => {
     await page.goto(PAGE_A_NEWSLETTER_LINKS_TO);
-    const callbackUrl = await tryAgainWhereSmartIdReturnedTheLogin(
-      page,
-      await anotherBrowser(),
-      smartIdApp,
-    );
+    const callbackUrl = await smartIdApp.confirmAndReturn(await tapLogInToOpenTheSmartIdApp(page));
 
-    const yetAnotherPrivateTab = await openTheSmartIdCallbackIn(
-      await anotherBrowser(),
-      callbackUrl,
-    );
+    const anotherPrivateTab = await openTheSmartIdCallbackIn(await anotherBrowser(), callbackUrl);
 
-    await expectToldToLogInHere(yetAnotherPrivateTab);
+    await expectToldToOpenANormalSafariTab(anotherPrivateTab);
   });
 });

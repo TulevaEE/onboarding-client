@@ -17,6 +17,8 @@ const SESSION_THE_LOGIN_STARTED_IN_IS_MISSING = 'auth.session.not.found';
 export const TOLD_TO_LOG_IN_IN_THE_BROWSER_SMART_ID_OPENED =
   /^Smart.ID avas Tuleva teises brauseris või aknas\. Vajuta .Proovi\suuesti.\. Privaatses aknas sisselogimine ei õnnestu, sest Smart.ID rakendus ei saa sind privaatsesse aknasse tagasi saata\. Ava Tuleva siis tavalises aknas\.$/;
 
+const TOLD_TO_OPEN_A_NORMAL_SAFARI_TAB = /^Privaatses aknas Smart.ID ei tööta\./;
+
 const tryAgainLinkOf = (tab: Page) => tab.getByRole('link', { name: 'Proovi uuesti' });
 
 export async function openTheSmartIdCallbackIn(
@@ -49,6 +51,24 @@ export async function expectToldToLogInHere(
   await expect(tab.getByRole('alert')).toHaveText(TOLD_TO_LOG_IN_IN_THE_BROWSER_SMART_ID_OPENED);
   await expect(tryAgainLinkOf(tab)).toBeVisible();
 }
+
+export async function expectToldToOpenANormalSafariTab({
+  tab,
+  callbackAnswer,
+}: ReturnedTab): Promise<void> {
+  expect(await callbackAnswer.json()).toEqual({
+    errors: [expect.objectContaining({ code: SESSION_THE_LOGIN_STARTED_IN_IS_MISSING })],
+  });
+  await expect(tab.getByRole('alert')).toHaveText(TOLD_TO_OPEN_A_NORMAL_SAFARI_TAB);
+  await expect(tryAgainLinkOf(tab)).toHaveCount(0);
+}
+
+export const expectWarnedBeforeThePinThatSmartIdCannotFinishInAPrivateTab = async (
+  page: Page,
+): Promise<void> => {
+  await expect(page.getByText(TOLD_TO_OPEN_A_NORMAL_SAFARI_TAB)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Sisenen' })).toBeVisible();
+};
 
 export const tapTryAgainToOpenTheSmartIdApp = (tab: Page): Promise<string> =>
   web2AppLinkOpenedBy(tab, () => tryAgainLinkOf(tab).click());
