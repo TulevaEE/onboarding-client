@@ -1,4 +1,4 @@
-import { inSamsungInternet } from './phoneBrowser';
+import { inSamsungInternet } from '../../common/browserFamily';
 
 const LIVE_SMART_ID_APP_LINK_HOST = 'smart-id.com';
 const LIVE_SMART_ID_APP_ON_ANDROID = 'com.smart_id';

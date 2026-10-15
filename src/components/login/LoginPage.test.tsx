@@ -21,6 +21,7 @@ import { getAuthentication } from '../common/authenticationManager';
 import { replaceWindowLocationAssign } from '../../test/windowLocationAssign';
 import { resumePendingSmartIdAuthentication } from './actions';
 import { forgetTheLayout, layOutBelowTheFold, watchScrollingIntoView } from '../../test/fold';
+import { blockSiteStorage } from '../../test/siteStorage';
 
 jest.unmock('react-intl');
 
@@ -36,6 +37,13 @@ const pretendToBeOn = (userAgent: string) => {
     Object.defineProperty(navigator, 'userAgent', { value: desktopUserAgent, configurable: true }),
   );
 };
+
+const pretendToBeBrave = () =>
+  Object.defineProperty(navigator, 'brave', {
+    value: { isBrave: () => Promise.resolve(true) },
+    configurable: true,
+  });
+const stopPretendingToBeBrave = () => delete (navigator as { brave?: unknown }).brave;
 
 const waitLongerThanAPoll = () => act(() => new Promise((resolve) => setTimeout(resolve, 1500)));
 
@@ -1014,6 +1022,59 @@ describe('When a user is logging in', () => {
     userEvent.click(screen.getByRole('tab', { name: 'Smart-ID' }));
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  test('a browser that keeps site storage does not ask them to allow cookies', async () => {
+    smartIdAuthenticationBackend(server, { language: 'en' });
+
+    expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+    expect(screen.queryByText(/allow cookies/i)).not.toBeInTheDocument();
+  });
+
+  describe('on a browser that blocks site storage', () => {
+    let unblockSiteStorage: () => void;
+
+    beforeEach(() => {
+      smartIdAuthenticationBackend(server, { language: 'en' });
+      unblockSiteStorage = blockSiteStorage();
+    });
+
+    afterEach(() => {
+      unblockSiteStorage();
+      stopPretendingToBeBrave();
+    });
+
+    test('they are asked to allow cookies for this site, above the login methods', async () => {
+      reloadThePage();
+
+      expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+      expect(
+        screen
+          .getByText('Allow cookies for this site to log in.')
+          .compareDocumentPosition(screen.getByRole('tablist')),
+      ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    });
+
+    test('the request to allow cookies leaves no word alone on its last line', async () => {
+      reloadThePage();
+
+      expect(await screen.findByText('Allow cookies for this site to log in.')).toHaveClass(
+        'text-balance',
+      );
+    });
+
+    test('in Brave they are shown where Brave allows cookies for this site', async () => {
+      pretendToBeBrave();
+      reloadThePage();
+
+      expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'To log in, allow cookies: tap the lion icon in the address bar, choose Advanced controls and under Block cookies choose Block third-party cookies.',
+        ),
+      ).toBeInTheDocument();
+      expect(screen.queryByText('Allow cookies for this site to log in.')).not.toBeInTheDocument();
+    });
   });
 
   test('they can sign in with id card via mTLS escape hatch (?mtls=true)', async () => {

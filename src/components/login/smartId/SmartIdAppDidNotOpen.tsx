@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { inBraveOnAndroid, inSamsungInternet } from './phoneBrowser';
+import { inBraveOnAndroid, inSamsungInternet } from '../../common/browserFamily';
 
 const SAMSUNG_INTERNET_LABELS = {
   et: { privacy: 'Privaatsus', block: 'Blokeeri avanevad välised rakendused' },

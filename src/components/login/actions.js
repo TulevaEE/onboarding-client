@@ -38,6 +38,7 @@ import { getGlobalErrorCode } from '../common/errorMessage';
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 
 import { getAuthentication } from '../common/authenticationManager';
+import { withSessionStorage } from '../common/siteStorage';
 import { forgetSmartIdCallbackParameters } from './smartId/smartIdCallbackParameters';
 import { pageInView } from './smartId/pageInView';
 import { opensTheSmartIdApp } from './smartId/opensTheSmartIdApp';
@@ -176,9 +177,7 @@ const TRANSIENT_POLL_ERRORS = [
 ];
 
 function clearPendingSmartIdAuthentication() {
-  if (window.sessionStorage) {
-    sessionStorage.removeItem(PENDING_SMART_ID_KEY);
-  }
+  withSessionStorage((storage) => storage.removeItem(PENDING_SMART_ID_KEY), undefined);
 }
 
 function savePendingSmartIdAuthentication({
@@ -191,9 +190,6 @@ function savePendingSmartIdAuthentication({
   language,
   callbackAccepted,
 }) {
-  if (!window.sessionStorage) {
-    return;
-  }
   try {
     sessionStorage.setItem(
       PENDING_SMART_ID_KEY,
@@ -216,9 +212,6 @@ function savePendingSmartIdAuthentication({
 }
 
 function loadPendingSmartIdAuthentication() {
-  if (!window.sessionStorage) {
-    return null;
-  }
   try {
     const pending = JSON.parse(sessionStorage.getItem(PENDING_SMART_ID_KEY));
     return pending && pending.startedAt && pending.authenticationHash ? pending : null;

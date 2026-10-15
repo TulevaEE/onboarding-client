@@ -1,12 +1,6 @@
-export const HANDOVER_TOKEN_STORAGE_KEY = 'handoverToken';
+import { withSessionStorage } from '../common/siteStorage';
 
-const withSessionStorage = <T>(use: (storage: Storage) => T, whenUnavailable: T): T => {
-  try {
-    return use(window.sessionStorage);
-  } catch (error) {
-    return whenUnavailable;
-  }
-};
+export const HANDOVER_TOKEN_STORAGE_KEY = 'handoverToken';
 
 export const storedHandoverToken = (): string | undefined =>
   window.handoverToken ??

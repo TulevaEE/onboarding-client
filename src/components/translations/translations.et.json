@@ -66,6 +66,8 @@
   "login.apply.link": "Täida liitumisavaldus",
   "login.epis_maintenance": "Pensionikontole sisenemine ei pruugi olla praegu võimalik, sest Pensionikeskuse töös on planeeritud katkestus.",
   "login.remember.me": "Jäta mind meelde",
+  "login.allow.cookies": "Sisselogimiseks luba selle lehe küpsised.",
+  "login.allow.cookies.brave": "Sisselogimiseks luba küpsised: vajuta aadressiribal lõviikooni, vali „Täiustatud kontroll“ ja „Blokeeri küpsised“ alt „Blokeeri kolmanda osapoole küpsisefailid“.",
   "log.out": "Väljun",
   "steps.next": "Järgmine samm",
   "steps.previous": "Eelmine samm",

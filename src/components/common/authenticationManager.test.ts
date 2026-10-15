@@ -2,6 +2,7 @@ import config from 'react-global-configuration';
 import { AuthenticationPrincipal } from './apiModels';
 import * as authenticationManagerModule from './authenticationManager';
 import { anAuthenticationManager } from './authenticationManagerFixture';
+import { blockSiteStorage } from '../../test/siteStorage';
 
 jest.mock('react-global-configuration');
 
@@ -59,6 +60,42 @@ describe('Authentication Management', () => {
     authManager.remove();
 
     expect(window.sessionStorage.removeItem).toHaveBeenCalledWith(AUTHENTICATION_CONFIGURATION_KEY);
+  });
+
+  describe('when the browser blocks session storage', () => {
+    let unblockSiteStorage: () => void;
+
+    beforeEach(() => {
+      unblockSiteStorage = blockSiteStorage();
+    });
+
+    afterEach(() => unblockSiteStorage());
+
+    test('restoreAuthenticationFromSession restores nothing', () => {
+      authenticationManagerModule.restoreAuthenticationFromSession();
+
+      expect(config.set).not.toHaveBeenCalled();
+    });
+
+    test('update keeps the authentication for this page', () => {
+      const mockAuthData = anAuthenticationManager('newAccessToken');
+
+      authenticationManagerModule.getAuthentication().update(mockAuthData);
+
+      expect(config.set).toHaveBeenCalledWith(
+        { [AUTHENTICATION_CONFIGURATION_KEY]: mockAuthData },
+        { freeze: false, assign: true },
+      );
+    });
+
+    test('remove forgets the authentication of this page', () => {
+      authenticationManagerModule.getAuthentication().remove();
+
+      expect(config.set).toHaveBeenCalledWith(
+        { [AUTHENTICATION_CONFIGURATION_KEY]: undefined },
+        { freeze: false, assign: true },
+      );
+    });
   });
 
   test('isAuthenticated should return true when access token is present', () => {

@@ -28,6 +28,7 @@ import {
 
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 import { getAuthentication } from '../common/authenticationManager';
+import { blockSiteStorage } from '../../test/siteStorage';
 
 const mockHttp = jest.genMockFromModule('../common/http');
 jest.mock('../common/http', () => mockHttp);
@@ -1673,6 +1674,35 @@ describe('Login actions', () => {
     expect(dispatch).toHaveBeenCalledWith({ type: SET_LOGIN_TO_REDIRECT });
     expect(dispatch).toHaveBeenCalledWith({
       type: MOBILE_AUTHENTICATION_START,
+    });
+  });
+
+  describe('when the browser blocks session storage', () => {
+    let unblockSiteStorage;
+
+    beforeEach(() => {
+      unblockSiteStorage = blockSiteStorage();
+    });
+
+    afterEach(() => unblockSiteStorage());
+
+    it('has no pending Smart-ID login to resume or to take a language from', () => {
+      createBoundAction(actions.resumePendingSmartIdAuthentication)();
+
+      expect(dispatch).not.toHaveBeenCalled();
+      expect(actions.getPendingSmartIdLanguage()).toBeNull();
+    });
+
+    it('still starts a Smart-ID login and cancels it', async () => {
+      mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
+      mockApi.getSmartIdTokens = jest.fn(() => new Promise(() => {}));
+
+      await createBoundAction(actions.startSmartIdLogin)('et');
+
+      expect(dispatch).toHaveBeenCalledWith(
+        expect.objectContaining({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink }),
+      );
+      expect(actions.cancelMobileAuthentication()).toEqual({ type: MOBILE_AUTHENTICATION_CANCEL });
     });
   });
 });
