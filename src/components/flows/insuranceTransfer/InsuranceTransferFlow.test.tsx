@@ -141,6 +141,20 @@ describe('III pillar insurance contract transfer', () => {
       expect(screen.queryByText(/Contribution to Tuleva/)).not.toBeInTheDocument();
     }, 20_000);
 
+    test('signs once when the sign button is pressed twice while the answers are being saved', async () => {
+      const amlChecks = amlChecksCreated();
+      const mandatesSaved = mandatesSavedCount();
+      openFlow();
+      await answerAllAgreements();
+
+      userEvent.click(signButton());
+      userEvent.click(signButton());
+
+      await requestStepOpened();
+      expect(amlChecks).toHaveLength(3);
+      expect(mandatesSaved()).toBe(1);
+    }, 20_000);
+
     test('keeps the selection among the steps once it shows up as complete after signing', async () => {
       openFlow();
       await answerAllAgreements();
@@ -217,6 +231,22 @@ describe('III pillar insurance contract transfer', () => {
       expect(await screen.findByRole('radio', { name: 'Ergo' })).toBeChecked();
     }, 20_000);
 
+    test('saves only the email and phone when contact details come first, leaving the address to the signed selection', async () => {
+      contactDetailsCheckMissing();
+      const savedContactDetails = contactDetailsSaved();
+      openFlow();
+
+      userEvent.click(await screen.findByRole('button', { name: 'Save' }));
+
+      expect(await screen.findByText(/^Choose Tuleva III\spillar$/)).toBeInTheDocument();
+      await waitFor(() =>
+        expect(history.location.pathname).toBe('/3rd-pillar-insurance/selection'),
+      );
+      expect(savedContactDetails).toEqual([
+        { email: 'john.doe@example.com', phoneNumber: '55667788' },
+      ]);
+    });
+
     test('says when the signing fails and lets the person close the message', async () => {
       server.use(
         rest.post('http://localhost/v1/mandates', (req, res, ctx) =>
@@ -235,6 +265,23 @@ describe('III pillar insurance contract transfer', () => {
       expect(
         screen.queryByText('An error occurred. Please try again or reach out to us.'),
       ).not.toBeInTheDocument();
+      expect(signButton()).toBeEnabled();
+      expect(history.location.pathname).toBe('/3rd-pillar-insurance/selection');
+    });
+
+    test('lets the person sign again when saving the answers fails', async () => {
+      server.use(
+        rest.post('http://localhost/v1/amlchecks', (req, res, ctx) =>
+          res(ctx.status(500), ctx.json({ errors: [] })),
+        ),
+      );
+      openFlow();
+      await answerAllAgreements();
+
+      userEvent.click(signButton());
+
+      userEvent.click(await screen.findByRole('button', { name: 'Close' }, { timeout: 5_000 }));
+      expect(signButton()).toBeEnabled();
       expect(history.location.pathname).toBe('/3rd-pillar-insurance/selection');
     });
   });
@@ -245,11 +292,7 @@ describe('III pillar insurance contract transfer', () => {
     });
 
     test('are asked for first when their check is missing', async () => {
-      server.use(
-        rest.get('http://localhost/v1/amlchecks', (req, res, ctx) =>
-          res(ctx.json([{ type: 'CONTACT_DETAILS', success: false }])),
-        ),
-      );
+      contactDetailsCheckMissing();
 
       openFlow();
 
@@ -258,6 +301,23 @@ describe('III pillar insurance contract transfer', () => {
       );
       expect(screen.getByText('Enter your contact details')).toBeInTheDocument();
       expect(screen.getByText('Send a request to your insurer')).toBeInTheDocument();
+    });
+
+    test('are saved with the address when no selection follows to carry it', async () => {
+      contactDetailsCheckMissing();
+      const savedContactDetails = contactDetailsSaved();
+      openFlow();
+
+      userEvent.click(await screen.findByRole('button', { name: 'Save' }));
+
+      await requestStepOpened();
+      expect(savedContactDetails).toEqual([
+        expect.objectContaining({
+          email: 'john.doe@example.com',
+          phoneNumber: '55667788',
+          address: { countryCode: 'EE' },
+        }),
+      ]);
     });
 
     test('are not asked for when the checks only arrive after the rest', async () => {
@@ -614,6 +674,37 @@ function amlChecksCreated() {
     }),
   );
   return checks;
+}
+
+function mandatesSavedCount() {
+  let saved = 0;
+  server.use(
+    rest.post('http://localhost/v1/mandates', (req, res, ctx) => {
+      saved += 1;
+      return res(ctx.json({ id: 1, pillar: 3 }));
+    }),
+  );
+  return () => saved;
+}
+
+function contactDetailsCheckMissing() {
+  server.use(
+    rest.get('http://localhost/v1/amlchecks', (req, res, ctx) =>
+      res(ctx.json([{ type: 'CONTACT_DETAILS', success: false }])),
+    ),
+  );
+}
+
+function contactDetailsSaved() {
+  const saved: Record<string, unknown>[] = [];
+  server.use(
+    rest.patch('http://localhost/v1/me', (req, res, ctx) => {
+      const body = req.body as Record<string, unknown>;
+      saved.push(body);
+      return res(ctx.json({ ...mockUser, ...MARI, ...body }));
+    }),
+  );
+  return saved;
 }
 
 function conversionBackendCountingRequests(thirdPillar: Partial<Conversion>) {

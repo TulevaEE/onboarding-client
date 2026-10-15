@@ -38,12 +38,22 @@ const useStepPathsFixedOnceLoaded = () => {
   return stepPaths;
 };
 
-const toFlowStep = (path: InsuranceTransferStepPath, nextPath: string): FlowStep => {
+const toFlowStep = (
+  path: InsuranceTransferStepPath,
+  nextPath: string,
+  selectionCarriesAddress: boolean,
+): FlowStep => {
   switch (path) {
     case 'contact-details':
       return {
         path,
-        Component: () => <AddressStep nextPath={nextPath} updateOnlyEmailAndPhone pillar={3} />,
+        Component: () => (
+          <AddressStep
+            nextPath={nextPath}
+            updateOnlyEmailAndPhone={selectionCarriesAddress}
+            pillar={3}
+          />
+        ),
         title: <FormattedMessage id="thirdPillarFlow.steps.address.title" />,
       };
     case 'selection':
@@ -83,8 +93,13 @@ export const InsuranceTransferFlow = () => {
     return <Redirect to={{ pathname: `${flowPath}/${stepPaths[0]}`, search }} />;
   }
 
+  const selectionCarriesAddress = stepPaths.includes('selection');
   const steps = stepPaths.map((path, index) =>
-    toFlowStep(path, `${flowPath}/${stepPaths[index + 1] ?? path}${search}`),
+    toFlowStep(
+      path,
+      `${flowPath}/${stepPaths[index + 1] ?? path}${search}`,
+      selectionCarriesAddress,
+    ),
   );
 
   return <ConnectedFlow flowPath={flowPath} steps={steps} />;

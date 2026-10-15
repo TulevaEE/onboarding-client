@@ -63,6 +63,7 @@ const Selection = ({ nextPath }: Props & InjectedFormProps<Record<string, never>
   const address = useSelector((state: State) => state.login.user.address);
   const agreedToTerms = useSelector((state: State) => state.thirdPillar.agreedToTerms);
   const amlAnswers = useAmlAnswers();
+  const savingAnswers = useSelector((state: State) => state.aml.loading);
   const { loading, challengeCode, error, cancel, resetError } = useMandateSigning();
   const { startSigning, stopSigning } = useSignedHere(nextPath);
 
@@ -106,7 +107,7 @@ const Selection = ({ nextPath }: Props & InjectedFormProps<Record<string, never>
       <button
         type="button"
         className="btn btn-primary mt-5"
-        disabled={!allAnswered || loading || !!challengeCode}
+        disabled={!allAnswered || savingAnswers || loading || !!challengeCode}
         onClick={sign}
       >
         <FormattedMessage id="confirm.mandate.sign" />
