@@ -14,6 +14,7 @@ import { readRememberMeChoice, saveRememberMeChoice } from './rememberMeChoice';
 import { InAppBrowserSmartIdLogin } from './InAppBrowserSmartIdLogin';
 import { wayOutOfTheInAppBrowser } from '../smartId/wayOutOfTheInAppBrowser';
 import { PRIMARY_LOGIN_BUTTON_CLASS } from './loginButtonClasses';
+import { usePrivateSafariTabOnAnIphone } from '../smartId/usePrivateSafariTabOnAnIphone';
 
 interface SmartIdLoginTabProps {
   onSmartIdLoginStart: (
@@ -29,6 +30,7 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
   const language = useLoginLanguage();
   const { account, loading, pushLoginAvailable, forget } = useRememberedSmartIdAccount();
   const [rememberMe, setRememberMe] = useState(() => readRememberMeChoice() ?? false);
+  const inAPrivateSafariTab = usePrivateSafariTabOnAnIphone();
 
   const chooseRememberMe = (choice: boolean) => {
     saveRememberMeChoice(choice);
@@ -98,6 +100,11 @@ export const SmartIdLoginTab: React.FC<SmartIdLoginTabProps> = ({ onSmartIdLogin
       )}
       {onAPhone ? (
         <div className="d-grid gap-2">
+          {inAPrivateSafariTab && (
+            <p className="m-0 text-pretty">
+              <FormattedMessage id="login.smart.id.private.safari.tab" />
+            </p>
+          )}
           {logInButton}
           <QuietLinkButton
             onClick={() => onSmartIdLoginStart(language, 'DEVICE_LINK', false, true)}

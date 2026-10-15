@@ -4,12 +4,14 @@ import XCTest
 enum LoginOutcome: Equatable {
   case loggedIn
   case sentToLogInInTheBrowserSmartIdOpened
+  case toldToOpenANormalTab
   case failedWithTheGenericLoginError
   case otherError(String)
 }
 
 struct LoginPage {
   private static let qrCodeImage = NSPredicate(format: "label BEGINSWITH 'Skänni Smart'")
+  private static let thePrivateTabWarning = NSPredicate(format: "label BEGINSWITH 'Privaatses aknas Smart'")
 
   let page: XCUIElement
 
@@ -17,6 +19,7 @@ struct LoginPage {
   var logIn: XCUIElement { page.buttons["Sisenen"].firstMatch }
   var showQrCode: XCUIElement { page.buttons["Näita QR-koodi"].firstMatch }
   var qrCode: XCUIElement { page.images.matching(Self.qrCodeImage).firstMatch }
+  var privateTabWarning: XCUIElement { page.staticTexts.matching(Self.thePrivateTabWarning).firstMatch }
 
   func waitUntilShown(timeout: TimeInterval = 60) -> Bool {
     logIn.waitForExistence(timeout: timeout)
@@ -78,6 +81,7 @@ struct LoginPage {
 
 struct LoginResultPage {
   private static let theAnotherBrowserMessage = "teises brauseris või aknas"
+  private static let theOpenANormalTabInstruction = "Privaatses aknas Smart"
   private static let theGenericLoginError = "Sisselogimisel tekkis viga. Palun proovi uuesti."
   private static let titleOfTheAccountPage = "Minu konto – Tuleva"
 
@@ -97,7 +101,7 @@ struct LoginResultPage {
       if skipToContent.exists {
         return .loggedIn
       }
-      if tryAgain.exists {
+      if tryAgain.exists || errorAlert.exists {
         return outcomeOfTheShownError()
       }
       sleep(1)
@@ -107,10 +111,13 @@ struct LoginResultPage {
 
   private func outcomeOfTheShownError() -> LoginOutcome {
     guard let message = shownErrorMessage() else {
-      return .otherError("No error message next to Proovi uuesti: \(page.debugDescription)")
+      return .otherError("No error message in the alert: \(page.debugDescription)")
     }
     if message.contains(Self.theAnotherBrowserMessage) {
       return .sentToLogInInTheBrowserSmartIdOpened
+    }
+    if message.hasPrefix(Self.theOpenANormalTabInstruction) {
+      return .toldToOpenANormalTab
     }
     if message == Self.theGenericLoginError {
       return .failedWithTheGenericLoginError

@@ -22,6 +22,7 @@
   "login.smart.id.copy.link": "Kopeeri link",
   "login.smart.id.copy.link.by.hand": "Kopeeri see link ja kleebi see Safarisse.",
   "login.smart.id.link.copied": "Link on kopeeritud. Kleebi see Safarisse.",
+  "login.smart.id.private.safari.tab": "Privaatses aknas Smart‑ID ei tööta. Vajuta ⋯, vali „New Tab“ ja ava seal pension.tuleva.ee.",
   "login.continue.as": "Jätka kui {firstName}",
   "login.not.you": "Pole sina?",
   "login.id.card": "ID-kaart",

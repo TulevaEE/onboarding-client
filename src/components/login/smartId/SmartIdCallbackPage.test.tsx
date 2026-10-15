@@ -286,6 +286,55 @@ describe('When the Smart-ID app returns to the browser', () => {
     expect(getAuthentication().isAuthenticated()).toBe(false);
   });
 
+  describe('in a private Safari tab on an iPhone', () => {
+    const desktopUserAgent = navigator.userAgent;
+    const browserStorage = Object.getOwnPropertyDescriptor(navigator, 'storage');
+
+    beforeEach(() => {
+      Object.defineProperty(navigator, 'userAgent', {
+        value:
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.4 Mobile/15E148 Safari/604.1',
+        configurable: true,
+      });
+      Object.defineProperty(navigator, 'storage', {
+        value: {
+          getDirectory: () =>
+            Promise.reject(
+              new Error(
+                'The operation failed for an unknown transient reason (e.g. out of memory).',
+              ),
+            ),
+        },
+        configurable: true,
+      });
+    });
+
+    afterEach(() => {
+      Object.defineProperty(navigator, 'userAgent', {
+        value: desktopUserAgent,
+        configurable: true,
+      });
+      if (browserStorage) {
+        Object.defineProperty(navigator, 'storage', browserStorage);
+      } else {
+        delete (navigator as { storage?: unknown }).storage;
+      }
+    });
+
+    test('a callback the private tab cannot see tells the person to open a normal tab instead of offering a Try again that would fail the same way', async () => {
+      smartIdAuthenticationBackend(server);
+
+      openCallback(aCallback);
+
+      expect(
+        await screen.findByText(
+          /^Smart.ID does not work in a private window\. Tap ⋯, choose New Tab and open pension\.tuleva\.ee there\.$/,
+        ),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Try again' })).not.toBeInTheDocument();
+    });
+  });
+
   test('a login that loses its session after the callback was accepted does not blame the browser', async () => {
     const backend = smartIdAuthenticationBackend(server);
     startLoginBeforeTheAppRoundTrip(backend);

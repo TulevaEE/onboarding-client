@@ -20,6 +20,7 @@ import { loginLanding } from '../loginLanding';
 import { cancelledInTheApp } from '../cancelledInTheApp';
 import { useLoginLanguage } from '../loginLanguage';
 import { opensTheSmartIdApp } from './opensTheSmartIdApp';
+import { usePrivateSafariTabOnAnIphone } from './usePrivateSafariTabOnAnIphone';
 import styles from '../LoginPage.module.scss';
 import {
   forgetSmartIdCallbackParameters,
@@ -28,6 +29,8 @@ import {
 } from './smartIdCallbackParameters';
 
 const SLOW_COMPLETION_MILLIS = 20000;
+const CALLBACK_IN_ANOTHER_BROWSER = 'smart.id.callback.in.another.browser';
+const CALLBACK_IN_A_PRIVATE_SAFARI_TAB = 'smart.id.callback.in.a.private.safari.tab';
 const ERRORS_OF_THE_SMART_ID_ACCOUNT_ITSELF = [
   'smart.id.account.not.found',
   'smart.id.unsupported.country',
@@ -54,6 +57,7 @@ export const SmartIdCallbackPage: React.FC = () => {
   const [destination] = useState(() => loginLanding(returnPath));
   const [attemptStarted, setAttemptStarted] = useState(false);
   const [slow, setSlow] = useState(false);
+  const inAPrivateSafariTab = usePrivateSafariTabOnAnIphone();
 
   useEffect(() => {
     if (arrivedLoggedIn) {
@@ -93,6 +97,8 @@ export const SmartIdCallbackPage: React.FC = () => {
   };
 
   const attemptEnded = attemptStarted && !authenticating;
+  const tryingAgainHereFailsTheSameWay =
+    loginError === CALLBACK_IN_ANOTHER_BROWSER && inAPrivateSafariTab;
   const failed = (!callback && !callbackAccepted) || Boolean(loginError) || attemptEnded;
 
   return (
@@ -103,16 +109,24 @@ export const SmartIdCallbackPage: React.FC = () => {
             <img width="146" height="66" src={logo} alt="Tuleva" className="d-block mx-auto mb-5" />
             {failed ? (
               <div className="bg-white shadow-sm rounded-3 p-5">
-                <ErrorAlert description={loginError ?? undefined} />
-                <div className="d-grid">
-                  <Link
-                    className="btn btn-primary btn-lg"
-                    to={{ pathname: loginPath, state: { from: returnPath } }}
-                    onClick={tryAgain}
-                  >
-                    <FormattedMessage id="login.smart.id.callback.retry" />
-                  </Link>
-                </div>
+                <ErrorAlert
+                  description={
+                    tryingAgainHereFailsTheSameWay
+                      ? CALLBACK_IN_A_PRIVATE_SAFARI_TAB
+                      : loginError ?? undefined
+                  }
+                />
+                {!tryingAgainHereFailsTheSameWay && (
+                  <div className="d-grid">
+                    <Link
+                      className="btn btn-primary btn-lg"
+                      to={{ pathname: loginPath, state: { from: returnPath } }}
+                      onClick={tryAgain}
+                    >
+                      <FormattedMessage id="login.smart.id.callback.retry" />
+                    </Link>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="bg-white shadow-sm rounded-3 p-5 text-center">

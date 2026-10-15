@@ -20,6 +20,13 @@ final class SafariNormalTabTests: SafariLoginTestCase {
     XCTAssertTrue(loginResult.showsTheAccountPage())
   }
 
+  func testTheLoginPageInANormalTabSaysNothingAboutPrivateTabs() throws {
+    _ = try openTheLoginPage(privately: false)
+    loginPage.chooseSmartId()
+
+    XCTAssertFalse(loginPage.privateTabWarning.waitForExistence(timeout: 5), "Private tab warning in a normal tab")
+  }
+
   func testQrCodeShownOnThePhoneLogsThePersonInOnTheAccountPage() throws {
     _ = try openTheLoginPage(privately: false)
 

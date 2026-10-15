@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { MemoryRouter } from 'react-router-dom';
@@ -622,6 +622,92 @@ describe('Smart-ID login tab', () => {
       expect(screen.queryByText('Open in browser')).not.toBeInTheDocument();
       expect(screen.queryByText('Continue here')).not.toBeInTheDocument();
       expect(screen.queryByText('Copy link')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('in a private tab on a phone', () => {
+    const safariIphone =
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.4 Mobile/15E148 Safari/604.1';
+    const chromeIphone =
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/156.0.7795.64 Mobile/15E148 Safari/604.1';
+    const chromeAndroid =
+      'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Mobile Safari/537.36';
+    const browserStorage = Object.getOwnPropertyDescriptor(navigator, 'storage');
+
+    const browseInAPrivateTab = () =>
+      Object.defineProperty(navigator, 'storage', {
+        value: {
+          getDirectory: () =>
+            Promise.reject(
+              new Error(
+                'The operation failed for an unknown transient reason (e.g. out of memory).',
+              ),
+            ),
+        },
+        configurable: true,
+      });
+
+    const browseInANormalTab = () =>
+      Object.defineProperty(navigator, 'storage', {
+        value: { getDirectory: () => Promise.resolve({}) },
+        configurable: true,
+      });
+
+    const afterThePrivateTabCheck = () => act(() => Promise.resolve());
+
+    afterEach(() => {
+      if (browserStorage) {
+        Object.defineProperty(navigator, 'storage', browserStorage);
+      } else {
+        delete (navigator as { storage?: unknown }).storage;
+      }
+    });
+
+    it('tells the person before the PIN that Smart-ID does not work in a private Safari tab and how to open a normal one, and still offers Log in', async () => {
+      setUserAgent(safariIphone);
+      browseInAPrivateTab();
+      renderTab();
+
+      expect(
+        await screen.findByText(
+          /^Smart.ID does not work in a private window\. Tap ⋯, choose New Tab and open pension\.tuleva\.ee there\.$/,
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+    });
+
+    it('names the English Safari menu items on the Estonian page, because most iPhones show Safari in English', async () => {
+      setUserAgent(safariIphone);
+      browseInAPrivateTab();
+      renderTab('et');
+
+      expect(
+        await screen.findByText(
+          /^Privaatses aknas Smart.ID ei tööta\. Vajuta ⋯, vali „New Tab“ ja ava seal pension\.tuleva\.ee\.$/,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it.each([
+      ['Chrome on an iPhone', chromeIphone],
+      ['Chrome on Android', chromeAndroid],
+    ])('gives no Safari steps in %s', async (browser, userAgent) => {
+      setUserAgent(userAgent);
+      browseInAPrivateTab();
+      renderTab();
+      await afterThePrivateTabCheck();
+
+      expect(screen.queryByText(/private window/)).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+    });
+
+    it('says nothing about private windows in a normal Safari tab', async () => {
+      setUserAgent(safariIphone);
+      browseInANormalTab();
+      renderTab();
+      await afterThePrivateTabCheck();
+
+      expect(screen.queryByText(/private window/)).not.toBeInTheDocument();
     });
   });
 
