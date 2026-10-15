@@ -5,14 +5,13 @@ import { PaymentDetailRow } from '../thirdPillar/ThirdPillarPayment/paymentDetai
 import { useMe } from '../../common/apiHooks';
 import { ACCOUNT_PATH } from '../../paths';
 import { TULEVA_3RD_PILLAR_FUND_ISIN } from '../../thirdPillar/initialState';
-import '../thirdPillar/ThirdPillarPayment/Payment.scss';
 
 const DetailsIfAsked = ({ pensionAccountNumber }: { pensionAccountNumber: string }) => (
   <div className="mt-4">
     <p className="mb-2">
       <FormattedMessage id="insuranceTransfer.done.ifAsked" />
     </p>
-    <div className="p-3 p-md-4 payment-details-table">
+    <div className="p-3 p-md-4 rounded bg-blue-2">
       <PaymentDetailRow
         label={<FormattedMessage id="insuranceTransfer.done.isin" />}
         value={TULEVA_3RD_PILLAR_FUND_ISIN}
