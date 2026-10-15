@@ -480,7 +480,7 @@ describe('form posts', () => {
 
   it('leaves the fields of an ordinary form alone', () => {
     const form = document.createElement('form');
-    form.action = 'https://onboarding-service.tuleva.ee/idLogin';
+    form.action = 'https://onboarding-service.tuleva.ee/account';
     const field = document.createElement('input');
     field.name = 'personalCode';
     field.value = '39001011234';

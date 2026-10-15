@@ -17,7 +17,6 @@ describe('Config', () => {
         applicationUrl: 'http://localhost:3000',
         clientCredentialsAccessToken: '6b338ba2-805c-4300-9341-b38bb4ad34a9',
         language: 'et',
-        idCardUrl: 'https://id.tuleva.ee',
       });
     });
 
@@ -28,7 +27,6 @@ describe('Config', () => {
         applicationUrl: 'https://pension.tuleva.ee',
         clientCredentialsAccessToken: '705e26c1-9316-47f2-94b8-a5c6b0dfb566',
         language: 'et',
-        idCardUrl: 'https://id.tuleva.ee',
       });
     });
 
@@ -39,7 +37,6 @@ describe('Config', () => {
         applicationUrl: 'https://staging.tuleva.ee',
         clientCredentialsAccessToken: '6b338ba2-805c-4300-9341-b38bb4ad34a9',
         language: 'et',
-        idCardUrl: 'https://id-staging.tuleva.ee',
       });
     });
 
@@ -51,7 +48,6 @@ describe('Config', () => {
         applicationUrl: 'https://staging.tuleva.ee',
         clientCredentialsAccessToken: '6b338ba2-805c-4300-9341-b38bb4ad34a9',
         language: 'et',
-        idCardUrl: 'https://id-staging.tuleva.ee',
       });
     });
 
@@ -62,7 +58,6 @@ describe('Config', () => {
         applicationUrl: 'http://localhost',
         clientCredentialsAccessToken: undefined,
         language: 'en',
-        idCardUrl: 'https://id.tuleva.ee',
       });
     });
   });

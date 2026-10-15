@@ -22,12 +22,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: false } },
 });
 
-const renderWithProviders = (ui: React.ReactElement, searchParams = '') => {
-  Object.defineProperty(window, 'location', {
-    value: { search: searchParams },
-    writable: true,
-  });
-
+const renderWithProviders = (ui: React.ReactElement) => {
   const history = createMemoryHistory();
   return render(
     <QueryClientProvider client={queryClient}>
@@ -46,33 +41,16 @@ describe('IdCardLoginTab', () => {
   });
 
   it('renders login button', () => {
-    renderWithProviders(<IdCardLoginTab onAuthenticateWithIdCardMtls={jest.fn()} />);
+    renderWithProviders(<IdCardLoginTab />);
 
     expect(screen.getByRole('button', { name: /log in/i })).toBeInTheDocument();
   });
 
-  it('calls WebEid by default', () => {
-    const onAuthenticateWithIdCardMtls = jest.fn();
-    renderWithProviders(
-      <IdCardLoginTab onAuthenticateWithIdCardMtls={onAuthenticateWithIdCardMtls} />,
-    );
+  it('authenticates with Web eID when clicked', () => {
+    renderWithProviders(<IdCardLoginTab />);
 
     userEvent.click(screen.getByRole('button'));
 
     expect(mockAuthenticate).toHaveBeenCalledTimes(1);
-    expect(onAuthenticateWithIdCardMtls).not.toHaveBeenCalled();
-  });
-
-  it('calls mTLS handler when ?mtls=true is set', () => {
-    const onAuthenticateWithIdCardMtls = jest.fn();
-    renderWithProviders(
-      <IdCardLoginTab onAuthenticateWithIdCardMtls={onAuthenticateWithIdCardMtls} />,
-      '?mtls=true',
-    );
-
-    userEvent.click(screen.getByRole('button'));
-
-    expect(onAuthenticateWithIdCardMtls).toHaveBeenCalledTimes(1);
-    expect(mockAuthenticate).not.toHaveBeenCalled();
   });
 });

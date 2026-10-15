@@ -510,43 +510,6 @@ export function mobileIdAuthenticationBackend(
   return backend;
 }
 
-export function idCardAuthenticationBackend(server: SetupServerApi): {
-  authenticatedWithIdCard: boolean;
-  acceptedCertificate: boolean;
-} {
-  const backend = { authenticatedWithIdCard: false, acceptedCertificate: false };
-  server.use(
-    rest.get('https://id.tuleva.ee', (req, res, ctx) => {
-      backend.acceptedCertificate = true;
-      return res(ctx.status(200), ctx.json({ success: true }));
-    }),
-    rest.post('https://id.tuleva.ee/idLogin', (req, res, ctx) => {
-      backend.authenticatedWithIdCard = true;
-      return res(ctx.status(200), ctx.json({ success: true }));
-    }),
-    rest.post('http://localhost/oauth/token', (req, res, ctx) => {
-      const body = queryString.parse(req.body as string);
-      if (
-        body.grant_type !== 'ID_CARD' ||
-        body.client_id !== 'onboarding-client' ||
-        req.headers.get('Authorization') !==
-          'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
-      ) {
-        return res(
-          ctx.status(401),
-          ctx.json({ error: 'wrong grant type, client id or basic auth' }),
-        );
-      }
-
-      return res(
-        ctx.status(200),
-        ctx.json({ access_token: 'an access token', refresh_token: 'mock refresh token' }),
-      );
-    }),
-  );
-  return backend;
-}
-
 export function partnerAuthenticationBackend(server: SetupServerApi): void {
   server.use(
     rest.post('http://localhost/oauth/token', (req, res, ctx) =>
@@ -1439,7 +1402,6 @@ const TEST_BACKENDS = {
   smartIdMandateBatchSigning: smartIdMandateBatchSigningBackend,
   smartIdAuthentication: smartIdAuthenticationBackend,
   mobileIdAuthentication: mobileIdAuthenticationBackend,
-  idCardAuthentication: idCardAuthenticationBackend,
   partnerAuthentication: partnerAuthenticationBackend,
   user: userBackend,
   userConversion: userConversionBackend,

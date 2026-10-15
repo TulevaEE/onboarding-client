@@ -24,11 +24,7 @@ import {
   SIGN_MANDATE_IN_PROGRESS,
 } from './constants';
 
-import {
-  ID_CARD_AUTHENTICATION_SUCCESS,
-  LOG_OUT,
-  MOBILE_AUTHENTICATION_SUCCESS,
-} from '../login/constants';
+import { LOG_OUT, MOBILE_AUTHENTICATION_SUCCESS } from '../login/constants';
 
 describe('Exchange reducer', () => {
   it('finishes loading pension data', () => {
@@ -660,7 +656,7 @@ describe('Exchange reducer', () => {
   });
 
   it('reverts to initial state when logging out or logging in', () => {
-    [LOG_OUT, MOBILE_AUTHENTICATION_SUCCESS, ID_CARD_AUTHENTICATION_SUCCESS].forEach((type) => {
+    [LOG_OUT, MOBILE_AUTHENTICATION_SUCCESS].forEach((type) => {
       const action = { type };
       const newState = exchangeReducer(
         {

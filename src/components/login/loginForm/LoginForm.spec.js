@@ -102,14 +102,6 @@ describe('Login form', () => {
     expect(component.find('SmartIdLoginTab').prop('onSmartIdLoginStart')).toBe(onSmartIdLoginStart);
   });
 
-  it('passes id card auth handler to IdCardLoginTab', () => {
-    const onAuthenticateWithIdCard = jest.fn();
-    component.setProps({ onAuthenticateWithIdCard });
-
-    const idCardTab = component.find('IdCardLoginTab');
-    expect(idCardTab.prop('onAuthenticateWithIdCardMtls')).toBe(onAuthenticateWithIdCard);
-  });
-
   describe('when time within maintenance window', () => {
     beforeEach(() => {
       jest.setSystemTime(new Date('September 22, 2026 21:00:00'));

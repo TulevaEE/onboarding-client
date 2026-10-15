@@ -14,11 +14,6 @@ import {
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
   MOBILE_AUTHENTICATION_CANCEL,
-  ID_CARD_AUTHENTICATION_START,
-  ID_CARD_AUTHENTICATION_START_SUCCESS,
-  ID_CARD_AUTHENTICATION_START_ERROR,
-  ID_CARD_AUTHENTICATION_SUCCESS,
-  ID_CARD_AUTHENTICATION_ERROR,
   WEB_EID_AUTHENTICATION_ERROR,
   LOGIN_ERROR_CLEARED,
   GET_USER_START,
@@ -34,8 +29,6 @@ import {
 
 import { api } from '../common';
 import { getGlobalErrorCode } from '../common/errorMessage';
-
-import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 
 import { getAuthentication } from '../common/authenticationManager';
 import { forgetSmartIdCallbackParameters } from './smartId/smartIdCallbackParameters';
@@ -539,58 +532,8 @@ export function resumeAcceptedSmartIdCallback() {
   };
 }
 
-function getIdCardTokens() {
-  return (dispatch, getState) => {
-    timeout = setTimeout(() => {
-      api
-        .getIdCardTokens()
-        .then((tokens) => {
-          if (isTokenPresent(tokens)) {
-            // authentication complete
-            dispatch({ type: ID_CARD_AUTHENTICATION_SUCCESS, tokens });
-            dispatch(handleLogin());
-          } else if (getState().login.loadingAuthentication) {
-            // authentication not yet completed
-            dispatch(getIdCardTokens()); // poll again
-          }
-        })
-        .catch((error) => dispatch({ type: ID_CARD_AUTHENTICATION_ERROR, error }));
-    }, POLL_DELAY);
-  };
-}
-
-export function authenticateWithIdCard() {
-  return (dispatch) => {
-    dispatch({ type: ID_CARD_AUTHENTICATION_START });
-
-    return api
-      .authenticateWithIdCardMtls()
-      .then(() => {
-        dispatch({ type: ID_CARD_AUTHENTICATION_START_SUCCESS });
-        dispatch(getIdCardTokens());
-      })
-      .catch(() => {
-        const error = {
-          body: { errors: [{ code: ID_CARD_LOGIN_START_FAILED_ERROR }] },
-        };
-        dispatch({ type: ID_CARD_AUTHENTICATION_START_ERROR, error });
-      });
-  };
-}
-
 function isTokenPresent(tokens) {
   return tokens.accessToken && tokens.refreshToken;
-}
-
-export function handleIdCardLogin(query) {
-  if (query.login === 'ID_CARD') {
-    return (dispatch) => {
-      dispatch({ type: ID_CARD_AUTHENTICATION_START });
-      dispatch({ type: ID_CARD_AUTHENTICATION_START_SUCCESS });
-      return dispatch(getIdCardTokens());
-    };
-  }
-  return () => {};
 }
 
 export function failWebEidLogin(errorCode) {
@@ -686,13 +629,6 @@ export function useRedirectLoginWithPhoneNumber(phoneNumber, personalCode) {
   return (dispatch) => {
     dispatch(setLoginToRedirect());
     dispatch(authenticateWithMobileId(phoneNumber, personalCode));
-  };
-}
-
-export function useRedirectLoginWithIdCard() {
-  return (dispatch) => {
-    dispatch(setLoginToRedirect());
-    dispatch(authenticateWithIdCard());
   };
 }
 

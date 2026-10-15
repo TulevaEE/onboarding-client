@@ -9,10 +9,6 @@ import {
   MOBILE_AUTHENTICATION_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
   MOBILE_AUTHENTICATION_CANCEL,
-  ID_CARD_AUTHENTICATION_START,
-  ID_CARD_AUTHENTICATION_SUCCESS,
-  ID_CARD_AUTHENTICATION_ERROR,
-  ID_CARD_AUTHENTICATION_START_ERROR,
   WEB_EID_AUTHENTICATION_ERROR,
   LOGIN_ERROR_CLEARED,
   GET_USER_START,
@@ -182,38 +178,6 @@ describe('Login reducer', () => {
     const newState = loginReducer({ loadingAuthentication: true, controlCode: '1337' }, action);
     expect(newState.loadingAuthentication).toBe(false);
     expect(newState.controlCode).toBe(null);
-  });
-
-  it('resets error when starting id card authentication', () => {
-    const action = { type: ID_CARD_AUTHENTICATION_START };
-    const newState = loginReducer({ error: { anError: true } }, action);
-    expect(newState.error).toBe(null);
-  });
-
-  it('sets the state when id card authentication succeeds', () => {
-    const state = {};
-    const action = { type: ID_CARD_AUTHENTICATION_SUCCESS, state };
-
-    expect(loginReducer(undefined, action).loadingAuthentication).toBe(false);
-  });
-
-  it('sets the error when id card authentication start fails', () => {
-    const error = { body: { errors: [{ code: 'oh noes!!1' }] } };
-    const action = { type: ID_CARD_AUTHENTICATION_START_ERROR, error };
-
-    const newState = loginReducer(undefined, action);
-
-    expect(newState.error).toBe('oh noes!!1');
-    expect(newState.loadingAuthentication).toBe(false);
-  });
-
-  it('sets the error when id card authentication fails', () => {
-    const error = { body: { errors: [{ code: 'oh noes!!1' }] } };
-    const action = { type: ID_CARD_AUTHENTICATION_ERROR, error };
-
-    const newState = loginReducer(undefined, action);
-
-    expect(newState.error).toBe('oh noes!!1');
   });
 
   it('keeps the error of a failed Web eID login without leaving the login form', () => {

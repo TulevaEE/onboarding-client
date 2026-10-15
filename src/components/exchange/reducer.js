@@ -26,11 +26,7 @@ import {
   SET_CANCELLATION_MANDATE_ID,
 } from './constants';
 
-import {
-  ID_CARD_AUTHENTICATION_SUCCESS,
-  LOG_OUT,
-  MOBILE_AUTHENTICATION_SUCCESS,
-} from '../login/constants';
+import { LOG_OUT, MOBILE_AUTHENTICATION_SUCCESS } from '../login/constants';
 import { isTuleva } from '../common/utils';
 
 const initialState = {
@@ -241,7 +237,6 @@ export default function exchangeReducer(state = initialState, action) {
       };
 
     case MOBILE_AUTHENTICATION_SUCCESS:
-    case ID_CARD_AUTHENTICATION_SUCCESS:
     case LOG_OUT:
       return initialState;
     case NO_SIGN_MANDATE_ERROR:
