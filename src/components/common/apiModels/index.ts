@@ -236,6 +236,12 @@ interface Address {
   countryCode: string;
 }
 
+export interface MandateRequest {
+  fundTransferExchanges: { amount: number; sourceFundIsin: string; targetFundIsin: string }[];
+  futureContributionFundIsin: string | null;
+  address: Address;
+}
+
 interface PaymentRates {
   current: PaymentRate;
   pending: PaymentRate | null;

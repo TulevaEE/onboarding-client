@@ -48,7 +48,7 @@ import {
 import { actions as amlActions } from '../aml';
 import { getAuthentication } from '../common/authenticationManager';
 import { RootState } from '../account/ComparisonCalculator/types';
-import { Mandate, SignatureStatus } from '../common/apiModels';
+import { Mandate, MandateRequest, SignatureStatus } from '../common/apiModels';
 import { SourceSelection } from './types';
 
 const POLL_DELAY = 1000;
@@ -185,7 +185,7 @@ function handleSigningError(dispatch: Dispatch<unknown>, error: unknown) {
   handleSaveMandateError(dispatch, toSigningErrorResponse(error, 'MANDATE'));
 }
 
-export function previewMandate(mandate: Mandate, amlChecks?: unknown) {
+export function previewMandate(mandate: Mandate | MandateRequest, amlChecks?: unknown) {
   return (dispatch: Dispatch<unknown>) => {
     const amlChecksPromise = dispatch(
       amlActions.createAmlChecks(amlChecks),
@@ -201,7 +201,7 @@ export function previewMandate(mandate: Mandate, amlChecks?: unknown) {
   };
 }
 
-export function signMandateWithMobileId(mandate: Mandate) {
+export function signMandateWithMobileId(mandate: Mandate | MandateRequest) {
   return (dispatch: Dispatch<unknown>) => {
     dispatch({ type: SIGN_MANDATE_MOBILE_ID_START });
     let mandateId: number;
@@ -223,7 +223,7 @@ export function signMandateWithMobileId(mandate: Mandate) {
   };
 }
 
-export function signMandateWithSmartId(mandate: Mandate) {
+export function signMandateWithSmartId(mandate: Mandate | MandateRequest) {
   return (dispatch: Dispatch<unknown>) => {
     dispatch({ type: SIGN_MANDATE_SMART_ID_START });
     let mandateId: number;
@@ -272,14 +272,17 @@ function pollForIdCardSignature(mandateId: number, pillar: 2 | 3) {
   };
 }
 
-function saveOrRetrieveExistingMandate(mandate: Mandate | string) {
-  if (typeof mandate === 'object' && mandate.id) {
+const isSavedMandate = (mandate: Mandate | MandateRequest): mandate is Mandate =>
+  typeof mandate === 'object' && 'id' in mandate && !!mandate.id;
+
+function saveOrRetrieveExistingMandate(mandate: Mandate | MandateRequest): Promise<Mandate> {
+  if (isSavedMandate(mandate)) {
     return Promise.resolve(mandate);
   }
-  return saveMandateWithAuthentication(mandate as string);
+  return saveMandateWithAuthentication(mandate);
 }
 
-export function signMandateWithIdCard(mandate: Mandate) {
+export function signMandateWithIdCard(mandate: Mandate | MandateRequest) {
   return (dispatch: Dispatch<unknown>) => {
     dispatch({ type: SIGN_MANDATE_ID_CARD_START });
     let certificate: string;
@@ -323,7 +326,7 @@ export function signMandateWithIdCard(mandate: Mandate) {
   };
 }
 
-export function signMandate(mandate: Mandate, amlChecks?: unknown) {
+export function signMandate(mandate: Mandate | MandateRequest, amlChecks?: unknown) {
   return (dispatch: Dispatch<unknown>) => {
     const { signingMethod } = getAuthentication();
     const amlChecksPromise = dispatch(

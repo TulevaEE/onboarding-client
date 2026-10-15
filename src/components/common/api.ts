@@ -19,6 +19,7 @@ import {
   SignatureStatus,
   LoginMethod,
   Mandate,
+  MandateRequest,
   MandateDeadlines,
   MemberCapitalListing,
   MemberLookup,
@@ -406,7 +407,7 @@ const transformFundBalance = (fundBalance: FundBalance): SourceFund => ({
   units: fundBalance.units,
 });
 
-export function saveMandateWithAuthentication(mandate: string): Promise<Mandate> {
+export function saveMandateWithAuthentication(mandate: MandateRequest): Promise<Mandate> {
   return postWithAuthentication(getEndpoint('/v1/mandates'), mandate);
 }
 
