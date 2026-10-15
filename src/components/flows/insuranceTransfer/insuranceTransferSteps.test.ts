@@ -1,4 +1,4 @@
-import { insuranceTransferSteps } from './insuranceTransferSteps';
+import { insuranceTransferSteps, skipsAStepToDo } from './insuranceTransferSteps';
 
 describe('insuranceTransferSteps', () => {
   test('asks for contact details and the selection before the request when both are missing', () => {
@@ -23,5 +23,25 @@ describe('insuranceTransferSteps', () => {
     expect(
       insuranceTransferSteps({ contactDetailsMissing: false, selectionComplete: true }),
     ).toEqual(['request', 'done']);
+  });
+});
+
+describe('skipsAStepToDo', () => {
+  test('is true when the request is opened before the selection is signed', () => {
+    expect(skipsAStepToDo(['selection', 'request', 'done'], 'request')).toBe(true);
+  });
+
+  test('is true when the selection is opened before the contact details are saved', () => {
+    expect(skipsAStepToDo(['contact-details', 'selection', 'request', 'done'], 'selection')).toBe(
+      true,
+    );
+  });
+
+  test('is false when opened at the first step to do', () => {
+    expect(skipsAStepToDo(['selection', 'request', 'done'], 'selection')).toBe(false);
+  });
+
+  test('is false when nothing is to do before the request', () => {
+    expect(skipsAStepToDo(['request', 'done'], 'done')).toBe(false);
   });
 });

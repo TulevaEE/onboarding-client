@@ -209,6 +209,34 @@ describe('III pillar insurance contract transfer', () => {
       expect(history.location.pathname).toBe('/3rd-pillar-insurance/selection');
     }, 20_000);
 
+    test('asks for the selection first when opened at the request, keeping the insurer', async () => {
+      userBackend(server, { ...MARI, thirdPillarActive: false });
+
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
+
+      expect(await screen.findByText(/^Choose Tuleva III\spillar$/)).toBeInTheDocument();
+      await waitFor(() =>
+        expect(history.location.pathname).toBe('/3rd-pillar-insurance/selection'),
+      );
+      expect(history.location.search).toBe('?insurer=SEB');
+      expect(signButton()).toBeInTheDocument();
+      expect(screen.queryByText(/^Subject: /)).not.toBeInTheDocument();
+    });
+
+    test('asks for the contact details first when opened at the selection', async () => {
+      contactDetailsCheckMissing();
+
+      openFlow('/3rd-pillar-insurance/selection');
+
+      expect(await screen.findByText('Enter your contact details')).toBeInTheDocument();
+      await waitFor(() =>
+        expect(history.location.pathname).toBe('/3rd-pillar-insurance/contact-details'),
+      );
+      expect(
+        screen.queryByRole('button', { name: 'Sign and send mandate' }),
+      ).not.toBeInTheDocument();
+    });
+
     test('asks for no new signature when the person comes back once the selection has gone through', async () => {
       openFlow();
       expect(await screen.findByText(/^Choose Tuleva III\spillar$/)).toBeInTheDocument();

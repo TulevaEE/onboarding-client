@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { Redirect, useLocation } from 'react-router-dom';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import ConnectedFlow, { FlowStep } from '../common/Flow';
 import AddressStep from '../common/AddressStep';
 import { useConversion } from '../../common/apiHooks';
@@ -10,7 +10,11 @@ import { Shimmer } from '../../common/shimmer/Shimmer';
 import { hasAddress } from '../../common/user/address';
 import { hasContactDetailsAmlCheck } from '../../aml';
 import { State } from '../../../types';
-import { InsuranceTransferStepPath, insuranceTransferSteps } from './insuranceTransferSteps';
+import {
+  InsuranceTransferStepPath,
+  insuranceTransferSteps,
+  skipsAStepToDo,
+} from './insuranceTransferSteps';
 import { InsuranceTransferSelection } from './InsuranceTransferSelection';
 import { InsuranceTransferRequest } from './InsuranceTransferRequest';
 import { InsuranceTransferDone } from './InsuranceTransferDone';
@@ -18,7 +22,11 @@ import { LoadFailed } from './LoadFailed';
 
 export const flowPath = '/3rd-pillar-insurance';
 
+const addressedStepOf = (pathname: string) => pathname.split('/').pop();
+
 const useStepPathsFixedOnceLoaded = () => {
+  const history = useHistory();
+  const { pathname, search } = useLocation();
   const user = useSelector((state: State) => state.login.user);
   const missingAmlChecks = useSelector((state: State) => state.aml.missingAmlChecks);
   const missingAmlChecksFailed = useSelector(
@@ -35,13 +43,24 @@ const useStepPathsFixedOnceLoaded = () => {
     if (stepPaths || !user || !missingAmlChecks || !conversion || refreshingConversion) {
       return;
     }
-    setStepPaths(
-      insuranceTransferSteps({
-        contactDetailsMissing: !hasAddress(user) || !hasContactDetailsAmlCheck(missingAmlChecks),
-        selectionComplete: conversion.thirdPillar.selectionComplete,
-      }),
-    );
-  }, [stepPaths, user, missingAmlChecks, conversion, refreshingConversion]);
+    const paths = insuranceTransferSteps({
+      contactDetailsMissing: !hasAddress(user) || !hasContactDetailsAmlCheck(missingAmlChecks),
+      selectionComplete: conversion.thirdPillar.selectionComplete,
+    });
+    setStepPaths(paths);
+    if (skipsAStepToDo(paths, addressedStepOf(pathname))) {
+      history.replace({ pathname: `${flowPath}/${paths[0]}`, search });
+    }
+  }, [
+    stepPaths,
+    user,
+    missingAmlChecks,
+    conversion,
+    refreshingConversion,
+    history,
+    pathname,
+    search,
+  ]);
 
   return { stepPaths, loadFailed: missingAmlChecksFailed || (!conversion && conversionFailed) };
 };
@@ -92,7 +111,7 @@ export const InsuranceTransferFlow = () => {
     return <div className="mt-4">{loadFailed ? <LoadFailed /> : <Shimmer height={400} />}</div>;
   }
 
-  const addressedStep = pathname.split('/').pop();
+  const addressedStep = addressedStepOf(pathname);
   if (!stepPaths.some((path) => path === addressedStep)) {
     return <Redirect to={{ pathname: `${flowPath}/${stepPaths[0]}`, search }} />;
   }

@@ -12,3 +12,12 @@ export const insuranceTransferSteps = ({
   'request',
   'done',
 ];
+
+export const skipsAStepToDo = (
+  stepPaths: InsuranceTransferStepPath[],
+  addressedStep: string | undefined,
+): boolean => {
+  const [firstStep] = stepPaths;
+  const firstStepIsToDo = firstStep === 'contact-details' || firstStep === 'selection';
+  return firstStepIsToDo && addressedStep !== firstStep;
+};
