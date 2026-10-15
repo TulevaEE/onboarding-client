@@ -1,4 +1,5 @@
-const SAMSUNG_INTERNET = /SamsungBrowser\//;
+import { inSamsungInternet } from './phoneBrowser';
+
 const LIVE_SMART_ID_APP_LINK_HOST = 'smart-id.com';
 const LIVE_SMART_ID_APP_ON_ANDROID = 'com.smart_id';
 
@@ -14,7 +15,7 @@ export function linkThatOpensTheSmartIdApp(
   userAgent: string = navigator.userAgent,
 ): string {
   const link = new URL(web2AppLink);
-  const keepsPlainAppLinksInTheBrowser = SAMSUNG_INTERNET.test(userAgent);
+  const keepsPlainAppLinksInTheBrowser = inSamsungInternet(userAgent);
   if (
     !keepsPlainAppLinksInTheBrowser ||
     link.protocol !== 'https:' ||

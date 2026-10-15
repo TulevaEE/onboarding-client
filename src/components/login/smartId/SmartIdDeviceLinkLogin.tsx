@@ -15,6 +15,8 @@ import { ScanFrame } from './ScanFrame';
 import { SmartIdLoginFlow } from '../../common/apiModels';
 import { opensTheSmartIdApp } from './opensTheSmartIdApp';
 import { linkThatOpensTheSmartIdApp } from './linkThatOpensTheSmartIdApp';
+import { useSmartIdAppDidNotOpen } from './useSmartIdAppDidNotOpen';
+import { SmartIdAppDidNotOpen } from './SmartIdAppDidNotOpen';
 import { useStillOnThisPage } from './useStillOnThisPage';
 import { IconBeforeLabel, SmartIdMarkIcon } from './icons';
 
@@ -94,22 +96,24 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
 }) => {
   const { formatMessage } = useIntl();
   const stillOnThisPage = useStillOnThisPage();
+  const appDidNotOpen = useSmartIdAppDidNotOpen(web2AppLink);
+  const offerTheAppButton = stillOnThisPage || appDidNotOpen;
   const appButton = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
-    if (stillOnThisPage) {
+    if (offerTheAppButton) {
       appButton.current?.focus();
     }
-  }, [stillOnThisPage]);
+  }, [offerTheAppButton]);
 
   return (
     <>
       <FocusedParagraph className="visually-hidden">
         <FormattedMessage id="login.smart.id.confirm.in.app" />
       </FocusedParagraph>
-      <Loader className="align-middle" />
+      {appDidNotOpen ? <SmartIdAppDidNotOpen /> : <Loader className="align-middle" />}
       <div className="d-grid gap-2 mt-4">
-        {stillOnThisPage && (
+        {offerTheAppButton && (
           <a
             ref={appButton}
             className="btn btn-primary btn-lg text-wrap text-balance"
