@@ -1962,6 +1962,7 @@
   "pageTitle.hackathon": "Hackathon registration",
   "pageTitle.savingsFundTaxReport": "Tax report",
   "pageTitle.savingsFundIdentityVerification": "Identity verification",
+  "pageTitle.pensionAccountNumber": "Pension account number",
   "pensionCalculator.title": "Will your money last for life?",
   "pensionCalculator.intro": "See how much you can spend each month in retirement, and whether your savings run out or pass on to your family.",
   "pensionCalculator.years": "{years} y",
@@ -2252,5 +2253,14 @@
   "secondPillarRejoin.calculator.start": "Start saving again",
   "secondPillarRejoin.calculator.eyebrow": "Rejoining the II pillar",
   "secondPillarRejoin.calculator.assumption": "The calculation assumes you contribute {rate}% of your gross salary.",
-  "secondPillarRejoin.firstPillarNote": "Social tax paid into the II pillar also has a small effect on your I pillar."
+  "secondPillarRejoin.firstPillarNote": "Social tax paid into the II pillar also has a small effect on your I pillar.",
+  "pensionAccountNumber.title": "Your pension account number",
+  "pensionAccountNumber.whenNeeded": "When you need it",
+  "pensionAccountNumber.whenNeeded.employer": "Your employer pays into your III pillar straight from your salary.",
+  "pensionAccountNumber.whenNeeded.employerLink": "Application to your employer",
+  "pensionAccountNumber.whenNeeded.insuranceContract": "You move a III pillar insurance contract into a pension fund.",
+  "pensionAccountNumber.whenNeeded.bankTransfer": "You or someone else pays into your III pillar by bank transfer.",
+  "pensionAccountNumber.whenNeeded.mistakenContribution": "You cancel a III pillar contribution made by mistake.",
+  "pensionAccountNumber.otherNames": "The same number is used for the II and III pillar. It is often asked for as a reference number.",
+  "pensionAccountNumber.noAccountYet": "You do not have a pension account yet. It opens when you join the II or III pillar."
 }
