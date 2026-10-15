@@ -275,7 +275,7 @@ export interface User {
   phoneNumber: string;
   memberNumber: number | null;
   memberJoinDate: string | null;
-  pensionAccountNumber: string;
+  pensionAccountNumber: string | null;
   secondPillarPikNumber: string;
   address: Address;
   secondPillarActive: boolean;
