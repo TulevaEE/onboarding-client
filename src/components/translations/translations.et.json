@@ -2238,7 +2238,7 @@
   "nudge.THIRD_PILLAR_FEES.description": "Kui sa ei kogu oma III sammast veel koos meiega Tulevas, veendu, et sinu III samba fonditasud jääksid alla 0,3% aastas. Madalad tasud annavad parimad eeldused parimaks pikaajaliseks tootluseks.",
   "nudge.THIRD_PILLAR_FEES.button": "Vaata oma tasud üle",
   "nudge.THIRD_PILLAR_RAISE.header": "Kas saaksid püsimakset suurendada?",
-  "nudge.THIRD_PILLAR_RAISE.description": "Kogud III sambasse juba igal kuul ja saad igalt sissemakselt 22% tulumaksu tagasi. Maksuvõit kehtib kuni 15% ulatuses brutopalgast, kõige rohkem 6000 euro suuruselt sissemakselt aastas. Kui su sissemaksed jäävad sellest piirist allapoole, kasvatab püsimakse tõstmine ka kevadist tulumaksutagastust.",
+  "nudge.THIRD_PILLAR_RAISE.description": "Kogud III sambasse juba igal kuul ja saad igalt sissemakselt 22% tulumaksu tagasi. Maksuvõit kehtib kuni 15% ulatuses Eestis maksustatavast brutotulust, kõige rohkem 6000 euro suuruselt sissemakselt aastas. Kui su sissemaksed jäävad sellest piirist allapoole, kasvatab püsimakse tõstmine ka kevadist tulumaksutagastust.",
   "nudge.THIRD_PILLAR_RAISE.button": "Arvuta oma võit",
   "nudge.SAVINGS_FUND.header": "Kas järgmine samm on Täiendav Kogumisfond?",
   "nudge.SAVINGS_FUND.description": "Kui II sammas ja III sammas on juba hästi tööle pandud, saad Tulevas koguda ka vabalt valitud eesmärgil. Täiendav Kogumisfond on madala tasuga indeksfond, mis investeerib ligi 2500 maailma suurima börsiettevõtte aktsiatesse. Tasu on {fee, number}% aastas ja alustada saad kasvõi 1 eurost.",

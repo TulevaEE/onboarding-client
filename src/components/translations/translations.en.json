@@ -2148,7 +2148,7 @@
   "nudge.THIRD_PILLAR_FEES.description": "If you are not yet saving your third pillar with us at Tuleva, make sure your third pillar fund fees are below 0.3% per year. Low fees provide the best foundation for optimal long-term returns.",
   "nudge.THIRD_PILLAR_FEES.button": "Review your fees",
   "nudge.THIRD_PILLAR_RAISE.header": "Could you raise your recurring payment?",
-  "nudge.THIRD_PILLAR_RAISE.description": "You already save in the third pillar every month and get 22% income tax back on every contribution. The tax benefit covers up to 15% of your gross salary, on at most 6,000 euros of contributions per year. If your contributions stay below that limit, raising your recurring payment also raises next spring's tax refund.",
+  "nudge.THIRD_PILLAR_RAISE.description": "You already save in the third pillar every month and get 22% income tax back on every contribution. The tax benefit covers up to 15% of your gross income taxable in Estonia, on at most 6,000 euros of contributions per year. If your contributions stay below that limit, raising your recurring payment also raises next spring's tax refund.",
   "nudge.THIRD_PILLAR_RAISE.button": "Calculate your gain",
   "nudge.SAVINGS_FUND.header": "Is the Additional Investment Fund your next step?",
   "nudge.SAVINGS_FUND.description": "With your second and third pillar already working hard, you can also save for any goal at Tuleva. The Additional Investment Fund is a low-fee index fund investing in nearly 2,500 of the world's largest listed companies. The fee is {fee, number}% per year and you can start with just 1 euro.",
