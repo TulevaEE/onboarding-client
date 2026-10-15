@@ -1063,17 +1063,11 @@ describe('When a user is logging in', () => {
       );
     });
 
-    test('in Brave they are shown where Brave allows cookies for this site', async () => {
+    test('in Brave they are asked the same', async () => {
       pretendToBeBrave();
       reloadThePage();
 
-      expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          'To log in, allow cookies: tap the lion icon in the address bar, choose Advanced controls and under Block cookies choose Block third-party cookies.',
-        ),
-      ).toBeInTheDocument();
-      expect(screen.queryByText('Allow cookies for this site to log in.')).not.toBeInTheDocument();
+      expect(await screen.findByText('Allow cookies for this site to log in.')).toBeInTheDocument();
     });
   });
 

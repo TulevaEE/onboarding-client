@@ -1,4 +1,5 @@
 import { isTestMode, writeTestMode } from '.';
+import { isSessionStorageBlocked } from '../siteStorage';
 import { blockSiteStorage } from '../../../test/siteStorage';
 
 describe('test mode', () => {
@@ -15,6 +16,7 @@ describe('test mode', () => {
 
     beforeEach(() => {
       unblockSiteStorage = blockSiteStorage();
+      expect(isSessionStorageBlocked()).toBe(true);
     });
 
     afterEach(() => unblockSiteStorage());

@@ -1,6 +1,6 @@
 import config from 'react-global-configuration';
 import { AuthenticationPrincipal } from './apiModels';
-import { withSessionStorage } from './siteStorage';
+import { isSessionStorageBlocked, withSessionStorage } from './siteStorage';
 
 const AUTHENTICATION_CONFIGURATION_KEY = 'AUTHENTICATION_CONFIGURATION_KEY';
 export function restoreAuthenticationFromSession(): void {
@@ -15,10 +15,10 @@ export function restoreAuthenticationFromSession(): void {
 }
 
 function updateSessionStorage(authentication: AuthenticationPrincipal) {
-  withSessionStorage(
-    (storage) => storage.setItem(AUTHENTICATION_CONFIGURATION_KEY, JSON.stringify(authentication)),
-    undefined,
-  );
+  if (isSessionStorageBlocked() || !window.sessionStorage) {
+    return;
+  }
+  window.sessionStorage.setItem(AUTHENTICATION_CONFIGURATION_KEY, JSON.stringify(authentication));
 }
 
 function setAuthenticationInConfiguration(newAuthentication: AuthenticationPrincipal) {

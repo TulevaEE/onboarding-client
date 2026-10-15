@@ -1,4 +1,11 @@
-import { mockRequestInMockMode, writeMockModeConfiguration } from '.';
+import {
+  isMockModeEnabled,
+  mockRequestInMockMode,
+  readMockModeConfiguration,
+  writeMockModeConfiguration,
+} from '.';
+import { isSessionStorageBlocked } from '../siteStorage';
+import { blockSiteStorage } from '../../../test/siteStorage';
 import { mockUser } from '../../../test/backend-responses';
 import { completeConversion } from '../../account/statusBox/fixtures';
 import { conversionMockProfiles } from './profiles/conversion';
@@ -98,5 +105,28 @@ describe('mockRequestInMockMode', () => {
         'paymentRateRedirect',
       ),
     ).toBe(paymentRateRedirectProfiles.TREATMENT);
+  });
+
+  describe('when the browser blocks session storage', () => {
+    let unblockSiteStorage: () => void;
+
+    beforeEach(() => {
+      unblockSiteStorage = blockSiteStorage();
+      expect(isSessionStorageBlocked()).toBe(true);
+    });
+
+    afterEach(() => unblockSiteStorage());
+
+    it('stays out of mock mode, even when a configuration is written', async () => {
+      writeMockModeConfiguration({ user: 'NO_SECOND_NO_THIRD_PILLAR' });
+
+      expect(readMockModeConfiguration()).toBeNull();
+      expect(isMockModeEnabled()).toBe(false);
+      expect(await mockRequestInMockMode(() => Promise.resolve(mockUser), 'user')).toBe(mockUser);
+    });
+
+    it('leaves mock mode without failing', () => {
+      expect(() => writeMockModeConfiguration(null)).not.toThrow();
+    });
   });
 });

@@ -2,6 +2,7 @@ import config from 'react-global-configuration';
 import { AuthenticationPrincipal } from './apiModels';
 import * as authenticationManagerModule from './authenticationManager';
 import { anAuthenticationManager } from './authenticationManagerFixture';
+import { isSessionStorageBlocked } from './siteStorage';
 import { blockSiteStorage } from '../../test/siteStorage';
 
 jest.mock('react-global-configuration');
@@ -55,6 +56,40 @@ describe('Authentication Management', () => {
     );
   });
 
+  test('update lets a full session storage fail the write', () => {
+    const quotaExceeded = new DOMException('The quota has been exceeded.', 'QuotaExceededError');
+    (window.sessionStorage.setItem as jest.Mock).mockImplementation(() => {
+      throw quotaExceeded;
+    });
+
+    expect(() =>
+      authenticationManagerModule
+        .getAuthentication()
+        .update(anAuthenticationManager('newAccessToken')),
+    ).toThrow(quotaExceeded);
+  });
+
+  test('update keeps the authentication for this page without failing on a browser that offers no session storage', () => {
+    const sessionStorageOfTheBrowser = Object.getOwnPropertyDescriptor(window, 'sessionStorage');
+    Object.defineProperty(window, 'sessionStorage', { value: null, configurable: true });
+
+    const mockAuthData = anAuthenticationManager('newAccessToken');
+
+    try {
+      expect(() =>
+        authenticationManagerModule.getAuthentication().update(mockAuthData),
+      ).not.toThrow();
+      expect(config.set).toHaveBeenCalledWith(
+        { [AUTHENTICATION_CONFIGURATION_KEY]: mockAuthData },
+        { freeze: false, assign: true },
+      );
+    } finally {
+      if (sessionStorageOfTheBrowser) {
+        Object.defineProperty(window, 'sessionStorage', sessionStorageOfTheBrowser);
+      }
+    }
+  });
+
   test('remove method should remove authentication from session storage', () => {
     const authManager = authenticationManagerModule.getAuthentication();
     authManager.remove();
@@ -67,6 +102,7 @@ describe('Authentication Management', () => {
 
     beforeEach(() => {
       unblockSiteStorage = blockSiteStorage();
+      expect(isSessionStorageBlocked()).toBe(true);
     });
 
     afterEach(() => unblockSiteStorage());
@@ -77,10 +113,12 @@ describe('Authentication Management', () => {
       expect(config.set).not.toHaveBeenCalled();
     });
 
-    test('update keeps the authentication for this page', () => {
+    test('update keeps the authentication for this page without failing', () => {
       const mockAuthData = anAuthenticationManager('newAccessToken');
 
-      authenticationManagerModule.getAuthentication().update(mockAuthData);
+      expect(() =>
+        authenticationManagerModule.getAuthentication().update(mockAuthData),
+      ).not.toThrow();
 
       expect(config.set).toHaveBeenCalledWith(
         { [AUTHENTICATION_CONFIGURATION_KEY]: mockAuthData },

@@ -28,6 +28,7 @@ import {
 
 import { ID_CARD_LOGIN_START_FAILED_ERROR } from '../common/errorAlert/ErrorAlert';
 import { getAuthentication } from '../common/authenticationManager';
+import { isSessionStorageBlocked } from '../common/siteStorage';
 import { blockSiteStorage } from '../../test/siteStorage';
 
 const mockHttp = jest.genMockFromModule('../common/http');
@@ -1685,6 +1686,7 @@ describe('Login actions', () => {
 
     beforeEach(() => {
       unblockSiteStorage = blockSiteStorage();
+      expect(isSessionStorageBlocked()).toBe(true);
     });
 
     afterEach(() => unblockSiteStorage());

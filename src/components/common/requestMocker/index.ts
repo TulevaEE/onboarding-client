@@ -1,18 +1,23 @@
 import { MockModeConfiguration, MockModeEndpoint } from './types';
 import { mockModeProfiles } from './profiles';
+import { withSessionStorage } from '../siteStorage';
 
 const MOCK_MODE_CONFIGURATION_KEY_NAME = 'MOCK_MODE';
 
-export const writeMockModeConfiguration = (config: Partial<MockModeConfiguration> | null) => {
-  if (config === null) {
-    sessionStorage.removeItem(MOCK_MODE_CONFIGURATION_KEY_NAME);
-  } else {
-    sessionStorage.setItem(MOCK_MODE_CONFIGURATION_KEY_NAME, JSON.stringify(config));
-  }
-};
+export const writeMockModeConfiguration = (config: Partial<MockModeConfiguration> | null) =>
+  withSessionStorage((storage) => {
+    if (config === null) {
+      storage.removeItem(MOCK_MODE_CONFIGURATION_KEY_NAME);
+    } else {
+      storage.setItem(MOCK_MODE_CONFIGURATION_KEY_NAME, JSON.stringify(config));
+    }
+  }, undefined);
 
 export const readMockModeConfiguration = () => {
-  const config = sessionStorage.getItem(MOCK_MODE_CONFIGURATION_KEY_NAME);
+  const config = withSessionStorage(
+    (storage) => storage.getItem(MOCK_MODE_CONFIGURATION_KEY_NAME),
+    null,
+  );
 
   if (config === null) {
     return null;
