@@ -14,6 +14,7 @@ import { AutomaticRenewalAllowance } from './automaticRenewalAllowance';
 import { ScanFrame } from './ScanFrame';
 import { SmartIdLoginFlow } from '../../common/apiModels';
 import { opensTheSmartIdApp } from './opensTheSmartIdApp';
+import { linkThatOpensTheSmartIdApp } from './linkThatOpensTheSmartIdApp';
 import { useStillOnThisPage } from './useStillOnThisPage';
 import { IconBeforeLabel, SmartIdMarkIcon } from './icons';
 
@@ -79,7 +80,7 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
       scanFrame={device === 'computer'}
     >
       {device === 'tablet' && (
-        <QuietLink href={web2AppLink} onClick={onAppOpen}>
+        <QuietLink href={linkThatOpensTheSmartIdApp(web2AppLink)} onClick={onAppOpen}>
           <FormattedMessage id="login.smart.id.open.app" />
         </QuietLink>
       )}
@@ -112,7 +113,7 @@ const SmartIdAppLogin: React.FC<{ web2AppLink: string; onCancel: () => void }> =
           <a
             ref={appButton}
             className="btn btn-primary btn-lg text-wrap text-balance"
-            href={web2AppLink}
+            href={linkThatOpensTheSmartIdApp(web2AppLink)}
           >
             <IconBeforeLabel
               icon={<SmartIdMarkIcon />}

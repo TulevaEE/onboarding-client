@@ -630,6 +630,23 @@ describe('Smart-ID device link login', () => {
       expect(appButton()).toHaveAttribute('href', web2AppLink);
     });
 
+    it('asks Android for the Smart-ID app by name from the button in Samsung Internet, which keeps plain links to apps inside the browser', async () => {
+      setUserAgent(
+        'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/30.0 Chrome/143.0.0.0 Mobile Safari/537.36',
+      );
+      renderDeviceLinkLogin();
+      await flushPendingRequests();
+
+      waitInView(2000);
+
+      expect(appButton()).toHaveAttribute(
+        'href',
+        `intent://smart-id.com/device-link/?deviceLinkType=Web2App&sessionType=auth#Intent;scheme=https;package=com.smart_id;S.browser_fallback_url=${encodeURIComponent(
+          web2AppLink,
+        )};end`,
+      );
+    });
+
     it.each([
       ['en', 'Open Smart\u2011ID'],
       ['et', 'Ava Smart\u2011ID'],

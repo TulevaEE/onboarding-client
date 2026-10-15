@@ -491,6 +491,27 @@ describe('Login actions', () => {
       expect(openSmartIdApp).toHaveBeenCalledWith(web2AppLink);
     });
 
+    it('opens the Smart-ID app by its Android name in Samsung Internet, which keeps plain links to apps inside the browser', async () => {
+      Object.defineProperty(navigator, 'userAgent', {
+        value:
+          'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/30.0 Chrome/143.0.0.0 Mobile Safari/537.36',
+        configurable: true,
+      });
+      mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
+
+      await createBoundAction(actions.startSmartIdLoginInTheApp)('en');
+
+      Object.defineProperty(navigator, 'userAgent', {
+        value: desktopUserAgent,
+        configurable: true,
+      });
+      expect(openSmartIdApp).toHaveBeenCalledWith(
+        `intent://smart-id.com/device-link/?deviceLinkType=Web2App&sessionType=auth&lang=est#Intent;scheme=https;package=com.smart_id;S.browser_fallback_url=${encodeURIComponent(
+          web2AppLink,
+        )};end`,
+      );
+    });
+
     it('saves the pending login before it leaves for the Smart-ID app', async () => {
       mockApi.startSmartIdLogin = jest.fn(() => Promise.resolve(aDeviceLinkStart));
       let loginSavedWhenTheAppOpened = null;
