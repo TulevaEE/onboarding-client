@@ -286,6 +286,31 @@ describe('III pillar insurance contract transfer', () => {
     });
   });
 
+  describe('when something it needs cannot be loaded', () => {
+    test.each([
+      { what: 'the pillar status', url: 'http://localhost/v1/me/conversion' },
+      { what: 'the missing checks', url: 'http://localhost/v1/amlchecks' },
+    ])('says so instead of loading forever when $what cannot be loaded', async ({ url }) => {
+      userConversionBackend(server, {}, { selectionComplete: true });
+      server.use(rest.get(url, (req, res, ctx) => res(ctx.status(500), ctx.json({ errors: [] }))));
+
+      openFlow();
+
+      expect(await screen.findByText(SOMETHING_WENT_WRONG)).toBeInTheDocument();
+      expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+    });
+
+    test('says so instead of loading forever when the person cannot be loaded again for the request', async () => {
+      userConversionBackend(server, {}, { selectionComplete: true });
+      personLoadsOnlyOnce();
+
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
+
+      expect(await screen.findByText(SOMETHING_WENT_WRONG)).toBeInTheDocument();
+      expect(screen.queryByText(/^Subject: /)).not.toBeInTheDocument();
+    });
+  });
+
   describe('contact details', () => {
     beforeEach(() => {
       userConversionBackend(server, {}, { selectionComplete: true });
@@ -674,6 +699,20 @@ function amlChecksCreated() {
     }),
   );
   return checks;
+}
+
+const SOMETHING_WENT_WRONG = 'Something went wrong. Please try again or reach out to us.';
+
+function personLoadsOnlyOnce() {
+  let loads = 0;
+  server.use(
+    rest.get('http://localhost/v1/me', (req, res, ctx) => {
+      loads += 1;
+      return loads === 1
+        ? res(ctx.json({ ...mockUser, ...MARI }))
+        : res(ctx.status(500), ctx.json({ errors: [] }));
+    }),
+  );
 }
 
 function mandatesSavedCount() {

@@ -10,6 +10,7 @@ import { ACCOUNT_PATH } from '../../paths';
 import { INSURER_CODES, InsurerCode, insurers, toInsurerCode } from './insurers';
 import { InsurerGuide } from './InsurerGuide';
 import { useTransferRequest } from './useTransferRequest';
+import { LoadFailed } from './LoadFailed';
 
 const INSURER_PARAMETER = 'insurer';
 const CONFIRM_PARAMETER = 'confirm';
@@ -149,9 +150,13 @@ const RequestToInsurer = ({
 };
 
 export const InsuranceTransferRequest = ({ nextPath }: { nextPath: string }) => {
-  const { data: user, isFetching } = useMe();
+  const { data: user, isFetching, isError } = useMe();
 
-  if (!user || (isFetching && !user.pensionAccountNumber)) {
+  if (!user) {
+    return isError ? <LoadFailed /> : <Shimmer height={500} />;
+  }
+
+  if (isFetching && !user.pensionAccountNumber) {
     return <Shimmer height={500} />;
   }
 

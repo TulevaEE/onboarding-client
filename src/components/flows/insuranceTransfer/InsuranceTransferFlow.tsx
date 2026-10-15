@@ -14,13 +14,21 @@ import { InsuranceTransferStepPath, insuranceTransferSteps } from './insuranceTr
 import { InsuranceTransferSelection } from './InsuranceTransferSelection';
 import { InsuranceTransferRequest } from './InsuranceTransferRequest';
 import { InsuranceTransferDone } from './InsuranceTransferDone';
+import { LoadFailed } from './LoadFailed';
 
 export const flowPath = '/3rd-pillar-insurance';
 
 const useStepPathsFixedOnceLoaded = () => {
   const user = useSelector((state: State) => state.login.user);
   const missingAmlChecks = useSelector((state: State) => state.aml.missingAmlChecks);
-  const { data: conversion, isFetching: refreshingConversion } = useConversion();
+  const missingAmlChecksFailed = useSelector(
+    ({ aml }: State) => !aml.missingAmlChecks && !!aml.error,
+  );
+  const {
+    data: conversion,
+    isFetching: refreshingConversion,
+    isError: conversionFailed,
+  } = useConversion();
   const [stepPaths, setStepPaths] = useState<InsuranceTransferStepPath[] | null>(null);
 
   useEffect(() => {
@@ -35,7 +43,7 @@ const useStepPathsFixedOnceLoaded = () => {
     );
   }, [stepPaths, user, missingAmlChecks, conversion, refreshingConversion]);
 
-  return stepPaths;
+  return { stepPaths, loadFailed: missingAmlChecksFailed || (!conversion && conversionFailed) };
 };
 
 const toFlowStep = (
@@ -78,14 +86,10 @@ const toFlowStep = (
 export const InsuranceTransferFlow = () => {
   usePageTitle('pageTitle.thirdPillarInsurance');
   const { pathname, search } = useLocation();
-  const stepPaths = useStepPathsFixedOnceLoaded();
+  const { stepPaths, loadFailed } = useStepPathsFixedOnceLoaded();
 
   if (!stepPaths) {
-    return (
-      <div className="mt-4">
-        <Shimmer height={400} />
-      </div>
-    );
+    return <div className="mt-4">{loadFailed ? <LoadFailed /> : <Shimmer height={400} />}</div>;
   }
 
   const addressedStep = pathname.split('/').pop();
