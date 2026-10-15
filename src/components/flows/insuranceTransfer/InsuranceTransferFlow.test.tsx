@@ -17,10 +17,11 @@ import {
   useTestBackendsExcept,
 } from '../../../test/backend';
 import { SIGN_MANDATE_SUCCESS } from '../../exchange/constants';
-import { Conversion, FundBalance } from '../../common/apiModels';
+import { Conversion } from '../../common/apiModels';
 import {
   getMobileSignatureStatusResponse,
   mockSecondPillarConversion,
+  mockSwedbankThirdPillarFundBalance,
   mockThirdPillarConversion,
   mockUser,
 } from '../../../test/backend-responses';
@@ -61,7 +62,7 @@ afterAll(() => server.close());
 beforeEach(() => {
   initializeConfiguration();
   useTestBackendsExcept(server, ['user', 'userConversion', 'pensionAccountStatement', 'mandates']);
-  pensionAccountStatementBackend(server, [otherThirdPillarFund]);
+  pensionAccountStatementBackend(server, [mockSwedbankThirdPillarFundBalance]);
   userBackend(server, MARI);
   writeText = jest.fn().mockResolvedValue(undefined);
   Object.defineProperty(window.navigator, 'clipboard', {
@@ -775,25 +776,3 @@ const comeBackToTheTab = () =>
     focusManager.setFocused(false);
     focusManager.setFocused(true);
   });
-
-const otherThirdPillarFund: FundBalance = {
-  fund: {
-    fundManager: { name: 'Swedbank' },
-    isin: 'EE3600001822',
-    name: 'Swedbank III Pillar Pension Fund',
-    managementFeeRate: 0.005,
-    pillar: 3,
-    ongoingChargesFigure: 0.005,
-    status: 'ACTIVE',
-    inceptionDate: '2017-01-01',
-    nav: 1,
-  },
-  value: 1234.56,
-  unavailableValue: 0,
-  currency: 'EUR',
-  activeContributions: true,
-  contributions: 1000.0,
-  subtractions: 0,
-  profit: 234.56,
-  units: 1234.56,
-};

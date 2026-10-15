@@ -9,6 +9,7 @@ type Insurer = {
   actionUrl: string;
   stepMessageIds: TranslationKey[];
   signedRequestEmail?: string;
+  formerNamesMessageId?: TranslationKey;
 };
 
 export const insurers: Record<InsurerCode, Insurer> = {
@@ -36,6 +37,7 @@ export const insurers: Record<InsurerCode, Insurer> = {
     actionUrl: 'https://e-life.artea.ee',
     stepMessageIds: ['insuranceTransfer.guide.ARTEA.send'],
     signedRequestEmail: 'kindlustus@artea.ee',
+    formerNamesMessageId: 'insuranceTransfer.insurer.ARTEA.formerNames',
   },
   ERGO: {
     name: 'Ergo',

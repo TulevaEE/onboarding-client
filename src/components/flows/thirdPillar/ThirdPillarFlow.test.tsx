@@ -14,6 +14,7 @@ import {
   useTestBackendsExcept,
 } from '../../../test/backend';
 import { FundBalance } from '../../common/apiModels';
+import { mockSwedbankThirdPillarFundBalance } from '../../../test/backend-responses';
 
 const server = setupServer();
 let history: History;
@@ -84,7 +85,7 @@ describe('3rd pillar flow', () => {
       {},
       { transfersComplete: false, selectionComplete: false, paymentComplete: false },
     );
-    pensionAccountStatementBackend(server, [otherFund, tulevaFund]);
+    pensionAccountStatementBackend(server, [mockSwedbankThirdPillarFundBalance, tulevaFund]);
     history.push('/3rd-pillar-flow');
 
     expect(await introText()).toBeInTheDocument();
@@ -201,26 +202,4 @@ const tulevaFund: FundBalance = {
   subtractions: 0,
   profit: -1876.54,
   units: 5699.36 / 1,
-};
-
-const otherFund: FundBalance = {
-  fund: {
-    fundManager: { name: 'Swedbank' },
-    isin: 'EE3600001822',
-    name: 'Swedbank III Pillar Pension Fund',
-    managementFeeRate: 0.005,
-    pillar: 3,
-    ongoingChargesFigure: 0.005,
-    status: 'ACTIVE',
-    inceptionDate: '2017-01-01',
-    nav: 1,
-  },
-  value: 1234.56,
-  unavailableValue: 0,
-  currency: 'EUR',
-  activeContributions: true,
-  contributions: 1000.0,
-  subtractions: 0,
-  profit: 234.56,
-  units: 1234.56 / 1,
 };

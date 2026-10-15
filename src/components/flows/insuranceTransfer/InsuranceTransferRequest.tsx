@@ -15,49 +15,57 @@ import { LoadFailed } from './LoadFailed';
 const INSURER_PARAMETER = 'insurer';
 const CONFIRM_PARAMETER = 'confirm';
 
-const useChosenInsurer = (): [InsurerCode | null, (insurer: InsurerCode) => void] => {
+const useRequestStateInAddress = () => {
   const { search } = useLocation();
   const history = useHistory();
   const parameters = new URLSearchParams(search);
 
-  const choose = (insurer: InsurerCode) => {
-    parameters.set(INSURER_PARAMETER, insurer);
-    history.replace({ search: parameters.toString() });
+  const changedSearch = (change: (changed: URLSearchParams) => void) => {
+    const changed = new URLSearchParams(search);
+    change(changed);
+    return { search: changed.toString() };
   };
 
-  return [toInsurerCode(parameters.get(INSURER_PARAMETER)), choose];
+  return {
+    insurer: toInsurerCode(parameters.get(INSURER_PARAMETER)),
+    askingIfSent: parameters.has(CONFIRM_PARAMETER),
+    chooseInsurer: (insurer: InsurerCode) =>
+      history.replace(changedSearch((changed) => changed.set(INSURER_PARAMETER, insurer))),
+    askIfSent: () => history.push(changedSearch((changed) => changed.set(CONFIRM_PARAMETER, '1'))),
+    showStepsAgain: () => history.goBack(),
+  };
 };
 
-const InsurerName = ({ insurer }: { insurer: InsurerCode }) => (
-  <p className="m-0">
-    {insurers[insurer].name}
-    {insurer === 'ARTEA' && (
-      <span className="text-body-secondary">
-        {' '}
-        (<FormattedMessage id="insuranceTransfer.insurer.ARTEA.formerNames" />)
-      </span>
-    )}
-  </p>
-);
-
-const SentQuestion = ({ onSent }: { onSent: () => void }) => {
-  const history = useHistory();
+const InsurerName = ({ insurer }: { insurer: InsurerCode }) => {
+  const { name, formerNamesMessageId } = insurers[insurer];
   return (
-    <div className="text-center py-5">
-      <h2 className="mb-4">
-        <FormattedMessage id="insuranceTransfer.sentQuestion.title" />
-      </h2>
-      <div className="d-flex gap-2 justify-content-center flex-wrap">
-        <button type="button" className="btn btn-primary" onClick={onSent}>
-          <FormattedMessage id="insuranceTransfer.sentQuestion.yes" />
-        </button>
-        <button type="button" className="btn btn-outline-primary" onClick={() => history.goBack()}>
-          <FormattedMessage id="insuranceTransfer.sentQuestion.showSteps" />
-        </button>
-      </div>
-    </div>
+    <p className="m-0">
+      {name}
+      {formerNamesMessageId && (
+        <span className="text-body-secondary">
+          {' '}
+          (<FormattedMessage id={formerNamesMessageId} />)
+        </span>
+      )}
+    </p>
   );
 };
+
+const SentQuestion = ({ onSent, onShowSteps }: { onSent: () => void; onShowSteps: () => void }) => (
+  <div className="text-center py-5">
+    <h2 className="mb-4">
+      <FormattedMessage id="insuranceTransfer.sentQuestion.title" />
+    </h2>
+    <div className="d-flex gap-2 justify-content-center flex-wrap">
+      <button type="button" className="btn btn-primary" onClick={onSent}>
+        <FormattedMessage id="insuranceTransfer.sentQuestion.yes" />
+      </button>
+      <button type="button" className="btn btn-outline-primary" onClick={onShowSteps}>
+        <FormattedMessage id="insuranceTransfer.sentQuestion.showSteps" />
+      </button>
+    </div>
+  </div>
+);
 
 const NoPensionAccountNumberYet = () => (
   <>
@@ -80,16 +88,9 @@ const RequestToInsurer = ({
   nextPath: string;
 }) => {
   const history = useHistory();
-  const { search } = useLocation();
-  const [insurer, chooseInsurer] = useChosenInsurer();
+  const { insurer, askingIfSent, chooseInsurer, askIfSent, showStepsAgain } =
+    useRequestStateInAddress();
   const request = useTransferRequest(user, pensionAccountNumber);
-  const askingIfSent = new URLSearchParams(search).has(CONFIRM_PARAMETER);
-
-  const askIfSent = () => {
-    const parameters = new URLSearchParams(search);
-    parameters.set(CONFIRM_PARAMETER, '1');
-    history.push({ search: parameters.toString() });
-  };
 
   const recordSent = (sentTo: InsurerCode) => {
     createTrackedEvent('CLICK', { target: 'insurance-transfer-sent', insurer: sentTo }).catch(
@@ -99,7 +100,7 @@ const RequestToInsurer = ({
   };
 
   if (askingIfSent && insurer) {
-    return <SentQuestion onSent={() => recordSent(insurer)} />;
+    return <SentQuestion onSent={() => recordSent(insurer)} onShowSteps={showStepsAgain} />;
   }
 
   return (
