@@ -1,4 +1,4 @@
-export type InsuranceTransferStepPath = 'contact-details' | 'selection' | 'request' | 'done';
+export type InsuranceTransferStepPath = 'contact-details' | 'selection' | 'request';
 
 export const insuranceTransferSteps = ({
   contactDetailsMissing,
@@ -10,7 +10,6 @@ export const insuranceTransferSteps = ({
   ...(contactDetailsMissing ? (['contact-details'] as const) : []),
   ...(selectionComplete ? [] : (['selection'] as const)),
   'request',
-  'done',
 ];
 
 export const skipsAStepToDo = (

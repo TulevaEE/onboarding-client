@@ -127,7 +127,6 @@ describe('III pillar insurance contract transfer', () => {
       userEvent.click(signButton());
 
       await requestStepOpened();
-      expect(screen.queryByText(/still being opened/)).not.toBeInTheDocument();
       userEvent.click(await screen.findByRole('radio', { name: 'SEB' }));
 
       expect(await requestText()).toHaveTextContent(
@@ -449,6 +448,39 @@ describe('III pillar insurance contract transfer', () => {
       ).toBeInTheDocument();
     });
 
+    test('warns that some contracts pay less when ended early and lets a later end date be chosen', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+
+      const endDate = await screen.findByLabelText('When should the contract end?');
+      expect(endDate).toHaveAttribute('type', 'date');
+      expect(endDate).toHaveValue('');
+      expect(endDate).toHaveAccessibleDescription(
+        'Some contracts pay less before their end date: check your contract or the insurer’s e\u2011service. If yours pays more later, pick that date, otherwise leave this empty.',
+      );
+    });
+
+    test('puts the chosen end date into the request it copies', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+
+      userEvent.type(await screen.findByLabelText('When should the contract end?'), '2027-11-01');
+
+      const request = await requestText();
+      expect(request).toHaveTextContent(
+        [
+          'Policyholder: Mari Maasikas, personal code 38888888888',
+          'Contract end date: November 1, 2027',
+          'Pension fund: Tuleva III Samba Pensionifond, ISIN EE3600001707',
+        ].join('\n'),
+        { normalizeWhitespace: false },
+      );
+      userEvent.click(within(guide('Ergo')).getByRole('button', { name: 'Copy' }));
+      await waitFor(() =>
+        expect(writeText).toHaveBeenCalledWith(
+          expect.stringContaining('Contract end date: November 1, 2027'),
+        ),
+      );
+    });
+
     test('drafts a request with the person, the fund and the pension account number but no amount', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=SEB');
 
@@ -461,6 +493,7 @@ describe('III pillar insurance contract transfer', () => {
       expect(request).toHaveTextContent(
         [
           'Policyholder: Mari Maasikas, personal code 38888888888',
+          'Contract end date: as soon as possible',
           'Pension fund: Tuleva III Samba Pensionifond, ISIN EE3600001707',
           'Fund manager: Tuleva Fondid AS',
           'Pension account number (reference number): 99812345678',
@@ -485,37 +518,35 @@ describe('III pillar insurance contract transfer', () => {
       await waitFor(() => expect(writeText).toHaveBeenCalledWith(request.textContent));
     });
 
-    test('asks to come back later instead of drafting a request while the pension account is being opened', async () => {
-      userBackend(server, { ...MARI, pensionAccountNumber: null });
-
-      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
-
-      expect(
-        await screen.findByText(
-          'Your pension account is still being opened. Come back later and your request will be ready here.',
-        ),
-      ).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: 'My account' })).toHaveAttribute('href', '/account');
-      expect(screen.queryByRole('radio')).not.toBeInTheDocument();
-      expect(screen.queryByText(/^Subject: /)).not.toBeInTheDocument();
-    });
-
-    test('asks whether the request went out once the insurer opens, and shows the steps again when it did not', async () => {
+    test('asks on a page of its own whether the request went out once the insurer opens, and shows the steps again when it did not', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=SEB');
 
       userEvent.click(await screen.findByRole('link', { name: 'Open SEB' }));
 
-      expect(history.location.search).toBe('?insurer=SEB&confirm=1');
+      expect(history.location.pathname).toBe('/3rd-pillar-insurance-sent');
+      expect(history.location.search).toBe('?insurer=SEB');
       expect(
-        screen.getByRole('heading', { name: 'Did you send the request?' }),
+        await screen.findByRole('heading', { level: 1, name: 'Did you send the request?' }),
       ).toBeInTheDocument();
-      expect(screen.queryByRole('region', { name: 'SEB' })).not.toBeInTheDocument();
+      expect(screen.queryByText('Send a request to your insurer')).not.toBeInTheDocument();
 
       userEvent.click(screen.getByRole('button', { name: 'Show the steps again' }));
 
       expect(await screen.findByRole('region', { name: 'SEB' })).toBeInTheDocument();
       expect(screen.getByRole('radio', { name: 'SEB' })).toBeChecked();
+      expect(history.location.pathname).toBe('/3rd-pillar-insurance/request');
       expect(history.location.search).toBe('?insurer=SEB');
+    });
+
+    test('keeps the chosen end date in the request when the steps are shown again after the insurer opens', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+      userEvent.type(await screen.findByLabelText('When should the contract end?'), '2027-11-01');
+
+      userEvent.click(screen.getByRole('link', { name: 'Open Ergo e\u2011kontor' }));
+      userEvent.click(await screen.findByRole('button', { name: 'Show the steps again' }));
+
+      expect(await requestText()).toHaveTextContent('Contract end date: November 1, 2027');
+      expect(screen.getByLabelText('When should the contract end?')).toHaveValue('2027-11-01');
     });
 
     test('asks whether the request went out once the signed request is emailed instead', async () => {
@@ -524,13 +555,14 @@ describe('III pillar insurance contract transfer', () => {
       userEvent.click(await screen.findByRole('link', { name: 'kindlustus@artea.ee' }));
 
       expect(
-        screen.getByRole('heading', { name: 'Did you send the request?' }),
+        await screen.findByRole('heading', { name: 'Did you send the request?' }),
       ).toBeInTheDocument();
-      expect(history.location.search).toBe('?insurer=ARTEA&confirm=1');
+      expect(history.location.pathname).toBe('/3rd-pillar-insurance-sent');
+      expect(history.location.search).toBe('?insurer=ARTEA');
     });
 
     test('shows the steps again when the question whether the request went out was opened from a link', async () => {
-      openFlow('/3rd-pillar-insurance/request?insurer=SEB&confirm=1');
+      openFlow('/3rd-pillar-insurance-sent?insurer=SEB');
 
       userEvent.click(await screen.findByRole('button', { name: 'Show the steps again' }));
 
@@ -539,7 +571,7 @@ describe('III pillar insurance contract transfer', () => {
       expect(history.location.search).toBe('?insurer=SEB');
     });
 
-    test('records the sent request and says the insurer moves the money within two months', async () => {
+    test('records the sent request and says the insurer moves the money within two months after the contract ends', async () => {
       const trackedEvents = trackedEventsBackend();
       openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
 
@@ -549,11 +581,12 @@ describe('III pillar insurance contract transfer', () => {
       expect(await screen.findByRole('heading', { name: 'Done' })).toBeInTheDocument();
       expect(
         screen.getByText(
-          /^Your insurer will transfer the money to Tuleva III\sPillar Pension Fund within 2\smonths\.$/,
+          /^Your insurer will transfer the money to Tuleva III\sPillar Pension Fund within 2\smonths after the contract ends\.$/,
         ),
       ).toBeInTheDocument();
       expect(screen.getByRole('link', { name: 'My account' })).toHaveAttribute('href', '/account');
-      expect(history.location.pathname).toBe('/3rd-pillar-insurance/done');
+      expect(history.location.pathname).toBe('/3rd-pillar-insurance-success');
+      expect(screen.queryByText('Send a request to your insurer')).not.toBeInTheDocument();
       await waitFor(() =>
         expect(sentRequests(trackedEvents)).toEqual([
           { type: 'CLICK', data: { target: 'insurance-transfer-sent', insurer: 'COMPENSA' } },
@@ -561,14 +594,12 @@ describe('III pillar insurance contract transfer', () => {
       );
     });
 
-    test('gives the fund ISIN and the pension account number in case the insurer asks for them', async () => {
-      openFlow('/3rd-pillar-insurance/done');
+    test('does not repeat on the done page the fund ISIN and pension account number the request already gave the insurer', async () => {
+      openFlow('/3rd-pillar-insurance-success');
 
-      expect(await screen.findByText('If the insurer asks for more details:')).toBeInTheDocument();
-      expect(screen.getByText(/^Tuleva III\sSamba Pensionifond ISIN:$/)).toBeInTheDocument();
-      expect(screen.getByText('EE3600001707')).toBeInTheDocument();
-      expect(screen.getByText('Your pension account number:')).toBeInTheDocument();
-      expect(screen.getByText('99812345678')).toHaveClass(PII_CLASS);
+      expect(await screen.findByRole('heading', { name: 'Done' })).toBeInTheDocument();
+      expect(screen.queryByText('EE3600001707')).not.toBeInTheDocument();
+      expect(screen.queryByText('99812345678')).not.toBeInTheDocument();
     });
 
     test.each([
@@ -609,11 +640,11 @@ describe('III pillar insurance contract transfer', () => {
         insurer: 'Artea',
         steps: [
           'Copy the request.',
-          'Send it in the Artea e-service.',
+          'Send it in the Artea e\u2011service.',
           'Or sign the request digitally and email it to kindlustus@artea.ee.',
         ],
         emails: [subjectOnlyMailto('kindlustus@artea.ee')],
-        open: 'Open Artea e-service',
+        open: 'Open Artea e\u2011service',
         actionUrl: 'https://e-life.artea.ee',
       },
       {
@@ -624,7 +655,7 @@ describe('III pillar insurance contract transfer', () => {
           'Paste the request into Kirja sisu and press Saada.',
         ],
         emails: [],
-        open: 'Open Ergo e-kontor',
+        open: 'Open Ergo e\u2011kontor',
         actionUrl: 'https://ekontor.ergo.ee/lepingud',
       },
     ])(

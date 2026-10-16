@@ -17,10 +17,8 @@ import {
 } from './insuranceTransferSteps';
 import { InsuranceTransferSelection } from './InsuranceTransferSelection';
 import { InsuranceTransferRequest } from './InsuranceTransferRequest';
-import { InsuranceTransferDone } from './InsuranceTransferDone';
 import { LoadFailed } from './LoadFailed';
-
-export const flowPath = '/3rd-pillar-insurance';
+import { flowPath } from './insuranceTransferPaths';
 
 const addressedStepOf = (pathname: string) => pathname.split('/').pop();
 
@@ -92,11 +90,9 @@ const toFlowStep = (
     case 'request':
       return {
         path,
-        Component: () => <InsuranceTransferRequest nextPath={nextPath} />,
+        Component: () => <InsuranceTransferRequest />,
         title: <FormattedMessage id="insuranceTransfer.steps.request.title" />,
       };
-    case 'done':
-      return { path, Component: () => <InsuranceTransferDone /> };
     default:
       throw new Error(`Unknown insurance transfer step: path=${path}`);
   }

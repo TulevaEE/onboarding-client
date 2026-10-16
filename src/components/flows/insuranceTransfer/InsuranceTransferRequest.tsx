@@ -1,39 +1,39 @@
 import { FormattedMessage } from 'react-intl';
-import { Link, useHistory, useLocation } from 'react-router-dom';
-import { captureException } from '@sentry/browser';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useMe } from '../../common/apiHooks';
-import { createTrackedEvent } from '../../common/api';
 import { User } from '../../common/apiModels';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import Radio from '../../common/radio';
-import { ACCOUNT_PATH } from '../../paths';
 import { INSURER_CODES, InsurerCode, insurers, toInsurerCode } from './insurers';
 import { InsurerGuide } from './InsurerGuide';
 import { useTransferRequest } from './useTransferRequest';
 import { LoadFailed } from './LoadFailed';
+import { sentPath } from './insuranceTransferPaths';
 
 const INSURER_PARAMETER = 'insurer';
-const CONFIRM_PARAMETER = 'confirm';
+const END_DATE_PARAMETER = 'endDate';
 
-const useRequestStateInAddress = () => {
+const useRequestChoicesInAddress = () => {
   const { search } = useLocation();
   const history = useHistory();
   const parameters = new URLSearchParams(search);
 
-  const changedSearch = (change: (changed: URLSearchParams) => void) => {
+  const replaceParameter = (name: string, value: string | null) => {
     const changed = new URLSearchParams(search);
-    change(changed);
-    return { search: changed.toString() };
+    if (value) {
+      changed.set(name, value);
+    } else {
+      changed.delete(name);
+    }
+    history.replace({ search: changed.toString() });
   };
 
   return {
     insurer: toInsurerCode(parameters.get(INSURER_PARAMETER)),
-    askingIfSent: parameters.has(CONFIRM_PARAMETER),
-    chooseInsurer: (insurer: InsurerCode) =>
-      history.replace(changedSearch((changed) => changed.set(INSURER_PARAMETER, insurer))),
-    askIfSent: () => history.push(changedSearch((changed) => changed.set(CONFIRM_PARAMETER, '1'))),
-    showStepsAgain: () =>
-      history.replace(changedSearch((changed) => changed.delete(CONFIRM_PARAMETER))),
+    endDate: parameters.get(END_DATE_PARAMETER),
+    chooseInsurer: (insurer: InsurerCode) => replaceParameter(INSURER_PARAMETER, insurer),
+    chooseEndDate: (endDate: string | null) => replaceParameter(END_DATE_PARAMETER, endDate),
+    askIfSent: () => history.push({ pathname: sentPath, search }),
   };
 };
 
@@ -52,57 +52,37 @@ const InsurerName = ({ insurer }: { insurer: InsurerCode }) => {
   );
 };
 
-const SentQuestion = ({ onSent, onShowSteps }: { onSent: () => void; onShowSteps: () => void }) => (
-  <div className="text-center py-5">
-    <h2 className="mb-4">
-      <FormattedMessage id="insuranceTransfer.sentQuestion.title" />
-    </h2>
-    <div className="d-flex gap-2 justify-content-center flex-wrap">
-      <button type="button" className="btn btn-primary" onClick={onSent}>
-        <FormattedMessage id="insuranceTransfer.sentQuestion.yes" />
-      </button>
-      <button type="button" className="btn btn-outline-primary" onClick={onShowSteps}>
-        <FormattedMessage id="insuranceTransfer.sentQuestion.showSteps" />
-      </button>
+const END_DATE_ID = 'insurance-contract-end-date';
+
+const EndDateField = ({
+  endDate,
+  onChange,
+}: {
+  endDate: string | null;
+  onChange: (endDate: string | null) => void;
+}) => (
+  <div className="mt-4">
+    <label className="form-label fw-bold" htmlFor={END_DATE_ID}>
+      <FormattedMessage id="insuranceTransfer.endDate.label" />
+    </label>
+    <input
+      type="date"
+      id={END_DATE_ID}
+      className="form-control w-auto"
+      value={endDate ?? ''}
+      onChange={(event) => onChange(event.target.value || null)}
+      aria-describedby={`${END_DATE_ID}-hint`}
+    />
+    <div id={`${END_DATE_ID}-hint`} className="form-text text-pretty">
+      <FormattedMessage id="insuranceTransfer.endDate.hint" />
     </div>
   </div>
 );
 
-const NoPensionAccountNumberYet = () => (
-  <>
-    <p className="text-pretty">
-      <FormattedMessage id="insuranceTransfer.noNumber" />
-    </p>
-    <Link className="btn btn-outline-primary mt-3" to={ACCOUNT_PATH}>
-      <FormattedMessage id="thirdPillarSuccess.button.account" />
-    </Link>
-  </>
-);
-
-const RequestToInsurer = ({
-  user,
-  pensionAccountNumber,
-  nextPath,
-}: {
-  user: User;
-  pensionAccountNumber: string;
-  nextPath: string;
-}) => {
-  const history = useHistory();
-  const { insurer, askingIfSent, chooseInsurer, askIfSent, showStepsAgain } =
-    useRequestStateInAddress();
-  const request = useTransferRequest(user, pensionAccountNumber);
-
-  const recordSent = (sentTo: InsurerCode) => {
-    createTrackedEvent('CLICK', { target: 'insurance-transfer-sent', insurer: sentTo }).catch(
-      captureException,
-    );
-    history.push(nextPath);
-  };
-
-  if (askingIfSent && insurer) {
-    return <SentQuestion onSent={() => recordSent(insurer)} onShowSteps={showStepsAgain} />;
-  }
+const RequestToInsurer = ({ user }: { user: User }) => {
+  const { insurer, endDate, chooseInsurer, chooseEndDate, askIfSent } =
+    useRequestChoicesInAddress();
+  const request = useTransferRequest(user, endDate);
 
   return (
     <div className="row">
@@ -132,6 +112,7 @@ const RequestToInsurer = ({
             <p className="mt-3 mb-0 text-body-secondary text-pretty">
               <FormattedMessage id="insuranceTransfer.fairness" />
             </p>
+            <EndDateField endDate={endDate} onChange={chooseEndDate} />
             <InsurerGuide insurer={insurer} request={request} onSend={askIfSent} />
             <div className="mt-4 d-flex flex-column flex-sm-row justify-content-end">
               <a
@@ -151,7 +132,7 @@ const RequestToInsurer = ({
   );
 };
 
-export const InsuranceTransferRequest = ({ nextPath }: { nextPath: string }) => {
+export const InsuranceTransferRequest = () => {
   const { data: user, isFetching, isError } = useMe();
 
   if (!user) {
@@ -162,15 +143,5 @@ export const InsuranceTransferRequest = ({ nextPath }: { nextPath: string }) => 
     return <Shimmer height={500} />;
   }
 
-  if (!user.pensionAccountNumber) {
-    return <NoPensionAccountNumberYet />;
-  }
-
-  return (
-    <RequestToInsurer
-      user={user}
-      pensionAccountNumber={user.pensionAccountNumber}
-      nextPath={nextPath}
-    />
-  );
+  return <RequestToInsurer user={user} />;
 };
