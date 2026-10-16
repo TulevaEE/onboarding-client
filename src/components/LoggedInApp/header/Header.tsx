@@ -9,13 +9,12 @@ import { RoleSwitcher } from './roleSwitcher';
 type Props = {
   // TODO move to useMe hook here
   user: { name: string };
-  loading: boolean;
   onLogout: () => unknown;
   onRoleSwitch?: () => void;
   hackathon?: boolean;
 };
 
-export const Header = ({ user, loading, onLogout, onRoleSwitch, hackathon = false }: Props) => (
+export const Header = ({ user, onLogout, onRoleSwitch, hackathon = false }: Props) => (
   <>
     <a className="skip-link visually-hidden-focusable" href="#main">
       <FormattedMessage id="global.skipToContent" />
@@ -40,7 +39,7 @@ export const Header = ({ user, loading, onLogout, onRoleSwitch, hackathon = fals
           </a>
         )}
       </div>
-      {loading || !user ? (
+      {!user?.name ? (
         <div style={{ width: '200px' }}>
           <Shimmer height={32} />
         </div>

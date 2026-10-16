@@ -110,14 +110,12 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
   const pendingChildren = pendingChildOnboardings(pendingOnboardings);
   const hasAnotherAccount = (roles?.length ?? 0) > 1 || pendingChildren.length > 0;
 
-  const handleRoleClick = async (command: SwitchRoleCommand, isCurrent: boolean) => {
+  const handleRoleClick = (command: SwitchRoleCommand, isCurrent: boolean) => {
     setOpen(false);
-    if (isCurrent) {
-      toggleRef.current?.focus();
-      return;
+    toggleRef.current?.focus();
+    if (!isCurrent) {
+      switchRole.mutate(command, { onSuccess: () => onRoleSwitch?.() });
     }
-    await switchRole.mutateAsync(command);
-    onRoleSwitch?.();
   };
 
   return (

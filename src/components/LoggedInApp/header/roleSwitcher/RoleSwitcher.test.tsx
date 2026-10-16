@@ -702,6 +702,40 @@ describe('RoleSwitcher', () => {
     });
   });
 
+  it('keeps focus on the toggle after switching to another account', async () => {
+    setupSwitchFlow();
+
+    renderRoleSwitcher();
+
+    const companyItem = await openDropdownAndGetCompanyItem();
+    userBackend(server, { role: companyRole });
+    companyItem.focus();
+    userEvent.type(companyItem, '{enter}', { skipClick: true });
+
+    await waitFor(() => expect(screen.getByRole('button', { name: /Test OÜ/i })).toHaveFocus());
+  });
+
+  it('stays on the current account when switching fails', async () => {
+    rolesBackend(server, multipleRoles);
+    userBackend(server, { role: personalRole });
+    let switchAttempted = false;
+    server.use(
+      rest.post('http://localhost/v1/me/role', (req, res, ctx) => {
+        switchAttempted = true;
+        return res(ctx.status(500));
+      }),
+    );
+    const onRoleSwitch = jest.fn();
+
+    renderRoleSwitcher(onRoleSwitch);
+
+    userEvent.click(await openDropdownAndGetCompanyItem());
+
+    await waitFor(() => expect(switchAttempted).toBe(true));
+    expect(onRoleSwitch).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: /John Doe/i })).toBeInTheDocument();
+  });
+
   it('only closes the menu when clicking the role you are already acting as', async () => {
     const backend = setupSwitchFlow();
 

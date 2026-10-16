@@ -123,14 +123,13 @@ export class LoggedInApp extends PureComponent {
   }
 
   render() {
-    const { user, loading, onLogout, location } = this.props;
+    const { user, onLogout, location } = this.props;
     const isHackathonPage = location.pathname.startsWith('/hackathon');
 
     return (
       <div className="container">
         <Header
           user={user}
-          loading={loading}
           onLogout={onLogout}
           onRoleSwitch={() => this.handleRoleSwitch()}
           hackathon={isHackathonPage}
@@ -408,7 +407,6 @@ const noop = () => null;
 LoggedInApp.defaultProps = {
   user: null,
   hasError: false,
-  loading: false,
   shouldLoadAllUserData: false,
   location: { pathname: '' },
 
@@ -423,7 +421,6 @@ LoggedInApp.defaultProps = {
 LoggedInApp.propTypes = {
   user: Types.shape({ name: Types.string }),
   hasError: Types.bool,
-  loading: Types.bool,
   shouldLoadAllUserData: Types.bool,
   location: Types.shape({ pathname: Types.string }),
 
@@ -440,7 +437,6 @@ const mapStateToProps = (state) => ({
     name: [(state.login.user || {}).firstName, (state.login.user || {}).lastName].join(' ').trim(),
   },
   hasError: !!(state.login.userConversionError || state.login.userError),
-  loading: state.login.loadingUser || state.login.loadingUserConversion,
   shouldLoadAllUserData:
     getAuthentication().isAuthenticated() &&
     (!(state.login.user || state.login.loadingUser) ||
