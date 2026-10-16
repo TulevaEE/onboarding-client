@@ -2401,7 +2401,7 @@
   "insuranceTransfer.endDate.label": "Millal leping lõpetada?",
   "insuranceTransfer.endDate.hint": "Mõni leping maksab enne lõpptähtaega vähem: vaata lepingust või kindlustusandja e‑teenindusest. Kui sinu oma maksab hiljem rohkem, vali see kuupäev, muidu jäta tühjaks.",
   "thirdPillarStandingOrder.title": "Muuda III samba püsimakset",
-  "thirdPillarStandingOrder.lead": "Summat muudad oma pangas. Vali pank, kust püsimakse läheb.",
+  "thirdPillarStandingOrder.lead": "Püsimakset saad muuta oma pangas, kus maksed toimuvad.",
   "thirdPillarStandingOrder.otherBank": "Muu pank",
   "thirdPillarStandingOrder.heading.END_AND_RECREATE": "Tee uus püsimakse ja lõpeta siis vana",
   "thirdPillarStandingOrder.heading.EDIT_IN_PLACE": "Muuda summat olemasolevas püsimakses",

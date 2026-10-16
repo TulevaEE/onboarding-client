@@ -2311,7 +2311,7 @@
   "insuranceTransfer.endDate.label": "When should the contract end?",
   "insuranceTransfer.endDate.hint": "Some contracts pay less before their end date: check your contract or the insurer’s e‑service. If yours pays more later, pick that date, otherwise leave this empty.",
   "thirdPillarStandingOrder.title": "Change your III pillar recurring payment",
-  "thirdPillarStandingOrder.lead": "You change the amount at your bank. Choose the bank your recurring payment goes from.",
+  "thirdPillarStandingOrder.lead": "You can change your recurring payment at your bank, where the payments are made.",
   "thirdPillarStandingOrder.otherBank": "Other bank",
   "thirdPillarStandingOrder.heading.END_AND_RECREATE": "Set up a new payment, then end the old one",
   "thirdPillarStandingOrder.heading.EDIT_IN_PLACE": "Change the amount of your existing payment",

@@ -68,7 +68,7 @@ describe('a person who wants to change their III pillar recurring payment', () =
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        'You change the amount at your bank. Choose the bank your recurring payment goes from.',
+        'You can change your recurring payment at your bank, where the payments are made.',
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('radio', { name: 'Swedbank' })).not.toBeChecked();
