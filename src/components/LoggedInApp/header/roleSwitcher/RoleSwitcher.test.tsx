@@ -42,6 +42,10 @@ function dropdownMenuPanel() {
   return document.querySelector('.dropdown-menu');
 }
 
+function menuRows() {
+  return Array.from(dropdownMenuPanel()?.children ?? []);
+}
+
 async function openDropdownAndGetCompanyItem() {
   const toggle = await screen.findByRole('button', { name: /John Doe/i });
   userEvent.click(toggle);
@@ -126,6 +130,51 @@ describe('RoleSwitcher', () => {
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
       expect(await screen.findByText('Switch account')).toBeInTheDocument();
+    });
+
+    it('leaves out switching accounts when there is no other account to switch to', async () => {
+      rolesBackend(server, [personalRole]);
+      userBackend(server, { role: personalRole });
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(
+        await screen.findByRole('link', { name: 'Open an account for a child or company' }),
+      ).toBeInTheDocument();
+      expect(screen.queryByText('Switch account')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'John Doe' })).not.toBeInTheDocument();
+      expect(screen.getAllByRole('separator')).toHaveLength(1);
+    });
+
+    it('offers switching accounts to a single-account user with a child being onboarded', async () => {
+      rolesBackend(server, [personalRole]);
+      userBackend(server, { role: personalRole });
+      pendingOnboardingsBackend(server, [
+        { type: 'PERSON', code: '61506150006', name: 'Mari Maasikas' },
+      ]);
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(await screen.findByText('Switch account')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'John Doe', current: true })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Mari Maasikas' })).toBeInTheDocument();
+    });
+
+    it('puts logging out right below the language choice', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
+
+      const rows = menuRows();
+      const languageRow = rows.indexOf(screen.getByRole('link', { name: 'Eesti keeles' }));
+      expect(rows[languageRow + 1]).toBe(screen.getByRole('link', { name: 'Log out' }));
     });
 
     it('opens with my account and ends with logging out', async () => {
