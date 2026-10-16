@@ -1,6 +1,7 @@
 import React, { FC, KeyboardEvent } from 'react';
 import { FormattedMessage } from 'react-intl';
 import config from 'react-global-configuration';
+import { useLocation } from 'react-router-dom';
 import { PhosphorIcon } from '../../../common/PhosphorIcon';
 
 type Props = {
@@ -8,13 +9,24 @@ type Props = {
   onClick?: () => void;
 };
 
+const addressIn = (
+  language: string,
+  { pathname, search }: { pathname: string; search: string },
+) => {
+  const parameters = new URLSearchParams(search);
+  parameters.set('language', language);
+  return `${pathname}?${parameters}`;
+};
+
 const LanguageSwitcher: FC<Props> = ({ onKeyDown, onClick }) => {
-  const isEstonian = config.get('language') === 'et';
+  const otherLanguage = config.get('language') === 'et' ? 'en' : 'et';
+  const location = useLocation();
 
   return (
     <a
       className="dropdown-item text-wrap d-flex align-items-center gap-2"
-      href={isEstonian ? '?language=en' : '?language=et'}
+      href={addressIn(otherLanguage, location)}
+      lang={otherLanguage}
       onKeyDown={onKeyDown}
       onClick={onClick}
     >

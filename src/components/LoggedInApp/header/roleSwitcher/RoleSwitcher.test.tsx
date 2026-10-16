@@ -261,7 +261,7 @@ describe('RoleSwitcher', () => {
 
       expect(screen.getByRole('link', { name: 'Eesti keeles' })).toHaveAttribute(
         'href',
-        '?language=et',
+        '/?language=et',
       );
     });
   });
