@@ -68,7 +68,7 @@ describe('a person who wants to change their III pillar recurring payment', () =
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        'You change the amount at your bank. Choose the bank your recurring payment goes from.',
+        'You can change your recurring payment at your bank, where the payments are made.',
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('radio', { name: 'Swedbank' })).not.toBeChecked();
@@ -76,19 +76,19 @@ describe('a person who wants to change their III pillar recurring payment', () =
     await waitFor(() => expect(document.title).toMatch(/^III\spillar recurring payment – Tuleva$/));
   });
 
-  test('who pays from Swedbank sets up a new payment with the new amount, then ends the old one', async () => {
+  test('who pays from Swedbank ends the old payment, then sets up a new one with the new amount', async () => {
     openPage();
 
     userEvent.click(await screen.findByRole('radio', { name: 'Swedbank' }));
 
-    expect(stepsTitled('Set up a new payment, then end the old one')).toEqual([
+    expect(stepsTitled('End your old payment, then set up a new one')).toEqual([
       {
-        text: 'Choose Tuleva III Samba Pensionifond as the fund, enter the new amount and confirm.',
-        remindsOfTaxRefund: true,
+        text: 'In the list of regular payments to the third pillar, click the fund name of your current payment and end it.',
+        remindsOfTaxRefund: false,
       },
       {
-        text: 'Then, in the list of regular payments to the third pillar, click the fund name of the payment with the old amount and end it.',
-        remindsOfTaxRefund: false,
+        text: 'Then choose to make regular contributions, pick Tuleva III Samba Pensionifond as the fund, enter the new amount and confirm.',
+        remindsOfTaxRefund: true,
       },
     ]);
   });
@@ -134,11 +134,7 @@ describe('a person who wants to change their III pillar recurring payment', () =
   });
 
   test.each([
-    [
-      'Swedbank',
-      'Open Swedbank',
-      'https://www.swedbank.ee/private/pensions/pillar3/orderp3p?paymentType=2',
-    ],
+    ['Swedbank', 'Open Swedbank', 'https://www.swedbank.ee/private/pensions/my/pensionAssets'],
     ['SEB', 'Open SEB', 'https://e.seb.ee/ib/p/payments/standing-orders'],
     ['LHV', 'Open LHV', 'https://www.lhv.ee/ibank/cf/portfolio/payment_standing'],
     ['Luminor', 'Open Luminor', 'https://luminor.ee/auth/#/web/view/autopilot/'],
@@ -278,8 +274,8 @@ describe('a person reading in Estonian', () => {
 
     userEvent.click(await screen.findByRole('radio', { name: 'Swedbank' }));
 
-    const [enterAmount] = within(
-      screen.getByRole('list', { name: 'Tee uus püsimakse ja lõpeta siis vana' }),
+    const [, enterAmount] = within(
+      screen.getByRole('list', { name: 'Lõpeta vana püsimakse ja tee siis uus' }),
     ).getAllByRole('listitem');
     expect(
       within(enterAmount).getByText(
