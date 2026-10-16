@@ -5,6 +5,7 @@ import config from 'react-global-configuration';
 import { useMe, usePendingOnboardings, useRoles, useSwitchRole } from '../../../common/apiHooks';
 import { Role, SwitchRoleCommand, User } from '../../../common/apiModels';
 import { AccountIcon, AccountIconKind } from '../../../common/AccountIcon';
+import { PhosphorIcon } from '../../../common/PhosphorIcon';
 import { isChildRole, isCurrentRole } from '../../../common/utils';
 import LanguageSwitcher from '../languageSwitcher';
 import { PII_CLASS } from '../../../tracking/piiMarkup';
@@ -142,20 +143,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
         <span className="visually-hidden">
           <FormattedMessage id="roleSwitcher.accountMenu" />
         </span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          fill="currentColor"
-          viewBox="0 0 16 16"
-          className="flex-shrink-0"
-          aria-hidden="true"
-        >
-          <path
-            fillRule="evenodd"
-            d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
-          />
-        </svg>
+        <PhosphorIcon name="caretDown" />
       </button>
       {open && (
         <span
@@ -169,22 +157,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
             onClick={() => setOpen(false)}
             onKeyDown={handleKeyDown}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="text-body-secondary"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="m3 10 9-7 9 7" />
-              <path d="M5 8.7V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8.7" />
-            </svg>
+            <PhosphorIcon name="house" size={18} className="text-body-secondary" />
             <FormattedMessage id="header.my.account" />
           </Link>
           {hasAnotherAccount && (
@@ -204,24 +177,14 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                     onClick={() => handleRoleClick({ type: role.type, code: role.code }, isCurrent)}
                     onKeyDown={handleKeyDown}
                   >
-                    <AccountIcon kind={accountIconKind(role, user)} size={18} />
+                    <AccountIcon
+                      kind={accountIconKind(role, user)}
+                      size={18}
+                      className="text-body-secondary"
+                    />
                     <span className={PII_CLASS}>{role.name}</span>
                     {isCurrent && (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="ms-auto text-success"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.25"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="m5 13 4 4L19 7" />
-                      </svg>
+                      <PhosphorIcon name="check" size={18} className="ms-auto text-success" />
                     )}
                   </button>
                 );
@@ -234,7 +197,12 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                   onClick={() => setOpen(false)}
                   onKeyDown={handleKeyDown}
                 >
-                  <AccountIcon kind="child" size={18} testIdPrefix="pending-role-icon" />
+                  <AccountIcon
+                    kind="child"
+                    size={18}
+                    className="text-body-secondary"
+                    testIdPrefix="pending-role-icon"
+                  />
                   <span className={PII_CLASS}>{name}</span>
                 </Link>
               ))}
@@ -246,16 +214,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
             onClick={() => setOpen(false)}
             onKeyDown={handleKeyDown}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="18"
-              height="18"
-              fill="currentColor"
-              viewBox="0 0 256 256"
-              aria-hidden="true"
-            >
-              <path d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z" />
-            </svg>
+            <PhosphorIcon name="plus" size={18} />
             <FormattedMessage id="roleSwitcher.openNewAccount" />
           </Link>
           <hr className="dropdown-divider" />
@@ -270,23 +229,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
             }}
             onKeyDown={handleKeyDown}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="text-body-secondary"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <path d="m16 17 5-5-5-5" />
-              <path d="M21 12H9" />
-            </svg>
+            <PhosphorIcon name="signOut" size={18} className="text-body-secondary" />
             <FormattedMessage id="log.out" />
           </a>
         </span>
