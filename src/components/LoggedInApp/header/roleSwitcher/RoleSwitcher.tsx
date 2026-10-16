@@ -119,11 +119,16 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
   };
 
   return (
-    <span className="dropdown d-inline-block" ref={containerRef} onBlur={handleBlur}>
+    <span
+      className="dropdown d-inline-block"
+      style={{ minWidth: 0 }}
+      ref={containerRef}
+      onBlur={handleBlur}
+    >
       <button
         ref={toggleRef}
         type="button"
-        className="btn btn-outline-primary d-inline-flex align-items-center gap-2"
+        className="btn btn-outline-primary d-inline-flex align-items-center gap-2 mw-100"
         aria-expanded={open}
         onClick={() => setOpen(!open)}
         onKeyDown={handleKeyDown}
@@ -132,7 +137,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
           kind={user?.role ? accountIconKind(user.role, user) : 'person'}
           testIdPrefix="active-role-icon"
         />
-        <span className={PII_CLASS}>{displayName}</span>
+        <span className={`text-truncate ${PII_CLASS}`}>{displayName}</span>
         <span className="visually-hidden">
           <FormattedMessage id="roleSwitcher.accountMenu" />
         </span>
@@ -142,6 +147,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
           height="16"
           fill="currentColor"
           viewBox="0 0 16 16"
+          className="flex-shrink-0"
           aria-hidden="true"
         >
           <path
