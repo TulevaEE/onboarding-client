@@ -46,6 +46,14 @@ function menuRows() {
   return Array.from(dropdownMenuPanel()?.children ?? []);
 }
 
+function iconsInToggleAndMenu() {
+  return Array.from(document.querySelectorAll('.dropdown svg'));
+}
+
+function iconOf(row: HTMLElement) {
+  return row.querySelector('svg');
+}
+
 async function openDropdownAndGetCompanyItem() {
   const toggle = await screen.findByRole('button', { name: /John Doe/i });
   userEvent.click(toggle);
@@ -399,6 +407,37 @@ describe('RoleSwitcher', () => {
 
       expect(await screen.findByRole('button', { name: /John Doe/i })).toHaveClass('mw-100');
       expect(screen.getByText('John Doe')).toHaveClass('text-truncate');
+    });
+
+    it('draws every icon in the toggle and the menu from one icon set', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
+
+      const icons = iconsInToggleAndMenu();
+      expect(icons).not.toHaveLength(0);
+      icons.forEach((icon) => expect(icon).toHaveAttribute('viewBox', '0 0 256 256'));
+    });
+
+    it('colours the account and action icons in the menu alike', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
+
+      const rowIcons = [
+        screen.getByRole('link', { name: 'My account' }),
+        screen.getByRole('button', { name: 'John Doe' }),
+        screen.getByRole('button', { name: 'Test OÜ' }),
+        screen.getByRole('link', { name: 'Eesti keeles' }),
+        screen.getByRole('link', { name: 'Log out' }),
+      ].map(iconOf);
+      rowIcons.forEach((icon) => expect(icon).toHaveClass('text-body-secondary'));
     });
 
     it('hangs the menu off the right edge of the toggle so a phone screen fits it', async () => {
