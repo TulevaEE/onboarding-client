@@ -22,9 +22,6 @@ type Props = {
 const dropdownItemsOf = (container: HTMLElement | null): HTMLElement[] =>
   Array.from(container?.querySelectorAll<HTMLElement>('.dropdown-item') ?? []);
 
-// The same three marks the savings-fund onboarding chooser puts on its cards, so an
-// account is recognisable here by the card it was opened from. Decorative: every row
-// names the account holder right beside the icon.
 const accountIconKind = (role: Role, user: User | undefined): AccountIconKind => {
   if (role.type === 'LEGAL_ENTITY') {
     return 'company';
@@ -32,8 +29,6 @@ const accountIconKind = (role: Role, user: User | undefined): AccountIconKind =>
   return isChildRole(role, user) ? 'child' : 'person';
 };
 
-// The menu is wide enough for the longest row rather than sized to the name, so the
-// rows do not reflow as you switch between a short name and a long company one.
 const menuStyle = {
   minWidth: 'min(19rem, calc(100vw - 2rem))',
   maxWidth: 'calc(100vw - 2rem)',
@@ -125,11 +120,6 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
 
   return (
     <span className="dropdown d-inline-block" ref={containerRef} onBlur={handleBlur}>
-      {/* Bordered rather than a bare link: a name with only a chevron reads as a
-          label, and everything the header used to show now lives behind it. Primary
-          (brand blue) rather than secondary grey, which read as disabled next to the
-          header's blue links. Stock button radius and size, so the header's only
-          control reads as an ordinary button. */}
       <button
         ref={toggleRef}
         type="button"
@@ -143,7 +133,6 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
           testIdPrefix="active-role-icon"
         />
         <span className={PII_CLASS}>{displayName}</span>
-        {/* Screen readers otherwise hear only a name, with no hint it opens anything. */}
         <span className="visually-hidden">
           <FormattedMessage id="roleSwitcher.accountMenu" />
         </span>
@@ -167,8 +156,6 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
           data-bs-popper="static"
           style={menuStyle}
         >
-          {/* First, because it is the one thing every visitor to this menu wants and
-              the header no longer carries it as a link of its own. */}
           <Link
             className="dropdown-item text-wrap d-flex align-items-center gap-2"
             to={config.get('language') === 'et' ? '/account' : '/account?language=en'}
@@ -206,8 +193,6 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                     key={role.code}
                     type="button"
                     className="dropdown-item text-wrap d-flex align-items-center gap-2"
-                    // Marks the row you are already on, so the tick is announced rather
-                    // than being colour alone.
                     aria-current={isCurrent || undefined}
                     onClick={() => handleRoleClick({ type: role.type, code: role.code }, isCurrent)}
                     onKeyDown={handleKeyDown}

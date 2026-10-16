@@ -34,9 +34,6 @@ function renderRoleSwitcher(onRoleSwitch?: () => void, onLogout: () => void = je
   );
 }
 
-// All keyboard-navigable menu items in DOM order. This mirrors the component's
-// own `.dropdown-item` selector, so it includes the open-new-account link (an
-// anchor, not a button) as the last item once company onboarding is launched.
 function dropdownItems() {
   return Array.from(document.querySelectorAll<HTMLElement>('.dropdown-item'));
 }
@@ -98,8 +95,6 @@ describe('RoleSwitcher', () => {
 
       const toggle = await screen.findByRole('button', { name: /John Doe/i });
       toggle.focus();
-      // Arrow up enters the menu at the bottom. Walking up from there: log out, the
-      // language choice, then the new-account link.
       userEvent.type(toggle, '{arrowup}', { skipClick: true });
       await waitFor(() => expect(screen.getByRole('link', { name: 'Log out' })).toHaveFocus());
       expect(
@@ -200,8 +195,6 @@ describe('RoleSwitcher', () => {
       await waitFor(() => expect(onLogout).toHaveBeenCalledTimes(1));
     });
 
-    // Which language the row names is LanguageSwitcher's own test — this harness pins
-    // the IntlProvider to English, so only the destination is meaningful here.
     it('offers the other language from inside the menu', async () => {
       setupSwitchFlow();
 
@@ -217,8 +210,6 @@ describe('RoleSwitcher', () => {
   });
 
   describe('telling the accounts in the menu apart', () => {
-    // A child has no role type of its own — it is a PERSON role pointing at someone
-    // else's personal code, the same test isActingAsSelf() makes.
     const childRole: Role = { type: 'PERSON', code: '61506150006', name: 'Mari Maasikas' };
 
     it('gives a child you represent the child icon, not the person icon', async () => {
@@ -525,11 +516,9 @@ describe('RoleSwitcher', () => {
     await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
     expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
 
-    // ArrowDown advances to the next item.
     userEvent.type(dropdownItems()[0], '{arrowdown}', { skipClick: true });
     await waitFor(() => expect(dropdownItems()[1]).toHaveFocus());
 
-    // ArrowUp steps back, then once more wraps around to the last item.
     userEvent.type(dropdownItems()[1], '{arrowup}', { skipClick: true });
     await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
     userEvent.type(dropdownItems()[0], '{arrowup}', { skipClick: true });
@@ -538,7 +527,6 @@ describe('RoleSwitcher', () => {
       expect(items[items.length - 1]).toHaveFocus();
     });
 
-    // ArrowDown from the last item wraps back to the first.
     const items = dropdownItems();
     userEvent.type(items[items.length - 1], '{arrowdown}', { skipClick: true });
     await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
@@ -591,7 +579,6 @@ describe('RoleSwitcher', () => {
 
     const toggle = await screen.findByRole('button', { name: /John Doe/i });
     toggle.focus();
-    // ArrowUp focuses the last item, so a single Tab forward leaves the menu.
     userEvent.type(toggle, '{arrowup}', { skipClick: true });
     await waitFor(() => {
       const items = dropdownItems();

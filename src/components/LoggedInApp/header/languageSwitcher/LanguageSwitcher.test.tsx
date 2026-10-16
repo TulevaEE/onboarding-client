@@ -16,8 +16,6 @@ const renderWithIntl = (locale: 'et' | 'en') => {
 };
 
 describe('Language Switcher', () => {
-  // The label names the language it switches TO, written in that language, so it stays
-  // readable to someone who cannot read the language the app is currently in.
   it('can switch to English when the language is Estonian', () => {
     renderWithIntl('et');
 

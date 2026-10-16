@@ -7,9 +7,6 @@ type Props = {
   onClick?: () => void;
 };
 
-// roleSwitcher.otherLanguage names the language you would switch TO, written in that
-// language — so the Estonian file says "In English" and the English file says "Eesti
-// keeles". Someone stranded in a language they cannot read still recognises the way back.
 const LanguageSwitcher: FC<Props> = ({ onKeyDown, onClick }) => {
   const isEstonian = config.get('language') === 'et';
 

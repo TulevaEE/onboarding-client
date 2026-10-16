@@ -1,8 +1,6 @@
 import React, { FC } from 'react';
 
-// Phosphor Icons, bold weight (MIT): user, balloon, briefcase. One copy, shared by
-// the savings-fund onboarding chooser and the header account switcher, so an account
-// carries in the switcher the same mark it was opened under.
+// Phosphor Icons, bold weight (MIT)
 export type AccountIconKind = 'person' | 'child' | 'company';
 
 const paths: Record<AccountIconKind, string> = {
@@ -14,8 +12,6 @@ const paths: Record<AccountIconKind, string> = {
     'M100,100a12,12,0,0,1,12-12h32a12,12,0,0,1,0,24H112A12,12,0,0,1,100,100ZM236,68V196a20,20,0,0,1-20,20H40a20,20,0,0,1-20-20V68A20,20,0,0,1,40,48H76V40a28,28,0,0,1,28-28h48a28,28,0,0,1,28,28v8h36A20,20,0,0,1,236,68ZM100,48h56V40a4,4,0,0,0-4-4H104a4,4,0,0,0-4,4ZM44,72v35.23A180.06,180.06,0,0,0,128,128a180,180,0,0,0,84-20.78V72ZM212,192V133.94A204.27,204.27,0,0,1,128,152a204.21,204.21,0,0,1-84-18.06V192Z',
 };
 
-// Kept as-is from when the switcher owned these icons, so the switcher's tests keep
-// naming the account kind they are about.
 const testIdSuffixes: Record<AccountIconKind, string> = {
   person: 'person',
   child: 'child',
@@ -28,7 +24,6 @@ type Props = {
   testIdPrefix?: string;
 };
 
-// Decorative everywhere it is used: the name sits right next to it.
 export const AccountIcon: FC<Props> = ({ kind, size = 16, testIdPrefix = 'role-icon' }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
