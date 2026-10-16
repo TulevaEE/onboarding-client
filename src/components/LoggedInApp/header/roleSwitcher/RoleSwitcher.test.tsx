@@ -440,6 +440,19 @@ describe('RoleSwitcher', () => {
       rowIcons.forEach((icon) => expect(icon).toHaveClass('text-body-secondary'));
     });
 
+    it('shows the toggle pressed while the menu is open', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      const toggle = await screen.findByRole('button', { name: /John Doe/i });
+      expect(toggle).not.toHaveClass('show');
+
+      userEvent.click(toggle);
+
+      expect(toggle).toHaveClass('show');
+    });
+
     it('hangs the menu off the right edge of the toggle so a phone screen fits it', async () => {
       rolesBackend(server, multipleRoles);
       userBackend(server, { role: personalRole });
