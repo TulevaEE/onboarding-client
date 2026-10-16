@@ -18,13 +18,13 @@ export type BankGuide = {
 export const STANDING_ORDER_CHANGE_GUIDES: Record<StandingOrderBank, BankGuide> = {
   swedbank: {
     internetBank: {
-      url: 'https://www.swedbank.ee/private/pensions/pillar3/orderp3p?paymentType=2',
+      url: 'https://www.swedbank.ee/private/pensions/my/pensionAssets',
       openLabel: 'thirdPillarStandingOrder.openBank.swedbank',
     },
     changeMethod: 'END_AND_RECREATE',
     steps: [
-      { text: 'thirdPillarStandingOrder.steps.swedbank.1', amountEntered: true },
-      { text: 'thirdPillarStandingOrder.steps.swedbank.2' },
+      { text: 'thirdPillarStandingOrder.steps.swedbank.1' },
+      { text: 'thirdPillarStandingOrder.steps.swedbank.2', amountEntered: true },
     ],
   },
   seb: {
