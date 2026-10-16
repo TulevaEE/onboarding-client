@@ -5,13 +5,12 @@ import config from 'react-global-configuration';
 import { useMe, usePendingOnboardings, useRoles, useSwitchRole } from '../../../common/apiHooks';
 import { Role, SwitchRoleCommand, User } from '../../../common/apiModels';
 import { AccountIcon, AccountIconKind } from '../../../common/AccountIcon';
+import { PhosphorIcon } from '../../../common/PhosphorIcon';
 import { isChildRole, isCurrentRole } from '../../../common/utils';
 import LanguageSwitcher from '../languageSwitcher';
 import { PII_CLASS } from '../../../tracking/piiMarkup';
 import {
   childOnboardingLocation,
-  isChildOnboardingEnabled,
-  isCompanyOnboardingEnabled,
   pendingChildOnboardings,
 } from '../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
 
@@ -24,9 +23,6 @@ type Props = {
 const dropdownItemsOf = (container: HTMLElement | null): HTMLElement[] =>
   Array.from(container?.querySelectorAll<HTMLElement>('.dropdown-item') ?? []);
 
-// The same three marks the savings-fund onboarding chooser puts on its cards, so an
-// account is recognisable here by the card it was opened from. Decorative: every row
-// names the account holder right beside the icon.
 const accountIconKind = (role: Role, user: User | undefined): AccountIconKind => {
   if (role.type === 'LEGAL_ENTITY') {
     return 'company';
@@ -34,8 +30,6 @@ const accountIconKind = (role: Role, user: User | undefined): AccountIconKind =>
   return isChildRole(role, user) ? 'child' : 'person';
 };
 
-// The menu is wide enough for the longest row rather than sized to the name, so the
-// rows do not reflow as you switch between a short name and a long company one.
 const menuStyle = {
   minWidth: 'min(19rem, calc(100vw - 2rem))',
   maxWidth: 'calc(100vw - 2rem)',
@@ -43,12 +37,7 @@ const menuStyle = {
 
 export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
   const { data: roles } = useRoles();
-  // The child route redirects away until child onboarding launches — no dead
-  // menu links, and the always-mounted header must not fetch for every user.
-  const childOnboardingEnabled = isChildOnboardingEnabled();
-  const { data: pendingOnboardings = [] } = usePendingOnboardings({
-    enabled: childOnboardingEnabled,
-  });
+  const { data: pendingOnboardings = [] } = usePendingOnboardings();
   const { data: user } = useMe();
   const switchRole = useSwitchRole();
   const [open, setOpen] = useState(false);
@@ -118,31 +107,30 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
   };
 
   const displayName = user?.role?.name ?? userName;
-  const companyOnboardingEnabled = isCompanyOnboardingEnabled();
   const pendingChildren = pendingChildOnboardings(pendingOnboardings);
-  const hasPendingChildren = childOnboardingEnabled && pendingChildren.length > 0;
+  const hasAnotherAccount = (roles?.length ?? 0) > 1 || pendingChildren.length > 0;
 
-  const handleRoleClick = async (command: SwitchRoleCommand, isCurrent: boolean) => {
+  const handleRoleClick = (command: SwitchRoleCommand, isCurrent: boolean) => {
     setOpen(false);
-    if (isCurrent) {
-      toggleRef.current?.focus();
-      return;
+    toggleRef.current?.focus();
+    if (!isCurrent) {
+      switchRole.mutate(command, { onSuccess: () => onRoleSwitch?.() });
     }
-    await switchRole.mutateAsync(command);
-    onRoleSwitch?.();
   };
 
   return (
-    <span className="dropdown d-inline-block" ref={containerRef} onBlur={handleBlur}>
-      {/* Bordered rather than a bare link: a name with only a chevron reads as a
-          label, and everything the header used to show now lives behind it. Primary
-          (brand blue) rather than secondary grey, which read as disabled next to the
-          header's blue links. Stock button radius and size, so the header's only
-          control reads as an ordinary button. */}
+    <span
+      className="dropdown d-inline-block"
+      style={{ minWidth: 0 }}
+      ref={containerRef}
+      onBlur={handleBlur}
+    >
       <button
         ref={toggleRef}
         type="button"
-        className="btn btn-outline-primary d-inline-flex align-items-center gap-2"
+        className={`btn btn-outline-primary d-inline-flex align-items-center gap-2 mw-100 ${
+          open ? 'show' : ''
+        }`}
         aria-expanded={open}
         onClick={() => setOpen(!open)}
         onKeyDown={handleKeyDown}
@@ -151,24 +139,11 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
           kind={user?.role ? accountIconKind(user.role, user) : 'person'}
           testIdPrefix="active-role-icon"
         />
-        <span className={PII_CLASS}>{displayName}</span>
-        {/* Screen readers otherwise hear only a name, with no hint it opens anything. */}
+        <span className={`text-truncate ${PII_CLASS}`}>{displayName}</span>
         <span className="visually-hidden">
           <FormattedMessage id="roleSwitcher.accountMenu" />
         </span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          fill="currentColor"
-          viewBox="0 0 16 16"
-          aria-hidden="true"
-        >
-          <path
-            fillRule="evenodd"
-            d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"
-          />
-        </svg>
+        <PhosphorIcon name="caretDown" />
       </button>
       {open && (
         <span
@@ -176,114 +151,77 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
           data-bs-popper="static"
           style={menuStyle}
         >
-          {/* First, because it is the one thing every visitor to this menu wants and
-              the header no longer carries it as a link of its own. */}
           <Link
-            className="dropdown-item text-wrap d-flex align-items-center gap-2"
+            className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2"
             to={config.get('language') === 'et' ? '/account' : '/account?language=en'}
             onClick={() => setOpen(false)}
             onKeyDown={handleKeyDown}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="text-body-secondary"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="m3 10 9-7 9 7" />
-              <path d="M5 8.7V20a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8.7" />
-            </svg>
+            <PhosphorIcon name="house" size={18} className="text-body-secondary" />
             <FormattedMessage id="header.my.account" />
           </Link>
-          {roles && (
+          {hasAnotherAccount && (
             <>
               <hr className="dropdown-divider" />
               <span className="dropdown-header">
                 <FormattedMessage id="roleSwitcher.switchAccount" />
               </span>
-              {roles.map((role) => {
+              {roles?.map((role) => {
                 const isCurrent = isCurrentRole(role, user);
                 return (
                   <button
                     key={role.code}
                     type="button"
-                    className="dropdown-item text-wrap d-flex align-items-center gap-2"
-                    // Marks the row you are already on, so the tick is announced rather
-                    // than being colour alone.
+                    className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2"
                     aria-current={isCurrent || undefined}
                     onClick={() => handleRoleClick({ type: role.type, code: role.code }, isCurrent)}
                     onKeyDown={handleKeyDown}
                   >
-                    <AccountIcon kind={accountIconKind(role, user)} size={18} />
+                    <AccountIcon
+                      kind={accountIconKind(role, user)}
+                      size={18}
+                      className="text-body-secondary"
+                    />
                     <span className={PII_CLASS}>{role.name}</span>
                     {isCurrent && (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="ms-auto text-success"
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.25"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="m5 13 4 4L19 7" />
-                      </svg>
+                      <PhosphorIcon name="check" size={18} className="ms-auto text-success" />
                     )}
                   </button>
                 );
               })}
-              {hasPendingChildren &&
-                pendingChildren.map(({ code, name }) => (
-                  <Link
-                    key={code}
-                    className="dropdown-item text-wrap d-flex align-items-center gap-2"
-                    to={childOnboardingLocation(code)}
-                    onClick={() => setOpen(false)}
-                    onKeyDown={handleKeyDown}
-                  >
-                    <AccountIcon kind="child" size={18} testIdPrefix="pending-role-icon" />
-                    <span className={PII_CLASS}>{name}</span>
-                  </Link>
-                ))}
-              {companyOnboardingEnabled && (
+              {pendingChildren.map(({ code, name }) => (
                 <Link
-                  className="dropdown-item text-wrap d-flex align-items-center gap-2 link-primary fw-medium"
-                  to="/savings-fund/onboarding"
+                  key={code}
+                  className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2"
+                  to={childOnboardingLocation(code)}
                   onClick={() => setOpen(false)}
                   onKeyDown={handleKeyDown}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    fill="currentColor"
-                    viewBox="0 0 256 256"
-                    aria-hidden="true"
-                  >
-                    <path d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z" />
-                  </svg>
-                  <FormattedMessage id="roleSwitcher.openNewAccount" />
+                  <AccountIcon
+                    kind="child"
+                    size={18}
+                    className="text-body-secondary"
+                    testIdPrefix="pending-role-icon"
+                  />
+                  <span className={PII_CLASS}>{name}</span>
                 </Link>
-              )}
+              ))}
             </>
           )}
+          <Link
+            className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2 link-primary fw-medium"
+            to="/savings-fund/onboarding"
+            onClick={() => setOpen(false)}
+            onKeyDown={handleKeyDown}
+          >
+            <PhosphorIcon name="plus" size={18} />
+            <FormattedMessage id="roleSwitcher.openNewAccount" />
+          </Link>
           <hr className="dropdown-divider" />
           <LanguageSwitcher onKeyDown={handleKeyDown} onClick={() => setOpen(false)} />
-          <hr className="dropdown-divider" />
           <a
             href="/login"
-            className="dropdown-item text-wrap d-flex align-items-center gap-2"
+            className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2"
             onClick={(event) => {
               event.preventDefault();
               setOpen(false);
@@ -291,23 +229,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
             }}
             onKeyDown={handleKeyDown}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="text-body-secondary"
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <path d="m16 17 5-5-5-5" />
-              <path d="M21 12H9" />
-            </svg>
+            <PhosphorIcon name="signOut" size={18} className="text-body-secondary" />
             <FormattedMessage id="log.out" />
           </a>
         </span>

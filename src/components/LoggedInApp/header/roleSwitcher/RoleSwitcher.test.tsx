@@ -15,29 +15,8 @@ import {
 } from '../../../../test/backend';
 import { mockUser } from '../../../../test/backend-responses';
 import { Role } from '../../../common/apiModels';
-import {
-  isChildOnboardingEnabled,
-  isCompanyOnboardingEnabled,
-} from '../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
 import { RoleSwitcher } from './RoleSwitcher';
 import { isInsidePii } from '../../../tracking/piiMarkup';
-
-// Company onboarding is the other reason a single-role user gets a dropdown, and
-// it ships permanently on. Mock the flags so the "pending child opens the dropdown"
-// tests can turn company onboarding off and prove the pending child is doing the
-// work — and so child onboarding can be toggled (pending entries only show while
-// the child flow route is reachable).
-jest.mock('../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows', () => ({
-  ...jest.requireActual('../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows'),
-  isCompanyOnboardingEnabled: jest.fn(() => true),
-  isChildOnboardingEnabled: jest.fn(() => true),
-}));
-const mockIsCompanyOnboardingEnabled = isCompanyOnboardingEnabled as jest.MockedFunction<
-  typeof isCompanyOnboardingEnabled
->;
-const mockIsChildOnboardingEnabled = isChildOnboardingEnabled as jest.MockedFunction<
-  typeof isChildOnboardingEnabled
->;
 
 const server = setupServer();
 
@@ -55,15 +34,24 @@ function renderRoleSwitcher(onRoleSwitch?: () => void, onLogout: () => void = je
   );
 }
 
-// All keyboard-navigable menu items in DOM order. This mirrors the component's
-// own `.dropdown-item` selector, so it includes the open-new-account link (an
-// anchor, not a button) as the last item once company onboarding is launched.
 function dropdownItems() {
   return Array.from(document.querySelectorAll<HTMLElement>('.dropdown-item'));
 }
 
 function dropdownMenuPanel() {
   return document.querySelector('.dropdown-menu');
+}
+
+function menuRows() {
+  return Array.from(dropdownMenuPanel()?.children ?? []);
+}
+
+function iconsInToggleAndMenu() {
+  return Array.from(document.querySelectorAll('.dropdown svg'));
+}
+
+function iconOf(row: HTMLElement) {
+  return row.querySelector('svg');
 }
 
 async function openDropdownAndGetCompanyItem() {
@@ -82,13 +70,11 @@ function setupSwitchFlow() {
 beforeEach(() => {
   initializeConfiguration();
   getAuthentication().update(anAuthenticationManager());
-  mockIsCompanyOnboardingEnabled.mockReturnValue(true);
-  mockIsChildOnboardingEnabled.mockReturnValue(true);
   pendingOnboardingsBackend(server);
 });
 
 describe('RoleSwitcher', () => {
-  describe('now that company onboarding has launched', () => {
+  describe('opening a new account', () => {
     it('offers opening a new account even when there is only one role', async () => {
       rolesBackend(server, [personalRole]);
       userBackend(server, { role: personalRole });
@@ -121,8 +107,6 @@ describe('RoleSwitcher', () => {
 
       const toggle = await screen.findByRole('button', { name: /John Doe/i });
       toggle.focus();
-      // Arrow up enters the menu at the bottom. Walking up from there: log out, the
-      // language choice, then the new-account link.
       userEvent.type(toggle, '{arrowup}', { skipClick: true });
       await waitFor(() => expect(screen.getByRole('link', { name: 'Log out' })).toHaveFocus());
       expect(
@@ -154,6 +138,51 @@ describe('RoleSwitcher', () => {
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
       expect(await screen.findByText('Switch account')).toBeInTheDocument();
+    });
+
+    it('leaves out switching accounts when there is no other account to switch to', async () => {
+      rolesBackend(server, [personalRole]);
+      userBackend(server, { role: personalRole });
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(
+        await screen.findByRole('link', { name: 'Open an account for a child or company' }),
+      ).toBeInTheDocument();
+      expect(screen.queryByText('Switch account')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'John Doe' })).not.toBeInTheDocument();
+      expect(screen.getAllByRole('separator')).toHaveLength(1);
+    });
+
+    it('offers switching accounts to a single-account user with a child being onboarded', async () => {
+      rolesBackend(server, [personalRole]);
+      userBackend(server, { role: personalRole });
+      pendingOnboardingsBackend(server, [
+        { type: 'PERSON', code: '61506150006', name: 'Mari Maasikas' },
+      ]);
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(await screen.findByText('Switch account')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'John Doe', current: true })).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Mari Maasikas' })).toBeInTheDocument();
+    });
+
+    it('puts logging out right below the language choice', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
+
+      const rows = menuRows();
+      const languageRow = rows.indexOf(screen.getByRole('link', { name: 'Eesti keeles' }));
+      expect(rows[languageRow + 1]).toBe(screen.getByRole('link', { name: 'Log out' }));
     });
 
     it('opens with my account and ends with logging out', async () => {
@@ -223,8 +252,6 @@ describe('RoleSwitcher', () => {
       await waitFor(() => expect(onLogout).toHaveBeenCalledTimes(1));
     });
 
-    // Which language the row names is LanguageSwitcher's own test — this harness pins
-    // the IntlProvider to English, so only the destination is meaningful here.
     it('offers the other language from inside the menu', async () => {
       setupSwitchFlow();
 
@@ -234,14 +261,12 @@ describe('RoleSwitcher', () => {
 
       expect(screen.getByRole('link', { name: 'Eesti keeles' })).toHaveAttribute(
         'href',
-        '?language=et',
+        '/?language=et',
       );
     });
   });
 
   describe('telling the accounts in the menu apart', () => {
-    // A child has no role type of its own — it is a PERSON role pointing at someone
-    // else's personal code, the same test isActingAsSelf() makes.
     const childRole: Role = { type: 'PERSON', code: '61506150006', name: 'Mari Maasikas' };
 
     it('gives a child you represent the child icon, not the person icon', async () => {
@@ -374,6 +399,60 @@ describe('RoleSwitcher', () => {
       expect(screen.getByTestId('active-role-icon-person')).toBeInTheDocument();
     });
 
+    it('truncates a long account name in the toggle so the header fits a phone screen', async () => {
+      rolesBackend(server, multipleRoles);
+      userBackend(server, { role: personalRole });
+
+      renderRoleSwitcher();
+
+      expect(await screen.findByRole('button', { name: /John Doe/i })).toHaveClass('mw-100');
+      expect(screen.getByText('John Doe')).toHaveClass('text-truncate');
+    });
+
+    it('draws every icon in the toggle and the menu from one icon set', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
+
+      const icons = iconsInToggleAndMenu();
+      expect(icons).not.toHaveLength(0);
+      icons.forEach((icon) => expect(icon).toHaveAttribute('viewBox', '0 0 256 256'));
+    });
+
+    it('colours the account and action icons in the menu alike', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
+
+      const rowIcons = [
+        screen.getByRole('link', { name: 'My account' }),
+        screen.getByRole('button', { name: 'John Doe' }),
+        screen.getByRole('button', { name: 'Test OÜ' }),
+        screen.getByRole('link', { name: 'Eesti keeles' }),
+        screen.getByRole('link', { name: 'Log out' }),
+      ].map(iconOf);
+      rowIcons.forEach((icon) => expect(icon).toHaveClass('text-body-secondary'));
+    });
+
+    it('shows the toggle pressed while the menu is open', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      const toggle = await screen.findByRole('button', { name: /John Doe/i });
+      expect(toggle).not.toHaveClass('show');
+
+      userEvent.click(toggle);
+
+      expect(toggle).toHaveClass('show');
+    });
+
     it('hangs the menu off the right edge of the toggle so a phone screen fits it', async () => {
       rolesBackend(server, multipleRoles);
       userBackend(server, { role: personalRole });
@@ -398,6 +477,17 @@ describe('RoleSwitcher', () => {
 
       expect(dropdownMenuPanel()).toHaveStyle({ maxWidth: 'calc(100vw - 2rem)' });
       dropdownItems().forEach((item) => expect(item).toHaveClass('text-wrap'));
+    });
+
+    it('balances a wrapping row so no word is left alone on its last line', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
+
+      dropdownItems().forEach((item) => expect(item).toHaveClass('text-balance'));
     });
   });
 
@@ -435,7 +525,6 @@ describe('RoleSwitcher', () => {
     });
 
     it('opens the dropdown for a single-role user solely because a pending child exists', async () => {
-      mockIsCompanyOnboardingEnabled.mockReturnValue(false);
       rolesBackend(server, [personalRole]);
       userBackend(server, { role: personalRole });
       pendingOnboardingsBackend(server, [pendingChild]);
@@ -445,59 +534,6 @@ describe('RoleSwitcher', () => {
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
       expect(await screen.findByRole('link', { name: 'Mari Maasikas' })).toBeInTheDocument();
-    });
-
-    it('hides the pending child while the child onboarding flow is not yet launched', async () => {
-      mockIsCompanyOnboardingEnabled.mockReturnValue(false);
-      mockIsChildOnboardingEnabled.mockReturnValue(false);
-      // Track the roles response so the negative assertion below runs after the
-      // data that could open the dropdown has actually been applied — the plain
-      // span also renders before any query resolves, which would pass vacuously.
-      let rolesServed = false;
-      server.use(
-        rest.get('http://localhost/v1/me/roles', (req, res, ctx) => {
-          rolesServed = true;
-          return res(ctx.json([personalRole]));
-        }),
-      );
-      userBackend(server, { role: personalRole });
-      pendingOnboardingsBackend(server, [pendingChild]);
-
-      renderRoleSwitcher();
-
-      await waitFor(() => expect(rolesServed).toBe(true));
-
-      // The child route redirects away until launch, so no dead menu link — but the
-      // menu itself still opens, because logging out now lives inside it.
-      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
-      expect(screen.queryByRole('link', { name: 'Mari Maasikas' })).not.toBeInTheDocument();
-      expect(screen.getByRole('link', { name: 'Log out' })).toBeInTheDocument();
-    });
-
-    it('still opens the menu for a single-role user with nothing to add', async () => {
-      mockIsCompanyOnboardingEnabled.mockReturnValue(false);
-      rolesBackend(server, [personalRole]);
-      userBackend(server, { role: personalRole });
-      // Track the empty pending response so the negative assertion below runs
-      // after the query that could open the dropdown has actually resolved.
-      let pendingServed = false;
-      server.use(
-        rest.get('http://localhost/v1/me/pending-onboardings', (req, res, ctx) => {
-          pendingServed = true;
-          return res(ctx.json([]));
-        }),
-      );
-
-      renderRoleSwitcher();
-
-      await waitFor(() => expect(pendingServed).toBe(true));
-
-      // Nothing to add, but the menu is the only way to log out, so it must open.
-      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
-      expect(
-        screen.queryByRole('link', { name: 'Open an account for a child or company' }),
-      ).not.toBeInTheDocument();
-      expect(screen.getByRole('link', { name: 'Log out' })).toBeInTheDocument();
     });
   });
 
@@ -602,11 +638,9 @@ describe('RoleSwitcher', () => {
     await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
     expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
 
-    // ArrowDown advances to the next item.
     userEvent.type(dropdownItems()[0], '{arrowdown}', { skipClick: true });
     await waitFor(() => expect(dropdownItems()[1]).toHaveFocus());
 
-    // ArrowUp steps back, then once more wraps around to the last item.
     userEvent.type(dropdownItems()[1], '{arrowup}', { skipClick: true });
     await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
     userEvent.type(dropdownItems()[0], '{arrowup}', { skipClick: true });
@@ -615,7 +649,6 @@ describe('RoleSwitcher', () => {
       expect(items[items.length - 1]).toHaveFocus();
     });
 
-    // ArrowDown from the last item wraps back to the first.
     const items = dropdownItems();
     userEvent.type(items[items.length - 1], '{arrowdown}', { skipClick: true });
     await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
@@ -668,7 +701,6 @@ describe('RoleSwitcher', () => {
 
     const toggle = await screen.findByRole('button', { name: /John Doe/i });
     toggle.focus();
-    // ArrowUp focuses the last item, so a single Tab forward leaves the menu.
     userEvent.type(toggle, '{arrowup}', { skipClick: true });
     await waitFor(() => {
       const items = dropdownItems();
@@ -692,6 +724,40 @@ describe('RoleSwitcher', () => {
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /Test OÜ/i })).toBeInTheDocument();
     });
+  });
+
+  it('keeps focus on the toggle after switching to another account', async () => {
+    setupSwitchFlow();
+
+    renderRoleSwitcher();
+
+    const companyItem = await openDropdownAndGetCompanyItem();
+    userBackend(server, { role: companyRole });
+    companyItem.focus();
+    userEvent.type(companyItem, '{enter}', { skipClick: true });
+
+    await waitFor(() => expect(screen.getByRole('button', { name: /Test OÜ/i })).toHaveFocus());
+  });
+
+  it('stays on the current account when switching fails', async () => {
+    rolesBackend(server, multipleRoles);
+    userBackend(server, { role: personalRole });
+    let switchAttempted = false;
+    server.use(
+      rest.post('http://localhost/v1/me/role', (req, res, ctx) => {
+        switchAttempted = true;
+        return res(ctx.status(500));
+      }),
+    );
+    const onRoleSwitch = jest.fn();
+
+    renderRoleSwitcher(onRoleSwitch);
+
+    userEvent.click(await openDropdownAndGetCompanyItem());
+
+    await waitFor(() => expect(switchAttempted).toBe(true));
+    expect(onRoleSwitch).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: /John Doe/i })).toBeInTheDocument();
   });
 
   it('only closes the menu when clicking the role you are already acting as', async () => {

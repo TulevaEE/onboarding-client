@@ -33,6 +33,8 @@ const startTagManagerAndGa = (): void => {
   }
 };
 
+const isDevelopmentServer = (): boolean => process.env.NODE_ENV === 'development';
+
 const isSmartIdCallbackPage = (pathname: string): boolean =>
   pathname.startsWith(smartIdCallbackPath);
 
@@ -49,7 +51,7 @@ export const startAnalytics = (history: History): void => {
   const isProtected = installPersonalDataProtection();
 
   // Analytics tools report the URL, and a gift URL carries a token that names a child.
-  if (!isProtected || isGiftPage()) {
+  if (!isProtected || isGiftPage() || isDevelopmentServer()) {
     return;
   }
 

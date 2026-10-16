@@ -9,19 +9,18 @@ import { RoleSwitcher } from './roleSwitcher';
 type Props = {
   // TODO move to useMe hook here
   user: { name: string };
-  loading: boolean;
   onLogout: () => unknown;
   onRoleSwitch?: () => void;
   hackathon?: boolean;
 };
 
-export const Header = ({ user, loading, onLogout, onRoleSwitch, hackathon = false }: Props) => (
+export const Header = ({ user, onLogout, onRoleSwitch, hackathon = false }: Props) => (
   <>
     <a className="skip-link visually-hidden-focusable" href="#main">
       <FormattedMessage id="global.skipToContent" />
     </a>
-    <header className="d-flex justify-content-between align-items-end border-bottom py-4 mb-5 app-header">
-      <div className="app-header__brand">
+    <header className="d-flex justify-content-between align-items-end gap-3 border-bottom py-4 mb-5 app-header">
+      <div className="app-header__brand flex-shrink-0">
         {config.get('language') === 'et' ? (
           <a href="/account">
             <img src={logo} alt="Tuleva" className="brand-logo" />
@@ -40,10 +39,7 @@ export const Header = ({ user, loading, onLogout, onRoleSwitch, hackathon = fals
           </a>
         )}
       </div>
-      {/* My account, the language choice and logging out all moved into the account
-          menu, so the header carries a single control. The logo keeps its own link to
-          the account page for anyone who never opens the menu. */}
-      {loading || !user ? (
+      {!user?.name ? (
         <div style={{ width: '200px' }}>
           <Shimmer height={32} />
         </div>

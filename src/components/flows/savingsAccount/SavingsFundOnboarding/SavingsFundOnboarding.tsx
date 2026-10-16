@@ -15,7 +15,6 @@ import {
   buildIdentitySteps,
   useIdentityOnFile,
 } from './identitySteps';
-import { isCompanyOnboardingEnabled } from './onboardingFlows';
 import {
   useMe,
   useSavingsFundPersonOnboardingStatus,
@@ -202,9 +201,7 @@ export const SavingsFundOnboarding: FC = () => {
 
   const showPreviousSection = () => {
     if (isFirstSection) {
-      // Back to the chooser once it is live; until then the root path renders
-      // this same flow, so going there would just loop.
-      history.push(isCompanyOnboardingEnabled() ? '/savings-fund/onboarding' : '/account');
+      history.push('/savings-fund/onboarding');
       return;
     }
 

@@ -29,26 +29,25 @@ describe('Header', () => {
     ).toBe(true);
   });
 
-  it("shows the user's name when not loading", () => {
+  it("shows the user's name in the account menu", () => {
     const name = 'A name of a person';
     component.setProps({
       user: { name },
-      loading: false,
     });
     expect(component.find(RoleSwitcher).prop('userName')).toBe(name);
     expect(component.contains(<Shimmer height={32} />)).toBe(false);
   });
 
-  // Logging out lives in the account menu now, so the header only forwards it.
   it('hands logging out to the account menu', () => {
     const onLogout = jest.fn();
-    component.setProps({ loading: false, onLogout, user: { name: 'name' } });
+    component.setProps({ onLogout, user: { name: 'name' } });
     expect(component.find(RoleSwitcher).prop('onLogout')).toBe(onLogout);
   });
 
-  it("shows a loader when it's loading", () => {
-    component.setProps({ loading: true });
+  it("shows a loader until the user's name is known", () => {
+    component.setProps({ user: { name: '' } });
     expect(component.contains(<Shimmer height={32} />)).toBe(true);
+    expect(component.find(RoleSwitcher)).toHaveLength(0);
   });
 
   it('names the hackathon next to the logo on the hackathon pages', () => {
@@ -62,9 +61,7 @@ describe('Header', () => {
   });
 
   it('leaves the account menu as the only control in the header', () => {
-    component.setProps({ loading: false, onLogout: jest.fn(), user: { name: 'name' } });
-    // The logo link is the one remaining anchor; log out, my account and the
-    // language switcher all moved into the menu.
+    component.setProps({ onLogout: jest.fn(), user: { name: 'name' } });
     expect(component.find('a')).toHaveLength(2); // skip-link + logo
     expect(component.find(RoleSwitcher)).toHaveLength(1);
   });

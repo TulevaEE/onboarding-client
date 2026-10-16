@@ -319,6 +319,12 @@ small {
     align-items: last baseline;
   }
 
+  @media (pointer: coarse) {
+    .dropdown-menu {
+      --bs-dropdown-item-padding-y: 0.5rem;
+    }
+  }
+
   @media (max-width: 576px) {
     .brand-logo {
       height: 52px;
