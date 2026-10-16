@@ -26,11 +26,15 @@ export class AddressStep extends PureComponent {
     return (
       <>
         {shouldSkipAddressStep() && <Redirect to={nextPath} />}
-        <UpdateUserForm
-          onSubmit={(user) =>
-            updateOnlyEmailAndPhone ? updateEmailAndPhone(user) : updateFullUser(user)
-          }
-        />
+        <div className="row">
+          <div className="col-md-8 col-lg-6">
+            <UpdateUserForm
+              onSubmit={(user) =>
+                updateOnlyEmailAndPhone ? updateEmailAndPhone(user) : updateFullUser(user)
+              }
+            />
+          </div>
+        </div>
       </>
     );
   }

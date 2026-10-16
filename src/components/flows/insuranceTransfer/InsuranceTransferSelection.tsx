@@ -104,14 +104,16 @@ const Selection = ({ nextPath }: Props & InjectedFormProps<Record<string, never>
       <OccupationAgreement className="col-md-5 mt-3 px-0" />
       <PoliticallyExposedPersonAgreement className="mt-3" />
 
-      <button
-        type="button"
-        className="btn btn-primary mt-5"
-        disabled={!allAnswered || savingAnswers || loading || !!challengeCode}
-        onClick={sign}
-      >
-        <FormattedMessage id="confirm.mandate.sign" />
-      </button>
+      <div className="mt-5 d-flex flex-column flex-sm-row justify-content-end">
+        <button
+          type="button"
+          className="btn btn-primary"
+          disabled={!allAnswered || savingAnswers || loading || !!challengeCode}
+          onClick={sign}
+        >
+          <FormattedMessage id="confirm.mandate.sign" />
+        </button>
+      </div>
     </>
   );
 };

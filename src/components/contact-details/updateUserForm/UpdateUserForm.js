@@ -316,7 +316,7 @@ export const UpdateUserForm = ({
             <FormattedMessage id={error} />
           </p>
         )}
-        <div className="d-grid mt-4">
+        <div className="mt-4 d-flex flex-column flex-sm-row justify-content-end">
           <button type="submit" disabled={submitting} className="btn btn-primary">
             <FormattedMessage id="update.user.save" />
           </button>
