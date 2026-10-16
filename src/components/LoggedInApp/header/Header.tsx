@@ -40,9 +40,6 @@ export const Header = ({ user, loading, onLogout, onRoleSwitch, hackathon = fals
           </a>
         )}
       </div>
-      {/* My account, the language choice and logging out all moved into the account
-          menu, so the header carries a single control. The logo keeps its own link to
-          the account page for anyone who never opens the menu. */}
       {loading || !user ? (
         <div style={{ width: '200px' }}>
           <Shimmer height={32} />
