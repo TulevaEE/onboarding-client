@@ -478,6 +478,17 @@ describe('RoleSwitcher', () => {
       expect(dropdownMenuPanel()).toHaveStyle({ maxWidth: 'calc(100vw - 2rem)' });
       dropdownItems().forEach((item) => expect(item).toHaveClass('text-wrap'));
     });
+
+    it('balances a wrapping row so no word is left alone on its last line', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
+
+      dropdownItems().forEach((item) => expect(item).toHaveClass('text-balance'));
+    });
   });
 
   describe('with a child the other parent is onboarding', () => {

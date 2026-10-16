@@ -24,7 +24,7 @@ const LanguageSwitcher: FC<Props> = ({ onKeyDown, onClick }) => {
 
   return (
     <a
-      className="dropdown-item text-wrap d-flex align-items-center gap-2"
+      className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2"
       href={addressIn(otherLanguage, location)}
       lang={otherLanguage}
       onKeyDown={onKeyDown}
