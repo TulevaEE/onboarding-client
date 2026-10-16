@@ -128,7 +128,9 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
       <button
         ref={toggleRef}
         type="button"
-        className="btn btn-outline-primary d-inline-flex align-items-center gap-2 mw-100"
+        className={`btn btn-outline-primary d-inline-flex align-items-center gap-2 mw-100 ${
+          open ? 'show' : ''
+        }`}
         aria-expanded={open}
         onClick={() => setOpen(!open)}
         onKeyDown={handleKeyDown}
