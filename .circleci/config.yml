@@ -59,7 +59,9 @@ jobs:
       - aws-cli/setup
       - run:
           name: Deploy master to staging
-          command: aws s3 cp /tmp/workspace/build s3://staging.tuleva.ee --recursive
+          command: |
+            aws s3 cp /tmp/workspace/build s3://staging.tuleva.ee --recursive --exclude index.html
+            aws s3 cp /tmp/workspace/build/index.html s3://staging.tuleva.ee/index.html
   build:
     executor:
       name: node/default
@@ -108,7 +110,9 @@ jobs:
       - aws-cli/setup
       - run:
           name: Deploy master to production
-          command: aws s3 cp /tmp/workspace/build s3://pension.tuleva.ee --recursive
+          command: |
+            aws s3 cp /tmp/workspace/build s3://pension.tuleva.ee --recursive --exclude index.html
+            aws s3 cp /tmp/workspace/build/index.html s3://pension.tuleva.ee/index.html
   notify-sentry-deploy:
     docker:
       - image: cimg/base:stable
