@@ -268,7 +268,7 @@ export class LoggedInApp extends PureComponent {
               component={RecurringPaymentConfirmation}
             />
             <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />
-            <Route path="/3rd-pillar-standing-order" component={ThirdPillarStandingOrderPage} />
+            <Route path="/3rd-pillar-recurring-payment" component={ThirdPillarStandingOrderPage} />
             <Route path="/3rd-pillar-success" component={ThirdPillarSuccess} />
             <Route path="/3rd-pillar-gift-success" component={ThirdPillarGiftSuccess} />
             <Route path="/3rd-pillar-gift" component={Gift} />

@@ -15,7 +15,7 @@ let history: History;
 let trackedEvents: unknown[];
 
 const TAX_REFUND =
-  'You get 22% income tax back on every contribution, up to 15% of your gross income taxable in Estonia and on at most 6,000 euros a year.';
+  'You get 22% income tax back on every contribution, up to 15% of your gross income for the calendar year and on at most 6,000 euros a year.';
 
 const withoutStepNumber = (step: HTMLElement) =>
   (step.textContent ?? '').replace(/\s+/g, ' ').replace(/^\d+/, '');
@@ -40,7 +40,7 @@ function openPage(language: 'en' | 'et' = 'en', search = '') {
     new QueryClient(),
     language,
   );
-  history.push({ pathname: '/3rd-pillar-standing-order', search });
+  history.push({ pathname: '/3rd-pillar-recurring-payment', search });
 }
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -255,7 +255,7 @@ describe('a person who wants to change their III pillar recurring payment', () =
           type: 'CLICK',
           data: {
             bank: 'swedbank',
-            path: '/3rd-pillar-standing-order',
+            path: '/3rd-pillar-recurring-payment',
             target: 'standing-order-bank',
           },
         },
@@ -263,7 +263,7 @@ describe('a person who wants to change their III pillar recurring payment', () =
           type: 'CLICK',
           data: {
             bank: 'swedbank',
-            path: '/3rd-pillar-standing-order',
+            path: '/3rd-pillar-recurring-payment',
             target: 'standing-order-open-bank',
           },
         },
@@ -283,7 +283,7 @@ describe('a person reading in Estonian', () => {
     ).getAllByRole('listitem');
     expect(
       within(enterAmount).getByText(
-        'Saad igalt sissemakselt 22% tulumaksu tagasi kuni 15% ulatuses Eestis maksustatavast brutotulust, kõige rohkem 6000 eurolt aastas.',
+        'Saad igalt sissemakselt 22% tulumaksu tagasi kuni 15% ulatuses kalendriaasta brutotulust, kõige rohkem 6000 eurolt aastas.',
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Avan Swedbanki' })).toBeInTheDocument();
