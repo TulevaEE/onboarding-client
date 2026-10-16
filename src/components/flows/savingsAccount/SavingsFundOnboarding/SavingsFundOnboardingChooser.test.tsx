@@ -45,7 +45,7 @@ describe('SavingsFundOnboardingChooser', () => {
     history.push('/savings-fund/onboarding');
   };
 
-  it('shows all three options with personal preselected now that all have launched', async () => {
+  it('shows all three options with personal preselected', async () => {
     openChooser();
 
     expect(
@@ -59,7 +59,6 @@ describe('SavingsFundOnboardingChooser', () => {
     expect(
       screen.getByRole('button', { name: /For my child/, pressed: false }),
     ).toBeInTheDocument();
-    expect(screen.queryByText('Coming soon')).not.toBeInTheDocument();
   });
 
   it('does not redirect away from the chooser when onboarding is already completed', async () => {

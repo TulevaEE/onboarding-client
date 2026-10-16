@@ -74,10 +74,6 @@ import {
   SavingsFundOnboardingWaiting,
   SavingsFundOnboardingSuccess,
 } from '../flows/savingsAccount/SavingsFundOnboarding';
-import {
-  isChildOnboardingEnabled,
-  isCompanyOnboardingEnabled,
-} from '../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
 import { SavingsFundPayment } from '../flows/savingsAccount/SavingsFundPayment';
 import { GiftLinkPage } from '../flows/savingsAccount/GiftLink';
 import SavingsFundPaymentSuccess from '../flows/savingsAccount/SavingsFundPayment/SavingsFundPaymentSuccess';
@@ -231,36 +227,14 @@ export class LoggedInApp extends PureComponent {
             <Route
               exact
               path="/savings-fund/onboarding/company"
-              render={() =>
-                isCompanyOnboardingEnabled() ? (
-                  <SavingsFundCompanyOnboarding />
-                ) : (
-                  <Redirect to="/savings-fund/onboarding" />
-                )
-              }
+              component={SavingsFundCompanyOnboarding}
             />
             <Route
               exact
               path="/savings-fund/onboarding/child"
-              render={() =>
-                isChildOnboardingEnabled() ? (
-                  <SavingsFundChildOnboarding />
-                ) : (
-                  <Redirect to="/savings-fund/onboarding" />
-                )
-              }
+              component={SavingsFundChildOnboarding}
             />
-            <Route
-              exact
-              path="/savings-fund/onboarding"
-              render={() =>
-                isCompanyOnboardingEnabled() ? (
-                  <SavingsFundOnboardingChooser />
-                ) : (
-                  <SavingsFundOnboarding />
-                )
-              }
-            />
+            <Route exact path="/savings-fund/onboarding" component={SavingsFundOnboardingChooser} />
             <Route path="/partner/3rd-pillar-flow-success" component={BackToPartner} />
             <Route
               path="/3rd-pillar-payment/recurring-confirmation"
