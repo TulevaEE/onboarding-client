@@ -82,6 +82,18 @@ describe('Third pillar payment confirmation', () => {
     );
   });
 
+  test('says the tax benefit of a raise is capped at 15% of gross income for the calendar year, not of salary', async () => {
+    nudgeBackend(server, { key: 'THIRD_PILLAR_RAISE', tag: 'nudge_third_pillar_raise' });
+    initializeComponent();
+    history.push('/3rd-pillar-payment/recurring-confirmation?type=RECURRING&confirmed=true');
+
+    expect(
+      await main().findByText(
+        /The tax benefit covers up to 15% of your gross income for the calendar year,/,
+      ),
+    ).toBeInTheDocument();
+  });
+
   test('asks for the single payment nudge in the payment context', async () => {
     nudgeBackend(server, { key: 'MEMBERSHIP', tag: 'nudge_membership' });
     initializeComponent();

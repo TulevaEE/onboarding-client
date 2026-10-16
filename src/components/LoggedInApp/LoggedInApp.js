@@ -44,6 +44,7 @@ import { SecondPillarPaymentRateSuccess } from '../flows/secondPillarPaymentRate
 import BackToPartner from '../flows/partner/BackToPartner';
 import ThirdPillarPaymentPage from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarPaymentPage';
 import { RecurringPaymentConfirmation } from '../flows/thirdPillar/ThirdPillarPayment/RecurringPaymentConfirmation';
+import { ThirdPillarStandingOrderPage } from '../flows/thirdPillar/ThirdPillarStandingOrder/ThirdPillarStandingOrderPage';
 import { DevSidebar } from '../dev/DevSidebar';
 import Success from '../flows/secondPillar/success';
 import { getAuthentication } from '../common/authenticationManager';
@@ -240,6 +241,7 @@ export class LoggedInApp extends PureComponent {
               component={RecurringPaymentConfirmation}
             />
             <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />
+            <Route path="/3rd-pillar-recurring-payment" component={ThirdPillarStandingOrderPage} />
             <Route path="/3rd-pillar-success" component={ThirdPillarSuccess} />
             <Route path="/3rd-pillar-gift-success" component={ThirdPillarGiftSuccess} />
             <Route path="/3rd-pillar-gift" component={Gift} />

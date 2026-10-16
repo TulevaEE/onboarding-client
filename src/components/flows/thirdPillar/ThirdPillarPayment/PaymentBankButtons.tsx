@@ -1,15 +1,22 @@
 import { BankButton } from './BankButton';
 import { BankKey } from './types';
+import { TranslationKey } from '../../../translations';
 
 type Props = {
   paymentBank: BankKey | 'other' | null;
   setPaymentBank: (value: BankKey | 'other' | null) => unknown;
   showOther?: boolean;
+  otherLabel?: TranslationKey;
 };
 
 const BANK_KEYS: readonly BankKey[] = ['swedbank', 'seb', 'lhv', 'luminor', 'coop'];
 
-export const PaymentBankButtons = ({ paymentBank, setPaymentBank, showOther = true }: Props) => (
+export const PaymentBankButtons = ({
+  paymentBank,
+  setPaymentBank,
+  showOther = true,
+  otherLabel,
+}: Props) => (
   <>
     <div className="row g-2 payment-banks">
       {BANK_KEYS.map((bankKey) => (
@@ -21,7 +28,12 @@ export const PaymentBankButtons = ({ paymentBank, setPaymentBank, showOther = tr
         />
       ))}
       {showOther && (
-        <BankButton bankKey="other" paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
+        <BankButton
+          bankKey="other"
+          paymentBank={paymentBank}
+          setPaymentBank={setPaymentBank}
+          otherLabel={otherLabel}
+        />
       )}
     </div>
   </>
