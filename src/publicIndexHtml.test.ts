@@ -9,12 +9,14 @@ const runAddressCleanup = () => {
   new Function(script)();
 };
 
-const runMetaPixel = () => {
+const runMetaPixel = (nodeEnvironment = 'production') => {
   const script = (indexHtml.match(/<script>[\s\S]*?<\/script>/g) ?? []).find((inline) =>
     inline.includes("fbq('init'"),
   );
   // eslint-disable-next-line no-new-func
-  new Function((script ?? '').replace(/<\/?script>/g, ''))();
+  new Function(
+    (script ?? '').replace(/<\/?script>/g, '').replace(/%NODE_ENV%/g, nodeEnvironment),
+  )();
 };
 
 const pixelWindow = window as Window & { fbq?: jest.Mock };
@@ -102,6 +104,15 @@ describe('the html every page is served from', () => {
     runMetaPixel();
 
     expect(pixelWindow.fbq).toHaveBeenCalledWith('track', 'PageView');
+  });
+
+  it('keeps the development server away from the Meta Pixel', () => {
+    pixelWindow.fbq = jest.fn();
+    openAddress('/login');
+
+    runMetaPixel('development');
+
+    expect(pixelWindow.fbq).not.toHaveBeenCalled();
   });
 
   it('leaves the address of any other page alone', () => {
