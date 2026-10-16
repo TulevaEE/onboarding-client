@@ -88,6 +88,7 @@
     <title>Tuleva</title>
     <!-- Facebook Pixel Code -->
 <script>
+  if ('%NODE_ENV%' === 'production') {
   !function(f,b,e,v,n,t,s)
   {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
   n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -100,6 +101,7 @@
   if (!/^\/(kingitus(\/|$)|login\/smart-id\/callback)/.test(window.location.pathname)) {
     fbq('init', '264307013931375');
     fbq('track', 'PageView');
+  }
   }
 </script>
 <script type="text/javascript" src="https://inaadress.maaamet.ee/inaadress/js/inaadress.min.js?d=20220510"></script>

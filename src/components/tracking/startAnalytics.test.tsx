@@ -35,6 +35,17 @@ describe('startAnalytics', () => {
     expect(scrubbedAtStart).toStrictEqual([true, true]);
   });
 
+  it('does not start Tag Manager or GA4 on the development server', () => {
+    const testEnvironment = process.env;
+    process.env = { ...testEnvironment, NODE_ENV: 'development' };
+
+    startAnalytics(createBrowserHistory());
+
+    process.env = testEnvironment;
+    expect(TagManager.initialize).not.toHaveBeenCalled();
+    expect(ReactGA.initialize).not.toHaveBeenCalled();
+  });
+
   it('does not start Tag Manager or GA4 on a gift page, where analytics are off', () => {
     window.history.pushState({}, '', '/kingitus/SECRETTOKEN');
 
