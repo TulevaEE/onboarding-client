@@ -152,7 +152,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
           style={menuStyle}
         >
           <Link
-            className="dropdown-item text-wrap d-flex align-items-center gap-2"
+            className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2"
             to={config.get('language') === 'et' ? '/account' : '/account?language=en'}
             onClick={() => setOpen(false)}
             onKeyDown={handleKeyDown}
@@ -172,7 +172,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                   <button
                     key={role.code}
                     type="button"
-                    className="dropdown-item text-wrap d-flex align-items-center gap-2"
+                    className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2"
                     aria-current={isCurrent || undefined}
                     onClick={() => handleRoleClick({ type: role.type, code: role.code }, isCurrent)}
                     onKeyDown={handleKeyDown}
@@ -192,7 +192,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
               {pendingChildren.map(({ code, name }) => (
                 <Link
                   key={code}
-                  className="dropdown-item text-wrap d-flex align-items-center gap-2"
+                  className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2"
                   to={childOnboardingLocation(code)}
                   onClick={() => setOpen(false)}
                   onKeyDown={handleKeyDown}
@@ -209,7 +209,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
             </>
           )}
           <Link
-            className="dropdown-item text-wrap d-flex align-items-center gap-2 link-primary fw-medium"
+            className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2 link-primary fw-medium"
             to="/savings-fund/onboarding"
             onClick={() => setOpen(false)}
             onKeyDown={handleKeyDown}
@@ -221,7 +221,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
           <LanguageSwitcher onKeyDown={handleKeyDown} onClick={() => setOpen(false)} />
           <a
             href="/login"
-            className="dropdown-item text-wrap d-flex align-items-center gap-2"
+            className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2"
             onClick={(event) => {
               event.preventDefault();
               setOpen(false);
