@@ -2,6 +2,7 @@ import {
   CHANGE_AGREEMENT_TO_TERMS,
   CHANGE_EXCHANGE_EXISTING_UNITS,
   CHANGE_MONTHLY_CONTRIBUTION,
+  FORGET_SIGNED_MANDATE,
   QUERY_PARAMETERS,
   SELECT_THIRD_PILLAR_SOURCES,
 } from './constants';
@@ -31,4 +32,8 @@ export function selectThirdPillarSources(
     exchangeExistingUnits,
     selectedFutureContributionsFundIsin,
   };
+}
+
+export function forgetSignedMandate() {
+  return { type: FORGET_SIGNED_MANDATE };
 }

@@ -12,6 +12,14 @@ import AccountPage from '../account';
 import { RoleDeepLink } from '../account/RoleDeepLink';
 import SecondPillarFlow from '../flows/secondPillar';
 import ThirdPillarFlow from '../flows/thirdPillar';
+import { InsuranceTransferFlow } from '../flows/insuranceTransfer/InsuranceTransferFlow';
+import { InsuranceTransferSent } from '../flows/insuranceTransfer/InsuranceTransferSent';
+import { InsuranceTransferDone } from '../flows/insuranceTransfer/InsuranceTransferDone';
+import {
+  flowPath as insuranceTransferFlowPath,
+  sentPath as insuranceTransferSentPath,
+  successPath as insuranceTransferSuccessPath,
+} from '../flows/insuranceTransfer/insuranceTransferPaths';
 import PartnerSecondPillarFlow from '../flows/partner/PartnerSecondPillarFlow';
 import PartnerThirdPillarFlow from '../flows/partner/PartnerThirdPillarFlow';
 import {
@@ -177,6 +185,16 @@ export class LoggedInApp extends PureComponent {
               render={() => (
                 <ContactDetailsGatekeep>
                   <ThirdPillarFlow />
+                </ContactDetailsGatekeep>
+              )}
+            />
+            <Route path={insuranceTransferSentPath} component={InsuranceTransferSent} />
+            <Route path={insuranceTransferSuccessPath} component={InsuranceTransferDone} />
+            <Route
+              path={insuranceTransferFlowPath}
+              render={() => (
+                <ContactDetailsGatekeep>
+                  <InsuranceTransferFlow />
                 </ContactDetailsGatekeep>
               )}
             />

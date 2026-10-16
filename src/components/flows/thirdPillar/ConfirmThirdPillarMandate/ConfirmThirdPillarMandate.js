@@ -109,7 +109,7 @@ export const ConfirmThirdPillarMandate = ({
         ''
       )}
 
-      <div className="mt-5 d-flex flex-wrap align-items-center gap-2">
+      <div className="mt-5 d-flex flex-column flex-sm-row-reverse gap-2">
         <button
           type="button"
           className="btn btn-primary"

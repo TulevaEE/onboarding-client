@@ -707,7 +707,11 @@ describe('API calls', () => {
   });
 
   describe('saveMandateWithToken', () => {
-    const mockMandate = 'mandate-data';
+    const mockMandate = {
+      fundTransferExchanges: [],
+      futureContributionFundIsin: 'EE3600001707',
+      address: { countryCode: 'EE' },
+    };
     const mockMandateResponse = {
       id: 'mandate-123',
       status: 'PENDING',

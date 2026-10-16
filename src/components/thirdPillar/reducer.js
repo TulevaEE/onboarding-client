@@ -2,6 +2,7 @@ import {
   CHANGE_AGREEMENT_TO_TERMS,
   CHANGE_EXCHANGE_EXISTING_UNITS,
   CHANGE_MONTHLY_CONTRIBUTION,
+  FORGET_SIGNED_MANDATE,
   QUERY_PARAMETERS,
   SELECT_THIRD_PILLAR_SOURCES,
 } from './constants';
@@ -97,6 +98,8 @@ export default function thirdPillarReducer(state = initialState, action) {
         ...state,
         signedMandateId: action.pillar === 3 ? action.signedMandateId : null,
       };
+    case FORGET_SIGNED_MANDATE:
+      return { ...state, signedMandateId: null };
     case SELECT_THIRD_PILLAR_SOURCES:
       return {
         ...state,

@@ -26,11 +26,15 @@ export class AddressStep extends PureComponent {
     return (
       <>
         {shouldSkipAddressStep() && <Redirect to={nextPath} />}
-        <UpdateUserForm
-          onSubmit={(user) =>
-            updateOnlyEmailAndPhone ? updateEmailAndPhone(user) : updateFullUser(user)
-          }
-        />
+        <div className="row">
+          <div className="col-md-8 col-lg-6">
+            <UpdateUserForm
+              onSubmit={(user) =>
+                updateOnlyEmailAndPhone ? updateEmailAndPhone(user) : updateFullUser(user)
+              }
+            />
+          </div>
+        </div>
       </>
     );
   }
@@ -43,6 +47,7 @@ AddressStep.propTypes = {
   pillar: Types.number.isRequired,
   hasAddress: Types.bool,
   hasContactDetailsAmlCheck: Types.bool,
+  updateOnlyEmailAndPhone: Types.bool,
   updateEmailAndPhone: Types.func,
   updateFullUser: Types.func,
 };
@@ -50,6 +55,7 @@ AddressStep.propTypes = {
 AddressStep.defaultProps = {
   hasAddress: false,
   hasContactDetailsAmlCheck: false,
+  updateOnlyEmailAndPhone: false,
   updateEmailAndPhone: noop,
   updateFullUser: noop,
 };

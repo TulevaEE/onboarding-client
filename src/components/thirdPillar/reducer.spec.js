@@ -7,6 +7,7 @@ import {
 } from './constants';
 import initialState, { EXIT_RESTRICTED_FUNDS } from './initialState';
 import reducer from './reducer';
+import { forgetSignedMandate } from './actions';
 import {
   GET_SOURCE_FUNDS_ERROR,
   GET_SOURCE_FUNDS_SUCCESS,
@@ -322,6 +323,19 @@ describe('Third pillar reducer', () => {
       ...initialState,
       signedMandateId: 123,
     });
+  });
+
+  it('forgets the signed mandate and keeps everything else', () => {
+    const signedState = {
+      ...initialState,
+      agreedToTerms: true,
+      exchangeExistingUnits: true,
+      signedMandateId: 123,
+    };
+
+    const state = reducer(signedState, forgetSignedMandate());
+
+    expect(state).toEqual({ ...signedState, signedMandateId: null });
   });
 
   it('sets state to initialState on logout', () => {

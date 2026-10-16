@@ -4,6 +4,7 @@ import {
   CapitalRow,
   Conversion,
   Fund,
+  FundBalance,
   MandateDeadlines,
   MobileSignatureResponse,
   MobileSignatureStatusResponse,
@@ -80,6 +81,28 @@ export const mockUser: User & { role: Role } = {
   thirdPillarInitDate: '2019-01-01',
   contactDetailsLastUpdateDate: moment().format('YYYY-MM-DD'),
   role: { type: 'PERSON', code: '39001011234', name: 'John Doe' },
+};
+
+export const mockSwedbankThirdPillarFundBalance: FundBalance = {
+  fund: {
+    fundManager: { name: 'Swedbank' },
+    isin: 'EE3600001822',
+    name: 'Swedbank III Pillar Pension Fund',
+    managementFeeRate: 0.005,
+    pillar: 3,
+    ongoingChargesFigure: 0.005,
+    status: 'ACTIVE',
+    inceptionDate: '2017-01-01',
+    nav: 1,
+  },
+  value: 1234.56,
+  unavailableValue: 0,
+  currency: 'EUR',
+  activeContributions: true,
+  contributions: 1000.0,
+  subtractions: 0,
+  profit: 234.56,
+  units: 1234.56,
 };
 
 export const mockSecondPillarConversion: Conversion = {
