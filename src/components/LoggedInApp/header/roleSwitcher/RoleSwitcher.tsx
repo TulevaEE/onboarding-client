@@ -107,6 +107,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
 
   const displayName = user?.role?.name ?? userName;
   const pendingChildren = pendingChildOnboardings(pendingOnboardings);
+  const hasAnotherAccount = (roles?.length ?? 0) > 1 || pendingChildren.length > 0;
 
   const handleRoleClick = async (command: SwitchRoleCommand, isCurrent: boolean) => {
     setOpen(false);
@@ -186,13 +187,13 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
             </svg>
             <FormattedMessage id="header.my.account" />
           </Link>
-          {roles && (
+          {hasAnotherAccount && (
             <>
               <hr className="dropdown-divider" />
               <span className="dropdown-header">
                 <FormattedMessage id="roleSwitcher.switchAccount" />
               </span>
-              {roles.map((role) => {
+              {roles?.map((role) => {
                 const isCurrent = isCurrentRole(role, user);
                 return (
                   <button
@@ -237,29 +238,28 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
                   <span className={PII_CLASS}>{name}</span>
                 </Link>
               ))}
-              <Link
-                className="dropdown-item text-wrap d-flex align-items-center gap-2 link-primary fw-medium"
-                to="/savings-fund/onboarding"
-                onClick={() => setOpen(false)}
-                onKeyDown={handleKeyDown}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  fill="currentColor"
-                  viewBox="0 0 256 256"
-                  aria-hidden="true"
-                >
-                  <path d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z" />
-                </svg>
-                <FormattedMessage id="roleSwitcher.openNewAccount" />
-              </Link>
             </>
           )}
+          <Link
+            className="dropdown-item text-wrap d-flex align-items-center gap-2 link-primary fw-medium"
+            to="/savings-fund/onboarding"
+            onClick={() => setOpen(false)}
+            onKeyDown={handleKeyDown}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              fill="currentColor"
+              viewBox="0 0 256 256"
+              aria-hidden="true"
+            >
+              <path d="M228,128a12,12,0,0,1-12,12H140v76a12,12,0,0,1-24,0V140H40a12,12,0,0,1,0-24h76V40a12,12,0,0,1,24,0v76h76A12,12,0,0,1,228,128Z" />
+            </svg>
+            <FormattedMessage id="roleSwitcher.openNewAccount" />
+          </Link>
           <hr className="dropdown-divider" />
           <LanguageSwitcher onKeyDown={handleKeyDown} onClick={() => setOpen(false)} />
-          <hr className="dropdown-divider" />
           <a
             href="/login"
             className="dropdown-item text-wrap d-flex align-items-center gap-2"
