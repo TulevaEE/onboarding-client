@@ -31,6 +31,7 @@ export const AccountIcon: FC<Props> = ({ kind, size = 16, testIdPrefix = 'role-i
     height={size}
     fill="currentColor"
     viewBox="0 0 256 256"
+    className="flex-shrink-0"
     aria-hidden="true"
     data-testid={`${testIdPrefix}-${testIdSuffixes[kind]}`}
   >

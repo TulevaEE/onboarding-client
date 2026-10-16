@@ -342,6 +342,16 @@ describe('RoleSwitcher', () => {
       expect(screen.getByTestId('active-role-icon-person')).toBeInTheDocument();
     });
 
+    it('truncates a long account name in the toggle so the header fits a phone screen', async () => {
+      rolesBackend(server, multipleRoles);
+      userBackend(server, { role: personalRole });
+
+      renderRoleSwitcher();
+
+      expect(await screen.findByRole('button', { name: /John Doe/i })).toHaveClass('mw-100');
+      expect(screen.getByText('John Doe')).toHaveClass('text-truncate');
+    });
+
     it('hangs the menu off the right edge of the toggle so a phone screen fits it', async () => {
       rolesBackend(server, multipleRoles);
       userBackend(server, { role: personalRole });

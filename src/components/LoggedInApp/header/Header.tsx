@@ -20,8 +20,8 @@ export const Header = ({ user, loading, onLogout, onRoleSwitch, hackathon = fals
     <a className="skip-link visually-hidden-focusable" href="#main">
       <FormattedMessage id="global.skipToContent" />
     </a>
-    <header className="d-flex justify-content-between align-items-end border-bottom py-4 mb-5 app-header">
-      <div className="app-header__brand">
+    <header className="d-flex justify-content-between align-items-end gap-3 border-bottom py-4 mb-5 app-header">
+      <div className="app-header__brand flex-shrink-0">
         {config.get('language') === 'et' ? (
           <a href="/account">
             <img src={logo} alt="Tuleva" className="brand-logo" />
