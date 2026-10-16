@@ -153,6 +153,12 @@ function initializeWithRoles(roles: Role[], initialRole: Role) {
   return session;
 }
 
+function initializeSavingsFundMemberWithRoles(roles: Role[], initialRole: Role) {
+  const session = initializeWithRoles(roles, initialRole);
+  savingsFundOnboardingStatusBackend(server, 'COMPLETED');
+  return session;
+}
+
 const representedPartyAccount = () =>
   screen.findByRole('region', { name: 'represented-party-account' });
 
@@ -285,7 +291,7 @@ describe('/account/child', () => {
 
 describe('/savings-fund/payment/child', () => {
   test('switches to the child role and lands on the payment page', async () => {
-    const session = initializeWithRoles([personRole, childRole], personRole);
+    const session = initializeSavingsFundMemberWithRoles([personRole, childRole], personRole);
 
     history.push('/savings-fund/payment/child');
 
@@ -297,18 +303,19 @@ describe('/savings-fund/payment/child', () => {
   });
 
   test('carries the payment options through to the payment page', async () => {
-    initializeWithRoles([personRole, childRole], personRole);
+    initializeSavingsFundMemberWithRoles([personRole, childRole], personRole);
 
     history.push('/savings-fund/payment/child?type=RECURRING');
 
-    await waitFor(() => expect(history.location.pathname).toBe('/savings-fund/payment'));
+    expect(await screen.findByRole('radio', { name: /^Recurring\spayment/ })).toBeChecked();
+    expect(history.location.pathname).toBe('/savings-fund/payment');
     expect(history.location.search).toBe('?type=RECURRING');
   });
 });
 
 describe('/savings-fund/payment/company', () => {
   test('switches to the company role and lands on the payment page', async () => {
-    const session = initializeWithRoles([personRole, acmeRole], personRole);
+    const session = initializeSavingsFundMemberWithRoles([personRole, acmeRole], personRole);
 
     history.push('/savings-fund/payment/company');
 
@@ -317,7 +324,7 @@ describe('/savings-fund/payment/company', () => {
   });
 
   test('lands on the payment page without switching when already acting as the company', async () => {
-    const session = initializeWithRoles([personRole, acmeRole], acmeRole);
+    const session = initializeSavingsFundMemberWithRoles([personRole, acmeRole], acmeRole);
 
     history.push('/savings-fund/payment/company');
 
@@ -328,7 +335,10 @@ describe('/savings-fund/payment/company', () => {
 
 describe('a payment deep link that names the account', () => {
   test('switches to the named child even when another child sorts first', async () => {
-    const session = initializeWithRoles([personRole, childRole, secondChildRole], personRole);
+    const session = initializeSavingsFundMemberWithRoles(
+      [personRole, childRole, secondChildRole],
+      personRole,
+    );
 
     history.push(`/savings-fund/payment/child/${secondChildRole.id}`);
 
@@ -337,7 +347,10 @@ describe('a payment deep link that names the account', () => {
   });
 
   test('switches to the named company even when another company sorts first', async () => {
-    const session = initializeWithRoles([personRole, acmeRole, betaRole], personRole);
+    const session = initializeSavingsFundMemberWithRoles(
+      [personRole, acmeRole, betaRole],
+      personRole,
+    );
 
     history.push(`/savings-fund/payment/company/${betaRole.id}`);
 
@@ -347,8 +360,7 @@ describe('a payment deep link that names the account', () => {
 
   test('opens the recurring payment form for the named child, keeping the query string of the email', async () => {
     const emailQuery = 'language=en&type=RECURRING&utm_content=nudge_savings_fund_recurring_child';
-    initializeWithRoles([personRole, childRole, secondChildRole], personRole);
-    savingsFundOnboardingStatusBackend(server, 'COMPLETED');
+    initializeSavingsFundMemberWithRoles([personRole, childRole, secondChildRole], personRole);
 
     history.push(`/savings-fund/payment/child/${secondChildRole.id}?${emailQuery}`);
 
@@ -392,7 +404,10 @@ describe('a payment deep link that names an account the member does not represen
 
 describe('a payment deep link opened while acting as another account of the same kind', () => {
   test('switches from one child to the child the link names', async () => {
-    const session = initializeWithRoles([personRole, childRole, secondChildRole], childRole);
+    const session = initializeSavingsFundMemberWithRoles(
+      [personRole, childRole, secondChildRole],
+      childRole,
+    );
 
     history.push(`/savings-fund/payment/child/${secondChildRole.id}`);
 
@@ -401,7 +416,10 @@ describe('a payment deep link opened while acting as another account of the same
   });
 
   test('does not switch when already acting as the child the link names', async () => {
-    const session = initializeWithRoles([personRole, childRole, secondChildRole], secondChildRole);
+    const session = initializeSavingsFundMemberWithRoles(
+      [personRole, childRole, secondChildRole],
+      secondChildRole,
+    );
 
     history.push(`/savings-fund/payment/child/${secondChildRole.id}`);
 
@@ -448,7 +466,7 @@ describe('a second deep link opened while the first is still resolving', () => {
   const roles = [personRole, acmeRole, childRole];
 
   test('opens the destination the member asked for last for the same holder', async () => {
-    const session = initializeWithRoles(roles, personRole);
+    const session = initializeSavingsFundMemberWithRoles(roles, personRole);
     const { requested, release } = holdFirstRoleSwitch(session, roles);
 
     history.push('/account/company');
