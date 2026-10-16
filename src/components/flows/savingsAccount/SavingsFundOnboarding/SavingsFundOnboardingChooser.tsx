@@ -10,41 +10,32 @@ import {
   getRememberedOnboardingFlowSelection,
   rememberOnboardingFlowSelection,
 } from './onboardingFlows';
-import { TranslationKey } from '../../../translations';
 import checkImage from '../../common/SuccessNotice/success.svg';
 import { AccountIcon } from '../../../common/AccountIcon';
 import '../../secondPillar/selectSources/targetFundSelector/TargetFundSelector.scss';
 
-const OptionCardContent: FC<{ option: OnboardingFlowOption; badgeId?: TranslationKey }> = ({
+const OptionCardContent: FC<{ option: OnboardingFlowOption; opened: boolean }> = ({
   option,
-  badgeId,
+  opened,
 }) => (
   <div className="d-flex align-items-center gap-3">
     <span
-      className={`d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-secondary-subtle ${
-        option.enabled ? 'text-body' : 'text-body-secondary'
-      }`}
+      className="d-inline-flex align-items-center justify-content-center rounded-circle flex-shrink-0 bg-secondary-subtle text-body"
       style={{ width: '2.5rem', height: '2.5rem' }}
     >
       <AccountIcon kind={option.key} size={20} />
     </span>
     <span className="d-flex flex-column">
-      <span className={`fs-5 fw-bold ${option.enabled ? 'text-body' : 'text-body-secondary'}`}>
+      <span className="fs-5 fw-bold text-body">
         <FormattedMessage id={`flows.savingsFundOnboarding.chooser.${option.key}`} />
       </span>
       <span className="text-body-secondary">
         <FormattedMessage id={`flows.savingsFundOnboarding.chooser.${option.key}.subtitle`} />
       </span>
     </span>
-    {badgeId && (
-      <span
-        className={`ms-auto badge rounded-pill fw-medium ${
-          badgeId === 'flows.savingsFundOnboarding.chooser.opened'
-            ? 'text-bg-success'
-            : 'text-bg-secondary'
-        }`}
-      >
-        <FormattedMessage id={badgeId} />
+    {opened && (
+      <span className="ms-auto badge rounded-pill fw-medium text-bg-success">
+        <FormattedMessage id="flows.savingsFundOnboarding.chooser.opened" />
       </span>
     )}
   </div>
@@ -79,7 +70,7 @@ export const SavingsFundOnboardingChooser: FC = () => {
     rememberOnboardingFlowSelection(key);
   };
 
-  const selectedOption = options.find((option) => option.key === selectedKey && option.enabled);
+  const selectedOption = options.find((option) => option.key === selectedKey);
   // Mirrors the 2nd-pillar payment-rate UX: the already-opened option stays
   // selectable (the pill explains why), but Continue offers nothing for it.
   const continueDisabled =
@@ -104,44 +95,31 @@ export const SavingsFundOnboardingChooser: FC = () => {
         </p>
       </div>
       <div className="d-flex flex-column gap-3">
-        {options.map((option) =>
-          option.enabled ? (
-            <button
-              key={option.key}
-              type="button"
-              aria-pressed={option.key === selectedKey}
-              onClick={() => selectFlow(option.key)}
-              className={`tv-target-fund d-block w-100 p-4 text-start ${
-                option.key === selectedKey ? 'tv-target-fund--active' : ''
-              }`}
-            >
-              {option.key === selectedKey && (
-                <div className="tv-target-fund__corner-check">
-                  <span>
-                    <img src={checkImage} alt="" />
-                  </span>
-                </div>
-              )}
-              <div className="tv-target-fund__inner-container">
-                <OptionCardContent
-                  option={option}
-                  badgeId={
-                    option.key === 'person' && personOnboardingCompleted
-                      ? 'flows.savingsFundOnboarding.chooser.opened'
-                      : undefined
-                  }
-                />
+        {options.map((option) => (
+          <button
+            key={option.key}
+            type="button"
+            aria-pressed={option.key === selectedKey}
+            onClick={() => selectFlow(option.key)}
+            className={`tv-target-fund d-block w-100 p-4 text-start ${
+              option.key === selectedKey ? 'tv-target-fund--active' : ''
+            }`}
+          >
+            {option.key === selectedKey && (
+              <div className="tv-target-fund__corner-check">
+                <span>
+                  <img src={checkImage} alt="" />
+                </span>
               </div>
-            </button>
-          ) : (
-            <div key={option.key} className="card bg-body-tertiary p-4">
+            )}
+            <div className="tv-target-fund__inner-container">
               <OptionCardContent
                 option={option}
-                badgeId="flows.savingsFundOnboarding.chooser.comingSoon"
+                opened={option.key === 'person' && personOnboardingCompleted}
               />
             </div>
-          ),
-        )}
+          </button>
+        ))}
       </div>
       <p className="m-0 text-body-secondary">
         <FormattedMessage id="flows.savingsFundOnboarding.chooser.disclaimer" />

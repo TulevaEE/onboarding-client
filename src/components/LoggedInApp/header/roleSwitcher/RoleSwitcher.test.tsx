@@ -15,29 +15,8 @@ import {
 } from '../../../../test/backend';
 import { mockUser } from '../../../../test/backend-responses';
 import { Role } from '../../../common/apiModels';
-import {
-  isChildOnboardingEnabled,
-  isCompanyOnboardingEnabled,
-} from '../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows';
 import { RoleSwitcher } from './RoleSwitcher';
 import { isInsidePii } from '../../../tracking/piiMarkup';
-
-// Company onboarding is the other reason a single-role user gets a dropdown, and
-// it ships permanently on. Mock the flags so the "pending child opens the dropdown"
-// tests can turn company onboarding off and prove the pending child is doing the
-// work — and so child onboarding can be toggled (pending entries only show while
-// the child flow route is reachable).
-jest.mock('../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows', () => ({
-  ...jest.requireActual('../../../flows/savingsAccount/SavingsFundOnboarding/onboardingFlows'),
-  isCompanyOnboardingEnabled: jest.fn(() => true),
-  isChildOnboardingEnabled: jest.fn(() => true),
-}));
-const mockIsCompanyOnboardingEnabled = isCompanyOnboardingEnabled as jest.MockedFunction<
-  typeof isCompanyOnboardingEnabled
->;
-const mockIsChildOnboardingEnabled = isChildOnboardingEnabled as jest.MockedFunction<
-  typeof isChildOnboardingEnabled
->;
 
 const server = setupServer();
 
@@ -82,13 +61,11 @@ function setupSwitchFlow() {
 beforeEach(() => {
   initializeConfiguration();
   getAuthentication().update(anAuthenticationManager());
-  mockIsCompanyOnboardingEnabled.mockReturnValue(true);
-  mockIsChildOnboardingEnabled.mockReturnValue(true);
   pendingOnboardingsBackend(server);
 });
 
 describe('RoleSwitcher', () => {
-  describe('now that company onboarding has launched', () => {
+  describe('opening a new account', () => {
     it('offers opening a new account even when there is only one role', async () => {
       rolesBackend(server, [personalRole]);
       userBackend(server, { role: personalRole });
@@ -435,7 +412,6 @@ describe('RoleSwitcher', () => {
     });
 
     it('opens the dropdown for a single-role user solely because a pending child exists', async () => {
-      mockIsCompanyOnboardingEnabled.mockReturnValue(false);
       rolesBackend(server, [personalRole]);
       userBackend(server, { role: personalRole });
       pendingOnboardingsBackend(server, [pendingChild]);
@@ -445,59 +421,6 @@ describe('RoleSwitcher', () => {
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
       expect(await screen.findByRole('link', { name: 'Mari Maasikas' })).toBeInTheDocument();
-    });
-
-    it('hides the pending child while the child onboarding flow is not yet launched', async () => {
-      mockIsCompanyOnboardingEnabled.mockReturnValue(false);
-      mockIsChildOnboardingEnabled.mockReturnValue(false);
-      // Track the roles response so the negative assertion below runs after the
-      // data that could open the dropdown has actually been applied — the plain
-      // span also renders before any query resolves, which would pass vacuously.
-      let rolesServed = false;
-      server.use(
-        rest.get('http://localhost/v1/me/roles', (req, res, ctx) => {
-          rolesServed = true;
-          return res(ctx.json([personalRole]));
-        }),
-      );
-      userBackend(server, { role: personalRole });
-      pendingOnboardingsBackend(server, [pendingChild]);
-
-      renderRoleSwitcher();
-
-      await waitFor(() => expect(rolesServed).toBe(true));
-
-      // The child route redirects away until launch, so no dead menu link — but the
-      // menu itself still opens, because logging out now lives inside it.
-      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
-      expect(screen.queryByRole('link', { name: 'Mari Maasikas' })).not.toBeInTheDocument();
-      expect(screen.getByRole('link', { name: 'Log out' })).toBeInTheDocument();
-    });
-
-    it('still opens the menu for a single-role user with nothing to add', async () => {
-      mockIsCompanyOnboardingEnabled.mockReturnValue(false);
-      rolesBackend(server, [personalRole]);
-      userBackend(server, { role: personalRole });
-      // Track the empty pending response so the negative assertion below runs
-      // after the query that could open the dropdown has actually resolved.
-      let pendingServed = false;
-      server.use(
-        rest.get('http://localhost/v1/me/pending-onboardings', (req, res, ctx) => {
-          pendingServed = true;
-          return res(ctx.json([]));
-        }),
-      );
-
-      renderRoleSwitcher();
-
-      await waitFor(() => expect(pendingServed).toBe(true));
-
-      // Nothing to add, but the menu is the only way to log out, so it must open.
-      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
-      expect(
-        screen.queryByRole('link', { name: 'Open an account for a child or company' }),
-      ).not.toBeInTheDocument();
-      expect(screen.getByRole('link', { name: 'Log out' })).toBeInTheDocument();
     });
   });
 
