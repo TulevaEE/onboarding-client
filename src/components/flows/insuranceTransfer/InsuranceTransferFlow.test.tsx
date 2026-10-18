@@ -39,7 +39,7 @@ const MARI = {
   pensionAccountNumber: '99812345678',
 };
 
-function openFlow(path = '/3rd-pillar-insurance') {
+function openFlow(path = '/3rd-pillar-insurance', language: 'en' | 'et' = 'en') {
   history = createMemoryHistory();
   store = createDefaultStore(history as any);
   login(store);
@@ -48,6 +48,7 @@ function openFlow(path = '/3rd-pillar-insurance') {
     history as any,
     store,
     new QueryClient({ defaultOptions: { queries: { retry: false } } }),
+    language,
   );
   history.push(path);
 }
@@ -455,7 +456,7 @@ describe('III pillar insurance contract transfer', () => {
       expect(endDate).toHaveAttribute('type', 'date');
       expect(endDate).toHaveValue('');
       expect(endDate).toHaveAccessibleDescription(
-        'Some contracts pay less before their end date: check your contract or the insurer’s e\u2011service. If yours pays more later, pick that date, otherwise leave this empty.',
+        'Some contracts pay less before their end date: check your contract or the insurer’s e\u2011service. If your insurer pays more later, pick that date, otherwise leave this empty.',
       );
     });
 
@@ -500,11 +501,36 @@ describe('III pillar insurance contract transfer', () => {
         ].join('\n'),
         { normalizeWhitespace: false },
       );
+      expect(request).toHaveTextContent(/\n\nKind regards\nMari Maasikas$/, {
+        normalizeWhitespace: false,
+      });
+      expect(request).not.toHaveTextContent(/€|EUR/);
+    });
+
+    test('drafts a request that ends the contract in the words of the Funded Pensions Act and asks for the fees withheld and the amount transferred', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
+
+      const request = await requestText();
       expect(request).toHaveTextContent(
-        /Please confirm in writing that you have received this request and tell me the amount to be transferred\.\n\nKind regards\nMari Maasikas$/,
+        'I hereby terminate my supplementary funded pension insurance contract and wish to use its full surrender value to acquire units of Tuleva III Samba Pensionifond (Funded Pensions Act § 63 subsection 5¹ clause 2 and subsection 5²). The money goes directly to the voluntary pension fund, not to my bank account.',
         { normalizeWhitespace: false },
       );
-      expect(request).not.toHaveTextContent(/€|EUR/);
+      expect(request).toHaveTextContent(
+        'Please confirm in writing that you have received this request, and tell me the fees withheld on ending the contract and the amount to be transferred to the voluntary pension fund.',
+        { normalizeWhitespace: false },
+      );
+    });
+
+    test('says in Estonian where SEB’s message form is and that the copied request goes into it', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB', 'et');
+
+      const steps = normalizedText(await screen.findByRole('region', { name: 'SEB' }));
+      expect(steps).toContain(
+        'Ava SEB internetipangas Saada uus kiri ja vali teemaks Pension → Pensioni III sammas.',
+      );
+      expect(steps).toContain(
+        'Kleebi kopeeritud avaldus väljale Kirja sisu ja vajuta Saadan teate.',
+      );
     });
 
     test('copies the whole request with a quiet copy button', async () => {
@@ -607,8 +633,8 @@ describe('III pillar insurance contract transfer', () => {
         insurer: 'SEB',
         steps: [
           'Copy the request.',
-          'Open Saada uus kiri and choose the topic Pension → Pensioni III sammas.',
-          'Paste the request into Kirja sisu and press Saadan teate.',
+          'In the SEB internet bank, open Saada uus kiri and choose the topic Pension → Pensioni III sammas.',
+          'Paste the copied request into Kirja sisu and press Saadan teate.',
         ],
         emails: [],
         open: 'Open SEB',
@@ -629,8 +655,8 @@ describe('III pillar insurance contract transfer', () => {
         insurer: 'Swedbank',
         steps: [
           'Copy the request.',
-          'Choose the bank message topic Elukindlustus.',
-          'Paste the request into Teade and press Saada teade.',
+          'In the Swedbank internet bank, choose the bank message topic Elukindlustus.',
+          'Paste the copied request into Teade and press Saada teade.',
         ],
         emails: [],
         open: 'Open Swedbank',
@@ -651,8 +677,8 @@ describe('III pillar insurance contract transfer', () => {
         insurer: 'Ergo',
         steps: [
           'Copy the request.',
-          'Press Kirjuta meile, tick esitada avalduse and add your policy number.',
-          'Paste the request into Kirja sisu and press Saada.',
+          'In the Ergo e\u2011kontor, press Kirjuta meile, tick esitada avalduse and add your policy number.',
+          'Paste the copied request into Kirja sisu and press Saada.',
         ],
         emails: [],
         open: 'Open Ergo e\u2011kontor',
