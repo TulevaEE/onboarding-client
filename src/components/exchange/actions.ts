@@ -92,7 +92,7 @@ export function downloadMandate() {
     const mandateId = getState().exchange.signedMandateId;
     if (mandateId && getAuthentication().isAuthenticated()) {
       return downloadMandateWithId(mandateId.toString()).then((file) =>
-        download(file, 'Tuleva_avaldus.bdoc', 'application/bdoc'),
+        download(file, 'Tuleva_avaldus.asice', 'application/vnd.etsi.asic-e+zip'),
       );
     }
     return Promise.resolve();

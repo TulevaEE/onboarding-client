@@ -194,7 +194,11 @@ describe('Exchange actions', () => {
     }));
     await downloadMandate();
     expect(mockApi.downloadMandateWithId).toHaveBeenCalledWith('1233446');
-    expect(mockDownload).toHaveBeenCalledWith(file, 'Tuleva_avaldus.bdoc', 'application/bdoc');
+    expect(mockDownload).toHaveBeenCalledWith(
+      file,
+      'Tuleva_avaldus.asice',
+      'application/vnd.etsi.asic-e+zip',
+    );
   });
 
   it('will not download the mandate if mandate id is missing', async () => {
