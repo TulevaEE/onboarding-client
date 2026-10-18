@@ -472,7 +472,7 @@ describe('III pillar insurance contract transfer', () => {
     });
 
     test('puts the chosen end date into the request it copies', async () => {
-      openFlow('/3rd-pillar-insurance/request?insurer=SWEDBANK');
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
 
       userEvent.type(await screen.findByLabelText('When should the contract end?'), '2027-11-01');
 
@@ -485,7 +485,7 @@ describe('III pillar insurance contract transfer', () => {
         ].join('\n'),
         { normalizeWhitespace: false },
       );
-      userEvent.click(within(guide('Swedbank')).getByRole('button', { name: 'Copy' }));
+      userEvent.click(within(guide('SEB')).getByRole('button', { name: 'Copy' }));
       await waitFor(() =>
         expect(writeText).toHaveBeenCalledWith(
           expect.stringContaining('Contract end date: November 1, 2027'),
@@ -561,6 +561,19 @@ describe('III pillar insurance contract transfer', () => {
       );
     });
 
+    test('says in Estonian where Swedbank’s termination application is and what goes into it', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=SWEDBANK', 'et');
+
+      const steps = normalizedText(await screen.findByRole('region', { name: 'Swedbank' }));
+      expect(steps).toContain(
+        'Logi Swedbanki internetipanka. Kui lõpetamise avaldus kohe ei avane, vali Pension → Minu pensionivara, oma pensionikindlustuse leping ja Lepingu lõpetamine.',
+      );
+      expect(steps).toContain(
+        'Vali, et soovid tagasiostuväärtuse eest vabatahtliku pensionifondi osakuid, ja vali fondiks Tuleva III Samba Pensionifond (EE3600001707), 100%.',
+      );
+      expect(steps).toContain('Kirjuta väljale Pensionikonto number oma pensionikonto number:');
+    });
+
     test('copies the whole request with a quiet copy button', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=SEB');
       const request = await requestText();
@@ -593,10 +606,10 @@ describe('III pillar insurance contract transfer', () => {
     });
 
     test('keeps the chosen end date in the request when the steps are shown again after the insurer opens', async () => {
-      openFlow('/3rd-pillar-insurance/request?insurer=SWEDBANK');
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
       userEvent.type(await screen.findByLabelText('When should the contract end?'), '2027-11-01');
 
-      userEvent.click(screen.getByRole('link', { name: 'Open Swedbank' }));
+      userEvent.click(screen.getByRole('link', { name: 'Open SEB' }));
       userEvent.click(await screen.findByRole('button', { name: 'Show the steps again' }));
 
       expect(await requestText()).toHaveTextContent('Contract end date: November 1, 2027');
@@ -692,6 +705,42 @@ describe('III pillar insurance contract transfer', () => {
       expect(screen.queryByText('99812345678')).not.toBeInTheDocument();
     });
 
+    test('ends a Swedbank contract on Swedbank’s own termination application, with no request to copy and nothing to fill in here', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=SWEDBANK');
+
+      const swedbankGuide = await screen.findByRole('region', { name: 'Swedbank' });
+      expect(
+        within(swedbankGuide).getByText(
+          'Pensionikindlustus+ guarantees your payments minus fees only on its end date. If the value in the internet bank is already above that, ending now costs you only the termination fee. If it is below, wait for the end date and move the money then.',
+        ),
+      ).toBeInTheDocument();
+      expect(screen.queryByText(/^Subject: /)).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('Contract number')).not.toBeInTheDocument();
+      expect(screen.queryByLabelText('When should the contract end?')).not.toBeInTheDocument();
+    });
+
+    test('shows the pension account number for Swedbank’s application on its own, ready to copy', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=SWEDBANK');
+
+      const swedbankGuide = await screen.findByRole('region', { name: 'Swedbank' });
+      expect(isInsidePii(within(swedbankGuide).getByText('99812345678'))).toBe(true);
+
+      userEvent.click(within(swedbankGuide).getByRole('button', { name: 'Copy' }));
+
+      await waitFor(() => expect(writeText).toHaveBeenCalledWith('99812345678'));
+    });
+
+    test('tells where to find the pension account number for Swedbank’s application while it is still on its way', async () => {
+      userBackend(server, { ...MARI, pensionAccountNumber: null });
+      openFlow('/3rd-pillar-insurance/request?insurer=SWEDBANK');
+
+      const swedbankGuide = await screen.findByRole('region', { name: 'Swedbank' });
+      expect(normalizedText(swedbankGuide)).toContain(
+        'Enter your pension account number in Pensionikonto number. You find it in the Pensionikeskus e\u2011service.',
+      );
+      expect(within(swedbankGuide).queryByRole('button', { name: 'Copy' })).not.toBeInTheDocument();
+    });
+
     test.each([
       {
         insurer: 'SEB',
@@ -706,12 +755,14 @@ describe('III pillar insurance contract transfer', () => {
       {
         insurer: 'Swedbank',
         steps: [
-          'Copy the request.',
-          'In the Swedbank internet bank, choose the bank message topic Elukindlustus.',
-          'Paste the copied request into Teade and press Saada teade.',
+          'Log in to the Swedbank internet bank. If the termination application does not open right away, choose Pension → Minu pensionivara, your pension insurance contract and Lepingu lõpetamine.',
+          'Choose to use the surrender value for voluntary pension fund units, and choose Tuleva III Samba Pensionifond (EE3600001707) at 100%.',
+          'Enter your pension account number in Pensionikonto number:',
+          'Confirm the application in the internet bank.',
         ],
         open: 'Open Swedbank',
-        actionUrl: 'https://www.swedbank.ee/private/home/important/communication/messages/send',
+        actionUrl:
+          'https://www.swedbank.ee/private/pensions/my/pensionAssets/insuranceContract/modification/termination',
       },
     ])(
       'guides the request to $insurer and opens its channel in a new tab',

@@ -15,9 +15,16 @@ type Insurer = {
   formerNamesMessageId?: TranslationKey;
 };
 
+type GuideStep = {
+  messageId: TranslationKey;
+  showsPensionAccountNumber?: boolean;
+};
+
 type Guide = {
   actionUrl: string;
-  stepMessageIds: TranslationKey[];
+  writesLetter: boolean;
+  noteMessageId?: TranslationKey;
+  steps: GuideStep[];
 };
 
 export const insurers: Record<InsurerCode, Insurer> = {
@@ -31,13 +38,25 @@ export const insurers: Record<InsurerCode, Insurer> = {
 export const guides: Record<GuidedInsurerCode, Guide> = {
   SEB: {
     actionUrl: 'https://e.seb.ee/ib/p/frame/messages',
-    stepMessageIds: ['insuranceTransfer.guide.SEB.openMessage', 'insuranceTransfer.guide.SEB.send'],
+    writesLetter: true,
+    steps: [
+      { messageId: 'insuranceTransfer.guide.SEB.openMessage' },
+      { messageId: 'insuranceTransfer.guide.SEB.send' },
+    ],
   },
   SWEDBANK: {
-    actionUrl: 'https://www.swedbank.ee/private/home/important/communication/messages/send',
-    stepMessageIds: [
-      'insuranceTransfer.guide.SWEDBANK.openMessage',
-      'insuranceTransfer.guide.SWEDBANK.send',
+    actionUrl:
+      'https://www.swedbank.ee/private/pensions/my/pensionAssets/insuranceContract/modification/termination',
+    writesLetter: false,
+    noteMessageId: 'insuranceTransfer.guide.SWEDBANK.note',
+    steps: [
+      { messageId: 'insuranceTransfer.guide.SWEDBANK.logIn' },
+      { messageId: 'insuranceTransfer.guide.SWEDBANK.chooseFund' },
+      {
+        messageId: 'insuranceTransfer.guide.SWEDBANK.pensionAccount',
+        showsPensionAccountNumber: true,
+      },
+      { messageId: 'insuranceTransfer.guide.SWEDBANK.confirm' },
     ],
   },
 };

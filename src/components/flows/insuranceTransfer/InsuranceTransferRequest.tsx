@@ -148,8 +148,14 @@ const GuidedRequest = ({
 
   return (
     <>
-      <ContractNumberField contractNumber={contractNumber} onChange={changeContractNumber} />
-      <InsurerGuide insurer={insurer} request={request} />
+      {guides[insurer].writesLetter && (
+        <ContractNumberField contractNumber={contractNumber} onChange={changeContractNumber} />
+      )}
+      <InsurerGuide
+        insurer={insurer}
+        request={request}
+        pensionAccountNumber={user.pensionAccountNumber}
+      />
       <div className="mt-4 d-flex flex-column flex-sm-row justify-content-end">
         <a
           className="btn btn-primary btn-lg"
@@ -204,7 +210,9 @@ const RequestToInsurer = ({ user }: { user: User }) => {
             <p className="mt-3 mb-0 text-body-secondary text-pretty">
               <FormattedMessage id="insuranceTransfer.fairness" />
             </p>
-            <EndDateField endDate={endDate} onChange={chooseEndDate} />
+            {(takesSignedForm(insurer) || guides[insurer].writesLetter) && (
+              <EndDateField endDate={endDate} onChange={chooseEndDate} />
+            )}
             {takesSignedForm(insurer) ? (
               <InsurerForm insurer={insurer} endDate={endDate} user={user} />
             ) : (

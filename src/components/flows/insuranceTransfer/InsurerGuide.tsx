@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { Fragment, ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { PaymentStep } from '../common/PaymentStep/PaymentStep';
 import { CopyButton } from '../../common/CopyButton';
@@ -30,22 +30,49 @@ const CopyRequestStep = ({ request }: { request: TransferRequest }) => (
   </>
 );
 
+const PensionAccountNumberToCopy = ({ pensionAccountNumber }: { pensionAccountNumber: string }) => (
+  <div className="mt-2 mb-3 p-3 rounded bg-blue-2 d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <span className={`fw-semibold ${PII_CLASS}`}>{pensionAccountNumber}</span>
+    <CopyButton textToCopy={pensionAccountNumber}>
+      <FormattedMessage id="global.copy" />
+    </CopyButton>
+  </div>
+);
+
 export const InsurerGuide = ({
   insurer,
   request,
+  pensionAccountNumber,
 }: {
   insurer: GuidedInsurerCode;
   request: TransferRequest;
-}) => (
-  <section className="p-4 mt-5 payment-details" aria-labelledby={GUIDE_HEADING_ID}>
-    <h3 id={GUIDE_HEADING_ID} className="h5 mb-3">
-      {insurers[insurer].name}
-    </h3>
-    <CopyRequestStep request={request} />
-    {guides[insurer].stepMessageIds.map((messageId, index) => (
-      <PaymentStep key={messageId} number={index + 2}>
-        <FormattedMessage id={messageId} values={{ b: bold }} />
-      </PaymentStep>
-    ))}
-  </section>
-);
+  pensionAccountNumber: string | null;
+}) => {
+  const { writesLetter, noteMessageId, steps } = guides[insurer];
+  const firstStepNumber = writesLetter ? 2 : 1;
+  const stepValues = { b: bold, known: pensionAccountNumber ? 'yes' : 'no' };
+
+  return (
+    <section className="p-4 mt-5 payment-details" aria-labelledby={GUIDE_HEADING_ID}>
+      <h3 id={GUIDE_HEADING_ID} className="h5 mb-3">
+        {insurers[insurer].name}
+      </h3>
+      {noteMessageId && (
+        <p className="mb-3 text-body-secondary text-pretty">
+          <FormattedMessage id={noteMessageId} />
+        </p>
+      )}
+      {writesLetter && <CopyRequestStep request={request} />}
+      {steps.map(({ messageId, showsPensionAccountNumber }, index) => (
+        <Fragment key={messageId}>
+          <PaymentStep number={index + firstStepNumber}>
+            <FormattedMessage id={messageId} values={stepValues} />
+          </PaymentStep>
+          {showsPensionAccountNumber && pensionAccountNumber && (
+            <PensionAccountNumberToCopy pensionAccountNumber={pensionAccountNumber} />
+          )}
+        </Fragment>
+      ))}
+    </section>
+  );
+};
