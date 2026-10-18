@@ -3,39 +3,13 @@ import { FormattedMessage } from 'react-intl';
 import { PaymentStep } from '../common/PaymentStep/PaymentStep';
 import { CopyButton } from '../../common/CopyButton';
 import { PII_CLASS } from '../../tracking/piiMarkup';
-import { InsurerCode, insurers } from './insurers';
+import { GuidedInsurerCode, guides, insurers } from './insurers';
 import { TransferRequest } from './useTransferRequest';
 import '../thirdPillar/ThirdPillarPayment/Payment.scss';
 
 const GUIDE_HEADING_ID = 'insurer-guide-heading';
 
 const bold = (chunks: ReactNode) => <b>{chunks}</b>;
-
-const subjectOnlyMailto = (email: string, subject: string) =>
-  `mailto:${email}?subject=${encodeURIComponent(subject)}`;
-
-const SignedRequestByEmail = ({
-  email,
-  subject,
-  onSend,
-}: {
-  email: string;
-  subject: string;
-  onSend: () => void;
-}) => (
-  <p className="small text-body-secondary mt-3 mb-0">
-    <FormattedMessage
-      id="insuranceTransfer.guide.signedEmail"
-      values={{
-        email: (
-          <a className="text-break" href={subjectOnlyMailto(email, subject)} onClick={onSend}>
-            {email}
-          </a>
-        ),
-      }}
-    />
-  </p>
-);
 
 const CopyRequestStep = ({ request }: { request: TransferRequest }) => (
   <>
@@ -59,31 +33,19 @@ const CopyRequestStep = ({ request }: { request: TransferRequest }) => (
 export const InsurerGuide = ({
   insurer,
   request,
-  onSend,
 }: {
-  insurer: InsurerCode;
+  insurer: GuidedInsurerCode;
   request: TransferRequest;
-  onSend: () => void;
-}) => {
-  const { name, stepMessageIds, signedRequestEmail } = insurers[insurer];
-  return (
-    <section className="p-4 mt-5 payment-details" aria-labelledby={GUIDE_HEADING_ID}>
-      <h3 id={GUIDE_HEADING_ID} className="h5 mb-3">
-        {name}
-      </h3>
-      <CopyRequestStep request={request} />
-      {stepMessageIds.map((messageId, index) => (
-        <PaymentStep key={messageId} number={index + 2}>
-          <FormattedMessage id={messageId} values={{ b: bold }} />
-        </PaymentStep>
-      ))}
-      {signedRequestEmail && (
-        <SignedRequestByEmail
-          email={signedRequestEmail}
-          subject={request.subject}
-          onSend={onSend}
-        />
-      )}
-    </section>
-  );
-};
+}) => (
+  <section className="p-4 mt-5 payment-details" aria-labelledby={GUIDE_HEADING_ID}>
+    <h3 id={GUIDE_HEADING_ID} className="h5 mb-3">
+      {insurers[insurer].name}
+    </h3>
+    <CopyRequestStep request={request} />
+    {guides[insurer].stepMessageIds.map((messageId, index) => (
+      <PaymentStep key={messageId} number={index + 2}>
+        <FormattedMessage id={messageId} values={{ b: bold }} />
+      </PaymentStep>
+    ))}
+  </section>
+);

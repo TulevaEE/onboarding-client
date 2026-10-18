@@ -1,0 +1,247 @@
+import { useEffect, useRef, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { useHistory } from 'react-router-dom';
+import { FormProvider, useForm, useFormContext } from 'react-hook-form';
+import download from 'downloadjs';
+import { AuthenticationLoader, ErrorMessage } from '../../common';
+import { isSigningWithIdCard } from '../../common/authenticationManager';
+import {
+  createInsuranceTransferForm,
+  downloadInsuranceTransferFormPreview,
+} from '../../common/api';
+import { useKycIdentity } from '../../common/apiHooks';
+import { User } from '../../common/apiModels';
+import {
+  CreateInsuranceTransferFormCommand,
+  InsuranceTransferForm,
+  InsuranceTransferFormInsurer,
+} from '../../common/apiModels/insurance-transfer';
+import { isErrorResponse } from '../../common/errorResponse';
+import { Shimmer } from '../../common/shimmer/Shimmer';
+import { useSigning } from '../../common/signing/useSigning';
+import { PII_CLASS } from '../../tracking/piiMarkup';
+import { KycIdentity } from '../savingsAccount/SavingsFundOnboarding/types.api';
+import { ArteaQuestionnaire } from './ArteaQuestionnaire';
+import { TextField } from './formFields';
+import { signedPath } from './insuranceTransferPaths';
+import {
+  asksUsPersonDeclaration,
+  defaultValuesFrom,
+  detailsOnFile,
+  InsurerFormValues,
+  toCommand,
+} from './insurerFormValues';
+import { YourDetails } from './YourDetails';
+
+type Props = {
+  insurer: InsuranceTransferFormInsurer;
+  endDate: string | null;
+  user: User;
+};
+
+const POLICY_NUMBER_MAX_LENGTH = 40;
+const PDF = 'application/pdf';
+const PREVIEW_FILE_NAME = 'Tuleva_avaldus_eelvaade.pdf';
+
+const isPensionAccountNotReady = (error: unknown) =>
+  (error as { body?: { error?: unknown } } | null)?.body?.error === 'PENSION_ACCOUNT_NOT_READY';
+
+const showPdf = (pdf: Blob) => {
+  const pdfAddress = URL.createObjectURL(new Blob([pdf], { type: PDF }));
+  if (!window.open(pdfAddress, '_blank')) {
+    URL.revokeObjectURL(pdfAddress);
+    download(pdf, PREVIEW_FILE_NAME, PDF);
+  }
+};
+
+const useFormFilledOnce = () => {
+  const [filled, setFilled] = useState<{ command: string; form: InsuranceTransferForm } | null>(
+    null,
+  );
+  const [busy, setBusy] = useState(false);
+  const filling = useRef(false);
+  const [failure, setFailure] = useState<unknown>(null);
+
+  const formFor = async (command: CreateInsuranceTransferFormCommand) => {
+    const commandKey = JSON.stringify(command);
+    if (filled?.command === commandKey) {
+      return filled.form;
+    }
+    const form = await createInsuranceTransferForm(command);
+    setFilled({ command: commandKey, form });
+    return form;
+  };
+
+  const withFilledForm = async (
+    command: CreateInsuranceTransferFormCommand,
+    use: (form: InsuranceTransferForm) => unknown,
+  ) => {
+    if (filling.current) {
+      return;
+    }
+    filling.current = true;
+    setBusy(true);
+    setFailure(null);
+    try {
+      await use(await formFor(command));
+    } catch (error) {
+      setFailure(error);
+    } finally {
+      filling.current = false;
+      setBusy(false);
+    }
+  };
+
+  return { withFilledForm, busy, failure, dismissFailure: () => setFailure(null) };
+};
+
+const PolicyNumberField = () => {
+  const { formatMessage } = useIntl();
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<InsurerFormValues>();
+  return (
+    <TextField
+      className="mt-4"
+      id="insurance-contract-number"
+      label={
+        <span className="fw-bold">
+          <FormattedMessage id="insuranceTransfer.contractNumber.label" />
+        </span>
+      }
+      hint={<FormattedMessage id="insuranceTransfer.form.policyNumber.hint" />}
+      registration={register('policyNumber', {
+        validate: (value) =>
+          value.trim() !== '' ||
+          formatMessage({ id: 'insuranceTransfer.form.policyNumber.required' }),
+      })}
+      error={errors.policyNumber?.message}
+      inputClassName={`w-auto ${PII_CLASS}`}
+      maxLength={POLICY_NUMBER_MAX_LENGTH}
+    />
+  );
+};
+
+const NotUsPersonConfirmation = () => {
+  const { formatMessage } = useIntl();
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<InsurerFormValues>();
+  const error = errors.notUsPerson?.message;
+  return (
+    <div className="form-check mt-4">
+      <input
+        type="checkbox"
+        className={`form-check-input ${error ? 'is-invalid' : ''}`}
+        id="insurer-form-not-us-person"
+        aria-invalid={!!error}
+        {...register('notUsPerson', {
+          required: formatMessage({ id: 'insuranceTransfer.form.notUsPerson.required' }),
+        })}
+      />
+      <label className="form-check-label" htmlFor="insurer-form-not-us-person">
+        <FormattedMessage id="insuranceTransfer.form.notUsPerson" />
+      </label>
+      {error && <div className="invalid-feedback text-pretty">{error}</div>}
+    </div>
+  );
+};
+
+const FilledInInsurerForm = ({
+  insurer,
+  endDate,
+  user,
+  identity,
+}: Props & { identity: KycIdentity | undefined }) => {
+  const history = useHistory();
+  const [onFile] = useState(() => detailsOnFile(identity));
+  const methods = useForm<InsurerFormValues>({ defaultValues: defaultValuesFrom(identity, user) });
+  const { withFilledForm, busy, failure, dismissFailure } = useFormFilledOnce();
+  const { startSigning, cancelSigning, signed, loading, error, challengeCode } =
+    useSigning<InsuranceTransferForm>('INSURANCE_TRANSFER_FORM');
+  const [signingFormId, setSigningFormId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (signed && signingFormId) {
+      history.push(`${signedPath}/${signingFormId}`);
+    }
+  }, [signed, signingFormId, history]);
+
+  const commandFrom = (values: InsurerFormValues) => toCommand(insurer, endDate, values);
+
+  const sign = (values: InsurerFormValues) =>
+    withFilledForm(commandFrom(values), (form) => {
+      setSigningFormId(form.id);
+      startSigning(form);
+    });
+
+  const preview = (values: InsurerFormValues) =>
+    withFilledForm(commandFrom(values), async (form) =>
+      showPdf(await downloadInsuranceTransferFormPreview(form.id)),
+    );
+
+  const pensionAccountNotReady = isPensionAccountNotReady(failure);
+  const working = busy || loading || !!challengeCode;
+
+  return (
+    <FormProvider {...methods}>
+      {(loading || challengeCode) && (
+        <AuthenticationLoader
+          signingWithIdCard={isSigningWithIdCard()}
+          controlCode={challengeCode}
+          onCancel={cancelSigning}
+          overlayed
+        />
+      )}
+      {error && <ErrorMessage errors={error.body} onCancel={cancelSigning} overlayed />}
+      {!!failure && !pensionAccountNotReady && (
+        <ErrorMessage
+          errors={isErrorResponse(failure) ? failure.body : { errors: [] }}
+          onCancel={dismissFailure}
+          overlayed
+        />
+      )}
+
+      <form onSubmit={methods.handleSubmit(sign)} noValidate>
+        <p className="mt-4 mb-0 text-pretty">
+          <FormattedMessage id="insuranceTransfer.form.intro" />
+        </p>
+        <PolicyNumberField />
+        <YourDetails insurer={insurer} onFile={onFile} />
+        {insurer === 'ARTEA' && <ArteaQuestionnaire />}
+        {asksUsPersonDeclaration(insurer) && <NotUsPersonConfirmation />}
+
+        {pensionAccountNotReady && (
+          <div className="alert alert-warning mt-4 mb-0 text-pretty" role="alert">
+            <FormattedMessage id="insuranceTransfer.form.pensionAccountNotReady" />
+          </div>
+        )}
+        <div className="mt-5 d-flex flex-column-reverse flex-sm-row justify-content-end align-items-sm-center gap-3">
+          <button
+            type="button"
+            className="btn btn-link"
+            disabled={working}
+            onClick={methods.handleSubmit(preview)}
+          >
+            <FormattedMessage id="insuranceTransfer.form.preview" />
+          </button>
+          <button type="submit" className="btn btn-primary btn-lg" disabled={working}>
+            <FormattedMessage id="insuranceTransfer.form.sign" />
+          </button>
+        </div>
+      </form>
+    </FormProvider>
+  );
+};
+
+export const InsurerForm = (props: Props) => {
+  const { data: identity, isError } = useKycIdentity();
+
+  if (!identity && !isError) {
+    return <Shimmer height={400} />;
+  }
+
+  return <FilledInInsurerForm {...props} identity={identity} />;
+};

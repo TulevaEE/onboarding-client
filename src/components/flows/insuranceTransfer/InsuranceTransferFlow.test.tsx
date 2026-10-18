@@ -6,10 +6,18 @@ import { rest } from 'msw';
 import { Route } from 'react-router-dom';
 import { Store } from 'redux';
 import { createMemoryHistory, History } from 'history';
+import download from 'downloadjs';
 import { initializeConfiguration } from '../../config/config';
 import LoggedInApp from '../../LoggedInApp';
-import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import {
+  createDefaultStore,
+  login,
+  renderWrapped,
+  selectCountryOptionInTomSelect,
+} from '../../../test/utils';
+import {
+  failingKycIdentityBackend,
+  kycIdentityBackend,
   mandatesBackend,
   pensionAccountStatementBackend,
   userBackend,
@@ -25,7 +33,10 @@ import {
   mockThirdPillarConversion,
   mockUser,
 } from '../../../test/backend-responses';
-import { PII_CLASS } from '../../tracking/piiMarkup';
+import { isInsidePii, PII_CLASS } from '../../tracking/piiMarkup';
+import { KycIdentity } from '../savingsAccount/SavingsFundOnboarding/types.api';
+
+jest.mock('downloadjs');
 
 const server = setupServer();
 let history: History;
@@ -461,7 +472,7 @@ describe('III pillar insurance contract transfer', () => {
     });
 
     test('puts the chosen end date into the request it copies', async () => {
-      openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+      openFlow('/3rd-pillar-insurance/request?insurer=SWEDBANK');
 
       userEvent.type(await screen.findByLabelText('When should the contract end?'), '2027-11-01');
 
@@ -474,7 +485,7 @@ describe('III pillar insurance contract transfer', () => {
         ].join('\n'),
         { normalizeWhitespace: false },
       );
-      userEvent.click(within(guide('Ergo')).getByRole('button', { name: 'Copy' }));
+      userEvent.click(within(guide('Swedbank')).getByRole('button', { name: 'Copy' }));
       await waitFor(() =>
         expect(writeText).toHaveBeenCalledWith(
           expect.stringContaining('Contract end date: November 1, 2027'),
@@ -582,10 +593,10 @@ describe('III pillar insurance contract transfer', () => {
     });
 
     test('keeps the chosen end date in the request when the steps are shown again after the insurer opens', async () => {
-      openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+      openFlow('/3rd-pillar-insurance/request?insurer=SWEDBANK');
       userEvent.type(await screen.findByLabelText('When should the contract end?'), '2027-11-01');
 
-      userEvent.click(screen.getByRole('link', { name: 'Open Ergo e\u2011kontor' }));
+      userEvent.click(screen.getByRole('link', { name: 'Open Swedbank' }));
       userEvent.click(await screen.findByRole('button', { name: 'Show the steps again' }));
 
       expect(await requestText()).toHaveTextContent('Contract end date: November 1, 2027');
@@ -640,18 +651,6 @@ describe('III pillar insurance contract transfer', () => {
       expect(screen.getByLabelText('Contract number')).toHaveValue('UP000123');
     });
 
-    test('asks whether the request went out once the signed request is emailed instead', async () => {
-      openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
-
-      userEvent.click(await screen.findByRole('link', { name: 'kindlustus@artea.ee' }));
-
-      expect(
-        await screen.findByRole('heading', { name: 'Did you send the request?' }),
-      ).toBeInTheDocument();
-      expect(history.location.pathname).toBe('/3rd-pillar-insurance-sent');
-      expect(history.location.search).toBe('?insurer=ARTEA');
-    });
-
     test('shows the steps again when the question whether the request went out was opened from a link', async () => {
       openFlow('/3rd-pillar-insurance-sent?insurer=SEB');
 
@@ -664,9 +663,9 @@ describe('III pillar insurance contract transfer', () => {
 
     test('records the sent request and says the insurer moves the money within two months after the contract ends', async () => {
       const trackedEvents = trackedEventsBackend();
-      openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
+      openFlow('/3rd-pillar-insurance/request?insurer=SWEDBANK');
 
-      userEvent.click(await screen.findByRole('link', { name: 'Open Compensa online office' }));
+      userEvent.click(await screen.findByRole('link', { name: 'Open Swedbank' }));
       userEvent.click(screen.getByRole('button', { name: 'Yes, I sent it' }));
 
       expect(await screen.findByRole('heading', { name: 'Done' })).toBeInTheDocument();
@@ -680,7 +679,7 @@ describe('III pillar insurance contract transfer', () => {
       expect(screen.queryByText('Send a request to your insurer')).not.toBeInTheDocument();
       await waitFor(() =>
         expect(sentRequests(trackedEvents)).toEqual([
-          { type: 'CLICK', data: { target: 'insurance-transfer-sent', insurer: 'COMPENSA' } },
+          { type: 'CLICK', data: { target: 'insurance-transfer-sent', insurer: 'SWEDBANK' } },
         ]),
       );
     });
@@ -701,20 +700,8 @@ describe('III pillar insurance contract transfer', () => {
           'In the SEB internet bank, open Saada uus kiri and choose the topic Pension → Pensioni III sammas.',
           'Paste the copied request into Kirja sisu and press Saadan teate.',
         ],
-        emails: [],
         open: 'Open SEB',
         actionUrl: 'https://e.seb.ee/ib/p/frame/messages',
-      },
-      {
-        insurer: 'Compensa',
-        steps: [
-          'Copy the request.',
-          'Send it in the Compensa online office.',
-          'Or sign the request digitally and email it to info@compensalife.ee.',
-        ],
-        emails: [subjectOnlyMailto('info@compensalife.ee')],
-        open: 'Open Compensa online office',
-        actionUrl: 'https://www.compensalife.eu/EE/logon.asp',
       },
       {
         insurer: 'Swedbank',
@@ -723,43 +710,19 @@ describe('III pillar insurance contract transfer', () => {
           'In the Swedbank internet bank, choose the bank message topic Elukindlustus.',
           'Paste the copied request into Teade and press Saada teade.',
         ],
-        emails: [],
         open: 'Open Swedbank',
         actionUrl: 'https://www.swedbank.ee/private/home/important/communication/messages/send',
       },
-      {
-        insurer: 'Artea',
-        steps: [
-          'Copy the request.',
-          'Send it in the Artea e\u2011service.',
-          'Or sign the request digitally and email it to kindlustus@artea.ee.',
-        ],
-        emails: [subjectOnlyMailto('kindlustus@artea.ee')],
-        open: 'Open Artea e\u2011service',
-        actionUrl: 'https://e-life.artea.ee',
-      },
-      {
-        insurer: 'Ergo',
-        steps: [
-          'Copy the request.',
-          'Log in to the Ergo e\u2011kontor, press Kirjuta meile and tick esitada avalduse.',
-          'Paste the copied request into Kirja sisu and press Saada.',
-          'Or sign the request digitally and email it to elukindlustus@ergo.ee.',
-        ],
-        emails: [subjectOnlyMailto('elukindlustus@ergo.ee')],
-        open: 'Open Ergo e\u2011kontor',
-        actionUrl: 'https://ekontor.ergo.ee/lepingud',
-      },
     ])(
       'guides the request to $insurer and opens its channel in a new tab',
-      async ({ insurer, steps, emails, open, actionUrl }) => {
+      async ({ insurer, steps, open, actionUrl }) => {
         openFlow();
         userEvent.click(await screen.findByRole('radio', { name: new RegExp(`^${insurer}`) }));
 
         const insurerGuide = guide(insurer);
         expect(within(insurerGuide).getByRole('heading', { name: insurer })).toBeInTheDocument();
         steps.forEach((step) => expect(normalizedText(insurerGuide)).toContain(step));
-        expect(within(insurerGuide).queryAllByRole('link').map(href)).toEqual(emails);
+        expect(within(insurerGuide).queryAllByRole('link')).toEqual([]);
 
         const openLink = screen.getByRole('link', { name: open });
         expect(openLink).toHaveAttribute('href', actionUrl);
@@ -767,6 +730,528 @@ describe('III pillar insurance contract transfer', () => {
         expect(openLink).toHaveAttribute('rel', 'noreferrer');
       },
     );
+  });
+});
+
+describe('III pillar insurance contract transfer on the insurer’s own form', () => {
+  beforeEach(() => {
+    userConversionBackend(server, {}, { selectionComplete: true });
+    kycIdentityBackend(server, IDENTITY_ON_FILE);
+  });
+
+  test.each([
+    { code: 'COMPENSA', name: 'Compensa' },
+    { code: 'ARTEA', name: /^Artea/ },
+    { code: 'ERGO', name: 'Ergo' },
+  ])(
+    'offers $code a request on its own form to sign instead of a request to copy',
+    async ({ name }) => {
+      openFlow();
+
+      userEvent.click(await screen.findByRole('radio', { name }));
+
+      expect(await screen.findByRole('button', { name: 'Sign the request' })).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'We fill in the insurer’s own request form. You sign it, we email it to you, and you forward it to the insurer.',
+        ),
+      ).toBeInTheDocument();
+      expect(screen.queryByText(/^Subject: /)).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Copy' })).not.toBeInTheDocument();
+      expect(screen.getByLabelText('When should the contract end?')).toBeInTheDocument();
+    },
+  );
+
+  test('shows the details on file for confirmation, asks only for the contract number and the US declaration, signs the Compensa form and says where to forward it', async () => {
+    const forms = insuranceTransferFormBackend();
+    openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
+
+    const details = await yourDetails();
+    expect(definitionsIn(details)).toEqual([['Address', 'Tamme tn 1, Tallinn, 10111, Estonia']]);
+    expect(details).toHaveClass(PII_CLASS);
+    expect(screen.queryByLabelText('City')).not.toBeInTheDocument();
+    expect(screen.queryByText('Citizenship')).not.toBeInTheDocument();
+
+    const contractNumber = screen.getByLabelText('Contract number');
+    expect(contractNumber).toHaveClass(PII_CLASS);
+    expect(contractNumber).toHaveAccessibleDescription(
+      'You can find it on your contract or in the insurer’s e‑service.',
+    );
+    userEvent.type(contractNumber, ' UP000123 ');
+    userEvent.click(
+      screen.getByRole('checkbox', { name: 'I am not a US citizen or US tax resident' }),
+    );
+    userEvent.click(signRequestButton());
+
+    expect(await screen.findByText('9876')).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Your request is signed' }, { timeout: 5_000 }),
+    ).toBeInTheDocument();
+    expect(history.location.pathname).toBe('/3rd-pillar-insurance-signed/1');
+    expect(forms.created).toEqual([
+      {
+        insurer: 'COMPENSA',
+        policyNumber: 'UP000123',
+        endDate: null,
+        address: ADDRESS_ON_FILE,
+        usPerson: false,
+      },
+    ]);
+    expect(screen.getByText(/^We emailed the signed request to you\./)).toHaveTextContent(
+      'We emailed the signed request to you. Forward that email with its attachment to your insurer (Compensa) at info@compensalife.ee.',
+    );
+    expect(screen.getByRole('link', { name: 'info@compensalife.ee' })).toHaveAttribute(
+      'href',
+      'mailto:info@compensalife.ee',
+    );
+    expect(
+      screen.queryByRole('button', { name: 'Download the signed request' }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'My account' })).toHaveAttribute('href', '/account');
+    expect(screen.queryByText('Send a request to your insurer')).not.toBeInTheDocument();
+  }, 20_000);
+
+  test('does not sign without the contract number and the US declaration', async () => {
+    const forms = insuranceTransferFormBackend();
+    openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
+    await yourDetails();
+
+    userEvent.type(screen.getByLabelText('Contract number'), '   ');
+    userEvent.click(signRequestButton());
+
+    expect(await screen.findByText('Enter the contract number.')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Confirm this to sign here. If you are a US citizen or US tax resident, contact your insurer.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Contract number')).toBeInvalid();
+    expect(forms.created).toEqual([]);
+  });
+
+  test('sends the chosen end date with the request', async () => {
+    const forms = insuranceTransferFormBackend();
+    openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
+    await yourDetails();
+
+    userEvent.type(screen.getByLabelText('When should the contract end?'), '2027-11-01');
+    await fillCompensaForm();
+    userEvent.click(signRequestButton());
+
+    await waitFor(() => expect(forms.created).toHaveLength(1));
+    expect(forms.created[0]).toMatchObject({ endDate: '2027-11-01' });
+  });
+
+  test('shows Ergo the citizenship, tax residency, country of birth and politically exposed status on file, defaulting tax residency to the address country and the country of birth to Estonia', async () => {
+    const forms = insuranceTransferFormBackend();
+    openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+
+    const details = await yourDetails();
+    expect(definitionsIn(details)).toEqual([
+      ['Address', 'Tamme tn 1, Tallinn, 10111, Estonia'],
+      ['Citizenship', 'Estonia'],
+      ['Tax residency', 'Estonia'],
+      ['Country of birth', 'Estonia'],
+      ['Politically exposed person', 'No'],
+    ]);
+    userEvent.type(screen.getByLabelText('Contract number'), 'EL-12-345678');
+    expect(screen.queryByRole('checkbox', { name: /US citizen/ })).not.toBeInTheDocument();
+
+    userEvent.click(signRequestButton());
+
+    await waitFor(() => expect(forms.created).toHaveLength(1));
+    expect(forms.created).toEqual([
+      {
+        insurer: 'ERGO',
+        policyNumber: 'EL-12-345678',
+        endDate: null,
+        address: ADDRESS_ON_FILE,
+        citizenship: ['EE'],
+        countryOfBirth: 'EE',
+        taxResidency: 'EE',
+        pep: false,
+      },
+    ]);
+  });
+
+  test('asks only for the details nothing on file holds', async () => {
+    kycIdentityBackend(server, { email: 'saver@example.com', complete: false });
+    const forms = insuranceTransferFormBackend();
+    openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+
+    const details = await yourDetails();
+    expect(definitionsIn(details)).toEqual([
+      ['Tax residency', 'Estonia'],
+      ['Country of birth', 'Estonia'],
+    ]);
+    userEvent.type(screen.getByLabelText('Contract number'), 'EL-12-345678');
+    userEvent.type(screen.getByLabelText('Address (street, house, apartment)'), 'Kase tn 2');
+    userEvent.type(screen.getByLabelText('City'), 'Tartu');
+    userEvent.type(screen.getByLabelText('Postal code'), '50050');
+    selectCountryOptionInTomSelect(
+      screen.getByRole('listbox', { name: 'Citizenship' }) as HTMLSelectElement,
+      'FI',
+    );
+    expect(isInsidePii(screen.getByLabelText('City'))).toBe(true);
+    userEvent.click(screen.getByRole('radio', { name: 'I am a politically exposed person' }));
+
+    userEvent.click(signRequestButton());
+
+    await waitFor(() => expect(forms.created).toHaveLength(1));
+    expect(forms.created[0]).toMatchObject({
+      address: { street: 'Kase tn 2', city: 'Tartu', postalCode: '50050', countryCode: 'EE' },
+      citizenship: ['FI'],
+      taxResidency: 'EE',
+      pep: true,
+    });
+  });
+
+  test('asks for every detail on file again when it is more than a year old, filled in from the file', async () => {
+    kycIdentityBackend(server, { ...IDENTITY_ON_FILE, updatedAt: daysAgo(400) });
+    openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+
+    expect(await screen.findByLabelText('City')).toHaveValue('Tallinn');
+    expect(
+      screen.getByRole('radio', { name: 'I am not a politically exposed person' }),
+    ).toBeChecked();
+    expect(definitionsIn(await yourDetails())).toEqual([
+      ['Tax residency', 'Estonia'],
+      ['Country of birth', 'Estonia'],
+    ]);
+  });
+
+  test('asks for every detail when the details on file cannot be loaded', async () => {
+    failingKycIdentityBackend(server);
+    openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
+
+    expect(await screen.findByLabelText('City')).toHaveValue('');
+    expect(screen.getByRole('combobox', { name: 'Country' })).toHaveValue('EE');
+  });
+
+  test('lets the person change the details on file, with tax residency following a changed address country', async () => {
+    const forms = insuranceTransferFormBackend();
+    openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+    await yourDetails();
+    userEvent.type(screen.getByLabelText('Contract number'), 'EL-12-345678');
+
+    userEvent.click(screen.getByRole('button', { name: 'Change details' }));
+
+    expect(screen.queryByRole('button', { name: 'Change details' })).not.toBeInTheDocument();
+    const city = screen.getByLabelText('City');
+    expect(city).toHaveValue('Tallinn');
+    userEvent.clear(city);
+    userEvent.type(city, 'Helsinki');
+    userEvent.selectOptions(screen.getByRole('combobox', { name: 'Country' }), 'FI');
+    userEvent.selectOptions(screen.getByRole('combobox', { name: 'Country of birth' }), 'LV');
+    expect(screen.getByRole('combobox', { name: 'Tax residency' })).toHaveValue('FI');
+
+    userEvent.click(signRequestButton());
+
+    await waitFor(() => expect(forms.created).toHaveLength(1));
+    expect(forms.created[0]).toMatchObject({
+      address: { ...ADDRESS_ON_FILE, city: 'Helsinki', countryCode: 'FI' },
+      countryOfBirth: 'LV',
+      taxResidency: 'FI',
+    });
+  });
+
+  test('asks Artea’s customer questions and sends the answers with the request', async () => {
+    const forms = insuranceTransferFormBackend();
+    openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
+    await yourDetails();
+    userEvent.type(screen.getByLabelText('Contract number'), 'UP000123');
+
+    const questionnaire = screen.getByRole('group', { name: 'Artea’s customer questionnaire' });
+    expect(questionnaire).toHaveClass(PII_CLASS);
+    userEvent.selectOptions(within(questionnaire).getByLabelText('Identity document'), 'ID_CARD');
+    userEvent.type(within(questionnaire).getByLabelText('Document number'), 'AB0000000');
+    userEvent.type(within(questionnaire).getByLabelText('Issued on'), '2024-01-01');
+    userEvent.type(within(questionnaire).getByLabelText('Valid until'), '2029-01-01');
+    expect(within(questionnaire).getByLabelText('Issuing country')).toHaveValue('EE');
+    userEvent.selectOptions(within(questionnaire).getByLabelText('Occupation'), 'EMPLOYED');
+    userEvent.type(within(questionnaire).getByLabelText('Position'), 'Specialist');
+    userEvent.type(within(questionnaire).getByLabelText('Employer'), 'Example OÜ');
+    userEvent.type(within(questionnaire).getByLabelText('Employer’s address'), 'Tallinn');
+    userEvent.click(within(questionnaire).getByRole('checkbox', { name: 'Salary and bonuses' }));
+    userEvent.click(within(questionnaire).getByRole('checkbox', { name: 'Dividends' }));
+    userEvent.type(within(questionnaire).getByLabelText('Payer’s name'), 'Example AS');
+    userEvent.selectOptions(
+      within(questionnaire).getByLabelText('Average monthly net income in the last 12 months'),
+      'FROM_1201_TO_3000',
+    );
+    userEvent.type(
+      within(questionnaire).getByLabelText('Bank account you paid the premiums from'),
+      'ee59 1254 4713 2274 9514',
+    );
+
+    userEvent.click(signRequestButton());
+
+    await waitFor(() => expect(forms.created).toHaveLength(1));
+    expect(forms.created).toEqual([
+      {
+        insurer: 'ARTEA',
+        policyNumber: 'UP000123',
+        endDate: null,
+        address: ADDRESS_ON_FILE,
+        citizenship: ['EE'],
+        countryOfBirth: 'EE',
+        taxResidency: 'EE',
+        pep: false,
+        artea: {
+          idDocument: {
+            type: 'ID_CARD',
+            number: 'AB0000000',
+            issuedOn: '2024-01-01',
+            validUntil: '2029-01-01',
+            issuingCountry: 'EE',
+          },
+          occupation: {
+            status: 'EMPLOYED',
+            position: 'Specialist',
+            employer: 'Example OÜ',
+            employerAddress: 'Tallinn',
+            description: null,
+          },
+          incomeSources: [
+            { source: 'SALARY', details: null },
+            { source: 'DIVIDENDS', details: 'Example AS' },
+          ],
+          monthlyNetIncome: 'FROM_1201_TO_3000',
+          premiumAccountIban: 'EE591254471322749514',
+        },
+      },
+    ]);
+  });
+
+  test('asks Artea for a description of an occupation other than employment, and for nothing about an employer', async () => {
+    const forms = insuranceTransferFormBackend();
+    openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
+    await yourDetails();
+    await fillArteaFormExceptOccupation();
+
+    userEvent.selectOptions(screen.getByLabelText('Occupation'), 'COMPANY_OWNER');
+    expect(screen.queryByLabelText('Employer')).not.toBeInTheDocument();
+    userEvent.type(
+      screen.getByLabelText('Company name, address and what it does'),
+      'Example OÜ, Tallinn, consulting',
+    );
+
+    userEvent.click(signRequestButton());
+
+    await waitFor(() => expect(forms.created).toHaveLength(1));
+    expect((forms.created[0] as { artea: unknown }).artea).toMatchObject({
+      occupation: {
+        status: 'COMPANY_OWNER',
+        position: null,
+        employer: null,
+        employerAddress: null,
+        description: 'Example OÜ, Tallinn, consulting',
+      },
+    });
+  });
+
+  test('does not send Artea’s questionnaire unanswered or with an invalid bank account', async () => {
+    const forms = insuranceTransferFormBackend();
+    openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
+    await yourDetails();
+    userEvent.type(screen.getByLabelText('Contract number'), 'UP000123');
+    userEvent.type(
+      screen.getByLabelText('Bank account you paid the premiums from'),
+      'EE00 0000 0000 0000 0000',
+    );
+
+    userEvent.click(signRequestButton());
+
+    expect(await screen.findByText('The entered IBAN is not valid.')).toBeInTheDocument();
+    expect(screen.getByText('Choose at least one')).toBeInTheDocument();
+    expect(screen.getByLabelText('Identity document')).toBeInvalid();
+    expect(screen.getByLabelText('Occupation')).toBeInvalid();
+    expect(forms.created).toEqual([]);
+  });
+
+  test('fills in and signs one form when the sign button is pressed twice', async () => {
+    const forms = insuranceTransferFormBackend();
+    openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
+    await yourDetails();
+    await fillCompensaForm();
+
+    userEvent.click(signRequestButton());
+    userEvent.click(signRequestButton());
+
+    await waitFor(() => expect(history.location.pathname).toBe('/3rd-pillar-insurance-signed/1'), {
+      timeout: 5_000,
+    });
+    expect(forms.created).toHaveLength(1);
+  });
+
+  test('opens the filled-in form as a PDF before signing, and signs that same form', async () => {
+    const forms = insuranceTransferFormBackend();
+    const opened = pdfOpensInNewTab();
+    openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
+    await yourDetails();
+    await fillCompensaForm();
+
+    userEvent.click(screen.getByRole('button', { name: 'Preview the request' }));
+
+    await waitFor(() => expect(opened()).toEqual(['blob:preview-of-form']));
+    expect(forms.previewed).toEqual(['1']);
+    userEvent.click(signRequestButton());
+    await waitFor(() => expect(history.location.pathname).toBe('/3rd-pillar-insurance-signed/1'), {
+      timeout: 5_000,
+    });
+    expect(forms.created).toHaveLength(1);
+  });
+
+  test('fills in a new form when the answers change after the preview', async () => {
+    const forms = insuranceTransferFormBackend();
+    pdfOpensInNewTab();
+    openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
+    await yourDetails();
+    await fillCompensaForm();
+    userEvent.click(screen.getByRole('button', { name: 'Preview the request' }));
+    await waitFor(() => expect(forms.previewed).toEqual(['1']));
+
+    userEvent.type(screen.getByLabelText('Contract number'), '4');
+    userEvent.click(signRequestButton());
+
+    await waitFor(() => expect(history.location.pathname).toBe('/3rd-pillar-insurance-signed/2'), {
+      timeout: 5_000,
+    });
+    expect(forms.created.map((form) => (form as { policyNumber: string }).policyNumber)).toEqual([
+      'UP000123',
+      'UP0001234',
+    ]);
+  });
+
+  test('downloads the preview when the browser does not open it in a new tab', async () => {
+    insuranceTransferFormBackend();
+    pdfOpensInNewTab(false);
+    openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
+    await yourDetails();
+    await fillCompensaForm();
+
+    userEvent.click(screen.getByRole('button', { name: 'Preview the request' }));
+
+    await waitFor(() =>
+      expect(download).toHaveBeenCalledWith(
+        expect.any(Blob),
+        'Tuleva_avaldus_eelvaade.pdf',
+        'application/pdf',
+      ),
+    );
+  });
+
+  test('says the pension account is still being opened when the form cannot be filled in yet', async () => {
+    server.use(
+      rest.post('http://localhost/v1/insurance-transfer-forms', (req, res, ctx) =>
+        res(ctx.status(409), ctx.json({ error: 'PENSION_ACCOUNT_NOT_READY' })),
+      ),
+    );
+    openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
+    await yourDetails();
+    await fillCompensaForm();
+
+    userEvent.click(signRequestButton());
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Your pension account is still being opened. Try again in a few days.',
+    );
+    expect(screen.queryByText('9876')).not.toBeInTheDocument();
+    expect(history.location.pathname).toBe('/3rd-pillar-insurance/request');
+  });
+
+  test('says when the form cannot be filled in and lets the person close the message', async () => {
+    server.use(
+      rest.post('http://localhost/v1/insurance-transfer-forms', (req, res, ctx) =>
+        res(ctx.status(500), ctx.json({ errors: [] })),
+      ),
+    );
+    openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
+    await yourDetails();
+    await fillCompensaForm();
+
+    userEvent.click(signRequestButton());
+
+    expect(
+      await screen.findByText('An error occurred. Please try again or reach out to us.'),
+    ).toBeInTheDocument();
+    userEvent.click(screen.getByRole('button', { name: 'Close' }));
+    expect(signRequestButton()).toBeEnabled();
+  });
+
+  describe('once signed', () => {
+    test('offers the signed request to download when it could not be emailed', async () => {
+      signedFormBackend({ emailStatus: 'FAILED' });
+
+      openFlow('/3rd-pillar-insurance-signed/1');
+
+      expect(
+        await screen.findByText(/^Download the signed request and email it/),
+      ).toHaveTextContent(
+        'Download the signed request and email it to your insurer (Compensa) at info@compensalife.ee.',
+      );
+      userEvent.click(screen.getByRole('button', { name: 'Download the signed request' }));
+      await waitFor(() =>
+        expect(download).toHaveBeenCalledWith(
+          expect.any(Blob),
+          'Tuleva_Compensa_avaldus.asice',
+          'application/vnd.etsi.asic-e+zip',
+        ),
+      );
+    });
+
+    test.each([{ emailStatus: 'NO_EMAIL' as const }, { emailStatus: null }])(
+      'offers the signed request to download when the email status is $emailStatus',
+      async ({ emailStatus }) => {
+        signedFormBackend({ emailStatus });
+
+        openFlow('/3rd-pillar-insurance-signed/1');
+
+        expect(
+          await screen.findByRole('button', { name: 'Download the signed request' }),
+        ).toBeInTheDocument();
+      },
+    );
+
+    test('says so when the signed request cannot be downloaded', async () => {
+      signedFormBackend({ emailStatus: 'FAILED' });
+      server.use(
+        rest.get('http://localhost/v1/insurance-transfer-forms/1/signed-file', (req, res, ctx) =>
+          res(ctx.status(500)),
+        ),
+      );
+      openFlow('/3rd-pillar-insurance-signed/1');
+
+      userEvent.click(await screen.findByRole('button', { name: 'Download the signed request' }));
+
+      expect(await screen.findByText(SOMETHING_WENT_WRONG)).toBeInTheDocument();
+    });
+
+    test('says so when the signed request cannot be loaded', async () => {
+      server.use(
+        rest.get('http://localhost/v1/insurance-transfer-forms/1', (req, res, ctx) =>
+          res(ctx.status(404), ctx.json({ errors: [] })),
+        ),
+      );
+
+      openFlow('/3rd-pillar-insurance-signed/1');
+
+      expect(await screen.findByText(SOMETHING_WENT_WRONG)).toBeInTheDocument();
+    });
+
+    test('says in Estonian where to forward the signed request, without inflecting the insurer’s name', async () => {
+      signedFormBackend({
+        emailStatus: 'SENT',
+        insurer: 'ERGO',
+        insurerEmail: 'elukindlustus@ergo.ee',
+      });
+
+      openFlow('/3rd-pillar-insurance-signed/1', 'et');
+
+      expect(await screen.findByText(/^Saatsime allkirjastatud avalduse/)).toHaveTextContent(
+        'Saatsime allkirjastatud avalduse sulle e‑postiga. Saada see kiri koos manusega edasi kindlustusandjale (Ergo) aadressil elukindlustus@ergo.ee.',
+      );
+    });
   });
 });
 
@@ -786,14 +1271,6 @@ const accessibleName = (radio: HTMLElement) =>
   (radio as HTMLInputElement).labels?.[0]?.textContent?.replace(/\s+/g, ' ').trim();
 
 const normalizedText = (element: HTMLElement) => element.textContent?.replace(/\s+/g, ' ');
-
-const href = (element: HTMLElement) => element.getAttribute('href');
-
-function subjectOnlyMailto(email: string) {
-  return `mailto:${email}?subject=${encodeURIComponent(
-    'Transfer of III\u00A0pillar insurance contract money to a pension fund',
-  )}`;
-}
 
 type TrackedEvent = { type: string; data: Record<string, unknown> };
 
@@ -948,3 +1425,139 @@ const comeBackToTheTab = () =>
     focusManager.setFocused(false);
     focusManager.setFocused(true);
   });
+
+const ADDRESS_ON_FILE = {
+  street: 'Tamme tn 1',
+  city: 'Tallinn',
+  postalCode: '10111',
+  countryCode: 'EE',
+};
+
+function daysAgo(days: number) {
+  return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+}
+
+const IDENTITY_ON_FILE: KycIdentity = {
+  citizenship: ['EE'],
+  address: { ...ADDRESS_ON_FILE, countryCode: 'EE' },
+  email: 'saver@example.com',
+  phoneNumber: '55667788',
+  pepSelfDeclaration: 'IS_NOT_PEP',
+  complete: true,
+  updatedAt: daysAgo(30),
+};
+
+const INSURER_EMAILS: Record<string, string> = {
+  COMPENSA: 'info@compensalife.ee',
+  ERGO: 'elukindlustus@ergo.ee',
+  ARTEA: 'kindlustus@artea.ee',
+};
+
+function insuranceTransferFormBackend() {
+  const backend = {
+    created: [] as Record<string, unknown>[],
+    previewed: [] as string[],
+  };
+  const signedIds: string[] = [];
+  const formWithId = (id: string) => {
+    const { insurer } = backend.created[Number(id) - 1] as { insurer: string };
+    const signed = signedIds.includes(id);
+    return {
+      id: Number(id),
+      insurer,
+      insurerEmail: INSURER_EMAILS[insurer],
+      status: signed ? 'SIGNED' : 'CREATED',
+      emailStatus: signed ? 'SENT' : null,
+    };
+  };
+  server.use(
+    rest.post('http://localhost/v1/insurance-transfer-forms', (req, res, ctx) => {
+      backend.created.push(req.body as Record<string, unknown>);
+      return res(ctx.json(formWithId(String(backend.created.length))));
+    }),
+    rest.get('http://localhost/v1/insurance-transfer-forms/:id', (req, res, ctx) =>
+      res(ctx.json(formWithId(req.params.id as string))),
+    ),
+    rest.get('http://localhost/v1/insurance-transfer-forms/:id/preview', (req, res, ctx) => {
+      backend.previewed.push(req.params.id as string);
+      return res(ctx.set('Content-Type', 'application/pdf'), ctx.body('%PDF-1.7'));
+    }),
+    rest.put(
+      'http://localhost/v1/insurance-transfer-forms/:id/signature/smart-id',
+      (req, res, ctx) => res(ctx.json({ challengeCode: '9876' })),
+    ),
+    rest.get(
+      'http://localhost/v1/insurance-transfer-forms/:id/signature/smart-id/status',
+      (req, res, ctx) => {
+        signedIds.push(req.params.id as string);
+        return res(ctx.json(getMobileSignatureStatusResponse('SIGNATURE')));
+      },
+    ),
+  );
+  return backend;
+}
+
+function signedFormBackend({
+  emailStatus,
+  insurer = 'COMPENSA',
+  insurerEmail = 'info@compensalife.ee',
+}: {
+  emailStatus: 'SENT' | 'FAILED' | 'NO_EMAIL' | null;
+  insurer?: string;
+  insurerEmail?: string;
+}) {
+  server.use(
+    rest.get('http://localhost/v1/insurance-transfer-forms/1', (req, res, ctx) =>
+      res(ctx.json({ id: 1, insurer, insurerEmail, status: 'SIGNED', emailStatus })),
+    ),
+    rest.get('http://localhost/v1/insurance-transfer-forms/1/signed-file', (req, res, ctx) =>
+      res(ctx.set('Content-Type', 'application/vnd.etsi.asic-e+zip'), ctx.body('PK')),
+    ),
+  );
+}
+
+function pdfOpensInNewTab(opens = true) {
+  const openedUrls: string[] = [];
+  URL.createObjectURL = jest.fn(() => 'blob:preview-of-form');
+  URL.revokeObjectURL = jest.fn();
+  jest.spyOn(window, 'open').mockImplementation((url) => {
+    openedUrls.push(String(url));
+    return opens ? ({} as Window) : null;
+  });
+  return () => openedUrls;
+}
+
+const yourDetails = () => screen.findByRole('region', { name: 'Your details' });
+
+const definitionsIn = (element: HTMLElement) => {
+  const definitions = within(element).getAllByRole('definition');
+  return within(element)
+    .getAllByRole('term')
+    .map((term, index) => [term.textContent, definitions[index].textContent]);
+};
+
+const signRequestButton = () => screen.getByRole('button', { name: 'Sign the request' });
+
+async function fillCompensaForm() {
+  userEvent.type(await screen.findByLabelText('Contract number'), 'UP000123');
+  userEvent.click(
+    screen.getByRole('checkbox', { name: 'I am not a US citizen or US tax resident' }),
+  );
+}
+
+async function fillArteaFormExceptOccupation() {
+  userEvent.type(await screen.findByLabelText('Contract number'), 'UP000123');
+  userEvent.selectOptions(screen.getByLabelText('Identity document'), 'PASSPORT');
+  userEvent.type(screen.getByLabelText('Document number'), 'K0000000');
+  userEvent.type(screen.getByLabelText('Issued on'), '2024-01-01');
+  userEvent.type(screen.getByLabelText('Valid until'), '2029-01-01');
+  userEvent.click(screen.getByRole('checkbox', { name: 'Salary and bonuses' }));
+  userEvent.selectOptions(
+    screen.getByLabelText('Average monthly net income in the last 12 months'),
+    'UP_TO_600',
+  );
+  userEvent.type(
+    screen.getByLabelText('Bank account you paid the premiums from'),
+    'EE591254471322749514',
+  );
+}

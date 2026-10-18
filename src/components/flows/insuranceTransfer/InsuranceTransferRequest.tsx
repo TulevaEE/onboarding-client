@@ -6,8 +6,17 @@ import { useMe } from '../../common/apiHooks';
 import { User } from '../../common/apiModels';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import Radio from '../../common/radio';
-import { INSURER_CODES, InsurerCode, insurers, toInsurerCode } from './insurers';
+import {
+  GuidedInsurerCode,
+  guides,
+  INSURER_CODES,
+  InsurerCode,
+  insurers,
+  takesSignedForm,
+  toInsurerCode,
+} from './insurers';
 import { InsurerGuide } from './InsurerGuide';
+import { InsurerForm } from './InsurerForm';
 import { useTransferRequest } from './useTransferRequest';
 import { LoadFailed } from './LoadFailed';
 import { sentPath } from './insuranceTransferPaths';
@@ -115,6 +124,47 @@ const ContractNumberField = ({
   </div>
 );
 
+const GuidedRequest = ({
+  insurer,
+  user,
+  endDate,
+  savedContractNumber,
+  saveContractNumber,
+  askIfSent,
+}: {
+  insurer: GuidedInsurerCode;
+  user: User;
+  endDate: string | null;
+  savedContractNumber: string;
+  saveContractNumber: (contractNumber: string) => void;
+  askIfSent: () => void;
+}) => {
+  const [contractNumber, setContractNumber] = useState(savedContractNumber);
+  const request = useTransferRequest(user, endDate, contractNumber.trim() || null);
+  const changeContractNumber = (changed: string) => {
+    setContractNumber(changed);
+    saveContractNumber(changed);
+  };
+
+  return (
+    <>
+      <ContractNumberField contractNumber={contractNumber} onChange={changeContractNumber} />
+      <InsurerGuide insurer={insurer} request={request} />
+      <div className="mt-4 d-flex flex-column flex-sm-row justify-content-end">
+        <a
+          className="btn btn-primary btn-lg"
+          href={guides[insurer].actionUrl}
+          target="_blank"
+          rel="noreferrer"
+          onClick={askIfSent}
+        >
+          <FormattedMessage id={`insuranceTransfer.open.${insurer}`} />
+        </a>
+      </div>
+    </>
+  );
+};
+
 const RequestToInsurer = ({ user }: { user: User }) => {
   const {
     insurer,
@@ -125,12 +175,6 @@ const RequestToInsurer = ({ user }: { user: User }) => {
     saveContractNumber,
     askIfSent,
   } = useRequestChoicesInAddress();
-  const [contractNumber, setContractNumber] = useState(savedContractNumber);
-  const request = useTransferRequest(user, endDate, contractNumber.trim() || null);
-  const changeContractNumber = (changed: string) => {
-    setContractNumber(changed);
-    saveContractNumber(changed);
-  };
 
   return (
     <div className="row">
@@ -161,19 +205,18 @@ const RequestToInsurer = ({ user }: { user: User }) => {
               <FormattedMessage id="insuranceTransfer.fairness" />
             </p>
             <EndDateField endDate={endDate} onChange={chooseEndDate} />
-            <ContractNumberField contractNumber={contractNumber} onChange={changeContractNumber} />
-            <InsurerGuide insurer={insurer} request={request} onSend={askIfSent} />
-            <div className="mt-4 d-flex flex-column flex-sm-row justify-content-end">
-              <a
-                className="btn btn-primary btn-lg"
-                href={insurers[insurer].actionUrl}
-                target="_blank"
-                rel="noreferrer"
-                onClick={askIfSent}
-              >
-                <FormattedMessage id={`insuranceTransfer.open.${insurer}`} />
-              </a>
-            </div>
+            {takesSignedForm(insurer) ? (
+              <InsurerForm insurer={insurer} endDate={endDate} user={user} />
+            ) : (
+              <GuidedRequest
+                insurer={insurer}
+                user={user}
+                endDate={endDate}
+                savedContractNumber={savedContractNumber}
+                saveContractNumber={saveContractNumber}
+                askIfSent={askIfSent}
+              />
+            )}
           </>
         )}
       </div>

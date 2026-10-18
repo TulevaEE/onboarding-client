@@ -1,1 +1,5 @@
-export type SignableEntity = 'MANDATE' | 'MANDATE_BATCH' | 'CAPITAL_TRANSFER_CONTRACT';
+export type SignableEntity =
+  | 'MANDATE'
+  | 'MANDATE_BATCH'
+  | 'CAPITAL_TRANSFER_CONTRACT'
+  | 'INSURANCE_TRANSFER_FORM';
