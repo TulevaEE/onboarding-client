@@ -1,5 +1,5 @@
-import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
+import { todayInTallinn } from '../../common/dateFormatter';
 
 const END_DATE_ID = 'insurance-contract-end-date';
 
@@ -10,7 +10,7 @@ export const EndDateField = ({
   endDate: string | null;
   onChange: (endDate: string | null) => void;
 }) => {
-  const today = moment().format('YYYY-MM-DD');
+  const today = todayInTallinn();
   const laterThanToday = (date: string) => (date > today ? date : null);
 
   return (

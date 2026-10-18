@@ -229,8 +229,11 @@ const usePersonWithPensionAccount = () => {
     isError,
     dataUpdatedAt,
   } = useMe({
-    refetchInterval: (person, query) =>
-      person && !hasPensionAccount(person) && answeredWithinTheWait(query.state.dataUpdatedAt)
+    refetchInterval: (person, { state }) =>
+      state.status === 'success' &&
+      person &&
+      !hasPensionAccount(person) &&
+      answeredWithinTheWait(state.dataUpdatedAt)
         ? PENSION_ACCOUNT_ASKED_EVERY_MS
         : false,
   });

@@ -129,6 +129,10 @@ export function dayInTallinn(time: string): string {
   return `${year}-${month}-${day}`;
 }
 
+export function todayInTallinn(): string {
+  return dayInTallinn(moment().toISOString());
+}
+
 export function formatDayInTallinn(time: string): string {
   const { year, month, day } = tallinnDayParts(time);
   return `${day}.${month}.${year}`;

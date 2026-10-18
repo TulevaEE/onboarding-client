@@ -6,6 +6,7 @@ import {
   formatDateUntil,
   formatDateYear,
   timeInTallinn,
+  todayInTallinn,
 } from './dateFormatter';
 
 describe('DateFormatter functions', () => {
@@ -98,6 +99,21 @@ describe('DateFormatter functions', () => {
       expect(timeInTallinn('2026-02-03T11:30:00Z')).toBe('13:30');
       expect(timeInTallinn('2026-07-03T11:30:00Z')).toBe('14:30');
       expect(timeInTallinn('2026-02-03T22:30:00Z')).toBe('00:30');
+    });
+  });
+
+  describe('todayInTallinn', () => {
+    afterEach(() => jest.restoreAllMocks());
+
+    it('is the calendar day in Estonia, which starts before the day in UTC', () => {
+      jest.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-02-03T21:59:59Z'));
+      expect(todayInTallinn()).toBe('2026-02-03');
+
+      jest.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-02-03T22:00:00Z'));
+      expect(todayInTallinn()).toBe('2026-02-04');
+
+      jest.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-07-03T21:00:00Z'));
+      expect(todayInTallinn()).toBe('2026-07-04');
     });
   });
 });

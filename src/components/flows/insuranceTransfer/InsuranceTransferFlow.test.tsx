@@ -27,7 +27,7 @@ import {
 } from '../../../test/backend';
 import { SIGN_MANDATE_SUCCESS } from '../../exchange/constants';
 import { changeIsPoliticallyExposed } from '../../aml/actions';
-import { Conversion } from '../../common/apiModels';
+import { Conversion, User } from '../../common/apiModels';
 import {
   getMobileSignatureStatusResponse,
   mockSecondPillarConversion,
@@ -35,6 +35,7 @@ import {
   mockThirdPillarConversion,
   mockUser,
 } from '../../../test/backend-responses';
+import { todayInTallinn } from '../../common/dateFormatter';
 import { isInsidePii, PII_CLASS } from '../../tracking/piiMarkup';
 import { KycIdentity } from '../savingsAccount/SavingsFundOnboarding/types.api';
 
@@ -373,7 +374,7 @@ describe('III pillar insurance contract transfer', () => {
 
     test('says so instead of loading forever when the person cannot be loaded again for the request', async () => {
       userConversionBackend(server, {}, { selectionComplete: true });
-      personLoadsOnlyOnce();
+      personLoadsOnly(1);
 
       openFlow('/3rd-pillar-insurance/request?insurer=SEB');
 
@@ -395,6 +396,21 @@ describe('III pillar insurance contract transfer', () => {
       ).toBeInTheDocument();
       expect(screen.queryByRole('radio')).not.toBeInTheDocument();
     });
+
+    test('stops asking for the pension account number once the person cannot be loaded again', async () => {
+      userConversionBackend(server, {}, { selectionComplete: true });
+      const asks = personLoadsOnly(2, { ...MARI, pensionAccountNumber: null });
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
+
+      expect(
+        await screen.findByText(SOMETHING_WENT_WRONG, {}, { timeout: 5_000 }),
+      ).toBeInTheDocument();
+      const asksUntilFailed = asks();
+      await longerThanOneAskForThePensionAccountPasses();
+
+      expect(asks()).toBe(asksUntilFailed);
+      expect(screen.getByText(SOMETHING_WENT_WRONG)).toBeInTheDocument();
+    }, 15_000);
   });
 
   describe('contact details', () => {
@@ -510,13 +526,22 @@ describe('III pillar insurance contract transfer', () => {
       openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
 
       const endDate = await screen.findByLabelText('When should the contract end?');
-      const today = moment().format('YYYY-MM-DD');
+      const today = todayInTallinn();
       expect(endDate).toHaveAttribute('type', 'date');
       expect(endDate).toHaveValue(today);
       expect(endDate).toHaveAttribute('min', today);
       expect(endDate).toHaveAccessibleDescription(
         'Today’s date means the contract ends as soon as possible. If your contract pays more on its end date, pick that date.',
       );
+    });
+
+    test('starts the end date at today in Estonia while it is still yesterday where the browser is', async () => {
+      const { dayInEstonia } = itIsLateEveningInUtc();
+      openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+
+      const endDate = await screen.findByLabelText('When should the contract end?');
+      expect(endDate).toHaveValue(dayInEstonia);
+      expect(endDate).toHaveAttribute('min', dayInEstonia);
     });
 
     test('says in Estonian that today’s date means as soon as possible, in the end-date word the Swedbank note uses', async () => {
@@ -532,7 +557,7 @@ describe('III pillar insurance contract transfer', () => {
 
       chooseEndDate(
         await screen.findByLabelText('When should the contract end?'),
-        moment().format('YYYY-MM-DD'),
+        todayInTallinn(),
       );
 
       expect(await requestText()).toHaveTextContent('Contract end date: as soon as possible');
@@ -1448,6 +1473,26 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     });
   });
 
+  test('checks Artea’s identity document dates against today in Estonia while it is still yesterday where the browser is', async () => {
+    const { dayInUtc, dayInEstonia } = itIsLateEveningInUtc();
+    const forms = insuranceTransferFormBackend();
+    openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
+    await yourDetails();
+    await fillArteaForm({ issuedOn: dayInEstonia, validUntil: dayInUtc });
+
+    userEvent.click(signRequestButton());
+
+    await waitFor(() =>
+      expect(screen.getByLabelText('Valid until')).toHaveAccessibleDescription(
+        'The document has expired.',
+      ),
+    );
+    expect(screen.getByLabelText('Issued on')).not.toHaveAccessibleDescription(
+      'The issue date cannot be in the future.',
+    );
+    expect(forms.created).toEqual([]);
+  });
+
   test('fills in and signs one form when the sign button is pressed twice', async () => {
     const forms = insuranceTransferFormBackend();
     openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
@@ -1748,6 +1793,15 @@ function pensionAccountOpenedAfterAsks(asksBeforeOpened: number) {
 
 const pensionAccountOpenedWhenAskedNext = () => pensionAccountOpenedAfterAsks(0);
 
+function itIsLateEveningInUtc() {
+  const lateEveningInUtc = moment.utc().startOf('day').hours(22).minutes(30);
+  jest.spyOn(Date, 'now').mockReturnValue(lateEveningInUtc.valueOf());
+  return {
+    dayInUtc: lateEveningInUtc.format('YYYY-MM-DD'),
+    dayInEstonia: lateEveningInUtc.clone().add(1, 'day').format('YYYY-MM-DD'),
+  };
+}
+
 const aMinutePasses = () => {
   const aMinuteLater = Date.now() + 60_000;
   jest.spyOn(Date, 'now').mockReturnValue(aMinuteLater);
@@ -1780,17 +1834,26 @@ function amlChecksCreated() {
 
 const SOMETHING_WENT_WRONG = 'Something went wrong. Please try again or reach out to us.';
 
-function personLoadsOnlyOnce() {
+function personLoadsOnly(times: number, person: Partial<User> = MARI) {
   let loads = 0;
   server.use(
     rest.get('http://localhost/v1/me', (req, res, ctx) => {
       loads += 1;
-      return loads === 1
-        ? res(ctx.json({ ...mockUser, ...MARI }))
+      return loads <= times
+        ? res(ctx.json({ ...mockUser, ...person }))
         : res(ctx.status(500), ctx.json({ errors: [] }));
     }),
   );
+  return () => loads;
 }
+
+const longerThanOneAskForThePensionAccountPasses = () =>
+  act(
+    () =>
+      new Promise<void>((resolve) => {
+        setTimeout(resolve, 2_500);
+      }),
+  );
 
 function mandatesSavedCount() {
   let saved = 0;
@@ -1975,7 +2038,8 @@ async function fillCompensaForm() {
 const maxLengthsOf = (labels: string[]) =>
   labels.map((label) => (screen.getByLabelText(label) as HTMLInputElement).maxLength);
 
-const dateFromToday = (days: number) => moment().add(days, 'days').format('YYYY-MM-DD');
+const dateFromToday = (days: number) =>
+  moment(todayInTallinn()).add(days, 'days').format('YYYY-MM-DD');
 
 const A_YEAR_FROM_TODAY = moment().add(1, 'year').format('YYYY-MM-DD');
 

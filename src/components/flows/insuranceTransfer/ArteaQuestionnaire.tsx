@@ -1,4 +1,3 @@
-import moment from 'moment';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import {
@@ -7,6 +6,7 @@ import {
   MONTHLY_NET_INCOMES,
   OCCUPATION_STATUSES,
 } from '../../common/apiModels/insurance-transfer';
+import { todayInTallinn } from '../../common/dateFormatter';
 import { isValidIban } from '../../common/iban';
 import { PII_CLASS } from '../../tracking/piiMarkup';
 import { ChoiceField, CountryField, TextField } from './formFields';
@@ -39,7 +39,6 @@ const IdDocumentFields = () => {
     formState: { errors },
   } = useFormContext<InsurerFormValues>();
   const idDocumentErrors = errors.artea?.idDocument;
-  const today = moment().format('YYYY-MM-DD');
 
   return (
     <>
@@ -70,7 +69,7 @@ const IdDocumentFields = () => {
             validate: {
               answered: required.isAnswered,
               notInTheFuture: (issuedOn) =>
-                issuedOn <= today ||
+                issuedOn <= todayInTallinn() ||
                 formatMessage({
                   id: 'insuranceTransfer.form.artea.idDocument.issuedOn.inTheFuture',
                 }),
@@ -87,7 +86,7 @@ const IdDocumentFields = () => {
             validate: {
               answered: required.isAnswered,
               notExpired: (validUntil) =>
-                validUntil >= today ||
+                validUntil >= todayInTallinn() ||
                 formatMessage({ id: 'insuranceTransfer.form.artea.idDocument.validUntil.expired' }),
             },
           })}
