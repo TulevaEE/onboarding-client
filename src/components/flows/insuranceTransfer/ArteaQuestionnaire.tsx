@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import {
@@ -21,13 +22,16 @@ const INCOME_SOURCES_ERROR_ID = 'insurer-form-income-error';
 const useRequired = () => {
   const { formatMessage } = useIntl();
   const message = formatMessage({ id: 'insuranceTransfer.form.required' });
+  const isAnswered = (value: string | undefined) => !!value?.trim() || message;
   return {
     chosen: { required: message },
-    answered: { validate: (value: string | undefined) => !!value?.trim() || message },
+    answered: { validate: isAnswered },
+    isAnswered,
   };
 };
 
 const IdDocumentFields = () => {
+  const { formatMessage } = useIntl();
   const required = useRequired();
   const {
     control,
@@ -35,6 +39,7 @@ const IdDocumentFields = () => {
     formState: { errors },
   } = useFormContext<InsurerFormValues>();
   const idDocumentErrors = errors.artea?.idDocument;
+  const today = moment().format('YYYY-MM-DD');
 
   return (
     <>
@@ -61,7 +66,16 @@ const IdDocumentFields = () => {
           type="date"
           id="insurer-form-id-document-issued-on"
           label={<FormattedMessage id="insuranceTransfer.form.artea.idDocument.issuedOn" />}
-          registration={register('artea.idDocument.issuedOn', required.answered)}
+          registration={register('artea.idDocument.issuedOn', {
+            validate: {
+              answered: required.isAnswered,
+              notInTheFuture: (issuedOn) =>
+                issuedOn <= today ||
+                formatMessage({
+                  id: 'insuranceTransfer.form.artea.idDocument.issuedOn.inTheFuture',
+                }),
+            },
+          })}
           error={idDocumentErrors?.issuedOn?.message}
         />
         <TextField
@@ -69,7 +83,14 @@ const IdDocumentFields = () => {
           type="date"
           id="insurer-form-id-document-valid-until"
           label={<FormattedMessage id="insuranceTransfer.form.artea.idDocument.validUntil" />}
-          registration={register('artea.idDocument.validUntil', required.answered)}
+          registration={register('artea.idDocument.validUntil', {
+            validate: {
+              answered: required.isAnswered,
+              notExpired: (validUntil) =>
+                validUntil >= today ||
+                formatMessage({ id: 'insuranceTransfer.form.artea.idDocument.validUntil.expired' }),
+            },
+          })}
           error={idDocumentErrors?.validUntil?.message}
         />
       </div>

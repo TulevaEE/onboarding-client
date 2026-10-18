@@ -32,7 +32,7 @@ import {
   defaultValuesFrom,
   detailsOnFile,
   InsurerFormValues,
-  isPolicyNumberInTheFormatTheFormHolds,
+  policyNumberFormatOf,
   toCommand,
 } from './insurerFormValues';
 import { YourDetails } from './YourDetails';
@@ -103,6 +103,7 @@ const PolicyNumberField = ({ insurer }: { insurer: InsuranceTransferFormInsurer 
     register,
     formState: { errors },
   } = useFormContext<InsurerFormValues>();
+  const format = policyNumberFormatOf(insurer);
   return (
     <TextField
       className="mt-4"
@@ -119,8 +120,7 @@ const PolicyNumberField = ({ insurer }: { insurer: InsuranceTransferFormInsurer 
             value.trim() !== '' ||
             formatMessage({ id: 'insuranceTransfer.form.policyNumber.required' }),
           inTheFormatTheFormHolds: (value) =>
-            isPolicyNumberInTheFormatTheFormHolds(insurer, value) ||
-            formatMessage({ id: 'insuranceTransfer.form.policyNumber.format.ERGO' }),
+            !format || format.holds(value) || formatMessage({ id: format.messageId }),
         },
       })}
       error={errors.policyNumber?.message}

@@ -11,6 +11,7 @@ import {
 } from '../../common/apiModels/insurance-transfer';
 import { User } from '../../common/apiModels';
 import { preProcessIban } from '../../common/iban';
+import { TranslationKey } from '../../translations';
 import { KycIdentity, PepSelfDeclaration } from '../savingsAccount/SavingsFundOnboarding/types.api';
 
 export type ArteaAnswers = {
@@ -82,10 +83,35 @@ const isErgoPolicyNumber = (policyNumber: string) => {
   );
 };
 
-export const isPolicyNumberInTheFormatTheFormHolds = (
-  insurer: InsuranceTransferFormInsurer,
-  policyNumber: string,
-) => insurer !== 'ERGO' || isErgoPolicyNumber(policyNumber);
+const ARTEA_POLICY_NUMBER =
+  /^(?:(?:KK|KP|SK|SP|LK|IK|IP|JK|JP)\d{1,6}|(?:TL|TW|NL|NW|UL|UP)\d{9})$/;
+
+const arteaPolicyNumberAsSent = (policyNumber: string) =>
+  policyNumber
+    .trim()
+    .replace(/^([a-z]{2})\s*-?\s*/i, (_typedPrefix, letters: string) => letters.toUpperCase());
+
+const isArteaPolicyNumber = (policyNumber: string) =>
+  ARTEA_POLICY_NUMBER.test(arteaPolicyNumberAsSent(policyNumber));
+
+type PolicyNumberFormat = {
+  holds: (policyNumber: string) => boolean;
+  messageId: TranslationKey;
+};
+
+const POLICY_NUMBER_FORMATS: Partial<Record<InsuranceTransferFormInsurer, PolicyNumberFormat>> = {
+  ERGO: { holds: isErgoPolicyNumber, messageId: 'insuranceTransfer.form.policyNumber.format.ERGO' },
+  ARTEA: {
+    holds: isArteaPolicyNumber,
+    messageId: 'insuranceTransfer.form.policyNumber.format.ARTEA',
+  },
+};
+
+export const policyNumberFormatOf = (insurer: InsuranceTransferFormInsurer) =>
+  POLICY_NUMBER_FORMATS[insurer];
+
+const policyNumberAsSent = (insurer: InsuranceTransferFormInsurer, policyNumber: string) =>
+  insurer === 'ARTEA' ? arteaPolicyNumberAsSent(policyNumber) : policyNumber.trim();
 
 export const asksEmployer = (status: OccupationStatus | '') => status === 'EMPLOYED';
 
@@ -236,7 +262,7 @@ export const toCommand = (
   const { street, city, postalCode, countryCode } = values.address;
   return {
     insurer,
-    policyNumber: values.policyNumber.trim(),
+    policyNumber: policyNumberAsSent(insurer, values.policyNumber),
     endDate,
     address: {
       street: street.trim(),

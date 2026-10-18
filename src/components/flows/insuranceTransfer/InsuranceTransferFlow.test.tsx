@@ -1251,14 +1251,14 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     const forms = insuranceTransferFormBackend();
     openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
     await yourDetails();
-    userEvent.type(screen.getByLabelText('Contract number'), 'UP000123');
+    userEvent.type(screen.getByLabelText('Contract number'), 'SP123456');
 
     const questionnaire = screen.getByRole('group', { name: 'Artea’s customer questionnaire' });
     expect(questionnaire).toHaveClass(PII_CLASS);
     userEvent.selectOptions(within(questionnaire).getByLabelText('Identity document'), 'ID_CARD');
     userEvent.type(within(questionnaire).getByLabelText('Document number'), 'AB0000000');
     userEvent.type(within(questionnaire).getByLabelText('Issued on'), '2024-01-01');
-    userEvent.type(within(questionnaire).getByLabelText('Valid until'), '2029-01-01');
+    userEvent.type(within(questionnaire).getByLabelText('Valid until'), A_YEAR_FROM_TODAY);
     expect(within(questionnaire).getByLabelText('Issuing country')).toHaveValue('EE');
     userEvent.selectOptions(within(questionnaire).getByLabelText('Occupation'), 'EMPLOYED');
     userEvent.type(within(questionnaire).getByLabelText('Position'), 'Specialist');
@@ -1282,7 +1282,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(forms.created).toEqual([
       {
         insurer: 'ARTEA',
-        policyNumber: 'UP000123',
+        policyNumber: 'SP123456',
         endDate: null,
         address: ADDRESS_ON_FILE,
         citizenship: ['EE'],
@@ -1294,7 +1294,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
             type: 'ID_CARD',
             number: 'AB0000000',
             issuedOn: '2024-01-01',
-            validUntil: '2029-01-01',
+            validUntil: A_YEAR_FROM_TODAY,
             issuingCountry: 'EE',
           },
           occupation: {
@@ -1346,7 +1346,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     const forms = insuranceTransferFormBackend();
     openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
     await yourDetails();
-    userEvent.type(screen.getByLabelText('Contract number'), 'UP000123');
+    userEvent.type(screen.getByLabelText('Contract number'), 'SP123456');
     userEvent.type(
       screen.getByLabelText('Bank account you paid the premiums from'),
       'EE00 0000 0000 0000 0000',
@@ -1376,6 +1376,76 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(
       await screen.findByLabelText('Bank account you paid the premiums from'),
     ).toHaveAccessibleDescription('Enter the bank account number.');
+  });
+
+  test.each(['UP000123', 'SP1234567', 'XP123456', '123456', 'SP'])(
+    'does not sign Artea’s form with the contract number %s, which is not in a format Artea issues',
+    async (contractNumber) => {
+      const forms = insuranceTransferFormBackend();
+      openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
+      await yourDetails();
+      await fillArteaForm({ contractNumber });
+
+      userEvent.click(signRequestButton());
+
+      expect(
+        await screen.findByText(
+          'Check the contract number. It starts with two letters, for example SP or UP.',
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByLabelText('Contract number')).toBeInvalid();
+      expect(forms.created).toEqual([]);
+    },
+  );
+
+  test.each([
+    { typed: ' sp 123456 ', sent: 'SP123456' },
+    { typed: 'up-000000123', sent: 'UP000000123' },
+    { typed: 'Kk1', sent: 'KK1' },
+  ])(
+    'signs Artea’s form with the contract number typed as "$typed", sent as $sent',
+    async ({ typed, sent }) => {
+      const forms = insuranceTransferFormBackend();
+      openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
+      await yourDetails();
+      await fillArteaForm({ contractNumber: typed });
+
+      userEvent.click(signRequestButton());
+
+      await waitFor(() => expect(forms.created).toHaveLength(1));
+      expect(forms.created[0]).toMatchObject({ policyNumber: sent });
+    },
+  );
+
+  test('does not sign Artea’s form with an identity document issued after today or valid only until before today', async () => {
+    const forms = insuranceTransferFormBackend();
+    openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
+    await yourDetails();
+    await fillArteaForm({ issuedOn: dateFromToday(1), validUntil: dateFromToday(-1) });
+
+    userEvent.click(signRequestButton());
+
+    expect(await screen.findByLabelText('Issued on')).toHaveAccessibleDescription(
+      'The issue date cannot be in the future.',
+    );
+    expect(screen.getByLabelText('Valid until')).toHaveAccessibleDescription(
+      'The document has expired.',
+    );
+    expect(forms.created).toEqual([]);
+  });
+
+  test('signs Artea’s form with an identity document issued today and valid until today', async () => {
+    const forms = insuranceTransferFormBackend();
+    openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
+    await yourDetails();
+    await fillArteaForm({ issuedOn: dateFromToday(0), validUntil: dateFromToday(0) });
+
+    userEvent.click(signRequestButton());
+
+    await waitFor(() => expect(forms.created).toHaveLength(1));
+    expect(forms.created[0]).toMatchObject({
+      artea: { idDocument: { issuedOn: dateFromToday(0), validUntil: dateFromToday(0) } },
+    });
   });
 
   test('fills in and signs one form when the sign button is pressed twice', async () => {
@@ -1905,12 +1975,20 @@ async function fillCompensaForm() {
 const maxLengthsOf = (labels: string[]) =>
   labels.map((label) => (screen.getByLabelText(label) as HTMLInputElement).maxLength);
 
-async function fillArteaFormExceptOccupation() {
-  userEvent.type(await screen.findByLabelText('Contract number'), 'UP000123');
+const dateFromToday = (days: number) => moment().add(days, 'days').format('YYYY-MM-DD');
+
+const A_YEAR_FROM_TODAY = moment().add(1, 'year').format('YYYY-MM-DD');
+
+async function fillArteaFormExceptOccupation({
+  contractNumber = 'SP123456',
+  issuedOn = '2024-01-01',
+  validUntil = A_YEAR_FROM_TODAY,
+} = {}) {
+  userEvent.type(await screen.findByLabelText('Contract number'), contractNumber);
   userEvent.selectOptions(screen.getByLabelText('Identity document'), 'PASSPORT');
   userEvent.type(screen.getByLabelText('Document number'), 'K0000000');
-  userEvent.type(screen.getByLabelText('Issued on'), '2024-01-01');
-  userEvent.type(screen.getByLabelText('Valid until'), '2029-01-01');
+  userEvent.type(screen.getByLabelText('Issued on'), issuedOn);
+  userEvent.type(screen.getByLabelText('Valid until'), validUntil);
   userEvent.click(screen.getByRole('checkbox', { name: 'Salary and bonuses' }));
   userEvent.selectOptions(
     screen.getByLabelText('Average monthly net income in the last 12 months'),
@@ -1920,4 +1998,9 @@ async function fillArteaFormExceptOccupation() {
     screen.getByLabelText('Bank account you paid the premiums from'),
     'EE591254471322749514',
   );
+}
+
+async function fillArteaForm(answers: Parameters<typeof fillArteaFormExceptOccupation>[0]) {
+  await fillArteaFormExceptOccupation(answers);
+  userEvent.selectOptions(screen.getByLabelText('Occupation'), 'RETIRED');
 }
