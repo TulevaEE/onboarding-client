@@ -4,7 +4,7 @@ import {
   InsuranceTransferFormInsurer,
 } from '../../common/apiModels/insurance-transfer';
 
-export const INSURER_CODES = ['SEB', 'COMPENSA', 'SWEDBANK', 'ARTEA', 'ERGO'] as const;
+export const INSURER_CODES = ['SWEDBANK', 'SEB', 'COMPENSA', 'ARTEA', 'ERGO'] as const;
 
 export type InsurerCode = (typeof INSURER_CODES)[number];
 

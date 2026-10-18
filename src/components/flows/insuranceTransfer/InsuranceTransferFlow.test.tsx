@@ -419,14 +419,14 @@ describe('III pillar insurance contract transfer', () => {
       expect(history.location.pathname).toBe('/3rd-pillar-insurance/request');
     });
 
-    test('offers the five insurers and shows no guide before one is chosen', async () => {
+    test('offers the five insurers, largest III pillar insurance book first, and shows no guide before one is chosen', async () => {
       openFlow();
 
       const question = await insurerQuestion();
       expect(within(question).getAllByRole('radio').map(accessibleName)).toEqual([
+        'Swedbank',
         'SEB',
         'Compensa',
-        'Swedbank',
         'Artea (formerly INVL, Mandatum)',
         'Ergo',
       ]);
