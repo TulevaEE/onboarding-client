@@ -7,6 +7,7 @@ import { Route } from 'react-router-dom';
 import { Store } from 'redux';
 import { createMemoryHistory, History } from 'history';
 import download from 'downloadjs';
+import moment from 'moment';
 import { initializeConfiguration } from '../../config/config';
 import LoggedInApp from '../../LoggedInApp';
 import {
@@ -464,17 +465,31 @@ describe('III pillar insurance contract transfer', () => {
       openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
 
       const endDate = await screen.findByLabelText('When should the contract end?');
+      const today = moment().format('YYYY-MM-DD');
       expect(endDate).toHaveAttribute('type', 'date');
-      expect(endDate).toHaveValue('');
+      expect(endDate).toHaveValue(today);
+      expect(endDate).toHaveAttribute('min', today);
       expect(endDate).toHaveAccessibleDescription(
-        'Some contracts pay less before their end date: check your contract or the insurer’s e\u2011service. If your insurer pays more later, pick that date, otherwise leave this empty.',
+        'Some contracts pay less before their end date: check your contract or the insurer’s e\u2011service. If your insurer pays more later, pick that date.',
       );
+    });
+
+    test('asks the insurer to end the contract as soon as possible when the end date stays today', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
+
+      chooseEndDate(
+        await screen.findByLabelText('When should the contract end?'),
+        moment().format('YYYY-MM-DD'),
+      );
+
+      expect(await requestText()).toHaveTextContent('Contract end date: as soon as possible');
+      expect(history.location.search).toBe('?insurer=SEB');
     });
 
     test('puts the chosen end date into the request it copies', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=SEB');
 
-      userEvent.type(await screen.findByLabelText('When should the contract end?'), '2027-11-01');
+      chooseEndDate(await screen.findByLabelText('When should the contract end?'), '2027-11-01');
 
       const request = await requestText();
       expect(request).toHaveTextContent(
@@ -571,7 +586,7 @@ describe('III pillar insurance contract transfer', () => {
       expect(steps).toContain(
         'Vali, et soovid tagasiostuväärtuse eest vabatahtliku pensionifondi osakuid, ja vali fondiks Tuleva III Samba Pensionifond (EE3600001707), 100%.',
       );
-      expect(steps).toContain('Kirjuta väljale Pensionikonto number oma pensionikonto number:');
+      expect(steps).toContain('Kirjuta väljale Pensionikonto number:');
     });
 
     test('copies the whole request with a quiet copy button', async () => {
@@ -607,7 +622,7 @@ describe('III pillar insurance contract transfer', () => {
 
     test('keeps the chosen end date in the request when the steps are shown again after the insurer opens', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=SEB');
-      userEvent.type(await screen.findByLabelText('When should the contract end?'), '2027-11-01');
+      chooseEndDate(await screen.findByLabelText('When should the contract end?'), '2027-11-01');
 
       userEvent.click(screen.getByRole('link', { name: 'Open SEB' }));
       userEvent.click(await screen.findByRole('button', { name: 'Show the steps again' }));
@@ -632,7 +647,7 @@ describe('III pillar insurance contract transfer', () => {
       userBackend(server, { ...MARI, pensionAccountNumber: null });
       openFlow('/3rd-pillar-insurance/request?insurer=SEB');
       userEvent.type(await screen.findByLabelText('Contract number'), 'UP000123');
-      userEvent.type(screen.getByLabelText('When should the contract end?'), '2027-11-01');
+      chooseEndDate(screen.getByLabelText('When should the contract end?'), '2027-11-01');
 
       comeBackToTheTab();
 
@@ -736,7 +751,7 @@ describe('III pillar insurance contract transfer', () => {
 
       const swedbankGuide = await screen.findByRole('region', { name: 'Swedbank' });
       expect(normalizedText(swedbankGuide)).toContain(
-        'Enter your pension account number in Pensionikonto number. You find it in the Pensionikeskus e\u2011service.',
+        'In Pensionikonto number, enter the number you find in the Pensionikeskus e\u2011service.',
       );
       expect(within(swedbankGuide).queryByRole('button', { name: 'Copy' })).not.toBeInTheDocument();
     });
@@ -757,7 +772,7 @@ describe('III pillar insurance contract transfer', () => {
         steps: [
           'Log in to the Swedbank internet bank. If the termination application does not open right away, choose Pension → Minu pensionivara, your pension insurance contract and Lepingu lõpetamine.',
           'Choose to use the surrender value for voluntary pension fund units, and choose Tuleva III Samba Pensionifond (EE3600001707) at 100%.',
-          'Enter your pension account number in Pensionikonto number:',
+          'In Pensionikonto number, enter:',
           'Confirm the application in the internet bank.',
         ],
         open: 'Open Swedbank',
@@ -886,7 +901,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
     await yourDetails();
 
-    userEvent.type(screen.getByLabelText('When should the contract end?'), '2027-11-01');
+    chooseEndDate(screen.getByLabelText('When should the contract end?'), '2027-11-01');
     await fillCompensaForm();
     userEvent.click(signRequestButton());
 
@@ -1391,6 +1406,8 @@ const requestStepOpened = () =>
 const requestText = () => screen.findByText(/^Subject: /);
 
 const guide = (insurer: string) => screen.getByRole('region', { name: insurer });
+
+const chooseEndDate = (input: HTMLElement, date: string) => userEvent.type(input, date);
 
 const accessibleName = (radio: HTMLElement) =>
   (radio as HTMLInputElement).labels?.[0]?.textContent?.replace(/\s+/g, ' ').trim();

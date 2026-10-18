@@ -163,7 +163,7 @@ const IncomeSourceFields = () => {
 
   return (
     <fieldset>
-      <legend className="form-label">
+      <legend className="form-label fs-6">
         <FormattedMessage id="insuranceTransfer.form.artea.incomeSources" />
       </legend>
       {INCOME_SOURCES.map((source) => (

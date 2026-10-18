@@ -1,4 +1,4 @@
-import { Fragment, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { PaymentStep } from '../common/PaymentStep/PaymentStep';
 import { CopyButton } from '../../common/CopyButton';
@@ -31,11 +31,9 @@ const CopyRequestStep = ({ request }: { request: TransferRequest }) => (
 );
 
 const PensionAccountNumberToCopy = ({ pensionAccountNumber }: { pensionAccountNumber: string }) => (
-  <div className="mt-2 mb-3 p-3 rounded bg-blue-2 d-flex flex-wrap align-items-center justify-content-between gap-3">
-    <span className={`fw-semibold ${PII_CLASS}`}>{pensionAccountNumber}</span>
-    <CopyButton textToCopy={pensionAccountNumber}>
-      <FormattedMessage id="global.copy" />
-    </CopyButton>
+  <div className="mt-1 d-flex align-items-center column-gap-2">
+    <b className={`text-break ${PII_CLASS}`}>{pensionAccountNumber}</b>
+    <CopyButton textToCopy={pensionAccountNumber} />
   </div>
 );
 
@@ -64,14 +62,12 @@ export const InsurerGuide = ({
       )}
       {writesLetter && <CopyRequestStep request={request} />}
       {steps.map(({ messageId, showsPensionAccountNumber }, index) => (
-        <Fragment key={messageId}>
-          <PaymentStep number={index + firstStepNumber}>
-            <FormattedMessage id={messageId} values={stepValues} />
-          </PaymentStep>
+        <PaymentStep key={messageId} number={index + firstStepNumber}>
+          <FormattedMessage id={messageId} values={stepValues} />
           {showsPensionAccountNumber && pensionAccountNumber && (
             <PensionAccountNumberToCopy pensionAccountNumber={pensionAccountNumber} />
           )}
-        </Fragment>
+        </PaymentStep>
       ))}
     </section>
   );

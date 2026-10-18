@@ -31,7 +31,7 @@ const AddressFields = () => {
 
   return (
     <fieldset className="mt-3 d-flex flex-column gap-3">
-      <legend className="form-label mb-0">
+      <legend className="form-label fs-6 mb-0">
         <FormattedMessage id="insuranceTransfer.form.details.address" />
       </legend>
       <CountryField
@@ -138,7 +138,7 @@ const PepField = () => {
 
   return (
     <fieldset className="mt-3">
-      <legend className="form-label">
+      <legend className="form-label fs-6">
         <FormattedMessage id="flows.savingsFundOnboarding.pepStep.title" />
       </legend>
       {(

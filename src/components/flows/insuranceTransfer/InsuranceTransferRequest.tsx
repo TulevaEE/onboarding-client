@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
 import { PII_CLASS } from '../../tracking/piiMarkup';
@@ -76,24 +77,30 @@ const EndDateField = ({
 }: {
   endDate: string | null;
   onChange: (endDate: string | null) => void;
-}) => (
-  <div className="mt-4">
-    <label className="form-label fw-bold" htmlFor={END_DATE_ID}>
-      <FormattedMessage id="insuranceTransfer.endDate.label" />
-    </label>
-    <input
-      type="date"
-      id={END_DATE_ID}
-      className="form-control w-auto"
-      value={endDate ?? ''}
-      onChange={(event) => onChange(event.target.value || null)}
-      aria-describedby={`${END_DATE_ID}-hint`}
-    />
-    <div id={`${END_DATE_ID}-hint`} className="form-text text-pretty">
-      <FormattedMessage id="insuranceTransfer.endDate.hint" />
+}) => {
+  const today = moment().format('YYYY-MM-DD');
+  const laterThanToday = (date: string) => (date > today ? date : null);
+
+  return (
+    <div className="mt-4">
+      <label className="form-label fw-bold" htmlFor={END_DATE_ID}>
+        <FormattedMessage id="insuranceTransfer.endDate.label" />
+      </label>
+      <input
+        type="date"
+        id={END_DATE_ID}
+        className="form-control w-auto"
+        value={endDate ?? today}
+        min={today}
+        onChange={(event) => onChange(laterThanToday(event.target.value))}
+        aria-describedby={`${END_DATE_ID}-hint`}
+      />
+      <div id={`${END_DATE_ID}-hint`} className="form-text text-pretty">
+        <FormattedMessage id="insuranceTransfer.endDate.hint" />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const CONTRACT_NUMBER_ID = 'insurance-contract-number';
 
