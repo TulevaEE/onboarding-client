@@ -48,9 +48,6 @@ const POLICY_NUMBER_MAX_LENGTH = 40;
 const PDF = 'application/pdf';
 const PREVIEW_FILE_NAME = 'Tuleva_avaldus_eelvaade.pdf';
 
-const isPensionAccountNotReady = (error: unknown) =>
-  (error as { body?: { error?: unknown } } | null)?.body?.error === 'PENSION_ACCOUNT_NOT_READY';
-
 const showPdf = (pdf: Blob) => {
   const pdfAddress = URL.createObjectURL(new Blob([pdf], { type: PDF }));
   if (!window.open(pdfAddress, '_blank')) {
@@ -217,7 +214,6 @@ const FilledInInsurerForm = ({
       async (form) => showPdf(await downloadInsuranceTransferFormPreview(form.id)),
     );
 
-  const pensionAccountNotReady = isPensionAccountNotReady(failure);
   const working = busy || loading || !!challengeCode;
 
   return (
@@ -231,7 +227,7 @@ const FilledInInsurerForm = ({
         />
       )}
       {error && <ErrorMessage errors={error.body} onCancel={cancelSigning} overlayed />}
-      {!!failure && !pensionAccountNotReady && (
+      {!!failure && (
         <ErrorMessage
           errors={isErrorResponse(failure) ? failure.body : { errors: [] }}
           onCancel={dismissFailure}
@@ -253,11 +249,6 @@ const FilledInInsurerForm = ({
         </div>
         {asksUsPersonDeclaration(insurer) && <NotUsPersonConfirmation />}
 
-        {pensionAccountNotReady && (
-          <div className="alert alert-warning mt-4 mb-0 text-pretty" role="alert">
-            <FormattedMessage id="insuranceTransfer.form.pensionAccountNotReady" />
-          </div>
-        )}
         <div className="mt-5 d-flex flex-column-reverse flex-sm-row justify-content-end align-items-sm-center gap-3">
           <button
             type="button"

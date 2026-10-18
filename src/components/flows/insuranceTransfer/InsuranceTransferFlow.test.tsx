@@ -68,6 +68,7 @@ function openFlow(path = '/3rd-pillar-insurance', language: 'en' | 'et' = 'en') 
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => {
+  jest.restoreAllMocks();
   server.resetHandlers();
   focusManager.setFocused(undefined);
 });
@@ -153,6 +154,21 @@ describe('III pillar insurance contract transfer', () => {
         { type: 'OCCUPATION', success: true, metadata: { occupation: 'PRIVATE_SECTOR' } },
       ]);
       expect(screen.queryByText(/Contribution to Tuleva/)).not.toBeInTheDocument();
+    }, 20_000);
+
+    test('waits for the pension account the signed selection opens, asking again until its number arrives', async () => {
+      openFlow('/3rd-pillar-insurance?insurer=SEB');
+      await answerAllAgreements();
+      const asks = pensionAccountOpenedAfterAsks(2);
+
+      userEvent.click(signButton());
+
+      await requestStepOpened();
+      expect(screen.queryByRole('radio', { name: 'SEB' })).not.toBeInTheDocument();
+      expect(await screen.findByText(/^Subject: /, {}, { timeout: 10_000 })).toHaveTextContent(
+        'Pension account number (reference number): 99812345678',
+      );
+      expect(asks()).toBeGreaterThan(2);
     }, 20_000);
 
     test('signs once when the sign button is pressed twice while the answers are being saved', async () => {
@@ -363,6 +379,21 @@ describe('III pillar insurance contract transfer', () => {
 
       expect(await screen.findByText(SOMETHING_WENT_WRONG)).toBeInTheDocument();
       expect(screen.queryByText(/^Subject: /)).not.toBeInTheDocument();
+    });
+
+    test('says so instead of waiting forever when the pension account number has not arrived a minute later', async () => {
+      userConversionBackend(server, {}, { selectionComplete: true });
+      userBackend(server, { ...MARI, pensionAccountNumber: null });
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
+      expect(await screen.findByText('Send a request to your insurer')).toBeInTheDocument();
+      expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+
+      aMinutePasses();
+
+      expect(
+        await screen.findByText(SOMETHING_WENT_WRONG, {}, { timeout: 5_000 }),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('radio')).not.toBeInTheDocument();
     });
   });
 
@@ -685,8 +716,7 @@ describe('III pillar insurance contract transfer', () => {
       expect(history.location.search).toBe('?insurer=SEB');
     });
 
-    test('keeps the contract number through a later end date and a reload while the pension account number is still on its way', async () => {
-      userBackend(server, { ...MARI, pensionAccountNumber: null });
+    test('keeps the contract number through a later end date and the person loading again', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=SEB');
       userEvent.type(await screen.findByLabelText('Contract number'), 'UP000123');
       chooseEndDate(screen.getByLabelText('When should the contract end?'), '2027-11-01');
@@ -785,17 +815,6 @@ describe('III pillar insurance contract transfer', () => {
       userEvent.click(within(swedbankGuide).getByRole('button', { name: 'Copy' }));
 
       await waitFor(() => expect(writeText).toHaveBeenCalledWith('99812345678'));
-    });
-
-    test('tells where to find the pension account number for Swedbank’s application while it is still on its way', async () => {
-      userBackend(server, { ...MARI, pensionAccountNumber: null });
-      openFlow('/3rd-pillar-insurance/request?insurer=SWEDBANK');
-
-      const swedbankGuide = await screen.findByRole('region', { name: 'Swedbank' });
-      expect(normalizedText(swedbankGuide)).toContain(
-        'In Pensionikonto number, enter the number you find in the Pensionikeskus e\u2011service.',
-      );
-      expect(within(swedbankGuide).queryByRole('button', { name: 'Copy' })).not.toBeInTheDocument();
     });
 
     test.each([
@@ -1421,25 +1440,6 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     );
   });
 
-  test('says the pension account is still being opened when the form cannot be filled in yet', async () => {
-    server.use(
-      rest.post('http://localhost/v1/insurance-transfer-forms', (req, res, ctx) =>
-        res(ctx.status(409), ctx.json({ error: 'PENSION_ACCOUNT_NOT_READY' })),
-      ),
-    );
-    openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
-    await yourDetails();
-    await fillCompensaForm();
-
-    userEvent.click(signRequestButton());
-
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Your pension account is still being opened. Try again in a few days.',
-    );
-    expect(screen.queryByText('9876')).not.toBeInTheDocument();
-    expect(history.location.pathname).toBe('/3rd-pillar-insurance/request');
-  });
-
   test('says when the form cannot be filled in and lets the person close the message', async () => {
     server.use(
       rest.post('http://localhost/v1/insurance-transfer-forms', (req, res, ctx) =>
@@ -1651,13 +1651,27 @@ async function answerAllAgreements() {
   declareNotPoliticallyExposed();
 }
 
-function pensionAccountOpenedWhenAskedNext() {
+function pensionAccountOpenedAfterAsks(asksBeforeOpened: number) {
+  let asks = 0;
   server.use(
-    rest.get('http://localhost/v1/me', (req, res, ctx) =>
-      res(ctx.delay(300), ctx.json({ ...mockUser, ...MARI, thirdPillarActive: true })),
-    ),
+    rest.get('http://localhost/v1/me', (req, res, ctx) => {
+      asks += 1;
+      const pensionAccountNumber = asks > asksBeforeOpened ? MARI.pensionAccountNumber : null;
+      return res(
+        ctx.delay(300),
+        ctx.json({ ...mockUser, ...MARI, thirdPillarActive: true, pensionAccountNumber }),
+      );
+    }),
   );
+  return () => asks;
 }
+
+const pensionAccountOpenedWhenAskedNext = () => pensionAccountOpenedAfterAsks(0);
+
+const aMinutePasses = () => {
+  const aMinuteLater = Date.now() + 60_000;
+  jest.spyOn(Date, 'now').mockReturnValue(aMinuteLater);
+};
 
 function reminderCancellationBackend() {
   let cancellations = 0;

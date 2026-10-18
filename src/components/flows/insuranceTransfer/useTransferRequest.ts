@@ -2,13 +2,15 @@ import { useIntl } from 'react-intl';
 import { User } from '../../common/apiModels';
 import { getFullName } from '../../common/utils';
 
+export type PersonWithPensionAccount = User & { pensionAccountNumber: string };
+
 export type TransferRequest = {
   subject: string;
   text: string;
 };
 
 export const useTransferRequest = (
-  user: User,
+  user: PersonWithPensionAccount,
   endDate: string | null,
   contractNumber: string | null,
 ): TransferRequest => {

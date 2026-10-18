@@ -18,9 +18,12 @@ import {
 import { InsurerGuide } from './InsurerGuide';
 import { InsurerForm } from './InsurerForm';
 import { EndDateField } from './EndDateField';
-import { useTransferRequest } from './useTransferRequest';
+import { PersonWithPensionAccount, useTransferRequest } from './useTransferRequest';
 import { LoadFailed } from './LoadFailed';
 import { sentPath } from './insuranceTransferPaths';
+
+const PENSION_ACCOUNT_ASKED_EVERY_MS = 2_000;
+const PENSION_ACCOUNT_AWAITED_FOR_MS = 60_000;
 
 const INSURER_PARAMETER = 'insurer';
 const END_DATE_PARAMETER = 'endDate';
@@ -108,7 +111,7 @@ const GuidedRequest = ({
   askIfSent,
 }: {
   insurer: GuidedInsurerCode;
-  user: User;
+  user: PersonWithPensionAccount;
   endDate: string | null;
   chooseEndDate: (endDate: string | null) => void;
   savedContractNumber: string;
@@ -150,7 +153,7 @@ const GuidedRequest = ({
   );
 };
 
-const RequestToInsurer = ({ user }: { user: User }) => {
+const RequestToInsurer = ({ user }: { user: PersonWithPensionAccount }) => {
   const {
     insurer,
     endDate,
@@ -214,16 +217,40 @@ const RequestToInsurer = ({ user }: { user: User }) => {
   );
 };
 
-export const InsuranceTransferRequest = () => {
-  const { data: user, isFetching, isError } = useMe();
+const hasPensionAccount = (user: User): user is PersonWithPensionAccount =>
+  !!user.pensionAccountNumber;
 
-  if (!user) {
-    return isError ? <LoadFailed /> : <Shimmer height={500} />;
+const usePersonWithPensionAccount = () => {
+  const [askedSince] = useState(Date.now);
+  const answeredWithinTheWait = (answeredAt: number) =>
+    answeredAt - askedSince < PENSION_ACCOUNT_AWAITED_FOR_MS;
+  const {
+    data: user,
+    isError,
+    dataUpdatedAt,
+  } = useMe({
+    refetchInterval: (person, query) =>
+      person && !hasPensionAccount(person) && answeredWithinTheWait(query.state.dataUpdatedAt)
+        ? PENSION_ACCOUNT_ASKED_EVERY_MS
+        : false,
+  });
+
+  if (user && hasPensionAccount(user)) {
+    return { person: user, failed: false };
+  }
+  return { person: null, failed: isError || (!!user && !answeredWithinTheWait(dataUpdatedAt)) };
+};
+
+export const InsuranceTransferRequest = () => {
+  const { person, failed } = usePersonWithPensionAccount();
+
+  if (failed) {
+    return <LoadFailed />;
   }
 
-  if (isFetching && !user.pensionAccountNumber) {
+  if (!person) {
     return <Shimmer height={500} />;
   }
 
-  return <RequestToInsurer user={user} />;
+  return <RequestToInsurer user={person} />;
 };

@@ -3,6 +3,7 @@ import {
   UseMutationResult,
   useQuery,
   useQueryClient,
+  UseQueryOptions,
   UseQueryResult,
 } from '@tanstack/react-query';
 
@@ -193,8 +194,12 @@ export function useMandateDeadlines(): UseQueryResult<MandateDeadlines> {
   return useQuery({ queryKey: ['mandateDeadlines'], queryFn: () => getMandateDeadlines() });
 }
 
-export function useMe(): UseQueryResult<User> {
-  return useQuery({ queryKey: ['user'], queryFn: () => getUserWithToken() });
+type UserRefetchInterval = UseQueryOptions<User, unknown, User, string[]>['refetchInterval'];
+
+export function useMe({
+  refetchInterval,
+}: { refetchInterval?: UserRefetchInterval } = {}): UseQueryResult<User> {
+  return useQuery({ queryKey: ['user'], queryFn: () => getUserWithToken(), refetchInterval });
 }
 
 export function useWithdrawalsEligibility(): UseQueryResult<WithdrawalsEligibility> {

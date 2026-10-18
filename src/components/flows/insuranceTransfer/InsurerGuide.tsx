@@ -42,11 +42,10 @@ export const InsurerGuide = ({
 }: {
   insurer: GuidedInsurerCode;
   request: TransferRequest;
-  pensionAccountNumber: string | null;
+  pensionAccountNumber: string;
 }) => {
   const { writesLetter, noteMessageId, steps } = guides[insurer];
   const firstStepNumber = writesLetter ? 2 : 1;
-  const stepValues = { b: bold, known: pensionAccountNumber ? 'yes' : 'no' };
 
   return (
     <section className="p-3 p-sm-4 mt-5 payment-details" aria-label={insurers[insurer].name}>
@@ -58,8 +57,8 @@ export const InsurerGuide = ({
       {writesLetter && <CopyRequestStep request={request} />}
       {steps.map(({ messageId, showsPensionAccountNumber }, index) => (
         <PaymentStep key={messageId} number={index + firstStepNumber}>
-          <FormattedMessage id={messageId} values={stepValues} />
-          {showsPensionAccountNumber && pensionAccountNumber && (
+          <FormattedMessage id={messageId} values={{ b: bold }} />
+          {showsPensionAccountNumber && (
             <PensionAccountNumberToCopy pensionAccountNumber={pensionAccountNumber} />
           )}
         </PaymentStep>
