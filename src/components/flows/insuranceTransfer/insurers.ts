@@ -20,7 +20,7 @@ export const insurers: Record<InsurerCode, Insurer> = {
   },
   COMPENSA: {
     name: 'Compensa',
-    actionUrl: 'https://www.compensalife.ee',
+    actionUrl: 'https://www.compensalife.eu/EE/logon.asp',
     stepMessageIds: ['insuranceTransfer.guide.COMPENSA.send'],
     signedRequestEmail: 'info@compensalife.ee',
   },
@@ -46,6 +46,7 @@ export const insurers: Record<InsurerCode, Insurer> = {
       'insuranceTransfer.guide.ERGO.openMessage',
       'insuranceTransfer.guide.ERGO.send',
     ],
+    signedRequestEmail: 'elukindlustus@ergo.ee',
   },
 };
 

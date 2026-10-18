@@ -8,7 +8,7 @@ import { flowPath, successPath } from './insuranceTransferPaths';
 export const InsuranceTransferSent = () => {
   usePageTitle('pageTitle.thirdPillarInsurance');
   const history = useHistory();
-  const { search } = useLocation();
+  const { search, state } = useLocation();
 
   const recordSent = () => {
     createTrackedEvent('CLICK', {
@@ -18,7 +18,7 @@ export const InsuranceTransferSent = () => {
     history.push(successPath);
   };
 
-  const showSteps = () => history.replace({ pathname: `${flowPath}/request`, search });
+  const showSteps = () => history.replace({ pathname: `${flowPath}/request`, search, state });
 
   return (
     <div className="col-12 col-md-11 col-lg-8 mx-auto text-center py-5">

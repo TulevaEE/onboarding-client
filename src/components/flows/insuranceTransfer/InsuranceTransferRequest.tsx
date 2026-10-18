@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
+import { PII_CLASS } from '../../tracking/piiMarkup';
 import { useMe } from '../../common/apiHooks';
 import { User } from '../../common/apiModels';
 import { Shimmer } from '../../common/shimmer/Shimmer';
@@ -13,8 +15,10 @@ import { sentPath } from './insuranceTransferPaths';
 const INSURER_PARAMETER = 'insurer';
 const END_DATE_PARAMETER = 'endDate';
 
+type RequestState = { contractNumber?: string } | undefined;
+
 const useRequestChoicesInAddress = () => {
-  const { search } = useLocation();
+  const { search, state } = useLocation<RequestState>();
   const history = useHistory();
   const parameters = new URLSearchParams(search);
 
@@ -25,15 +29,18 @@ const useRequestChoicesInAddress = () => {
     } else {
       changed.delete(name);
     }
-    history.replace({ search: changed.toString() });
+    history.replace({ search: changed.toString(), state });
   };
 
   return {
     insurer: toInsurerCode(parameters.get(INSURER_PARAMETER)),
     endDate: parameters.get(END_DATE_PARAMETER),
+    savedContractNumber: state?.contractNumber ?? '',
     chooseInsurer: (insurer: InsurerCode) => replaceParameter(INSURER_PARAMETER, insurer),
     chooseEndDate: (endDate: string | null) => replaceParameter(END_DATE_PARAMETER, endDate),
-    askIfSent: () => history.push({ pathname: sentPath, search }),
+    saveContractNumber: (contractNumber: string) =>
+      history.replace({ search, state: { contractNumber } }),
+    askIfSent: () => history.push({ pathname: sentPath, search, state }),
   };
 };
 
@@ -79,10 +86,51 @@ const EndDateField = ({
   </div>
 );
 
+const CONTRACT_NUMBER_ID = 'insurance-contract-number';
+
+const ContractNumberField = ({
+  contractNumber,
+  onChange,
+}: {
+  contractNumber: string;
+  onChange: (contractNumber: string) => void;
+}) => (
+  <div className="mt-4">
+    <label className="form-label fw-bold" htmlFor={CONTRACT_NUMBER_ID}>
+      <FormattedMessage id="insuranceTransfer.contractNumber.label" />
+    </label>
+    <input
+      type="text"
+      id={CONTRACT_NUMBER_ID}
+      className={`form-control w-auto ${PII_CLASS}`}
+      value={contractNumber}
+      onChange={(event) => onChange(event.target.value)}
+      spellCheck={false}
+      autoCapitalize="characters"
+      aria-describedby={`${CONTRACT_NUMBER_ID}-hint`}
+    />
+    <div id={`${CONTRACT_NUMBER_ID}-hint`} className="form-text text-pretty">
+      <FormattedMessage id="insuranceTransfer.contractNumber.hint" />
+    </div>
+  </div>
+);
+
 const RequestToInsurer = ({ user }: { user: User }) => {
-  const { insurer, endDate, chooseInsurer, chooseEndDate, askIfSent } =
-    useRequestChoicesInAddress();
-  const request = useTransferRequest(user, endDate);
+  const {
+    insurer,
+    endDate,
+    savedContractNumber,
+    chooseInsurer,
+    chooseEndDate,
+    saveContractNumber,
+    askIfSent,
+  } = useRequestChoicesInAddress();
+  const [contractNumber, setContractNumber] = useState(savedContractNumber);
+  const request = useTransferRequest(user, endDate, contractNumber.trim() || null);
+  const changeContractNumber = (changed: string) => {
+    setContractNumber(changed);
+    saveContractNumber(changed);
+  };
 
   return (
     <div className="row">
@@ -113,6 +161,7 @@ const RequestToInsurer = ({ user }: { user: User }) => {
               <FormattedMessage id="insuranceTransfer.fairness" />
             </p>
             <EndDateField endDate={endDate} onChange={chooseEndDate} />
+            <ContractNumberField contractNumber={contractNumber} onChange={changeContractNumber} />
             <InsurerGuide insurer={insurer} request={request} onSend={askIfSent} />
             <div className="mt-4 d-flex flex-column flex-sm-row justify-content-end">
               <a

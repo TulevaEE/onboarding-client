@@ -507,18 +507,35 @@ describe('III pillar insurance contract transfer', () => {
       expect(request).not.toHaveTextContent(/€|EUR/);
     });
 
-    test('drafts a request that ends the contract in the words of the Funded Pensions Act and asks for the fees withheld and the amount transferred', async () => {
+    test('drafts a request that ends every III pillar contract at the insurer in the words of the Funded Pensions Act when no contract number is given, and asks for the date it arrived, the fees withheld and the amount transferred', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=SEB');
 
       const request = await requestText();
       expect(request).toHaveTextContent(
-        'I hereby terminate my supplementary funded pension insurance contract and wish to use its full surrender value to acquire units of Tuleva III Samba Pensionifond (Funded Pensions Act § 63 subsection 5¹ clause 2 and subsection 5²). The money goes directly to the voluntary pension fund, not to my bank account.',
+        'I hereby terminate all my supplementary funded pension insurance contracts and wish to use their full surrender value to acquire units of Tuleva III Samba Pensionifond (Funded Pensions Act § 63 subsection 5¹ clause 2 and subsection 5²). The money goes directly to the voluntary pension fund, not to my bank account.',
         { normalizeWhitespace: false },
       );
       expect(request).toHaveTextContent(
-        'Please confirm in writing that you have received this request, and tell me the fees withheld on ending the contract and the amount to be transferred to the voluntary pension fund.',
+        'Please confirm in writing the date you received this request, and tell me the fees withheld on ending the contract and the amount to be transferred to the voluntary pension fund.',
         { normalizeWhitespace: false },
       );
+    });
+
+    test('names the contract to end when its number is given, keeping the number out of the address', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
+
+      const contractNumber = await screen.findByLabelText('Contract number');
+      expect(contractNumber).toHaveClass(PII_CLASS);
+      expect(contractNumber).toHaveAccessibleDescription(
+        'You can find it on your contract or in the insurer’s e\u2011service. If you leave it empty, the request ends all your III\u00A0pillar insurance contracts with this insurer.',
+      );
+      userEvent.type(contractNumber, 'UP000123');
+
+      expect(await requestText()).toHaveTextContent(
+        'I hereby terminate my supplementary funded pension insurance contract no. UP000123 and wish to use its full surrender value to acquire units of Tuleva III Samba Pensionifond',
+        { normalizeWhitespace: false },
+      );
+      expect(history.location.search).toBe('?insurer=SEB');
     });
 
     test('says in Estonian where SEB’s message form is and that the copied request goes into it', async () => {
@@ -573,6 +590,54 @@ describe('III pillar insurance contract transfer', () => {
 
       expect(await requestText()).toHaveTextContent('Contract end date: November 1, 2027');
       expect(screen.getByLabelText('When should the contract end?')).toHaveValue('2027-11-01');
+    });
+
+    test('keeps the contract number in the request when the steps are shown again after the insurer opens, still out of the address', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
+      userEvent.type(await screen.findByLabelText('Contract number'), 'UP000123');
+
+      userEvent.click(screen.getByRole('link', { name: 'Open SEB' }));
+      userEvent.click(await screen.findByRole('button', { name: 'Show the steps again' }));
+
+      expect(await requestText()).toHaveTextContent('contract no. UP000123');
+      expect(screen.getByLabelText('Contract number')).toHaveValue('UP000123');
+      expect(history.location.search).toBe('?insurer=SEB');
+    });
+
+    test('keeps the contract number through a later end date and a reload while the pension account number is still on its way', async () => {
+      userBackend(server, { ...MARI, pensionAccountNumber: null });
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
+      userEvent.type(await screen.findByLabelText('Contract number'), 'UP000123');
+      userEvent.type(screen.getByLabelText('When should the contract end?'), '2027-11-01');
+
+      comeBackToTheTab();
+
+      expect(await screen.findByLabelText('Contract number')).toHaveValue('UP000123');
+      expect(await requestText()).toHaveTextContent('contract no. UP000123');
+    });
+
+    test('ends every contract when the contract number is only spaces', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
+
+      userEvent.type(await screen.findByLabelText('Contract number'), '   ');
+
+      expect(await requestText()).toHaveTextContent(
+        'I hereby terminate all my supplementary funded pension insurance contracts',
+      );
+    });
+
+    test('keeps the contract number in the request when the person goes back after the insurer opens', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
+      userEvent.type(await screen.findByLabelText('Contract number'), 'UP000123');
+
+      userEvent.click(screen.getByRole('link', { name: 'Open SEB' }));
+      expect(
+        await screen.findByRole('button', { name: 'Show the steps again' }),
+      ).toBeInTheDocument();
+      act(() => history.goBack());
+
+      expect(await requestText()).toHaveTextContent('contract no. UP000123');
+      expect(screen.getByLabelText('Contract number')).toHaveValue('UP000123');
     });
 
     test('asks whether the request went out once the signed request is emailed instead', async () => {
@@ -649,7 +714,7 @@ describe('III pillar insurance contract transfer', () => {
         ],
         emails: [subjectOnlyMailto('info@compensalife.ee')],
         open: 'Open Compensa online office',
-        actionUrl: 'https://www.compensalife.ee',
+        actionUrl: 'https://www.compensalife.eu/EE/logon.asp',
       },
       {
         insurer: 'Swedbank',
@@ -677,10 +742,11 @@ describe('III pillar insurance contract transfer', () => {
         insurer: 'Ergo',
         steps: [
           'Copy the request.',
-          'In the Ergo e\u2011kontor, press Kirjuta meile, tick esitada avalduse and add your policy number.',
+          'Log in to the Ergo e\u2011kontor, press Kirjuta meile and tick esitada avalduse.',
           'Paste the copied request into Kirja sisu and press Saada.',
+          'Or sign the request digitally and email it to elukindlustus@ergo.ee.',
         ],
-        emails: [],
+        emails: [subjectOnlyMailto('elukindlustus@ergo.ee')],
         open: 'Open Ergo e\u2011kontor',
         actionUrl: 'https://ekontor.ergo.ee/lepingud',
       },

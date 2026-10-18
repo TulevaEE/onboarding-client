@@ -7,13 +7,21 @@ export type TransferRequest = {
   text: string;
 };
 
-export const useTransferRequest = (user: User, endDate: string | null): TransferRequest => {
+export const useTransferRequest = (
+  user: User,
+  endDate: string | null,
+  contractNumber: string | null,
+): TransferRequest => {
   const { formatMessage, formatDate } = useIntl();
   const subject = formatMessage({ id: 'insuranceTransfer.request.subject' });
   const subjectLine = formatMessage({ id: 'insuranceTransfer.request.subjectLine' }, { subject });
+  const termination = contractNumber
+    ? formatMessage({ id: 'insuranceTransfer.request.termination.oneContract' }, { contractNumber })
+    : formatMessage({ id: 'insuranceTransfer.request.termination.allContracts' });
   const body = formatMessage(
     { id: 'insuranceTransfer.request.body' },
     {
+      termination,
       name: getFullName(user),
       personalCode: user.personalCode,
       endDate: endDate
