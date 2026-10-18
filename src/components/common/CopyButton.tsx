@@ -131,43 +131,48 @@ const IconCopyButton = ({ textToCopy }: { textToCopy: string }) => {
   const tooltipText = intl.formatMessage({ id: FEEDBACK_MESSAGES[feedback] });
 
   return (
-    <button
-      type="button"
-      className={`btn p-1 border-0 focus-ring d-flex align-items-center position-relative ${
-        copied ? 'text-success' : 'text-primary'
-      }`}
-      onClick={handleClick}
-      aria-label={tooltipText}
-      aria-describedby={showTooltip ? idRef.current : undefined}
-      ref={targetRef}
-      data-tip
-      data-for={idRef.current}
-      onMouseEnter={() => {
-        if (feedback === 'ready') {
-          showCurrentTooltip();
-        }
-      }}
-      onMouseLeave={() => {
-        if (feedback === 'ready') {
+    <>
+      <button
+        type="button"
+        className={`btn p-1 border-0 focus-ring d-flex align-items-center position-relative ${
+          copied ? 'text-success' : 'text-primary'
+        }`}
+        onClick={handleClick}
+        aria-label={tooltipText}
+        aria-describedby={showTooltip ? idRef.current : undefined}
+        ref={targetRef}
+        data-tip
+        data-for={idRef.current}
+        onMouseEnter={() => {
+          if (feedback === 'ready') {
+            showCurrentTooltip();
+          }
+        }}
+        onMouseLeave={() => {
+          if (feedback === 'ready') {
+            hideCurrentTooltip();
+          }
+        }}
+        onFocus={() => {
+          if (feedback === 'ready') {
+            showCurrentTooltip();
+          }
+        }}
+        onBlur={() => {
           hideCurrentTooltip();
-        }
-      }}
-      onFocus={() => {
-        if (feedback === 'ready') {
-          showCurrentTooltip();
-        }
-      }}
-      onBlur={() => {
-        hideCurrentTooltip();
-      }}
-    >
-      {copied ? <CopiedIcon /> : <CopyIcon />}
-      <span aria-hidden="true">
-        <InfoTooltip name={idRef.current} place="right" noTrigger>
-          {tooltipText}
-        </InfoTooltip>
+        }}
+      >
+        {copied ? <CopiedIcon /> : <CopyIcon />}
+        <span aria-hidden="true">
+          <InfoTooltip name={idRef.current} place="right" noTrigger>
+            {tooltipText}
+          </InfoTooltip>
+        </span>
+      </button>
+      <span role="status" className="visually-hidden">
+        {feedback !== 'ready' && tooltipText}
       </span>
-    </button>
+    </>
   );
 };
 

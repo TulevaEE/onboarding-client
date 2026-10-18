@@ -66,6 +66,32 @@ describe('MultiSelect', () => {
     expect(select).toBeInTheDocument();
   });
 
+  test('describes both the list and the field the person types into once a description is given', () => {
+    const description = <div id="countries-error">Choose a country</div>;
+    const { rerender } = render(
+      <>
+        <MultiSelect options={mockOptions} ariaLabel="Countries" />
+        {description}
+      </>,
+    );
+
+    rerender(
+      <>
+        <MultiSelect
+          options={mockOptions}
+          ariaLabel="Countries"
+          ariaDescribedBy="countries-error"
+        />
+        {description}
+      </>,
+    );
+
+    expect(screen.getByRole('listbox', { name: 'Countries' })).toHaveAccessibleDescription(
+      'Choose a country',
+    );
+    expect(screen.getByRole('combobox')).toHaveAccessibleDescription('Choose a country');
+  });
+
   test('sets size attribute', () => {
     render(<MultiSelect options={mockOptions} size={5} />);
 
