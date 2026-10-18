@@ -2398,7 +2398,7 @@
   "insuranceTransfer.done.message": "Kindlustusandja kannab raha Tuleva III Samba Pensionifondi hiljemalt 2 kuu jooksul pärast lepingu lõppemist.",
   "insuranceTransfer.selection.intro": "Allkirjastad avalduse, millega Tuleva III Samba Pensionifond saab sinu III samba sissemaksete fondiks. Sinna kannab kindlustusandja ka lepingu raha. Sissemakset ei pea tegema ja teistes fondides olev raha jääb sinna, kus see on.",
   "insuranceTransfer.endDate.label": "Millal leping lõpetada?",
-  "insuranceTransfer.endDate.hint": "Tänane kuupäev tähendab esimesel võimalusel. Kui sinu leping maksab lõpptähtpäeval rohkem, vali see kuupäev. Selle leiad lepingust või kindlustusandja e\u2011teenindusest.",
+  "insuranceTransfer.endDate.hint": "Tänane kuupäev tähendab, et leping lõpeb esimesel võimalusel. Kui sinu leping maksab lõpptähtpäeval rohkem, vali see kuupäev. Selle leiad lepingust või kindlustusandja e‑teenindusest.",
   "insuranceTransfer.contractNumber.label": "Lepingu number",
   "insuranceTransfer.contractNumber.hint": "Selle leiad lepingust või kindlustusandja e‑teenindusest. Kui jätad välja tühjaks, lõpetab avaldus kõik sinu sealsed III samba kindlustuslepingud.",
   "insuranceTransfer.form.intro": "Täidame kindlustusandja enda avalduse vormi. Allkirjastatud avalduse saadame sulle e‑postiga ja sina edastad selle kindlustusandjale.",

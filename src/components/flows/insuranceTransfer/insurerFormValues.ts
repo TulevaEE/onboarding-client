@@ -129,6 +129,14 @@ export const detailsOnFile = (
   };
 };
 
+const pepSelfDeclarationFrom = (
+  identity: KycIdentity | undefined,
+  pepDeclaredThisSession: PepSelfDeclaration | null,
+) =>
+  isUnderAYearOld(identity)
+    ? identity?.pepSelfDeclaration ?? pepDeclaredThisSession
+    : pepDeclaredThisSession ?? identity?.pepSelfDeclaration ?? null;
+
 export const defaultValuesFrom = (
   identity: KycIdentity | undefined,
   user: User,
@@ -144,7 +152,7 @@ export const defaultValuesFrom = (
   citizenship: identity?.citizenship ?? [],
   countryOfBirth: ESTONIA,
   taxResidencyIfNotAddressCountry: '',
-  pepSelfDeclaration: identity?.pepSelfDeclaration ?? pepDeclaredThisSession,
+  pepSelfDeclaration: pepSelfDeclarationFrom(identity, pepDeclaredThisSession),
   notUsPerson: false,
   artea: {
     idDocument: { type: '', number: '', issuedOn: '', validUntil: '', issuingCountry: ESTONIA },

@@ -2308,7 +2308,7 @@
   "insuranceTransfer.done.message": "Your insurer will transfer the money to Tuleva III Pillar Pension Fund within 2 months after the contract ends.",
   "insuranceTransfer.selection.intro": "You sign an application that makes Tuleva III Pillar Pension Fund the fund for your III pillar contributions. Your insurer transfers the contract money there too. You don’t need to make a contribution, and money in other funds stays where it is.",
   "insuranceTransfer.endDate.label": "When should the contract end?",
-  "insuranceTransfer.endDate.hint": "Today’s date means as soon as possible. If your contract pays more on its end date, pick that date. You can find it on your contract or in the insurer’s e\u2011service.",
+  "insuranceTransfer.endDate.hint": "Today’s date means the contract ends as soon as possible. If your contract pays more on its end date, pick that date. You can find it on your contract or in the insurer’s e‑service.",
   "insuranceTransfer.contractNumber.label": "Contract number",
   "insuranceTransfer.contractNumber.hint": "You can find it on your contract or in the insurer’s e‑service. If you leave it empty, the request ends all your III pillar insurance contracts with this insurer.",
   "insuranceTransfer.form.intro": "We fill in the insurer’s own request form. We email the signed request to you, and you forward it to the insurer.",

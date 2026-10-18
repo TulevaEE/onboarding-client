@@ -66,11 +66,11 @@ const SignedRequest = ({ form, userEmail }: { form: InsuranceTransferForm; userE
       </p>
       <InsurerAddress email={form.insurerEmail} />
       {emailed && <DownloadButton className="btn btn-link" onClick={downloadSigned} />}
-      <div className="d-flex flex-column-reverse flex-sm-row justify-content-center gap-3 mt-3">
+      <div className="d-flex flex-column flex-sm-row-reverse justify-content-center gap-3 mt-3">
+        {!emailed && <DownloadButton className="btn btn-primary" onClick={downloadSigned} />}
         <Link className="btn btn-outline-primary" to={ACCOUNT_PATH}>
           <FormattedMessage id="thirdPillarSuccess.button.account" />
         </Link>
-        {!emailed && <DownloadButton className="btn btn-primary" onClick={downloadSigned} />}
       </div>
       {downloadFailed && (
         <div className="mt-3" role="alert">

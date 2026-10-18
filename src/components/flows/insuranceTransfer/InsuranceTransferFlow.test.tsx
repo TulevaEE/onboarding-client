@@ -484,7 +484,7 @@ describe('III pillar insurance contract transfer', () => {
       expect(endDate).toHaveValue(today);
       expect(endDate).toHaveAttribute('min', today);
       expect(endDate).toHaveAccessibleDescription(
-        'Today’s date means as soon as possible. If your contract pays more on its end date, pick that date. You can find it on your contract or in the insurer’s e\u2011service.',
+        'Today’s date means the contract ends as soon as possible. If your contract pays more on its end date, pick that date. You can find it on your contract or in the insurer’s e\u2011service.',
       );
     });
 
@@ -492,7 +492,7 @@ describe('III pillar insurance contract transfer', () => {
       openFlow('/3rd-pillar-insurance/request?insurer=ERGO', 'et');
 
       expect(await screen.findByLabelText('Millal leping lõpetada?')).toHaveAccessibleDescription(
-        'Tänane kuupäev tähendab esimesel võimalusel. Kui sinu leping maksab lõpptähtpäeval rohkem, vali see kuupäev. Selle leiad lepingust või kindlustusandja e\u2011teenindusest.',
+        'Tänane kuupäev tähendab, et leping lõpeb esimesel võimalusel. Kui sinu leping maksab lõpptähtpäeval rohkem, vali see kuupäev. Selle leiad lepingust või kindlustusandja e\u2011teenindusest.',
       );
     });
 
@@ -980,7 +980,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(forms.created[0]).toMatchObject({ endDate: '2027-11-01' });
   });
 
-  test('shows Ergo the citizenship and politically exposed status on file, with tax residency defaulting to the address country and the country of birth to Estonia', async () => {
+  test('shows Ergo the citizenship and politically exposed status on file, with tax residency defaulting to the address country, and asks the country of birth, which nothing on file holds, starting at Estonia', async () => {
     const forms = insuranceTransferFormBackend();
     openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
 
@@ -989,9 +989,9 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       ['Address', 'Tamme tn 1, Tallinn, 10111, Estonia'],
       ['Citizenship', 'Estonia'],
       ['Tax residency', 'Estonia'],
-      ['Country of birth', 'Estonia'],
       ['Politically exposed person', 'No'],
     ]);
+    expect(within(details).getByRole('combobox', { name: 'Country of birth' })).toHaveValue('EE');
     userEvent.type(screen.getByLabelText('Contract number'), 'EL-12-345678');
     expect(screen.queryByRole('checkbox', { name: /US citizen/ })).not.toBeInTheDocument();
 
@@ -1085,16 +1085,16 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(maxLengthsOf(['Your occupation'])).toEqual([500]);
   });
 
-  test('asks only for the details nothing on file holds', async () => {
+  test('asks only for the details nothing on file holds, the country of birth starting at Estonia', async () => {
     kycIdentityBackend(server, { email: 'saver@example.com', complete: false });
     const forms = insuranceTransferFormBackend();
     openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
 
     const details = await yourDetails();
-    expect(definitionsIn(details)).toEqual([
-      ['Tax residency', 'Estonia'],
-      ['Country of birth', 'Estonia'],
-    ]);
+    expect(definitionsIn(details)).toEqual([['Tax residency', 'Estonia']]);
+    const countryOfBirth = within(details).getByRole('combobox', { name: 'Country of birth' });
+    expect(countryOfBirth).toHaveValue('EE');
+    userEvent.selectOptions(countryOfBirth, 'LV');
     userEvent.type(screen.getByLabelText('Contract number'), 'EL-12-345678');
     userEvent.type(screen.getByLabelText('Address (street, house, apartment)'), 'Kase tn 2');
     userEvent.type(screen.getByLabelText('City'), 'Tartu');
@@ -1116,6 +1116,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(forms.created[0]).toMatchObject({
       address: { street: 'Kase tn 2', city: 'Tartu', postalCode: '50050', countryCode: 'EE' },
       citizenship: ['FI'],
+      countryOfBirth: 'LV',
       taxResidency: 'EE',
       pep: true,
     });
@@ -1154,10 +1155,23 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
         name: 'I am not a politically exposed person, a close relative or close associate of such a person',
       }),
     ).toBeChecked();
-    expect(definitionsIn(await yourDetails())).toEqual([
-      ['Tax residency', 'Estonia'],
-      ['Country of birth', 'Estonia'],
-    ]);
+    expect(definitionsIn(await yourDetails())).toEqual([['Tax residency', 'Estonia']]);
+  });
+
+  test('fills the politically exposed question with the answer given earlier in the session over a status on file more than a year old', async () => {
+    kycIdentityBackend(server, {
+      ...IDENTITY_ON_FILE,
+      pepSelfDeclaration: 'IS_NOT_PEP',
+      updatedAt: daysAgo(400),
+    });
+    openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+    store.dispatch(changeIsPoliticallyExposed(true));
+
+    expect(
+      await screen.findByRole('radio', {
+        name: 'I am a politically exposed person, a close relative or close associate of such a person',
+      }),
+    ).toBeChecked();
   });
 
   test('asks for every detail when the details on file cannot be loaded', async () => {
@@ -1498,6 +1512,18 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       );
     });
 
+    test('puts the download before the account link in reading order when the request could not be emailed', async () => {
+      signedFormBackend({ emailStatus: 'FAILED' });
+
+      openFlow('/3rd-pillar-insurance-signed/1');
+
+      const downloadButton = await screen.findByRole('button', {
+        name: 'Download the signed request',
+      });
+      const accountLink = screen.getByRole('link', { name: 'My account' });
+      expect(inDocumentOrder([accountLink, downloadButton])).toEqual([downloadButton, accountLink]);
+    });
+
     test.each([{ emailStatus: 'NO_EMAIL' as const }, { emailStatus: null }])(
       'offers the signed request to download when the email status is $emailStatus',
       async ({ emailStatus }) => {
@@ -1575,7 +1601,8 @@ const normalizedText = (element: HTMLElement) => element.textContent?.replace(/\
 
 const inDocumentOrder = (elements: HTMLElement[]) =>
   [...elements].sort((first, second) =>
-    first.compareDocumentPosition(second) === Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1,
+    // eslint-disable-next-line no-bitwise -- compareDocumentPosition returns a bitmask
+    (first.compareDocumentPosition(second) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0 ? -1 : 1,
   );
 
 type TrackedEvent = { type: string; data: Record<string, unknown> };

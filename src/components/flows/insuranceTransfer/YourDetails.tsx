@@ -224,7 +224,7 @@ const shownDetails = (
     ? ['address', 'citizenship', 'taxResidency', 'countryOfBirth', 'pep']
     : ['address'];
   const isKnown = (detail: Detail) =>
-    detail === 'taxResidency' || detail === 'countryOfBirth' || onFile[detail];
+    detail === 'taxResidency' || (detail !== 'countryOfBirth' && onFile[detail]);
   const summarized = editing ? [] : asked.filter(isKnown);
   return {
     summarized,
