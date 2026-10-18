@@ -515,7 +515,7 @@ describe('III pillar insurance contract transfer', () => {
       expect(endDate).toHaveValue(today);
       expect(endDate).toHaveAttribute('min', today);
       expect(endDate).toHaveAccessibleDescription(
-        'Today’s date means the contract ends as soon as possible. If your contract pays more on its end date, pick that date. You can find it on your contract or in the insurer’s e\u2011service.',
+        'Today’s date means the contract ends as soon as possible. If your contract pays more on its end date, pick that date.',
       );
     });
 
@@ -523,7 +523,7 @@ describe('III pillar insurance contract transfer', () => {
       openFlow('/3rd-pillar-insurance/request?insurer=ERGO', 'et');
 
       expect(await screen.findByLabelText('Millal leping lõpetada?')).toHaveAccessibleDescription(
-        'Tänane kuupäev tähendab, et leping lõpeb esimesel võimalusel. Kui sinu leping maksab lõpptähtpäeval rohkem, vali see kuupäev. Selle leiad lepingust või kindlustusandja e\u2011teenindusest.',
+        'Tänane kuupäev tähendab, et leping lõpeb esimesel võimalusel. Kui sinu leping maksab lõpptähtpäeval rohkem, vali see kuupäev.',
       );
     });
 
@@ -586,12 +586,12 @@ describe('III pillar insurance contract transfer', () => {
       expect(request).not.toHaveTextContent(/€|EUR/);
     });
 
-    test('drafts a request that ends every III pillar contract at the insurer in the words of the Funded Pensions Act when no contract number is given, and asks for the date it arrived, the fees withheld and the amount transferred', async () => {
+    test('drafts a request that ends every III pillar contract at the insurer in the words of the Funded Pensions Act, citing each provision it relies on, when no contract number is given, and asks for the date it arrived, the fees withheld and the amount transferred', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=SEB');
 
       const request = await requestText();
       expect(request).toHaveTextContent(
-        'I hereby terminate all my supplementary funded pension insurance contracts and wish to use their full surrender value to acquire units of Tuleva III Samba Pensionifond (Funded Pensions Act § 63 subsection 5¹ clause 2 and subsection 5²). The money goes directly to the voluntary pension fund, not to my bank account.',
+        'I hereby terminate all my supplementary funded pension insurance contracts and wish to use their full surrender value to acquire units of Tuleva III Samba Pensionifond (Funded Pensions Act § 63 subsections 5, 5¹ clause 2, 5² and 5³). The money goes directly to the voluntary pension fund, not to my bank account. This is not a payout and no income tax is charged (Income Tax Act § 21 subsection 1¹ clauses 1 and 2).',
         { normalizeWhitespace: false },
       );
       expect(request).toHaveTextContent(
@@ -761,7 +761,7 @@ describe('III pillar insurance contract transfer', () => {
       expect(history.location.search).toBe('?insurer=SEB');
     });
 
-    test('records the sent request and says the insurer moves the money within two months after the contract ends', async () => {
+    test('records the sent request and says the law gives the insurer up to two months from receiving it to move the money', async () => {
       const trackedEvents = trackedEventsBackend();
       openFlow('/3rd-pillar-insurance/request?insurer=SWEDBANK');
 
@@ -771,7 +771,7 @@ describe('III pillar insurance contract transfer', () => {
       expect(await screen.findByRole('heading', { name: 'Done' })).toBeInTheDocument();
       expect(
         screen.getByText(
-          /^Your insurer will transfer the money to Tuleva III\sPillar Pension Fund within 2\smonths after the contract ends\.$/,
+          /^Your insurer transfers the money to Tuleva III\sPillar Pension Fund\. The law gives it up to 2\smonths from receiving your request\.$/,
         ),
       ).toBeInTheDocument();
       expect(screen.getByRole('link', { name: 'My account' })).toHaveAttribute('href', '/account');
@@ -782,6 +782,16 @@ describe('III pillar insurance contract transfer', () => {
           { type: 'CLICK', data: { target: 'insurance-transfer-sent', insurer: 'SWEDBANK' } },
         ]),
       );
+    });
+
+    test('says in Estonian that the law gives the insurer up to two months from receiving the request to move the money', async () => {
+      openFlow('/3rd-pillar-insurance-success', 'et');
+
+      expect(
+        await screen.findByText(
+          'Kindlustusandja kannab raha Tuleva III Samba Pensionifondi. Seaduse järgi on tal selleks aega kuni 2 kuud avalduse kättesaamisest.',
+        ),
+      ).toBeInTheDocument();
     });
 
     test('does not repeat on the done page the fund ISIN and pension account number the request already gave the insurer', async () => {
