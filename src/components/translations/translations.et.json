@@ -2401,6 +2401,7 @@
   "insuranceTransfer.form.intro": "Täidame kindlustusandja enda avalduse vormi. Sina allkirjastad selle, meie saadame selle sulle e‑postile ja sina saadad selle kindlustusandjale edasi.",
   "insuranceTransfer.form.policyNumber.hint": "Leiad selle lepingult või kindlustusandja e‑teenindusest.",
   "insuranceTransfer.form.policyNumber.required": "Sisesta lepingu number.",
+  "insuranceTransfer.form.policyNumber.format.ERGO": "Kontrolli lepingu numbrit. See on 8‑kohaline või 705‑ga algades 11‑kohaline.",
   "insuranceTransfer.form.details.title": "Sinu andmed",
   "insuranceTransfer.form.details.change": "Muuda andmeid",
   "insuranceTransfer.form.details.address": "Aadress",

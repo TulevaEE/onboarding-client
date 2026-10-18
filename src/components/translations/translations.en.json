@@ -2311,6 +2311,7 @@
   "insuranceTransfer.form.intro": "We fill in the insurer’s own request form. You sign it, we email it to you, and you forward it to the insurer.",
   "insuranceTransfer.form.policyNumber.hint": "You can find it on your contract or in the insurer’s e‑service.",
   "insuranceTransfer.form.policyNumber.required": "Enter the contract number.",
+  "insuranceTransfer.form.policyNumber.format.ERGO": "Check the contract number. It has 8 digits, or 11 when it starts with 705.",
   "insuranceTransfer.form.details.title": "Your details",
   "insuranceTransfer.form.details.change": "Change details",
   "insuranceTransfer.form.details.address": "Address",

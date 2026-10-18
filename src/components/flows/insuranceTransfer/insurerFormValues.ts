@@ -70,6 +70,23 @@ export const asksCitizenshipTaxResidencyAndExposure = (insurer: InsuranceTransfe
 export const asksUsPersonDeclaration = (insurer: InsuranceTransferFormInsurer) =>
   insurer === 'COMPENSA';
 
+const ERGO_POLICY_NUMBER_DIGITS = 8;
+const ERGO_PRINTED_PREFIX = '705';
+
+const isErgoPolicyNumber = (policyNumber: string) => {
+  const digits = policyNumber.replace(/\D/g, '');
+  return (
+    digits.length === ERGO_POLICY_NUMBER_DIGITS ||
+    (digits.length === ERGO_PRINTED_PREFIX.length + ERGO_POLICY_NUMBER_DIGITS &&
+      digits.startsWith(ERGO_PRINTED_PREFIX))
+  );
+};
+
+export const isPolicyNumberInTheFormatTheFormHolds = (
+  insurer: InsuranceTransferFormInsurer,
+  policyNumber: string,
+) => insurer !== 'ERGO' || isErgoPolicyNumber(policyNumber);
+
 export const asksEmployer = (status: OccupationStatus | '') => status === 'EMPLOYED';
 
 export const asksOccupationDescription = (

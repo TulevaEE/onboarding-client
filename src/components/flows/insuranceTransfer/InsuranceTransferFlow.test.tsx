@@ -777,6 +777,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(contractNumber).toHaveAccessibleDescription(
       'You can find it on your contract or in the insurer’s e‑service.',
     );
+    expect(contractNumber).toHaveAttribute('autocapitalize', 'characters');
     userEvent.type(contractNumber, ' UP000123 ');
     userEvent.click(
       screen.getByRole('checkbox', { name: 'I am not a US citizen or US tax resident' }),
@@ -842,7 +843,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(forms.created[0]).toMatchObject({ endDate: '2027-11-01' });
   });
 
-  test('shows Ergo the citizenship, tax residency, country of birth and politically exposed status on file, defaulting tax residency to the address country and the country of birth to Estonia', async () => {
+  test('shows Ergo the citizenship and politically exposed status on file, with tax residency defaulting to the address country and the country of birth to Estonia', async () => {
     const forms = insuranceTransferFormBackend();
     openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
 
@@ -872,6 +873,79 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
         pep: false,
       },
     ]);
+  });
+
+  test.each(['12-3456789', '71-512-345678'])(
+    'does not sign Ergo’s form with the contract number %s, which is not in the format the form holds',
+    async (contractNumber) => {
+      const forms = insuranceTransferFormBackend();
+      openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+      await yourDetails();
+
+      userEvent.type(screen.getByLabelText('Contract number'), contractNumber);
+      userEvent.click(signRequestButton());
+
+      expect(
+        await screen.findByText(
+          'Check the contract number. It has 8 digits, or 11 when it starts with 705.',
+        ),
+      ).toBeInTheDocument();
+      expect(screen.getByLabelText('Contract number')).toBeInvalid();
+      expect(forms.created).toEqual([]);
+    },
+  );
+
+  test('signs Ergo’s form with the contract number as printed, with 705 in front', async () => {
+    const forms = insuranceTransferFormBackend();
+    openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+    await yourDetails();
+
+    userEvent.type(screen.getByLabelText('Contract number'), '70-512-345678');
+    userEvent.click(signRequestButton());
+
+    await waitFor(() => expect(forms.created).toHaveLength(1));
+    expect(forms.created[0]).toMatchObject({ policyNumber: '70-512-345678' });
+  });
+
+  test('takes at most five citizenships', async () => {
+    kycIdentityBackend(server, { ...IDENTITY_ON_FILE, citizenship: [] });
+    const forms = insuranceTransferFormBackend();
+    openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+    await yourDetails();
+    userEvent.type(screen.getByLabelText('Contract number'), 'EL-12-345678');
+
+    const citizenship = screen.getByRole('listbox', { name: 'Citizenship' }) as HTMLSelectElement;
+    ['EE', 'FI', 'LV', 'LT', 'SE', 'NO'].forEach((country) =>
+      selectCountryOptionInTomSelect(citizenship, country),
+    );
+    userEvent.click(signRequestButton());
+
+    await waitFor(() => expect(forms.created).toHaveLength(1));
+    expect(forms.created[0]).toMatchObject({ citizenship: ['EE', 'FI', 'LV', 'LT', 'SE'] });
+  });
+
+  test('takes no longer answers than the form holds', async () => {
+    kycIdentityBackend(server, { email: 'saver@example.com', complete: false });
+    openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
+    await yourDetails();
+    userEvent.selectOptions(screen.getByLabelText('Occupation'), 'EMPLOYED');
+    userEvent.click(screen.getByRole('checkbox', { name: 'Dividends' }));
+
+    expect(
+      maxLengthsOf([
+        'Contract number',
+        'Address (street, house, apartment)',
+        'City',
+        'Postal code',
+        'Document number',
+        'Position',
+        'Employer',
+        'Employer’s address',
+        'Payer’s name',
+      ]),
+    ).toEqual([40, 200, 100, 20, 40, 200, 200, 200, 300]);
+    userEvent.selectOptions(screen.getByLabelText('Occupation'), 'OTHER');
+    expect(maxLengthsOf(['Your occupation'])).toEqual([500]);
   });
 
   test('asks only for the details nothing on file holds', async () => {
@@ -955,7 +1029,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     });
   });
 
-  test('asks Artea’s customer questions and sends the answers with the request', async () => {
+  test('asks Artea’s customer questions and sends the answers with the request, the bank account without the separators it was typed with', async () => {
     const forms = insuranceTransferFormBackend();
     openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
     await yourDetails();
@@ -981,7 +1055,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     );
     userEvent.type(
       within(questionnaire).getByLabelText('Bank account you paid the premiums from'),
-      'ee59 1254 4713 2274 9514',
+      'ee59-1254-4713-2274-9514',
     );
 
     userEvent.click(signRequestButton());
@@ -1544,6 +1618,9 @@ async function fillCompensaForm() {
     screen.getByRole('checkbox', { name: 'I am not a US citizen or US tax resident' }),
   );
 }
+
+const maxLengthsOf = (labels: string[]) =>
+  labels.map((label) => (screen.getByLabelText(label) as HTMLInputElement).maxLength);
 
 async function fillArteaFormExceptOccupation() {
   userEvent.type(await screen.findByLabelText('Contract number'), 'UP000123');

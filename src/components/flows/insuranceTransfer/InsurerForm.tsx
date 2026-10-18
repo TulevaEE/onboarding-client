@@ -29,6 +29,7 @@ import {
   defaultValuesFrom,
   detailsOnFile,
   InsurerFormValues,
+  isPolicyNumberInTheFormatTheFormHolds,
   toCommand,
 } from './insurerFormValues';
 import { YourDetails } from './YourDetails';
@@ -73,7 +74,7 @@ const useFormFilledOnce = () => {
   };
 
   const withFilledForm = async (
-    command: CreateInsuranceTransferFormCommand,
+    command: () => CreateInsuranceTransferFormCommand,
     use: (form: InsuranceTransferForm) => unknown,
   ) => {
     if (filling.current) {
@@ -83,7 +84,7 @@ const useFormFilledOnce = () => {
     setBusy(true);
     setFailure(null);
     try {
-      await use(await formFor(command));
+      await use(await formFor(command()));
     } catch (error) {
       setFailure(error);
     } finally {
@@ -95,7 +96,7 @@ const useFormFilledOnce = () => {
   return { withFilledForm, busy, failure, dismissFailure: () => setFailure(null) };
 };
 
-const PolicyNumberField = () => {
+const PolicyNumberField = ({ insurer }: { insurer: InsuranceTransferFormInsurer }) => {
   const { formatMessage } = useIntl();
   const {
     register,
@@ -112,12 +113,18 @@ const PolicyNumberField = () => {
       }
       hint={<FormattedMessage id="insuranceTransfer.form.policyNumber.hint" />}
       registration={register('policyNumber', {
-        validate: (value) =>
-          value.trim() !== '' ||
-          formatMessage({ id: 'insuranceTransfer.form.policyNumber.required' }),
+        validate: {
+          required: (value) =>
+            value.trim() !== '' ||
+            formatMessage({ id: 'insuranceTransfer.form.policyNumber.required' }),
+          inTheFormatTheFormHolds: (value) =>
+            isPolicyNumberInTheFormatTheFormHolds(insurer, value) ||
+            formatMessage({ id: 'insuranceTransfer.form.policyNumber.format.ERGO' }),
+        },
       })}
       error={errors.policyNumber?.message}
       inputClassName={`w-auto ${PII_CLASS}`}
+      autoCapitalize="characters"
       maxLength={POLICY_NUMBER_MAX_LENGTH}
     />
   );
@@ -172,14 +179,18 @@ const FilledInInsurerForm = ({
   const commandFrom = (values: InsurerFormValues) => toCommand(insurer, endDate, values);
 
   const sign = (values: InsurerFormValues) =>
-    withFilledForm(commandFrom(values), (form) => {
-      setSigningFormId(form.id);
-      startSigning(form);
-    });
+    withFilledForm(
+      () => commandFrom(values),
+      (form) => {
+        setSigningFormId(form.id);
+        startSigning(form);
+      },
+    );
 
   const preview = (values: InsurerFormValues) =>
-    withFilledForm(commandFrom(values), async (form) =>
-      showPdf(await downloadInsuranceTransferFormPreview(form.id)),
+    withFilledForm(
+      () => commandFrom(values),
+      async (form) => showPdf(await downloadInsuranceTransferFormPreview(form.id)),
     );
 
   const pensionAccountNotReady = isPensionAccountNotReady(failure);
@@ -208,7 +219,7 @@ const FilledInInsurerForm = ({
         <p className="mt-4 mb-0 text-pretty">
           <FormattedMessage id="insuranceTransfer.form.intro" />
         </p>
-        <PolicyNumberField />
+        <PolicyNumberField insurer={insurer} />
         <YourDetails insurer={insurer} onFile={onFile} />
         {insurer === 'ARTEA' && <ArteaQuestionnaire />}
         {asksUsPersonDeclaration(insurer) && <NotUsPersonConfirmation />}

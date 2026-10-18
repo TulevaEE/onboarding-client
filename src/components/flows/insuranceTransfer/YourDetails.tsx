@@ -49,6 +49,7 @@ const AddressFields = () => {
         )}
         error={errors.address?.street?.message}
         autoComplete="address-line1"
+        maxLength={200}
       />
       <div className="row gx-3 row-gap-3">
         <TextField
@@ -61,6 +62,7 @@ const AddressFields = () => {
           )}
           error={errors.address?.city?.message}
           autoComplete="address-level2"
+          maxLength={100}
         />
         <TextField
           className="col-sm-4"
@@ -74,6 +76,7 @@ const AddressFields = () => {
           )}
           error={errors.address?.postalCode?.message}
           autoComplete="postal-code"
+          maxLength={20}
         />
       </div>
     </fieldset>
@@ -113,6 +116,7 @@ const CitizenshipField = () => {
             onChange={field.onChange}
             onBlur={field.onBlur}
             ariaLabel={label}
+            maxItems={5}
           />
           {error?.message && <div className="invalid-feedback d-block">{error.message}</div>}
         </div>

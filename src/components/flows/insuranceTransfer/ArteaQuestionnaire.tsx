@@ -52,6 +52,7 @@ const IdDocumentFields = () => {
           label={<FormattedMessage id="insuranceTransfer.form.artea.idDocument.number" />}
           registration={register('artea.idDocument.number', required.answered)}
           error={idDocumentErrors?.number?.message}
+          maxLength={40}
         />
         <TextField
           className="col-sm-6"
@@ -107,12 +108,14 @@ const OccupationFields = () => {
             label={<FormattedMessage id="insuranceTransfer.form.artea.occupation.position" />}
             registration={register('artea.occupation.position', required.answered)}
             error={occupationErrors?.position?.message}
+            maxLength={200}
           />
           <TextField
             id="insurer-form-employer"
             label={<FormattedMessage id="insuranceTransfer.form.artea.occupation.employer" />}
             registration={register('artea.occupation.employer', required.answered)}
             error={occupationErrors?.employer?.message}
+            maxLength={200}
           />
           <TextField
             id="insurer-form-employer-address"
@@ -121,6 +124,7 @@ const OccupationFields = () => {
             }
             registration={register('artea.occupation.employerAddress', required.answered)}
             error={occupationErrors?.employerAddress?.message}
+            maxLength={200}
           />
         </>
       )}
@@ -134,6 +138,7 @@ const OccupationFields = () => {
           }
           registration={register('artea.occupation.description', required.answered)}
           error={occupationErrors?.description?.message}
+          maxLength={500}
         />
       )}
     </>
@@ -186,6 +191,7 @@ const IncomeSourceFields = () => {
               }
               registration={register(`artea.incomeSourceDetails.${source}`, required.answered)}
               error={errors.artea?.incomeSourceDetails?.[source]?.message}
+              maxLength={300}
             />
           )}
         </div>

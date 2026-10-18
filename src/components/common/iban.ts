@@ -127,12 +127,10 @@ export const getBankName = (iban: string): string | null => {
   return bankCodes.bankNames[bankCode] ?? null;
 };
 
-export const preProcessIban = (iban: string) => iban.trim().replace(/\s/g, '').toUpperCase();
+export const preProcessIban = (iban: string) => iban.toUpperCase().replace(/[^A-Z0-9]/g, '');
 
 const getIbanCountry = (input: string): keyof typeof IBAN_CODE_LENGTHS | null => {
-  const iban = String(input)
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, ''); // keep only alphanumeric characters
+  const iban = preProcessIban(input);
   const code = iban.match(/^([A-Z]{2})(\d{2})([A-Z\d]+)$/);
 
   if (!code) {
@@ -148,9 +146,7 @@ export const isValidIban = (
   input: string,
   onlyFromCountry?: keyof typeof IBAN_CODE_LENGTHS,
 ): boolean => {
-  const iban = String(input)
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, ''); // keep only alphanumeric characters
+  const iban = preProcessIban(input);
   const code = iban.match(/^([A-Z]{2})(\d{2})([A-Z\d]+)$/); // match and capture (1) the country code, (2) the check digits, and (3) the rest
 
   if (!code) {

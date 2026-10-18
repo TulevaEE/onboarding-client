@@ -23,6 +23,7 @@ type MultiSelectProps = {
   ariaLabel?: string;
   size?: number;
   className?: string;
+  maxItems?: number;
 };
 
 export const MultiSelect: FC<MultiSelectProps> = ({
@@ -35,6 +36,7 @@ export const MultiSelect: FC<MultiSelectProps> = ({
   ariaLabel,
   size = 10,
   className = 'form-select form-select-lg',
+  maxItems,
 }) => {
   const selectRef = useRef<HTMLSelectElement>(null);
   const tomSelectRef = useRef<TomSelect | null>(null);
@@ -56,7 +58,7 @@ export const MultiSelect: FC<MultiSelectProps> = ({
           : {}),
       },
       placeholder,
-      maxItems: null,
+      maxItems: maxItems ?? null,
       maxOptions: 200,
       items: selected,
       closeAfterSelect: true,

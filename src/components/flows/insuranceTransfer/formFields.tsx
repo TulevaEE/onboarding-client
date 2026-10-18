@@ -48,12 +48,14 @@ export const TextField = ({
   type = 'text',
   inputClassName,
   autoComplete,
+  autoCapitalize,
   maxLength,
 }: FieldProps & {
   registration: UseFormRegisterReturn;
   type?: 'text' | 'date';
   inputClassName?: string;
   autoComplete?: string;
+  autoCapitalize?: 'characters';
   maxLength?: number;
 }) => (
   <div className={className}>
@@ -67,6 +69,7 @@ export const TextField = ({
       aria-invalid={!!error}
       aria-describedby={describedBy(id, hint, error)}
       autoComplete={autoComplete}
+      autoCapitalize={autoCapitalize}
       maxLength={maxLength}
       spellCheck={false}
       {...registration}
