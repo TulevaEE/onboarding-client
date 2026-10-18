@@ -145,6 +145,7 @@ export const CountryField = <TValues extends FieldValues>({
             onChange={field.onChange}
             id={id}
             name={field.name}
+            selectRef={field.ref}
             translate={false}
           />
         )}

@@ -28,9 +28,9 @@ type Guide = {
 };
 
 export const insurers: Record<InsurerCode, Insurer> = {
+  SWEDBANK: { name: 'Swedbank' },
   SEB: { name: 'SEB' },
   COMPENSA: { name: 'Compensa' },
-  SWEDBANK: { name: 'Swedbank' },
   ARTEA: { name: 'Artea', formerNamesMessageId: 'insuranceTransfer.insurer.ARTEA.formerNames' },
   ERGO: { name: 'Ergo' },
 };

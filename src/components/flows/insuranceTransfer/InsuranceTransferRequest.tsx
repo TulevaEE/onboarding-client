@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
 import { PII_CLASS } from '../../tracking/piiMarkup';
@@ -18,6 +17,7 @@ import {
 } from './insurers';
 import { InsurerGuide } from './InsurerGuide';
 import { InsurerForm } from './InsurerForm';
+import { EndDateField } from './EndDateField';
 import { useTransferRequest } from './useTransferRequest';
 import { LoadFailed } from './LoadFailed';
 import { sentPath } from './insuranceTransferPaths';
@@ -69,39 +69,6 @@ const InsurerName = ({ insurer }: { insurer: InsurerCode }) => {
   );
 };
 
-const END_DATE_ID = 'insurance-contract-end-date';
-
-const EndDateField = ({
-  endDate,
-  onChange,
-}: {
-  endDate: string | null;
-  onChange: (endDate: string | null) => void;
-}) => {
-  const today = moment().format('YYYY-MM-DD');
-  const laterThanToday = (date: string) => (date > today ? date : null);
-
-  return (
-    <div className="mt-4">
-      <label className="form-label fw-bold" htmlFor={END_DATE_ID}>
-        <FormattedMessage id="insuranceTransfer.endDate.label" />
-      </label>
-      <input
-        type="date"
-        id={END_DATE_ID}
-        className="form-control w-auto"
-        value={endDate ?? today}
-        min={today}
-        onChange={(event) => onChange(laterThanToday(event.target.value))}
-        aria-describedby={`${END_DATE_ID}-hint`}
-      />
-      <div id={`${END_DATE_ID}-hint`} className="form-text text-pretty">
-        <FormattedMessage id="insuranceTransfer.endDate.hint" />
-      </div>
-    </div>
-  );
-};
-
 const CONTRACT_NUMBER_ID = 'insurance-contract-number';
 
 const ContractNumberField = ({
@@ -135,6 +102,7 @@ const GuidedRequest = ({
   insurer,
   user,
   endDate,
+  chooseEndDate,
   savedContractNumber,
   saveContractNumber,
   askIfSent,
@@ -142,6 +110,7 @@ const GuidedRequest = ({
   insurer: GuidedInsurerCode;
   user: User;
   endDate: string | null;
+  chooseEndDate: (endDate: string | null) => void;
   savedContractNumber: string;
   saveContractNumber: (contractNumber: string) => void;
   askIfSent: () => void;
@@ -156,7 +125,10 @@ const GuidedRequest = ({
   return (
     <>
       {guides[insurer].writesLetter && (
-        <ContractNumberField contractNumber={contractNumber} onChange={changeContractNumber} />
+        <>
+          <ContractNumberField contractNumber={contractNumber} onChange={changeContractNumber} />
+          <EndDateField endDate={endDate} onChange={chooseEndDate} />
+        </>
       )}
       <InsurerGuide
         insurer={insurer}
@@ -217,16 +189,19 @@ const RequestToInsurer = ({ user }: { user: User }) => {
             <p className="mt-3 mb-0 text-body-secondary text-pretty">
               <FormattedMessage id="insuranceTransfer.fairness" />
             </p>
-            {(takesSignedForm(insurer) || guides[insurer].writesLetter) && (
-              <EndDateField endDate={endDate} onChange={chooseEndDate} />
-            )}
             {takesSignedForm(insurer) ? (
-              <InsurerForm insurer={insurer} endDate={endDate} user={user} />
+              <InsurerForm
+                insurer={insurer}
+                endDate={endDate}
+                chooseEndDate={chooseEndDate}
+                user={user}
+              />
             ) : (
               <GuidedRequest
                 insurer={insurer}
                 user={user}
                 endDate={endDate}
+                chooseEndDate={chooseEndDate}
                 savedContractNumber={savedContractNumber}
                 saveContractNumber={saveContractNumber}
                 askIfSent={askIfSent}

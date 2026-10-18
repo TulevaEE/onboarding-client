@@ -4,17 +4,19 @@ import { Link, useParams } from 'react-router-dom';
 import download from 'downloadjs';
 import { SuccessNotice2 } from '../common/SuccessNotice2/SuccessNotice2';
 import { downloadSignedInsuranceTransferForm } from '../../common/api';
-import { useInsuranceTransferForm } from '../../common/apiHooks';
+import { useInsuranceTransferForm, useMe } from '../../common/apiHooks';
 import { InsuranceTransferForm } from '../../common/apiModels/insurance-transfer';
+import { CopyButton } from '../../common/CopyButton';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { usePageTitle } from '../../common/usePageTitle';
+import { PII_CLASS } from '../../tracking/piiMarkup';
 import { ACCOUNT_PATH } from '../../paths';
 import { insurers } from './insurers';
 import { LoadFailed } from './LoadFailed';
 
 const SIGNED_CONTAINER_TYPE = 'application/vnd.etsi.asic-e+zip';
 
-const DownloadSignedRequest = ({ form }: { form: InsuranceTransferForm }) => {
+const useSignedRequestDownload = (form: InsuranceTransferForm) => {
   const [downloadFailed, setDownloadFailed] = useState(false);
   const downloadSigned = () =>
     downloadSignedInsuranceTransferForm(form.id)
@@ -27,29 +29,28 @@ const DownloadSignedRequest = ({ form }: { form: InsuranceTransferForm }) => {
       )
       .catch(() => setDownloadFailed(true));
 
-  return (
-    <>
-      <button type="button" className="btn btn-primary" onClick={downloadSigned}>
-        <FormattedMessage id="insuranceTransfer.signed.downloadButton" />
-      </button>
-      {downloadFailed && (
-        <div className="mt-3" role="alert">
-          <LoadFailed />
-        </div>
-      )}
-    </>
-  );
+  return { downloadSigned, downloadFailed };
 };
 
-const SignedRequest = ({ form }: { form: InsuranceTransferForm }) => {
+const DownloadButton = ({ className, onClick }: { className: string; onClick: () => void }) => (
+  <button type="button" className={className} onClick={onClick}>
+    <FormattedMessage id="insuranceTransfer.signed.downloadButton" />
+  </button>
+);
+
+const InsurerAddress = ({ email }: { email: string }) => (
+  <div className="d-flex justify-content-center align-items-center column-gap-2">
+    <b className="text-break">{email}</b>
+    <CopyButton textToCopy={email} />
+  </div>
+);
+
+const SignedRequest = ({ form, userEmail }: { form: InsuranceTransferForm; userEmail: string }) => {
   const emailed = form.emailStatus === 'SENT';
+  const { downloadSigned, downloadFailed } = useSignedRequestDownload(form);
   const values = {
     insurer: insurers[form.insurer].name,
-    email: (
-      <a className="text-break" href={`mailto:${form.insurerEmail}`}>
-        {form.insurerEmail}
-      </a>
-    ),
+    userEmail: <span className={PII_CLASS}>{userEmail}</span>,
   };
 
   return (
@@ -57,18 +58,25 @@ const SignedRequest = ({ form }: { form: InsuranceTransferForm }) => {
       <h2 className="my-3">
         <FormattedMessage id="insuranceTransfer.signed.title" />
       </h2>
-      <p>
+      <p className="mb-2">
         <FormattedMessage
           id={emailed ? 'insuranceTransfer.signed.emailed' : 'insuranceTransfer.signed.download'}
           values={values}
         />
       </p>
-      {!emailed && <DownloadSignedRequest form={form} />}
-      <div>
-        <Link className="btn btn-outline-primary mt-3" to={ACCOUNT_PATH}>
+      <InsurerAddress email={form.insurerEmail} />
+      {emailed && <DownloadButton className="btn btn-link" onClick={downloadSigned} />}
+      <div className="d-flex flex-column-reverse flex-sm-row justify-content-center gap-3 mt-3">
+        <Link className="btn btn-outline-primary" to={ACCOUNT_PATH}>
           <FormattedMessage id="thirdPillarSuccess.button.account" />
         </Link>
+        {!emailed && <DownloadButton className="btn btn-primary" onClick={downloadSigned} />}
       </div>
+      {downloadFailed && (
+        <div className="mt-3" role="alert">
+          <LoadFailed />
+        </div>
+      )}
     </SuccessNotice2>
   );
 };
@@ -76,11 +84,16 @@ const SignedRequest = ({ form }: { form: InsuranceTransferForm }) => {
 export const InsuranceTransferSigned = () => {
   usePageTitle('pageTitle.thirdPillarInsurance');
   const { formId } = useParams<{ formId: string }>();
-  const { data: form, isError } = useInsuranceTransferForm(formId);
+  const { data: form, isError: formFailed } = useInsuranceTransferForm(formId);
+  const { data: user, isError: userFailed } = useMe();
 
-  if (!form) {
-    return <div className="mt-4">{isError ? <LoadFailed /> : <Shimmer height={300} />}</div>;
+  if (!form || !user) {
+    return (
+      <div className="mt-4">
+        {formFailed || userFailed ? <LoadFailed /> : <Shimmer height={300} />}
+      </div>
+    );
   }
 
-  return <SignedRequest form={form} />;
+  return <SignedRequest form={form} userEmail={user.email} />;
 };

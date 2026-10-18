@@ -1,4 +1,4 @@
-import { Fragment, ReactNode, useMemo, useState } from 'react';
+import { Fragment, ReactNode, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { InsuranceTransferFormInsurer } from '../../common/apiModels/insurance-transfer';
@@ -15,6 +15,9 @@ import {
 } from './insurerFormValues';
 
 const DETAILS_HEADING_ID = 'insurer-form-details-heading';
+const CITIZENSHIP_ERROR_ID = 'insurer-form-citizenship-error';
+const PEP_LABEL_ID = 'insurer-form-pep-label';
+const PEP_ERROR_ID = 'insurer-form-pep-error';
 
 type Detail = 'address' | 'citizenship' | 'taxResidency' | 'countryOfBirth' | 'pep';
 
@@ -31,7 +34,7 @@ const AddressFields = () => {
 
   return (
     <fieldset className="mt-3 d-flex flex-column gap-3">
-      <legend className="form-label fs-6 mb-0">
+      <legend className="visually-hidden">
         <FormattedMessage id="insuranceTransfer.form.details.address" />
       </legend>
       <CountryField
@@ -116,9 +119,14 @@ const CitizenshipField = () => {
             onChange={field.onChange}
             onBlur={field.onBlur}
             ariaLabel={label}
+            ariaDescribedBy={error?.message ? CITIZENSHIP_ERROR_ID : undefined}
             maxItems={5}
           />
-          {error?.message && <div className="invalid-feedback d-block">{error.message}</div>}
+          {error?.message && (
+            <div id={CITIZENSHIP_ERROR_ID} className="invalid-feedback d-block">
+              {error.message}
+            </div>
+          )}
         </div>
       )}
     />
@@ -137,14 +145,20 @@ const PepField = () => {
   const error = errors.pepSelfDeclaration?.message;
 
   return (
-    <fieldset className="mt-3">
-      <legend className="form-label fs-6">
+    <div
+      className="mt-3"
+      role="radiogroup"
+      aria-labelledby={PEP_LABEL_ID}
+      aria-invalid={!!error}
+      aria-describedby={error ? PEP_ERROR_ID : undefined}
+    >
+      <div id={PEP_LABEL_ID} className="form-label">
         <FormattedMessage id="flows.savingsFundOnboarding.pepStep.title" />
-      </legend>
+      </div>
       {(
         [
-          ['IS_NOT_PEP', 'flows.savingsFundOnboarding.pepStep.no'],
-          ['IS_PEP', 'flows.savingsFundOnboarding.pepStep.yes'],
+          ['IS_NOT_PEP', 'aml.isNotPep'],
+          ['IS_PEP', 'aml.isPep'],
         ] as const
       ).map(([value, labelId]) => (
         <div className="form-check" key={value}>
@@ -160,8 +174,12 @@ const PepField = () => {
           </label>
         </div>
       ))}
-      {error && <div className="invalid-feedback d-block">{error}</div>}
-    </fieldset>
+      {error && (
+        <div id={PEP_ERROR_ID} className="invalid-feedback d-block">
+          {error}
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -214,41 +232,12 @@ const shownDetails = (
   };
 };
 
-export const YourDetails = ({
-  insurer,
-  onFile,
-}: {
-  insurer: InsuranceTransferFormInsurer;
-  onFile: DetailsOnFile;
-}) => {
-  const [editing, setEditing] = useState(false);
+const DetailInputs = ({ inputs }: { inputs: Detail[] }) => {
   const { control } = useFormContext<InsurerFormValues>();
   const addressCountry = useWatch({ control, name: 'address.countryCode' });
-  const summary = useSummary();
-  const { summarized, inputs } = shownDetails(insurer, onFile, editing);
 
   return (
-    <section className={`mt-4 ${PII_CLASS}`} aria-labelledby={DETAILS_HEADING_ID}>
-      <h3 id={DETAILS_HEADING_ID} className="h6 mb-2">
-        <FormattedMessage id="insuranceTransfer.form.details.title" />
-      </h3>
-      {summarized.length > 0 && (
-        <>
-          <dl className="row mb-1">
-            {summarized.map((detail) => (
-              <Fragment key={detail}>
-                <dt className="col-sm-5 fw-normal text-body-secondary">
-                  <FormattedMessage id={summary[detail].termId} />
-                </dt>
-                <dd className="col-sm-7 mb-1">{summary[detail].value}</dd>
-              </Fragment>
-            ))}
-          </dl>
-          <button type="button" className="btn btn-link p-0" onClick={() => setEditing(true)}>
-            <FormattedMessage id="insuranceTransfer.form.details.change" />
-          </button>
-        </>
-      )}
+    <>
       {inputs.includes('address') && <AddressFields />}
       {inputs.includes('citizenship') && <CitizenshipField />}
       {inputs.includes('taxResidency') && (
@@ -271,6 +260,71 @@ export const YourDetails = ({
         />
       )}
       {inputs.includes('pep') && <PepField />}
+    </>
+  );
+};
+
+const DetailSummary = ({
+  summarized,
+  onChange,
+  className,
+}: {
+  summarized: Detail[];
+  onChange: () => void;
+  className?: string;
+}) => {
+  const summary = useSummary();
+
+  return (
+    <div className={className}>
+      <dl className="row mb-1">
+        {summarized.map((detail) => (
+          <Fragment key={detail}>
+            <dt className="col-sm-4 fw-normal text-body-secondary">
+              <FormattedMessage id={summary[detail].termId} />
+            </dt>
+            <dd className="col-sm-8 mb-2 mb-sm-1">{summary[detail].value}</dd>
+          </Fragment>
+        ))}
+      </dl>
+      <button type="button" className="btn btn-link p-0" onClick={onChange}>
+        <FormattedMessage id="insuranceTransfer.form.details.change" />
+      </button>
+    </div>
+  );
+};
+
+export const YourDetails = ({
+  insurer,
+  onFile,
+}: {
+  insurer: InsuranceTransferFormInsurer;
+  onFile: DetailsOnFile;
+}) => {
+  const [editing, setEditing] = useState(false);
+  const { setFocus } = useFormContext<InsurerFormValues>();
+  const { summarized, inputs } = shownDetails(insurer, onFile, editing);
+  const asksAnything = inputs.length > 0;
+
+  useEffect(() => {
+    if (editing) {
+      setFocus('address.countryCode');
+    }
+  }, [editing, setFocus]);
+
+  return (
+    <section className={`mt-4 ${PII_CLASS}`} aria-labelledby={DETAILS_HEADING_ID}>
+      <h3 id={DETAILS_HEADING_ID} className="h6 mb-2">
+        <FormattedMessage id="insuranceTransfer.form.details.title" />
+      </h3>
+      {asksAnything && <DetailInputs inputs={inputs} />}
+      {summarized.length > 0 && (
+        <DetailSummary
+          summarized={summarized}
+          onChange={() => setEditing(true)}
+          className={asksAnything ? 'mt-3' : undefined}
+        />
+      )}
     </section>
   );
 };

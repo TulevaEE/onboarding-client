@@ -117,18 +117,22 @@ const isUnderAYearOld = (identity: KycIdentity | undefined) =>
 const isComplete = (address: KycIdentity['address']) =>
   !!address?.street && !!address.city && !!address.postalCode && !!address.countryCode;
 
-export const detailsOnFile = (identity: KycIdentity | undefined): DetailsOnFile => {
+export const detailsOnFile = (
+  identity: KycIdentity | undefined,
+  pepDeclaredThisSession: PepSelfDeclaration | null,
+): DetailsOnFile => {
   const current = isUnderAYearOld(identity);
   return {
     address: current && isComplete(identity?.address),
     citizenship: current && !!identity?.citizenship?.length,
-    pep: current && !!identity?.pepSelfDeclaration,
+    pep: identity?.pepSelfDeclaration ? current : !!pepDeclaredThisSession,
   };
 };
 
 export const defaultValuesFrom = (
   identity: KycIdentity | undefined,
   user: User,
+  pepDeclaredThisSession: PepSelfDeclaration | null,
 ): InsurerFormValues => ({
   policyNumber: '',
   address: {
@@ -140,7 +144,7 @@ export const defaultValuesFrom = (
   citizenship: identity?.citizenship ?? [],
   countryOfBirth: ESTONIA,
   taxResidencyIfNotAddressCountry: '',
-  pepSelfDeclaration: identity?.pepSelfDeclaration ?? null,
+  pepSelfDeclaration: identity?.pepSelfDeclaration ?? pepDeclaredThisSession,
   notUsPerson: false,
   artea: {
     idDocument: { type: '', number: '', issuedOn: '', validUntil: '', issuingCountry: ESTONIA },

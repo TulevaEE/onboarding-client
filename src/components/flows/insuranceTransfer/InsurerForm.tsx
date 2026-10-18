@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
 import download from 'downloadjs';
@@ -20,8 +21,10 @@ import { isErrorResponse } from '../../common/errorResponse';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { useSigning } from '../../common/signing/useSigning';
 import { PII_CLASS } from '../../tracking/piiMarkup';
-import { KycIdentity } from '../savingsAccount/SavingsFundOnboarding/types.api';
+import { State } from '../../../types';
+import { KycIdentity, PepSelfDeclaration } from '../savingsAccount/SavingsFundOnboarding/types.api';
 import { ArteaQuestionnaire } from './ArteaQuestionnaire';
+import { EndDateField } from './EndDateField';
 import { TextField } from './formFields';
 import { signedPath } from './insuranceTransferPaths';
 import {
@@ -37,6 +40,7 @@ import { YourDetails } from './YourDetails';
 type Props = {
   insurer: InsuranceTransferFormInsurer;
   endDate: string | null;
+  chooseEndDate: (endDate: string | null) => void;
   user: User;
 };
 
@@ -130,6 +134,17 @@ const PolicyNumberField = ({ insurer }: { insurer: InsuranceTransferFormInsurer 
   );
 };
 
+const usePepDeclaredThisSession = (): PepSelfDeclaration | null => {
+  const isPoliticallyExposed = useSelector((state: State) => state.aml.isPoliticallyExposed);
+  if (isPoliticallyExposed === null) {
+    return null;
+  }
+  return isPoliticallyExposed ? 'IS_PEP' : 'IS_NOT_PEP';
+};
+
+const NOT_US_PERSON_ID = 'insurer-form-not-us-person';
+const NOT_US_PERSON_ERROR_ID = `${NOT_US_PERSON_ID}-error`;
+
 const NotUsPersonConfirmation = () => {
   const { formatMessage } = useIntl();
   const {
@@ -142,16 +157,21 @@ const NotUsPersonConfirmation = () => {
       <input
         type="checkbox"
         className={`form-check-input ${error ? 'is-invalid' : ''}`}
-        id="insurer-form-not-us-person"
+        id={NOT_US_PERSON_ID}
         aria-invalid={!!error}
+        aria-describedby={error ? NOT_US_PERSON_ERROR_ID : undefined}
         {...register('notUsPerson', {
           required: formatMessage({ id: 'insuranceTransfer.form.notUsPerson.required' }),
         })}
       />
-      <label className="form-check-label" htmlFor="insurer-form-not-us-person">
+      <label className="form-check-label" htmlFor={NOT_US_PERSON_ID}>
         <FormattedMessage id="insuranceTransfer.form.notUsPerson" />
       </label>
-      {error && <div className="invalid-feedback text-pretty">{error}</div>}
+      {error && (
+        <div id={NOT_US_PERSON_ERROR_ID} className="invalid-feedback text-pretty">
+          {error}
+        </div>
+      )}
     </div>
   );
 };
@@ -159,12 +179,16 @@ const NotUsPersonConfirmation = () => {
 const FilledInInsurerForm = ({
   insurer,
   endDate,
+  chooseEndDate,
   user,
   identity,
 }: Props & { identity: KycIdentity | undefined }) => {
   const history = useHistory();
-  const [onFile] = useState(() => detailsOnFile(identity));
-  const methods = useForm<InsurerFormValues>({ defaultValues: defaultValuesFrom(identity, user) });
+  const pepDeclaredThisSession = usePepDeclaredThisSession();
+  const [onFile] = useState(() => detailsOnFile(identity, pepDeclaredThisSession));
+  const methods = useForm<InsurerFormValues>({
+    defaultValues: defaultValuesFrom(identity, user, pepDeclaredThisSession),
+  });
   const { withFilledForm, busy, failure, dismissFailure } = useFormFilledOnce();
   const { startSigning, cancelSigning, signed, loading, error, challengeCode } =
     useSigning<InsuranceTransferForm>('INSURANCE_TRANSFER_FORM');
@@ -220,8 +244,13 @@ const FilledInInsurerForm = ({
           <FormattedMessage id="insuranceTransfer.form.intro" />
         </p>
         <PolicyNumberField insurer={insurer} />
-        <YourDetails insurer={insurer} onFile={onFile} />
-        {insurer === 'ARTEA' && <ArteaQuestionnaire />}
+        <EndDateField endDate={endDate} onChange={chooseEndDate} />
+        <div className="row">
+          <div className="col-md-8">
+            <YourDetails insurer={insurer} onFile={onFile} />
+            {insurer === 'ARTEA' && <ArteaQuestionnaire />}
+          </div>
+        </div>
         {asksUsPersonDeclaration(insurer) && <NotUsPersonConfirmation />}
 
         {pensionAccountNotReady && (

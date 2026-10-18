@@ -25,7 +25,7 @@ export const InsuranceTransferSent = () => {
       <h1 className="mb-4 text-balance">
         <FormattedMessage id="insuranceTransfer.sentQuestion.title" />
       </h1>
-      <div className="d-flex gap-2 justify-content-center flex-wrap">
+      <div className="d-flex flex-column flex-sm-row-reverse justify-content-center gap-2">
         <button type="button" className="btn btn-primary" onClick={recordSent}>
           <FormattedMessage id="insuranceTransfer.sentQuestion.yes" />
         </button>

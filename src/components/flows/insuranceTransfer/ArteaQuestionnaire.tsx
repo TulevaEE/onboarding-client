@@ -16,9 +16,11 @@ import {
   InsurerFormValues,
 } from './insurerFormValues';
 
+const INCOME_SOURCES_ERROR_ID = 'insurer-form-income-error';
+
 const useRequired = () => {
   const { formatMessage } = useIntl();
-  const message = formatMessage({ id: 'new.user.flow.signup.error.required.field' });
+  const message = formatMessage({ id: 'insuranceTransfer.form.required' });
   return {
     chosen: { required: message },
     answered: { validate: (value: string | undefined) => !!value?.trim() || message },
@@ -157,13 +159,13 @@ const IncomeSourceFields = () => {
   const registration = register('artea.incomeSources', {
     validate: (sources) =>
       sources.length > 0 ||
-      formatMessage({ id: 'flows.savingsFundChildOnboarding.fundingSourcesStep.required' }),
+      formatMessage({ id: 'insuranceTransfer.form.artea.incomeSources.required' }),
   });
   const error = errors.artea?.incomeSources?.message;
 
   return (
-    <fieldset>
-      <legend className="form-label fs-6">
+    <fieldset aria-describedby={error ? INCOME_SOURCES_ERROR_ID : undefined}>
+      <legend className="form-label fs-base">
         <FormattedMessage id="insuranceTransfer.form.artea.incomeSources" />
       </legend>
       {INCOME_SOURCES.map((source) => (
@@ -171,7 +173,7 @@ const IncomeSourceFields = () => {
           <div className="form-check">
             <input
               type="checkbox"
-              className={`form-check-input ${error ? 'is-invalid' : ''}`}
+              className="form-check-input"
               id={`insurer-form-income-${source}`}
               value={source}
               {...registration}
@@ -196,7 +198,11 @@ const IncomeSourceFields = () => {
           )}
         </div>
       ))}
-      {error && <div className="invalid-feedback d-block">{error}</div>}
+      {error && (
+        <div id={INCOME_SOURCES_ERROR_ID} className="invalid-feedback d-block">
+          {error}
+        </div>
+      )}
     </fieldset>
   );
 };
@@ -229,8 +235,14 @@ export const ArteaQuestionnaire = () => {
         id="insurer-form-premium-account"
         label={<FormattedMessage id="insuranceTransfer.form.artea.premiumAccountIban" />}
         registration={register('artea.premiumAccountIban', {
-          validate: (iban) =>
-            isValidIban(iban) || formatMessage({ id: 'capital.transfer.create.error.ibanInvalid' }),
+          validate: {
+            answered: (iban) =>
+              iban.trim() !== '' ||
+              formatMessage({ id: 'insuranceTransfer.form.artea.premiumAccountIban.required' }),
+            valid: (iban) =>
+              isValidIban(iban) ||
+              formatMessage({ id: 'insuranceTransfer.form.artea.premiumAccountIban.invalid' }),
+          },
         })}
         error={errors.artea?.premiumAccountIban?.message}
         autoComplete="off"

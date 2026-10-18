@@ -84,37 +84,39 @@ const Selection = ({ nextPath }: Props & InjectedFormProps<Record<string, never>
   };
 
   return (
-    <>
-      {(loading || challengeCode) && (
-        <AuthenticationLoader
-          signingWithIdCard={isSigningWithIdCard()}
-          controlCode={challengeCode}
-          onCancel={cancelSigning}
-          overlayed
-        />
-      )}
-      {error && <ErrorMessage errors={error.body} onCancel={resetError} overlayed />}
+    <div className="row">
+      <div className="col-lg-8">
+        {(loading || challengeCode) && (
+          <AuthenticationLoader
+            signingWithIdCard={isSigningWithIdCard()}
+            controlCode={challengeCode}
+            onCancel={cancelSigning}
+            overlayed
+          />
+        )}
+        {error && <ErrorMessage errors={error.body} onCancel={resetError} overlayed />}
 
-      <p className="text-pretty">
-        <FormattedMessage id="insuranceTransfer.selection.intro" />
-      </p>
+        <p className="text-pretty">
+          <FormattedMessage id="insuranceTransfer.selection.intro" />
+        </p>
 
-      <ThirdPillarTermsAgreement />
-      <ResidencyAgreement className="mt-3" />
-      <OccupationAgreement className="col-md-5 mt-3 px-0" />
-      <PoliticallyExposedPersonAgreement className="mt-3" />
+        <ThirdPillarTermsAgreement />
+        <ResidencyAgreement className="mt-3" />
+        <OccupationAgreement className="col-md-5 mt-3 px-0" />
+        <PoliticallyExposedPersonAgreement className="mt-3" />
 
-      <div className="mt-5 d-flex flex-column flex-sm-row justify-content-end">
-        <button
-          type="button"
-          className="btn btn-primary"
-          disabled={!allAnswered || savingAnswers || loading || !!challengeCode}
-          onClick={sign}
-        >
-          <FormattedMessage id="confirm.mandate.sign" />
-        </button>
+        <div className="mt-5 d-flex flex-column flex-sm-row justify-content-end">
+          <button
+            type="button"
+            className="btn btn-primary btn-lg"
+            disabled={!allAnswered || savingAnswers || loading || !!challengeCode}
+            onClick={sign}
+          >
+            <FormattedMessage id="confirm.mandate.sign" />
+          </button>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

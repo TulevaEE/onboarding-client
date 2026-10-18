@@ -7,8 +7,6 @@ import { GuidedInsurerCode, guides, insurers } from './insurers';
 import { TransferRequest } from './useTransferRequest';
 import '../thirdPillar/ThirdPillarPayment/Payment.scss';
 
-const GUIDE_HEADING_ID = 'insurer-guide-heading';
-
 const bold = (chunks: ReactNode) => <b>{chunks}</b>;
 
 const CopyRequestStep = ({ request }: { request: TransferRequest }) => (
@@ -51,10 +49,7 @@ export const InsurerGuide = ({
   const stepValues = { b: bold, known: pensionAccountNumber ? 'yes' : 'no' };
 
   return (
-    <section className="p-4 mt-5 payment-details" aria-labelledby={GUIDE_HEADING_ID}>
-      <h3 id={GUIDE_HEADING_ID} className="h5 mb-3">
-        {insurers[insurer].name}
-      </h3>
+    <section className="p-3 p-sm-4 mt-5 payment-details" aria-label={insurers[insurer].name}>
       {noteMessageId && (
         <p className="mb-3 text-body-secondary text-pretty">
           <FormattedMessage id={noteMessageId} />

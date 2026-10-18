@@ -26,6 +26,7 @@ import {
   useTestBackendsExcept,
 } from '../../../test/backend';
 import { SIGN_MANDATE_SUCCESS } from '../../exchange/constants';
+import { changeIsPoliticallyExposed } from '../../aml/actions';
 import { Conversion } from '../../common/apiModels';
 import {
   getMobileSignatureStatusResponse,
@@ -272,6 +273,19 @@ describe('III pillar insurance contract transfer', () => {
       expect(await screen.findByRole('radio', { name: 'Ergo' })).toBeChecked();
     }, 20_000);
 
+    test('does not ask Ergo’s form again whether the person is politically exposed after the selection asked it', async () => {
+      openFlow('/3rd-pillar-insurance?insurer=ERGO');
+      await answerAllAgreements();
+      pensionAccountOpenedWhenAskedNext();
+
+      userEvent.click(signButton());
+
+      await requestStepOpened();
+      const details = await yourDetails();
+      expect(within(details).queryByRole('radio')).not.toBeInTheDocument();
+      expect(definitionsIn(details)).toContainEqual(['Politically exposed person', 'No']);
+    }, 20_000);
+
     test('saves only the email and phone when contact details come first, leaving the address to the signed selection', async () => {
       contactDetailsCheckMissing();
       const savedContactDetails = contactDetailsSaved();
@@ -461,7 +475,7 @@ describe('III pillar insurance contract transfer', () => {
       ).toBeInTheDocument();
     });
 
-    test('warns that some contracts pay less when ended early and lets a later end date be chosen', async () => {
+    test('says that today’s date means as soon as possible and lets the end date of a contract that pays more then be chosen', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
 
       const endDate = await screen.findByLabelText('When should the contract end?');
@@ -470,7 +484,15 @@ describe('III pillar insurance contract transfer', () => {
       expect(endDate).toHaveValue(today);
       expect(endDate).toHaveAttribute('min', today);
       expect(endDate).toHaveAccessibleDescription(
-        'Some contracts pay less before their end date: check your contract or the insurer’s e\u2011service. If your insurer pays more later, pick that date.',
+        'Today’s date means as soon as possible. If your contract pays more on its end date, pick that date. You can find it on your contract or in the insurer’s e\u2011service.',
+      );
+    });
+
+    test('says in Estonian that today’s date means as soon as possible, in the end-date word the Swedbank note uses', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=ERGO', 'et');
+
+      expect(await screen.findByLabelText('Millal leping lõpetada?')).toHaveAccessibleDescription(
+        'Tänane kuupäev tähendab esimesel võimalusel. Kui sinu leping maksab lõpptähtpäeval rohkem, vali see kuupäev. Selle leiad lepingust või kindlustusandja e\u2011teenindusest.',
       );
     });
 
@@ -547,6 +569,15 @@ describe('III pillar insurance contract transfer', () => {
       );
     });
 
+    test('asks SEB’s contract number before the end date', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
+
+      const endDate = await screen.findByLabelText('When should the contract end?');
+      const contractNumber = screen.getByLabelText('Contract number');
+
+      expect(inDocumentOrder([endDate, contractNumber])).toEqual([contractNumber, endDate]);
+    });
+
     test('names the contract to end when its number is given, keeping the number out of the address', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=SEB');
 
@@ -581,12 +612,23 @@ describe('III pillar insurance contract transfer', () => {
 
       const steps = normalizedText(await screen.findByRole('region', { name: 'Swedbank' }));
       expect(steps).toContain(
-        'Logi Swedbanki internetipanka. Kui lõpetamise avaldus kohe ei avane, vali Pension → Minu pensionivara, oma pensionikindlustuse leping ja Lepingu lõpetamine.',
+        'Logi sisse Swedbanki internetipanka. Kui lõpetamise avaldus kohe ei avane, vali Pension → Minu pensionivara, oma pensionikindlustuse leping ja Lepingu lõpetamine.',
       );
       expect(steps).toContain(
-        'Vali, et soovid tagasiostuväärtuse eest vabatahtliku pensionifondi osakuid, ja vali fondiks Tuleva III Samba Pensionifond (EE3600001707), 100%.',
+        'Märgi, et soovid tagasiostuväärtuse eest vabatahtliku pensionifondi osakuid, ja vali fondiks Tuleva III Samba Pensionifond (EE3600001707) osakaaluga 100%.',
       );
       expect(steps).toContain('Kirjuta väljale Pensionikonto number:');
+    });
+
+    test('keeps Tuleva III Samba Pensionifond from breaking after the pillar number in Swedbank’s steps', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=SWEDBANK', 'et');
+
+      const swedbankGuide = await screen.findByRole('region', { name: 'Swedbank' });
+      expect(
+        within(swedbankGuide).getByText('Tuleva III\u00A0Samba Pensionifond', {
+          normalizer: (text) => text,
+        }),
+      ).toBeInTheDocument();
     });
 
     test('copies the whole request with a quiet copy button', async () => {
@@ -726,7 +768,7 @@ describe('III pillar insurance contract transfer', () => {
       const swedbankGuide = await screen.findByRole('region', { name: 'Swedbank' });
       expect(
         within(swedbankGuide).getByText(
-          'Pensionikindlustus+ guarantees your payments minus fees only on its end date. If the value in the internet bank is already above that, ending now costs you only the termination fee. If it is below, wait for the end date and move the money then.',
+          'Pensionikindlustus+ guarantees your contributions minus fees only on its end date. If the value in the internet bank is already above that, ending now costs you only the termination fee. If it is below, wait for the end date and move the money then.',
         ),
       ).toBeInTheDocument();
       expect(screen.queryByText(/^Subject: /)).not.toBeInTheDocument();
@@ -771,7 +813,7 @@ describe('III pillar insurance contract transfer', () => {
         insurer: 'Swedbank',
         steps: [
           'Log in to the Swedbank internet bank. If the termination application does not open right away, choose Pension → Minu pensionivara, your pension insurance contract and Lepingu lõpetamine.',
-          'Choose to use the surrender value for voluntary pension fund units, and choose Tuleva III Samba Pensionifond (EE3600001707) at 100%.',
+          'Select voluntary pension fund units for the surrender value, then choose Tuleva III Samba Pensionifond (EE3600001707) with a 100% share.',
           'In Pensionikonto number, enter:',
           'Confirm the application in the internet bank.',
         ],
@@ -780,13 +822,13 @@ describe('III pillar insurance contract transfer', () => {
           'https://www.swedbank.ee/private/pensions/my/pensionAssets/insuranceContract/modification/termination',
       },
     ])(
-      'guides the request to $insurer and opens its channel in a new tab',
+      'guides the request to $insurer, named by the guide rather than a heading that repeats the chosen insurer, and opens its channel in a new tab',
       async ({ insurer, steps, open, actionUrl }) => {
         openFlow();
         userEvent.click(await screen.findByRole('radio', { name: new RegExp(`^${insurer}`) }));
 
         const insurerGuide = guide(insurer);
-        expect(within(insurerGuide).getByRole('heading', { name: insurer })).toBeInTheDocument();
+        expect(within(insurerGuide).queryByRole('heading')).not.toBeInTheDocument();
         steps.forEach((step) => expect(normalizedText(insurerGuide)).toContain(step));
         expect(within(insurerGuide).queryAllByRole('link')).toEqual([]);
 
@@ -819,7 +861,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       expect(await screen.findByRole('button', { name: 'Sign the request' })).toBeInTheDocument();
       expect(
         screen.getByText(
-          'We fill in the insurer’s own request form. You sign it, we email it to you, and you forward it to the insurer.',
+          'We fill in the insurer’s own request form. We email the signed request to you, and you forward it to the insurer.',
         ),
       ).toBeInTheDocument();
       expect(screen.queryByText(/^Subject: /)).not.toBeInTheDocument();
@@ -827,6 +869,22 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       expect(screen.getByLabelText('When should the contract end?')).toBeInTheDocument();
     },
   );
+
+  test('explains the form before its first question and asks the contract number before the end date', async () => {
+    openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
+
+    const details = await yourDetails();
+    const intro = screen.getByText(/^We fill in the insurer’s own request form\./);
+    const contractNumber = screen.getByLabelText('Contract number');
+    const endDate = screen.getByLabelText('When should the contract end?');
+
+    expect(inDocumentOrder([details, endDate, contractNumber, intro])).toEqual([
+      intro,
+      contractNumber,
+      endDate,
+      details,
+    ]);
+  });
 
   test('shows the details on file for confirmation, asks only for the contract number and the US declaration, signs the Compensa form and says where to forward it', async () => {
     const forms = insuranceTransferFormBackend();
@@ -852,7 +910,11 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
 
     expect(await screen.findByText('9876')).toBeInTheDocument();
     expect(
-      await screen.findByRole('heading', { name: 'Your request is signed' }, { timeout: 5_000 }),
+      await screen.findByRole(
+        'heading',
+        { name: 'Send the request to your insurer' },
+        { timeout: 5_000 },
+      ),
     ).toBeInTheDocument();
     expect(history.location.pathname).toBe('/3rd-pillar-insurance-signed/1');
     expect(forms.created).toEqual([
@@ -864,16 +926,10 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
         usPerson: false,
       },
     ]);
-    expect(screen.getByText(/^We emailed the signed request to you\./)).toHaveTextContent(
-      'We emailed the signed request to you. Forward that email with its attachment to your insurer (Compensa) at info@compensalife.ee.',
+    expect(screen.getByText(/^We emailed the request to/)).toHaveTextContent(
+      'We emailed the request to john.doe@example.com. Forward that email with its attachment to your insurer (Compensa):',
     );
-    expect(screen.getByRole('link', { name: 'info@compensalife.ee' })).toHaveAttribute(
-      'href',
-      'mailto:info@compensalife.ee',
-    );
-    expect(
-      screen.queryByRole('button', { name: 'Download the signed request' }),
-    ).not.toBeInTheDocument();
+    expect(screen.getByText('info@compensalife.ee')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'My account' })).toHaveAttribute('href', '/account');
     expect(screen.queryByText('Send a request to your insurer')).not.toBeInTheDocument();
   }, 20_000);
@@ -887,13 +943,28 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     userEvent.click(signRequestButton());
 
     expect(await screen.findByText('Enter the contract number.')).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'Confirm this to sign here. If you are a US citizen or US tax resident, contact your insurer.',
-      ),
-    ).toBeInTheDocument();
     expect(screen.getByLabelText('Contract number')).toBeInvalid();
+    expect(
+      screen.getByRole('checkbox', { name: 'I am not a US citizen or US tax resident' }),
+    ).toHaveAccessibleDescription('Confirm this to sign here. Otherwise, contact your insurer.');
     expect(forms.created).toEqual([]);
+  });
+
+  test('ties the messages of unanswered questions to the questions for screen readers', async () => {
+    kycIdentityBackend(server, { email: 'saver@example.com', complete: false });
+    openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+    await yourDetails();
+
+    userEvent.click(signRequestButton());
+
+    const pep = await screen.findByRole('radiogroup', {
+      name: 'Are you a politically exposed person?',
+    });
+    expect(pep).toBeInvalid();
+    expect(pep).toHaveAccessibleDescription('Select an option to continue.');
+    expect(screen.getByRole('listbox', { name: 'Citizenship' })).toHaveAccessibleDescription(
+      'Select countries of citizenship to continue.',
+    );
   });
 
   test('sends the chosen end date with the request', async () => {
@@ -1033,7 +1104,11 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       'FI',
     );
     expect(isInsidePii(screen.getByLabelText('City'))).toBe(true);
-    userEvent.click(screen.getByRole('radio', { name: 'I am a politically exposed person' }));
+    userEvent.click(
+      screen.getByRole('radio', {
+        name: 'I am a politically exposed person, a close relative or close associate of such a person',
+      }),
+    );
 
     userEvent.click(signRequestButton());
 
@@ -1046,13 +1121,38 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     });
   });
 
+  test('asks the details nothing on file holds before summarizing the ones that follow from them', async () => {
+    kycIdentityBackend(server, { email: 'saver@example.com', complete: false });
+    openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+
+    const details = await yourDetails();
+    const city = within(details).getByLabelText('City');
+    const taxResidency = within(details).getByText('Tax residency');
+    const change = within(details).getByRole('button', { name: 'Change details' });
+
+    expect(inDocumentOrder([change, taxResidency, city])).toEqual([city, taxResidency, change]);
+  });
+
+  test('keeps the politically exposed status on file over an answer given earlier in the session', async () => {
+    kycIdentityBackend(server, { ...IDENTITY_ON_FILE, pepSelfDeclaration: 'IS_PEP' });
+    openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+    store.dispatch(changeIsPoliticallyExposed(false));
+
+    expect(definitionsIn(await yourDetails())).toContainEqual([
+      'Politically exposed person',
+      'Yes',
+    ]);
+  });
+
   test('asks for every detail on file again when it is more than a year old, filled in from the file', async () => {
     kycIdentityBackend(server, { ...IDENTITY_ON_FILE, updatedAt: daysAgo(400) });
     openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
 
     expect(await screen.findByLabelText('City')).toHaveValue('Tallinn');
     expect(
-      screen.getByRole('radio', { name: 'I am not a politically exposed person' }),
+      screen.getByRole('radio', {
+        name: 'I am not a politically exposed person, a close relative or close associate of such a person',
+      }),
     ).toBeChecked();
     expect(definitionsIn(await yourDetails())).toEqual([
       ['Tax residency', 'Estonia'],
@@ -1093,6 +1193,15 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       countryOfBirth: 'LV',
       taxResidency: 'FI',
     });
+  });
+
+  test('moves focus to the first field the person opens by changing the details on file', async () => {
+    openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+    await yourDetails();
+
+    userEvent.click(screen.getByRole('button', { name: 'Change details' }));
+
+    await waitFor(() => expect(screen.getByRole('combobox', { name: 'Country' })).toHaveFocus());
   });
 
   test('asks Artea’s customer questions and sends the answers with the request, the bank account without the separators it was typed with', async () => {
@@ -1202,11 +1311,28 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
 
     userEvent.click(signRequestButton());
 
-    expect(await screen.findByText('The entered IBAN is not valid.')).toBeInTheDocument();
-    expect(screen.getByText('Choose at least one')).toBeInTheDocument();
-    expect(screen.getByLabelText('Identity document')).toBeInvalid();
+    expect(await screen.findByText('Check the bank account number.')).toBeInTheDocument();
+    const incomeSources = screen.getByRole('group', { name: 'Sources of income' });
+    expect(incomeSources).toHaveAccessibleDescription('Choose at least one source of income.');
+    within(incomeSources)
+      .getAllByRole('checkbox')
+      .forEach((checkbox) => expect(checkbox).not.toHaveClass('is-invalid'));
+    expect(screen.getByLabelText('Identity document')).toHaveAccessibleDescription(
+      'Fill in this field.',
+    );
     expect(screen.getByLabelText('Occupation')).toBeInvalid();
     expect(forms.created).toEqual([]);
+  });
+
+  test('asks for Artea’s bank account when it is left empty instead of calling it invalid', async () => {
+    openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
+    await yourDetails();
+
+    userEvent.click(signRequestButton());
+
+    expect(
+      await screen.findByLabelText('Bank account you paid the premiums from'),
+    ).toHaveAccessibleDescription('Enter the bank account number.');
   });
 
   test('fills in and signs one form when the sign button is pressed twice', async () => {
@@ -1320,17 +1446,49 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
   });
 
   describe('once signed', () => {
-    test('offers the signed request to download when it could not be emailed', async () => {
-      signedFormBackend({ emailStatus: 'FAILED' });
+    test('says which address the request was emailed to, gives the insurer’s address to copy instead of a link that opens an empty email, and still offers the file to download', async () => {
+      signedFormBackend({ emailStatus: 'SENT' });
 
       openFlow('/3rd-pillar-insurance-signed/1');
 
       expect(
-        await screen.findByText(/^Download the signed request and email it/),
-      ).toHaveTextContent(
-        'Download the signed request and email it to your insurer (Compensa) at info@compensalife.ee.',
+        await screen.findByRole('heading', { name: 'Send the request to your insurer' }),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/^We emailed the request to/)).toHaveTextContent(
+        'We emailed the request to john.doe@example.com. Forward that email with its attachment to your insurer (Compensa):',
       );
-      userEvent.click(screen.getByRole('button', { name: 'Download the signed request' }));
+      expect(isInsidePii(screen.getByText('john.doe@example.com'))).toBe(true);
+      expect(screen.getByText('info@compensalife.ee')).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'info@compensalife.ee' })).not.toBeInTheDocument();
+
+      userEvent.click(screen.getByRole('button', { name: 'Copy' }));
+      await waitFor(() => expect(writeText).toHaveBeenCalledWith('info@compensalife.ee'));
+
+      const downloadButton = screen.getByRole('button', { name: 'Download the signed request' });
+      expect(downloadButton).toHaveClass('btn-link');
+      userEvent.click(downloadButton);
+      await waitFor(() =>
+        expect(download).toHaveBeenCalledWith(
+          expect.any(Blob),
+          'Tuleva_Compensa_avaldus.asice',
+          'application/vnd.etsi.asic-e+zip',
+        ),
+      );
+    });
+
+    test('says the request could not be emailed and offers it to download as the main action, with the insurer’s address to copy', async () => {
+      signedFormBackend({ emailStatus: 'FAILED' });
+
+      openFlow('/3rd-pillar-insurance-signed/1');
+
+      expect(await screen.findByText(/^We could not email you the request\./)).toHaveTextContent(
+        'We could not email you the request. Download it and send it to your insurer (Compensa):',
+      );
+      expect(screen.getByText('info@compensalife.ee')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Copy' })).toBeInTheDocument();
+      const downloadButton = screen.getByRole('button', { name: 'Download the signed request' });
+      expect(downloadButton).toHaveClass('btn-primary');
+      userEvent.click(downloadButton);
       await waitFor(() =>
         expect(download).toHaveBeenCalledWith(
           expect.any(Blob),
@@ -1388,9 +1546,10 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
 
       openFlow('/3rd-pillar-insurance-signed/1', 'et');
 
-      expect(await screen.findByText(/^Saatsime allkirjastatud avalduse/)).toHaveTextContent(
-        'Saatsime allkirjastatud avalduse sulle e‑postiga. Saada see kiri koos manusega edasi kindlustusandjale (Ergo) aadressil elukindlustus@ergo.ee.',
+      expect(await screen.findByText(/^Saatsime avalduse aadressile/)).toHaveTextContent(
+        'Saatsime avalduse aadressile john.doe@example.com. Edasta see kiri koos manusega kindlustusandjale (Ergo):',
       );
+      expect(screen.getByText('elukindlustus@ergo.ee')).toBeInTheDocument();
     });
   });
 });
@@ -1413,6 +1572,11 @@ const accessibleName = (radio: HTMLElement) =>
   (radio as HTMLInputElement).labels?.[0]?.textContent?.replace(/\s+/g, ' ').trim();
 
 const normalizedText = (element: HTMLElement) => element.textContent?.replace(/\s+/g, ' ');
+
+const inDocumentOrder = (elements: HTMLElement[]) =>
+  [...elements].sort((first, second) =>
+    first.compareDocumentPosition(second) === Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1,
+  );
 
 type TrackedEvent = { type: string; data: Record<string, unknown> };
 
