@@ -23,7 +23,6 @@ type GuideStep = {
 type Guide = {
   actionUrl: string;
   writesLetter: boolean;
-  noteMessageId?: TranslationKey;
   steps: GuideStep[];
 };
 
@@ -48,7 +47,6 @@ export const guides: Record<GuidedInsurerCode, Guide> = {
     actionUrl:
       'https://www.swedbank.ee/private/pensions/my/pensionAssets/insuranceContract/modification/termination',
     writesLetter: false,
-    noteMessageId: 'insuranceTransfer.guide.SWEDBANK.note',
     steps: [
       { messageId: 'insuranceTransfer.guide.SWEDBANK.logIn' },
       { messageId: 'insuranceTransfer.guide.SWEDBANK.chooseFund' },

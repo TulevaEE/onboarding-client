@@ -187,31 +187,25 @@ const RequestToInsurer = ({ user }: { user: PersonWithPensionAccount }) => {
           </div>
         </fieldset>
 
-        {insurer && (
-          <>
-            <p className="mt-3 mb-0 text-body-secondary text-pretty">
-              <FormattedMessage id="insuranceTransfer.fairness" />
-            </p>
-            {takesSignedForm(insurer) ? (
-              <InsurerForm
-                insurer={insurer}
-                endDate={endDate}
-                chooseEndDate={chooseEndDate}
-                user={user}
-              />
-            ) : (
-              <GuidedRequest
-                insurer={insurer}
-                user={user}
-                endDate={endDate}
-                chooseEndDate={chooseEndDate}
-                savedContractNumber={savedContractNumber}
-                saveContractNumber={saveContractNumber}
-                askIfSent={askIfSent}
-              />
-            )}
-          </>
-        )}
+        {insurer &&
+          (takesSignedForm(insurer) ? (
+            <InsurerForm
+              insurer={insurer}
+              endDate={endDate}
+              chooseEndDate={chooseEndDate}
+              user={user}
+            />
+          ) : (
+            <GuidedRequest
+              insurer={insurer}
+              user={user}
+              endDate={endDate}
+              chooseEndDate={chooseEndDate}
+              savedContractNumber={savedContractNumber}
+              saveContractNumber={saveContractNumber}
+              askIfSent={askIfSent}
+            />
+          ))}
       </div>
     </div>
   );

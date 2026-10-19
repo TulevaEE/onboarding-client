@@ -44,16 +44,11 @@ export const InsurerGuide = ({
   request: TransferRequest;
   pensionAccountNumber: string;
 }) => {
-  const { writesLetter, noteMessageId, steps } = guides[insurer];
+  const { writesLetter, steps } = guides[insurer];
   const firstStepNumber = writesLetter ? 2 : 1;
 
   return (
     <section className="p-3 p-sm-4 mt-5 payment-details" aria-label={insurers[insurer].name}>
-      {noteMessageId && (
-        <p className="mb-3 text-body-secondary text-pretty">
-          <FormattedMessage id={noteMessageId} />
-        </p>
-      )}
       {writesLetter && <CopyRequestStep request={request} />}
       {steps.map(({ messageId, showsPensionAccountNumber }, index) => (
         <PaymentStep key={messageId} number={index + firstStepNumber}>

@@ -514,14 +514,6 @@ describe('III pillar insurance contract transfer', () => {
       expect(screen.getByRole('region', { name: 'SEB' })).toBeInTheDocument();
     });
 
-    test('says that the insurance cover ends with the contract once an insurer is chosen', async () => {
-      openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
-
-      expect(
-        await screen.findByText('When the contract ends, so does its insurance cover.'),
-      ).toBeInTheDocument();
-    });
-
     test('says that today’s date means as soon as possible and lets the end date of a contract that pays more then be chosen', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
 
@@ -544,7 +536,7 @@ describe('III pillar insurance contract transfer', () => {
       expect(endDate).toHaveAttribute('min', dayInEstonia);
     });
 
-    test('says in Estonian that today’s date means as soon as possible, in the end-date word the Swedbank note uses', async () => {
+    test('says in Estonian that today’s date means as soon as possible', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=ERGO', 'et');
 
       expect(await screen.findByLabelText('Millal leping lõpetada?')).toHaveAccessibleDescription(
@@ -830,12 +822,7 @@ describe('III pillar insurance contract transfer', () => {
     test('ends a Swedbank contract on Swedbank’s own termination application, with no request to copy and nothing to fill in here', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=SWEDBANK');
 
-      const swedbankGuide = await screen.findByRole('region', { name: 'Swedbank' });
-      expect(
-        within(swedbankGuide).getByText(
-          'Pensionikindlustus+ guarantees your contributions minus fees only on its end date. If the value in the internet bank is already above that, ending now costs you only the termination fee. If it is below, wait for the end date and move the money then.',
-        ),
-      ).toBeInTheDocument();
+      expect(await screen.findByRole('region', { name: 'Swedbank' })).toBeInTheDocument();
       expect(screen.queryByText(/^Subject: /)).not.toBeInTheDocument();
       expect(screen.queryByLabelText('Contract number')).not.toBeInTheDocument();
       expect(screen.queryByLabelText('When should the contract end?')).not.toBeInTheDocument();
