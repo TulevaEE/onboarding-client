@@ -701,6 +701,17 @@ describe('third pillar recurring payment link', () => {
     expect(link).toHaveClass('icon-link');
   });
 
+  test('sits after the fund change link when the III pillar is not fully converted', async () => {
+    userConversionBackend(server, {}, { transfersComplete: false });
+    thirdPillarRecurringPaymentBackend(server, { detected: true });
+    renderAccountPage();
+
+    const link = await screen.findByRole('link', { name: 'Change recurring payment' });
+
+    expect(linkBefore(link)).toHaveAccessibleName(/^Change III\spillar fund$/);
+    expect(linkBefore(link)).toHaveAttribute('href', '/3rd-pillar-flow');
+  });
+
   test('takes the person to the recurring payment change flow', async () => {
     thirdPillarRecurringPaymentBackend(server, { detected: true });
     renderAccountPage();
