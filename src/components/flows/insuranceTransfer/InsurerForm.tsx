@@ -11,7 +11,6 @@ import {
   downloadInsuranceTransferFormPreview,
 } from '../../common/api';
 import { useKycIdentity } from '../../common/apiHooks';
-import { User } from '../../common/apiModels';
 import {
   CreateInsuranceTransferFormCommand,
   InsuranceTransferForm,
@@ -31,16 +30,22 @@ import {
   defaultValuesFrom,
   detailsOnFile,
   InsurerFormValues,
+  policyNumberAsSent,
   policyNumberFormatOf,
   toCommand,
 } from './insurerFormValues';
 import { YourDetails } from './YourDetails';
+import { RequestReview } from './RequestReview';
+import { PersonWithPensionAccount } from './useTransferRequest';
 
 type Props = {
   insurer: InsuranceTransferFormInsurer;
   endDate: string | null;
   chooseEndDate: (endDate: string | null) => void;
-  user: User;
+  user: PersonWithPensionAccount;
+  reviewing: boolean;
+  review: () => void;
+  editAnswers: () => void;
 };
 
 const POLICY_NUMBER_MAX_LENGTH = 40;
@@ -143,6 +148,9 @@ const FilledInInsurerForm = ({
   endDate,
   chooseEndDate,
   user,
+  reviewing,
+  review,
+  editAnswers,
   identity,
 }: Props & { identity: KycIdentity | undefined }) => {
   const history = useHistory();
@@ -173,7 +181,7 @@ const FilledInInsurerForm = ({
       },
     );
 
-  const preview = (values: InsurerFormValues) =>
+  const viewAsPdf = (values: InsurerFormValues) =>
     withFilledForm(
       () => commandFrom(values),
       async (form) => showPdf(await downloadInsuranceTransferFormPreview(form.id)),
@@ -200,7 +208,7 @@ const FilledInInsurerForm = ({
         />
       )}
 
-      <form onSubmit={methods.handleSubmit(sign)} noValidate>
+      <form onSubmit={methods.handleSubmit(review)} hidden={reviewing} noValidate>
         <p className="mt-4 mb-0 text-pretty">
           <FormattedMessage id="insuranceTransfer.form.intro" />
         </p>
@@ -215,20 +223,25 @@ const FilledInInsurerForm = ({
           </div>
         )}
 
-        <div className="mt-5 d-flex flex-column-reverse flex-sm-row justify-content-end align-items-sm-center gap-3">
-          <button
-            type="button"
-            className="btn btn-link"
-            disabled={working}
-            onClick={methods.handleSubmit(preview)}
-          >
-            <FormattedMessage id="insuranceTransfer.form.preview" />
-          </button>
-          <button type="submit" className="btn btn-primary btn-lg" disabled={working}>
-            <FormattedMessage id="insuranceTransfer.form.sign" />
+        <div className="mt-5 d-flex flex-column flex-sm-row justify-content-end">
+          <button type="submit" className="btn btn-primary btn-lg">
+            <FormattedMessage id="insuranceTransfer.form.continue" />
           </button>
         </div>
       </form>
+
+      {reviewing && (
+        <RequestReview
+          insurer={insurer}
+          policyNumber={policyNumberAsSent(insurer, methods.getValues('policyNumber'))}
+          endDate={endDate}
+          pensionAccountNumber={user.pensionAccountNumber}
+          working={working}
+          onViewAsPdf={() => viewAsPdf(methods.getValues())}
+          onSign={() => sign(methods.getValues())}
+          onEditAnswers={editAnswers}
+        />
+      )}
     </FormProvider>
   );
 };

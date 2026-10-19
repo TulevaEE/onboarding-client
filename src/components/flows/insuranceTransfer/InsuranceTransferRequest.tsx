@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useLocation } from 'react-router-dom';
 import { PII_CLASS } from '../../tracking/piiMarkup';
@@ -26,6 +26,8 @@ const INSURER_PARAMETER = 'insurer';
 const END_DATE_PARAMETER = 'endDate';
 
 type RequestState = { contractNumber?: string } | undefined;
+
+type FormStep = 'answering' | 'reviewing' | 'changingAnswers';
 
 const useRequestChoicesInAddress = () => {
   const { search, state } = useLocation<RequestState>();
@@ -66,6 +68,46 @@ const InsurerName = ({ insurer }: { insurer: InsurerCode }) => {
         </span>
       )}
     </p>
+  );
+};
+
+const InsurerQuestion = ({
+  insurer,
+  chooseInsurer,
+  focused,
+}: {
+  insurer: InsurerCode | null;
+  chooseInsurer: (insurer: InsurerCode) => void;
+  focused: boolean;
+}) => {
+  const legend = useRef<HTMLLegendElement>(null);
+
+  useEffect(() => {
+    if (focused) {
+      legend.current?.focus({ preventScroll: true });
+    }
+  }, [focused]);
+
+  return (
+    <fieldset>
+      <legend ref={legend} tabIndex={-1} className="h5 mb-3">
+        <FormattedMessage id="insuranceTransfer.request.question" />
+      </legend>
+      <div className="d-flex flex-column gap-2">
+        {INSURER_CODES.map((code) => (
+          <Radio
+            key={code}
+            name="insurer"
+            id={`insurer-${code}`}
+            className="py-3"
+            selected={insurer === code}
+            onSelect={() => chooseInsurer(code)}
+          >
+            <InsurerName insurer={code} />
+          </Radio>
+        ))}
+      </div>
+    </fieldset>
   );
 };
 
@@ -160,29 +202,23 @@ const RequestToInsurer = ({ user }: { user: PersonWithPensionAccount }) => {
     saveContractNumber,
     askIfSent,
   } = useRequestChoicesInAddress();
+  const [step, setStep] = useState<FormStep>('answering');
+  const goTo = (next: FormStep) => {
+    setStep(next);
+    window.scrollTo(0, 0);
+  };
+  const reviewing = step === 'reviewing';
 
   return (
     <div className="row">
       <div className="col-lg-8">
-        <fieldset>
-          <legend className="h5 mb-3">
-            <FormattedMessage id="insuranceTransfer.request.question" />
-          </legend>
-          <div className="d-flex flex-column gap-2">
-            {INSURER_CODES.map((code) => (
-              <Radio
-                key={code}
-                name="insurer"
-                id={`insurer-${code}`}
-                className="py-3"
-                selected={insurer === code}
-                onSelect={() => chooseInsurer(code)}
-              >
-                <InsurerName insurer={code} />
-              </Radio>
-            ))}
-          </div>
-        </fieldset>
+        {!reviewing && (
+          <InsurerQuestion
+            insurer={insurer}
+            chooseInsurer={chooseInsurer}
+            focused={step === 'changingAnswers'}
+          />
+        )}
 
         {insurer &&
           (takesSignedForm(insurer) ? (
@@ -191,6 +227,9 @@ const RequestToInsurer = ({ user }: { user: PersonWithPensionAccount }) => {
               endDate={endDate}
               chooseEndDate={chooseEndDate}
               user={user}
+              reviewing={reviewing}
+              review={() => goTo('reviewing')}
+              editAnswers={() => goTo('changingAnswers')}
             />
           ) : (
             <GuidedRequest
