@@ -160,9 +160,10 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
             <PhosphorIcon name="house" size={18} className="text-body-secondary" />
             <FormattedMessage id="header.my.account" />
           </Link>
+          <LanguageSwitcher onKeyDown={handleKeyDown} onClick={() => setOpen(false)} />
+          <hr className="dropdown-divider" />
           {hasAnotherAccount && (
             <>
-              <hr className="dropdown-divider" />
               <span className="dropdown-header">
                 <FormattedMessage id="roleSwitcher.switchAccount" />
               </span>
@@ -218,7 +219,6 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
             <FormattedMessage id="roleSwitcher.openNewAccount" />
           </Link>
           <hr className="dropdown-divider" />
-          <LanguageSwitcher onKeyDown={handleKeyDown} onClick={() => setOpen(false)} />
           <a
             href="/login"
             className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2"

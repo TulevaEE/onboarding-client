@@ -46,6 +46,13 @@ function menuRows() {
   return Array.from(dropdownMenuPanel()?.children ?? []);
 }
 
+const DIVIDER = '──';
+
+function menuOutline() {
+  const dividers: Element[] = screen.getAllByRole('separator');
+  return menuRows().map((row) => (dividers.includes(row) ? DIVIDER : row.textContent));
+}
+
 function iconsInToggleAndMenu() {
   return Array.from(document.querySelectorAll('.dropdown svg'));
 }
@@ -88,18 +95,6 @@ describe('RoleSwitcher', () => {
       ).toHaveAttribute('href', '/savings-fund/onboarding');
     });
 
-    it('offers opening a new account below the existing roles', async () => {
-      setupSwitchFlow();
-
-      renderRoleSwitcher();
-
-      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
-
-      expect(
-        await screen.findByRole('link', { name: 'Open an account for a child or company' }),
-      ).toBeInTheDocument();
-    });
-
     it('reaches the open-new-account link with arrow keys', async () => {
       setupSwitchFlow();
 
@@ -113,13 +108,9 @@ describe('RoleSwitcher', () => {
         await screen.findByRole('link', { name: 'Open an account for a child or company' }),
       ).toBeInTheDocument();
 
-      const items = dropdownItems();
-      const languageItem = items[items.length - 2];
       userEvent.type(screen.getByRole('link', { name: 'Log out' }), '{arrowup}', {
         skipClick: true,
       });
-      await waitFor(() => expect(languageItem).toHaveFocus());
-      userEvent.type(languageItem, '{arrowup}', { skipClick: true });
 
       await waitFor(() =>
         expect(
@@ -153,7 +144,6 @@ describe('RoleSwitcher', () => {
       ).toBeInTheDocument();
       expect(screen.queryByText('Switch account')).not.toBeInTheDocument();
       expect(screen.queryByRole('button', { name: 'John Doe' })).not.toBeInTheDocument();
-      expect(screen.getAllByRole('separator')).toHaveLength(1);
     });
 
     it('offers switching accounts to a single-account user with a child being onboarded', async () => {
@@ -172,7 +162,7 @@ describe('RoleSwitcher', () => {
       expect(screen.getByRole('link', { name: 'Mari Maasikas' })).toBeInTheDocument();
     });
 
-    it('puts logging out right below the language choice', async () => {
+    it('puts the language choice below my account and sets logging out apart at the end', async () => {
       setupSwitchFlow();
 
       renderRoleSwitcher();
@@ -180,21 +170,38 @@ describe('RoleSwitcher', () => {
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
       expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
 
-      const rows = menuRows();
-      const languageRow = rows.indexOf(screen.getByRole('link', { name: 'Eesti keeles' }));
-      expect(rows[languageRow + 1]).toBe(screen.getByRole('link', { name: 'Log out' }));
+      expect(menuOutline()).toEqual([
+        'My account',
+        'Eesti keeles',
+        DIVIDER,
+        'Switch account',
+        'John Doe',
+        'Test OÜ',
+        'Open an account for a child or company',
+        DIVIDER,
+        'Log out',
+      ]);
     });
 
-    it('opens with my account and ends with logging out', async () => {
-      setupSwitchFlow();
+    it('keeps the same three groups when there is no other account to switch to', async () => {
+      rolesBackend(server, [personalRole]);
+      userBackend(server, { role: personalRole });
 
       renderRoleSwitcher();
 
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      expect(
+        await screen.findByRole('link', { name: 'Open an account for a child or company' }),
+      ).toBeInTheDocument();
 
-      const items = dropdownItems();
-      expect(items[0]).toHaveTextContent('My account');
-      expect(items[items.length - 1]).toHaveTextContent('Log out');
+      expect(menuOutline()).toEqual([
+        'My account',
+        'Eesti keeles',
+        DIVIDER,
+        'Open an account for a child or company',
+        DIVIDER,
+        'Log out',
+      ]);
     });
 
     it('links my account to the account page', async () => {
