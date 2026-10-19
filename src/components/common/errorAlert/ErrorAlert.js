@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { FormattedMessage } from 'react-intl';
+import classNames from 'classnames';
 import {
   isIdEeInstructionsMessage,
   IdEeInstructionsMessage,
@@ -98,15 +99,16 @@ class ErrorAlert extends Component {
   }
 
   render() {
+    const { className, children } = this.props;
     return (
-      <div className="alert alert-danger text-balance" role="alert">
-        {this.errorMessage()}
+      <div className={classNames('alert alert-danger text-balance', className)} role="alert">
+        {children ?? this.errorMessage()}
       </div>
     );
   }
 }
 
-ErrorAlert.defaultProps = { description: '' };
-ErrorAlert.propTypes = { description: Types.string };
+ErrorAlert.defaultProps = { description: '', className: '', children: undefined };
+ErrorAlert.propTypes = { description: Types.string, className: Types.string, children: Types.node };
 
 export default ErrorAlert;

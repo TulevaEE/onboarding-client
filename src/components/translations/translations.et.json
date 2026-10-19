@@ -2516,5 +2516,15 @@
   "thirdPillarStandingOrder.footer.setUpNew": "Ei leia püsimakset? Seadista uus",
   "thirdPillarStandingOrder.footer.employer": "Maksad tööandja kaudu?",
   "thirdPillarStandingOrder.footer.calculator": "Arvuta oma maksuvõit",
-  "thirdPillarStandingOrder.footer.calculator.link": "https://tuleva.ee/iii-sammas/"
+  "thirdPillarStandingOrder.footer.calculator.link": "https://tuleva.ee/iii-sammas/",
+  "connect.error.title": "See link ei tööta",
+  "connect.error.description": "Link võib olla aegunud või avatud teises brauseris. Mine tagasi rakendusse ja proovi uuesti.",
+  "connect.error.generic": "Tekkis viga. Palun proovi uuesti.",
+  "connect.consent.title": "{clientName} soovib näha",
+  "connect.consent.duration": "Ligipääs kehtib kuni 180 päeva.",
+  "connect.consent.allow": "Luban",
+  "connect.consent.deny": "Ei luba",
+  "connect.scope.balances": "Sinu fondiosakuid ja nende väärtust",
+  "connect.scope.transactions": "Sinu tehinguid",
+  "connect.retry": "Proovi uuesti"
 }

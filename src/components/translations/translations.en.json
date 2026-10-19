@@ -2426,5 +2426,15 @@
   "thirdPillarStandingOrder.footer.setUpNew": "Can’t find your payment? Set up a new one",
   "thirdPillarStandingOrder.footer.employer": "Paying through your employer?",
   "thirdPillarStandingOrder.footer.calculator": "Calculate your tax gain",
-  "thirdPillarStandingOrder.footer.calculator.link": "https://tuleva.ee/en/third-pillar/"
+  "thirdPillarStandingOrder.footer.calculator.link": "https://tuleva.ee/en/third-pillar/",
+  "connect.error.title": "This link does not work",
+  "connect.error.description": "It may have expired or been opened in another browser. Go back to the app and try again.",
+  "connect.error.generic": "An error occurred. Please try again.",
+  "connect.consent.title": "{clientName} wants to see",
+  "connect.consent.duration": "Access lasts up to 180 days.",
+  "connect.consent.allow": "Allow",
+  "connect.consent.deny": "Deny",
+  "connect.scope.balances": "Your fund balances and their value",
+  "connect.scope.transactions": "Your transactions",
+  "connect.retry": "Try again"
 }

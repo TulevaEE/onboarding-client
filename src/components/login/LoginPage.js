@@ -5,9 +5,9 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { useIntl } from 'react-intl';
 
-import { logo, AuthenticationLoader, ErrorAlert } from '../common';
+import { AuthenticationLoader, ErrorAlert } from '../common';
 import { usePageTitle } from '../common/usePageTitle';
-import styles from './LoginPage.module.scss';
+import { LoginFrame } from './LoginFrame';
 import { loginPath } from './constants';
 
 import LoginForm from './loginForm';
@@ -28,6 +28,8 @@ import { getAuthentication } from '../common/authenticationManager';
 import { loginLanding } from './loginLanding';
 import { MOBILE_ID_PHONE_NUMBER_REQUIRED } from './mobileId/MobileIdLoginForm';
 import { cancelledInTheApp } from './cancelledInTheApp';
+import { CancelConnecting } from '../connect/CancelConnecting';
+import { connectRequestIdOf } from '../connect/connectPath';
 
 const ERRORS_SHOWN_BESIDE_THEIR_FIELD = [MOBILE_ID_PHONE_NUMBER_REQUIRED];
 
@@ -61,10 +63,13 @@ export const LoginPage = ({
   const { formatMessage } = useIntl();
   const [qrCodeRenewals] = useState(automaticRenewalAllowance);
 
+  const from = location.state && location.state.from;
+
   if (isAuthenticated) {
-    const from = location.state && location.state.from;
     return <Redirect to={loginLanding(from)} />;
   }
+
+  const connectRequestId = connectRequestIdOf(from);
 
   const startSmartIdLoginFromTheTab = (language, flow, rememberMe, qrCodeRequested = false) => {
     if (flow === 'DEVICE_LINK' && opensTheSmartIdApp({ qrCodeRequested })) {
@@ -120,39 +125,33 @@ export const LoginPage = ({
   };
 
   return (
-    <div className={styles.loginPage}>
-      <div className="container py-5">
-        <div className="row justify-content-center">
-          <div className="col-12 col-md-9 col-lg-7">
-            <img width="146" height="66" src={logo} alt="Tuleva" className="d-block mx-auto mb-5" />
-            {waitsForConfirmationOnThePhone && (
-              <section
-                className="bg-white shadow-sm rounded-3 p-4 p-sm-5 text-center"
-                aria-label={formatMessage({ id: confirmingWith })}
-              >
-                {pendingLogin()}
-              </section>
-            )}
-            <div hidden={waitsForConfirmationOnThePhone}>
-              <LoginForm
-                onMobileIdSubmit={onMobileIdSubmit}
-                onPhoneNumberChange={onPhoneNumberChange}
-                onPersonalCodeChange={onPersonalCodeChange}
-                phoneNumber={phoneNumber}
-                personalCode={personalCode}
-                mobileIdStartError={errorDescription}
-                onSmartIdLoginStart={startSmartIdLoginFromTheTab}
-                onLoginMethodChange={onLoginMethodChange}
-                monthlyThirdPillarContribution={monthlyThirdPillarContribution}
-                exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
-                alert={showsAlert ? <ErrorAlert description={errorDescription} /> : null}
-                pendingLogin={waitsForConfirmationOnThePhone ? null : pendingLogin()}
-              />
-            </div>
-          </div>
-        </div>
+    <LoginFrame>
+      {waitsForConfirmationOnThePhone && (
+        <section
+          className="bg-white shadow-sm rounded-3 p-4 p-sm-5 text-center"
+          aria-label={formatMessage({ id: confirmingWith })}
+        >
+          {pendingLogin()}
+        </section>
+      )}
+      <div hidden={waitsForConfirmationOnThePhone}>
+        <LoginForm
+          onMobileIdSubmit={onMobileIdSubmit}
+          onPhoneNumberChange={onPhoneNumberChange}
+          onPersonalCodeChange={onPersonalCodeChange}
+          phoneNumber={phoneNumber}
+          personalCode={personalCode}
+          mobileIdStartError={errorDescription}
+          onSmartIdLoginStart={startSmartIdLoginFromTheTab}
+          onLoginMethodChange={onLoginMethodChange}
+          monthlyThirdPillarContribution={monthlyThirdPillarContribution}
+          exchangeExistingThirdPillarUnits={exchangeExistingThirdPillarUnits}
+          alert={showsAlert ? <ErrorAlert description={errorDescription} /> : null}
+          pendingLogin={waitsForConfirmationOnThePhone ? null : pendingLogin()}
+        />
+        {connectRequestId && !authenticating && <CancelConnecting requestId={connectRequestId} />}
       </div>
-    </div>
+    </LoginFrame>
   );
 };
 
