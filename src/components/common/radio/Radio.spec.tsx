@@ -41,6 +41,12 @@ describe('Radio', () => {
     expect(onSelect).toHaveBeenCalledWith(true);
   });
 
+  it('leaves the keyboard and screen readers to the radio input, keeping its look-alike button out of the tab order and the accessibility tree', () => {
+    const button = component.find('button');
+    expect(button.prop('tabIndex')).toBe(-1);
+    expect(button.prop('aria-hidden')).toBe('true');
+  });
+
   it('sets it to selected when the component is selected', () => {
     const componentSelected = () => component.find('.tv-radio').hasClass('tv-radio--selected');
     expect(componentSelected()).toBe(false);

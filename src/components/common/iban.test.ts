@@ -1,4 +1,4 @@
-import { getBankName } from './iban';
+import { getBankName, preProcessIban } from './iban';
 
 describe('getBankName', () => {
   it.each([
@@ -13,6 +13,7 @@ describe('getBankName', () => {
     ['BE24967012345638', 'Wise'],
     ['LT633250001234567890', 'Revolut'],
     ['LT263500001234567890', 'Paysera'],
+    ['EE19-1000-0012-3456-7890', 'SEB'],
   ])('names the bank of %s as %s', (iban, bankName) => {
     expect(getBankName(iban)).toBe(bankName);
   });
@@ -24,4 +25,13 @@ describe('getBankName', () => {
   ])('names no bank for %s', (description, iban) => {
     expect(getBankName(iban)).toBeNull();
   });
+});
+
+describe('preProcessIban', () => {
+  it.each(['ee00 1234 5678 9012 3456', 'EE00-1234-5678-9012-3456', ' EE00.1234.5678.9012.3456 '])(
+    'keeps only the letters and digits of %s, in capitals',
+    (typed) => {
+      expect(preProcessIban(typed)).toBe('EE001234567890123456');
+    },
+  );
 });

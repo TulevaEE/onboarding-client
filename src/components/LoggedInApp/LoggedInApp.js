@@ -15,10 +15,12 @@ import ThirdPillarFlow from '../flows/thirdPillar';
 import { InsuranceTransferFlow } from '../flows/insuranceTransfer/InsuranceTransferFlow';
 import { InsuranceTransferSent } from '../flows/insuranceTransfer/InsuranceTransferSent';
 import { InsuranceTransferDone } from '../flows/insuranceTransfer/InsuranceTransferDone';
+import { InsuranceTransferSigned } from '../flows/insuranceTransfer/InsuranceTransferSigned';
 import {
   flowPath as insuranceTransferFlowPath,
   sentPath as insuranceTransferSentPath,
   successPath as insuranceTransferSuccessPath,
+  signedPath as insuranceTransferSignedPath,
 } from '../flows/insuranceTransfer/insuranceTransferPaths';
 import PartnerSecondPillarFlow from '../flows/partner/PartnerSecondPillarFlow';
 import PartnerThirdPillarFlow from '../flows/partner/PartnerThirdPillarFlow';
@@ -190,6 +192,10 @@ export class LoggedInApp extends PureComponent {
             />
             <Route path={insuranceTransferSentPath} component={InsuranceTransferSent} />
             <Route path={insuranceTransferSuccessPath} component={InsuranceTransferDone} />
+            <Route
+              path={`${insuranceTransferSignedPath}/:formId`}
+              component={InsuranceTransferSigned}
+            />
             <Route
               path={insuranceTransferFlowPath}
               render={() => (

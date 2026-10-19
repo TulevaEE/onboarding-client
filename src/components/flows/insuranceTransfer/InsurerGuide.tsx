@@ -3,39 +3,11 @@ import { FormattedMessage } from 'react-intl';
 import { PaymentStep } from '../common/PaymentStep/PaymentStep';
 import { CopyButton } from '../../common/CopyButton';
 import { PII_CLASS } from '../../tracking/piiMarkup';
-import { InsurerCode, insurers } from './insurers';
+import { GuidedInsurerCode, guides, insurers } from './insurers';
 import { TransferRequest } from './useTransferRequest';
 import '../thirdPillar/ThirdPillarPayment/Payment.scss';
 
-const GUIDE_HEADING_ID = 'insurer-guide-heading';
-
 const bold = (chunks: ReactNode) => <b>{chunks}</b>;
-
-const subjectOnlyMailto = (email: string, subject: string) =>
-  `mailto:${email}?subject=${encodeURIComponent(subject)}`;
-
-const SignedRequestByEmail = ({
-  email,
-  subject,
-  onSend,
-}: {
-  email: string;
-  subject: string;
-  onSend: () => void;
-}) => (
-  <p className="small text-body-secondary mt-3 mb-0">
-    <FormattedMessage
-      id="insuranceTransfer.guide.signedEmail"
-      values={{
-        email: (
-          <a className="text-break" href={subjectOnlyMailto(email, subject)} onClick={onSend}>
-            {email}
-          </a>
-        ),
-      }}
-    />
-  </p>
-);
 
 const CopyRequestStep = ({ request }: { request: TransferRequest }) => (
   <>
@@ -50,40 +22,42 @@ const CopyRequestStep = ({ request }: { request: TransferRequest }) => (
     </div>
     <div className="mt-3 mb-3">
       <CopyButton textToCopy={request.text}>
-        <FormattedMessage id="global.copy" />
+        <FormattedMessage id="insuranceTransfer.guide.copyButton" />
       </CopyButton>
     </div>
   </>
 );
 
+const PensionAccountNumberToCopy = ({ pensionAccountNumber }: { pensionAccountNumber: string }) => (
+  <div className="mt-1 d-flex align-items-center column-gap-2">
+    <b className={`text-break ${PII_CLASS}`}>{pensionAccountNumber}</b>
+    <CopyButton textToCopy={pensionAccountNumber} />
+  </div>
+);
+
 export const InsurerGuide = ({
   insurer,
   request,
-  onSend,
+  pensionAccountNumber,
 }: {
-  insurer: InsurerCode;
+  insurer: GuidedInsurerCode;
   request: TransferRequest;
-  onSend: () => void;
+  pensionAccountNumber: string;
 }) => {
-  const { name, stepMessageIds, signedRequestEmail } = insurers[insurer];
+  const { writesLetter, steps } = guides[insurer];
+  const firstStepNumber = writesLetter ? 2 : 1;
+
   return (
-    <section className="p-4 mt-5 payment-details" aria-labelledby={GUIDE_HEADING_ID}>
-      <h3 id={GUIDE_HEADING_ID} className="h5 mb-3">
-        {name}
-      </h3>
-      <CopyRequestStep request={request} />
-      {stepMessageIds.map((messageId, index) => (
-        <PaymentStep key={messageId} number={index + 2}>
+    <section className="p-3 p-sm-4 mt-5 payment-details" aria-label={insurers[insurer].name}>
+      {writesLetter && <CopyRequestStep request={request} />}
+      {steps.map(({ messageId, showsPensionAccountNumber }, index) => (
+        <PaymentStep key={messageId} number={index + firstStepNumber}>
           <FormattedMessage id={messageId} values={{ b: bold }} />
+          {showsPensionAccountNumber && (
+            <PensionAccountNumberToCopy pensionAccountNumber={pensionAccountNumber} />
+          )}
         </PaymentStep>
       ))}
-      {signedRequestEmail && (
-        <SignedRequestByEmail
-          email={signedRequestEmail}
-          subject={request.subject}
-          onSend={onSend}
-        />
-      )}
     </section>
   );
 };

@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, Ref } from 'react';
 import { useIntl } from 'react-intl';
 import classNames from 'classnames';
 import { TranslationKey } from '../../../translations';
@@ -34,6 +34,7 @@ interface SelectProps {
   name?: string;
   id?: string;
   className?: string;
+  selectRef?: Ref<HTMLSelectElement>;
 }
 
 export const Select: FC<SelectProps> = ({
@@ -45,6 +46,7 @@ export const Select: FC<SelectProps> = ({
   translate = true,
   id,
   className,
+  selectRef,
 }) => {
   const { formatMessage } = useIntl();
 
@@ -80,6 +82,7 @@ export const Select: FC<SelectProps> = ({
 
   return (
     <select
+      ref={selectRef}
       className={classNames('form-select', className)}
       onChange={(event): void => onChange(event.target.value)}
       value={selected}

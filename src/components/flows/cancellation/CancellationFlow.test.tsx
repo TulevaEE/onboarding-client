@@ -130,8 +130,8 @@ describe('When a user is cancelling an application', () => {
     await waitFor(() => {
       expect(download).toHaveBeenCalledWith(
         expect.any(Blob),
-        'Tuleva_avaldus.bdoc',
-        'application/bdoc',
+        'Tuleva_avaldus.asice',
+        'application/vnd.etsi.asic-e+zip',
       );
     });
   });

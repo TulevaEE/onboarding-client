@@ -16,6 +16,7 @@ const ENTITY_MESSAGE_SUFFIX: Record<SignableEntity, string> = {
   MANDATE: 'mandate',
   MANDATE_BATCH: 'mandateBatch',
   CAPITAL_TRANSFER_CONTRACT: 'capitalTransferContract',
+  INSURANCE_TRANSFER_FORM: 'insuranceTransferForm',
 };
 
 const firstCodeAmong = (error: ErrorResponse, codes: string[]) =>

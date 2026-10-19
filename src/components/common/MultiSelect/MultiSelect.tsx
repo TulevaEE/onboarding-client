@@ -21,8 +21,10 @@ type MultiSelectProps = {
   onChange?: (values: string[]) => void;
   onBlur?: () => void;
   ariaLabel?: string;
+  ariaDescribedBy?: string;
   size?: number;
   className?: string;
+  maxItems?: number;
 };
 
 export const MultiSelect: FC<MultiSelectProps> = ({
@@ -33,8 +35,10 @@ export const MultiSelect: FC<MultiSelectProps> = ({
   onChange,
   onBlur,
   ariaLabel,
+  ariaDescribedBy,
   size = 10,
   className = 'form-select form-select-lg',
+  maxItems,
 }) => {
   const selectRef = useRef<HTMLSelectElement>(null);
   const tomSelectRef = useRef<TomSelect | null>(null);
@@ -56,7 +60,7 @@ export const MultiSelect: FC<MultiSelectProps> = ({
           : {}),
       },
       placeholder,
-      maxItems: null,
+      maxItems: maxItems ?? null,
       maxOptions: 200,
       items: selected,
       closeAfterSelect: true,
@@ -80,6 +84,18 @@ export const MultiSelect: FC<MultiSelectProps> = ({
     }
   }, [selected]);
 
+  useEffect(() => {
+    const typedInto = tomSelectRef.current?.control_input;
+    if (!typedInto) {
+      return;
+    }
+    if (ariaDescribedBy) {
+      typedInto.setAttribute('aria-describedby', ariaDescribedBy);
+    } else {
+      typedInto.removeAttribute('aria-describedby');
+    }
+  }, [ariaDescribedBy]);
+
   const isOptionGroup = (
     option: MultiSelectOption | MultiSelectOptionGroup,
   ): option is MultiSelectOptionGroup => 'options' in option;
@@ -90,6 +106,7 @@ export const MultiSelect: FC<MultiSelectProps> = ({
       ref={selectRef}
       className={className}
       aria-label={ariaLabel}
+      aria-describedby={ariaDescribedBy}
       multiple
       size={size}
     >

@@ -37,6 +37,7 @@ import {
   saveHackathonRegistration,
   submitHackathonIdea,
   getKycIdentity,
+  getInsuranceTransferForm,
   getFunds,
   getMandateDeadlines,
   getMemberCapitalListingCount,
@@ -101,6 +102,7 @@ import {
   UpdateCapitalTransferContractDto,
 } from './apiModels/capital-transfer';
 import { BusinessRegistryValidatedData } from './apiModels/company-onboarding';
+import { InsuranceTransferForm } from './apiModels/insurance-transfer';
 import {
   ChildResponse,
   CompanyOnboardingSurveyCommand,
@@ -276,6 +278,13 @@ export function useKycIdentity(): UseQueryResult<KycIdentity> {
     queryKey: ['kycIdentity'],
     queryFn: () => getKycIdentity(),
     retry: false,
+  });
+}
+
+export function useInsuranceTransferForm(id: string): UseQueryResult<InsuranceTransferForm> {
+  return useQuery({
+    queryKey: ['insuranceTransferForm', id],
+    queryFn: () => getInsuranceTransferForm(id),
   });
 }
 

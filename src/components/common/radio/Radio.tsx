@@ -47,6 +47,8 @@ const Radio: FC<RadioProps> = ({
           onClick={() => !selected && onSelect?.(!selected)}
           disabled={disabled}
           aria-pressed={selected}
+          tabIndex={-1}
+          aria-hidden="true"
         >
           <span className="tv-radio__check" />
         </button>

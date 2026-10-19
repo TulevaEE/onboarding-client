@@ -81,6 +81,10 @@ import {
   UpdateCapitalTransferContractDto,
 } from './apiModels/capital-transfer';
 import { SavingsFundWithdrawal } from './apiModels/savings-fund';
+import {
+  CreateInsuranceTransferFormCommand,
+  InsuranceTransferForm,
+} from './apiModels/insurance-transfer';
 import { BusinessRegistryValidatedData } from './apiModels/company-onboarding';
 import {
   ChildResponse,
@@ -246,6 +250,26 @@ export function getSmartIdTokens(
 
 export function downloadMandatePreviewWithId(entityId: string): Promise<Blob> {
   return downloadFileWithAuthentication(getEndpoint(`/v1/mandates/${entityId}/file/preview`));
+}
+
+export function createInsuranceTransferForm(
+  command: CreateInsuranceTransferFormCommand,
+): Promise<InsuranceTransferForm> {
+  return postWithAuthentication(getEndpoint('/v1/insurance-transfer-forms'), command);
+}
+
+export function getInsuranceTransferForm(id: string): Promise<InsuranceTransferForm> {
+  return getWithAuthentication(getEndpoint(`/v1/insurance-transfer-forms/${id}`));
+}
+
+export function downloadInsuranceTransferFormPreview(id: number): Promise<Blob> {
+  return downloadFileWithAuthentication(getEndpoint(`/v1/insurance-transfer-forms/${id}/preview`));
+}
+
+export function downloadSignedInsuranceTransferForm(id: number): Promise<Blob> {
+  return downloadFileWithAuthentication(
+    getEndpoint(`/v1/insurance-transfer-forms/${id}/signed-file`),
+  );
 }
 
 export function downloadMandateWithId(entityId: string): Promise<Blob> {
@@ -425,6 +449,10 @@ const getSigningBaseUrl = (entityId: string, type: SignableEntity) => {
 
   if (type === 'MANDATE_BATCH') {
     return `/v1/mandate-batches/${entityId}/signature`;
+  }
+
+  if (type === 'INSURANCE_TRANSFER_FORM') {
+    return `/v1/insurance-transfer-forms/${entityId}/signature`;
   }
 
   return `/v1/mandates/${entityId}/signature`;

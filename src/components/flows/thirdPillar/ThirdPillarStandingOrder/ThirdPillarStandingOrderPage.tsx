@@ -169,7 +169,7 @@ const ChangedQuestion = ({
     <h1 className="mb-4 text-balance">
       <FormattedMessage id="thirdPillarStandingOrder.changedQuestion.title" />
     </h1>
-    <div className="d-flex gap-2 justify-content-center flex-wrap">
+    <div className="d-flex flex-column flex-sm-row-reverse justify-content-center gap-2">
       <button type="button" className="btn btn-primary" onClick={onYes}>
         <FormattedMessage id="thirdPillarPayment.confirmation.yes" />
       </button>
