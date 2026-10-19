@@ -7,6 +7,7 @@ import { useSavingsFundBalance, useSavingsFundOnboardingStatus } from '../../../
 import { Login } from '../../../login/types';
 import { Euro } from '../../../common/Euro';
 import { Shimmer } from '../../../common/shimmer/Shimmer';
+import { fundBalance } from '../../../common/balances';
 
 type SavingsFundStatusBoxProps = {
   loading: boolean;
@@ -22,8 +23,7 @@ const SavingsFundStatusBox: FC<SavingsFundStatusBoxProps> = ({ loading, last }) 
     return null;
   }
 
-  const hasUnits = savingsFundBalance?.units !== 0;
-  const hasContributions = savingsFundBalance?.contributions !== 0;
+  const holdsValue = savingsFundBalance != null && fundBalance(savingsFundBalance) > 0;
 
   const getLines = () => {
     const lines: ReactNode[] = [];
@@ -33,7 +33,7 @@ const SavingsFundStatusBox: FC<SavingsFundStatusBoxProps> = ({ loading, last }) 
       return lines;
     }
 
-    if (savingsFundBalance && hasContributions && hasUnits) {
+    if (holdsValue) {
       lines.push(
         <span>
           <FormattedMessage id="savingsFund.status.description.hasInvested" />
@@ -42,11 +42,11 @@ const SavingsFundStatusBox: FC<SavingsFundStatusBoxProps> = ({ loading, last }) 
       lines.push(
         <span className="text-body-secondary">
           <FormattedMessage
-            id="savingsFund.status.secondary.investedBalance"
+            id="savingsFund.status.secondary.value"
             values={{
-              investedAmount: (
+              value: (
                 <strong>
-                  <Euro amount={savingsFundBalance.contributions} />
+                  <Euro amount={fundBalance(savingsFundBalance)} />
                 </strong>
               ),
             }}
@@ -70,7 +70,7 @@ const SavingsFundStatusBox: FC<SavingsFundStatusBoxProps> = ({ loading, last }) 
   return (
     <div>
       <StatusBoxRow
-        status={savingsFundBalance && hasContributions && hasUnits ? 'SUCCESS' : 'TODO'}
+        status={holdsValue ? 'SUCCESS' : 'TODO'}
         showAction={!loading}
         name={intl.formatMessage({ id: 'savingsFund.status.title' })}
         lines={getLines()}

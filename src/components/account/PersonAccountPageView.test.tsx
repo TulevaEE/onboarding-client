@@ -599,9 +599,9 @@ describe('Additional Investment Fund status', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows status and invested amount for non-zero contributions', async () => {
+  it('shows what the investment is worth, counting units reserved for a pending withdrawal, rather than what was paid in', async () => {
     server.use(savingsFundOnboardingStatus.completed());
-    server.use(savingsAccountStatement.nonZero());
+    server.use(savingsAccountStatement.partlyWithdrawnWithPendingWithdrawal());
 
     initializeComponent();
     history.push('/account');
@@ -620,8 +620,29 @@ describe('Additional Investment Fund status', () => {
     expect(
       within(savingsFundRow).getByText('You are investing in Tuleva low cost index fund'),
     ).toBeInTheDocument();
-    expect(within(savingsFundRow).getByText('You have invested an additional')).toBeInTheDocument();
-    expect(within(savingsFundRow).getByText('1.00 €')).toBeInTheDocument();
+    expect(within(savingsFundRow).getByTestId('status-icon-success')).toBeInTheDocument();
+    expect(within(savingsFundRow).getByText('Your investment is worth')).toBeInTheDocument();
+    expect(within(savingsFundRow).getByText('200.00 €')).toBeInTheDocument();
+    expect(within(savingsFundRow).queryByText('300.00 €')).not.toBeInTheDocument();
+  });
+
+  it('keeps showing what the investment is worth while every unit is reserved for a pending withdrawal', async () => {
+    server.use(savingsFundOnboardingStatus.completed());
+    server.use(savingsAccountStatement.fullyReservedForPendingWithdrawal());
+
+    initializeComponent();
+    history.push('/account');
+
+    await waitFor(async () => {
+      const rows = await screen.findAllByTestId('status-box-row');
+      expect(rows).toHaveLength(4);
+    });
+
+    const savingsFundRow = screen.getAllByTestId('status-box-row')[2];
+
+    expect(within(savingsFundRow).getByTestId('status-icon-success')).toBeInTheDocument();
+    expect(within(savingsFundRow).getByText('Your investment is worth')).toBeInTheDocument();
+    expect(within(savingsFundRow).getByText('200.00 €')).toBeInTheDocument();
   });
 
   it('still offers the account chooser once the member has completed their own onboarding', async () => {
@@ -661,8 +682,32 @@ const savingsAccountStatement = {
     rest.get('http://localhost/v1/savings-account-statement', (req, res, ctx) =>
       res(ctx.json({ ...additionalSavingsFund, value: 0, contributions: 0 })),
     ),
-  nonZero: () =>
+  partlyWithdrawnWithPendingWithdrawal: () =>
     rest.get('http://localhost/v1/savings-account-statement', (req, res, ctx) =>
-      res(ctx.json({ ...additionalSavingsFund, value: 1, units: 1, contributions: 1 })),
+      res(
+        ctx.json({
+          ...additionalSavingsFund,
+          value: 150,
+          unavailableValue: 50,
+          units: 150,
+          contributions: 300,
+          subtractions: -200,
+          profit: 100,
+        }),
+      ),
+    ),
+  fullyReservedForPendingWithdrawal: () =>
+    rest.get('http://localhost/v1/savings-account-statement', (req, res, ctx) =>
+      res(
+        ctx.json({
+          ...additionalSavingsFund,
+          value: 0,
+          unavailableValue: 200,
+          units: 0,
+          contributions: 300,
+          subtractions: -100,
+          profit: 0,
+        }),
+      ),
     ),
 };

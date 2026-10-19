@@ -663,8 +663,8 @@
   "savingsFund.status.title": "Additional Investment Fund",
   "savingsFund.status.description.hasInvested": "You are investing in Tuleva low cost index fund",
   "savingsFund.status.description.zeroBalance": "A widely diversified index fund that invests in the global stock market",
-  "savingsFund.status.secondary.investedBalance": "You have invested an additional {investedAmount}",
   "savingsFund.status.secondary.zeroBalance": "Continue investing outside the pillar system once the foundation is already established",
+  "savingsFund.status.secondary.value": "Your investment is worth {value}",
   "savingsFund.status.makeDeposit.label": "Make a payment",
   "savingsFund.status.startSaving.label": "Start investing",
 
