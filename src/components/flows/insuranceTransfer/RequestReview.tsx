@@ -47,7 +47,7 @@ export const RequestReview = ({
 
   return (
     <div className="text-pretty">
-      <p className="my-5 lead text-center">
+      <p className="my-5 lead">
         <FormattedMessage id="insuranceTransfer.review.lead" />
       </p>
 
