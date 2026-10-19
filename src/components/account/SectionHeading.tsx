@@ -18,6 +18,8 @@ export const SectionHeading = ({ titleId, lead, children }: Props): React.JSX.El
         <FormattedMessage id={titleId} />
       </h3>
     )}
-    {children && <div>{children}</div>}
+    {children && (
+      <div className="d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline">{children}</div>
+    )}
   </div>
 );

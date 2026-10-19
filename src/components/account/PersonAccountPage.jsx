@@ -161,23 +161,18 @@ export function PersonAccountPage(
           <h2 className="mt-5 mb-4">
             <FormattedMessage id="accountStatement.heading" />
           </h2>
-          <div className="mt-5 mb-4 d-flex flex-wrap column-gap-3 row-gap-2 justify-content-between align-items-baseline">
-            <h3 className="m-0">
-              <FormattedMessage id="accountStatement.secondPillar.heading" />
-            </h3>
-            <div className="d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline justify-content-between">
-              {shouldShowSecondPillarActions() && (
-                <>
-                  <Link className="icon-link" to="/2nd-pillar-payment-rate">
-                    <FormattedMessage id="account.status.choice.paymentRate.change" />
-                  </Link>
-                  <Link className="icon-link" to="/2nd-pillar-flow">
-                    <FormattedMessage id="change.my.pension.fund" />
-                  </Link>
-                </>
-              )}
-            </div>
-          </div>
+          <SectionHeading titleId="accountStatement.secondPillar.heading">
+            {shouldShowSecondPillarActions() && (
+              <>
+                <Link className="icon-link" to="/2nd-pillar-payment-rate">
+                  <FormattedMessage id="account.status.choice.paymentRate.change" />
+                </Link>
+                <Link className="icon-link" to="/2nd-pillar-flow">
+                  <FormattedMessage id="change.my.pension.fund" />
+                </Link>
+              </>
+            )}
+          </SectionHeading>
 
           {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && (
             <AccountStatement funds={secondPillarSourceFunds} />
@@ -188,22 +183,20 @@ export function PersonAccountPage(
       {!loadingCurrentBalance && (
         <>
           <SectionHeading titleId="accountStatement.thirdPillar.heading">
-            <div className="d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline">
-              {isThirdPillarFullyConverted ? (
-                <Link className="icon-link" to="/3rd-pillar-payment">
-                  <FormattedMessage id="account.status.choice.pillar.third.success.action" />
-                </Link>
-              ) : (
-                <Link className="icon-link" to="/3rd-pillar-flow">
-                  <FormattedMessage id="change.my.pension.fund.third.pillar" />
-                </Link>
-              )}
-              {thirdPillarRecurringPayment?.detected && (
-                <Link className="icon-link" to="/3rd-pillar-recurring-payment">
-                  <FormattedMessage id="accountStatement.thirdPillar.changeRecurringPayment" />
-                </Link>
-              )}
-            </div>
+            {isThirdPillarFullyConverted ? (
+              <Link className="icon-link" to="/3rd-pillar-payment">
+                <FormattedMessage id="account.status.choice.pillar.third.success.action" />
+              </Link>
+            ) : (
+              <Link className="icon-link" to="/3rd-pillar-flow">
+                <FormattedMessage id="change.my.pension.fund.third.pillar" />
+              </Link>
+            )}
+            {thirdPillarRecurringPayment?.detected && (
+              <Link className="icon-link" to="/3rd-pillar-recurring-payment">
+                <FormattedMessage id="accountStatement.thirdPillar.changeRecurringPayment" />
+              </Link>
+            )}
           </SectionHeading>
           {thirdPillarSourceFunds && thirdPillarSourceFunds.length > 0 && (
             <AccountStatement funds={thirdPillarSourceFunds} />
@@ -214,17 +207,15 @@ export function PersonAccountPage(
       {savingsFundBalance && (
         <>
           <SectionHeading titleId="accountStatement.savingsFund.heading">
-            <div className="d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline">
-              <Link className="icon-link" to="/savings-fund/payment">
-                <FormattedMessage id="accountStatement.savingsFund.deposit" />
-              </Link>
-              <Link className="icon-link" to="/savings-fund/withdraw">
-                <FormattedMessage id="accountStatement.savingsFund.withdraw" />
-              </Link>
-              <Link className="icon-link" to="/savings-fund/onboarding">
-                <FormattedMessage id="accountStatement.savingsFund.openNewAccount" />
-              </Link>
-            </div>
+            <Link className="icon-link" to="/savings-fund/payment">
+              <FormattedMessage id="accountStatement.savingsFund.deposit" />
+            </Link>
+            <Link className="icon-link" to="/savings-fund/withdraw">
+              <FormattedMessage id="accountStatement.savingsFund.withdraw" />
+            </Link>
+            <Link className="icon-link" to="/savings-fund/onboarding">
+              <FormattedMessage id="accountStatement.savingsFund.openNewAccount" />
+            </Link>
           </SectionHeading>
           <AccountStatement funds={[savingsFundBalance]} />
         </>
@@ -233,25 +224,23 @@ export function PersonAccountPage(
       {loadingCapital || memberCapital ? (
         <div className="mt-5">
           <SectionHeading titleId="memberCapital.heading">
-            <div className="d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline justify-content-between">
-              <Link className="icon-link" to="/capital/listings">
-                <FormattedMessage id="memberCapital.listings" />
-                {activeListingsCount > 0 && (
-                  <span
-                    className="badge rounded-pill text-bg-primary items-count-badge"
-                    data-testid="member-capital-listings-count"
-                  >
-                    {activeListingsCount}
-                    <span className="visually-hidden">
-                      <FormattedMessage id="listings" values={{ count: activeListingsCount }} />
-                    </span>
+            <Link className="icon-link" to="/capital/listings">
+              <FormattedMessage id="memberCapital.listings" />
+              {activeListingsCount > 0 && (
+                <span
+                  className="badge rounded-pill text-bg-primary items-count-badge"
+                  data-testid="member-capital-listings-count"
+                >
+                  {activeListingsCount}
+                  <span className="visually-hidden">
+                    <FormattedMessage id="listings" values={{ count: activeListingsCount }} />
                   </span>
-                )}
-              </Link>
-              <Link className="icon-link" to="/capital">
-                <FormattedMessage id="memberCapital.transactions" />
-              </Link>
-            </div>
+                </span>
+              )}
+            </Link>
+            <Link className="icon-link" to="/capital">
+              <FormattedMessage id="memberCapital.transactions" />
+            </Link>
           </SectionHeading>
           {loadingCapital && (
             <>

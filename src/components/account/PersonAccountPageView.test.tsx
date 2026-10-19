@@ -684,16 +684,19 @@ describe('third pillar recurring payment link', () => {
   const recurringPaymentLink = () =>
     screen.queryByRole('link', { name: 'Change recurring payment' });
 
+  const linkBefore = (link: HTMLElement) => {
+    const links = screen.getAllByRole('link');
+    return links[links.indexOf(link) - 1];
+  };
+
   test('sits after the payment link in the III pillar section when a standing order is detected', async () => {
     thirdPillarRecurringPaymentBackend(server, { detected: true });
     renderAccountPage();
 
     const link = await screen.findByRole('link', { name: 'Change recurring payment' });
-    // eslint-disable-next-line testing-library/no-node-access,@typescript-eslint/no-non-null-assertion
-    const thirdPillarActions = within(link.parentElement!);
-    const paymentLink = thirdPillarActions.getByRole('link', { name: 'Make a payment' });
 
-    expect(thirdPillarActions.getAllByRole('link')).toEqual([paymentLink, link]);
+    expect(linkBefore(link)).toHaveAccessibleName('Make a payment');
+    expect(linkBefore(link)).toHaveClass('icon-link');
     expect(link).toHaveAttribute('href', '/3rd-pillar-recurring-payment');
     expect(link).toHaveClass('icon-link');
   });
