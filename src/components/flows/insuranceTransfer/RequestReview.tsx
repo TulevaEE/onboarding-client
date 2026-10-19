@@ -119,7 +119,7 @@ export const RequestReview = ({
           disabled={working}
           onClick={onEditAnswers}
         >
-          <FormattedMessage id="insuranceTransfer.review.change" />
+          <FormattedMessage id="common.back" />
         </button>
       </div>
     </div>

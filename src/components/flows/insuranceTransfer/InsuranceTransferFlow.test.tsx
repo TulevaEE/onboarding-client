@@ -1029,9 +1029,10 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     ).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Edasi' })).not.toBeInTheDocument();
     const sign = screen.getByRole('button', { name: 'Allkirjastan avalduse' });
-    const change = screen.getByRole('button', { name: 'Muudan andmeid' });
+    const back = screen.getByRole('button', { name: 'Tagasi' });
     expect(sign).toBeEnabled();
-    expect(inDocumentOrder([change, sign])).toEqual([sign, change]);
+    expect(inDocumentOrder([back, sign])).toEqual([sign, back]);
+    expect(screen.queryByRole('button', { name: 'Muudan andmeid' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /^Vaatan avaldust PDF‑ina$/ })).toHaveClass(
       'btn-link',
     );
@@ -1067,7 +1068,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(normalizedText(pensionAccount)).toBe('99812345678');
   });
 
-  test('switches to the review and back in place, at the top of the step each way, with focus on the request and every answer kept', async () => {
+  test('switches to the review and back in place, at the top of the step each way, with focus on the request going and on the insurer question coming back, and every answer kept', async () => {
     const scrolledToTop = jest.spyOn(window, 'scrollTo').mockImplementation(() => undefined);
     openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
     await yourDetails();
@@ -1086,9 +1087,10 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(scrolledToTop.mock.calls).toEqual([[0, 0]]);
     expect(screen.getByText('Send a request to your insurer')).toBeInTheDocument();
 
-    userEvent.click(screen.getByRole('button', { name: 'Change details' }));
+    userEvent.click(screen.getByRole('button', { name: 'Back' }));
 
-    expect(await insurerQuestion()).toBeInTheDocument();
+    const question = await insurerQuestion();
+    expect(within(question).getByText('Where is your insurance contract?')).toHaveFocus();
     expect(screen.queryByRole('region', { name: REQUEST_UNDER_REVIEW })).not.toBeInTheDocument();
     expect(screen.getByLabelText('Contract number')).toHaveValue('12345678');
     expect(screen.getByLabelText('City')).toHaveValue('Tartu');
@@ -1636,7 +1638,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     userEvent.click(await viewAsPdfButton());
     await waitFor(() => expect(forms.previewed).toEqual(['1']));
 
-    userEvent.click(screen.getByRole('button', { name: 'Change details' }));
+    userEvent.click(screen.getByRole('button', { name: 'Back' }));
     userEvent.type(screen.getByLabelText('Contract number'), '4');
     await signFromReview();
 

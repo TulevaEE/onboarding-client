@@ -2389,7 +2389,6 @@
   "insuranceTransfer.signed.downloadButton": "Download the signed request",
   "insuranceTransfer.review.viewAsPdf": "View the request as a PDF",
   "insuranceTransfer.review.sign": "Sign the request",
-  "insuranceTransfer.review.change": "Change details",
   "insuranceTransfer.review.lead": "I am submitting the following request:",
   "insuranceTransfer.review.heading": "Ending a III pillar insurance contract",
   "insuranceTransfer.review.description": "I am ending my III pillar insurance contract no. <b>{contractNumber}</b> <b>{ending}</b> and moving its money to Tuleva III Pillar Pension Fund.",

@@ -2479,7 +2479,6 @@
   "insuranceTransfer.signed.downloadButton": "Laadin avalduse alla",
   "insuranceTransfer.review.viewAsPdf": "Vaatan avaldust PDF‑ina",
   "insuranceTransfer.review.sign": "Allkirjastan avalduse",
-  "insuranceTransfer.review.change": "Muudan andmeid",
   "insuranceTransfer.review.lead": "Esitan järgmise avalduse:",
   "insuranceTransfer.review.heading": "III samba kindlustuslepingu lõpetamine",
   "insuranceTransfer.review.description": "Lõpetan <b>{ending}</b> oma III samba kindlustuslepingu nr <b>{contractNumber}</b> ja kannan selle raha Tuleva III Samba Pensionifondi.",
