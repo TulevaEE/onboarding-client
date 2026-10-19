@@ -2324,8 +2324,6 @@
   "insuranceTransfer.form.details.pep": "Politically exposed person",
   "insuranceTransfer.form.details.pep.IS_PEP": "Yes",
   "insuranceTransfer.form.details.pep.IS_NOT_PEP": "No",
-  "insuranceTransfer.form.notUsPerson": "I am not a US citizen or US tax resident",
-  "insuranceTransfer.form.notUsPerson.required": "Confirm this to sign here. Otherwise, contact your insurer.",
   "insuranceTransfer.form.choose": "Choose",
   "insuranceTransfer.form.preview": "Preview the request",
   "insuranceTransfer.form.sign": "Sign the request",

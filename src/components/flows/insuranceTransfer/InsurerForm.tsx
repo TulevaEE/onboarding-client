@@ -28,7 +28,6 @@ import { EndDateField } from './EndDateField';
 import { TextField } from './formFields';
 import { signedPath } from './insuranceTransferPaths';
 import {
-  asksUsPersonDeclaration,
   defaultValuesFrom,
   detailsOnFile,
   InsurerFormValues,
@@ -139,40 +138,6 @@ const usePepDeclaredThisSession = (): PepSelfDeclaration | null => {
   return isPoliticallyExposed ? 'IS_PEP' : 'IS_NOT_PEP';
 };
 
-const NOT_US_PERSON_ID = 'insurer-form-not-us-person';
-const NOT_US_PERSON_ERROR_ID = `${NOT_US_PERSON_ID}-error`;
-
-const NotUsPersonConfirmation = () => {
-  const { formatMessage } = useIntl();
-  const {
-    register,
-    formState: { errors },
-  } = useFormContext<InsurerFormValues>();
-  const error = errors.notUsPerson?.message;
-  return (
-    <div className="form-check mt-4">
-      <input
-        type="checkbox"
-        className={`form-check-input ${error ? 'is-invalid' : ''}`}
-        id={NOT_US_PERSON_ID}
-        aria-invalid={!!error}
-        aria-describedby={error ? NOT_US_PERSON_ERROR_ID : undefined}
-        {...register('notUsPerson', {
-          required: formatMessage({ id: 'insuranceTransfer.form.notUsPerson.required' }),
-        })}
-      />
-      <label className="form-check-label" htmlFor={NOT_US_PERSON_ID}>
-        <FormattedMessage id="insuranceTransfer.form.notUsPerson" />
-      </label>
-      {error && (
-        <div id={NOT_US_PERSON_ERROR_ID} className="invalid-feedback text-pretty">
-          {error}
-        </div>
-      )}
-    </div>
-  );
-};
-
 const FilledInInsurerForm = ({
   insurer,
   endDate,
@@ -247,7 +212,6 @@ const FilledInInsurerForm = ({
             {insurer === 'ARTEA' && <ArteaQuestionnaire />}
           </div>
         </div>
-        {asksUsPersonDeclaration(insurer) && <NotUsPersonConfirmation />}
 
         <div className="mt-5 d-flex flex-column-reverse flex-sm-row justify-content-end align-items-sm-center gap-3">
           <button

@@ -2414,8 +2414,6 @@
   "insuranceTransfer.form.details.pep": "Riikliku taustaga isik",
   "insuranceTransfer.form.details.pep.IS_PEP": "Jah",
   "insuranceTransfer.form.details.pep.IS_NOT_PEP": "Ei",
-  "insuranceTransfer.form.notUsPerson": "Ma ei ole USA kodanik ega USA maksuresident",
-  "insuranceTransfer.form.notUsPerson.required": "Kinnita see, et saaksid siin allkirjastada. Muul juhul pöördu oma kindlustusandja poole.",
   "insuranceTransfer.form.choose": "Vali",
   "insuranceTransfer.form.preview": "Vaatan avaldust",
   "insuranceTransfer.form.sign": "Allkirjastan avalduse",

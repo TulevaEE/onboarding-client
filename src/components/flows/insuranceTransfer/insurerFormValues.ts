@@ -42,7 +42,6 @@ export type InsurerFormValues = {
   countryOfBirth: string;
   taxResidencyIfNotAddressCountry: string;
   pepSelfDeclaration: PepSelfDeclaration | null;
-  notUsPerson: boolean;
   artea: ArteaAnswers;
 };
 
@@ -67,9 +66,6 @@ type IncomeSourceNeedingDetails = Exclude<
 
 export const asksCitizenshipTaxResidencyAndExposure = (insurer: InsuranceTransferFormInsurer) =>
   insurer === 'ERGO' || insurer === 'ARTEA';
-
-export const asksUsPersonDeclaration = (insurer: InsuranceTransferFormInsurer) =>
-  insurer === 'COMPENSA';
 
 const ERGO_POLICY_NUMBER_DIGITS = 8;
 const ERGO_PRINTED_PREFIX = '705';
@@ -179,7 +175,6 @@ export const defaultValuesFrom = (
   countryOfBirth: ESTONIA,
   taxResidencyIfNotAddressCountry: '',
   pepSelfDeclaration: pepSelfDeclarationFrom(identity, pepDeclaredThisSession),
-  notUsPerson: false,
   artea: {
     idDocument: { type: '', number: '', issuedOn: '', validUntil: '', issuingCountry: ESTONIA },
     occupation: { status: '', position: '', employer: '', employerAddress: '', description: '' },
@@ -270,7 +265,6 @@ export const toCommand = (
       postalCode: postalCode.trim(),
       countryCode,
     },
-    ...(asksUsPersonDeclaration(insurer) && { usPerson: !values.notUsPerson }),
     ...(asksCitizenshipTaxResidencyAndExposure(insurer) && {
       citizenship: values.citizenship,
       countryOfBirth: values.countryOfBirth,

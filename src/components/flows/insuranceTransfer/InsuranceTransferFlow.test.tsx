@@ -941,7 +941,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     ]);
   });
 
-  test('shows the details on file for confirmation, asks only for the contract number and the US declaration, signs the Compensa form and says where to forward it', async () => {
+  test('shows the details on file for confirmation, asks only for the contract number, signs the Compensa form with no US person question and says where to forward it', async () => {
     const forms = insuranceTransferFormBackend();
     openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
 
@@ -957,10 +957,8 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       'You can find it on your contract or in the insurer’s e‑service.',
     );
     expect(contractNumber).toHaveAttribute('autocapitalize', 'characters');
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
     userEvent.type(contractNumber, ' UP000123 ');
-    userEvent.click(
-      screen.getByRole('checkbox', { name: 'I am not a US citizen or US tax resident' }),
-    );
     userEvent.click(signRequestButton());
 
     expect(await screen.findByText('9876')).toBeInTheDocument();
@@ -978,7 +976,6 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
         policyNumber: 'UP000123',
         endDate: null,
         address: ADDRESS_ON_FILE,
-        usPerson: false,
       },
     ]);
     expect(screen.getByText(/^We emailed the request to/)).toHaveTextContent(
@@ -989,7 +986,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(screen.queryByText('Send a request to your insurer')).not.toBeInTheDocument();
   }, 20_000);
 
-  test('does not sign without the contract number and the US declaration', async () => {
+  test('does not sign without the contract number', async () => {
     const forms = insuranceTransferFormBackend();
     openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
     await yourDetails();
@@ -999,9 +996,6 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
 
     expect(await screen.findByText('Enter the contract number.')).toBeInTheDocument();
     expect(screen.getByLabelText('Contract number')).toBeInvalid();
-    expect(
-      screen.getByRole('checkbox', { name: 'I am not a US citizen or US tax resident' }),
-    ).toHaveAccessibleDescription('Confirm this to sign here. Otherwise, contact your insurer.');
     expect(forms.created).toEqual([]);
   });
 
@@ -1048,7 +1042,6 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     ]);
     expect(within(details).getByRole('combobox', { name: 'Country of birth' })).toHaveValue('EE');
     userEvent.type(screen.getByLabelText('Contract number'), 'EL-12-345678');
-    expect(screen.queryByRole('checkbox', { name: /US citizen/ })).not.toBeInTheDocument();
 
     userEvent.click(signRequestButton());
 
@@ -2031,9 +2024,6 @@ const signRequestButton = () => screen.getByRole('button', { name: 'Sign the req
 
 async function fillCompensaForm() {
   userEvent.type(await screen.findByLabelText('Contract number'), 'UP000123');
-  userEvent.click(
-    screen.getByRole('checkbox', { name: 'I am not a US citizen or US tax resident' }),
-  );
 }
 
 const maxLengthsOf = (labels: string[]) =>

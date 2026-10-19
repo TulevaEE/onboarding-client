@@ -76,7 +76,6 @@ export type CreateInsuranceTransferFormCommand = {
   policyNumber: string;
   endDate: string | null;
   address: InsuranceTransferAddress;
-  usPerson?: boolean;
   citizenship?: string[];
   countryOfBirth?: string;
   taxResidency?: string;
