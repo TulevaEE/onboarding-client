@@ -2,6 +2,7 @@ import moment from 'moment';
 import {
   formatDateFrom,
   formatDateOn,
+  formatDateOnWithYear,
   formatDateRange,
   formatDateUntil,
   formatDateYear,
@@ -74,6 +75,20 @@ describe('DateFormatter functions', () => {
       expect(formatDateOn('2026-11-30')).toBe('30.\u00a0novembril');
       expect(formatDateUntil('2026-11-30')).toBe('30.\u00a0novembrini');
       expect(formatDateUntil('2026-05-31')).toBe('31.\u00a0maini');
+    });
+
+    it('inflects the Estonian month for "on" and keeps the year with the day', () => {
+      moment.locale('et');
+
+      expect(formatDateOnWithYear('2027-11-01')).toBe('1.\u00a0novembril\u00a02027');
+      expect(formatDateOnWithYear('2027-05-31')).toBe('31.\u00a0mail\u00a02027');
+      expect(formatDateOnWithYear('2026-12-31T22:30:00Z')).toBe('1.\u00a0jaanuaril\u00a02027');
+    });
+
+    it('keeps the date with its year in English', () => {
+      moment.locale('en');
+
+      expect(formatDateOnWithYear('2027-11-01')).toBe('November\u00a01,\u00a02027');
     });
 
     it('keeps the plain date in English', () => {
