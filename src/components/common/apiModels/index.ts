@@ -310,6 +310,10 @@ export interface UserConversion {
   weightedAverageFee: number;
 }
 
+export interface ThirdPillarRecurringPayment {
+  detected: boolean;
+}
+
 export interface Amount {
   yearToDate: number;
   lastYear: number;

@@ -113,6 +113,7 @@
   "accountStatement.heading": "Your portfolio details",
   "accountStatement.secondPillar.heading": "II pillar",
   "accountStatement.thirdPillar.heading": "III pillar",
+  "accountStatement.thirdPillar.changeRecurringPayment": "Change recurring payment",
   "accountStatement.savingsFund.heading": "Additional Investment Fund",
   "accountStatement.savingsFund.deposit": "Deposit",
   "accountStatement.savingsFund.withdraw": "Withdraw",

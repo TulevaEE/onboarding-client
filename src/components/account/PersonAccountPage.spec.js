@@ -15,6 +15,7 @@ jest.mock('../common/apiHooks', () => ({
   useFundPensionStatus: () => ({ data: { fundPensions: [] } }),
   useMemberCapitalListingCount: () => ({ data: [] }),
   useSavingsFundBalance: () => ({ data: mockSavingsFundBalance }),
+  useThirdPillarRecurringPayment: () => ({ data: undefined }),
 }));
 jest.mock('./usePaymentRateRedirect', () => ({ usePaymentRateRedirect: () => undefined }));
 /**

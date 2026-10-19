@@ -40,6 +40,7 @@ import {
   SmartIdLoginStart,
   SmartIdQrCode,
   SourceFund,
+  ThirdPillarRecurringPayment,
   Token,
   Transaction,
   User,
@@ -584,6 +585,10 @@ export function getUserConversionWithToken(): Promise<UserConversion> {
     () => getWithAuthentication(getEndpoint('/v1/me/conversion'), undefined),
     'conversion',
   );
+}
+
+export function getThirdPillarRecurringPayment(): Promise<ThirdPillarRecurringPayment> {
+  return getWithAuthentication(getEndpoint('/v1/me/third-pillar/recurring-payment'));
 }
 
 export function getNudge(context: NudgeContext): Promise<NudgeDecision> {

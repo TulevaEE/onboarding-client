@@ -11,6 +11,7 @@ import {
   applicationsBackend,
   fundPensionStatusBackend,
   pensionAccountStatementBackend,
+  thirdPillarRecurringPaymentBackend,
   userConversionBackend,
   useTestBackends,
   useTestBackendsExcept,
@@ -665,6 +666,80 @@ describe('Additional Investment Fund status', () => {
     expect(
       within(savingsFundRow).getByRole('link', { name: 'Make a payment' }),
     ).toBeInTheDocument();
+  });
+});
+
+describe('third pillar recurring payment link', () => {
+  beforeEach(() => {
+    initializeConfiguration();
+    useTestBackendsExcept(server, ['thirdPillarRecurringPayment']);
+  });
+
+  const renderAccountPage = () => {
+    initializeComponent();
+    history.push('/account');
+  };
+
+  const recurringPaymentLink = () =>
+    screen.queryByRole('link', { name: 'Change recurring payment' });
+
+  test('sits after the payment link in the III pillar section when a standing order is detected', async () => {
+    thirdPillarRecurringPaymentBackend(server, { detected: true });
+    renderAccountPage();
+
+    const link = await screen.findByRole('link', { name: 'Change recurring payment' });
+    // eslint-disable-next-line testing-library/no-node-access,@typescript-eslint/no-non-null-assertion
+    const thirdPillarActions = within(link.parentElement!);
+    const paymentLink = thirdPillarActions.getByRole('link', { name: 'Make a payment' });
+
+    expect(thirdPillarActions.getAllByRole('link')).toEqual([paymentLink, link]);
+    expect(link).toHaveAttribute('href', '/3rd-pillar-recurring-payment');
+    expect(link).toHaveClass('icon-link');
+  });
+
+  test('takes the person to the recurring payment change flow', async () => {
+    thirdPillarRecurringPaymentBackend(server, { detected: true });
+    renderAccountPage();
+
+    userEvent.click(await screen.findByRole('link', { name: 'Change recurring payment' }));
+
+    expect(history.location.pathname).toBe('/3rd-pillar-recurring-payment');
+  });
+
+  test('is not shown when no standing order is detected', async () => {
+    const requests = thirdPillarRecurringPaymentBackend(server, { detected: false });
+    renderAccountPage();
+
+    await waitFor(() => expect(requests.count()).toBe(1));
+    expect(await screen.findByText('Swedbank PIK')).toBeInTheDocument();
+    expect(recurringPaymentLink()).not.toBeInTheDocument();
+  });
+
+  test('is not shown while the detection is loading', async () => {
+    server.use(
+      rest.get('http://localhost/v1/me/third-pillar/recurring-payment', (req, res, ctx) =>
+        res(ctx.delay('infinite')),
+      ),
+    );
+    renderAccountPage();
+
+    expect(await screen.findByText('Swedbank PIK')).toBeInTheDocument();
+    expect(recurringPaymentLink()).not.toBeInTheDocument();
+  });
+
+  test('is not shown when the detection fails', async () => {
+    let requests = 0;
+    server.use(
+      rest.get('http://localhost/v1/me/third-pillar/recurring-payment', (req, res, ctx) => {
+        requests += 1;
+        return res(ctx.status(500), ctx.json({ errors: [] }));
+      }),
+    );
+    renderAccountPage();
+
+    await waitFor(() => expect(requests).toBeGreaterThan(0));
+    expect(await screen.findByText('Swedbank PIK')).toBeInTheDocument();
+    expect(recurringPaymentLink()).not.toBeInTheDocument();
   });
 });
 

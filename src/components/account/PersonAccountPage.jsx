@@ -25,6 +25,7 @@ import {
   useFundPensionStatus,
   useMemberCapitalListingCount,
   useSavingsFundBalance,
+  useThirdPillarRecurringPayment,
 } from '../common/apiHooks';
 import { canAccessWithdrawals } from '../flows/withdrawals/utils';
 import { getBankName } from '../common/iban';
@@ -60,6 +61,7 @@ export function PersonAccountPage(
   const { data: fundPensionStatus, loading: isFundPensionStatusLoading } = useFundPensionStatus();
   const { data: memberCapitalListingsCount } = useMemberCapitalListingCount();
   const { data: savingsFundBalance } = useSavingsFundBalance();
+  const { data: thirdPillarRecurringPayment } = useThirdPillarRecurringPayment();
 
   const activeListingsCount = memberCapitalListingsCount ?? 0;
 
@@ -186,15 +188,22 @@ export function PersonAccountPage(
       {!loadingCurrentBalance && (
         <>
           <SectionHeading titleId="accountStatement.thirdPillar.heading">
-            {isThirdPillarFullyConverted ? (
-              <Link className="icon-link" to="/3rd-pillar-payment">
-                <FormattedMessage id="account.status.choice.pillar.third.success.action" />
-              </Link>
-            ) : (
-              <Link className="icon-link" to="/3rd-pillar-flow">
-                <FormattedMessage id="change.my.pension.fund.third.pillar" />
-              </Link>
-            )}
+            <div className="d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline">
+              {isThirdPillarFullyConverted ? (
+                <Link className="icon-link" to="/3rd-pillar-payment">
+                  <FormattedMessage id="account.status.choice.pillar.third.success.action" />
+                </Link>
+              ) : (
+                <Link className="icon-link" to="/3rd-pillar-flow">
+                  <FormattedMessage id="change.my.pension.fund.third.pillar" />
+                </Link>
+              )}
+              {thirdPillarRecurringPayment?.detected && (
+                <Link className="icon-link" to="/3rd-pillar-recurring-payment">
+                  <FormattedMessage id="accountStatement.thirdPillar.changeRecurringPayment" />
+                </Link>
+              )}
+            </div>
           </SectionHeading>
           {thirdPillarSourceFunds && thirdPillarSourceFunds.length > 0 && (
             <AccountStatement funds={thirdPillarSourceFunds} />
