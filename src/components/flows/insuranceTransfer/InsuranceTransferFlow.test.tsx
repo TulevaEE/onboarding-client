@@ -991,7 +991,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(forms.created).toEqual([]);
   });
 
-  test('sums up the Ergo request in Estonian in the first person once the form is filled in: the contract it ends and when, the fund and pension account the money goes to, and how the signed request reaches the insurer', async () => {
+  test('sums up the Ergo request in Estonian in the first person once the form is filled in: when it ends which contract, as two bold facts kept apart by words, the fund and pension account the money goes to, and how the signed request reaches the insurer', async () => {
     openFlow('/3rd-pillar-insurance/request?insurer=ERGO', 'et');
     userEvent.type(await screen.findByLabelText('Lepingu number'), '12345678');
     chooseEndDate(screen.getByLabelText('Millal leping lõpetada?'), '2027-11-01');
@@ -1003,9 +1003,11 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     });
     expect(screen.getByText('Esitan järgmise avalduse:')).toBeInTheDocument();
     expect(within(request).getByText('Ergo')).toBeInTheDocument();
-    expect(normalizedText(within(request).getByText(/^Lõpetan oma/))).toBe(
-      'Lõpetan oma III samba kindlustuslepingu nr 12345678 1. novembril 2027 ja kannan selle raha Tuleva III Samba Pensionifondi.',
+    const description = within(request).getByText(/^Lõpetan/);
+    expect(normalizedText(description)).toBe(
+      'Lõpetan 1. novembril 2027 oma III samba kindlustuslepingu nr 12345678 ja kannan selle raha Tuleva III Samba Pensionifondi.',
     );
+    expect(boldIn(description)).toEqual(['1. novembril 2027', '12345678']);
     expect(
       within(request).getByText(
         'Allkirjastatud avalduse saadame sulle e‑postiga ja sina edastad selle kindlustusandjale.',
@@ -1045,9 +1047,11 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     const request = await requestUnderReview();
     expect(screen.getByText('I am submitting the following request:')).toBeInTheDocument();
     expect(within(request).getByText('Compensa')).toBeInTheDocument();
-    expect(normalizedText(within(request).getByText(/^I am ending/))).toBe(
+    const description = within(request).getByText(/^I am ending/);
+    expect(normalizedText(description)).toBe(
       'I am ending my III pillar insurance contract no. UP000123 as soon as possible and moving its money to Tuleva III Pillar Pension Fund.',
     );
+    expect(boldIn(description)).toEqual(['UP000123', 'as soon as possible']);
     expect(
       within(request).getByText(
         'We email you the signed request, and you forward it to your insurer.',
@@ -1822,6 +1826,10 @@ const accessibleName = (radio: HTMLElement) =>
   (radio as HTMLInputElement).labels?.[0]?.textContent?.replace(/\s+/g, ' ').trim();
 
 const normalizedText = (element: HTMLElement) => element.textContent?.replace(/\s+/g, ' ');
+
+const boldIn = (element: HTMLElement) =>
+  // eslint-disable-next-line testing-library/no-node-access
+  Array.from(element.getElementsByTagName('b'), normalizedText);
 
 const inDocumentOrder = (elements: HTMLElement[]) =>
   [...elements].sort((first, second) =>

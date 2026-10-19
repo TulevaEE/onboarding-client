@@ -85,7 +85,7 @@ export const RequestReview = ({
           </dt>
           <dd className="mb-0 text-end">
             <b>
-              <FormattedMessage id="insuranceTransfer.review.fund.name" />
+              <FormattedMessage id={`target.funds.${TULEVA_3RD_PILLAR_FUND_ISIN}.title`} />
             </b>
             <div className="text-body-secondary">{TULEVA_3RD_PILLAR_FUND_ISIN}</div>
           </dd>
