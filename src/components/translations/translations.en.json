@@ -667,6 +667,7 @@
   "savingsFund.status.secondary.zeroBalance": "Continue investing outside the pillar system once the foundation is already established",
   "savingsFund.status.makeDeposit.label": "Make a payment",
   "savingsFund.status.startSaving.label": "Start investing",
+  "savingsFund.status.closeAccount.label": "Close account",
 
   "transactions.title": "Your latest transactions",
   "transactions.title.2nd": "Your II pillar transactions",
@@ -1477,6 +1478,12 @@
   "savingsFund.identityVerification.alreadyDone.title": "Your identity is already verified",
   "savingsFund.identityVerification.alreadyDone.description": "You have nothing more to do. The company account opens automatically once the company's application has been submitted and everyone connected to the company has verified their identity.",
   "savingsFund.identityVerification.accountButton.label": "Go to my account",
+  "savingsFund.accountClosure.pageTitle": "Close account",
+  "savingsFund.accountClosure.title": "Close your Additional Investment Fund account",
+  "savingsFund.accountClosure.description": "You have no units on your account and no unit transactions in progress. After closing, you will no longer be able to make payments to the Additional Investment Fund from your account. To continue investing, you will need to open an account again from the start.",
+  "savingsFund.accountClosure.error": "We could not close your account. Please make sure you have no units left and no payment or withdrawal in progress.",
+  "savingsFund.accountClosure.success.title": "Your account is closed",
+  "savingsFund.accountClosure.success.description": "If you want to start investing in the Additional Investment Fund again, you can open a new account.",
 
   "flows.savingsFundOnboarding.title": "Opening an Additional Investment Fund",
   "flows.savingsFundOnboarding.currentStep": "Step {currentStep} / {totalSteps}",

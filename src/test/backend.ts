@@ -1190,6 +1190,14 @@ export function savingsFundPersonOnboardingStatusBackend(
   );
 }
 
+export function savingsFundAccountClosureBackend(server: SetupServerApi, closable = false): void {
+  server.use(
+    rest.get('http://localhost/v1/savings/account-closure', (req, res, ctx) =>
+      res(ctx.json({ closable })),
+    ),
+  );
+}
+
 export function delayedSavingsFundOnboardingStatusBackend(server: SetupServerApi): void {
   server.use(
     rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
@@ -1451,6 +1459,7 @@ const TEST_BACKENDS = {
   kycIdentity: kycIdentityBackend,
   savingsFundOnboardingStatus: savingsFundOnboardingStatusBackend,
   savingsFundPersonOnboardingStatus: savingsFundPersonOnboardingStatusBackend,
+  savingsFundAccountClosure: savingsFundAccountClosureBackend,
   hackathonRegistration: hackathonRegistrationBackend,
   hackathonIdeas: hackathonIdeasBackend,
   nudge: nudgeBackend,

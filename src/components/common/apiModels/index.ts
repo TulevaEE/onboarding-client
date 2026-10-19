@@ -180,7 +180,11 @@ export interface Fund {
 export type Pillar = 2 | 3;
 
 export type SavingsFundOnboardingStatus = {
-  status: null | 'COMPLETED' | 'REJECTED' | 'PENDING';
+  status: null | 'COMPLETED' | 'REJECTED' | 'PENDING' | 'CLOSED';
+};
+
+export type SavingsFundAccountClosure = {
+  closable: boolean;
 };
 
 export type FundStatus =

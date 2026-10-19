@@ -16,6 +16,7 @@ import {
 
 import {
   cancelSavingsFundWithdrawal,
+  closeSavingsFundAccount,
   contactMemberCapitalListingOwner,
   createApplicationCancellation,
   createCapitalTransferContract,
@@ -45,6 +46,7 @@ import {
   getNudge,
   getPendingApplications,
   getPendingOnboardings,
+  getSavingsFundAccountClosure,
   getSavingsFundBalance,
   getSavingsFundBankAccounts,
   getSavingsFundOnboardingStatus,
@@ -81,6 +83,7 @@ import {
   SecondPillarAssets,
   SwitchRoleCommand,
   Token,
+  SavingsFundAccountClosure,
   SavingsFundOnboardingStatus,
   SavingsFundPaymentCancellationCommand,
   SourceFund,
@@ -439,6 +442,33 @@ export function useContactMemberCapitalListing(): UseMutationResult<
 
 export function useSavingsFundBalance(): UseQueryResult<SourceFund | null> {
   return useQuery({ queryKey: ['savingsFundBalance'], queryFn: () => getSavingsFundBalance() });
+}
+
+export function useSavingsFundAccountClosure(
+  enabled: boolean,
+): UseQueryResult<SavingsFundAccountClosure> {
+  const { data: user } = useMe();
+  return useQuery({
+    queryKey: ['savingsFundAccountClosure', user?.role?.code],
+    queryFn: () => getSavingsFundAccountClosure(),
+    enabled: enabled && !!user,
+  });
+}
+
+export function useCloseSavingsFundAccount(): UseMutationResult<void, unknown, void, unknown> {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => closeSavingsFundAccount(),
+    onSuccess: () => {
+      queryClient.resetQueries({ queryKey: ['savingsFundOnboardingStatus'] });
+      queryClient.resetQueries({ queryKey: ['savingsFundPersonOnboardingStatus'] });
+      queryClient.invalidateQueries({ queryKey: ['savingsFundAccountClosure'] });
+      queryClient.invalidateQueries({ queryKey: ['savingsFundBalance'] });
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ['savingsFundAccountClosure'] });
+    },
+  });
 }
 
 export function useSavingsFundBankAccounts(): UseQueryResult<string[]> {
