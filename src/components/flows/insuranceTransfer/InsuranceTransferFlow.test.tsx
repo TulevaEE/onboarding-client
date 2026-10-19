@@ -65,10 +65,12 @@ function openFlow(path = '/3rd-pillar-insurance', language: 'en' | 'et' = 'en') 
     language,
   );
   history.push(path);
+  moment.locale(language);
 }
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => {
+  moment.locale('en');
   jest.restoreAllMocks();
   server.resetHandlers();
   focusManager.setFocused(undefined);
@@ -76,6 +78,7 @@ afterEach(() => {
 afterAll(() => server.close());
 
 beforeEach(() => {
+  jest.spyOn(window, 'scrollTo').mockImplementation(() => undefined);
   initializeConfiguration();
   useTestBackendsExcept(server, ['user', 'userConversion', 'pensionAccountStatement', 'mandates']);
   pensionAccountStatementBackend(server, [mockSwedbankThirdPillarFundBalance]);
@@ -864,7 +867,7 @@ describe('III pillar insurance contract transfer', () => {
           'https://www.swedbank.ee/private/pensions/my/pensionAssets/insuranceContract/modification/termination',
       },
     ])(
-      'guides the request to $insurer, named by the guide rather than a heading that repeats the chosen insurer, and opens its channel in a new tab',
+      'guides the request to $insurer, named by the guide rather than a heading that repeats the chosen insurer, and opens its channel in a new tab with no review to continue to',
       async ({ insurer, steps, open, actionUrl }) => {
         openFlow();
         userEvent.click(await screen.findByRole('radio', { name: new RegExp(`^${insurer}`) }));
@@ -878,6 +881,7 @@ describe('III pillar insurance contract transfer', () => {
         expect(openLink).toHaveAttribute('href', actionUrl);
         expect(openLink).toHaveAttribute('target', '_blank');
         expect(openLink).toHaveAttribute('rel', 'noreferrer');
+        expect(screen.queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument();
       },
     );
   });
@@ -894,18 +898,17 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     { code: 'ARTEA', name: /^Artea/ },
     { code: 'ERGO', name: 'Ergo' },
   ])(
-    'offers $code a request on its own form to sign instead of a request to copy',
+    'offers $code a request on its own form to fill in and then review, instead of a request to copy, saying how the signed request reaches the insurer only on the review',
     async ({ name }) => {
       openFlow();
 
       userEvent.click(await screen.findByRole('radio', { name }));
 
-      expect(await screen.findByRole('button', { name: 'Sign the request' })).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          'We fill in the insurer’s own request form. We email the signed request to you, and you forward it to the insurer.',
-        ),
-      ).toBeInTheDocument();
+      expect(await screen.findByRole('button', { name: 'Continue' })).toBeInTheDocument();
+      expect(screen.getByText('We fill in the insurer’s own request form.')).toBeInTheDocument();
+      expect(screen.queryByText(/We email the signed request/)).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Sign the request' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /PDF|Preview/ })).not.toBeInTheDocument();
       expect(screen.queryByText(/^Subject: /)).not.toBeInTheDocument();
       expect(screen.queryByRole('button', { name: 'Copy' })).not.toBeInTheDocument();
       expect(screen.getByLabelText('When should the contract end?')).toBeInTheDocument();
@@ -928,7 +931,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     ]);
   });
 
-  test('shows the details on file for confirmation, asks only for the contract number, signs the Compensa form with no US person question and says where to forward it', async () => {
+  test('shows the details on file for confirmation, asks only for the contract number, signs the Compensa form from the review with no US person question and says where to forward it', async () => {
     const forms = insuranceTransferFormBackend();
     openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
 
@@ -946,7 +949,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(contractNumber).toHaveAttribute('autocapitalize', 'characters');
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
     userEvent.type(contractNumber, ' UP000123 ');
-    userEvent.click(signRequestButton());
+    await signFromReview();
 
     expect(await screen.findByText('9876')).toBeInTheDocument();
     expect(
@@ -973,17 +976,125 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(screen.queryByText('Send a request to your insurer')).not.toBeInTheDocument();
   }, 20_000);
 
-  test('does not sign without the contract number', async () => {
+  test('stays on the form with the error instead of continuing to the review without the contract number', async () => {
     const forms = insuranceTransferFormBackend();
     openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
     await yourDetails();
 
     userEvent.type(screen.getByLabelText('Contract number'), '   ');
-    userEvent.click(signRequestButton());
+    userEvent.click(continueButton());
 
     expect(await screen.findByText('Enter the contract number.')).toBeInTheDocument();
     expect(screen.getByLabelText('Contract number')).toBeInvalid();
+    expect(screen.queryByRole('region', { name: REQUEST_UNDER_REVIEW })).not.toBeInTheDocument();
+    expect(continueButton()).toBeInTheDocument();
     expect(forms.created).toEqual([]);
+  });
+
+  test('sums up the Ergo request in Estonian in the first person once the form is filled in: the contract it ends and when, the fund and pension account the money goes to, and how the signed request reaches the insurer', async () => {
+    openFlow('/3rd-pillar-insurance/request?insurer=ERGO', 'et');
+    userEvent.type(await screen.findByLabelText('Lepingu number'), '12345678');
+    chooseEndDate(screen.getByLabelText('Millal leping lõpetada?'), '2027-11-01');
+
+    userEvent.click(screen.getByRole('button', { name: 'Edasi' }));
+
+    const request = await screen.findByRole('region', {
+      name: /^III\ssamba kindlustuslepingu lõpetamine$/,
+    });
+    expect(screen.getByText('Esitan järgmise avalduse:')).toBeInTheDocument();
+    expect(within(request).getByText('Ergo')).toBeInTheDocument();
+    expect(normalizedText(within(request).getByText(/^Lõpetan oma/))).toBe(
+      'Lõpetan oma III samba kindlustuslepingu nr 12345678 1. novembril 2027 ja kannan selle raha Tuleva III Samba Pensionifondi.',
+    );
+    expect(
+      within(request).getByText(
+        'Allkirjastatud avalduse saadame sulle e‑postiga ja sina edastad selle kindlustusandjale.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole('term').map(normalizedText)).toEqual([
+      'Pensionifond:',
+      'Pensionikonto:',
+    ]);
+    const [fund, pensionAccount] = screen.getAllByRole('definition');
+    expect(within(fund).getByText('Tuleva III Samba Pensionifond')).toBeInTheDocument();
+    expect(within(fund).getByText('EE3600001707')).toBeInTheDocument();
+    expect(normalizedText(pensionAccount)).toBe('99812345678');
+    expect(isInsidePii(within(pensionAccount).getByText('99812345678'))).toBe(true);
+    expect(isInsidePii(within(request).getByText('12345678'))).toBe(true);
+    expect(screen.queryByRole('region', { name: 'Sinu andmed' })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('group', { name: 'Kus on sinu kindlustusleping?' }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Edasi' })).not.toBeInTheDocument();
+    const sign = screen.getByRole('button', { name: 'Allkirjastan avalduse' });
+    const change = screen.getByRole('button', { name: 'Muudan andmeid' });
+    expect(sign).toBeEnabled();
+    expect(inDocumentOrder([change, sign])).toEqual([sign, change]);
+    expect(screen.getByRole('button', { name: /^Vaatan avaldust PDF‑ina$/ })).toHaveClass(
+      'btn-link',
+    );
+  });
+
+  test('sums up a Compensa request in English that ends the contract as soon as possible', async () => {
+    openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
+    await yourDetails();
+    await fillCompensaForm();
+
+    userEvent.click(continueButton());
+
+    const request = await requestUnderReview();
+    expect(screen.getByText('I am submitting the following request:')).toBeInTheDocument();
+    expect(within(request).getByText('Compensa')).toBeInTheDocument();
+    expect(normalizedText(within(request).getByText(/^I am ending/))).toBe(
+      'I am ending my III pillar insurance contract no. UP000123 as soon as possible and moving its money to Tuleva III Pillar Pension Fund.',
+    );
+    expect(
+      within(request).getByText(
+        'We email you the signed request, and you forward it to your insurer.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole('term').map(normalizedText)).toEqual([
+      'Pension fund:',
+      'Pension account:',
+    ]);
+    const [fund, pensionAccount] = screen.getAllByRole('definition');
+    expect(within(fund).getByText('Tuleva III Pillar Pension Fund')).toBeInTheDocument();
+    expect(within(fund).getByText('EE3600001707')).toBeInTheDocument();
+    expect(normalizedText(pensionAccount)).toBe('99812345678');
+  });
+
+  test('switches to the review and back in place, at the top of the step each way, with focus on the request and every answer kept', async () => {
+    const scrolledToTop = jest.spyOn(window, 'scrollTo').mockImplementation(() => undefined);
+    openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
+    await yourDetails();
+    userEvent.type(screen.getByLabelText('Contract number'), '12345678');
+    userEvent.click(screen.getByRole('button', { name: 'Change details' }));
+    userEvent.clear(screen.getByLabelText('City'));
+    userEvent.type(screen.getByLabelText('City'), 'Tartu');
+    userEvent.selectOptions(screen.getByRole('combobox', { name: 'Country of birth' }), 'LV');
+    const entriesBefore = history.length;
+    const addressBefore = `${history.location.pathname}${history.location.search}`;
+
+    userEvent.click(continueButton());
+
+    await requestUnderReview();
+    expect(screen.getByRole('heading', { name: REQUEST_UNDER_REVIEW })).toHaveFocus();
+    expect(scrolledToTop.mock.calls).toEqual([[0, 0]]);
+    expect(screen.getByText('Send a request to your insurer')).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Change details' }));
+
+    expect(await insurerQuestion()).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: REQUEST_UNDER_REVIEW })).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Contract number')).toHaveValue('12345678');
+    expect(screen.getByLabelText('City')).toHaveValue('Tartu');
+    expect(screen.getByRole('combobox', { name: 'Country of birth' })).toHaveValue('LV');
+    expect(scrolledToTop.mock.calls).toEqual([
+      [0, 0],
+      [0, 0],
+    ]);
+    expect(history.length).toBe(entriesBefore);
+    expect(`${history.location.pathname}${history.location.search}`).toBe(addressBefore);
   });
 
   test('ties the messages of unanswered questions to the questions for screen readers', async () => {
@@ -991,7 +1102,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     openFlow('/3rd-pillar-insurance/request?insurer=ERGO');
     await yourDetails();
 
-    userEvent.click(signRequestButton());
+    userEvent.click(continueButton());
 
     const pep = await screen.findByRole('radiogroup', {
       name: 'Are you a politically exposed person?',
@@ -1010,7 +1121,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
 
     chooseEndDate(screen.getByLabelText('When should the contract end?'), '2027-11-01');
     await fillCompensaForm();
-    userEvent.click(signRequestButton());
+    await signFromReview();
 
     await waitFor(() => expect(forms.created).toHaveLength(1));
     expect(forms.created[0]).toMatchObject({ endDate: '2027-11-01' });
@@ -1030,7 +1141,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(within(details).getByRole('combobox', { name: 'Country of birth' })).toHaveValue('EE');
     userEvent.type(screen.getByLabelText('Contract number'), 'EL-12-345678');
 
-    userEvent.click(signRequestButton());
+    await signFromReview();
 
     await waitFor(() => expect(forms.created).toHaveLength(1));
     expect(forms.created).toEqual([
@@ -1055,7 +1166,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       await yourDetails();
 
       userEvent.type(screen.getByLabelText('Contract number'), contractNumber);
-      userEvent.click(signRequestButton());
+      userEvent.click(continueButton());
 
       expect(
         await screen.findByText(
@@ -1073,7 +1184,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     await yourDetails();
 
     userEvent.type(screen.getByLabelText('Contract number'), '70-512-345678');
-    userEvent.click(signRequestButton());
+    await signFromReview();
 
     await waitFor(() => expect(forms.created).toHaveLength(1));
     expect(forms.created[0]).toMatchObject({ policyNumber: '70-512-345678' });
@@ -1090,7 +1201,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     ['EE', 'FI', 'LV', 'LT', 'SE', 'NO'].forEach((country) =>
       selectCountryOptionInTomSelect(citizenship, country),
     );
-    userEvent.click(signRequestButton());
+    await signFromReview();
 
     await waitFor(() => expect(forms.created).toHaveLength(1));
     expect(forms.created[0]).toMatchObject({ citizenship: ['EE', 'FI', 'LV', 'LT', 'SE'] });
@@ -1145,7 +1256,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       }),
     );
 
-    userEvent.click(signRequestButton());
+    await signFromReview();
 
     await waitFor(() => expect(forms.created).toHaveLength(1));
     expect(forms.created[0]).toMatchObject({
@@ -1234,7 +1345,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     userEvent.selectOptions(screen.getByRole('combobox', { name: 'Country of birth' }), 'LV');
     expect(screen.getByRole('combobox', { name: 'Tax residency' })).toHaveValue('FI');
 
-    userEvent.click(signRequestButton());
+    await signFromReview();
 
     await waitFor(() => expect(forms.created).toHaveLength(1));
     expect(forms.created[0]).toMatchObject({
@@ -1282,7 +1393,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       'ee59-1254-4713-2274-9514',
     );
 
-    userEvent.click(signRequestButton());
+    await signFromReview();
 
     await waitFor(() => expect(forms.created).toHaveLength(1));
     expect(forms.created).toEqual([
@@ -1334,7 +1445,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       'Example OÜ, Tallinn, consulting',
     );
 
-    userEvent.click(signRequestButton());
+    await signFromReview();
 
     await waitFor(() => expect(forms.created).toHaveLength(1));
     expect((forms.created[0] as { artea: unknown }).artea).toMatchObject({
@@ -1358,7 +1469,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       'EE00 0000 0000 0000 0000',
     );
 
-    userEvent.click(signRequestButton());
+    userEvent.click(continueButton());
 
     expect(await screen.findByText('Check the bank account number.')).toBeInTheDocument();
     const incomeSources = screen.getByRole('group', { name: 'Sources of income' });
@@ -1377,7 +1488,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
     await yourDetails();
 
-    userEvent.click(signRequestButton());
+    userEvent.click(continueButton());
 
     expect(
       await screen.findByLabelText('Bank account you paid the premiums from'),
@@ -1392,7 +1503,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       await yourDetails();
       await fillArteaForm({ contractNumber });
 
-      userEvent.click(signRequestButton());
+      userEvent.click(continueButton());
 
       expect(
         await screen.findByText(
@@ -1409,15 +1520,16 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     { typed: 'up-000000123', sent: 'UP000000123' },
     { typed: 'Kk1', sent: 'KK1' },
   ])(
-    'signs Artea’s form with the contract number typed as "$typed", sent as $sent',
+    'reviews and signs Artea’s form with the contract number typed as "$typed", sent as $sent',
     async ({ typed, sent }) => {
       const forms = insuranceTransferFormBackend();
       openFlow('/3rd-pillar-insurance/request?insurer=ARTEA');
       await yourDetails();
       await fillArteaForm({ contractNumber: typed });
+      userEvent.click(continueButton());
 
+      expect(within(await requestUnderReview()).getByText(sent)).toBeInTheDocument();
       userEvent.click(signRequestButton());
-
       await waitFor(() => expect(forms.created).toHaveLength(1));
       expect(forms.created[0]).toMatchObject({ policyNumber: sent });
     },
@@ -1429,7 +1541,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     await yourDetails();
     await fillArteaForm({ issuedOn: dateFromToday(1), validUntil: dateFromToday(-1) });
 
-    userEvent.click(signRequestButton());
+    userEvent.click(continueButton());
 
     expect(await screen.findByLabelText('Issued on')).toHaveAccessibleDescription(
       'The issue date cannot be in the future.',
@@ -1446,7 +1558,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     await yourDetails();
     await fillArteaForm({ issuedOn: dateFromToday(0), validUntil: dateFromToday(0) });
 
-    userEvent.click(signRequestButton());
+    await signFromReview();
 
     await waitFor(() => expect(forms.created).toHaveLength(1));
     expect(forms.created[0]).toMatchObject({
@@ -1461,7 +1573,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     await yourDetails();
     await fillArteaForm({ issuedOn: dayInEstonia, validUntil: dayInUtc });
 
-    userEvent.click(signRequestButton());
+    userEvent.click(continueButton());
 
     await waitFor(() =>
       expect(screen.getByLabelText('Valid until')).toHaveAccessibleDescription(
@@ -1479,6 +1591,8 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
     await yourDetails();
     await fillCompensaForm();
+    userEvent.click(continueButton());
+    await requestUnderReview();
 
     userEvent.click(signRequestButton());
     userEvent.click(signRequestButton());
@@ -1489,14 +1603,15 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(forms.created).toHaveLength(1);
   });
 
-  test('opens the filled-in form as a PDF before signing, and signs that same form', async () => {
+  test('opens the filled-in form as a PDF from the review, and signs that same form', async () => {
     const forms = insuranceTransferFormBackend();
     const opened = pdfOpensInNewTab();
     openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
     await yourDetails();
     await fillCompensaForm();
+    userEvent.click(continueButton());
 
-    userEvent.click(screen.getByRole('button', { name: 'Preview the request' }));
+    userEvent.click(await viewAsPdfButton());
 
     await waitFor(() => expect(opened()).toEqual(['blob:preview-of-form']));
     expect(forms.previewed).toEqual(['1']);
@@ -1513,11 +1628,13 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
     await yourDetails();
     await fillCompensaForm();
-    userEvent.click(screen.getByRole('button', { name: 'Preview the request' }));
+    userEvent.click(continueButton());
+    userEvent.click(await viewAsPdfButton());
     await waitFor(() => expect(forms.previewed).toEqual(['1']));
 
+    userEvent.click(screen.getByRole('button', { name: 'Change details' }));
     userEvent.type(screen.getByLabelText('Contract number'), '4');
-    userEvent.click(signRequestButton());
+    await signFromReview();
 
     await waitFor(() => expect(history.location.pathname).toBe('/3rd-pillar-insurance-signed/2'), {
       timeout: 5_000,
@@ -1534,8 +1651,9 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
     await yourDetails();
     await fillCompensaForm();
+    userEvent.click(continueButton());
 
-    userEvent.click(screen.getByRole('button', { name: 'Preview the request' }));
+    userEvent.click(await viewAsPdfButton());
 
     await waitFor(() =>
       expect(download).toHaveBeenCalledWith(
@@ -1556,7 +1674,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     await yourDetails();
     await fillCompensaForm();
 
-    userEvent.click(signRequestButton());
+    await signFromReview();
 
     expect(
       await screen.findByText('An error occurred. Please try again or reach out to us.'),
@@ -2001,7 +2119,23 @@ const definitionsIn = (element: HTMLElement) => {
     .map((term, index) => [term.textContent, definitions[index].textContent]);
 };
 
+const REQUEST_UNDER_REVIEW = /^Ending a III\spillar insurance contract$/;
+
+const continueButton = () => screen.getByRole('button', { name: 'Continue' });
+
+const requestUnderReview = () => screen.findByRole('region', { name: REQUEST_UNDER_REVIEW });
+
 const signRequestButton = () => screen.getByRole('button', { name: 'Sign the request' });
+
+const VIEW_AS_PDF = /^View the request as a\sPDF$/;
+
+const viewAsPdfButton = () => screen.findByRole('button', { name: VIEW_AS_PDF });
+
+async function signFromReview() {
+  userEvent.click(continueButton());
+  await requestUnderReview();
+  userEvent.click(signRequestButton());
+}
 
 async function fillCompensaForm() {
   userEvent.type(await screen.findByLabelText('Contract number'), 'UP000123');

@@ -160,29 +160,36 @@ const RequestToInsurer = ({ user }: { user: PersonWithPensionAccount }) => {
     saveContractNumber,
     askIfSent,
   } = useRequestChoicesInAddress();
+  const [reviewing, setReviewing] = useState(false);
+  const showReview = (shown: boolean) => {
+    setReviewing(shown);
+    window.scrollTo(0, 0);
+  };
 
   return (
     <div className="row">
       <div className="col-lg-8">
-        <fieldset>
-          <legend className="h5 mb-3">
-            <FormattedMessage id="insuranceTransfer.request.question" />
-          </legend>
-          <div className="d-flex flex-column gap-2">
-            {INSURER_CODES.map((code) => (
-              <Radio
-                key={code}
-                name="insurer"
-                id={`insurer-${code}`}
-                className="py-3"
-                selected={insurer === code}
-                onSelect={() => chooseInsurer(code)}
-              >
-                <InsurerName insurer={code} />
-              </Radio>
-            ))}
-          </div>
-        </fieldset>
+        {!reviewing && (
+          <fieldset>
+            <legend className="h5 mb-3">
+              <FormattedMessage id="insuranceTransfer.request.question" />
+            </legend>
+            <div className="d-flex flex-column gap-2">
+              {INSURER_CODES.map((code) => (
+                <Radio
+                  key={code}
+                  name="insurer"
+                  id={`insurer-${code}`}
+                  className="py-3"
+                  selected={insurer === code}
+                  onSelect={() => chooseInsurer(code)}
+                >
+                  <InsurerName insurer={code} />
+                </Radio>
+              ))}
+            </div>
+          </fieldset>
+        )}
 
         {insurer &&
           (takesSignedForm(insurer) ? (
@@ -191,6 +198,9 @@ const RequestToInsurer = ({ user }: { user: PersonWithPensionAccount }) => {
               endDate={endDate}
               chooseEndDate={chooseEndDate}
               user={user}
+              reviewing={reviewing}
+              review={() => showReview(true)}
+              editAnswers={() => showReview(false)}
             />
           ) : (
             <GuidedRequest

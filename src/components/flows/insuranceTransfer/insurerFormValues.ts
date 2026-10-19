@@ -106,7 +106,7 @@ const POLICY_NUMBER_FORMATS: Partial<Record<InsuranceTransferFormInsurer, Policy
 export const policyNumberFormatOf = (insurer: InsuranceTransferFormInsurer) =>
   POLICY_NUMBER_FORMATS[insurer];
 
-const policyNumberAsSent = (insurer: InsuranceTransferFormInsurer, policyNumber: string) =>
+export const policyNumberAsSent = (insurer: InsuranceTransferFormInsurer, policyNumber: string) =>
   insurer === 'ARTEA' ? arteaPolicyNumberAsSent(policyNumber) : policyNumber.trim();
 
 export const asksEmployer = (status: OccupationStatus | '') => status === 'EMPLOYED';
