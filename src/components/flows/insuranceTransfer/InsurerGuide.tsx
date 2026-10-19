@@ -22,7 +22,7 @@ const CopyRequestStep = ({ request }: { request: TransferRequest }) => (
     </div>
     <div className="mt-3 mb-3">
       <CopyButton textToCopy={request.text}>
-        <FormattedMessage id="global.copy" />
+        <FormattedMessage id="insuranceTransfer.guide.copyButton" />
       </CopyButton>
     </div>
   </>

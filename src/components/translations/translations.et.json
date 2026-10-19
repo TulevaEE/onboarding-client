@@ -2381,6 +2381,7 @@
   "insuranceTransfer.request.termination.oneContract": "Ütlen üles oma täiendava kogumispensioni kindlustuslepingu nr {contractNumber} ja soovin kasutada selle kogu tagastusväärtust Tuleva III Samba Pensionifondi osakute omandamiseks",
   "insuranceTransfer.insurer.ARTEA.formerNames": "endine INVL, Mandatum",
   "insuranceTransfer.guide.copy": "Kopeeri avaldus.",
+  "insuranceTransfer.guide.copyButton": "Kopeerin avalduse",
   "insuranceTransfer.guide.SEB.openMessage": "Ava SEB internetipangas <b>Saada uus kiri</b> ja vali teemaks <b>Pension → Pensioni III sammas</b>.",
   "insuranceTransfer.guide.SEB.send": "Kleebi kopeeritud avaldus väljale <b>Kirja sisu</b> ja vajuta <b>Saadan teate</b>.",
   "insuranceTransfer.guide.SWEDBANK.logIn": "Logi sisse Swedbanki internetipanka. Kui lõpetamise avaldus kohe ei avane, vali <b>Pension → Minu pensionivara</b>, oma pensionikindlustuse leping ja <b>Lepingu lõpetamine</b>.",

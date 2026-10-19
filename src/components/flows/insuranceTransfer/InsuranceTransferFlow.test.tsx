@@ -583,7 +583,7 @@ describe('III pillar insurance contract transfer', () => {
         ].join('\n'),
         { normalizeWhitespace: false },
       );
-      userEvent.click(within(guide('SEB')).getByRole('button', { name: 'Copy' }));
+      userEvent.click(within(guide('SEB')).getByRole('button', { name: 'Copy the request' }));
       await waitFor(() =>
         expect(writeText).toHaveBeenCalledWith(
           expect.stringContaining('Contract end date: November 1, 2027'),
@@ -692,12 +692,13 @@ describe('III pillar insurance contract transfer', () => {
       ).toBeInTheDocument();
     });
 
-    test('copies the whole request with a quiet copy button', async () => {
+    test('copies the whole request with a quiet copy button that names what it copies', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=SEB');
       const request = await requestText();
 
-      const copyButton = within(guide('SEB')).getByRole('button', { name: 'Copy' });
+      const copyButton = within(guide('SEB')).getByRole('button', { name: 'Copy the request' });
       expect(copyButton).toHaveClass('btn-outline-primary');
+      expect(copyButton).not.toHaveClass('btn-lg');
       userEvent.click(copyButton);
 
       await waitFor(() => expect(writeText).toHaveBeenCalledWith(request.textContent));

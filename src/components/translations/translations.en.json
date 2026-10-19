@@ -2291,6 +2291,7 @@
   "insuranceTransfer.request.termination.oneContract": "I hereby terminate my supplementary funded pension insurance contract no. {contractNumber} and wish to use its full surrender value to acquire units of Tuleva III Samba Pensionifond",
   "insuranceTransfer.insurer.ARTEA.formerNames": "formerly INVL, Mandatum",
   "insuranceTransfer.guide.copy": "Copy the request.",
+  "insuranceTransfer.guide.copyButton": "Copy the request",
   "insuranceTransfer.guide.SEB.openMessage": "In the SEB internet bank, open <b>Saada uus kiri</b> and choose the topic <b>Pension → Pensioni III sammas</b>.",
   "insuranceTransfer.guide.SEB.send": "Paste the copied request into <b>Kirja sisu</b> and press <b>Saadan teate</b>.",
   "insuranceTransfer.guide.SWEDBANK.logIn": "Log in to the Swedbank internet bank. If the termination application does not open right away, choose <b>Pension → Minu pensionivara</b>, your pension insurance contract and <b>Lepingu lõpetamine</b>.",
