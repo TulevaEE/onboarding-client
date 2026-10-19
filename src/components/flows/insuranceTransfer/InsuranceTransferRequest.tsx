@@ -212,12 +212,12 @@ const hasPensionAccount = (user: User): user is PersonWithPensionAccount =>
   !!user.pensionAccountNumber;
 
 const usePersonWithPensionAccount = () => {
-  const { data: user, isFetching, isError } = useMe();
+  const { data: user, isFetchedAfterMount, isError } = useMe();
 
   if (user && hasPensionAccount(user)) {
     return { person: user, failed: false };
   }
-  return { person: null, failed: !isFetching && (isError || !!user) };
+  return { person: null, failed: isFetchedAfterMount && (isError || !!user) };
 };
 
 export const InsuranceTransferRequest = () => {

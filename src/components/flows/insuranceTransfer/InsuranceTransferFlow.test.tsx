@@ -173,6 +173,22 @@ describe('III pillar insurance contract transfer', () => {
       expect(screen.queryByText(/^Subject: /)).not.toBeInTheDocument();
     }, 20_000);
 
+    test('keeps saying it could not load while the person is read again on coming back to the tab', async () => {
+      openFlow('/3rd-pillar-insurance?insurer=SEB');
+      await answerAllAgreements();
+      const asks = pensionAccountOpenedAfterAsks(2);
+      userEvent.click(signButton());
+      await requestStepOpened();
+      expect(await screen.findByText(SOMETHING_WENT_WRONG)).toBeInTheDocument();
+
+      comeBackToTheTab();
+      await waitFor(() => expect(asks()).toBe(2));
+
+      expect(screen.getByText(SOMETHING_WENT_WRONG)).toBeInTheDocument();
+      await aFewSecondsPass();
+      expect(screen.getByText(SOMETHING_WENT_WRONG)).toBeInTheDocument();
+    }, 20_000);
+
     test('signs once when the sign button is pressed twice while the answers are being saved', async () => {
       const amlChecks = amlChecksCreated();
       const mandatesSaved = mandatesSavedCount();
