@@ -31,6 +31,10 @@ jest.mock('../common/http', () => mockHttp);
 const mockApi = jest.genMockFromModule('../common/api');
 jest.mock('../common/api', () => mockApi);
 
+jest.mock('@sentry/browser', () => ({ configureScope: jest.fn() }));
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Sentry = require('@sentry/browser');
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const actions = require('./actions'); // need to use require because of jest mocks being weird
 
@@ -1467,6 +1471,22 @@ describe('Login actions', () => {
     mockApi.logout = jest.fn(() => Promise.resolve());
     const logout = createBoundAction(actions.logOut);
     return logout().then(() => expect(dispatch).toHaveBeenCalledWith({ type: LOG_OUT }));
+  });
+
+  it('forgets the user errors are reported for when you log out', async () => {
+    const nodeEnvironment = process.env.NODE_ENV;
+    const scope = { clear: jest.fn() };
+    Sentry.configureScope.mockImplementation((clearIt) => clearIt(scope));
+    mockApi.logout = jest.fn(() => Promise.resolve());
+    process.env.NODE_ENV = 'production';
+    try {
+      await createBoundAction(actions.logOut)();
+    } finally {
+      process.env.NODE_ENV = nodeEnvironment;
+    }
+
+    expect(scope.clear).toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({ type: LOG_OUT });
   });
 
   it('logs you out locally even when the logout request fails', async () => {

@@ -34,6 +34,8 @@ import { loginPath } from './components/login/LoginPage';
 import { GiftDonePage, PublicGiftPage } from './components/flows/savingsAccount/GiftLink';
 import { smartIdCallbackPath } from './components/login/constants';
 import { SmartIdCallbackPage } from './components/login/smartId/SmartIdCallbackPage';
+import { ConnectPage } from './components/connect/ConnectPage';
+import { connectPath } from './components/connect/connectPath';
 
 import { createTrackedEvent } from './components/common/api';
 import { shouldWriteTestMode, writeTestMode } from './components/common/test-mode';
@@ -118,6 +120,7 @@ export class App extends Component {
                 <Route path="/trigger-procedure" component={TriggerProcedure} />
                 <Route path="/kingitus/:token/tehtud" component={GiftDonePage} />
                 <Route path="/kingitus/:token" component={PublicGiftPage} />
+                <Route exact path={connectPath} component={ConnectPage} />
                 <PrivateRoute exact path="" component={LoggedInApp} />
               </Switch>
             </ConnectedRouter>

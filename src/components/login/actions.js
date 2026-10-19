@@ -38,6 +38,8 @@ import { opensTheSmartIdApp } from './smartId/opensTheSmartIdApp';
 import { linkThatOpensTheSmartIdApp } from './smartId/linkThatOpensTheSmartIdApp';
 import { departForTheSmartIdLink } from './smartId/useSmartIdAppDidNotOpen';
 import { pathOnThisSite } from './pathOnThisSite';
+import { forgetAllConnectLoginsInFlight, noteALoginStartingFor } from '../connect/freshLogin';
+import { endTheSession } from './endTheSession';
 
 const POLL_DELAY = 1000;
 let timeout;
@@ -114,8 +116,11 @@ function beginLoginStart() {
   return () => startSequence !== loginStartSequence;
 }
 
+const returnPathIn = (getState) => getState()?.router?.location?.state?.from;
+
 function startMobileIdLogin(start) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
+    noteALoginStartingFor(returnPathIn(getState));
     const canceledOrSuperseded = beginLoginStart();
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return start()
@@ -213,6 +218,10 @@ function loadPendingSmartIdAuthentication() {
   }
 }
 
+export function hasPendingSmartIdAuthentication() {
+  return loadUnexpiredPendingSmartIdAuthentication() !== null;
+}
+
 export function getPendingSmartIdReturnPath() {
   const pending = loadUnexpiredPendingSmartIdAuthentication();
   return pending?.returnPath ?? null;
@@ -263,6 +272,7 @@ export function resumePendingSmartIdAuthentication() {
       return;
     }
     logPoll('resume-pending-login');
+    noteALoginStartingFor(pending.returnPath);
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     if (pending.web2AppLink) {
       dispatch({
@@ -444,6 +454,7 @@ function startSmartIdSession(
       if (canceledOrSuperseded()) {
         return;
       }
+      noteALoginStartingFor(returnPath);
       const { authenticationHash } = start;
       if (start.flow === 'NOTIFICATION') {
         const controlCode = start.verificationCode;
@@ -485,7 +496,7 @@ const SMART_ID_CALLBACK_IN_ANOTHER_BROWSER = {
 const belongsToALoginStartedElsewhere = (error) =>
   ['auth.session.not.found', 'smart.id.callback.invalid'].includes(getGlobalErrorCode(error?.body));
 
-export function completeSmartIdLogin(callback) {
+export function completeSmartIdLogin(callback, returnPath) {
   return (dispatch) => {
     const canceledOrSuperseded = beginLoginStart();
     dispatch({ type: MOBILE_AUTHENTICATION_START });
@@ -505,7 +516,7 @@ export function completeSmartIdLogin(callback) {
         }
         savePendingSmartIdAuthentication({
           authenticationHash,
-          returnPath: pending?.returnPath,
+          returnPath: pending?.returnPath ?? returnPath,
           language: pending?.language,
           callbackAccepted: true,
         });
@@ -616,16 +627,10 @@ export function getUserConversion() {
 
 export function logOut() {
   return (dispatch) => {
-    if (process.env.NODE_ENV === 'production') {
-      Sentry.configureScope((scope) => {
-        scope.clear();
-      });
-    }
+    forgetAllConnectLoginsInFlight();
     // api.logout() drops the local authentication before the request settles, so the
     // local LOG_OUT cleanup (state reset, query cache clear) must run even on failure
-    return api.logout().finally(() => {
-      dispatch({ type: LOG_OUT });
-    });
+    return api.logout().finally(() => endTheSession(dispatch));
   };
 }
 export function setLoginToRedirect() {

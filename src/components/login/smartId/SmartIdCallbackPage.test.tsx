@@ -12,6 +12,8 @@ import { smartIdAuthenticationBackend } from '../../../test/backend';
 import { getAuthentication } from '../../common/authenticationManager';
 import { anAuthenticationManager } from '../../common/authenticationManagerFixture';
 import { SmartIdCallbackPage } from './SmartIdCallbackPage';
+import { logOut } from '../actions';
+import { refuseLocalStorageChangesTo } from '../../../test/refuseLocalStorageChanges';
 import { loginPath, smartIdCallbackPath } from '../constants';
 import { expectFullWidthCancel } from '../../../test/expectFullWidthCancel';
 import { replaceWindowLocationAssign } from '../../../test/windowLocationAssign';
@@ -32,6 +34,11 @@ describe('When the Smart-ID app returns to the browser', () => {
       <Switch>
         <Route exact path="/account" render={() => <h1>Mock account page</h1>} />
         <Route exact path="/capital/listings/42" render={() => <h1>Mock listing page</h1>} />
+        <Route
+          exact
+          path="/connect/:requestId"
+          render={({ match }) => <h1>Mock connect page for {match.params.requestId}</h1>}
+        />
         <Route exact path={loginPath} render={() => <h1>Mock login page</h1>} />
         <Route exact path={smartIdCallbackPath} component={SmartIdCallbackPage} />
       </Switch>,
@@ -64,7 +71,10 @@ describe('When the Smart-ID app returns to the browser', () => {
     `?returnPath=${encodeURIComponent(returnPath)}&${aCallback.slice(1)}`;
 
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterEach(() => server.resetHandlers());
+  afterEach(() => {
+    server.resetHandlers();
+    jest.restoreAllMocks();
+  });
   afterAll(() => server.close());
 
   const startLoginBeforeTheAppRoundTrip = (
@@ -84,6 +94,7 @@ describe('When the Smart-ID app returns to the browser', () => {
     initializeConfiguration();
     getAuthentication().remove();
     sessionStorage.clear();
+    localStorage.clear();
     delete window.smartIdCallback;
   });
 
@@ -236,6 +247,99 @@ describe('When the Smart-ID app returns to the browser', () => {
     ).toBeInTheDocument();
   });
 
+  const minutesFromNow = (minutes: number) => Date.now() + minutes * 60 * 1000;
+  const rememberConnectLoginsInFlight = (logins: Record<string, unknown>) =>
+    localStorage.setItem('connectLoginsInFlight', JSON.stringify(logins));
+  const aLoginInFlight = (
+    startedMinutesAgo: number,
+    expiresInMinutes: number,
+    steersTheCallback = true,
+  ) => ({
+    startedAt: minutesFromNow(-startedMinutesAgo),
+    createdAt: new Date(minutesFromNow(-startedMinutesAgo)).toISOString(),
+    expiresAt: new Date(minutesFromNow(expiresInMinutes)).toISOString(),
+    steersTheCallback,
+  });
+  const completeTheLoginInANewTab = () => {
+    const backend = smartIdAuthenticationBackend(server);
+    backend.startSession();
+    backend.resolvePolling();
+    openCallback(aCallback);
+  };
+
+  test('a login that comes back in a new tab goes to the connect request whose login is in flight, for as long as the request has not expired', async () => {
+    rememberConnectLoginsInFlight({ 'a-request-id': aLoginInFlight(11, 5) });
+
+    completeTheLoginInANewTab();
+
+    expect(
+      await screen.findByText(/mock connect page for a-request-id/i, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+  });
+
+  test('a reload while a login that came back in a new tab waits for its tokens still goes to the connect request', async () => {
+    rememberConnectLoginsInFlight({ 'a-request-id': aLoginInFlight(1, 9) });
+    const backend = smartIdAuthenticationBackend(server);
+    backend.startSession();
+    const view = openCallback(aCallback);
+    await waitFor(() => expect(backend.acceptedCallbacks).toBe(1));
+    await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+
+    reload(view);
+    backend.resolvePolling();
+
+    expect(
+      await screen.findByText(/mock connect page for a-request-id/i, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+  });
+
+  test('a login that comes back in a new tab goes to the connect request started most recently whose login is still in flight and whose consent was not shown yet', async () => {
+    rememberConnectLoginsInFlight({
+      'an-older-request': aLoginInFlight(4, 6),
+      'the-latest-request': aLoginInFlight(3, 7),
+      'a-request-whose-consent-was-shown': aLoginInFlight(2, 8, false),
+      'an-expired-request': aLoginInFlight(1, -10),
+    });
+
+    completeTheLoginInANewTab();
+
+    expect(
+      await screen.findByText(/mock connect page for the-latest-request/i, undefined, {
+        timeout: 3000,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  test('a login that comes back in a new tab whose own Smart-ID login was abandoned long ago goes to the connect request in flight', async () => {
+    rememberConnectLoginsInFlight({ 'a-request-id': aLoginInFlight(1, 9) });
+    sessionStorage.setItem(
+      'pendingSmartIdAuthentication',
+      JSON.stringify({
+        authenticationHash: 'a-hash-of-a-login-abandoned-long-ago',
+        startedAt: minutesFromNow(-10),
+      }),
+    );
+
+    completeTheLoginInANewTab();
+
+    expect(
+      await screen.findByText(/mock connect page for a-request-id/i, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+  });
+
+  test('a login started in this tab without a page to return to lands on the account page, even while a connect login is in flight', async () => {
+    rememberConnectLoginsInFlight({ 'a-request-id': aLoginInFlight(1, 9) });
+    const backend = smartIdAuthenticationBackend(server);
+    startLoginBeforeTheAppRoundTrip(backend);
+    backend.resolvePolling();
+
+    openCallback(aCallback);
+
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+  });
+
   test.each([
     ['//evil.example/account'],
     ['/\\evil.example/account'],
@@ -255,6 +359,72 @@ describe('When the Smart-ID app returns to the browser', () => {
         await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
       ).toBeInTheDocument();
       expect(history.location.state).toEqual({ justLoggedIn: true });
+    },
+  );
+
+  test('a login that comes back in a new tab completes even when the browser refuses to clean up the connect record', async () => {
+    localStorage.setItem('connectLoginsInFlight', 'not json');
+    refuseLocalStorageChangesTo('connectLoginsInFlight', 'removeItem');
+
+    completeTheLoginInANewTab();
+
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+  });
+
+  test('a login that comes back in a new tab after the person logged out lands on the account page', async () => {
+    rememberConnectLoginsInFlight({ 'a-request-id': aLoginInFlight(1, 9) });
+    server.use(rest.get('http://localhost/v1/logout', (req, res, ctx) => res(ctx.status(200))));
+    const anotherTab = createMemoryHistory();
+    await createDefaultStore(anotherTab as never).dispatch(logOut() as never);
+
+    completeTheLoginInANewTab();
+
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+  });
+
+  test('a browser whose clock runs two minutes behind the server still forgets a connect request that has expired', async () => {
+    rememberConnectLoginsInFlight({ 'a-request-id': aLoginInFlight(20, -10) });
+    const browserClock = Date.now.bind(Date);
+    jest.spyOn(Date, 'now').mockImplementation(() => browserClock() - 2 * 60 * 1000);
+
+    completeTheLoginInANewTab();
+
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    expect(localStorage.getItem('connectLoginsInFlight')).toBeNull();
+  });
+
+  test('a login that comes back in a new tab after the connect request expired lands on the account page and forgets that request', async () => {
+    rememberConnectLoginsInFlight({ 'a-request-id': aLoginInFlight(20, -10) });
+
+    completeTheLoginInANewTab();
+
+    expect(
+      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    expect(localStorage.getItem('connectLoginsInFlight')).toBeNull();
+  });
+
+  test.each([
+    'not json',
+    '{"a-request-id": {"startedAt": "yesterday"}}',
+    '{"a-request-id": {"startedAt": 1, "expiresAt": "soon"}}',
+  ])(
+    'a login that comes back in a new tab while the connect record is malformed (%s) lands on the account page and removes the record',
+    async (malformedRecord) => {
+      localStorage.setItem('connectLoginsInFlight', malformedRecord);
+
+      completeTheLoginInANewTab();
+
+      expect(
+        await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      ).toBeInTheDocument();
+      expect(localStorage.getItem('connectLoginsInFlight')).toBeNull();
     },
   );
 
@@ -494,6 +664,33 @@ describe('When the Smart-ID app returns to the browser', () => {
     ).toBeInTheDocument();
   });
 
+  test('cancelling in the Smart-ID app goes back to the login page still heading for the same page', async () => {
+    startLoginBeforeTheAppRoundTrip(smartIdAuthenticationBackend(server), '/capital/listings/42');
+    server.use(
+      rest.post('http://localhost/oauth/token', (req, res, ctx) =>
+        res(ctx.status(400), ctx.json({ errors: [{ code: 'smart.id.user.refused' }] })),
+      ),
+    );
+
+    openCallback(aCallback);
+
+    expect(
+      await screen.findByText(/mock login page/i, undefined, { timeout: 3000 }),
+    ).toBeInTheDocument();
+    expect(history.location.state).toEqual({ from: '/capital/listings/42' });
+  });
+
+  test('trying again after a rejected callback goes back to the login page still heading for the same page', async () => {
+    const backend = smartIdAuthenticationBackend(server, { rejectCallback: true });
+    startLoginBeforeTheAppRoundTrip(backend, '/capital/listings/42');
+
+    openCallback(aCallback);
+    userEvent.click(await screen.findByRole('link', { name: 'Try again' }));
+
+    expect(await screen.findByText(/mock login page/i)).toBeInTheDocument();
+    expect(history.location.state).toEqual({ from: '/capital/listings/42' });
+  });
+
   test('says why Smart-ID ended the login any other way', async () => {
     startLoginBeforeTheAppRoundTrip(smartIdAuthenticationBackend(server));
     server.use(
@@ -533,6 +730,24 @@ describe('When the Smart-ID app returns to the browser', () => {
     userEvent.click(screen.getByRole('link', { name: 'Cancel' }));
 
     expect(screen.getByText(/mock login page/i)).toBeInTheDocument();
+    jest.useRealTimers();
+  });
+
+  test('stopping a login that takes too long goes back to the login page still heading for the same page', () => {
+    jest.useFakeTimers();
+    startLoginBeforeTheAppRoundTrip(smartIdAuthenticationBackend(server), '/capital/listings/42');
+    server.use(
+      rest.post('http://localhost/v1/smart-id/login/callback', () => new Promise<never>(() => {})),
+    );
+
+    openCallback(aCallback);
+    act(() => {
+      jest.advanceTimersByTime(20000);
+    });
+    userEvent.click(screen.getByRole('link', { name: 'Cancel' }));
+
+    expect(screen.getByText(/mock login page/i)).toBeInTheDocument();
+    expect(history.location.state).toEqual({ from: '/capital/listings/42' });
     jest.useRealTimers();
   });
 
@@ -602,6 +817,24 @@ describe('When the Smart-ID app returns to the browser', () => {
       backend.resolvePolling();
       expect(
         await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      ).toBeInTheDocument();
+    });
+
+    test('on a phone the new session still lands on the page the person was heading for', async () => {
+      pretendToBeOn(phoneUserAgent);
+      const backend = smartIdAuthenticationBackend(server, {
+        rejectCallback: true,
+        language: 'en',
+      });
+      startLoginBeforeTheAppRoundTrip(backend, '/capital/listings/42');
+      openFailedCallbackBeforeTheLoginPage();
+
+      userEvent.click(await screen.findByRole('link', { name: 'Try again' }));
+      await waitFor(() => expect(locationAssign).toHaveBeenCalledWith(smartIdWeb2AppLink('en')));
+      backend.resolvePolling();
+
+      expect(
+        await screen.findByText(/mock listing page/gi, undefined, { timeout: 3000 }),
       ).toBeInTheDocument();
     });
 

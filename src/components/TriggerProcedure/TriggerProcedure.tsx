@@ -7,7 +7,8 @@ import { Loader } from '../common/loader/Loader';
 import { exchangeHandoverTokenForAccessToken } from './exchangeHandoverToken';
 import { getQueryParams } from '../../utils';
 import { MOBILE_AUTHENTICATION_SUCCESS } from '../login/constants';
-import { finish, init, parseJwt } from './utils';
+import { finish, init } from './utils';
+import { parseJwt } from '../common/jwt';
 import { forgetHandoverToken, storedHandoverToken } from './handoverTokenStorage';
 
 import './TriggerProcedure.scss';

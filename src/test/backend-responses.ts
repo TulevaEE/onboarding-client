@@ -15,6 +15,7 @@ import {
 import { BusinessRegistryValidatedData } from '../components/common/apiModels/company-onboarding';
 import { KycIdentity } from '../components/flows/savingsAccount/SavingsFundOnboarding/types.api';
 import { SecondPillarPaymentRateChangeMandate } from '../components/flows/secondPillarPaymentRate/types';
+import { ConnectRequest } from '../components/connect/connect.api';
 
 export const authErrorResponse = {
   error: 'not authenticated correctly',
@@ -317,3 +318,37 @@ export const mandateDeadlinesResponse: MandateDeadlines = {
   secondPillarContributionEndDate: '2024-08-01',
   thirdPillarPaymentDeadline: '2024-12-27T13:59:59.999999999Z',
 };
+
+export const connectRequestResponse: Omit<ConnectRequest, 'createdAt' | 'expiresAt'> = {
+  clientName: 'Portfellow',
+  scopes: ['balances:read', 'transactions:read'],
+};
+
+export const connectRequestNotFoundResponse = {
+  errors: [{ code: 'connect.request.not.found' }],
+};
+
+export const connectLoginRequiredResponse = {
+  errors: [{ code: 'connect.login.required' }],
+};
+
+export const connectApprovalResponse = {
+  redirectUri: 'https://app.example/callback?code=an-authorization-code&state=a-state',
+};
+
+export const connectDenialResponse = {
+  redirectUri: 'https://app.example/callback?error=access_denied&state=a-state',
+};
+
+const base64UrlOf = (value: unknown): string =>
+  btoa(JSON.stringify(value)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+export const anAccessTokenLoggedInAt = (loginTime: Date): string =>
+  [
+    base64UrlOf({ alg: 'RS256', typ: 'JWT' }),
+    base64UrlOf({
+      sub: 'a-person',
+      attributes: { authTime: loginTime.toISOString().replace(/\.\d{3}Z$/, 'Z') },
+    }),
+    'a-signature',
+  ].join('.');

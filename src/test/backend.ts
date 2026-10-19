@@ -1,4 +1,10 @@
-import { DefaultRequestMultipartBody, rest, RestRequest } from 'msw';
+import {
+  DefaultRequestMultipartBody,
+  ResponseComposition,
+  rest,
+  RestContext,
+  RestRequest,
+} from 'msw';
 import { SetupServerApi } from 'msw/node';
 import queryString from 'qs';
 import { isEqual } from 'lodash';
@@ -19,6 +25,7 @@ import {
   SecondPillarAssets,
 } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
+import { parseJwt } from '../components/common/jwt';
 import { ReturnsResponse } from '../components/account/ComparisonCalculator/api';
 import {
   CreateMandateBatchDto,
@@ -44,6 +51,11 @@ import {
   smartIdQrDeviceLink,
   smartIdWeb2AppLink,
   secondPillarPaymentRateChangeResponse,
+  connectApprovalResponse,
+  connectDenialResponse,
+  connectLoginRequiredResponse,
+  connectRequestNotFoundResponse,
+  connectRequestResponse,
 } from './backend-responses';
 import {
   CapitalTransferContract,
@@ -226,6 +238,7 @@ export function smartIdAuthenticationBackend(
     rejectCallback?: boolean;
     rememberedAccount?: { firstName: string; lastName: string };
     verificationCode?: string;
+    issueAccessToken?: () => string;
   } = {},
 ): SmartIdAuthenticationBackend {
   let pollingResolved = false;
@@ -389,7 +402,10 @@ export function smartIdAuthenticationBackend(
 
       return res(
         ctx.status(200),
-        ctx.json({ access_token: 'an access token', refresh_token: 'mock refresh token' }),
+        ctx.json({
+          access_token: options.issueAccessToken?.() ?? 'an access token',
+          refresh_token: 'mock refresh token',
+        }),
       );
     }),
   );
@@ -411,6 +427,7 @@ export function mobileIdAuthenticationBackend(
     rememberedPersonalCodes?: string[];
     rememberedNumberStopsWorking?: boolean;
     rememberedPerson?: { firstName: string };
+    issueAccessToken?: () => string;
   } = {},
 ): {
   resolvePolling: () => void;
@@ -520,11 +537,49 @@ export function mobileIdAuthenticationBackend(
 
       return res(
         ctx.status(200),
-        ctx.json({ access_token: 'an access token', refresh_token: 'mock refresh token' }),
+        ctx.json({
+          access_token: options.issueAccessToken?.() ?? 'an access token',
+          refresh_token: 'mock refresh token',
+        }),
       );
     }),
   );
   return backend;
+}
+
+export function webEidAuthenticationBackend(
+  server: SetupServerApi,
+  options: { issueAccessToken?: () => string } = {},
+): void {
+  server.use(
+    rest.post('http://localhost/authenticate', (req, res, ctx) =>
+      (req.body as { type?: string }).type === 'ID_CARD'
+        ? res(ctx.status(200), ctx.json({ challengeCode: 'a-web-eid-challenge' }))
+        : res(ctx.status(401), ctx.json({ error: 'wrong method' })),
+    ),
+    rest.post('http://localhost/oauth/token', (req, res, ctx) => {
+      const body = queryString.parse(req.body as string);
+      if (
+        body.grant_type !== 'ID_CARD' ||
+        body.client_id !== 'onboarding-client' ||
+        req.headers.get('Authorization') !==
+          'Basic b25ib2FyZGluZy1jbGllbnQ6b25ib2FyZGluZy1jbGllbnQ='
+      ) {
+        return res(
+          ctx.status(401),
+          ctx.json({ error: 'wrong grant type, client id or basic auth' }),
+        );
+      }
+
+      return res(
+        ctx.status(200),
+        ctx.json({
+          access_token: options.issueAccessToken?.() ?? 'an access token',
+          refresh_token: 'mock refresh token',
+        }),
+      );
+    }),
+  );
 }
 
 export function partnerAuthenticationBackend(server: SetupServerApi): void {
@@ -1466,6 +1521,122 @@ const TEST_BACKENDS = {
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;
+
+type LoginRefusal = 'newerLoginRequired' | 'tokenRejected' | 'tokenUnusable';
+
+function carriesALoginTime(authorization: string | null): boolean {
+  try {
+    return Boolean(parseJwt((authorization ?? '').replace('Bearer ', '')).attributes.authTime);
+  } catch (error) {
+    return false;
+  }
+}
+
+export function connectBackend(
+  server: SetupServerApi,
+  options: {
+    requestFound?: boolean;
+    refuseTheFirstLogin?: LoginRefusal;
+    createdAt?: string;
+    expiresAt?: string;
+    scopes?: string[];
+  } = {},
+): {
+  expire: () => void;
+  failTheNextAnswer: () => void;
+  failTheNextLookup: () => void;
+  denials: () => number;
+  approvals: () => number;
+} {
+  let requestFound = options.requestFound !== false;
+  let failsTheNextAnswer = false;
+  let failsTheNextLookup = false;
+  let denials = 0;
+  let approvals = 0;
+  const forbiddenWithoutAReason = (req: RestRequest, res: ResponseComposition, ctx: RestContext) =>
+    res(
+      ctx.status(403),
+      ctx.json({
+        timestamp: new Date().toISOString(),
+        status: 403,
+        error: 'Forbidden',
+        path: req.url.pathname,
+      }),
+    );
+  let loginRefusal = options.refuseTheFirstLogin ?? null;
+  const requestNotFound = (res: ResponseComposition, ctx: RestContext) =>
+    res(ctx.status(404), ctx.json(connectRequestNotFoundResponse));
+  const refusals: Record<LoginRefusal, (res: ResponseComposition, ctx: RestContext) => any> = {
+    newerLoginRequired: (res, ctx) => res(ctx.status(403), ctx.json(connectLoginRequiredResponse)),
+    tokenRejected: (res, ctx) => res(ctx.status(401), ctx.json(authErrorResponse)),
+    tokenUnusable: (res, ctx) =>
+      res(ctx.status(403), ctx.json({ status: 403, error: 'Forbidden' })),
+  };
+
+  server.use(
+    rest.get('http://localhost/v1/connect/:requestId', (req, res, ctx) => {
+      if (failsTheNextLookup) {
+        failsTheNextLookup = false;
+        return res(ctx.status(503), ctx.json({}));
+      }
+      const tenMinutesFromNow = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+      return requestFound
+        ? res(
+            ctx.status(200),
+            ctx.json({
+              ...connectRequestResponse,
+              scopes: options.scopes ?? connectRequestResponse.scopes,
+              createdAt: options.createdAt ?? new Date().toISOString(),
+              expiresAt: options.expiresAt ?? tenMinutesFromNow,
+            }),
+          )
+        : requestNotFound(res, ctx);
+    }),
+    rest.post('http://localhost/v1/connect/:requestId/approve', (req, res, ctx) => {
+      approvals += 1;
+      if (!requestFound) {
+        return requestNotFound(res, ctx);
+      }
+      if (!carriesALoginTime(req.headers.get('Authorization'))) {
+        return forbiddenWithoutAReason(req, res, ctx);
+      }
+      if (failsTheNextAnswer) {
+        failsTheNextAnswer = false;
+        return res(ctx.status(500), ctx.json({}));
+      }
+      if (loginRefusal) {
+        const refuse = refusals[loginRefusal];
+        loginRefusal = null;
+        return refuse(res, ctx);
+      }
+      return res(ctx.status(200), ctx.json(connectApprovalResponse));
+    }),
+    rest.post('http://localhost/v1/connect/:requestId/deny', (req, res, ctx) => {
+      denials += 1;
+      if (!requestFound) {
+        return requestNotFound(res, ctx);
+      }
+      if (failsTheNextAnswer) {
+        failsTheNextAnswer = false;
+        return res(ctx.status(500), ctx.json({}));
+      }
+      return res(ctx.status(200), ctx.json(connectDenialResponse));
+    }),
+  );
+  return {
+    expire: () => {
+      requestFound = false;
+    },
+    failTheNextAnswer: () => {
+      failsTheNextAnswer = true;
+    },
+    failTheNextLookup: () => {
+      failsTheNextLookup = true;
+    },
+    denials: () => denials,
+    approvals: () => approvals,
+  };
+}
 
 export function useTestBackends(server: SetupServerApi) {
   return useTestBackendsExcept(server, []);
