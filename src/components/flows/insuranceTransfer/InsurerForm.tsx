@@ -206,12 +206,14 @@ const FilledInInsurerForm = ({
         </p>
         <PolicyNumberField insurer={insurer} />
         <EndDateField endDate={endDate} onChange={chooseEndDate} />
-        <div className="row">
-          <div className="col-md-8">
-            <YourDetails insurer={insurer} onFile={onFile} />
-            {insurer === 'ARTEA' && <ArteaQuestionnaire />}
+        <YourDetails insurer={insurer} onFile={onFile} />
+        {insurer === 'ARTEA' && (
+          <div className="row">
+            <div className="col-md-8">
+              <ArteaQuestionnaire />
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="mt-5 d-flex flex-column-reverse flex-sm-row justify-content-end align-items-sm-center gap-3">
           <button

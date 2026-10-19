@@ -317,7 +317,13 @@ export const YourDetails = ({
       <h3 id={DETAILS_HEADING_ID} className="h6 mb-2">
         <FormattedMessage id="insuranceTransfer.form.details.title" />
       </h3>
-      {asksAnything && <DetailInputs inputs={inputs} />}
+      {asksAnything && (
+        <div className="row">
+          <div className="col-md-8">
+            <DetailInputs inputs={inputs} />
+          </div>
+        </div>
+      )}
       {summarized.length > 0 && (
         <DetailSummary
           summarized={summarized}
