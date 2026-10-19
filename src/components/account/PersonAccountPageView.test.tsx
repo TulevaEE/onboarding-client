@@ -684,32 +684,32 @@ describe('third pillar recurring payment link', () => {
   const recurringPaymentLink = () =>
     screen.queryByRole('link', { name: 'Change recurring payment' });
 
-  const linkBefore = (link: HTMLElement) => {
+  const linkAfter = (link: HTMLElement) => {
     const links = screen.getAllByRole('link');
-    return links[links.indexOf(link) - 1];
+    return links[links.indexOf(link) + 1];
   };
 
-  test('sits after the payment link in the III pillar section when a standing order is detected', async () => {
+  test('sits before the payment link in the III pillar section when a standing order is detected', async () => {
     thirdPillarRecurringPaymentBackend(server, { detected: true });
     renderAccountPage();
 
     const link = await screen.findByRole('link', { name: 'Change recurring payment' });
 
-    expect(linkBefore(link)).toHaveAccessibleName('Make a payment');
-    expect(linkBefore(link)).toHaveClass('icon-link');
+    expect(linkAfter(link)).toHaveAccessibleName('Make a payment');
+    expect(linkAfter(link)).toHaveClass('icon-link');
     expect(link).toHaveAttribute('href', '/3rd-pillar-recurring-payment');
     expect(link).toHaveClass('icon-link');
   });
 
-  test('sits after the fund change link when the III pillar is not fully converted', async () => {
+  test('sits before the fund change link when the III pillar is not fully converted', async () => {
     userConversionBackend(server, {}, { transfersComplete: false });
     thirdPillarRecurringPaymentBackend(server, { detected: true });
     renderAccountPage();
 
     const link = await screen.findByRole('link', { name: 'Change recurring payment' });
 
-    expect(linkBefore(link)).toHaveAccessibleName(/^Change III\spillar fund$/);
-    expect(linkBefore(link)).toHaveAttribute('href', '/3rd-pillar-flow');
+    expect(linkAfter(link)).toHaveAccessibleName(/^Change III\spillar fund$/);
+    expect(linkAfter(link)).toHaveAttribute('href', '/3rd-pillar-flow');
   });
 
   test('takes the person to the recurring payment change flow', async () => {

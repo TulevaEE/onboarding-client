@@ -183,6 +183,11 @@ export function PersonAccountPage(
       {!loadingCurrentBalance && (
         <>
           <SectionHeading titleId="accountStatement.thirdPillar.heading">
+            {thirdPillarRecurringPayment?.detected && (
+              <Link className="icon-link" to="/3rd-pillar-recurring-payment">
+                <FormattedMessage id="accountStatement.thirdPillar.changeRecurringPayment" />
+              </Link>
+            )}
             {isThirdPillarFullyConverted ? (
               <Link className="icon-link" to="/3rd-pillar-payment">
                 <FormattedMessage id="account.status.choice.pillar.third.success.action" />
@@ -190,11 +195,6 @@ export function PersonAccountPage(
             ) : (
               <Link className="icon-link" to="/3rd-pillar-flow">
                 <FormattedMessage id="change.my.pension.fund.third.pillar" />
-              </Link>
-            )}
-            {thirdPillarRecurringPayment?.detected && (
-              <Link className="icon-link" to="/3rd-pillar-recurring-payment">
-                <FormattedMessage id="accountStatement.thirdPillar.changeRecurringPayment" />
               </Link>
             )}
           </SectionHeading>
