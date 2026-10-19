@@ -556,6 +556,19 @@ describe('III pillar insurance contract transfer', () => {
       expect(history.location.search).toBe('?insurer=SEB');
     });
 
+    test('keeps a date being edited on screen while it is before today, and goes back to today once the field is left', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
+      const endDate = await screen.findByLabelText('When should the contract end?');
+      const aYearAgo = moment(todayInTallinn()).subtract(1, 'year').format('YYYY-MM-DD');
+
+      chooseEndDate(endDate, aYearAgo);
+      expect(endDate).toHaveValue(aYearAgo);
+
+      userEvent.tab();
+      expect(endDate).toHaveValue(todayInTallinn());
+      expect(await requestText()).toHaveTextContent('Contract end date: as soon as possible');
+    });
+
     test('puts the chosen end date into the request it copies', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=SEB');
 

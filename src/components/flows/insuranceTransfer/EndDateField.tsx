@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { todayInTallinn } from '../../common/dateFormatter';
 
@@ -12,6 +13,7 @@ export const EndDateField = ({
 }) => {
   const today = todayInTallinn();
   const laterThanToday = (date: string) => (date > today ? date : null);
+  const [shownDate, showDate] = useState(endDate ?? today);
 
   return (
     <div className="mt-4">
@@ -22,9 +24,13 @@ export const EndDateField = ({
         type="date"
         id={END_DATE_ID}
         className="form-control w-auto"
-        value={endDate ?? today}
+        value={shownDate}
         min={today}
-        onChange={(event) => onChange(laterThanToday(event.target.value))}
+        onChange={(event) => {
+          showDate(event.target.value);
+          onChange(laterThanToday(event.target.value));
+        }}
+        onBlur={() => showDate(laterThanToday(shownDate) ?? today)}
         aria-describedby={`${END_DATE_ID}-hint`}
       />
       <div id={`${END_DATE_ID}-hint`} className="form-text text-pretty">
