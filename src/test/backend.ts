@@ -1191,20 +1191,10 @@ export function savingsFundPersonOnboardingStatusBackend(
   );
 }
 
-export function delayedSavingsFundOnboardingStatusBackend(server: SetupServerApi): void {
-  server.use(
-    rest.get('http://localhost/v1/savings/onboarding/status', (req, res, ctx) =>
-      res(ctx.delay('infinite')),
-    ),
-  );
-}
+export const neverAnswer = (): Promise<never> => new Promise(() => {});
 
 export function delayedSavingsFundPersonOnboardingStatusBackend(server: SetupServerApi): void {
-  server.use(
-    rest.get('http://localhost/v1/savings/onboarding/status/person', (req, res, ctx) =>
-      res(ctx.delay('infinite')),
-    ),
-  );
+  server.use(rest.get('http://localhost/v1/savings/onboarding/status/person', neverAnswer));
 }
 
 export function failingKycIdentityBackend(server: SetupServerApi): void {

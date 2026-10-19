@@ -4,6 +4,7 @@ import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import userEvent from '@testing-library/user-event';
 import { rest } from 'msw';
+import { QueryClient } from '@tanstack/react-query';
 import { initializeConfiguration } from '../config/config';
 import LoggedInApp from '../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../test/utils';
@@ -32,12 +33,12 @@ import {
 const server = setupServer();
 let history: History;
 
-function initializeComponent() {
+function initializeComponent(queryClient?: QueryClient) {
   history = createMemoryHistory();
   const store = createDefaultStore(history as any);
   login(store);
 
-  renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
+  renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store, queryClient);
 }
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -675,8 +676,8 @@ describe('third pillar recurring payment link', () => {
     useTestBackendsExcept(server, ['thirdPillarRecurringPayment']);
   });
 
-  const renderAccountPage = () => {
-    initializeComponent();
+  const renderAccountPage = (queryClient?: QueryClient) => {
+    initializeComponent(queryClient);
     history.push('/account');
   };
 
@@ -715,19 +716,31 @@ describe('third pillar recurring payment link', () => {
     expect(recurringPaymentLink()).not.toBeInTheDocument();
   });
 
-  test('is not shown while the detection is loading', async () => {
+  test('appears only once the detection has answered', async () => {
+    let answer = () => {};
+    const answered = new Promise<void>((resolve) => {
+      answer = resolve;
+    });
     server.use(
-      rest.get('http://localhost/v1/me/third-pillar/recurring-payment', (req, res, ctx) =>
-        res(ctx.delay('infinite')),
-      ),
+      rest.get('http://localhost/v1/me/third-pillar/recurring-payment', async (req, res, ctx) => {
+        await answered;
+        return res(ctx.json({ detected: true }));
+      }),
     );
     renderAccountPage();
 
     expect(await screen.findByText('Swedbank PIK')).toBeInTheDocument();
     expect(recurringPaymentLink()).not.toBeInTheDocument();
+
+    answer();
+
+    expect(
+      await screen.findByRole('link', { name: 'Change recurring payment' }),
+    ).toBeInTheDocument();
   });
 
   test('is not shown when the detection fails', async () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     let requests = 0;
     server.use(
       rest.get('http://localhost/v1/me/third-pillar/recurring-payment', (req, res, ctx) => {
@@ -735,10 +748,11 @@ describe('third pillar recurring payment link', () => {
         return res(ctx.status(500), ctx.json({ errors: [] }));
       }),
     );
-    renderAccountPage();
+    renderAccountPage(queryClient);
 
-    await waitFor(() => expect(requests).toBeGreaterThan(0));
     expect(await screen.findByText('Swedbank PIK')).toBeInTheDocument();
+    await waitFor(() => expect(requests).toBe(1));
+    await waitFor(() => expect(queryClient.isFetching()).toBe(0));
     expect(recurringPaymentLink()).not.toBeInTheDocument();
   });
 });
