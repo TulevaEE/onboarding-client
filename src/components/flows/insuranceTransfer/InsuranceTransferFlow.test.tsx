@@ -27,7 +27,7 @@ import {
 } from '../../../test/backend';
 import { SIGN_MANDATE_SUCCESS } from '../../exchange/constants';
 import { changeIsPoliticallyExposed } from '../../aml/actions';
-import { Conversion, User } from '../../common/apiModels';
+import { Conversion } from '../../common/apiModels';
 import {
   getMobileSignatureStatusResponse,
   mockSecondPillarConversion,
@@ -157,19 +157,20 @@ describe('III pillar insurance contract transfer', () => {
       expect(screen.queryByText(/Contribution to Tuleva/)).not.toBeInTheDocument();
     }, 20_000);
 
-    test('waits for the pension account the signed selection opens, asking again until its number arrives', async () => {
+    test('says right away that it could not load when the person read once after signing has no pension account number, and does not ask again', async () => {
       openFlow('/3rd-pillar-insurance?insurer=SEB');
       await answerAllAgreements();
-      const asks = pensionAccountOpenedAfterAsks(2);
+      const asks = pensionAccountOpenedAfterAsks(1);
 
       userEvent.click(signButton());
 
       await requestStepOpened();
-      expect(screen.queryByRole('radio', { name: 'SEB' })).not.toBeInTheDocument();
-      expect(await screen.findByText(/^Subject: /, {}, { timeout: 10_000 })).toHaveTextContent(
-        'Pension account number (reference number): 99812345678',
-      );
-      expect(asks()).toBeGreaterThan(2);
+      expect(await screen.findByText(SOMETHING_WENT_WRONG)).toBeInTheDocument();
+      await aFewSecondsPass();
+
+      expect(asks()).toBe(1);
+      expect(screen.getByText(SOMETHING_WENT_WRONG)).toBeInTheDocument();
+      expect(screen.queryByText(/^Subject: /)).not.toBeInTheDocument();
     }, 20_000);
 
     test('signs once when the sign button is pressed twice while the answers are being saved', async () => {
@@ -381,36 +382,6 @@ describe('III pillar insurance contract transfer', () => {
       expect(await screen.findByText(SOMETHING_WENT_WRONG)).toBeInTheDocument();
       expect(screen.queryByText(/^Subject: /)).not.toBeInTheDocument();
     });
-
-    test('says so instead of waiting forever when the pension account number has not arrived a minute later', async () => {
-      userConversionBackend(server, {}, { selectionComplete: true });
-      userBackend(server, { ...MARI, pensionAccountNumber: null });
-      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
-      expect(await screen.findByText('Send a request to your insurer')).toBeInTheDocument();
-      expect(screen.queryByRole('radio')).not.toBeInTheDocument();
-
-      aMinutePasses();
-
-      expect(
-        await screen.findByText(SOMETHING_WENT_WRONG, {}, { timeout: 5_000 }),
-      ).toBeInTheDocument();
-      expect(screen.queryByRole('radio')).not.toBeInTheDocument();
-    });
-
-    test('stops asking for the pension account number once the person cannot be loaded again', async () => {
-      userConversionBackend(server, {}, { selectionComplete: true });
-      const asks = personLoadsOnly(2, { ...MARI, pensionAccountNumber: null });
-      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
-
-      expect(
-        await screen.findByText(SOMETHING_WENT_WRONG, {}, { timeout: 5_000 }),
-      ).toBeInTheDocument();
-      const asksUntilFailed = asks();
-      await longerThanOneAskForThePensionAccountPasses();
-
-      expect(asks()).toBe(asksUntilFailed);
-      expect(screen.getByText(SOMETHING_WENT_WRONG)).toBeInTheDocument();
-    }, 15_000);
   });
 
   describe('contact details', () => {
@@ -1796,11 +1767,6 @@ function itIsLateEveningInUtc() {
   };
 }
 
-const aMinutePasses = () => {
-  const aMinuteLater = Date.now() + 60_000;
-  jest.spyOn(Date, 'now').mockReturnValue(aMinuteLater);
-};
-
 function reminderCancellationBackend() {
   let cancellations = 0;
   server.use(
@@ -1828,20 +1794,19 @@ function amlChecksCreated() {
 
 const SOMETHING_WENT_WRONG = 'Something went wrong. Please try again or reach out to us.';
 
-function personLoadsOnly(times: number, person: Partial<User> = MARI) {
+function personLoadsOnly(times: number) {
   let loads = 0;
   server.use(
     rest.get('http://localhost/v1/me', (req, res, ctx) => {
       loads += 1;
       return loads <= times
-        ? res(ctx.json({ ...mockUser, ...person }))
+        ? res(ctx.json({ ...mockUser, ...MARI }))
         : res(ctx.status(500), ctx.json({ errors: [] }));
     }),
   );
-  return () => loads;
 }
 
-const longerThanOneAskForThePensionAccountPasses = () =>
+const aFewSecondsPass = () =>
   act(
     () =>
       new Promise<void>((resolve) => {

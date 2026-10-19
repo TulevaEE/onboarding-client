@@ -22,9 +22,6 @@ import { PersonWithPensionAccount, useTransferRequest } from './useTransferReque
 import { LoadFailed } from './LoadFailed';
 import { sentPath } from './insuranceTransferPaths';
 
-const PENSION_ACCOUNT_ASKED_EVERY_MS = 2_000;
-const PENSION_ACCOUNT_AWAITED_FOR_MS = 60_000;
-
 const INSURER_PARAMETER = 'insurer';
 const END_DATE_PARAMETER = 'endDate';
 
@@ -215,27 +212,12 @@ const hasPensionAccount = (user: User): user is PersonWithPensionAccount =>
   !!user.pensionAccountNumber;
 
 const usePersonWithPensionAccount = () => {
-  const [askedSince] = useState(Date.now);
-  const answeredWithinTheWait = (answeredAt: number) =>
-    answeredAt - askedSince < PENSION_ACCOUNT_AWAITED_FOR_MS;
-  const {
-    data: user,
-    isError,
-    dataUpdatedAt,
-  } = useMe({
-    refetchInterval: (person, { state }) =>
-      state.status === 'success' &&
-      person &&
-      !hasPensionAccount(person) &&
-      answeredWithinTheWait(state.dataUpdatedAt)
-        ? PENSION_ACCOUNT_ASKED_EVERY_MS
-        : false,
-  });
+  const { data: user, isFetching, isError } = useMe();
 
   if (user && hasPensionAccount(user)) {
     return { person: user, failed: false };
   }
-  return { person: null, failed: isError || (!!user && !answeredWithinTheWait(dataUpdatedAt)) };
+  return { person: null, failed: !isFetching && (isError || !!user) };
 };
 
 export const InsuranceTransferRequest = () => {
