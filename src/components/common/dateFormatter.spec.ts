@@ -85,10 +85,11 @@ describe('DateFormatter functions', () => {
       expect(formatDateOnWithYear('2026-12-31T22:30:00Z')).toBe('1.\u00a0jaanuaril\u00a02027');
     });
 
-    it('keeps the date with its year in English', () => {
+    it('keeps the date with its year in English, on the day it is in Tallinn', () => {
       moment.locale('en');
 
       expect(formatDateOnWithYear('2027-11-01')).toBe('November\u00a01,\u00a02027');
+      expect(formatDateOnWithYear('2026-12-31T22:30:00Z')).toBe('January\u00a01,\u00a02027');
     });
 
     it('keeps the plain date in English', () => {
