@@ -762,6 +762,13 @@ export async function cancelThirdPillarPaymentReminder(): Promise<void> {
   );
 }
 
+export async function confirmThirdPillarRecurringPayment(): Promise<void> {
+  return postWithAuthentication(
+    getEndpoint('/v1/me/third-pillar/recurring-payment-confirmations'),
+    {},
+  );
+}
+
 function getWindow(paymentType: PaymentType): Window {
   if (paymentType !== 'RECURRING' || getAuthentication().loginMethod === 'PARTNER') {
     return window;

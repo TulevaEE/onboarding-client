@@ -1397,6 +1397,23 @@ export function paymentRateRedirectBackend(
   return { count: () => count, dismissals: () => dismissals };
 }
 
+export function recurringPaymentConfirmationBackend(
+  server: SetupServerApi,
+  status = 204,
+): () => number {
+  let confirmations = 0;
+  server.use(
+    rest.post(
+      'http://localhost/v1/me/third-pillar/recurring-payment-confirmations',
+      (req, res, ctx) => {
+        confirmations += 1;
+        return res(ctx.status(status));
+      },
+    ),
+  );
+  return () => confirmations;
+}
+
 export function trackedEventsBackend(server: SetupServerApi): void {
   server.use(rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))));
 }
@@ -1445,6 +1462,7 @@ const TEST_BACKENDS = {
   hackathonIdeas: hackathonIdeasBackend,
   nudge: nudgeBackend,
   paymentRateRedirect: paymentRateRedirectBackend,
+  recurringPaymentConfirmation: recurringPaymentConfirmationBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

@@ -3,7 +3,10 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import { captureException } from '@sentry/browser';
 import { SuccessNotice } from '../../common/SuccessNotice/SuccessNotice';
-import { cancelThirdPillarPaymentReminder } from '../../../common/api';
+import {
+  cancelThirdPillarPaymentReminder,
+  confirmThirdPillarRecurringPayment,
+} from '../../../common/api';
 import { Nudge } from '../../../common/nudge/Nudge';
 import { PaymentDoneMessage } from '../ThirdPillarSuccess/PaymentDoneMessage';
 import { AvailablePaymentType } from './types';
@@ -15,10 +18,14 @@ export const RecurringPaymentConfirmation = () => {
   const history = useHistory();
 
   useEffect(() => {
-    if (confirmed) {
-      cancelThirdPillarPaymentReminder().catch(captureException);
+    if (!confirmed) {
+      return;
     }
-  }, [confirmed]);
+    cancelThirdPillarPaymentReminder().catch(captureException);
+    if (paymentType === 'RECURRING') {
+      confirmThirdPillarRecurringPayment().catch(captureException);
+    }
+  }, [confirmed, paymentType]);
 
   if (!confirmed) {
     return (
