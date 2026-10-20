@@ -17,9 +17,12 @@ const withThirdPillarRecurringPaymentDetected = (
 });
 
 export const conversionMockProfiles: Record<string, UserConversion> = {
-  INCOMPLETE: incompleteConversion,
-  LOW_FEES_NOT_TULEVA: lowFeesNoTulevaConversion,
-  COMPLETE_ONLY_SECOND_PILLAR: completeSecondPillarConversion,
+  INCOMPLETE: withThirdPillarRecurringPaymentDetected(incompleteConversion, true),
+  LOW_FEES_NOT_TULEVA: withThirdPillarRecurringPaymentDetected(lowFeesNoTulevaConversion, false),
+  COMPLETE_ONLY_SECOND_PILLAR: withThirdPillarRecurringPaymentDetected(
+    completeSecondPillarConversion,
+    false,
+  ),
   COMPLETE_ONLY_THIRD_PILLAR: withThirdPillarRecurringPaymentDetected(
     completeThirdPillarConversion,
     true,
