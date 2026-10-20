@@ -84,9 +84,7 @@ export function PersonAccountPage(
   } = props;
 
   const isThirdPillarFullyConverted =
-    conversion &&
-    conversion.thirdPillar.selectionComplete &&
-    conversion.thirdPillar.transfersComplete;
+    conversion?.thirdPillar.selectionComplete && conversion?.thirdPillar.transfersComplete;
 
   const thirdPillarRecurringPaymentDetected = conversion?.thirdPillar.recurringPaymentDetected;
 
