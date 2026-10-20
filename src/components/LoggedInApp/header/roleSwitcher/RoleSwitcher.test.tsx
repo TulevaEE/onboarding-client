@@ -8,6 +8,7 @@ import { getAuthentication } from '../../../common/authenticationManager';
 import { anAuthenticationManager } from '../../../common/authenticationManagerFixture';
 import { renderWrapped } from '../../../../test/utils';
 import {
+  connectedAppsBackend,
   pendingOnboardingsBackend,
   rolesBackend,
   switchRoleBackend,
@@ -78,6 +79,7 @@ beforeEach(() => {
   initializeConfiguration();
   getAuthentication().update(anAuthenticationManager());
   pendingOnboardingsBackend(server);
+  connectedAppsBackend(server);
 });
 
 describe('RoleSwitcher', () => {
@@ -169,6 +171,7 @@ describe('RoleSwitcher', () => {
 
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
       expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
+      expect(await screen.findByRole('link', { name: 'Security' })).toBeInTheDocument();
 
       expect(menuOutline()).toEqual([
         'My account',
@@ -194,6 +197,7 @@ describe('RoleSwitcher', () => {
       expect(
         await screen.findByRole('link', { name: 'Open an account for a child or company' }),
       ).toBeInTheDocument();
+      expect(await screen.findByRole('link', { name: 'Security' })).toBeInTheDocument();
 
       expect(menuOutline()).toEqual([
         'My account',
@@ -231,6 +235,45 @@ describe('RoleSwitcher', () => {
       );
     });
 
+    it('leaves security out of the menu until the person has connected an app', async () => {
+      connectedAppsBackend(server, []);
+      rolesBackend(server, [personalRole]);
+      userBackend(server, { role: personalRole });
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      expect(
+        await screen.findByRole('link', { name: 'Open an account for a child or company' }),
+      ).toBeInTheDocument();
+
+      expect(menuOutline()).toEqual([
+        'My account',
+        'Eesti keeles',
+        DIVIDER,
+        'Open an account for a child or company',
+        DIVIDER,
+        'Log out',
+      ]);
+    });
+
+    it('leaves security out of the menu when the connected apps cannot be loaded', async () => {
+      server.use(
+        rest.get('http://localhost/v1/me/connected-apps', (req, res, ctx) => res(ctx.status(500))),
+      );
+      rolesBackend(server, [personalRole]);
+      userBackend(server, { role: personalRole });
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+      expect(
+        await screen.findByRole('link', { name: 'Open an account for a child or company' }),
+      ).toBeInTheDocument();
+
+      expect(screen.queryByRole('link', { name: 'Security' })).not.toBeInTheDocument();
+    });
+
     it('links security to the security page', async () => {
       setupSwitchFlow();
 
@@ -238,7 +281,10 @@ describe('RoleSwitcher', () => {
 
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
 
-      expect(screen.getByRole('link', { name: 'Security' })).toHaveAttribute('href', '/security');
+      expect(await screen.findByRole('link', { name: 'Security' })).toHaveAttribute(
+        'href',
+        '/security',
+      );
     });
 
     it('logs the user out from the menu', async () => {
@@ -448,6 +494,7 @@ describe('RoleSwitcher', () => {
 
       userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
       expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
+      expect(await screen.findByRole('link', { name: 'Security' })).toBeInTheDocument();
 
       const rowIcons = [
         screen.getByRole('link', { name: 'My account' }),
