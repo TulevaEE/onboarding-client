@@ -52,7 +52,6 @@ import {
   getSavingsFundPersonOnboardingStatus,
   getSecondPillarAssets,
   getSourceFunds,
-  getThirdPillarRecurringPayment,
   getTransactions,
   getUserConversionWithToken,
   getRoles,
@@ -86,7 +85,6 @@ import {
   SavingsFundOnboardingStatus,
   SavingsFundPaymentCancellationCommand,
   SourceFund,
-  ThirdPillarRecurringPayment,
   Transaction,
   User,
   UserConversion,
@@ -218,13 +216,6 @@ export function useNudge(context: NudgeContext): UseQueryResult<NudgeDecision> {
     enabled: !!user,
     retry: false,
     staleTime: 2 * 60 * 1000,
-  });
-}
-
-export function useThirdPillarRecurringPayment(): UseQueryResult<ThirdPillarRecurringPayment> {
-  return useQuery({
-    queryKey: ['thirdPillarRecurringPayment'],
-    queryFn: () => getThirdPillarRecurringPayment(),
   });
 }
 

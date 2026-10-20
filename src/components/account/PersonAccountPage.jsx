@@ -25,7 +25,6 @@ import {
   useFundPensionStatus,
   useMemberCapitalListingCount,
   useSavingsFundBalance,
-  useThirdPillarRecurringPayment,
 } from '../common/apiHooks';
 import { canAccessWithdrawals } from '../flows/withdrawals/utils';
 import { getBankName } from '../common/iban';
@@ -61,7 +60,6 @@ export function PersonAccountPage(
   const { data: fundPensionStatus, loading: isFundPensionStatusLoading } = useFundPensionStatus();
   const { data: memberCapitalListingsCount } = useMemberCapitalListingCount();
   const { data: savingsFundBalance } = useSavingsFundBalance();
-  const { data: thirdPillarRecurringPayment } = useThirdPillarRecurringPayment();
 
   const activeListingsCount = memberCapitalListingsCount ?? 0;
 
@@ -89,6 +87,8 @@ export function PersonAccountPage(
     conversion &&
     conversion.thirdPillar.selectionComplete &&
     conversion.thirdPillar.transfersComplete;
+
+  const thirdPillarRecurringPaymentDetected = conversion?.thirdPillar.recurringPaymentDetected;
 
   const shouldShowWithdrawalsButton = () => {
     if (isFundPensionStatusLoading || !conversion || !fundPensionStatus) {
@@ -183,12 +183,12 @@ export function PersonAccountPage(
       {!loadingCurrentBalance && (
         <>
           <SectionHeading titleId="accountStatement.thirdPillar.heading">
-            {thirdPillarRecurringPayment?.detected && (
+            {thirdPillarRecurringPaymentDetected && (
               <Link className="icon-link" to="/3rd-pillar-recurring-payment">
                 <FormattedMessage id="accountStatement.thirdPillar.changeRecurringPayment" />
               </Link>
             )}
-            {thirdPillarRecurringPayment?.detected === false && isThirdPillarFullyConverted && (
+            {thirdPillarRecurringPaymentDetected === false && isThirdPillarFullyConverted && (
               <Link className="icon-link" to="/3rd-pillar-payment?type=RECURRING">
                 <FormattedMessage id="accountStatement.thirdPillar.setUpRecurringPayment" />
               </Link>

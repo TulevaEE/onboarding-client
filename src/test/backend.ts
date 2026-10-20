@@ -17,7 +17,6 @@ import {
   MemberLookup,
   CapitalType,
   SecondPillarAssets,
-  ThirdPillarRecurringPayment,
 } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { ReturnsResponse } from '../components/account/ComparisonCalculator/api';
@@ -1398,20 +1397,6 @@ export function paymentRateRedirectBackend(
   return { count: () => count, dismissals: () => dismissals };
 }
 
-export function thirdPillarRecurringPaymentBackend(
-  server: SetupServerApi,
-  recurringPayment: ThirdPillarRecurringPayment = { detected: false },
-): { count: () => number } {
-  let count = 0;
-  server.use(
-    rest.get('http://localhost/v1/me/third-pillar/recurring-payment', (req, res, ctx) => {
-      count += 1;
-      return res(ctx.json(recurringPayment));
-    }),
-  );
-  return { count: () => count };
-}
-
 export function trackedEventsBackend(server: SetupServerApi): void {
   server.use(rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))));
 }
@@ -1460,7 +1445,6 @@ const TEST_BACKENDS = {
   hackathonIdeas: hackathonIdeasBackend,
   nudge: nudgeBackend,
   paymentRateRedirect: paymentRateRedirectBackend,
-  thirdPillarRecurringPayment: thirdPillarRecurringPaymentBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

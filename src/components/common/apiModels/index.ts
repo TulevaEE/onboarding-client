@@ -310,10 +310,6 @@ export interface UserConversion {
   weightedAverageFee: number;
 }
 
-export interface ThirdPillarRecurringPayment {
-  detected: boolean;
-}
-
 export interface Amount {
   yearToDate: number;
   lastYear: number;
@@ -326,6 +322,7 @@ export interface Conversion {
   transfersComplete: boolean;
   transfersPartial: boolean;
   paymentComplete: boolean;
+  recurringPaymentDetected?: boolean;
   pendingWithdrawal: boolean;
   contribution: Amount;
   subtraction: Amount;

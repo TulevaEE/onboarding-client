@@ -29,7 +29,6 @@ import {
   getSmartIdTokens,
   getSourceFunds,
   getTokensWithGrantType,
-  getThirdPillarRecurringPayment,
   getTransactions,
   getUserConversionWithToken,
   getUserWithToken,
@@ -1101,19 +1100,6 @@ describe('API calls', () => {
 
       expect(conversion).toEqual(mockConversion);
       expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith('/v1/me/conversion', undefined);
-    });
-  });
-
-  describe('getThirdPillarRecurringPayment', () => {
-    it('asks whether the person pays into the III pillar by standing order', async () => {
-      mockHttp.getWithAuthentication.mockResolvedValue({ detected: true });
-
-      const recurringPayment = await getThirdPillarRecurringPayment();
-
-      expect(recurringPayment).toEqual({ detected: true });
-      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
-        '/v1/me/third-pillar/recurring-payment',
-      );
     });
   });
 
