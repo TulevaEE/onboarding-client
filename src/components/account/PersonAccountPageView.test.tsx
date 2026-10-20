@@ -674,10 +674,11 @@ describe('third pillar recurring payment link', () => {
     useTestBackends(server);
   });
 
-  const openAccountPageWithThirdPillarStatement = async () => {
+  const openAccountPageWithConversionAndThirdPillarStatement = async () => {
     initializeComponent();
     history.push('/account');
     expect(await screen.findByText('Tuleva III Samba Pensionifond')).toBeInTheDocument();
+    expect(await screen.findByRole('cell', { name: /^III\spillar$/ })).toBeInTheDocument();
   };
 
   const recurringPaymentLink = () =>
@@ -693,7 +694,7 @@ describe('third pillar recurring payment link', () => {
 
   test('sits before the payment link in the III pillar section when a standing order is detected', async () => {
     userConversionBackend(server, {}, { recurringPaymentDetected: true });
-    await openAccountPageWithThirdPillarStatement();
+    await openAccountPageWithConversionAndThirdPillarStatement();
 
     const link = screen.getByRole('link', { name: 'Change recurring payment' });
 
@@ -705,7 +706,7 @@ describe('third pillar recurring payment link', () => {
 
   test('sits before the fund change link when the III pillar is not fully converted', async () => {
     userConversionBackend(server, {}, { transfersComplete: false, recurringPaymentDetected: true });
-    await openAccountPageWithThirdPillarStatement();
+    await openAccountPageWithConversionAndThirdPillarStatement();
 
     const link = screen.getByRole('link', { name: 'Change recurring payment' });
 
@@ -715,7 +716,7 @@ describe('third pillar recurring payment link', () => {
 
   test('takes the person to the recurring payment change flow', async () => {
     userConversionBackend(server, {}, { recurringPaymentDetected: true });
-    await openAccountPageWithThirdPillarStatement();
+    await openAccountPageWithConversionAndThirdPillarStatement();
 
     userEvent.click(screen.getByRole('link', { name: 'Change recurring payment' }));
 
@@ -724,14 +725,14 @@ describe('third pillar recurring payment link', () => {
 
   test('is not shown when no standing order is detected', async () => {
     userConversionBackend(server, {}, { recurringPaymentDetected: false });
-    await openAccountPageWithThirdPillarStatement();
+    await openAccountPageWithConversionAndThirdPillarStatement();
 
     expect(recurringPaymentLink()).not.toBeInTheDocument();
   });
 
   test('offers to set up a recurring payment before the payment link when no standing order is detected', async () => {
     userConversionBackend(server, {}, { recurringPaymentDetected: false });
-    await openAccountPageWithThirdPillarStatement();
+    await openAccountPageWithConversionAndThirdPillarStatement();
 
     const link = screen.getByRole('link', { name: 'Set up recurring payment' });
 
@@ -742,7 +743,7 @@ describe('third pillar recurring payment link', () => {
 
   test('does not offer to set up a recurring payment when a standing order is detected', async () => {
     userConversionBackend(server, {}, { recurringPaymentDetected: true });
-    await openAccountPageWithThirdPillarStatement();
+    await openAccountPageWithConversionAndThirdPillarStatement();
 
     expect(screen.getByRole('link', { name: 'Change recurring payment' })).toBeInTheDocument();
     expect(setUpRecurringPaymentLink()).not.toBeInTheDocument();
@@ -754,7 +755,7 @@ describe('third pillar recurring payment link', () => {
       {},
       { transfersComplete: false, recurringPaymentDetected: false },
     );
-    await openAccountPageWithThirdPillarStatement();
+    await openAccountPageWithConversionAndThirdPillarStatement();
 
     expect(screen.getByRole('link', { name: /^Change III\spillar fund$/ })).toBeInTheDocument();
     expect(setUpRecurringPaymentLink()).not.toBeInTheDocument();
@@ -762,7 +763,7 @@ describe('third pillar recurring payment link', () => {
 
   test('shows neither link when the conversion does not say whether a standing order is detected', async () => {
     userConversionBackend(server, {}, { recurringPaymentDetected: undefined });
-    await openAccountPageWithThirdPillarStatement();
+    await openAccountPageWithConversionAndThirdPillarStatement();
 
     expect(recurringPaymentLink()).not.toBeInTheDocument();
     expect(setUpRecurringPaymentLink()).not.toBeInTheDocument();
