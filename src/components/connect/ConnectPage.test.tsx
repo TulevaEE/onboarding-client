@@ -132,6 +132,9 @@ describe('When an app asks to read a person’s Tuleva data', () => {
 
   const somethingWentWrong = 'An error occurred. Please try again.';
 
+  const aParagraphReading = (text: string) => (_: string, element: Element | null) =>
+    element?.tagName === 'P' && element.textContent === text;
+
   const findTheAllowButton = () => screen.findByRole('button', { name: 'Allow' });
 
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -190,6 +193,21 @@ describe('When an app asks to read a person’s Tuleva data', () => {
     },
   );
 
+  test('the consent tells where access can be revoked later without leading away from the consent', async () => {
+    connectBackend(server);
+
+    openTheConnectLink();
+    await logInWithSmartId();
+
+    expect(await findTheConsent()).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        aParagraphReading('You can revoke access at any time on the Security\u00a0page.'),
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Security' })).not.toBeInTheDocument();
+  });
+
   test('the person reads it all in Estonian too', async () => {
     connectBackend(server);
     const smartIdInEstonian = smartIdAuthenticationBackend(server, {
@@ -214,6 +232,11 @@ describe('When an app asks to read a person’s Tuleva data', () => {
     ).toEqual(['Sinu fondiosakuid ja nende väärtust', 'Sinu tehinguid']);
     expect(
       screen.getByText('Ligipääs kehtib kuni 180\u00a0päeva.', keepingNoBreakSpaces),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        aParagraphReading('Ligipääsu saad igal ajal tühistada lehel\u00a0Turvalisus.'),
+      ),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Luban' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Ei luba' })).toBeInTheDocument();

@@ -162,7 +162,7 @@ describe('RoleSwitcher', () => {
       expect(screen.getByRole('link', { name: 'Mari Maasikas' })).toBeInTheDocument();
     });
 
-    it('puts the language choice below my account and sets logging out apart at the end', async () => {
+    it('puts security and the language choice below my account and sets logging out apart at the end', async () => {
       setupSwitchFlow();
 
       renderRoleSwitcher();
@@ -172,6 +172,7 @@ describe('RoleSwitcher', () => {
 
       expect(menuOutline()).toEqual([
         'My account',
+        'Security',
         'Eesti keeles',
         DIVIDER,
         'Switch account',
@@ -196,6 +197,7 @@ describe('RoleSwitcher', () => {
 
       expect(menuOutline()).toEqual([
         'My account',
+        'Security',
         'Eesti keeles',
         DIVIDER,
         'Open an account for a child or company',
@@ -227,6 +229,16 @@ describe('RoleSwitcher', () => {
         'href',
         '/account?language=en',
       );
+    });
+
+    it('links security to the security page', async () => {
+      setupSwitchFlow();
+
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /John Doe/i }));
+
+      expect(screen.getByRole('link', { name: 'Security' })).toHaveAttribute('href', '/security');
     });
 
     it('logs the user out from the menu', async () => {
@@ -439,6 +451,7 @@ describe('RoleSwitcher', () => {
 
       const rowIcons = [
         screen.getByRole('link', { name: 'My account' }),
+        screen.getByRole('link', { name: 'Security' }),
         screen.getByRole('button', { name: 'John Doe' }),
         screen.getByRole('button', { name: 'Test OÜ' }),
         screen.getByRole('link', { name: 'Eesti keeles' }),

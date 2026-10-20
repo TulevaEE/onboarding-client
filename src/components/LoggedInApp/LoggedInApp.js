@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 import { PropTypes as Types } from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { ACCOUNT_PATH, AML_PATH } from '../paths';
+import { ACCOUNT_PATH, AML_PATH, SECURITY_PATH } from '../paths';
 
 import { actions as loginActions } from '../login';
 import { actions as exchangeActions } from '../exchange';
@@ -42,6 +42,7 @@ import ThirdPillarSuccess, {
 } from '../flows/thirdPillar/ThirdPillarSuccess';
 import { EmployerPaymentDetails } from '../flows/thirdPillar/ThirdPillarPayment/paymentDetails/EmployerPaymentDetails';
 import { PensionAccountNumberPage } from '../pensionAccountNumber/PensionAccountNumberPage';
+import { SecurityPage } from '../security/SecurityPage';
 import { ContributionPageSecondPillar } from '../contribution/ContributionPageSecondPillar';
 import { TransactionPageSecondPillar } from '../account/TransactionSection/TransactionPageSecondPillar';
 import { SavingsTransactionPage } from '../account/TransactionSection/SavingsTransactionPage';
@@ -271,6 +272,7 @@ export class LoggedInApp extends PureComponent {
             <Route path="/3rd-pillar-gift" component={Gift} />
             <Route path="/3rd-pillar-employer" component={EmployerPaymentDetails} />
             <Route path="/pension-account-number" component={PensionAccountNumberPage} />
+            <Route path={SECURITY_PATH} component={SecurityPage} />
             <Route path="/2nd-pillar-transactions" component={TransactionPageSecondPillar} />
             <Route path="/3rd-pillar-transactions" component={TransactionPageThirdPillar} />
             <Route path="/savings-fund-transactions" component={SavingsTransactionPage} />

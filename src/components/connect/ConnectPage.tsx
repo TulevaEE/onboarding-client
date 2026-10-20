@@ -8,10 +8,8 @@ import { getAuthentication } from '../common/authenticationManager';
 import { cancelMobileAuthentication } from '../login/actions';
 import { loginPath } from '../login/constants';
 import { LoginFrame } from '../login/LoginFrame';
-import { TranslationKey } from '../translations';
 import {
   asksForAFreshLogin,
-  ConnectScope,
   useApproveConnectRequest,
   useConnectRequest,
   useDenyConnectRequest,
@@ -23,17 +21,7 @@ import {
   stopSteeringTheCallbackTo,
   startFreshLoginFor,
 } from './freshLogin';
-
-const SCOPE_DESCRIPTIONS: Record<ConnectScope, TranslationKey> = {
-  'balances:read': 'connect.scope.balances',
-  'transactions:read': 'connect.scope.transactions',
-};
-
-const isDescribed = (scope: string): scope is ConnectScope =>
-  Object.prototype.hasOwnProperty.call(SCOPE_DESCRIPTIONS, scope);
-
-const describedScopesOf = (scopes: string[]): ConnectScope[] | null =>
-  scopes.length > 0 && scopes.every(isDescribed) ? scopes : null;
+import { ConnectScope, describedScopesOf, ScopeDescription } from './ScopeDescription';
 
 export const ConnectPage: FC = () => {
   const { requestId } = useParams<{ requestId: string }>();
@@ -177,12 +165,15 @@ const Consent: FC<{
       <ul className="list-unstyled m-0 mt-4 d-flex flex-column gap-2 fs-5">
         {scopes.map((scope) => (
           <li key={scope}>
-            <FormattedMessage id={SCOPE_DESCRIPTIONS[scope]} />
+            <ScopeDescription scope={scope} />
           </li>
         ))}
       </ul>
       <p className="m-0 mt-4 text-body-secondary text-pretty">
         <FormattedMessage id="connect.consent.duration" />
+      </p>
+      <p className="m-0 mt-2 text-body-secondary text-pretty">
+        <FormattedMessage id="connect.consent.revocable" />
       </p>
       {answerFailed && (
         <ErrorAlert className="mt-4 mb-0">
