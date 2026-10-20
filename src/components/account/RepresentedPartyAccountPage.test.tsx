@@ -12,6 +12,7 @@ import { mockUser } from '../../test/backend-responses';
 import { RepresentedPartyAccountPage } from './RepresentedPartyAccountPage';
 import {
   applicationsBackend,
+  neverAnswer,
   portfolioBackend,
   savingsAccountStatementBackend,
   transactionsBackend,
@@ -306,11 +307,7 @@ describe('RepresentedPartyAccountPage while the savings balance is loading', () 
     userBackend(server, {
       role: { type: 'LEGAL_ENTITY', code: '12345678', name: 'Acme OÜ' },
     });
-    server.use(
-      rest.get('http://localhost/v1/savings-account-statement', (_req, res, ctx) =>
-        res(ctx.delay('infinite')),
-      ),
-    );
+    server.use(rest.get('http://localhost/v1/savings-account-statement', neverAnswer));
     initializeComponent();
     history.push('/account');
   });

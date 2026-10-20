@@ -115,6 +115,8 @@
   "accountStatement.heading": "Sinu portfell detailsemalt",
   "accountStatement.secondPillar.heading": "II sammas",
   "accountStatement.thirdPillar.heading": "III sammas",
+  "accountStatement.thirdPillar.changeRecurringPayment": "Muudan püsimakset",
+  "accountStatement.thirdPillar.setUpRecurringPayment": "Teen püsimakse",
   "accountStatement.savingsFund.heading": "Täiendav Kogumisfond",
   "accountStatement.savingsFund.deposit": "Lisan raha",
   "accountStatement.savingsFund.withdraw": "Võtan välja",

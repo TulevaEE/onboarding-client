@@ -122,6 +122,7 @@ export const mockThirdPillarConversion: Conversion = {
   selectionComplete: true,
   pendingWithdrawal: false,
   paymentComplete: true,
+  recurringPaymentDetected: false,
   contribution: { total: 9876.54, yearToDate: 999.99, lastYear: 100 },
   subtraction: { total: 0.0, yearToDate: 0.0, lastYear: 0 },
   selectionPartial: false,

@@ -668,6 +668,108 @@ describe('Additional Investment Fund status', () => {
   });
 });
 
+describe('third pillar recurring payment link', () => {
+  beforeEach(() => {
+    initializeConfiguration();
+    useTestBackends(server);
+  });
+
+  const openAccountPageWithConversionAndThirdPillarStatement = async () => {
+    initializeComponent();
+    history.push('/account');
+    expect(await screen.findByText('Tuleva III Samba Pensionifond')).toBeInTheDocument();
+    expect(await screen.findByRole('cell', { name: /^III\spillar$/ })).toBeInTheDocument();
+  };
+
+  const recurringPaymentLink = () =>
+    screen.queryByRole('link', { name: 'Change recurring payment' });
+
+  const setUpRecurringPaymentLink = () =>
+    screen.queryByRole('link', { name: 'Set up recurring payment' });
+
+  const linkAfter = (link: HTMLElement) => {
+    const links = screen.getAllByRole('link');
+    return links[links.indexOf(link) + 1];
+  };
+
+  test('sits before the payment link in the III pillar section when a standing order is detected', async () => {
+    userConversionBackend(server, {}, { recurringPaymentDetected: true });
+    await openAccountPageWithConversionAndThirdPillarStatement();
+
+    const link = screen.getByRole('link', { name: 'Change recurring payment' });
+
+    expect(linkAfter(link)).toHaveAccessibleName('Make a payment');
+    expect(linkAfter(link)).toHaveClass('icon-link');
+    expect(link).toHaveAttribute('href', '/3rd-pillar-recurring-payment');
+    expect(link).toHaveClass('icon-link');
+  });
+
+  test('sits before the fund change link when the III pillar is not fully converted', async () => {
+    userConversionBackend(server, {}, { transfersComplete: false, recurringPaymentDetected: true });
+    await openAccountPageWithConversionAndThirdPillarStatement();
+
+    const link = screen.getByRole('link', { name: 'Change recurring payment' });
+
+    expect(linkAfter(link)).toHaveAccessibleName(/^Change III\spillar fund$/);
+    expect(linkAfter(link)).toHaveAttribute('href', '/3rd-pillar-flow');
+  });
+
+  test('takes the person to the recurring payment change flow', async () => {
+    userConversionBackend(server, {}, { recurringPaymentDetected: true });
+    await openAccountPageWithConversionAndThirdPillarStatement();
+
+    userEvent.click(screen.getByRole('link', { name: 'Change recurring payment' }));
+
+    expect(history.location.pathname).toBe('/3rd-pillar-recurring-payment');
+  });
+
+  test('is not shown when no standing order is detected', async () => {
+    userConversionBackend(server, {}, { recurringPaymentDetected: false });
+    await openAccountPageWithConversionAndThirdPillarStatement();
+
+    expect(recurringPaymentLink()).not.toBeInTheDocument();
+  });
+
+  test('offers to set up a recurring payment before the payment link when no standing order is detected', async () => {
+    userConversionBackend(server, {}, { recurringPaymentDetected: false });
+    await openAccountPageWithConversionAndThirdPillarStatement();
+
+    const link = screen.getByRole('link', { name: 'Set up recurring payment' });
+
+    expect(linkAfter(link)).toHaveAccessibleName('Make a payment');
+    expect(link).toHaveAttribute('href', '/3rd-pillar-payment?type=RECURRING');
+    expect(link).toHaveClass('icon-link');
+  });
+
+  test('does not offer to set up a recurring payment when a standing order is detected', async () => {
+    userConversionBackend(server, {}, { recurringPaymentDetected: true });
+    await openAccountPageWithConversionAndThirdPillarStatement();
+
+    expect(screen.getByRole('link', { name: 'Change recurring payment' })).toBeInTheDocument();
+    expect(setUpRecurringPaymentLink()).not.toBeInTheDocument();
+  });
+
+  test('does not offer to set up a recurring payment when the III pillar is not fully converted', async () => {
+    userConversionBackend(
+      server,
+      {},
+      { transfersComplete: false, recurringPaymentDetected: false },
+    );
+    await openAccountPageWithConversionAndThirdPillarStatement();
+
+    expect(screen.getByRole('link', { name: /^Change III\spillar fund$/ })).toBeInTheDocument();
+    expect(setUpRecurringPaymentLink()).not.toBeInTheDocument();
+  });
+
+  test('shows neither link when the conversion does not say whether a standing order is detected', async () => {
+    userConversionBackend(server, {}, { recurringPaymentDetected: undefined });
+    await openAccountPageWithConversionAndThirdPillarStatement();
+
+    expect(recurringPaymentLink()).not.toBeInTheDocument();
+    expect(setUpRecurringPaymentLink()).not.toBeInTheDocument();
+  });
+});
+
 const savingsFundOnboardingStatus = {
   completed: () =>
     rest.get('/v1/savings/onboarding/status', (req, res, ctx) =>

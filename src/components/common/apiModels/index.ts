@@ -322,6 +322,7 @@ export interface Conversion {
   transfersComplete: boolean;
   transfersPartial: boolean;
   paymentComplete: boolean;
+  recurringPaymentDetected?: boolean;
   pendingWithdrawal: boolean;
   contribution: Amount;
   subtraction: Amount;

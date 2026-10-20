@@ -6,7 +6,11 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { QueryClient } from '@tanstack/react-query';
 import { renderWrapped } from '../../../../../test/utils';
-import { eligibleChildrenBackend, pendingOnboardingsBackend } from '../../../../../test/backend';
+import {
+  eligibleChildrenBackend,
+  neverAnswer,
+  pendingOnboardingsBackend,
+} from '../../../../../test/backend';
 import { initializeConfiguration } from '../../../../config/config';
 import { ChildIdentityStep } from './ChildIdentityStep';
 import { ChildOnboardingFormData } from '../types';
@@ -123,11 +127,7 @@ describe('ChildIdentityStep', () => {
   });
 
   test('lets the user switch to manual entry while the lookup is still pending', () => {
-    server.use(
-      rest.get('http://localhost/v1/me/children', (req, res, ctx) =>
-        res(ctx.delay('infinite'), ctx.json([])),
-      ),
-    );
+    server.use(rest.get('http://localhost/v1/me/children', neverAnswer));
     renderWrapped(<Wrapper />);
     expect(screen.getByLabelText(/personal ID code/i)).toBeDisabled();
 
