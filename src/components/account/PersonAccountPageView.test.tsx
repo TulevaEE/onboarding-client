@@ -684,6 +684,9 @@ describe('third pillar recurring payment link', () => {
   const recurringPaymentLink = () =>
     screen.queryByRole('link', { name: 'Change recurring payment' });
 
+  const setUpRecurringPaymentLink = () =>
+    screen.queryByRole('link', { name: 'Set up recurring payment' });
+
   const linkAfter = (link: HTMLElement) => {
     const links = screen.getAllByRole('link');
     return links[links.indexOf(link) + 1];
@@ -730,6 +733,39 @@ describe('third pillar recurring payment link', () => {
     expect(recurringPaymentLink()).not.toBeInTheDocument();
   });
 
+  test('offers to set up a recurring payment before the payment link when no standing order is detected', async () => {
+    thirdPillarRecurringPaymentBackend(server, { detected: false });
+    renderAccountPage();
+
+    const link = await screen.findByRole('link', { name: 'Set up recurring payment' });
+
+    expect(linkAfter(link)).toHaveAccessibleName('Make a payment');
+    expect(link).toHaveAttribute('href', '/3rd-pillar-payment?type=RECURRING');
+    expect(link).toHaveClass('icon-link');
+  });
+
+  test('does not offer to set up a recurring payment when a standing order is detected', async () => {
+    thirdPillarRecurringPaymentBackend(server, { detected: true });
+    renderAccountPage();
+
+    expect(
+      await screen.findByRole('link', { name: 'Change recurring payment' }),
+    ).toBeInTheDocument();
+    expect(setUpRecurringPaymentLink()).not.toBeInTheDocument();
+  });
+
+  test('does not offer to set up a recurring payment when the III pillar is not fully converted', async () => {
+    userConversionBackend(server, {}, { transfersComplete: false });
+    const requests = thirdPillarRecurringPaymentBackend(server, { detected: false });
+    renderAccountPage();
+
+    await waitFor(() => expect(requests.count()).toBe(1));
+    expect(
+      await screen.findByRole('link', { name: /^Change III\spillar fund$/ }),
+    ).toBeInTheDocument();
+    expect(setUpRecurringPaymentLink()).not.toBeInTheDocument();
+  });
+
   test('appears only once the detection has answered', async () => {
     let answer = () => {};
     const answered = new Promise<void>((resolve) => {
@@ -745,6 +781,7 @@ describe('third pillar recurring payment link', () => {
 
     expect(await screen.findByText('Swedbank PIK')).toBeInTheDocument();
     expect(recurringPaymentLink()).not.toBeInTheDocument();
+    expect(setUpRecurringPaymentLink()).not.toBeInTheDocument();
 
     answer();
 
@@ -768,6 +805,7 @@ describe('third pillar recurring payment link', () => {
     await waitFor(() => expect(requests).toBe(1));
     await waitFor(() => expect(queryClient.isFetching()).toBe(0));
     expect(recurringPaymentLink()).not.toBeInTheDocument();
+    expect(setUpRecurringPaymentLink()).not.toBeInTheDocument();
   });
 });
 

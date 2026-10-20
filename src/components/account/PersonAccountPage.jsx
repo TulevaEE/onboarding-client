@@ -188,6 +188,11 @@ export function PersonAccountPage(
                 <FormattedMessage id="accountStatement.thirdPillar.changeRecurringPayment" />
               </Link>
             )}
+            {thirdPillarRecurringPayment?.detected === false && isThirdPillarFullyConverted && (
+              <Link className="icon-link" to="/3rd-pillar-payment?type=RECURRING">
+                <FormattedMessage id="accountStatement.thirdPillar.setUpRecurringPayment" />
+              </Link>
+            )}
             {isThirdPillarFullyConverted ? (
               <Link className="icon-link" to="/3rd-pillar-payment">
                 <FormattedMessage id="account.status.choice.pillar.third.success.action" />

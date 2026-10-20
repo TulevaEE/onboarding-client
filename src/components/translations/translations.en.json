@@ -114,6 +114,7 @@
   "accountStatement.secondPillar.heading": "II pillar",
   "accountStatement.thirdPillar.heading": "III pillar",
   "accountStatement.thirdPillar.changeRecurringPayment": "Change recurring payment",
+  "accountStatement.thirdPillar.setUpRecurringPayment": "Set up recurring payment",
   "accountStatement.savingsFund.heading": "Additional Investment Fund",
   "accountStatement.savingsFund.deposit": "Deposit",
   "accountStatement.savingsFund.withdraw": "Withdraw",
