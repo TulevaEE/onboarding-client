@@ -1508,6 +1508,7 @@ const TEST_BACKENDS = {
   memberLookup: memberLookupBackend,
   roles: rolesBackend,
   pendingOnboardings: pendingOnboardingsBackend,
+  connectedApps: (server: SetupServerApi) => connectedAppsBackend(server, []),
   switchRole: switchRoleBackend,
   contributions: contributionsBackend,
   businessRegistry: businessRegistryBackend,

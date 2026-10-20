@@ -10,6 +10,7 @@ import { isChildRole, isCurrentRole } from '../../../common/utils';
 import LanguageSwitcher from '../languageSwitcher';
 import { PII_CLASS } from '../../../tracking/piiMarkup';
 import { SECURITY_PATH } from '../../../paths';
+import { useConnectedApps } from '../../../security/connectedApps/connectedApps.api';
 import {
   childOnboardingLocation,
   pendingChildOnboardings,
@@ -40,6 +41,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
   const { data: roles } = useRoles();
   const { data: pendingOnboardings = [] } = usePendingOnboardings();
   const { data: user } = useMe();
+  const { data: connectedApps = [] } = useConnectedApps();
   const switchRole = useSwitchRole();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLSpanElement>(null);
@@ -161,15 +163,17 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
             <PhosphorIcon name="house" size={18} className="text-body-secondary" />
             <FormattedMessage id="header.my.account" />
           </Link>
-          <Link
-            className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2"
-            to={SECURITY_PATH}
-            onClick={() => setOpen(false)}
-            onKeyDown={handleKeyDown}
-          >
-            <PhosphorIcon name="shieldCheck" size={18} className="text-body-secondary" />
-            <FormattedMessage id="security.title" />
-          </Link>
+          {connectedApps.length > 0 && (
+            <Link
+              className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2"
+              to={SECURITY_PATH}
+              onClick={() => setOpen(false)}
+              onKeyDown={handleKeyDown}
+            >
+              <PhosphorIcon name="shieldCheck" size={18} className="text-body-secondary" />
+              <FormattedMessage id="security.title" />
+            </Link>
+          )}
           <LanguageSwitcher onKeyDown={handleKeyDown} onClick={() => setOpen(false)} />
           <hr className="dropdown-divider" />
           {hasAnotherAccount && (

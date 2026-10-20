@@ -10,6 +10,7 @@ import { initializeConfiguration } from '../config/config';
 import {
   amlChecksBackend,
   applicationsBackend,
+  connectedAppsBackend,
   fundsBackend,
   pendingOnboardingsBackend,
   pensionAccountStatementBackend,
@@ -98,6 +99,7 @@ beforeEach(() => {
   returnsBackend(server);
   rolesBackend(server);
   pendingOnboardingsBackend(server);
+  connectedAppsBackend(server, []);
   userBackend(server, { pensionAccountNumber: '99812345678' });
   writeText = jest.fn().mockResolvedValue(undefined);
   Object.defineProperty(window.navigator, 'clipboard', {

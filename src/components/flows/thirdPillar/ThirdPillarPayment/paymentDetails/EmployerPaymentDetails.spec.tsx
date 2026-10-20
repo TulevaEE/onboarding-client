@@ -8,6 +8,7 @@ import { initializeConfiguration } from '../../../../config/config';
 import {
   amlChecksBackend,
   applicationsBackend,
+  connectedAppsBackend,
   fundsBackend,
   paymentLinkBackend,
   pensionAccountStatementBackend,
@@ -51,6 +52,7 @@ describe('When a user is setting up third pillar payments via employer', () => {
     paymentLinkBackend(server);
     applicationsBackend(server);
     returnsBackend(server);
+    connectedAppsBackend(server, []);
 
     initializeComponent();
 
