@@ -56,6 +56,7 @@ import {
   connectLoginRequiredResponse,
   connectRequestNotFoundResponse,
   connectRequestResponse,
+  connectedAppsResponse,
 } from './backend-responses';
 import {
   CapitalTransferContract,
@@ -71,6 +72,7 @@ import {
 } from '../components/common/apiModels/hackathon';
 import { KycIdentity } from '../components/flows/savingsAccount/SavingsFundOnboarding/types.api';
 import { NudgeDecision, PaymentRateRedirect } from '../components/common/apiModels/nudge';
+import { ConnectedApp } from '../components/security/connectedApps/connectedApps.api';
 
 export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
@@ -1635,6 +1637,86 @@ export function connectBackend(
     },
     denials: () => denials,
     approvals: () => approvals,
+  };
+}
+
+export function connectedAppsBackend(
+  server: SetupServerApi,
+  apps: ConnectedApp[] = connectedAppsResponse,
+): {
+  failTheNextListing: () => void;
+  holdTheNextListing: () => () => void;
+  listingsAskedFor: () => number;
+  listingsAnswered: () => number;
+  answerTheNextRevocationWith: (status: number) => void;
+  holdTheRevocations: () => () => void;
+  revocations: () => string[];
+} {
+  const revoked: string[] = [];
+  let failsTheNextListing = false;
+  let nextListingLetThrough: Promise<void> = Promise.resolve();
+  let listingsAskedFor = 0;
+  let listingsAnswered = 0;
+  let nextRevocationStatus: number | null = null;
+  let revocationsLetThrough: Promise<void> = Promise.resolve();
+  const heldUntilLetThrough = () => {
+    let letThrough = () => {};
+    const held = new Promise<void>((resolve) => {
+      letThrough = resolve;
+    });
+    return { held, letThrough };
+  };
+  server.use(
+    rest.get('http://localhost/v1/me/connected-apps', async (req, res, ctx) => {
+      if (req.headers.get('Authorization') !== 'Bearer an access token') {
+        return res(ctx.status(401), ctx.json({}));
+      }
+      listingsAskedFor += 1;
+      if (failsTheNextListing) {
+        failsTheNextListing = false;
+        return res(ctx.status(500), ctx.json({}));
+      }
+      const listed = apps.filter(({ id }) => !revoked.includes(id));
+      const letThrough = nextListingLetThrough;
+      nextListingLetThrough = Promise.resolve();
+      await letThrough;
+      listingsAnswered += 1;
+      return res(ctx.json(listed));
+    }),
+    rest.delete('http://localhost/v1/me/connected-apps/:id', async (req, res, ctx) => {
+      if (req.headers.get('Authorization') !== 'Bearer an access token') {
+        return res(ctx.status(401), ctx.json({}));
+      }
+      await revocationsLetThrough;
+      const status = nextRevocationStatus;
+      nextRevocationStatus = null;
+      if (status !== null) {
+        return res(ctx.status(status), ctx.json({}));
+      }
+      revoked.push(req.params.id as string);
+      return res(ctx.status(204));
+    }),
+  );
+  return {
+    failTheNextListing: () => {
+      failsTheNextListing = true;
+    },
+    holdTheNextListing: () => {
+      const { held, letThrough } = heldUntilLetThrough();
+      nextListingLetThrough = held;
+      return letThrough;
+    },
+    listingsAskedFor: () => listingsAskedFor,
+    listingsAnswered: () => listingsAnswered,
+    answerTheNextRevocationWith: (status) => {
+      nextRevocationStatus = status;
+    },
+    holdTheRevocations: () => {
+      const { held, letThrough } = heldUntilLetThrough();
+      revocationsLetThrough = held;
+      return letThrough;
+    },
+    revocations: () => revoked,
   };
 }
 

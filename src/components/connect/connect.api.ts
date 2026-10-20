@@ -6,8 +6,6 @@ import { isErrorResponse } from '../common/errorResponse';
 import { get, post } from '../common/http';
 import { forgetConnectLoginInFlight } from './freshLogin';
 
-export type ConnectScope = 'balances:read' | 'transactions:read';
-
 export interface ConnectRequest {
   clientName: string;
   scopes: string[];

@@ -16,6 +16,7 @@ import { BusinessRegistryValidatedData } from '../components/common/apiModels/co
 import { KycIdentity } from '../components/flows/savingsAccount/SavingsFundOnboarding/types.api';
 import { SecondPillarPaymentRateChangeMandate } from '../components/flows/secondPillarPaymentRate/types';
 import { ConnectRequest } from '../components/connect/connect.api';
+import type { ConnectedApp } from '../components/security/connectedApps/connectedApps.api';
 
 export const authErrorResponse = {
   error: 'not authenticated correctly',
@@ -339,6 +340,25 @@ export const connectApprovalResponse = {
 export const connectDenialResponse = {
   redirectUri: 'https://app.example/callback?error=access_denied&state=a-state',
 };
+
+export const connectedAppsResponse: ConnectedApp[] = [
+  {
+    id: '3f6b2c1e-8a4d-4f0b-9c7e-2d5a1b8e6f40',
+    clientName: 'Portfellow',
+    scopes: ['balances:read', 'transactions:read'],
+    connectedAt: '2026-10-20T10:00:00Z',
+    lastUsedAt: '2026-10-21T08:30:00Z',
+    expiresAt: '2027-04-18T10:00:00Z',
+  },
+  {
+    id: '9a1d7e52-4b3c-4e8f-a6d0-71c2f5b9e384',
+    clientName: 'Näidisrakendus',
+    scopes: ['balances:read'],
+    connectedAt: '2026-10-15T12:00:00Z',
+    lastUsedAt: null,
+    expiresAt: '2026-11-14T12:00:00Z',
+  },
+];
 
 const base64UrlOf = (value: unknown): string =>
   btoa(JSON.stringify(value)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
