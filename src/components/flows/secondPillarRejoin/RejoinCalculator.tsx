@@ -1,20 +1,14 @@
 import { ReactNode } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CurrencyInput } from '../../common/input/CurrencyInput';
-import { Euro } from '../../common/Euro';
 import { PII_CLASS } from '../../tracking/piiMarkup';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
 import { rejoinContributions } from './rejoinContributions';
 import { ContributionBreakdown } from './ContributionBreakdown';
 
-const bold = (chunks: ReactNode) => <b>{chunks}</b>;
+const MAX_GROSS_SALARY = 99999;
 
-const DetailLine = ({ label, value }: { label: ReactNode; value: ReactNode }) => (
-  <div className="d-flex justify-content-between gap-3 small text-secondary">
-    <span>{label}</span>
-    <span className="fw-medium text-nowrap">{value}</span>
-  </div>
-);
+const bold = (chunks: ReactNode) => <b>{chunks}</b>;
 
 type RejoinCalculatorProps = {
   grossSalary: number | undefined;
@@ -62,7 +56,11 @@ export const RejoinCalculator = ({
                     className={`mw-100 ${PII_CLASS}`}
                     value={grossSalary}
                     placeholder={String(exampleSalary)}
-                    onChange={onGrossSalaryChange}
+                    onChange={(salary) =>
+                      onGrossSalaryChange(
+                        salary === undefined ? undefined : Math.min(salary, MAX_GROSS_SALARY),
+                      )
+                    }
                     withEuroSign={false}
                     alignEnd
                   />
@@ -75,30 +73,7 @@ export const RejoinCalculator = ({
               role="group"
               aria-label={formatMessage({ id: 'secondPillarRejoin.calculation.label' })}
             >
-              <div className="d-flex justify-content-between align-items-baseline gap-3 text-navy">
-                <span className="fs-5 fw-medium">
-                  <FormattedMessage id="secondPillarRejoin.calculation.intoPillar" />
-                </span>
-                <span className="fs-3 fw-bold text-nowrap">
-                  <FormattedMessage
-                    id="secondPillarRejoin.calculation.perMonth"
-                    values={{
-                      amount: <Euro amount={contributions.intoPillarPerMonth} fractionDigits={0} />,
-                    }}
-                  />
-                </span>
-              </div>
               <ContributionBreakdown contributions={contributions} />
-              <div className="border-top mt-3 pt-3">
-                <DetailLine
-                  label={<FormattedMessage id="secondPillarRejoin.calculation.tenYears" />}
-                  value={<Euro amount={contributions.tenYearTotal} fractionDigits={0} />}
-                />
-                <DetailLine
-                  label={<FormattedMessage id="secondPillarRejoin.calculation.stateShare" />}
-                  value={<Euro amount={contributions.tenYearStateShare} fractionDigits={0} />}
-                />
-              </div>
               <button type="button" className="btn btn-primary btn-lg w-100 mt-4" onClick={onStart}>
                 <FormattedMessage id="secondPillarRejoin.calculator.start" />
               </button>

@@ -1,0 +1,38 @@
+@import '../../variables';
+
+.breakdown {
+  --bs-tooltip-bg: #{$white};
+  --bs-tooltip-color: #{$text-primary};
+  --bs-tooltip-opacity: 1;
+  --bs-tooltip-padding-x: 16px;
+  --bs-tooltip-padding-y: 12px;
+  --bs-tooltip-border-radius: 6px;
+  --bs-tooltip-font-size: 14px;
+  --bs-tooltip-max-width: 384px;
+
+  :global(.tooltip-inner) {
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.16), 0 1px 2px 0 rgba(0, 0, 0, 0.04),
+      0 4px 8px 0 rgba(0, 0, 0, 0.04), 0 0 16px 0 rgba(0, 0, 0, 0.16);
+  }
+}
+
+.withBreakdown {
+  cursor: help;
+
+  &:global(.btn):focus-visible {
+    box-shadow: 0 0 0 var(--bs-focus-ring-width) var(--bs-focus-ring-color);
+  }
+}
+
+.breakdownTable {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 12px;
+  row-gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.operator {
+  flex-shrink: 0;
+  width: 1.5rem;
+}

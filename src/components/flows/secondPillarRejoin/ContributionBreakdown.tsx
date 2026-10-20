@@ -1,30 +1,44 @@
-import { useState } from 'react';
+import { ReactNode, useState } from 'react';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Euro } from '../../common/Euro';
 import { RejoinContributions } from './rejoinContributions';
+import styles from './ContributionBreakdown.module.scss';
 
-const SEGMENTS = [
-  {
-    key: 'netSalaryCostPerMonth',
-    labelId: 'secondPillarTaxWin.chart.fromNetSalary',
-    color: '#00AEEA',
-    hoverColor: '#0098CC',
-  },
-  {
-    key: 'incomeTaxSavedPerMonth',
-    labelId: 'secondPillarTaxWin.chart.fromIncomeTax',
-    color: '#FDD835',
-    hoverColor: '#E8C41E',
-  },
-  {
-    key: 'statePerMonth',
-    labelId: 'secondPillarRejoin.calculation.fromState',
-    color: '#52A560',
-    hoverColor: '#418C50',
-  },
-] as const;
+const NET_SALARY_COLOR = 'var(--blue)';
+const TAX_WIN_COLOR = 'var(--green)';
+const TAX_WIN_HOVER_COLOR = '#00A100';
 
-type SegmentKey = (typeof SEGMENTS)[number]['key'];
+const SumRow = ({
+  operator,
+  label,
+  labelElementId,
+  amount,
+}: {
+  operator: string;
+  label: ReactNode;
+  labelElementId?: string;
+  amount: ReactNode;
+}) => (
+  <div className="d-flex align-items-baseline">
+    <span aria-hidden="true" className={`fs-3 fw-bold text-navy ${styles.operator}`}>
+      {operator}
+    </span>{' '}
+    <span id={labelElementId} className="flex-grow-1 fs-5 fw-medium">
+      {label}
+    </span>{' '}
+    <span className="fs-3 fw-bold">{amount}</span>
+  </div>
+);
+
+const BreakdownRow = ({ label, amount }: { label: ReactNode; amount: number }) => (
+  <>
+    <dt className="fw-normal">{label}:</dt>{' '}
+    <dd className="m-0 text-end">
+      <Euro amount={amount} fractionDigits={0} />
+    </dd>{' '}
+  </>
+);
 
 export const ContributionBreakdown = ({
   contributions,
@@ -32,54 +46,67 @@ export const ContributionBreakdown = ({
   contributions: RejoinContributions;
 }) => {
   const { formatMessage } = useIntl();
-  const [highlighted, setHighlighted] = useState<SegmentKey | null>(null);
-  const total = SEGMENTS.reduce((sum, { key }) => sum + contributions[key], 0);
-  const highlight = (key: SegmentKey) => ({
-    onMouseEnter: () => setHighlighted(key),
-    onMouseLeave: () => setHighlighted(null),
-  });
+  const [isTaxWinHovered, setTaxWinHovered] = useState(false);
 
   return (
-    <div className="mt-2">
-      {total > 0 && (
-        <div className="d-flex gap-1 rounded-pill overflow-hidden" style={{ height: '0.5rem' }}>
-          {SEGMENTS.filter(({ key }) => contributions[key] > 0).map(
-            ({ key, color, hoverColor }) => (
-              <div
-                key={key}
-                aria-hidden="true"
-                style={{
-                  width: `${(contributions[key] / total) * 100}%`,
-                  backgroundColor: highlighted === key ? hoverColor : color,
-                }}
-                {...highlight(key)}
-              />
-            ),
-          )}
-        </div>
-      )}
+    <>
       <ul
-        className="list-unstyled d-flex flex-wrap justify-content-between column-gap-2 row-gap-1 small text-secondary mt-2 mb-0"
+        className="list-unstyled d-flex flex-column gap-2 m-0"
         aria-label={formatMessage({ id: 'secondPillarRejoin.calculation.breakdown' })}
       >
-        {SEGMENTS.map(({ key, labelId, color }) => (
-          <li
-            key={key}
-            className={`d-flex align-items-center gap-1 text-nowrap ${
-              highlighted === key ? 'text-body' : ''
-            }`}
-            {...highlight(key)}
-          >
-            <span
-              aria-hidden="true"
-              className="rounded-circle flex-shrink-0"
-              style={{ width: '0.5rem', height: '0.5rem', backgroundColor: color }}
-            />
-            <Euro className="fw-medium" amount={contributions[key]} fractionDigits={0} />{' '}
-            <FormattedMessage id={labelId} />
-          </li>
-        ))}
+        <li style={{ color: NET_SALARY_COLOR }}>
+          <SumRow
+            operator=""
+            label={<FormattedMessage id="secondPillarRejoin.calculation.fromNetSalary" />}
+            amount={<Euro amount={contributions.netSalaryCostPerMonth} fractionDigits={0} />}
+          />
+        </li>
+        <li style={{ color: TAX_WIN_COLOR }}>
+          <SumRow
+            operator="+"
+            label={<FormattedMessage id="secondPillarRejoin.calculation.taxWin" />}
+            labelElementId="rejoin-tax-win-label"
+            amount={
+              <OverlayTrigger
+                placement="right"
+                overlay={
+                  <Tooltip id="rejoin-tax-win-breakdown" className={styles.breakdown}>
+                    <dl className={`m-0 text-start ${styles.breakdownTable}`}>
+                      <BreakdownRow
+                        label={<FormattedMessage id="secondPillarGrowth.tooltip.taxGain" />}
+                        amount={contributions.incomeTaxSavedPerMonth}
+                      />
+                      <BreakdownRow
+                        label={<FormattedMessage id="secondPillarGrowth.tooltip.socialTax" />}
+                        amount={contributions.statePerMonth}
+                      />
+                    </dl>
+                  </Tooltip>
+                }
+              >
+                <button
+                  type="button"
+                  id="rejoin-tax-win-amount"
+                  aria-labelledby="rejoin-tax-win-label rejoin-tax-win-amount"
+                  className={`btn p-0 border-0 align-baseline fs-3 fw-bold ${styles.withBreakdown}`}
+                  style={{ color: isTaxWinHovered ? TAX_WIN_HOVER_COLOR : TAX_WIN_COLOR }}
+                  onMouseEnter={() => setTaxWinHovered(true)}
+                  onMouseLeave={() => setTaxWinHovered(false)}
+                >
+                  <Euro amount={contributions.taxWinPerMonth} fractionDigits={0} />
+                </button>
+              </OverlayTrigger>
+            }
+          />
+        </li>
       </ul>
-    </div>
+      <div className="border-top mt-2 pt-2 text-navy">
+        <SumRow
+          operator="="
+          label={<FormattedMessage id="secondPillarRejoin.calculation.intoPillar" />}
+          amount={<Euro amount={contributions.intoPillarPerMonth} fractionDigits={0} />}
+        />
+      </div>
+    </>
   );
 };

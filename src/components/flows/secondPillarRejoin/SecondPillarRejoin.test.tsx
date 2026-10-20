@@ -38,11 +38,11 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
   });
 
   test.each(['application', 'calculator'])(
-    'leads with the 4% the state adds and the deadline in bold in the %s',
+    'leads with part of your taxes going into the II pillar, and the deadline, in bold in the %s',
     async (view) => {
       await renderAt(`/2nd-pillar-rejoin?view=${view}`);
 
-      expect(screen.getByText('4% of your salary on top', { selector: 'b' })).toBeInTheDocument();
+      expect(screen.getByText('part of your taxes', { selector: 'b' })).toBeInTheDocument();
       expect(screen.getByText(/^30\sNovember$/, { selector: 'b' })).toBeInTheDocument();
     },
   );
@@ -206,10 +206,27 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
 
     expect(screen.getByLabelText('Gross salary')).toHaveValue('2000');
     expect(screen.queryByText('€', { selector: '.input-group-text' })).not.toBeInTheDocument();
-    expect(calculation()).toHaveTextContent(/Into your II\spillar\s*200\s€ a month/);
-    expectBreakdown(['94 € from net salary', '26 € income tax benefit', '80 € from the state']);
-    expect(calculation()).toHaveTextContent(/In 10 years\s*24\s000\s€/);
-    expect(calculation()).toHaveTextContent(/of which from the state\s*9\s600\s€/);
+    expectBreakdown(['From your net salary 94 €', 'Tax win 106 €']);
+    expect(calculation()).toHaveTextContent(
+      /From your net salary\s*94\s€\s*\+\s*Tax win\s*106\s€\s*=\s*Into your II\spillar each month\s*200\s€/,
+    );
+    expect(calculation()).not.toHaveTextContent('In 10 years');
+  });
+
+  test('splits the tax win into the income tax saving and the 4% from social tax on hovering its amount', async () => {
+    await renderAt('/2nd-pillar-rejoin?view=calculator');
+
+    userEvent.hover(screen.getByRole('button', { name: /^Tax win\s106\s€$/ }));
+
+    const breakdown = await screen.findByRole('tooltip');
+    expect(breakdown).toHaveTextContent('Income tax savings: 26 €');
+    expect(breakdown).toHaveTextContent('4% from social tax: 80 €');
+  });
+
+  test('offers a breakdown only for the tax win, not for the net salary', async () => {
+    await renderAt('/2nd-pillar-rejoin?view=calculator');
+
+    expect(screen.queryByRole('button', { name: /^From your net salary/ })).not.toBeInTheDocument();
   });
 
   test('recalculates for another salary', async () => {
@@ -219,7 +236,7 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
     userEvent.clear(salary);
     userEvent.type(salary, '3000');
 
-    expect(calculation()).toHaveTextContent(/Into your II\spillar\s*300\s€ a month/);
+    expect(calculation()).toHaveTextContent(/=\s*Into your II\spillar each month\s*300\s€/);
   });
 
   test('calculates on the 2000 € example while the salary field is empty', async () => {
@@ -229,7 +246,7 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
     userEvent.clear(salary);
 
     expect(salary).toHaveAttribute('placeholder', '2000');
-    expect(calculation()).toHaveTextContent(/Into your II\spillar\s*200\s€ a month/);
+    expect(calculation()).toHaveTextContent(/=\s*Into your II\spillar each month\s*200\s€/);
   });
 
   test('marks the salary and the amounts it gives as personal data for analytics', async () => {
@@ -256,17 +273,49 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
     userEvent.type(salary, '2500,50');
 
     expect(screen.getByLabelText('Gross salary')).toHaveValue('2500.50');
-    expect(calculation()).toHaveTextContent(/Into your II\spillar\s*250\s€ a month/);
+    expect(calculation()).toHaveTextContent(/=\s*Into your II\spillar each month\s*250\s€/);
   });
 
-  test('gives no income tax saving on the part of the salary the basic exemption covers', async () => {
+  test('leaves only the 4% the state adds in the tax win when the basic exemption covers the salary', async () => {
     await renderAt('/2nd-pillar-rejoin?view=calculator');
 
     const salary = screen.getByLabelText('Gross salary');
     userEvent.clear(salary);
     userEvent.type(salary, '500');
 
-    expectBreakdown(['30 € from net salary', '0 € income tax benefit', '20 € from the state']);
+    expectBreakdown(['From your net salary 30 €', 'Tax win 20 €']);
+  });
+
+  test('rounds each part to whole euros so the parts add up to the monthly amount', async () => {
+    await renderAt('/2nd-pillar-rejoin?view=calculator');
+
+    const salary = screen.getByLabelText('Gross salary');
+    userEvent.clear(salary);
+    userEvent.type(salary, '1005');
+
+    expect(calculation()).toHaveTextContent(/=\s*Into your II\spillar each month\s*100\s€/);
+    expectBreakdown(['From your net salary 47 €', 'Tax win 53 €']);
+  });
+
+  test('caps the salary at 99 999 € so a mistyped salary cannot blow up the calculation', async () => {
+    await renderAt('/2nd-pillar-rejoin?view=calculator');
+
+    const salary = screen.getByLabelText('Gross salary');
+    userEvent.clear(salary);
+    userEvent.type(salary, '1000000');
+
+    expect(salary).toHaveValue('99999');
+    expect(calculation()).toHaveTextContent(/=\s*Into your II\spillar each month\s*10\s000\s€/);
+  });
+
+  test('shows 0 € for both parts when the salary is 0', async () => {
+    await renderAt('/2nd-pillar-rejoin?view=calculator');
+
+    const salary = screen.getByLabelText('Gross salary');
+    userEvent.clear(salary);
+    userEvent.type(salary, '0');
+
+    expectBreakdown(['From your net salary 0 €', 'Tax win 0 €']);
   });
 
   test('starts the application from the calculator with 6% preselected', async () => {
