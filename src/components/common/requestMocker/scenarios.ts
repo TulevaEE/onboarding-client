@@ -271,6 +271,14 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     user: 'LEFT_SECOND_PILLAR_PAYMENT_RATE_2',
     pendingApplications: 'SECOND_PILLAR_REJOIN',
   },
+  MINOR_SELF_VIEW: {
+    user: 'MINOR',
+    roles: 'MINOR_ONLY',
+    funds: 'WITH_SAVINGS_FUND',
+    savingsFundBalance: 'MINOR',
+    sourceFunds: 'MINOR_THIRD_PILLAR',
+    transactions: 'MINOR_SAVINGS_FUND',
+  },
 
   WITHDRAWALS_PENSIONER_60_ALL_PILLARS: {
     withdrawalsEligibility: 'ALL_PILLARS_60',

@@ -48,6 +48,7 @@ import {
   getPendingOnboardings,
   getRejoinPermission,
   getSavingsFundBalance,
+  getSavingsFundBalanceOrFail,
   getSavingsFundBankAccounts,
   getSavingsFundOnboardingStatus,
   getSavingsFundPersonOnboardingStatus,
@@ -461,6 +462,13 @@ export function useContactMemberCapitalListing(): UseMutationResult<
 
 export function useSavingsFundBalance(): UseQueryResult<SourceFund | null> {
   return useQuery({ queryKey: ['savingsFundBalance'], queryFn: () => getSavingsFundBalance() });
+}
+
+export function useSavingsFundBalanceOrFail(): UseQueryResult<SourceFund | null> {
+  return useQuery({
+    queryKey: ['savingsFundBalance', 'orFail'],
+    queryFn: () => getSavingsFundBalanceOrFail(),
+  });
 }
 
 export function useSavingsFundBankAccounts(): UseQueryResult<string[]> {
