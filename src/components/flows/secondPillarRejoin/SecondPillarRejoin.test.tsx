@@ -62,7 +62,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     userEvent.click(nextButton());
 
     const disclaimers = within(
-      screen.getByRole('region', { name: /application to make contributions/ }),
+      screen.getByRole('region', { name: /contributing to the II\spillar again/ }),
     ).getByRole('note');
     expect(disclaimers).toHaveTextContent(restriction);
     expect(disclaimers).toHaveTextContent(
@@ -108,14 +108,14 @@ describe('When an eligible person rejoins the II pillar', () => {
         .getAllByRole('heading', { level: 2 })
         .map((title) => title.textContent?.replace(/\s+/g, ' ')),
     ).toEqual([
-      'II pillar application to make contributions',
-      'II pillar contribution rate application',
-      'II pillar fund selection application',
+      'I start contributing to the II pillar again',
+      'My contribution is 6% of my gross salary',
+      'Future contributions go to Tuleva World Stocks Pension Fund',
     ]);
-    expect(screen.getByText('My contribution is 6% of my gross salary.')).toBeInTheDocument();
-    expect(
-      screen.getByText('Future contributions go to Tuleva World Stocks Pension Fund.'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('II pillar application to make contributions')).toBeInTheDocument();
+    expect(screen.getByText('II pillar contribution rate application')).toBeInTheDocument();
+    expect(screen.getByText('II pillar fund selection application')).toBeInTheDocument();
+    expect(screen.queryByText(/Application #/)).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Pension Centre/ })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Change' })).not.toBeInTheDocument();
   });

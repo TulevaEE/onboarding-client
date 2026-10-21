@@ -182,20 +182,23 @@ const RejoinApplication = ({
             <FormattedMessage id="withdrawals.reviewAndConfirm.confirmAndSubmit" />
           </p>
           <ApplicationCard
-            number={1}
+            id="rejoin-application"
             titleId="secondPillarRejoin.review.rejoin.title"
-            notes={<RejoinDisclaimers className="mt-2" />}
+            notes={<RejoinDisclaimers className="mt-3" />}
           >
             <FormattedMessage id="secondPillarRejoin.review.rejoin" />
           </ApplicationCard>
-          <ApplicationCard number={2} titleId="secondPillarRejoin.review.paymentRate.title">
+          <ApplicationCard
+            id="rejoin-payment-rate"
+            titleId="secondPillarRejoin.review.paymentRate.title"
+          >
             <FormattedMessage
               id="secondPillarRejoin.review.paymentRate"
               values={{ rate: paymentRate }}
             />
           </ApplicationCard>
           {chosenFund && (
-            <ApplicationCard number={3} titleId="secondPillarRejoin.review.fund.title">
+            <ApplicationCard id="rejoin-fund" titleId="secondPillarRejoin.review.fund.title">
               <FormattedMessage
                 id="secondPillarRejoin.review.fund"
                 values={{ fund: chosenFund.name }}
@@ -286,24 +289,23 @@ const RejoinApplication = ({
 };
 
 const ApplicationCard = ({
-  number,
+  id,
   titleId,
   notes,
   children,
 }: {
-  number: number;
+  id: string;
   titleId: TranslationKey;
   notes?: ReactNode;
   children: ReactNode;
 }) => (
-  <section className="card my-3 p-4" aria-labelledby={`rejoin-application-${number}`}>
-    <p className="small text-primary mb-1">
-      <FormattedMessage id="withdrawals.reviewAndConfirm.application" values={{ number }} />
-    </p>
-    <h2 className="h5 fw-semibold mb-2" id={`rejoin-application-${number}`}>
-      <FormattedMessage id={titleId} />
+  <section className="card my-3 p-4" aria-labelledby={id}>
+    <h2 className="h5 fw-semibold mb-1" id={id}>
+      {children}
     </h2>
-    <p className="m-0">{children}</p>
+    <p className="small text-secondary m-0">
+      <FormattedMessage id={titleId} />
+    </p>
     {notes}
   </section>
 );
