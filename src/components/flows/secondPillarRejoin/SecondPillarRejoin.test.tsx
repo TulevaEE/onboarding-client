@@ -57,11 +57,13 @@ describe('When an eligible person rejoins the II pillar', () => {
     },
   );
 
-  test('keeps the I pillar effect and the restriction together before signing', async () => {
+  test('keeps the I pillar effect and the restriction with the application to make contributions', async () => {
     await renderAt('/2nd-pillar-rejoin');
     userEvent.click(nextButton());
 
-    const disclaimers = screen.getByRole('note');
+    const disclaimers = within(
+      screen.getByRole('region', { name: /application to make contributions/ }),
+    ).getByRole('note');
     expect(disclaimers).toHaveTextContent(restriction);
     expect(disclaimers).toHaveTextContent(
       'Social tax paid into the II pillar also has a small effect on your I pillar.',

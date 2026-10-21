@@ -181,7 +181,11 @@ const RejoinApplication = ({
           <p className="my-5 lead text-center">
             <FormattedMessage id="withdrawals.reviewAndConfirm.confirmAndSubmit" />
           </p>
-          <ApplicationCard number={1} titleId="secondPillarRejoin.review.rejoin.title">
+          <ApplicationCard
+            number={1}
+            titleId="secondPillarRejoin.review.rejoin.title"
+            notes={<RejoinDisclaimers className="mt-2" />}
+          >
             <FormattedMessage id="secondPillarRejoin.review.rejoin" />
           </ApplicationCard>
           <ApplicationCard number={2} titleId="secondPillarRejoin.review.paymentRate.title">
@@ -198,8 +202,7 @@ const RejoinApplication = ({
               />
             </ApplicationCard>
           )}
-          <RejoinDisclaimers className="my-4" />
-          <div className="card p-4">
+          <div className="card p-4 mt-4">
             <div className="form-check">
               <input
                 checked={hasAgreedToTerms}
@@ -284,21 +287,24 @@ const RejoinApplication = ({
 const ApplicationCard = ({
   number,
   titleId,
+  notes,
   children,
 }: {
   number: number;
   titleId: TranslationKey;
+  notes?: ReactNode;
   children: ReactNode;
 }) => (
-  <div className="card my-3 p-4">
+  <section className="card my-3 p-4" aria-labelledby={`rejoin-application-${number}`}>
     <p className="small text-primary mb-1">
       <FormattedMessage id="withdrawals.reviewAndConfirm.application" values={{ number }} />
     </p>
-    <h2 className="h5 fw-semibold mb-2">
+    <h2 className="h5 fw-semibold mb-2" id={`rejoin-application-${number}`}>
       <FormattedMessage id={titleId} />
     </h2>
     <p className="m-0">{children}</p>
-  </div>
+    {notes}
+  </section>
 );
 
 const SummaryItem = ({ label, children }: { label: ReactNode; children: ReactNode }) => (
