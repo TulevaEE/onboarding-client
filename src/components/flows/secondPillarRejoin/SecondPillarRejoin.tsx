@@ -2,7 +2,8 @@ import { ReactNode, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../common';
-import { useCreateMandateBatch, useFunds, useRejoinPermission } from '../../common/apiHooks';
+import { getRejoinPermission } from '../../common/api';
+import { useCreateMandateBatch, useFunds } from '../../common/apiHooks';
 import { ErrorResponse, Fund } from '../../common/apiModels';
 import { PaymentRateChangeMandateDetails } from '../../common/apiModels/withdrawals';
 import { isSigningWithIdCard } from '../../common/authenticationManager';
@@ -14,6 +15,7 @@ import { FundChoice, PaymentRateChoice } from './RejoinChoices';
 import { RejoinDisclaimers } from './RejoinDisclaimers';
 import { STATE_CONTRIBUTION_PERCENT } from './rejoinContributions';
 import { useMandateBatchSigning } from '../withdrawals/signing/useMandateBatchSigning';
+import { TranslationKey } from '../../translations';
 import { useView } from './variants';
 
 const EXAMPLE_GROSS_SALARY = 2000;
@@ -68,12 +70,23 @@ export const SecondPillarRejoin = () => {
   );
 };
 
+type RejoinRefusal = 'notPermitted' | 'permissionUnknown';
+
+const REFUSAL_MESSAGES: Record<RejoinRefusal, TranslationKey> = {
+  notPermitted: 'secondPillarRejoin.notPermitted',
+  permissionUnknown: 'secondPillarRejoin.permissionUnknown',
+};
+
+const askPensionikeskus = async (): Promise<RejoinRefusal | null> => {
+  try {
+    const { permitted } = await getRejoinPermission();
+    return permitted ? null : 'notPermitted';
+  } catch {
+    return 'permissionUnknown';
+  }
+};
+
 const RejoinApplication = ({ funds }: { funds: Fund[] }) => {
-  const {
-    data: permission,
-    isError: isPermissionUnknown,
-    refetch: askPermissionAgain,
-  } = useRejoinPermission();
   const { mutateAsync: createMandateBatch } = useCreateMandateBatch();
   const {
     startSigning,
@@ -89,6 +102,7 @@ const RejoinApplication = ({ funds }: { funds: Fund[] }) => {
   const [isFundOpen, setFundOpen] = useState(false);
   const [batchCreationError, setBatchCreationError] = useState<ErrorResponse | null>(null);
   const [isCreatingBatch, setCreatingBatch] = useState(false);
+  const [refusal, setRefusal] = useState<RejoinRefusal | null>(null);
 
   const chosenFund = funds.find((fund) => fund.isin === fundIsin) ?? null;
 
@@ -96,40 +110,15 @@ const RejoinApplication = ({ funds }: { funds: Fund[] }) => {
     return <RejoinSuccess paymentRate={paymentRate} chosenFund={chosenFund} />;
   }
 
-  if (isPermissionUnknown) {
-    return (
-      <>
-        <RejoinHeader />
-        <p className="mb-4">
-          <FormattedMessage id="secondPillarRejoin.permissionUnknown" />
-        </p>
-        <button type="button" className="btn btn-primary" onClick={() => askPermissionAgain()}>
-          <FormattedMessage id="secondPillarRejoin.askPermissionAgain" />
-        </button>
-      </>
-    );
-  }
-
-  if (!permission) {
-    return <Loader className="align-middle my-4" />;
-  }
-
-  if (!permission.permitted) {
-    return (
-      <>
-        <RejoinHeader />
-        <p className="mb-5">
-          <FormattedMessage id="secondPillarRejoin.notPermitted" />
-        </p>
-        <Link className="btn btn-light" to="/account">
-          <FormattedMessage id="secondPillarPaymentRate.cancel" />
-        </Link>
-      </>
-    );
-  }
-
   const createBatchAndStartSigning = async () => {
     setCreatingBatch(true);
+    setRefusal(null);
+    const permissionRefusal = await askPensionikeskus();
+    if (permissionRefusal) {
+      setRefusal(permissionRefusal);
+      setCreatingBatch(false);
+      return;
+    }
     try {
       const mandateBatch = await createMandateBatch({
         mandates: [
@@ -188,6 +177,11 @@ const RejoinApplication = ({ funds }: { funds: Fund[] }) => {
         />
       </div>
       <RejoinDisclaimers className="mb-3" />
+      {refusal && (
+        <p className="alert alert-warning" role="alert">
+          <FormattedMessage id={REFUSAL_MESSAGES[refusal]} />
+        </p>
+      )}
       <div className="d-flex flex-column-reverse flex-md-row justify-content-between">
         <Link className="btn btn-light mt-2" to="/account">
           <FormattedMessage id="secondPillarPaymentRate.cancel" />

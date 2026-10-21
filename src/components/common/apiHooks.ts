@@ -50,7 +50,6 @@ import {
   getSavingsFundBankAccounts,
   getSavingsFundOnboardingStatus,
   getSavingsFundPersonOnboardingStatus,
-  getRejoinPermission,
   getSecondPillarAssets,
   getSourceFunds,
   getTransactions,
@@ -80,7 +79,6 @@ import {
   MemberCapitalListing,
   PendingOnboarding,
   Role,
-  RejoinPermission,
   SecondPillarAssets,
   SwitchRoleCommand,
   Token,
@@ -146,13 +144,6 @@ export function useCapitalTotal(): UseQueryResult<CapitalTotal> {
 
 export function useContributions(): UseQueryResult<Contribution[]> {
   return useQuery({ queryKey: ['contributions'], queryFn: () => getContributions() });
-}
-
-export function useRejoinPermission(): UseQueryResult<RejoinPermission> {
-  return useQuery({
-    queryKey: ['rejoinPermission'],
-    queryFn: () => getRejoinPermission(),
-  });
 }
 
 export function useSecondPillarAssets(): UseQueryResult<SecondPillarAssets> {

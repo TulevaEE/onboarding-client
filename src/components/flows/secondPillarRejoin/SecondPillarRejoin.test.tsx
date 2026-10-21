@@ -224,33 +224,36 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(mandateBatches.created).toHaveLength(1);
   });
 
-  test('offers to ask again when Pensionikeskus could not be asked', async () => {
+  test('asks again on the next Sign when Pensionikeskus could not be asked', async () => {
     server.use(
       rest.get('http://localhost/v1/rejoin-permission', (req, res, ctx) => res(ctx.status(500))),
     );
-    render('/2nd-pillar-rejoin');
+    await renderAt('/2nd-pillar-rejoin');
+
+    userEvent.click(signButton());
 
     expect(
       await screen.findByText(
-        'We could not ask Pensionikeskus whether you can rejoin.',
-        {},
-        { timeout: 10000 },
+        'We could not ask Pensionikeskus whether you can rejoin. Please sign again.',
       ),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Sign' })).not.toBeInTheDocument();
-  }, 15000);
+    expect(mandateBatches.created).toEqual([]);
+  });
 
-  test('tells someone Pensionikeskus does not let rejoin yet, and offers nothing to sign', async () => {
+  test('shows the application to everyone, and checks with Pensionikeskus only on Sign', async () => {
     rejoinPermissionBackend(server, { permitted: false });
     await renderAt('/2nd-pillar-rejoin');
+
+    expect(paymentRateRow()).toHaveTextContent('6% of gross salary');
+
+    userEvent.click(signButton());
 
     expect(
       await screen.findByText(
         'Pensionikeskus does not let you rejoin the II pillar at the moment.',
       ),
     ).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Sign' })).not.toBeInTheDocument();
+    expect(mandateBatches.created).toEqual([]);
   });
 
   test('calculates the default 6% rate on a 2000 € salary in the public calculator', async () => {
@@ -380,9 +383,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     userEvent.click(screen.getByRole('button', { name: 'Start saving again' }));
 
     expect(new URLSearchParams(history.location.search).get('view')).toBe('application');
-    expect(await screen.findByRole('group', { name: 'Your contribution' })).toHaveTextContent(
-      '6% of gross salary',
-    );
+    expect(paymentRateRow()).toHaveTextContent('6% of gross salary');
   });
 
   const restriction =
