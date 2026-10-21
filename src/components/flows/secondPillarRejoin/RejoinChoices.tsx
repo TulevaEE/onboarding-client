@@ -20,7 +20,7 @@ const ChoiceRow = ({ id, label, value, open, onToggle, children }: ChoiceRowProp
   <div role="group" aria-labelledby={`${id}-label`} className="py-3 border-bottom">
     <div className="d-flex justify-content-between align-items-start gap-3">
       <div>
-        <div id={`${id}-label`} className="small text-body-secondary">
+        <div id={`${id}-label`} className="text-body-secondary">
           {label}
         </div>
         <div className="fw-medium">{value}</div>
@@ -80,14 +80,14 @@ export const PaymentRateChoice = ({
           </span>
           {rate === RECOMMENDED_PAYMENT_RATE && <Recommended />}
         </p>
-        <p className="m-0 small text-body-secondary">
+        <p className="m-0 text-body-secondary">
           <FormattedMessage
             id={`secondPillarPaymentRate.calculation.${rate}Percent`}
             values={{ b: (chunks: string) => <b>{chunks}</b> }}
           />
         </p>
         {rate === RECOMMENDED_PAYMENT_RATE && (
-          <p className="m-0 small text-body-secondary">
+          <p className="m-0 text-body-secondary">
             <FormattedMessage id="secondPillarPaymentRate.maximumBenefit" />
           </p>
         )}
@@ -146,7 +146,7 @@ export const FundChoice = ({
         chosenFund && (
           <>
             {chosenFund.name}
-            <span className="d-block small fw-normal">
+            <span className="d-block fw-normal">
               <FormattedMessage id="target.funds.fees" />{' '}
               <Fees value={chosenFund.ongoingChargesFigure} showPerYear />
             </span>
@@ -167,10 +167,10 @@ export const FundChoice = ({
           onSelect={() => choose(recommendedFund.isin)}
         >
           <p className="mb-1 fw-medium">{recommendedFund.name}</p>
-          <p className="m-0 small text-body-secondary">
+          <p className="m-0 text-body-secondary">
             <FormattedMessage id="secondPillarRejoin.fund.recommended.description" />
           </p>
-          <p className="m-0 small text-body-secondary">
+          <p className="m-0 text-body-secondary">
             <FormattedMessage id="target.funds.fees" />{' '}
             <Fees value={recommendedFund.ongoingChargesFigure} showPerYear />
           </p>

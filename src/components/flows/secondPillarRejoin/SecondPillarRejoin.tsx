@@ -301,7 +301,7 @@ const ApplicationCard = ({
     <h2 className="h5 fw-semibold mb-1" id={id}>
       {children}
     </h2>
-    <p className="small text-secondary m-0">
+    <p className="text-secondary m-0">
       <FormattedMessage id={titleId} />
     </p>
     {notes}

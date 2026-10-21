@@ -26,7 +26,7 @@ const SumRow = ({
 );
 
 const TenYearLine = ({ label, amount }: { label: ReactNode; amount: number }) => (
-  <div className="d-flex justify-content-between gap-3 small text-secondary">
+  <div className="d-flex justify-content-between gap-3 text-secondary">
     <span>{label}</span>
     <Euro className="fw-medium" amount={amount} fractionDigits={0} />
   </div>

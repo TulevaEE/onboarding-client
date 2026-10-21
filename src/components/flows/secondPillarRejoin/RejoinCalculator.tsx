@@ -80,7 +80,7 @@ export const RejoinCalculator = ({
             </div>
           </div>
         </div>
-        <p className="small text-secondary text-center mt-3 mb-0">
+        <p className="text-secondary text-center mt-3 mb-0">
           <span>
             <FormattedMessage
               id="secondPillarRejoin.calculator.assumption"
