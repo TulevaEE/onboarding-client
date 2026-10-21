@@ -312,6 +312,7 @@ describe('Confirm mandate step', () => {
           <div className="mt-2">
             <small className="text-body-secondary">
               <a
+                className="link-secondary"
                 target="_blank"
                 rel="noopener noreferrer"
                 href="//www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/"
