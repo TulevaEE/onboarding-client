@@ -27,4 +27,11 @@ export const savingsFundBalanceProfiles: Record<string, SourceFund | null> = {
     units: 4464,
   },
   NO_ACCOUNT: null,
+  MINOR: {
+    ...savingsFund,
+    price: 1193.9,
+    contributions: 1175,
+    profit: 18.9,
+    units: 1144.122,
+  },
 };

@@ -12,6 +12,8 @@ import { TranslationKey } from '../../translations';
 import { PII_CLASS } from '../../tracking/piiMarkup';
 import { navScaleFor } from '../../common/fundPrecision';
 import { Units } from '../../common/Units';
+import { isMinorActingAsSelf } from '../../common/utils';
+import { payerOf } from './payer';
 
 const TYPE_LABEL: Record<TransactionType, TranslationKey> = {
   CONTRIBUTION_CASH: 'transactions.detail.type.subscription',
@@ -69,6 +71,8 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
   const isTransfer = transaction.type === 'TRANSFER_IN' || transaction.type === 'TRANSFER_OUT';
   const holder = unitHolderName(user);
   const bankName = transaction.counterpartyIban && getBankName(transaction.counterpartyIban);
+  const payer = payerOf(transaction);
+  const showsPayer = isSavingsFund && isMinorActingAsSelf(user) && !!payer;
 
   return (
     <section className="mt-5">
@@ -168,6 +172,15 @@ export const TransactionDetailPage: React.FunctionComponent = () => {
           />
         </dt>
         <dd className="col-sm-8">{formatDateYear(dayInTallinn(transaction.time))}</dd>
+
+        {showsPayer && (
+          <>
+            <dt className="col-sm-4 mb-sm-2 text-balance">
+              <FormattedMessage id="transactions.detail.payer" />
+            </dt>
+            <dd className="col-sm-8">{payer}</dd>
+          </>
+        )}
 
         {isSavingsFund && !isTransfer && (
           <>

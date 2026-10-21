@@ -57,6 +57,32 @@ const savingsFundTransfer = (
   ...(acquisitionCost !== undefined && { acquisitionCost }),
 });
 
+const parent = { name: 'Kati Kask', iban: 'EE382200221020145685', isOwnAccount: false };
+const minor = { name: 'Mari Maasikas', iban: 'EE381010220306497227', isOwnAccount: true };
+
+const depositToMinor = (
+  id: string,
+  day: string,
+  amount: number,
+  nav: number,
+  remitter: typeof parent,
+): Transaction => ({
+  id,
+  amount,
+  currency: 'EUR',
+  time: `${day}T09:00:00Z`,
+  navDate: previousDay(day),
+  priceCalculationDate: day,
+  applicationTime: `${previousDay(day)}T12:00:00Z`,
+  counterpartyIban: remitter.iban,
+  isin: SAVINGS_FUND_ISIN,
+  type: 'CONTRIBUTION_CASH',
+  units: Number((amount / nav).toFixed(3)),
+  nav,
+  remitterName: remitter.name,
+  paidFromOwnAccount: remitter.isOwnAccount,
+});
+
 export const transactionsProfiles: Record<string, Transaction[]> = {
   SAVINGS_FUND_DEPOSITS: [
     {
@@ -101,4 +127,10 @@ export const transactionsProfiles: Record<string, Transaction[]> = {
     savingsFundTransfer('hist-9', yearsAgo(0, 6, 4), 10, -112.5, 'TRANSFER_OUT'),
   ],
   EMPTY: [],
+  MINOR_SAVINGS_FUND: [
+    depositToMinor('minor-4', '2026-08-21', 50, 1.0421, parent),
+    depositToMinor('minor-3', '2026-08-18', 100, 1.0388, parent),
+    depositToMinor('minor-2', '2026-08-04', 25, 1.0302, minor),
+    depositToMinor('minor-1', '2026-07-17', 1000, 1.025, parent),
+  ],
 };
