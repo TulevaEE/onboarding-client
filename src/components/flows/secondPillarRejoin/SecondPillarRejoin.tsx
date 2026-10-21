@@ -65,7 +65,12 @@ export const SecondPillarRejoin = () => {
 
   return (
     <div className="col-12 col-md-11 col-lg-8 mx-auto">
-      <RejoinApplication funds={funds.filter(isOpenForContributions)} />
+      <RejoinApplication
+        funds={funds.filter(isOpenForContributions)}
+        isReviewing={view === 'review'}
+        onReview={() => setView('review')}
+        onBack={() => setView('application')}
+      />
     </div>
   );
 };
@@ -86,7 +91,17 @@ const askPensionikeskus = async (): Promise<RejoinRefusal | null> => {
   }
 };
 
-const RejoinApplication = ({ funds }: { funds: Fund[] }) => {
+const RejoinApplication = ({
+  funds,
+  isReviewing,
+  onReview,
+  onBack,
+}: {
+  funds: Fund[];
+  isReviewing: boolean;
+  onReview: () => void;
+  onBack: () => void;
+}) => {
   const { mutateAsync: createMandateBatch } = useCreateMandateBatch();
   const {
     startSigning,
@@ -103,6 +118,7 @@ const RejoinApplication = ({ funds }: { funds: Fund[] }) => {
   const [batchCreationError, setBatchCreationError] = useState<ErrorResponse | null>(null);
   const [isCreatingBatch, setCreatingBatch] = useState(false);
   const [refusal, setRefusal] = useState<RejoinRefusal | null>(null);
+  const [hasAgreedToTerms, setAgreedToTerms] = useState(false);
 
   const chosenFund = funds.find((fund) => fund.isin === fundIsin) ?? null;
 
@@ -160,44 +176,130 @@ const RejoinApplication = ({ funds }: { funds: Fund[] }) => {
         />
       )}
       <RejoinHeader />
-      <div className="border-top mb-5">
-        <PaymentRateChoice
-          paymentRate={paymentRate}
-          onChange={setPaymentRate}
-          open={isPaymentRateOpen}
-          onToggle={() => setPaymentRateOpen(!isPaymentRateOpen)}
-        />
-        <FundChoice
-          funds={funds}
-          recommendedFundIsin={RECOMMENDED_FUND_ISIN}
-          fundIsin={fundIsin}
-          onChange={setFundIsin}
-          open={isFundOpen}
-          onToggle={() => setFundOpen(!isFundOpen)}
-        />
-      </div>
-      <RejoinDisclaimers className="mb-3" />
-      {refusal && (
-        <p className="alert alert-warning" role="alert">
-          <FormattedMessage id={REFUSAL_MESSAGES[refusal]} />
-        </p>
+      {isReviewing ? (
+        <>
+          <p className="my-5 lead text-center">
+            <FormattedMessage id="withdrawals.reviewAndConfirm.confirmAndSubmit" />
+          </p>
+          <ApplicationCard number={1} titleId="secondPillarRejoin.review.rejoin.title">
+            <FormattedMessage id="secondPillarRejoin.review.rejoin" />
+          </ApplicationCard>
+          <ApplicationCard number={2} titleId="secondPillarRejoin.review.paymentRate.title">
+            <FormattedMessage
+              id="secondPillarRejoin.review.paymentRate"
+              values={{ rate: paymentRate }}
+            />
+          </ApplicationCard>
+          {chosenFund && (
+            <ApplicationCard number={3} titleId="secondPillarRejoin.review.fund.title">
+              <FormattedMessage
+                id="secondPillarRejoin.review.fund"
+                values={{ fund: chosenFund.name }}
+              />
+            </ApplicationCard>
+          )}
+          <RejoinDisclaimers className="my-4" />
+          <div className="card p-4">
+            <div className="form-check">
+              <input
+                checked={hasAgreedToTerms}
+                onChange={() => setAgreedToTerms(!hasAgreedToTerms)}
+                type="checkbox"
+                className="form-check-input"
+                id="rejoin-agree-to-terms"
+              />
+              <label className="form-check-label" htmlFor="rejoin-agree-to-terms">
+                <FormattedMessage id="confirm.mandate.agree.to.terms" />
+              </label>
+              <div className="mt-2">
+                <small className="text-body-secondary">
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="//www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/"
+                  >
+                    <FormattedMessage id="confirm.mandate.pension.centre" />
+                  </a>
+                  <FormattedMessage id="confirm.mandate.view.info" />
+                </small>
+              </div>
+            </div>
+          </div>
+          {refusal && (
+            <p className="alert alert-warning mt-4 mb-0" role="alert">
+              <FormattedMessage id={REFUSAL_MESSAGES[refusal]} />
+            </p>
+          )}
+          <div className="mt-5 d-flex justify-content-between align-items-center">
+            <button
+              type="button"
+              className="btn btn-light"
+              disabled={isCreatingBatch || signingInProgress}
+              onClick={onBack}
+            >
+              <FormattedMessage id="withdrawals.navigation.back" />
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={!hasAgreedToTerms || isCreatingBatch || signingInProgress}
+              onClick={createBatchAndStartSigning}
+            >
+              <FormattedMessage id="confirm.mandate.sign" />
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="border-top mb-5">
+            <PaymentRateChoice
+              paymentRate={paymentRate}
+              onChange={setPaymentRate}
+              open={isPaymentRateOpen}
+              onToggle={() => setPaymentRateOpen(!isPaymentRateOpen)}
+            />
+            <FundChoice
+              funds={funds}
+              recommendedFundIsin={RECOMMENDED_FUND_ISIN}
+              fundIsin={fundIsin}
+              onChange={setFundIsin}
+              open={isFundOpen}
+              onToggle={() => setFundOpen(!isFundOpen)}
+            />
+          </div>
+          <div className="d-flex flex-column-reverse flex-md-row justify-content-between">
+            <Link className="btn btn-light mt-2" to="/account">
+              <FormattedMessage id="secondPillarPaymentRate.cancel" />
+            </Link>
+            <button type="button" className="btn btn-primary mt-2" onClick={onReview}>
+              <FormattedMessage id="secondPillarRejoin.next" />
+            </button>
+          </div>
+        </>
       )}
-      <div className="d-flex flex-column-reverse flex-md-row justify-content-between">
-        <Link className="btn btn-light mt-2" to="/account">
-          <FormattedMessage id="secondPillarPaymentRate.cancel" />
-        </Link>
-        <button
-          type="button"
-          className="btn btn-primary mt-2"
-          disabled={isCreatingBatch || signingInProgress}
-          onClick={createBatchAndStartSigning}
-        >
-          <FormattedMessage id="secondPillarRejoin.sign" />
-        </button>
-      </div>
     </>
   );
 };
+
+const ApplicationCard = ({
+  number,
+  titleId,
+  children,
+}: {
+  number: number;
+  titleId: TranslationKey;
+  children: ReactNode;
+}) => (
+  <div className="card my-3 p-4">
+    <p className="small text-primary mb-1">
+      <FormattedMessage id="withdrawals.reviewAndConfirm.application" values={{ number }} />
+    </p>
+    <h2 className="h5 fw-semibold mb-2">
+      <FormattedMessage id={titleId} />
+    </h2>
+    <p className="m-0">{children}</p>
+  </div>
+);
 
 const SummaryItem = ({ label, children }: { label: ReactNode; children: ReactNode }) => (
   <li className="d-flex justify-content-between gap-3 py-2 border-top">

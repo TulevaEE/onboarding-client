@@ -1,6 +1,6 @@
 import { useHistory, useLocation } from 'react-router-dom';
 
-export const VIEWS = ['application', 'calculator'] as const;
+export const VIEWS = ['application', 'calculator', 'review'] as const;
 
 export type View = (typeof VIEWS)[number];
 

@@ -59,6 +59,7 @@ describe('When an eligible person rejoins the II pillar', () => {
 
   test('keeps the I pillar effect and the restriction together before signing', async () => {
     await renderAt('/2nd-pillar-rejoin');
+    userEvent.click(nextButton());
 
     const disclaimers = screen.getByRole('note');
     expect(disclaimers).toHaveTextContent(restriction);
@@ -91,6 +92,54 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(screen.queryByLabelText('Gross salary')).not.toBeInTheDocument();
   });
 
+  test('reviews the three applications read-only before signing, like other batch applications', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    userEvent.click(nextButton());
+
+    expect(new URLSearchParams(history.location.search).get('view')).toBe('review');
+    expect(
+      screen.getByText('I submit the following applications and am aware of their terms:'),
+    ).toBeInTheDocument();
+    expect(
+      screen
+        .getAllByRole('heading', { level: 2 })
+        .map((title) => title.textContent?.replace(/\s+/g, ' ')),
+    ).toEqual([
+      'II pillar application to make contributions',
+      'II pillar contribution rate application',
+      'II pillar fund selection application',
+    ]);
+    expect(screen.getByText('My contribution is 6% of my gross salary.')).toBeInTheDocument();
+    expect(
+      screen.getByText('Future contributions go to Tuleva World Stocks Pension Fund.'),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Pension Centre/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Change' })).not.toBeInTheDocument();
+  });
+
+  test('keeps the choices when going back from the review', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+    userEvent.click(within(paymentRateRow()).getByRole('button', { name: 'Change' }));
+    userEvent.click(screen.getByRole('radio', { name: /^2% of gross salary/i }));
+
+    userEvent.click(nextButton());
+    userEvent.click(screen.getByRole('button', { name: 'Back' }));
+
+    expect(paymentRateRow()).toHaveTextContent('2% of gross salary');
+  });
+
+  test('signs only after confirming the fund terms', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+    userEvent.click(nextButton());
+
+    expect(signButton()).toBeDisabled();
+
+    userEvent.click(termsCheckbox());
+
+    expect(signButton()).toBeEnabled();
+  });
+
   test('lets them cancel back to the account like other flows', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
@@ -114,7 +163,7 @@ describe('When an eligible person rejoins the II pillar', () => {
   test('signing the defaults summarizes what happens from May', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
-    userEvent.click(signButton());
+    signApplications();
 
     expect(await successHeading()).toBeInTheDocument();
     expectSummary('6%', 'Tuleva World Stocks Pension Fund');
@@ -133,7 +182,7 @@ describe('When an eligible person rejoins the II pillar', () => {
 
     expect(screen.queryByRole('radio')).not.toBeInTheDocument();
 
-    userEvent.click(signButton());
+    signApplications();
 
     expect(await successHeading()).toBeInTheDocument();
     expectSummary('2%', 'Tuleva World Stocks Pension Fund');
@@ -207,7 +256,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(fundRow()).toHaveTextContent('Swedbank Pension Fund K60');
     expect(fundRow()).toHaveTextContent(/Fees\s*0\.65%/);
 
-    userEvent.click(signButton());
+    signApplications();
 
     expect(await successHeading()).toBeInTheDocument();
     expectSummary('6%', 'Swedbank Pension Fund K60');
@@ -217,6 +266,7 @@ describe('When an eligible person rejoins the II pillar', () => {
   test('creates a single batch however many times Sign is pressed', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
+    reviewAndAgree();
     userEvent.click(signButton());
     userEvent.click(signButton());
 
@@ -230,7 +280,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     );
     await renderAt('/2nd-pillar-rejoin');
 
-    userEvent.click(signButton());
+    signApplications();
 
     expect(
       await screen.findByText(
@@ -246,7 +296,7 @@ describe('When an eligible person rejoins the II pillar', () => {
 
     expect(paymentRateRow()).toHaveTextContent('6% of gross salary');
 
-    userEvent.click(signButton());
+    signApplications();
 
     expect(
       await screen.findByText(
@@ -392,7 +442,17 @@ describe('When an eligible person rejoins the II pillar', () => {
   const calculation = () => screen.getByRole('group', { name: 'Calculation' });
   const paymentRateRow = () => screen.getByRole('group', { name: 'Your contribution' });
   const fundRow = () => screen.getByRole('group', { name: 'Fund' });
-  const signButton = () => screen.getByRole('button', { name: 'Sign' });
+  const signButton = () => screen.getByRole('button', { name: 'Sign and send mandate' });
+  const nextButton = () => screen.getByRole('button', { name: 'Next' });
+  const termsCheckbox = () => screen.getByRole('checkbox', { name: /fund prospectuses/ });
+  const reviewAndAgree = () => {
+    userEvent.click(nextButton());
+    userEvent.click(termsCheckbox());
+  };
+  const signApplications = () => {
+    reviewAndAgree();
+    userEvent.click(signButton());
+  };
   const successHeading = () => screen.findByRole('heading', { name: 'Applications submitted' });
   const expectSummary = (contribution: string, fund: string) => {
     const items = within(screen.getByRole('list', { name: 'Summary' })).getAllByRole('listitem');
