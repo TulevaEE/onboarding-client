@@ -13,7 +13,6 @@ export type RejoinContributions = {
   taxWinPerMonth: number;
   intoPillarPerMonth: number;
   tenYearTotal: number;
-  tenYearTaxWin: number;
 };
 
 const incomeTaxSaved = (grossMonthlySalary: number, ownContribution: number) => {
@@ -42,6 +41,5 @@ export const rejoinContributions = (
     taxWinPerMonth: incomeTaxSavedPerMonth + stateContribution,
     intoPillarPerMonth,
     tenYearTotal: intoPillarPerMonth * MONTHS_IN_TEN_YEARS,
-    tenYearTaxWin: (incomeTaxSavedPerMonth + stateContribution) * MONTHS_IN_TEN_YEARS,
   };
 };

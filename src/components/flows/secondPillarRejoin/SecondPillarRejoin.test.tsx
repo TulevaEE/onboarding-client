@@ -264,11 +264,11 @@ describe('When an eligible person rejoins the II pillar', () => {
     );
   });
 
-  test('adds up 10 years of contributions and the tax win in them', async () => {
+  test('says how much is saved in 10 years, without splitting out the tax win', async () => {
     await renderAt('/2nd-pillar-rejoin?view=calculator');
 
-    expect(calculation()).toHaveTextContent(/In 10 years\s*24\s000\s€/);
-    expect(calculation()).toHaveTextContent(/of which tax win\s*12\s720\s€/);
+    expect(calculation()).toHaveTextContent(/Saved in 10 years\s*24\s000\s€/);
+    expect(calculation()).not.toHaveTextContent('of which tax win');
   });
 
   test('splits the tax win into the income tax saving and the 4% from social tax behind its info icon', async () => {

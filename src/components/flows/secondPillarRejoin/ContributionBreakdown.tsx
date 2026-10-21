@@ -101,10 +101,6 @@ export const ContributionBreakdown = ({
           label={<FormattedMessage id="secondPillarRejoin.calculation.tenYears" />}
           amount={contributions.tenYearTotal}
         />
-        <TenYearLine
-          label={<FormattedMessage id="secondPillarRejoin.calculation.tenYearTaxWin" />}
-          amount={contributions.tenYearTaxWin}
-        />
       </div>
     </>
   );
