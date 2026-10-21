@@ -1,7 +1,7 @@
 import { FormattedMessage } from 'react-intl';
 
 export const RejoinDisclaimers = ({ className = '' }: { className?: string }) => (
-  <div role="note" className={`small text-secondary ${className}`.trim()}>
+  <div role="note" className={className}>
     <p className="mb-1">
       <FormattedMessage id="secondPillarRejoin.firstPillarNote" />
     </p>

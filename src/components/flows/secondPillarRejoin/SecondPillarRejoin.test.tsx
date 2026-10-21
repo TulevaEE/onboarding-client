@@ -100,9 +100,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     userEvent.click(nextButton());
 
     expect(new URLSearchParams(history.location.search).get('view')).toBe('review');
-    expect(
-      screen.getByText('I submit the following applications and am aware of their terms:'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('I submit the following applications:')).toBeInTheDocument();
     expect(
       screen
         .getAllByRole('heading', { level: 2 })
@@ -438,8 +436,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(paymentRateRow()).toHaveTextContent('6% of gross salary');
   });
 
-  const restriction =
-    'You can use the money from age 60 and cannot withdraw it a second time before that.';
+  const restriction = "You can use the money from age 60 and can't withdraw it again before then.";
   const heading = () => screen.findByRole('heading', { name: 'Get the tax win again' });
   const calculation = () => screen.getByRole('group', { name: 'Calculation' });
   const paymentRateRow = () => screen.getByRole('group', { name: 'Your contribution' });

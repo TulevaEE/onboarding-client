@@ -12,6 +12,7 @@ import { SuccessNotice } from '../common/SuccessNotice/SuccessNotice';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
 import { RejoinCalculator } from './RejoinCalculator';
 import { FundChoice, PaymentRateChoice } from './RejoinChoices';
+import Checkbox from '../../common/checkbox/Checkbox';
 import { RejoinDisclaimers } from './RejoinDisclaimers';
 import { STATE_CONTRIBUTION_PERCENT } from './rejoinContributions';
 import { useMandateBatchSigning } from '../withdrawals/signing/useMandateBatchSigning';
@@ -178,8 +179,8 @@ const RejoinApplication = ({
       <RejoinHeader />
       {isReviewing ? (
         <>
-          <p className="my-5 lead text-center">
-            <FormattedMessage id="withdrawals.reviewAndConfirm.confirmAndSubmit" />
+          <p className="mt-5 mb-3 fw-medium">
+            <FormattedMessage id="secondPillarRejoin.review.intro" />
           </p>
           <ApplicationCard
             id="rejoin-application"
@@ -205,33 +206,27 @@ const RejoinApplication = ({
               />
             </ApplicationCard>
           )}
-          <div className="card p-4 mt-4">
-            <div className="form-check">
-              <input
-                checked={hasAgreedToTerms}
-                onChange={() => setAgreedToTerms(!hasAgreedToTerms)}
-                type="checkbox"
-                className="form-check-input"
-                id="rejoin-agree-to-terms"
-              />
-              <label className="form-check-label" htmlFor="rejoin-agree-to-terms">
-                <FormattedMessage id="confirm.mandate.agree.to.terms" />
-              </label>
-              <div className="mt-2">
-                <small className="text-body-secondary">
-                  <a
-                    className="link-secondary"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="//www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/"
-                  >
-                    <FormattedMessage id="confirm.mandate.pension.centre" />
-                  </a>
-                  <FormattedMessage id="confirm.mandate.view.info" />
-                </small>
-              </div>
+          <Checkbox
+            id="rejoin-agree-to-terms"
+            className="mt-4"
+            checked={hasAgreedToTerms}
+            onToggle={setAgreedToTerms}
+          >
+            <FormattedMessage id="confirm.mandate.agree.to.terms" />
+            <div className="mt-2">
+              <small className="text-body-secondary">
+                <a
+                  className="link-secondary"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="//www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/"
+                >
+                  <FormattedMessage id="confirm.mandate.pension.centre" />
+                </a>
+                <FormattedMessage id="confirm.mandate.view.info" />
+              </small>
             </div>
-          </div>
+          </Checkbox>
           {refusal && (
             <p className="alert alert-warning mt-4 mb-0" role="alert">
               <FormattedMessage id={REFUSAL_MESSAGES[refusal]} />

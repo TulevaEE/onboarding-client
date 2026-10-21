@@ -29,7 +29,7 @@ const Checkbox: FC<CheckboxProps> = ({
     htmlFor={id}
   >
     <div className="row mb-0">
-      <div className="col col-auto align-self-center pe-0">
+      <div className="col col-auto pe-0">
         <input
           type="checkbox"
           className="visually-hidden"
