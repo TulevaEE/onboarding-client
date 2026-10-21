@@ -10,16 +10,14 @@ import { isSigningWithIdCard } from '../../common/authenticationManager';
 import { TulevaSecondPillarStockFund } from '../../common/utils';
 import { SuccessNotice } from '../common/SuccessNotice/SuccessNotice';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
-import { RejoinCalculator } from './RejoinCalculator';
 import { FundChoice, PaymentRateChoice } from './RejoinChoices';
 import Checkbox from '../../common/checkbox/Checkbox';
 import { RejoinDisclaimers } from './RejoinDisclaimers';
-import { STATE_CONTRIBUTION_PERCENT } from './rejoinContributions';
 import { useMandateBatchSigning } from '../withdrawals/signing/useMandateBatchSigning';
 import { TranslationKey } from '../../translations';
 import { useView } from './variants';
 
-const EXAMPLE_GROSS_SALARY = 2000;
+const STATE_CONTRIBUTION_PERCENT = 4;
 const DEFAULT_PAYMENT_RATE: PaymentRate = 6;
 const RECOMMENDED_FUND_ISIN: TulevaSecondPillarStockFund = 'EE3600109435';
 const PAYMENT_RATE_NAMES: Record<PaymentRate, PaymentRateChangeMandateDetails['paymentRate']> = {
@@ -46,22 +44,9 @@ const RejoinHeader = () => (
 export const SecondPillarRejoin = () => {
   const [view, setView] = useView();
   const { data: funds } = useFunds();
-  const [grossSalary, setGrossSalary] = useState<number | undefined>(EXAMPLE_GROSS_SALARY);
 
   if (!funds) {
     return <Loader className="align-middle my-4" />;
-  }
-
-  if (view === 'calculator') {
-    return (
-      <RejoinCalculator
-        grossSalary={grossSalary}
-        onGrossSalaryChange={setGrossSalary}
-        exampleSalary={EXAMPLE_GROSS_SALARY}
-        paymentRate={DEFAULT_PAYMENT_RATE}
-        onStart={() => setView('application')}
-      />
-    );
   }
 
   return (

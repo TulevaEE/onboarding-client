@@ -14,7 +14,6 @@ import {
 } from '../../../test/backend';
 import { CreateMandateBatchDto } from '../../common/apiModels/withdrawals';
 import LoggedInApp from '../../LoggedInApp';
-import { isInsidePii } from '../../tracking/piiMarkup';
 
 describe('When an eligible person rejoins the II pillar', () => {
   const server = setupServer();
@@ -47,15 +46,12 @@ describe('When an eligible person rejoins the II pillar', () => {
     smartIdMandateBatchSigningBackend(server);
   });
 
-  test.each(['application', 'calculator'])(
-    'leads with part of your taxes going into the II pillar, and the deadline, in bold in the %s',
-    async (view) => {
-      await renderAt(`/2nd-pillar-rejoin?view=${view}`);
+  test('leads with part of your taxes going into the II pillar, and the deadline, in bold', async () => {
+    await renderAt('/2nd-pillar-rejoin');
 
-      expect(screen.getByText('part of your taxes', { selector: 'b' })).toBeInTheDocument();
-      expect(screen.getByText(/^30\sNovember$/, { selector: 'b' })).toBeInTheDocument();
-    },
-  );
+    expect(screen.getByText('part of your taxes', { selector: 'b' })).toBeInTheDocument();
+    expect(screen.getByText(/^30\sNovember$/, { selector: 'b' })).toBeInTheDocument();
+  });
 
   test('keeps the I pillar effect and the restriction with the application to make contributions', async () => {
     await renderAt('/2nd-pillar-rejoin');
@@ -71,17 +67,6 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(within(disclaimers).queryByRole('link')).not.toBeInTheDocument();
   });
 
-  test('notes the I pillar effect under the calculator, and leaves the restriction to the application', async () => {
-    await renderAt('/2nd-pillar-rejoin?view=calculator');
-
-    expect(
-      screen.getByText(
-        'Social tax paid into the II pillar also has a small effect on your I pillar.',
-      ),
-    ).toBeInTheDocument();
-    expect(screen.queryByText(restriction)).not.toBeInTheDocument();
-  });
-
   test('opens the application with 6% and the Tuleva stock fund preselected and collapsed', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
@@ -91,7 +76,6 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(fundRow()).toHaveTextContent('Tuleva World Stocks Pension Fund');
     expect(fundRow()).toHaveTextContent(/Fees\s*0\.39%/);
     expect(screen.queryByRole('radio')).not.toBeInTheDocument();
-    expect(screen.queryByLabelText('Gross salary')).not.toBeInTheDocument();
   });
 
   test('reviews the three applications read-only before signing, like other batch applications', async () => {
@@ -311,139 +295,8 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(mandateBatches.created).toEqual([]);
   });
 
-  test('calculates the default 6% rate on a 2000 € salary in the public calculator', async () => {
-    await renderAt('/2nd-pillar-rejoin?view=calculator');
-
-    expect(screen.getByLabelText('Gross salary')).toHaveValue('2000');
-    expect(screen.queryByText('€', { selector: '.input-group-text' })).not.toBeInTheDocument();
-    expectBreakdown(['From your net salary 94 €', 'Tax win 106 €']);
-    expect(calculation()).toHaveTextContent(
-      /From your net salary\s*94\s€\s*\+\s*Tax win.*\s106\s€\s*=\s*Into your II\spillar each month\s*200\s€/,
-    );
-  });
-
-  test('says how much is saved in 10 years, without splitting out the tax win', async () => {
-    await renderAt('/2nd-pillar-rejoin?view=calculator');
-
-    expect(calculation()).toHaveTextContent(/Saved in 10 years\s*24\s000\s€/);
-    expect(calculation()).not.toHaveTextContent('of which tax win');
-  });
-
-  test('splits the tax win into the income tax saving and the 4% from social tax behind its info icon', async () => {
-    await renderAt('/2nd-pillar-rejoin?view=calculator');
-
-    expect(calculation()).toHaveTextContent('Income tax savings: 26 €');
-    expect(calculation()).toHaveTextContent('4% from social tax: 80 €');
-    expect(screen.queryByRole('button', { name: /106\s€/ })).not.toBeInTheDocument();
-  });
-
-  test('offers a breakdown only for the tax win, not for the net salary', async () => {
-    await renderAt('/2nd-pillar-rejoin?view=calculator');
-
-    expect(screen.queryByRole('button', { name: /^From your net salary/ })).not.toBeInTheDocument();
-  });
-
-  test('recalculates for another salary', async () => {
-    await renderAt('/2nd-pillar-rejoin?view=calculator');
-
-    const salary = screen.getByLabelText('Gross salary');
-    userEvent.clear(salary);
-    userEvent.type(salary, '3000');
-
-    expect(calculation()).toHaveTextContent(/=\s*Into your II\spillar each month\s*300\s€/);
-  });
-
-  test('calculates on the 2000 € example while the salary field is empty', async () => {
-    await renderAt('/2nd-pillar-rejoin?view=calculator');
-
-    const salary = screen.getByLabelText('Gross salary');
-    userEvent.clear(salary);
-
-    expect(salary).toHaveAttribute('placeholder', '2000');
-    expect(calculation()).toHaveTextContent(/=\s*Into your II\spillar each month\s*200\s€/);
-  });
-
-  test('marks the salary and the amounts it gives as personal data for analytics', async () => {
-    await renderAt('/2nd-pillar-rejoin?view=calculator');
-
-    expect(screen.getByText(/^200\s€$/)).toHaveClass('pii');
-    expect(isInsidePii(screen.getByLabelText('Gross salary'))).toBe(true);
-  });
-
-  test('calculates at the 6% contribution and says so, leaving the choice to the application', async () => {
-    await renderAt('/2nd-pillar-rejoin?view=calculator');
-
-    expect(screen.queryByRole('button', { name: '2%' })).not.toBeInTheDocument();
-    expect(
-      screen.getByText('The calculation assumes you contribute 6% of your gross salary.'),
-    ).toBeInTheDocument();
-  });
-
-  test('reads a salary typed with cents as euros and cents', async () => {
-    await renderAt('/2nd-pillar-rejoin?view=calculator');
-
-    const salary = screen.getByLabelText('Gross salary');
-    userEvent.clear(salary);
-    userEvent.type(salary, '2500,50');
-
-    expect(screen.getByLabelText('Gross salary')).toHaveValue('2500.50');
-    expect(calculation()).toHaveTextContent(/=\s*Into your II\spillar each month\s*250\s€/);
-  });
-
-  test('leaves only the 4% the state adds in the tax win when the basic exemption covers the salary', async () => {
-    await renderAt('/2nd-pillar-rejoin?view=calculator');
-
-    const salary = screen.getByLabelText('Gross salary');
-    userEvent.clear(salary);
-    userEvent.type(salary, '500');
-
-    expectBreakdown(['From your net salary 30 €', 'Tax win 20 €']);
-  });
-
-  test('rounds each part to whole euros so the parts add up to the monthly amount', async () => {
-    await renderAt('/2nd-pillar-rejoin?view=calculator');
-
-    const salary = screen.getByLabelText('Gross salary');
-    userEvent.clear(salary);
-    userEvent.type(salary, '1005');
-
-    expect(calculation()).toHaveTextContent(/=\s*Into your II\spillar each month\s*100\s€/);
-    expectBreakdown(['From your net salary 47 €', 'Tax win 53 €']);
-  });
-
-  test('caps the salary at 99 999 € so a mistyped salary cannot blow up the calculation', async () => {
-    await renderAt('/2nd-pillar-rejoin?view=calculator');
-
-    const salary = screen.getByLabelText('Gross salary');
-    userEvent.clear(salary);
-    userEvent.type(salary, '1000000');
-
-    expect(salary).toHaveValue('99999');
-    expect(calculation()).toHaveTextContent(/=\s*Into your II\spillar each month\s*10\s000\s€/);
-  });
-
-  test('shows 0 € for both parts when the salary is 0', async () => {
-    await renderAt('/2nd-pillar-rejoin?view=calculator');
-
-    const salary = screen.getByLabelText('Gross salary');
-    userEvent.clear(salary);
-    userEvent.type(salary, '0');
-
-    expectBreakdown(['From your net salary 0 €', 'Tax win 0 €']);
-  });
-
-  test('starts the application from the calculator with 6% preselected', async () => {
-    await renderAt('/2nd-pillar-rejoin?view=calculator');
-
-    userEvent.click(screen.getByRole('button', { name: 'Start saving again' }));
-
-    expect(new URLSearchParams(history.location.search).get('view')).toBe('application');
-    expect(paymentRateRow()).toHaveTextContent('6% of gross salary');
-  });
-
   const restriction = "You can use the money from age 60 and can't withdraw it again before then.";
   const heading = () => screen.findByRole('heading', { name: 'Get the tax win again' });
-  const calculation = () => screen.getByRole('group', { name: 'Calculation' });
   const paymentRateRow = () => screen.getByRole('group', { name: 'Your contribution' });
   const fundRow = () => screen.getByRole('group', { name: 'Fund' });
   const signButton = () => screen.getByRole('button', { name: 'Sign and send mandate' });
@@ -465,18 +318,6 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(items[1]).toHaveTextContent(`Your contribution ${contribution} of gross salary`);
     expect(items[2]).toHaveTextContent('The state adds 4% of gross salary');
     expect(items[3]).toHaveTextContent(`Fund ${fund}`);
-  };
-  const expectBreakdown = (parts: string[]) => {
-    const items = within(
-      screen.getByRole('list', { name: 'What the monthly amount consists of' }),
-    ).getAllByRole('listitem');
-    expect(items).toHaveLength(parts.length);
-    parts.forEach((part, index) => {
-      const [, label, amount] = part.match(/^(.*) (\d+ €)$/) ?? [];
-      expect(items[index]).toHaveTextContent(
-        new RegExp(`${label}.*\\s${amount.replace(' ', '\\s')}$`),
-      );
-    });
   };
   const expectSignedBatch = (paymentRate: string, fundIsin: string) =>
     expect(mandateBatches.created).toEqual([
