@@ -524,6 +524,8 @@ export interface Transaction {
   units: number;
   nav: number | null;
   acquisitionCost?: number;
+  remitterName?: string | null;
+  paidFromOwnAccount?: boolean | null;
 }
 
 export type TransactionType =

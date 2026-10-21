@@ -9,6 +9,7 @@ export interface TableColumn {
   hideOnBreakpoint?: Breakpoint[];
   align?: 'left' | 'right' | string;
   width?: number | 'auto';
+  className?: string;
 }
 
 export interface Props {
@@ -21,10 +22,12 @@ const Table: React.FC<Props> = ({ columns, dataSource }) => (
     <table className="table mb-0">
       <thead>
         <tr>
-          {columns.map(({ dataIndex, title, hideOnBreakpoint, align }) => (
+          {columns.map(({ dataIndex, title, hideOnBreakpoint, align, className = '' }) => (
             <th
               key={dataIndex}
-              className={`${getAlignClass(align)} ${getBreakpointClass(hideOnBreakpoint)}`}
+              className={`${getAlignClass(align)} ${getBreakpointClass(
+                hideOnBreakpoint,
+              )} ${className}`}
             >
               {title}
             </th>
@@ -34,12 +37,12 @@ const Table: React.FC<Props> = ({ columns, dataSource }) => (
       <tbody className={PII_CLASS}>
         {dataSource.map(({ key, tooltip, ...data }) => (
           <tr key={key} title={tooltip}>
-            {columns.map(({ dataIndex, hideOnBreakpoint, width, align }) => (
+            {columns.map(({ dataIndex, hideOnBreakpoint, width, align, className = '' }) => (
               <td
                 key={dataIndex}
                 className={`${getAlignClass(align)} ${getWidthClass(width)} ${getBreakpointClass(
                   hideOnBreakpoint,
-                )}`}
+                )} ${className}`}
               >
                 {data[dataIndex]}
               </td>
@@ -50,8 +53,11 @@ const Table: React.FC<Props> = ({ columns, dataSource }) => (
       {dataSource.length !== 1 && columns.some(({ footer }) => !!footer) && (
         <tfoot className={PII_CLASS}>
           <tr>
-            {columns.map(({ dataIndex, footer, hideOnBreakpoint }) => (
-              <td key={dataIndex} className={getBreakpointClass(hideOnBreakpoint)}>
+            {columns.map(({ dataIndex, footer, hideOnBreakpoint, className = '' }) => (
+              <td
+                key={dataIndex}
+                className={`${getBreakpointClass(hideOnBreakpoint)} ${className}`}
+              >
                 {footer}
               </td>
             ))}

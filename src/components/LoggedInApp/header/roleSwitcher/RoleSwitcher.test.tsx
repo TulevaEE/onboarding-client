@@ -14,10 +14,12 @@ import {
   switchRoleBackend,
   userBackend,
 } from '../../../../test/backend';
-import { mockUser } from '../../../../test/backend-responses';
+import { mockMinor, mockUser } from '../../../../test/backend-responses';
 import { Role } from '../../../common/apiModels';
 import { RoleSwitcher } from './RoleSwitcher';
 import { isInsidePii } from '../../../tracking/piiMarkup';
+import { usePendingOnboardings, useRoles } from '../../../common/apiHooks';
+import { useConnectedApps } from '../../../security/connectedApps/connectedApps.api';
 
 const server = setupServer();
 
@@ -28,6 +30,24 @@ afterAll(() => server.close());
 const personalRole: Role = { type: 'PERSON', code: '39001011234', name: 'John Doe' };
 const companyRole: Role = { type: 'LEGAL_ENTITY', code: '12345678', name: 'Test OÜ' };
 const multipleRoles = [personalRole, companyRole];
+
+const MENU_DATA_ARRIVED = 'menu data arrived';
+
+const MenuDataArrived = () => {
+  const { data: roles } = useRoles();
+  const { data: pendingOnboardings } = usePendingOnboardings();
+  const { data: connectedApps } = useConnectedApps();
+  return roles && pendingOnboardings && connectedApps ? <p>{MENU_DATA_ARRIVED}</p> : null;
+};
+
+function renderRoleSwitcherWithMenuDataProbe() {
+  renderWrapped(
+    <>
+      <RoleSwitcher userName="John Doe" onLogout={jest.fn()} />
+      <MenuDataArrived />
+    </>,
+  );
+}
 
 function renderRoleSwitcher(onRoleSwitch?: () => void, onLogout: () => void = jest.fn()) {
   renderWrapped(
@@ -555,6 +575,61 @@ describe('RoleSwitcher', () => {
       expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
 
       dropdownItems().forEach((item) => expect(item).toHaveClass('text-balance'));
+    });
+  });
+
+  describe('for someone under 18 looking at their own account', () => {
+    beforeEach(() => {
+      rolesBackend(server, [mockMinor.role]);
+      userBackend(server, mockMinor);
+    });
+
+    it('offers only their account, the language and logging out', async () => {
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /Mari Maasikas/ }));
+      expect(await screen.findByRole('link', { name: 'Log out' })).toBeInTheDocument();
+
+      expect(menuOutline()).toEqual(['My account', 'Eesti keeles', DIVIDER, 'Log out']);
+    });
+
+    it('leaves security out even when an app is connected', async () => {
+      const connectedApps = connectedAppsBackend(server);
+
+      renderRoleSwitcherWithMenuDataProbe();
+
+      userEvent.click(await screen.findByRole('button', { name: /Mari Maasikas/ }));
+      expect(await screen.findByText(MENU_DATA_ARRIVED)).toBeInTheDocument();
+      expect(connectedApps.listingsAnswered()).toBeGreaterThan(0);
+
+      expect(screen.queryByRole('link', { name: 'Security' })).not.toBeInTheDocument();
+    });
+
+    it('offers no other account even when there is a second role or a child being onboarded', async () => {
+      rolesBackend(server, [mockMinor.role, companyRole]);
+      pendingOnboardingsBackend(server, [
+        { type: 'PERSON', code: '61506150006', name: 'Juku Maasikas' },
+      ]);
+
+      renderRoleSwitcherWithMenuDataProbe();
+
+      userEvent.click(await screen.findByRole('button', { name: /Mari Maasikas/ }));
+      expect(await screen.findByText(MENU_DATA_ARRIVED)).toBeInTheDocument();
+
+      expect(screen.queryByText('Switch account')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Test OÜ' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Juku Maasikas' })).not.toBeInTheDocument();
+    });
+
+    it('does not offer opening an account for someone else', async () => {
+      renderRoleSwitcher();
+
+      userEvent.click(await screen.findByRole('button', { name: /Mari Maasikas/ }));
+      expect(await screen.findByRole('link', { name: 'Log out' })).toBeInTheDocument();
+
+      expect(
+        screen.queryByRole('link', { name: 'Open an account for a child or company' }),
+      ).not.toBeInTheDocument();
     });
   });
 

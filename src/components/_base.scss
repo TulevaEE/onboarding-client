@@ -286,6 +286,18 @@ small {
   text-wrap: pretty;
 }
 
+@media (min-width: 576px) {
+  .text-sm-nowrap {
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 359.98px) {
+  .hidden-below-360px {
+    display: none !important;
+  }
+}
+
 .scroll-margin-bottom {
   scroll-margin-bottom: $spacer * 1.5;
 }

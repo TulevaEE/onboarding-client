@@ -85,6 +85,25 @@ export const mockUser: User & { role: Role } = {
   role: { type: 'PERSON', code: '39001011234', name: 'John Doe' },
 };
 
+const minorPersonalCode = '61403150123';
+
+export const mockMinor: User & { role: Role } = {
+  ...mockUser,
+  id: 456,
+  personalCode: minorPersonalCode,
+  firstName: 'Mari',
+  lastName: 'Maasikas',
+  email: 'mari.maasikas@example.com',
+  memberNumber: null,
+  memberJoinDate: null,
+  pensionAccountNumber: null,
+  secondPillarActive: false,
+  secondPillarOpenDate: null,
+  age: 12,
+  dateOfBirth: '2014-03-15',
+  role: { type: 'PERSON', code: minorPersonalCode, name: 'Mari Maasikas' },
+};
+
 export const mockSwedbankThirdPillarFundBalance: FundBalance = {
   fund: {
     fundManager: { name: 'Swedbank' },

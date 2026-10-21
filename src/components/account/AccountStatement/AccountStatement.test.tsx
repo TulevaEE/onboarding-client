@@ -6,6 +6,8 @@ import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import LoggedInApp from '../../LoggedInApp';
 import { initializeConfiguration } from '../../config/config';
 import { useTestBackends } from '../../../test/backend';
+import AccountStatement from './AccountStatement';
+import { activeThirdPillar } from '../statusBox/fixtures';
 
 const server = setupServer();
 let history: History;
@@ -41,5 +43,21 @@ describe('happy path', () => {
 
     expect(await screen.findAllByText(/115\s000.00\s€/)).toHaveLength(2);
     expect(await screen.findAllByText(/5\s699.36\s€/)).toHaveLength(2);
+  });
+});
+
+describe('on the narrowest phones', () => {
+  const feePercentageHeader = () => screen.getByRole('columnheader', { name: /^Annual fees\s%$/ });
+
+  test('leaves the fee percentage out to make room for the profit', () => {
+    renderWrapped(<AccountStatement funds={[activeThirdPillar]} showProfit />);
+
+    expect(feePercentageHeader()).toHaveClass('hidden-below-360px');
+  });
+
+  test('keeps the fee percentage when there is no profit column', () => {
+    renderWrapped(<AccountStatement funds={[activeThirdPillar]} />);
+
+    expect(feePercentageHeader()).not.toHaveClass('hidden-below-360px');
   });
 });

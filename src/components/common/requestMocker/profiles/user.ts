@@ -1,5 +1,9 @@
-import { mockUser } from '../../../../test/backend-responses';
+import moment from 'moment';
+import { mockMinor, mockUser } from '../../../../test/backend-responses';
 import { User } from '../../apiModels';
+
+const MINORS_AGE = 12;
+const MONTHS_SINCE_MINORS_BIRTHDAY = 5;
 
 export const userMockProfiles: Record<string, User> = {
   NO_SECOND_NO_THIRD_PILLAR: {
@@ -117,5 +121,13 @@ export const userMockProfiles: Record<string, User> = {
     thirdPillarInitDate: null,
     memberNumber: null,
     memberJoinDate: null,
+  },
+  MINOR: {
+    ...mockMinor,
+    age: MINORS_AGE,
+    dateOfBirth: moment()
+      .subtract(MINORS_AGE, 'years')
+      .subtract(MONTHS_SINCE_MINORS_BIRTHDAY, 'months')
+      .format('YYYY-MM-DD'),
   },
 } as const;

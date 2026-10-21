@@ -16,7 +16,7 @@ import {
   useTestBackendsExcept,
   userBackend,
 } from '../../test/backend';
-import { mockUser } from '../../test/backend-responses';
+import { mockMinor, mockUser } from '../../test/backend-responses';
 import { contribution } from './TransactionSection/fixtures';
 
 const server = setupServer();
@@ -100,6 +100,32 @@ describe('when user represents a child (PERSON role with a different code)', () 
       await screen.findByRole('region', { name: 'represented-party-account' }),
     ).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /Change II\spillar fund/i })).not.toBeInTheDocument();
+  });
+});
+
+describe('when a person under 18 is acting as themselves', () => {
+  beforeEach(() => {
+    initializeConfiguration();
+    useTestBackendsExcept(server, ['user']);
+    userBackend(server, mockMinor);
+    initializeComponent();
+    history.push('/account');
+  });
+
+  test('renders the read-only account page for a minor', async () => {
+    expect(await screen.findByText('Hi, Mari!')).toBeInTheDocument();
+  });
+
+  test('does not render the full person account page', async () => {
+    expect(await screen.findByText('Hi, Mari!')).toBeInTheDocument();
+    expect(screen.queryByText(/^Hi, Mari Maasikas/)).not.toBeInTheDocument();
+  });
+
+  test('does not render the represented party account page', async () => {
+    expect(await screen.findByText('Hi, Mari!')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('region', { name: 'represented-party-account' }),
+    ).not.toBeInTheDocument();
   });
 });
 

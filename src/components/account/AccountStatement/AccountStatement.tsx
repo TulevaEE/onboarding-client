@@ -47,6 +47,7 @@ const AccountStatement: React.FC<Props> = ({ funds, showProfit = false }) => {
       dataIndex: 'feesPercent',
       width: 15,
       footer: <Fees value={weightedAverageFee} />,
+      ...(showProfit && { className: 'hidden-below-360px' }),
     },
     ...(weightedAverageFee * valueSum === 0
       ? []

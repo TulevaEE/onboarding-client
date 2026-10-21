@@ -102,6 +102,11 @@ export const isActingAsSelf = (user: User | undefined): boolean => {
   return user.role.type === 'PERSON' && user.role.code === user.personalCode;
 };
 
+const AGE_OF_MAJORITY = 18;
+
+export const isMinorActingAsSelf = (user: User | undefined): boolean =>
+  !!user && isActingAsSelf(user) && typeof user.age === 'number' && user.age < AGE_OF_MAJORITY;
+
 // The same test, applied to a role you could switch to rather than the one you hold.
 // A PERSON role that is not your own personal code is someone you represent, which
 // today is always a child — companies come through as LEGAL_ENTITY.
