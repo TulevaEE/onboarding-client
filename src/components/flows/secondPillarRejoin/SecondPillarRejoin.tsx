@@ -214,7 +214,7 @@ const RejoinApplication = ({
             checked={hasAgreedToTerms}
             onToggle={setAgreedToTerms}
           >
-            <FormattedMessage id="confirm.mandate.agree.to.terms" />
+            <FormattedMessage id="secondPillarRejoin.review.terms" />
             <div className="mt-2">
               <small className="text-body-secondary">
                 <a

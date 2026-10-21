@@ -119,6 +119,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(screen.getByText('II pillar fund selection application')).toBeInTheDocument();
     expect(screen.queryByText(/Application #/)).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Pension Centre/ })).toBeInTheDocument();
+    expect(termsCheckbox()).toHaveAccessibleName(/signed applications go straight to the register/);
     expect(screen.queryByRole('button', { name: 'Change' })).not.toBeInTheDocument();
   });
 
@@ -447,7 +448,7 @@ describe('When an eligible person rejoins the II pillar', () => {
   const fundRow = () => screen.getByRole('group', { name: 'Fund' });
   const signButton = () => screen.getByRole('button', { name: 'Sign and send mandate' });
   const nextButton = () => screen.getByRole('button', { name: 'Next' });
-  const termsCheckbox = () => screen.getByRole('checkbox', { name: /fund prospectuses/ });
+  const termsCheckbox = () => screen.getByRole('checkbox', { name: /prospectuses/ });
   const reviewAndAgree = () => {
     userEvent.click(nextButton());
     userEvent.click(termsCheckbox());
