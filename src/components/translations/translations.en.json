@@ -2252,6 +2252,8 @@
   "secondPillarRejoin.calculation.breakdown": "What the monthly amount consists of",
   "secondPillarRejoin.calculation.taxWin": "Tax win",
   "secondPillarRejoin.calculation.fromNetSalary": "From your net salary",
+  "secondPillarRejoin.calculation.tenYears": "In 10 years",
+  "secondPillarRejoin.calculation.tenYearTaxWin": "of which tax win",
   "secondPillarRejoin.paymentRate.label": "Your contribution",
   "secondPillarRejoin.paymentRate.value": "{rate}% of gross salary",
   "secondPillarRejoin.fund.label": "Fund",

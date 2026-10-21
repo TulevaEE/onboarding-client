@@ -208,19 +208,23 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
     expect(screen.queryByText('€', { selector: '.input-group-text' })).not.toBeInTheDocument();
     expectBreakdown(['From your net salary 94 €', 'Tax win 106 €']);
     expect(calculation()).toHaveTextContent(
-      /From your net salary\s*94\s€\s*\+\s*Tax win\s*106\s€\s*=\s*Into your II\spillar each month\s*200\s€/,
+      /From your net salary\s*94\s€\s*\+\s*Tax win.*\s106\s€\s*=\s*Into your II\spillar each month\s*200\s€/,
     );
-    expect(calculation()).not.toHaveTextContent('In 10 years');
   });
 
-  test('splits the tax win into the income tax saving and the 4% from social tax on hovering its amount', async () => {
+  test('adds up 10 years of contributions and the tax win in them', async () => {
     await renderAt('/2nd-pillar-rejoin?view=calculator');
 
-    userEvent.hover(screen.getByRole('button', { name: /^Tax win\s106\s€$/ }));
+    expect(calculation()).toHaveTextContent(/In 10 years\s*24\s000\s€/);
+    expect(calculation()).toHaveTextContent(/of which tax win\s*12\s720\s€/);
+  });
 
-    const breakdown = await screen.findByRole('tooltip');
-    expect(breakdown).toHaveTextContent('Income tax savings: 26 €');
-    expect(breakdown).toHaveTextContent('4% from social tax: 80 €');
+  test('splits the tax win into the income tax saving and the 4% from social tax behind its info icon', async () => {
+    await renderAt('/2nd-pillar-rejoin?view=calculator');
+
+    expect(calculation()).toHaveTextContent('Income tax savings: 26 €');
+    expect(calculation()).toHaveTextContent('4% from social tax: 80 €');
+    expect(screen.queryByRole('button', { name: /106\s€/ })).not.toBeInTheDocument();
   });
 
   test('offers a breakdown only for the tax win, not for the net salary', async () => {
@@ -361,7 +365,12 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
       screen.getByRole('list', { name: 'What the monthly amount consists of' }),
     ).getAllByRole('listitem');
     expect(items).toHaveLength(parts.length);
-    parts.forEach((part, index) => expect(items[index]).toHaveTextContent(part));
+    parts.forEach((part, index) => {
+      const [, label, amount] = part.match(/^(.*) (\d+ €)$/) ?? [];
+      expect(items[index]).toHaveTextContent(
+        new RegExp(`${label}.*\\s${amount.replace(' ', '\\s')}$`),
+      );
+    });
   };
   const radiosNamed = (names: (string | RegExp)[]) =>
     names.map((name) => screen.getByRole('radio', { name }));

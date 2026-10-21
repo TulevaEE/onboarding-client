@@ -2342,6 +2342,8 @@
   "secondPillarRejoin.calculation.breakdown": "Millest summa koosneb",
   "secondPillarRejoin.calculation.taxWin": "Maksuvõit",
   "secondPillarRejoin.calculation.fromNetSalary": "Sinu panus netopalgast",
+  "secondPillarRejoin.calculation.tenYears": "10 aastaga",
+  "secondPillarRejoin.calculation.tenYearTaxWin": "sellest maksuvõit",
   "secondPillarRejoin.paymentRate.label": "Sinu panus",
   "secondPillarRejoin.paymentRate.value": "{rate}% brutopalgast",
   "secondPillarRejoin.fund.label": "Fond",

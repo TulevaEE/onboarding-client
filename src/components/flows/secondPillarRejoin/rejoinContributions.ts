@@ -4,6 +4,7 @@ export const STATE_CONTRIBUTION_PERCENT = 4;
 const INCOME_TAX_RATE = 0.22;
 const MONTHLY_BASIC_EXEMPTION = 700;
 const UNEMPLOYMENT_INSURANCE_RATE = 0.016;
+const MONTHS_IN_TEN_YEARS = 120;
 
 export type RejoinContributions = {
   netSalaryCostPerMonth: number;
@@ -11,6 +12,8 @@ export type RejoinContributions = {
   statePerMonth: number;
   taxWinPerMonth: number;
   intoPillarPerMonth: number;
+  tenYearTotal: number;
+  tenYearTaxWin: number;
 };
 
 const incomeTaxSaved = (grossMonthlySalary: number, ownContribution: number) => {
@@ -38,5 +41,7 @@ export const rejoinContributions = (
     statePerMonth: stateContribution,
     taxWinPerMonth: incomeTaxSavedPerMonth + stateContribution,
     intoPillarPerMonth,
+    tenYearTotal: intoPillarPerMonth * MONTHS_IN_TEN_YEARS,
+    tenYearTaxWin: (incomeTaxSavedPerMonth + stateContribution) * MONTHS_IN_TEN_YEARS,
   };
 };
