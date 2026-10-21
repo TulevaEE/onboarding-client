@@ -1,3 +1,4 @@
+import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { screen, within } from '@testing-library/react';
 import { Route } from 'react-router-dom';
@@ -5,20 +6,30 @@ import { createMemoryHistory, History } from 'history';
 import userEvent from '@testing-library/user-event';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import { initializeConfiguration } from '../../config/config';
-import { useTestBackends } from '../../../test/backend';
+import {
+  mandateBatchBackend,
+  rejoinPermissionBackend,
+  smartIdMandateBatchSigningBackend,
+  useTestBackends,
+} from '../../../test/backend';
+import { CreateMandateBatchDto } from '../../common/apiModels/withdrawals';
 import LoggedInApp from '../../LoggedInApp';
 import { isInsidePii } from '../../tracking/piiMarkup';
 
-describe('When an eligible person rejoins the II pillar in the prototype', () => {
+describe('When an eligible person rejoins the II pillar', () => {
   const server = setupServer();
   let history: History;
 
-  async function renderAt(path: string) {
+  function render(path: string) {
     history = createMemoryHistory();
     const store = createDefaultStore(history as any);
     login(store);
     renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
     history.push(path);
+  }
+
+  async function renderAt(path: string) {
+    render(path);
     await heading();
   }
 
@@ -26,15 +37,14 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
 
+  let mandateBatches: { created: CreateMandateBatchDto[] };
+
   beforeEach(() => {
     initializeConfiguration();
     useTestBackends(server);
-  });
-
-  test('says it is a prototype that submits nothing', async () => {
-    await renderAt('/2nd-pillar-rejoin');
-
-    expect(screen.getByText('Prototype. No applications are submitted.')).toBeInTheDocument();
+    rejoinPermissionBackend(server, { permitted: true });
+    mandateBatches = mandateBatchBackend(server);
+    smartIdMandateBatchSigningBackend(server);
   });
 
   test.each(['application', 'calculator'])(
@@ -108,6 +118,7 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
 
     expect(await successHeading()).toBeInTheDocument();
     expectSummary('6%', 'Tuleva World Stocks Pension Fund');
+    expectSignedBatch('SIX', 'EE3600109435');
   });
 
   test('staying at 2% says the contribution stays at 2%', async () => {
@@ -126,6 +137,7 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
 
     expect(await successHeading()).toBeInTheDocument();
     expectSummary('2%', 'Tuleva World Stocks Pension Fund');
+    expectSignedBatch('TWO', 'EE3600109435');
   });
 
   test('keeps the chosen value in view and the other choice as it is while choosing', async () => {
@@ -199,6 +211,46 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
 
     expect(await successHeading()).toBeInTheDocument();
     expectSummary('6%', 'Swedbank Pension Fund K60');
+    expectSignedBatch('SIX', 'EE3600019758');
+  });
+
+  test('creates a single batch however many times Sign is pressed', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    userEvent.click(signButton());
+    userEvent.click(signButton());
+
+    expect(await successHeading()).toBeInTheDocument();
+    expect(mandateBatches.created).toHaveLength(1);
+  });
+
+  test('offers to ask again when Pensionikeskus could not be asked', async () => {
+    server.use(
+      rest.get('http://localhost/v1/rejoin-permission', (req, res, ctx) => res(ctx.status(500))),
+    );
+    render('/2nd-pillar-rejoin');
+
+    expect(
+      await screen.findByText(
+        'We could not ask Pensionikeskus whether you can rejoin.',
+        {},
+        { timeout: 10000 },
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Sign' })).not.toBeInTheDocument();
+  }, 15000);
+
+  test('tells someone Pensionikeskus does not let rejoin yet, and offers nothing to sign', async () => {
+    rejoinPermissionBackend(server, { permitted: false });
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(
+      await screen.findByText(
+        'Pensionikeskus does not let you rejoin the II pillar at the moment.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Sign' })).not.toBeInTheDocument();
   });
 
   test('calculates the default 6% rate on a 2000 € salary in the public calculator', async () => {
@@ -328,20 +380,9 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
     userEvent.click(screen.getByRole('button', { name: 'Start saving again' }));
 
     expect(new URLSearchParams(history.location.search).get('view')).toBe('application');
-    expect(paymentRateRow()).toHaveTextContent('6% of gross salary');
-  });
-
-  test('switches between the public calculator and the application from the prototype bar', async () => {
-    await renderAt('/2nd-pillar-rejoin');
-
-    userEvent.click(screen.getByRole('button', { name: 'Calculator (public page)' }));
-
-    expect(new URLSearchParams(history.location.search).get('view')).toBe('calculator');
-    expect(screen.getByLabelText('Gross salary')).toBeInTheDocument();
-
-    userEvent.click(screen.getByRole('button', { name: 'Application (logged in)' }));
-
-    expect(paymentRateRow()).toBeInTheDocument();
+    expect(await screen.findByRole('group', { name: 'Your contribution' })).toHaveTextContent(
+      '6% of gross salary',
+    );
   });
 
   const restriction =
@@ -372,6 +413,16 @@ describe('When an eligible person rejoins the II pillar in the prototype', () =>
       );
     });
   };
+  const expectSignedBatch = (paymentRate: string, fundIsin: string) =>
+    expect(mandateBatches.created).toEqual([
+      {
+        mandates: [
+          { details: { mandateType: 'REJOIN' } },
+          { details: { mandateType: 'PAYMENT_RATE_CHANGE', paymentRate } },
+          { details: { mandateType: 'SELECTION', futureContributionFundIsin: fundIsin } },
+        ],
+      },
+    ]);
   const radiosNamed = (names: (string | RegExp)[]) =>
     names.map((name) => screen.getByRole('radio', { name }));
 });

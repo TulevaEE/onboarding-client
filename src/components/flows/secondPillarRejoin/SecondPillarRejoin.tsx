@@ -1,22 +1,29 @@
 import { ReactNode, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
-import { Loader } from '../../common';
-import { useFunds } from '../../common/apiHooks';
-import { Fund } from '../../common/apiModels';
+import { AuthenticationLoader, ErrorMessage, Loader } from '../../common';
+import { useCreateMandateBatch, useFunds, useRejoinPermission } from '../../common/apiHooks';
+import { ErrorResponse, Fund } from '../../common/apiModels';
+import { PaymentRateChangeMandateDetails } from '../../common/apiModels/withdrawals';
+import { isSigningWithIdCard } from '../../common/authenticationManager';
 import { TulevaSecondPillarStockFund } from '../../common/utils';
 import { SuccessNotice } from '../common/SuccessNotice/SuccessNotice';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
-import { PrototypeBar } from './PrototypeBar';
 import { RejoinCalculator } from './RejoinCalculator';
 import { FundChoice, PaymentRateChoice } from './RejoinChoices';
 import { RejoinDisclaimers } from './RejoinDisclaimers';
 import { STATE_CONTRIBUTION_PERCENT } from './rejoinContributions';
-import { useView, View } from './variants';
+import { useMandateBatchSigning } from '../withdrawals/signing/useMandateBatchSigning';
+import { useView } from './variants';
 
 const EXAMPLE_GROSS_SALARY = 2000;
 const DEFAULT_PAYMENT_RATE: PaymentRate = 6;
 const RECOMMENDED_FUND_ISIN: TulevaSecondPillarStockFund = 'EE3600109435';
+const PAYMENT_RATE_NAMES: Record<PaymentRate, PaymentRateChangeMandateDetails['paymentRate']> = {
+  2: 'TWO',
+  4: 'FOUR',
+  6: 'SIX',
+};
 
 const bold = (chunks: ReactNode) => <b>{chunks}</b>;
 
@@ -37,89 +44,162 @@ export const SecondPillarRejoin = () => {
   const [view, setView] = useView();
   const { data: funds } = useFunds();
   const [grossSalary, setGrossSalary] = useState<number | undefined>(EXAMPLE_GROSS_SALARY);
-  const [paymentRate, setPaymentRate] = useState<PaymentRate>(DEFAULT_PAYMENT_RATE);
-  const [fundIsin, setFundIsin] = useState<string>(RECOMMENDED_FUND_ISIN);
-  const [isPaymentRateOpen, setPaymentRateOpen] = useState(false);
-  const [isFundOpen, setFundOpen] = useState(false);
-  const [isSubmitted, setSubmitted] = useState(false);
 
   if (!funds) {
     return <Loader className="align-middle my-4" />;
   }
 
-  const secondPillarFunds = funds.filter(isOpenForContributions);
-  const chosenFund = secondPillarFunds.find((fund) => fund.isin === fundIsin) ?? null;
+  if (view === 'calculator') {
+    return (
+      <RejoinCalculator
+        grossSalary={grossSalary}
+        onGrossSalaryChange={setGrossSalary}
+        exampleSalary={EXAMPLE_GROSS_SALARY}
+        paymentRate={DEFAULT_PAYMENT_RATE}
+        onStart={() => setView('application')}
+      />
+    );
+  }
 
-  const changeView = (nextView: View) => {
-    setSubmitted(false);
-    setView(nextView);
-  };
+  return (
+    <div className="col-12 col-md-11 col-lg-8 mx-auto">
+      <RejoinApplication funds={funds.filter(isOpenForContributions)} />
+    </div>
+  );
+};
 
-  const startOver = () => {
-    setPaymentRate(DEFAULT_PAYMENT_RATE);
-    setFundIsin(RECOMMENDED_FUND_ISIN);
-    setSubmitted(false);
+const RejoinApplication = ({ funds }: { funds: Fund[] }) => {
+  const {
+    data: permission,
+    isError: isPermissionUnknown,
+    refetch: askPermissionAgain,
+  } = useRejoinPermission();
+  const { mutateAsync: createMandateBatch } = useCreateMandateBatch();
+  const {
+    startSigning,
+    cancelSigning,
+    signed,
+    error: signingError,
+    loading: signingInProgress,
+    challengeCode,
+  } = useMandateBatchSigning();
+  const [paymentRate, setPaymentRate] = useState<PaymentRate>(DEFAULT_PAYMENT_RATE);
+  const [fundIsin, setFundIsin] = useState<string>(RECOMMENDED_FUND_ISIN);
+  const [isPaymentRateOpen, setPaymentRateOpen] = useState(false);
+  const [isFundOpen, setFundOpen] = useState(false);
+  const [batchCreationError, setBatchCreationError] = useState<ErrorResponse | null>(null);
+  const [isCreatingBatch, setCreatingBatch] = useState(false);
+
+  const chosenFund = funds.find((fund) => fund.isin === fundIsin) ?? null;
+
+  if (signed) {
+    return <RejoinSuccess paymentRate={paymentRate} chosenFund={chosenFund} />;
+  }
+
+  if (isPermissionUnknown) {
+    return (
+      <>
+        <RejoinHeader />
+        <p className="mb-4">
+          <FormattedMessage id="secondPillarRejoin.permissionUnknown" />
+        </p>
+        <button type="button" className="btn btn-primary" onClick={() => askPermissionAgain()}>
+          <FormattedMessage id="secondPillarRejoin.askPermissionAgain" />
+        </button>
+      </>
+    );
+  }
+
+  if (!permission) {
+    return <Loader className="align-middle my-4" />;
+  }
+
+  if (!permission.permitted) {
+    return (
+      <>
+        <RejoinHeader />
+        <p className="mb-5">
+          <FormattedMessage id="secondPillarRejoin.notPermitted" />
+        </p>
+        <Link className="btn btn-light" to="/account">
+          <FormattedMessage id="secondPillarPaymentRate.cancel" />
+        </Link>
+      </>
+    );
+  }
+
+  const createBatchAndStartSigning = async () => {
+    setCreatingBatch(true);
+    try {
+      const mandateBatch = await createMandateBatch({
+        mandates: [
+          { details: { mandateType: 'REJOIN' } },
+          {
+            details: {
+              mandateType: 'PAYMENT_RATE_CHANGE',
+              paymentRate: PAYMENT_RATE_NAMES[paymentRate],
+            },
+          },
+          { details: { mandateType: 'SELECTION', futureContributionFundIsin: fundIsin } },
+        ],
+      });
+      startSigning(mandateBatch);
+    } catch (e) {
+      setBatchCreationError(e as ErrorResponse);
+    }
+    setCreatingBatch(false);
   };
 
   return (
     <>
-      <div className="col-12 col-md-11 col-lg-8 mx-auto">
-        <PrototypeBar view={view} onViewChange={changeView} />
-      </div>
-
-      {view === 'calculator' && (
-        <RejoinCalculator
-          grossSalary={grossSalary}
-          onGrossSalaryChange={setGrossSalary}
-          exampleSalary={EXAMPLE_GROSS_SALARY}
-          paymentRate={DEFAULT_PAYMENT_RATE}
-          onStart={() => changeView('application')}
+      {(isCreatingBatch || signingInProgress || challengeCode) && (
+        <AuthenticationLoader
+          signingWithIdCard={isSigningWithIdCard()}
+          controlCode={challengeCode}
+          onCancel={cancelSigning}
+          overlayed
         />
       )}
-
-      <div className="col-12 col-md-11 col-lg-8 mx-auto">
-        {view === 'application' && isSubmitted && (
-          <RejoinSuccess
-            paymentRate={paymentRate}
-            chosenFund={chosenFund}
-            onStartOver={startOver}
-          />
-        )}
-
-        {view === 'application' && !isSubmitted && (
-          <>
-            <RejoinHeader />
-            <div className="border-top mb-5">
-              <PaymentRateChoice
-                paymentRate={paymentRate}
-                onChange={setPaymentRate}
-                open={isPaymentRateOpen}
-                onToggle={() => setPaymentRateOpen(!isPaymentRateOpen)}
-              />
-              <FundChoice
-                funds={secondPillarFunds}
-                recommendedFundIsin={RECOMMENDED_FUND_ISIN}
-                fundIsin={fundIsin}
-                onChange={setFundIsin}
-                open={isFundOpen}
-                onToggle={() => setFundOpen(!isFundOpen)}
-              />
-            </div>
-            <RejoinDisclaimers className="mb-3" />
-            <div className="d-flex flex-column-reverse flex-md-row justify-content-between">
-              <Link className="btn btn-light mt-2" to="/account">
-                <FormattedMessage id="secondPillarPaymentRate.cancel" />
-              </Link>
-              <button
-                type="button"
-                className="btn btn-primary mt-2"
-                onClick={() => setSubmitted(true)}
-              >
-                <FormattedMessage id="secondPillarRejoin.sign" />
-              </button>
-            </div>
-          </>
-        )}
+      {signingError && (
+        <ErrorMessage errors={signingError.body} onCancel={cancelSigning} overlayed />
+      )}
+      {batchCreationError && (
+        <ErrorMessage
+          errors={batchCreationError.body}
+          onCancel={() => setBatchCreationError(null)}
+          overlayed
+        />
+      )}
+      <RejoinHeader />
+      <div className="border-top mb-5">
+        <PaymentRateChoice
+          paymentRate={paymentRate}
+          onChange={setPaymentRate}
+          open={isPaymentRateOpen}
+          onToggle={() => setPaymentRateOpen(!isPaymentRateOpen)}
+        />
+        <FundChoice
+          funds={funds}
+          recommendedFundIsin={RECOMMENDED_FUND_ISIN}
+          fundIsin={fundIsin}
+          onChange={setFundIsin}
+          open={isFundOpen}
+          onToggle={() => setFundOpen(!isFundOpen)}
+        />
+      </div>
+      <RejoinDisclaimers className="mb-3" />
+      <div className="d-flex flex-column-reverse flex-md-row justify-content-between">
+        <Link className="btn btn-light mt-2" to="/account">
+          <FormattedMessage id="secondPillarPaymentRate.cancel" />
+        </Link>
+        <button
+          type="button"
+          className="btn btn-primary mt-2"
+          disabled={isCreatingBatch || signingInProgress}
+          onClick={createBatchAndStartSigning}
+        >
+          <FormattedMessage id="secondPillarRejoin.sign" />
+        </button>
       </div>
     </>
   );
@@ -134,11 +214,9 @@ const SummaryItem = ({ label, children }: { label: ReactNode; children: ReactNod
 const RejoinSuccess = ({
   paymentRate,
   chosenFund,
-  onStartOver,
 }: {
   paymentRate: PaymentRate;
   chosenFund: Fund | null;
-  onStartOver: () => void;
 }) => {
   const { formatMessage } = useIntl();
 
@@ -175,9 +253,6 @@ const RejoinSuccess = ({
           </SummaryItem>
         )}
       </ul>
-      <button type="button" className="btn btn-outline-primary mt-4" onClick={onStartOver}>
-        <FormattedMessage id="secondPillarRejoin.success.startOver" />
-      </button>
     </SuccessNotice>
   );
 };

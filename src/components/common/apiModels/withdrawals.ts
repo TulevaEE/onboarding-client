@@ -51,8 +51,27 @@ export type BankAccountDetails = {
   accountIban: string;
 };
 
+export type RejoinMandateDetails = {
+  mandateType: 'REJOIN';
+};
+
+export type PaymentRateChangeMandateDetails = {
+  mandateType: 'PAYMENT_RATE_CHANGE';
+  paymentRate: 'TWO' | 'FOUR' | 'SIX';
+};
+
+export type SelectionMandateDetails = {
+  mandateType: 'SELECTION';
+  futureContributionFundIsin: string;
+};
+
+export type RejoinBatchMandateDetails =
+  | RejoinMandateDetails
+  | PaymentRateChangeMandateDetails
+  | SelectionMandateDetails;
+
 export type CreateMandateDto = {
-  details: WithdrawalMandateDetails;
+  details: WithdrawalMandateDetails | RejoinBatchMandateDetails;
 };
 
 export type MandateDto = CreateMandateDto & {

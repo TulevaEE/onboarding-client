@@ -121,7 +121,10 @@ export function mandatePreviewBackend(server: SetupServerApi): {
   return backend;
 }
 
-export const mandateBatchBackend = (server: SetupServerApi): void => {
+export const mandateBatchBackend = (
+  server: SetupServerApi,
+): { created: CreateMandateBatchDto[] } => {
+  const backend = { created: [] as CreateMandateBatchDto[] };
   server.use(
     rest.post(
       'http://localhost/v1/mandate-batches',
@@ -130,6 +133,7 @@ export const mandateBatchBackend = (server: SetupServerApi): void => {
           return res(ctx.status(401), ctx.json(authErrorResponse));
         }
 
+        backend.created.push(req.body);
         const mandates: MandateDto[] = req.body.mandates.map((mandate, idx) => ({
           ...mandate,
           id: idx + 1,
@@ -146,7 +150,22 @@ export const mandateBatchBackend = (server: SetupServerApi): void => {
       },
     ),
   );
+  return backend;
 };
+
+export function rejoinPermissionBackend(
+  server: SetupServerApi,
+  { permitted }: { permitted: boolean },
+): void {
+  server.use(
+    rest.get('http://localhost/v1/rejoin-permission', (req, res, ctx) => {
+      if (req.headers.get('Authorization') !== 'Bearer an access token') {
+        return res(ctx.status(401), ctx.json(authErrorResponse));
+      }
+      return res(ctx.status(200), ctx.json({ permitted }));
+    }),
+  );
+}
 
 export function smartIdMandateSigningBackend(
   server: SetupServerApi,

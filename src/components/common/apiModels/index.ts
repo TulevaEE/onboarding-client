@@ -554,6 +554,10 @@ export interface ThirdPillarContribution extends BaseContribution {
 
 export type Contribution = SecondPillarContribution | ThirdPillarContribution;
 
+export interface RejoinPermission {
+  permitted: boolean;
+}
+
 export interface SecondPillarAssets {
   pikFlag: boolean;
   balance: number;

@@ -31,6 +31,7 @@ import {
   PendingOnboarding,
   Role,
   SavingsFundOnboardingStatus,
+  RejoinPermission,
   SecondPillarAssets,
   SigningMethod,
   RememberedMobileIdPerson,
@@ -693,6 +694,10 @@ export function getContributions(): Promise<Contribution[]> {
     () => getWithAuthentication(getEndpoint('/v1/contributions'), undefined),
     'contributions',
   );
+}
+
+export function getRejoinPermission(): Promise<RejoinPermission> {
+  return getWithAuthentication(getEndpoint('/v1/rejoin-permission'), undefined);
 }
 
 export function getSecondPillarAssets(): Promise<SecondPillarAssets> {
