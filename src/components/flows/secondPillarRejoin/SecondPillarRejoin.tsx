@@ -216,17 +216,23 @@ const RejoinApplication = ({
           >
             <FormattedMessage id="secondPillarRejoin.review.terms" />
             <div className="mt-2">
-              <small className="text-body-secondary">
-                <a
-                  className="link-secondary"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="//www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/"
-                >
-                  <FormattedMessage id="confirm.mandate.pension.centre" />
-                </a>
-                <FormattedMessage id="confirm.mandate.view.info" />
-              </small>
+              <span className="text-body-secondary">
+                <FormattedMessage
+                  id="secondPillarRejoin.review.compareFunds"
+                  values={{
+                    a: (chunks: ReactNode) => (
+                      <a
+                        className="link-secondary"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href="//www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/"
+                      >
+                        {chunks}
+                      </a>
+                    ),
+                  }}
+                />
+              </span>
             </div>
           </Checkbox>
           {refusal && (
