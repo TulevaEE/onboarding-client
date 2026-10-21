@@ -2276,6 +2276,7 @@
   "secondPillarRejoin.review.fund": "Future contributions go to {fund}",
   "secondPillarRejoin.review.fund.title": "II pillar fund selection application",
   "secondPillarRejoin.review.intro": "I submit the following applications:",
+  "secondPillarRejoin.review.heading": "Confirm the applications",
   "pensionAccountNumber.title": "Your pension account number",
   "pensionAccountNumber.whenNeeded": "When you need it",
   "pensionAccountNumber.whenNeeded.employer": "Your employer pays into your III pillar straight from your salary.",

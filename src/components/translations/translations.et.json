@@ -2366,6 +2366,7 @@
   "secondPillarRejoin.review.fund": "Sissemaksed lähevad fondi {fund}",
   "secondPillarRejoin.review.fund.title": "II samba valikuavaldus",
   "secondPillarRejoin.review.intro": "Esitan järgmised avaldused:",
+  "secondPillarRejoin.review.heading": "Kinnita avalduste sisu",
   "pensionAccountNumber.title": "Sinu pensionikonto number",
   "pensionAccountNumber.whenNeeded": "Millal seda vaja läheb",
   "pensionAccountNumber.whenNeeded.employer": "Tööandja maksab sinu III sambasse otse palgast.",

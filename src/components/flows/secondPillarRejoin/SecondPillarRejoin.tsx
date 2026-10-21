@@ -176,10 +176,12 @@ const RejoinApplication = ({
           overlayed
         />
       )}
-      <RejoinHeader />
       {isReviewing ? (
         <>
-          <p className="mt-5 mb-3 fw-medium">
+          <h1 className="mb-4">
+            <FormattedMessage id="secondPillarRejoin.review.heading" />
+          </h1>
+          <p className="mb-3 fw-medium">
             <FormattedMessage id="secondPillarRejoin.review.intro" />
           </p>
           <ApplicationCard
@@ -253,6 +255,7 @@ const RejoinApplication = ({
         </>
       ) : (
         <>
+          <RejoinHeader />
           <div className="border-top mb-5">
             <PaymentRateChoice
               paymentRate={paymentRate}

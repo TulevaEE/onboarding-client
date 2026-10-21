@@ -100,6 +100,10 @@ describe('When an eligible person rejoins the II pillar', () => {
     userEvent.click(nextButton());
 
     expect(new URLSearchParams(history.location.search).get('view')).toBe('review');
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Confirm the applications' }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('part of your taxes')).not.toBeInTheDocument();
     expect(screen.getByText('I submit the following applications:')).toBeInTheDocument();
     expect(
       screen
