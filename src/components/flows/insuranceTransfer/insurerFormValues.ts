@@ -156,8 +156,8 @@ const pepSelfDeclarationFrom = (
   pepDeclaredThisSession: PepSelfDeclaration | null,
 ) =>
   isUnderAYearOld(identity)
-    ? identity?.pepSelfDeclaration ?? pepDeclaredThisSession
-    : pepDeclaredThisSession ?? identity?.pepSelfDeclaration ?? null;
+    ? (identity?.pepSelfDeclaration ?? pepDeclaredThisSession)
+    : (pepDeclaredThisSession ?? identity?.pepSelfDeclaration ?? null);
 
 export const defaultValuesFrom = (
   identity: KycIdentity | undefined,

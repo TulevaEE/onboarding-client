@@ -106,7 +106,7 @@ const user = (overrides: Partial<User> = {}): User =>
     secondPillarActive: true,
     secondPillarPaymentRates: { current: 4, pending: null },
     ...overrides,
-  } as User);
+  }) as User;
 
 const sourceFunds: SourceFund[] = [
   { pillar: 2, price: 14200, unavailablePrice: 0 } as SourceFund,
@@ -191,7 +191,7 @@ const savingsFundPayment = (
     amount,
     time: monthsAgo(months),
     type,
-  } as Transaction);
+  }) as Transaction;
 
 const givenSavingsFund = (
   payments: Transaction[] = [],

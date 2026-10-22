@@ -10,10 +10,7 @@ export type HackathonSkill =
   | 'FINANCE_AND_INSURANCE';
 
 export type HackathonChallenge =
-  | 'FAIR_LENDING'
-  | 'INSURANCE'
-  | 'COLLECTIVE_BUYING_POWER'
-  | 'WEALTH_AND_INHERITANCE';
+  'FAIR_LENDING' | 'INSURANCE' | 'COLLECTIVE_BUYING_POWER' | 'WEALTH_AND_INHERITANCE';
 
 export type HackathonParticipation = 'WITH_TEAM' | 'WITH_IDEA' | 'LOOKING_FOR_TEAM';
 
