@@ -13,6 +13,8 @@ if (isProduction) {
     environment: process.env.NODE_ENV,
     sampleRate: 1.0,
     attachStacktrace: false,
+    integrations: (defaultIntegrations) =>
+      defaultIntegrations.filter(({ name }) => name !== 'CultureContext'),
     denyUrls: [/^iabjs:\/\//, /extensions\//, /^chrome(-extension)?:\/\//, /^moz-extension:\/\//],
     beforeSend: (event) => (isFirstPartyEvent(event) ? withoutPersonalData(event) : null),
     beforeBreadcrumb,
