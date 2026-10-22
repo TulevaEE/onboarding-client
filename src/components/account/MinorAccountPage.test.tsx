@@ -10,6 +10,7 @@ import LoggedInApp from '../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../test/utils';
 import { mockMinor } from '../../test/backend-responses';
 import {
+  myGiftsBackend,
   neverAnswer,
   pensionAccountStatementBackend,
   savingsAccountStatementBackend,
@@ -23,7 +24,7 @@ import {
   subtraction,
 } from './TransactionSection/fixtures';
 import { additionalSavingsFund, tulevaThirdPillarBalance } from './statusBox/fixtures';
-import { PII_CLASS } from '../tracking/piiMarkup';
+import { isInsidePii, PII_CLASS } from '../tracking/piiMarkup';
 import { useSavingsFundBalanceOrFail, useSourceFunds } from '../common/apiHooks';
 
 const server = setupServer();
@@ -139,27 +140,12 @@ describe('MinorAccountPage', () => {
     expect(within(thirdPillarRow).getByText(/^12\.50\s€$/)).toBeInTheDocument();
   });
 
-  test('explains who can deposit and withdraw instead of linking to either', async () => {
-    expect(await screen.findByRole('button', { name: 'Deposit' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Withdraw' })).toBeInTheDocument();
+  test('offers no deposit or withdrawal, since their parent makes those', async () => {
+    expect(await screen.findByText('Kati Kask')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Deposit' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Deposit' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Withdraw' })).not.toBeInTheDocument();
-  });
-
-  test('says that their parent makes the deposits when asked', async () => {
-    userEvent.click(await screen.findByRole('button', { name: 'Deposit' }));
-
-    expect(
-      screen.getByText('Your parent can make deposits from their own bank account or yours.'),
-    ).toBeVisible();
-  });
-
-  test('says that withdrawals only go to their own bank account when asked', async () => {
-    userEvent.click(await screen.findByRole('button', { name: 'Withdraw' }));
-
-    expect(
-      screen.getByText('Your parent can make withdrawals, and only to your own bank account.'),
-    ).toBeVisible();
+    expect(screen.queryByRole('button', { name: 'Withdraw' })).not.toBeInTheDocument();
   });
 
   test('lists their latest savings fund transactions and who paid them', async () => {
@@ -232,10 +218,103 @@ describe('MinorAccountPage without a savings fund account', () => {
     expect(
       screen.queryByRole('heading', { name: 'Additional Investment Fund' }),
     ).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Deposit' })).not.toBeInTheDocument();
     expect(
       screen.queryByRole('row', { name: /^Tuleva Täiendav Kogumisfond/ }),
     ).not.toBeInTheDocument();
+  });
+
+  test('does not promise savings fund transactions that cannot come', async () => {
+    expect(await screen.findByText(PORTFOLIO_FETCHED)).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Your latest transactions' }),
+    ).not.toBeInTheDocument();
+  });
+});
+
+describe('MinorAccountPage without any account yet', () => {
+  beforeEach(() => {
+    server.use(
+      rest.get('http://localhost/v1/savings-account-statement', (_req, res, ctx) =>
+        res(ctx.status(204)),
+      ),
+    );
+    pensionAccountStatementBackend(server, []);
+    openAccountPage(withoutRetries());
+  });
+
+  test('says their parent can open one for them', async () => {
+    expect(
+      await screen.findByRole('heading', {
+        name: "You don't have a savings account at Tuleva yet",
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'When your parent opens an Additional Investment Fund account for you, you will see it here.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Your portfolio overview' }),
+    ).not.toBeInTheDocument();
+  });
+});
+
+describe('MinorAccountPage with an account but no transactions yet', () => {
+  beforeEach(() => {
+    transactionsBackend(server, []);
+    openAccountPage();
+  });
+
+  test('says where the transactions will appear', async () => {
+    expect(
+      await screen.findByText(
+        'You will see your transactions here once the first deposit reaches your account.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'View all transactions' })).not.toBeInTheDocument();
+  });
+});
+
+describe('MinorAccountPage with gifts', () => {
+  beforeEach(() => {
+    myGiftsBackend(server, [
+      {
+        receivedAt: '2026-08-10T09:00:00Z',
+        amount: 30,
+        giverName: 'Mai Maasikas',
+        message: 'Palju õnne!',
+        confirmed: true,
+      },
+    ]);
+    openAccountPage();
+  });
+
+  test('shows who gave them what, with the wish that came along', async () => {
+    expect(
+      await screen.findByRole('heading', { name: 'Gifts for you', level: 3 }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Mai Maasikas')).toBeInTheDocument();
+    expect(screen.getByText('„Palju õnne!“')).toBeInTheDocument();
+  });
+
+  test('marks the gifts as personal data for analytics', async () => {
+    expect(isInsidePii(await screen.findByText('Mai Maasikas'))).toBe(true);
+  });
+});
+
+describe('MinorAccountPage without gifts', () => {
+  test('leaves the gifts out when there are none', async () => {
+    openAccountPage();
+    expect(await screen.findByText('Kati Kask')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Gifts for you' })).not.toBeInTheDocument();
+  });
+
+  test('leaves the gifts out quietly when they cannot be loaded', async () => {
+    server.use(failingRequest('http://localhost/v1/savings-fund/gifts'));
+    openAccountPage(withoutRetries());
+    expect(await screen.findByText('Kati Kask')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Gifts for you' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 });
 
@@ -284,9 +363,9 @@ describe('MinorAccountPage when the savings fund balance cannot be loaded', () =
     openAccountPage(withoutRetries());
   });
 
-  test('says the portfolio could not be loaded instead of showing an empty savings fund', async () => {
+  test('says the savings fund could not be loaded instead of showing an empty one', async () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'We cannot load your portfolio right now.',
+      'We cannot load your Additional Investment Fund right now.',
     );
     expect(
       screen.queryByRole('row', { name: /^Tuleva Täiendav Kogumisfond/ }),
@@ -306,15 +385,31 @@ describe('MinorAccountPage when the savings fund balance cannot be loaded', () =
   });
 });
 
+describe('MinorAccountPage when neither the savings fund nor the III pillar can be loaded', () => {
+  beforeEach(() => {
+    server.use(
+      failingRequest('http://localhost/v1/savings-account-statement'),
+      failingRequest('http://localhost/v1/pension-account-statement'),
+    );
+    openAccountPage(withoutRetries());
+  });
+
+  test('says the portfolio could not be loaded', async () => {
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'We cannot load your portfolio right now.',
+    );
+  });
+});
+
 describe('MinorAccountPage when the III pillar holdings cannot be loaded', () => {
   beforeEach(() => {
     server.use(failingRequest('http://localhost/v1/pension-account-statement'));
     openAccountPage(withoutRetries());
   });
 
-  test('says the portfolio could not be loaded and still shows the savings fund', async () => {
+  test('says the III pillar could not be loaded and still shows the savings fund', async () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'We cannot load your portfolio right now.',
+      'We cannot load your III pillar right now.',
     );
     expect(
       await screen.findByRole('row', { name: /^Tuleva Täiendav Kogumisfond/ }),
