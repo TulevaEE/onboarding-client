@@ -1,6 +1,7 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { screen, within } from '@testing-library/react';
+import { QueryClient } from '@tanstack/react-query';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import userEvent from '@testing-library/user-event';
@@ -9,29 +10,31 @@ import { initializeConfiguration } from '../../config/config';
 import {
   mandateBatchBackend,
   mandateDeadlinesBackend,
+  pensionAccountStatementBackend,
+  userBackend,
   rejoinPermissionBackend,
   smartIdMandateBatchSigningBackend,
   useTestBackends,
 } from '../../../test/backend';
-import { mandateDeadlinesResponse } from '../../../test/backend-responses';
+import { mandateDeadlinesResponse, mockFunds } from '../../../test/backend-responses';
 import { CreateMandateBatchDto } from '../../common/apiModels/withdrawals';
-import { MandateDeadlines } from '../../common/apiModels';
+import { FundBalance, MandateDeadlines } from '../../common/apiModels';
 import LoggedInApp from '../../LoggedInApp';
 
 describe('When an eligible person rejoins the II pillar', () => {
   const server = setupServer();
   let history: History;
 
-  function render(path: string) {
+  function render(path: string, queryClient = new QueryClient()) {
     history = createMemoryHistory();
     const store = createDefaultStore(history as any);
     login(store);
-    renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
+    renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store, queryClient);
     history.push(path);
   }
 
-  async function renderAt(path: string) {
-    render(path);
+  async function renderAt(path: string, queryClient?: QueryClient) {
+    render(path, queryClient);
     await heading();
   }
 
@@ -149,11 +152,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     ).toBeInTheDocument();
     expect(screen.queryByText('part of your taxes')).not.toBeInTheDocument();
     expect(screen.getByText('I submit the following applications:')).toBeInTheDocument();
-    expect(
-      screen
-        .getAllByRole('heading', { level: 2 })
-        .map((title) => title.textContent?.replace(/\s+/g, ' ')),
-    ).toEqual([
+    expect(applicationTitles()).toEqual([
       'I start contributing to the II pillar again',
       'My contribution is 6% of my gross salary',
       'Future contributions go to Tuleva World Stocks Pension Fund',
@@ -249,11 +248,97 @@ describe('When an eligible person rejoins the II pillar', () => {
 
     expect(screen.queryByRole('radio')).not.toBeInTheDocument();
 
-    signApplications();
+    userEvent.click(nextButton());
+
+    expect(applicationTitles()).toEqual([
+      'I start contributing to the II pillar again',
+      'Future contributions go to Tuleva World Stocks Pension Fund',
+    ]);
+
+    userEvent.click(termsCheckbox());
+    userEvent.click(signButton());
 
     expect(await successHeading()).toBeInTheDocument();
     expectSummary('2%', 'Tuleva World Stocks Pension Fund');
-    expectSignedBatch('TWO', 'EE3600109435');
+    expectSignedBatchOf([REJOIN, selectionOf('EE3600109435')]);
+  });
+
+  test('asks for the contribution and files it as before when the rate on file cannot be loaded', async () => {
+    server.use(
+      rest.get('http://localhost/v1/me', (req, res, ctx) => res(ctx.status(500), ctx.json({}))),
+    );
+    await renderAt(
+      '/2nd-pillar-rejoin',
+      new QueryClient({ defaultOptions: { queries: { retry: false } } }),
+    );
+
+    expect(paymentRateRow()).toHaveTextContent('6% of gross salary');
+
+    signApplications();
+
+    expect(await successHeading()).toBeInTheDocument();
+    expectSignedBatch('SIX', 'EE3600109435');
+  });
+
+  test('skips the contribution question for someone whose rate on file is already 6%', async () => {
+    userBackend(server, { secondPillarPaymentRates: { current: 6, pending: null } });
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(screen.queryByRole('group', { name: 'Your contribution' })).not.toBeInTheDocument();
+    expect(fundRow()).toHaveTextContent('Tuleva World Stocks Pension Fund');
+
+    userEvent.click(nextButton());
+
+    expect(applicationTitles()).toEqual([
+      'I start contributing to the II pillar again',
+      'Future contributions go to Tuleva World Stocks Pension Fund',
+    ]);
+
+    userEvent.click(termsCheckbox());
+    userEvent.click(signButton());
+
+    expect(await successHeading()).toBeInTheDocument();
+    expectSummary('6%', 'Tuleva World Stocks Pension Fund');
+    expectSignedBatchOf([REJOIN, selectionOf('EE3600109435')]);
+  });
+
+  test('counts a pending change to 6% as the rate on file', async () => {
+    userBackend(server, { secondPillarPaymentRates: { current: 2, pending: 6 } });
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(screen.queryByRole('group', { name: 'Your contribution' })).not.toBeInTheDocument();
+  });
+
+  test('asks for the contribution when a pending change takes the rate on file below 6%', async () => {
+    userBackend(server, { secondPillarPaymentRates: { current: 6, pending: 2 } });
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(paymentRateRow()).toHaveTextContent('6% of gross salary');
+
+    signApplications();
+
+    expect(await successHeading()).toBeInTheDocument();
+    expectSignedBatch('SIX', 'EE3600109435');
+  });
+
+  test('files only the application to make contributions when the rate and the fund are already in place', async () => {
+    userBackend(server, { secondPillarPaymentRates: { current: 6, pending: null } });
+    pensionAccountStatementBackend(server, [contributingTo(fundWithIsin('EE3600109435'))]);
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(screen.queryByRole('group', { name: 'Your contribution' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('group', { name: 'Fund' })).not.toBeInTheDocument();
+
+    userEvent.click(nextButton());
+
+    expect(applicationTitles()).toEqual(['I start contributing to the II pillar again']);
+
+    userEvent.click(termsCheckbox());
+    userEvent.click(signButton());
+
+    expect(await successHeading()).toBeInTheDocument();
+    expectSummary('6%', 'Tuleva World Stocks Pension Fund');
+    expectSignedBatchOf([REJOIN]);
   });
 
   test('keeps the chosen value in view and the other choice as it is while choosing', async () => {
@@ -317,17 +402,82 @@ describe('When an eligible person rejoins the II pillar', () => {
 
     userEvent.selectOptions(
       screen.getByRole('combobox', { name: 'Select a pension fund' }),
-      'EE3600019758',
+      'EE3600109443',
     );
 
-    expect(fundRow()).toHaveTextContent('Swedbank Pension Fund K60');
-    expect(fundRow()).toHaveTextContent(/Fees\s*0\.65%/);
+    expect(fundRow()).toHaveTextContent('Tuleva World Bonds Pension Fund');
+    expect(fundRow()).toHaveTextContent(/Fees\s*0\.39%/);
 
     signApplications();
 
     expect(await successHeading()).toBeInTheDocument();
+    expectSummary('6%', 'Tuleva World Bonds Pension Fund');
+    expectSignedBatch('SIX', 'EE3600109443');
+  });
+
+  test('files no fund selection when the fund chosen is the one their contributions already go to', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+    userEvent.click(within(fundRow()).getByRole('button', { name: 'Change' }));
+    userEvent.click(screen.getByRole('radio', { name: 'Another fund' }));
+    userEvent.selectOptions(
+      screen.getByRole('combobox', { name: 'Select a pension fund' }),
+      'EE3600019758',
+    );
+    userEvent.click(nextButton());
+
+    expect(applicationTitles()).toEqual([
+      'I start contributing to the II pillar again',
+      'My contribution is 6% of my gross salary',
+    ]);
+
+    userEvent.click(termsCheckbox());
+    userEvent.click(signButton());
+
+    expect(await successHeading()).toBeInTheDocument();
     expectSummary('6%', 'Swedbank Pension Fund K60');
-    expectSignedBatch('SIX', 'EE3600019758');
+    expectSignedBatchWithoutSelection('SIX');
+  });
+
+  test('asks for the fund and files the selection as before when the account statement cannot be loaded', async () => {
+    server.use(
+      rest.get('http://localhost/v1/pension-account-statement', (req, res, ctx) =>
+        res(ctx.status(500), ctx.json({})),
+      ),
+    );
+    await renderAt(
+      '/2nd-pillar-rejoin',
+      new QueryClient({ defaultOptions: { queries: { retry: false } } }),
+    );
+
+    expect(fundRow()).toHaveTextContent('Tuleva World Stocks Pension Fund');
+
+    signApplications();
+
+    expect(await successHeading()).toBeInTheDocument();
+    expectSignedBatch('SIX', 'EE3600109435');
+  });
+
+  test('skips the fund question for someone already saving in the Tuleva stock fund', async () => {
+    pensionAccountStatementBackend(server, [contributingTo(fundWithIsin('EE3600109435'))]);
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(paymentRateRow()).toHaveTextContent('6% of gross salary');
+    expect(screen.queryByRole('group', { name: 'Fund' })).not.toBeInTheDocument();
+
+    userEvent.click(nextButton());
+
+    expect(applicationTitles()).toEqual([
+      'I start contributing to the II pillar again',
+      'My contribution is 6% of my gross salary',
+    ]);
+    expect(screen.queryByText('II pillar fund selection application')).not.toBeInTheDocument();
+
+    userEvent.click(termsCheckbox());
+    userEvent.click(signButton());
+
+    expect(await successHeading()).toBeInTheDocument();
+    expectSummary('6%', 'Tuleva World Stocks Pension Fund');
+    expectSignedBatchWithoutSelection('SIX');
   });
 
   test('creates a single batch however many times Sign is pressed', async () => {
@@ -412,16 +562,41 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(items[2]).toHaveTextContent('The state adds 4% of gross salary');
     expect(items[3]).toHaveTextContent(`Fund ${fund}`);
   };
+  const REJOIN = { details: { mandateType: 'REJOIN' } };
+  const paymentRateChangeTo = (paymentRate: string) => ({
+    details: { mandateType: 'PAYMENT_RATE_CHANGE', paymentRate },
+  });
+  const selectionOf = (fundIsin: string) => ({
+    details: { mandateType: 'SELECTION', futureContributionFundIsin: fundIsin },
+  });
+  const expectSignedBatchOf = (mandates: object[]) =>
+    expect(mandateBatches.created).toEqual([{ mandates }]);
   const expectSignedBatch = (paymentRate: string, fundIsin: string) =>
-    expect(mandateBatches.created).toEqual([
-      {
-        mandates: [
-          { details: { mandateType: 'REJOIN' } },
-          { details: { mandateType: 'PAYMENT_RATE_CHANGE', paymentRate } },
-          { details: { mandateType: 'SELECTION', futureContributionFundIsin: fundIsin } },
-        ],
-      },
-    ]);
+    expectSignedBatchOf([REJOIN, paymentRateChangeTo(paymentRate), selectionOf(fundIsin)]);
+  const expectSignedBatchWithoutSelection = (paymentRate: string) =>
+    expectSignedBatchOf([REJOIN, paymentRateChangeTo(paymentRate)]);
+  const applicationTitles = () =>
+    screen
+      .getAllByRole('heading', { level: 2 })
+      .map((title) => title.textContent?.replace(/\s+/g, ' '));
+  const fundWithIsin = (isin: string) => {
+    const fund = mockFunds.find((candidate) => candidate.isin === isin);
+    if (!fund) {
+      throw new Error(`No fund in the test funds: isin=${isin}`);
+    }
+    return fund;
+  };
+  const contributingTo = (fund: FundBalance['fund']): FundBalance => ({
+    fund,
+    value: 15000,
+    unavailableValue: 0,
+    currency: 'EUR',
+    activeContributions: true,
+    contributions: 12000,
+    subtractions: 0,
+    profit: 3000,
+    units: 17000,
+  });
   const radiosNamed = (names: (string | RegExp)[]) =>
     names.map((name) => screen.getByRole('radio', { name }));
 });

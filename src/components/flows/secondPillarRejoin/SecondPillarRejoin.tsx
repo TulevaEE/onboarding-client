@@ -4,9 +4,18 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../common';
 import { getRejoinPermission } from '../../common/api';
-import { useCreateMandateBatch, useFunds, useMandateDeadlines } from '../../common/apiHooks';
-import { ErrorResponse, Fund } from '../../common/apiModels';
-import { PaymentRateChangeMandateDetails } from '../../common/apiModels/withdrawals';
+import {
+  useCreateMandateBatch,
+  useFunds,
+  useMandateDeadlines,
+  useMe,
+  useSourceFunds,
+} from '../../common/apiHooks';
+import { ErrorResponse, Fund, SourceFund, User } from '../../common/apiModels';
+import {
+  CreateMandateDto,
+  PaymentRateChangeMandateDetails,
+} from '../../common/apiModels/withdrawals';
 import { isSigningWithIdCard } from '../../common/authenticationManager';
 import { TulevaSecondPillarStockFund } from '../../common/utils';
 import { formatDateYear } from '../../common/dateFormatter';
@@ -33,6 +42,12 @@ const bold = (chunks: ReactNode) => <b>{chunks}</b>;
 
 const isOpenForContributions = (fund: Fund) => fund.pillar === 2 && fund.status === 'ACTIVE';
 
+const activeSecondPillarFundIsin = (sourceFunds: SourceFund[] | undefined) =>
+  sourceFunds?.find((fund) => fund.pillar === 2 && fund.activeFund)?.isin;
+
+const paymentRateThatApplies = (user: User | undefined) =>
+  user?.secondPillarPaymentRates?.pending ?? user?.secondPillarPaymentRates?.current;
+
 const monthOf = (date: string) => moment(date).month() + 1;
 
 const RejoinHeader = ({ contributionStartDate }: { contributionStartDate: string }) => (
@@ -54,8 +69,10 @@ export const SecondPillarRejoin = () => {
   const [view, setView] = useView();
   const { data: funds } = useFunds();
   const { data: mandateDeadlines } = useMandateDeadlines();
+  const { data: sourceFunds, isLoading: isLoadingSourceFunds } = useSourceFunds();
+  const { data: user, isLoading: isLoadingUser } = useMe();
 
-  if (!funds || !mandateDeadlines) {
+  if (!funds || !mandateDeadlines || isLoadingSourceFunds || isLoadingUser) {
     return <Loader className="align-middle my-4" />;
   }
 
@@ -63,6 +80,8 @@ export const SecondPillarRejoin = () => {
     <div className="col-12 col-md-11 col-lg-8 mx-auto">
       <RejoinApplication
         funds={funds.filter(isOpenForContributions)}
+        activeFundIsin={activeSecondPillarFundIsin(sourceFunds)}
+        paymentRateOnFile={paymentRateThatApplies(user)}
         contributionStartDate={mandateDeadlines.secondPillarRejoinContributionStartDate}
         isReviewing={view === 'review'}
         onReview={() => setView('review')}
@@ -90,12 +109,16 @@ const askPensionikeskus = async (): Promise<RejoinRefusal | null> => {
 
 const RejoinApplication = ({
   funds,
+  activeFundIsin,
+  paymentRateOnFile,
   contributionStartDate,
   isReviewing,
   onReview,
   onBack,
 }: {
   funds: Fund[];
+  activeFundIsin: string | undefined;
+  paymentRateOnFile: number | undefined;
   contributionStartDate: string;
   isReviewing: boolean;
   onReview: () => void;
@@ -120,6 +143,24 @@ const RejoinApplication = ({
   const [hasAgreedToTerms, setAgreedToTerms] = useState(false);
 
   const chosenFund = funds.find((fund) => fund.isin === fundIsin) ?? null;
+  const isAlreadyAtDefaultPaymentRate = paymentRateOnFile === DEFAULT_PAYMENT_RATE;
+  const isChangingPaymentRate = paymentRate !== paymentRateOnFile;
+  const isAlreadyInRecommendedFund = activeFundIsin === RECOMMENDED_FUND_ISIN;
+  const isChangingFund = fundIsin !== activeFundIsin;
+  const hasChoices = !isAlreadyAtDefaultPaymentRate || !isAlreadyInRecommendedFund;
+  const paymentRateChange: CreateMandateDto[] = isChangingPaymentRate
+    ? [
+        {
+          details: {
+            mandateType: 'PAYMENT_RATE_CHANGE',
+            paymentRate: PAYMENT_RATE_NAMES[paymentRate],
+          },
+        },
+      ]
+    : [];
+  const fundSelection: CreateMandateDto[] = isChangingFund
+    ? [{ details: { mandateType: 'SELECTION', futureContributionFundIsin: fundIsin } }]
+    : [];
 
   if (signed) {
     return (
@@ -142,16 +183,7 @@ const RejoinApplication = ({
     }
     try {
       const mandateBatch = await createMandateBatch({
-        mandates: [
-          { details: { mandateType: 'REJOIN' } },
-          {
-            details: {
-              mandateType: 'PAYMENT_RATE_CHANGE',
-              paymentRate: PAYMENT_RATE_NAMES[paymentRate],
-            },
-          },
-          { details: { mandateType: 'SELECTION', futureContributionFundIsin: fundIsin } },
-        ],
+        mandates: [{ details: { mandateType: 'REJOIN' } }, ...paymentRateChange, ...fundSelection],
       });
       startSigning(mandateBatch);
     } catch (e) {
@@ -195,16 +227,18 @@ const RejoinApplication = ({
           >
             <FormattedMessage id="secondPillarRejoin.review.rejoin" />
           </ApplicationCard>
-          <ApplicationCard
-            id="rejoin-payment-rate"
-            titleId="secondPillarRejoin.review.paymentRate.title"
-          >
-            <FormattedMessage
-              id="secondPillarRejoin.review.paymentRate"
-              values={{ rate: paymentRate }}
-            />
-          </ApplicationCard>
-          {chosenFund && (
+          {isChangingPaymentRate && (
+            <ApplicationCard
+              id="rejoin-payment-rate"
+              titleId="secondPillarRejoin.review.paymentRate.title"
+            >
+              <FormattedMessage
+                id="secondPillarRejoin.review.paymentRate"
+                values={{ rate: paymentRate }}
+              />
+            </ApplicationCard>
+          )}
+          {isChangingFund && chosenFund && (
             <ApplicationCard id="rejoin-fund" titleId="secondPillarRejoin.review.fund.title">
               <FormattedMessage
                 id="secondPillarRejoin.review.fund"
@@ -266,22 +300,28 @@ const RejoinApplication = ({
       ) : (
         <>
           <RejoinHeader contributionStartDate={contributionStartDate} />
-          <div className="border-top mb-5">
-            <PaymentRateChoice
-              paymentRate={paymentRate}
-              onChange={setPaymentRate}
-              open={isPaymentRateOpen}
-              onToggle={() => setPaymentRateOpen(!isPaymentRateOpen)}
-            />
-            <FundChoice
-              funds={funds}
-              recommendedFundIsin={RECOMMENDED_FUND_ISIN}
-              fundIsin={fundIsin}
-              onChange={setFundIsin}
-              open={isFundOpen}
-              onToggle={() => setFundOpen(!isFundOpen)}
-            />
-          </div>
+          {hasChoices && (
+            <div className="border-top mb-5">
+              {!isAlreadyAtDefaultPaymentRate && (
+                <PaymentRateChoice
+                  paymentRate={paymentRate}
+                  onChange={setPaymentRate}
+                  open={isPaymentRateOpen}
+                  onToggle={() => setPaymentRateOpen(!isPaymentRateOpen)}
+                />
+              )}
+              {!isAlreadyInRecommendedFund && (
+                <FundChoice
+                  funds={funds}
+                  recommendedFundIsin={RECOMMENDED_FUND_ISIN}
+                  fundIsin={fundIsin}
+                  onChange={setFundIsin}
+                  open={isFundOpen}
+                  onToggle={() => setFundOpen(!isFundOpen)}
+                />
+              )}
+            </div>
+          )}
           <div className="d-flex flex-column-reverse flex-md-row justify-content-between">
             <Link className="btn btn-light mt-2" to="/account">
               <FormattedMessage id="secondPillarPaymentRate.cancel" />
