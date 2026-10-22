@@ -35,7 +35,7 @@
     "react-dom": "^17.0.2",
     "react-facebook": "^8.1.4",
     "react-ga4": "^1.4.1",
-    "react-global-configuration": "^1.4.2",
+    "react-global-configuration": "1.4.1",
     "react-gtm-module": "^2.0.11",
     "react-hook-form": "7.63.0",
     "react-intl": "^5.25.1",
@@ -151,6 +151,9 @@
       "eslint-plugin-prettier": "$eslint-plugin-prettier"
     },
     "cheerio": "1.0.0-rc.12",
-    "@types/node": "^22.19.0"
+    "@types/node": "^22.19.0",
+    "react-global-configuration": {
+      "serialize-javascript": "^7.0.7"
+    }
   }
 }
