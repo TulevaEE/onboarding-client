@@ -23,6 +23,7 @@ import {
   MemberLookup,
   CapitalType,
   SecondPillarAssets,
+  MandateDeadlines,
 } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { parseJwt } from '../components/common/jwt';
@@ -1176,10 +1177,13 @@ export function capitalEventsBackend(server: SetupServerApi, capitalEvents: Capi
   );
 }
 
-export function mandateDeadlinesBackend(server: SetupServerApi): void {
+export function mandateDeadlinesBackend(
+  server: SetupServerApi,
+  mandateDeadlines: MandateDeadlines = mandateDeadlinesResponse,
+): void {
   server.use(
     rest.get('http://localhost/v1/mandate-deadlines', (req, res, ctx) =>
-      res(ctx.json(mandateDeadlinesResponse)),
+      res(ctx.json(mandateDeadlines)),
     ),
   );
 }

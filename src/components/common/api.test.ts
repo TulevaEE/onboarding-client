@@ -1325,6 +1325,8 @@ describe('API calls', () => {
       paymentRateDeadline: '2020-11-30T21:59:59.999999999Z',
       paymentRateFulfillmentDate: '2021-01-01',
       secondPillarContributionEndDate: '2020-09-01',
+      secondPillarRejoinDeadline: '2020-03-31T20:59:59.999999999Z',
+      secondPillarRejoinContributionStartDate: '2020-09-01',
       thirdPillarPaymentDeadline: '2019-12-27T13:59:59.999999999Z',
     };
 

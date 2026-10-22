@@ -27,7 +27,7 @@ const ChoiceRow = ({ id, label, value, open, onToggle, children }: ChoiceRowProp
       </div>
       <button
         type="button"
-        className="btn btn-link p-0 text-end"
+        className="btn btn-link link-body-emphasis p-0 text-end"
         style={{ minWidth: '4.5rem' }}
         aria-expanded={open}
         onClick={onToggle}
@@ -61,7 +61,17 @@ export const PaymentRateChoice = ({
     id="rejoin-payment-rate"
     label={<FormattedMessage id="secondPillarRejoin.paymentRate.label" />}
     value={
-      <FormattedMessage id="secondPillarRejoin.paymentRate.value" values={{ rate: paymentRate }} />
+      <>
+        <FormattedMessage
+          id="secondPillarRejoin.paymentRate.value"
+          values={{ rate: paymentRate }}
+        />
+        {!open && paymentRate === RECOMMENDED_PAYMENT_RATE && (
+          <span className="d-block fw-normal">
+            <FormattedMessage id="secondPillarPaymentRate.maximumBenefit" />
+          </span>
+        )}
+      </>
     }
     open={open}
     onToggle={onToggle}
@@ -146,6 +156,11 @@ export const FundChoice = ({
         chosenFund && (
           <>
             {chosenFund.name}
+            {!open && !isAnotherFundChosen && (
+              <span className="d-block fw-normal">
+                <FormattedMessage id="secondPillarRejoin.fund.recommended.description" />
+              </span>
+            )}
             <span className="d-block fw-normal">
               <FormattedMessage id="target.funds.fees" />{' '}
               <Fees value={chosenFund.ongoingChargesFigure} showPerYear />

@@ -587,6 +587,8 @@ export interface MandateDeadlines {
   paymentRateDeadline: string;
   paymentRateFulfillmentDate: string;
   secondPillarContributionEndDate: string;
+  secondPillarRejoinDeadline: string;
+  secondPillarRejoinContributionStartDate: string;
   thirdPillarPaymentDeadline: string;
 }
 

@@ -1,13 +1,15 @@
 import { ReactNode, useState } from 'react';
+import moment from 'moment';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../common';
 import { getRejoinPermission } from '../../common/api';
-import { useCreateMandateBatch, useFunds } from '../../common/apiHooks';
+import { useCreateMandateBatch, useFunds, useMandateDeadlines } from '../../common/apiHooks';
 import { ErrorResponse, Fund } from '../../common/apiModels';
 import { PaymentRateChangeMandateDetails } from '../../common/apiModels/withdrawals';
 import { isSigningWithIdCard } from '../../common/authenticationManager';
 import { TulevaSecondPillarStockFund } from '../../common/utils';
+import { formatDateYear } from '../../common/dateFormatter';
 import { SuccessNotice } from '../common/SuccessNotice/SuccessNotice';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
 import { FundChoice, PaymentRateChoice } from './RejoinChoices';
@@ -16,6 +18,7 @@ import { RejoinDisclaimers } from './RejoinDisclaimers';
 import { useMandateBatchSigning } from '../withdrawals/signing/useMandateBatchSigning';
 import { TranslationKey } from '../../translations';
 import { useView } from './variants';
+import { usePageTitle } from '../../common/usePageTitle';
 
 const STATE_CONTRIBUTION_PERCENT = 4;
 const DEFAULT_PAYMENT_RATE: PaymentRate = 6;
@@ -30,22 +33,29 @@ const bold = (chunks: ReactNode) => <b>{chunks}</b>;
 
 const isOpenForContributions = (fund: Fund) => fund.pillar === 2 && fund.status === 'ACTIVE';
 
-const RejoinHeader = () => (
+const monthOf = (date: string) => moment(date).month() + 1;
+
+const RejoinHeader = ({ contributionStartDate }: { contributionStartDate: string }) => (
   <>
     <h1 className="mb-3 text-balance">
       <FormattedMessage id="secondPillarRejoin.heading" />
     </h1>
     <p className="lead mb-5 text-balance">
-      <FormattedMessage id="secondPillarRejoin.lead" values={{ b: bold }} />
+      <FormattedMessage
+        id="secondPillarRejoin.lead"
+        values={{ b: bold, startMonth: monthOf(contributionStartDate) }}
+      />
     </p>
   </>
 );
 
 export const SecondPillarRejoin = () => {
+  usePageTitle('pageTitle.secondPillarRejoin');
   const [view, setView] = useView();
   const { data: funds } = useFunds();
+  const { data: mandateDeadlines } = useMandateDeadlines();
 
-  if (!funds) {
+  if (!funds || !mandateDeadlines) {
     return <Loader className="align-middle my-4" />;
   }
 
@@ -53,6 +63,7 @@ export const SecondPillarRejoin = () => {
     <div className="col-12 col-md-11 col-lg-8 mx-auto">
       <RejoinApplication
         funds={funds.filter(isOpenForContributions)}
+        contributionStartDate={mandateDeadlines.secondPillarRejoinContributionStartDate}
         isReviewing={view === 'review'}
         onReview={() => setView('review')}
         onBack={() => setView('application')}
@@ -79,11 +90,13 @@ const askPensionikeskus = async (): Promise<RejoinRefusal | null> => {
 
 const RejoinApplication = ({
   funds,
+  contributionStartDate,
   isReviewing,
   onReview,
   onBack,
 }: {
   funds: Fund[];
+  contributionStartDate: string;
   isReviewing: boolean;
   onReview: () => void;
   onBack: () => void;
@@ -109,7 +122,13 @@ const RejoinApplication = ({
   const chosenFund = funds.find((fund) => fund.isin === fundIsin) ?? null;
 
   if (signed) {
-    return <RejoinSuccess paymentRate={paymentRate} chosenFund={chosenFund} />;
+    return (
+      <RejoinSuccess
+        contributionStartDate={contributionStartDate}
+        paymentRate={paymentRate}
+        chosenFund={chosenFund}
+      />
+    );
   }
 
   const createBatchAndStartSigning = async () => {
@@ -210,7 +229,7 @@ const RejoinApplication = ({
                         className="link-secondary"
                         target="_blank"
                         rel="noopener noreferrer"
-                        href="//www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/fonditasude-vordlus/"
+                        href="https://www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/"
                       >
                         {chunks}
                       </a>
@@ -246,7 +265,7 @@ const RejoinApplication = ({
         </>
       ) : (
         <>
-          <RejoinHeader />
+          <RejoinHeader contributionStartDate={contributionStartDate} />
           <div className="border-top mb-5">
             <PaymentRateChoice
               paymentRate={paymentRate}
@@ -306,9 +325,11 @@ const SummaryItem = ({ label, children }: { label: ReactNode; children: ReactNod
 );
 
 const RejoinSuccess = ({
+  contributionStartDate,
   paymentRate,
   chosenFund,
 }: {
+  contributionStartDate: string;
   paymentRate: PaymentRate;
   chosenFund: Fund | null;
 }) => {
@@ -327,7 +348,7 @@ const RejoinSuccess = ({
         <SummaryItem
           label={<FormattedMessage id="secondPillarRejoin.success.contributionsStart" />}
         >
-          <FormattedMessage id="secondPillarRejoin.success.contributionsStartDate" />
+          {formatDateYear(contributionStartDate)}
         </SummaryItem>
         <SummaryItem label={<FormattedMessage id="secondPillarRejoin.paymentRate.label" />}>
           <FormattedMessage

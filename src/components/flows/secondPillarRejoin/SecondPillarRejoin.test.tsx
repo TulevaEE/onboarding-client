@@ -8,11 +8,14 @@ import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import { initializeConfiguration } from '../../config/config';
 import {
   mandateBatchBackend,
+  mandateDeadlinesBackend,
   rejoinPermissionBackend,
   smartIdMandateBatchSigningBackend,
   useTestBackends,
 } from '../../../test/backend';
+import { mandateDeadlinesResponse } from '../../../test/backend-responses';
 import { CreateMandateBatchDto } from '../../common/apiModels/withdrawals';
+import { MandateDeadlines } from '../../common/apiModels';
 import LoggedInApp from '../../LoggedInApp';
 
 describe('When an eligible person rejoins the II pillar', () => {
@@ -41,6 +44,7 @@ describe('When an eligible person rejoins the II pillar', () => {
   beforeEach(() => {
     initializeConfiguration();
     useTestBackends(server);
+    mandateDeadlinesBackend(server, NOVEMBER_WINDOW);
     rejoinPermissionBackend(server, { permitted: true });
     mandateBatches = mandateBatchBackend(server);
     smartIdMandateBatchSigningBackend(server);
@@ -53,7 +57,29 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(screen.getByText(/^30\sNovember$/, { selector: 'b' })).toBeInTheDocument();
   });
 
-  test('keeps the I pillar effect and the restriction with the application to make contributions', async () => {
+  test('leads with 31 March and saving from September when filing in the spring window', async () => {
+    mandateDeadlinesBackend(server, MARCH_WINDOW);
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(screen.getByText(/^31\sMarch$/, { selector: 'b' })).toBeInTheDocument();
+    expect(lead()).toHaveTextContent(/saving starts in September\.$/);
+  });
+
+  test('leads with 31 July and saving from next January when filing in the summer window', async () => {
+    mandateDeadlinesBackend(server, JULY_WINDOW);
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(screen.getByText(/^31\sJuly$/, { selector: 'b' })).toBeInTheDocument();
+    expect(lead()).toHaveTextContent(/saving starts next January\.$/);
+  });
+
+  test('leads with 30 November and saving from next May when filing in the autumn window', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(lead()).toHaveTextContent(/saving starts next May\.$/);
+  });
+
+  test('keeps the I pillar effect and the restriction with the application to make contributions, without a taxation caveat', async () => {
     await renderAt('/2nd-pillar-rejoin');
     userEvent.click(nextButton());
 
@@ -62,9 +88,11 @@ describe('When an eligible person rejoins the II pillar', () => {
     ).getByRole('note');
     expect(disclaimers).toHaveTextContent(restriction);
     expect(disclaimers).toHaveTextContent(
-      'Social tax paid into the II pillar also has a small effect on your I pillar.',
+      'Social tax paid into the II pillar slightly reduces your I pillar.',
     );
+    expect(disclaimers).not.toHaveTextContent(/Taxation|Tax laws/);
     expect(within(disclaimers).queryByRole('link')).not.toBeInTheDocument();
+    expect(disclaimers).toHaveTextContent(/your I\spillar\..*can't stop contributions/);
   });
 
   test('opens the application with 6% and the Tuleva stock fund preselected and collapsed', async () => {
@@ -76,6 +104,38 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(fundRow()).toHaveTextContent('Tuleva World Stocks Pension Fund');
     expect(fundRow()).toHaveTextContent(/Fees\s*0\.39%/);
     expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+  });
+
+  test('names the page in the browser tab', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(document.title).toMatch(/^Rejoining the II\spillar – Tuleva$/);
+  });
+
+  test('says why each default is a good choice while the choices are still closed', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(paymentRateRow()).toHaveTextContent(/greatest tax benefit/);
+    expect(fundRow()).toHaveTextContent('A low-cost index fund that invests entirely in stocks');
+    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+  });
+
+  test('drops the reason once a smaller rate or another fund is chosen', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    userEvent.click(within(paymentRateRow()).getByRole('button', { name: 'Change' }));
+    userEvent.click(screen.getByRole('radio', { name: /^4% of gross salary/i }));
+    userEvent.click(within(paymentRateRow()).getByRole('button', { name: 'Done' }));
+    userEvent.click(within(fundRow()).getByRole('button', { name: 'Change' }));
+    userEvent.click(screen.getByRole('radio', { name: 'Another fund' }));
+    userEvent.selectOptions(
+      screen.getByRole('combobox', { name: 'Select a pension fund' }),
+      'EE3600019758',
+    );
+    userEvent.click(within(fundRow()).getByRole('button', { name: 'Done' }));
+
+    expect(paymentRateRow()).not.toHaveTextContent(/greatest tax benefit/);
+    expect(fundRow()).not.toHaveTextContent('A low-cost index fund');
   });
 
   test('reviews the three applications read-only before signing, like other batch applications', async () => {
@@ -102,8 +162,16 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(screen.getByText('II pillar contribution rate application')).toBeInTheDocument();
     expect(screen.getByText('II pillar fund selection application')).toBeInTheDocument();
     expect(screen.queryByText(/Application #/)).not.toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Pension Centre/ })).toBeInTheDocument();
-    expect(termsCheckbox()).toHaveAccessibleName(/signed applications go straight to the register/);
+    expect(screen.getByRole('link', { name: /Pension Centre/ })).toHaveAttribute(
+      'href',
+      'https://www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/',
+    );
+    expect(termsCheckbox()).toHaveAccessibleName(
+      /terms, prospectuses and key information documents of all mandatory pension funds.*signed applications go straight to the register/,
+    );
+    expect(termsCheckbox()).toHaveAccessibleName(
+      /You'll find the funds' fees, terms, prospectuses and key information documents on the Pension Centre website/,
+    );
     expect(screen.queryByRole('button', { name: 'Change' })).not.toBeInTheDocument();
   });
 
@@ -159,6 +227,16 @@ describe('When an eligible person rejoins the II pillar', () => {
     expectSignedBatch('SIX', 'EE3600109435');
   });
 
+  test('dates the start of contributions from the filing window', async () => {
+    mandateDeadlinesBackend(server, MARCH_WINDOW);
+    await renderAt('/2nd-pillar-rejoin');
+
+    signApplications();
+
+    expect(await successHeading()).toBeInTheDocument();
+    expect(summaryItems()[0]).toHaveTextContent('Contributions start September 1, 2027');
+  });
+
   test('staying at 2% says the contribution stays at 2%', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
@@ -208,7 +286,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(
       screen.getByRole('radio', { name: /^Tuleva World Stocks Pension Fund/ }),
     ).toHaveAccessibleName(
-      /^Tuleva World Stocks Pension Fund\s*A low-cost index fund that invests entirely in stocks\..*Fees\s*0\.39%/,
+      /^Tuleva World Stocks Pension Fund\s*A low-cost index fund that invests entirely in stocks\s*Fees\s*0\.39%/,
     );
     expect(
       screen.getByRole('radio', { name: /^Tuleva World Stocks Pension Fund/ }),
@@ -295,8 +373,21 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(mandateBatches.created).toEqual([]);
   });
 
-  const restriction = "You can use the money from age 60 and can't withdraw it again before then.";
+  const rejoinWindow = (
+    secondPillarRejoinDeadline: string,
+    secondPillarRejoinContributionStartDate: string,
+  ): MandateDeadlines => ({
+    ...mandateDeadlinesResponse,
+    secondPillarRejoinDeadline,
+    secondPillarRejoinContributionStartDate,
+  });
+  const MARCH_WINDOW = rejoinWindow('2027-03-31T20:59:59.999999999Z', '2027-09-01');
+  const JULY_WINDOW = rejoinWindow('2027-07-31T20:59:59.999999999Z', '2028-01-01');
+  const NOVEMBER_WINDOW = rejoinWindow('2026-11-30T21:59:59.999999999Z', '2027-05-01');
+  const restriction =
+    "You can use the money from age 60. After rejoining, you can't stop contributions again or withdraw the money a second time.";
   const heading = () => screen.findByRole('heading', { name: 'Get the tax win again' });
+  const lead = () => screen.getByText(/^The state directs/);
   const paymentRateRow = () => screen.getByRole('group', { name: 'Your contribution' });
   const fundRow = () => screen.getByRole('group', { name: 'Fund' });
   const signButton = () => screen.getByRole('button', { name: 'Sign and send mandate' });
@@ -311,10 +402,12 @@ describe('When an eligible person rejoins the II pillar', () => {
     userEvent.click(signButton());
   };
   const successHeading = () => screen.findByRole('heading', { name: 'Applications submitted' });
+  const summaryItems = () =>
+    within(screen.getByRole('list', { name: 'Summary' })).getAllByRole('listitem');
   const expectSummary = (contribution: string, fund: string) => {
-    const items = within(screen.getByRole('list', { name: 'Summary' })).getAllByRole('listitem');
+    const items = summaryItems();
     expect(items).toHaveLength(4);
-    expect(items[0]).toHaveTextContent('Contributions start 1 May 2027');
+    expect(items[0]).toHaveTextContent('Contributions start May 1, 2027');
     expect(items[1]).toHaveTextContent(`Your contribution ${contribution} of gross salary`);
     expect(items[2]).toHaveTextContent('The state adds 4% of gross salary');
     expect(items[3]).toHaveTextContent(`Fund ${fund}`);

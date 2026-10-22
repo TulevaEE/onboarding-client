@@ -9,6 +9,8 @@ export const mandateDeadlinesProfiles: Record<string, MandateDeadlines> = {
     transferMandateFulfillmentDate: '2027-01-01',
     paymentRateDeadline: '2026-11-30T21:59:59.999999999Z',
     paymentRateFulfillmentDate: '2027-01-01',
+    secondPillarRejoinDeadline: '2026-11-30T21:59:59.999999999Z',
+    secondPillarRejoinContributionStartDate: '2027-05-01',
     thirdPillarPaymentDeadline: '2026-12-28T13:59:59.999999999Z',
   },
   DECEMBER_2026_AFTER_DEADLINE: {
@@ -18,6 +20,8 @@ export const mandateDeadlinesProfiles: Record<string, MandateDeadlines> = {
     transferMandateFulfillmentDate: '2027-05-01',
     paymentRateDeadline: '2027-11-30T21:59:59.999999999Z',
     paymentRateFulfillmentDate: '2028-01-01',
+    secondPillarRejoinDeadline: '2027-03-31T20:59:59.999999999Z',
+    secondPillarRejoinContributionStartDate: '2027-09-01',
     thirdPillarPaymentDeadline: '2026-12-28T13:59:59.999999999Z',
   },
 };
