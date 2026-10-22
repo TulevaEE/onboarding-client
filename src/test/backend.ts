@@ -23,6 +23,7 @@ import {
   MemberLookup,
   CapitalType,
   SecondPillarAssets,
+  ReceivedGift,
 } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { parseJwt } from '../components/common/jwt';
@@ -1490,6 +1491,12 @@ export function recurringPaymentConfirmationBackend(
   return () => confirmations;
 }
 
+export function myGiftsBackend(server: SetupServerApi, gifts: ReceivedGift[] = []): void {
+  server.use(
+    rest.get('http://localhost/v1/savings-fund/gifts', (req, res, ctx) => res(ctx.json(gifts))),
+  );
+}
+
 export function trackedEventsBackend(server: SetupServerApi): void {
   server.use(rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))));
 }
@@ -1540,6 +1547,7 @@ const TEST_BACKENDS = {
   nudge: nudgeBackend,
   paymentRateRedirect: paymentRateRedirectBackend,
   recurringPaymentConfirmation: recurringPaymentConfirmationBackend,
+  myGifts: myGiftsBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

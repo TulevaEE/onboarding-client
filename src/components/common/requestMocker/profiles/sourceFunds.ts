@@ -39,4 +39,13 @@ export const sourceFundsProfiles: Record<string, SourceFund[]> = {
   ONLY_SECOND_PILLAR: [secondPillarFund],
   ONLY_THIRD_PILLAR: [thirdPillarFund],
   NO_HOLDINGS: [],
+  MINOR_THIRD_PILLAR: [
+    {
+      ...thirdPillarFund,
+      price: 312.5,
+      contributions: 300,
+      profit: 12.5,
+      units: 312.5 / 0.7813,
+    },
+  ],
 };

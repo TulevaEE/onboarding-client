@@ -6,7 +6,7 @@ import { useMe, usePendingOnboardings, useRoles, useSwitchRole } from '../../../
 import { Role, SwitchRoleCommand, User } from '../../../common/apiModels';
 import { AccountIcon, AccountIconKind } from '../../../common/AccountIcon';
 import { PhosphorIcon } from '../../../common/PhosphorIcon';
-import { isChildRole, isCurrentRole } from '../../../common/utils';
+import { isChildRole, isCurrentRole, isMinorActingAsSelf } from '../../../common/utils';
 import LanguageSwitcher from '../languageSwitcher';
 import { PII_CLASS } from '../../../tracking/piiMarkup';
 import { SECURITY_PATH } from '../../../paths';
@@ -110,8 +110,10 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
   };
 
   const displayName = user?.role?.name ?? userName;
+  const isReadOnlyAccount = isMinorActingAsSelf(user);
   const pendingChildren = pendingChildOnboardings(pendingOnboardings);
-  const hasAnotherAccount = (roles?.length ?? 0) > 1 || pendingChildren.length > 0;
+  const hasAnotherAccount =
+    !isReadOnlyAccount && ((roles?.length ?? 0) > 1 || pendingChildren.length > 0);
 
   const handleRoleClick = (command: SwitchRoleCommand, isCurrent: boolean) => {
     setOpen(false);
@@ -163,7 +165,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
             <PhosphorIcon name="house" size={18} className="text-body-secondary" />
             <FormattedMessage id="header.my.account" />
           </Link>
-          {connectedApps.length > 0 && (
+          {connectedApps.length > 0 && !isReadOnlyAccount && (
             <Link
               className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2"
               to={SECURITY_PATH}
@@ -223,16 +225,20 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
               ))}
             </>
           )}
-          <Link
-            className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2 link-primary fw-medium"
-            to="/savings-fund/onboarding"
-            onClick={() => setOpen(false)}
-            onKeyDown={handleKeyDown}
-          >
-            <PhosphorIcon name="plus" size={18} />
-            <FormattedMessage id="roleSwitcher.openNewAccount" />
-          </Link>
-          <hr className="dropdown-divider" />
+          {!isReadOnlyAccount && (
+            <>
+              <Link
+                className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2 link-primary fw-medium"
+                to="/savings-fund/onboarding"
+                onClick={() => setOpen(false)}
+                onKeyDown={handleKeyDown}
+              >
+                <PhosphorIcon name="plus" size={18} />
+                <FormattedMessage id="roleSwitcher.openNewAccount" />
+              </Link>
+              <hr className="dropdown-divider" />
+            </>
+          )}
           <a
             href="/login"
             className="dropdown-item text-wrap text-balance d-flex align-items-center gap-2"

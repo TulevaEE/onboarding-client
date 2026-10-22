@@ -786,22 +786,30 @@ function getWindow(paymentType: PaymentType): Window {
   return newWindow;
 }
 
+const fetchSavingsFundBalance = async (): Promise<SourceFund | null> => {
+  const fund = await getWithAuthentication<FundBalance>(
+    getEndpoint('/v1/savings-account-statement'),
+  );
+
+  if (!fund) {
+    return null;
+  }
+
+  return transformFundBalance(fund);
+};
+
 export async function getSavingsFundBalance(): Promise<SourceFund | null> {
   return mockRequestInMockMode(async () => {
     try {
-      const fund = await getWithAuthentication<FundBalance>(
-        getEndpoint('/v1/savings-account-statement'),
-      );
-
-      if (!fund) {
-        return null;
-      }
-
-      return transformFundBalance(fund);
+      return await fetchSavingsFundBalance();
     } catch (error) {
       return null;
     }
   }, 'savingsFundBalance');
+}
+
+export async function getSavingsFundBalanceOrFail(): Promise<SourceFund | null> {
+  return mockRequestInMockMode(fetchSavingsFundBalance, 'savingsFundBalance');
 }
 
 export async function getSavingsFundBankAccounts(): Promise<string[]> {

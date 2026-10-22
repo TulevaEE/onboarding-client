@@ -199,6 +199,16 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     funds: 'WITHOUT_SAVINGS_FUND',
   },
 
+  MINOR_SELF_VIEW: {
+    user: 'MINOR',
+    roles: 'MINOR_ONLY',
+    funds: 'WITH_SAVINGS_FUND',
+    savingsFundBalance: 'MINOR',
+    sourceFunds: 'MINOR_THIRD_PILLAR',
+    transactions: 'MINOR_SAVINGS_FUND',
+    myGifts: 'MINOR',
+  },
+
   WITHDRAWALS_PENSIONER_60_ALL_PILLARS: {
     withdrawalsEligibility: 'ALL_PILLARS_60',
     sourceFunds: 'BOTH_PILLARS',

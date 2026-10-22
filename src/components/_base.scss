@@ -286,6 +286,12 @@ small {
   text-wrap: pretty;
 }
 
+@media (min-width: 576px) {
+  .text-sm-nowrap {
+    white-space: nowrap !important;
+  }
+}
+
 .scroll-margin-bottom {
   scroll-margin-bottom: $spacer * 1.5;
 }
