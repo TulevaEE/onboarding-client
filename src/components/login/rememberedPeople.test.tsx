@@ -68,6 +68,7 @@ describe('who this browser remembers', () => {
       </RememberWhoThisBrowserRemembers>,
     );
 
+    // eslint-disable-next-line testing-library/no-node-access
     act(() => screen.getByRole('button', { name: 'Not you?' }).click());
     await act(async () => answer({ firstName: 'Mari' }));
 
