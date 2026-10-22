@@ -40,7 +40,7 @@ describe('Axios Instance Creation and Interceptors', () => {
     mockAxios.restore();
     jest.restoreAllMocks();
     delete (window as any).location;
-    window.location = originalLocation;
+    window.location = originalLocation as any;
   });
 
   function stubLocation(): void {

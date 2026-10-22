@@ -1560,7 +1560,7 @@ describe('API calls', () => {
     });
 
     afterAll(() => {
-      window.location = originalLocation;
+      window.location = originalLocation as any;
     });
 
     it('redirects to payment link for non-recurring payments', async () => {
