@@ -1316,8 +1316,7 @@ describe('SavingsFundCompanyOnboarding', () => {
     const submittedEmails: (string | undefined)[] = [];
     savingsFundOnboardingSurveyBackend(server, (body) => {
       const emailAnswer = body.answers.find((answer) => answer.type === 'EMAIL') as
-        | { type: string; value: { value: string } }
-        | undefined;
+        { type: string; value: { value: string } } | undefined;
       submittedEmails.push(emailAnswer?.value.value);
     });
 

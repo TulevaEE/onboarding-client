@@ -1584,7 +1584,7 @@ describe('API calls', () => {
         () =>
           ({
             document: { write: jest.fn() },
-          } as any),
+          }) as any,
       );
     });
 

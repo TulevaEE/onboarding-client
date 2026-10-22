@@ -87,7 +87,7 @@ export const LoginPage = ({
     Boolean(authenticating) &&
     Boolean(
       controlCode ||
-        (smartIdWeb2AppLink && opensTheSmartIdApp({ qrCodeRequested: smartIdQrCodeRequested })),
+      (smartIdWeb2AppLink && opensTheSmartIdApp({ qrCodeRequested: smartIdQrCodeRequested })),
     );
 
   const confirmingWith =

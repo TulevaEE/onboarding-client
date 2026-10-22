@@ -18,7 +18,7 @@ const MobileIdPerson = () => {
   const people = useContext(KnownRememberedPeople);
   useEffect(() => people?.ensure('mobileIdPerson'), [people]);
   const person = people?.state.mobileIdPerson;
-  return <output>{person === undefined ? 'asking' : person?.firstName ?? 'nobody'}</output>;
+  return <output>{person === undefined ? 'asking' : (person?.firstName ?? 'nobody')}</output>;
 };
 
 const NotYou = () => {

@@ -25,7 +25,7 @@ export const WithdrawalsHeader = () => {
     hasEarlierThirdPillarReducedTaxAccess(eligibility) && hasThirdPillarHoldings;
   const showTaxOnlyNote = hasThirdPillarEarlierAccess || !hasSecondPillarHoldings;
   const thirdPillarAccessYearsToGo = hasThirdPillarEarlierAccess
-    ? getYearsToGoUntilThirdPillarReducedTax(eligibility) ?? 0
+    ? (getYearsToGoUntilThirdPillarReducedTax(eligibility) ?? 0)
     : getYearsToGoUntilEarlyRetirementAge(eligibility);
 
   return (

@@ -101,7 +101,7 @@ export const FirstVsSecondPillarComparison = () => {
         ({
           ...contribution,
           time: minusOneMonth(contribution.time),
-        } as SecondPillarContribution),
+        }) as SecondPillarContribution,
     )
     .filter(
       ({ time }) => new Date(time) >= new Date(fromDate) && new Date(time) <= new Date(toDate),

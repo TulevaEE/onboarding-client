@@ -11,7 +11,9 @@
   padding: 1.5rem;
   width: 100%;
 
-  transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
+  transition:
+    background-color 0.15s ease-out,
+    border-color 0.15s ease-out;
 
   &:not(&--disabled),
   &:not(&--disabled) > * {
@@ -65,7 +67,9 @@
     justify-content: center;
     background-color: transparent;
     border-width: 2px;
-    transition: border-color 0.15s ease-out, background-color 0.15s ease-out;
+    transition:
+      border-color 0.15s ease-out,
+      background-color 0.15s ease-out;
   }
 
   &__check {

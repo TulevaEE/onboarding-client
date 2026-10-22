@@ -102,11 +102,13 @@ $text-navy-tertiary: #7d8fa3;
 
   --bs-box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
 
-  --box-shadow-dropdown: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.04),
-    0 4px 8px 0 rgba(0, 0, 0, 0.04), 0 12px 24px 0 rgba(0, 0, 0, 0.08);
+  --box-shadow-dropdown:
+    0 0 0 1px rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.04), 0 4px 8px 0 rgba(0, 0, 0, 0.04),
+    0 12px 24px 0 rgba(0, 0, 0, 0.08);
 
-  --box-shadow-calculator: 0 0 0 1px rgba(0, 0, 0, 0.02), 0 1px 3px 0 rgba(0, 0, 0, 0.04),
-    0 3px 9px 0 rgba(0, 0, 0, 0.04), 0 6px 18px 0 rgba(0, 0, 0, 0.04);
+  --box-shadow-calculator:
+    0 0 0 1px rgba(0, 0, 0, 0.02), 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 3px 9px 0 rgba(0, 0, 0, 0.04),
+    0 6px 18px 0 rgba(0, 0, 0, 0.04);
 
   --box-shadow-hc: 0 0 0 1px rgba(0, 0, 0, 0.25);
 }
@@ -178,7 +180,8 @@ $fa-font-path: '~font-awesome/fonts';
 $font-family-sans-serif: 'Roboto', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif !default;
 $font-family-serif: 'Merriweather', Georgia, 'Times New Roman', Times, serif !default;
 $font-family-system: system-ui, sans-serif !default;
-$font-family-monospace: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace !default;
+$font-family-monospace:
+  Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace !default;
 $font-family-base: $font-family-sans-serif !default;
 
 $font-size-xs: 0.75em;
