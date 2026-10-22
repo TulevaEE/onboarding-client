@@ -2,7 +2,7 @@ import { Route } from 'react-router-dom';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { createMemoryHistory, History } from 'history';
-import { cleanup, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SavingsFundWithdraw } from './SavingsFundWithdraw';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
@@ -30,6 +30,10 @@ const mockSavingsFundBalance: SourceFund = {
 };
 
 const mockBankAccounts = ['EE362200221234567897', 'EE362200221098765432'];
+
+const slideTo = (slider: HTMLElement, value: string) =>
+  // eslint-disable-next-line testing-library/prefer-user-event
+  fireEvent.change(slider, { target: { value } });
 
 describe(SavingsFundWithdraw, () => {
   const server = setupServer();
@@ -118,6 +122,22 @@ describe(SavingsFundWithdraw, () => {
 
     expect(await screen.findByText(bankAccountValidationMessage)).toBeInTheDocument();
     expect(submitButton).toBeEnabled();
+  });
+
+  it('validates the amount chosen with the slider as it moves', async () => {
+    const amountInput = await screen.findByRole('textbox', { name: 'Amount' });
+    const slider = await screen.findByRole('slider');
+    const amountValidationMessage = 'The withdrawal amount must be at least one euro.';
+
+    slideTo(slider, '0.5');
+    expect(await screen.findByText(amountValidationMessage)).toBeInTheDocument();
+    expect(amountInput).toHaveValue('0.5');
+
+    slideTo(slider, '300');
+    await waitFor(() =>
+      expect(screen.queryByText(amountValidationMessage)).not.toBeInTheDocument(),
+    );
+    expect(amountInput).toHaveValue('300');
   });
 
   it('displays balance slider with correct range', async () => {
