@@ -200,7 +200,7 @@ const portfolioBackendRefusingNarrowedPeriods = () =>
 
 const statementRequests: string[] = [];
 
-const registerHolding = (funds: unknown[], savingsFund: unknown | null) =>
+const registerHolding = (funds: unknown[], savingsFund: Record<string, unknown> | null) =>
   server.use(
     rest.get('http://localhost/v1/pension-account-statement', (req, res, ctx) => {
       statementRequests.push(req.url.pathname);

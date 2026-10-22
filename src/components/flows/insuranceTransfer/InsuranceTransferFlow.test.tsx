@@ -330,10 +330,10 @@ describe('III pillar insurance contract transfer', () => {
 
       userEvent.click(await screen.findByRole('button', { name: 'Save' }));
 
-      expect(await screen.findByText(/^Choose Tuleva III\spillar$/)).toBeInTheDocument();
       await waitFor(() =>
         expect(history.location.pathname).toBe('/3rd-pillar-insurance/selection'),
       );
+      expect(await screen.findByText(/^Choose Tuleva III\spillar$/)).toBeInTheDocument();
       expect(savedContactDetails).toEqual([
         { email: 'john.doe@example.com', phoneNumber: '55667788' },
       ]);
