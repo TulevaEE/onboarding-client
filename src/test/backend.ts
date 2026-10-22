@@ -5,7 +5,7 @@ import {
   RestContext,
   RestRequest,
 } from 'msw';
-import { SetupServerApi } from 'msw/node';
+import { SetupServer } from 'msw/node';
 import queryString from 'qs';
 import { isEqual } from 'lodash';
 import moment from 'moment';
@@ -77,7 +77,7 @@ import { KycIdentity } from '../components/flows/savingsAccount/SavingsFundOnboa
 import { NudgeDecision, PaymentRateRedirect } from '../components/common/apiModels/nudge';
 import { ConnectedApp } from '../components/security/connectedApps/connectedApps.api';
 
-export function cancellationBackend(server: SetupServerApi): {
+export function cancellationBackend(server: SetupServer): {
   cancellationCreated: boolean;
 } {
   const backend = {
@@ -95,7 +95,7 @@ export function cancellationBackend(server: SetupServerApi): {
   return backend;
 }
 
-export const mandateDownloadBackend = (server: SetupServerApi): void => {
+export const mandateDownloadBackend = (server: SetupServer): void => {
   server.use(
     rest.get('http://localhost/v1/mandates/1/file', async (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
@@ -106,7 +106,7 @@ export const mandateDownloadBackend = (server: SetupServerApi): void => {
   );
 };
 
-export function mandatePreviewBackend(server: SetupServerApi): {
+export function mandatePreviewBackend(server: SetupServer): {
   previewDownloaded: boolean;
 } {
   const backend = {
@@ -124,9 +124,7 @@ export function mandatePreviewBackend(server: SetupServerApi): {
   return backend;
 }
 
-export const mandateBatchBackend = (
-  server: SetupServerApi,
-): { created: CreateMandateBatchDto[] } => {
+export const mandateBatchBackend = (server: SetupServer): { created: CreateMandateBatchDto[] } => {
   const backend = { created: [] as CreateMandateBatchDto[] };
   server.use(
     rest.post(
@@ -157,7 +155,7 @@ export const mandateBatchBackend = (
 };
 
 export function rejoinPermissionBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   {
     permitted,
     decision = permitted ? 'PERMITTED' : 'REFUSED_BY_PENSIONIKESKUS',
@@ -174,7 +172,7 @@ export function rejoinPermissionBackend(
 }
 
 export function smartIdMandateSigningBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   options: { challengeCode?: string } = {},
 ): {
   mandateSigned: boolean;
@@ -201,7 +199,7 @@ export function smartIdMandateSigningBackend(
 }
 
 export function smartIdMandateBatchSigningBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   options: { challengeCode?: string } = {},
 ): {
   signed: boolean;
@@ -259,7 +257,7 @@ type SmartIdAuthenticationBackend = {
 const PATH_ON_THIS_SITE_LIKE_THE_BACKEND_ACCEPTS = /^\/(?![/\\])\S{0,2047}$/;
 
 export function smartIdAuthenticationBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   options: {
     language?: string;
     loseFirstCallbackAnswer?: boolean;
@@ -451,7 +449,7 @@ export function smartIdAuthenticationBackend(
 type MobileIdLoginStart = { personalCode?: string; phoneNumber?: string; rememberMe?: boolean };
 
 export function mobileIdAuthenticationBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   options: {
     challengeCode?: string;
     identityCode?: string;
@@ -581,7 +579,7 @@ export function mobileIdAuthenticationBackend(
 }
 
 export function webEidAuthenticationBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   options: { issueAccessToken?: () => string } = {},
 ): void {
   server.use(
@@ -615,7 +613,7 @@ export function webEidAuthenticationBackend(
   );
 }
 
-export function partnerAuthenticationBackend(server: SetupServerApi): void {
+export function partnerAuthenticationBackend(server: SetupServer): void {
   server.use(
     rest.post('http://localhost/oauth/token', (req, res, ctx) =>
       res(
@@ -630,7 +628,7 @@ export function partnerAuthenticationBackend(server: SetupServerApi): void {
 }
 
 export function userBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   overrides: Partial<User> = {},
   expectedUser: Partial<User> = mockUser,
 ): void {
@@ -660,7 +658,7 @@ export function userBackend(
 }
 
 export function userConversionBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   secondPillarOverrides: Partial<Conversion> = {},
   thirdPillarOverrides: Partial<Conversion> = {},
 ): void {
@@ -682,7 +680,7 @@ export function userConversionBackend(
   );
 }
 
-export function amlChecksBackend(server: SetupServerApi): void {
+export function amlChecksBackend(server: SetupServer): void {
   server.use(rest.get('http://localhost/v1/amlchecks', (req, res, ctx) => res(ctx.json([]))));
   server.use(
     rest.post('http://localhost/v1/amlchecks', (req, res, ctx) => {
@@ -695,7 +693,7 @@ export function amlChecksBackend(server: SetupServerApi): void {
 }
 
 export function pensionAccountStatementBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   fundBalances: FundBalance[] | null = null,
 ): void {
   server.use(
@@ -770,12 +768,12 @@ export function pensionAccountStatementBackend(
   );
 }
 
-export function fundsBackend(server: SetupServerApi): void {
+export function fundsBackend(server: SetupServer): void {
   server.use(rest.get('http://localhost/v1/funds', (req, res, ctx) => res(ctx.json(mockFunds))));
 }
 
 export function secondPillarAssetsBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   overrides: Partial<SecondPillarAssets> = {},
 ): void {
   server.use(
@@ -794,7 +792,7 @@ export function setReturnsData(data: ReturnsResponse | undefined): void {
   returnData = data;
 }
 
-export function returnsBackend(server: SetupServerApi): void {
+export function returnsBackend(server: SetupServer): void {
   server.use(
     rest.get('http://localhost/v1/returns', (req, res, ctx) => {
       const data = returnData || {
@@ -824,7 +822,7 @@ export function returnsBackend(server: SetupServerApi): void {
 }
 
 export function userCapitalBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   capitalRows: CapitalRow[] = capitalRowsResponse,
 ): void {
   server.use(
@@ -841,26 +839,20 @@ export function userCapitalBackend(
   );
 }
 
-export function applicationsBackend(
-  server: SetupServerApi,
-  applications: Application[] = [],
-): void {
+export function applicationsBackend(server: SetupServer, applications: Application[] = []): void {
   server.use(
     rest.get('http://localhost/v1/applications', (req, res, ctx) => res(ctx.json(applications))),
   );
 }
 
-export function transactionsBackend(
-  server: SetupServerApi,
-  transactions: Transaction[] = [],
-): void {
+export function transactionsBackend(server: SetupServer, transactions: Transaction[] = []): void {
   server.use(
     rest.get('http://localhost/v1/transactions', (req, res, ctx) => res(ctx.json(transactions))),
   );
 }
 
 export function portfolioBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   portfolio: Portfolio = emptyPortfolio(),
 ): void {
   server.use(
@@ -886,7 +878,7 @@ function emptyPortfolio(): Portfolio {
   };
 }
 
-export function paymentLinkBackend(server: SetupServerApi): void {
+export function paymentLinkBackend(server: SetupServer): void {
   server.use(
     rest.get('http://localhost/v1/payments/link', (req, res, ctx) => {
       const type = req.url.searchParams.get('type');
@@ -937,7 +929,7 @@ export function paymentLinkBackend(server: SetupServerApi): void {
   );
 }
 
-export function secondPillarPaymentRateBackend(server: SetupServerApi): {
+export function secondPillarPaymentRateBackend(server: SetupServer): {
   mandateCreated: boolean;
 } {
   const backend = {
@@ -956,7 +948,7 @@ export function secondPillarPaymentRateBackend(server: SetupServerApi): {
 }
 
 export function withdrawalsEligibilityBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   eligibility: WithdrawalsEligibility = {
     age: 60,
     hasReachedEarlyRetirementAge: true,
@@ -975,7 +967,7 @@ export function withdrawalsEligibilityBackend(
 }
 
 export function memberCapitalListingsBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   listings: MemberCapitalListing[] = [
     {
       id: 1,
@@ -1039,7 +1031,7 @@ export function memberCapitalListingsBackend(
 }
 
 export function memberLookupBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   member: MemberLookup = {
     id: 1,
     memberNumber: 9999,
@@ -1060,7 +1052,7 @@ export function memberLookupBackend(
 }
 
 export function capitalTransferContractBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   {
     contract = {
       id: 1,
@@ -1096,7 +1088,7 @@ export function capitalTransferContractBackend(
 ) {
   let { state } = contract;
   server.use(
-    rest.post('http://localhost/v1/capital-transfer-contracts/', (req, res, ctx) => {
+    rest.post('http://localhost/v1/capital-transfer-contracts', (req, res, ctx) => {
       if (Object.keys(expectedBookValues).length > 0) {
         const amountsInCreationDto = (req.body as CreateCapitalTransferDto).transferAmounts;
 
@@ -1112,7 +1104,7 @@ export function capitalTransferContractBackend(
       }
       return res(ctx.json({ ...contract, state }));
     }),
-    rest.get('http://localhost/v1/capital-transfer-contracts/', (req, res, ctx) =>
+    rest.get('http://localhost/v1/capital-transfer-contracts', (req, res, ctx) =>
       res(ctx.json([{ ...contract, state }, ...activeContracts])),
     ),
     rest.get('http://localhost/v1/capital-transfer-contracts/1', (req, res, ctx) =>
@@ -1168,7 +1160,7 @@ export function capitalTransferContractBackend(
 }
 
 export function fundPensionStatusBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   fundPensionStatus: FundPensionStatus = {
     fundPensions: [],
   },
@@ -1180,7 +1172,7 @@ export function fundPensionStatusBackend(
   );
 }
 
-export function capitalEventsBackend(server: SetupServerApi, capitalEvents: CapitalEvent[] = []) {
+export function capitalEventsBackend(server: SetupServer, capitalEvents: CapitalEvent[] = []) {
   server.use(
     rest.get('http://localhost/v1/me/capital/events', (req, res, ctx) =>
       res(ctx.json(capitalEvents)),
@@ -1189,7 +1181,7 @@ export function capitalEventsBackend(server: SetupServerApi, capitalEvents: Capi
 }
 
 export function mandateDeadlinesBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   mandateDeadlines: MandateDeadlines = mandateDeadlinesResponse,
 ): void {
   server.use(
@@ -1200,7 +1192,7 @@ export function mandateDeadlinesBackend(
 }
 
 export function mandatesBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   expectedRequest: unknown | null = null,
   pillar: 2 | 3 = 2,
 ) {
@@ -1218,7 +1210,7 @@ export function mandatesBackend(
   );
 }
 
-export function switchRoleBackend(server: SetupServerApi): { switchedRole: any } {
+export function switchRoleBackend(server: SetupServer): { switchedRole: any } {
   const backend = { switchedRole: null as any };
   server.use(
     rest.post('http://localhost/v1/me/role', (req, res, ctx) => {
@@ -1232,7 +1224,7 @@ export function switchRoleBackend(server: SetupServerApi): { switchedRole: any }
 }
 
 export function rolesBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   roles: Role[] = [
     {
       type: 'PERSON',
@@ -1245,7 +1237,7 @@ export function rolesBackend(
 }
 
 export function pendingOnboardingsBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   pendingOnboardings: { type: 'PERSON' | 'LEGAL_ENTITY'; code: string; name: string }[] = [],
 ): void {
   server.use(
@@ -1255,12 +1247,12 @@ export function pendingOnboardingsBackend(
   );
 }
 
-export function contributionsBackend(server: SetupServerApi): void {
+export function contributionsBackend(server: SetupServer): void {
   server.use(rest.get('http://localhost/v1/contributions', (req, res, ctx) => res(ctx.json([]))));
 }
 
 export function savingsFundOnboardingStatusBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   status: string | null = null,
 ): void {
   server.use(
@@ -1271,7 +1263,7 @@ export function savingsFundOnboardingStatusBackend(
 }
 
 export function savingsFundPersonOnboardingStatusBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   status: string | null = null,
 ): void {
   server.use(
@@ -1283,11 +1275,11 @@ export function savingsFundPersonOnboardingStatusBackend(
 
 export const neverAnswer = (): Promise<never> => new Promise(() => {});
 
-export function delayedSavingsFundPersonOnboardingStatusBackend(server: SetupServerApi): void {
+export function delayedSavingsFundPersonOnboardingStatusBackend(server: SetupServer): void {
   server.use(rest.get('http://localhost/v1/savings/onboarding/status/person', neverAnswer));
 }
 
-export function failingKycIdentityBackend(server: SetupServerApi): void {
+export function failingKycIdentityBackend(server: SetupServer): void {
   server.use(
     rest.get('http://localhost/v1/kyc/identity', (req, res, ctx) =>
       res(ctx.status(500), ctx.json({})),
@@ -1296,7 +1288,7 @@ export function failingKycIdentityBackend(server: SetupServerApi): void {
 }
 
 export function savingsFundOnboardingSurveyBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   captureBody?: (body: { answers: { type: string }[] }) => void,
 ): void {
   server.use(
@@ -1308,7 +1300,7 @@ export function savingsFundOnboardingSurveyBackend(
 }
 
 export function eligibleChildrenBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   children: {
     personalCode: string;
     firstName?: string;
@@ -1322,7 +1314,7 @@ export function eligibleChildrenBackend(
 }
 
 export function createChildBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   response: {
     status: 'VERIFIED' | 'UNDER_REVIEW';
     firstName?: string;
@@ -1349,7 +1341,7 @@ export function createChildBackend(
 }
 
 export function kycIdentityBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   identity: KycIdentity = {
     email: mockUser.email,
     phoneNumber: mockUser.phoneNumber,
@@ -1362,7 +1354,7 @@ export function kycIdentityBackend(
 }
 
 export function hackathonRegistrationBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   registration: HackathonRegistration = {
     registered: false,
     open: true,
@@ -1400,7 +1392,7 @@ export function hackathonRegistrationBackend(
 }
 
 export function hackathonIdeasBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   ideas: HackathonIdeas = {
     open: true,
     deadline: '2026-09-30T20:59:59Z',
@@ -1430,7 +1422,7 @@ export function hackathonIdeasBackend(
 }
 
 export function savingsAccountStatementBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   statement: FundBalance | null = null,
 ): void {
   server.use(
@@ -1440,7 +1432,7 @@ export function savingsAccountStatementBackend(
   );
 }
 
-export function businessRegistryBackend(server: SetupServerApi, data: unknown[] = []): void {
+export function businessRegistryBackend(server: SetupServer, data: unknown[] = []): void {
   server.use(
     rest.get('https://ariregister.rik.ee/est/api/autocomplete', (_req, res, ctx) =>
       res(ctx.json({ data })),
@@ -1448,7 +1440,7 @@ export function businessRegistryBackend(server: SetupServerApi, data: unknown[] 
   );
 }
 
-export function companyValidationBackend(server: SetupServerApi): void {
+export function companyValidationBackend(server: SetupServer): void {
   server.use(
     rest.get('http://localhost/v1/kyb/surveys/initial-validation', (_req, res, ctx) =>
       res(ctx.json(mockValidatedCompany)),
@@ -1457,7 +1449,7 @@ export function companyValidationBackend(server: SetupServerApi): void {
 }
 
 export function nudgeBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   decision: NudgeDecision = { key: 'NONE', tag: 'nudge_none' },
 ): void {
   server.use(
@@ -1470,7 +1462,7 @@ export function nudgeBackend(
 }
 
 export function paymentRateRedirectBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   decision: PaymentRateRedirect = { redirect: false },
 ): { count: () => number; dismissals: () => number } {
   let count = 0;
@@ -1489,7 +1481,7 @@ export function paymentRateRedirectBackend(
 }
 
 export function recurringPaymentConfirmationBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   status = 204,
 ): () => number {
   let confirmations = 0;
@@ -1505,7 +1497,7 @@ export function recurringPaymentConfirmationBackend(
   return () => confirmations;
 }
 
-export function trackedEventsBackend(server: SetupServerApi): void {
+export function trackedEventsBackend(server: SetupServer): void {
   server.use(rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))));
 }
 
@@ -1542,7 +1534,7 @@ const TEST_BACKENDS = {
   memberLookup: memberLookupBackend,
   roles: rolesBackend,
   pendingOnboardings: pendingOnboardingsBackend,
-  connectedApps: (server: SetupServerApi) => connectedAppsBackend(server, []),
+  connectedApps: (server: SetupServer) => connectedAppsBackend(server, []),
   switchRole: switchRoleBackend,
   contributions: contributionsBackend,
   businessRegistry: businessRegistryBackend,
@@ -1570,7 +1562,7 @@ function carriesALoginTime(authorization: string | null): boolean {
 }
 
 export function connectBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   options: {
     requestFound?: boolean;
     refuseTheFirstLogin?: LoginRefusal;
@@ -1676,7 +1668,7 @@ export function connectBackend(
 }
 
 export function connectedAppsBackend(
-  server: SetupServerApi,
+  server: SetupServer,
   apps: ConnectedApp[] = connectedAppsResponse,
 ): {
   failTheNextListing: () => void;
@@ -1755,14 +1747,11 @@ export function connectedAppsBackend(
   };
 }
 
-export function useTestBackends(server: SetupServerApi) {
+export function useTestBackends(server: SetupServer) {
   return useTestBackendsExcept(server, []);
 }
 
-export function useTestBackendsExcept(
-  server: SetupServerApi,
-  backendsToExclude: TestBackendName[],
-) {
+export function useTestBackendsExcept(server: SetupServer, backendsToExclude: TestBackendName[]) {
   const testBackendsToUse = Object.keys(TEST_BACKENDS)
     .filter((name) => !backendsToExclude.includes(name as TestBackendName))
     .map((name) => TEST_BACKENDS[name as TestBackendName]);

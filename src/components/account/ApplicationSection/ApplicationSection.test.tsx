@@ -462,7 +462,7 @@ describe('Application section', () => {
 
   function waitForRequestToFinish() {
     return new Promise((resolve) => {
-      server.on('request:end', () => setTimeout(resolve, 50));
+      server.events.on('request:end', () => setTimeout(resolve, 50));
     });
   }
 
