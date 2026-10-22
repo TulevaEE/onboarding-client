@@ -13,7 +13,6 @@ import {
 import { getGlobalErrorCode } from '../common/errorMessage/ErrorMessage';
 import { loginLanding } from './loginLanding';
 import { clearLoginError, failWebEidLogin } from './actions';
-import { noteALoginStartingFor } from '../connect/freshLogin';
 import {
   ID_CARD_LOGIN_START_FAILED_ERROR,
   WEB_EID_TIMEOUT,
@@ -48,7 +47,6 @@ export function useWebEidAuth() {
     mutationFn: () => withWebEidDiagnosis(() => authenticateWithIdCardWebEid(webEidOptions())),
     onMutate: () => {
       dispatch(clearLoginError());
-      noteALoginStartingFor(location.state?.from);
     },
     onSuccess: () => {
       const from = location.state?.from;

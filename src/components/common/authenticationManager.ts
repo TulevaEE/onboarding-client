@@ -1,6 +1,7 @@
 import config from 'react-global-configuration';
 import { AuthenticationPrincipal } from './apiModels';
 import { isSessionStorageBlocked, withSessionStorage } from './siteStorage';
+import { parseJwt } from './jwt';
 
 const AUTHENTICATION_CONFIGURATION_KEY = 'AUTHENTICATION_CONFIGURATION_KEY';
 export function restoreAuthenticationFromSession(): void {
@@ -75,3 +76,15 @@ export function getAuthentication(): AuthenticationManager {
 }
 
 export const isSigningWithIdCard = (): boolean => getAuthentication().signingMethod === 'ID_CARD';
+
+export function loginTimeOf(accessToken: string | undefined): number | null {
+  if (!accessToken) {
+    return null;
+  }
+  try {
+    const loginTime = Date.parse(parseJwt(accessToken).attributes.authTime);
+    return Number.isNaN(loginTime) ? null : loginTime;
+  } catch (error) {
+    return null;
+  }
+}

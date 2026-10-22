@@ -10,6 +10,7 @@ import { RememberKnownMobileIdNumbers } from '../mobileId/knownMobileIdNumbers';
 import { RememberWhoThisBrowserRemembers } from '../rememberedPeople';
 import { Maintenance } from '../Maintenance';
 import { AllowCookiesToLogIn } from './AllowCookiesToLogIn';
+import { LoginCard } from '../LoginFrame';
 
 export const LoginForm = ({
   phoneNumber,
@@ -33,7 +34,7 @@ export const LoginForm = ({
     ) : (
       ''
     )}
-    <div className="bg-white shadow-sm rounded-3 p-4 p-sm-5 text-center">
+    <LoginCard className="text-center">
       {renderLoginForm(
         monthlyThirdPillarContribution,
         exchangeExistingThirdPillarUnits,
@@ -48,7 +49,7 @@ export const LoginForm = ({
         alert,
         pendingLogin,
       )}
-    </div>
+    </LoginCard>
   </>
 );
 

@@ -1,13 +1,12 @@
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useDispatch } from 'react-redux';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 
 import { ErrorAlert, Loader } from '../common';
 import { getAuthentication } from '../common/authenticationManager';
 import { cancelMobileAuthentication } from '../login/actions';
-import { loginPath } from '../login/constants';
-import { LoginFrame } from '../login/LoginFrame';
+import { LoginCard, LoginFrame } from '../login/LoginFrame';
 import {
   asksForAFreshLogin,
   useApproveConnectRequest,
@@ -15,12 +14,8 @@ import {
   useDenyConnectRequest,
   requestIsGone,
 } from './connect.api';
-import {
-  hasALoginThatCannotCountFor,
-  hasFreshLoginFor,
-  stopSteeringTheCallbackTo,
-  startFreshLoginFor,
-} from './freshLogin';
+import { hasALoginThatCannotCountFor, hasFreshLoginFor, startFreshLoginFor } from './freshLogin';
+import { connectLoginPathOf, connectPathOf } from './connectPath';
 import { ConnectScope, describedScopesOf, ScopeDescription } from './ScopeDescription';
 
 export const ConnectPage: FC = () => {
@@ -82,7 +77,6 @@ const ConnectRequestPage: FC<{ requestId: string }> = ({ requestId }) => {
   return (
     <ConnectFrame>
       <Consent
-        requestId={requestId}
         clientName={request.data.clientName}
         scopes={describedScopes}
         answered={answered}
@@ -127,7 +121,6 @@ const FreshLogin: FC<{ requestId: string; createdAt: string; expiresAt: string }
 }) => {
   const history = useHistory();
   const dispatch = useDispatch();
-  const { pathname } = useLocation();
   const [recordRefused, setRecordRefused] = useState(false);
 
   const startTheLogin = useCallback(() => {
@@ -135,9 +128,12 @@ const FreshLogin: FC<{ requestId: string; createdAt: string; expiresAt: string }
     const recordKept = startFreshLoginFor({ requestId, createdAt, expiresAt }, dispatch);
     setRecordRefused(!recordKept);
     if (recordKept) {
-      history.replace({ pathname: loginPath, state: { from: pathname } });
+      history.replace({
+        pathname: connectLoginPathOf(requestId),
+        state: { from: connectPathOf(requestId) },
+      });
     }
-  }, [requestId, createdAt, expiresAt, dispatch, history, pathname]);
+  }, [requestId, createdAt, expiresAt, dispatch, history]);
 
   useEffect(startTheLogin, [startTheLogin]);
 
@@ -145,65 +141,58 @@ const FreshLogin: FC<{ requestId: string; createdAt: string; expiresAt: string }
 };
 
 const Consent: FC<{
-  requestId: string;
   clientName: string;
   scopes: ConnectScope[];
   answered: boolean;
   answerFailed: boolean;
   onAllow: () => void;
   onDeny: () => void;
-}> = ({ requestId, clientName, scopes, answered, answerFailed, onAllow, onDeny }) => {
-  useEffect(() => {
-    stopSteeringTheCallbackTo(requestId);
-  }, [requestId]);
-
-  return (
-    <>
-      <h1 className="m-0 h2 text-balance">
-        <FormattedMessage id="connect.consent.title" values={{ clientName }} />
-      </h1>
-      <ul className="list-unstyled m-0 mt-4 d-flex flex-column gap-2 fs-5">
-        {scopes.map((scope) => (
-          <li key={scope}>
-            <ScopeDescription scope={scope} />
-          </li>
-        ))}
-      </ul>
-      <p className="m-0 mt-4 text-body-secondary text-pretty">
-        <FormattedMessage id="connect.consent.duration" />
-      </p>
-      <p className="m-0 mt-2 text-body-secondary text-pretty">
-        <FormattedMessage id="connect.consent.revocable" />
-      </p>
-      {answerFailed && (
-        <ErrorAlert className="mt-4 mb-0">
-          <FormattedMessage id="connect.error.generic" />
-        </ErrorAlert>
-      )}
-      <div className="d-grid gap-2 mt-5">
-        <button
-          type="button"
-          className="btn btn-primary btn-lg"
-          disabled={answered}
-          onClick={onAllow}
-        >
-          <FormattedMessage id="connect.consent.allow" />
-        </button>
-        <button
-          type="button"
-          className="btn btn-outline-primary btn-lg"
-          disabled={answered}
-          onClick={onDeny}
-        >
-          <FormattedMessage id="connect.consent.deny" />
-        </button>
-      </div>
-    </>
-  );
-};
+}> = ({ clientName, scopes, answered, answerFailed, onAllow, onDeny }) => (
+  <>
+    <h1 className="m-0 h2 text-balance">
+      <FormattedMessage id="connect.consent.title" values={{ clientName }} />
+    </h1>
+    <ul className="list-unstyled m-0 mt-4 d-flex flex-column gap-2 fs-5">
+      {scopes.map((scope) => (
+        <li key={scope}>
+          <ScopeDescription scope={scope} />
+        </li>
+      ))}
+    </ul>
+    <p className="m-0 mt-4 text-body-secondary text-pretty">
+      <FormattedMessage id="connect.consent.duration" />
+    </p>
+    <p className="m-0 mt-2 text-body-secondary text-pretty">
+      <FormattedMessage id="connect.consent.revocable" />
+    </p>
+    {answerFailed && (
+      <ErrorAlert className="mt-4 mb-0">
+        <FormattedMessage id="connect.error.generic" />
+      </ErrorAlert>
+    )}
+    <div className="d-grid gap-2 mt-5">
+      <button
+        type="button"
+        className="btn btn-primary btn-lg"
+        disabled={answered}
+        onClick={onAllow}
+      >
+        <FormattedMessage id="connect.consent.allow" />
+      </button>
+      <button
+        type="button"
+        className="btn btn-outline-primary btn-lg"
+        disabled={answered}
+        onClick={onDeny}
+      >
+        <FormattedMessage id="connect.consent.deny" />
+      </button>
+    </div>
+  </>
+);
 
 const ConnectFrame: FC = ({ children }) => (
   <LoginFrame>
-    <div className="bg-white shadow-sm rounded-3 p-4 p-sm-5 text-center">{children}</div>
+    <LoginCard className="text-center">{children}</LoginCard>
   </LoginFrame>
 );

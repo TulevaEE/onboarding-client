@@ -27,6 +27,7 @@ import {
 } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { parseJwt } from '../components/common/jwt';
+import { smartIdCallbackPath } from '../components/login/constants';
 import { ReturnsResponse } from '../components/account/ComparisonCalculator/api';
 import {
   CreateMandateBatchDto,
@@ -247,6 +248,7 @@ type SmartIdAuthenticationBackend = {
   startedFlows: string[];
   deviceLinkRememberMeChoices: (boolean | undefined)[];
   deviceLinkReturnPaths: (string | undefined)[];
+  callbackAddress: () => string;
   rememberedAccount: { firstName: string; lastName: string } | null;
 };
 
@@ -298,6 +300,11 @@ export function smartIdAuthenticationBackend(
     startedFlows: [],
     deviceLinkRememberMeChoices: [],
     deviceLinkReturnPaths: [],
+    callbackAddress: () => {
+      const returnPath = backend.deviceLinkReturnPaths[backend.deviceLinkReturnPaths.length - 1];
+      const returningTo = returnPath ? `returnPath=${encodeURIComponent(returnPath)}&` : '';
+      return `${smartIdCallbackPath}?${returningTo}value=a-callback-value&sessionSecretDigest=a-digest&userChallengeVerifier=a-verifier`;
+    },
     rememberedAccount: options.rememberedAccount ?? null,
   };
 

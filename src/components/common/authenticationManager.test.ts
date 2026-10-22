@@ -4,6 +4,7 @@ import * as authenticationManagerModule from './authenticationManager';
 import { anAuthenticationManager } from './authenticationManagerFixture';
 import { isSessionStorageBlocked } from './siteStorage';
 import { blockSiteStorage } from '../../test/siteStorage';
+import { anAccessTokenLoggedInAt } from '../../test/backend-responses';
 
 jest.mock('react-global-configuration');
 
@@ -146,6 +147,27 @@ describe('Authentication Management', () => {
     (config.get as jest.Mock).mockImplementation(() => ({}));
     const authManager = authenticationManagerModule.getAuthentication();
     expect(authManager.isAuthenticated()).toBe(false);
+  });
+
+  test('loginTimeOf reads the time of the login the access token was issued for', () => {
+    const loginTime = new Date('2026-10-22T09:15:30Z');
+
+    expect(authenticationManagerModule.loginTimeOf(anAccessTokenLoggedInAt(loginTime))).toBe(
+      loginTime.getTime(),
+    );
+  });
+
+  test.each([
+    ['no access token', undefined],
+    [
+      'an access token without a login time',
+      ['a-header', btoa(JSON.stringify({ sub: 'a-person', attributes: {} })), 'a-signature'].join(
+        '.',
+      ),
+    ],
+    ['an access token that cannot be read', 'not.a-readable.token'],
+  ])('loginTimeOf knows no login time for %s', (_, accessToken) => {
+    expect(authenticationManagerModule.loginTimeOf(accessToken)).toBeNull();
   });
 
   test.each([
