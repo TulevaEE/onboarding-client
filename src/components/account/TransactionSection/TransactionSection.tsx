@@ -14,13 +14,15 @@ import { getOtherTransactionPages } from './getOtherTransactionPages';
 import { signedUnits } from '../../common/transactions';
 import { Units, UnitsRoundingNote } from '../../common/Units';
 import { payerOf } from './payer';
+import { TranslationKey } from '../../translations';
 
 export const TransactionSection: React.FunctionComponent<{
   limit?: number;
   pillar?: number | null;
   children?: React.ReactNode;
   allTransactionsPath?: string;
-}> = ({ limit, pillar, children, allTransactionsPath }) => {
+  emptyMessageId?: TranslationKey;
+}> = ({ limit, pillar, children, allTransactionsPath, emptyMessageId }) => {
   const { data: transactions = [], isLoading: transactionsLoading } = useTransactions();
   const { data: funds = [], isLoading: fundsLoading } = useFunds();
   const { data: user, isLoading: userLoading } = useMe();
@@ -185,7 +187,16 @@ export const TransactionSection: React.FunctionComponent<{
   }
 
   if (!dataSource.length && limit) {
-    return <></>;
+    return emptyMessageId ? (
+      <section className="mt-5">
+        <h2 className="mt-5 mb-4">{children || <FormattedMessage id="transactions.title" />}</h2>
+        <p className="text-body-secondary">
+          <FormattedMessage id={emptyMessageId} />
+        </p>
+      </section>
+    ) : (
+      <></>
+    );
   }
 
   return (

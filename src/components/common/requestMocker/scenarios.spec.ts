@@ -3,7 +3,7 @@ import sumBy from 'lodash/sumBy';
 import { mockScenarios } from './scenarios';
 import { mockModeProfiles } from './profiles';
 import { MockModeConfiguration, MockModeEndpoint } from './types';
-import { Fund, Role, SourceFund, Transaction, User } from '../apiModels';
+import { Fund, ReceivedGift, Role, SourceFund, Transaction, User } from '../apiModels';
 import { isMinorActingAsSelf } from '../utils';
 
 const profileIn = <T>(scenario: Partial<MockModeConfiguration>, endpoint: MockModeEndpoint): T =>
@@ -66,12 +66,17 @@ describe('mock scenarios', () => {
       );
     });
 
-    it('has one deposit from her own bank account and the rest from her parent', () => {
+    it('has one deposit from her own bank account, one gift and the rest from her parent', () => {
       const fromOwnAccount = transactions().filter(({ paidFromOwnAccount }) => paidFromOwnAccount);
       const fromParent = transactions().filter(({ remitterName }) => remitterName === 'Kati Kask');
+      const gifts = profileIn<ReceivedGift[]>(scenario, 'myGifts');
 
       expect(fromOwnAccount).toHaveLength(1);
-      expect(fromParent).toHaveLength(transactions().length - 1);
+      expect(gifts).toHaveLength(1);
+      expect(transactions()).toContainEqual(
+        expect.objectContaining({ remitterName: gifts[0].giverName, amount: gifts[0].amount }),
+      );
+      expect(fromParent).toHaveLength(transactions().length - 2);
     });
 
     it('holds a III pillar fund', () => {

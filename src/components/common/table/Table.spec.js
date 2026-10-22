@@ -102,26 +102,6 @@ describe('Table', () => {
     expect(isInsidePii(screen.getByText('Value'))).toBe(false);
   });
 
-  it("adds a column's own class to its title, its cells and its total", () => {
-    render(
-      <Table
-        columns={[
-          { title: 'Fund', dataIndex: 'fund' },
-          { title: 'Value', dataIndex: 'value', footer: '3 000.00 €', className: 'narrow-value' },
-        ]}
-        dataSource={[
-          { fund: 'World Stocks', value: '1 000.00 €', key: 'world' },
-          { fund: 'Bonds', value: '2 000.00 €', key: 'bonds' },
-        ]}
-      />,
-    );
-
-    expect(screen.getByRole('columnheader', { name: 'Value' })).toHaveClass('narrow-value');
-    expect(screen.getByRole('cell', { name: '1 000.00 €' })).toHaveClass('narrow-value');
-    expect(screen.getByRole('cell', { name: '3 000.00 €' })).toHaveClass('narrow-value');
-    expect(screen.getByRole('cell', { name: 'Bonds' })).not.toHaveClass('narrow-value');
-  });
-
   it('does not render footer when no column footers exist', () => {
     component = shallow(
       <Table

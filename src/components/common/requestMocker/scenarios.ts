@@ -206,6 +206,7 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     savingsFundBalance: 'MINOR',
     sourceFunds: 'MINOR_THIRD_PILLAR',
     transactions: 'MINOR_SAVINGS_FUND',
+    myGifts: 'MINOR',
   },
 
   WITHDRAWALS_PENSIONER_60_ALL_PILLARS: {

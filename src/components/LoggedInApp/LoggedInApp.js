@@ -31,6 +31,7 @@ import {
 import { Footer } from './footer';
 import { ContactDetailsPage } from '../contact-details/ContactDetailsPage';
 import { ContactDetailsGatekeep } from '../contact-details/ContactDetailsGatekeep';
+import { MinorRouteGuard } from './MinorRouteGuard';
 import AmlPage, { actions as amlActions } from '../aml';
 import SignUpPage from '../newUserFlow';
 import { MembershipSuccess } from '../newUserFlow/MembershipSuccess';
@@ -148,6 +149,7 @@ export class LoggedInApp extends PureComponent {
         />
         {this.isDevelopmentMode() && <DevSidebar />}
         <main id="main" className="pb-5">
+          <MinorRouteGuard />
           <Switch>
             <Route
               path={`${ACCOUNT_PATH}/child`}

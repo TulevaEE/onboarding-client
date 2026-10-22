@@ -292,12 +292,6 @@ small {
   }
 }
 
-@media (max-width: 359.98px) {
-  .hidden-below-360px {
-    display: none !important;
-  }
-}
-
 .scroll-margin-bottom {
   scroll-margin-bottom: $spacer * 1.5;
 }

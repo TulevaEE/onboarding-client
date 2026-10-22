@@ -528,6 +528,15 @@ export interface Transaction {
   paidFromOwnAccount?: boolean | null;
 }
 
+export interface ReceivedGift {
+  receivedAt: string;
+  amount: number;
+  // A bank may take hours to send the payer's name, and some never send it.
+  giverName: string | null;
+  message: string | null;
+  confirmed: boolean;
+}
+
 export type TransactionType =
   | 'CONTRIBUTION_CASH'
   | 'CONTRIBUTION_CASH_WORKPLACE'
