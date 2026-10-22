@@ -8,7 +8,10 @@ import {
 } from '@tanstack/react-query';
 import { getEndpoint } from '../../../../common/api';
 import { get, post, getWithAuthentication, postWithAuthentication } from '../../../../common/http';
-import { PaymentChannel } from '../../../../common/apiModels';
+import { PaymentChannel, ReceivedGift } from '../../../../common/apiModels';
+import { mockRequestInMockMode } from '../../../../common/requestMocker';
+
+export type { ReceivedGift };
 
 export interface PublicGiftLink {
   recipientName: string;
@@ -18,15 +21,6 @@ export interface PublicGiftLink {
 export interface GiftLink {
   id: string;
   token: string;
-}
-
-export interface ReceivedGift {
-  receivedAt: string;
-  amount: number;
-  // A bank may take hours to send the payer's name, and some never send it.
-  giverName: string | null;
-  message: string | null;
-  confirmed: boolean;
 }
 
 export interface GiftPayment {
@@ -78,6 +72,23 @@ export function useReceivedGifts(
     queryKey: ['receivedGifts', childCode],
     queryFn: () => getReceivedGifts(giftLinkId as string),
     enabled: !!childCode && !!giftLinkId,
+  });
+}
+
+// The gifts that have arrived for whoever is logged in: a child looking at their own account.
+export function getMyGifts(): Promise<ReceivedGift[]> {
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/savings-fund/gifts')),
+    'myGifts',
+  );
+}
+
+export function useMyGifts(options: { enabled?: boolean } = {}): UseQueryResult<ReceivedGift[]> {
+  return useQuery({
+    queryKey: ['myGifts'],
+    queryFn: () => getMyGifts(),
+    retry: false,
+    ...options,
   });
 }
 
