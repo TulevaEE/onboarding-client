@@ -77,6 +77,12 @@ describe('When a user is logging in', () => {
       store,
     );
   }
+  const rememberNobody = () =>
+    server.use(
+      rest.get('http://localhost/v1/smart-id/login/remembered-account', (req, res, ctx) =>
+        res(ctx.status(204)),
+      ),
+    );
   const reloadThePage = () => {
     cleanup();
     initializeComponent();
@@ -92,6 +98,7 @@ describe('When a user is logging in', () => {
     localStorage.clear();
     initializeConfiguration();
     getAuthentication().remove();
+    rememberNobody();
     initializeComponent();
     act(() => {
       history.push('/login');
