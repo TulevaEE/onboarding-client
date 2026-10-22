@@ -1,5 +1,7 @@
 import type { Breadcrumb, BrowserOptions, ErrorEvent } from '@sentry/browser';
 
+type ChooseIntegrations = Extract<BrowserOptions['integrations'], (...args: never[]) => unknown>;
+
 const mockSentryInit = jest.fn();
 
 const setNodeEnv = (value: string) => {
@@ -42,6 +44,15 @@ describe('Sentry initialization in production', () => {
 
   it('sends messages and values other than errors without a stack trace made up where they were captured', () => {
     expect(options.attachStacktrace).toBe(false);
+  });
+
+  it("sends events without the browser's locale, time zone and calendar", () => {
+    const defaultIntegrations = [{ name: 'Breadcrumbs' }, { name: 'CultureContext' }];
+    const chooseIntegrations = options.integrations as ChooseIntegrations;
+
+    expect(chooseIntegrations(defaultIntegrations).map(({ name }) => name)).toEqual([
+      'Breadcrumbs',
+    ]);
   });
 
   it('drops events without a single frame from our own bundle', () => {
