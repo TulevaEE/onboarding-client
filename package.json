@@ -152,6 +152,9 @@
     "@types/node": "^22.19.0",
     "react-global-configuration": {
       "serialize-javascript": "^7.0.7"
+    },
+    "react-tooltip": {
+      "uuid": "^11.1.1"
     }
   }
 }
