@@ -482,8 +482,7 @@ const statementOwner = (
   name: string;
   code: string;
   codeLabel:
-    | 'savingsFund.statement.document.personalCode'
-    | 'savingsFund.statement.document.registryCode';
+    'savingsFund.statement.document.personalCode' | 'savingsFund.statement.document.registryCode';
 } => {
   if (user.role && !isActingAsSelf(user)) {
     return {

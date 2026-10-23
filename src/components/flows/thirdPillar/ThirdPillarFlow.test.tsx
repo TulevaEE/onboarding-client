@@ -35,8 +35,6 @@ beforeEach(async () => {
   initializeConfiguration();
 
   useTestBackendsExcept(server, ['user', 'userConversion', 'pensionAccountStatement', 'mandates']);
-
-  initializeComponent();
 });
 
 describe('3rd pillar flow', () => {
@@ -48,6 +46,7 @@ describe('3rd pillar flow', () => {
       { transfersComplete: false, selectionComplete: false, paymentComplete: false },
     );
     pensionAccountStatementBackend(server, []);
+    initializeComponent();
     history.push('/3rd-pillar-flow');
 
     expect(await introText()).toBeInTheDocument();
@@ -86,6 +85,7 @@ describe('3rd pillar flow', () => {
       { transfersComplete: false, selectionComplete: false, paymentComplete: false },
     );
     pensionAccountStatementBackend(server, [mockSwedbankThirdPillarFundBalance, tulevaFund]);
+    initializeComponent();
     history.push('/3rd-pillar-flow');
 
     expect(await introText()).toBeInTheDocument();

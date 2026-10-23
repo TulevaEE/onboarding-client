@@ -39,7 +39,7 @@ export const webEidFailureOf = (error: unknown): WebEidFailure | null => {
     return error.failure;
   }
   const code = webEidErrorCode(error);
-  return code ? FAILURES_BY_CODE[code] ?? 'FAILED' : null;
+  return code ? (FAILURES_BY_CODE[code] ?? 'FAILED') : null;
 };
 
 const failureReportedByStatus = async (): Promise<WebEidFailure> => {

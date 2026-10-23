@@ -33,8 +33,8 @@ export default function thirdPillarReducer(state = initialState, action) {
           query.exchangeExistingThirdPillarUnits === 'true'
             ? true
             : query.exchangeExistingThirdPillarUnits === 'false'
-            ? false
-            : state.exchangeExistingUnits,
+              ? false
+              : state.exchangeExistingUnits,
       };
     case CHANGE_MONTHLY_CONTRIBUTION:
       return { ...state, monthlyContribution };

@@ -131,7 +131,7 @@ const paysMonthly = (totals: Map<number, number>): boolean => totals.size >= REC
 // What the standing order pays today: the newest month's total, not a trailing
 // average, so someone who raised their standing order sees the amount they set.
 const latestMonthTotal = (totals: Map<number, number>): number =>
-  totals.size === 0 ? 0 : totals.get(Math.min(...Array.from(totals.keys()))) ?? 0;
+  totals.size === 0 ? 0 : (totals.get(Math.min(...Array.from(totals.keys()))) ?? 0);
 
 export function contributesMonthlyToThirdPillar(contributions: Contribution[], now: Date): boolean {
   return paysMonthly(recentPaymentsByMonth(contributions.filter(isThirdPillar), now));
@@ -249,7 +249,7 @@ export function derivePrefill(
     initialThirdPillarBalance: deriveThirdPillarBalance(sourceFunds),
     // 0 = no II contribution (the saver has left the funded II pillar).
     currentSecondPillarRate: user.secondPillarActive
-      ? user.secondPillarPaymentRates?.current ?? 2
+      ? (user.secondPillarPaymentRates?.current ?? 2)
       : 0,
     // Cap at the tax-advantaged ceiling — the slider never exceeds it either.
     currentThirdPillarMonthly: Math.min(

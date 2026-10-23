@@ -596,9 +596,7 @@ export function getUser() {
       .getUserWithToken()
       .then((user) => {
         if (process.env.NODE_ENV === 'production') {
-          Sentry.configureScope((scope) => {
-            scope.setUser({ id: user.id });
-          });
+          Sentry.setUser({ id: user.id });
         }
         dispatch({ type: GET_USER_SUCCESS, user });
       })

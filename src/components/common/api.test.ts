@@ -1555,12 +1555,12 @@ describe('API calls', () => {
         () =>
           ({
             document: { write: jest.fn() },
-          } as any),
+          }) as any,
       );
     });
 
     afterAll(() => {
-      window.location = originalLocation;
+      window.location = originalLocation as any;
     });
 
     it('redirects to payment link for non-recurring payments', async () => {

@@ -410,7 +410,7 @@ export const PensionCalculator: React.FC = () => {
         // 0 = no II contribution (the saver has left the funded II pillar). A pending
         // rate change beats the current rate: it is what will be paid going forward.
         secondPillarRate: user.secondPillarActive
-          ? user.secondPillarPaymentRates?.pending ?? user.secondPillarPaymentRates?.current ?? 2
+          ? (user.secondPillarPaymentRates?.pending ?? user.secondPillarPaymentRates?.current ?? 2)
           : 0,
         secondPillarBalance: Math.round(pillarBalance(sourceFunds, 2)),
         // Capped at the tax-advantaged ceiling — the slider never exceeds it either.

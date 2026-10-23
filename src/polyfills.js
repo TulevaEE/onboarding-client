@@ -12,6 +12,9 @@ if (isProduction) {
     dsn: 'https://cfcb0c4bb8cb4264942f80ca1eb78c49@sentry.io/146907',
     environment: process.env.NODE_ENV,
     sampleRate: 1.0,
+    attachStacktrace: false,
+    integrations: (defaultIntegrations) =>
+      defaultIntegrations.filter(({ name }) => name !== 'CultureContext'),
     denyUrls: [/^iabjs:\/\//, /extensions\//, /^chrome(-extension)?:\/\//, /^moz-extension:\/\//],
     beforeSend: (event) => (isFirstPartyEvent(event) ? withoutPersonalData(event) : null),
     beforeBreadcrumb,

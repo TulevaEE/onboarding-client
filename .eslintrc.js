@@ -61,12 +61,18 @@ module.exports = {
       rules: {
         '@typescript-eslint/no-explicit-any': 0, // fine in tests
         'import/no-extraneous-dependencies': 0, // devdependencies
-        'testing-library/no-await-sync-events': 'error',
+        'testing-library/await-async-events': 'off',
+        'testing-library/no-await-sync-events': [
+          'error',
+          { eventModules: ['fire-event', 'user-event'] },
+        ],
+        'testing-library/no-debugging-utils': 'error',
+        'testing-library/no-global-regexp-flag-in-query': 'off',
+        'testing-library/no-manual-cleanup': 'off',
         'testing-library/no-wait-for-multiple-assertions': 'error',
         'testing-library/prefer-explicit-assert': 'error',
         'testing-library/prefer-presence-queries': 'error',
         'testing-library/prefer-user-event': 'error',
-        'testing-library/prefer-wait-for': 'error',
       },
     },
   ],

@@ -6,13 +6,7 @@ type Country = {
   iso2Code: string;
   translationKey: string;
   continent:
-    | 'EUROPE'
-    | 'ASIA'
-    | 'AFRICA'
-    | 'NORTH_AMERICA'
-    | 'SOUTH_AMERICA'
-    | 'OCEANIA'
-    | 'ANTARCTICA';
+    'EUROPE' | 'ASIA' | 'AFRICA' | 'NORTH_AMERICA' | 'SOUTH_AMERICA' | 'OCEANIA' | 'ANTARCTICA';
 };
 
 const mapCountriesToOptions = (continent: string, intl: IntlShape) => {

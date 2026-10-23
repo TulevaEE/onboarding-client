@@ -27,6 +27,9 @@ const startTagManagerAndGa = (): void => {
       gaOptions: {
         alwaysSendReferrer: true,
       },
+      gtagOptions: {
+        send_page_view: false,
+      },
     });
   } catch (error) {
     // the app keeps working without analytics

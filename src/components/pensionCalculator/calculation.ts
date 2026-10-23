@@ -494,7 +494,7 @@ export function project(inputs: CalculatorInputs): Projection {
   // Member capital is drawn like the savings fund, but only the member's own capital
   // contributions are deductible; bonuses, work compensation and growth are all taxed.
   const memberCapitalBasis =
-    inputs.memberCapitalBalance !== undefined ? inputs.memberCapitalBasis ?? 0 : 0;
+    inputs.memberCapitalBalance !== undefined ? (inputs.memberCapitalBasis ?? 0) : 0;
   let cumulativeMemberCapitalWithdrawn = 0;
   let totalNetWithdrawn = 0;
   let totalGrossWithdrawn = 0;
