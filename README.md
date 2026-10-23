@@ -30,7 +30,7 @@ Then it's later possible to replace `useSelector` and `useDispatch` within those
 ## Prerequisites
 
 - Git
-- Node.js LTS (22.17.0) and NPM (10.9.2)
+- Node.js LTS (24.22.1) and NPM (11.19.1)
 
 Easiest way to get a specific version of Nodejs (or almost anything really) is to use [asdf](https://asdf-vm.com)
 - *asdf plugin add nodejs*
