@@ -1,4 +1,6 @@
+import { createMemoryHistory } from 'history';
 import {
+  applyMockScenarioFromLink,
   isMockModeEnabled,
   mockRequestInMockMode,
   readMockModeConfiguration,
@@ -14,6 +16,7 @@ import { withdrawalsEligibilityProfiles } from './profiles/withdrawalsEligibilit
 import { nudgeProfiles } from './profiles/nudge';
 import { mandateDeadlinesProfiles } from './profiles/mandateDeadlines';
 import { paymentRateRedirectProfiles } from './profiles/paymentRateRedirect';
+import { mockScenarios } from './scenarios';
 
 describe('mockRequestInMockMode', () => {
   beforeEach(() => {
@@ -129,4 +132,48 @@ describe('mockRequestInMockMode', () => {
       expect(() => writeMockModeConfiguration(null)).not.toThrow();
     });
   });
+});
+
+describe('applyMockScenarioFromLink', () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+  });
+
+  it('mocks the scenario a shared link names and takes it out of the address', () => {
+    const history = createMemoryHistory({
+      initialEntries: ['/2nd-pillar-rejoin?dev=SECOND_PILLAR_REJOIN_RATE_ONLY&language=en'],
+    });
+
+    applyMockScenarioFromLink(history);
+
+    expect(readMockModeConfiguration()).toEqual(mockScenarios.SECOND_PILLAR_REJOIN_RATE_ONLY);
+    expect(history.location).toMatchObject({
+      pathname: '/2nd-pillar-rejoin',
+      search: '?language=en',
+    });
+  });
+
+  it('shows everyone who opens the link the same scenario, whatever they mocked before', () => {
+    writeMockModeConfiguration({ funds: 'WITH_SAVINGS_FUND', user: 'PAYMENT_RATE_6' });
+    const history = createMemoryHistory({
+      initialEntries: ['/2nd-pillar-rejoin?dev=SECOND_PILLAR_REJOIN_RATE_ONLY'],
+    });
+
+    applyMockScenarioFromLink(history);
+
+    expect(readMockModeConfiguration()).toEqual(mockScenarios.SECOND_PILLAR_REJOIN_RATE_ONLY);
+    expect(history.location.search).toBe('');
+  });
+
+  it.each(['?dev', '?dev=NO_SUCH_SCENARIO', '?dev=toString', '?language=en'])(
+    'leaves mock mode and the address alone for %s',
+    (search) => {
+      const history = createMemoryHistory({ initialEntries: [`/account${search}`] });
+
+      applyMockScenarioFromLink(history);
+
+      expect(readMockModeConfiguration()).toBeNull();
+      expect(history.location.search).toBe(search);
+    },
+  );
 });

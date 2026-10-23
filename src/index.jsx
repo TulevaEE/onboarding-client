@@ -39,6 +39,7 @@ import { connectPath } from './components/connect/connectPath';
 
 import { createTrackedEvent } from './components/common/api';
 import { shouldWriteTestMode, writeTestMode } from './components/common/test-mode';
+import { applyMockScenarioFromLink } from './components/common/requestMocker';
 import { startAnalytics } from './components/tracking/startAnalytics';
 
 const history = createBrowserHistory();
@@ -93,6 +94,7 @@ function trackPageView() {
   createTrackedEvent('PAGE_VIEW', { path }).catch(noop);
 }
 
+applyMockScenarioFromLink(history);
 trackPageView();
 history.listen(() => {
   trackPageView();

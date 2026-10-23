@@ -61,7 +61,7 @@ import Success from '../flows/secondPillar/success';
 import { getAuthentication } from '../common/authenticationManager';
 import { CapitalPage } from '../account/MemberCapital/CapitalPage';
 import { Withdrawals } from '../flows/withdrawals/Withdrawals';
-import { isMockModeEnabled } from '../common/requestMocker';
+import { DEV_MODE_PARAM, isMockModeEnabled } from '../common/requestMocker';
 import { FirstVsSecondPillarComparison } from '../comparison/FirstVsSecondPillarComparison';
 import SecondPillarTaxWin from '../secondPillarTaxWin/SecondPillarTaxWin';
 import SecondPillarGrowth from '../secondPillarGrowth/SecondPillarGrowth';
@@ -131,7 +131,7 @@ export class LoggedInApp extends PureComponent {
     const { location } = this.props;
     const queryParams = new URLSearchParams(location.search);
 
-    return queryParams.has('dev') || isMockModeEnabled();
+    return queryParams.has(DEV_MODE_PARAM) || isMockModeEnabled();
   }
 
   render() {

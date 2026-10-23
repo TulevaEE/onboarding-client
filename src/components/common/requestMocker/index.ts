@@ -1,5 +1,7 @@
+import { History } from 'history';
 import { MockModeConfiguration, MockModeEndpoint } from './types';
 import { mockModeProfiles } from './profiles';
+import { mockScenarios } from './scenarios';
 import { withSessionStorage } from '../siteStorage';
 
 const MOCK_MODE_CONFIGURATION_KEY_NAME = 'MOCK_MODE';
@@ -27,6 +29,26 @@ export const readMockModeConfiguration = () => {
 };
 
 export const isMockModeEnabled = () => readMockModeConfiguration() !== null;
+
+export const DEV_MODE_PARAM = 'dev';
+
+export const applyMockScenarioFromLink = (history: History) => {
+  const params = new URLSearchParams(history.location.search);
+  const scenarioName = params.get(DEV_MODE_PARAM);
+  if (!scenarioName) {
+    return;
+  }
+  if (!Object.prototype.hasOwnProperty.call(mockScenarios, scenarioName)) {
+    // eslint-disable-next-line no-console
+    console.warn('No mock scenario named in the link:', scenarioName);
+    return;
+  }
+
+  writeMockModeConfiguration(mockScenarios[scenarioName]);
+  params.delete(DEV_MODE_PARAM);
+  const otherParams = params.toString();
+  history.replace({ ...history.location, search: otherParams ? `?${otherParams}` : '' });
+};
 
 export async function mockRequestInMockMode<TResponse = unknown>(
   fetcher: () => Promise<TResponse>,
