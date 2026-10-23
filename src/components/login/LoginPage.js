@@ -7,7 +7,7 @@ import { useIntl } from 'react-intl';
 
 import { AuthenticationLoader, ErrorAlert } from '../common';
 import { usePageTitle } from '../common/usePageTitle';
-import { LoginFrame } from './LoginFrame';
+import { LoginCard, LoginFrame } from './LoginFrame';
 import { loginPath } from './constants';
 
 import LoginForm from './loginForm';
@@ -28,8 +28,6 @@ import { getAuthentication } from '../common/authenticationManager';
 import { loginLanding } from './loginLanding';
 import { MOBILE_ID_PHONE_NUMBER_REQUIRED } from './mobileId/MobileIdLoginForm';
 import { cancelledInTheApp } from './cancelledInTheApp';
-import { CancelConnecting } from '../connect/CancelConnecting';
-import { connectRequestIdOf } from '../connect/connectPath';
 
 const ERRORS_SHOWN_BESIDE_THEIR_FIELD = [MOBILE_ID_PHONE_NUMBER_REQUIRED];
 
@@ -58,6 +56,7 @@ export const LoginPage = ({
   monthlyThirdPillarContribution,
   exchangeExistingThirdPillarUnits,
   location,
+  children,
 }) => {
   usePageTitle('pageTitle.loginPage');
   const { formatMessage } = useIntl();
@@ -68,8 +67,6 @@ export const LoginPage = ({
   if (isAuthenticated) {
     return <Redirect to={loginLanding(from)} />;
   }
-
-  const connectRequestId = connectRequestIdOf(from);
 
   const startSmartIdLoginFromTheTab = (language, flow, rememberMe, qrCodeRequested = false) => {
     if (flow === 'DEVICE_LINK' && opensTheSmartIdApp({ qrCodeRequested })) {
@@ -127,11 +124,8 @@ export const LoginPage = ({
   return (
     <LoginFrame>
       {waitsForConfirmationOnThePhone && (
-        <section
-          className="bg-white shadow-sm rounded-3 p-4 p-sm-5 text-center"
-          aria-label={formatMessage({ id: confirmingWith })}
-        >
-          {pendingLogin()}
+        <section aria-label={formatMessage({ id: confirmingWith })}>
+          <LoginCard className="text-center">{pendingLogin()}</LoginCard>
         </section>
       )}
       <div hidden={waitsForConfirmationOnThePhone}>
@@ -149,7 +143,7 @@ export const LoginPage = ({
           alert={showsAlert ? <ErrorAlert description={errorDescription} /> : null}
           pendingLogin={waitsForConfirmationOnThePhone ? null : pendingLogin()}
         />
-        {connectRequestId && !authenticating && <CancelConnecting requestId={connectRequestId} />}
+        {!authenticating && children}
       </div>
     </LoginFrame>
   );
@@ -184,6 +178,7 @@ LoginPage.defaultProps = {
   exchangeExistingThirdPillarUnits: false,
 
   location: { state: { from: '' } },
+  children: null,
 };
 
 LoginPage.propTypes = {
@@ -213,6 +208,7 @@ LoginPage.propTypes = {
   exchangeExistingThirdPillarUnits: Types.bool,
 
   location: Types.shape({ state: Types.shape({ from: Types.string }) }),
+  children: Types.node,
 };
 
 const mapStateToProps = (state) => ({

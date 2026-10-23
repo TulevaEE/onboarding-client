@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import classNames from 'classnames';
 
 import { logo } from '../common';
 import styles from './LoginPage.module.scss';
@@ -14,4 +15,12 @@ export const LoginFrame: FC = ({ children }) => (
       </div>
     </div>
   </div>
+);
+
+export const LoginCard: FC<{ className?: string; padding?: string }> = ({
+  className,
+  padding = 'p-4 p-sm-5',
+  children,
+}) => (
+  <div className={classNames('bg-white shadow-sm rounded-3', padding, className)}>{children}</div>
 );

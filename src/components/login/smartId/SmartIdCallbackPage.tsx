@@ -10,8 +10,8 @@ import { CANCEL_BUTTON_CLASS } from '../../common/cancelButton/CancelButton';
 import {
   cancelMobileAuthentication,
   completeSmartIdLogin,
+  getPendingSmartIdLoginPagePath,
   getPendingSmartIdReturnPath,
-  hasPendingSmartIdAuthentication,
   hasAcceptedSmartIdCallback,
   resumeAcceptedSmartIdCallback,
   startSmartIdLoginInTheApp,
@@ -23,8 +23,7 @@ import { useLoginLanguage } from '../loginLanguage';
 import { opensTheSmartIdApp } from './opensTheSmartIdApp';
 import { usePrivateSafariTabOnAnIphone } from './usePrivateSafariTabOnAnIphone';
 import { PrivateSafariTabInstruction } from './PrivateSafariTabInstruction';
-import { LoginFrame } from '../LoginFrame';
-import { connectPathOfTheLatestLoginInFlight } from '../../connect/freshLogin';
+import { LoginCard, LoginFrame } from '../LoginFrame';
 import {
   forgetSmartIdCallbackParameters,
   returnPathInCallbackAddress,
@@ -54,13 +53,11 @@ export const SmartIdCallbackPage: React.FC = () => {
   const [callback] = useState(() => smartIdCallbackParameters(search));
   const [callbackAccepted] = useState(() => !callback && hasAcceptedSmartIdCallback());
   const [returnPath] = useState(
-    () =>
-      returnPathInCallbackAddress(search) ??
-      getPendingSmartIdReturnPath() ??
-      (hasPendingSmartIdAuthentication() ? undefined : connectPathOfTheLatestLoginInFlight()),
+    () => returnPathInCallbackAddress(search) ?? getPendingSmartIdReturnPath() ?? undefined,
   );
   const [destination] = useState(() => loginLanding(returnPath));
-  const backToTheLogin = { pathname: loginPath, state: { from: returnPath } };
+  const [loginPagePath] = useState(() => getPendingSmartIdLoginPagePath() ?? loginPath);
+  const backToTheLogin = { pathname: loginPagePath, state: { from: returnPath } };
   const [attemptStarted, setAttemptStarted] = useState(false);
   const [slow, setSlow] = useState(false);
   const inAPrivateSafariTab = usePrivateSafariTabOnAnIphone();
@@ -98,7 +95,7 @@ export const SmartIdCallbackPage: React.FC = () => {
 
   const tryAgain = () => {
     if (aNewSessionCanFixIt && opensTheSmartIdApp({ qrCodeRequested: false })) {
-      dispatch(startSmartIdLoginInTheApp(language, returnPath));
+      dispatch(startSmartIdLoginInTheApp(language, backToTheLogin));
     }
   };
 
@@ -110,7 +107,7 @@ export const SmartIdCallbackPage: React.FC = () => {
   return (
     <LoginFrame>
       {failed ? (
-        <div className="bg-white shadow-sm rounded-3 p-5">
+        <LoginCard padding="p-5">
           {tryingAgainHereFailsTheSameWay ? (
             <div className="alert alert-danger text-pretty" role="alert">
               <PrivateSafariTabInstruction />
@@ -125,9 +122,9 @@ export const SmartIdCallbackPage: React.FC = () => {
               </Link>
             </div>
           )}
-        </div>
+        </LoginCard>
       ) : (
-        <div className="bg-white shadow-sm rounded-3 p-5 text-center">
+        <LoginCard padding="p-5" className="text-center">
           <Loader className="align-middle" />
           {slow && (
             <Link
@@ -138,7 +135,7 @@ export const SmartIdCallbackPage: React.FC = () => {
               <FormattedMessage id="login.stop" />
             </Link>
           )}
-        </div>
+        </LoginCard>
       )}
     </LoginFrame>
   );

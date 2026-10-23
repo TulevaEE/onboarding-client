@@ -38,7 +38,6 @@ import { opensTheSmartIdApp } from './smartId/opensTheSmartIdApp';
 import { linkThatOpensTheSmartIdApp } from './smartId/linkThatOpensTheSmartIdApp';
 import { departForTheSmartIdLink } from './smartId/useSmartIdAppDidNotOpen';
 import { pathOnThisSite } from './pathOnThisSite';
-import { forgetAllConnectLoginsInFlight, noteALoginStartingFor } from '../connect/freshLogin';
 import { endTheSession } from './endTheSession';
 
 const POLL_DELAY = 1000;
@@ -116,11 +115,8 @@ function beginLoginStart() {
   return () => startSequence !== loginStartSequence;
 }
 
-const returnPathIn = (getState) => getState()?.router?.location?.state?.from;
-
 function startMobileIdLogin(start) {
-  return (dispatch, getState) => {
-    noteALoginStartingFor(returnPathIn(getState));
+  return (dispatch) => {
     const canceledOrSuperseded = beginLoginStart();
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     return start()
@@ -185,6 +181,7 @@ function savePendingSmartIdAuthentication({
   qrCodeRequested,
   controlCode,
   returnPath,
+  loginPagePath,
   language,
   callbackAccepted,
 }) {
@@ -198,6 +195,7 @@ function savePendingSmartIdAuthentication({
         qrCodeRequested,
         controlCode,
         returnPath,
+        loginPagePath,
         language,
         callbackAccepted,
         startedAt: Date.now(),
@@ -218,13 +216,14 @@ function loadPendingSmartIdAuthentication() {
   }
 }
 
-export function hasPendingSmartIdAuthentication() {
-  return loadUnexpiredPendingSmartIdAuthentication() !== null;
-}
-
 export function getPendingSmartIdReturnPath() {
   const pending = loadUnexpiredPendingSmartIdAuthentication();
   return pending?.returnPath ?? null;
+}
+
+export function getPendingSmartIdLoginPagePath() {
+  const pending = loadUnexpiredPendingSmartIdAuthentication();
+  return pending?.loginPagePath ?? null;
 }
 
 const onSmartIdCallbackPage = () => window.location.pathname.startsWith(smartIdCallbackPath);
@@ -272,7 +271,6 @@ export function resumePendingSmartIdAuthentication() {
       return;
     }
     logPoll('resume-pending-login');
-    noteALoginStartingFor(pending.returnPath);
     dispatch({ type: MOBILE_AUTHENTICATION_START });
     if (pending.web2AppLink) {
       dispatch({
@@ -425,8 +423,8 @@ export function startSmartIdLogin(language, flow = 'DEVICE_LINK', rememberMe = f
   return startSmartIdSession(language, flow, rememberMe, showTheQrCode);
 }
 
-export function startSmartIdLoginInTheApp(language, returnPath) {
-  return startSmartIdSession(language, 'DEVICE_LINK', false, openTheSmartIdApp, returnPath);
+export function startSmartIdLoginInTheApp(language, loginPageToWaitOn) {
+  return startSmartIdSession(language, 'DEVICE_LINK', false, openTheSmartIdApp, loginPageToWaitOn);
 }
 
 function startSmartIdSession(
@@ -434,12 +432,12 @@ function startSmartIdSession(
   flow,
   rememberMe,
   { qrCodeRequested, afterDeviceLinkStarted },
-  pageTheLoginStartedFrom,
+  loginPageToWaitOn,
 ) {
   return (dispatch, getState) => {
-    const returnPath = pathOnThisSite(
-      pageTheLoginStartedFrom ?? getState().router?.location?.state?.from,
-    );
+    const loginPage = loginPageToWaitOn ?? getState().router?.location;
+    const returnPath = pathOnThisSite(loginPage?.state?.from);
+    const loginPagePath = pathOnThisSite(loginPage?.pathname);
     const canceledOrSuperseded = beginLoginStart();
     stopSmartIdPolling();
     dispatch({ type: MOBILE_AUTHENTICATION_START });
@@ -454,7 +452,6 @@ function startSmartIdSession(
       if (canceledOrSuperseded()) {
         return;
       }
-      noteALoginStartingFor(returnPath);
       const { authenticationHash } = start;
       if (start.flow === 'NOTIFICATION') {
         const controlCode = start.verificationCode;
@@ -462,6 +459,7 @@ function startSmartIdSession(
           authenticationHash,
           controlCode,
           returnPath,
+          loginPagePath,
           language,
         });
         dispatch({
@@ -479,6 +477,7 @@ function startSmartIdSession(
         rememberMe,
         qrCodeRequested,
         returnPath,
+        loginPagePath,
         language,
       });
       dispatch({ type: SMART_ID_LOGIN_START_SUCCESS, web2AppLink, rememberMe, qrCodeRequested });
@@ -517,6 +516,7 @@ export function completeSmartIdLogin(callback, returnPath) {
         savePendingSmartIdAuthentication({
           authenticationHash,
           returnPath: pending?.returnPath ?? returnPath,
+          loginPagePath: pending?.loginPagePath,
           language: pending?.language,
           callbackAccepted: true,
         });
@@ -626,12 +626,9 @@ export function getUserConversion() {
 }
 
 export function logOut() {
-  return (dispatch) => {
-    forgetAllConnectLoginsInFlight();
-    // api.logout() drops the local authentication before the request settles, so the
-    // local LOG_OUT cleanup (state reset, query cache clear) must run even on failure
-    return api.logout().finally(() => endTheSession(dispatch));
-  };
+  // api.logout() drops the local authentication before the request settles, so the
+  // local LOG_OUT cleanup (state reset, query cache clear) must run even on failure
+  return (dispatch) => api.logout().finally(() => endTheSession(dispatch));
 }
 export function setLoginToRedirect() {
   return { type: SET_LOGIN_TO_REDIRECT };
