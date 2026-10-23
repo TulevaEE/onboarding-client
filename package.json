@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "npm": ">=10.9.2",
-    "node": ">=22.17.0"
+    "npm": ">=11.19.1",
+    "node": ">=24.22.1"
   },
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
@@ -151,7 +151,7 @@
       "eslint-plugin-react-hooks": "$eslint-plugin-react-hooks"
     },
     "cheerio": "1.0.0-rc.12",
-    "@types/node": "^22.19.0",
+    "@types/node": "^24.19.2",
     "react-global-configuration": {
       "serialize-javascript": "^7.0.7"
     },
