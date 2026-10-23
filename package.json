@@ -147,6 +147,18 @@
     "react-tooltip": {
       "uuid": "^11.1.1"
     },
+    "sockjs": {
+      "uuid": "^11.1.1"
+    },
+    "msw": {
+      "cookie": "^0.7.2"
+    },
+    "css-minimizer-webpack-plugin": {
+      "serialize-javascript": "^7.0.7"
+    },
+    "rollup-plugin-terser": {
+      "serialize-javascript": "^7.0.7"
+    },
     "react-scripts": {
       "typescript": "$typescript"
     },
