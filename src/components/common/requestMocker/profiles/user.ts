@@ -103,6 +103,12 @@ export const userMockProfiles: Record<string, User> = {
     secondPillarActive: false,
     secondPillarPaymentRates: { current: 6, pending: null },
   },
+  // The rate most leavers still have on file, as they left before 4% and 6% existed.
+  LEFT_SECOND_PILLAR_PAYMENT_RATE_2: {
+    ...mockUser,
+    secondPillarActive: false,
+    secondPillarPaymentRates: { current: 2, pending: null },
+  },
   PAST_RETIREMENT_AGE: {
     ...mockUser,
     age: 65,

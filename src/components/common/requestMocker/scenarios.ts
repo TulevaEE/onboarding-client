@@ -199,6 +199,20 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     funds: 'WITHOUT_SAVINGS_FUND',
   },
 
+  // The II pillar rejoin page (/2nd-pillar-rejoin) as most leavers see it: 2% on file and
+  // the fund elsewhere, so they are asked both and sign three applications. Sign still
+  // goes to the real backend, where Pensionikeskus refuses anyone already contributing.
+  SECOND_PILLAR_REJOIN_RATE_AND_FUND: {
+    user: 'LEFT_SECOND_PILLAR_PAYMENT_RATE_2',
+    sourceFunds: 'ONLY_THIRD_PILLAR',
+  },
+  // A leaver whose fund is still the Tuleva stock fund: asked only the rate, so no fund
+  // selection is filed and there are no fund terms to confirm.
+  SECOND_PILLAR_REJOIN_RATE_ONLY: {
+    user: 'LEFT_SECOND_PILLAR_PAYMENT_RATE_2',
+    sourceFunds: 'BOTH_PILLARS',
+  },
+
   WITHDRAWALS_PENSIONER_60_ALL_PILLARS: {
     withdrawalsEligibility: 'ALL_PILLARS_60',
     sourceFunds: 'BOTH_PILLARS',
