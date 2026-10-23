@@ -142,12 +142,18 @@ const RejoinApplication = ({
   const [refusal, setRefusal] = useState<RejoinRefusal | null>(null);
   const [hasAgreedToTerms, setAgreedToTerms] = useState(false);
 
+  const chooseFund = (isin: string) => {
+    setFundIsin(isin);
+    setAgreedToTerms(false);
+  };
+
   const chosenFund = funds.find((fund) => fund.isin === fundIsin) ?? null;
   const isAlreadyAtDefaultPaymentRate = paymentRateOnFile === DEFAULT_PAYMENT_RATE;
   const isChangingPaymentRate = paymentRate !== paymentRateOnFile;
   const isAlreadyInRecommendedFund = activeFundIsin === RECOMMENDED_FUND_ISIN;
   const isChangingFund = fundIsin !== activeFundIsin;
   const hasChoices = !isAlreadyAtDefaultPaymentRate || !isAlreadyInRecommendedFund;
+  const isAwaitingFundTerms = isChangingFund && !hasAgreedToTerms;
   const paymentRateChange: CreateMandateDto[] = isChangingPaymentRate
     ? [
         {
@@ -246,33 +252,35 @@ const RejoinApplication = ({
               />
             </ApplicationCard>
           )}
-          <Checkbox
-            id="rejoin-agree-to-terms"
-            className="mt-4"
-            checked={hasAgreedToTerms}
-            onToggle={setAgreedToTerms}
-          >
-            <FormattedMessage id="secondPillarRejoin.review.terms" />
-            <div className="mt-2">
-              <span className="text-body-secondary">
-                <FormattedMessage
-                  id="secondPillarRejoin.review.compareFunds"
-                  values={{
-                    a: (chunks: ReactNode) => (
-                      <a
-                        className="link-secondary"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href="https://www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/"
-                      >
-                        {chunks}
-                      </a>
-                    ),
-                  }}
-                />
-              </span>
-            </div>
-          </Checkbox>
+          {isChangingFund && (
+            <Checkbox
+              id="rejoin-agree-to-terms"
+              className="mt-4"
+              checked={hasAgreedToTerms}
+              onToggle={setAgreedToTerms}
+            >
+              <FormattedMessage id="secondPillarRejoin.review.terms" />
+              <div className="mt-2">
+                <span className="text-body-secondary">
+                  <FormattedMessage
+                    id="secondPillarRejoin.review.compareFunds"
+                    values={{
+                      a: (chunks: ReactNode) => (
+                        <a
+                          className="link-secondary"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          href="https://www.pensionikeskus.ee/ii-sammas/kohustuslikud-pensionifondid/"
+                        >
+                          {chunks}
+                        </a>
+                      ),
+                    }}
+                  />
+                </span>
+              </div>
+            </Checkbox>
+          )}
           {refusal && (
             <p className="alert alert-warning mt-4 mb-0" role="alert">
               <FormattedMessage id={REFUSAL_MESSAGES[refusal]} />
@@ -290,7 +298,7 @@ const RejoinApplication = ({
             <button
               type="button"
               className="btn btn-primary"
-              disabled={!hasAgreedToTerms || isCreatingBatch || signingInProgress}
+              disabled={isAwaitingFundTerms || isCreatingBatch || signingInProgress}
               onClick={createBatchAndStartSigning}
             >
               <FormattedMessage id="confirm.mandate.sign" />
@@ -315,7 +323,7 @@ const RejoinApplication = ({
                   funds={funds}
                   recommendedFundIsin={RECOMMENDED_FUND_ISIN}
                   fundIsin={fundIsin}
-                  onChange={setFundIsin}
+                  onChange={chooseFund}
                   open={isFundOpen}
                   onToggle={() => setFundOpen(!isFundOpen)}
                 />

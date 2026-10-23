@@ -185,7 +185,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(paymentRateRow()).toHaveTextContent('2% of gross salary');
   });
 
-  test('signs only after confirming the fund terms', async () => {
+  test('signs only after confirming the fund terms when a fund selection is filed', async () => {
     await renderAt('/2nd-pillar-rejoin');
     userEvent.click(nextButton());
 
@@ -194,6 +194,22 @@ describe('When an eligible person rejoins the II pillar', () => {
     userEvent.click(termsCheckbox());
 
     expect(signButton()).toBeEnabled();
+  });
+
+  test('asks for the fund terms again after the fund is changed', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+    reviewAndAgree();
+    userEvent.click(screen.getByRole('button', { name: 'Back' }));
+    userEvent.click(within(fundRow()).getByRole('button', { name: 'Change' }));
+    userEvent.click(screen.getByRole('radio', { name: 'Another fund' }));
+    userEvent.selectOptions(
+      screen.getByRole('combobox', { name: 'Select a pension fund' }),
+      'EE3600109443',
+    );
+    userEvent.click(nextButton());
+
+    expect(termsCheckbox()).not.toBeChecked();
+    expect(signButton()).toBeDisabled();
   });
 
   test('lets them cancel back to the account like other flows', async () => {
@@ -332,8 +348,9 @@ describe('When an eligible person rejoins the II pillar', () => {
     userEvent.click(nextButton());
 
     expect(applicationTitles()).toEqual(['I start contributing to the II pillar again']);
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+    expect(signButton()).toBeEnabled();
 
-    userEvent.click(termsCheckbox());
     userEvent.click(signButton());
 
     expect(await successHeading()).toBeInTheDocument();
@@ -429,8 +446,8 @@ describe('When an eligible person rejoins the II pillar', () => {
       'I start contributing to the II pillar again',
       'My contribution is 6% of my gross salary',
     ]);
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
 
-    userEvent.click(termsCheckbox());
     userEvent.click(signButton());
 
     expect(await successHeading()).toBeInTheDocument();
@@ -471,8 +488,9 @@ describe('When an eligible person rejoins the II pillar', () => {
       'My contribution is 6% of my gross salary',
     ]);
     expect(screen.queryByText('II pillar fund selection application')).not.toBeInTheDocument();
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /Pension Centre/ })).not.toBeInTheDocument();
 
-    userEvent.click(termsCheckbox());
     userEvent.click(signButton());
 
     expect(await successHeading()).toBeInTheDocument();
