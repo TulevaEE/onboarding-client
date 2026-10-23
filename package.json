@@ -13,7 +13,7 @@
     "array.prototype.find": "^2.2.3",
     "axios": "^1.20.0",
     "bootstrap": "^5.3.8",
-    "chart.js": "^4.5.1",
+    "chart.js": "4.5.0",
     "chartjs-plugin-datalabels": "^2.2.0",
     "classnames": "^2.5.1",
     "connected-react-router": "^6.9.3",
