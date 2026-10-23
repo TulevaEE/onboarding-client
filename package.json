@@ -34,7 +34,7 @@
     "react-chartjs-2": "5.3.0",
     "react-dom": "^17.0.2",
     "react-ga4": "^2.1.0",
-    "react-global-configuration": "1.4.1",
+    "react-global-configuration": "^1.4.2",
     "react-gtm-module": "^2.0.11",
     "react-hook-form": "^7.90.0",
     "react-intl": "^7.1.14",
@@ -152,9 +152,6 @@
     },
     "cheerio": "1.0.0-rc.12",
     "@types/node": "^24.19.2",
-    "react-global-configuration": {
-      "serialize-javascript": "^7.0.7"
-    },
     "react-tooltip": {
       "uuid": "^11.1.1"
     },
