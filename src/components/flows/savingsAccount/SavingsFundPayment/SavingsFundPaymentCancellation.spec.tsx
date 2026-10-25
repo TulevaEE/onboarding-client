@@ -101,11 +101,11 @@ describe('SavingsFundPaymentCancellation', () => {
   const cancelPayment = {
     success: () =>
       rest.delete('http://localhost/v1/savings/payments/PAYMENT123456', (req, res, ctx) =>
-        res(ctx.status(204)),
+        res(ctx.delay(50), ctx.status(204)),
       ),
     failure: () =>
       rest.delete('http://localhost/v1/savings/payments/PAYMENT123456', (req, res, ctx) =>
-        res(ctx.status(500)),
+        res(ctx.delay(50), ctx.status(500)),
       ),
   };
 });

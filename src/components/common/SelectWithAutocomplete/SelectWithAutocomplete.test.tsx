@@ -25,7 +25,7 @@ describe('SelectWithAutocomplete', () => {
       />,
     );
 
-    const select = screen.getByRole('combobox', { name: 'Test select' });
+    const select = screen.getByLabelText('Test select', { selector: 'select' });
     expect(select).toBeInTheDocument();
     expect(select).not.toHaveAttribute('multiple');
   });
@@ -39,7 +39,7 @@ describe('SelectWithAutocomplete', () => {
       />,
     );
 
-    expect(screen.getByRole('combobox', { name: 'Test select' })).toHaveClass(
+    expect(screen.getByLabelText('Test select', { selector: 'select' })).toHaveClass(
       'form-select',
       'form-select-lg',
     );
@@ -55,7 +55,9 @@ describe('SelectWithAutocomplete', () => {
       />,
     );
 
-    expect(screen.getByRole('combobox', { name: 'Test select' })).toHaveClass('custom-class');
+    expect(screen.getByLabelText('Test select', { selector: 'select' })).toHaveClass(
+      'custom-class',
+    );
   });
 
   test('sets aria-label', () => {
@@ -67,7 +69,7 @@ describe('SelectWithAutocomplete', () => {
       />,
     );
 
-    expect(screen.getByRole('combobox', { name: 'Search companies' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Search companies', { selector: 'select' })).toBeInTheDocument();
   });
 
   test('renders provided options', async () => {
@@ -108,7 +110,7 @@ describe('SelectWithAutocomplete', () => {
       />,
     );
 
-    fireEvent.blur(screen.getByRole('combobox', { name: 'Test select' }));
+    fireEvent.blur(screen.getByLabelText('Test select', { selector: 'select' }));
 
     expect(onBlur).toHaveBeenCalled();
   });

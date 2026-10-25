@@ -93,7 +93,7 @@ const portfolioBackend = () =>
     ),
   );
 
-const registerHolding = (savingsFund: unknown | null) =>
+const registerHolding = (savingsFund: Record<string, unknown> | null) =>
   server.use(
     rest.get('http://localhost/v1/savings-account-statement', (req, res, ctx) =>
       res(ctx.json(savingsFund)),

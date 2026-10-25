@@ -184,11 +184,7 @@ export type SavingsFundOnboardingStatus = {
 };
 
 export type FundStatus =
-  | 'ACTIVE'
-  | 'LIQUIDATED'
-  | 'SUSPENDED'
-  | 'CONTRIBUTIONS_FORBIDDEN'
-  | 'PAYOUTS_FORBIDDEN';
+  'ACTIVE' | 'LIQUIDATED' | 'SUSPENDED' | 'CONTRIBUTIONS_FORBIDDEN' | 'PAYOUTS_FORBIDDEN';
 
 export interface FundBalance {
   fund: Fund;
@@ -411,23 +407,10 @@ export interface Payment {
 export type Currency = 'EUR';
 
 export type PaymentType =
-  | 'SINGLE'
-  | 'RECURRING'
-  | 'EMPLOYER'
-  | 'GIFT'
-  | 'MEMBER_FEE'
-  | 'SAVINGS'
-  | 'SAVINGS_RECURRING';
+  'SINGLE' | 'RECURRING' | 'EMPLOYER' | 'GIFT' | 'MEMBER_FEE' | 'SAVINGS' | 'SAVINGS_RECURRING';
 
 export type PaymentChannel =
-  | 'SWEDBANK'
-  | 'LHV'
-  | 'SEB'
-  | 'LUMINOR'
-  | 'COOP'
-  | 'COOP_WEB'
-  | 'PARTNER'
-  | 'TULUNDUSUHISTU';
+  'SWEDBANK' | 'LHV' | 'SEB' | 'LUMINOR' | 'COOP' | 'COOP_WEB' | 'PARTNER' | 'TULUNDUSUHISTU';
 
 export type SmartIdLoginFlow = 'DEVICE_LINK' | 'NOTIFICATION';
 

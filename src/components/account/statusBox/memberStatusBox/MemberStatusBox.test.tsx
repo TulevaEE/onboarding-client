@@ -25,6 +25,7 @@ function initializeComponent() {
   login(store);
 
   renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
+  history.push('/');
 }
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -35,15 +36,13 @@ beforeEach(async () => {
   initializeConfiguration();
 
   useTestBackendsExcept(server, ['capitalEvents', 'user']);
-  initializeComponent();
-
-  history.push('/');
 });
 
 describe('member status box with existing membership but no bonus', () => {
   beforeEach(() => {
     capitalEventsBackend(server);
     userBackend(server);
+    initializeComponent();
   });
 
   it('renders member number and upcoming membership bonus %', async () => {
@@ -85,6 +84,7 @@ describe('member status box with existing membership and latest received members
       },
     ]);
     userBackend(server);
+    initializeComponent();
   });
 
   it('renders existing membership bonus', async () => {
@@ -117,6 +117,7 @@ describe('member status box with existing membership and membership bonus sale',
       },
     ]);
     userBackend(server);
+    initializeComponent();
   });
 
   it('renders the only the last received membership bonus', async () => {
@@ -141,6 +142,7 @@ describe('member status box without membership', () => {
       memberNumber: null,
       memberJoinDate: null,
     });
+    initializeComponent();
   });
 
   it('allows to join', async () => {

@@ -77,6 +77,12 @@ describe('When a user is logging in', () => {
       store,
     );
   }
+  const rememberNobody = () =>
+    server.use(
+      rest.get('http://localhost/v1/smart-id/login/remembered-account', (req, res, ctx) =>
+        res(ctx.status(204)),
+      ),
+    );
   const reloadThePage = () => {
     cleanup();
     initializeComponent();
@@ -92,6 +98,7 @@ describe('When a user is logging in', () => {
     localStorage.clear();
     initializeConfiguration();
     getAuthentication().remove();
+    rememberNobody();
     initializeComponent();
     act(() => {
       history.push('/login');
@@ -154,6 +161,7 @@ describe('When a user is logging in', () => {
     smartIdAuthenticationBackend(server, {
       rememberedAccount: { firstName: 'Mari', lastName: 'Maasikas' },
     });
+    reloadThePage();
 
     userEvent.click(await screen.findByRole('button', { name: 'Continue as Mari' }));
 
@@ -518,6 +526,7 @@ describe('When a user is logging in', () => {
       rememberedAccount: { firstName: 'Mari', lastName: 'Maasikas' },
       verificationCode: '5678',
     });
+    reloadThePage();
 
     userEvent.click(await screen.findByRole('button', { name: 'Continue as Mari' }));
 
@@ -543,6 +552,7 @@ describe('When a user is logging in', () => {
         return res(ctx.status(204));
       }),
     );
+    reloadThePage();
     expect(await screen.findByRole('button', { name: 'Continue as Mari' })).toBeInTheDocument();
     userEvent.click(screen.getByRole('tab', { name: 'Mobile-ID' }));
     expect(await screen.findByPlaceholderText(/Identity code/gi)).toBeInTheDocument();
@@ -561,6 +571,7 @@ describe('When a user is logging in', () => {
       rememberedAccount: { firstName: 'Mari', lastName: 'Maasikas' },
       verificationCode: '5678',
     });
+    reloadThePage();
     userEvent.click(await screen.findByRole('button', { name: 'Continue as Mari' }));
     expect(await screen.findByText('5678')).toBeInTheDocument();
     expect(screen.queryByRole('tab')).not.toBeInTheDocument();
@@ -574,12 +585,13 @@ describe('When a user is logging in', () => {
     const backend = smartIdAuthenticationBackend(server, {
       rememberedAccount: { firstName: 'Mari', lastName: 'Maasikas' },
     });
+    reloadThePage();
     expect(await screen.findByRole('button', { name: 'Continue as Mari' })).toBeInTheDocument();
 
     userEvent.click(screen.getByRole('button', { name: /Not you/ }));
 
     expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
-    expect(backend.rememberedAccount).toBeNull();
+    await waitFor(() => expect(backend.rememberedAccount).toBeNull());
     expect(backend.startedFlows).toEqual([]);
 
     userEvent.click(screen.getByRole('button', { name: /^Log in$/ }));
@@ -893,7 +905,7 @@ describe('When a user is logging in', () => {
     expect(await screen.findByPlaceholderText(/Identity code/gi)).toHaveValue('');
     expect(screen.getByRole('checkbox', { name: 'Remember me' })).not.toBeChecked();
     expect(screen.queryByText(/Aadu/)).not.toBeInTheDocument();
-    expect(backend.rememberedPerson).toBeNull();
+    await waitFor(() => expect(backend.rememberedPerson).toBeNull());
     expect(backend.rememberedPersonLogins).toBe(0);
   });
 
