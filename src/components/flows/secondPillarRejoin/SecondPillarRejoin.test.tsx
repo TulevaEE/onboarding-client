@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { screen, within } from '@testing-library/react';
@@ -25,11 +26,17 @@ describe('When an eligible person rejoins the II pillar', () => {
   const server = setupServer();
   let history: History;
 
-  function render(path: string, queryClient = new QueryClient()) {
+  function render(path: string, queryClient = new QueryClient(), language: 'en' | 'et' = 'en') {
     history = createMemoryHistory();
     const store = createDefaultStore(history as any);
     login(store);
-    renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store, queryClient);
+    renderWrapped(
+      <Route path="" component={LoggedInApp} />,
+      history as any,
+      store,
+      queryClient,
+      language,
+    );
     history.push(path);
   }
 
@@ -39,7 +46,10 @@ describe('When an eligible person rejoins the II pillar', () => {
   }
 
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-  afterEach(() => server.resetHandlers());
+  afterEach(() => {
+    server.resetHandlers();
+    moment.locale('en');
+  });
   afterAll(() => server.close());
 
   let mandateBatches: { created: CreateMandateBatchDto[] };
@@ -82,7 +92,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(lead()).toHaveTextContent(/saving starts next May\.$/);
   });
 
-  test('keeps the I pillar effect and the restriction with the application to make contributions, without a taxation caveat', async () => {
+  test('keeps the I pillar effect and the restriction with the application for making contributions, without a taxation caveat', async () => {
     await renderAt('/2nd-pillar-rejoin');
     userEvent.click(nextButton());
 
@@ -157,7 +167,7 @@ describe('When an eligible person rejoins the II pillar', () => {
       'My contribution is 6% of my gross salary',
       'Future contributions go to Tuleva World Stocks Pension Fund',
     ]);
-    expect(screen.getByText('II pillar application to make contributions')).toBeInTheDocument();
+    expect(screen.getByText('II pillar application for making contributions')).toBeInTheDocument();
     expect(screen.getByText('II pillar contribution rate application')).toBeInTheDocument();
     expect(screen.getByText('II pillar fund selection application')).toBeInTheDocument();
     expect(screen.queryByText(/Application #/)).not.toBeInTheDocument();
@@ -252,6 +262,60 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(summaryItems()[0]).toHaveTextContent('Contributions start September 1, 2027');
   });
 
+  test('says until which day in Estonia the application can be cancelled', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    signApplications();
+
+    expect(await successHeading()).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'If you change your mind, you can cancel the application on your account page until November 30, 2026.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  test('names the day in Estonia as the last day to cancel, while the browser is still on the day before', async () => {
+    mandateDeadlinesBackend(server, DEADLINE_JUST_PAST_MIDNIGHT_IN_ESTONIA);
+    await renderAt('/2nd-pillar-rejoin');
+
+    signApplications();
+
+    expect(await successHeading()).toBeInTheDocument();
+    expect(
+      screen.getByText(/cancel the application on your account page until December 1, 2026\.$/),
+    ).toBeInTheDocument();
+  });
+
+  test('names the last day to cancel in Estonian', async () => {
+    moment.locale('et');
+    render('/2nd-pillar-rejoin', new QueryClient(), 'et');
+    userEvent.click(await screen.findByRole('button', { name: 'Edasi' }));
+    userEvent.click(screen.getByRole('checkbox', { name: /prospektide/ }));
+    userEvent.click(screen.getByRole('button', { name: 'Allkirjastan ja saadan' }));
+
+    expect(
+      await screen.findByRole('heading', { name: 'Avaldused on esitatud' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Kui mõtled ümber, saad avalduse oma konto lehel tühistada. Viimane päev selleks on 30. november 2026.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  test('dates the last day to cancel from the filing window', async () => {
+    mandateDeadlinesBackend(server, MARCH_WINDOW);
+    await renderAt('/2nd-pillar-rejoin');
+
+    signApplications();
+
+    expect(await successHeading()).toBeInTheDocument();
+    expect(
+      screen.getByText(/cancel the application on your account page until March 31, 2027\.$/),
+    ).toBeInTheDocument();
+  });
+
   test('staying at 2% says the contribution stays at 2%', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
@@ -337,7 +401,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     expectSignedBatch('SIX', 'EE3600109435');
   });
 
-  test('files only the application to make contributions when the rate and the fund are already in place', async () => {
+  test('files only the application for making contributions when the rate and the fund are already in place', async () => {
     userBackend(server, { secondPillarPaymentRates: { current: 6, pending: null } });
     pensionAccountStatementBackend(server, [contributingTo(fundWithIsin('EE3600109435'))]);
     await renderAt('/2nd-pillar-rejoin');
@@ -552,6 +616,7 @@ describe('When an eligible person rejoins the II pillar', () => {
   const MARCH_WINDOW = rejoinWindow('2027-03-31T20:59:59.999999999Z', '2027-09-01');
   const JULY_WINDOW = rejoinWindow('2027-07-31T20:59:59.999999999Z', '2028-01-01');
   const NOVEMBER_WINDOW = rejoinWindow('2026-11-30T21:59:59.999999999Z', '2027-05-01');
+  const DEADLINE_JUST_PAST_MIDNIGHT_IN_ESTONIA = rejoinWindow('2026-11-30T22:30:00Z', '2027-05-01');
   const restriction =
     "You can use the money from age 60. After rejoining, you can't stop contributions again or withdraw the money a second time.";
   const heading = () => screen.findByRole('heading', { name: 'Get the tax win again' });

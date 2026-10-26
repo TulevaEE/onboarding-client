@@ -16,6 +16,7 @@ import {
   mandatePreviewBackend,
   mandateDownloadBackend,
 } from '../../../test/backend';
+import { rejoin } from '../../account/ApplicationSection/fixtures';
 
 jest.mock('downloadjs');
 
@@ -44,7 +45,7 @@ describe('When a user is cancelling an application', () => {
     initializeConfiguration();
     server.use(
       rest.get('http://localhost/v1/applications', (req, res, ctx) =>
-        res(ctx.status(200), ctx.json([testApplication()])),
+        res(ctx.status(200), ctx.json([testApplication(), rejoin])),
       ),
     );
     initializeComponent();
@@ -134,6 +135,19 @@ describe('When a user is cancelling an application', () => {
         'application/vnd.etsi.asic-e+zip',
       );
     });
+  });
+
+  test('names the application for exemption from contributions that signing files to cancel a rejoin application, as Pensionikeskus names it', async () => {
+    act(() => {
+      history.push(`/applications/${rejoin.id}/cancellation`);
+    });
+
+    expect(await screen.findByText('II pillar rejoin application')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'By signing you file a II pillar application for exemption from contributions, which cancels the following application:',
+      ),
+    ).toBeInTheDocument();
   });
 
   function testApplication() {

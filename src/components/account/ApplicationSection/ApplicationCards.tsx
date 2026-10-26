@@ -17,6 +17,7 @@ import {
   ThirdPillarWithdrawalApplication,
   SavingsFundPaymentApplication,
   SavingsFundWithdrawalApplication,
+  RejoinApplication,
   ApplicationType,
 } from '../../common/apiModels';
 import Percentage from '../../common/Percentage';
@@ -65,6 +66,8 @@ export const ApplicationCard: React.FunctionComponent<{
       return (
         <SavingsFundWithdrawalCard application={application} allowedActions={allowedActions} />
       );
+    case 'REJOIN':
+      return <RejoinApplicationCard application={application} allowedActions={allowedActions} />;
     default:
       return <></>;
   }
@@ -513,6 +516,26 @@ const ResumeContributionsCard: React.FunctionComponent<{
         {
           key: 'applications.type.resumeContributions.time',
           value: formatDate(application.details.resumeTime),
+        },
+      ]}
+    />
+  </BaseApplicationCard>
+);
+
+const RejoinApplicationCard: React.FunctionComponent<{
+  application: RejoinApplication;
+  allowedActions: ApplicationAction[];
+}> = ({ application, allowedActions }) => (
+  <BaseApplicationCard
+    allowedActions={allowedActions}
+    application={application}
+    title={<FormattedMessage id="applications.type.rejoin.title" />}
+  >
+    <DefinitionList
+      definitions={[
+        {
+          key: 'applications.type.rejoin.contributionsStart',
+          value: formatDate(application.details.fulfillmentDate),
         },
       ]}
     />

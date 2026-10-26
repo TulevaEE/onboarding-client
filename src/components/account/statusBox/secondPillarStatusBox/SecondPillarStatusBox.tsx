@@ -14,6 +14,7 @@ import {
   Conversion,
   Fund,
   MandateDeadlines,
+  RejoinApplication,
   SourceFund,
 } from '../../../common/apiModels';
 import { State } from '../../../../types';
@@ -22,7 +23,12 @@ import { isTuleva } from '../../../common/utils';
 import { getValueSum } from '../../AccountStatement/fundSelector';
 import { Euro } from '../../../common/Euro';
 import { Shimmer } from '../../../common/shimmer/Shimmer';
-import { formatDate, formatDateFrom, formatDateUntil } from '../../../common/dateFormatter';
+import {
+  formatDate,
+  formatDateFrom,
+  formatDateOnWithYear,
+  formatDateUntil,
+} from '../../../common/dateFormatter';
 import { isDateSameOrBeforeCancellationDeadline } from '../../ApplicationSection/ApplicationFunctions';
 import {
   SecondPillarPaymentRateTaxWin,
@@ -75,7 +81,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
 }: Props) => {
   // TODO improve loading state handling here
   const { data: mandateDeadlines } = useMandateDeadlines();
-  const { data: applications } = usePendingApplications();
+  const { data: applications, isInitialLoading: loadingApplications } = usePendingApplications();
   const { data: fundPensionStatus } = useFundPensionStatus();
 
   const leaveApplication: Application | undefined =
@@ -98,7 +104,15 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   };
 
   if (!secondPillarActive) {
-    return <SecondPillarMissing {...rowProps} />;
+    if (loadingApplications) {
+      return <SecondPillarLoading />;
+    }
+    const pendingRejoinApplication = applications?.find(isRejoinApplication);
+    return pendingRejoinApplication ? (
+      <PendingRejoin application={pendingRejoinApplication} />
+    ) : (
+      <SecondPillarMissing {...rowProps} />
+    );
   }
 
   if (conversion.pendingWithdrawal) {
@@ -470,6 +484,31 @@ const mapStateToProps = (state: State) => ({
     2,
   activeFundIsin: state.exchange.sourceFunds?.find((sourceFund) => sourceFund.activeFund)?.isin,
 });
+
+const isRejoinApplication = (application: Application): application is RejoinApplication =>
+  application.type === 'REJOIN';
+
+const SecondPillarLoading = () => (
+  <StatusBoxRow
+    showAction={false}
+    name={<FormattedMessage id="account.status.choice.pillar.second" />}
+    lines={[<Shimmer />]}
+  />
+);
+
+const PendingRejoin = ({ application }: { application: RejoinApplication }) => (
+  <StatusBoxRow
+    status="SUCCESS"
+    showAction={false}
+    name={<FormattedMessage id="account.status.choice.pillar.second" />}
+    lines={[
+      <FormattedMessage
+        id="account.status.choice.pillar.second.rejoinPending"
+        values={{ date: formatDateOnWithYear(application.details.fulfillmentDate) }}
+      />,
+    ]}
+  />
+);
 
 const SecondPillarMissing = ({ loading, nudgeKey }: RowProps) => (
   <StatusBoxRow
