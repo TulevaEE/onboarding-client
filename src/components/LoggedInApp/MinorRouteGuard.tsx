@@ -3,7 +3,6 @@ import { useMe } from '../common/apiHooks';
 import { isMinorActingAsSelf } from '../common/utils';
 import { ACCOUNT_PATH } from '../paths';
 
-// Everything else is a flow a minor cannot complete: the backend refuses it at the end.
 export const PATHS_A_MINOR_CAN_OPEN = [
   ACCOUNT_PATH,
   '/savings-fund-transactions',
