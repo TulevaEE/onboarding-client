@@ -18,7 +18,7 @@ describe('pending applications mock profiles', () => {
     jest.useRealTimers();
   });
 
-  it('lists an application to rejoin only for a leaver who filed one, as no II pillar saver can have one', () => {
+  it('lists an application for making contributions only for a leaver who filed one, as no II pillar saver can have one', () => {
     const profilesWithRejoin = Object.entries(pendingApplicationsProfiles)
       .filter(([, applications]) => applications.some(({ type }) => type === 'REJOIN'))
       .map(([profileName]) => profileName);

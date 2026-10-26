@@ -42,6 +42,8 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
     return <Redirect to={successUrl} />;
   }
 
+  const cancelsAnApplicationForMakingContributions = application.type === 'REJOIN';
+
   return (
     <>
       {(signing || challengeCode) && (
@@ -53,7 +55,13 @@ export const ConfirmCancellation: React.FunctionComponent = () => {
         />
       )}
       <p>
-        <FormattedMessage id="cancellation.flow.confirm.content" />
+        <FormattedMessage
+          id={
+            cancelsAnApplicationForMakingContributions
+              ? 'cancellation.flow.confirm.content.rejoin'
+              : 'cancellation.flow.confirm.content'
+          }
+        />
       </p>
       <ApplicationCard application={application} />
       <div className="mt-5 d-flex flex-wrap align-items-center gap-2">

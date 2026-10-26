@@ -304,7 +304,7 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
 
       expect(
         screen.getByText(
-          'Your application to rejoin has been filed. Contributions start on May 1, 2027.',
+          'Your application for making contributions has been filed. Contributions start on May 1, 2027.',
         ),
       ).toBeInTheDocument();
       expect(screen.queryByText(/You have no II\spillar/)).not.toBeInTheDocument();

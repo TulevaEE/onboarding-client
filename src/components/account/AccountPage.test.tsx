@@ -288,7 +288,7 @@ describe('when the payment rate season is on and another nudge wins', () => {
   });
 });
 
-describe('when a leaver has filed an application to rejoin the II pillar', () => {
+describe('when a leaver has filed an application for making contributions to the II pillar', () => {
   beforeEach(() => {
     initializeConfiguration();
     useTestBackendsExcept(server, ['user', 'applications', 'nudge']);
@@ -302,7 +302,7 @@ describe('when a leaver has filed an application to rejoin the II pillar', () =>
   test('shows the filed rejoin application and when contributions start instead of a missing II pillar', async () => {
     expect(
       await screen.findByText(
-        'Your application to rejoin has been filed. Contributions start on May 1, 2027.',
+        'Your application for making contributions has been filed. Contributions start on May 1, 2027.',
       ),
     ).toBeInTheDocument();
     expect(screen.queryByText(/You have no II\spillar/)).not.toBeInTheDocument();
@@ -310,13 +310,15 @@ describe('when a leaver has filed an application to rejoin the II pillar', () =>
 
   test('offers no II pillar to open while the rejoin is pending, so nobody files twice', async () => {
     expect(
-      await screen.findByText(/Your application to rejoin has been filed/),
+      await screen.findByText(/Your application for making contributions has been filed/),
     ).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /^Open II\spillar$/ })).not.toBeInTheDocument();
   });
 
-  test('lists the application to rejoin with a link to cancel it', async () => {
-    expect(await screen.findByText(/^Rejoining the II\spillar$/)).toBeInTheDocument();
+  test('lists the application for making contributions with a link to cancel it', async () => {
+    expect(
+      await screen.findByText(/^II\spillar application for making contributions$/),
+    ).toBeInTheDocument();
     expect(
       screen
         .getAllByRole('link', { name: 'Cancel application' })

@@ -92,7 +92,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(lead()).toHaveTextContent(/saving starts next May\.$/);
   });
 
-  test('keeps the I pillar effect and the restriction with the application to make contributions, without a taxation caveat', async () => {
+  test('keeps the I pillar effect and the restriction with the application for making contributions, without a taxation caveat', async () => {
     await renderAt('/2nd-pillar-rejoin');
     userEvent.click(nextButton());
 
@@ -167,7 +167,7 @@ describe('When an eligible person rejoins the II pillar', () => {
       'My contribution is 6% of my gross salary',
       'Future contributions go to Tuleva World Stocks Pension Fund',
     ]);
-    expect(screen.getByText('II pillar application to make contributions')).toBeInTheDocument();
+    expect(screen.getByText('II pillar application for making contributions')).toBeInTheDocument();
     expect(screen.getByText('II pillar contribution rate application')).toBeInTheDocument();
     expect(screen.getByText('II pillar fund selection application')).toBeInTheDocument();
     expect(screen.queryByText(/Application #/)).not.toBeInTheDocument();
@@ -401,7 +401,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     expectSignedBatch('SIX', 'EE3600109435');
   });
 
-  test('files only the application to make contributions when the rate and the fund are already in place', async () => {
+  test('files only the application for making contributions when the rate and the fund are already in place', async () => {
     userBackend(server, { secondPillarPaymentRates: { current: 6, pending: null } });
     pensionAccountStatementBackend(server, [contributingTo(fundWithIsin('EE3600109435'))]);
     await renderAt('/2nd-pillar-rejoin');
