@@ -398,9 +398,7 @@ describe('Application section', () => {
     mockApplications([rejoin]);
     initializeComponent();
 
-    expect(
-      await screen.findByText(/^II\spillar application for making contributions$/),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/^II\spillar rejoin application$/)).toBeInTheDocument();
     expect(screen.getByText('October 26, 2026')).toBeInTheDocument();
     expect(screen.getByText('Contributions start')).toBeInTheDocument();
     expect(screen.getByText('May 1, 2027')).toBeInTheDocument();
@@ -421,9 +419,7 @@ describe('Application section', () => {
       mockApplications([withCancellationDeadline(rejoin, '2026-12-31T21:59:59.999999999Z')]);
       initializeComponent();
 
-      expect(
-        await screen.findByText(/^II\spillar application for making contributions$/),
-      ).toBeInTheDocument();
+      expect(await screen.findByText(/^II\spillar rejoin application$/)).toBeInTheDocument();
       const [desktopCancelLink] = cancelLinksOnDesktopAndMobile();
 
       userEvent.click(desktopCancelLink);
@@ -435,9 +431,7 @@ describe('Application section', () => {
       mockApplications([withCancellationDeadline(rejoin, '2026-11-30T09:00:00Z')]);
       initializeComponent();
 
-      expect(
-        await screen.findByText(/^II\spillar application for making contributions$/),
-      ).toBeInTheDocument();
+      expect(await screen.findByText(/^II\spillar rejoin application$/)).toBeInTheDocument();
       expect(cancelLinksOnDesktopAndMobile().map((link) => link.getAttribute('href'))).toEqual([
         `/applications/${rejoin.id}/cancellation`,
         `/applications/${rejoin.id}/cancellation`,
@@ -448,9 +442,7 @@ describe('Application section', () => {
       mockApplications([withCancellationDeadline(rejoin, '2026-11-29T23:59:59.999Z')]);
       initializeComponent();
 
-      expect(
-        await screen.findByText(/^II\spillar application for making contributions$/),
-      ).toBeInTheDocument();
+      expect(await screen.findByText(/^II\spillar rejoin application$/)).toBeInTheDocument();
       expect(screen.queryByRole('link', { name: 'Cancel application' })).not.toBeInTheDocument();
     });
   });

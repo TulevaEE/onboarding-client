@@ -311,10 +311,8 @@ describe('when a leaver has filed an application for making contributions to the
     expect(screen.queryByRole('link', { name: /^Open II\spillar$/ })).not.toBeInTheDocument();
   });
 
-  test('lists the application for making contributions with a link to cancel it', async () => {
-    expect(
-      await screen.findByText(/^II\spillar application for making contributions$/),
-    ).toBeInTheDocument();
+  test('lists the rejoin application with a link to cancel it', async () => {
+    expect(await screen.findByText(/^II\spillar rejoin application$/)).toBeInTheDocument();
     expect(
       screen
         .getAllByRole('link', { name: 'Cancel application' })

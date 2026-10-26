@@ -137,14 +137,12 @@ describe('When a user is cancelling an application', () => {
     });
   });
 
-  test('names the application for exemption from contributions that signing files to cancel an application for making contributions, as Pensionikeskus names both', async () => {
+  test('names the application for exemption from contributions that signing files to cancel a rejoin application, as Pensionikeskus names it', async () => {
     act(() => {
       history.push(`/applications/${rejoin.id}/cancellation`);
     });
 
-    expect(
-      await screen.findByText('II pillar application for making contributions'),
-    ).toBeInTheDocument();
+    expect(await screen.findByText('II pillar rejoin application')).toBeInTheDocument();
     expect(
       screen.getByText(
         'By signing you file a II pillar application for exemption from contributions, which cancels the following application:',

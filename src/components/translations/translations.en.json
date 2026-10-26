@@ -662,7 +662,7 @@
   "applications.type.savingFundWithdrawal.paymentDate": "Payment date",
   "applications.type.savingFundWithdrawal.account": "Bank account",
   "applications.type.savingFundWithdrawal.amount": "Amount",
-  "applications.type.rejoin.title": "II pillar application for making contributions",
+  "applications.type.rejoin.title": "II pillar rejoin application",
   "applications.type.rejoin.contributionsStart": "Contributions start",
 
   "savingsFund.status.title": "Additional Investment Fund",
