@@ -75,7 +75,6 @@ export function useReceivedGifts(
   });
 }
 
-// The gifts that have arrived for whoever is logged in: a child looking at their own account.
 export function getMyGifts(): Promise<ReceivedGift[]> {
   return mockRequestInMockMode(
     () => getWithAuthentication(getEndpoint('/v1/savings-fund/gifts')),
