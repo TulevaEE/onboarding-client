@@ -18,7 +18,7 @@ import {
 } from '../../common/apiModels/withdrawals';
 import { isSigningWithIdCard } from '../../common/authenticationManager';
 import { TulevaSecondPillarStockFund } from '../../common/utils';
-import { formatDateYear } from '../../common/dateFormatter';
+import { dayInTallinn, formatDateYear } from '../../common/dateFormatter';
 import { SuccessNotice } from '../common/SuccessNotice/SuccessNotice';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
 import { FundChoice, PaymentRateChoice } from './RejoinChoices';
@@ -83,6 +83,7 @@ export const SecondPillarRejoin = () => {
         activeFundIsin={activeSecondPillarFundIsin(sourceFunds)}
         paymentRateOnFile={paymentRateThatApplies(user)}
         contributionStartDate={mandateDeadlines.secondPillarRejoinContributionStartDate}
+        cancellationDeadline={mandateDeadlines.secondPillarRejoinDeadline}
         isReviewing={view === 'review'}
         onReview={() => setView('review')}
         onBack={() => setView('application')}
@@ -112,6 +113,7 @@ const RejoinApplication = ({
   activeFundIsin,
   paymentRateOnFile,
   contributionStartDate,
+  cancellationDeadline,
   isReviewing,
   onReview,
   onBack,
@@ -120,6 +122,7 @@ const RejoinApplication = ({
   activeFundIsin: string | undefined;
   paymentRateOnFile: number | undefined;
   contributionStartDate: string;
+  cancellationDeadline: string;
   isReviewing: boolean;
   onReview: () => void;
   onBack: () => void;
@@ -172,6 +175,7 @@ const RejoinApplication = ({
     return (
       <RejoinSuccess
         contributionStartDate={contributionStartDate}
+        cancellationDeadline={cancellationDeadline}
         paymentRate={paymentRate}
         chosenFund={chosenFund}
       />
@@ -374,10 +378,12 @@ const SummaryItem = ({ label, children }: { label: ReactNode; children: ReactNod
 
 const RejoinSuccess = ({
   contributionStartDate,
+  cancellationDeadline,
   paymentRate,
   chosenFund,
 }: {
   contributionStartDate: string;
+  cancellationDeadline: string;
   paymentRate: PaymentRate;
   chosenFund: Fund | null;
 }) => {
@@ -416,6 +422,12 @@ const RejoinSuccess = ({
           </SummaryItem>
         )}
       </ul>
+      <p className="mx-auto mt-4 mb-0 text-pretty" style={{ maxWidth: '26rem' }}>
+        <FormattedMessage
+          id="secondPillarRejoin.success.cancellation"
+          values={{ deadline: formatDateYear(dayInTallinn(cancellationDeadline)) }}
+        />
+      </p>
     </SuccessNotice>
   );
 };

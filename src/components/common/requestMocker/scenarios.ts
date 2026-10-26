@@ -212,6 +212,17 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     user: 'LEFT_SECOND_PILLAR_PAYMENT_RATE_2',
     sourceFunds: 'BOTH_PILLARS',
   },
+  // The account page (/account) of a leaver who has filed to rejoin: the II pillar row says
+  // when contributions start, and the pending application can still be cancelled.
+  SECOND_PILLAR_REJOIN_PENDING: {
+    user: 'LEFT_SECOND_PILLAR_PAYMENT_RATE_2',
+    conversion: 'COMPLETE_ONLY_THIRD_PILLAR',
+    contributions: 'THIRD_PILLAR_MONTHLY_MAXED',
+    sourceFunds: 'ONLY_THIRD_PILLAR',
+    pendingApplications: 'SECOND_PILLAR_REJOIN',
+    savingsFundOnboardingStatus: 'NOT_STARTED',
+    savingsFundBalance: 'NO_ACCOUNT',
+  },
 
   WITHDRAWALS_PENSIONER_60_ALL_PILLARS: {
     withdrawalsEligibility: 'ALL_PILLARS_60',

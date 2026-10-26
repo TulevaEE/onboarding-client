@@ -40,6 +40,22 @@ const pendingTransfer = (pillar: 2 | 3): Application => ({
   },
 });
 
+const firstDayOfSixthMonthAfter = (deadline: moment.Moment) =>
+  deadline.clone().add(6, 'months').startOf('month').format('YYYY-MM-DD');
+
+const rejoinCancellationDeadline = moment().add(7, 'days').endOf('day');
+
+const pendingRejoin: Application = {
+  id: 9003,
+  status: 'PENDING',
+  creationTime: moment().subtract(1, 'hours').toISOString(),
+  type: 'REJOIN',
+  details: {
+    cancellationDeadline: rejoinCancellationDeadline.toISOString(),
+    fulfillmentDate: firstDayOfSixthMonthAfter(rejoinCancellationDeadline),
+  },
+};
+
 export const pendingApplicationsProfiles: Record<string, Application[]> = {
   ALL_TYPES: [
     {
@@ -435,4 +451,5 @@ export const pendingApplicationsProfiles: Record<string, Application[]> = {
   NONE: [],
   SECOND_PILLAR_TRANSFER: [pendingTransfer(2)],
   THIRD_PILLAR_TRANSFER: [pendingTransfer(3)],
+  SECOND_PILLAR_REJOIN: [pendingRejoin],
 };

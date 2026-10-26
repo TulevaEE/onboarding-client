@@ -1,4 +1,5 @@
 import {
+  RejoinApplication,
   SavingsFundPaymentApplication,
   SavingsFundWithdrawalApplication,
 } from '../../common/apiModels';
@@ -276,5 +277,16 @@ export const savingsFundWithdrawalApplication: SavingsFundWithdrawalApplication 
     iban: 'EE382200221020145685',
     cancellationDeadline: '2024-03-15T23:59:59.999999999Z',
     fulfillmentDeadline: '2024-03-01',
+  },
+};
+
+export const rejoin: RejoinApplication = {
+  id: 789,
+  type: 'REJOIN',
+  status: 'PENDING',
+  creationTime: '2026-10-26T10:15:00Z',
+  details: {
+    cancellationDeadline: '3000-11-30T21:59:59.999999999Z',
+    fulfillmentDate: '2027-05-01',
   },
 };

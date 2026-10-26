@@ -24,6 +24,7 @@ import {
   thirdPillarWithdrawal,
   savingFundPaymentApplication,
   savingsFundWithdrawalApplication,
+  rejoin,
 } from './fixtures';
 import { initializeConfiguration } from '../../config/config';
 import { getAuthentication } from '../../common/authenticationManager';
@@ -392,6 +393,72 @@ describe('Application section', () => {
       PII_CLASS,
     );
   });
+
+  it('renders rejoin applications with the date contributions start', async () => {
+    mockApplications([rejoin]);
+    initializeComponent();
+
+    expect(await screen.findByText(/^Rejoining the II\spillar$/)).toBeInTheDocument();
+    expect(screen.getByText('October 26, 2026')).toBeInTheDocument();
+    expect(screen.getByText('Contributions start')).toBeInTheDocument();
+    expect(screen.getByText('May 1, 2027')).toBeInTheDocument();
+  });
+
+  describe('cancelling a rejoin application at noon on November 30', () => {
+    const now = '2026-11-30T12:00:00Z';
+
+    beforeEach(() => {
+      jest.spyOn(Date, 'now').mockReturnValue(Date.parse(now));
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('lets you cancel a rejoin application before the deadline', async () => {
+      mockApplications([withCancellationDeadline(rejoin, '2026-12-31T21:59:59.999999999Z')]);
+      initializeComponent();
+
+      expect(await screen.findByText(/^Rejoining the II\spillar$/)).toBeInTheDocument();
+      const [desktopCancelLink] = cancelLinksOnDesktopAndMobile();
+
+      userEvent.click(desktopCancelLink);
+
+      expect(await screen.findByText('Test cancellation route')).toBeInTheDocument();
+    });
+
+    it('lets you cancel a rejoin application for the rest of the deadline day, after the deadline time has passed', async () => {
+      mockApplications([withCancellationDeadline(rejoin, '2026-11-30T09:00:00Z')]);
+      initializeComponent();
+
+      expect(await screen.findByText(/^Rejoining the II\spillar$/)).toBeInTheDocument();
+      expect(cancelLinksOnDesktopAndMobile().map((link) => link.getAttribute('href'))).toEqual([
+        `/applications/${rejoin.id}/cancellation`,
+        `/applications/${rejoin.id}/cancellation`,
+      ]);
+    });
+
+    it('does not let you cancel a rejoin application from the day after the deadline', async () => {
+      mockApplications([withCancellationDeadline(rejoin, '2026-11-29T23:59:59.999Z')]);
+      initializeComponent();
+
+      expect(await screen.findByText(/^Rejoining the II\spillar$/)).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Cancel application' })).not.toBeInTheDocument();
+    });
+  });
+
+  function cancelLinksOnDesktopAndMobile() {
+    const links = screen.getAllByRole('link', { name: 'Cancel application' });
+    expect(links).toHaveLength(2);
+    return links;
+  }
+
+  function withCancellationDeadline<T extends { details: object }>(
+    application: T,
+    cancellationDeadline: string,
+  ): T {
+    return { ...application, details: { ...application.details, cancellationDeadline } };
+  }
 
   function waitForRequestToFinish() {
     return new Promise((resolve) => {

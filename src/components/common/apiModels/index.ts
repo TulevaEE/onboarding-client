@@ -12,7 +12,8 @@ export type Application =
   | PaymentRateApplication
   | FundPensionOpeningApplication
   | PartialWithdrawalApplication
-  | ThirdPillarWithdrawalApplication;
+  | ThirdPillarWithdrawalApplication
+  | RejoinApplication;
 
 export type PaymentRateApplication = BaseApplication<
   'PAYMENT_RATE',
@@ -135,6 +136,14 @@ export type ThirdPillarWithdrawalApplication = BaseApplication<
   }
 >;
 
+export type RejoinApplication = BaseApplication<
+  'REJOIN',
+  {
+    cancellationDeadline: string;
+    fulfillmentDate: string;
+  }
+>;
+
 export type SavingsFundPaymentCancellationCommand = {
   paymentId: string;
 };
@@ -152,7 +161,8 @@ export type ApplicationType =
   | 'FUND_PENSION_OPENING'
   | 'FUND_PENSION_OPENING_THIRD_PILLAR'
   | 'PARTIAL_WITHDRAWAL'
-  | 'WITHDRAWAL_THIRD_PILLAR';
+  | 'WITHDRAWAL_THIRD_PILLAR'
+  | 'REJOIN';
 
 export type ApplicationStatus = 'PENDING' | 'COMPLETE' | 'FAILED';
 

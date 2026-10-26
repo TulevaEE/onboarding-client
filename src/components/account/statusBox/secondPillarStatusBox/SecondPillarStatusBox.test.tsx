@@ -12,12 +12,20 @@ import {
   lowFeesNoTulevaConversion,
   tulevaSecondPillarFund,
 } from '../fixtures';
+import { rejoin } from '../../ApplicationSection/fixtures';
+import { Application } from '../../../common/apiModels';
 
 let mockContributionsAreLoaded = true;
+const mockPendingApplicationsByDefault: Partial<Application>[] = [{ type: 'WITHDRAWAL' }];
+let mockPendingApplications = mockPendingApplicationsByDefault;
+let mockPendingApplicationsAreLoading = false;
 
 // TODO: Figure out a cleaner way to mock the hooks
 jest.mock('../../../common/apiHooks', () => ({
-  usePendingApplications: () => ({ data: [{ type: 'WITHDRAWAL' }] }),
+  usePendingApplications: () =>
+    mockPendingApplicationsAreLoading
+      ? { data: undefined, isInitialLoading: true }
+      : { data: mockPendingApplications, isInitialLoading: false },
   useTransactions: () => ({ data: [{ amount: 100 }] }),
   useFunds: () => ({ data: [{ pillar: 2 }] }),
   useMandateDeadlines: () => ({ data: { periodEnding: '2024-07-31T00:59:59.999999999Z' } }),
@@ -37,6 +45,8 @@ jest.mock('../../../common/apiHooks', () => ({
 
 afterEach(() => {
   mockContributionsAreLoaded = true;
+  mockPendingApplications = mockPendingApplicationsByDefault;
+  mockPendingApplicationsAreLoading = false;
 });
 
 jest.useFakeTimers();
@@ -285,6 +295,48 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
       renderWithIntl(<SecondPillarStatusBox {...noSecondPillar} />);
 
       expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    });
+
+    it('shows a filed rejoin application and when contributions start instead of a missing II pillar', () => {
+      mockPendingApplications = [rejoin];
+
+      renderWithIntl(<SecondPillarStatusBox {...noSecondPillar} nudgeKey="SECOND_PILLAR_START" />);
+
+      expect(
+        screen.getByText(
+          'Your application to rejoin has been filed. Contributions start on May 1, 2027.',
+        ),
+      ).toBeInTheDocument();
+      expect(screen.queryByText(/You have no II\spillar/)).not.toBeInTheDocument();
+      expect(screen.getByTestId('status-icon-success')).toBeInTheDocument();
+    });
+
+    it('offers no call to action while a rejoin application is pending, so nobody files twice', () => {
+      mockPendingApplications = [rejoin];
+
+      renderWithIntl(<SecondPillarStatusBox {...noSecondPillar} nudgeKey="SECOND_PILLAR_START" />);
+
+      expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    });
+
+    it('offers no II pillar to open until it is known whether a rejoin application is pending', () => {
+      mockPendingApplicationsAreLoading = true;
+
+      renderWithIntl(<SecondPillarStatusBox {...noSecondPillar} nudgeKey="SECOND_PILLAR_START" />);
+
+      expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    });
+
+    it('shimmers the II pillar line instead of saying there is none until it is known whether a rejoin application is pending', () => {
+      mockPendingApplicationsAreLoading = true;
+
+      renderWithIntl(<SecondPillarStatusBox {...noSecondPillar} nudgeKey="SECOND_PILLAR_START" />);
+
+      expect(screen.getByRole('heading', { name: /^II\spillar$/ })).toBeInTheDocument();
+      // eslint-disable-next-line testing-library/no-node-access
+      expect(document.querySelector('.shimmerDefault')).toBeInTheDocument();
+      expect(screen.queryByText(/You have no II\spillar/)).not.toBeInTheDocument();
+      expect(screen.queryByTestId('status-icon-error')).not.toBeInTheDocument();
     });
   });
 

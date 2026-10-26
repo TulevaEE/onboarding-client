@@ -8,6 +8,7 @@ import { initializeConfiguration } from '../config/config';
 import LoggedInApp from '../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../test/utils';
 import {
+  applicationsBackend,
   rolesBackend,
   switchRoleBackend,
   transactionsBackend,
@@ -18,6 +19,7 @@ import {
 } from '../../test/backend';
 import { mockUser } from '../../test/backend-responses';
 import { contribution } from './TransactionSection/fixtures';
+import { rejoin } from './ApplicationSection/fixtures';
 
 const server = setupServer();
 
@@ -283,5 +285,45 @@ describe('when the payment rate season is on and another nudge wins', () => {
 
     expect(rows.some((row) => row.classList.contains('primary'))).toBe(false);
     expect(rows.some((row) => row.classList.contains('secondary'))).toBe(false);
+  });
+});
+
+describe('when a leaver has filed an application to rejoin the II pillar', () => {
+  beforeEach(() => {
+    initializeConfiguration();
+    useTestBackendsExcept(server, ['user', 'applications', 'nudge']);
+    userBackend(server, { secondPillarActive: false });
+    applicationsBackend(server, [rejoin]);
+    nudgeBackend(server, { key: 'SECOND_PILLAR_START', tag: 'nudge_second_pillar_start' });
+    initializeComponent();
+    history.push('/account');
+  });
+
+  test('shows the filed rejoin application and when contributions start instead of a missing II pillar', async () => {
+    expect(
+      await screen.findByText(
+        'Your application to rejoin has been filed. Contributions start on May 1, 2027.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/You have no II\spillar/)).not.toBeInTheDocument();
+  });
+
+  test('offers no II pillar to open while the rejoin is pending, so nobody files twice', async () => {
+    expect(
+      await screen.findByText(/Your application to rejoin has been filed/),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /^Open II\spillar$/ })).not.toBeInTheDocument();
+  });
+
+  test('lists the application to rejoin with a link to cancel it', async () => {
+    expect(await screen.findByText(/^Rejoining the II\spillar$/)).toBeInTheDocument();
+    expect(
+      screen
+        .getAllByRole('link', { name: 'Cancel application' })
+        .map((link) => link.getAttribute('href')),
+    ).toEqual([
+      `/applications/${rejoin.id}/cancellation`,
+      `/applications/${rejoin.id}/cancellation`,
+    ]);
   });
 });
