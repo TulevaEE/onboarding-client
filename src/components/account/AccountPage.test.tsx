@@ -301,17 +301,13 @@ describe('when a leaver has filed an application for making contributions to the
 
   test('shows the filed rejoin application and when contributions start instead of a missing II pillar', async () => {
     expect(
-      await screen.findByText(
-        'Your application for making contributions has been filed. Contributions start on May 1, 2027.',
-      ),
+      await screen.findByText('You rejoined the II pillar. Contributions start on May 1, 2027.'),
     ).toBeInTheDocument();
     expect(screen.queryByText(/You have no II\spillar/)).not.toBeInTheDocument();
   });
 
   test('offers no II pillar to open while the rejoin is pending, so nobody files twice', async () => {
-    expect(
-      await screen.findByText(/Your application for making contributions has been filed/),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/You rejoined the II pillar/)).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /^Open II\spillar$/ })).not.toBeInTheDocument();
   });
 

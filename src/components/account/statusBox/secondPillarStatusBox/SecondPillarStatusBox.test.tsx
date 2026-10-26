@@ -303,9 +303,7 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
       renderWithIntl(<SecondPillarStatusBox {...noSecondPillar} nudgeKey="SECOND_PILLAR_START" />);
 
       expect(
-        screen.getByText(
-          'Your application for making contributions has been filed. Contributions start on May 1, 2027.',
-        ),
+        screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027.'),
       ).toBeInTheDocument();
       expect(screen.queryByText(/You have no II\spillar/)).not.toBeInTheDocument();
       expect(screen.getByTestId('status-icon-success')).toBeInTheDocument();

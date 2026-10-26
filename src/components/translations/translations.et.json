@@ -361,7 +361,7 @@
   "account.status.choice.pillar.second.season.pendingDecrease.line1": "Alates {fulfillmentDate} panustad II sambasse {pendingPaymentRate}% brutopalgast, praegu {currentPaymentRate}%",
   "account.status.choice.pillar.second.season.pendingDecrease.line2": "Sel aastal <link>võitsid tulumaksult</link> <amount>{taxWin}</amount>, <b>valikut saad muuta kuni {deadlineUntil}</b>",
   "account.status.choice.pillar.second.season.pendingDecrease.line2.noTaxWin": "<b>Valikut saad muuta kuni {deadlineUntil}</b>",
-  "account.status.choice.pillar.second.rejoinPending": "Sissemaksete tasumise avaldus on esitatud. Sissemaksed algavad {date}.",
+  "account.status.choice.pillar.second.rejoinPending": "Liitusid uuesti II sambaga. Sissemaksed algavad {date}.",
 
   "account.status.choice.pillar.third": "III sammas",
   "account.status.choice.pillar.third.missing.action": "Avan III samba",
