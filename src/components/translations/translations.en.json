@@ -2247,6 +2247,7 @@
   "signature.not.signed.insuranceTransferForm": "The request has not been signed yet.",
   "signature.not.awaited": "This contract is not waiting for your signature right now. It may have been cancelled.",
   "signature.session.entity.mismatch": "Signing was started for another document. Please start signing again.",
+  "signature.service.unavailable": "Signing is temporarily unavailable.",
   "web.eid.extension.missing": "Your browser does not have the Web eID extension. Install it <link>following the instructions on id.ee</link>, then try again.",
   "web.eid.id.software.missing": "The ID‑software is not installed on this computer. <link>Install it from id.ee</link>, then try again.",
   "web.eid.update.required": "Your ID‑software needs updating. <link>Install the latest version from id.ee</link>, then try again.",
