@@ -1,8 +1,10 @@
 import { User } from '../common/apiModels';
-import { Sex } from './engine/pension';
+import { CURRENT_YEAR, Sex } from './engine/pension';
+
+const ADULT_AGE = 18;
 
 export const BIRTH_YEAR_MIN = 1930;
-export const BIRTH_YEAR_MAX = 2008;
+export const BIRTH_YEAR_MAX = CURRENT_YEAR - ADULT_AGE;
 
 const PERSONAL_CODE = /^\d{11}$/;
 const BIRTH_YEAR_TEXT = /^\d{4}$/;

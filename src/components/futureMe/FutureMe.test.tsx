@@ -338,7 +338,7 @@ describe('FutureMe', () => {
     it('reports the You step when the page opens', () => {
       renderFutureMe();
 
-      expect(reportedSteps()).toEqual([{ samm: 0 }]);
+      expect(reportedSteps()).toEqual([{ step: 0 }]);
     });
 
     it('reports each step reached, numbering the result 9', async () => {
@@ -347,7 +347,7 @@ describe('FutureMe', () => {
       userEvent.click(nextButton());
       userEvent.click(within(trail()).getByRole('button', { name: 'Tulemus, vaatamata' }));
 
-      await waitFor(() => expect(reportedSteps()).toEqual([{ samm: 0 }, { samm: 3 }, { samm: 9 }]));
+      await waitFor(() => expect(reportedSteps()).toEqual([{ step: 0 }, { step: 3 }, { step: 9 }]));
     });
 
     it('does not report the same step twice in a row', () => {
@@ -355,7 +355,7 @@ describe('FutureMe', () => {
 
       userEvent.click(within(trail()).getByRole('button', { name: 'Sina, praegune samm' }));
 
-      expect(reportedSteps()).toEqual([{ samm: 0 }]);
+      expect(reportedSteps()).toEqual([{ step: 0 }]);
     });
 
     it('sends no answer of the saver', async () => {

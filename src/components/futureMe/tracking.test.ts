@@ -1,6 +1,6 @@
 import { trackCustomEvent } from '../tracking/actions';
 import { FutureMeStep, StepId } from './steps';
-import { FUTURE_ME_STEP_EVENT, trackFutureMeStep } from './tracking';
+import { trackFutureMeStep } from './tracking';
 
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
 
@@ -27,7 +27,7 @@ describe('tracking the step a saver reaches', () => {
     (_, step, number) => {
       trackFutureMeStep(step);
 
-      expect(mockTrackCustomEvent).toHaveBeenCalledWith(FUTURE_ME_STEP_EVENT, { samm: number });
+      expect(mockTrackCustomEvent).toHaveBeenCalledWith('future_me_step', { step: number });
     },
   );
 
@@ -43,7 +43,7 @@ describe('tracking the step a saver reaches', () => {
     const parameters = mockTrackCustomEvent.mock.calls.map(([, params]) => params);
     expect(parameters.length).toBeGreaterThan(0);
     parameters.forEach((params) => {
-      expect(Object.keys(params as object)).toEqual(['samm']);
+      expect(Object.keys(params as object)).toEqual(['step']);
     });
   });
 });
