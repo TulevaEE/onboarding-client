@@ -697,7 +697,10 @@ export function getContributions(): Promise<Contribution[]> {
 }
 
 export function getRejoinPermission(): Promise<RejoinPermission> {
-  return getWithAuthentication(getEndpoint('/v1/rejoin-permission'), undefined);
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/rejoin-permission'), undefined),
+    'rejoinPermission',
+  );
 }
 
 export function getSecondPillarAssets(): Promise<SecondPillarAssets> {

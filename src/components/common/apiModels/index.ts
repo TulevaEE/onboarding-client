@@ -282,6 +282,12 @@ export interface PendingOnboarding {
   name: string;
 }
 
+export interface SecondPillarContributions {
+  contributing: boolean;
+  restartDate: string | null;
+  rejoinPossibleFrom: string | null;
+}
+
 export interface User {
   id: number;
   personalCode: string;
@@ -295,6 +301,7 @@ export interface User {
   secondPillarPikNumber: string;
   address: Address;
   secondPillarActive: boolean;
+  secondPillarContributions?: SecondPillarContributions | null;
   thirdPillarActive: boolean;
   dateOfBirth: string;
   age: number;

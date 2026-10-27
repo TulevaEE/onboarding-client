@@ -36,10 +36,18 @@ export function formatDateOn(date: string): string {
   return moment.locale() === 'et' ? inflectedEstonianDate(date, 'l') : formatDate(date);
 }
 
-export function formatDateOnWithYear(date: string): string {
+function inflectedDateWithYear(date: string, estonianSuffix: string): string {
   return moment.locale() === 'et'
-    ? `${inflectedEstonianDate(date, 'l')} ${tallinnDayParts(date).year}`
+    ? `${inflectedEstonianDate(date, estonianSuffix)}\u00A0${tallinnDayParts(date).year}`
     : formatDateYear(dayInTallinn(date));
+}
+
+export function formatDateOnWithYear(date: string): string {
+  return inflectedDateWithYear(date, 'l');
+}
+
+export function formatDateFromWithYear(date: string): string {
+  return inflectedDateWithYear(date, 'st');
 }
 
 export function formatDateUntil(date: string): string {
