@@ -23,6 +23,7 @@ const WORK_YEARS_LIMITS = { min: 0, max: 50 };
 
 export type FundKey = keyof typeof FUND_RETURNS;
 export type ThirdPillarJoined = 'before' | 'after' | 'none';
+export type ThirdPillarPlan = 'keep' | 'fund' | 'lump';
 export type HazardList = 'no' | 'list1' | 'list2';
 export type FieldProblem = 'empty' | 'min' | 'range';
 
@@ -57,6 +58,7 @@ export interface YouAnswers extends KidsAnswers, WorkAnswers {
   thirdPillarMonthly: string;
   thirdPillarOpenAge: string;
   thirdPillarFund: FundKey;
+  thirdPillarPlan: ThirdPillarPlan;
   earlyYearsPicked: string;
 }
 
@@ -140,6 +142,7 @@ export const initialAnswers = (prefill: YouPrefill): YouAnswers =>
     thirdPillarMonthly: '',
     thirdPillarOpenAge: '',
     thirdPillarFund: 'mix',
+    thirdPillarPlan: 'keep',
     ...OPTIONAL_DEFAULTS.kids,
     ...OPTIONAL_DEFAULTS.work,
     earlyYearsPicked: '',
