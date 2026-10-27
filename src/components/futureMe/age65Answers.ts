@@ -1,4 +1,4 @@
-import { PayoutChoice } from './age60Answers';
+import { PayoutChoice, payoutAge } from './age60Answers';
 import { DEFERRAL_INCREASE, EARLY_DECREASE, retirementYears, workAccrual } from './engine/pension';
 import { StepPlanInput } from './steps';
 import {
@@ -16,7 +16,6 @@ export type DeferralLock = 'specialPension' | PensionKind;
 export const PENSION_MODES: PensionMode[] = ['full', 'half', 'defer'];
 export const DEFERRAL_YEARS = [1, 2, 3, 4, 5];
 
-const YEARS_BEFORE_PENSION_AGE_FOR_PAYOUT = 5;
 const LAST_WORK_AGE_MIN = 75;
 const YEARS_WORKED_PAST_PENSION_AGE = 5;
 
@@ -51,7 +50,7 @@ export const retirementAge = (plan: StepPlanInput): number =>
   retirementYears(plan) - plan.earlyRetirementYears;
 
 export const isPayoutChoiceMadeAtAnotherStep = (plan: StepPlanInput): boolean =>
-  retirementAge(plan) <= retirementYears(plan) - YEARS_BEFORE_PENSION_AGE_FOR_PAYOUT;
+  retirementAge(plan) <= payoutAge(plan);
 
 export const pensionKind = (you: YouAnswers): PensionKind => {
   const years = earlyRetirementYears(you);
