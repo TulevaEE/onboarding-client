@@ -565,6 +565,19 @@ const SecondPillarTaxWin = () => {
           </div>
         </div>
 
+        <div className="text-secondary" data-testid="first-pillar-note">
+          <FormattedMessage
+            id="secondPillarGrowth.firstPillarNote"
+            values={{
+              a: (chunks: string) => (
+                <Link to="/1st-vs-2nd-pillar" className="text-secondary">
+                  {chunks}
+                </Link>
+              ),
+            }}
+          />
+        </div>
+
         <div className="d-flex flex-column gap-3">
           {!contributions || !user ? (
             <>

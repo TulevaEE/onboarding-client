@@ -86,6 +86,19 @@ describe('SecondPillarTaxWin', () => {
   });
 
   describe('THE BUG: User at 2% with January contribution at 6%', () => {
+    it('says that the social tax paid into the II pillar slightly affects the I pillar, as the chart shows the 4% from social tax', () => {
+      mockUseMe.mockReturnValue({ data: createMockUser(2) } as ReturnType<typeof useMe>);
+      mockUseContributions.mockReturnValue({
+        data: [createContributionAtRate(2, 100, '2026-01-10T10:00:00Z')],
+      } as ReturnType<typeof useContributions>);
+
+      renderWithProviders(<SecondPillarTaxWin />);
+
+      expect(screen.getByTestId('first-pillar-note')).toHaveTextContent(
+        /Social tax paid into II pillar also has a small effect on your I pillar\./,
+      );
+    });
+
     it('shows different values for 2% and 6% projections when contribution was made at 6%', () => {
       const userAt2Percent = createMockUser(2);
       const socialTaxBase = 100;
