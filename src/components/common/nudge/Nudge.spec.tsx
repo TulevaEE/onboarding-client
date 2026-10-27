@@ -121,3 +121,102 @@ describe('second pillar start nudge', () => {
     );
   });
 });
+
+describe('second pillar rejoin nudge', () => {
+  beforeEach(() => {
+    initializeConfiguration();
+    useTestBackendsExcept(server, ['trackedEvents']);
+    server.use(rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))));
+  });
+
+  test('invites a leaver to rejoin until the filing deadline', async () => {
+    const history = createMemoryHistory();
+    const store = createDefaultStore(history as any);
+    login(store);
+    const rejoin: NudgeDecision = {
+      key: 'SECOND_PILLAR_REJOIN',
+      tag: 'nudge_second_pillar_rejoin',
+      secondPillarRejoinDeadline: '2026-11-30',
+    };
+
+    renderWrapped(
+      <NudgeView decision={rejoin} context="THIRD_PILLAR_PAYMENT" />,
+      history as any,
+      store,
+    );
+
+    expect(
+      await screen.findByRole('heading', { name: 'Get the tax win again' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/The last day to file the application is November\s30,\s2026\./),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/^94\s€ a month$/)).toBeInTheDocument();
+    expect(screen.getByText('to your bank account')).toBeInTheDocument();
+    expect(screen.getByText(/^200\s€ a month$/)).toBeInTheDocument();
+    expect(screen.getByText(/^to your II\spillar account$/)).toBeInTheDocument();
+    expect(screen.getByText(/^From taxes 106\s€$/)).toBeInTheDocument();
+    expect(screen.getByText(/^With a gross salary of 2000\s€$/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Start saving again' })).toHaveAttribute(
+      'href',
+      '/2nd-pillar-rejoin',
+    );
+  });
+});
+
+describe('fee comparison nudge', () => {
+  const decision: NudgeDecision = {
+    key: 'SECOND_PILLAR_TRANSFER',
+    tag: 'nudge_second_pillar',
+    feeComparison: {
+      currentFeePercent: 0.65,
+      currentFeeAmount: 130,
+      tulevaFeeAmount: 56,
+      savingsAmount: 74,
+    },
+  };
+  const otherFund = (isin: string) => ({
+    fund: {
+      isin,
+      name: isin,
+      pillar: 2,
+      managementFeeRate: 0.0065,
+      ongoingChargesFigure: 0.0065,
+      status: 'ACTIVE',
+      fundManager: { name: 'Other' },
+    },
+    value: 1000,
+    unavailableValue: 0,
+    activeContributions: false,
+    currency: 'EUR',
+    pillar: 2,
+    contributions: 0,
+    subtractions: 0,
+    profit: 0,
+  });
+
+  test.each([
+    [[otherFund('EE0000000001')], 'Your selected fund'],
+    [[otherFund('EE0000000001'), otherFund('EE0000000002')], 'Your selected funds'],
+  ])('names the current funds in the singular or plural: %#', async (funds, label) => {
+    initializeConfiguration();
+    useTestBackendsExcept(server, ['trackedEvents']);
+    server.use(
+      rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))),
+      rest.get('http://localhost/v1/pension-account-statement', (req, res, ctx) =>
+        res(ctx.json(funds)),
+      ),
+    );
+    const history = createMemoryHistory();
+    const store = createDefaultStore(history as any);
+    login(store);
+
+    renderWrapped(
+      <NudgeView decision={decision} context="THIRD_PILLAR_PAYMENT" />,
+      history as any,
+      store,
+    );
+
+    expect(await screen.findByText(label)).toBeInTheDocument();
+  });
+});
