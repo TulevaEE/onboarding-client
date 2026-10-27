@@ -234,12 +234,13 @@ describe('When a user is making a third pillar payment', () => {
   });
 
   test.each([
-    ['Wise', 'WISE', 'Open Wise'],
-    ['Citadele', 'CITADELE', 'Log into internet bank'],
-    ['Bigbank', 'BIGBANK', 'Log into internet bank'],
+    ['Wise', 'WISE', 'Open Wise', 'EE362200221067235244'],
+    ['Citadele', 'CITADELE', 'Log into internet bank', 'EE362200221067235244'],
+    ['Bigbank', 'BIGBANK', 'Log into internet bank', 'EE362200221067235244'],
+    ['Luminor', 'LUMINOR', 'Log into internet bank', 'EE961700017004379157'],
   ])(
     'keeps the details to copy on screen after %s opens in a new tab',
-    async (bank, paymentChannel, openButton) => {
+    async (bank, paymentChannel, openButton, pensionikeskusIban) => {
       const fakeWindow = { location: { replace: jest.fn() }, document: { write: jest.fn() } };
       const windowOpen = jest
         .spyOn(window, 'open')
@@ -257,7 +258,7 @@ describe('When a user is making a third pillar payment', () => {
       expect(
         screen.getByRole('heading', { name: `How to set up a recurring payment in ${bank}` }),
       ).toBeInTheDocument();
-      expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
+      expect(screen.getByText(pensionikeskusIban)).toBeInTheDocument();
       expect(
         screen.queryByRole('heading', { name: 'Did you set up the recurring payment?' }),
       ).not.toBeInTheDocument();

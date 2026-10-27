@@ -492,7 +492,7 @@
   "thirdPillarPayment.firstPayment": "First payment",
   "thirdPillarPayment.RECURRING.luminor": "How to set up a recurring payment in Luminor",
   "thirdPillarPayment.RECURRING.luminor.login": "Click the button below and log into your Luminor internet bank.",
-  "thirdPillarPayment.RECURRING.luminor.form": "The standing order form is pre-filled with your data. Check the following fields and confirm the order:",
+  "thirdPillarPayment.RECURRING.luminor.form": "Fill in the standing order with these details and confirm it:",
   "thirdPillarPayment.beneficiaryName": "Beneficiary name",
   "thirdPillarPayment.amountInEur": "Amount in EUR",
   "thirdPillarPayment.description": "Description",
