@@ -192,6 +192,7 @@ describe('toSigningErrorResponse', () => {
       'signature.session.entity.mismatch',
       'Signing session was started for another entity: entity=Mandate, id=1',
     ],
+    ['signature.service.unavailable', 'Signing is temporarily unavailable, please retry later.'],
   ])(
     'shows only the explanation written for the user when the backend refuses with %s',
     (backendCode, logMessage) => {
@@ -202,4 +203,34 @@ describe('toSigningErrorResponse', () => {
       );
     },
   );
+
+  it('replaces a backend failure whose code has no explanation written for the user with the unknown signing error, leaving the report to the backend', () => {
+    const unhandledBackendFailure = {
+      status: 500,
+      body: {
+        errors: [
+          {
+            code: 'Internal Server Error',
+            message:
+              'OCSP request failed. Please check GitHub Wiki for more information: https://github.com/open-eid/digidoc4j/wiki/Questions-&-Answers#if-ocsp-request-has-failed',
+          },
+        ],
+      },
+    };
+
+    expect(toSigningErrorResponse(unhandledBackendFailure, 'MANDATE')).toEqual(
+      errorResponseWithCode('signature.error.unknown'),
+    );
+    expect(captureException).not.toHaveBeenCalled();
+  });
+
+  it('passes a refusal it has no explanation for through unchanged, status included, so the flow can still tell a rejected request from a failed one', () => {
+    const refusal = {
+      status: 400,
+      body: { errors: [{ code: 'mandate.invalid', message: 'Mandate is invalid: id=1' }] },
+    };
+
+    expect(toSigningErrorResponse(refusal, 'MANDATE')).toBe(refusal);
+    expect(captureException).not.toHaveBeenCalled();
+  });
 });

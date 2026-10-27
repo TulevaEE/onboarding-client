@@ -2337,6 +2337,7 @@
   "signature.not.signed.insuranceTransferForm": "Avaldus pole veel allkirjastatud.",
   "signature.not.awaited": "See leping ei oota praegu sinu allkirja. Võimalik, et see on tühistatud.",
   "signature.session.entity.mismatch": "Allkirjastamist alustati teise dokumendi jaoks. Palun alusta allkirjastamist uuesti.",
+  "signature.service.unavailable": "Allkirjastamine on ajutiselt häiritud.",
   "web.eid.extension.missing": "Sinu brauseris pole Web eID laiendust. Paigalda see <link>id.ee juhendi järgi</link> ja proovi uuesti.",
   "web.eid.id.software.missing": "Selles arvutis pole ID‑tarkvara. <link>Paigalda see id.ee lehelt</link> ja proovi uuesti.",
   "web.eid.update.required": "Sinu ID‑tarkvara vajab uuendamist. <link>Paigalda uusim versioon id.ee lehelt</link> ja proovi uuesti.",

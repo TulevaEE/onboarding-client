@@ -2,6 +2,7 @@ import { captureException } from '@sentry/browser';
 import { isAxiosError } from 'axios';
 import { ErrorResponse } from '../apiModels';
 import { errorResponseWithCode, isErrorResponse } from '../errorResponse';
+import { isTranslationKey } from '../../translations';
 import { SignableEntity } from './types';
 
 const SIGNATURE_STATE_CODES = ['signature.already.signed', 'signature.not.signed'];
@@ -10,6 +11,7 @@ const REFUSALS_EXPLAINED_IN_OWN_WORDS = [
   'id.card.signing.certificate.revoked',
   'signature.not.awaited',
   'signature.session.entity.mismatch',
+  'signature.service.unavailable',
 ];
 
 const ENTITY_MESSAGE_SUFFIX: Record<SignableEntity, string> = {
@@ -39,6 +41,14 @@ const categoryOf = (error: unknown, httpStatus: number | undefined): SigningFail
   return isAxiosError(error) ? 'network' : 'unexpected';
 };
 
+const hasExplanationWrittenForTheUser = (error: ErrorResponse) =>
+  error.body.errors.some(({ code }) => isTranslationKey(code));
+
+const isServerFailureNobodyExplained = (error: ErrorResponse) => {
+  const httpStatus = httpStatusOf(error);
+  return httpStatus !== undefined && httpStatus >= 500 && !hasExplanationWrittenForTheUser(error);
+};
+
 const UNEXPLAINED_FAILURE = 'Signing failed unexpectedly';
 
 const reportUnexplainedFailure = (error: unknown, entity: SignableEntity) => {
@@ -62,7 +72,12 @@ export const toSigningErrorResponse = (error: unknown, entity: SignableEntity): 
       return errorResponseWithCode(`${stateCode}.${ENTITY_MESSAGE_SUFFIX[entity]}`);
     }
     const refusalCode = firstCodeAmong(error, REFUSALS_EXPLAINED_IN_OWN_WORDS);
-    return refusalCode ? errorResponseWithCode(refusalCode) : error;
+    if (refusalCode) {
+      return errorResponseWithCode(refusalCode);
+    }
+    return isServerFailureNobodyExplained(error)
+      ? errorResponseWithCode('signature.error.unknown')
+      : error;
   }
   reportUnexplainedFailure(error, entity);
   return errorResponseWithCode('signature.error.unknown');
