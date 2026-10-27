@@ -72,11 +72,55 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({
         <NudgeNotice
           header="nudge.SECOND_PILLAR_REJOIN.header"
           description="nudge.SECOND_PILLAR_REJOIN.description"
-          descriptionValues={{ deadline: formatDateYear(decision.secondPillarRejoinDeadline) }}
+          descriptionValues={{
+            ...REJOIN_EXAMPLE,
+            deadline: formatDateYear(decision.secondPillarRejoinDeadline),
+          }}
           button="nudge.SECOND_PILLAR_REJOIN.button"
           to="/2nd-pillar-rejoin"
           onCallToAction={onCallToAction}
-        />
+        >
+          <ComparisonFigure
+            left={{
+              segments: [{ amount: REJOIN_EXAMPLE.fromNetSalary }],
+              title: (
+                <FormattedMessage
+                  id="nudge.SECOND_PILLAR_REJOIN.perMonth"
+                  values={{ amount: REJOIN_EXAMPLE.fromNetSalary }}
+                />
+              ),
+              subtitle: <FormattedMessage id="nudge.SECOND_PILLAR_REJOIN.toBankAccount" />,
+            }}
+            right={{
+              segments: [
+                { amount: REJOIN_EXAMPLE.fromNetSalary },
+                {
+                  amount: REJOIN_EXAMPLE.taxWin,
+                  gain: true,
+                  label: (
+                    <FormattedMessage
+                      id="nudge.SECOND_PILLAR_REJOIN.taxWin"
+                      values={{ amount: REJOIN_EXAMPLE.taxWin }}
+                    />
+                  ),
+                },
+              ],
+              title: (
+                <FormattedMessage
+                  id="nudge.SECOND_PILLAR_REJOIN.perMonth"
+                  values={{ amount: REJOIN_EXAMPLE.fromNetSalary + REJOIN_EXAMPLE.taxWin }}
+                />
+              ),
+              subtitle: <FormattedMessage id="nudge.SECOND_PILLAR_REJOIN.toSecondPillarAccount" />,
+            }}
+            caption={
+              <FormattedMessage
+                id="nudge.SECOND_PILLAR_REJOIN.caption"
+                values={{ grossSalary: REJOIN_EXAMPLE.grossSalary }}
+              />
+            }
+          />
+        </NudgeNotice>
       );
     case 'SECOND_PILLAR_TRANSFER':
       return decision.feeComparison ? (
@@ -246,6 +290,66 @@ const NudgeNotice = ({
   </Notice>
 );
 
+type Segment = { amount: number; gain?: boolean; label?: ReactNode };
+type ComparisonBar = { segments: Segment[]; title: ReactNode; subtitle: ReactNode };
+
+const MAXIMUM_BAR_HEIGHT = 150;
+const MINIMUM_BAR_HEIGHT = 6;
+const MINIMUM_LABELLED_SEGMENT_HEIGHT = 40;
+
+const ComparisonFigure = ({
+  left,
+  right,
+  caption,
+}: {
+  left: ComparisonBar;
+  right: ComparisonBar;
+  caption?: ReactNode;
+}) => {
+  const totalOf = (bar: ComparisonBar) =>
+    bar.segments.reduce((sum, segment) => sum + segment.amount, 0);
+  const largest = Math.max(totalOf(left), totalOf(right), 1);
+  const heightOf = (segment: Segment) =>
+    Math.max(MINIMUM_BAR_HEIGHT, (segment.amount / largest) * MAXIMUM_BAR_HEIGHT);
+
+  const column = (bar: ComparisonBar) => (
+    <div className={styles.column}>
+      <div className={styles.bar} style={{ height: MAXIMUM_BAR_HEIGHT }}>
+        {[...bar.segments].reverse().map((segment) => (
+          <div
+            key={segment.gain ? 'gain' : 'base'}
+            className={segment.gain ? styles.gain : styles.base}
+            style={{ height: heightOf(segment) }}
+          >
+            {heightOf(segment) >= MINIMUM_LABELLED_SEGMENT_HEIGHT &&
+              (segment.label ?? <>{segment.amount}&nbsp;€</>)}
+          </div>
+        ))}
+      </div>
+      <div className={styles.baseline} />
+      <div className={styles.title}>{bar.title}</div>
+      <div className={styles.subtitle}>{bar.subtitle}</div>
+    </div>
+  );
+
+  return (
+    <figure className={styles.figure}>
+      <div className={styles.columns}>
+        {column(left)}
+        <div className={styles.divider}>
+          <span className={styles.or}>
+            <FormattedMessage id="nudge.comparison.or" />
+          </span>
+        </div>
+        {column(right)}
+      </div>
+      {caption && <figcaption className="text-body-secondary mt-3 mb-0">{caption}</figcaption>}
+    </figure>
+  );
+};
+
+const REJOIN_EXAMPLE = { grossSalary: 2000, fromNetSalary: 94, taxWin: 106 };
+
 const FeeComparisonNudge = ({
   feeComparison,
   onCallToAction,
@@ -254,11 +358,6 @@ const FeeComparisonNudge = ({
   onCallToAction: () => void;
 }) => {
   const { currentFeePercent, currentFeeAmount, tulevaFeeAmount, savingsAmount } = feeComparison;
-  const maximumFundColumnHeight = 150;
-  const maxAmount = Math.max(tulevaFeeAmount, currentFeeAmount);
-  const ourFundHeight = (tulevaFeeAmount / maxAmount) * maximumFundColumnHeight;
-  const currentFundsHeight = (currentFeeAmount / maxAmount) * maximumFundColumnHeight;
-
   return (
     <NudgeNotice
       header="thirdPillarSuccess.notice.header"
@@ -273,34 +372,18 @@ const FeeComparisonNudge = ({
       to="/2nd-pillar-flow"
       onCallToAction={onCallToAction}
     >
-      <div>
-        <div className="row d-flex justify-content-center align-items-end mt-5">
-          <div className="col-md-2 col-5">
-            <div className={styles.leftcolumn} style={{ height: ourFundHeight }}>
-              <div className={styles.columncontent}>{tulevaFeeAmount}&nbsp;€</div>
-            </div>
-          </div>
-          <div className="col-md-2 col-1" />
-          <div className="col-md-2 col-5">
-            <div className={styles.rightcolumn} style={{ height: currentFundsHeight }}>
-              <div className={styles.columncontent}>{currentFeeAmount}&nbsp;€</div>
-            </div>
-          </div>
-        </div>
-        <div className="row d-flex justify-content-center align-items-start my-3">
-          <div className="col-md-3 col-5">
-            <small className="text-body-secondary">
-              <FormattedMessage id="thirdPillarSuccess.ourFund" />
-            </small>
-          </div>
-          <div className="col-md-1 col-1" />
-          <div className="col-md-3 col-5">
-            <small className="text-body-secondary">
-              <FormattedMessage id="thirdPillarSuccess.currentFund" />
-            </small>
-          </div>
-        </div>
-      </div>
+      <ComparisonFigure
+        left={{
+          segments: [{ amount: tulevaFeeAmount }],
+          title: <>{tulevaFeeAmount}&nbsp;€</>,
+          subtitle: <FormattedMessage id="thirdPillarSuccess.ourFund" />,
+        }}
+        right={{
+          segments: [{ amount: currentFeeAmount }],
+          title: <>{currentFeeAmount}&nbsp;€</>,
+          subtitle: <FormattedMessage id="thirdPillarSuccess.currentFund" />,
+        }}
+      />
     </NudgeNotice>
   );
 };
