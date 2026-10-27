@@ -308,6 +308,18 @@ describe('Age 65 step', () => {
       expect(screen.getByRole('spinbutton', { name: /Uus III\ssamba sissemakse/ })).toBeRequired();
     });
 
+    it('tells a screen reader that the new third pillar contribution is missing', () => {
+      const group = screen.getByRole('group', { name: /^Kas III\ssamba sissemakse muutub\?$/ });
+      userEvent.click(within(group).getByRole('radio', { name: /^Muutub/ }));
+      const amount = screen.getByRole('spinbutton', { name: /Uus III\ssamba sissemakse/ });
+
+      userEvent.click(amount);
+      userEvent.tab();
+
+      expect(amount).toHaveAttribute('aria-invalid', 'true');
+      expect(amount).toHaveAccessibleDescription(/Sisesta summa/);
+    });
+
     it('marks the regular pension age among the end ages and defaults to it', () => {
       userEvent.click(within(workGroup()).getByRole('radio', { name: /^Töötan edasi/ }));
 

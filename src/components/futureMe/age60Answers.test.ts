@@ -1,10 +1,11 @@
 import {
   decisionOrdinal,
-  hasThirdPillar,
+  hasThirdPillarAt,
   initialAge60,
   payoutAge,
   payoutAgeTense,
 } from './age60Answers';
+import { retirementYears } from './engine/pension';
 import { FutureMeStep } from './steps';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
 
@@ -48,7 +49,8 @@ describe('age60Answers', () => {
   describe('having a third pillar', () => {
     const hasThirdPillarFor = (changes: Partial<ReturnType<typeof initialAnswers>>) => {
       const you = youWith(changes);
-      return hasThirdPillar(you, toStepPlanInput(you));
+      const plan = toStepPlanInput(you);
+      return hasThirdPillarAt(you, plan, payoutAge(plan));
     };
 
     it('is true with a balance or a monthly payment once joined', () => {
@@ -79,6 +81,18 @@ describe('age60Answers', () => {
           thirdPillarOpenAge: '65',
         }),
       ).toBe(false);
+    });
+
+    it('counts a pillar opened after the payout age when asked at the pension age', () => {
+      const you = youWith({
+        thirdPillarJoined: 'none',
+        thirdPillarMonthly: '30',
+        thirdPillarOpenAge: '63',
+      });
+      const plan = toStepPlanInput(you);
+
+      expect(hasThirdPillarAt(you, plan, payoutAge(plan))).toBe(false);
+      expect(hasThirdPillarAt(you, plan, retirementYears(plan))).toBe(true);
     });
 
     it('is true when the saver opens the III pillar before the payout age', () => {

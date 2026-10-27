@@ -8,7 +8,7 @@ import { Age55Step } from './Age55Step';
 import { age55Of } from './age55';
 import {
   decisionOrdinal,
-  hasThirdPillar,
+  hasThirdPillarAt,
   initialAge60,
   payoutAge,
   payoutAgeTense,
@@ -174,7 +174,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           tense={payoutAgeTense(birthYearOrFallback(answers), payoutAge(plan))}
           ordinal={decisionOrdinal(steps)}
           hasSecondPillar={plan.savesInSecondPillar}
-          hasThirdPillar={hasThirdPillar(answers, plan)}
+          hasThirdPillar={hasThirdPillarAt(answers, plan, payoutAge(plan))}
           headingRef={headingRef}
           onChange={setAge60}
           onEditYou={() => goTo(FutureMeStep.YOU)}

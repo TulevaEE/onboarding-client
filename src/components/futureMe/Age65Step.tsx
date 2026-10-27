@@ -1,6 +1,6 @@
 import React, { RefObject } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Age60Answers, hasThirdPillar, payoutAge, payoutAgeTense } from './age60Answers';
+import { Age60Answers, hasThirdPillarAt, payoutAge, payoutAgeTense } from './age60Answers';
 import {
   Age65Answers,
   earlyDecrease,
@@ -56,7 +56,7 @@ export const Age65Step = ({
   const kind = pensionKind(you);
   const isChosenAtAnotherStep = isPayoutChoiceMadeAtAnotherStep(plan);
   const hasSecondPillar = plan.savesInSecondPillar;
-  const hasThird = hasThirdPillar(you, plan);
+  const hasThird = hasThirdPillarAt(you, plan, age);
   const isAnyPayoutAsked =
     !isChosenAtAnotherStep &&
     (!hasSecondPillar ||

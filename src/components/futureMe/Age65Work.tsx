@@ -139,12 +139,15 @@ export const Age65Work = ({ answers, you, plan, isThirdPillarAfterAsked, onChang
                 min={0}
                 step={10}
                 required
-                aria-describedby="future-me-third-pillar-after-unit"
+                aria-invalid={isAmountTouched && isAmountMissing}
+                aria-describedby={classNames('future-me-third-pillar-after-unit', {
+                  'future-me-third-pillar-after-error': isAmountTouched && isAmountMissing,
+                })}
                 value={answers.thirdPillarAfter}
                 onChange={(event) => onChange({ ...answers, thirdPillarAfter: event.target.value })}
                 onBlur={() => setAmountTouched(true)}
               />
-              <div className="invalid-feedback">
+              <div className="invalid-feedback" id="future-me-third-pillar-after-error">
                 <FormattedMessage id="futureMe.age65.thirdPillarAfter.amount.error" />
               </div>
               <div className="form-text" id="future-me-third-pillar-after-unit">
