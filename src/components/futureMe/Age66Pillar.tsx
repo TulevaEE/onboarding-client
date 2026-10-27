@@ -46,7 +46,7 @@ export const Age66Pillar = ({ pillar, answers, context, isLegendShown, onChange 
             }
           >
             <option value="">{intl.formatMessage({ id: 'futureMe.age66.start.none' })}</option>
-            {fundStartAges(context.plan).map((age) => (
+            {fundStartAges(pillar, context).map((age) => (
               <option key={age} value={age}>
                 {intl.formatMessage(
                   { id: 'futureMe.age66.start.option' },

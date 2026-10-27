@@ -1,4 +1,4 @@
-import { Age60Answers, hasThirdPillarAt, PayoutChoice } from './age60Answers';
+import { Age60Answers, hasThirdPillarAt, PayoutChoice, payoutAge } from './age60Answers';
 import { Age65Answers, isPayoutChoiceMadeAtAnotherStep, retirementAge } from './age65Answers';
 import { StepPlanInput } from './steps';
 import { YouAnswers } from './youAnswers';
@@ -10,6 +10,8 @@ export type ContractLock = 'none' | 'grow' | 'lump';
 export const CONTRACTS: Contract[] = ['yearly', 'once'];
 
 const LAST_FUND_START_AGE = 85;
+const THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021 = 55;
+const THIRD_PILLAR_PAYOUT_AGE = 60;
 
 export interface Age66Answers {
   secondPillarFrom: string;
@@ -32,15 +34,27 @@ export const initialAge66 = (): Age66Answers => ({
   thirdPillarContract: 'yearly',
 });
 
-export const fundStartAges = (plan: StepPlanInput): number[] => {
-  const first = retirementAge(plan) + 1;
+const pillarPayoutAge = (pillar: Pillar, { you, plan }: Pick<Age66Context, 'you' | 'plan'>) => {
+  if (pillar === 'secondPillar') {
+    return payoutAge(plan);
+  }
+  return you.thirdPillarJoined === 'before'
+    ? THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021
+    : THIRD_PILLAR_PAYOUT_AGE;
+};
+
+export const fundStartAges = (
+  pillar: Pillar,
+  context: Pick<Age66Context, 'you' | 'plan'>,
+): number[] => {
+  const first = Math.max(retirementAge(context.plan) + 1, pillarPayoutAge(pillar, context));
   return Array.from({ length: LAST_FUND_START_AGE - first + 1 }, (_, offset) => first + offset);
 };
 
 export const hasPillar = (pillar: Pillar, { you, plan }: Age66Context): boolean =>
   pillar === 'secondPillar'
     ? plan.savesInSecondPillar
-    : hasThirdPillarAt(you, plan, retirementAge(plan));
+    : hasThirdPillarAt(you, plan, LAST_FUND_START_AGE);
 
 export const payoutAtPensionAge = (
   pillar: Pillar,
@@ -65,7 +79,7 @@ export const fundStartOf = (
   context: Age66Context,
 ): number | undefined => {
   const picked = Number(answers[fundStartField(pillar)]);
-  return isGrowing(pillar, context) && fundStartAges(context.plan).includes(picked)
+  return isGrowing(pillar, context) && fundStartAges(pillar, context).includes(picked)
     ? picked
     : undefined;
 };

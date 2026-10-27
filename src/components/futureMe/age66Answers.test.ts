@@ -4,6 +4,7 @@ import {
   contractLock,
   fundStartAges,
   fundStartOf,
+  hasPillar,
   initialAge66,
   isContractAsked,
   payoutAtPensionAge,
@@ -32,10 +33,48 @@ describe('age66Answers', () => {
   });
 
   it('offers the start ages from the year after the pension age up to 85', () => {
-    const ages = fundStartAges(plan);
+    const ages = fundStartAges('secondPillar', context());
 
     expect(ages[0]).toBe(66);
     expect(ages[ages.length - 1]).toBe(85);
+  });
+
+  describe('for a saver retiring ten years early', () => {
+    const earlyContext = (changes: Partial<typeof you>) => {
+      const early = {
+        ...you,
+        workAdded: true,
+        hazardList: 'list1' as const,
+        hazardYears: '10',
+        ...changes,
+      };
+      return { ...growing, you: early, plan: toStepPlanInput(early) };
+    };
+
+    it('starts the II pillar fund pension no earlier than five years before the pension age', () => {
+      expect(fundStartAges('secondPillar', earlyContext({}))[0]).toBe(60);
+    });
+
+    it('starts a III pillar joined in 2021 or later no earlier than 60', () => {
+      expect(fundStartAges('thirdPillar', earlyContext({ thirdPillarJoined: 'after' }))[0]).toBe(
+        60,
+      );
+    });
+
+    it('starts a III pillar joined before 2021 from the year after retiring', () => {
+      expect(fundStartAges('thirdPillar', earlyContext({ thirdPillarJoined: 'before' }))[0]).toBe(
+        56,
+      );
+    });
+
+    it('counts a III pillar that opens after the early retirement', () => {
+      expect(
+        hasPillar(
+          'thirdPillar',
+          earlyContext({ thirdPillarJoined: 'none', thirdPillarOpenAge: '58' }),
+        ),
+      ).toBe(true);
+    });
   });
 
   describe('payoutAtPensionAge', () => {
