@@ -85,6 +85,17 @@ const STANDING_ORDER_CHANGE_GUIDES: Record<BankWithStandingOrderLink, BankGuide>
       { text: 'thirdPillarStandingOrder.steps.coop.2', amountEntered: true },
     ],
   },
+  wise: {
+    internetBank: {
+      url: 'https://wise.com/payments/scheduled-transfers',
+      openLabel: 'thirdPillarStandingOrder.openBank.wise',
+    },
+    changeMethod: 'END_AND_RECREATE',
+    steps: [
+      { text: 'thirdPillarStandingOrder.steps.wise.1' },
+      { text: 'thirdPillarStandingOrder.steps.wise.2', amountEntered: true },
+    ],
+  },
 };
 
 export const standingOrderChangeGuideFor = (bank: StandingOrderBank): BankGuide =>

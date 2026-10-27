@@ -5,6 +5,7 @@ import { SwedbankRecurringPaymentDetails } from './paymentDetails/SwedbankRecurr
 import { SebRecurringPaymentDetails } from './paymentDetails/SebRecurringPaymentDetails';
 import { LhvRecurringPaymentDetails } from './paymentDetails/LhvRecurringPaymentDetails';
 import { CoopRecurringPaymentDetails } from './paymentDetails/CoopRecurringPaymentDetails';
+import { WiseRecurringPaymentDetails } from './paymentDetails/WiseRecurringPaymentDetails';
 import { BankKey, hasStandingOrderLink } from './types';
 
 type Props = {
@@ -26,6 +27,10 @@ export const RecurringPaymentDetails = ({ paymentBank, paymentAmount, personalCo
     )}
 
     {paymentBank === 'coop' && <CoopRecurringPaymentDetails />}
+
+    {paymentBank === 'wise' && (
+      <WiseRecurringPaymentDetails amount={paymentAmount} personalCode={personalCode} />
+    )}
 
     {!hasStandingOrderLink(paymentBank) && (
       <OtherBankPaymentDetails

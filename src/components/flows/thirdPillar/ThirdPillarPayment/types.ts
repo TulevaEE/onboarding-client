@@ -19,7 +19,14 @@ export type BankKey = keyof typeof bankKeyToBankNameMap;
 
 export const BANK_KEYS = Object.keys(bankKeyToBankNameMap) as BankKey[];
 
-const BANKS_WITH_STANDING_ORDER_LINK = ['swedbank', 'seb', 'lhv', 'luminor', 'coop'] as const;
+const BANKS_WITH_STANDING_ORDER_LINK = [
+  'swedbank',
+  'seb',
+  'lhv',
+  'luminor',
+  'coop',
+  'wise',
+] as const;
 
 export type BankWithStandingOrderLink = (typeof BANKS_WITH_STANDING_ORDER_LINK)[number];
 
