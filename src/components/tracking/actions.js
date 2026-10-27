@@ -23,3 +23,9 @@ export function trackEvent(type, data) {
     }
   }
 }
+
+export function trackCustomEvent(name, params) {
+  if (process.env.NODE_ENV === 'production') {
+    ReactGA.event(name, params);
+  }
+}

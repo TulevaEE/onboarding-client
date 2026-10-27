@@ -1,0 +1,136 @@
+@import '../variables';
+
+.future-me {
+  max-width: 880px;
+  margin: 0 auto;
+
+  .trail {
+    display: flex;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0 0 0.75rem;
+    list-style: none;
+    overflow-x: auto;
+
+    button {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      min-width: 4.5rem;
+      padding: 0.25rem 0.5rem;
+      border: 0;
+      background: none;
+      color: $text-navy;
+      font-weight: 500;
+    }
+
+    .trail-dot {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border: 2px solid $text-navy-tertiary;
+      border-radius: 50%;
+      font-size: 0.875rem;
+      background: $white;
+    }
+
+    .is-current .trail-dot {
+      border-color: $blue;
+      background: $blue;
+      color: $white;
+    }
+
+    .is-visited .trail-dot {
+      border-color: $green;
+      color: $green;
+    }
+
+    .is-locked button {
+      cursor: not-allowed;
+    }
+  }
+
+  .trail-progress {
+    height: 4px;
+    margin-bottom: 1.5rem;
+    border-radius: 2px;
+    background: $text-navy-tertiary;
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      background: $blue;
+      transition: width 0.2s ease;
+    }
+  }
+
+  .chapter {
+    margin-bottom: 1rem;
+  }
+
+  .chapter-kicker {
+    margin-bottom: 0.25rem;
+    color: $text-secondary;
+    text-transform: uppercase;
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+  }
+
+  .prefill-note {
+    color: $text-secondary;
+    font-size: 0.875rem;
+  }
+
+  .you-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .you-section {
+    padding: 1rem 0;
+    border-top: 1px solid var(--gray-border-2);
+  }
+
+  .you-section-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .you-section-title {
+    margin: 0;
+    font-size: 1.125rem;
+  }
+
+  .you-section-summary {
+    display: block;
+    color: $text-secondary;
+
+    &.is-empty {
+      color: $red;
+    }
+  }
+
+  .you-section.is-open > div:last-child {
+    margin-top: 1rem;
+  }
+
+  .required-mark {
+    color: $text-secondary;
+    font-weight: 400;
+  }
+
+  .step-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+}
