@@ -4,7 +4,7 @@ import { TranslationKey } from '../translations';
 import Radio from '../common/radio';
 import { formatAmountForCurrency } from '../common/utils';
 import { Age55, ThirdPillarPayout } from './age55';
-import { INCOME_TAX, TAX_SHORT } from './engine/pension';
+import { TAX_SHORT } from './engine/pension';
 import { birthYearOrFallback, ThirdPillarPlan, YouAnswers } from './youAnswers';
 
 const PLANS: ThirdPillarPlan[] = ['keep', 'fund', 'lump'];
@@ -50,7 +50,6 @@ const PlanOutcome = ({
         age,
         monthly: euros(payout.firstMonthly),
         total: euros(payout.net),
-        hasLeft: payout.leftAtPension > 0 ? 'yes' : 'no',
         left: euros(payout.leftAtPension),
         strong,
       }}
@@ -124,10 +123,7 @@ export const Age55Step = ({ answers, age55, headingRef, onChange, onEditThirdPil
                 <FormattedMessage id={title} />
               </strong>
               <span className="d-block text-secondary text-pretty">
-                <FormattedMessage
-                  id={hint}
-                  values={{ tax: percent(age55.isFundAvailable ? TAX_SHORT : INCOME_TAX) }}
-                />
+                <FormattedMessage id={hint} values={{ tax: percent(TAX_SHORT) }} />
               </span>
             </Radio>
           );

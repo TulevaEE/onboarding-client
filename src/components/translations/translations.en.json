@@ -2759,7 +2759,7 @@
   "futureMe.age55.lock.edit": "Muuda III sammast",
   "futureMe.age55.lock.editLabel": "Muuda III sammast sinu andmetes",
   "futureMe.age55.outcome.lump": "Võtad III samba {age}‑aastaselt korraga välja: sambas on u {gross}, tulumaksu läheb {tax} ja kätte saad <strong>{net}</strong>. Pensioniks sellest raha ei jää.",
-  "futureMe.age55.outcome.fund": "Fondipension III sambast alates {age}‑aastaselt: esimene väljamakse on u <strong>{monthly} kuus</strong>, kokku saad enne pensioniiga {total}.{hasLeft, select, yes { Pensionieas jääb sambasse veel u {left}.} other {}}",
+  "futureMe.age55.outcome.fund": "Fondipension III sambast alates {age}‑aastaselt: esimene väljamakse on u <strong>{monthly} kuus</strong>, kokku saad enne pensioniiga {total}. Pensionieas jääb sambasse veel u {left}.",
   "futureMe.age55.faq.fundPension.question": "Mis on fondipension?",
   "futureMe.age55.faq.fundPension.intro": "Fondipension tähendab, et võtad III samba raha välja osamaksetena, näiteks iga kuu. Raha, mida veel välja ei võtnud, jääb fondi ja kasvab edasi.",
   "futureMe.age55.faq.fundPension.taxFree": "Kui väljamaksete periood on vähemalt nii pikk kui sinu eeldatav elada jäänud aeg Statistikaameti andmetel, on väljamaksed <strong>tulumaksuvabad</strong>.",
