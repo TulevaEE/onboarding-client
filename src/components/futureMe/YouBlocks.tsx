@@ -27,6 +27,7 @@ const sectionLabels = (block: 'state' | 'secondPillar' | 'thirdPillar'): YouSect
 const FUND_KEYS = Object.keys(FUND_RETURNS) as FundKey[];
 const THIRD_PILLAR_JOIN_TIMES: ThirdPillarJoined[] = ['after', 'before', 'none'];
 const MAX_OPEN_AGE_DIGITS = 2;
+const NON_DIGITS = /\D/g;
 
 const percentOf = (rate: number): number => Math.round(rate * 100);
 
@@ -83,11 +84,7 @@ export const StateSection = ({
           id="futureMe.you.state.socialInsuranceBoardCalculator"
           values={{
             link: (chunks: React.ReactNode) => (
-              <a
-                href="https://iseteenindus.sotsiaalkindlustusamet.ee/self-service/pension-calculator"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href="https://iseteenindus.sotsiaalkindlustusamet.ee/self-service/pension-calculator">
                 {chunks}
               </a>
             ),
@@ -291,7 +288,9 @@ export const ThirdPillarSection = ({
               autoComplete="off"
               value={answers.thirdPillarOpenAge}
               aria-describedby="future-me-third-pillar-open-age-hint"
-              onChange={(event) => onChange({ thirdPillarOpenAge: event.target.value })}
+              onChange={(event) =>
+                onChange({ thirdPillarOpenAge: event.target.value.replace(NON_DIGITS, '') })
+              }
             />
             <div className="form-text" id="future-me-third-pillar-open-age-hint">
               <FormattedMessage id="futureMe.you.thirdPillarOpenAge.hint" />

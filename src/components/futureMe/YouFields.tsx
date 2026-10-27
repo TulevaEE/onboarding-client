@@ -60,6 +60,7 @@ export const AmountField = ({
 }: AmountFieldProps) => {
   const intl = useIntl();
   const id = FIELD_DOM_IDS[field];
+  const isRequired = !disabled;
   const problem = touched.has(field) && !disabled ? fieldProblem(answers, field) : null;
   const errorId = `${id}-error`;
   const describedBy = classNames(`${id}-unit`, { [errorId]: problem });
@@ -67,7 +68,13 @@ export const AmountField = ({
   return (
     <div className="col-12 col-sm-6">
       <label className="form-label text-balance" htmlFor={id}>
-        <FormattedMessage id={label} /> <RequiredMark />
+        <FormattedMessage id={label} />
+        {isRequired && (
+          <>
+            {' '}
+            <RequiredMark />
+          </>
+        )}
       </label>
       <input
         id={id}
@@ -78,7 +85,7 @@ export const AmountField = ({
         step={step}
         value={shownValue ?? answers[field]}
         disabled={disabled}
-        aria-required="true"
+        aria-required={isRequired}
         aria-invalid={!!problem}
         aria-describedby={describedBy}
         onChange={(event: ChangeEvent<HTMLInputElement>) =>

@@ -396,6 +396,14 @@ describe('FutureMe', () => {
       ).toHaveAttribute('href', expect.stringContaining('sotsiaalkindlustusamet.ee'));
     });
 
+    it('opens the calculator in the same tab, as most savers are on a phone', () => {
+      renderFutureMe();
+
+      expect(
+        screen.getByRole('link', { name: /Sotsiaalkindlustusameti kalkulaatorist/ }),
+      ).not.toHaveAttribute('target');
+    });
+
     it('offers the pension ages 65 to 70', () => {
       renderFutureMe();
 
@@ -562,6 +570,20 @@ describe('FutureMe', () => {
       it('asks at which age the saver opens the III pillar', () => {
         renderAsSaverWhoHasNotJoined();
         expect(thirdPillarOpenAgeField()).toBeVisible();
+      });
+
+      it('keeps only the digits typed into the opening age', () => {
+        renderAsSaverWhoHasNotJoined();
+        typeInto(thirdPillarOpenAgeField(), 'a4b');
+
+        expect(thirdPillarOpenAgeField()).toHaveValue('4');
+      });
+
+      it('does not mark the balance it cannot ask for as required', () => {
+        renderAsSaverWhoHasNotJoined();
+
+        expect(thirdPillarAmountField()).not.toBeRequired();
+        expect(thirdPillarAmountField()).not.toHaveAccessibleName(/kohustuslik/);
       });
 
       it('brings back the balance typed before when the saver says they have joined after all', () => {
