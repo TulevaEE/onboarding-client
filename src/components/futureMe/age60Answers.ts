@@ -37,11 +37,14 @@ const plannedThirdPillarOpenAge = (answers: YouAnswers, plan: StepPlanInput): nu
   );
 };
 
-export const hasThirdPillar = (answers: YouAnswers, plan: StepPlanInput): boolean => {
+export const hasThirdPillarAt = (
+  answers: YouAnswers,
+  plan: StepPlanInput,
+  age: number,
+): boolean => {
   if (answers.thirdPillarJoined === 'none') {
     return (
-      amountOf(answers.thirdPillarMonthly) > 0 &&
-      plannedThirdPillarOpenAge(answers, plan) < payoutAge(plan)
+      amountOf(answers.thirdPillarMonthly) > 0 && plannedThirdPillarOpenAge(answers, plan) < age
     );
   }
   return amountOf(answers.thirdPillarMonthly) > 0 || amountOf(answers.thirdPillarAmount) > 0;

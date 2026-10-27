@@ -49,6 +49,13 @@
     .trail-label {
       white-space: nowrap;
 
+      .trail-sublabel {
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 400;
+        color: $text-secondary;
+      }
+
       @media (max-width: 575.98px) {
         font-size: 0.8125rem;
       }
@@ -461,6 +468,10 @@
       cursor: not-allowed;
       opacity: 0.55;
     }
+  }
+
+  .narrow-field {
+    max-width: 16rem;
   }
 
   .payout-note {

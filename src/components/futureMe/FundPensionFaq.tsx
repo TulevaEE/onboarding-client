@@ -22,23 +22,30 @@ const richText = {
   pensionikeskusPayouts: externalLink(PENSIONIKESKUS_PAYOUTS_PAGE),
 };
 
-export const FundPensionFaq = () => (
+interface Props {
+  children?: React.ReactNode;
+  withFundQuestions?: boolean;
+}
+
+export const FundPensionFaq = ({ children, withFundQuestions = true }: Props) => (
   <section className="faq" aria-labelledby="future-me-fund-pension-faq-title">
     <h3 id="future-me-fund-pension-faq-title" className="h5">
       <FormattedMessage id="futureMe.fundPensionFaq.title" />
     </h3>
-    {FAQ_ITEMS.map((item) => (
-      <details key={item} className="faq-item">
-        <summary>
-          <FormattedMessage id={`futureMe.fundPensionFaq.${item}.q` as TranslationKey} />
-        </summary>
-        <div className="faq-body">
-          <FormattedMessage
-            id={`futureMe.fundPensionFaq.${item}.a` as TranslationKey}
-            values={richText}
-          />
-        </div>
-      </details>
-    ))}
+    {children}
+    {withFundQuestions &&
+      FAQ_ITEMS.map((item) => (
+        <details key={item} className="faq-item">
+          <summary>
+            <FormattedMessage id={`futureMe.fundPensionFaq.${item}.q` as TranslationKey} />
+          </summary>
+          <div className="faq-body">
+            <FormattedMessage
+              id={`futureMe.fundPensionFaq.${item}.a` as TranslationKey}
+              values={richText}
+            />
+          </div>
+        </details>
+      ))}
   </section>
 );
