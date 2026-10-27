@@ -75,6 +75,7 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({
           description="nudge.SECOND_PILLAR_REJOIN.description"
           descriptionValues={{
             ...REJOIN_EXAMPLE,
+            total: REJOIN_EXAMPLE.fromNetSalary + REJOIN_EXAMPLE.taxWin,
             deadline: formatDateYear(decision.secondPillarRejoinDeadline),
           }}
           button="nudge.SECOND_PILLAR_REJOIN.button"

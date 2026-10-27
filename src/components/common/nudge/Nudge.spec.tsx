@@ -155,7 +155,7 @@ describe('second pillar rejoin nudge', () => {
     expect(screen.getByText('to your bank account')).toBeInTheDocument();
     expect(screen.getByText(/^200\s€ a month$/)).toBeInTheDocument();
     expect(screen.getByText(/^to your II\spillar account$/)).toBeInTheDocument();
-    expect(screen.getByText(/^Tax win 106\s€$/)).toBeInTheDocument();
+    expect(screen.getByText(/^From taxes 106\s€$/)).toBeInTheDocument();
     expect(screen.getByText(/^With a gross salary of 2000\s€$/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Start saving again' })).toHaveAttribute(
       'href',
