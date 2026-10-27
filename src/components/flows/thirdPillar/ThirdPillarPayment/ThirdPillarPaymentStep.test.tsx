@@ -100,7 +100,7 @@ describe('When a user is making a third pillar payment', () => {
 
   test('sees how to set up the recurring payment by hand in a bank with no standing order link', async () => {
     userEvent.click(await recurringPaymentOption());
-    userEvent.click(await screen.findByLabelText('Citadele'));
+    userEvent.click(await screen.findByLabelText('Revolut'));
 
     expect(
       await screen.findByRole('heading', {
@@ -113,6 +113,32 @@ describe('When a user is making a third pillar payment', () => {
     expect(queryLogIntoInternetBankButton()).not.toBeInTheDocument();
     expect(await confirmDoneLink()).toBeInTheDocument();
   });
+
+  test.each([
+    ['Citadele', 'CITADELE'],
+    ['Bigbank', 'BIGBANK'],
+  ])(
+    'sees how to set up the recurring payment in %s and opens its internet bank',
+    async (bank, paymentChannel) => {
+      userEvent.click(await recurringPaymentOption());
+      userEvent.click(await screen.findByLabelText(bank));
+
+      expect(
+        await screen.findByRole('heading', {
+          name: `How to set up a recurring payment in ${bank}`,
+        }),
+      ).toBeInTheDocument();
+      expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
+
+      userEvent.click(await logIntoInternetBankButton());
+
+      await waitFor(() =>
+        expect(windowLocation).toHaveBeenCalledWith(
+          `https://${paymentChannel}.EE/RECURRING.200.EUR`,
+        ),
+      );
+    },
+  );
 
   test('sees how to schedule the recurring payment in Wise and opens Wise', async () => {
     userEvent.click(await recurringPaymentOption());
@@ -207,26 +233,37 @@ describe('When a user is making a third pillar payment', () => {
     windowOpen.mockRestore();
   });
 
-  test('keeps the details to copy on screen after Wise opens in a new tab', async () => {
-    const fakeWindow = { location: { replace: jest.fn() }, document: { write: jest.fn() } };
-    const windowOpen = jest.spyOn(window, 'open').mockReturnValue(fakeWindow as unknown as Window);
+  test.each([
+    ['Wise', 'WISE', 'Open Wise'],
+    ['Citadele', 'CITADELE', 'Log into internet bank'],
+    ['Bigbank', 'BIGBANK', 'Log into internet bank'],
+  ])(
+    'keeps the details to copy on screen after %s opens in a new tab',
+    async (bank, paymentChannel, openButton) => {
+      const fakeWindow = { location: { replace: jest.fn() }, document: { write: jest.fn() } };
+      const windowOpen = jest
+        .spyOn(window, 'open')
+        .mockReturnValue(fakeWindow as unknown as Window);
 
-    userEvent.click(await recurringPaymentOption());
-    userEvent.click(await screen.findByLabelText('Wise'));
-    userEvent.click(await screen.findByRole('button', { name: 'Open Wise' }));
+      userEvent.click(await recurringPaymentOption());
+      userEvent.click(await screen.findByLabelText(bank));
+      userEvent.click(await screen.findByRole('button', { name: openButton }));
 
-    await waitFor(() =>
-      expect(fakeWindow.location.replace).toHaveBeenCalledWith('https://WISE.EE/RECURRING.200.EUR'),
-    );
-    expect(
-      screen.getByRole('heading', { name: 'How to set up a recurring payment in Wise' }),
-    ).toBeInTheDocument();
-    expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', { name: 'Did you set up the recurring payment?' }),
-    ).not.toBeInTheDocument();
-    windowOpen.mockRestore();
-  });
+      await waitFor(() =>
+        expect(fakeWindow.location.replace).toHaveBeenCalledWith(
+          `https://${paymentChannel}.EE/RECURRING.200.EUR`,
+        ),
+      );
+      expect(
+        screen.getByRole('heading', { name: `How to set up a recurring payment in ${bank}` }),
+      ).toBeInTheDocument();
+      expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
+      expect(
+        screen.queryByRole('heading', { name: 'Did you set up the recurring payment?' }),
+      ).not.toBeInTheDocument();
+      windowOpen.mockRestore();
+    },
+  );
 
   test('confirming the recurring payment shows the nudge from the server and cancels the payment reminder', async () => {
     const reminderCancellation = jest.fn();

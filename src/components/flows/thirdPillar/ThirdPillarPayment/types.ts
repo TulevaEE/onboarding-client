@@ -26,7 +26,14 @@ const BANKS_WITH_STANDING_ORDER_LINK = [
   'luminor',
   'coop',
   'wise',
+  'citadele',
+  'bigbank',
 ] as const;
+
+const BANKS_WHERE_STANDING_ORDER_DETAILS_ARE_TYPED_IN = ['wise', 'citadele', 'bigbank'] as const;
+
+export const standingOrderDetailsAreTypedIn = (bank: BankKey | 'other' | null): boolean =>
+  BANKS_WHERE_STANDING_ORDER_DETAILS_ARE_TYPED_IN.some((typedInBank) => typedInBank === bank);
 
 export type BankWithStandingOrderLink = (typeof BANKS_WITH_STANDING_ORDER_LINK)[number];
 

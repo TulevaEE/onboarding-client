@@ -928,7 +928,12 @@ export function paymentLinkBackend(server: SetupServer): void {
         if (!channel) {
           return res(ctx.json(base));
         }
-        const host = channel === 'WISE' ? 'wise.com' : `${channel.toLowerCase()}.ee`;
+        const hostsWithOwnDomain: Record<string, string> = {
+          WISE: 'wise.com',
+          CITADELE: 'online.citadele.lv',
+          BIGBANK: 'auth.bigbank.eu',
+        };
+        const host = hostsWithOwnDomain[channel] ?? `${channel.toLowerCase()}.ee`;
         return res(
           ctx.json({
             ...base,
