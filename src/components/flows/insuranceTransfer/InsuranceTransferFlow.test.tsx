@@ -264,10 +264,10 @@ describe('III pillar insurance contract transfer', () => {
 
       openFlow('/3rd-pillar-insurance/request?insurer=SEB');
 
-      expect(await screen.findByText(/^Choose Tuleva III\spillar$/)).toBeInTheDocument();
       await waitFor(() =>
         expect(history.location.pathname).toBe('/3rd-pillar-insurance/selection'),
       );
+      expect(await screen.findByText(/^Choose Tuleva III\spillar$/)).toBeInTheDocument();
       expect(history.location.search).toBe('?insurer=SEB');
       expect(signButton()).toBeInTheDocument();
       expect(screen.queryByText(/^Subject: /)).not.toBeInTheDocument();
@@ -328,18 +328,18 @@ describe('III pillar insurance contract transfer', () => {
       const savedContactDetails = contactDetailsSaved();
       openFlow();
 
-      userEvent.click(await screen.findByRole('button', { name: 'Save' }, { timeout: 5_000 }));
+      userEvent.click(await screen.findByRole('button', { name: 'Save' }));
 
-      expect(
-        await screen.findByText(/^Choose Tuleva III\spillar$/, {}, { timeout: 5_000 }),
-      ).toBeInTheDocument();
       await waitFor(() =>
         expect(history.location.pathname).toBe('/3rd-pillar-insurance/selection'),
       );
+      expect(
+        await screen.findByRole('button', { name: 'Sign and send mandate' }),
+      ).toBeInTheDocument();
       expect(savedContactDetails).toEqual([
         { email: 'john.doe@example.com', phoneNumber: '55667788' },
       ]);
-    }, 20_000);
+    });
 
     test('says when the signing fails and lets the person close the message', async () => {
       server.use(
