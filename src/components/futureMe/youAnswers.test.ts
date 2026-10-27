@@ -409,6 +409,12 @@ describe('a special pension', () => {
     });
   });
 
+  it('takes the youngest start age for a start age that is not a number', () => {
+    expect(toStepPlanInput(specialPension({ specialPensionStartAge: 'x' }))).toMatchObject({
+      specialPensionStartAge: 35,
+    });
+  });
+
   it('leaves the start age out of the plan while it is empty', () => {
     expect(toStepPlanInput(specialPension({ specialPensionStartAge: '' }))).toMatchObject({
       specialPensionStartAge: undefined,

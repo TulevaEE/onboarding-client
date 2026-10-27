@@ -1071,6 +1071,21 @@ describe('FutureMe', () => {
         expect(earlyYearsField()).toHaveDisplayValue(withNbsp('10 a, vähendamata (kõige varem)'));
       });
 
+      it('drop the list and its right when hazardous work is unticked', () => {
+        renderFutureMe();
+        addSpecialCases();
+        userEvent.click(specialCase(/Töötasin tervist kahjustaval tööl/));
+
+        userEvent.click(specialCase(/Töötasin tervist kahjustaval tööl/));
+
+        expect(
+          screen.queryByRole('combobox', { name: /Millise nimekirja tööl töötasid/ }),
+        ).not.toBeInTheDocument();
+        expect(earlyYearsField()).toHaveDisplayValue(
+          withNbsp('ei lähe varem (tavalises pensionieas)'),
+        );
+      });
+
       it('count list 1 work of less than ten years for nothing', () => {
         renderFutureMe();
         addSpecialCases();
