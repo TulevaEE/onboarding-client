@@ -4,6 +4,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useMe } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { usePageTitle } from '../common/usePageTitle';
+import { Age55Step } from './Age55Step';
+import { age55Of } from './age55';
 import {
   decisionOrdinal,
   hasThirdPillar,
@@ -45,6 +47,8 @@ const ALL_SECTIONS_OPEN: Record<YouSectionId, boolean> = {
   kids: true,
   work: true,
 };
+
+const MONTHS_IN_YEAR = 12;
 
 const ADDED_FLAGS = { kids: 'kidsAdded', work: 'workAdded' } as const;
 
@@ -122,20 +126,14 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
     );
   };
 
-  const nextLabelId =
-    step === steps[steps.length - 2] ? 'futureMe.nav.showResult' : 'futureMe.nav.next';
+  const editThirdPillar = () => {
+    setOpenSections((previous) => ({ ...previous, thirdPillar: true }));
+    goTo(FutureMeStep.YOU);
+  };
 
-  return (
-    <div className="future-me">
-      <StepTrail
-        steps={steps}
-        current={step}
-        visited={visited}
-        plan={plan}
-        isLocked={isLocked}
-        onSelect={goTo}
-      />
-      {step === FutureMeStep.YOU ? (
+  const renderStep = () => {
+    if (step === FutureMeStep.YOU) {
+      return (
         <YouStep
           answers={answers}
           touched={touched}
@@ -150,30 +148,56 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           onAddSection={addSection}
           onRemoveSection={removeSection}
         />
-      ) : (
-        <>
-          {step === FutureMeStep.COSTS && (
-            <ExpensesStep answers={expenses} headingRef={headingRef} onChange={setExpenses} />
-          )}
-          {step === FutureMeStep.AGE_60 && (
-            <Age60Step
-              answers={age60}
-              birthYear={birthYearOrFallback(answers)}
-              age={payoutAge(plan)}
-              tense={payoutAgeTense(birthYearOrFallback(answers), payoutAge(plan))}
-              ordinal={decisionOrdinal(steps)}
-              hasSecondPillar={plan.savesInSecondPillar}
-              hasThirdPillar={hasThirdPillar(answers, plan)}
-              headingRef={headingRef}
-              onChange={setAge60}
-              onEditYou={() => goTo(FutureMeStep.YOU)}
-            />
-          )}
-          {step !== FutureMeStep.COSTS && step !== FutureMeStep.AGE_60 && (
-            <PlaceholderStep label={stepLabel(intl, step, plan)} headingRef={headingRef} />
-          )}
-        </>
-      )}
+      );
+    }
+    if (step === FutureMeStep.AGE_55) {
+      const firstYearShare = (MONTHS_IN_YEAR - new Date().getMonth()) / MONTHS_IN_YEAR;
+      return (
+        <Age55Step
+          answers={answers}
+          age55={age55Of(answers, firstYearShare)}
+          headingRef={headingRef}
+          onChange={(changes) => setAnswers((previous) => ({ ...previous, ...changes }))}
+          onEditThirdPillar={editThirdPillar}
+        />
+      );
+    }
+    if (step === FutureMeStep.AGE_60) {
+      return (
+        <Age60Step
+          answers={age60}
+          birthYear={birthYearOrFallback(answers)}
+          age={payoutAge(plan)}
+          tense={payoutAgeTense(birthYearOrFallback(answers), payoutAge(plan))}
+          ordinal={decisionOrdinal(steps)}
+          hasSecondPillar={plan.savesInSecondPillar}
+          hasThirdPillar={hasThirdPillar(answers, plan)}
+          headingRef={headingRef}
+          onChange={setAge60}
+          onEditYou={() => goTo(FutureMeStep.YOU)}
+        />
+      );
+    }
+    if (step === FutureMeStep.COSTS) {
+      return <ExpensesStep answers={expenses} headingRef={headingRef} onChange={setExpenses} />;
+    }
+    return <PlaceholderStep label={stepLabel(intl, step, plan)} headingRef={headingRef} />;
+  };
+
+  const nextLabelId =
+    step === steps[steps.length - 2] ? 'futureMe.nav.showResult' : 'futureMe.nav.next';
+
+  return (
+    <div className="future-me">
+      <StepTrail
+        steps={steps}
+        current={step}
+        visited={visited}
+        plan={plan}
+        isLocked={isLocked}
+        onSelect={goTo}
+      />
+      {renderStep()}
       <div className="step-nav">
         <button
           type="button"

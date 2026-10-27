@@ -244,7 +244,7 @@ export function rescueIncrease(years?: number, pensionYear?: number): number {
   return 0;
 }
 
-const TAX_SHORT = 0.1;
+export const TAX_SHORT = 0.1;
 // EMTA 2026: 22% income tax, pensioner tax-free income 776 € a month
 export const INCOME_TAX = 0.22;
 export const PENSIONER_ALLOWANCE = 776 * 12;

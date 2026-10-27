@@ -9,6 +9,7 @@ import translations from '../translations';
 import { pensionAge } from './engine/pension';
 import { trackCustomEvent } from '../tracking/actions';
 import { mockUser } from '../../test/backend-responses';
+import { formatAmountForCurrency } from '../common/utils';
 
 jest.mock('../common/apiHooks', () => ({ useMe: jest.fn() }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
@@ -1255,6 +1256,164 @@ describe('FutureMe', () => {
 
         expect(specialCase(/Töötasin päästeteenistuses/)).not.toBeChecked();
       });
+    });
+  });
+
+  describe('age 55 step', () => {
+    const age55Heading = () =>
+      screen.getByRole('heading', { level: 2, name: '55-aastaselt: esimene otsustuskoht' });
+    const planGroup = () => screen.getByRole('group', { name: /Mida III\ssamba rahaga teed/ });
+    const keepPlan = () => within(planGroup()).getByRole('radio', { name: /Jätan kasvama/ });
+    const fundPlan = () => within(planGroup()).getByRole('radio', { name: /Fondipension/ });
+    const lumpPlan = () => within(planGroup()).getByRole('radio', { name: /Võtan korraga välja/ });
+    const amountText = (amount: number) =>
+      new RegExp(
+        formatAmountForCurrency(amount, 0)
+          .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+          .replace(/ /g, '\\s'),
+      );
+
+    const openAge55 = () => {
+      fillInRequiredAnswers();
+      userEvent.selectOptions(thirdPillarJoinedField(), 'jah, enne 2021. a');
+      typeInto(thirdPillarAmountField(), '5000');
+      typeInto(thirdPillarMonthlyField(), '0');
+      userEvent.click(within(trail()).getByRole('button', { name: /^55\sa/ }));
+    };
+
+    it('replaces the placeholder with the III pillar choice', () => {
+      renderFutureMe();
+
+      openAge55();
+
+      expect(age55Heading()).toBeInTheDocument();
+      expect(screen.queryByText('Selle sammu sisu lisandub hiljem.')).not.toBeInTheDocument();
+    });
+
+    it('moves focus to the heading', async () => {
+      renderFutureMe();
+
+      openAge55();
+
+      await waitFor(() => expect(age55Heading()).toHaveFocus());
+    });
+
+    it('tells the saver when the favorable tax starts', () => {
+      renderFutureMe();
+
+      openAge55();
+
+      expect(screen.getByText(/Liitusid III\ssambaga enne 2021/)).toHaveTextContent(
+        /alates 55\u2011aastaselt \(2044\)/,
+      );
+      expect(screen.getByText(/läheb tulumaksuks 10%/)).toBeInTheDocument();
+    });
+
+    it('lets the money keep growing by default and shows no payout, in a status region ready to announce one', () => {
+      renderFutureMe();
+
+      openAge55();
+
+      expect(keepPlan()).toBeChecked();
+      expect(screen.getByRole('status')).toBeEmptyDOMElement();
+    });
+
+    it('shows what is left after tax when everything is taken out at once', () => {
+      renderFutureMe();
+      openAge55();
+
+      userEvent.click(lumpPlan());
+
+      expect(screen.getByRole('status')).toHaveTextContent(
+        /Võtad III\ssamba 55\u2011aastaselt korraga välja/,
+      );
+      expect(screen.getByRole('status')).toHaveTextContent(amountText(5000 * 1.02 ** 18));
+      expect(screen.getByRole('status')).toHaveTextContent(amountText(5000 * 1.02 ** 18 * 0.9));
+    });
+
+    it('shows the monthly amount of a fund pension', () => {
+      renderFutureMe();
+      openAge55();
+
+      userEvent.click(fundPlan());
+
+      expect(screen.getByRole('status')).toHaveTextContent(/Fondipension III\ssambast alates 55/);
+      expect(screen.getByRole('status')).toHaveTextContent(/esimene väljamakse on u/);
+    });
+
+    it('keeps the choice when the saver leaves the step and comes back', () => {
+      renderFutureMe();
+      openAge55();
+      userEvent.click(lumpPlan());
+
+      userEvent.click(nextButton());
+      userEvent.click(backButton());
+
+      expect(lumpPlan()).toBeChecked();
+    });
+
+    it('locks the choice for a saver with nothing in the III pillar', () => {
+      renderFutureMe();
+      fillInRequiredAnswers();
+      userEvent.selectOptions(thirdPillarJoinedField(), 'jah, enne 2021. a');
+      typeInto(thirdPillarAmountField(), '0');
+      typeInto(thirdPillarMonthlyField(), '0');
+      userEvent.click(within(trail()).getByRole('button', { name: /^55\sa/ }));
+
+      expect(screen.getByText(/Sul ei ole III\ssammast/)).toBeInTheDocument();
+      expect(keepPlan()).toBeDisabled();
+      expect(lumpPlan()).toBeDisabled();
+    });
+
+    it('takes the saver back to the III pillar answers to change them', async () => {
+      renderFutureMe();
+      fillInRequiredAnswers();
+      userEvent.selectOptions(thirdPillarJoinedField(), 'jah, enne 2021. a');
+      typeInto(thirdPillarAmountField(), '0');
+      typeInto(thirdPillarMonthlyField(), '0');
+      userEvent.click(within(trail()).getByRole('button', { name: /^55\sa/ }));
+
+      userEvent.click(screen.getByRole('button', { name: /Muuda III\ssammast sinu andmetes/ }));
+
+      await waitFor(() =>
+        expect(
+          screen.getByRole('heading', { level: 2, name: 'Kes sa oled ja mis sul juba on?' }),
+        ).toHaveFocus(),
+      );
+    });
+
+    it('locks the choice once the saver is already at the pension age', () => {
+      loggedInAs({ dateOfBirth: '1950-01-01', personalCode: '35001011234' });
+      renderFutureMe();
+      fillInRequiredAnswers();
+      userEvent.selectOptions(thirdPillarJoinedField(), 'jah, enne 2021. a');
+      userEvent.click(within(trail()).getByRole('button', { name: /^55\sa/ }));
+
+      expect(screen.getByText(/Oled juba pensionieas/)).toBeInTheDocument();
+      expect(keepPlan()).toBeDisabled();
+    });
+
+    it('explains the fund pension', () => {
+      renderFutureMe();
+      openAge55();
+
+      userEvent.click(screen.getByText('Mis on fondipension?'));
+
+      expect(screen.getByText(/tulumaksuvabad/)).toBeVisible();
+      expect(screen.getByRole('link', { name: /pensioni väljamaksete kohta/ })).toHaveAttribute(
+        'href',
+        'https://tuleva.ee/pensioni-valjamaksed/',
+      );
+    });
+
+    it('sends no amount to the measuring', async () => {
+      renderFutureMe();
+      openAge55();
+      userEvent.click(lumpPlan());
+      userEvent.click(nextButton());
+      await waitFor(() => expect(mockTrackCustomEvent).toHaveBeenCalledTimes(3));
+
+      expect(JSON.stringify(mockTrackCustomEvent.mock.calls)).not.toMatch(/5000|7141|6427/);
     });
   });
 
