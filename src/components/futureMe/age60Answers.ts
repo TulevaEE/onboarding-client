@@ -17,22 +17,6 @@ export interface Age60Answers {
 
 export const initialAge60 = (): Age60Answers => ({ secondPillar: 'grow', thirdPillar: 'grow' });
 
-export const withSecondPillar = (
-  answers: Age60Answers,
-  secondPillar: PayoutChoice,
-): Age60Answers => ({
-  ...answers,
-  secondPillar,
-});
-
-export const withThirdPillar = (
-  answers: Age60Answers,
-  thirdPillar: PayoutChoice,
-): Age60Answers => ({
-  ...answers,
-  thirdPillar,
-});
-
 export const payoutAge = (plan: StepPlanInput): number =>
   retirementYears(plan) - YEARS_BEFORE_PENSION_AGE;
 

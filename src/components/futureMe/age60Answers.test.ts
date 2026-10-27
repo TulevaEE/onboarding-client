@@ -4,8 +4,6 @@ import {
   initialAge60,
   payoutAge,
   payoutAgeTense,
-  withSecondPillar,
-  withThirdPillar,
 } from './age60Answers';
 import { FutureMeStep } from './steps';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
@@ -19,12 +17,6 @@ const youWith = (changes: Partial<ReturnType<typeof initialAnswers>>) => ({
 describe('age60Answers', () => {
   it('starts with growing both pillars', () => {
     expect(initialAge60()).toEqual({ secondPillar: 'grow', thirdPillar: 'grow' });
-  });
-
-  it('changes one pillar choice at a time', () => {
-    const answers = withThirdPillar(withSecondPillar(initialAge60(), 'fund'), 'lump');
-
-    expect(answers).toEqual({ secondPillar: 'fund', thirdPillar: 'lump' });
   });
 
   describe('payout age', () => {
