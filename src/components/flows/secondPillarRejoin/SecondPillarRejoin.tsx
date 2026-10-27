@@ -9,9 +9,10 @@ import {
   useFunds,
   useMandateDeadlines,
   useMe,
+  usePendingApplications,
   useSourceFunds,
 } from '../../common/apiHooks';
-import { ErrorResponse, Fund, SourceFund, User } from '../../common/apiModels';
+import { Application, ErrorResponse, Fund, SourceFund, User } from '../../common/apiModels';
 import {
   CreateMandateDto,
   PaymentRateChangeMandateDetails,
@@ -26,6 +27,8 @@ import { useMandateBatchSigning } from '../withdrawals/signing/useMandateBatchSi
 import { TranslationKey } from '../../translations';
 import { flowPath, reviewPath, successPath } from './secondPillarRejoinPaths';
 import { RejoinSummary } from './SecondPillarRejoinSuccess';
+import { PendingRejoinApplication } from './PendingRejoinApplication';
+import { isRejoinApplication } from '../../account/ApplicationSection/ApplicationFunctions';
 import { usePageTitle } from '../../common/usePageTitle';
 
 const DEFAULT_PAYMENT_RATE: PaymentRate = 6;
@@ -71,8 +74,16 @@ export const SecondPillarRejoin = () => {
   const { data: mandateDeadlines } = useMandateDeadlines();
   const { data: sourceFunds, isLoading: isLoadingSourceFunds } = useSourceFunds();
   const { data: user, isLoading: isLoadingUser } = useMe();
+  const { data: pendingApplications, isFetchedAfterMount: hasCheckedPendingApplications } =
+    usePendingApplications();
 
-  if (!funds || !mandateDeadlines || isLoadingSourceFunds || isLoadingUser) {
+  if (
+    !funds ||
+    !mandateDeadlines ||
+    isLoadingSourceFunds ||
+    isLoadingUser ||
+    !hasCheckedPendingApplications
+  ) {
     return <Loader className="align-middle my-4" />;
   }
 
@@ -84,6 +95,7 @@ export const SecondPillarRejoin = () => {
         paymentRateOnFile={paymentRateThatApplies(user)}
         contributionStartDate={mandateDeadlines.secondPillarRejoinContributionStartDate}
         cancellationDeadline={mandateDeadlines.secondPillarRejoinDeadline}
+        pendingApplications={pendingApplications}
         isReviewing={isReviewing}
         onReview={() => history.push({ pathname: reviewPath, search })}
         onBack={() => history.goBack()}
@@ -114,6 +126,7 @@ const RejoinApplication = ({
   paymentRateOnFile,
   contributionStartDate,
   cancellationDeadline,
+  pendingApplications,
   isReviewing,
   onReview,
   onBack,
@@ -123,6 +136,7 @@ const RejoinApplication = ({
   paymentRateOnFile: number | undefined;
   contributionStartDate: string;
   cancellationDeadline: string;
+  pendingApplications: Application[] | undefined;
   isReviewing: boolean;
   onReview: () => void;
   onBack: () => void;
@@ -172,6 +186,8 @@ const RejoinApplication = ({
   const fundSelection: CreateMandateDto[] = isChangingFund
     ? [{ details: { mandateType: 'SELECTION', futureContributionFundIsin: fundIsin } }]
     : [];
+  const isSubmitting = isCreatingBatch || signingInProgress || !!challengeCode;
+  const pendingRejoin = pendingApplications?.find(isRejoinApplication);
 
   if (signed) {
     const summary: RejoinSummary = {
@@ -185,6 +201,10 @@ const RejoinApplication = ({
 
   if (isReviewing && !hasFilledApplication) {
     return <Redirect to={{ pathname: flowPath, search }} />;
+  }
+
+  if (pendingRejoin && !isSubmitting) {
+    return <PendingRejoinApplication application={pendingRejoin} />;
   }
 
   const review = () => {
@@ -214,7 +234,7 @@ const RejoinApplication = ({
 
   return (
     <>
-      {(isCreatingBatch || signingInProgress || challengeCode) && (
+      {isSubmitting && (
         <AuthenticationLoader
           signingWithIdCard={isSigningWithIdCard()}
           controlCode={challengeCode}

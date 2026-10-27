@@ -238,7 +238,8 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     rejoinPermission: 'NOT_PERMITTED',
   },
   // The account page (/account) of a leaver who has filed to rejoin: the II pillar row says
-  // when contributions start, and the pending application can still be cancelled.
+  // when contributions start, and the pending application can still be cancelled. The rejoin
+  // page (/2nd-pillar-rejoin) shows that application instead of a new one to sign.
   SECOND_PILLAR_REJOIN_PENDING: {
     ...leaverAccountPage,
     user: 'LEFT_SECOND_PILLAR_PAYMENT_RATE_2',

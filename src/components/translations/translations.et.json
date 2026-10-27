@@ -2370,6 +2370,8 @@
   "secondPillarRejoin.review.heading": "Kinnita avalduste sisu",
   "secondPillarRejoin.review.terms": "Kinnitan, et mul on olnud võimalik tutvuda kõigi kohustuslike pensionifondide tingimuste, prospektide ja põhiteabega ning nõustun valitud fondi tingimustega. Allkirjastatud avaldused saadan otse registripidajale.",
   "secondPillarRejoin.review.compareFunds": "Fondide tasud, tingimused, prospektid ja põhiteave on <a>Pensionikeskuses</a>.",
+  "secondPillarRejoin.pending.heading": "Oled juba esitanud II sambaga taasliitumise avalduse",
+  "secondPillarRejoin.pending.cancellation": "Kui mõtled ümber, saad avalduse tühistada. Viimane päev selleks on {deadline}.",
   "pensionAccountNumber.title": "Sinu pensionikonto number",
   "pensionAccountNumber.whenNeeded": "Millal seda vaja läheb",
   "pensionAccountNumber.whenNeeded.employer": "Tööandja maksab sinu III sambasse otse palgast.",

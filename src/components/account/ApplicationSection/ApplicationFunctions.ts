@@ -1,5 +1,5 @@
 import moment from 'moment/moment';
-import { Application } from '../../common/apiModels';
+import { Application, RejoinApplication } from '../../common/apiModels';
 
 type DetailsWithCancellationDeadline = {
   cancellationDeadline: string;
@@ -16,3 +16,6 @@ export const isTimeBeforeCancellationDeadline = (application: Application): bool
     moment((application.details as DetailsWithCancellationDeadline).cancellationDeadline),
     'minute',
   );
+
+export const isRejoinApplication = (application: Application): application is RejoinApplication =>
+  application.type === 'REJOIN';

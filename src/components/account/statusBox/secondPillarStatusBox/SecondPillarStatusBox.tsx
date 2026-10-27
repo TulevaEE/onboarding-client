@@ -33,7 +33,10 @@ import {
   formatDateUntil,
   todayInTallinn,
 } from '../../../common/dateFormatter';
-import { isDateSameOrBeforeCancellationDeadline } from '../../ApplicationSection/ApplicationFunctions';
+import {
+  isDateSameOrBeforeCancellationDeadline,
+  isRejoinApplication,
+} from '../../ApplicationSection/ApplicationFunctions';
 import {
   SecondPillarPaymentRateTaxWin,
   useSecondPillarTaxWin,
@@ -508,9 +511,6 @@ const mapStateToProps = (state: State) => ({
     2,
   activeFundIsin: state.exchange.sourceFunds?.find((sourceFund) => sourceFund.activeFund)?.isin,
 });
-
-const isRejoinApplication = (application: Application): application is RejoinApplication =>
-  application.type === 'REJOIN';
 
 const SecondPillarLoading = () => (
   <StatusBoxRow

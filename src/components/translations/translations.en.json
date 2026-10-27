@@ -2280,6 +2280,8 @@
   "secondPillarRejoin.review.heading": "Confirm the applications",
   "secondPillarRejoin.review.terms": "I confirm that I have had the chance to view the terms, prospectuses and key information documents of all mandatory pension funds and agree to the terms of the chosen fund. The signed applications go straight to the register.",
   "secondPillarRejoin.review.compareFunds": "You'll find the funds' fees, terms, prospectuses and key information documents <a>on the Pension Centre website</a>.",
+  "secondPillarRejoin.pending.heading": "You have already applied to rejoin the II pillar",
+  "secondPillarRejoin.pending.cancellation": "If you change your mind, you can cancel the application until {deadline}.",
   "pensionAccountNumber.title": "Your pension account number",
   "pensionAccountNumber.whenNeeded": "When you need it",
   "pensionAccountNumber.whenNeeded.employer": "Your employer pays into your III pillar straight from your salary.",

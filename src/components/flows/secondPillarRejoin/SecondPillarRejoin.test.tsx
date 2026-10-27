@@ -9,6 +9,7 @@ import userEvent from '@testing-library/user-event';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
 import { initializeConfiguration } from '../../config/config';
 import {
+  applicationsBackend,
   mandateBatchBackend,
   mandateDeadlinesBackend,
   pensionAccountStatementBackend,
@@ -21,6 +22,7 @@ import { mandateDeadlinesResponse, mockFunds } from '../../../test/backend-respo
 import { CreateMandateBatchDto } from '../../common/apiModels/withdrawals';
 import { FundBalance, MandateDeadlines } from '../../common/apiModels';
 import LoggedInApp from '../../LoggedInApp';
+import { rejoin } from '../../account/ApplicationSection/fixtures';
 
 describe('When an eligible person rejoins the II pillar', () => {
   const server = setupServer();
@@ -291,15 +293,134 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(history.location.search).toBe('?language=en');
   });
 
-  test('leaves the signed review behind, so browser Back from the success page opens a fresh application', async () => {
+  test('shows the application just signed as pending on browser Back from the success page, rather than a fresh one to sign again', async () => {
     await renderAt('/2nd-pillar-rejoin');
     signApplications();
     expect(await successHeading()).toBeInTheDocument();
+    applicationsBackend(server, [rejoin]);
 
     act(() => history.goBack());
 
     expect(history.location.pathname).toBe('/2nd-pillar-rejoin');
-    expect(await heading()).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Get the tax win again' }),
+    ).not.toBeInTheDocument();
+    expect(await pendingHeading()).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Next' })).not.toBeInTheDocument();
+  });
+
+  test('shows the pending application with a way to cancel it, instead of a new one, to someone who already applied', async () => {
+    applicationsBackend(server, [rejoin]);
+    render('/2nd-pillar-rejoin');
+
+    expect(await pendingHeading()).toBeInTheDocument();
+    expect(screen.getByText(/^II\spillar rejoin application$/)).toBeInTheDocument();
+    expect(screen.getByText('May 1, 2027')).toBeInTheDocument();
+    screen
+      .getAllByRole('link', { name: 'Cancel application' })
+      .forEach((link) => expect(link).toHaveAttribute('href', '/applications/789/cancellation'));
+    expect(screen.queryByRole('button', { name: 'Next' })).not.toBeInTheDocument();
+  });
+
+  test('says until which day the pending application can be cancelled', async () => {
+    applicationsBackend(server, [rejoin]);
+    render('/2nd-pillar-rejoin');
+
+    expect(await pendingHeading()).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'If you change your mind, you can cancel the application until November 30, 3000.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  test('no longer offers to cancel the pending application once its cancellation deadline has passed', async () => {
+    applicationsBackend(server, [
+      { ...rejoin, details: { ...rejoin.details, cancellationDeadline: '2020-11-30T21:59:59Z' } },
+    ]);
+    render('/2nd-pillar-rejoin');
+
+    expect(await pendingHeading()).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Cancel application' })).not.toBeInTheDocument();
+    expect(screen.queryByText(/you can cancel/)).not.toBeInTheDocument();
+  });
+
+  test('keeps the signing in view and then opens the success page when the application being signed already shows as pending, as on returning from the Smart-ID app', async () => {
+    const queryClient = new QueryClient();
+    await renderAt('/2nd-pillar-rejoin', queryClient);
+    signApplications();
+    await waitFor(() => expect(mandateBatches.created).toHaveLength(1));
+    applicationsBackend(server, [rejoin]);
+
+    await act(async () => {
+      await queryClient.invalidateQueries({ queryKey: ['pendingApplications'] });
+    });
+
+    await expect(
+      screen.findByRole('heading', { name: /already applied/ }, { timeout: 500 }),
+    ).rejects.toThrow();
+    expect(await successHeading()).toBeInTheDocument();
+  });
+
+  test('still opens the success page when browser Back is pressed while signing', async () => {
+    const queryClient = new QueryClient();
+    await renderAt('/2nd-pillar-rejoin', queryClient);
+    signApplications();
+    await waitFor(() => expect(mandateBatches.created).toHaveLength(1));
+    applicationsBackend(server, [rejoin]);
+    await act(async () => {
+      await queryClient.invalidateQueries({ queryKey: ['pendingApplications'] });
+    });
+
+    act(() => history.goBack());
+
+    expect(await successHeading()).toBeInTheDocument();
+  });
+
+  test('shows the filed application instead of Sign again when signing reports a failure after the application was filed', async () => {
+    server.use(
+      rest.get('http://localhost/v1/mandate-batches/1/signature/smart-id/status', (req, res, ctx) =>
+        res(ctx.status(500)),
+      ),
+    );
+    const queryClient = new QueryClient();
+    await renderAt('/2nd-pillar-rejoin', queryClient);
+    signApplications();
+    await waitFor(() => expect(mandateBatches.created).toHaveLength(1));
+    applicationsBackend(server, [rejoin]);
+
+    await act(async () => {
+      await queryClient.invalidateQueries({ queryKey: ['pendingApplications'] });
+    });
+
+    expect(await pendingHeading()).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Sign and send mandate' })).not.toBeInTheDocument();
+  });
+
+  test('shows the pending application instead of Sign when it was filed in another tab while the review was open', async () => {
+    const queryClient = new QueryClient();
+    await renderAt('/2nd-pillar-rejoin', queryClient);
+    userEvent.click(nextButton());
+    applicationsBackend(server, [rejoin]);
+
+    await act(async () => {
+      await queryClient.invalidateQueries({ queryKey: ['pendingApplications'] });
+    });
+
+    expect(await pendingHeading()).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Sign and send mandate' })).not.toBeInTheDocument();
+  });
+
+  test('shows the application when the pending applications cannot be loaded, as Pensionikeskus still decides on Sign', async () => {
+    server.use(
+      rest.get('http://localhost/v1/applications', (req, res, ctx) => res(ctx.status(500))),
+    );
+    await renderAt(
+      '/2nd-pillar-rejoin',
+      new QueryClient({ defaultOptions: { queries: { retry: false } } }),
+    );
+
+    expect(nextButton()).toBeInTheDocument();
   });
 
   test('sends someone who opens the success address without signing to their account', async () => {
@@ -713,6 +834,8 @@ describe('When an eligible person rejoins the II pillar', () => {
     userEvent.click(signButton());
   };
   const successHeading = () => screen.findByRole('heading', { name: 'Applications submitted' });
+  const pendingHeading = () =>
+    screen.findByRole('heading', { name: /^You have already applied to rejoin the II\spillar$/ });
   const summaryItems = () =>
     within(screen.getByRole('list', { name: 'Summary' })).getAllByRole('listitem');
   const expectSummary = (contribution: string, fund: string) => {
