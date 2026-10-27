@@ -559,23 +559,22 @@ const SecondPillarTaxWin = () => {
                     id="secondPillarTaxWin.chart.title"
                     values={{ currentYear: new Date().getFullYear() }}
                   />
-                )}
+                )}{' '}
+                <span data-testid="first-pillar-note">
+                  <FormattedMessage
+                    id="secondPillarGrowth.firstPillarNote"
+                    values={{
+                      a: (chunks: string) => (
+                        <Link to="/1st-vs-2nd-pillar" className="text-secondary">
+                          {chunks}
+                        </Link>
+                      ),
+                    }}
+                  />
+                </span>
               </>
             )}
           </div>
-        </div>
-
-        <div className="text-secondary" data-testid="first-pillar-note">
-          <FormattedMessage
-            id="secondPillarGrowth.firstPillarNote"
-            values={{
-              a: (chunks: string) => (
-                <Link to="/1st-vs-2nd-pillar" className="text-secondary">
-                  {chunks}
-                </Link>
-              ),
-            }}
-          />
         </div>
 
         <div className="d-flex flex-column gap-3">
