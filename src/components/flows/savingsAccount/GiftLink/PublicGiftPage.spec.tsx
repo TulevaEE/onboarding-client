@@ -142,6 +142,25 @@ describe('the gift page a giver opens', () => {
     expect(paymentRequest).toEqual({ amount: 50, paymentChannel: 'SWEDBANK' });
   });
 
+  it.each([
+    ['Wise', 'WISE'],
+    ['Citadele', 'CITADELE'],
+    ['Revolut', 'REVOLUT'],
+    ['Bigbank', 'BIGBANK'],
+    ['N26', 'N26'],
+  ])('lets the giver pay from %s', async (bankName, paymentChannel) => {
+    giftPaymentBackend();
+
+    renderAt();
+    await findSubtitle();
+    userEvent.type(amountInput(), '50');
+    userEvent.click(screen.getByRole('radio', { name: bankName }));
+    userEvent.click(giveButton());
+
+    await waitFor(() => expect(replace).toHaveBeenCalledWith('https://montonio.example/pay'));
+    expect(paymentRequest).toEqual({ amount: 50, paymentChannel });
+  });
+
   it('says so when the payment cannot be started, instead of looking like it worked', async () => {
     giftPaymentBackend(500);
 
