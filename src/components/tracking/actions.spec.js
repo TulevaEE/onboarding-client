@@ -1,6 +1,6 @@
 import ReactGA from 'react-ga4';
 import { LOCATION_CHANGE } from 'connected-react-router';
-import { trackEvent } from './actions';
+import { trackCustomEvent, trackEvent } from './actions';
 
 jest.mock('react-ga4');
 
@@ -68,6 +68,28 @@ describe('trackEvent', () => {
     trackEvent(type, data);
 
     expect(ReactGA.send).not.toHaveBeenCalled();
+    expect(ReactGA.event).not.toHaveBeenCalled();
+  });
+});
+
+describe('trackCustomEvent', () => {
+  beforeEach(() => {
+    ReactGA.event.mockClear();
+  });
+
+  it('sends the named event with its parameters when NODE_ENV is production', () => {
+    process.env.NODE_ENV = 'production';
+
+    trackCustomEvent('some_event', { step: 3 });
+
+    expect(ReactGA.event).toHaveBeenCalledWith('some_event', { step: 3 });
+  });
+
+  it('does not send anything when NODE_ENV is not production', () => {
+    process.env.NODE_ENV = 'development';
+
+    trackCustomEvent('some_event', { step: 3 });
+
     expect(ReactGA.event).not.toHaveBeenCalled();
   });
 });

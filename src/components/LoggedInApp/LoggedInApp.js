@@ -72,6 +72,7 @@ import SecondPillarTaxWin from '../secondPillarTaxWin/SecondPillarTaxWin';
 import SecondPillarGrowth from '../secondPillarGrowth/SecondPillarGrowth';
 import { MillionaireCalculator } from '../millionaire/MillionaireCalculator';
 import { PensionCalculator } from '../pensionCalculator/PensionCalculator';
+import { FutureMe } from '../futureMe/FutureMe';
 import { HackathonRegistrationPage } from '../hackathon/HackathonRegistrationPage';
 import { HackathonIdeaPage } from '../hackathon/HackathonIdeaPage';
 import { Listings } from '../listings/Listings';
@@ -424,6 +425,7 @@ export class LoggedInApp extends PureComponent {
             <Route path="/1st-vs-2nd-pillar" render={() => <FirstVsSecondPillarComparison />} />
             <Route path="/millionaire" component={MillionaireCalculator} />
             <Route path="/calculator" component={PensionCalculator} />
+            <Route path="/future-me" component={FutureMe} />
             <Route path="/hackathon/idea" component={HackathonIdeaPage} />
             <Route path="/hackathon" component={HackathonRegistrationPage} />
 
