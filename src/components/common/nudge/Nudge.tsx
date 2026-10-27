@@ -98,7 +98,7 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({
                 { amount: REJOIN_EXAMPLE.fromNetSalary },
                 {
                   amount: REJOIN_EXAMPLE.taxWin,
-                  tone: 'positive',
+                  tone: 'gain',
                   label: (
                     <FormattedMessage
                       id="nudge.SECOND_PILLAR_REJOIN.taxWin"
@@ -292,7 +292,7 @@ const NudgeNotice = ({
   </Notice>
 );
 
-type Segment = { amount: number; tone?: 'positive' | 'negative'; label?: ReactNode };
+type Segment = { amount: number; tone?: 'gain' | 'positive' | 'negative'; label?: ReactNode };
 type ComparisonBar = { segments: Segment[]; title: ReactNode; subtitle: ReactNode };
 
 const MAXIMUM_BAR_HEIGHT = 150;
@@ -327,8 +327,7 @@ const ComparisonFigure = ({
             className={segment.tone ? styles[segment.tone] : styles.base}
             style={{ height: heightOf(segment) }}
           >
-            {heightOf(segment) >= MINIMUM_LABELLED_SEGMENT_HEIGHT &&
-              (segment.label ?? <>{segment.amount}&nbsp;€</>)}
+            {heightOf(segment) >= MINIMUM_LABELLED_SEGMENT_HEIGHT && segment.label}
           </div>
         ))}
       </div>
@@ -389,12 +388,12 @@ const FeeComparisonNudge = ({
       <ComparisonFigure
         costs
         left={{
-          segments: [{ amount: tulevaFeeAmount, tone: 'positive', label: cost(tulevaFeeAmount) }],
+          segments: [{ amount: tulevaFeeAmount, tone: 'positive' }],
           title: cost(tulevaFeeAmount),
           subtitle: <FormattedMessage id="thirdPillarSuccess.ourFund" />,
         }}
         right={{
-          segments: [{ amount: currentFeeAmount, tone: 'negative', label: cost(currentFeeAmount) }],
+          segments: [{ amount: currentFeeAmount, tone: 'negative' }],
           title: cost(currentFeeAmount),
           subtitle: (
             <FormattedMessage

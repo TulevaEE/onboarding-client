@@ -54,6 +54,7 @@
 }
 
 .base,
+.gain,
 .positive,
 .negative {
   display: flex;
@@ -70,14 +71,17 @@
   color: $navy-blue;
 }
 
-.positive {
+.gain {
   background-color: $green;
   color: #ffffff;
 }
 
+.positive {
+  background-color: mix($green, #ffffff, 30%);
+}
+
 .negative {
-  background-color: $red;
-  color: #ffffff;
+  background-color: mix($red, #ffffff, 30%);
 }
 
 .baseline {
