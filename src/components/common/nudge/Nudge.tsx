@@ -5,6 +5,7 @@ import { Notice } from './Notice';
 import { AccountHolder, accountHolderFor } from '../../flows/savingsAccount/accountHolder';
 import { TranslationKey } from '../../translations';
 import { useMe, useNudge } from '../apiHooks';
+import { formatDateYear } from '../dateFormatter';
 import { NudgeContext, NudgeDecision, NudgeFeeComparison } from '../apiModels/nudge';
 import styles from './Nudge.module.scss';
 import { NudgeEventType, trackNudgeEvent } from './tracking';
@@ -63,6 +64,17 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({
           description="nudge.SECOND_PILLAR_START.description"
           button="nudge.SECOND_PILLAR_START.button"
           to="/2nd-pillar-flow"
+          onCallToAction={onCallToAction}
+        />
+      );
+    case 'SECOND_PILLAR_REJOIN':
+      return (
+        <NudgeNotice
+          header="nudge.SECOND_PILLAR_REJOIN.header"
+          description="nudge.SECOND_PILLAR_REJOIN.description"
+          descriptionValues={{ deadline: formatDateYear(decision.secondPillarRejoinDeadline) }}
+          button="nudge.SECOND_PILLAR_REJOIN.button"
+          to="/2nd-pillar-rejoin"
           onCallToAction={onCallToAction}
         />
       );
@@ -200,7 +212,7 @@ const NudgeNotice = ({
 }: {
   header: TranslationKey;
   description: TranslationKey;
-  descriptionValues?: Record<string, number>;
+  descriptionValues?: Record<string, number | string>;
   button: TranslationKey;
   to: string;
   onAction?: () => void;

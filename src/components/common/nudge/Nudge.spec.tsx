@@ -121,3 +121,39 @@ describe('second pillar start nudge', () => {
     );
   });
 });
+
+describe('second pillar rejoin nudge', () => {
+  beforeEach(() => {
+    initializeConfiguration();
+    useTestBackendsExcept(server, ['trackedEvents']);
+    server.use(rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))));
+  });
+
+  test('invites a leaver to rejoin until the filing deadline', async () => {
+    const history = createMemoryHistory();
+    const store = createDefaultStore(history as any);
+    login(store);
+    const rejoin: NudgeDecision = {
+      key: 'SECOND_PILLAR_REJOIN',
+      tag: 'nudge_second_pillar_rejoin',
+      secondPillarRejoinDeadline: '2026-11-30',
+    };
+
+    renderWrapped(
+      <NudgeView decision={rejoin} context="THIRD_PILLAR_PAYMENT" />,
+      history as any,
+      store,
+    );
+
+    expect(
+      await screen.findByRole('heading', { name: 'Get the tax win again' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/The last day to file the application is November\s30,\s2026\./),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Start saving again' })).toHaveAttribute(
+      'href',
+      '/2nd-pillar-rejoin',
+    );
+  });
+});
