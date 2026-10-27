@@ -764,7 +764,7 @@ export function simulate(
     if (age < p1Start) {
       return 0;
     }
-    return age < ret + half ? p1Base / 2 : p1At(age);
+    return age < ret + half ? (p1Base / 2) * (1 + serviceIncrease) : p1At(age);
   };
   let allowAtPa =
     firstRetAge >= pa ? Math.max(0, allowance - firstPillarAt(firstRetAge) - spAt(firstRetAge)) : 0;

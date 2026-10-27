@@ -123,6 +123,14 @@ describe('half state pension', () => {
     },
   );
 
+  it('raises the half pension by the civil service increase, as it raises the full one', () => {
+    const withTwentyCivilServiceYears = { ...base, civilYears: 20 };
+
+    const result = simulate(withTwentyCivilServiceYears, lifeTable, { id: 'D', half: 2 });
+
+    expect(rowAt(result, retirementAge).i1g).toBeCloseTo((1065.09 / 2) * 1.2, 6);
+  });
+
   it.each(halfYearsCases)(
     'pays the full pension plus half the deferral increase after %i years of half',
     (halfYears) => {
