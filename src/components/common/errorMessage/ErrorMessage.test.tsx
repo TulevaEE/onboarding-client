@@ -73,6 +73,8 @@ describe('ErrorMessage', () => {
       'et',
       /^Allkirjastamist alustati teise dokumendi jaoks\. Palun alusta allkirjastamist uuesti\.$/,
     ],
+    ['signature.service.unavailable', 'en', /^Signing is temporarily unavailable\.$/],
+    ['signature.service.unavailable', 'et', /^Allkirjastamine on ajutiselt häiritud\.$/],
   ] as const)('explains the signing refusal %s in %s', (code, language, explanation) => {
     render(
       <IntlProvider locale={language} messages={MESSAGES[language]}>

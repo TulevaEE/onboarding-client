@@ -11,6 +11,11 @@ const lastDaysOfNovember2026: PaymentRateSeason = { ...november2026, mode: 'LAST
 export const nudgeProfiles: Record<string, NudgeDecision> = {
   NONE: { key: 'NONE', tag: 'nudge_none' },
   SECOND_PILLAR_START: { key: 'SECOND_PILLAR_START', tag: 'nudge_second_pillar_start' },
+  SECOND_PILLAR_REJOIN: {
+    key: 'SECOND_PILLAR_REJOIN',
+    tag: 'nudge_second_pillar_rejoin',
+    secondPillarRejoinDeadline: '2026-11-30',
+  },
   SECOND_PILLAR_TRANSFER: {
     key: 'SECOND_PILLAR_TRANSFER',
     tag: 'nudge_second_pillar',
