@@ -139,6 +139,7 @@ describe('a person who wants to change their III pillar recurring payment', () =
     ['LHV', 'Open LHV', 'https://www.lhv.ee/ibank/cf/portfolio/payment_standing'],
     ['Luminor', 'Open Luminor', 'https://luminor.ee/auth/#/web/view/autopilot/'],
     ['Coop Pank', /^Open Coop\sPank$/, 'https://i.cooppank.ee/i/standing-orders'],
+    ['Wise', 'Open Wise', 'https://wise.com/payments/scheduled-transfers'],
   ])(
     'who pays from %s opens the bank in a new tab where the change is made',
     async (bank, openBank, bankPage) => {
@@ -151,6 +152,23 @@ describe('a person who wants to change their III pillar recurring payment', () =
       expect(link).toHaveAttribute('target', '_blank');
     },
   );
+
+  test('who pays from Wise cancels the scheduled transfer, then schedules a new one with the new amount', async () => {
+    openPage();
+
+    userEvent.click(await screen.findByRole('radio', { name: 'Wise' }));
+
+    expect(stepsTitled('End your old payment, then set up a new one')).toEqual([
+      {
+        text: 'Select the scheduled transfer to AS Pensionikeskus, note its Reference and click Cancel transfer.',
+        remindsOfTaxRefund: false,
+      },
+      {
+        text: 'Then click Schedule a transfer, pick AS Pensionikeskus as the recipient, enter the new amount and the same reference, choose monthly and confirm with Schedule transfer.',
+        remindsOfTaxRefund: true,
+      },
+    ]);
+  });
 
   test('who pays from a bank with no guide of its own gets the steps for any other bank', async () => {
     openPage();

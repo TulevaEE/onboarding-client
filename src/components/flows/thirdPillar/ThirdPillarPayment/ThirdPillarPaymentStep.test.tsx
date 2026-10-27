@@ -114,6 +114,34 @@ describe('When a user is making a third pillar payment', () => {
     expect(await confirmDoneLink()).toBeInTheDocument();
   });
 
+  test('sees how to schedule the recurring payment in Wise and opens Wise', async () => {
+    userEvent.click(await recurringPaymentOption());
+    userEvent.click(await screen.findByLabelText('Wise'));
+
+    expect(
+      await screen.findByRole('heading', { name: 'How to set up a recurring payment in Wise' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
+    expect(screen.getByText('30101119828, IK:39001011234, EE3600001707')).toBeInTheDocument();
+
+    userEvent.click(await screen.findByRole('button', { name: 'Open Wise' }));
+
+    await waitFor(() =>
+      expect(windowLocation).toHaveBeenCalledWith('https://WISE.EE/RECURRING.200.EUR'),
+    );
+  });
+
+  test('is told the Wise schedule is free but not that it can be changed in an internet bank', async () => {
+    userEvent.click(await recurringPaymentOption());
+    userEvent.click(await screen.findByLabelText('Wise'));
+
+    expect(await screen.findByRole('button', { name: 'Open Wise' })).toBeInTheDocument();
+    expect(screen.getByText(/Setting up a standing order is/)).toBeInTheDocument();
+    expect(
+      screen.queryByText('You can change your standing order in your internet bank at any time.'),
+    ).not.toBeInTheDocument();
+  });
+
   test('prefills the suggested single payment amount', async () => {
     const amount = await amountInput();
     expect(amount.value).toBe('1000');
@@ -176,6 +204,27 @@ describe('When a user is making a third pillar payment', () => {
     expect(
       await screen.findByRole('heading', { name: 'Did you set up the recurring payment?' }),
     ).toBeInTheDocument();
+    windowOpen.mockRestore();
+  });
+
+  test('keeps the details to copy on screen after Wise opens in a new tab', async () => {
+    const fakeWindow = { location: { replace: jest.fn() }, document: { write: jest.fn() } };
+    const windowOpen = jest.spyOn(window, 'open').mockReturnValue(fakeWindow as unknown as Window);
+
+    userEvent.click(await recurringPaymentOption());
+    userEvent.click(await screen.findByLabelText('Wise'));
+    userEvent.click(await screen.findByRole('button', { name: 'Open Wise' }));
+
+    await waitFor(() =>
+      expect(fakeWindow.location.replace).toHaveBeenCalledWith('https://WISE.EE/RECURRING.200.EUR'),
+    );
+    expect(
+      screen.getByRole('heading', { name: 'How to set up a recurring payment in Wise' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Did you set up the recurring payment?' }),
+    ).not.toBeInTheDocument();
     windowOpen.mockRestore();
   });
 

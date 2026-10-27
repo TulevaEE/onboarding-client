@@ -68,7 +68,8 @@ export const Payment: React.FunctionComponent = () => {
         type: paymentType,
         paymentChannel: paymentChannelFor(paymentBank),
       });
-      if (openedInNewTab && paymentType === 'RECURRING') {
+      const detailsAreCopiedByHand = paymentBank === 'wise';
+      if (openedInNewTab && paymentType === 'RECURRING' && !detailsAreCopiedByHand) {
         history.push('/3rd-pillar-payment/recurring-confirmation');
       }
     } catch (e) {

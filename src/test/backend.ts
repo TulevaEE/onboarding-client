@@ -893,10 +893,11 @@ export function paymentLinkBackend(server: SetupServerApi): void {
         if (!channel) {
           return res(ctx.json(base));
         }
+        const host = channel === 'WISE' ? 'wise.com' : `${channel.toLowerCase()}.ee`;
         return res(
           ctx.json({
             ...base,
-            url: `https://${channel.toLowerCase()}.ee/recurring?amount=${amount}&desc=${personalCode}`,
+            url: `https://${host}/recurring?amount=${amount}&desc=${personalCode}`,
           }),
         );
       }

@@ -405,11 +405,27 @@ describe(SavingsFundPayment, () => {
       expect(await findPageHeading()).toBeInTheDocument();
       replaceAmount('50');
       selectRecurring();
-      userEvent.click(screen.getByRole('radio', { name: 'Wise' }));
+      userEvent.click(screen.getByRole('radio', { name: 'Citadele' }));
 
       expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
       expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
       expect(screen.queryByRole('link', { name: 'Continue' })).not.toBeInTheDocument();
+    });
+
+    it('shows how to schedule the payment in Wise, with a link to Wise', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      replaceAmount('50');
+      selectRecurring();
+      userEvent.click(screen.getByRole('radio', { name: 'Wise' }));
+
+      expect(
+        await screen.findByRole('heading', { name: 'Set up the recurring payment in Wise' }),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/log into Wise and add a new recipient/)).toBeInTheDocument();
+      expect(screen.getByText(/the description goes into the/)).toBeInTheDocument();
+      expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
+      const openWise = screen.getByRole('link', { name: 'Continue' });
+      expect(openWise).toHaveAttribute('href', expect.stringContaining('https://wise.com/'));
     });
 
     it('renders the verify and confirm steps for panel A banks', async () => {

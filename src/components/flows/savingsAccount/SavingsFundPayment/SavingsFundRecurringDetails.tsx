@@ -11,7 +11,7 @@ import { formatAmountForCount, formatAmountForCurrency } from '../../../common/u
 import { AccountHolder } from '../accountHolder';
 import { PII_CLASS } from '../../../tracking/piiMarkup';
 
-export type BankKey = 'LHV' | 'COOP' | 'SWEDBANK' | 'SEB' | 'LUMINOR' | 'OTHER';
+export type BankKey = 'LHV' | 'COOP' | 'SWEDBANK' | 'SEB' | 'LUMINOR' | 'WISE' | 'OTHER';
 
 // PREFILLED — bank link opens the standing-order form with all fields pre-filled;
 //             user just reviews.
@@ -20,19 +20,38 @@ export type BankKey = 'LHV' | 'COOP' | 'SWEDBANK' | 'SEB' | 'LUMINOR' | 'OTHER';
 // MANUAL    — no bank link; user opens their own bank and fills the fields manually.
 type LinkBehavior = 'PREFILLED' | 'LANDING' | 'MANUAL';
 
-const BANK_META: Record<
-  BankKey,
-  { label: string; channel?: PaymentChannel; linkBehavior: LinkBehavior }
-> = {
+type BankMeta = {
+  label: string;
+  channel?: PaymentChannel;
+  linkBehavior: LinkBehavior;
+  openBankStepId?: 'savingsFund.recurring.step.openBank.wise';
+  copyFieldsStepId?: 'savingsFund.recurring.step.copyFields.wise';
+};
+
+const BANK_META: Record<BankKey, BankMeta> = {
   LHV: { label: 'LHV', channel: 'LHV', linkBehavior: 'PREFILLED' },
   COOP: { label: 'Coop Pank', channel: 'COOP', linkBehavior: 'PREFILLED' },
   SWEDBANK: { label: 'Swedbank', channel: 'SWEDBANK', linkBehavior: 'PREFILLED' },
   SEB: { label: 'SEB', channel: 'SEB', linkBehavior: 'LANDING' },
   LUMINOR: { label: 'Luminor', channel: 'LUMINOR', linkBehavior: 'LANDING' },
+  WISE: {
+    label: 'Wise',
+    channel: 'WISE',
+    linkBehavior: 'LANDING',
+    openBankStepId: 'savingsFund.recurring.step.openBank.wise',
+    copyFieldsStepId: 'savingsFund.recurring.step.copyFields.wise',
+  },
   OTHER: { label: '', linkBehavior: 'MANUAL' },
 };
 
-const ALLOWED_BANK_DOMAINS = ['lhv.ee', 'cooppank.ee', 'swedbank.ee', 'seb.ee', 'luminor.ee'];
+const ALLOWED_BANK_DOMAINS = [
+  'lhv.ee',
+  'cooppank.ee',
+  'swedbank.ee',
+  'seb.ee',
+  'luminor.ee',
+  'wise.com',
+];
 
 const isSafeBankUrl = (url: string | undefined): url is string => {
   if (!url) {
@@ -120,8 +139,8 @@ export const SavingsFundRecurringDetails: FC<Props> = ({
               <FormattedMessage id="savingsFund.recurring.step.openBank.generic" />
             ) : (
               <FormattedMessage
-                id="savingsFund.recurring.step.openBank"
-                values={{ bank: meta.label }}
+                id={meta.openBankStepId ?? 'savingsFund.recurring.step.openBank'}
+                values={{ bank: meta.label, b: (chunks: string) => <b>{chunks}</b> }}
               />
             )}
           </PaymentStep>
@@ -153,7 +172,10 @@ export const SavingsFundRecurringDetails: FC<Props> = ({
               </>
             ) : (
               <>
-                <FormattedMessage id="savingsFund.recurring.step.copyFields" />
+                <FormattedMessage
+                  id={meta.copyFieldsStepId ?? 'savingsFund.recurring.step.copyFields'}
+                  values={{ b: (chunks: string) => <b>{chunks}</b> }}
+                />
                 <CopyTable link={data} />
               </>
             )}

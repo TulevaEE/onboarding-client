@@ -50,7 +50,13 @@ export const PaymentSubmitSection = ({
           >
             {paymentType === 'SINGLE' && <FormattedMessage id="thirdPillarPayment.makePayment" />}
             {paymentType === 'RECURRING' && (
-              <FormattedMessage id="thirdPillarPayment.setupRecurringPayment" />
+              <FormattedMessage
+                id={
+                  paymentBank === 'wise'
+                    ? 'thirdPillarPayment.setupRecurringPayment.wise'
+                    : 'thirdPillarPayment.setupRecurringPayment'
+                }
+              />
             )}
           </button>
           {paymentType === 'SINGLE' && (
@@ -78,9 +84,11 @@ export const PaymentSubmitSection = ({
                   }}
                 />
               </p>
-              <p className="m-0">
-                <FormattedMessage id="thirdPillarPayment.recurringPaymentDetails" />
-              </p>
+              {paymentBank !== 'wise' && (
+                <p className="m-0">
+                  <FormattedMessage id="thirdPillarPayment.recurringPaymentDetails" />
+                </p>
+              )}
             </>
           )}
         </div>
