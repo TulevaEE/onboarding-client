@@ -116,7 +116,7 @@ export const SpecialPensionStep = ({
               specialAge: age,
               startsLater: age > oldAgeAge ? 'yes' : 'no',
               oldAge: euro(comparison.oldAge),
-              paid: comparison.paid,
+              larger: comparison.larger,
             }}
           />
         ) : (

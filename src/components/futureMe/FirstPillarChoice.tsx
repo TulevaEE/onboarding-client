@@ -48,7 +48,7 @@ export const FirstPillarChoice = ({
                 <>
                   <FormattedMessage id={`futureMe.firstPillarChoice.${value}.title`} />
                   {larger === value && (
-                    <span className="larger-badge">
+                    <span className="badge rounded-pill text-bg-success">
                       <FormattedMessage id="futureMe.firstPillarChoice.larger" />
                     </span>
                   )}

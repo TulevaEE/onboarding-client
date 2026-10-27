@@ -126,6 +126,18 @@ describe('Choosing between the special pension and the old-age pension', () => {
 
       expect(choice(choiceGroup(AGE_65_GROUP), /^Jätkan eripensioniga/)).toBeChecked();
     });
+
+    it('still calls the old-age pension the larger one after the smaller special pension is chosen', () => {
+      openFutureMe();
+      enterSpecialPensionAmount('500');
+      goTo(pensionAgeStep);
+      userEvent.click(choice(choiceGroup(AGE_65_GROUP), /^Jätkan eripensioniga/));
+
+      goTo(/^55\sa/);
+
+      expect(screen.getByText(/Vanaduspension on suurem/)).toBeInTheDocument();
+      expect(screen.queryByText(/Sinu eripension on suurem/)).not.toBeInTheDocument();
+    });
   });
 
   describe('at the ordinary pension age step', () => {
