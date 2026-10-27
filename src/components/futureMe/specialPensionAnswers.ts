@@ -41,9 +41,19 @@ export const isWorkAsked = (plan: StepPlanInput): boolean =>
 export const isPayAsked = (answers: SpecialPensionAnswers, plan: StepPlanInput): boolean =>
   isWorkAsked(plan) && answers.work === 'yes';
 
-export const secondPillarMonthly = (you: YouAnswers): number => {
+const newSalaryOf = (answers: SpecialPensionAnswers, plan: StepPlanInput): number | undefined =>
+  isPayAsked(answers, plan) && answers.pay === 'change' && answers.gross.trim() !== ''
+    ? amountOf(answers.gross)
+    : undefined;
+
+export const secondPillarMonthly = (
+  you: YouAnswers,
+  answers: SpecialPensionAnswers,
+  plan: StepPlanInput,
+): number => {
   const rate = Number(you.secondPillarRate) || 0;
-  return rate > 0 ? amountOf(you.grossMonthly) * (rate + STATE_SECOND_PILLAR_RATE) : 0;
+  const salary = newSalaryOf(answers, plan) ?? amountOf(you.grossMonthly);
+  return rate > 0 ? salary * (rate + STATE_SECOND_PILLAR_RATE) : 0;
 };
 
 const pensionInputOf = (
@@ -74,10 +84,7 @@ const pensionInputOf = (
     spMonthly: amountOf(answers.monthly),
     spStartAge: plan.specialPensionStartAge,
     spWork: isStarted ? amountOf(you.grossMonthly) > 0 : answers.work === 'yes',
-    spGross:
-      isPayAsked(answers, plan) && answers.pay === 'change' && answers.gross.trim() !== ''
-        ? amountOf(answers.gross)
-        : undefined,
+    spGross: newSalaryOf(answers, plan),
   };
 };
 

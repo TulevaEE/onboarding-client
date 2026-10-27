@@ -134,6 +134,39 @@ describe('Special pension step', () => {
     expect(screen.getByRole('spinbutton', { name: /Uus brutopalk/ })).toBeRequired();
   });
 
+  it('counts the second pillar payment from the new salary', () => {
+    openSpecialPensionStep();
+    userEvent.click(screen.getByRole('radio', { name: /Brutopalk muutub/ }));
+
+    typeInto(screen.getByRole('spinbutton', { name: /Uus brutopalk/ }), '1000');
+
+    expect(within(workGroup()).getByText(/II\ssambasse laekub 60 € kuus/)).toBeVisible();
+  });
+
+  it('tells a screen reader which required amounts are missing', () => {
+    openSpecialPensionStep();
+    userEvent.click(screen.getByRole('radio', { name: /Brutopalk muutub/ }));
+    const gross = screen.getByRole('spinbutton', { name: /Uus brutopalk/ });
+
+    userEvent.click(amountField());
+    userEvent.click(gross);
+    userEvent.tab();
+
+    expect(amountField()).toHaveAttribute('aria-invalid', 'true');
+    expect(amountField()).toHaveAccessibleDescription(/Sisesta eripensioni suurus/);
+    expect(gross).toHaveAttribute('aria-invalid', 'true');
+    expect(gross).toHaveAccessibleDescription(/Sisesta uus brutopalk/);
+  });
+
+  it('does not say the special pension continues at the pension age when it starts only later', () => {
+    openSpecialPensionStep('68');
+
+    typeInto(amountField(), '900');
+
+    expect(screen.queryByText(/jätkub see samas mahus/)).not.toBeInTheDocument();
+    expect(screen.getByText(/Eripension algab 68-aastaselt/)).toBeVisible();
+  });
+
   it('does not ask about working when the special pension starts at the pension age', () => {
     openSpecialPensionStep('67');
 

@@ -52,8 +52,22 @@ describe('specialPensionAnswers', () => {
   });
 
   it('counts the second pillar payment from the salary with the state 4%', () => {
-    expect(secondPillarMonthly(youWith({ secondPillarRate: '0.02' }))).toBeCloseTo(120);
-    expect(secondPillarMonthly(youWith({ secondPillarRate: '0' }))).toBe(0);
+    const plan = planOf();
+
+    expect(
+      secondPillarMonthly(youWith({ secondPillarRate: '0.02' }), initialSpecialPension(), plan),
+    ).toBeCloseTo(120);
+    expect(
+      secondPillarMonthly(youWith({ secondPillarRate: '0' }), initialSpecialPension(), plan),
+    ).toBe(0);
+  });
+
+  it('counts the second pillar payment from the new salary when the salary changes', () => {
+    const changed = { ...initialSpecialPension(), pay: 'change' as const, gross: '1000' };
+
+    expect(
+      secondPillarMonthly(youWith({ secondPillarRate: '0.02' }), changed, planOf()),
+    ).toBeCloseTo(60);
   });
 
   it('compares the special pension with the old-age pension once the amount is known', () => {

@@ -2,7 +2,7 @@ import React, { RefObject, useState } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
 import { payoutAgeTense } from './age60Answers';
-import { retirementAge } from './age65Answers';
+import { pensionKind, retirementAge } from './age65Answers';
 import { euro, exactPercent } from './amountFormat';
 import { ChoiceCard } from './ChoiceCard';
 import {
@@ -63,11 +63,13 @@ export const SpecialPensionStep = ({
   const isStarted = isSpecialPensionStarted(plan);
   const oldAgeAge = retirementAge(plan);
   const comparison = firstPillarComparison(answers, you, plan);
+  const isMonthlyMissing = isMonthlyTouched && !(amountOf(answers.monthly) > 0);
+  const isGrossMissing = isGrossTouched && answers.gross.trim() === '';
   const gross = amountOf(you.grossMonthly);
   const rate = Number(you.secondPillarRate) || 0;
   const secondPillarValues = {
     hasRate: rate > 0,
-    amount: euro(secondPillarMonthly(you)),
+    amount: euro(secondPillarMonthly(you, answers, plan)),
     rate: exactPercent(rate),
   };
 
@@ -102,6 +104,9 @@ export const SpecialPensionStep = ({
               age: oldAgeAge,
               year: plan.birthYear + oldAgeAge,
               years: plan.earlyRetirementYears,
+              kind: pensionKind(you),
+              specialAge: age,
+              startsLater: age > oldAgeAge ? 'yes' : 'no',
               oldAge: euro(comparison.oldAge),
               paid: comparison.paid,
             }}
@@ -120,17 +125,20 @@ export const SpecialPensionStep = ({
             id="future-me-special-pension-monthly"
             type="number"
             className={classNames('form-control', {
-              'is-invalid': isMonthlyTouched && !(amountOf(answers.monthly) > 0),
+              'is-invalid': isMonthlyMissing,
             })}
             min={0}
             step={10}
             required
-            aria-describedby="future-me-special-pension-monthly-unit"
+            aria-invalid={isMonthlyMissing}
+            aria-describedby={classNames('future-me-special-pension-monthly-unit', {
+              'future-me-special-pension-monthly-error': isMonthlyMissing,
+            })}
             value={answers.monthly}
             onChange={(event) => onChange({ ...answers, monthly: event.target.value })}
             onBlur={() => setMonthlyTouched(true)}
           />
-          <div className="invalid-feedback">
+          <div className="invalid-feedback" id="future-me-special-pension-monthly-error">
             <FormattedMessage id="futureMe.specialPension.monthly.error" />
           </div>
         </div>
@@ -225,17 +233,20 @@ export const SpecialPensionStep = ({
                 id="future-me-special-pension-gross"
                 type="number"
                 className={classNames('form-control', {
-                  'is-invalid': isGrossTouched && answers.gross.trim() === '',
+                  'is-invalid': isGrossMissing,
                 })}
                 min={0}
                 step={50}
                 required
-                aria-describedby="future-me-special-pension-gross-unit"
+                aria-invalid={isGrossMissing}
+                aria-describedby={classNames('future-me-special-pension-gross-unit', {
+                  'future-me-special-pension-gross-error': isGrossMissing,
+                })}
                 value={answers.gross}
                 onChange={(event) => onChange({ ...answers, gross: event.target.value })}
                 onBlur={() => setGrossTouched(true)}
               />
-              <div className="invalid-feedback">
+              <div className="invalid-feedback" id="future-me-special-pension-gross-error">
                 <FormattedMessage id="futureMe.specialPension.gross.error" />
               </div>
               <div className="form-text" id="future-me-special-pension-gross-unit">
