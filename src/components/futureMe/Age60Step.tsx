@@ -3,6 +3,9 @@ import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { Age60Answers, DecisionOrdinal, PAYOUT_CHOICES, PayoutChoice, Tense } from './age60Answers';
 import { FundPensionFaq } from './FundPensionFaq';
+import { ChapterHead } from './ChapterHead';
+import { FutureMeStep } from './steps';
+import { EmojiIcon } from './FutureMeIcon';
 
 type Pillar = 'secondPillar' | 'thirdPillar';
 
@@ -80,7 +83,7 @@ const PillarChoices = ({
               />
               <span className="payout-choice-body">
                 <span className="payout-choice-emoji" aria-hidden="true">
-                  {CHOICE_EMOJI[choice]}
+                  <EmojiIcon emoji={CHOICE_EMOJI[choice]} />
                 </span>
                 <strong id={`future-me-${pillar}-${choice}-name`}>
                   <FormattedMessage id={`futureMe.age60.choice.${choice}` as TranslationKey} />
@@ -114,12 +117,14 @@ export const Age60Step = ({
 
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-age60-heading">
-      <p className="chapter-kicker">
-        <FormattedMessage id="futureMe.age60.kicker" values={{ age, year, tense }} />
-      </p>
-      <h2 id="future-me-age60-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
-        <FormattedMessage id="futureMe.age60.title" values={{ age, ordinal }} />
-      </h2>
+      <ChapterHead step={FutureMeStep.AGE_60}>
+        <p className="chapter-kicker">
+          <FormattedMessage id="futureMe.age60.kicker" values={{ age, year, tense }} />
+        </p>
+        <h2 id="future-me-age60-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
+          <FormattedMessage id="futureMe.age60.title" values={{ age, ordinal }} />
+        </h2>
+      </ChapterHead>
       <p>
         <FormattedMessage id="futureMe.age60.intro" values={{ age, year }} />
       </p>

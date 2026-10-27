@@ -7,8 +7,8 @@
   .trail {
     display: flex;
     gap: 0.25rem;
-    margin: 0;
-    padding: 0 0 0.75rem;
+    margin: 0 -0.5rem;
+    padding: 0.375rem 0.5rem 0.75rem;
     list-style: none;
     overflow-x: auto;
 
@@ -17,6 +17,7 @@
     }
 
     button {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -30,19 +31,59 @@
     }
 
     .trail-dot {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 2rem;
-      height: 2rem;
-      border: 2px solid $text-navy-tertiary;
+      display: grid;
+      place-items: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border: 2px solid $gray-border-3;
       border-radius: 50%;
-      font-size: 0.875rem;
       background: $white;
+      color: $text-navy;
+      transition: transform 0.15s;
+
+      .line-icon {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
 
       @media (max-width: 575.98px) {
-        width: 1.75rem;
-        height: 1.75rem;
+        width: 2.125rem;
+        height: 2.125rem;
+
+        .line-icon {
+          width: 1.0625rem;
+          height: 1.0625rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    }
+
+    .trail-badge {
+      position: absolute;
+      top: 0;
+      left: calc(50% + 0.6rem);
+      display: grid;
+      place-items: center;
+      width: 1.05rem;
+      height: 1.05rem;
+      border: 2px solid $white;
+      border-radius: 50%;
+      background: $text-navy;
+      color: $white;
+
+      .line-icon {
+        width: 0.65rem;
+        height: 0.65rem;
+        stroke-width: 3.5;
+      }
+
+      @media (max-width: 575.98px) {
+        left: calc(50% + 0.4rem);
+        width: 0.95rem;
+        height: 0.95rem;
       }
     }
 
@@ -65,11 +106,17 @@
       border-color: $blue;
       background: $blue;
       color: $white;
+      transform: scale(1.12);
+      box-shadow: 0 0 0 4px $blue-border-1;
     }
 
     .is-visited .trail-dot {
-      border-color: $green;
-      color: $green;
+      border-color: $bright-blue;
+      background: $blue-bg-1;
+    }
+
+    .is-locked .trail-dot {
+      color: $text-navy-tertiary;
     }
 
     .is-locked button {
@@ -94,6 +141,61 @@
 
   .chapter {
     margin-bottom: 1rem;
+  }
+
+  .line-icon {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 1.25em;
+    height: 1.25em;
+    vertical-align: -0.2em;
+  }
+
+  .chapter-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h2 {
+      margin-bottom: 0;
+    }
+  }
+
+  .chapter-art {
+    display: grid;
+    flex: 0 0 4.5rem;
+    place-items: center;
+    height: 4.5rem;
+    border: 1px solid $blue-border-1;
+    border-radius: 1rem;
+    background: linear-gradient(135deg, $blue-bg-1, #e6f6fd);
+    color: $blue;
+
+    .line-icon {
+      width: 2.25rem;
+      height: 2.25rem;
+      stroke-width: 1.75;
+    }
+
+    @media (max-width: 575.98px) {
+      flex-basis: 3.25rem;
+      height: 3.25rem;
+
+      .line-icon {
+        width: 1.75rem;
+        height: 1.75rem;
+      }
+    }
+  }
+
+  .cost-fact-icon {
+    color: $blue;
+  }
+
+  input:checked + .payout-choice-body .payout-choice-emoji {
+    color: $text-navy;
   }
 
   .chapter-kicker {
@@ -126,8 +228,14 @@
   }
 
   .household-emoji {
-    font-size: 1.75rem;
+    display: inline-flex;
+    color: $text-navy;
     line-height: 1;
+
+    .line-icon {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
   }
 
   .household-help {
@@ -246,8 +354,14 @@
   }
 
   .cost-level-emoji {
-    font-size: 1.75rem;
+    display: inline-flex;
+    color: $blue;
     line-height: 1;
+
+    .line-icon {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
   }
 
   .cost-level-price {
@@ -540,8 +654,14 @@
   }
 
   .payout-choice-emoji {
-    font-size: 1.75rem;
+    display: inline-flex;
+    color: $blue;
     line-height: 1;
+
+    .line-icon {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
   }
 
   .faq {

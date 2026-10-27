@@ -15,8 +15,9 @@ import { Age65Work } from './Age65Work';
 import { exactPercent } from './amountFormat';
 import { retirementYears } from './engine/pension';
 import { FundPensionFaq } from './FundPensionFaq';
-import { StepPlanInput } from './steps';
+import { FutureMeStep, StepPlanInput } from './steps';
 import { YouAnswers } from './youAnswers';
+import { ChapterHead } from './ChapterHead';
 
 interface Props {
   answers: Age65Answers;
@@ -75,15 +76,17 @@ export const Age65Step = ({
 
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-age65-heading">
-      <p className="chapter-kicker">
-        <FormattedMessage
-          id="futureMe.age65.kicker"
-          values={{ age, year, tense: payoutAgeTense(plan.birthYear, age) }}
-        />
-      </p>
-      <h2 id="future-me-age65-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
-        <FormattedMessage id="futureMe.age65.title" values={{ kind }} />
-      </h2>
+      <ChapterHead step={FutureMeStep.AGE_65}>
+        <p className="chapter-kicker">
+          <FormattedMessage
+            id="futureMe.age65.kicker"
+            values={{ age, year, tense: payoutAgeTense(plan.birthYear, age) }}
+          />
+        </p>
+        <h2 id="future-me-age65-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
+          <FormattedMessage id="futureMe.age65.title" values={{ kind }} />
+        </h2>
+      </ChapterHead>
       {kind !== 'regular' && (
         <p className="payout-note">
           <FormattedMessage

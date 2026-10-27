@@ -14,10 +14,11 @@ import {
   SpecialPensionAnswers,
   specialPensionStartAge,
 } from './specialPensionAnswers';
-import { StepPlanInput } from './steps';
+import { StepPlanInput, FutureMeStep } from './steps';
 import { RequiredMark } from './YouFields';
 import { amountOf, YouAnswers } from './youAnswers';
 import { TranslationKey } from '../translations';
+import { ChapterHead } from './ChapterHead';
 
 interface Props {
   answers: SpecialPensionAnswers;
@@ -75,20 +76,22 @@ export const SpecialPensionStep = ({
 
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-special-pension-heading">
-      <p className="chapter-kicker">
-        <FormattedMessage
-          id="futureMe.specialPension.kicker"
-          values={{ age, year, tense: payoutAgeTense(plan.birthYear, age) }}
-        />
-      </p>
-      <h2
-        id="future-me-special-pension-heading"
-        className="text-balance"
-        tabIndex={-1}
-        ref={headingRef}
-      >
-        <FormattedMessage id="futureMe.specialPension.title" values={{ isStarted }} />
-      </h2>
+      <ChapterHead step={FutureMeStep.SPECIAL_PENSION}>
+        <p className="chapter-kicker">
+          <FormattedMessage
+            id="futureMe.specialPension.kicker"
+            values={{ age, year, tense: payoutAgeTense(plan.birthYear, age) }}
+          />
+        </p>
+        <h2
+          id="future-me-special-pension-heading"
+          className="text-balance"
+          tabIndex={-1}
+          ref={headingRef}
+        >
+          <FormattedMessage id="futureMe.specialPension.title" values={{ isStarted }} />
+        </h2>
+      </ChapterHead>
       <p className="payout-note">
         <FormattedMessage id="futureMe.specialPension.intro" values={{ age, year, isStarted }} />{' '}
         <EditYouButton labelId="futureMe.specialPension.changeStart" onClick={onEditYou} />

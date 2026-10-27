@@ -20,6 +20,9 @@ import {
   withHousehold,
   withLevel,
 } from './expensesAnswers';
+import { ChapterHead } from './ChapterHead';
+import { FutureMeStep } from './steps';
+import { EmojiIcon } from './FutureMeIcon';
 
 interface Props {
   answers: ExpensesAnswers;
@@ -138,7 +141,7 @@ const LevelCard = ({ answers, level, widestTotal, onChange }: LevelCardProps) =>
       <span className="cost-level-body">
         <span className="cost-level-top">
           <span className="cost-level-emoji" aria-hidden="true">
-            {LEVEL_EMOJI[level]}
+            <EmojiIcon emoji={LEVEL_EMOJI[level]} />
           </span>
           <strong id={nameId}>
             <FormattedMessage id={`futureMe.expenses.level.${level}.name` as TranslationKey} />
@@ -181,7 +184,10 @@ const LevelCard = ({ answers, level, widestTotal, onChange }: LevelCardProps) =>
           <ul className="cost-level-facts">
             {factItems(intl, costFacts(household, level)).map((fact) => (
               <li key={fact.key}>
-                <span aria-hidden="true">{fact.emoji}</span> {fact.text}
+                <span className="cost-fact-icon" aria-hidden="true">
+                  <EmojiIcon emoji={fact.emoji} />
+                </span>{' '}
+                {fact.text}
               </li>
             ))}
           </ul>
@@ -193,7 +199,9 @@ const LevelCard = ({ answers, level, widestTotal, onChange }: LevelCardProps) =>
                 </span>
               </span>
               <span className="cost-level-alt">
-                <span aria-hidden="true">🏡</span>
+                <span className="cost-fact-icon" aria-hidden="true">
+                  <EmojiIcon emoji="🏡" />
+                </span>
                 <span>
                   <span className="visually-hidden">
                     <FormattedMessage id="futureMe.expenses.level.alt.srPrefix" />{' '}
@@ -221,12 +229,14 @@ export const ExpensesStep = ({ answers, headingRef, onChange }: Props) => {
 
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-expenses-heading">
-      <p className="chapter-kicker">
-        <FormattedMessage id="futureMe.expenses.kicker" />
-      </p>
-      <h2 id="future-me-expenses-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
-        <FormattedMessage id="futureMe.expenses.title" />
-      </h2>
+      <ChapterHead step={FutureMeStep.COSTS}>
+        <p className="chapter-kicker">
+          <FormattedMessage id="futureMe.expenses.kicker" />
+        </p>
+        <h2 id="future-me-expenses-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
+          <FormattedMessage id="futureMe.expenses.title" />
+        </h2>
+      </ChapterHead>
       <div className="household-row">
         <div>
           <label className="form-label" htmlFor="future-me-household">
@@ -249,7 +259,7 @@ export const ExpensesStep = ({ answers, headingRef, onChange }: Props) => {
         </div>
         <div className="household-note" aria-live="polite">
           <span className="household-emoji" aria-hidden="true">
-            {HOUSEHOLD_EMOJI[answers.household]}
+            <EmojiIcon emoji={HOUSEHOLD_EMOJI[answers.household]} />
           </span>
           <span>
             <FormattedMessage

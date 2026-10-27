@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { PhosphorIcon } from '../common/PhosphorIcon';
+import { LineIcon, StepIcon } from './FutureMeIcon';
 import { StepId, StepPlanInput } from './steps';
 import { stepLabel, stepSublabel } from './stepLabels';
 
@@ -41,7 +41,7 @@ export const StepTrail = ({ steps, current, visited, plan, isLocked, onSelect }:
   return (
     <nav aria-label={intl.formatMessage({ id: 'futureMe.trail.ariaLabel' })}>
       <ol className="trail">
-        {steps.map((step, index) => {
+        {steps.map((step) => {
           const state = stateOf(step);
           const sublabel = stepSublabel(intl, step, plan);
           const label = [stepLabel(intl, step, plan), sublabel].filter(Boolean).join(' ');
@@ -55,8 +55,13 @@ export const StepTrail = ({ steps, current, visited, plan, isLocked, onSelect }:
                 onClick={() => onSelect(step)}
               >
                 <span className="trail-dot" aria-hidden="true">
-                  {state === 'visited' ? <PhosphorIcon name="check" size={14} /> : index + 1}
+                  <StepIcon step={step} />
                 </span>
+                {(state === 'visited' || state === 'locked') && (
+                  <span className="trail-badge" aria-hidden="true">
+                    <LineIcon name={state === 'visited' ? 'check' : 'lock'} />
+                  </span>
+                )}
                 <span className="trail-label">
                   {stepLabel(intl, step, plan)}
                   {sublabel && <small className="trail-sublabel">{sublabel}</small>}

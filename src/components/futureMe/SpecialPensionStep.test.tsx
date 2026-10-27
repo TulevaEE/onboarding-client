@@ -113,6 +113,14 @@ describe('Special pension step', () => {
     expect(within(workGroup()).getByText(/II\ssambasse laekub 0 € kuus/)).toBeVisible();
   });
 
+  it('draws the work choices with line icons instead of emoji', () => {
+    openSpecialPensionStep();
+
+    expect(within(workGroup()).getByTestId('icon-briefcase')).toBeInTheDocument();
+    expect(within(workGroup()).getByTestId('icon-leaf')).toBeInTheDocument();
+    expect(within(workGroup()).queryByText('💼')).not.toBeInTheDocument();
+  });
+
   it('asks about the salary only while working on', () => {
     openSpecialPensionStep();
 

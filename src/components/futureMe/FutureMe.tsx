@@ -232,7 +232,9 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
     if (step === FutureMeStep.COSTS) {
       return <ExpensesStep answers={expenses} headingRef={headingRef} onChange={setExpenses} />;
     }
-    return <PlaceholderStep label={stepLabel(intl, step, plan)} headingRef={headingRef} />;
+    return (
+      <PlaceholderStep step={step} label={stepLabel(intl, step, plan)} headingRef={headingRef} />
+    );
   };
 
   const nextLabelId =
