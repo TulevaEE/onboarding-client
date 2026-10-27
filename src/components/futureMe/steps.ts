@@ -62,16 +62,6 @@ export interface StepPlanInput {
   thirdPillarEarlyWithdrawalTaken: boolean;
 }
 
-export const defaultStepPlanInput = (birthYear: number): StepPlanInput => ({
-  birthYear,
-  earlyRetirementYears: 0,
-  hasSpecialPension: false,
-  savesInSecondPillar: true,
-  thirdPillarJoined: 'after',
-  thirdPillarEarlyWithdrawalAvailable: false,
-  thirdPillarEarlyWithdrawalTaken: false,
-});
-
 const isSecondPillarEarlyWithdrawalOpen = (input: StepPlanInput): boolean =>
   input.savesInSecondPillar &&
   CURRENT_YEAR - input.birthYear <=

@@ -1,5 +1,4 @@
 import {
-  defaultStepPlanInput,
   FutureMeStep,
   isStepSkipped,
   measuredStep,
@@ -10,8 +9,14 @@ import {
 } from './steps';
 
 const planFor = (overrides: Partial<StepPlanInput>): StepPlanInput => ({
-  ...defaultStepPlanInput(1980),
+  birthYear: 1980,
   pensionAgeYears: 65,
+  earlyRetirementYears: 0,
+  hasSpecialPension: false,
+  savesInSecondPillar: true,
+  thirdPillarJoined: 'after',
+  thirdPillarEarlyWithdrawalAvailable: false,
+  thirdPillarEarlyWithdrawalTaken: false,
   ...overrides,
 });
 

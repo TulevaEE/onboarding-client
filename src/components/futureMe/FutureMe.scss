@@ -127,6 +127,7 @@
 
   .you-section-summary {
     display: block;
+    text-wrap: pretty;
     color: $text-secondary;
 
     &.is-empty {

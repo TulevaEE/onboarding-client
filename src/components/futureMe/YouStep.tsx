@@ -3,7 +3,10 @@ import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Sex } from './engine/pension';
 import { BIRTH_YEAR_MAX, BIRTH_YEAR_MIN } from './prefill';
+import { SecondPillarSection, StateSection, ThirdPillarSection } from './YouBlocks';
+import { FIELD_DOM_IDS, RequiredMark } from './YouFields';
 import { YouSection, YouSectionLabels } from './YouSection';
+import { blockedFieldsOf, YouAnswers, YouField, YouSectionId } from './youAnswers';
 
 const ME_SECTION_LABELS: YouSectionLabels = {
   close: 'futureMe.you.me.close',
@@ -24,35 +27,38 @@ const SEX_OPTIONS = [
 const BIRTH_YEAR_RANGE = { min: String(BIRTH_YEAR_MIN), max: String(BIRTH_YEAR_MAX) };
 
 interface Props {
-  birthYear: string;
-  sex: Sex;
+  answers: YouAnswers;
+  touched: ReadonlySet<YouField>;
+  openSections: Record<YouSectionId, boolean>;
   isPrefilled: boolean;
-  isMeOpen: boolean;
-  isBirthYearComplete: boolean;
-  showBirthYearError: boolean;
   headingRef: RefObject<HTMLHeadingElement>;
-  birthYearRef: RefObject<HTMLInputElement>;
-  onBirthYearChange: (birthYear: string) => void;
-  onBirthYearBlur: () => void;
-  onSexChange: (sex: Sex) => void;
-  onToggleMe: () => void;
+  onChange: (changes: Partial<YouAnswers>) => void;
+  onBlur: (field: YouField) => void;
+  onToggle: (section: YouSectionId) => void;
 }
 
 export const YouStep = ({
-  birthYear,
-  sex,
+  answers,
+  touched,
+  openSections,
   isPrefilled,
-  isMeOpen,
-  isBirthYearComplete,
-  showBirthYearError,
   headingRef,
-  birthYearRef,
-  onBirthYearChange,
-  onBirthYearBlur,
-  onSexChange,
-  onToggleMe,
+  onChange,
+  onBlur,
+  onToggle,
 }: Props) => {
   const intl = useIntl();
+  const { birthYear, sex } = answers;
+  const showBirthYearError = touched.has('birthYear') && blockedFieldsOf(answers, 'me').length > 0;
+  const blockProps = (section: Exclude<YouSectionId, 'me'>) => ({
+    answers,
+    touched,
+    isOpen: openSections[section],
+    isComplete: blockedFieldsOf(answers, section).length === 0,
+    onToggle: () => onToggle(section),
+    onChange,
+    onBlur,
+  });
   const describedBy = classNames('future-me-birth-year-hint', {
     'future-me-birth-year-error': showBirthYearError,
   });
@@ -82,21 +88,17 @@ export const YouStep = ({
           title={<FormattedMessage id="futureMe.you.me.title" />}
           summary={<FormattedMessage id="futureMe.you.me.summary" values={{ birthYear, sex }} />}
           labels={ME_SECTION_LABELS}
-          isOpen={isMeOpen}
-          isComplete={isBirthYearComplete}
-          onToggle={onToggleMe}
+          isOpen={openSections.me}
+          isComplete={blockedFieldsOf(answers, 'me').length === 0}
+          onToggle={() => onToggle('me')}
         >
           <div className="row g-3">
             <div className="col-12 col-sm-6">
-              <label className="form-label text-balance" htmlFor="future-me-birth-year">
-                <FormattedMessage id="futureMe.you.birthYear.label" />{' '}
-                <span className="required-mark">
-                  <FormattedMessage id="futureMe.required" />
-                </span>
+              <label className="form-label text-balance" htmlFor={FIELD_DOM_IDS.birthYear}>
+                <FormattedMessage id="futureMe.you.birthYear.label" /> <RequiredMark />
               </label>
               <input
-                id="future-me-birth-year"
-                ref={birthYearRef}
+                id={FIELD_DOM_IDS.birthYear}
                 className={classNames('form-control', { 'is-invalid': showBirthYearError })}
                 type="number"
                 inputMode="numeric"
@@ -107,9 +109,9 @@ export const YouStep = ({
                 aria-invalid={showBirthYearError}
                 aria-describedby={describedBy}
                 onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                  onBirthYearChange(event.target.value)
+                  onChange({ birthYear: event.target.value })
                 }
-                onBlur={onBirthYearBlur}
+                onBlur={() => onBlur('birthYear')}
               />
               <div className="form-text" id="future-me-birth-year-hint">
                 <FormattedMessage id="futureMe.you.birthYear.hint" values={BIRTH_YEAR_RANGE} />
@@ -128,7 +130,7 @@ export const YouStep = ({
                 id="future-me-sex"
                 className="form-select"
                 value={sex}
-                onChange={(event) => onSexChange(event.target.value as Sex)}
+                onChange={(event) => onChange({ sex: event.target.value as Sex })}
               >
                 {SEX_OPTIONS.map(({ value, label }) => (
                   <option key={value} value={value}>
@@ -139,6 +141,9 @@ export const YouStep = ({
             </div>
           </div>
         </YouSection>
+        <StateSection {...blockProps('state')} />
+        <SecondPillarSection {...blockProps('secondPillar')} />
+        <ThirdPillarSection {...blockProps('thirdPillar')} />
       </ul>
     </section>
   );
