@@ -85,7 +85,7 @@ describe('SecondPillarGrowth', () => {
       });
       renderWithProviders();
       await expectRow('Your contribution', '4 425 €');
-      await expectRow('Tax win', '9 889 €');
+      await expectRow('From taxes', '9 889 €');
       await expectRow('Return', '1 384 €');
       await expectRow('Total', '15 698 €');
       expectNoRow('Inheritance');
@@ -100,7 +100,7 @@ describe('SecondPillarGrowth', () => {
       });
       renderWithProviders();
       await expectRow('Your contribution', '3 923 €');
-      await expectRow('Tax win', '10 788 €');
+      await expectRow('From taxes', '10 788 €');
       await expectRow('Return', '−11 €');
       await expectRow('Total', '14 701 €');
       expectNoRow('Withdrawn');
@@ -116,7 +116,7 @@ describe('SecondPillarGrowth', () => {
       });
       renderWithProviders();
       await expectRow('Your contribution', '1 357 €');
-      await expectRow('Tax win', '3 262 €');
+      await expectRow('From taxes', '3 262 €');
       await expectRow('Inheritance', '310 €');
       await expectRow('Return', '2 231 €');
       await expectRow('Withdrawn', '−7 160 €');
@@ -133,7 +133,7 @@ describe('SecondPillarGrowth', () => {
       });
       renderWithProviders();
       await expectRow('Your contribution', '877 €');
-      await expectRow('Tax win', '2 542 €');
+      await expectRow('From taxes', '2 542 €');
       await expectRow('Inheritance', '350 €');
       await expectRow('Return', '−216 €');
       await expectRow('Withdrawn', '−3 500 €');
@@ -149,7 +149,7 @@ describe('SecondPillarGrowth', () => {
       await expectRow('Your contribution', '397 €');
       await expectRow('Return', '29 €');
       await expectRow('Total', '426 €');
-      expectNoRow('Tax win');
+      expectNoRow('From taxes');
     });
 
     it('case 6 — PIK conversion renders a disclaimer', async () => {
@@ -213,7 +213,7 @@ describe('SecondPillarGrowth', () => {
       });
       renderWithProviders();
       await expectRow('Your contribution', '6 434 €');
-      await expectRow('Tax win', '14 665 €');
+      await expectRow('From taxes', '14 665 €');
       await expectRow('Inheritance', '5 000 €');
       await expectRow('Return', '2 022 €');
       await expectRow('Total', '28 120 €');
@@ -227,7 +227,7 @@ describe('SecondPillarGrowth', () => {
       });
       renderWithProviders();
       await expectRow('Your contribution', '7 536 €');
-      await expectRow('Tax win', '18 337 €');
+      await expectRow('From taxes', '18 337 €');
       await expectRow('Return', '20 176 €');
       await expectRow('Total', '46 049 €');
     });
@@ -346,7 +346,7 @@ describe('SecondPillarGrowth', () => {
       });
       renderWithProviders();
       await expectRow('Your contribution', '4 425 €');
-      await expectRow('Tax win', '9 889 €');
+      await expectRow('From taxes', '9 889 €');
       await expectRow('Return', '1 384 €');
       await expectRow('Total', '15 698 €');
     });
