@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { PhosphorIcon } from '../common/PhosphorIcon';
 import { StepId, StepPlanInput } from './steps';
-import { stepLabel } from './stepLabels';
+import { stepLabel, stepSublabel } from './stepLabels';
 
 type TrailState = 'current' | 'locked' | 'visited' | 'unvisited';
 
@@ -43,7 +43,8 @@ export const StepTrail = ({ steps, current, visited, plan, isLocked, onSelect }:
       <ol className="trail">
         {steps.map((step, index) => {
           const state = stateOf(step);
-          const label = stepLabel(intl, step, plan);
+          const sublabel = stepSublabel(intl, step, plan);
+          const label = [stepLabel(intl, step, plan), sublabel].filter(Boolean).join(' ');
           return (
             <li key={step} className={classNames('trail-item', `is-${state}`)}>
               <button
@@ -56,7 +57,10 @@ export const StepTrail = ({ steps, current, visited, plan, isLocked, onSelect }:
                 <span className="trail-dot" aria-hidden="true">
                   {state === 'visited' ? <PhosphorIcon name="check" size={14} /> : index + 1}
                 </span>
-                <span className="trail-label">{label}</span>
+                <span className="trail-label">
+                  {stepLabel(intl, step, plan)}
+                  {sublabel && <small className="trail-sublabel">{sublabel}</small>}
+                </span>
               </button>
             </li>
           );

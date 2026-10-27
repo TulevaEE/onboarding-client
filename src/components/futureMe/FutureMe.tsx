@@ -14,6 +14,8 @@ import {
   payoutAgeTense,
 } from './age60Answers';
 import { Age60Step } from './Age60Step';
+import { Age65Step } from './Age65Step';
+import { initialAge65 } from './age65Answers';
 import { initialExpenses } from './expensesAnswers';
 import { ExpensesStep } from './ExpensesStep';
 import { derivePrefill, YouPrefill } from './prefill';
@@ -56,6 +58,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   const intl = useIntl();
   const [answers, setAnswers] = useState(() => initialAnswers(prefill));
   const [age60, setAge60] = useState(initialAge60);
+  const [age65, setAge65] = useState(initialAge65);
   const [expenses, setExpenses] = useState(initialExpenses);
   const [step, setStep] = useState<StepId>(FutureMeStep.YOU);
   const [visited, setVisited] = useState<ReadonlySet<StepId>>(new Set([FutureMeStep.YOU]));
@@ -175,6 +178,20 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           headingRef={headingRef}
           onChange={setAge60}
           onEditYou={() => goTo(FutureMeStep.YOU)}
+        />
+      );
+    }
+    if (step === FutureMeStep.AGE_65) {
+      return (
+        <Age65Step
+          answers={age65}
+          you={answers}
+          plan={plan}
+          age60={age60}
+          headingRef={headingRef}
+          onChange={setAge65}
+          onEditYou={() => goTo(FutureMeStep.YOU)}
+          onEditAge60={() => goTo(FutureMeStep.AGE_60)}
         />
       );
     }

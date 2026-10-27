@@ -56,7 +56,7 @@ const openAge60Step = (answers?: Parameters<typeof fillInYou>[0]) => {
     </IntlProvider>,
   );
   fillInYou(answers);
-  userEvent.click(within(trail()).getByRole('button', { name: '60, vaatamata' }));
+  userEvent.click(within(trail()).getByRole('button', { name: /^60\sa, vaatamata$/ }));
 };
 
 const secondPillarGroup = () => screen.getByRole('group', { name: /^II\ssamba väljamakse viis$/ });

@@ -194,8 +194,8 @@ describe('FutureMe', () => {
       expect(trailNames()).toEqual([
         'Sina, praegune samm',
         '18–55, vaatamata',
-        '60, vaatamata',
-        '65, vaatamata',
+        '61\u00A0a, vaatamata',
+        '66\u00A0a, vaatamata',
         '66+, vaatamata',
         'Kulud, vaatamata',
         'Tulemus, vaatamata',
@@ -217,8 +217,8 @@ describe('FutureMe', () => {
 
       expect(trailNames().map((name) => name?.split(',')[0])).toEqual([
         'Sina',
-        '60',
-        '65',
+        '60\u00A0a',
+        '65\u00A0a',
         '66+',
         'Kulud',
         'Tulemus',
@@ -1030,6 +1030,16 @@ describe('FutureMe', () => {
         expect(earlyYearsField()).toHaveDisplayValue(withNbsp('4 a, paindlik pension −25,5%'));
       });
 
+      it('tells the two steps apart when the saver retires exactly five years early', () => {
+        renderFutureMe();
+        fillInRequiredAnswers();
+        addKids(['1990', '1992', '1994', '1996', '1998']);
+
+        expect(trailNames()).toEqual(
+          expect.arrayContaining(['61\u00A0a sambad, vaatamata', '61\u00A0a pension, vaatamata']),
+        );
+      });
+
       it('moves the age 65 step in front of the age 60 step for more than five years', () => {
         renderFutureMe();
         fillInRequiredAnswers();
@@ -1038,7 +1048,8 @@ describe('FutureMe', () => {
 
         const names = trailNames().map((name) => name?.split(',')[0]);
 
-        expect(names.indexOf('65')).toBeLessThan(names.indexOf('60'));
+        expect(names.indexOf('56\u00A0a')).toBeLessThan(names.indexOf('61\u00A0a'));
+        expect(names).not.toContain('66\u00A0a');
       });
     });
 
