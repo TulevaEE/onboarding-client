@@ -11,7 +11,16 @@ import { formatAmountForCount, formatAmountForCurrency } from '../../../common/u
 import { AccountHolder } from '../accountHolder';
 import { PII_CLASS } from '../../../tracking/piiMarkup';
 
-export type BankKey = 'LHV' | 'COOP' | 'SWEDBANK' | 'SEB' | 'LUMINOR' | 'WISE' | 'OTHER';
+export type BankKey =
+  | 'LHV'
+  | 'COOP'
+  | 'SWEDBANK'
+  | 'SEB'
+  | 'LUMINOR'
+  | 'WISE'
+  | 'CITADELE'
+  | 'BIGBANK'
+  | 'OTHER';
 
 // PREFILLED — bank link opens the standing-order form with all fields pre-filled;
 //             user just reviews.
@@ -41,6 +50,8 @@ const BANK_META: Record<BankKey, BankMeta> = {
     openBankStepId: 'savingsFund.recurring.step.openBank.wise',
     copyFieldsStepId: 'savingsFund.recurring.step.copyFields.wise',
   },
+  CITADELE: { label: 'Citadele', channel: 'CITADELE', linkBehavior: 'LANDING' },
+  BIGBANK: { label: 'Bigbank', channel: 'BIGBANK', linkBehavior: 'LANDING' },
   OTHER: { label: '', linkBehavior: 'MANUAL' },
 };
 
@@ -51,6 +62,8 @@ const ALLOWED_BANK_DOMAINS = [
   'seb.ee',
   'luminor.ee',
   'wise.com',
+  'citadele.lv',
+  'bigbank.eu',
 ];
 
 const isSafeBankUrl = (url: string | undefined): url is string => {

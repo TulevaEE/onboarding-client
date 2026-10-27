@@ -8,7 +8,12 @@ import { redirectToPayment } from '../../../common/api';
 import { PaymentAmountInput } from './PaymentAmountInput';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
 import { useMe } from '../../../common/apiHooks';
-import { AvailablePaymentType, BankKey, paymentChannelFor } from './types';
+import {
+  AvailablePaymentType,
+  BankKey,
+  paymentChannelFor,
+  standingOrderDetailsAreTypedIn,
+} from './types';
 import { PaymentTypeSelection } from './PaymentTypeSelection';
 import { PaymentBankButtons } from './PaymentBankButtons';
 import { RecurringPaymentDetails } from './RecurringPaymentDetails';
@@ -68,8 +73,11 @@ export const Payment: React.FunctionComponent = () => {
         type: paymentType,
         paymentChannel: paymentChannelFor(paymentBank),
       });
-      const detailsAreCopiedByHand = paymentBank === 'wise';
-      if (openedInNewTab && paymentType === 'RECURRING' && !detailsAreCopiedByHand) {
+      if (
+        openedInNewTab &&
+        paymentType === 'RECURRING' &&
+        !standingOrderDetailsAreTypedIn(paymentBank)
+      ) {
         history.push('/3rd-pillar-payment/recurring-confirmation');
       }
     } catch (e) {
