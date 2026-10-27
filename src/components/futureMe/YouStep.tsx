@@ -15,6 +15,8 @@ import {
   YouField,
   YouSectionId,
 } from './youAnswers';
+import { ChapterHead } from './ChapterHead';
+import { FutureMeStep } from './steps';
 
 const ME_SECTION_LABELS: YouSectionLabels = {
   close: 'futureMe.you.me.close',
@@ -77,12 +79,14 @@ export const YouStep = ({
 
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-you-heading">
-      <p className="chapter-kicker">
-        <FormattedMessage id="futureMe.you.kicker" />
-      </p>
-      <h2 id="future-me-you-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
-        <FormattedMessage id="futureMe.you.title" />
-      </h2>
+      <ChapterHead step={FutureMeStep.YOU}>
+        <p className="chapter-kicker">
+          <FormattedMessage id="futureMe.you.kicker" />
+        </p>
+        <h2 id="future-me-you-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
+          <FormattedMessage id="futureMe.you.title" />
+        </h2>
+      </ChapterHead>
       <p>
         <FormattedMessage
           id="futureMe.you.intro"

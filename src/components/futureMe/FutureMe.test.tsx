@@ -202,6 +202,31 @@ describe('FutureMe', () => {
       ]);
     });
 
+    it('shows an icon for each step instead of its number', () => {
+      renderFutureMe();
+
+      within(trail())
+        .getAllByRole('button')
+        .forEach((button, index) => {
+          expect(button).not.toHaveTextContent(new RegExp(`^${index + 1}`));
+          expect(within(button).getAllByTestId(/^icon-/).length).toBeGreaterThan(0);
+        });
+    });
+
+    it('shows the step icon beside the heading of every step', () => {
+      renderFutureMe();
+      fillInRequiredAnswers();
+
+      within(trail())
+        .getAllByRole('button')
+        .forEach((button) => {
+          userEvent.click(button);
+          const { textContent } = screen.getByRole('heading', { level: 2 });
+          const section = screen.getByRole('region', { name: textContent ?? '' });
+          expect(within(section).getAllByTestId(/^icon-/).length).toBeGreaterThan(0);
+        });
+    });
+
     it('marks the current step for assistive technology', () => {
       renderFutureMe();
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { EmojiIcon } from './FutureMeIcon';
 
 interface Props {
   idPrefix: string;
@@ -40,7 +41,7 @@ export const ChoiceCard = ({
       <span className="payout-choice-body">
         {emoji && (
           <span className="payout-choice-emoji" aria-hidden="true">
-            {emoji}
+            <EmojiIcon emoji={emoji} />
           </span>
         )}
         <strong id={`${id}-name`}>{title}</strong>

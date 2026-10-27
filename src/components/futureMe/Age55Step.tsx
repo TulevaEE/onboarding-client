@@ -6,6 +6,8 @@ import { formatAmountForCurrency } from '../common/utils';
 import { Age55, ThirdPillarPayout } from './age55';
 import { TAX_SHORT } from './engine/pension';
 import { birthYearOrFallback, ThirdPillarPlan, YouAnswers } from './youAnswers';
+import { ChapterHead } from './ChapterHead';
+import { FutureMeStep } from './steps';
 
 const PLANS: ThirdPillarPlan[] = ['keep', 'fund', 'lump'];
 const FAVORABLE_TAX_AGE = 55;
@@ -66,9 +68,11 @@ export const Age55Step = ({ answers, age55, headingRef, onChange, onEditThirdPil
 
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-age-55-heading">
-      <h2 id="future-me-age-55-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
-        <FormattedMessage id="futureMe.age55.title" />
-      </h2>
+      <ChapterHead step={FutureMeStep.AGE_55}>
+        <h2 id="future-me-age-55-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
+          <FormattedMessage id="futureMe.age55.title" />
+        </h2>
+      </ChapterHead>
       {age55.hasThirdPillar && (
         <>
           <p className="text-pretty">

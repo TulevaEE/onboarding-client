@@ -12,8 +12,9 @@ import {
 } from './age66Answers';
 import { Age66Pillar } from './Age66Pillar';
 import { FundPensionFaq } from './FundPensionFaq';
-import { StepPlanInput } from './steps';
+import { FutureMeStep, StepPlanInput } from './steps';
 import { YouAnswers } from './youAnswers';
+import { ChapterHead } from './ChapterHead';
 
 interface Props {
   answers: Age66Answers;
@@ -66,19 +67,21 @@ export const Age66Step = ({
 
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-age66-heading">
-      <p className="chapter-kicker">
-        <FormattedMessage
-          id="futureMe.age66.kicker"
-          values={{
-            age: firstAge,
-            year: plan.birthYear + firstAge,
-            tense: payoutAgeTense(plan.birthYear, firstAge),
-          }}
-        />
-      </p>
-      <h2 id="future-me-age66-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
-        <FormattedMessage id="futureMe.age66.title" values={{ state: titleState }} />
-      </h2>
+      <ChapterHead step={FutureMeStep.AGE_66_PLUS}>
+        <p className="chapter-kicker">
+          <FormattedMessage
+            id="futureMe.age66.kicker"
+            values={{
+              age: firstAge,
+              year: plan.birthYear + firstAge,
+              tense: payoutAgeTense(plan.birthYear, firstAge),
+            }}
+          />
+        </p>
+        <h2 id="future-me-age66-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
+          <FormattedMessage id="futureMe.age66.title" values={{ state: titleState }} />
+        </h2>
+      </ChapterHead>
       <Age66Pillar
         pillar="secondPillar"
         answers={answers}
