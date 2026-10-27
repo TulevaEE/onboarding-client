@@ -12,9 +12,13 @@ const MALE_FIRST_DIGITS = ['1', '3', '5', '7'];
 const FEMALE_FIRST_DIGITS = ['2', '4', '6', '8'];
 const ISO_YEAR = /^(\d{4})-/;
 
+const DEFAULT_SECOND_PILLAR_RATE_PERCENT = 2;
+const NO_SECOND_PILLAR_RATE = '0';
+
 export interface YouPrefill {
   birthYear: number | null;
   sex: Sex | null;
+  secondPillarRate: string | null;
 }
 
 export const parseBirthYear = (typed: string): number | null => {
@@ -36,7 +40,13 @@ export const deriveSex = (personalCode: string): Sex | null => {
   return FEMALE_FIRST_DIGITS.includes(personalCode[0]) ? 'N' : null;
 };
 
+export const deriveSecondPillarRate = (user: User): string =>
+  user.secondPillarActive
+    ? String((user.secondPillarPaymentRates?.current ?? DEFAULT_SECOND_PILLAR_RATE_PERCENT) / 100)
+    : NO_SECOND_PILLAR_RATE;
+
 export const derivePrefill = (user: User): YouPrefill => ({
   birthYear: deriveBirthYear(user.dateOfBirth),
   sex: deriveSex(user.personalCode),
+  secondPillarRate: deriveSecondPillarRate(user),
 });

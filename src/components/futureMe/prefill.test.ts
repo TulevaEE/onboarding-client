@@ -57,14 +57,26 @@ describe('sex from the personal code', () => {
 
 describe('prefill for the You step', () => {
   it('takes the birth year and sex from the user', () => {
-    expect(derivePrefill(mockUser)).toEqual({ birthYear: 1989, sex: 'M' });
+    expect(derivePrefill(mockUser)).toMatchObject({ birthYear: 1989, sex: 'M' });
   });
 
   it('leaves out what the user does not tell', () => {
-    expect(derivePrefill({ ...mockUser, dateOfBirth: '', personalCode: '12345678' })).toEqual({
-      birthYear: null,
-      sex: null,
-    });
+    expect(derivePrefill({ ...mockUser, dateOfBirth: '', personalCode: '12345678' })).toMatchObject(
+      {
+        birthYear: null,
+        sex: null,
+      },
+    );
+  });
+
+  it.each([2, 4, 6] as const)('takes the current II pillar payment rate of %i%', (current) => {
+    const user = { ...mockUser, secondPillarPaymentRates: { current, pending: null } };
+
+    expect(derivePrefill(user).secondPillarRate).toBe(String(current / 100));
+  });
+
+  it('reads a user outside the II pillar as paying nothing into it', () => {
+    expect(derivePrefill({ ...mockUser, secondPillarActive: false }).secondPillarRate).toBe('0');
   });
 });
 

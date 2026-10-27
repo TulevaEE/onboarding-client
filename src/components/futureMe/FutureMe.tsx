@@ -4,37 +4,49 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useMe } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { usePageTitle } from '../common/usePageTitle';
-import { Sex } from './engine/pension';
-import { derivePrefill, parseBirthYear, YouPrefill } from './prefill';
+import { derivePrefill, YouPrefill } from './prefill';
 import { PlaceholderStep } from './PlaceholderStep';
 import { StepTrail } from './StepTrail';
 import { stepLabel } from './stepLabels';
-import { defaultStepPlanInput, FutureMeStep, neighbouringStep, shownSteps, StepId } from './steps';
+import { FutureMeStep, neighbouringStep, shownSteps, StepId } from './steps';
 import { trackFutureMeStep } from './tracking';
+import {
+  blockedFields,
+  blockedFieldsOf,
+  initialAnswers,
+  SECTION_IDS,
+  toStepPlanInput,
+  YouField,
+  YouSectionId,
+} from './youAnswers';
+import { FIELD_DOM_IDS } from './YouFields';
 import { YouStep } from './YouStep';
 import './FutureMe.scss';
 
-const FALLBACK_BIRTH_YEAR = 1980;
-const UNKNOWN_SEX: Sex = 'X';
+const ALL_SECTIONS_OPEN: Record<YouSectionId, boolean> = {
+  me: true,
+  state: true,
+  secondPillar: true,
+  thirdPillar: true,
+};
 
 const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   const intl = useIntl();
-  const [birthYear, setBirthYear] = useState(prefill.birthYear?.toString() ?? '');
-  const [sex, setSex] = useState<Sex>(prefill.sex ?? UNKNOWN_SEX);
+  const [answers, setAnswers] = useState(() => initialAnswers(prefill));
   const [step, setStep] = useState<StepId>(FutureMeStep.YOU);
   const [visited, setVisited] = useState<ReadonlySet<StepId>>(new Set([FutureMeStep.YOU]));
-  const [isMeOpen, setIsMeOpen] = useState(true);
-  const [isBirthYearChecked, setIsBirthYearChecked] = useState(false);
+  const [openSections, setOpenSections] = useState(ALL_SECTIONS_OPEN);
+  const [touched, setTouched] = useState<ReadonlySet<YouField>>(new Set());
   const [blockedAttempts, setBlockedAttempts] = useState(0);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const birthYearRef = useRef<HTMLInputElement>(null);
+  const firstBlocked = useRef<YouField | undefined>(undefined);
   const isFirstRender = useRef(true);
 
-  const parsedBirthYear = parseBirthYear(birthYear);
-  const isBirthYearComplete = parsedBirthYear !== null;
-  const plan = defaultStepPlanInput(parsedBirthYear ?? FALLBACK_BIRTH_YEAR);
+  const blocked = blockedFields(answers);
+  [firstBlocked.current] = blocked;
+  const plan = toStepPlanInput(answers);
   const steps = shownSteps(plan);
-  const isLocked = (target: StepId) => target !== FutureMeStep.YOU && !isBirthYearComplete;
+  const isLocked = (target: StepId) => target !== FutureMeStep.YOU && blocked.length > 0;
   const isFirst = step === steps[0];
   const isLast = step === steps[steps.length - 1];
 
@@ -50,15 +62,23 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   }, [step]);
 
   useEffect(() => {
-    if (blockedAttempts > 0) {
-      birthYearRef.current?.focus();
+    if (blockedAttempts > 0 && firstBlocked.current) {
+      document.getElementById(FIELD_DOM_IDS[firstBlocked.current])?.focus();
     }
   }, [blockedAttempts]);
 
   const goTo = (target: StepId) => {
     if (isLocked(target)) {
-      setIsBirthYearChecked(true);
-      setIsMeOpen(true);
+      setTouched((previous) => new Set([...Array.from(previous), ...blocked]));
+      setOpenSections((previous) => {
+        const next = { ...previous };
+        SECTION_IDS.filter((section) => blockedFieldsOf(answers, section).length > 0).forEach(
+          (section) => {
+            next[section] = true;
+          },
+        );
+        return next;
+      });
       setBlockedAttempts((attempts) => attempts + 1);
       return;
     }
@@ -81,18 +101,16 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
       />
       {step === FutureMeStep.YOU ? (
         <YouStep
-          birthYear={birthYear}
-          sex={sex}
+          answers={answers}
+          touched={touched}
+          openSections={openSections}
           isPrefilled={prefill.birthYear !== null || prefill.sex !== null}
-          isMeOpen={isMeOpen}
-          isBirthYearComplete={isBirthYearComplete}
-          showBirthYearError={isBirthYearChecked && !isBirthYearComplete}
           headingRef={headingRef}
-          birthYearRef={birthYearRef}
-          onBirthYearChange={setBirthYear}
-          onBirthYearBlur={() => setIsBirthYearChecked(true)}
-          onSexChange={setSex}
-          onToggleMe={() => setIsMeOpen((isOpen) => !isOpen)}
+          onChange={(changes) => setAnswers((previous) => ({ ...previous, ...changes }))}
+          onBlur={(field) => setTouched((previous) => new Set(previous).add(field))}
+          onToggle={(section) =>
+            setOpenSections((previous) => ({ ...previous, [section]: !previous[section] }))
+          }
         />
       ) : (
         <PlaceholderStep label={stepLabel(intl, step, plan)} headingRef={headingRef} />
@@ -133,5 +151,9 @@ export const FutureMe = () => {
     return <Shimmer height={400} />;
   }
 
-  return <FutureMeSteps prefill={user ? derivePrefill(user) : { birthYear: null, sex: null }} />;
+  return (
+    <FutureMeSteps
+      prefill={user ? derivePrefill(user) : { birthYear: null, sex: null, secondPillarRate: null }}
+    />
+  );
 };
