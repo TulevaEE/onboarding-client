@@ -6,6 +6,7 @@ import {
   effectivePensionAge,
   isKidsRightAvailableToSelf,
   fieldProblem,
+  hasChildWithoutBirthYear,
   initialAnswers,
   isSpecialPensionOnly,
   pensionAgeValue,
@@ -316,6 +317,17 @@ describe('retiring early', () => {
     expect(
       earlyRetirementYears(withKids(['1990', '1992', '1994'], { kidsEarlyUser: 'other' })),
     ).toBe(0);
+  });
+
+  it('does not count a child whose birth year the field rejects', () => {
+    expect(
+      earlyRetirementYears(withKids(['1990', '1992', '2050'], { pensionAgeYears: '65' })),
+    ).toBe(0);
+  });
+
+  it('notes as counted raised only the children with no birth year at all', () => {
+    expect(hasChildWithoutBirthYear(withKids(['1990', '2050']))).toBe(false);
+    expect(hasChildWithoutBirthYear(withKids(['1990', '']))).toBe(true);
   });
 
   it('counts a child without a valid birth year as raised', () => {

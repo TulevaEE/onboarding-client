@@ -108,7 +108,7 @@ export const AmountField = ({
         disabled={disabled}
         aria-required={isRequired}
         aria-invalid={!!problem}
-        aria-describedby={describedBy}
+        aria-describedby={describedBy || undefined}
         onChange={(event: ChangeEvent<HTMLInputElement>) =>
           onChange({ [field]: event.target.value })
         }

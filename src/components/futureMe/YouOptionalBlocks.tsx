@@ -19,7 +19,7 @@ import { YouOptionalSection, YouSection } from './YouSection';
 const CHILD_BIRTH_YEAR_DIGITS = 4;
 const MIN_CHILD_BIRTH_YEAR = 1930;
 const SOCIAL_INSURANCE_BOARD_URL = 'https://sotsiaalkindlustusamet.ee';
-const HAZARD_LISTS: HazardList[] = ['no', 'list1', 'list2'];
+const HAZARD_LISTS: Exclude<HazardList, 'no'>[] = ['list1', 'list2'];
 const HAZARD_YEARS_NEEDED = { list1: 10, list2: 12.5 };
 const SERVICE_YEARS_NEEDED = { list1: 20, list2: 25 };
 

@@ -908,13 +908,20 @@ describe('FutureMe', () => {
         expect(screen.queryByText(/Mõne lapse sünniaasta on puudu/)).not.toBeInTheDocument();
       });
 
+      it('describe the children count only by what it has to say', () => {
+        renderFutureMe();
+        userEvent.click(addKidsButton());
+
+        expect(kidsCountField()).not.toHaveAttribute('aria-describedby');
+      });
+
       it('say which children were not raised for eight years by retirement', () => {
         renderFutureMe();
         addKids(['2050']);
 
         expect(
           screen.getByText(
-            /1 last ei ole pensionile minekuks \(\d{4}\) vähemalt 8 aastat kasvatatud/,
+            /1 laps ei ole pensionile minekuks \(\d{4}\) vähemalt 8 aastat kasvatatud/,
           ),
         ).toBeVisible();
       });
@@ -1112,6 +1119,20 @@ describe('FutureMe', () => {
 
         expect(hazardYearsField()).toHaveAccessibleName(/nimekirja nr 2/);
         expect(earlyYearsField()).toHaveDisplayValue(withNbsp('5 a, vähendamata (kõige varem)'));
+      });
+
+      it('offer only the two lists once hazardous work is ticked, as unticking it says no', () => {
+        renderFutureMe();
+        addSpecialCases();
+        userEvent.click(specialCase(/Töötasin tervist kahjustaval tööl/));
+
+        const listField = screen.getByRole('combobox', { name: /Millise nimekirja tööl töötasid/ });
+
+        expect(
+          within(listField)
+            .getAllByRole('option')
+            .map((option) => option.textContent),
+        ).toEqual(['nimekiri nr 1', 'nimekiri nr 2']);
       });
 
       it('accept the twelve and a half years list 2 needs', () => {

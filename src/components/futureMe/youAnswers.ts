@@ -198,11 +198,13 @@ export const isChildBirthYearInvalid = (answers: YouAnswers, index: number): boo
   return typed !== '' && validChildBirthYear(typed, maxChildBirthYear(answers)) === null;
 };
 
-export const hasChildWithoutBirthYear = (answers: YouAnswers): boolean =>
-  Array.from({ length: childRows(answers) }).some(
-    (_, index) =>
-      validChildBirthYear(answers.kidsBirthYears[index] ?? '', maxChildBirthYear(answers)) === null,
+const typedChildBirthYears = (answers: YouAnswers): string[] =>
+  Array.from({ length: childRows(answers) }, (_, index) =>
+    (answers.kidsBirthYears[index] ?? '').trim(),
   );
+
+export const hasChildWithoutBirthYear = (answers: YouAnswers): boolean =>
+  typedChildBirthYears(answers).some((typed) => typed === '');
 
 const kidsEarlyInput = (
   earlyUser: YouAnswers['kidsEarlyUser'],
@@ -216,11 +218,11 @@ const kidsEarlyInput = (
 
 const kidsRetirement = (answers: YouAnswers, earlyUser: YouAnswers['kidsEarlyUser']) => {
   const maxYear = maxChildBirthYear(answers);
-  const birthYears = Array.from({ length: childRows(answers) }, (_, index) =>
-    validChildBirthYear(answers.kidsBirthYears[index] ?? '', maxYear),
-  );
-  const unknown = birthYears.filter((year) => year === null).length;
-  const known = birthYears.filter((year): year is number => year !== null);
+  const typed = typedChildBirthYears(answers);
+  const unknown = typed.filter((year) => year === '').length;
+  const known = typed
+    .map((year) => validChildBirthYear(year, maxYear))
+    .filter((year): year is number => year !== null);
   const pensionYear = birthYearOrFallback(answers) + effectivePensionAge(answers);
   const countedBy = (retirementYear: number) =>
     known.filter((year) => year + YEARS_RAISING_A_CHILD <= retirementYear).length + unknown;
