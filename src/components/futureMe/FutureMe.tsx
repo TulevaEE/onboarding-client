@@ -194,6 +194,8 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           you={answers}
           plan={plan}
           age60={age60}
+          age66={age66}
+          specialPension={specialPension}
           headingRef={headingRef}
           onChange={setAge65}
           onEditYou={() => goTo(FutureMeStep.YOU)}
@@ -209,6 +211,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           plan={plan}
           age60={age60}
           age65={age65}
+          specialPension={specialPension}
           headingRef={headingRef}
           onChange={setAge66}
           onEditYou={() => goTo(FutureMeStep.YOU)}
@@ -223,6 +226,8 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           answers={specialPension}
           you={answers}
           plan={plan}
+          age65={age65}
+          age66={age66}
           headingRef={headingRef}
           onChange={setSpecialPension}
           onEditYou={() => goTo(FutureMeStep.YOU)}

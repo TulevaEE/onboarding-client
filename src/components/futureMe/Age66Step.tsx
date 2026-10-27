@@ -11,7 +11,14 @@ import {
   isGrowing,
 } from './age66Answers';
 import { Age66Pillar } from './Age66Pillar';
+import { euro } from './amountFormat';
+import { FirstPillarChoice } from './FirstPillarChoice';
 import { FundPensionFaq } from './FundPensionFaq';
+import {
+  chosenFirstPillar,
+  firstPillarComparison,
+  SpecialPensionAnswers,
+} from './specialPensionAnswers';
 import { FutureMeStep, StepPlanInput } from './steps';
 import { YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
@@ -22,6 +29,7 @@ interface Props {
   plan: StepPlanInput;
   age60: Age60Answers;
   age65: Age65Answers;
+  specialPension: SpecialPensionAnswers;
   headingRef: RefObject<HTMLHeadingElement>;
   onChange: (answers: Age66Answers) => void;
   onEditYou: () => void;
@@ -36,6 +44,8 @@ const titleStateOf = (isStarting: boolean, isAsked: boolean) => {
   return isAsked ? 'asks' : 'off';
 };
 
+const MIN_NOTICEABLE_RISE = 0.5;
+
 const linkButton = 'btn btn-link p-0 align-baseline';
 
 export const Age66Step = ({
@@ -44,6 +54,7 @@ export const Age66Step = ({
   plan,
   age60,
   age65,
+  specialPension,
   headingRef,
   onChange,
   onEditYou,
@@ -51,6 +62,11 @@ export const Age66Step = ({
   onEditAge65,
 }: Props) => {
   const context: Age66Context = { age60, age65, you, plan };
+  const comparison = plan.hasSpecialPension
+    ? firstPillarComparison(specialPension, you, plan, age65, answers)
+    : null;
+  const atPensionAge = comparison?.atPa;
+  const pensionAgeRise = atPensionAge ? atPensionAge.oldAge - (comparison?.oldAge ?? 0) : 0;
   const startAges = [
     fundStartOf('secondPillar', answers, context),
     fundStartOf('thirdPillar', answers, context),
@@ -82,6 +98,28 @@ export const Age66Step = ({
           <FormattedMessage id="futureMe.age66.title" values={{ state: titleState }} />
         </h2>
       </ChapterHead>
+      {comparison && atPensionAge && (
+        <FirstPillarChoice
+          idPrefix="future-me-first-pillar-at-pension-age"
+          title={<FormattedMessage id="futureMe.firstPillarChoice.atPensionAge.title" />}
+          intro={
+            <FormattedMessage
+              id="futureMe.firstPillarChoice.atPensionAge.intro"
+              values={{
+                age: atPensionAge.age,
+                year: plan.birthYear + atPensionAge.age,
+                hasRise: pensionAgeRise >= MIN_NOTICEABLE_RISE,
+                rise: euro(pensionAgeRise),
+              }}
+            />
+          }
+          special={comparison.special}
+          oldAge={atPensionAge.oldAge}
+          larger={atPensionAge.larger}
+          chosen={chosenFirstPillar(answers.firstPillarChoicePa, atPensionAge)}
+          onChange={(firstPillarChoicePa) => onChange({ ...answers, firstPillarChoicePa })}
+        />
+      )}
       <Age66Pillar
         pillar="secondPillar"
         answers={answers}

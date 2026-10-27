@@ -29,6 +29,7 @@ describe('age66Answers', () => {
       thirdPillarFrom: '',
       secondPillarContract: 'yearly',
       thirdPillarContract: 'yearly',
+      firstPillarChoicePa: null,
     });
   });
 

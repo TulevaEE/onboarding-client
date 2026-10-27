@@ -1,5 +1,11 @@
 import { PayoutChoice, payoutAge } from './age60Answers';
-import { DEFERRAL_INCREASE, EARLY_DECREASE, retirementYears, workAccrual } from './engine/pension';
+import {
+  DEFERRAL_INCREASE,
+  EARLY_DECREASE,
+  FirstPillarChoice,
+  retirementYears,
+  workAccrual,
+} from './engine/pension';
 import { StepPlanInput } from './steps';
 import {
   amountOf,
@@ -28,6 +34,7 @@ export interface Age65Answers {
   years: number;
   secondPillar: PayoutChoice;
   thirdPillar: PayoutChoice;
+  firstPillarChoice: FirstPillarChoice | null;
 }
 
 export const initialAge65 = (): Age65Answers => ({
@@ -39,6 +46,7 @@ export const initialAge65 = (): Age65Answers => ({
   years: 1,
   secondPillar: 'grow',
   thirdPillar: 'grow',
+  firstPillarChoice: null,
 });
 
 export const withMode = (answers: Age65Answers, mode: PensionMode): Age65Answers => ({
