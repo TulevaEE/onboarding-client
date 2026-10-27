@@ -124,6 +124,38 @@ describe('When a user is logging in', () => {
     expect(history.location.state).toEqual({ justLoggedIn: true });
   });
 
+  test('what the page around the login puts under the login form shows only while no login is in progress', async () => {
+    smartIdAuthenticationBackend(server, { language: 'en' });
+    cleanup();
+    history = createMemoryHistory({ initialEntries: [loginPath] });
+    renderWrapped(
+      <Route path={loginPath}>
+        <LoginPage>
+          <button type="button">Something of the page around the login</button>
+        </LoginPage>
+      </Route>,
+      history as any,
+      createDefaultStore(history as any),
+    );
+    const somethingOfThePage = () =>
+      screen.queryByRole('button', { name: 'Something of the page around the login' });
+
+    expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+    expect(somethingOfThePage()).toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: /^Log in$/ }));
+
+    expect(
+      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
+    ).toBeInTheDocument();
+    expect(somethingOfThePage()).not.toBeInTheDocument();
+
+    userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(await screen.findByRole('button', { name: /^Log in$/ })).toBeInTheDocument();
+    expect(somethingOfThePage()).toBeInTheDocument();
+  });
+
   test('the QR code takes the place of the Smart-ID tab content, under the same title and tabs', async () => {
     smartIdAuthenticationBackend(server, { language: 'en' });
     userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));

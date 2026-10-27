@@ -1,5 +1,4 @@
 import React from 'react';
-import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   act,
@@ -35,15 +34,12 @@ import { GET_USER_SUCCESS, smartIdCallbackPath } from '../login/constants';
 import { SmartIdCallbackPage } from '../login/smartId/SmartIdCallbackPage';
 import { replaceWindowLocationAssign } from '../../test/windowLocationAssign';
 import { refuseLocalStorageChangesTo } from '../../test/refuseLocalStorageChanges';
-import {
-  cancelMobileAuthentication,
-  logOut,
-  resumePendingSmartIdAuthentication,
-} from '../login/actions';
+import { cancelMobileAuthentication, resumePendingSmartIdAuthentication } from '../login/actions';
 // eslint-disable-next-line import/no-named-as-default
 import LoginPage, { loginPath } from '../login/LoginPage';
 import { ConnectPage } from './ConnectPage';
-import { connectPath } from './connectPath';
+import { ConnectLoginPage } from './ConnectLoginPage';
+import { connectLoginPath, connectPath } from './connectPath';
 
 jest.unmock('react-intl');
 
@@ -77,7 +73,8 @@ describe('When an app asks to read a person’s Tuleva data', () => {
       <Switch>
         <Route exact path={smartIdCallbackPath} component={SmartIdCallbackPage} />
         <Route path={loginPath} component={LoginPage} />
-        <Route path={connectPath} component={ConnectPage} />
+        <Route exact path={connectPath} component={ConnectPage} />
+        <Route exact path={connectLoginPath} component={ConnectLoginPage} />
         <Route path="/account" render={() => <h1>Mock account page</h1>} />
       </Switch>,
       history as any,
@@ -170,6 +167,7 @@ describe('When an app asks to read a person’s Tuleva data', () => {
       openTheConnectLink();
 
       expect(await findTheLoginHeading()).toBeInTheDocument();
+      expect(history.location.pathname).toBe('/connect/a-request-id/login');
       expect(screen.getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
         'Smart-ID',
         'Mobile-ID',
@@ -242,6 +240,16 @@ describe('When an app asks to read a person’s Tuleva data', () => {
     expect(screen.getByRole('button', { name: 'Ei luba' })).toBeInTheDocument();
   });
 
+  test('a person who opens the request’s login without coming from the request still lands on the consent after logging in', async () => {
+    connectBackend(server);
+
+    openTheApp('/connect/a-request-id/login');
+    expect(await findTheLoginHeading()).toBeInTheDocument();
+    await logInWithSmartId();
+
+    expect(await findTheConsent()).toBeInTheDocument();
+  });
+
   test('someone already logged in logs in again, so the app gets access only through a fresh login', async () => {
     connectBackend(server);
     getAuthentication().update(anAuthenticationManager('an access token from an earlier login'));
@@ -256,21 +264,128 @@ describe('When an app asks to read a person’s Tuleva data', () => {
     expect(await findTheConsent()).toBeInTheDocument();
   });
 
-  test('a Smart-ID login that comes back in a new tab of this browser lands on the consent without a second login', async () => {
-    connectBackend(server);
-    openTheConnectLink();
-    expect(await findTheLoginHeading()).toBeInTheDocument();
-    smartId.startSession();
+  describe('on a phone', () => {
+    const desktopUserAgent = navigator.userAgent;
 
-    cleanup();
-    sessionStorage.clear();
-    smartId.resolvePolling();
-    openTheApp(
-      `${smartIdCallbackPath}?value=a-callback-value&sessionSecretDigest=a-digest&userChallengeVerifier=a-verifier`,
+    beforeEach(() =>
+      Object.defineProperty(navigator, 'userAgent', {
+        value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15',
+        configurable: true,
+      }),
+    );
+    afterEach(() =>
+      Object.defineProperty(navigator, 'userAgent', {
+        value: desktopUserAgent,
+        configurable: true,
+      }),
     );
 
-    expect(await findTheConsent()).toBeInTheDocument();
-    expect(history.location.pathname).toBe('/connect/a-request-id');
+    const startTheLoginInTheSmartIdApp = async () => {
+      userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
+      await waitFor(() => expect(locationAssign).toHaveBeenCalled());
+    };
+
+    const comeBackFromTheSmartIdAppInANewTab = () => {
+      store.dispatch(cancelMobileAuthentication());
+      cleanup();
+      sessionStorage.clear();
+      openTheApp(smartId.callbackAddress());
+    };
+
+    const comeBackFromTheSmartIdAppInThisTab = (backend = smartId) => {
+      cleanup();
+      openTheApp(backend.callbackAddress());
+    };
+
+    test('cancelling in the Smart-ID app brings the person back to the request’s login, where Cancel still tells the app no', async () => {
+      connectBackend(server);
+      openTheConnectLink();
+      await startTheLoginInTheSmartIdApp();
+
+      smartId.failPollingWith('smart.id.user.refused');
+      comeBackFromTheSmartIdAppInThisTab();
+
+      expect(await findTheLoginHeading()).toBeInTheDocument();
+      userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+
+      await waitFor(() =>
+        expect(locationAssign).toHaveBeenCalledWith(connectDenialResponse.redirectUri),
+      );
+    });
+
+    test('trying again after the Smart-ID return failed waits on the request’s login, which keeps its Cancel once that login is stopped', async () => {
+      connectBackend(server);
+      const smartIdRejectingTheCallback = smartIdAuthenticationBackend(server, {
+        language: 'en',
+        rejectCallback: true,
+      });
+      openTheConnectLink();
+      await startTheLoginInTheSmartIdApp();
+      comeBackFromTheSmartIdAppInThisTab(smartIdRejectingTheCallback);
+
+      userEvent.click(await screen.findByRole('link', { name: 'Try again' }));
+      await waitFor(() => expect(locationAssign).toHaveBeenCalledTimes(2));
+      userEvent.click(
+        within(await screen.findByRole('region', { name: 'Smart-ID' })).getByRole('button', {
+          name: 'Cancel',
+        }),
+      );
+
+      expect(await findTheLoginHeading()).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument();
+    });
+
+    const theAddressOnceThePageTookTheCallbackOutOfIt = (address: string) => {
+      const [pathname, search] = address.split('?');
+      const parameters = new URLSearchParams(search);
+      ['value', 'sessionSecretDigest', 'userChallengeVerifier'].forEach((name) =>
+        parameters.delete(name),
+      );
+      return `${pathname}?${parameters}`;
+    };
+
+    test('a Smart-ID login for the request that comes back in a new tab lands on the consent without a second login', async () => {
+      connectBackend(server);
+      openTheConnectLink();
+      await startTheLoginInTheSmartIdApp();
+
+      smartId.resolvePolling();
+      comeBackFromTheSmartIdAppInANewTab();
+
+      expect(await findTheConsent()).toBeInTheDocument();
+      expect(history.location.pathname).toBe('/connect/a-request-id');
+    });
+
+    test('reloading the tab the Smart-ID app opened while the login completes still lands on the consent', async () => {
+      connectBackend(server);
+      openTheConnectLink();
+      await startTheLoginInTheSmartIdApp();
+      comeBackFromTheSmartIdAppInANewTab();
+      await waitFor(() => expect(smartId.acceptedCallbacks).toBe(1));
+      await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+
+      cleanup();
+      smartId.resolvePolling();
+      openTheApp(theAddressOnceThePageTookTheCallbackOutOfIt(smartId.callbackAddress()));
+
+      expect(await findTheConsent()).toBeInTheDocument();
+      expect(history.location.pathname).toBe('/connect/a-request-id');
+    });
+
+    test('a login page reloaded while the person confirms in the Smart-ID app still lands on the consent', async () => {
+      connectBackend(server);
+      openTheConnectLink();
+      await startTheLoginInTheSmartIdApp();
+      const theLoginPage = { pathname: history.location.pathname, state: history.location.state };
+
+      cleanup();
+      openTheApp(theLoginPage);
+      store.dispatch(resumePendingSmartIdAuthentication() as any);
+      smartId.resolvePolling();
+
+      expect(await findTheConsent()).toBeInTheDocument();
+      expect(history.location.pathname).toBe('/connect/a-request-id');
+    });
   });
 
   test.each(['not json', '{"a-request-id": {"startedAt": "yesterday"}}'])(
@@ -283,31 +398,6 @@ describe('When an app asks to read a person’s Tuleva data', () => {
       openTheConnectLink();
 
       expect(await findTheLoginHeading()).toBeInTheDocument();
-    },
-  );
-
-  test.each([
-    ['the consent was shown', () => {}],
-    ['the person left the consent unanswered', () => act(() => history.push('/account'))],
-  ])(
-    'a login that comes back in a new tab after %s goes to the default page',
-    async (_, afterTheConsent) => {
-      connectBackend(server);
-      openTheConnectLink();
-      await logInWithSmartId();
-      expect(await findTheConsent()).toBeInTheDocument();
-      afterTheConsent();
-
-      cleanup();
-      sessionStorage.clear();
-      smartId.startSession();
-      openTheApp(
-        `${smartIdCallbackPath}?value=a-callback-value&sessionSecretDigest=a-digest&userChallengeVerifier=a-verifier`,
-      );
-
-      expect(
-        await screen.findByRole('heading', { name: 'Mock account page' }, { timeout: 5000 }),
-      ).toBeInTheDocument();
     },
   );
 
@@ -415,105 +505,6 @@ describe('When an app asks to read a person’s Tuleva data', () => {
     expect(await findTheConsent()).toBeInTheDocument();
   });
 
-  const startASmartIdLogin = async () => {
-    userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
-    expect(
-      await screen.findByRole('img', { name: /^Scan with the Smart.ID app$/ }),
-    ).toBeInTheDocument();
-  };
-
-  const startAMobileIdLogin = async () => {
-    mobileIdAuthenticationBackend(server, { challengeCode: '4321' });
-    userEvent.click(await screen.findByRole('tab', { name: 'Mobile-ID' }));
-    userEvent.type(await screen.findByPlaceholderText(/Identity code/gi), '38001085718');
-    userEvent.type(screen.getByPlaceholderText(/Phone number/gi), '+37255512345');
-    userEvent.click(screen.getByRole('button', { name: 'Log in' }));
-    expect(await screen.findByText('4321')).toBeInTheDocument();
-  };
-
-  const startAnIdCardLogin = async () => {
-    webEidAuthenticationBackend(server, { issueAccessToken: aLoginMadeNow });
-    userEvent.click(await screen.findByRole('tab', { name: 'ID-card' }));
-    userEvent.click(await screen.findByRole('button', { name: /^Log in$/ }));
-    expect(await screen.findByRole('heading', { name: 'Mock account page' })).toBeInTheDocument();
-  };
-
-  const resumeASmartIdLoginOnPageLoad = async () => {
-    sessionStorage.setItem(
-      'pendingSmartIdAuthentication',
-      JSON.stringify({ authenticationHash: 'a-pending-hash', startedAt: Date.now() }),
-    );
-    store.dispatch(resumePendingSmartIdAuthentication() as any);
-  };
-
-  test.each([
-    ['Smart-ID', startASmartIdLogin],
-    ['Mobile-ID', startAMobileIdLogin],
-    ['ID-card', startAnIdCardLogin],
-    ['resumed Smart-ID', resumeASmartIdLoginOnPageLoad],
-  ])(
-    'a %s login started from the ordinary login page stops an abandoned connect link from steering a login that comes back in a new tab',
-    async (_, startTheLogin) => {
-      connectBackend(server);
-      openTheConnectLink();
-      expect(await findTheLoginHeading()).toBeInTheDocument();
-
-      cleanup();
-      sessionStorage.clear();
-      openTheApp('/login');
-      await startTheLogin();
-      store.dispatch(cancelMobileAuthentication());
-
-      cleanup();
-      sessionStorage.clear();
-      const smartIdOfTheNewTab = smartIdAuthenticationBackend(server, {
-        language: 'en',
-        issueAccessToken: aLoginMadeNow,
-      });
-      smartIdOfTheNewTab.startSession();
-      smartIdOfTheNewTab.resolvePolling();
-      openTheApp(
-        `${smartIdCallbackPath}?value=a-callback-value&sessionSecretDigest=a-digest&userChallengeVerifier=a-verifier`,
-      );
-
-      expect(
-        await screen.findByRole('heading', { name: 'Mock account page' }, { timeout: 5000 }),
-      ).toBeInTheDocument();
-    },
-  );
-
-  test('a login started for an older request that comes back in a new tab goes to that request, not to a newer one', async () => {
-    connectBackend(server);
-    openTheApp('/connect/request-a');
-    expect(await findTheLoginHeading()).toBeInTheDocument();
-    await act(() => new Promise((resolve) => setTimeout(resolve, 5)));
-    cleanup();
-    sessionStorage.clear();
-    openTheApp('/connect/request-b');
-    expect(await findTheLoginHeading()).toBeInTheDocument();
-
-    cleanup();
-    sessionStorage.clear();
-    openTheApp({ pathname: loginPath, state: { from: '/connect/request-a' } });
-    await startASmartIdLogin();
-    store.dispatch(cancelMobileAuthentication());
-
-    cleanup();
-    sessionStorage.clear();
-    const smartIdOfTheNewTab = smartIdAuthenticationBackend(server, {
-      language: 'en',
-      issueAccessToken: aLoginMadeNow,
-    });
-    smartIdOfTheNewTab.startSession();
-    smartIdOfTheNewTab.resolvePolling();
-    openTheApp(
-      `${smartIdCallbackPath}?value=a-callback-value&sessionSecretDigest=a-digest&userChallengeVerifier=a-verifier`,
-    );
-
-    expect(await findTheConsent()).toBeInTheDocument();
-    expect(history.location.pathname).toBe('/connect/request-a');
-  });
-
   test('two connect requests started in different tabs each keep their own login in flight', async () => {
     connectBackend(server);
     openTheApp('/connect/a-request-id');
@@ -529,27 +520,6 @@ describe('When an app asks to read a person’s Tuleva data', () => {
     openTheApp('/connect/a-request-id');
 
     expect(await findTheConsent()).toBeInTheDocument();
-  });
-
-  test('a login for a request whose time is already up does not steer a login that comes back in a new tab', async () => {
-    connectBackend(server, {
-      createdAt: new Date(Date.now() - 20 * 60 * 1000).toISOString(),
-      expiresAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
-    });
-    openTheConnectLink();
-    expect(await findTheLoginHeading()).toBeInTheDocument();
-    smartId.startSession();
-
-    cleanup();
-    sessionStorage.clear();
-    smartId.resolvePolling();
-    openTheApp(
-      `${smartIdCallbackPath}?value=a-callback-value&sessionSecretDigest=a-digest&userChallengeVerifier=a-verifier`,
-    );
-
-    expect(
-      await screen.findByRole('heading', { name: 'Mock account page' }, { timeout: 5000 }),
-    ).toBeInTheDocument();
   });
 
   test('a Smart-ID login still pending in this tab is stopped before the fresh login, so it cannot log anyone in afterwards', async () => {
@@ -777,7 +747,7 @@ describe('When an app asks to read a person’s Tuleva data', () => {
     userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(somethingWentWrong);
-    expect(history.location.pathname).toBe(loginPath);
+    expect(history.location.pathname).toBe('/connect/a-request-id/login');
     expect(locationAssign).not.toHaveBeenCalled();
 
     userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
@@ -839,19 +809,6 @@ describe('When an app asks to read a person’s Tuleva data', () => {
     await waitFor(() =>
       expect(locationAssign).toHaveBeenCalledWith(connectApprovalResponse.redirectUri),
     );
-  });
-
-  test('a browser that refuses to forget the connect logins still logs the person out', async () => {
-    server.use(rest.get('http://localhost/v1/logout', (req, res, ctx) => res(ctx.status(200))));
-    connectBackend(server);
-    openTheConnectLink();
-    await logInWithSmartId();
-    await findTheConsent();
-    refuseLocalStorageChangesTo('connectLoginsInFlight', 'removeItem');
-
-    await store.dispatch(logOut() as any);
-
-    expect(getAuthentication().isAuthenticated()).toBe(false);
   });
 
   test('the page shows it is loading while it checks the link', async () => {
