@@ -15,7 +15,6 @@ import {
   Conversion,
   Fund,
   MandateDeadlines,
-  RejoinApplication,
   SecondPillarContributions,
   SourceFund,
 } from '../../../common/apiModels';
