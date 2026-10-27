@@ -100,13 +100,7 @@ export const Age66Step = ({
       )}
       {secondLock && (
         <p className="payout-note">
-          <FormattedMessage
-            id={
-              secondLock === 'none'
-                ? 'futureMe.age66.lock.none'
-                : `futureMe.age66.lock.${secondLock}`
-            }
-          />{' '}
+          <FormattedMessage id={`futureMe.age66.lock.${secondLock}`} />{' '}
           {secondLock === 'none' ? (
             <button type="button" className={linkButton} onClick={onEditYou}>
               <FormattedMessage id="futureMe.age66.lock.changeAmount" />
