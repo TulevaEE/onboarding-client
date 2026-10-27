@@ -362,6 +362,12 @@
   "account.status.choice.pillar.second.season.pendingDecrease.line2": "Sel aastal <link>võitsid tulumaksult</link> <amount>{taxWin}</amount>, <b>valikut saad muuta kuni {deadlineUntil}</b>",
   "account.status.choice.pillar.second.season.pendingDecrease.line2.noTaxWin": "<b>Valikut saad muuta kuni {deadlineUntil}</b>",
   "account.status.choice.pillar.second.rejoinPending": "Liitusid uuesti II sambaga. Sissemaksed algavad {date}.",
+  "account.status.choice.pillar.second.notContributing.line1": "Sa ei kogu II sambas ja sissemakseid ei tehta.",
+  "account.status.choice.pillar.second.notContributing.line2.fundChoiceOnRecord": "Sinu fondivalik jääb registrisse, aga sissemaksed algavad uuesti alles siis, kui esitad taasliitumise avalduse.",
+  "account.status.choice.pillar.second.notContributing.line2.noFundChoice": "Sissemaksed algavad uuesti alles siis, kui esitad taasliitumise avalduse.",
+  "account.status.choice.pillar.second.notContributing.line2.rejoinNotYetPermitted": "Taasliituda saad viie aasta möödumisel sissemaksete lõppemisest.",
+  "account.status.choice.pillar.second.notContributing.line2.rejoinPossibleFrom": "Taasliituda saad alates {date}.",
+  "account.status.choice.pillar.second.notContributing.action": "Liitun uuesti",
 
   "account.status.choice.pillar.third": "III sammas",
   "account.status.choice.pillar.third.missing.action": "Avan III samba",

@@ -8,6 +8,7 @@ import {
   useFundPensionStatus,
   useMandateDeadlines,
   usePendingApplications,
+  useRejoinPermission,
 } from '../../../common/apiHooks';
 import {
   Application,
@@ -15,6 +16,7 @@ import {
   Fund,
   MandateDeadlines,
   RejoinApplication,
+  SecondPillarContributions,
   SourceFund,
 } from '../../../common/apiModels';
 import { State } from '../../../../types';
@@ -26,8 +28,10 @@ import { Shimmer } from '../../../common/shimmer/Shimmer';
 import {
   formatDate,
   formatDateFrom,
+  formatDateFromWithYear,
   formatDateOnWithYear,
   formatDateUntil,
+  todayInTallinn,
 } from '../../../common/dateFormatter';
 import { isDateSameOrBeforeCancellationDeadline } from '../../ApplicationSection/ApplicationFunctions';
 import {
@@ -47,6 +51,7 @@ export interface Props {
   sourceFunds: SourceFund[];
   targetFunds: Fund[];
   secondPillarActive: boolean;
+  secondPillarContributions?: SecondPillarContributions | null;
   currentPaymentRate: number;
   pendingPaymentRate: number;
   activeFundIsin: string | undefined;
@@ -73,6 +78,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   sourceFunds,
   targetFunds,
   secondPillarActive,
+  secondPillarContributions,
   currentPaymentRate,
   pendingPaymentRate,
   activeFundIsin,
@@ -103,16 +109,29 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     nudgeKey,
   };
 
+  const contributing = secondPillarContributions?.contributing;
+  const mayHaveFiledToRejoin = !secondPillarActive || contributing !== true;
+  if (loadingApplications && mayHaveFiledToRejoin) {
+    return <SecondPillarLoading />;
+  }
+
+  const pendingRejoinApplication = applications?.find(isRejoinApplication);
+  if (pendingRejoinApplication) {
+    return <Rejoined contributionsStartDate={pendingRejoinApplication.details.fulfillmentDate} />;
+  }
+
+  const hasStoppedContributing = contributing === false;
+  const stoppedContributions = (
+    <StoppedContributions
+      restartDate={secondPillarContributions?.restartDate}
+      rejoinPossibleFrom={secondPillarContributions?.rejoinPossibleFrom}
+      hasFundChoiceOnRecord={secondPillarActive}
+      loading={loading}
+    />
+  );
+
   if (!secondPillarActive) {
-    if (loadingApplications) {
-      return <SecondPillarLoading />;
-    }
-    const pendingRejoinApplication = applications?.find(isRejoinApplication);
-    return pendingRejoinApplication ? (
-      <PendingRejoin application={pendingRejoinApplication} />
-    ) : (
-      <SecondPillarMissing {...rowProps} />
-    );
+    return hasStoppedContributing ? stoppedContributions : <SecondPillarMissing {...rowProps} />;
   }
 
   if (conversion.pendingWithdrawal) {
@@ -125,6 +144,10 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
 
   if (activeSecondPillarFundPension) {
     return <ActiveFundPension fundPension={activeSecondPillarFundPension} />;
+  }
+
+  if (hasStoppedContributing) {
+    return stoppedContributions;
   }
 
   const isFullyConvertedToTuleva = conversion.selectionComplete && conversion.transfersComplete;
@@ -477,6 +500,7 @@ const mapStateToProps = (state: State) => ({
   sourceFunds: state.exchange.sourceFunds || [],
   targetFunds: state.exchange.targetFunds || [],
   secondPillarActive: state.login.user?.secondPillarActive,
+  secondPillarContributions: state.login.user?.secondPillarContributions,
   currentPaymentRate: state.login.user?.secondPillarPaymentRates?.current ?? 2,
   pendingPaymentRate:
     state.login.user?.secondPillarPaymentRates?.pending ??
@@ -496,7 +520,7 @@ const SecondPillarLoading = () => (
   />
 );
 
-const PendingRejoin = ({ application }: { application: RejoinApplication }) => (
+const Rejoined = ({ contributionsStartDate }: { contributionsStartDate: string }) => (
   <StatusBoxRow
     status="SUCCESS"
     showAction={false}
@@ -504,11 +528,107 @@ const PendingRejoin = ({ application }: { application: RejoinApplication }) => (
     lines={[
       <FormattedMessage
         id="account.status.choice.pillar.second.rejoinPending"
-        values={{ date: formatDateOnWithYear(application.details.fulfillmentDate) }}
+        values={{ date: formatDateOnWithYear(contributionsStartDate) }}
       />,
     ]}
   />
 );
+
+const StoppedContributions = ({
+  restartDate,
+  rejoinPossibleFrom,
+  hasFundChoiceOnRecord,
+  loading,
+}: {
+  restartDate: string | null | undefined;
+  rejoinPossibleFrom: string | null | undefined;
+  hasFundChoiceOnRecord: boolean;
+  loading: boolean;
+}) =>
+  restartDate ? (
+    <Rejoined contributionsStartDate={restartDate} />
+  ) : (
+    <WayBackIn
+      rejoinPossibleFrom={rejoinPossibleFrom}
+      hasFundChoiceOnRecord={hasFundChoiceOnRecord}
+      loading={loading}
+    />
+  );
+
+const WayBackIn = ({
+  rejoinPossibleFrom,
+  hasFundChoiceOnRecord,
+  loading,
+}: {
+  rejoinPossibleFrom: string | null | undefined;
+  hasFundChoiceOnRecord: boolean;
+  loading: boolean;
+}) => {
+  const { data: rejoinPermission, isInitialLoading: askingWhetherPermitted } =
+    useRejoinPermission();
+  const mayRejoin = rejoinPermission?.permitted !== false;
+
+  return (
+    <StatusBoxRow
+      status="WARNING"
+      showAction={!loading && !askingWhetherPermitted && mayRejoin}
+      name={<FormattedMessage id="account.status.choice.pillar.second" />}
+      lines={[
+        <FormattedMessage id="account.status.choice.pillar.second.notContributing.line1" />,
+        askingWhetherPermitted ? (
+          <Shimmer height={24} />
+        ) : (
+          <span className="text-body-secondary">
+            <WayBackInExplanation
+              mayRejoin={mayRejoin}
+              rejoinPossibleFrom={rejoinPossibleFrom}
+              hasFundChoiceOnRecord={hasFundChoiceOnRecord}
+            />
+          </span>
+        ),
+      ]}
+    >
+      <Link to="/2nd-pillar-rejoin" className="btn btn-primary">
+        <FormattedMessage id="account.status.choice.pillar.second.notContributing.action" />
+      </Link>
+    </StatusBoxRow>
+  );
+};
+
+const WayBackInExplanation = ({
+  mayRejoin,
+  rejoinPossibleFrom,
+  hasFundChoiceOnRecord,
+}: {
+  mayRejoin: boolean;
+  rejoinPossibleFrom: string | null | undefined;
+  hasFundChoiceOnRecord: boolean;
+}) => {
+  if (mayRejoin) {
+    return (
+      <FormattedMessage
+        id={
+          hasFundChoiceOnRecord
+            ? 'account.status.choice.pillar.second.notContributing.line2.fundChoiceOnRecord'
+            : 'account.status.choice.pillar.second.notContributing.line2.noFundChoice'
+        }
+      />
+    );
+  }
+  if (rejoinPossibleFrom && isAfterToday(rejoinPossibleFrom)) {
+    return (
+      <FormattedMessage
+        id="account.status.choice.pillar.second.notContributing.line2.rejoinPossibleFrom"
+        values={{ date: formatDateFromWithYear(rejoinPossibleFrom) }}
+      />
+    );
+  }
+  return (
+    <FormattedMessage id="account.status.choice.pillar.second.notContributing.line2.rejoinNotYetPermitted" />
+  );
+};
+
+const isAfterToday = (day: string) => day > todayInTallinn();
 
 const SecondPillarMissing = ({ loading, nudgeKey }: RowProps) => (
   <StatusBoxRow

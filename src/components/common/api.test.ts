@@ -22,6 +22,7 @@ import {
   getMobileIdTokens,
   getPaymentLink,
   getPendingApplications,
+  getRejoinPermission,
   getSavingsFundBalance,
   getSmartIdQrCodeLink,
   getSmartIdSignatureChallengeCode,
@@ -65,6 +66,7 @@ import { writeMockModeConfiguration } from './requestMocker';
 import { mandateDeadlinesProfiles } from './requestMocker/profiles/mandateDeadlines';
 import { nudgeProfiles } from './requestMocker/profiles/nudge';
 import { paymentRateRedirectProfiles } from './requestMocker/profiles/paymentRateRedirect';
+import { rejoinPermissionProfiles } from './requestMocker/profiles/rejoinPermission';
 
 import * as authenticationManager from './authenticationManager';
 import Mock = jest.Mock;
@@ -1376,6 +1378,33 @@ describe('API calls', () => {
 
       expect(decision).toBe(paymentRateRedirectProfiles.TREATMENT);
       expect(mockHttp.postWithAuthentication).not.toHaveBeenCalled();
+      writeMockModeConfiguration(null);
+    });
+  });
+
+  describe('getRejoinPermission', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      mockHttp.getWithAuthentication.mockResolvedValue({ permitted: true });
+    });
+
+    it('asks the backend whether the person may rejoin the II pillar', async () => {
+      const permission = await getRejoinPermission();
+
+      expect(permission).toEqual({ permitted: true });
+      expect(mockHttp.getWithAuthentication).toHaveBeenCalledWith(
+        '/v1/rejoin-permission',
+        undefined,
+      );
+    });
+
+    it('returns the selected mock mode profile without calling the backend', async () => {
+      writeMockModeConfiguration({ rejoinPermission: 'NOT_PERMITTED' });
+
+      const permission = await getRejoinPermission();
+
+      expect(permission).toBe(rejoinPermissionProfiles.NOT_PERMITTED);
+      expect(mockHttp.getWithAuthentication).not.toHaveBeenCalled();
       writeMockModeConfiguration(null);
     });
   });

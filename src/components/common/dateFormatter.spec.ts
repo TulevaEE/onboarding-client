@@ -1,6 +1,7 @@
 import moment from 'moment';
 import {
   formatDateFrom,
+  formatDateFromWithYear,
   formatDateOn,
   formatDateOnWithYear,
   formatDateRange,
@@ -90,6 +91,21 @@ describe('DateFormatter functions', () => {
 
       expect(formatDateOnWithYear('2027-11-01')).toBe('November\u00a01,\u00a02027');
       expect(formatDateOnWithYear('2026-12-31T22:30:00Z')).toBe('January\u00a01,\u00a02027');
+    });
+
+    it('inflects the Estonian month for "from" and keeps the year with the day', () => {
+      moment.locale('et');
+
+      expect(formatDateFromWithYear('2028-09-01')).toBe('1.\u00a0septembrist\u00a02028');
+      expect(formatDateFromWithYear('2027-05-01')).toBe('1.\u00a0maist\u00a02027');
+      expect(formatDateFromWithYear('2026-12-31T22:30:00Z')).toBe('1.\u00a0jaanuarist\u00a02027');
+    });
+
+    it('keeps the "from" date with its year in English, on the day it is in Tallinn', () => {
+      moment.locale('en');
+
+      expect(formatDateFromWithYear('2028-09-01')).toBe('September\u00a01,\u00a02028');
+      expect(formatDateFromWithYear('2026-12-31T22:30:00Z')).toBe('January\u00a01,\u00a02027');
     });
 
     it('keeps the plain date in English', () => {

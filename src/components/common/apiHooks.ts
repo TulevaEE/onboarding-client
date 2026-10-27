@@ -46,6 +46,7 @@ import {
   getNudge,
   getPendingApplications,
   getPendingOnboardings,
+  getRejoinPermission,
   getSavingsFundBalance,
   getSavingsFundBankAccounts,
   getSavingsFundOnboardingStatus,
@@ -78,6 +79,7 @@ import {
   MandateDeadlines,
   MemberCapitalListing,
   PendingOnboarding,
+  RejoinPermission,
   Role,
   SecondPillarAssets,
   SwitchRoleCommand,
@@ -206,6 +208,14 @@ export function useWithdrawalsEligibility(): UseQueryResult<WithdrawalsEligibili
 
 export function useFundPensionStatus(): UseQueryResult<FundPensionStatus> {
   return useQuery({ queryKey: ['fundPensionStatus'], queryFn: () => getFundPensionStatus() });
+}
+
+export function useRejoinPermission(): UseQueryResult<RejoinPermission> {
+  return useQuery({
+    queryKey: ['rejoinPermission'],
+    queryFn: () => getRejoinPermission(),
+    retry: false,
+  });
 }
 
 export function useNudge(context: NudgeContext): UseQueryResult<NudgeDecision> {

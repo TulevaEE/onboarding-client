@@ -1,5 +1,13 @@
 import { MockModeConfiguration } from './types';
 
+const leaverAccountPage: Partial<MockModeConfiguration> = {
+  conversion: 'COMPLETE_ONLY_THIRD_PILLAR',
+  contributions: 'THIRD_PILLAR_MONTHLY_MAXED',
+  sourceFunds: 'ONLY_THIRD_PILLAR',
+  savingsFundOnboardingStatus: 'NOT_STARTED',
+  savingsFundBalance: 'NO_ACCOUNT',
+};
+
 export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
   // One saver climbing the conversion ladder, one rung at a time: II pillar to Tuleva,
   // II rate to 6%, III pillar to Tuleva, savings fund on top. Only the rung being
@@ -212,16 +220,29 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     user: 'LEFT_SECOND_PILLAR_PAYMENT_RATE_2',
     sourceFunds: 'BOTH_PILLARS',
   },
+  // The account page (/account) of a leaver who has not filed to rejoin, as the register reports
+  // most of them: the fund choice is on record, so the II pillar still reads as active. The row
+  // says no contributions are made and offers the way back in, instead of fees and the rate.
+  SECOND_PILLAR_NOT_CONTRIBUTING: {
+    ...leaverAccountPage,
+    user: 'LEFT_SECOND_PILLAR_FUND_ON_RECORD',
+    pendingApplications: 'NONE',
+    rejoinPermission: 'PERMITTED',
+  },
+  // A leaver whose contributions ended in 2023, so within five years: the row says the day they
+  // can rejoin from and offers no way back in yet.
+  SECOND_PILLAR_NOT_CONTRIBUTING_REJOIN_NOT_YET_PERMITTED: {
+    ...leaverAccountPage,
+    user: 'LEFT_SECOND_PILLAR_FUND_ON_RECORD_IN_2023',
+    pendingApplications: 'NONE',
+    rejoinPermission: 'NOT_PERMITTED',
+  },
   // The account page (/account) of a leaver who has filed to rejoin: the II pillar row says
   // when contributions start, and the pending application can still be cancelled.
   SECOND_PILLAR_REJOIN_PENDING: {
+    ...leaverAccountPage,
     user: 'LEFT_SECOND_PILLAR_PAYMENT_RATE_2',
-    conversion: 'COMPLETE_ONLY_THIRD_PILLAR',
-    contributions: 'THIRD_PILLAR_MONTHLY_MAXED',
-    sourceFunds: 'ONLY_THIRD_PILLAR',
     pendingApplications: 'SECOND_PILLAR_REJOIN',
-    savingsFundOnboardingStatus: 'NOT_STARTED',
-    savingsFundBalance: 'NO_ACCOUNT',
   },
 
   WITHDRAWALS_PENSIONER_60_ALL_PILLARS: {

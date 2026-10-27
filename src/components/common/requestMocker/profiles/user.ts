@@ -1,5 +1,17 @@
 import { mockUser } from '../../../../test/backend-responses';
-import { User } from '../../apiModels';
+import { SecondPillarContributions, User } from '../../apiModels';
+
+const contributionsEndedIn2021: SecondPillarContributions = {
+  contributing: false,
+  restartDate: null,
+  rejoinPossibleFrom: '2026-09-01',
+};
+
+const contributionsEndedIn2023: SecondPillarContributions = {
+  contributing: false,
+  restartDate: null,
+  rejoinPossibleFrom: '2028-09-01',
+};
 
 export const userMockProfiles: Record<string, User> = {
   NO_SECOND_NO_THIRD_PILLAR: {
@@ -101,12 +113,28 @@ export const userMockProfiles: Record<string, User> = {
   LEFT_SECOND_PILLAR: {
     ...mockUser,
     secondPillarActive: false,
+    secondPillarContributions: contributionsEndedIn2021,
     secondPillarPaymentRates: { current: 6, pending: null },
   },
   // The rate most leavers still have on file, as they left before 4% and 6% existed.
   LEFT_SECOND_PILLAR_PAYMENT_RATE_2: {
     ...mockUser,
     secondPillarActive: false,
+    secondPillarContributions: contributionsEndedIn2021,
+    secondPillarPaymentRates: { current: 2, pending: null },
+  },
+  // A leaver as the register reports most of them: the fund choice stays on record, so the
+  // II pillar reads as active although no contributions are made.
+  LEFT_SECOND_PILLAR_FUND_ON_RECORD: {
+    ...mockUser,
+    secondPillarActive: true,
+    secondPillarContributions: contributionsEndedIn2021,
+    secondPillarPaymentRates: { current: 2, pending: null },
+  },
+  LEFT_SECOND_PILLAR_FUND_ON_RECORD_IN_2023: {
+    ...mockUser,
+    secondPillarActive: true,
+    secondPillarContributions: contributionsEndedIn2023,
     secondPillarPaymentRates: { current: 2, pending: null },
   },
   PAST_RETIREMENT_AGE: {
