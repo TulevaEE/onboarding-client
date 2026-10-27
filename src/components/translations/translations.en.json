@@ -589,7 +589,7 @@
   "thirdPillarSuccess.button.account": "My account",
   "thirdPillarSuccess.button": "Learn more",
   "thirdPillarSuccess.ourFund": "Tuleva World Stocks Pension Fund",
-  "thirdPillarSuccess.currentFund": "Your selected pension funds",
+  "thirdPillarSuccess.currentFund": "{count, plural, one {Your selected fund} other {Your selected funds}}",
   "thirdPillarSuccess.transfer.done": "Application submitted",
   "thirdPillarSuccess.transfer.message": "Your fund units will move to Tuleva in the coming days and will then appear in your account.",
   "thirdPillarSuccess.suggestion.lowFee.header": "You can make the same smart move with your II pillar",

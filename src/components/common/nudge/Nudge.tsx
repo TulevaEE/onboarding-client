@@ -4,7 +4,8 @@ import { useLocation } from 'react-router-dom';
 import { Notice } from './Notice';
 import { AccountHolder, accountHolderFor } from '../../flows/savingsAccount/accountHolder';
 import { TranslationKey } from '../../translations';
-import { useMe, useNudge } from '../apiHooks';
+import { useMe, useNudge, useSourceFunds } from '../apiHooks';
+import { isTulevaIsin } from '../utils';
 import { formatDateYear } from '../dateFormatter';
 import { NudgeContext, NudgeDecision, NudgeFeeComparison } from '../apiModels/nudge';
 import styles from './Nudge.module.scss';
@@ -81,6 +82,7 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({
           onCallToAction={onCallToAction}
         >
           <ComparisonFigure
+            alternatives
             left={{
               segments: [{ amount: REJOIN_EXAMPLE.fromNetSalary }],
               title: (
@@ -96,7 +98,7 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({
                 { amount: REJOIN_EXAMPLE.fromNetSalary },
                 {
                   amount: REJOIN_EXAMPLE.taxWin,
-                  gain: true,
+                  tone: 'positive',
                   label: (
                     <FormattedMessage
                       id="nudge.SECOND_PILLAR_REJOIN.taxWin"
@@ -290,7 +292,7 @@ const NudgeNotice = ({
   </Notice>
 );
 
-type Segment = { amount: number; gain?: boolean; label?: ReactNode };
+type Segment = { amount: number; tone?: 'positive' | 'negative'; label?: ReactNode };
 type ComparisonBar = { segments: Segment[]; title: ReactNode; subtitle: ReactNode };
 
 const MAXIMUM_BAR_HEIGHT = 150;
@@ -300,10 +302,14 @@ const MINIMUM_LABELLED_SEGMENT_HEIGHT = 40;
 const ComparisonFigure = ({
   left,
   right,
+  alternatives = false,
+  costs = false,
   caption,
 }: {
   left: ComparisonBar;
   right: ComparisonBar;
+  alternatives?: boolean;
+  costs?: boolean;
   caption?: ReactNode;
 }) => {
   const totalOf = (bar: ComparisonBar) =>
@@ -313,12 +319,12 @@ const ComparisonFigure = ({
     Math.max(MINIMUM_BAR_HEIGHT, (segment.amount / largest) * MAXIMUM_BAR_HEIGHT);
 
   const column = (bar: ComparisonBar) => (
-    <div className={styles.column}>
+    <div className={`${styles.column} ${costs ? styles.costs : ''}`}>
       <div className={styles.bar} style={{ height: MAXIMUM_BAR_HEIGHT }}>
-        {[...bar.segments].reverse().map((segment) => (
+        {(costs ? bar.segments : [...bar.segments].reverse()).map((segment) => (
           <div
-            key={segment.gain ? 'gain' : 'base'}
-            className={segment.gain ? styles.gain : styles.base}
+            key={segment.tone ?? 'base'}
+            className={segment.tone ? styles[segment.tone] : styles.base}
             style={{ height: heightOf(segment) }}
           >
             {heightOf(segment) >= MINIMUM_LABELLED_SEGMENT_HEIGHT &&
@@ -337,9 +343,11 @@ const ComparisonFigure = ({
       <div className={styles.columns}>
         {column(left)}
         <div className={styles.divider}>
-          <span className={styles.or}>
-            <FormattedMessage id="nudge.comparison.or" />
-          </span>
+          {alternatives && (
+            <span className={styles.or}>
+              <FormattedMessage id="nudge.comparison.or" />
+            </span>
+          )}
         </div>
         {column(right)}
       </div>
@@ -347,6 +355,8 @@ const ComparisonFigure = ({
     </figure>
   );
 };
+
+const cost = (amount: number) => (amount > 0 ? <>&minus;{amount}&nbsp;€</> : <>0&nbsp;€</>);
 
 const REJOIN_EXAMPLE = { grossSalary: 2000, fromNetSalary: 94, taxWin: 106 };
 
@@ -358,6 +368,10 @@ const FeeComparisonNudge = ({
   onCallToAction: () => void;
 }) => {
   const { currentFeePercent, currentFeeAmount, tulevaFeeAmount, savingsAmount } = feeComparison;
+  const { data: sourceFunds } = useSourceFunds();
+  const currentFundCount = (sourceFunds ?? []).filter(
+    (fund) => fund.pillar === 2 && !isTulevaIsin(fund.isin) && fund.price > 0,
+  ).length;
   return (
     <NudgeNotice
       header="thirdPillarSuccess.notice.header"
@@ -373,15 +387,21 @@ const FeeComparisonNudge = ({
       onCallToAction={onCallToAction}
     >
       <ComparisonFigure
+        costs
         left={{
-          segments: [{ amount: tulevaFeeAmount }],
-          title: <>{tulevaFeeAmount}&nbsp;€</>,
+          segments: [{ amount: tulevaFeeAmount, tone: 'positive', label: cost(tulevaFeeAmount) }],
+          title: cost(tulevaFeeAmount),
           subtitle: <FormattedMessage id="thirdPillarSuccess.ourFund" />,
         }}
         right={{
-          segments: [{ amount: currentFeeAmount }],
-          title: <>{currentFeeAmount}&nbsp;€</>,
-          subtitle: <FormattedMessage id="thirdPillarSuccess.currentFund" />,
+          segments: [{ amount: currentFeeAmount, tone: 'negative', label: cost(currentFeeAmount) }],
+          title: cost(currentFeeAmount),
+          subtitle: (
+            <FormattedMessage
+              id="thirdPillarSuccess.currentFund"
+              values={{ count: currentFundCount }}
+            />
+          ),
         }}
       />
     </NudgeNotice>

@@ -163,3 +163,60 @@ describe('second pillar rejoin nudge', () => {
     );
   });
 });
+
+describe('fee comparison nudge', () => {
+  const decision: NudgeDecision = {
+    key: 'SECOND_PILLAR_TRANSFER',
+    tag: 'nudge_second_pillar',
+    feeComparison: {
+      currentFeePercent: 0.65,
+      currentFeeAmount: 130,
+      tulevaFeeAmount: 56,
+      savingsAmount: 74,
+    },
+  };
+  const otherFund = (isin: string) => ({
+    fund: {
+      isin,
+      name: isin,
+      pillar: 2,
+      managementFeeRate: 0.0065,
+      ongoingChargesFigure: 0.0065,
+      status: 'ACTIVE',
+      fundManager: { name: 'Other' },
+    },
+    value: 1000,
+    unavailableValue: 0,
+    activeContributions: false,
+    currency: 'EUR',
+    pillar: 2,
+    contributions: 0,
+    subtractions: 0,
+    profit: 0,
+  });
+
+  test.each([
+    [[otherFund('EE0000000001')], 'Your selected fund'],
+    [[otherFund('EE0000000001'), otherFund('EE0000000002')], 'Your selected funds'],
+  ])('names the current funds in the singular or plural: %#', async (funds, label) => {
+    initializeConfiguration();
+    useTestBackendsExcept(server, ['trackedEvents']);
+    server.use(
+      rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))),
+      rest.get('http://localhost/v1/pension-account-statement', (req, res, ctx) =>
+        res(ctx.json(funds)),
+      ),
+    );
+    const history = createMemoryHistory();
+    const store = createDefaultStore(history as any);
+    login(store);
+
+    renderWrapped(
+      <NudgeView decision={decision} context="THIRD_PILLAR_PAYMENT" />,
+      history as any,
+      store,
+    );
+
+    expect(await screen.findByText(label)).toBeInTheDocument();
+  });
+});

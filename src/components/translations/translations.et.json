@@ -630,7 +630,7 @@
   "thirdPillarSuccess.button.account": "Minu konto",
   "thirdPillarSuccess.button": "Vaata lähemalt",
   "thirdPillarSuccess.ourFund": "Tuleva Maailma Aktsiate pensionifond",
-  "thirdPillarSuccess.currentFund": "Sinu valitud fondid",
+  "thirdPillarSuccess.currentFund": "{count, plural, one {Sinu valitud fond} other {Sinu valitud fondid}}",
   "thirdPillarSuccess.transfer.done": "Avaldus esitatud",
   "thirdPillarSuccess.transfer.message": "Sinu osakud liiguvad Tulevasse lähipäevil ja ilmuvad siis su kontole.",
   "thirdPillarSuccess.suggestion.lowFee.header": "Sama nutika sammu saad teha ka II sambas",

@@ -29,8 +29,33 @@
   }
 }
 
+.costs {
+  .bar {
+    order: 1;
+    justify-content: flex-start;
+
+    > :first-child {
+      border-radius: 0;
+    }
+
+    > :last-child {
+      border-radius: 0 0 4px 4px;
+    }
+  }
+
+  .baseline {
+    order: 0;
+  }
+
+  .title,
+  .subtitle {
+    order: 2;
+  }
+}
+
 .base,
-.gain {
+.positive,
+.negative {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -45,8 +70,13 @@
   color: $navy-blue;
 }
 
-.gain {
-  background-color: #008a00;
+.positive {
+  background-color: $green;
+  color: #ffffff;
+}
+
+.negative {
+  background-color: $red;
   color: #ffffff;
 }
 
