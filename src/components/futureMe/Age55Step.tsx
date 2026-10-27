@@ -129,11 +129,9 @@ export const Age55Step = ({ answers, age55, headingRef, onChange, onEditThirdPil
           );
         })}
       </fieldset>
-      {age55.payout && (
-        <p className="you-note text-pretty" role="status">
-          <PlanOutcome plan={age55.plan} age={age55.age} payout={age55.payout} />
-        </p>
-      )}
+      <p className={age55.payout ? 'you-note text-pretty' : undefined} role="status">
+        {age55.payout && <PlanOutcome plan={age55.plan} age={age55.age} payout={age55.payout} />}
+      </p>
       <details className="mt-3">
         <summary className="fw-medium">
           <FormattedMessage id="futureMe.age55.faq.fundPension.question" />

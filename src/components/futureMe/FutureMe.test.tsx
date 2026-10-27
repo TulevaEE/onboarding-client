@@ -1309,13 +1309,13 @@ describe('FutureMe', () => {
       expect(screen.getByText(/läheb tulumaksuks 10%/)).toBeInTheDocument();
     });
 
-    it('lets the money keep growing by default and shows no payout', () => {
+    it('lets the money keep growing by default and shows no payout, in a status region ready to announce one', () => {
       renderFutureMe();
 
       openAge55();
 
       expect(keepPlan()).toBeChecked();
-      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      expect(screen.getByRole('status')).toBeEmptyDOMElement();
     });
 
     it('shows what is left after tax when everything is taken out at once', () => {
