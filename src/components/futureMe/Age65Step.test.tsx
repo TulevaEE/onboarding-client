@@ -183,6 +183,17 @@ describe('Age 65 step', () => {
       ).toBeInTheDocument();
     });
 
+    it('keeps the picked end age', () => {
+      openAge65Step();
+      userEvent.click(within(workGroup()).getByRole('radio', { name: /^Töötan edasi/ }));
+
+      userEvent.selectOptions(screen.getByRole('combobox', { name: 'Töötan kuni' }), '68');
+
+      expect(screen.getByRole('combobox', { name: 'Töötan kuni' })).toHaveDisplayValue(
+        '68-aastaseni (2030)',
+      );
+    });
+
     it('says how long the saver works while deferring', () => {
       openAge65Step();
       userEvent.click(within(workGroup()).getByRole('radio', { name: /^Töötan edasi/ }));
@@ -318,6 +329,22 @@ describe('Age 65 step', () => {
 
       expect(amount).toHaveAttribute('aria-invalid', 'true');
       expect(amount).toHaveAccessibleDescription(/Sisesta summa/);
+    });
+
+    it('asks for the new third pillar amount once the field is left empty, and keeps a typed one', () => {
+      const group = screen.getByRole('group', { name: /^Kas III\ssamba sissemakse muutub\?$/ });
+      userEvent.click(within(group).getByRole('radio', { name: /^Muutub/ }));
+      const amount = screen.getByRole('spinbutton', { name: /Uus III\ssamba sissemakse/ });
+
+      userEvent.click(amount);
+      userEvent.tab();
+
+      expect(amount).toBeInvalid();
+      expect(screen.getByText('Sisesta summa (0 = lõpetan).')).toBeInTheDocument();
+
+      userEvent.type(amount, '20');
+
+      expect(amount).toHaveValue(20);
     });
 
     it('marks the regular pension age among the end ages and defaults to it', () => {
