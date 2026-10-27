@@ -51,6 +51,11 @@ import { TaxReportPage } from '../account/SavingsFundTaxReport';
 import { TransactionDetailPage } from '../account/TransactionSection/TransactionDetailPage';
 import { SecondPillarPaymentRate } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRate';
 import { SecondPillarRejoin } from '../flows/secondPillarRejoin/SecondPillarRejoin';
+import { SecondPillarRejoinSuccess } from '../flows/secondPillarRejoin/SecondPillarRejoinSuccess';
+import {
+  flowPath as secondPillarRejoinFlowPath,
+  successPath as secondPillarRejoinSuccessPath,
+} from '../flows/secondPillarRejoin/secondPillarRejoinPaths';
 import { SecondPillarPaymentRateSuccess } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRateSuccess';
 import BackToPartner from '../flows/partner/BackToPartner';
 import ThirdPillarPaymentPage from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarPaymentPage';
@@ -281,7 +286,8 @@ export class LoggedInApp extends PureComponent {
             <Route path="/transaction/:id" component={TransactionDetailPage} />
             <Route path="/2nd-pillar-contributions" component={ContributionPageSecondPillar} />
             <Route path="/3rd-pillar-contributions" component={ContributionPageThirdPillar} />
-            <Route path="/2nd-pillar-rejoin" component={SecondPillarRejoin} />
+            <Route path={secondPillarRejoinSuccessPath} component={SecondPillarRejoinSuccess} />
+            <Route path={secondPillarRejoinFlowPath} component={SecondPillarRejoin} />
             <Route
               path="/2nd-pillar-payment-rate"
               render={() => (

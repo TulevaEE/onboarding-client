@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { screen, within } from '@testing-library/react';
+import { act, screen, waitFor, within } from '@testing-library/react';
 import { QueryClient } from '@tanstack/react-query';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
@@ -156,7 +156,7 @@ describe('When an eligible person rejoins the II pillar', () => {
 
     userEvent.click(nextButton());
 
-    expect(new URLSearchParams(history.location.search).get('view')).toBe('review');
+    expect(history.location.pathname).toBe('/2nd-pillar-rejoin/review');
     expect(
       screen.getByRole('heading', { level: 1, name: 'Confirm the applications' }),
     ).toBeInTheDocument();
@@ -193,6 +193,25 @@ describe('When an eligible person rejoins the II pillar', () => {
     userEvent.click(screen.getByRole('button', { name: 'Back' }));
 
     expect(paymentRateRow()).toHaveTextContent('2% of gross salary');
+  });
+
+  test('keeps the choices when going back from the review with the browser', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+    userEvent.click(within(paymentRateRow()).getByRole('button', { name: 'Change' }));
+    userEvent.click(screen.getByRole('radio', { name: /^2% of gross salary/i }));
+
+    userEvent.click(nextButton());
+    act(() => history.goBack());
+
+    expect(history.location.pathname).toBe('/2nd-pillar-rejoin');
+    expect(paymentRateRow()).toHaveTextContent('2% of gross salary');
+  });
+
+  test('starts from the application when the review is opened without choosing first, as after a reload', async () => {
+    render('/2nd-pillar-rejoin/review');
+
+    expect(await heading()).toBeInTheDocument();
+    expect(history.location.pathname).toBe('/2nd-pillar-rejoin');
   });
 
   test('signs only after confirming the fund terms when a fund selection is filed', async () => {
@@ -240,6 +259,65 @@ describe('When an eligible person rejoins the II pillar', () => {
       /^6% of gross salary\s*Recommended\s*You contribute 6% and the state\s4%, totaling\s10%.*greatest tax benefit/i,
     );
     expect(within(paymentRateRow()).queryByLabelText('Gross salary')).not.toBeInTheDocument();
+  });
+
+  test('opens the success page at its own address, so a submitted application can be counted', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    signApplications();
+
+    expect(await successHeading()).toBeInTheDocument();
+    expect(history.location.pathname).toBe('/2nd-pillar-rejoin/success');
+  });
+
+  test('keeps the language in the address through the review and the success page, so a reload stays in English', async () => {
+    await renderAt('/2nd-pillar-rejoin?language=en');
+
+    userEvent.click(nextButton());
+
+    expect(history.location.search).toBe('?language=en');
+
+    userEvent.click(termsCheckbox());
+    userEvent.click(signButton());
+
+    expect(await successHeading()).toBeInTheDocument();
+    expect(history.location.search).toBe('?language=en');
+  });
+
+  test('keeps the language in the address when the review opened without choosing first starts over', async () => {
+    render('/2nd-pillar-rejoin/review?language=en');
+
+    expect(await heading()).toBeInTheDocument();
+    expect(history.location.search).toBe('?language=en');
+  });
+
+  test('leaves the signed review behind, so browser Back from the success page opens a fresh application', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+    signApplications();
+    expect(await successHeading()).toBeInTheDocument();
+
+    act(() => history.goBack());
+
+    expect(history.location.pathname).toBe('/2nd-pillar-rejoin');
+    expect(await heading()).toBeInTheDocument();
+  });
+
+  test('sends someone who opens the success address without signing to their account', async () => {
+    render('/2nd-pillar-rejoin/success');
+
+    await waitFor(() => expect(history.location.pathname).toBe('/account'));
+    expect(
+      screen.queryByRole('heading', { name: 'Applications submitted' }),
+    ).not.toBeInTheDocument();
+  });
+
+  test('keeps naming the page in the browser tab on the success page', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    signApplications();
+
+    expect(await successHeading()).toBeInTheDocument();
+    expect(document.title).toMatch(/^Rejoining the II\spillar – Tuleva$/);
   });
 
   test('signing the defaults summarizes what happens from May', async () => {

@@ -1,7 +1,7 @@
 import { ReactNode, useState } from 'react';
 import moment from 'moment';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
+import { Link, Redirect, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../common';
 import { getRejoinPermission } from '../../common/api';
 import {
@@ -18,18 +18,16 @@ import {
 } from '../../common/apiModels/withdrawals';
 import { isSigningWithIdCard } from '../../common/authenticationManager';
 import { TulevaSecondPillarStockFund } from '../../common/utils';
-import { dayInTallinn, formatDateYear } from '../../common/dateFormatter';
-import { SuccessNotice } from '../common/SuccessNotice/SuccessNotice';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
 import { FundChoice, PaymentRateChoice } from './RejoinChoices';
 import Checkbox from '../../common/checkbox/Checkbox';
 import { RejoinDisclaimers } from './RejoinDisclaimers';
 import { useMandateBatchSigning } from '../withdrawals/signing/useMandateBatchSigning';
 import { TranslationKey } from '../../translations';
-import { useView } from './variants';
+import { flowPath, reviewPath, successPath } from './secondPillarRejoinPaths';
+import { RejoinSummary } from './SecondPillarRejoinSuccess';
 import { usePageTitle } from '../../common/usePageTitle';
 
-const STATE_CONTRIBUTION_PERCENT = 4;
 const DEFAULT_PAYMENT_RATE: PaymentRate = 6;
 const RECOMMENDED_FUND_ISIN: TulevaSecondPillarStockFund = 'EE3600109435';
 const PAYMENT_RATE_NAMES: Record<PaymentRate, PaymentRateChangeMandateDetails['paymentRate']> = {
@@ -66,7 +64,9 @@ const RejoinHeader = ({ contributionStartDate }: { contributionStartDate: string
 
 export const SecondPillarRejoin = () => {
   usePageTitle('pageTitle.secondPillarRejoin');
-  const [view, setView] = useView();
+  const history = useHistory();
+  const { search } = useLocation();
+  const isReviewing = useRouteMatch(reviewPath) !== null;
   const { data: funds } = useFunds();
   const { data: mandateDeadlines } = useMandateDeadlines();
   const { data: sourceFunds, isLoading: isLoadingSourceFunds } = useSourceFunds();
@@ -84,9 +84,9 @@ export const SecondPillarRejoin = () => {
         paymentRateOnFile={paymentRateThatApplies(user)}
         contributionStartDate={mandateDeadlines.secondPillarRejoinContributionStartDate}
         cancellationDeadline={mandateDeadlines.secondPillarRejoinDeadline}
-        isReviewing={view === 'review'}
-        onReview={() => setView('review')}
-        onBack={() => setView('application')}
+        isReviewing={isReviewing}
+        onReview={() => history.push({ pathname: reviewPath, search })}
+        onBack={() => history.goBack()}
       />
     </div>
   );
@@ -127,6 +127,7 @@ const RejoinApplication = ({
   onReview: () => void;
   onBack: () => void;
 }) => {
+  const { search } = useLocation();
   const { mutateAsync: createMandateBatch } = useCreateMandateBatch();
   const {
     startSigning,
@@ -144,6 +145,7 @@ const RejoinApplication = ({
   const [isCreatingBatch, setCreatingBatch] = useState(false);
   const [refusal, setRefusal] = useState<RejoinRefusal | null>(null);
   const [hasAgreedToTerms, setAgreedToTerms] = useState(false);
+  const [hasFilledApplication, setFilledApplication] = useState(false);
 
   const chooseFund = (isin: string) => {
     setFundIsin(isin);
@@ -172,15 +174,23 @@ const RejoinApplication = ({
     : [];
 
   if (signed) {
-    return (
-      <RejoinSuccess
-        contributionStartDate={contributionStartDate}
-        cancellationDeadline={cancellationDeadline}
-        paymentRate={paymentRate}
-        chosenFund={chosenFund}
-      />
-    );
+    const summary: RejoinSummary = {
+      contributionStartDate,
+      cancellationDeadline,
+      paymentRate,
+      fundName: chosenFund?.name ?? null,
+    };
+    return <Redirect to={{ pathname: successPath, search, state: summary }} />;
   }
+
+  if (isReviewing && !hasFilledApplication) {
+    return <Redirect to={{ pathname: flowPath, search }} />;
+  }
+
+  const review = () => {
+    setFilledApplication(true);
+    onReview();
+  };
 
   const createBatchAndStartSigning = async () => {
     setCreatingBatch(true);
@@ -338,7 +348,7 @@ const RejoinApplication = ({
             <Link className="btn btn-light mt-2" to="/account">
               <FormattedMessage id="secondPillarPaymentRate.cancel" />
             </Link>
-            <button type="button" className="btn btn-primary mt-2" onClick={onReview}>
+            <button type="button" className="btn btn-primary mt-2" onClick={review}>
               <FormattedMessage id="secondPillarRejoin.next" />
             </button>
           </div>
@@ -369,65 +379,3 @@ const ApplicationCard = ({
     {notes}
   </section>
 );
-
-const SummaryItem = ({ label, children }: { label: ReactNode; children: ReactNode }) => (
-  <li className="d-flex justify-content-between gap-3 py-2 border-top">
-    <span>{label}</span> <b className="text-end">{children}</b>
-  </li>
-);
-
-const RejoinSuccess = ({
-  contributionStartDate,
-  cancellationDeadline,
-  paymentRate,
-  chosenFund,
-}: {
-  contributionStartDate: string;
-  cancellationDeadline: string;
-  paymentRate: PaymentRate;
-  chosenFund: Fund | null;
-}) => {
-  const { formatMessage } = useIntl();
-
-  return (
-    <SuccessNotice>
-      <h2 className="text-center mt-3">
-        <FormattedMessage id="secondPillarRejoin.success.heading" />
-      </h2>
-      <ul
-        className="list-unstyled text-start mx-auto mt-4 mb-0"
-        style={{ maxWidth: '26rem' }}
-        aria-label={formatMessage({ id: 'secondPillarRejoin.success.summary' })}
-      >
-        <SummaryItem
-          label={<FormattedMessage id="secondPillarRejoin.success.contributionsStart" />}
-        >
-          {formatDateYear(contributionStartDate)}
-        </SummaryItem>
-        <SummaryItem label={<FormattedMessage id="secondPillarRejoin.paymentRate.label" />}>
-          <FormattedMessage
-            id="secondPillarRejoin.paymentRate.value"
-            values={{ rate: paymentRate }}
-          />
-        </SummaryItem>
-        <SummaryItem label={<FormattedMessage id="secondPillarRejoin.success.stateAdds" />}>
-          <FormattedMessage
-            id="secondPillarRejoin.paymentRate.value"
-            values={{ rate: STATE_CONTRIBUTION_PERCENT }}
-          />
-        </SummaryItem>
-        {chosenFund && (
-          <SummaryItem label={<FormattedMessage id="secondPillarRejoin.fund.label" />}>
-            {chosenFund.name}
-          </SummaryItem>
-        )}
-      </ul>
-      <p className="mx-auto mt-4 mb-0 text-pretty" style={{ maxWidth: '26rem' }}>
-        <FormattedMessage
-          id="secondPillarRejoin.success.cancellation"
-          values={{ deadline: formatDateYear(dayInTallinn(cancellationDeadline)) }}
-        />
-      </p>
-    </SuccessNotice>
-  );
-};
