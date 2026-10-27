@@ -274,11 +274,7 @@ export const ExpensesStep = ({ answers, headingRef, onChange }: Props) => {
             id="futureMe.expenses.household.help.source"
             values={{
               link: (chunks: React.ReactNode) => (
-                <a
-                  href="https://sotsiaalkindlustusamet.ee/pension-ja-seotud-huvitised/muud-pensioniga-seotud-huvitised-ja-toetused/uksi-elava-pensionari"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href="https://sotsiaalkindlustusamet.ee/pension-ja-seotud-huvitised/muud-pensioniga-seotud-huvitised-ja-toetused/uksi-elava-pensionari">
                   {chunks}
                 </a>
               ),

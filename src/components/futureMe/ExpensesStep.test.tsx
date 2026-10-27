@@ -203,7 +203,7 @@ describe('Costs step', () => {
       expect(screen.getByText(/200\s€ üks kord aastas/)).toBeVisible();
       expect(
         screen.getByRole('link', { name: 'SKA: üksi elava pensionäri toetus' }),
-      ).toHaveAttribute('target', '_blank');
+      ).not.toHaveAttribute('target');
     });
   });
 
