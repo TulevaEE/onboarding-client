@@ -629,7 +629,7 @@
   "thirdPillarSuccess.notice.description": "Kogud II sammast kõrge tasuga fondides ({currentFundsFee}% aastas). Sel aastal maksad tasudeks {currentFundsFeeAmount} €, Tuleva fondis maksaksid {ourFundFeeAmount} €. Säästaksid {savingsAmount} € aastas, mis teenib sulle täiendavalt tulu.",
   "thirdPillarSuccess.button.account": "Minu konto",
   "thirdPillarSuccess.button": "Vaata lähemalt",
-  "thirdPillarSuccess.ourFund": "Tuleva Maailma Aktsiate pensionifond",
+  "thirdPillarSuccess.ourFund": "Tuleva fond",
   "thirdPillarSuccess.currentFund": "{count, plural, one {Sinu valitud fond} other {Sinu valitud fondid}}",
   "thirdPillarSuccess.transfer.done": "Avaldus esitatud",
   "thirdPillarSuccess.transfer.message": "Sinu osakud liiguvad Tulevasse lähipäevil ja ilmuvad siis su kontole.",

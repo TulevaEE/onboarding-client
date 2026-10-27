@@ -588,7 +588,7 @@
   "thirdPillarSuccess.notice.description": "You have selected high fee II pillar funds ({currentFundsFee}% per year). This year, you will pay {currentFundsFeeAmount} € for fees. With Tuleva fund you would pay {ourFundFeeAmount} €. Saving {savingsAmount} € per year, which would earn additional income.",
   "thirdPillarSuccess.button.account": "My account",
   "thirdPillarSuccess.button": "Learn more",
-  "thirdPillarSuccess.ourFund": "Tuleva World Stocks Pension Fund",
+  "thirdPillarSuccess.ourFund": "Tuleva fund",
   "thirdPillarSuccess.currentFund": "{count, plural, one {Your selected fund} other {Your selected funds}}",
   "thirdPillarSuccess.transfer.done": "Application submitted",
   "thirdPillarSuccess.transfer.message": "Your fund units will move to Tuleva in the coming days and will then appear in your account.",
