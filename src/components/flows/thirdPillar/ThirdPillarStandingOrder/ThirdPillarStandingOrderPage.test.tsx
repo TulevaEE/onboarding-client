@@ -152,6 +152,19 @@ describe('a person who wants to change their III pillar recurring payment', () =
     },
   );
 
+  test('who pays from a bank with no guide of its own gets the steps for any other bank', async () => {
+    openPage();
+
+    userEvent.click(await screen.findByRole('radio', { name: 'Revolut' }));
+
+    expect(stepsTitled('Change the amount of your existing payment')).toEqual([
+      { text: 'Log in to your internet bank.', remindsOfTaxRefund: false },
+      { text: 'Find the standing order to AS Pensionikeskus.', remindsOfTaxRefund: false },
+      { text: 'Change the amount and confirm.', remindsOfTaxRefund: true },
+    ]);
+    expect(screen.queryByRole('link', { name: /^Open / })).not.toBeInTheDocument();
+  });
+
   test('who opened the bank is asked on returning whether the payment was changed, and confirms it', async () => {
     openPage();
     userEvent.click(await screen.findByRole('radio', { name: 'SEB' }));

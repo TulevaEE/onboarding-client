@@ -519,6 +519,7 @@
   "thirdPillarPayment.backToAccountPage": "Back to account page",
   "thirdPillarPayment.SINGLE": "Single payment",
   "thirdPillarPayment.RECURRING": "Recurring payment",
+  "thirdPillarPayment.RECURRING.yourBank": "How to set up a recurring payment in your bank",
   "thirdPillarPayment.EMPLOYER": "Directly from salary",
   "thirdPillarPayment.freeSinglePayment": "Making payments is <b>free of charge</b>.",
   "thirdPillarPayment.singlePaymentDetails": "Make sure your bank transaction limits are high enough.",

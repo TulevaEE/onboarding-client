@@ -558,6 +558,7 @@
   "thirdPillarPayment.backToAccountPage": "Tagasi kontolehele",
   "thirdPillarPayment.SINGLE": "Ühekordne sissemakse",
   "thirdPillarPayment.RECURRING": "Igakuine püsimakse",
+  "thirdPillarPayment.RECURRING.yourBank": "Püsimakse juhend sinu pangas",
   "thirdPillarPayment.EMPLOYER": "Otse palgast",
   "thirdPillarPayment.freeSinglePayment": "Sissemakse tegemine on <b>tasuta</b>.",
   "thirdPillarPayment.singlePaymentDetails": "Veendu, et sinu pangakonto ülekandelimiit on piisavalt suur.",

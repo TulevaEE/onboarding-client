@@ -1,5 +1,10 @@
 import { TranslationKey } from '../../../translations';
-import { BankKey } from '../ThirdPillarPayment/types';
+import {
+  BANK_KEYS,
+  BankKey,
+  BankWithStandingOrderLink,
+  hasStandingOrderLink,
+} from '../ThirdPillarPayment/types';
 
 export type StandingOrderBank = BankKey | 'other';
 
@@ -15,7 +20,16 @@ export type BankGuide = {
   steps: GuideStep[];
 };
 
-export const STANDING_ORDER_CHANGE_GUIDES: Record<StandingOrderBank, BankGuide> = {
+const ANY_OTHER_BANK_GUIDE: BankGuide = {
+  changeMethod: 'EDIT_IN_PLACE',
+  steps: [
+    { text: 'thirdPillarStandingOrder.steps.other.1' },
+    { text: 'thirdPillarStandingOrder.steps.other.2' },
+    { text: 'thirdPillarStandingOrder.steps.other.3', amountEntered: true },
+  ],
+};
+
+const STANDING_ORDER_CHANGE_GUIDES: Record<BankWithStandingOrderLink, BankGuide> = {
   swedbank: {
     internetBank: {
       url: 'https://www.swedbank.ee/private/pensions/my/pensionAssets',
@@ -71,15 +85,10 @@ export const STANDING_ORDER_CHANGE_GUIDES: Record<StandingOrderBank, BankGuide> 
       { text: 'thirdPillarStandingOrder.steps.coop.2', amountEntered: true },
     ],
   },
-  other: {
-    changeMethod: 'EDIT_IN_PLACE',
-    steps: [
-      { text: 'thirdPillarStandingOrder.steps.other.1' },
-      { text: 'thirdPillarStandingOrder.steps.other.2' },
-      { text: 'thirdPillarStandingOrder.steps.other.3', amountEntered: true },
-    ],
-  },
 };
 
+export const standingOrderChangeGuideFor = (bank: StandingOrderBank): BankGuide =>
+  hasStandingOrderLink(bank) ? STANDING_ORDER_CHANGE_GUIDES[bank] : ANY_OTHER_BANK_GUIDE;
+
 export const isStandingOrderBank = (value: string | null): value is StandingOrderBank =>
-  value !== null && Object.keys(STANDING_ORDER_CHANGE_GUIDES).includes(value);
+  value === 'other' || BANK_KEYS.some((bank) => bank === value);

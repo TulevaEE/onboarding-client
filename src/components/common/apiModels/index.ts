@@ -435,6 +435,11 @@ export type PaymentChannel =
   | 'SEB'
   | 'LUMINOR'
   | 'COOP'
+  | 'CITADELE'
+  | 'REVOLUT'
+  | 'WISE'
+  | 'N26'
+  | 'BIGBANK'
   | 'COOP_WEB'
   | 'PARTNER'
   | 'TULUNDUSUHISTU';

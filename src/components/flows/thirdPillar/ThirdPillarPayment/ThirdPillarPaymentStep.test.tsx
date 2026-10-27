@@ -78,6 +78,42 @@ describe('When a user is making a third pillar payment', () => {
     expect(windowLocation).toHaveBeenCalledTimes(1);
   });
 
+  test.each([
+    ['Wise', 'WISE'],
+    ['Citadele', 'CITADELE'],
+    ['Revolut', 'REVOLUT'],
+    ['Bigbank', 'BIGBANK'],
+    ['N26', 'N26'],
+  ])('can start a one time payment from %s', async (bankName, paymentChannel) => {
+    const amount = await amountInput();
+    userEvent.clear(amount);
+    userEvent.type(amount, '23');
+    userEvent.click(await screen.findByLabelText(bankName));
+    userEvent.click(await makePaymentButton());
+
+    await waitFor(() =>
+      expect(windowLocation).toHaveBeenCalledWith(
+        `https://sandbox-payments.montonio.com?payment_token=example.jwt.token.with.23.EUR.${paymentChannel}`,
+      ),
+    );
+  });
+
+  test('sees how to set up the recurring payment by hand in a bank with no standing order link', async () => {
+    userEvent.click(await recurringPaymentOption());
+    userEvent.click(await screen.findByLabelText('Citadele'));
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'How to set up a recurring payment in your bank',
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Pay to:')).toBeInTheDocument();
+    expect(screen.getByText('AS Pensionikeskus')).toBeInTheDocument();
+    expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
+    expect(queryLogIntoInternetBankButton()).not.toBeInTheDocument();
+    expect(await confirmDoneLink()).toBeInTheDocument();
+  });
+
   test('prefills the suggested single payment amount', async () => {
     const amount = await amountInput();
     expect(amount.value).toBe('1000');

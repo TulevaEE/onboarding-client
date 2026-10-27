@@ -170,6 +170,25 @@ describe(SavingsFundPayment, () => {
     expect(windowLocation).toHaveBeenCalledTimes(1);
   });
 
+  it.each([
+    ['Wise', 'WISE'],
+    ['Citadele', 'CITADELE'],
+    ['Revolut', 'REVOLUT'],
+    ['Bigbank', 'BIGBANK'],
+    ['N26', 'N26'],
+  ])('lets user pay from %s', async (bankName, paymentChannel) => {
+    expect(await findPageHeading()).toBeInTheDocument();
+    replaceAmount('123.45');
+    userEvent.click(screen.getByRole('radio', { name: bankName }));
+    userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+    await waitFor(() =>
+      expect(windowLocation).toHaveBeenCalledWith(
+        `https://sandbox-payments.montonio.com?payment_token=example.jwt.token.with.123.45.EUR.${paymentChannel}`,
+      ),
+    );
+  });
+
   it('shows "Other bank" option and displays payment details when selected', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
 
@@ -379,6 +398,17 @@ describe(SavingsFundPayment, () => {
       userEvent.click(screen.getByRole('radio', { name: 'Payment info' }));
 
       expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Continue' })).not.toBeInTheDocument();
+    });
+
+    it('shows the copy-card for a bank with no standing order link', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      replaceAmount('50');
+      selectRecurring();
+      userEvent.click(screen.getByRole('radio', { name: 'Wise' }));
+
+      expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+      expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
       expect(screen.queryByRole('link', { name: 'Continue' })).not.toBeInTheDocument();
     });
 

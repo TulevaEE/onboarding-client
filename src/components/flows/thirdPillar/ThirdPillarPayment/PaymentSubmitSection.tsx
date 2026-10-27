@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 import './Payment.scss';
-import { AvailablePaymentType, BankKey } from './types';
+import { AvailablePaymentType, BankKey, hasStandingOrderLink } from './types';
 
 type Props = {
   paymentBank: BankKey | 'other' | null;
@@ -20,7 +20,10 @@ export const PaymentSubmitSection = ({
   handleSubmit,
   disabled,
 }: Props) => {
-  if (paymentBank === 'other') {
+  const setsUpRecurringPaymentByHand =
+    paymentType === 'RECURRING' && paymentBank !== null && !hasStandingOrderLink(paymentBank);
+
+  if (paymentBank === 'other' || setsUpRecurringPaymentByHand) {
     return (
       <div className="mt-5 d-flex gap-2 align-items-center">
         <span>

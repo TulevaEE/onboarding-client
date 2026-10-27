@@ -5,11 +5,10 @@ import { captureException } from '@sentry/browser';
 import ThirdPillarPaymentsAmount from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarContributionAmount';
 import './Payment.scss';
 import { redirectToPayment } from '../../../common/api';
-import { PaymentChannel } from '../../../common/apiModels';
 import { PaymentAmountInput } from './PaymentAmountInput';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
 import { useMe } from '../../../common/apiHooks';
-import { AvailablePaymentType, BankKey } from './types';
+import { AvailablePaymentType, BankKey, paymentChannelFor } from './types';
 import { PaymentTypeSelection } from './PaymentTypeSelection';
 import { PaymentBankButtons } from './PaymentBankButtons';
 import { RecurringPaymentDetails } from './RecurringPaymentDetails';
@@ -67,7 +66,7 @@ export const Payment: React.FunctionComponent = () => {
         amount: Number(paymentAmount.replace(',', '.')),
         currency: 'EUR',
         type: paymentType,
-        paymentChannel: paymentBank?.toUpperCase() as PaymentChannel,
+        paymentChannel: paymentChannelFor(paymentBank),
       });
       if (openedInNewTab && paymentType === 'RECURRING') {
         history.push('/3rd-pillar-payment/recurring-confirmation');
