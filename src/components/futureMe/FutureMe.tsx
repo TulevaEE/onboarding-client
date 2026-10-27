@@ -22,6 +22,8 @@ import { initialExpenses } from './expensesAnswers';
 import { ExpensesStep } from './ExpensesStep';
 import { derivePrefill, YouPrefill } from './prefill';
 import { PlaceholderStep } from './PlaceholderStep';
+import { initialSpecialPension } from './specialPensionAnswers';
+import { SpecialPensionStep } from './SpecialPensionStep';
 import { StepTrail } from './StepTrail';
 import { stepLabel } from './stepLabels';
 import { FutureMeStep, neighbouringStep, shownSteps, StepId } from './steps';
@@ -63,6 +65,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   const [age65, setAge65] = useState(initialAge65);
   const [age66, setAge66] = useState(initialAge66);
   const [expenses, setExpenses] = useState(initialExpenses);
+  const [specialPension, setSpecialPension] = useState(initialSpecialPension);
   const [step, setStep] = useState<StepId>(FutureMeStep.YOU);
   const [visited, setVisited] = useState<ReadonlySet<StepId>>(new Set([FutureMeStep.YOU]));
   const [openSections, setOpenSections] = useState(ALL_SECTIONS_OPEN);
@@ -211,6 +214,18 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           onEditYou={() => goTo(FutureMeStep.YOU)}
           onEditAge60={() => goTo(FutureMeStep.AGE_60)}
           onEditAge65={() => goTo(FutureMeStep.AGE_65)}
+        />
+      );
+    }
+    if (step === FutureMeStep.SPECIAL_PENSION) {
+      return (
+        <SpecialPensionStep
+          answers={specialPension}
+          you={answers}
+          plan={plan}
+          headingRef={headingRef}
+          onChange={setSpecialPension}
+          onEditYou={() => goTo(FutureMeStep.YOU)}
         />
       );
     }
