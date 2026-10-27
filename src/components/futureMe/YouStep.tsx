@@ -62,7 +62,7 @@ export const YouStep = ({
       <p className="chapter-kicker">
         <FormattedMessage id="futureMe.you.kicker" />
       </p>
-      <h2 id="future-me-you-heading" tabIndex={-1} ref={headingRef}>
+      <h2 id="future-me-you-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
         <FormattedMessage id="futureMe.you.title" />
       </h2>
       <p>
@@ -88,7 +88,7 @@ export const YouStep = ({
         >
           <div className="row g-3">
             <div className="col-12 col-sm-6">
-              <label className="form-label" htmlFor="future-me-birth-year">
+              <label className="form-label text-balance" htmlFor="future-me-birth-year">
                 <FormattedMessage id="futureMe.you.birthYear.label" />{' '}
                 <span className="required-mark">
                   <FormattedMessage id="futureMe.required" />
@@ -121,7 +121,7 @@ export const YouStep = ({
               )}
             </div>
             <div className="col-12 col-sm-6">
-              <label className="form-label" htmlFor="future-me-sex">
+              <label className="form-label text-balance" htmlFor="future-me-sex">
                 <FormattedMessage id="futureMe.you.sex.label" />
               </label>
               <select

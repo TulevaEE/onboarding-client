@@ -12,13 +12,17 @@
     list-style: none;
     overflow-x: auto;
 
+    .trail-item {
+      flex: 1 0 auto;
+    }
+
     button {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 0.25rem;
-      min-width: 4.5rem;
-      padding: 0.25rem 0.5rem;
+      width: 100%;
+      padding: 0.25rem 0.125rem;
       border: 0;
       background: none;
       color: $text-navy;
@@ -35,6 +39,19 @@
       border-radius: 50%;
       font-size: 0.875rem;
       background: $white;
+
+      @media (max-width: 575.98px) {
+        width: 1.75rem;
+        height: 1.75rem;
+      }
+    }
+
+    .trail-label {
+      white-space: nowrap;
+
+      @media (max-width: 575.98px) {
+        font-size: 0.8125rem;
+      }
     }
 
     .is-current .trail-dot {
@@ -130,7 +147,16 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: 0.5rem;
     margin-top: 1rem;
+
+    @media (max-width: 399.98px) {
+      > span {
+        order: -1;
+        flex-basis: 100%;
+        text-align: center;
+      }
+    }
   }
 }
