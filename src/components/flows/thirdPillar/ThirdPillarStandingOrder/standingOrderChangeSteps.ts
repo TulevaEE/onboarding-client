@@ -96,6 +96,28 @@ const STANDING_ORDER_CHANGE_GUIDES: Record<BankWithStandingOrderLink, BankGuide>
       { text: 'thirdPillarStandingOrder.steps.wise.2', amountEntered: true },
     ],
   },
+  citadele: {
+    internetBank: {
+      url: 'https://online.citadele.lv/ibbf/et_ee',
+      openLabel: 'thirdPillarStandingOrder.openBank.citadele',
+    },
+    changeMethod: 'EDIT_IN_PLACE',
+    steps: [
+      { text: 'thirdPillarStandingOrder.steps.citadele.1' },
+      { text: 'thirdPillarStandingOrder.steps.other.3', amountEntered: true },
+    ],
+  },
+  bigbank: {
+    internetBank: {
+      url: 'https://auth.bigbank.eu/',
+      openLabel: 'thirdPillarStandingOrder.openBank.bigbank',
+    },
+    changeMethod: 'EDIT_IN_PLACE',
+    steps: [
+      { text: 'thirdPillarStandingOrder.steps.other.2' },
+      { text: 'thirdPillarStandingOrder.steps.other.3', amountEntered: true },
+    ],
+  },
 };
 
 export const standingOrderChangeGuideFor = (bank: StandingOrderBank): BankGuide =>

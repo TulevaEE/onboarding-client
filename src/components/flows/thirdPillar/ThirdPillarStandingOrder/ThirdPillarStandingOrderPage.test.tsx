@@ -140,6 +140,8 @@ describe('a person who wants to change their III pillar recurring payment', () =
     ['Luminor', 'Open Luminor', 'https://luminor.ee/auth/#/web/view/autopilot/'],
     ['Coop Pank', /^Open Coop\sPank$/, 'https://i.cooppank.ee/i/standing-orders'],
     ['Wise', 'Open Wise', 'https://wise.com/payments/scheduled-transfers'],
+    ['Citadele', 'Open Citadele', 'https://online.citadele.lv/ibbf/et_ee'],
+    ['Bigbank', 'Open Bigbank', 'https://auth.bigbank.eu/'],
   ])(
     'who pays from %s opens the bank in a new tab where the change is made',
     async (bank, openBank, bankPage) => {
@@ -167,6 +169,20 @@ describe('a person who wants to change their III pillar recurring payment', () =
         text: 'Then click Schedule a transfer, pick AS Pensionikeskus as the recipient, enter the new amount and the same reference, choose monthly and confirm with Schedule transfer.',
         remindsOfTaxRefund: true,
       },
+    ]);
+  });
+
+  test('who pays from Citadele finds the standing order under Payments and changes the amount', async () => {
+    openPage();
+
+    userEvent.click(await screen.findByRole('radio', { name: 'Citadele' }));
+
+    expect(stepsTitled('Change the amount of your existing payment')).toEqual([
+      {
+        text: 'Open Maksed → Püsimaksekorraldused and find the standing order to AS Pensionikeskus.',
+        remindsOfTaxRefund: false,
+      },
+      { text: 'Change the amount and confirm.', remindsOfTaxRefund: true },
     ]);
   });
 
