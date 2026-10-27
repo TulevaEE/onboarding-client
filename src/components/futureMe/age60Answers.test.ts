@@ -46,26 +46,49 @@ describe('age60Answers', () => {
   });
 
   describe('having a third pillar', () => {
+    const hasThirdPillarFor = (changes: Partial<ReturnType<typeof initialAnswers>>) => {
+      const you = youWith(changes);
+      return hasThirdPillar(you, toStepPlanInput(you));
+    };
+
     it('is true with a balance or a monthly payment once joined', () => {
-      expect(
-        hasThirdPillar(youWith({ thirdPillarJoined: 'after', thirdPillarAmount: '100' })),
-      ).toBe(true);
-      expect(
-        hasThirdPillar(youWith({ thirdPillarJoined: 'before', thirdPillarMonthly: '20' })),
-      ).toBe(true);
+      expect(hasThirdPillarFor({ thirdPillarJoined: 'after', thirdPillarAmount: '100' })).toBe(
+        true,
+      );
+      expect(hasThirdPillarFor({ thirdPillarJoined: 'before', thirdPillarMonthly: '20' })).toBe(
+        true,
+      );
     });
 
     it('is false when joined with nothing in it', () => {
-      expect(hasThirdPillar(youWith({ thirdPillarJoined: 'after' }))).toBe(false);
+      expect(hasThirdPillarFor({ thirdPillarJoined: 'after' })).toBe(false);
     });
 
     it('counts only the monthly payment when not joined yet, because the balance is ignored', () => {
-      expect(hasThirdPillar(youWith({ thirdPillarJoined: 'none', thirdPillarAmount: '500' }))).toBe(
+      expect(hasThirdPillarFor({ thirdPillarJoined: 'none', thirdPillarAmount: '500' })).toBe(
         false,
       );
-      expect(hasThirdPillar(youWith({ thirdPillarJoined: 'none', thirdPillarMonthly: '30' }))).toBe(
-        true,
-      );
+      expect(hasThirdPillarFor({ thirdPillarJoined: 'none', thirdPillarMonthly: '30' })).toBe(true);
+    });
+
+    it('is false when the saver opens the III pillar only after the payout age', () => {
+      expect(
+        hasThirdPillarFor({
+          thirdPillarJoined: 'none',
+          thirdPillarMonthly: '30',
+          thirdPillarOpenAge: '65',
+        }),
+      ).toBe(false);
+    });
+
+    it('is true when the saver opens the III pillar before the payout age', () => {
+      expect(
+        hasThirdPillarFor({
+          thirdPillarJoined: 'none',
+          thirdPillarMonthly: '30',
+          thirdPillarOpenAge: '50',
+        }),
+      ).toBe(true);
     });
   });
 
@@ -78,6 +101,23 @@ describe('age60Answers', () => {
       expect(decisionOrdinal([FutureMeStep.YOU, FutureMeStep.AGE_55, FutureMeStep.AGE_60])).toBe(
         'second',
       );
+    });
+
+    it('is second after the early withdrawal decision', () => {
+      expect(
+        decisionOrdinal([FutureMeStep.YOU, FutureMeStep.EARLY_WITHDRAWAL, FutureMeStep.AGE_60]),
+      ).toBe('second');
+    });
+
+    it('is third after both the early withdrawal and the age 55 decisions', () => {
+      expect(
+        decisionOrdinal([
+          FutureMeStep.YOU,
+          FutureMeStep.EARLY_WITHDRAWAL,
+          FutureMeStep.AGE_55,
+          FutureMeStep.AGE_60,
+        ]),
+      ).toBe('third');
     });
   });
 });

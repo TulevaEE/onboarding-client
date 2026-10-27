@@ -121,6 +121,12 @@ describe('Age 60 step', () => {
     expect(screen.getByText('Millal valida fondipension?')).toBeInTheDocument();
   });
 
+  it('opens the payout pages in the same tab, as most savers are on a phone', () => {
+    openAge60Step();
+
+    screen.getAllByRole('link').forEach((link) => expect(link).not.toHaveAttribute('target'));
+  });
+
   describe('without a second pillar', () => {
     beforeEach(() => openAge60Step({ secondPillar: false }));
 
@@ -131,6 +137,7 @@ describe('Age 60 step', () => {
       expect(secondPillarGroup()).toBeDisabled();
       expect(thirdPillarGroup()).toBeEnabled();
       expect(screen.queryByText(/Kui töötad veel/)).not.toBeInTheDocument();
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
     });
 
     it('takes the saver back to the first step to change the amount', () => {

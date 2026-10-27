@@ -163,7 +163,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
               tense={payoutAgeTense(birthYearOrFallback(answers), payoutAge(plan))}
               ordinal={decisionOrdinal(steps)}
               hasSecondPillar={plan.savesInSecondPillar}
-              hasThirdPillar={hasThirdPillar(answers)}
+              hasThirdPillar={hasThirdPillar(answers, plan)}
               headingRef={headingRef}
               onChange={setAge60}
               onEditYou={() => goTo(FutureMeStep.YOU)}

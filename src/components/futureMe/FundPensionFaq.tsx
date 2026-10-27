@@ -9,12 +9,7 @@ const PENSIONIKESKUS_TERM_PAGE =
   'https://www.pensionikeskus.ee/ii-sammas/valjamaksed/tahtajaline-pension/';
 const PENSIONIKESKUS_PAYOUTS_PAGE = 'https://www.pensionikeskus.ee/ii-sammas/valjamaksed/';
 
-const externalLink = (href: string) => (chunks: React.ReactNode) =>
-  (
-    <a href={href} target="_blank" rel="noopener noreferrer">
-      {chunks}
-    </a>
-  );
+const externalLink = (href: string) => (chunks: React.ReactNode) => <a href={href}>{chunks}</a>;
 
 const richText = {
   p: (chunks: React.ReactNode) => <p>{chunks}</p>,

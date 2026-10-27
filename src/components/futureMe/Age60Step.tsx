@@ -48,7 +48,7 @@ const PillarChoices = ({
         <FormattedMessage id={`futureMe.age60.${pillar}.title` as TranslationKey} />
       </h3>
       {!hasPillar && (
-        <p className="payout-note" role="status">
+        <p className="payout-note">
           <FormattedMessage
             id={`futureMe.age60.${pillar}.none` as TranslationKey}
             values={{ strong: emphasis }}
