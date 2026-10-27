@@ -2,7 +2,7 @@ import React, { ChangeEvent } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { fieldProblem, YouAnswers, YouField } from './youAnswers';
+import { fieldProblem, limitsOf, YouAnswers, YouField } from './youAnswers';
 
 export const FIELD_DOM_IDS: Record<YouField, string> = {
   birthYear: 'future-me-birth-year',
@@ -11,6 +11,10 @@ export const FIELD_DOM_IDS: Record<YouField, string> = {
   secondPillarAmount: 'future-me-second-pillar-amount',
   thirdPillarAmount: 'future-me-third-pillar-amount',
   thirdPillarMonthly: 'future-me-third-pillar-monthly',
+  kidsCount: 'future-me-kids-count',
+  hazardYears: 'future-me-hazard-years',
+  rescueYears: 'future-me-rescue-years',
+  specialPensionStartAge: 'future-me-special-pension-start-age',
 };
 
 const MIN_AMOUNT = 0;
@@ -30,9 +34,13 @@ interface AmountFieldProps {
   answers: YouAnswers;
   touched: ReadonlySet<YouField>;
   label: TranslationKey;
-  unit: TranslationKey;
+  labelValues?: Record<string, string | number>;
+  unit?: TranslationKey;
+  unitValues?: Record<string, string | number>;
+  emptyError?: TranslationKey;
   name: TranslationKey;
   step: number;
+  inputMode?: 'decimal' | 'numeric';
   shownValue?: string;
   disabled?: boolean;
   onChange: (changes: Partial<YouAnswers>) => void;
@@ -50,9 +58,13 @@ export const AmountField = ({
   answers,
   touched,
   label,
+  labelValues,
   unit,
+  unitValues,
+  emptyError,
   name,
   step,
+  inputMode = 'decimal',
   shownValue,
   disabled = false,
   onChange,
@@ -63,12 +75,20 @@ export const AmountField = ({
   const isRequired = !disabled;
   const problem = touched.has(field) && !disabled ? fieldProblem(answers, field) : null;
   const errorId = `${id}-error`;
-  const describedBy = classNames(`${id}-unit`, { [errorId]: problem });
+  const describedBy = classNames({ [`${id}-unit`]: unit, [errorId]: problem });
+  const limits = limitsOf(field);
+  const min = limits?.min ?? MIN_AMOUNT;
+  const errorMessage = (() => {
+    if (problem === 'empty') {
+      return emptyError ?? 'futureMe.you.error.required';
+    }
+    return problem === 'range' ? 'futureMe.you.error.range' : 'futureMe.you.error.min';
+  })();
 
   return (
     <div className="col-12 col-sm-6">
       <label className="form-label text-balance" htmlFor={id}>
-        <FormattedMessage id={label} />
+        <FormattedMessage id={label} values={labelValues} />
         {isRequired && (
           <>
             {' '}
@@ -80,8 +100,9 @@ export const AmountField = ({
         id={id}
         className={classNames('form-control', { 'is-invalid': problem })}
         type="number"
-        inputMode="decimal"
-        min={MIN_AMOUNT}
+        inputMode={inputMode}
+        min={min}
+        max={limits?.max}
         step={step}
         value={shownValue ?? answers[field]}
         disabled={disabled}
@@ -93,14 +114,16 @@ export const AmountField = ({
         }
         onBlur={() => onBlur(field)}
       />
-      <div className="form-text" id={`${id}-unit`}>
-        <FormattedMessage id={unit} />
-      </div>
+      {unit && (
+        <div className="form-text" id={`${id}-unit`}>
+          <FormattedMessage id={unit} values={unitValues} />
+        </div>
+      )}
       {problem && (
         <div className="invalid-feedback" id={errorId}>
           <FormattedMessage
-            id={problem === 'empty' ? 'futureMe.you.error.required' : 'futureMe.you.error.min'}
-            values={{ name: intl.formatMessage({ id: name }), min: MIN_AMOUNT }}
+            id={errorMessage}
+            values={{ name: intl.formatMessage({ id: name }), min, max: limits?.max }}
           />
         </div>
       )}
@@ -113,10 +136,11 @@ interface SelectFieldProps {
   label: TranslationKey;
   value: string;
   options: { value: string; label: string }[];
+  hint?: TranslationKey;
   onChange: (value: string) => void;
 }
 
-export const SelectField = ({ id, label, value, options, onChange }: SelectFieldProps) => (
+export const SelectField = ({ id, label, value, options, hint, onChange }: SelectFieldProps) => (
   <div className="col-12 col-sm-6">
     <label className="form-label text-balance" htmlFor={id}>
       <FormattedMessage id={label} />
@@ -125,6 +149,7 @@ export const SelectField = ({ id, label, value, options, onChange }: SelectField
       id={id}
       className="form-select"
       value={value}
+      aria-describedby={hint ? `${id}-hint` : undefined}
       onChange={(event) => onChange(event.target.value)}
     >
       {options.map((option) => (
@@ -133,5 +158,10 @@ export const SelectField = ({ id, label, value, options, onChange }: SelectField
         </option>
       ))}
     </select>
+    {hint && (
+      <div className="form-text" id={`${id}-hint`}>
+        <FormattedMessage id={hint} />
+      </div>
+    )}
   </div>
 );

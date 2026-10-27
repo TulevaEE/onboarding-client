@@ -13,7 +13,10 @@ import { trackFutureMeStep } from './tracking';
 import {
   blockedFields,
   blockedFieldsOf,
+  FIELDS_BY_SECTION,
   initialAnswers,
+  OptionalSectionId,
+  removeOptionalSection,
   SECTION_IDS,
   toStepPlanInput,
   YouField,
@@ -28,7 +31,11 @@ const ALL_SECTIONS_OPEN: Record<YouSectionId, boolean> = {
   state: true,
   secondPillar: true,
   thirdPillar: true,
+  kids: true,
+  work: true,
 };
+
+const ADDED_FLAGS = { kids: 'kidsAdded', work: 'workAdded' } as const;
 
 const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   const intl = useIntl();
@@ -86,6 +93,22 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
     setVisited((previous) => new Set(previous).add(target));
   };
 
+  const addSection = (section: OptionalSectionId) => {
+    setAnswers((previous) => ({ ...previous, [ADDED_FLAGS[section]]: true }));
+    setOpenSections((previous) => ({ ...previous, [section]: true }));
+  };
+
+  const removeSection = (section: OptionalSectionId) => {
+    setAnswers((previous) => removeOptionalSection(previous, section));
+    setOpenSections((previous) => ({ ...previous, [section]: false }));
+    setTouched(
+      (previous) =>
+        new Set(
+          Array.from(previous).filter((field) => !FIELDS_BY_SECTION[section].includes(field)),
+        ),
+    );
+  };
+
   const nextLabelId =
     step === steps[steps.length - 2] ? 'futureMe.nav.showResult' : 'futureMe.nav.next';
 
@@ -111,6 +134,8 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           onToggle={(section) =>
             setOpenSections((previous) => ({ ...previous, [section]: !previous[section] }))
           }
+          onAddSection={addSection}
+          onRemoveSection={removeSection}
         />
       ) : (
         <PlaceholderStep label={stepLabel(intl, step, plan)} headingRef={headingRef} />

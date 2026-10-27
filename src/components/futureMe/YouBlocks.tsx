@@ -14,7 +14,9 @@ import {
 import { AmountField, BlockProps, SelectField } from './YouFields';
 import { YouSection, YouSectionLabels } from './YouSection';
 
-const sectionLabels = (block: 'state' | 'secondPillar' | 'thirdPillar'): YouSectionLabels => ({
+export const sectionLabels = (
+  block: 'state' | 'secondPillar' | 'thirdPillar' | 'kids' | 'work',
+): YouSectionLabels => ({
   close: `futureMe.you.${block}.close`,
   closeLabel: `futureMe.you.${block}.closeLabel`,
   edit: `futureMe.you.${block}.edit`,

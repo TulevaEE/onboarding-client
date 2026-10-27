@@ -81,6 +81,9 @@ const fillInRequiredAnswers = () => {
   typeInto(thirdPillarMonthlyField(), '50');
 };
 
+const withNbsp = (text: string) =>
+  new RegExp(`^${text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/ /g, '\\s')}$`);
+
 const blockButton = (name: RegExp) => screen.getByRole('button', { name });
 
 describe('FutureMe', () => {
@@ -543,7 +546,7 @@ describe('FutureMe', () => {
           .getAllByRole('option')
           .map((option) => option.textContent),
       ).toEqual(['jah, 2021. a või hiljem', 'jah, enne 2021. a', 'ei ole liitunud']);
-      expect(thirdPillarJoinedField()).toHaveDisplayValue('jah, 2021. a või hiljem');
+      expect(thirdPillarJoinedField()).toHaveDisplayValue(withNbsp('jah, 2021. a või hiljem'));
     });
 
     it('does not ask for the opening age of a saver who has joined', () => {
@@ -772,6 +775,421 @@ describe('FutureMe', () => {
       userEvent.tab();
 
       expect(firstPillarField()).toBeValid();
+    });
+  });
+
+  describe('optional blocks', () => {
+    const addKidsButton = () => screen.getByRole('button', { name: 'Lisa lapsed' });
+    const addSpecialCasesButton = () => screen.getByRole('button', { name: 'Lisa erijuht' });
+    const kidsCountField = () => screen.getByRole('spinbutton', { name: /Mitu last\?/ });
+    const kidBirthYearField = (number: number) =>
+      screen.getByRole('textbox', { name: new RegExp(`${number}\\. lapse sünniaasta`) });
+    const earlyYearsField = () =>
+      screen.getByRole('combobox', { name: /Mitu aastat varem plaanid pensionile minna/ });
+    const specialCase = (name: RegExp) => screen.getByRole('checkbox', { name });
+    const hazardYearsField = () =>
+      screen.getByRole('spinbutton', { name: /Mitu aastat töötasid nimekirja nr \d tööl/ });
+    const rescueYearsField = () =>
+      screen.getByRole('spinbutton', { name: /Mitu aastat töötasid päästeteenistuses/ });
+    const specialPensionStartField = () =>
+      screen.getByRole('spinbutton', { name: /Mis vanusest eripension algab/ });
+
+    const addKids = (birthYears: string[]) => {
+      userEvent.click(addKidsButton());
+      typeInto(kidsCountField(), String(birthYears.length));
+      birthYears.forEach((year, index) => typeInto(kidBirthYearField(index + 1), year));
+    };
+
+    const addSpecialCases = () => userEvent.click(addSpecialCasesButton());
+
+    describe('before they are added', () => {
+      it('offer to add the children with the reason for them, and show no fields', () => {
+        renderFutureMe();
+
+        expect(addKidsButton()).not.toHaveAttribute('aria-expanded');
+        expect(
+          screen.getByText('Lapsed annavad pensionilisa ja võivad tuua pensioni varem.'),
+        ).toBeVisible();
+        expect(screen.queryByRole('spinbutton', { name: /Mitu last/ })).not.toBeInTheDocument();
+      });
+
+      it('offer to add the special cases with the reason for them', () => {
+        renderFutureMe();
+
+        expect(addSpecialCasesButton()).toBeVisible();
+        expect(
+          screen.getByText('Tervist kahjustav töö, eripension, päästeteenistus või ametnik.'),
+        ).toBeVisible();
+        expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
+      });
+
+      it('leave the steps unlocked', () => {
+        renderFutureMe();
+        fillInRequiredAnswers();
+
+        userEvent.click(nextButton());
+
+        expect(screen.queryByRole('heading', { level: 2, name: 'Sina' })).not.toBeInTheDocument();
+      });
+    });
+
+    describe('children', () => {
+      it('open on adding, ask for one child and keep the focus on the button', () => {
+        renderFutureMe();
+
+        userEvent.click(addKidsButton());
+
+        expect(kidsCountField()).toHaveValue(1);
+        expect(kidBirthYearField(1)).toBeVisible();
+        const toggle = screen.getByRole('button', { name: 'Sulge laste andmed' });
+        expect(toggle).toHaveAttribute('aria-expanded', 'true');
+        expect(toggle).toHaveFocus();
+      });
+
+      it('give a row per child', () => {
+        renderFutureMe();
+        userEvent.click(addKidsButton());
+
+        typeInto(kidsCountField(), '3');
+
+        expect(kidBirthYearField(3)).toBeVisible();
+        expect(
+          screen.queryByRole('textbox', { name: /4\. lapse sünniaasta/ }),
+        ).not.toBeInTheDocument();
+      });
+
+      it('summarise the number of children when closed', () => {
+        renderFutureMe();
+        userEvent.click(addKidsButton());
+        userEvent.click(screen.getByRole('button', { name: 'Sulge laste andmed' }));
+
+        expect(screen.getByText('1 laps')).toBeVisible();
+
+        userEvent.click(screen.getByRole('button', { name: 'Muuda laste andmeid' }));
+        typeInto(kidsCountField(), '2');
+        userEvent.click(screen.getByRole('button', { name: 'Sulge laste andmed' }));
+
+        expect(screen.getByText('2 last')).toBeVisible();
+      });
+
+      it('lock the later steps while the number of children is empty', async () => {
+        renderFutureMe();
+        fillInRequiredAnswers();
+        userEvent.click(addKidsButton());
+        userEvent.clear(kidsCountField());
+
+        userEvent.click(nextButton());
+
+        expect(await screen.findByText(/Laste arvu väli on kohustuslik/)).toBeVisible();
+        await waitFor(() => expect(kidsCountField()).toHaveFocus());
+      });
+
+      it('name the field when a birth year is out of range, once the saver leaves it', () => {
+        renderFutureMe();
+        userEvent.click(addKidsButton());
+
+        userEvent.type(kidBirthYearField(1), '1800');
+        userEvent.tab();
+
+        expect(kidBirthYearField(1)).toBeInvalid();
+        expect(
+          screen.getByText(/1\. lapse sünniaasta: sisesta aasta vahemikus 1930–\d{4}/),
+        ).toBeVisible();
+      });
+
+      it('say a child without a birth year is counted as raised', () => {
+        renderFutureMe();
+        userEvent.click(addKidsButton());
+
+        expect(screen.getByText(/Mõne lapse sünniaasta on puudu/)).toBeVisible();
+
+        typeInto(kidBirthYearField(1), '1990');
+
+        expect(screen.queryByText(/Mõne lapse sünniaasta on puudu/)).not.toBeInTheDocument();
+      });
+
+      it('say which children were not raised for eight years by retirement', () => {
+        renderFutureMe();
+        addKids(['2050']);
+
+        expect(
+          screen.getByText(
+            /1 last ei ole pensionile minekuks \(\d{4}\) vähemalt 8 aastat kasvatatud/,
+          ),
+        ).toBeVisible();
+      });
+
+      it('offer retiring early for three children and add the choice of who uses it', () => {
+        renderFutureMe();
+        addKids(['1990', '1992', '1994']);
+
+        expect(earlyYearsField()).toHaveDisplayValue(withNbsp('1 a, vähendamata (kõige varem)'));
+        expect(
+          screen.getByRole('combobox', { name: /Kes kasutab varem pensionile mineku õigust/ }),
+        ).toBeVisible();
+        expect(screen.getByRole('status')).toHaveTextContent(
+          /Saad minna pensionile 1\sa varem, \d+-aastaselt \(\d{4}\), ilma vähenduseta\. Õigus tuleb lastest \(1\sa\)\./,
+        );
+      });
+
+      it('leave the pension age alone when the other parent uses the right', () => {
+        renderFutureMe();
+        addKids(['1990', '1992', '1994']);
+
+        userEvent.selectOptions(
+          screen.getByRole('combobox', { name: /Kes kasutab varem pensionile mineku õigust/ }),
+          'teine vanem',
+        );
+
+        expect(earlyYearsField()).toHaveDisplayValue(
+          withNbsp('ei lähe varem (tavalises pensionieas)'),
+        );
+        expect(
+          screen.getByText(
+            'Varem pensionile mineku õigust kasutab teine vanem, sinu pensioniiga ei muutu.',
+          ),
+        ).toBeVisible();
+      });
+
+      it('give five years for a disabled child', () => {
+        renderFutureMe();
+        addKids(['1990']);
+
+        userEvent.selectOptions(
+          screen.getByRole('combobox', { name: /Kas mõni laps on puudega/ }),
+          'jah (keskmine, raske või sügav puue)',
+        );
+
+        expect(earlyYearsField()).toHaveDisplayValue(withNbsp('5 a, vähendamata (kõige varem)'));
+      });
+
+      it('reset on removing, drop the right and move the focus to the add button', () => {
+        renderFutureMe();
+        addKids(['1990', '1992', '1994']);
+
+        userEvent.click(screen.getByRole('button', { name: 'Eemalda lapsed' }));
+
+        expect(addKidsButton()).toHaveFocus();
+        expect(screen.queryByRole('spinbutton', { name: /Mitu last/ })).not.toBeInTheDocument();
+        expect(earlyYearsField()).toHaveDisplayValue(
+          withNbsp('ei lähe varem (tavalises pensionieas)'),
+        );
+
+        userEvent.click(addKidsButton());
+
+        expect(kidsCountField()).toHaveValue(1);
+        expect(kidBirthYearField(1)).toHaveValue('');
+      });
+    });
+
+    describe('retiring early', () => {
+      it('offers 0 to 5 years, the ones above the right with the lifelong reduction', () => {
+        renderFutureMe();
+
+        const options = within(earlyYearsField())
+          .getAllByRole('option')
+          .map((option) => option.textContent?.replace(/\u00A0/g, ' '));
+
+        expect(options).toEqual([
+          'ei lähe varem (tavalises pensionieas)',
+          '1 a, paindlik pension −7,17%',
+          '2 a, paindlik pension −13,78%',
+          '3 a, paindlik pension −19,88%',
+          '4 a, paindlik pension −25,5%',
+          '5 a, paindlik pension −30,67%',
+        ]);
+      });
+
+      it('says the reduction applies when the saver picks more than the right', () => {
+        renderFutureMe();
+
+        userEvent.selectOptions(earlyYearsField(), '2');
+
+        expect(screen.getByRole('status')).toHaveTextContent(
+          /Lähed pensionile 2\sa varem, \d+-aastaselt \(\d{4}\)\. See on paindlik pension: riiklikku pensioni vähendatakse eluks ajaks 13,78%\./,
+        );
+      });
+
+      it('keeps a lower choice than the right', () => {
+        renderFutureMe();
+        addKids(['1990', '1992', '1994', '1996', '1998']);
+
+        userEvent.selectOptions(earlyYearsField(), '4');
+        typeInto(kidsCountField(), '3');
+
+        expect(earlyYearsField()).toHaveDisplayValue(withNbsp('4 a, paindlik pension −25,5%'));
+      });
+
+      it('moves the age 65 step in front of the age 60 step for more than five years', () => {
+        renderFutureMe();
+        fillInRequiredAnswers();
+        addSpecialCases();
+        userEvent.click(specialCase(/Töötasin tervist kahjustaval tööl/));
+
+        const names = trailNames().map((name) => name?.split(',')[0]);
+
+        expect(names.indexOf('65')).toBeLessThan(names.indexOf('60'));
+      });
+    });
+
+    describe('special cases', () => {
+      it('open on adding with five cases to tick, none ticked, and keep the focus on the button', () => {
+        renderFutureMe();
+
+        addSpecialCases();
+
+        expect(screen.getAllByRole('checkbox')).toHaveLength(5);
+        expect(
+          screen.getAllByRole('checkbox').filter((box) => (box as HTMLInputElement).checked),
+        ).toHaveLength(0);
+        expect(screen.getByRole('button', { name: 'Sulge erijuhud' })).toHaveFocus();
+      });
+
+      it('summarise the number of cases ticked', () => {
+        renderFutureMe();
+        addSpecialCases();
+        userEvent.click(screen.getByRole('button', { name: 'Sulge erijuhud' }));
+
+        expect(screen.getByText('Midagi pole valitud')).toBeVisible();
+
+        userEvent.click(screen.getByRole('button', { name: 'Muuda erijuhte' }));
+        userEvent.click(specialCase(/Töötasin tervist kahjustaval tööl/));
+        userEvent.click(specialCase(/Töötasin päästeteenistuses/));
+        typeInto(rescueYearsField(), '20');
+        userEvent.click(screen.getByRole('button', { name: 'Sulge erijuhud' }));
+
+        expect(screen.getByText('2 erijuhtu')).toBeVisible();
+      });
+
+      it('ask for list 1 work years, ten by default, and offer retiring ten years early', () => {
+        renderFutureMe();
+        addSpecialCases();
+
+        userEvent.click(specialCase(/Töötasin tervist kahjustaval tööl/));
+
+        expect(hazardYearsField()).toHaveValue(10);
+        expect(earlyYearsField()).toHaveDisplayValue(withNbsp('10 a, vähendamata (kõige varem)'));
+      });
+
+      it('count list 1 work of less than ten years for nothing', () => {
+        renderFutureMe();
+        addSpecialCases();
+        userEvent.click(specialCase(/Töötasin tervist kahjustaval tööl/));
+
+        typeInto(hazardYearsField(), '9');
+
+        expect(earlyYearsField()).toHaveDisplayValue(
+          withNbsp('ei lähe varem (tavalises pensionieas)'),
+        );
+        expect(screen.getByText(/9 aastast ei piisa/)).toBeVisible();
+      });
+
+      it('switch to list 2, which needs twelve and a half years and gives five', () => {
+        renderFutureMe();
+        addSpecialCases();
+        userEvent.click(specialCase(/Töötasin tervist kahjustaval tööl/));
+
+        userEvent.selectOptions(
+          screen.getByRole('combobox', { name: /Millise nimekirja tööl töötasid/ }),
+          'nimekiri nr 2',
+        );
+        typeInto(hazardYearsField(), '13');
+
+        expect(hazardYearsField()).toHaveAccessibleName(/nimekirja nr 2/);
+        expect(earlyYearsField()).toHaveDisplayValue(withNbsp('5 a, vähendamata (kõige varem)'));
+      });
+
+      it('ask for the rescue service years and give five years from fifteen', () => {
+        renderFutureMe();
+        addSpecialCases();
+
+        userEvent.click(specialCase(/Töötasin päästeteenistuses/));
+        typeInto(rescueYearsField(), '15');
+
+        expect(earlyYearsField()).toHaveDisplayValue(withNbsp('5 a, vähendamata (kõige varem)'));
+      });
+
+      it('limit the work years to 0–50 and name the field', () => {
+        renderFutureMe();
+        addSpecialCases();
+        userEvent.click(specialCase(/Töötasin päästeteenistuses/));
+
+        typeInto(rescueYearsField(), '60');
+        userEvent.tab();
+
+        expect(
+          screen.getByText('Päästeteenistuse aastate väljale sisesta number vahemikus 0–50.'),
+        ).toBeVisible();
+      });
+
+      it('explain the civil servant and the other case, which Elukaar does not calculate', () => {
+        renderFutureMe();
+        addSpecialCases();
+
+        userEvent.click(specialCase(/Olin ametnik/));
+        userEvent.click(specialCase(/Muu erijuht/));
+
+        expect(screen.getByText(/Avaliku teenistuse staaži suurendus/)).toBeVisible();
+        expect(screen.getByText(/Neid erijuhte Elukaar ei arvuta/)).toBeVisible();
+      });
+
+      it('lock the later steps until the special pension start age is filled in', async () => {
+        renderFutureMe();
+        fillInRequiredAnswers();
+        addSpecialCases();
+        userEvent.click(specialCase(/Saan või hakkan saama eripensioni/));
+
+        userEvent.click(nextButton());
+
+        expect(await screen.findByText(/Sisesta vanus, millest eripension algab/)).toBeVisible();
+        await waitFor(() => expect(specialPensionStartField()).toHaveFocus());
+      });
+
+      it('add the special pension step to the trail once the start age is known', () => {
+        renderFutureMe();
+        fillInRequiredAnswers();
+        addSpecialCases();
+        userEvent.click(specialCase(/Saan või hakkan saama eripensioni/));
+
+        typeInto(specialPensionStartField(), '50');
+
+        expect(trailNames().map((name) => name?.split(',')[0])).toContain('50\u00A0a');
+      });
+
+      it('replace the early pension choice by a note when the special pension is the only reason', () => {
+        renderFutureMe();
+        addSpecialCases();
+        userEvent.click(specialCase(/Saan või hakkan saama eripensioni/));
+
+        typeInto(specialPensionStartField(), '50');
+
+        expect(
+          screen.queryByRole('combobox', { name: /Mitu aastat varem plaanid/ }),
+        ).not.toBeInTheDocument();
+        expect(
+          screen.getByText(
+            /Eripensioni saad enne pensioniiga, alates 50-aastaselt, seega vanaduspensioni varem võtta pole vaja/,
+          ),
+        ).toBeVisible();
+      });
+
+      it('reset on removing and move the focus to the add button', () => {
+        renderFutureMe();
+        addSpecialCases();
+        userEvent.click(specialCase(/Töötasin päästeteenistuses/));
+        typeInto(rescueYearsField(), '20');
+
+        userEvent.click(screen.getByRole('button', { name: 'Eemalda erijuhud' }));
+
+        expect(addSpecialCasesButton()).toHaveFocus();
+        expect(earlyYearsField()).toHaveDisplayValue(
+          withNbsp('ei lähe varem (tavalises pensionieas)'),
+        );
+
+        addSpecialCases();
+
+        expect(specialCase(/Töötasin päästeteenistuses/)).not.toBeChecked();
+      });
     });
   });
 
