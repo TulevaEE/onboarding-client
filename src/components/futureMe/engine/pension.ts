@@ -800,7 +800,7 @@ export function simulate(
     const depositStart = deposit;
     const i1gross =
       age >= p1Start
-        ? (age < ret + half ? p1Base / 2 : p1At(age)) +
+        ? firstPillarAt(age) +
           (spPaidAt(age) ? 0 : accrualYear * workedBefore(age) * (age < ret + half ? 1 : p1Factor))
         : 0;
     const work = age >= ret && age < workEnd;
