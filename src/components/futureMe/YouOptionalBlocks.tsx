@@ -289,11 +289,7 @@ export const WorkSection = ({
           <FormattedMessage
             id="futureMe.you.work.otherNote"
             values={{
-              link: (chunks: React.ReactNode) => (
-                <a href={SOCIAL_INSURANCE_BOARD_URL} target="_blank" rel="noopener noreferrer">
-                  {chunks}
-                </a>
-              ),
+              link: (chunks: React.ReactNode) => <a href={SOCIAL_INSURANCE_BOARD_URL}>{chunks}</a>,
             }}
           />
         </p>
@@ -329,8 +325,8 @@ export const WorkSection = ({
                 years: hazardYears,
               }}
               name="futureMe.you.hazardYears.name"
-              step={1}
-              inputMode="numeric"
+              step={0.5}
+              inputMode="decimal"
               onChange={onChange}
               onBlur={onBlur}
             />

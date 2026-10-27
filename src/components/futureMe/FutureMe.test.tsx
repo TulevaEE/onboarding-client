@@ -1114,6 +1114,22 @@ describe('FutureMe', () => {
         expect(earlyYearsField()).toHaveDisplayValue(withNbsp('5 a, vähendamata (kõige varem)'));
       });
 
+      it('accept the twelve and a half years list 2 needs', () => {
+        renderFutureMe();
+        addSpecialCases();
+        userEvent.click(specialCase(/Töötasin tervist kahjustaval tööl/));
+        userEvent.selectOptions(
+          screen.getByRole('combobox', { name: /Millise nimekirja tööl töötasid/ }),
+          'nimekiri nr 2',
+        );
+
+        typeInto(hazardYearsField(), '12.5');
+
+        expect(hazardYearsField()).toBeValid();
+        expect(hazardYearsField()).toHaveAttribute('inputmode', 'decimal');
+        expect(earlyYearsField()).toHaveDisplayValue(withNbsp('5 a, vähendamata (kõige varem)'));
+      });
+
       it('ask for the rescue service years and give five years from fifteen', () => {
         renderFutureMe();
         addSpecialCases();
@@ -1146,6 +1162,17 @@ describe('FutureMe', () => {
 
         expect(screen.getByText(/Avaliku teenistuse staaži suurendus/)).toBeVisible();
         expect(screen.getByText(/Neid erijuhte Elukaar ei arvuta/)).toBeVisible();
+      });
+
+      it('open the Social Insurance Board in the same tab for the other case', () => {
+        renderFutureMe();
+        addSpecialCases();
+
+        userEvent.click(specialCase(/Muu erijuht/));
+
+        expect(screen.getByRole('link', { name: 'Sotsiaalkindlustusametist' })).not.toHaveAttribute(
+          'target',
+        );
       });
 
       it('lock the later steps until the special pension start age is filled in', async () => {

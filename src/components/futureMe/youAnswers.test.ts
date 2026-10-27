@@ -329,6 +329,18 @@ describe('retiring early', () => {
     expect(earlyRetirementYears(answers)).toBe(0);
   });
 
+  it('does not retire a year early on a child who turns eight only in the pension year', () => {
+    expect(
+      earlyRetirementYears(withKids(['1990', '1992', '2037'], { pensionAgeYears: '65' })),
+    ).toBe(0);
+  });
+
+  it('gives a disabled child the right only once the child has been raised for eight years', () => {
+    expect(
+      earlyRetirementYears(withKids(['2040'], { kidsDisabled: true, pensionAgeYears: '65' })),
+    ).toBe(0);
+  });
+
   it('forgets the children when the block is removed', () => {
     expect(earlyRetirementYears(withKids(['1990'], { kidsDisabled: true, kidsAdded: false }))).toBe(
       0,

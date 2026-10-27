@@ -14,6 +14,7 @@ const LATER_THIRD_PILLAR_BENEFIT_AGE = 60;
 const MAX_PENSION_AGE = Math.max(...PENSION_AGE_OPTIONS);
 const MIN_CHILD_BIRTH_YEAR = 1930;
 const YEARS_RAISING_A_CHILD = 8;
+const MAX_EARLY_YEARS_FOR_CHILDREN = 5;
 const MAX_CHILD_ROWS = 20;
 const CHILD_BIRTH_YEAR_TEXT = /^\d{4}$/;
 const FLEXIBLE_PENSION_MAX_YEARS_EARLY = 5;
@@ -203,15 +204,17 @@ export const hasChildWithoutBirthYear = (answers: YouAnswers): boolean =>
       validChildBirthYear(answers.kidsBirthYears[index] ?? '', maxChildBirthYear(answers)) === null,
   );
 
-const kidsEarlyInput = (answers: YouAnswers, counted: number): KidsInput => ({
+const kidsEarlyInput = (
+  earlyUser: YouAnswers['kidsEarlyUser'],
+  isDisabled: boolean,
+  counted: number,
+): KidsInput => ({
   b1991: counted,
-  earlyUser: answers.kidsEarlyUser,
-  disabled: answers.kidsDisabled,
+  earlyUser,
+  disabled: isDisabled && counted > 0,
 });
 
-export const countedKids = (
-  answers: YouAnswers,
-): { counted: number; late: number; lateYear: number } => {
+const kidsRetirement = (answers: YouAnswers, earlyUser: YouAnswers['kidsEarlyUser']) => {
   const maxYear = maxChildBirthYear(answers);
   const birthYears = Array.from({ length: childRows(answers) }, (_, index) =>
     validChildBirthYear(answers.kidsBirthYears[index] ?? '', maxYear),
@@ -221,27 +224,34 @@ export const countedKids = (
   const pensionYear = birthYearOrFallback(answers) + effectivePensionAge(answers);
   const countedBy = (retirementYear: number) =>
     known.filter((year) => year + YEARS_RAISING_A_CHILD <= retirementYear).length + unknown;
-  let retirementYear = pensionYear;
-  for (let round = 0; round < 4; round += 1) {
-    const years = earlyYears({ kids: kidsEarlyInput(answers, countedBy(retirementYear)) });
-    if (pensionYear - years === retirementYear) {
-      break;
-    }
-    retirementYear = pensionYear - years;
-  }
+  const coversRetiringIn = (retirementYear: number) =>
+    earlyYears({
+      kids: kidsEarlyInput(earlyUser, answers.kidsDisabled, countedBy(retirementYear)),
+    }) >=
+    pensionYear - retirementYear;
+  const earliestYearFirst = Array.from(
+    { length: MAX_EARLY_YEARS_FOR_CHILDREN + 1 },
+    (_, offset) => pensionYear - MAX_EARLY_YEARS_FOR_CHILDREN + offset,
+  );
+  const retirementYear = earliestYearFirst.find(coversRetiringIn) ?? pensionYear;
   const counted = countedBy(retirementYear);
-  return { counted, late: known.length - (counted - unknown), lateYear: retirementYear };
+  return {
+    counted,
+    late: known.length - (counted - unknown),
+    retirementYear,
+    yearsEarly: pensionYear - retirementYear,
+  };
+};
+
+export const countedKids = (
+  answers: YouAnswers,
+): { counted: number; late: number; lateYear: number } => {
+  const { counted, late, retirementYear } = kidsRetirement(answers, answers.kidsEarlyUser);
+  return { counted, late, lateYear: retirementYear };
 };
 
 const kidsRightFor = (answers: YouAnswers, earlyUser: YouAnswers['kidsEarlyUser']): number =>
-  answers.kidsAdded
-    ? earlyYears({
-        kids: kidsEarlyInput(
-          { ...answers, kidsEarlyUser: earlyUser },
-          countedKids(answers).counted,
-        ),
-      })
-    : 0;
+  answers.kidsAdded ? kidsRetirement(answers, earlyUser).yearsEarly : 0;
 
 export const isKidsRightAvailableToSelf = (answers: YouAnswers): boolean =>
   kidsRightFor(answers, 'me') > 0;
