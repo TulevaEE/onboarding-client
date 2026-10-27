@@ -22,7 +22,7 @@ export interface CostFacts {
 export const HOUSEHOLDS: Household[] = ['alone', 'couple'];
 export const COST_LEVELS: CostLevel[] = ['frugal', 'optimal', 'comfortable'];
 export const OWN_COST_LINE: CostLineId = 'other';
-export const careHomeShare = 1000;
+export const CARE_HOME_SHARE = 1000;
 
 export const { studyYear, pricesAsOf, priceFactor } = expensesData;
 

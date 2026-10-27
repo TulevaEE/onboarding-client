@@ -2794,8 +2794,8 @@
   "futureMe.expenses.category.gifts": "Kingitused, annetused jm",
   "futureMe.expenses.category.other": "Muud oma kulud",
   "futureMe.expenses.source.level.frugal": "Tänaste pensionäride keskmine kulu",
-  "futureMe.expenses.source.level.optimal": "Nagu keskmisest jõukamad leibkonnad (IV tulukvintiil)",
-  "futureMe.expenses.source.level.comfortable": "Nagu jõukaim viiendik (V tulukvintiil)",
+  "futureMe.expenses.source.level.optimal": "Nagu keskmisest jõukamad leibkonnad (IV tulukvintiil)",
+  "futureMe.expenses.source.level.comfortable": "Nagu jõukaim viiendik (V tulukvintiil)",
   "futureMe.expenses.source.household.alone": "üksik 65-aastane ja vanem",
   "futureMe.expenses.source.household.couple": "lasteta üle 64-aastaste paar (liikme kohta)",
   "futureMe.expenses.source.text": "<chip>Statistikaamet</chip> {level}, {household}. Leibkonna eelarve uuring {year} (viimane avaldatud), summad on viidud tänastesse hindadesse ({prices}): hinnad on tõusnud keskmiselt {percent}%, iga kulu oma hinnaindeksiga.{hasQuintile, select, yes { Kvintiili suhe on kõigi leibkondade andmetest, sest pensionäride kohta tulukvintiilide kaupa avalikke andmeid pole.} other {}} Kingitused, annetused jm on Statistikaameti „muud kulutused“: raha kinkimine, annetused, alimendid ja ülalpidamisraha, trahvid."

@@ -3,7 +3,7 @@ import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { formatAmountForCount, formatAmountForCurrency } from '../common/utils';
 import { TranslationKey } from '../translations';
 import {
-  careHomeShare,
+  CARE_HOME_SHARE,
   COST_LEVELS,
   CostFacts,
   CostLevel,
@@ -200,7 +200,10 @@ const LevelCard = ({ answers, level, widestTotal, onChange }: LevelCardProps) =>
                   </span>
                   <FormattedMessage
                     id="futureMe.expenses.level.alt.careHome"
-                    values={{ total: euro(total), care: formatAmountForCurrency(careHomeShare, 0) }}
+                    values={{
+                      total: euro(total),
+                      care: formatAmountForCurrency(CARE_HOME_SHARE, 0),
+                    }}
                   />
                 </span>
               </span>

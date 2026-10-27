@@ -2,7 +2,7 @@ import goldenProfiles from './goldenProfiles.json';
 import golden from './golden.json';
 import lifeTableData from './lifeTable.json';
 import {
-  careHomeShare,
+  CARE_HOME_SHARE,
   COST_LEVELS,
   costFacts,
   costLines,
@@ -87,7 +87,7 @@ describe('expenses', () => {
   });
 
   it('puts the care home share the comfortable level could cover at 1000 euros', () => {
-    expect(careHomeShare).toBe(1000);
+    expect(CARE_HOME_SHARE).toBe(1000);
   });
 
   describe('sustainable need', () => {

@@ -220,6 +220,16 @@ describe('Costs step', () => {
       expect(screen.getAllByRole('spinbutton')).toHaveLength(14);
     });
 
+    it('takes any whole euro amount as valid, not only multiples of five', () => {
+      renderCostsStep();
+      openBreakdown();
+
+      userEvent.clear(lineField('Toit ja joogid'));
+      userEvent.type(lineField('Toit ja joogid'), '223');
+
+      expect(lineField('Toit ja joogid')).toBeValid();
+    });
+
     it('adds a typed amount to the total and marks the line as edited', () => {
       renderCostsStep();
       openBreakdown();

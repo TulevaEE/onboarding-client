@@ -19,7 +19,6 @@ interface Props {
   onChange: (answers: ExpensesAnswers) => void;
 }
 
-const LINE_STEP = 5;
 const PRICE_RISE_FRACTION_DIGITS = 0;
 
 const euro = (value: number): string => formatAmountForCurrency(Math.round(value), 0);
@@ -97,7 +96,7 @@ export const ExpensesBreakdown = ({ answers, onChange }: Props) => {
                   type="number"
                   inputMode="numeric"
                   min={0}
-                  step={LINE_STEP}
+                  step="any"
                   value={shownAmount(answers, line)}
                   onChange={(event) => onChange(withLineEdit(answers, line.id, event.target.value))}
                 />
