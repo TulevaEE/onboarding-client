@@ -111,7 +111,7 @@ const isThirdPillarEarlyWithdrawalAvailable = (answers: YouAnswers): boolean => 
   const benefitStartsAtAge =
     answers.thirdPillarJoined === 'before'
       ? EARLIEST_THIRD_PILLAR_BENEFIT_AGE
-      : Math.max(LATER_THIRD_PILLAR_BENEFIT_AGE, currentAge);
+      : LATER_THIRD_PILLAR_BENEFIT_AGE;
   const lastEarlyAge = Math.min(benefitStartsAtAge, effectivePensionAge(answers)) - 1;
   return (
     isThirdPillarBalanceAsked(answers) &&

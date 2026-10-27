@@ -80,7 +80,7 @@ export const StateSection = ({
     >
       <p className="form-text mt-0">
         <FormattedMessage
-          id="futureMe.you.state.ska"
+          id="futureMe.you.state.socialInsuranceBoardCalculator"
           values={{
             link: (chunks: React.ReactNode) => (
               <a
