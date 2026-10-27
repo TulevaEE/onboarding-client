@@ -135,6 +135,22 @@
     }
   }
 
+  .you-list + .row,
+  .you-list + .you-note {
+    margin-top: 1.5rem;
+  }
+
+  .you-section-actions {
+    margin-top: 0.5rem;
+  }
+
+  .you-note {
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    background: var(--gray-light, #f4f5f7);
+    text-wrap: pretty;
+  }
+
   .you-section.is-open > div:last-child {
     margin-top: 1rem;
   }

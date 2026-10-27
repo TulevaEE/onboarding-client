@@ -1,0 +1,367 @@
+import React, { useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { TranslationKey } from '../translations';
+import {
+  childRows,
+  chosenSpecialCases,
+  countedKids,
+  hasChildWithoutBirthYear,
+  HazardList,
+  isChildBirthYearInvalid,
+  isKidsRightAvailableToSelf,
+  maxChildBirthYear,
+  YouAnswers,
+} from './youAnswers';
+import { AmountField, BlockProps, SelectField } from './YouFields';
+import { sectionLabels } from './YouBlocks';
+import { YouOptionalSection, YouSection } from './YouSection';
+
+const CHILD_BIRTH_YEAR_DIGITS = 4;
+const MIN_CHILD_BIRTH_YEAR = 1930;
+const SOCIAL_INSURANCE_BOARD_URL = 'https://sotsiaalkindlustusamet.ee';
+const HAZARD_LISTS: Exclude<HazardList, 'no'>[] = ['list1', 'list2'];
+const HAZARD_YEARS_NEEDED = { list1: 10, list2: 12.5 };
+const SERVICE_YEARS_NEEDED = { list1: 20, list2: 25 };
+
+type OptionalBlockProps = BlockProps & { optional: YouOptionalSection };
+
+const optionalOf = (
+  block: 'kids' | 'work',
+  isAdded: boolean,
+  onAdd: () => void,
+  onRemove: () => void,
+): YouOptionalSection => ({
+  isAdded,
+  labels: {
+    add: `futureMe.you.${block}.add` as TranslationKey,
+    why: `futureMe.you.${block}.why` as TranslationKey,
+    remove: `futureMe.you.${block}.remove` as TranslationKey,
+  },
+  onAdd,
+  onRemove,
+});
+
+export const kidsOptional = (answers: YouAnswers, onAdd: () => void, onRemove: () => void) =>
+  optionalOf('kids', answers.kidsAdded, onAdd, onRemove);
+
+export const workOptional = (answers: YouAnswers, onAdd: () => void, onRemove: () => void) =>
+  optionalOf('work', answers.workAdded, onAdd, onRemove);
+
+export const KidsSection = ({
+  answers,
+  touched,
+  isOpen,
+  isComplete,
+  optional,
+  onToggle,
+  onChange,
+  onBlur,
+}: OptionalBlockProps) => {
+  const intl = useIntl();
+  const [leftRows, setLeftRows] = useState<ReadonlySet<number>>(new Set());
+  const rows = childRows(answers);
+  const maxYear = maxChildBirthYear(answers);
+  const { late, lateYear } = countedKids(answers);
+  const birthYearValues = { min: MIN_CHILD_BIRTH_YEAR, max: maxYear };
+
+  const changeBirthYear = (index: number, typed: string) => {
+    const years = Array.from({ length: rows }, (_, row) => answers.kidsBirthYears[row] ?? '');
+    years[index] = typed;
+    onChange({ kidsBirthYears: years });
+  };
+
+  return (
+    <YouSection
+      id="future-me-kids"
+      title={<FormattedMessage id="futureMe.you.kids.title" />}
+      summary={<FormattedMessage id="futureMe.you.kids.summary" values={{ count: rows }} />}
+      labels={sectionLabels('kids')}
+      isOpen={isOpen}
+      isComplete={isComplete}
+      onToggle={onToggle}
+      optional={optional}
+    >
+      <div className="row g-3">
+        <AmountField
+          field="kidsCount"
+          answers={answers}
+          touched={touched}
+          label="futureMe.you.kidsCount.label"
+          name="futureMe.you.kidsCount.name"
+          step={1}
+          inputMode="numeric"
+          onChange={onChange}
+          onBlur={onBlur}
+        />
+        {rows > 0 && (
+          <>
+            <div className="col-12">
+              <p className="form-text mt-0 mb-0" id="future-me-kid-birth-year-hint">
+                <FormattedMessage id="futureMe.you.kidBirthYear.hint" />
+              </p>
+            </div>
+            <div
+              className="col-12"
+              role="group"
+              aria-label={intl.formatMessage({ id: 'futureMe.you.kidBirthYear.group' })}
+            >
+              <div className="row g-3">
+                {Array.from({ length: rows }, (_, index) => {
+                  const typed = answers.kidsBirthYears[index] ?? '';
+                  const id = `future-me-kid-birth-year-${index + 1}`;
+                  const showError =
+                    isChildBirthYearInvalid(answers, index) &&
+                    (typed.trim().length === CHILD_BIRTH_YEAR_DIGITS || leftRows.has(index));
+                  return (
+                    <div className="col-12 col-sm-6 col-lg-4" key={id}>
+                      <label className="form-label text-balance" htmlFor={id}>
+                        <FormattedMessage
+                          id="futureMe.you.kidBirthYear.label"
+                          values={{ number: index + 1 }}
+                        />
+                      </label>
+                      <input
+                        id={id}
+                        className={showError ? 'form-control is-invalid' : 'form-control'}
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]{4}"
+                        maxLength={CHILD_BIRTH_YEAR_DIGITS}
+                        autoComplete="off"
+                        value={typed}
+                        aria-invalid={showError}
+                        aria-describedby={
+                          showError
+                            ? `future-me-kid-birth-year-hint ${id}-error`
+                            : 'future-me-kid-birth-year-hint'
+                        }
+                        onChange={(event) => changeBirthYear(index, event.target.value)}
+                        onBlur={() => setLeftRows((previous) => new Set(previous).add(index))}
+                      />
+                      {showError && (
+                        <div className="invalid-feedback" id={`${id}-error`}>
+                          <FormattedMessage
+                            id="futureMe.you.kidBirthYear.error"
+                            values={{ number: index + 1, ...birthYearValues }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            {hasChildWithoutBirthYear(answers) && (
+              <div className="col-12">
+                <div className="form-text mt-0">
+                  <FormattedMessage id="futureMe.you.kids.missingBirthYear" />
+                </div>
+              </div>
+            )}
+            {late > 0 && (
+              <div className="col-12">
+                <div className="form-text mt-0">
+                  <FormattedMessage
+                    id="futureMe.you.kids.late"
+                    values={{ count: late, year: lateYear }}
+                  />
+                </div>
+              </div>
+            )}
+            <SelectField
+              id="future-me-kids-disabled"
+              label="futureMe.you.kidsDisabled.label"
+              value={answers.kidsDisabled ? 'yes' : 'no'}
+              options={(['no', 'yes'] as const).map((value) => ({
+                value,
+                label: intl.formatMessage({ id: `futureMe.you.kidsDisabled.${value}` }),
+              }))}
+              onChange={(value) => onChange({ kidsDisabled: value === 'yes' })}
+            />
+            {isKidsRightAvailableToSelf(answers) && (
+              <SelectField
+                id="future-me-kids-early-user"
+                label="futureMe.you.kidsEarlyUser.label"
+                value={answers.kidsEarlyUser}
+                options={(['me', 'other'] as const).map((value) => ({
+                  value,
+                  label: intl.formatMessage({ id: `futureMe.you.kidsEarlyUser.${value}` }),
+                }))}
+                onChange={(value) =>
+                  onChange({ kidsEarlyUser: value as YouAnswers['kidsEarlyUser'] })
+                }
+              />
+            )}
+          </>
+        )}
+      </div>
+    </YouSection>
+  );
+};
+
+const SPECIAL_CASE_CHECKBOXES = [
+  { id: 'future-me-case-hazard', label: 'futureMe.you.work.hazard' },
+  { id: 'future-me-case-special-pension', label: 'futureMe.you.work.specialPension' },
+  { id: 'future-me-case-rescue', label: 'futureMe.you.work.rescue' },
+  { id: 'future-me-case-civil', label: 'futureMe.you.work.civil' },
+  { id: 'future-me-case-other', label: 'futureMe.you.work.other' },
+] as const;
+
+export const WorkSection = ({
+  answers,
+  touched,
+  isOpen,
+  isComplete,
+  optional,
+  onToggle,
+  onChange,
+  onBlur,
+}: OptionalBlockProps) => {
+  const intl = useIntl();
+  const { hazardList } = answers;
+  const hasHazard = hazardList !== 'no';
+  const hazardYears = parseFloat(answers.hazardYears);
+  const hazardNeeded = hasHazard ? HAZARD_YEARS_NEEDED[hazardList] : 0;
+  const isChecked: Record<(typeof SPECIAL_CASE_CHECKBOXES)[number]['id'], boolean> = {
+    'future-me-case-hazard': hasHazard,
+    'future-me-case-special-pension': answers.hasSpecialPension,
+    'future-me-case-rescue': answers.hasRescue,
+    'future-me-case-civil': answers.isCivilServant,
+    'future-me-case-other': answers.hasOtherSpecialCase,
+  };
+  const toggleCase = (id: keyof typeof isChecked, checked: boolean): Partial<YouAnswers> => {
+    switch (id) {
+      case 'future-me-case-hazard':
+        return { hazardList: checked ? 'list1' : 'no' };
+      case 'future-me-case-special-pension':
+        return { hasSpecialPension: checked };
+      case 'future-me-case-rescue':
+        return { hasRescue: checked };
+      case 'future-me-case-civil':
+        return { isCivilServant: checked };
+      default:
+        return { hasOtherSpecialCase: checked };
+    }
+  };
+
+  return (
+    <YouSection
+      id="future-me-work"
+      title={<FormattedMessage id="futureMe.you.work.title" />}
+      summary={
+        <FormattedMessage
+          id="futureMe.you.work.summary"
+          values={{ count: chosenSpecialCases(answers) }}
+        />
+      }
+      labels={sectionLabels('work')}
+      isOpen={isOpen}
+      isComplete={isComplete}
+      onToggle={onToggle}
+      optional={optional}
+    >
+      <p className="form-text mt-0 mb-2" id="future-me-work-intro">
+        <FormattedMessage id="futureMe.you.work.intro" />
+      </p>
+      <div className="mb-3" role="group" aria-labelledby="future-me-work-intro">
+        {SPECIAL_CASE_CHECKBOXES.map(({ id, label }) => (
+          <div className="form-check" key={id}>
+            <input
+              className="form-check-input"
+              type="checkbox"
+              id={id}
+              checked={isChecked[id]}
+              onChange={(event) => onChange(toggleCase(id, event.target.checked))}
+            />
+            <label className="form-check-label" htmlFor={id}>
+              <FormattedMessage id={label} />
+            </label>
+          </div>
+        ))}
+      </div>
+      {answers.isCivilServant && (
+        <p className="you-note">
+          <FormattedMessage id="futureMe.you.work.civilNote" />
+        </p>
+      )}
+      {answers.hasOtherSpecialCase && (
+        <p className="you-note">
+          <FormattedMessage
+            id="futureMe.you.work.otherNote"
+            values={{
+              link: (chunks: React.ReactNode) => <a href={SOCIAL_INSURANCE_BOARD_URL}>{chunks}</a>,
+            }}
+          />
+        </p>
+      )}
+      <div className="row g-3">
+        {hasHazard && (
+          <>
+            <SelectField
+              id="future-me-hazard-list"
+              label="futureMe.you.hazardList.label"
+              value={hazardList}
+              hint="futureMe.you.hazardList.hint"
+              options={HAZARD_LISTS.map((list) => ({
+                value: list,
+                label: intl.formatMessage({
+                  id: `futureMe.you.hazardList.${list}` as TranslationKey,
+                }),
+              }))}
+              onChange={(list) => onChange({ hazardList: list as HazardList })}
+            />
+            <AmountField
+              field="hazardYears"
+              answers={answers}
+              touched={touched}
+              label="futureMe.you.hazardYears.label"
+              labelValues={{ list: hazardList === 'list1' ? 1 : 2 }}
+              unit="futureMe.you.hazardYears.hint"
+              unitValues={{
+                list: hazardList,
+                needed: hazardNeeded,
+                service: SERVICE_YEARS_NEEDED[hazardList],
+                isTooShort: hazardYears >= 0 && hazardYears < hazardNeeded ? 'yes' : 'no',
+                years: hazardYears,
+              }}
+              name="futureMe.you.hazardYears.name"
+              step={0.5}
+              inputMode="decimal"
+              onChange={onChange}
+              onBlur={onBlur}
+            />
+          </>
+        )}
+        {answers.hasRescue && (
+          <AmountField
+            field="rescueYears"
+            answers={answers}
+            touched={touched}
+            label="futureMe.you.rescueYears.label"
+            unit="futureMe.you.rescueYears.hint"
+            name="futureMe.you.rescueYears.name"
+            step={1}
+            inputMode="numeric"
+            onChange={onChange}
+            onBlur={onBlur}
+          />
+        )}
+        {answers.hasSpecialPension && (
+          <AmountField
+            field="specialPensionStartAge"
+            answers={answers}
+            touched={touched}
+            label="futureMe.you.specialPensionStart.label"
+            unit="futureMe.you.specialPensionStart.unit"
+            emptyError="futureMe.you.specialPensionStart.error"
+            name="futureMe.you.specialPensionStart.name"
+            step={1}
+            inputMode="numeric"
+            onChange={onChange}
+            onBlur={onBlur}
+          />
+        )}
+      </div>
+    </YouSection>
+  );
+};

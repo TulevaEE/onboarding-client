@@ -3,10 +3,18 @@ import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Sex } from './engine/pension';
 import { BIRTH_YEAR_MAX, BIRTH_YEAR_MIN } from './prefill';
+import { EarlyRetirementFields } from './EarlyRetirementFields';
 import { SecondPillarSection, StateSection, ThirdPillarSection } from './YouBlocks';
+import { KidsSection, kidsOptional, WorkSection, workOptional } from './YouOptionalBlocks';
 import { FIELD_DOM_IDS, RequiredMark } from './YouFields';
 import { YouSection, YouSectionLabels } from './YouSection';
-import { blockedFieldsOf, YouAnswers, YouField, YouSectionId } from './youAnswers';
+import {
+  blockedFieldsOf,
+  OptionalSectionId,
+  YouAnswers,
+  YouField,
+  YouSectionId,
+} from './youAnswers';
 
 const ME_SECTION_LABELS: YouSectionLabels = {
   close: 'futureMe.you.me.close',
@@ -35,6 +43,8 @@ interface Props {
   onChange: (changes: Partial<YouAnswers>) => void;
   onBlur: (field: YouField) => void;
   onToggle: (section: YouSectionId) => void;
+  onAddSection: (section: OptionalSectionId) => void;
+  onRemoveSection: (section: OptionalSectionId) => void;
 }
 
 export const YouStep = ({
@@ -46,6 +56,8 @@ export const YouStep = ({
   onChange,
   onBlur,
   onToggle,
+  onAddSection,
+  onRemoveSection,
 }: Props) => {
   const intl = useIntl();
   const { birthYear, sex } = answers;
@@ -144,7 +156,24 @@ export const YouStep = ({
         <StateSection {...blockProps('state')} />
         <SecondPillarSection {...blockProps('secondPillar')} />
         <ThirdPillarSection {...blockProps('thirdPillar')} />
+        <KidsSection
+          {...blockProps('kids')}
+          optional={kidsOptional(
+            answers,
+            () => onAddSection('kids'),
+            () => onRemoveSection('kids'),
+          )}
+        />
+        <WorkSection
+          {...blockProps('work')}
+          optional={workOptional(
+            answers,
+            () => onAddSection('work'),
+            () => onRemoveSection('work'),
+          )}
+        />
       </ul>
+      <EarlyRetirementFields answers={answers} onChange={onChange} />
     </section>
   );
 };
