@@ -4,6 +4,14 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useMe } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { usePageTitle } from '../common/usePageTitle';
+import {
+  decisionOrdinal,
+  hasThirdPillar,
+  initialAge60,
+  payoutAge,
+  payoutAgeTense,
+} from './age60Answers';
+import { Age60Step } from './Age60Step';
 import { initialExpenses } from './expensesAnswers';
 import { ExpensesStep } from './ExpensesStep';
 import { derivePrefill, YouPrefill } from './prefill';
@@ -14,6 +22,7 @@ import { FutureMeStep, neighbouringStep, shownSteps, StepId } from './steps';
 import { trackFutureMeStep } from './tracking';
 import {
   blockedFields,
+  birthYearOrFallback,
   blockedFieldsOf,
   FIELDS_BY_SECTION,
   initialAnswers,
@@ -42,6 +51,7 @@ const ADDED_FLAGS = { kids: 'kidsAdded', work: 'workAdded' } as const;
 const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   const intl = useIntl();
   const [answers, setAnswers] = useState(() => initialAnswers(prefill));
+  const [age60, setAge60] = useState(initialAge60);
   const [expenses, setExpenses] = useState(initialExpenses);
   const [step, setStep] = useState<StepId>(FutureMeStep.YOU);
   const [visited, setVisited] = useState<ReadonlySet<StepId>>(new Set([FutureMeStep.YOU]));
@@ -145,7 +155,21 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           {step === FutureMeStep.COSTS && (
             <ExpensesStep answers={expenses} headingRef={headingRef} onChange={setExpenses} />
           )}
-          {step !== FutureMeStep.COSTS && (
+          {step === FutureMeStep.AGE_60 && (
+            <Age60Step
+              answers={age60}
+              birthYear={birthYearOrFallback(answers)}
+              age={payoutAge(plan)}
+              tense={payoutAgeTense(birthYearOrFallback(answers), payoutAge(plan))}
+              ordinal={decisionOrdinal(steps)}
+              hasSecondPillar={plan.savesInSecondPillar}
+              hasThirdPillar={hasThirdPillar(answers)}
+              headingRef={headingRef}
+              onChange={setAge60}
+              onEditYou={() => goTo(FutureMeStep.YOU)}
+            />
+          )}
+          {step !== FutureMeStep.COSTS && step !== FutureMeStep.AGE_60 && (
             <PlaceholderStep label={stepLabel(intl, step, plan)} headingRef={headingRef} />
           )}
         </>
