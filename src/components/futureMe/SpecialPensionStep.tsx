@@ -2,7 +2,8 @@ import React, { RefObject, useState } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
 import { payoutAgeTense } from './age60Answers';
-import { pensionKind, retirementAge } from './age65Answers';
+import { Age65Answers, pensionKind, retirementAge } from './age65Answers';
+import { Age66Answers } from './age66Answers';
 import { euro, exactPercent } from './amountFormat';
 import { ChoiceCard } from './ChoiceCard';
 import {
@@ -24,6 +25,8 @@ interface Props {
   answers: SpecialPensionAnswers;
   you: YouAnswers;
   plan: StepPlanInput;
+  age65: Age65Answers;
+  age66: Age66Answers;
   headingRef: RefObject<HTMLHeadingElement>;
   onChange: (answers: SpecialPensionAnswers) => void;
   onEditYou: () => void;
@@ -53,6 +56,8 @@ export const SpecialPensionStep = ({
   answers,
   you,
   plan,
+  age65,
+  age66,
   headingRef,
   onChange,
   onEditYou,
@@ -63,7 +68,7 @@ export const SpecialPensionStep = ({
   const year = plan.birthYear + age;
   const isStarted = isSpecialPensionStarted(plan);
   const oldAgeAge = retirementAge(plan);
-  const comparison = firstPillarComparison(answers, you, plan);
+  const comparison = firstPillarComparison(answers, you, plan, age65, age66);
   const isMonthlyMissing = isMonthlyTouched && !(amountOf(answers.monthly) > 0);
   const isGrossMissing = isGrossTouched && answers.gross.trim() === '';
   const gross = amountOf(you.grossMonthly);

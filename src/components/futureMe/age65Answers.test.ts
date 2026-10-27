@@ -36,6 +36,7 @@ describe('age65Answers', () => {
       years: 1,
       secondPillar: 'grow',
       thirdPillar: 'grow',
+      firstPillarChoice: null,
     });
   });
 

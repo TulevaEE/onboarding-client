@@ -1,5 +1,6 @@
 import { Age60Answers, hasThirdPillarAt, PayoutChoice, payoutAge } from './age60Answers';
 import { Age65Answers, isPayoutChoiceMadeAtAnotherStep, retirementAge } from './age65Answers';
+import { FirstPillarChoice } from './engine/pension';
 import { StepPlanInput } from './steps';
 import { YouAnswers } from './youAnswers';
 
@@ -18,6 +19,7 @@ export interface Age66Answers {
   thirdPillarFrom: string;
   secondPillarContract: Contract;
   thirdPillarContract: Contract;
+  firstPillarChoicePa: FirstPillarChoice | null;
 }
 
 export interface Age66Context {
@@ -32,6 +34,7 @@ export const initialAge66 = (): Age66Answers => ({
   thirdPillarFrom: '',
   secondPillarContract: 'yearly',
   thirdPillarContract: 'yearly',
+  firstPillarChoicePa: null,
 });
 
 const pillarPayoutAge = (pillar: Pillar, { you, plan }: Pick<Age66Context, 'you' | 'plan'>) => {

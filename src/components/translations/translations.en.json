@@ -2876,5 +2876,13 @@
   "futureMe.specialPension.gross.unit": "eurot kuus, alates eripensioni algusest",
   "futureMe.specialPension.gross.error": "Sisesta uus brutopalk.",
   "futureMe.specialPension.sameJob": "Samas ametis töötamise ajal eripensioni ei maksta. Pane eripensioni alguseks vanus, mil ametist lahkud.",
-  "futureMe.specialPension.footer": "Eripensioni ei saa edasi lükata, varem võtta, peatada ega pooles mahus võtta. II ja III sammas avanevad samadel vanustel mis kõigil. Laste pensionilisa eripensionile ei lisata."
+  "futureMe.specialPension.footer": "Eripensioni ei saa edasi lükata, varem võtta, peatada ega pooles mahus võtta. II ja III sammas avanevad samadel vanustel mis kõigil. Laste pensionilisa eripensionile ei lisata.",
+  "futureMe.firstPillarChoice.title": "Eripension või vanaduspension?",
+  "futureMe.firstPillarChoice.intro": "{age}-aastaselt{isFavourable, select, true { (soodustingimustel)} other {}} on sul õigus nii eripensionile kui ka vanaduspensionile. Kahte riiklikku pensioni korraga ei maksta, seega vali üks. Tavaliselt tasub valida suurem. Vanaduspensionile üle minekuks esita SKA-le avaldus, automaatselt see ei vahetu.",
+  "futureMe.firstPillarChoice.atPensionAge.title": "Pensionieas uuesti: eripension või vanaduspension?",
+  "futureMe.firstPillarChoice.atPensionAge.intro": "{age}-aastaselt ({year}) jõuad tavalisse pensioniikka. Varem jätkasid eripensioniga.{hasRise, select, true { Pensioni ajal töötatud aastad tõstavad vanaduspensioni u {rise} kuus.} other {}} Võrdle uuesti ja vali üks. Vanaduspensionile üleminekuks esita SKA-le avaldus.",
+  "futureMe.firstPillarChoice.special.title": "Jätkan eripensioniga",
+  "futureMe.firstPillarChoice.oldAge.title": "Lähen üle vanaduspensionile",
+  "futureMe.firstPillarChoice.text": "{amount} kuus enne maksu{choice, select, special {. Ei muutu, avaldust pole vaja} other {}}",
+  "futureMe.firstPillarChoice.larger": "suurem"
 }

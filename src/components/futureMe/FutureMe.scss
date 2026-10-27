@@ -653,6 +653,17 @@
     }
   }
 
+  .larger-badge {
+    margin-left: 0.5rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 1rem;
+    background: $text-navy;
+    color: $white;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
   .payout-choice-emoji {
     display: inline-flex;
     color: $blue;

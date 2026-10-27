@@ -12,6 +12,13 @@ import {
 import { Age65Deferral } from './Age65Deferral';
 import { Age65Pillars } from './Age65Pillars';
 import { Age65Work } from './Age65Work';
+import { Age66Answers } from './age66Answers';
+import { FirstPillarChoice } from './FirstPillarChoice';
+import {
+  chosenFirstPillar,
+  firstPillarComparison,
+  SpecialPensionAnswers,
+} from './specialPensionAnswers';
 import { exactPercent } from './amountFormat';
 import { retirementYears } from './engine/pension';
 import { FundPensionFaq } from './FundPensionFaq';
@@ -24,6 +31,8 @@ interface Props {
   you: YouAnswers;
   plan: StepPlanInput;
   age60: Age60Answers;
+  age66: Age66Answers;
+  specialPension: SpecialPensionAnswers;
   headingRef: RefObject<HTMLHeadingElement>;
   onChange: (answers: Age65Answers) => void;
   onEditYou: () => void;
@@ -46,6 +55,8 @@ export const Age65Step = ({
   you,
   plan,
   age60,
+  age66,
+  specialPension,
   headingRef,
   onChange,
   onEditYou,
@@ -55,6 +66,9 @@ export const Age65Step = ({
   const pensionAge = retirementYears(plan);
   const year = plan.birthYear + age;
   const kind = pensionKind(you);
+  const comparison = plan.hasSpecialPension
+    ? firstPillarComparison(specialPension, you, plan, answers, age66)
+    : null;
   const isChosenAtAnotherStep = isPayoutChoiceMadeAtAnotherStep(plan);
   const hasSecondPillar = plan.savesInSecondPillar;
   const hasThird = hasThirdPillarAt(you, plan, age);
@@ -117,6 +131,23 @@ export const Age65Step = ({
         isThirdPillarAfterAsked={thirdPillarAfterAsked(answers, you, plan)}
         onChange={onChange}
       />
+      {comparison && (
+        <FirstPillarChoice
+          idPrefix="future-me-first-pillar"
+          title={<FormattedMessage id="futureMe.firstPillarChoice.title" />}
+          intro={
+            <FormattedMessage
+              id="futureMe.firstPillarChoice.intro"
+              values={{ age, isFavourable: kind === 'favourable' }}
+            />
+          }
+          special={comparison.special}
+          oldAge={comparison.oldAge}
+          larger={comparison.larger}
+          chosen={chosenFirstPillar(answers.firstPillarChoice, comparison)}
+          onChange={(firstPillarChoice) => onChange({ ...answers, firstPillarChoice })}
+        />
+      )}
       <Age65Deferral
         answers={answers}
         you={you}

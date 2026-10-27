@@ -1,3 +1,5 @@
+import { initialAge65 } from './age65Answers';
+import { initialAge66 } from './age66Answers';
 import {
   firstPillarComparison,
   initialSpecialPension,
@@ -116,6 +118,39 @@ describe('specialPensionAnswers', () => {
           planOf({ specialPensionStartAge: '40' }),
         ),
       ).toMatchObject({ special: 900, larger: 'special' });
+    });
+  });
+
+  describe('after working on past the retirement age', () => {
+    const early = { hazardList: 'list1' as const, hazardYears: '10' };
+    const you = youWith(early);
+    const plan = planOf(early);
+    const special = { ...initialSpecialPension(), monthly: '900' };
+    const workingOn = { ...initialAge65(), work: 'yes' as const, workUntil: '65' };
+
+    it('offers the comparison again at the ordinary pension age when the special pension was kept', () => {
+      expect(firstPillarComparison(special, you, plan)?.atPa).toBeNull();
+      expect(firstPillarComparison(special, you, plan, workingOn)?.atPa).toMatchObject({
+        age: 65,
+        paid: 'special',
+      });
+    });
+
+    it('pays the old-age pension from the retirement age once it is chosen', () => {
+      const chosen = { ...workingOn, firstPillarChoice: 'oldAge' as const };
+
+      expect(firstPillarComparison(special, you, plan, chosen)).toMatchObject({
+        paid: 'oldAge',
+        atPa: null,
+      });
+    });
+
+    it('pays the old-age pension from the ordinary pension age once it is chosen there', () => {
+      const chosenAtPensionAge = { ...initialAge66(), firstPillarChoicePa: 'oldAge' as const };
+
+      expect(
+        firstPillarComparison(special, you, plan, workingOn, chosenAtPensionAge)?.atPa,
+      ).toMatchObject({ paid: 'oldAge' });
     });
   });
 });
