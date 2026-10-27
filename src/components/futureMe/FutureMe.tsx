@@ -4,6 +4,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useMe } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { usePageTitle } from '../common/usePageTitle';
+import { initialExpenses } from './expensesAnswers';
+import { ExpensesStep } from './ExpensesStep';
 import { derivePrefill, YouPrefill } from './prefill';
 import { PlaceholderStep } from './PlaceholderStep';
 import { StepTrail } from './StepTrail';
@@ -40,6 +42,7 @@ const ADDED_FLAGS = { kids: 'kidsAdded', work: 'workAdded' } as const;
 const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   const intl = useIntl();
   const [answers, setAnswers] = useState(() => initialAnswers(prefill));
+  const [expenses, setExpenses] = useState(initialExpenses);
   const [step, setStep] = useState<StepId>(FutureMeStep.YOU);
   const [visited, setVisited] = useState<ReadonlySet<StepId>>(new Set([FutureMeStep.YOU]));
   const [openSections, setOpenSections] = useState(ALL_SECTIONS_OPEN);
@@ -138,7 +141,14 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           onRemoveSection={removeSection}
         />
       ) : (
-        <PlaceholderStep label={stepLabel(intl, step, plan)} headingRef={headingRef} />
+        <>
+          {step === FutureMeStep.COSTS && (
+            <ExpensesStep answers={expenses} headingRef={headingRef} onChange={setExpenses} />
+          )}
+          {step !== FutureMeStep.COSTS && (
+            <PlaceholderStep label={stepLabel(intl, step, plan)} headingRef={headingRef} />
+          )}
+        </>
       )}
       <div className="step-nav">
         <button

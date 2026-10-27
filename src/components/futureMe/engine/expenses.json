@@ -1,0 +1,176 @@
+{
+  "studyYear": 2020,
+  "pricesAsOf": "2026-09",
+  "priceFactor": 1.547,
+  "categories": [
+    {
+      "id": "food",
+      "alone": {
+        "frugal": 221,
+        "optimal": 240,
+        "comfortable": 306
+      },
+      "couple": {
+        "frugal": 188,
+        "optimal": 204,
+        "comfortable": 260
+      }
+    },
+    {
+      "id": "housing",
+      "alone": {
+        "frugal": 220,
+        "optimal": 237,
+        "comfortable": 333
+      },
+      "couple": {
+        "frugal": 156,
+        "optimal": 168,
+        "comfortable": 237
+      }
+    },
+    {
+      "id": "health",
+      "alone": {
+        "frugal": 67,
+        "optimal": 67,
+        "comfortable": 92
+      },
+      "couple": {
+        "frugal": 45,
+        "optimal": 45,
+        "comfortable": 62
+      }
+    },
+    {
+      "id": "transport",
+      "alone": {
+        "frugal": 46,
+        "optimal": 65,
+        "comfortable": 86
+      },
+      "couple": {
+        "frugal": 67,
+        "optimal": 96,
+        "comfortable": 127
+      }
+    },
+    {
+      "id": "leisure",
+      "alone": {
+        "frugal": 67,
+        "optimal": 79,
+        "comfortable": 128
+      },
+      "couple": {
+        "frugal": 57,
+        "optimal": 67,
+        "comfortable": 109
+      }
+    },
+    {
+      "id": "household",
+      "alone": {
+        "frugal": 39,
+        "optimal": 46,
+        "comfortable": 80
+      },
+      "couple": {
+        "frugal": 41,
+        "optimal": 49,
+        "comfortable": 85
+      }
+    },
+    {
+      "id": "communication",
+      "alone": {
+        "frugal": 22,
+        "optimal": 25,
+        "comfortable": 33
+      },
+      "couple": {
+        "frugal": 19,
+        "optimal": 21,
+        "comfortable": 27
+      }
+    },
+    {
+      "id": "clothing",
+      "alone": {
+        "frugal": 20,
+        "optimal": 26,
+        "comfortable": 35
+      },
+      "couple": {
+        "frugal": 15,
+        "optimal": 19,
+        "comfortable": 25
+      }
+    },
+    {
+      "id": "alcoholTobacco",
+      "alone": {
+        "frugal": 19,
+        "optimal": 23,
+        "comfortable": 31
+      },
+      "couple": {
+        "frugal": 19,
+        "optimal": 23,
+        "comfortable": 31
+      }
+    },
+    {
+      "id": "cafesAndAccommodation",
+      "alone": {
+        "frugal": 15,
+        "optimal": 18,
+        "comfortable": 39
+      },
+      "couple": {
+        "frugal": 13,
+        "optimal": 16,
+        "comfortable": 34
+      }
+    },
+    {
+      "id": "otherGoods",
+      "alone": {
+        "frugal": 34,
+        "optimal": 39,
+        "comfortable": 63
+      },
+      "couple": {
+        "frugal": 31,
+        "optimal": 36,
+        "comfortable": 58
+      }
+    },
+    {
+      "id": "education",
+      "alone": {
+        "frugal": 1,
+        "optimal": 2,
+        "comfortable": 3
+      },
+      "couple": {
+        "frugal": 0,
+        "optimal": 0,
+        "comfortable": 1
+      }
+    },
+    {
+      "id": "gifts",
+      "alone": {
+        "frugal": 20,
+        "optimal": 24,
+        "comfortable": 32
+      },
+      "couple": {
+        "frugal": 16,
+        "optimal": 20,
+        "comfortable": 27
+      }
+    }
+  ]
+}

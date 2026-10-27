@@ -230,7 +230,9 @@ describe('FutureMe', () => {
       fillInRequiredAnswers();
       userEvent.click(within(trail()).getByRole('button', { name: 'Kulud, vaatamata' }));
 
-      expect(screen.getByRole('heading', { level: 2, name: 'Kulud' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { level: 2, name: 'Mis elu sa pensionil elada tahad?' }),
+      ).toBeInTheDocument();
       expect(within(trail()).getByRole('button', { name: 'Sina, vaadatud' })).toBeInTheDocument();
       expect(
         within(trail()).getByRole('button', { name: 'Kulud, praegune samm' }),
