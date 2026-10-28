@@ -2961,5 +2961,17 @@
   "futureMe.result.chart.announce.surplus": "üle jääb {amount}",
   "futureMe.result.chart.announce.hidden": "{layer} peidetud.",
   "futureMe.result.chart.announce.shown": "{layer} nähtav.",
-  "futureMe.result.chart.keys": "Nooleklahvidega liigud graafiku punktide vahel, Esc sulgeb selgituse. Andmed on ka tabelis."
+  "futureMe.result.chart.keys": "Nooleklahvidega liigud graafiku punktide vahel, Esc sulgeb selgituse. Andmed on ka tabelis.",
+  "futureMe.result.warn.title": "Hoiatus: sinu valitud plaan ei kanna kulusid elu lõpuni",
+  "futureMe.result.warn.until": "(kaetud kuni {until}. eluaastani).",
+  "futureMe.result.warn.shorterDeferral": "Riikliku pensioni {deferral} a edasilükkamisega ei jätku sammaste raha sillaks. {isNow, select, yes {Kui võtad riikliku pensioni kohe ({pensionAge}-⁠aastaselt), on kulud kaetud elu lõpuni.} other {{shorter} a edasilükkamisega on kulud kaetud elu lõpuni ja riiklik pension on ikka suurem.}} Selle valiku teed pensionieas.",
+  "futureMe.result.warn.better": "Parem oleks <strong>{name}</strong>: see kannab elu lõpuni {best} kuus (sinu valik {mine}).",
+  "futureMe.result.warn.how": "Selleks vali {kind, select, lump {{payoutAge}-⁠aastaselt II sambale „Kõik korraga“} grow {{payoutAge}-⁠aastaselt „Jätkan kasvatamist“ ja pensionieas „Kasvatan edasi“} contract {pensionipõlves {contract, select, once {„Üks leping“} other {„Uus leping igal aastal“}}} bridge {{atPayoutAge, select, yes {{payoutAge}-⁠aastaselt} other {pensionieas}} fondipension ja lükka riiklik pension {deferral, plural, one {# aasta} other {# aastat}} edasi} other {{atPayoutAge, select, yes {{payoutAge}-⁠aastaselt} other {pensionieas}} fondipension, võta riiklik pension kohe ja pensionipõlves {contract, select, once {„Üks leping“} other {„Uus leping igal aastal“}}}}.",
+  "futureMe.result.warn.none": "Ükski väljamakse viis ei kanna neid kulusid elu lõpuni: kõige rohkem kannab {most} kuus. Vali väiksem kulupakett või muuda kulusid.",
+  "futureMe.result.warn.scenario.A": "Kõik korraga",
+  "futureMe.result.warn.scenario.B": "Üks fondipensioni leping",
+  "futureMe.result.warn.scenario.C": "Sild ja riiklik pension hiljem",
+  "futureMe.result.warn.scenario.D": "Leping igal aastal uuesti",
+  "futureMe.result.warn.scenario.E": "Jätkan kasvatamist",
+  "futureMe.result.surplus": "Fondipension maksab {from}–⁠{to}-⁠aastaselt keskmiselt <strong>{average} kuus rohkem</strong>, kui kulud vajavad. Ülejääk seisab hoiusel ja kaotab väärtust (−1% aastas pärast inflatsiooni).{hasGrow, select, yes { Kui jätad raha fondi („Kasvatan edasi“), kannab plaan elu lõpuni <strong>{grow} kuus</strong> (praegu {mine}).} other {}} Fondipensioni saad ka peatada ja hiljem uuesti alustada, näiteks kui riiklik pension algab ja katab suurema osa kuludest."
 }

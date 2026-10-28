@@ -697,6 +697,27 @@
     font-size: 1.125rem;
   }
 
+  .result-advice {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    background: $blue-bg-1;
+    text-wrap: pretty;
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .result-advice-warn {
+    border-left: 4px solid $red;
+    background: $note-bg;
+
+    p {
+      margin-bottom: 0.5rem;
+    }
+  }
+
   .result-tiles {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));

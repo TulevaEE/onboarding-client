@@ -4,6 +4,7 @@ import { TranslationKey } from '../translations';
 import { euro } from './amountFormat';
 import { ChapterHead } from './ChapterHead';
 import { needMonthly } from './expensesAnswers';
+import { ResultAdvice } from './ResultAdvice';
 import { ResultChart } from './ResultChart';
 import {
   coverageKind,
@@ -178,6 +179,7 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       >
         <AnswerText result={result} need={needMonthly(context.expenses)} />
       </p>
+      <ResultAdvice context={context} result={result} />
       <Tiles result={result} />
       <IncomeAtPensionAge result={result} need={needMonthly(context.expenses)} />
       <ResultChart result={result} need={needMonthly(context.expenses)} />
