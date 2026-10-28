@@ -441,6 +441,12 @@ describe('FutureMe', () => {
       const dialog = screen.getByRole('dialog');
       expect(within(dialog).getByText(/lapse esimese 36 elukuu eest/)).toBeInTheDocument();
       expect(within(dialog).getByText(/36:/)).toBeInTheDocument();
+      expect(within(dialog).getByText(/sündinud 2013\. aastal või hiljem/)).toBeInTheDocument();
+      expect(within(dialog).getByText(/iga lapse eest eraldi/)).toBeInTheDocument();
+      expect(within(dialog).getByText(/vähem kui 3\saastase vahega/)).toBeInTheDocument();
+      expect(
+        within(dialog).getByText(/2021\. aasta septembris või hiljem sündinud lapse puhul/),
+      ).toBeInTheDocument();
     });
 
     it('waits for the register before showing the form', () => {
