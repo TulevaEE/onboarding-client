@@ -167,6 +167,7 @@ export interface FundPensionContract {
 
 export interface SimulationResult extends SimulationSummary {
   ordinaryPensionAge: number;
+  p1FullAge: number;
   fundPensionContracts: Record<'second' | 'third', FundPensionContract | null>;
   childSupplement: { monthly: number; applied: boolean } | null;
   rescueAllowance: { from: number; until: number; monthly: number; pension: number } | null;
@@ -930,6 +931,7 @@ export function simulate(
   return {
     ...summarize(rows, input, table, ret, p1Start, currentAge),
     ordinaryPensionAge: pa,
+    p1FullAge: p1Start + half,
     fundPensionContracts: {
       second:
         contractStart !== null ? { start: contractStart, end: contractStart + contractTerm } : null,

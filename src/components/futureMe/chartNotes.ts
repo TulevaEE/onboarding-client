@@ -52,9 +52,13 @@ const bridgeNoteOf = (result: Result, rows: ChartRow[]): SummaryNote[] => {
 
 export const summaryNotesOf = (result: Result, rows: ChartRow[]): SummaryNote[] => {
   const allowance = PENSIONER_ALLOWANCE / MONTHS_IN_YEAR;
-  const fromPensionAge = result.rows.filter(({ age }) => age >= result.pensionStartAge);
-  const statePension = fromPensionAge.find(({ i1g }) => i1g > PAID_FROM);
-  const specialPension = fromPensionAge.find(({ ispg }) => ispg > PAID_FROM);
+  const retiredFrom = (from: number) => result.rows.filter(({ age, work }) => age >= from && !work);
+  const statePension = retiredFrom(Math.max(result.ordinaryPensionAge, result.p1FullAge)).find(
+    ({ i1g }) => i1g > PAID_FROM,
+  );
+  const specialPension = retiredFrom(result.ordinaryPensionAge).find(
+    ({ ispg }) => ispg > PAID_FROM,
+  );
   const { firstPillar } = result;
   const choiceAtPensionAge = firstPillar?.atPa ?? firstPillar;
   return [
@@ -97,15 +101,17 @@ export const assumptionOf = (
   rows: ChartRow[],
   events: ChartEvent[],
 ): Assumption | null => {
-  const retired = rows.filter(({ salary }) => salary === 0);
-  const firstDepositUse = retired.find(({ deposit }) => deposit > 0);
-  const fundPensionEnds = events.some(({ kind }) => kind === 'fundEnd');
+  const fundEndAges = events.filter(({ kind }) => kind === 'fundEnd').map(({ age }) => age);
+  const afterFundEnd = rows.filter(
+    ({ age, salary }) => salary === 0 && age >= Math.min(...fundEndAges),
+  );
+  const firstDepositUse = afterFundEnd.find(({ deposit }) => deposit > 0);
   const hasSurplus = rows.some(({ surplus }) => surplus > 0);
-  if (result.coversNeedUntil !== null || !fundPensionEnds || !hasSurplus || !firstDepositUse) {
+  if (result.coversNeedUntil !== null || !hasSurplus || !firstDepositUse) {
     return null;
   }
   return {
     from: firstDepositUse.age,
-    missing: Math.max(...retired.map(({ deposit }) => deposit)),
+    missing: Math.max(...afterFundEnd.map(({ deposit }) => deposit)),
   };
 };

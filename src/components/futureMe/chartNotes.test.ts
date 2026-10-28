@@ -65,8 +65,41 @@ const assumptionFor = (changes?: Changes) => {
   return assumptionOf(result, rows, chartEventsOf(result));
 };
 
+const taxNoteOf = (changes: Changes, kind: 'statePensionTax' | 'specialPensionTax') => {
+  const note = notesOf(changes).find((candidate) => candidate.kind === kind);
+  if (note?.kind !== kind) {
+    throw new Error(`No ${kind} note`);
+  }
+  return note;
+};
+
 describe('summaryNotesOf', () => {
   describe('income tax on the state pension', () => {
+    it('states a tax that is 22% of the pension over the tax-free income it names when working on past the pension age', () => {
+      const { gross, tax, allowance } = taxNoteOf(
+        { age65: { work: 'yes', workUntil: '67' } },
+        'statePensionTax',
+      );
+
+      expect(tax).toBeCloseTo(0.22 * Math.max(0, gross - allowance), 2);
+    });
+
+    it('describes the full pension after taking half of it for a few years', () => {
+      const note = taxNoteOf(
+        { you: { firstPillarMonthly: '1200' }, age65: { mode: 'half', years: 3 } },
+        'statePensionTax',
+      );
+
+      expect(note.gross).toBeGreaterThan(1200);
+      expect(note.tax).toBeGreaterThan(0);
+    });
+
+    it('states a tax on the special pension that is 22% over the tax-free income it names', () => {
+      const { gross, tax, allowance } = taxNoteOf(withSpecialPension, 'specialPensionTax');
+
+      expect(tax).toBeCloseTo(0.22 * Math.max(0, gross - allowance), 2);
+    });
+
     it('says there is no tax when the pension is below the pensioner tax-free income', () => {
       expect(notesOf()).toContainEqual({
         kind: 'statePensionTax',
@@ -171,6 +204,16 @@ describe('summaryNotesOf', () => {
 describe('assumptionOf', () => {
   it('gives the age the deposit starts being used and the most that is missing a month without it', () => {
     expect(assumptionFor(oneFundContract)).toEqual({ from: 84, missing: 91 });
+  });
+
+  it('is left out when the deposit only pays before the fund pension ends', () => {
+    expect(
+      assumptionFor({
+        you: { thirdPillarJoined: 'before', thirdPillarAmount: '10000', thirdPillarMonthly: '100' },
+        age65: { secondPillar: 'fund', thirdPillar: 'lump', mode: 'defer', years: 3 },
+        age66: { secondPillarContract: 'once' },
+      }),
+    ).toBeNull();
   });
 
   it('is left out when no fund pension pays and so none ends', () => {
