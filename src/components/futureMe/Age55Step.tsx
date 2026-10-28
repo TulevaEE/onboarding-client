@@ -1,20 +1,20 @@
-import React, { ReactNode, RefObject } from 'react';
+import React, { RefObject } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import Radio from '../common/radio';
-import { formatAmountForCurrency } from '../common/utils';
 import { Age55, ThirdPillarPayout } from './age55';
 import { TAX_SHORT } from './engine/pension';
 import { birthYearOrFallback, ThirdPillarPlan, YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
 import { FutureMeStep } from './steps';
 import { THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021 } from './thirdPillarPayoutAges';
+import { strong } from './richText';
+import { euro } from './amountFormat';
+import { LinkButton } from './LinkButton';
 
 const PLANS: ThirdPillarPlan[] = ['keep', 'fund', 'lump'];
 const PAYOUTS_URL = 'https://tuleva.ee/pensioni-valjamaksed/';
 
-const strong = (chunks: ReactNode) => <strong>{chunks}</strong>;
-const euros = (amount: number) => formatAmountForCurrency(amount, 0);
 const percent = (rate: number) => Math.round(rate * 100);
 
 interface Props {
@@ -39,9 +39,9 @@ const PlanOutcome = ({
       id="futureMe.age55.outcome.lump"
       values={{
         age,
-        gross: euros(payout.gross),
-        tax: euros(payout.tax),
-        net: euros(payout.net),
+        gross: euro(payout.gross),
+        tax: euro(payout.tax),
+        net: euro(payout.net),
         strong,
       }}
     />
@@ -50,9 +50,9 @@ const PlanOutcome = ({
       id="futureMe.age55.outcome.fund"
       values={{
         age,
-        monthly: euros(payout.firstMonthly),
-        total: euros(payout.net),
-        left: euros(payout.leftAtPension),
+        monthly: euro(payout.firstMonthly),
+        total: euro(payout.net),
+        left: euro(payout.leftAtPension),
         strong,
       }}
     />
@@ -99,14 +99,12 @@ export const Age55Step = ({ answers, age55, headingRef, onChange, onEditThirdPil
       {lockMessage && (
         <p className="you-note">
           <FormattedMessage id={lockMessage} />{' '}
-          <button
-            type="button"
-            className="btn btn-link p-0 align-baseline"
+          <LinkButton
             aria-label={intl.formatMessage({ id: 'futureMe.age55.lock.editLabel' })}
             onClick={onEditThirdPillar}
           >
             <FormattedMessage id="futureMe.age55.lock.edit" />
-          </button>
+          </LinkButton>
         </p>
       )}
       <fieldset disabled={!!age55.lock} className="mb-3">

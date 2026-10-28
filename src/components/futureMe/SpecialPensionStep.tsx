@@ -20,6 +20,8 @@ import { amountOf, YouAnswers } from './youAnswers';
 import { TranslationKey } from '../translations';
 import { ChapterHead } from './ChapterHead';
 import { ageTense, retirementAge } from './planAges';
+import { LinkButton } from './LinkButton';
+import { strong } from './richText';
 
 interface Props {
   answers: SpecialPensionAnswers;
@@ -39,18 +41,16 @@ const WORK_CHOICES = [
 
 const PAY_CHOICES = ['same', 'change'] as const;
 
-const linkButton = 'btn btn-link p-0 align-baseline';
-
 const EditYouButton = ({ labelId, onClick }: { labelId: TranslationKey; onClick: () => void }) => (
-  <button type="button" className={linkButton} onClick={onClick}>
+  <LinkButton onClick={onClick}>
     <FormattedMessage id={labelId} />
     <span className="visually-hidden">
       <FormattedMessage id="futureMe.age65.inYourData" />
     </span>
-  </button>
+  </LinkButton>
 );
 
-const bold = { b: (chunks: React.ReactNode) => <strong>{chunks}</strong> };
+const bold = { b: strong };
 
 export const SpecialPensionStep = ({
   answers,

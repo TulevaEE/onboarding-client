@@ -1,6 +1,5 @@
 import React from 'react';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
-import { formatAmountForCurrency } from '../common/utils';
 import { TranslationKey } from '../translations';
 import {
   amountOf,
@@ -13,6 +12,7 @@ import {
 } from './youAnswers';
 import { AmountField, BlockProps, SelectField } from './YouFields';
 import { YouSection, YouSectionLabels } from './YouSection';
+import { euro } from './amountFormat';
 
 export const sectionLabels = (
   block: 'state' | 'secondPillar' | 'thirdPillar' | 'kids' | 'work',
@@ -32,8 +32,6 @@ const MAX_OPEN_AGE_DIGITS = 2;
 const NON_DIGITS = /\D/g;
 
 const percentOf = (rate: number): number => Math.round(rate * 100);
-
-const euro = (value: number): string => formatAmountForCurrency(Math.round(value), 0);
 
 const rateLabel = (intl: IntlShape, rate: string): string =>
   Number(rate) > 0

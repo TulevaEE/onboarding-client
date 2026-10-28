@@ -7,6 +7,8 @@ import { ChapterHead } from './ChapterHead';
 import { FutureMeStep } from './steps';
 import { EmojiIcon } from './FutureMeIcon';
 import { Tense } from './planAges';
+import { strong } from './richText';
+import { LinkButton } from './LinkButton';
 
 type Pillar = 'secondPillar' | 'thirdPillar';
 
@@ -24,8 +26,6 @@ interface Props {
 }
 
 const CHOICE_EMOJI: Record<PayoutChoice, string> = { grow: '🌱', fund: '🗓️', lump: '💰' };
-
-const emphasis = (chunks: React.ReactNode) => <strong>{chunks}</strong>;
 
 interface PillarProps {
   pillar: Pillar;
@@ -55,14 +55,14 @@ const PillarChoices = ({
         <p className="payout-note">
           <FormattedMessage
             id={`futureMe.age60.${pillar}.none` as TranslationKey}
-            values={{ strong: emphasis }}
+            values={{ strong }}
           />{' '}
-          <button type="button" className="btn btn-link p-0 align-baseline" onClick={onEditYou}>
+          <LinkButton onClick={onEditYou}>
             <FormattedMessage id={`futureMe.age60.${pillar}.change` as TranslationKey} />
             <span className="visually-hidden">
               <FormattedMessage id="futureMe.age60.inYourData" />
             </span>
-          </button>
+          </LinkButton>
         </p>
       )}
       <fieldset disabled={!hasPillar} className="payout-fieldset">
@@ -138,7 +138,7 @@ export const Age60Step = ({
       >
         {hasSecondPillar && (
           <p className="text-secondary mt-2">
-            <FormattedMessage id="futureMe.age60.workTip" values={{ strong: emphasis }} />
+            <FormattedMessage id="futureMe.age60.workTip" values={{ strong }} />
           </p>
         )}
       </PillarChoices>

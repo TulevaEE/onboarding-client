@@ -14,6 +14,7 @@ import {
   pensionAgeValue,
   YouAnswers,
 } from './youAnswers';
+import { strong } from './richText';
 
 const NO_START_AGE = 'none';
 
@@ -61,7 +62,6 @@ const summaryOf = (intl: IntlShape, answers: YouAnswers): React.ReactNode => {
   const years = earlyRetirementYears(answers);
   const right = earlyRetirementRight(answers);
   const age = pensionAgeValue(answers);
-  const strong = (chunks: React.ReactNode) => <strong>{chunks}</strong>;
   const when = { years, age, year: birthYearOrFallback(answers) + age, strong };
   if (years > right) {
     return (

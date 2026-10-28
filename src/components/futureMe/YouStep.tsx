@@ -17,6 +17,7 @@ import {
 } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
 import { FutureMeStep } from './steps';
+import { strong } from './richText';
 
 const ME_SECTION_LABELS: YouSectionLabels = {
   close: 'futureMe.you.me.close',
@@ -88,10 +89,7 @@ export const YouStep = ({
         </h2>
       </ChapterHead>
       <p>
-        <FormattedMessage
-          id="futureMe.you.intro"
-          values={{ strong: (chunks: React.ReactNode) => <strong>{chunks}</strong> }}
-        />
+        <FormattedMessage id="futureMe.you.intro" values={{ strong }} />
       </p>
       {isPrefilled && (
         <p className="prefill-note">

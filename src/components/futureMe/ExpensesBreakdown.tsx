@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
-import { formatAmountForCount, formatAmountForCurrency } from '../common/utils';
+import { formatAmountForCount } from '../common/utils';
 import { TranslationKey } from '../translations';
 import { CostLevel, costLines, priceFactor, pricesAsOf, studyYear } from './engine/expenses';
 import {
@@ -13,6 +13,8 @@ import {
   withLineEdit,
   withoutLevelEdits,
 } from './expensesAnswers';
+import { strong } from './richText';
+import { euro } from './amountFormat';
 
 interface Props {
   answers: ExpensesAnswers;
@@ -21,14 +23,10 @@ interface Props {
 
 const PRICE_RISE_FRACTION_DIGITS = 0;
 
-const euro = (value: number): string => formatAmountForCurrency(Math.round(value), 0);
-
 const lineDomId = (lineId: string): string => `future-me-cost-${lineId}`;
 
-const emphasis = (chunks: React.ReactNode) => <strong>{chunks}</strong>;
-
 const sourceValues = (answers: ExpensesAnswers, level: CostLevel) => ({
-  chip: emphasis,
+  chip: strong,
   level: <FormattedMessage id={`futureMe.expenses.source.level.${level}` as TranslationKey} />,
   household: (
     <FormattedMessage

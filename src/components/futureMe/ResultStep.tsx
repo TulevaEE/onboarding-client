@@ -13,6 +13,7 @@ import {
   resultOf,
 } from './resultAnswers';
 import { FutureMeStep } from './steps';
+import { strong } from './richText';
 
 interface Props {
   context: ResultContext;
@@ -26,8 +27,6 @@ const INCOME_LABELS: Record<IncomeSource, TranslationKey> = {
   thirdPillar: 'futureMe.result.income.thirdPillar',
   deposit: 'futureMe.result.income.deposit',
 };
-
-const emphasis = (chunks: React.ReactNode) => <strong>{chunks}</strong>;
 
 const coverageKind = (result: Result): 'all' | 'gap' | 'none' | 'until' => {
   if (result.coversNeedUntil === null) {
@@ -57,7 +56,7 @@ const AnswerText = ({ result, need }: { result: Result; need: number }) => {
           isRange: gapEnd > until ? 'yes' : 'no',
           isBeforeStatePension: until < result.p1StartAge ? 'yes' : 'no',
           stateStart: result.p1StartAge,
-          strong: emphasis,
+          strong,
         }}
       />{' '}
       <FormattedMessage
@@ -72,7 +71,7 @@ const AnswerText = ({ result, need }: { result: Result; need: number }) => {
         values={{
           age: result.horizonAge,
           amount: euro(result.sustainable),
-          strong: emphasis,
+          strong,
         }}
       />
     </>

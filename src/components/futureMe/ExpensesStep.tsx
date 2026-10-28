@@ -23,6 +23,8 @@ import {
 import { ChapterHead } from './ChapterHead';
 import { FutureMeStep } from './steps';
 import { EmojiIcon } from './FutureMeIcon';
+import { strong } from './richText';
+import { euro } from './amountFormat';
 
 interface Props {
   answers: ExpensesAnswers;
@@ -42,14 +44,11 @@ const LEVEL_WITH_CARE_HOME_ALTERNATIVE: CostLevel = 'comfortable';
 const DECIMAL_FRACTION_DIGITS = 1;
 const TRAILING_ZERO_DECIMAL = /,0$/;
 
-const euro = (value: number): string => formatAmountForCurrency(Math.round(value), 0);
-
 const decimalText = (value: number): string =>
   formatAmountForCount(value, DECIMAL_FRACTION_DIGITS)
     .replace('.', ',')
     .replace(TRAILING_ZERO_DECIMAL, '');
 
-const emphasis = (chunks: React.ReactNode) => <strong>{chunks}</strong>;
 const muted = (chunks: React.ReactNode) => <small>{chunks}</small>;
 
 const factItems = (
@@ -161,7 +160,7 @@ const LevelCard = ({ answers, level, widestTotal, onChange }: LevelCardProps) =>
             <small className="cost-level-edited">
               <FormattedMessage
                 id="futureMe.expenses.level.edited"
-                values={{ amount: euro(levelNeed(answers, level)), strong: emphasis }}
+                values={{ amount: euro(levelNeed(answers, level)), strong }}
               />
             </small>
           )}
@@ -264,7 +263,7 @@ export const ExpensesStep = ({ answers, headingRef, onChange }: Props) => {
           <span>
             <FormattedMessage
               id={`futureMe.expenses.household.note.${answers.household}` as TranslationKey}
-              values={{ strong: emphasis }}
+              values={{ strong }}
             />
           </span>
         </div>
@@ -277,10 +276,7 @@ export const ExpensesStep = ({ answers, headingRef, onChange }: Props) => {
           <FormattedMessage id="futureMe.expenses.household.help.compare" />
         </p>
         <p>
-          <FormattedMessage
-            id="futureMe.expenses.household.help.benefit"
-            values={{ strong: emphasis }}
-          />
+          <FormattedMessage id="futureMe.expenses.household.help.benefit" values={{ strong }} />
         </p>
         <p className="form-text mb-0">
           <FormattedMessage

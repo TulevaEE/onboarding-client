@@ -16,6 +16,7 @@ import {
 } from './age65Answers';
 import { decimalText, euro } from './amountFormat';
 import { ChoiceCard } from './ChoiceCard';
+import { LinkButton } from './LinkButton';
 
 interface Props {
   answers: Age65Answers;
@@ -68,12 +69,12 @@ export const Age65Deferral = ({ answers, you, plan, onChange, onEditYou }: Props
         <p className="payout-note">
           <FormattedMessage id="futureMe.age65.defer.locked" values={{ lock }} />{' '}
           {lock === 'specialPension' && (
-            <button type="button" className="btn btn-link p-0 align-baseline" onClick={onEditYou}>
+            <LinkButton onClick={onEditYou}>
               <FormattedMessage id="futureMe.age65.defer.lockedChange" />
               <span className="visually-hidden">
                 <FormattedMessage id="futureMe.age65.inYourData" />
               </span>
-            </button>
+            </LinkButton>
           )}
         </p>
       ) : (

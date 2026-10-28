@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
+import { strong } from './richText';
 
 const FAQ_ITEMS = ['what', 'when', 'surplus', 'know', 'at60'] as const;
 
@@ -15,7 +16,7 @@ const richText = {
   p: (chunks: React.ReactNode) => <p>{chunks}</p>,
   ul: (chunks: React.ReactNode) => <ul>{chunks}</ul>,
   li: (chunks: React.ReactNode) => <li>{chunks}</li>,
-  strong: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
+  strong,
   small: (chunks: React.ReactNode) => <small className="text-secondary">{chunks}</small>,
   link: externalLink(PAYOUTS_PAGE),
   pensionikeskusTerm: externalLink(PENSIONIKESKUS_TERM_PAGE),
