@@ -102,6 +102,14 @@ describe('rules', () => {
       });
     });
 
+    it('dates the contract to when the fund pension starts paying, not the pension age', () => {
+      const context = contextWith({}, { age66: { ...initialAge66(), secondPillarFrom: '70' } });
+
+      expect(rulesOf(context)).toContainEqual(
+        expect.objectContaining({ id: 'fundPensionContract', age: 70, year: 2050 }),
+      );
+    });
+
     it('leaves out a pillar that is not paid as a fund pension', () => {
       const context = fundAtPensionAge({
         age60: { ...initialAge60(), secondPillar: 'fund', thirdPillar: 'lump' },

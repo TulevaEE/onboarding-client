@@ -2,7 +2,7 @@ import { pensionKind } from './age65Answers';
 import { Contract, hasPillar, Pillar } from './age66Answers';
 import { EARLY_DECREASE, retirementYears } from './engine/pension';
 import { retirementAge } from './planAges';
-import { ResultContext, resultInputOf, resultScenarioOf } from './resultAnswers';
+import { ResultContext, resultInputOf, resultOf, resultScenarioOf } from './resultAnswers';
 import { specialPensionStartAge } from './specialPensionAnswers';
 import { amountOf, earlyRightSources, YouAnswers } from './youAnswers';
 
@@ -23,6 +23,7 @@ export type Rule = When &
   );
 
 const FUND_PENSION_SCENARIOS = ['B', 'C', 'D'];
+const PAID_FROM = 0.5;
 
 const whenOf = (context: ResultContext, age: number | null): When => ({
   age,
@@ -81,9 +82,20 @@ const fundPensionRules = (context: ResultContext): Rule[] => {
     ...(isSecondPillarFund && { secondPillar: age66.secondPillarContract }),
     ...(isThirdPillarFund && { thirdPillar: age66.thirdPillarContract }),
   };
-  return Object.keys(contracts).length === 0
-    ? []
-    : [{ id: 'fundPensionContract', ...whenOf(context, retirementYears(plan)), contracts }];
+  if (Object.keys(contracts).length === 0) {
+    return [];
+  }
+  const result = resultOf(context);
+  const firstFundPayment = result.rows.find(
+    ({ age, fp }) => age >= result.pensionStartAge && fp > PAID_FROM,
+  );
+  return [
+    {
+      id: 'fundPensionContract',
+      ...whenOf(context, firstFundPayment?.age ?? retirementYears(plan)),
+      contracts,
+    },
+  ];
 };
 
 const inheritingPillar = (hasSecondPillar: boolean): Pillar =>
