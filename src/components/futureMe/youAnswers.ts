@@ -166,6 +166,58 @@ export const initialAnswers = (prefill: YouPrefill): YouAnswers =>
     earlyYearsPicked: '',
   } as YouAnswers);
 
+type PrefilledField =
+  | 'birthYear'
+  | 'sex'
+  | 'secondPillarRate'
+  | 'grossMonthly'
+  | 'secondPillarAmount'
+  | 'thirdPillarJoined'
+  | 'thirdPillarAmount'
+  | 'thirdPillarMonthly'
+  | 'kidsCount';
+type PrefilledChildField = 'kidsBirthYears' | 'kidsIIMonths';
+
+export type PrefilledValues = Partial<Pick<YouAnswers, PrefilledField | PrefilledChildField>>;
+
+export const prefilledValuesOf = (prefill: YouPrefill): PrefilledValues => {
+  const initial = initialAnswers(prefill);
+  const isFromData: Record<PrefilledField | PrefilledChildField, boolean> = {
+    birthYear: prefill.birthYear !== null,
+    sex: prefill.sex !== null,
+    secondPillarRate: prefill.secondPillarRate !== null,
+    grossMonthly: Boolean(prefill.grossMonthly),
+    secondPillarAmount: Boolean(prefill.secondPillarAmount),
+    thirdPillarJoined: Boolean(prefill.thirdPillarJoined),
+    thirdPillarAmount: Boolean(prefill.thirdPillarAmount),
+    thirdPillarMonthly: Boolean(prefill.thirdPillarMonthly),
+    kidsCount: Boolean(prefill.kids),
+    kidsBirthYears: Boolean(prefill.kids),
+    kidsIIMonths: Boolean(prefill.kids),
+  };
+  return Object.fromEntries(
+    Object.entries(isFromData)
+      .filter(([, isPrefilled]) => isPrefilled)
+      .map(([field]) => [field, initial[field as keyof YouAnswers]]),
+  );
+};
+
+export const isPrefilledAnswer = (
+  answers: YouAnswers,
+  prefilled: PrefilledValues,
+  field: PrefilledField,
+): boolean => prefilled[field] !== undefined && answers[field] === prefilled[field];
+
+export const isPrefilledChildAnswer = (
+  answers: YouAnswers,
+  prefilled: PrefilledValues,
+  field: PrefilledChildField,
+  index: number,
+): boolean => {
+  const value = prefilled[field]?.[index];
+  return Boolean(value) && answers[field][index] === value;
+};
+
 export const removeOptionalSection = (
   answers: YouAnswers,
   section: OptionalSectionId,

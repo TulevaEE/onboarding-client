@@ -307,6 +307,71 @@ describe('FutureMe', () => {
     });
   });
 
+  describe('prefilled fields for screen readers', () => {
+    const PREFILLED = /Eeltäidetud väli/;
+    const kidBirthYearField = (number: number) =>
+      screen.getByRole('textbox', { name: new RegExp(`${number}\\. lapse sünniaasta`) });
+    const kidMonthsField = (number: number) =>
+      screen.getByRole('spinbutton', {
+        name: new RegExp(`${number}\\. lapse riigi lisamakse II\\ssambasse`),
+      });
+
+    beforeEach(() => {
+      loggedInAs({ thirdPillarInitDate: '2019-03-01' });
+      withPensionData({
+        contributions: [salaryPayment(80), thirdPillarPayment(600), ...monthsOfParentalBenefit(30)],
+        sourceFunds: [fundOf(2, 24586.29), fundOf(3, 8117.43)],
+      });
+      withChildren([GIRL_BORN_FEB_2023]);
+    });
+
+    it('describes every field filled from the data as prefilled', () => {
+      renderFutureMe();
+
+      [
+        birthYearField(),
+        sexField(),
+        grossSalaryField(),
+        secondPillarRateField(),
+        secondPillarAmountField(),
+        thirdPillarJoinedField(),
+        thirdPillarAmountField(),
+        thirdPillarMonthlyField(),
+        screen.getByRole('spinbutton', { name: /Mitu last\?/ }),
+        kidBirthYearField(1),
+        kidMonthsField(1),
+      ].forEach((field) => expect(field).toHaveAccessibleDescription(PREFILLED));
+    });
+
+    it('stops calling a field prefilled once the saver changes it', () => {
+      renderFutureMe();
+
+      typeInto(grossSalaryField(), '2500');
+      typeInto(thirdPillarMonthlyField(), '100');
+      userEvent.selectOptions(secondPillarRateField(), '0.06');
+      typeInto(kidBirthYearField(1), '2022');
+      typeInto(kidMonthsField(1), '12');
+
+      [
+        grossSalaryField(),
+        thirdPillarMonthlyField(),
+        secondPillarRateField(),
+        kidBirthYearField(1),
+        kidMonthsField(1),
+      ].forEach((field) => expect(field).not.toHaveAccessibleDescription(PREFILLED));
+    });
+
+    it('does not call a field prefilled when the data had nothing for it', () => {
+      withPensionData({});
+      withChildren([]);
+
+      renderFutureMe();
+
+      expect(grossSalaryField()).not.toHaveAccessibleDescription(PREFILLED);
+      expect(thirdPillarAmountField()).not.toHaveAccessibleDescription(PREFILLED);
+    });
+  });
+
   describe('children from the register', () => {
     beforeAll(installDialogPolyfill);
 

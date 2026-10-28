@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import {
@@ -10,11 +11,20 @@ import {
   isChildBirthYearInvalid,
   isChildIIMonthsAsked,
   isChildIIMonthsInvalid,
+  isPrefilledAnswer,
+  isPrefilledChildAnswer,
   isKidsRightAvailableToSelf,
   maxChildBirthYear,
   YouAnswers,
 } from './youAnswers';
-import { AmountField, BlockProps, FieldLabel, SelectField } from './YouFields';
+import {
+  AmountField,
+  BlockProps,
+  FieldLabel,
+  PREFILLED_HINT_ID,
+  PrefilledBlockProps,
+  SelectField,
+} from './YouFields';
 import { sectionLabels } from './YouBlocks';
 import { YouOptionalSection, YouSection } from './YouSection';
 
@@ -26,7 +36,10 @@ const HAZARD_YEARS_NEEDED = { list1: 10, list2: 12.5 };
 const SERVICE_YEARS_NEEDED = { list1: 20, list2: 25 };
 
 type OptionalBlockProps = BlockProps & { optional: YouOptionalSection };
-type KidsBlockProps = OptionalBlockProps & { hasRegisterChildren: boolean };
+type KidsBlockProps = PrefilledBlockProps & {
+  optional: YouOptionalSection;
+  hasRegisterChildren: boolean;
+};
 
 const optionalOf = (
   block: 'kids' | 'work',
@@ -57,6 +70,7 @@ export const KidsSection = ({
   isComplete,
   optional,
   hasRegisterChildren,
+  prefilled,
   onToggle,
   onChange,
   onBlur,
@@ -95,6 +109,7 @@ export const KidsSection = ({
         <AmountField
           field="kidsCount"
           answers={answers}
+          isPrefilled={isPrefilledAnswer(answers, prefilled, 'kidsCount')}
           touched={touched}
           label="futureMe.you.kidsCount.label"
           name="futureMe.you.kidsCount.name"
@@ -143,11 +158,15 @@ export const KidsSection = ({
                         autoComplete="off"
                         value={typed}
                         aria-invalid={showError}
-                        aria-describedby={
-                          showError
-                            ? `future-me-kid-birth-year-hint ${id}-error`
-                            : 'future-me-kid-birth-year-hint'
-                        }
+                        aria-describedby={classNames('future-me-kid-birth-year-hint', {
+                          [PREFILLED_HINT_ID]: isPrefilledChildAnswer(
+                            answers,
+                            prefilled,
+                            'kidsBirthYears',
+                            index,
+                          ),
+                          [`${id}-error`]: showError,
+                        })}
                         onChange={(event) => changeBirthYear(index, event.target.value)}
                         onBlur={() => setLeftRows((previous) => new Set(previous).add(index))}
                       />
@@ -177,11 +196,15 @@ export const KidsSection = ({
                             step="1"
                             value={answers.kidsIIMonths[index] ?? ''}
                             aria-invalid={isMonthsInvalid}
-                            aria-describedby={
-                              isMonthsInvalid
-                                ? `${monthsId}-hint ${monthsId}-error`
-                                : `${monthsId}-hint`
-                            }
+                            aria-describedby={classNames(`${monthsId}-hint`, {
+                              [PREFILLED_HINT_ID]: isPrefilledChildAnswer(
+                                answers,
+                                prefilled,
+                                'kidsIIMonths',
+                                index,
+                              ),
+                              [`${monthsId}-error`]: isMonthsInvalid,
+                            })}
                             onChange={(event) => changeIIMonths(index, event.target.value)}
                           />
                           <div className="form-text" id={`${monthsId}-hint`}>

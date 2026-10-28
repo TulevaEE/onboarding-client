@@ -37,6 +37,7 @@ import {
   toStepPlanInput,
   YouField,
   YouSectionId,
+  prefilledValuesOf,
 } from './youAnswers';
 import { FIELD_DOM_IDS } from './YouFields';
 import { YouStep } from './YouStep';
@@ -59,6 +60,7 @@ const ADDED_FLAGS = { kids: 'kidsAdded', work: 'workAdded' } as const;
 const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   const intl = useIntl();
   const [answers, setAnswers] = useState(() => initialAnswers(prefill));
+  const [prefilled] = useState(() => prefilledValuesOf(prefill));
   const [age60, setAge60] = useState(initialAge60);
   const [age65, setAge65] = useState(initialAge65);
   const [age66, setAge66] = useState(initialAge66);
@@ -156,6 +158,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           openSections={openSections}
           isPrefilled={prefill.birthYear !== null || prefill.sex !== null}
           hasRegisterChildren={Boolean(prefill.kids)}
+          prefilled={prefilled}
           headingRef={headingRef}
           onChange={(changes) => setAnswers((previous) => ({ ...previous, ...changes }))}
           onBlur={(field) => setTouched((previous) => new Set(previous).add(field))}

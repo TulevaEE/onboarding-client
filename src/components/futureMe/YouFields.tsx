@@ -2,7 +2,7 @@ import React, { ChangeEvent } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { fieldProblem, limitsOf, YouAnswers, YouField } from './youAnswers';
+import { fieldProblem, limitsOf, PrefilledValues, YouAnswers, YouField } from './youAnswers';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';
 
@@ -20,7 +20,7 @@ export const FIELD_DOM_IDS: Record<YouField, string> = {
 };
 
 const MIN_AMOUNT = 0;
-const PREFILLED_HINT_ID = 'prefilled-hint';
+export const PREFILLED_HINT_ID = 'prefilled-hint';
 
 export const PrefilledHint = () => (
   <span id={PREFILLED_HINT_ID} hidden>
@@ -47,6 +47,8 @@ export const FieldLabel = ({ htmlFor, help, children }: FieldLabelProps) =>
       {children}
     </label>
   );
+
+export type PrefilledBlockProps = BlockProps & { prefilled: PrefilledValues };
 
 export interface BlockProps {
   answers: YouAnswers;
@@ -176,6 +178,7 @@ interface SelectFieldProps {
   hint?: TranslationKey;
   help?: HelpTopic;
   onChange: (value: string) => void;
+  isPrefilled?: boolean;
 }
 
 export const SelectField = ({
@@ -185,6 +188,7 @@ export const SelectField = ({
   options,
   hint,
   help,
+  isPrefilled = false,
   onChange,
 }: SelectFieldProps) => (
   <div className="col-12 col-sm-6">
@@ -195,7 +199,9 @@ export const SelectField = ({
       id={id}
       className="form-select"
       value={value}
-      aria-describedby={hint ? `${id}-hint` : undefined}
+      aria-describedby={
+        classNames({ [`${id}-hint`]: hint, [PREFILLED_HINT_ID]: isPrefilled }) || undefined
+      }
       onChange={(event) => onChange(event.target.value)}
     >
       {options.map((option) => (
