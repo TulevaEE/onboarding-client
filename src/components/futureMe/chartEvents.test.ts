@@ -118,4 +118,25 @@ describe('chartEvents', () => {
     expect(result.moneyEndAge).toBeNull();
     expect(kindsOf(contextWith())).not.toContain('moneyEnd');
   });
+
+  it('marks a later start of the state pension when it is deferred', () => {
+    const result = resultOf(contextWith({ mode: 'defer', years: 2 }));
+
+    expect(chartEventsOf(result).find(({ kind }) => kind === 'statePension')).toMatchObject({
+      age: result.p1StartAge,
+    });
+    expect(result.p1StartAge).toBeGreaterThan(result.pensionStartAge);
+  });
+
+  it('marks when the deposit starts to pay out', () => {
+    const result = resultOf(contextWith({ work: 'yes', workUntil: '68' }));
+    const firstDeposit = result.rows.find(
+      ({ age, dep }) => age >= result.pensionStartAge && dep > 0.5,
+    );
+
+    expect(firstDeposit).toBeDefined();
+    expect(chartEventsOf(result).find(({ kind }) => kind === 'depositStart')).toMatchObject({
+      age: firstDeposit?.age,
+    });
+  });
 });

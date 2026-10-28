@@ -8,6 +8,7 @@ import { initialAge66 } from './age66Answers';
 import { initialExpenses, needMonthly } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { ResultChart } from './ResultChart';
+import { ResultChartTip } from './ResultChartTip';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
 import translations from '../translations';
@@ -207,6 +208,107 @@ describe('ResultChart interaction', () => {
     });
   });
 
+  describe('tooltip placement', () => {
+    const PLOT_WIDTH = 400;
+    const TIP_WIDTH = 100;
+    const layoutOf = (name: string, value: (element: HTMLElement) => number) =>
+      jest
+        .spyOn(HTMLElement.prototype, name as 'offsetWidth', 'get')
+        .mockImplementation(function measure(this: HTMLElement) {
+          return value(this);
+        });
+
+    beforeEach(() => {
+      layoutOf('clientWidth', () => PLOT_WIDTH);
+      layoutOf('offsetWidth', () => TIP_WIDTH);
+      layoutOf('offsetLeft', (element) => parseFloat(element.style.left) || 0);
+    });
+
+    afterEach(() => jest.restoreAllMocks());
+
+    it('opens on the right of the line where it fits', () => {
+      renderChart();
+
+      hoverAt(3);
+
+      expect(tip()).toHaveStyle({ left: '40px', top: '10px' });
+    });
+
+    it('opens on the left of the line where it does not fit on the right', () => {
+      renderChart();
+
+      hoverAt(35);
+
+      expect(tip()).toHaveStyle({ left: '240px' });
+    });
+
+    it('keeps the age while the pointer moves from the line towards the tooltip', () => {
+      renderChart();
+      hoverAt(3);
+
+      act(() => lastChartProps().options.onHover({ x: 35 }, [{ index: 4 }]));
+
+      expect(within(tip() as HTMLElement).getByText('68 a')).toBeInTheDocument();
+    });
+
+    it('moves to the new age once the pointer is past the tooltip edge', () => {
+      renderChart();
+      hoverAt(3);
+
+      act(() => lastChartProps().options.onHover({ x: 60 }, [{ index: 6 }]));
+
+      expect(within(tip() as HTMLElement).getByText('71 a')).toBeInTheDocument();
+    });
+
+    it('ignores the pointer outside every point', () => {
+      renderChart();
+      hoverAt(3);
+
+      act(() => lastChartProps().options.onHover({ x: 60 }, []));
+
+      expect(within(tip() as HTMLElement).getByText('68 a')).toBeInTheDocument();
+    });
+  });
+
+  describe('tooltip content', () => {
+    const tipFor = (changes: { shortfall?: number; surplus?: number }) =>
+      render(
+        <IntlProvider locale="et" messages={translations.et}>
+          <ResultChartTip
+            row={{
+              age: 70,
+              year: 2046,
+              salary: 0,
+              firstPillar: 700,
+              specialPension: 0,
+              secondPillar: 300,
+              thirdPillar: 0,
+              deposit: 0,
+              costs: 800,
+              shortfall: 0,
+              surplus: 0,
+              ...changes,
+            }}
+            events={[{ kind: 'moneyEnd', age: 70, bad: true }]}
+            layers={['firstPillar', 'secondPillar']}
+            onClose={jest.fn()}
+          />
+        </IntlProvider>,
+      );
+
+    it('says how much is left over above the costs', () => {
+      tipFor({ surplus: 200 });
+
+      expect(screen.getByText(/^Üle jääb 200\s€$/)).toBeInTheDocument();
+    });
+
+    it('shows an event that goes wrong in its own colour', () => {
+      tipFor({ shortfall: 100 });
+
+      expect(screen.getByText('Raha saab otsa')).toHaveClass('result-chart-tip-bad');
+    });
+  });
+
   describe('keyboard', () => {
     it('has one tab stop', () => {
       renderChart();
@@ -247,6 +349,20 @@ describe('ResultChart interaction', () => {
       press('End');
       press('ArrowRight');
       expect(within(tip() as HTMLElement).getByText('100 a')).toBeInTheDocument();
+    });
+
+    it('opens again on the first point with an arrow key after Escape closed it', () => {
+      renderChart();
+      tabToChart();
+      press('End');
+      // eslint-disable-next-line testing-library/no-unnecessary-act -- the listener is on the document, outside React's batching
+      act(() => {
+        userEvent.keyboard('{esc}');
+      });
+
+      press('ArrowLeft');
+
+      expect(within(tip() as HTMLElement).getByText('65 a')).toBeInTheDocument();
     });
 
     it('goes to the first and the last point with Home and End', () => {
