@@ -173,6 +173,20 @@ describe('Sina step help buttons', () => {
     ).toBeInTheDocument();
   });
 
+  it('tells that the result counts the child supplement', () => {
+    renderYouStep();
+    addEverything();
+    const heading = screen.getByRole('heading', { name: 'Lapsed' });
+
+    userEvent.click(
+      helpButtonBeside(heading, '.you-section-head', /Kuidas lapsed pensioni mõjutavad$/),
+    );
+    const dialog = screen.getByRole('dialog');
+
+    expect(within(dialog).getByText(/^2\. Pensionilisa:$/)).toBeInTheDocument();
+    expect(within(dialog).queryByText(/veel ei arvesta/)).not.toBeInTheDocument();
+  });
+
   it('tells what the prefilled state pension is and where to check it', () => {
     renderYouStep();
     const stateField = screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ });

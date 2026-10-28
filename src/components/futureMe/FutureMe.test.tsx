@@ -1176,9 +1176,7 @@ describe('FutureMe', () => {
 
         expect(addKidsButton()).not.toHaveAttribute('aria-expanded');
         expect(
-          screen.getByText(
-            'Lapsed võivad tuua pensioni varem. Pensionilisa laste eest arvutus veel ei arvesta.',
-          ),
+          screen.getByText('Lapsed annavad pensionilisa ja võivad tuua pensioni varem.'),
         ).toBeVisible();
         expect(screen.queryByRole('spinbutton', { name: /Mitu last/ })).not.toBeInTheDocument();
       });
