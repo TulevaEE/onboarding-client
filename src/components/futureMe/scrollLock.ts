@@ -12,7 +12,6 @@ export const lockPageScroll = (): (() => void) => {
   style.width = '100%';
 
   return () => {
-    document.documentElement.classList.remove('scroll-locked');
     style.position = '';
     style.top = '';
     style.left = '';
@@ -20,5 +19,6 @@ export const lockPageScroll = (): (() => void) => {
     style.width = '';
     style.paddingRight = '';
     window.scrollTo(0, scrollY);
+    document.documentElement.classList.remove('scroll-locked');
   };
 };
