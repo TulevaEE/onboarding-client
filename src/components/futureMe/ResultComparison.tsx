@@ -36,7 +36,7 @@ const Cell = ({ rowId, value }: { rowId: ComparisonRowId; value: number }) => {
   return <>{intl.formatNumber(value, { style: 'percent', maximumFractionDigits: 0 })}</>;
 };
 
-const ComparisonTable = ({ context }: { context: ResultContext }) => {
+export const ComparisonTable = ({ context }: { context: ResultContext }) => {
   const columns = comparisonOf(context);
   const cells = columns.map(({ result }) => comparisonRowsOf(result));
   return (
