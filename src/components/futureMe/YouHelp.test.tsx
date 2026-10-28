@@ -8,7 +8,11 @@ import translations from '../translations';
 import { installDialogPolyfill } from './dialogPolyfill';
 import { mockUser } from '../../test/backend-responses';
 
-jest.mock('../common/apiHooks', () => ({ useMe: jest.fn() }));
+jest.mock('../common/apiHooks', () => ({
+  useMe: jest.fn(),
+  useContributions: () => ({ data: [], isLoading: false }),
+  useSourceFunds: () => ({ data: [], isLoading: false }),
+}));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
 
 const mockUseMe = useMe as jest.MockedFunction<typeof useMe>;

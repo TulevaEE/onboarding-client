@@ -41,6 +41,27 @@ describe('initial answers', () => {
     });
   });
 
+  it('starts the salary, amounts, III pillar payment and join from the pension data', () => {
+    expect(
+      initialAnswers({
+        birthYear: 1985,
+        sex: 'M',
+        secondPillarRate: '0.04',
+        grossMonthly: '2000',
+        secondPillarAmount: '24586',
+        thirdPillarAmount: '8117',
+        thirdPillarMonthly: '50',
+        thirdPillarJoined: 'before',
+      }),
+    ).toMatchObject({
+      grossMonthly: '2000',
+      secondPillarAmount: '24586',
+      thirdPillarAmount: '8117',
+      thirdPillarMonthly: '50',
+      thirdPillarJoined: 'before',
+    });
+  });
+
   it('assumes the prototype defaults when nothing is prefilled', () => {
     expect(initialAnswers({ birthYear: null, sex: null, secondPillarRate: null })).toMatchObject({
       birthYear: '',

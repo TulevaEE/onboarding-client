@@ -8,7 +8,11 @@ import { User } from '../common/apiModels';
 import translations from '../translations';
 import { mockUser } from '../../test/backend-responses';
 
-jest.mock('../common/apiHooks', () => ({ useMe: jest.fn() }));
+jest.mock('../common/apiHooks', () => ({
+  useMe: jest.fn(),
+  useContributions: () => ({ data: [], isLoading: false }),
+  useSourceFunds: () => ({ data: [], isLoading: false }),
+}));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
 
 const mockChart = jest.fn();
@@ -27,7 +31,7 @@ const mockUseMe = useMe as jest.MockedFunction<typeof useMe>;
 
 const loggedInAs = (user: Partial<User>) => {
   mockUseMe.mockReturnValue({
-    data: { ...mockUser, ...user },
+    data: { ...mockUser, thirdPillarInitDate: '2022-01-01', ...user },
     isLoading: false,
   } as ReturnType<typeof useMe>);
 };

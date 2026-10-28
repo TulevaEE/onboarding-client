@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useMe } from '../common/apiHooks';
+import { useContributions, useMe, useSourceFunds } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { usePageTitle } from '../common/usePageTitle';
 import { Age55Step } from './Age55Step';
@@ -301,17 +301,34 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   );
 };
 
+const isLoadingForTheFirstTime = ({
+  isLoading,
+  isFetched,
+}: {
+  isLoading: boolean;
+  isFetched?: boolean;
+}) => isLoading && !isFetched;
+
 export const FutureMe = () => {
   usePageTitle('pageTitle.futureMe');
-  const { data: user, isLoading } = useMe();
+  const me = useMe();
+  const contributionsQuery = useContributions();
+  const sourceFundsQuery = useSourceFunds();
+  const { data: user } = me;
+  const { data: contributions } = contributionsQuery;
+  const { data: sourceFunds } = sourceFundsQuery;
 
-  if (isLoading) {
+  if ([me, contributionsQuery, sourceFundsQuery].some(isLoadingForTheFirstTime)) {
     return <Shimmer height={400} />;
   }
 
   return (
     <FutureMeSteps
-      prefill={user ? derivePrefill(user) : { birthYear: null, sex: null, secondPillarRate: null }}
+      prefill={
+        user
+          ? derivePrefill(user, { contributions, sourceFunds })
+          : { birthYear: null, sex: null, secondPillarRate: null }
+      }
     />
   );
 };

@@ -12,7 +12,11 @@ import { ResultContext } from './resultAnswers';
 import { contextWith } from './resultContextFixture';
 import { initialSpecialPension } from './specialPensionAnswers';
 
-jest.mock('../common/apiHooks', () => ({ useMe: jest.fn() }));
+jest.mock('../common/apiHooks', () => ({
+  useMe: jest.fn(),
+  useContributions: () => ({ data: [], isLoading: false }),
+  useSourceFunds: () => ({ data: [], isLoading: false }),
+}));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
 jest.mock('react-chartjs-2', () => ({
   Chart: () => <div data-testid="mock-chart" />,
