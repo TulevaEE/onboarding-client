@@ -2,6 +2,8 @@ import React, { ReactNode, useRef } from 'react';
 import classNames from 'classnames';
 import { useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
+import { HelpButton } from './HelpButton';
+import { HelpTopic } from './helpTopics';
 
 export interface YouSectionLabels {
   close: TranslationKey;
@@ -29,6 +31,7 @@ export interface YouOptionalSection {
 interface Props {
   id: string;
   title: ReactNode;
+  help?: HelpTopic;
   summary: ReactNode;
   labels: YouSectionLabels;
   isOpen: boolean;
@@ -41,6 +44,7 @@ interface Props {
 export const YouSection = ({
   id,
   title,
+  help,
   summary,
   labels,
   isOpen,
@@ -79,9 +83,12 @@ export const YouSection = ({
     <li className={classNames('you-section', { 'is-open': isIncluded && isOpen })}>
       <div className="you-section-head">
         <div>
-          <h3 className="you-section-title" id={`${id}-title`}>
-            {title}
-          </h3>
+          <div className="you-section-title-line">
+            <h3 className="you-section-title" id={`${id}-title`}>
+              {title}
+            </h3>
+            {help && <HelpButton topic={help} />}
+          </div>
           {!(isIncluded && isOpen) && (
             <small
               className={classNames('you-section-summary', {

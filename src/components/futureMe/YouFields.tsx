@@ -3,6 +3,8 @@ import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { fieldProblem, limitsOf, YouAnswers, YouField } from './youAnswers';
+import { HelpButton } from './HelpButton';
+import { HelpTopic } from './helpTopics';
 
 export const FIELD_DOM_IDS: Record<YouField, string> = {
   birthYear: 'future-me-birth-year',
@@ -18,6 +20,26 @@ export const FIELD_DOM_IDS: Record<YouField, string> = {
 };
 
 const MIN_AMOUNT = 0;
+
+interface FieldLabelProps {
+  htmlFor: string;
+  help?: HelpTopic;
+  children: React.ReactNode;
+}
+
+export const FieldLabel = ({ htmlFor, help, children }: FieldLabelProps) =>
+  help ? (
+    <div className="label-line text-balance">
+      <label className="form-label" htmlFor={htmlFor}>
+        {children}
+      </label>
+      <HelpButton topic={help} />
+    </div>
+  ) : (
+    <label className="form-label text-balance" htmlFor={htmlFor}>
+      {children}
+    </label>
+  );
 
 export interface BlockProps {
   answers: YouAnswers;
@@ -43,6 +65,7 @@ interface AmountFieldProps {
   inputMode?: 'decimal' | 'numeric';
   shownValue?: string;
   disabled?: boolean;
+  help?: HelpTopic;
   onChange: (changes: Partial<YouAnswers>) => void;
   onBlur: (field: YouField) => void;
 }
@@ -67,6 +90,7 @@ export const AmountField = ({
   inputMode = 'decimal',
   shownValue,
   disabled = false,
+  help,
   onChange,
   onBlur,
 }: AmountFieldProps) => {
@@ -87,7 +111,7 @@ export const AmountField = ({
 
   return (
     <div className="col-12 col-sm-6">
-      <label className="form-label text-balance" htmlFor={id}>
+      <FieldLabel htmlFor={id} help={help}>
         <FormattedMessage id={label} values={labelValues} />
         {isRequired && (
           <>
@@ -95,7 +119,7 @@ export const AmountField = ({
             <RequiredMark />
           </>
         )}
-      </label>
+      </FieldLabel>
       <input
         id={id}
         className={classNames('form-control', { 'is-invalid': problem })}
@@ -137,14 +161,23 @@ interface SelectFieldProps {
   value: string;
   options: { value: string; label: string }[];
   hint?: TranslationKey;
+  help?: HelpTopic;
   onChange: (value: string) => void;
 }
 
-export const SelectField = ({ id, label, value, options, hint, onChange }: SelectFieldProps) => (
+export const SelectField = ({
+  id,
+  label,
+  value,
+  options,
+  hint,
+  help,
+  onChange,
+}: SelectFieldProps) => (
   <div className="col-12 col-sm-6">
-    <label className="form-label text-balance" htmlFor={id}>
+    <FieldLabel htmlFor={id} help={help}>
       <FormattedMessage id={label} />
-    </label>
+    </FieldLabel>
     <select
       id={id}
       className="form-select"

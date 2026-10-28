@@ -95,6 +95,7 @@ export const StateSection = ({
         <SelectField
           id="future-me-pension-age"
           label="futureMe.you.pensionAge.label"
+          help="pensionAge"
           value={String(effectivePensionAge(answers))}
           options={PENSION_AGE_OPTIONS.map((years) => ({
             value: String(years),
@@ -107,6 +108,7 @@ export const StateSection = ({
           answers={answers}
           touched={touched}
           label="futureMe.you.firstPillarMonthly.label"
+          help="p1"
           unit="futureMe.you.firstPillarMonthly.unit"
           name="futureMe.you.firstPillarMonthly.name"
           step={10}
@@ -133,6 +135,7 @@ export const SecondPillarSection = ({
     <YouSection
       id="future-me-second-pillar"
       title={<FormattedMessage id="futureMe.you.secondPillar.title" />}
+      help="pillars"
       summary={
         <FormattedMessage
           id="futureMe.you.secondPillar.summary"
@@ -157,6 +160,7 @@ export const SecondPillarSection = ({
           answers={answers}
           touched={touched}
           label="futureMe.you.grossMonthly.label"
+          help="gross"
           unit="futureMe.you.grossMonthly.unit"
           name="futureMe.you.grossMonthly.name"
           step={100}
@@ -166,6 +170,7 @@ export const SecondPillarSection = ({
         <SelectField
           id="future-me-second-pillar-rate"
           label="futureMe.you.secondPillarRate.label"
+          help="p2Rate"
           value={answers.secondPillarRate}
           options={SECOND_PILLAR_RATE_OPTIONS.map((rate) => ({
             value: rate,
@@ -187,6 +192,7 @@ export const SecondPillarSection = ({
         <SelectField
           id="future-me-second-pillar-fund"
           label="futureMe.you.secondPillarFund.label"
+          help="fundCur"
           value={answers.secondPillarFund}
           options={fundOptions(intl)}
           onChange={(secondPillarFund) =>
@@ -238,6 +244,7 @@ export const ThirdPillarSection = ({
         <SelectField
           id="future-me-third-pillar-joined"
           label="futureMe.you.thirdPillarJoined.label"
+          help="p3Joined"
           value={answers.thirdPillarJoined}
           options={THIRD_PILLAR_JOIN_TIMES.map((when) => ({
             value: when,
@@ -267,6 +274,7 @@ export const ThirdPillarSection = ({
           answers={answers}
           touched={touched}
           label="futureMe.you.thirdPillarMonthly.label"
+          help="p3Monthly"
           unit="futureMe.you.thirdPillarMonthly.unit"
           name="futureMe.you.thirdPillarMonthly.name"
           step={10}
