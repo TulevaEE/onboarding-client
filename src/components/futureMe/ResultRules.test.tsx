@@ -7,6 +7,10 @@ import { useMe } from '../common/apiHooks';
 import { User } from '../common/apiModels';
 import translations from '../translations';
 import { mockUser } from '../../test/backend-responses';
+import { ResultRules } from './ResultRules';
+import { ResultContext } from './resultAnswers';
+import { contextWith } from './resultContextFixture';
+import { initialSpecialPension } from './specialPensionAnswers';
 
 jest.mock('../common/apiHooks', () => ({ useMe: jest.fn() }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
@@ -100,5 +104,39 @@ describe('Result step: rules', () => {
 
     const contract = itemTitled(ruleList(), /^Fondipensioni leping/);
     expect(contract).toHaveTextContent(/II samba fondipensioni leping: Uus leping igal aastal/);
+  });
+});
+
+describe('Result step: rules that follow from the answers', () => {
+  const renderRules = (context: ResultContext) =>
+    render(
+      <IntlProvider locale="et" messages={translations.et}>
+        <ResultRules context={context} />
+      </IntlProvider>,
+    );
+
+  it.each([
+    {
+      rule: /^Paindlik pension varem/,
+      context: contextWith({ earlyYearsPicked: '3' }),
+      choice: /3\sa varem, pension [\d,]+% väiksem/,
+    },
+    {
+      rule: /^Soodustingimustel vanaduspension/,
+      context: contextWith({ workAdded: true, hazardList: 'list1', hazardYears: '10' }),
+      choice: /\d+\sa varem/,
+    },
+    {
+      rule: /^Eripension/,
+      context: contextWith(
+        { workAdded: true, hasSpecialPension: true, specialPensionStartAge: '55' },
+        { specialPension: { ...initialSpecialPension(), monthly: '800' } },
+      ),
+      choice: /800\s€\skuus enne maksu, alates 55-\u2060aastaselt/,
+    },
+  ])('shows what was chosen under $rule', ({ rule, context, choice }) => {
+    renderRules(context);
+
+    expect(itemTitled(ruleList(), rule)).toHaveTextContent(choice);
   });
 });
