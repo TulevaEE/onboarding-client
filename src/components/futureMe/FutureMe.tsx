@@ -142,6 +142,9 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
     if (changes.age65) {
       setAge65(changes.age65);
     }
+    if (changes.expenses) {
+      setExpenses(changes.expenses);
+    }
   };
 
   const renderStep = () => {
@@ -246,6 +249,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
         <ResultStep
           context={{ you: answers, plan, age60, age65, age66, specialPension, expenses }}
           headingRef={headingRef}
+          onGoTo={goTo}
         />
       </DecisionChangesProvider>
     );

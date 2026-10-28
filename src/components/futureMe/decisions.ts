@@ -24,7 +24,7 @@ export interface Decision {
   choices: string[];
 }
 
-export type DecisionChanges = Partial<Pick<ResultContext, 'age60' | 'age65'>>;
+export type DecisionChanges = Partial<Pick<ResultContext, 'age60' | 'age65' | 'expenses'>>;
 
 const decisionAt = (
   { plan }: ResultContext,

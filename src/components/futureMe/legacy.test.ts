@@ -1,0 +1,110 @@
+import { initialAge60 } from './age60Answers';
+import { initialAge65 } from './age65Answers';
+import { initialAge66 } from './age66Answers';
+import { initialExpenses, needMonthly, withLevel } from './expensesAnswers';
+import { keepSecondPillarGrowing, legacyOf } from './legacy';
+import { ResultContext, resultOf } from './resultAnswers';
+import { initialSpecialPension } from './specialPensionAnswers';
+import { initialAnswers, toStepPlanInput } from './youAnswers';
+
+const noPrefill = { birthYear: 1980, sex: null, secondPillarRate: null };
+
+const contextWith = (
+  changes: Partial<ReturnType<typeof initialAnswers>> = {},
+  rest: Partial<Omit<ResultContext, 'you' | 'plan'>> = {},
+): ResultContext => {
+  const you = {
+    ...initialAnswers(noPrefill),
+    pensionAgeYears: '65',
+    firstPillarMonthly: '700',
+    grossMonthly: '2000',
+    secondPillarAmount: '10000',
+    ...changes,
+  };
+  return {
+    you,
+    plan: toStepPlanInput(you),
+    age60: initialAge60(),
+    age65: initialAge65(),
+    age66: initialAge66(),
+    specialPension: initialSpecialPension(),
+    expenses: initialExpenses(),
+    ...rest,
+  };
+};
+
+const legacyFor = (context: ResultContext) => legacyOf(context, resultOf(context));
+
+const wealthy = () => contextWith({ secondPillarAmount: '400000' });
+const costsTooHigh = () =>
+  contextWith(
+    { firstPillarMonthly: '300' },
+    { expenses: withLevel(initialExpenses(), 'comfortable') },
+  );
+const takenAsLumpSum = () =>
+  contextWith(
+    { firstPillarMonthly: '300' },
+    {
+      age60: { ...initialAge60(), secondPillar: 'lump' },
+      expenses: withLevel(initialExpenses(), 'comfortable'),
+    },
+  );
+
+describe('legacyOf', () => {
+  it('has money left at the median age of someone whose pensions out-earn the costs', () => {
+    const legacy = legacyFor(wealthy());
+
+    expect(legacy.kind).toBe('surplus');
+  });
+
+  it('takes the median age from the life table: the age half of those born in the same year reach', () => {
+    const legacy = legacyFor(wealthy());
+
+    expect(legacy).toMatchObject({ medianAge: expect.any(Number) });
+    const { medianAge } = legacy as { medianAge: number };
+    expect(medianAge).toBeGreaterThanOrEqual(80);
+    expect(medianAge).toBeLessThanOrEqual(95);
+  });
+
+  it('reports the money left at the median age and what the plan can carry to the end', () => {
+    const context = wealthy();
+    const result = resultOf(context);
+    const legacy = legacyOf(context, result);
+
+    expect(legacy).toMatchObject({
+      left: result.rows.find((row) => row.age === (legacy as { medianAge: number }).medianAge)
+        ?.moneyLeft,
+      sustainable: result.sustainable,
+      extra: result.sustainable - needMonthly(context.expenses),
+    });
+  });
+
+  it('has no money left over when the costs are no longer covered by the median age', () => {
+    expect(legacyFor(costsTooHigh()).kind).toBe('shortfall');
+  });
+
+  it('suggests keeping the second pillar growing only when it was taken out as a lump sum', () => {
+    expect(legacyFor(takenAsLumpSum())).toMatchObject({
+      kind: 'shortfall',
+      isSecondPillarLumpSum: true,
+    });
+    expect(legacyFor(costsTooHigh())).toMatchObject({
+      kind: 'shortfall',
+      isSecondPillarLumpSum: false,
+    });
+  });
+});
+
+describe('keepSecondPillarGrowing', () => {
+  it('leaves the second pillar growing at the payout age and again at the pension age', () => {
+    const context = {
+      ...takenAsLumpSum(),
+      age65: { ...initialAge65(), secondPillar: 'lump' as const },
+    };
+
+    const changes = keepSecondPillarGrowing(context);
+
+    expect(changes.age60?.secondPillar).toBe('grow');
+    expect(changes.age65?.secondPillar).toBe('grow');
+  });
+});

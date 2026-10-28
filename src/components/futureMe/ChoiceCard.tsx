@@ -7,7 +7,7 @@ interface Props {
   value: string;
   checked: boolean;
   title: React.ReactNode;
-  text: React.ReactNode;
+  text?: React.ReactNode;
   emoji?: string;
   extra?: React.ReactNode;
   onChange: () => void;
@@ -32,7 +32,7 @@ export const ChoiceCard = ({
         type="radio"
         id={id}
         aria-labelledby={`${id}-name`}
-        aria-describedby={`${id}-text`}
+        aria-describedby={text ? `${id}-text` : undefined}
         name={name}
         value={value}
         checked={checked}
@@ -45,7 +45,7 @@ export const ChoiceCard = ({
           </span>
         )}
         <strong id={`${id}-name`}>{title}</strong>
-        <small id={`${id}-text`}>{text}</small>
+        {text && <small id={`${id}-text`}>{text}</small>}
         {extra}
       </span>
     </label>
