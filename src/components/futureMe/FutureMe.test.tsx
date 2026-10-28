@@ -3,10 +3,11 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { FutureMe } from './FutureMe';
-import { useContributions, useMe, useSourceFunds } from '../common/apiHooks';
+import { useContributions, useEligibleChildren, useMe, useSourceFunds } from '../common/apiHooks';
 import { Contribution, SourceFund, User } from '../common/apiModels';
 import translations from '../translations';
 import { pensionAge } from './engine/pension';
+import { installDialogPolyfill } from './dialogPolyfill';
 import { trackCustomEvent } from '../tracking/actions';
 import { mockUser } from '../../test/backend-responses';
 import { formatAmountForCurrency } from '../common/utils';
@@ -15,12 +16,16 @@ jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: jest.fn(),
   useSourceFunds: jest.fn(),
+  useEligibleChildren: jest.fn(),
 }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
 
 const mockUseMe = useMe as jest.MockedFunction<typeof useMe>;
 const mockUseContributions = useContributions as jest.MockedFunction<typeof useContributions>;
 const mockUseSourceFunds = useSourceFunds as jest.MockedFunction<typeof useSourceFunds>;
+const mockUseEligibleChildren = useEligibleChildren as jest.MockedFunction<
+  typeof useEligibleChildren
+>;
 const mockTrackCustomEvent = trackCustomEvent as jest.MockedFunction<typeof trackCustomEvent>;
 
 const loggedInAs = (user: Partial<User> | undefined) => {
@@ -48,6 +53,34 @@ const withPensionData = ({
     isLoading,
   } as ReturnType<typeof useSourceFunds>);
 };
+
+const withChildren = (children: { personalCode: string }[] | undefined, isLoading = false) => {
+  mockUseEligibleChildren.mockReturnValue({
+    data: children,
+    isLoading,
+  } as ReturnType<typeof useEligibleChildren>);
+};
+
+const BOY_BORN_JUNE_2015 = { personalCode: '51506150000' };
+const GIRL_BORN_FEB_2023 = { personalCode: '62302200000' };
+
+const parentalBenefitInMonth = (year: number, month: number): Contribution => ({
+  time: `${year}-${String(month).padStart(2, '0')}-10T08:00:00Z`,
+  sender: 'Riik',
+  amount: 50,
+  currency: 'EUR',
+  pillar: 2,
+  additionalParentalBenefit: 50,
+  employeeWithheldPortion: 0,
+  socialTaxPortion: 0,
+  interest: 0,
+});
+
+const monthsOfParentalBenefit = (count: number): Contribution[] =>
+  Array.from({ length: count }, (_, offset) => {
+    const index = 2023 * 12 + 2 + offset;
+    return parentalBenefitInMonth(Math.floor(index / 12), (index % 12) + 1);
+  });
 
 const monthsAgo = (months: number): string => {
   const now = new Date();
@@ -159,6 +192,7 @@ describe('FutureMe', () => {
     mockTrackCustomEvent.mockClear();
     loggedInAs({ dateOfBirth: '1989-01-01', personalCode: '39001011234' });
     withPensionData({});
+    withChildren([]);
   });
 
   describe('while the user is loading', () => {
@@ -270,6 +304,151 @@ describe('FutureMe', () => {
 
       expect(grossSalaryField()).toHaveValue(null);
       expect(secondPillarAmountField()).toHaveValue(null);
+    });
+  });
+
+  describe('children from the register', () => {
+    beforeAll(installDialogPolyfill);
+
+    const addKidsButton = () => screen.queryByRole('button', { name: 'Lisa lapsed' });
+    const kidsCountField = () => screen.getByRole('spinbutton', { name: /Mitu last\?/ });
+    const kidBirthYearField = (number: number) =>
+      screen.getByRole('textbox', { name: new RegExp(`${number}\\. lapse sünniaasta`) });
+    const kidMonthsField = (number: number) =>
+      screen.getByRole('spinbutton', {
+        name: new RegExp(`${number}\\. lapse riigi lisamakse II\\ssambasse`),
+      });
+    const queryKidMonthsField = (number: number) =>
+      screen.queryByRole('spinbutton', {
+        name: new RegExp(`${number}\\. lapse riigi lisamakse II\\ssambasse`),
+      });
+    it('opens the children block with the minors of the register', () => {
+      withChildren([BOY_BORN_JUNE_2015, GIRL_BORN_FEB_2023]);
+
+      renderFutureMe();
+
+      expect(addKidsButton()).not.toBeInTheDocument();
+      expect(kidsCountField()).toHaveValue(2);
+      expect(kidBirthYearField(1)).toHaveValue('2015');
+      expect(kidBirthYearField(2)).toHaveValue('2023');
+    });
+
+    it('asks for the state payment months only of a child born from 2022 who is over three', () => {
+      withChildren([BOY_BORN_JUNE_2015, GIRL_BORN_FEB_2023]);
+
+      renderFutureMe();
+
+      expect(queryKidMonthsField(1)).not.toBeInTheDocument();
+      expect(kidMonthsField(2)).toBeInTheDocument();
+    });
+
+    it('fills those months from the state payments into the II pillar', () => {
+      withChildren([BOY_BORN_JUNE_2015, GIRL_BORN_FEB_2023]);
+      withPensionData({ contributions: monthsOfParentalBenefit(30) });
+
+      renderFutureMe();
+
+      expect(kidMonthsField(2)).toHaveValue(30);
+    });
+
+    it('leaves the months empty when no state payment is found', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+
+      renderFutureMe();
+
+      expect(kidMonthsField(1)).toHaveValue(null);
+    });
+
+    it('keeps the saver on the step and points at a month count over 36', async () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+      renderFutureMe();
+      fillInRequiredAnswers();
+      typeInto(kidMonthsField(1), '40');
+
+      userEvent.click(nextButton());
+
+      expect(stepCount()).toHaveTextContent(/^Samm 1 /);
+      await waitFor(() => expect(kidMonthsField(1)).toHaveFocus());
+    });
+
+    it('says the adult children are for the saver to add', () => {
+      withChildren([BOY_BORN_JUNE_2015]);
+
+      renderFutureMe();
+
+      expect(
+        screen.getByText(/Täisealised lapsed lisa ise: suurenda laste arvu ja sisesta sünniaasta/),
+      ).toBeInTheDocument();
+    });
+
+    it('lets the saver add a child that the register does not list', () => {
+      withChildren([BOY_BORN_JUNE_2015]);
+
+      renderFutureMe();
+      typeInto(kidsCountField(), '2');
+      typeInto(kidBirthYearField(2), '2022');
+
+      expect(kidBirthYearField(2)).toHaveValue('2022');
+      expect(kidMonthsField(2)).toHaveValue(null);
+    });
+
+    it('lets the saver change a prefilled birth year and the months', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+      withPensionData({ contributions: monthsOfParentalBenefit(30) });
+
+      renderFutureMe();
+      typeInto(kidBirthYearField(1), '2010');
+
+      expect(queryKidMonthsField(1)).not.toBeInTheDocument();
+      typeInto(kidBirthYearField(1), '2022');
+      typeInto(kidMonthsField(1), '12');
+      expect(kidMonthsField(1)).toHaveValue(12);
+    });
+
+    it.each([
+      ['the register lists no minors', []],
+      ['the register could not be read', undefined],
+    ])('keeps adding children by hand when %s', (_, children) => {
+      withChildren(children);
+
+      renderFutureMe();
+      userEvent.click(addKidsButton() as HTMLElement);
+      typeInto(kidBirthYearField(1), '2023');
+
+      expect(kidsCountField()).toHaveValue(1);
+      expect(kidMonthsField(1)).toHaveValue(null);
+      expect(screen.queryByText(/Täisealised lapsed lisa ise/)).not.toBeInTheDocument();
+    });
+
+    it('says a number of months outside 0–36 is not possible', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+
+      renderFutureMe();
+      typeInto(kidMonthsField(1), '40');
+
+      expect(kidMonthsField(1)).toBeInvalid();
+      expect(
+        screen.getByText(/1\. lapse riigi lisamakse: sisesta täisarv vahemikus 0–36/),
+      ).toBeInTheDocument();
+    });
+
+    it('explains the number in a dialog behind a „?“ button', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+
+      renderFutureMe();
+      userEvent.click(screen.getByRole('button', { name: /^Selgitus: Mitu kuud maksis riik/ }));
+
+      const dialog = screen.getByRole('dialog');
+      expect(within(dialog).getByText(/lapse esimese 36 elukuu eest/)).toBeInTheDocument();
+      expect(within(dialog).getByText(/36:/)).toBeInTheDocument();
+    });
+
+    it('waits for the register before showing the form', () => {
+      withChildren(undefined, true);
+
+      renderFutureMe();
+
+      expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
     });
   });
 

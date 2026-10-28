@@ -12,6 +12,7 @@ jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: jest.fn(),
   useSourceFunds: jest.fn(),
+  useEligibleChildren: () => ({ data: [], isLoading: false }),
 }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
 
