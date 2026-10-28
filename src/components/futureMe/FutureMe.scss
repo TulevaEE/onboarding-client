@@ -1120,6 +1120,34 @@
     white-space: nowrap;
   }
 
+  .assumption-list {
+    margin: 0 0 1.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .assumption-row {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: 0 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid $gray-border-3;
+
+    h4 {
+      margin-bottom: 0.25rem;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .assumption-icon .line-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: $text-navy;
+  }
+
   .result-compare {
     margin-top: 1.5rem;
 
