@@ -693,6 +693,66 @@
     }
   }
 
+  .result-answer {
+    font-size: 1.125rem;
+  }
+
+  .result-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0 1.5rem;
+    padding: 0;
+    list-style: none;
+
+    li {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      padding: 0.75rem 1rem;
+      border: 1px solid $gray-border-3;
+      border-radius: 0.5rem;
+      background: $white;
+    }
+
+    strong {
+      font-size: 1.5rem;
+      line-height: 1.2;
+    }
+
+    span {
+      font-size: 0.875rem;
+      text-wrap: pretty;
+    }
+  }
+
+  .result-income {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid $gray-border-3;
+    }
+
+    span:first-child {
+      text-wrap: pretty;
+    }
+
+    span:last-child {
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  .result-income-total {
+    font-weight: 500;
+  }
+
   .step-nav {
     display: flex;
     align-items: center;

@@ -64,7 +64,7 @@ export const secondPillarMonthly = (
   return rate > 0 ? salary * (rate + STATE_SECOND_PILLAR_RATE) : 0;
 };
 
-const pensionInputOf = (
+export const pensionInputOf = (
   answers: SpecialPensionAnswers,
   you: YouAnswers,
   plan: StepPlanInput,

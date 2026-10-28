@@ -22,6 +22,7 @@ import { initialExpenses } from './expensesAnswers';
 import { ExpensesStep } from './ExpensesStep';
 import { derivePrefill, YouPrefill } from './prefill';
 import { PlaceholderStep } from './PlaceholderStep';
+import { ResultStep } from './ResultStep';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { SpecialPensionStep } from './SpecialPensionStep';
 import { StepTrail } from './StepTrail';
@@ -236,6 +237,14 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
     }
     if (step === FutureMeStep.COSTS) {
       return <ExpensesStep answers={expenses} headingRef={headingRef} onChange={setExpenses} />;
+    }
+    if (step === FutureMeStep.RESULT) {
+      return (
+        <ResultStep
+          context={{ you: answers, plan, age60, age65, age66, specialPension, expenses }}
+          headingRef={headingRef}
+        />
+      );
     }
     return (
       <PlaceholderStep step={step} label={stepLabel(intl, step, plan)} headingRef={headingRef} />

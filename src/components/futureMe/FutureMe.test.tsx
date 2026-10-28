@@ -311,7 +311,9 @@ describe('FutureMe', () => {
       userEvent.click(within(trail()).getByRole('button', { name: 'Kulud, vaatamata' }));
       userEvent.click(screen.getByRole('button', { name: 'Näita tulemust →' }));
 
-      expect(screen.getByRole('heading', { level: 2, name: 'Tulemus' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { level: 2, name: 'Kas raha jätkub elu lõpuni?' }),
+      ).toBeInTheDocument();
       expect(stepCount()).toHaveTextContent('Samm 7 / 7');
       expect(nextButton()).toBeDisabled();
     });
