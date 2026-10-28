@@ -185,6 +185,21 @@ describe('Result advice', () => {
     expect(screen.getByRole('button', { expanded: true, name: /II\ssammas/ })).toHaveFocus();
   });
 
+  it('brings the payout decision back into focus when the surplus advice is followed while it is open', () => {
+    startWith('900', '150000');
+    chooseSecondPillarFundPension();
+    openResult();
+    const advice = screen.getByRole('button', { name: 'Muuda samba väljamakse viisi' });
+    userEvent.click(advice);
+    const toggle = screen.getByRole('button', { expanded: true, name: /II\ssammas/ });
+    userEvent.tab();
+    expect(toggle).not.toHaveFocus();
+
+    userEvent.click(advice);
+
+    expect(toggle).toHaveFocus();
+  });
+
   it('explains with the numbers of the user what the plan carries to the end of life', () => {
     startWith('1200');
     openResult();

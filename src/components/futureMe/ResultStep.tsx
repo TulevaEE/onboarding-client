@@ -80,13 +80,15 @@ const AnswerText = ({ result, need }: { result: Result; need: number }) => {
 
 const sustainableHelpValues = (result: Result, need: number) => {
   const statePensionRow = result.rows.find((row) => row.i1g > 0.5);
-  const pensionStartRow = result.rows.find((row) => row.age === result.pensionStartAge);
+  // Someone past the pension age has no row at it: the first row is what they have today.
+  const pensionStartRow =
+    result.rows.find((row) => row.age === result.pensionStartAge) ?? result.rows[0];
   return {
     sustainable: euro(result.sustainable),
     horizonAge: result.horizonAge,
     hasStatePension: statePensionRow ? 'yes' : 'no',
     statePension: euro(statePensionRow?.i1g ?? 0),
-    statePensionAge: statePensionRow?.age ?? 0,
+    statePensionAge: result.p1StartAge,
     pot: euro(pensionStartRow?.pot ?? 0),
     need: euro(need),
   };
@@ -185,6 +187,11 @@ const IncomeAtPensionAge = ({ result, need }: { result: Result; need: number }) 
 export const ResultStep = ({ context, headingRef }: Props) => {
   const result = resultOf(context);
   const [openDecision, setOpenDecision] = useState<DecisionId | null>(null);
+  const [focusRequests, setFocusRequests] = useState(0);
+  const openAndFocusDecision = (id: DecisionId) => {
+    setOpenDecision(id);
+    setFocusRequests((count) => count + 1);
+  };
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-result-heading">
       <ChapterHead step={FutureMeStep.RESULT}>
@@ -202,7 +209,7 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       >
         <AnswerText result={result} need={needMonthly(context.expenses)} />
       </p>
-      <ResultAdvice context={context} result={result} onOpenDecision={setOpenDecision} />
+      <ResultAdvice context={context} result={result} onOpenDecision={openAndFocusDecision} />
       <Tiles result={result} need={needMonthly(context.expenses)} />
       <IncomeAtPensionAge result={result} need={needMonthly(context.expenses)} />
       <ResultChart
@@ -211,7 +218,12 @@ export const ResultStep = ({ context, headingRef }: Props) => {
         nominalReturns={nominalReturnsOf(context)}
       />
       <ResultLegacy context={context} result={result} />
-      <ResultDecisions context={context} openId={openDecision} onOpen={setOpenDecision} />
+      <ResultDecisions
+        context={context}
+        openId={openDecision}
+        onOpen={setOpenDecision}
+        focusRequests={focusRequests}
+      />
       <ResultAssumptions context={context} />
       <ResultRules context={context} />
     </section>

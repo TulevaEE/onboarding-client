@@ -7,6 +7,7 @@ import { useMe } from '../common/apiHooks';
 import { User } from '../common/apiModels';
 import translations from '../translations';
 import { mockUser } from '../../test/backend-responses';
+import { installDialogPolyfill } from './dialogPolyfill';
 
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
@@ -396,6 +397,26 @@ describe('Result step', () => {
       expect(
         within(figure()).getByRole('region', { name: /^Sissetulek ja kulud kuus/ }),
       ).toHaveAttribute('tabindex', '0');
+    });
+  });
+  describe('the help on how the most the plan carries is worked out', () => {
+    beforeAll(installDialogPolyfill);
+
+    it('counts the savings and the state pension of someone already past the pension age', () => {
+      loggedInAs({ dateOfBirth: '1956-01-01' });
+      openResultStep();
+      goTo(/^Sina/);
+      typeInto(
+        screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }),
+        '100000',
+      );
+      goTo(/^Tulemus/);
+
+      userEvent.click(screen.getByRole('button', { name: 'Selgitus: Kuidas see summa tekib' }));
+
+      const dialog = screen.getByRole('dialog', { name: 'Kuidas see summa tekib?' });
+      expect(dialog).toHaveTextContent(/sammastes u [1-9]/);
+      expect(dialog).not.toHaveTextContent(/alates 70-/);
     });
   });
 });

@@ -153,10 +153,18 @@ const DecisionChoices = ({ context, decision, panelId, titleId, onChange }: Pane
 
 interface RowProps extends Omit<PanelProps, 'panelId' | 'titleId'> {
   isOpen: boolean;
+  focusRequests: number;
   onToggle: () => void;
 }
 
-const DecisionRow = ({ context, decision, isOpen, onToggle, onChange }: RowProps) => {
+const DecisionRow = ({
+  context,
+  decision,
+  isOpen,
+  focusRequests,
+  onToggle,
+  onChange,
+}: RowProps) => {
   const intl = useIntl();
   const titleId = `future-me-decision-${decision.id}-title`;
   const panelId = `future-me-decision-${decision.id}-panel`;
@@ -170,7 +178,7 @@ const DecisionRow = ({ context, decision, isOpen, onToggle, onChange }: RowProps
     if (isOpen) {
       toggleRef.current?.focus();
     }
-  }, [isOpen]);
+  }, [isOpen, focusRequests]);
   return (
     <li>
       <div className="decision-row">
@@ -247,9 +255,10 @@ interface Props {
   context: ResultContext;
   openId: DecisionId | null;
   onOpen: (id: DecisionId | null) => void;
+  focusRequests: number;
 }
 
-const DecisionList = ({ context, openId, onOpen }: Props) => {
+const DecisionList = ({ context, openId, onOpen, focusRequests }: Props) => {
   const intl = useIntl();
   const { change: onChange } = useDecisionActions();
   return (
@@ -270,6 +279,7 @@ const DecisionList = ({ context, openId, onOpen }: Props) => {
             context={context}
             decision={decision}
             isOpen={openId === decision.id}
+            focusRequests={focusRequests}
             onToggle={() => onOpen(openId === decision.id ? null : decision.id)}
             onChange={onChange}
           />
@@ -279,9 +289,9 @@ const DecisionList = ({ context, openId, onOpen }: Props) => {
   );
 };
 
-export const ResultDecisions = ({ context, openId, onOpen }: Props) => (
+export const ResultDecisions = ({ context, openId, onOpen, focusRequests }: Props) => (
   <>
-    <DecisionList context={context} openId={openId} onOpen={onOpen} />
+    <DecisionList context={context} openId={openId} onOpen={onOpen} focusRequests={focusRequests} />
     <ResultComparison context={context} />
   </>
 );
