@@ -12,12 +12,16 @@ jest.mock('../common/apiHooks', () => ({ useMe: jest.fn() }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
 
 const mockChart = jest.fn();
-jest.mock('react-chartjs-2', () => ({
-  Chart: (props: unknown) => {
-    mockChart(props);
-    return <div data-testid="mock-chart" />;
-  },
-}));
+jest.mock('react-chartjs-2', () => {
+  // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+  const { forwardRef } = require('react');
+  return {
+    Chart: forwardRef((props: unknown) => {
+      mockChart(props);
+      return <div data-testid="mock-chart" />;
+    }),
+  };
+});
 
 const mockUseMe = useMe as jest.MockedFunction<typeof useMe>;
 
@@ -294,14 +298,10 @@ describe('Result step', () => {
       ]);
     });
 
-    it('shows the age and the monthly amount of each layer in the tooltip', () => {
+    it('turns off the Chart.js tooltip, as the chart opens its own with the events and the cover', () => {
       openResultStep();
-      const { title, label } = lastChartProps().options.plugins.tooltip.callbacks;
 
-      expect(title([{ label: '70' }])).toBe('70 a');
-      expect(label({ dataset: { label: 'Riiklik pension' }, parsed: { y: 512 } })).toBe(
-        'Riiklik pension: 512 €',
-      );
+      expect(lastChartProps().options.plugins.tooltip).toEqual({ enabled: false });
     });
 
     it('shortens the amounts on the side axis to thousands', () => {
@@ -328,7 +328,7 @@ describe('Result step', () => {
         within(legend)
           .getAllByRole('listitem')
           .map((item) => item.textContent),
-      ).toEqual(['Riiklik pension', 'Kulud']);
+      ).toEqual(['✓Riiklik pension', 'Kulud']);
     });
 
     it('labels every fifth age on a wide screen and every tenth on a narrow one', () => {

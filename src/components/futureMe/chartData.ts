@@ -1,3 +1,4 @@
+import { SimulationRow } from './engine/pension';
 import { Result } from './resultAnswers';
 
 export type ChartSourceId =
@@ -18,6 +19,8 @@ export interface ChartRow {
   thirdPillar: number;
   deposit: number;
   costs: number;
+  shortfall: number;
+  surplus: number;
 }
 
 const SOURCE_IDS: ChartSourceId[] = [
@@ -29,6 +32,12 @@ const SOURCE_IDS: ChartSourceId[] = [
   'deposit',
 ];
 const TABLE_AGE_STEP = 5;
+const NOTICEABLE = 0.5;
+
+const surplusOf = ({ work, i1, isp, i2, i3, dep }: SimulationRow, need: number) => {
+  const over = i1 + isp + i2 + i3 + dep - need;
+  return !work && over > NOTICEABLE ? Math.round(over) : 0;
+};
 
 export const chartRowsOf = (result: Result, need: number): ChartRow[] =>
   result.rows
@@ -43,6 +52,8 @@ export const chartRowsOf = (result: Result, need: number): ChartRow[] =>
       thirdPillar: Math.round(row.i3),
       deposit: Math.round(row.dep),
       costs: Math.round(need),
+      shortfall: row.shortfall > NOTICEABLE ? Math.round(row.shortfall) : 0,
+      surplus: surplusOf(row, need),
     }));
 
 export const startSourcesOf = (start: ChartRow): ChartSourceId[] => {

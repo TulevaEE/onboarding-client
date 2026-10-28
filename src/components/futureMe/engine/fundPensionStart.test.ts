@@ -103,4 +103,31 @@ describe('fund pension start after the pension age', () => {
       });
     },
   );
+
+  describe('contracts for the average remaining life', () => {
+    const termFrom70 = fundPensionTerm(lifeTable, 'N', 70);
+    const thirdPillarFrom70 = (contract: string): PensionInput => ({
+      ...base,
+      p3Sep: { amount: 30000, mode: 'fund', contract, start: 70 },
+    });
+
+    it('reports a single second pillar contract from its start to the end of its term', () => {
+      expect(
+        simulate(base, lifeTable, { ...scenarioB, fundFrom: 70 }).fundPensionContracts,
+      ).toEqual({ second: { start: 70, end: 70 + termFrom70 }, third: null });
+    });
+
+    it('reports a single third pillar contract from its start to the end of its term', () => {
+      expect(
+        simulate(thirdPillarFrom70('once'), lifeTable, keepGrowingScenario).fundPensionContracts,
+      ).toEqual({ second: null, third: { start: 70, end: 70 + termFrom70 } });
+    });
+
+    it('reports no contract for fund pensions signed again every year', () => {
+      expect(
+        simulate(thirdPillarFrom70('yearly'), lifeTable, { ...scenarioD, fundFrom: 70 })
+          .fundPensionContracts,
+      ).toEqual({ second: null, third: null });
+    });
+  });
 });
