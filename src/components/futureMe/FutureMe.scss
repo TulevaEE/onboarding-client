@@ -1181,16 +1181,30 @@
 
   .label-line {
     margin-bottom: 0.5rem;
+    white-space: nowrap;
 
     .form-label {
       display: inline;
       margin: 0;
+      white-space: normal;
     }
   }
 
   .you-section-title-line {
+    white-space: nowrap;
+
     .you-section-title {
       display: inline;
+      white-space: normal;
+    }
+  }
+
+  .form-check:has(.help-btn) {
+    white-space: nowrap;
+
+    .form-check-label {
+      display: inline;
+      white-space: normal;
     }
   }
 
