@@ -75,6 +75,46 @@ describe('nominalResultOf', () => {
   });
 });
 
+describe('nominalResultOf, special pension against the old-age pension', () => {
+  const you = {
+    ...initialAnswers({ birthYear: 1976, sex: null, secondPillarRate: null }),
+    pensionAgeYears: '65',
+    firstPillarMonthly: '700',
+    grossMonthly: '2000',
+    secondPillarAmount: '10000',
+    workAdded: true,
+    hasSpecialPension: true,
+    specialPensionStartAge: '55',
+  };
+  const context: ResultContext = {
+    you,
+    plan: toStepPlanInput(you),
+    age60: initialAge60(),
+    age65: initialAge65(),
+    age66: initialAge66(),
+    specialPension: { ...initialSpecialPension(), monthly: '900' },
+    expenses: initialExpenses(),
+  };
+  const result = resultOf(context);
+  const yearAt = (age: number) => result.rows.find((row) => row.age === age)?.year ?? 0;
+
+  it('puts the amounts it compares into the prices of the year they are paid from', () => {
+    const nominal = nominalResultOf(result);
+
+    expect(nominal.firstPillar?.special).toBeCloseTo(
+      (result.firstPillar?.special ?? 0) * nominalFactorAt(yearAt(result.pensionStartAge)),
+    );
+    expect(nominal.firstPillar?.oldAge).toBeCloseTo(
+      (result.firstPillar?.oldAge ?? 0) * nominalFactorAt(yearAt(result.p1StartAge)),
+    );
+    expect(nominal.firstPillar?.paid).toBe(result.firstPillar?.paid);
+  });
+
+  it('is left alone for someone with no special pension', () => {
+    expect(nominalResultOf(resultOf(contextWith())).firstPillar).toBeNull();
+  });
+});
+
 describe('nominalReturnsOf', () => {
   it('adds the price growth to the second pillar fund’s return when only that pillar exists', () => {
     expect(nominalReturnsOf(contextWith({ secondPillarFund: 'mix' }))).toEqual({

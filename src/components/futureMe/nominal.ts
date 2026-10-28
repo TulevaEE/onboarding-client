@@ -45,9 +45,24 @@ const nominalRowOf = (row: SimulationRow): SimulationRow => {
   );
 };
 
+const nominalFirstPillarOf = ({ firstPillar, rows, pensionStartAge, p1StartAge }: Result) => {
+  if (!firstPillar || rows.length === 0) {
+    return firstPillar;
+  }
+  const factorAt = (age: number) => nominalFactorAt(rows[0].year - rows[0].age + age);
+  const { atPa } = firstPillar;
+  return {
+    ...firstPillar,
+    special: firstPillar.special * factorAt(pensionStartAge),
+    oldAge: firstPillar.oldAge * factorAt(p1StartAge),
+    atPa: atPa && { ...atPa, oldAge: atPa.oldAge * factorAt(atPa.age) },
+  };
+};
+
 export const nominalResultOf = (result: Result): Result => ({
   ...result,
   rows: result.rows.map(nominalRowOf),
+  firstPillar: nominalFirstPillarOf(result),
 });
 
 const nominalReturnOf = (real: number): number =>
