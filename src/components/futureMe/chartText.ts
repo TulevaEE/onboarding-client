@@ -3,6 +3,7 @@ import { TranslationKey } from '../translations';
 import { euro } from './amountFormat';
 import { ChartRow, ChartSourceId } from './chartData';
 import { ChartEvent, ChartEventKind } from './chartEvents';
+import { Cover } from './chartPoints';
 import { SOURCE_LABELS } from './chartSources';
 
 const EVENT_LABELS: Record<ChartEventKind, TranslationKey> = {
@@ -19,11 +20,22 @@ const EVENT_LABELS: Record<ChartEventKind, TranslationKey> = {
 export const eventTextOf = (intl: IntlShape, { kind, pillars, years, next }: ChartEvent) =>
   intl.formatMessage({ id: EVENT_LABELS[kind] }, { pillars, years, next });
 
+export const withoutLayersTextOf = (intl: IntlShape, id: TranslationKey, cover: Cover) =>
+  intl.formatMessage(
+    { id },
+    {
+      layers: intl.formatList(
+        cover.without.map((layer) => intl.formatMessage({ id: SOURCE_LABELS[layer] })),
+      ),
+    },
+  );
+
 export const announcementOf = (
   intl: IntlShape,
   row: ChartRow,
   events: ChartEvent[],
   layers: ChartSourceId[],
+  cover: Cover,
 ) => {
   const amounts = layers
     .filter((id) => row[id] > 0)
@@ -35,13 +47,16 @@ export const announcementOf = (
   const coverLine = (id: TranslationKey, amount: number) => [
     intl.formatMessage({ id }, { amount: euro(amount) }),
   ];
-  let cover: string[] = [];
-  if (row.shortfall > 0) {
-    cover = coverLine('futureMe.result.chart.announce.missing', row.shortfall);
-  } else if (row.surplus > 0) {
-    cover = coverLine('futureMe.result.chart.announce.surplus', row.surplus);
+  let coverLines: string[] = [];
+  if (cover.shortfall > 0) {
+    coverLines = coverLine('futureMe.result.chart.announce.missing', cover.shortfall);
+  } else if (cover.surplus > 0) {
+    coverLines = coverLine('futureMe.result.chart.announce.surplus', cover.surplus);
   }
-  const details = (row.isBeforePension ? amounts : [...amounts, costs, ...cover]).join(', ');
+  if (cover.without.length > 0) {
+    coverLines.push(withoutLayersTextOf(intl, 'futureMe.result.chart.announce.without', cover));
+  }
+  const details = (row.isBeforePension ? amounts : [...amounts, costs, ...coverLines]).join(', ');
   return events.length
     ? intl.formatMessage(
         { id: 'futureMe.result.chart.announce.withEvents' },

@@ -30,7 +30,13 @@ import {
 import { ChartEvent, chartEventsOf } from './chartEvents';
 import { assumptionOf, SummaryNote, summaryNotesOf } from './chartNotes';
 import { ChartMark, costsLine, lastPointAtAge, marksLine } from './chartPlugins';
-import { ChartPoint, chartPointsOf, isLayerEdgeHidden, stackedValueOf } from './chartPoints';
+import {
+  ChartPoint,
+  chartPointsOf,
+  coverOf,
+  isLayerEdgeHidden,
+  stackedValueOf,
+} from './chartPoints';
 import { SOURCE_COLORS, SOURCE_LABELS, SUMMARY_LABELS } from './chartSources';
 import { announcementOf } from './chartText';
 import { ResultChartTip } from './ResultChartTip';
@@ -270,7 +276,15 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
   const close = () => setActiveIndex(null);
   const goTo = (index: number) => {
     setActiveIndex(index);
-    announce(announcementOf(intl, rows[index], eventsAt(index), visibleLayers));
+    announce(
+      announcementOf(
+        intl,
+        rows[index],
+        eventsAt(index),
+        visibleLayers,
+        coverOf(rows[index], layers, hidden),
+      ),
+    );
   };
 
   const isHeadingForTip = (x: number, index: number) => {
@@ -491,6 +505,7 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
               row={rows[activeIndex]}
               events={eventsAt(activeIndex)}
               layers={visibleLayers}
+              cover={coverOf(rows[activeIndex], layers, hidden)}
               onClose={close}
             />
           </>

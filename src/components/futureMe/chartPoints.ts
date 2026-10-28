@@ -9,6 +9,14 @@ export interface ChartPoint {
   values: Values;
 }
 
+export interface Cover {
+  shortfall: number;
+  surplus: number;
+  without: ChartSourceId[];
+}
+
+const NOTICEABLE = 0.5;
+
 const valuesOf = (row: ChartRow): Values =>
   Object.fromEntries(SOURCE_IDS.map((id) => [id, row[id]])) as Values;
 
@@ -40,4 +48,23 @@ export const isLayerEdgeHidden = (
   const paying = visible.filter((other) => point.values[other] > 0).length;
   const roundingError = (paying + 1) / 2;
   return isTop && Math.abs(totalOf(point, visible) - costs) <= roundingError;
+};
+
+export const coverOf = (
+  row: ChartRow,
+  layers: ChartSourceId[],
+  hidden: ReadonlySet<ChartSourceId>,
+): Cover => {
+  const without = layers.filter((id) => hidden.has(id) && row[id] > 0);
+  if (without.length === 0) {
+    return { shortfall: row.shortfall, surplus: row.surplus, without };
+  }
+  const shown = layers.filter((id) => !hidden.has(id)).reduce((sum, id) => sum + row[id], 0);
+  const gap = row.costs - shown;
+  const isWorking = row.salary > 0;
+  return {
+    shortfall: Math.max(row.shortfall, gap > NOTICEABLE ? Math.round(gap) : 0),
+    surplus: !isWorking && -gap > NOTICEABLE ? Math.round(-gap) : 0,
+    without,
+  };
 };
