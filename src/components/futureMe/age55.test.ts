@@ -133,6 +133,12 @@ describe('payout', () => {
       expect(payout.leftAtPension).toBeGreaterThan(0);
     });
 
+    it('pays the same every year from a single contract, which keeps the years left of the first payment', () => {
+      const payout = payoutOf('fund', payoutInput({ contract: 'once' }));
+
+      expect(payout.gross).toBeCloseTo((9 * 12000) / fundPensionTerm(lifeTable, 'N', 56), 6);
+    });
+
     it('pays more per month when started later', () => {
       const early = payoutOf('fund', payoutInput({ birthYear: 1971, age: 55 }));
       const late = payoutOf('fund', payoutInput({ birthYear: 1971, age: 60 }));

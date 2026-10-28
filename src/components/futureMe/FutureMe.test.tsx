@@ -1379,6 +1379,31 @@ describe('FutureMe', () => {
       expect(screen.getByRole('status')).toHaveTextContent(/esimene väljamakse on u/);
     });
 
+    it('shows the fund pension figures of the contract chosen for the III pillar', () => {
+      renderFutureMe();
+      openAge55();
+      userEvent.click(fundPlan());
+      const withYearlyContract = (screen.getByRole('status').textContent ?? '').replace(
+        /\s+/g,
+        ' ',
+      );
+
+      userEvent.click(within(trail()).getByRole('button', { name: /^66\+/ }));
+      const thirdPillarStart = screen.getByRole('combobox', {
+        name: /Mis vanusest hakkad III\ssambast fondipensioni võtma\?/,
+      });
+      userEvent.selectOptions(thirdPillarStart, within(thirdPillarStart).getAllByRole('option')[1]);
+      userEvent.click(
+        within(screen.getByRole('group', { name: /^III\ssamba fondipensioni leping$/ })).getByRole(
+          'radio',
+          { name: /^Üks leping/ },
+        ),
+      );
+      userEvent.click(within(trail()).getByRole('button', { name: /^55\sa/ }));
+
+      expect(screen.getByRole('status')).not.toHaveTextContent(withYearlyContract);
+    });
+
     it('keeps the choice when the saver leaves the step and comes back', () => {
       renderFutureMe();
       openAge55();

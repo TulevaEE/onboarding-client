@@ -6,6 +6,7 @@ import {
   INFLATION,
   LifeTable,
   p3Factor,
+  SeparateThirdPillar,
   Sex,
   TAX_SHORT,
 } from './engine/pension';
@@ -34,6 +35,7 @@ export interface ThirdPillarPayoutInput {
   monthlyContribution: number;
   returnRate: number;
   firstYearShare: number;
+  contract?: SeparateThirdPillar['contract'];
 }
 
 export interface ThirdPillarPayout {
@@ -113,10 +115,14 @@ export const thirdPillarPayout = (
     };
   }
 
+  const firstTerm = fundPensionTerm(lifeTable, sex, age);
+  const yearsLeftAt = (at: number): number =>
+    input.contract === 'once' ? firstTerm - (at - age) : fundPensionTerm(lifeTable, sex, at);
+
   let gross = 0;
   let firstMonthly = 0;
   for (let at = age; at < pensionAge; at += 1) {
-    const payment = balance / fundPensionTerm(lifeTable, sex, at);
+    const payment = balance / yearsLeftAt(at);
     firstMonthly = at === age ? payment / MONTHS_IN_YEAR : firstMonthly;
     gross += payment;
     balance = grow(balance - payment, at);
@@ -124,7 +130,30 @@ export const thirdPillarPayout = (
   return { gross, tax: 0, net: gross, firstMonthly, leftAtPension: balance };
 };
 
-export const age55Of = (answers: YouAnswers, firstYearShare: number): Age55 => {
+export const thirdPillarPayoutInputOf = (
+  answers: YouAnswers,
+  firstYearShare: number,
+  contract?: ThirdPillarPayoutInput['contract'],
+): ThirdPillarPayoutInput => {
+  const birthYear = birthYearOrFallback(answers);
+  return {
+    birthYear,
+    sex: answers.sex,
+    pensionAge: pensionAgeValue(answers),
+    age: withdrawalAge(CURRENT_YEAR - birthYear),
+    balance: amountOf(answers.thirdPillarAmount),
+    monthlyContribution: amountOf(answers.thirdPillarMonthly),
+    returnRate: FUND_RETURNS[answers.thirdPillarFund],
+    firstYearShare,
+    contract,
+  };
+};
+
+export const age55Of = (
+  answers: YouAnswers,
+  firstYearShare: number,
+  contract?: ThirdPillarPayoutInput['contract'],
+): Age55 => {
   const birthYear = birthYearOrFallback(answers);
   const age = withdrawalAge(CURRENT_YEAR - birthYear);
   const pensionAge = pensionAgeValue(answers);
@@ -148,15 +177,6 @@ export const age55Of = (answers: YouAnswers, firstYearShare: number): Age55 => {
     lock,
     isFundAvailable,
     plan,
-    payout: thirdPillarPayout(plan, {
-      birthYear,
-      sex: answers.sex,
-      pensionAge,
-      age,
-      balance: amountOf(answers.thirdPillarAmount),
-      monthlyContribution: amountOf(answers.thirdPillarMonthly),
-      returnRate: FUND_RETURNS[answers.thirdPillarFund],
-      firstYearShare,
-    }),
+    payout: thirdPillarPayout(plan, thirdPillarPayoutInputOf(answers, firstYearShare, contract)),
   };
 };
