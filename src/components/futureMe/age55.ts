@@ -122,7 +122,7 @@ export const thirdPillarPayout = (
   let gross = 0;
   let firstMonthly = 0;
   for (let at = age; at < pensionAge; at += 1) {
-    const payment = yearsLeftAt(at) > 0 ? balance / yearsLeftAt(at) : 0;
+    const payment = balance / yearsLeftAt(at);
     firstMonthly = at === age ? payment / MONTHS_IN_YEAR : firstMonthly;
     gross += payment;
     balance = grow(balance - payment, at);
