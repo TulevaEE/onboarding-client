@@ -1,0 +1,111 @@
+import { pensionKind } from './age65Answers';
+import { Contract, hasPillar, Pillar } from './age66Answers';
+import { EARLY_DECREASE, retirementYears } from './engine/pension';
+import { retirementAge } from './planAges';
+import { ResultContext, resultInputOf, resultScenarioOf } from './resultAnswers';
+import { specialPensionStartAge } from './specialPensionAnswers';
+import { amountOf, earlyRightSources, YouAnswers } from './youAnswers';
+
+type EarlyRightReason = keyof ReturnType<typeof earlyRightSources>;
+
+interface When {
+  age: number | null;
+  year: number | null;
+}
+
+export type Rule = When &
+  (
+    | { id: 'earlyRetirement'; years: number; pensionAge: number; reason: EarlyRightReason }
+    | { id: 'flexibleRetirement'; years: number; decrease: number }
+    | { id: 'specialPension'; monthly: number; startAge: number | undefined }
+    | { id: 'fundPensionContract'; contracts: Partial<Record<Pillar, Contract>> }
+    | { id: 'inheritance'; pillars: 'both' | Pillar }
+  );
+
+const FUND_PENSION_SCENARIOS = ['B', 'C', 'D'];
+
+const whenOf = (context: ResultContext, age: number | null): When => ({
+  age,
+  year: age === null ? null : context.plan.birthYear + age,
+});
+
+const earlyRightReason = (you: YouAnswers): EarlyRightReason => {
+  const sources = earlyRightSources(you);
+  return (Object.keys(sources) as EarlyRightReason[]).reduce((largest, reason) =>
+    sources[reason] > sources[largest] ? reason : largest,
+  );
+};
+
+const earlyRetirementRules = (context: ResultContext): Rule[] => {
+  const { you, plan } = context;
+  const years = plan.earlyRetirementYears;
+  const when = whenOf(context, retirementAge(plan));
+  if (years === 0) {
+    return [];
+  }
+  return [
+    pensionKind(you) === 'flexible'
+      ? { id: 'flexibleRetirement', ...when, years, decrease: EARLY_DECREASE[years] }
+      : {
+          id: 'earlyRetirement',
+          ...when,
+          years,
+          pensionAge: retirementYears(plan),
+          reason: earlyRightReason(you),
+        },
+  ];
+};
+
+const specialPensionRules = (context: ResultContext): Rule[] => {
+  const { plan, specialPension } = context;
+  const monthly = amountOf(specialPension.monthly);
+  return plan.hasSpecialPension && monthly > 0
+    ? [
+        {
+          id: 'specialPension',
+          ...whenOf(context, specialPensionStartAge(plan)),
+          monthly,
+          startAge: plan.specialPensionStartAge,
+        },
+      ]
+    : [];
+};
+
+const fundPensionRules = (context: ResultContext): Rule[] => {
+  const { age66, plan } = context;
+  const isSecondPillarFund =
+    hasPillar('secondPillar', context) &&
+    FUND_PENSION_SCENARIOS.includes(resultScenarioOf(context).id);
+  const isThirdPillarFund = resultInputOf(context).p3Sep?.mode === 'fund';
+  const contracts = {
+    ...(isSecondPillarFund && { secondPillar: age66.secondPillarContract }),
+    ...(isThirdPillarFund && { thirdPillar: age66.thirdPillarContract }),
+  };
+  return Object.keys(contracts).length === 0
+    ? []
+    : [{ id: 'fundPensionContract', ...whenOf(context, retirementYears(plan)), contracts }];
+};
+
+const inheritingPillar = (hasSecondPillar: boolean): Pillar =>
+  hasSecondPillar ? 'secondPillar' : 'thirdPillar';
+
+const inheritanceRules = (context: ResultContext): Rule[] => {
+  const hasSecondPillar = hasPillar('secondPillar', context);
+  const hasThirdPillar = hasPillar('thirdPillar', context);
+  if (!hasSecondPillar && !hasThirdPillar) {
+    return [];
+  }
+  const pillars = hasSecondPillar && hasThirdPillar ? 'both' : inheritingPillar(hasSecondPillar);
+  return [{ id: 'inheritance', ...whenOf(context, null), pillars }];
+};
+
+const byAge = (a: Rule, b: Rule): number =>
+  (a.age ?? Number.POSITIVE_INFINITY) - (b.age ?? Number.POSITIVE_INFINITY);
+
+export const rulesOf = (context: ResultContext): Rule[] =>
+  [
+    ...earlyRetirementRules(context),
+    ...specialPensionRules(context),
+    ...fundPensionRules(context),
+    ...inheritanceRules(context),
+  ].sort(byAge);

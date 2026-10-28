@@ -3146,5 +3146,21 @@
   "futureMe.help.pillars.body": "<p>Nende andmete järgi arvutame, kui palju sul pensionieas sammastes raha on ja kui kaua see kestab.</p><ul><li><strong>II sammas</strong> on kohustuslik kogumispension: osa sinu palgast ja riigi sotsiaalmaksust läheb pensionifondi. Raha saad kasutada alates 5 aastat enne pensioniiga. Varem välja võtta saab ainult ühe korra 22% tulumaksuga (vt „II samba sissemakse“ selgitus).</li><li><strong>III sammas</strong> on vabatahtlik: maksad ise ja saad tulumaksu tagasi (kuni 15% brutotulust, kuni 6000 € aastas).</li><li><strong>Brutopalk</strong> määrab II samba sissemakse ja selle, kui palju töötamine pensionieas pensioni tõstab.</li></ul><p>Loe lähemalt: <tuleva>Tuleva</tuleva>, <pensionikeskus>Pensionikeskus</pensionikeskus>, <ska>SKA</ska>.</p>",
   "futureMe.help.open": "Selgitus: {title}",
   "futureMe.help.close": "Sulge selgitus",
-  "futureMe.help.newWindow": "(avaneb uues aknas)"
+  "futureMe.help.newWindow": "(avaneb uues aknas)",
+  "futureMe.result.rules.title": "Reeglid ja maksud",
+  "futureMe.result.rules.intro": "Reeglid, mis kehtivad sinu valikute puhul (Pensionikeskus ja Sotsiaalkindlustusamet, 2026).",
+  "futureMe.result.rules.endOfLife": "Elu lõpus",
+  "futureMe.result.rules.earlyRetirement.title": "Soodustingimustel vanaduspension",
+  "futureMe.result.rules.earlyRetirement.text": "Pensionile saab minna {years} {years, plural, one {aasta} other {aastat}} enne tavalist pensioniiga ({reason, select, kids {lapsed} hazard {tervist kahjustav töö} other {päästeteenistus}}) ja riiklikku pensioni ei vähendata. Sinu pensioniiga on {pensionAge} a. Kontrolli oma õigust SKA lehelt.",
+  "futureMe.result.rules.earlyRetirement.choice": "{years} a varem",
+  "futureMe.result.rules.flexibleRetirement.title": "Paindlik pension varem",
+  "futureMe.result.rules.flexibleRetirement.text": "Pensionile saab minna {years} {years, plural, one {aasta} other {aastat}} enne tavalist pensioniiga. Riiklikku pensioni vähendatakse eluks ajaks {decrease}.",
+  "futureMe.result.rules.flexibleRetirement.choice": "{years} a varem, pension {decrease} väiksem",
+  "futureMe.result.rules.specialPension.title": "Eripension",
+  "futureMe.result.rules.specialPension.text": "Eripension (politsei, kaitsevägi, kohtunik, Riigikogu jt) on riiklik pension (I sammas). Kahte riiklikku pensioni korraga ei maksta: pensionieas valid ühe, eripensioni või vanaduspensioni, tavaliselt suurema (SKA kontrollib seda sinu soovil). Eripensioni ei saa edasi lükata, varem võtta ega peatada. II ja III samba vanusepiirid on samad mis kõigil. Uutele teenistujatele (politsei, kaitsevägi, prokurörid alates 2020. a) enam ei teki. Kontrolli oma õigust SKA lehelt.",
+  "futureMe.result.rules.specialPension.choice": "{monthly} kuus enne maksu{hasStartAge, select, yes {, alates {startAge}-⁠aastaselt} other {}}",
+  "futureMe.result.rules.fundPensionContract.title": "Fondipensioni leping: üks kord või igal aastal uuesti",
+  "futureMe.result.rules.fundPensionContract.text": "{isBoth, select, yes {II ja III samba fondipension on eraldi lepingud. } other {}}Ühe lepinguga lõpeb väljamakse perioodi lõpus. Kui sõlmid lepingu igal aastal uuesti vähemalt soovitusliku perioodiga, jääb see maksuvabaks ega saa otsa, aga väga kõrges eas on kuumakse väiksem.",
+  "futureMe.result.rules.inheritance.title": "Pärimine",
+  "futureMe.result.rules.inheritance.text": "{pillars, select, both {II ja III samba} secondPillar {II samba} other {III samba}} fondis olev raha (ka fondipension) läheb pärijatele. {hasSecondPillar, select, yes {Kui pärija võtab II samba osakud rahana välja, on maks 22%. } other {}}Eluaegne kindlustuspension pärandada ei saa (v.a garantiiperiood)."
 }

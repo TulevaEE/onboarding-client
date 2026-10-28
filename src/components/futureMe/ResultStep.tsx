@@ -8,6 +8,7 @@ import { ResultAdvice } from './ResultAdvice';
 import { ResultAssumptions } from './ResultAssumptions';
 import { ResultChart } from './ResultChart';
 import { ResultDecisions } from './ResultDecisions';
+import { ResultRules } from './ResultRules';
 import {
   coverageKind,
   incomeAtStart,
@@ -187,6 +188,7 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       <ResultChart result={result} need={needMonthly(context.expenses)} />
       <ResultDecisions context={context} />
       <ResultAssumptions context={context} />
+      <ResultRules context={context} />
     </section>
   );
 };
