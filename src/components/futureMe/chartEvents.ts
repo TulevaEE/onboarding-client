@@ -48,9 +48,10 @@ export const chartEventsOf = (result: Result): ChartEvent[] => {
     events.push({ kind: 'statePension', age: result.p1StartAge });
   }
 
-  const fundStart = rows.find(({ fp }) => isPaid(fp));
-  if (fundStart) {
-    events.push({ kind: 'fundStart', age: fundStart.age });
+  // The III pillar paid before the pension age is the chart's first fund pension row.
+  const fundStartAge = result.earlyThirdPillar[0]?.age ?? rows.find(({ fp }) => isPaid(fp))?.age;
+  if (fundStartAge !== undefined) {
+    events.push({ kind: 'fundStart', age: fundStartAge });
   }
 
   const rowAt = (age: number) => rows.find((row) => row.age === age);
