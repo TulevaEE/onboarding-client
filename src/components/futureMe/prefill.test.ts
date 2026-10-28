@@ -1,12 +1,56 @@
 import { mockUser } from '../../test/backend-responses';
+import { Contribution, SourceFund } from '../common/apiModels';
 import {
   BIRTH_YEAR_MAX,
   BIRTH_YEAR_MIN,
   deriveBirthYear,
+  deriveGrossMonthly,
+  derivePillarAmount,
   derivePrefill,
   deriveSex,
+  deriveThirdPillarJoined,
+  deriveThirdPillarMonthly,
   parseBirthYear,
 } from './prefill';
+
+const TODAY = new Date('2026-10-28T12:00:00Z');
+
+const secondPillarPayment = (time: string, socialTaxPortion: number): Contribution => ({
+  time,
+  sender: 'Employer',
+  amount: socialTaxPortion * 1.5,
+  currency: 'EUR',
+  pillar: 2,
+  additionalParentalBenefit: 0,
+  employeeWithheldPortion: socialTaxPortion / 2,
+  socialTaxPortion,
+  interest: 0,
+});
+
+const thirdPillarPayment = (time: string, amount: number): Contribution => ({
+  time,
+  sender: 'Me',
+  amount,
+  currency: 'EUR',
+  pillar: 3,
+});
+
+const fund = (pillar: 2 | 3, price: number, unavailablePrice = 0): SourceFund => ({
+  isin: `EE${pillar}${price}`,
+  name: 'Fund',
+  fundManager: { name: 'Tuleva' },
+  activeFund: true,
+  pillar,
+  managementFeePercent: 0.3,
+  price,
+  unavailablePrice,
+  currency: 'EUR',
+  ongoingChargesFigure: 0.004,
+  contributions: price,
+  subtractions: 0,
+  profit: 0,
+  units: price,
+});
 
 describe('birth year from the date of birth', () => {
   it('reads the year of an ISO date', () => {
@@ -77,6 +121,151 @@ describe('prefill for the You step', () => {
 
   it('reads a user outside the II pillar as paying nothing into it', () => {
     expect(derivePrefill({ ...mockUser, secondPillarActive: false }).secondPillarRate).toBe('0');
+  });
+});
+
+describe('III pillar join from the user', () => {
+  it.each([
+    ['2019-01-01', 'before'],
+    ['2020-12-31', 'before'],
+    ['2021-01-01', 'after'],
+    [null, 'none'],
+  ] as const)('reads %p as %p', (thirdPillarInitDate, joined) => {
+    expect(deriveThirdPillarJoined({ ...mockUser, thirdPillarInitDate })).toBe(joined);
+  });
+});
+
+describe('gross salary from the II pillar contributions', () => {
+  it('is the social tax part of the latest month divided by 4%', () => {
+    const contributions = [
+      secondPillarPayment('2026-08-10T08:00:00Z', 80),
+      secondPillarPayment('2026-09-10T08:00:00Z', 100),
+    ];
+
+    expect(deriveGrossMonthly(contributions, TODAY)).toBe('2500');
+  });
+
+  it('adds up the payments of several employers in the same month', () => {
+    const contributions = [
+      secondPillarPayment('2026-09-05T08:00:00Z', 60),
+      secondPillarPayment('2026-09-20T08:00:00Z', 20),
+    ];
+
+    expect(deriveGrossMonthly(contributions, TODAY)).toBe('2000');
+  });
+
+  it('still reads a payment three months back, as payments arrive late', () => {
+    expect(deriveGrossMonthly([secondPillarPayment('2026-07-10', 80)], TODAY)).toBe('2000');
+  });
+
+  it("gives nothing when the latest payment is older, so an old salary is not taken as today's", () => {
+    expect(deriveGrossMonthly([secondPillarPayment('2026-06-10', 80)], TODAY)).toBeNull();
+  });
+
+  it.each([
+    ['there are no payments', []],
+    ['only the III pillar was paid into', [thirdPillarPayment('2026-09-10', 100)]],
+    ['the payment has no social tax part', [secondPillarPayment('2026-09-10', 0)]],
+  ])('gives nothing when %s', (_, contributions) => {
+    expect(deriveGrossMonthly(contributions, TODAY)).toBeNull();
+  });
+});
+
+describe('III pillar monthly payment from the contributions', () => {
+  it('averages the last 12 months, so a yearly payment counts as a twelfth', () => {
+    expect(deriveThirdPillarMonthly([thirdPillarPayment('2025-12-20', 1200)], TODAY)).toBe('100');
+  });
+
+  it('adds up every payment within the 12 months and rounds to euros', () => {
+    const contributions = [
+      thirdPillarPayment('2026-01-10', 100),
+      thirdPillarPayment('2026-10-10', 105),
+    ];
+
+    expect(deriveThirdPillarMonthly(contributions, TODAY)).toBe('17');
+  });
+
+  it('takes the latest month of a standing order, however recently it started', () => {
+    const contributions = [
+      thirdPillarPayment('2026-08-05', 200),
+      thirdPillarPayment('2026-09-05', 200),
+      thirdPillarPayment('2026-10-05', 250),
+    ];
+
+    expect(deriveThirdPillarMonthly(contributions, TODAY)).toBe('250');
+  });
+
+  it('leaves out payments older than 12 months', () => {
+    const contributions = [
+      thirdPillarPayment('2025-10-28', 1200),
+      thirdPillarPayment('2025-11-02', 120),
+    ];
+
+    expect(deriveThirdPillarMonthly(contributions, TODAY)).toBe('10');
+  });
+
+  it.each([
+    ['there are no payments', []],
+    ['only the II pillar was paid into', [secondPillarPayment('2026-09-10', 80)]],
+  ])('gives nothing when %s', (_, contributions) => {
+    expect(deriveThirdPillarMonthly(contributions, TODAY)).toBeNull();
+  });
+});
+
+describe('pillar amount from the pension account', () => {
+  it('adds up the value of every fund of the pillar, rounded to euros', () => {
+    const funds = [fund(2, 1000.4), fund(2, 500, 100.3), fund(3, 9999)];
+
+    expect(derivePillarAmount(funds, 2)).toBe('1601');
+    expect(derivePillarAmount(funds, 3)).toBe('9999');
+  });
+
+  it('gives nothing without money in the pillar', () => {
+    expect(derivePillarAmount([fund(3, 100)], 2)).toBeNull();
+    expect(derivePillarAmount([fund(2, 0)], 2)).toBeNull();
+  });
+});
+
+describe('prefill from the pension data', () => {
+  it('adds the salary, amounts, III pillar payment and join to the user prefill', () => {
+    const prefill = derivePrefill(
+      { ...mockUser, thirdPillarInitDate: '2019-01-01' },
+      {
+        contributions: [
+          secondPillarPayment('2026-09-10', 80),
+          thirdPillarPayment('2026-05-10', 600),
+        ],
+        sourceFunds: [fund(2, 24586.29), fund(3, 8117.43)],
+      },
+      TODAY,
+    );
+
+    expect(prefill).toMatchObject({
+      grossMonthly: '2000',
+      secondPillarAmount: '24586',
+      thirdPillarAmount: '8117',
+      thirdPillarMonthly: '50',
+      thirdPillarJoined: 'before',
+    });
+  });
+
+  it('does not call a saver with III pillar money unjoined when the join date is missing', () => {
+    const prefill = derivePrefill(
+      { ...mockUser, thirdPillarInitDate: null },
+      { sourceFunds: [fund(3, 8117.43)] },
+      TODAY,
+    );
+
+    expect(prefill.thirdPillarJoined).toBeNull();
+  });
+
+  it('leaves the pension data fields empty when it could not be loaded', () => {
+    expect(derivePrefill(mockUser)).toMatchObject({
+      grossMonthly: null,
+      secondPillarAmount: null,
+      thirdPillarAmount: null,
+      thirdPillarMonthly: null,
+    });
   });
 });
 

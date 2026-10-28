@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useMe } from '../common/apiHooks';
+import { useContributions, useMe, useSourceFunds } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { usePageTitle } from '../common/usePageTitle';
 import { Age55Step } from './Age55Step';
@@ -303,15 +303,21 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
 
 export const FutureMe = () => {
   usePageTitle('pageTitle.futureMe');
-  const { data: user, isLoading } = useMe();
+  const { data: user, isLoading: isUserLoading } = useMe();
+  const { data: contributions, isLoading: areContributionsLoading } = useContributions();
+  const { data: sourceFunds, isLoading: areSourceFundsLoading } = useSourceFunds();
 
-  if (isLoading) {
+  if (isUserLoading || areContributionsLoading || areSourceFundsLoading) {
     return <Shimmer height={400} />;
   }
 
   return (
     <FutureMeSteps
-      prefill={user ? derivePrefill(user) : { birthYear: null, sex: null, secondPillarRate: null }}
+      prefill={
+        user
+          ? derivePrefill(user, { contributions, sourceFunds })
+          : { birthYear: null, sex: null, secondPillarRate: null }
+      }
     />
   );
 };

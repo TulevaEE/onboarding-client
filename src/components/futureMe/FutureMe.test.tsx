@@ -3,26 +3,93 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { FutureMe } from './FutureMe';
-import { useMe } from '../common/apiHooks';
-import { User } from '../common/apiModels';
+import { useContributions, useMe, useSourceFunds } from '../common/apiHooks';
+import { Contribution, SourceFund, User } from '../common/apiModels';
 import translations from '../translations';
 import { pensionAge } from './engine/pension';
 import { trackCustomEvent } from '../tracking/actions';
 import { mockUser } from '../../test/backend-responses';
 import { formatAmountForCurrency } from '../common/utils';
 
-jest.mock('../common/apiHooks', () => ({ useMe: jest.fn() }));
+jest.mock('../common/apiHooks', () => ({
+  useMe: jest.fn(),
+  useContributions: jest.fn(),
+  useSourceFunds: jest.fn(),
+}));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
 
 const mockUseMe = useMe as jest.MockedFunction<typeof useMe>;
+const mockUseContributions = useContributions as jest.MockedFunction<typeof useContributions>;
+const mockUseSourceFunds = useSourceFunds as jest.MockedFunction<typeof useSourceFunds>;
 const mockTrackCustomEvent = trackCustomEvent as jest.MockedFunction<typeof trackCustomEvent>;
 
 const loggedInAs = (user: Partial<User> | undefined) => {
   mockUseMe.mockReturnValue({
-    data: user && { ...mockUser, ...user },
+    data: user && { ...mockUser, thirdPillarInitDate: '2022-01-01', ...user },
     isLoading: false,
   } as ReturnType<typeof useMe>);
 };
+
+const withPensionData = ({
+  contributions = [],
+  sourceFunds = [],
+  isLoading = false,
+}: {
+  contributions?: Contribution[] | undefined;
+  sourceFunds?: SourceFund[] | undefined;
+  isLoading?: boolean;
+}) => {
+  mockUseContributions.mockReturnValue({
+    data: contributions,
+    isLoading,
+  } as ReturnType<typeof useContributions>);
+  mockUseSourceFunds.mockReturnValue({
+    data: sourceFunds,
+    isLoading,
+  } as ReturnType<typeof useSourceFunds>);
+};
+
+const monthsAgo = (months: number): string => {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth() - months, 5).toISOString();
+};
+
+const salaryPayment = (socialTaxPortion: number): Contribution => ({
+  time: monthsAgo(1),
+  sender: 'Employer',
+  amount: socialTaxPortion * 1.5,
+  currency: 'EUR',
+  pillar: 2,
+  additionalParentalBenefit: 0,
+  employeeWithheldPortion: socialTaxPortion / 2,
+  socialTaxPortion,
+  interest: 0,
+});
+
+const thirdPillarPayment = (amount: number): Contribution => ({
+  time: monthsAgo(2),
+  sender: 'Me',
+  amount,
+  currency: 'EUR',
+  pillar: 3,
+});
+
+const fundOf = (pillar: 2 | 3, price: number): SourceFund => ({
+  isin: `EE${pillar}`,
+  name: 'Fund',
+  fundManager: { name: 'Tuleva' },
+  activeFund: true,
+  pillar,
+  managementFeePercent: 0.3,
+  price,
+  unavailablePrice: 0,
+  currency: 'EUR',
+  ongoingChargesFigure: 0.004,
+  contributions: price,
+  subtractions: 0,
+  profit: 0,
+  units: price,
+});
 
 const renderFutureMe = () =>
   render(
@@ -91,6 +158,7 @@ describe('FutureMe', () => {
   beforeEach(() => {
     mockTrackCustomEvent.mockClear();
     loggedInAs({ dateOfBirth: '1989-01-01', personalCode: '39001011234' });
+    withPensionData({});
   });
 
   describe('while the user is loading', () => {
@@ -142,6 +210,47 @@ describe('FutureMe', () => {
 
       expect(birthYearField()).toHaveValue(null);
       expect(screen.queryByText(/võetud sinu Tuleva andmetest/)).not.toBeInTheDocument();
+    });
+  });
+
+  describe('prefill from the pension data', () => {
+    it('fills the salary, both pillar amounts and the III pillar payment', () => {
+      withPensionData({
+        contributions: [salaryPayment(80), thirdPillarPayment(600)],
+        sourceFunds: [fundOf(2, 24586.29), fundOf(3, 8117.43)],
+      });
+
+      renderFutureMe();
+
+      expect(grossSalaryField()).toHaveValue(2000);
+      expect(secondPillarAmountField()).toHaveValue(24586);
+      expect(thirdPillarAmountField()).toHaveValue(8117);
+      expect(thirdPillarMonthlyField()).toHaveValue(50);
+    });
+
+    it('reads when the saver joined the III pillar', () => {
+      loggedInAs({ thirdPillarInitDate: '2019-03-01' });
+
+      renderFutureMe();
+
+      expect(thirdPillarJoinedField()).toHaveDisplayValue(withNbsp('jah, enne 2021. a'));
+    });
+
+    it('waits for the pension data before showing the form', () => {
+      withPensionData({ isLoading: true });
+
+      renderFutureMe();
+
+      expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
+    });
+
+    it('leaves the fields empty when the pension data could not be loaded', () => {
+      withPensionData({ contributions: undefined, sourceFunds: undefined });
+
+      renderFutureMe();
+
+      expect(grossSalaryField()).toHaveValue(null);
+      expect(secondPillarAmountField()).toHaveValue(null);
     });
   });
 
