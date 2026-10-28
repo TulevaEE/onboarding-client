@@ -7,6 +7,7 @@ import {
   FUND_RETURNS,
   FundKey,
   PENSION_AGE_OPTIONS,
+  PREFILLED_FIRST_PILLAR_MONTHLY,
   SECOND_PILLAR_RATE_OPTIONS,
   ThirdPillarJoined,
 } from './youAnswers';
@@ -109,6 +110,7 @@ export const StateSection = ({
           touched={touched}
           label="futureMe.you.firstPillarMonthly.label"
           help="p1"
+          isPrefilled={answers.firstPillarMonthly === PREFILLED_FIRST_PILLAR_MONTHLY}
           unit="futureMe.you.firstPillarMonthly.unit"
           name="futureMe.you.firstPillarMonthly.name"
           step={10}

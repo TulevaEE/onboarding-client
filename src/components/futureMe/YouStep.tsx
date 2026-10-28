@@ -6,7 +6,7 @@ import { BIRTH_YEAR_MAX, BIRTH_YEAR_MIN } from './prefill';
 import { EarlyRetirementFields } from './EarlyRetirementFields';
 import { SecondPillarSection, StateSection, ThirdPillarSection } from './YouBlocks';
 import { KidsSection, kidsOptional, WorkSection, workOptional } from './YouOptionalBlocks';
-import { FIELD_DOM_IDS, FieldLabel, RequiredMark } from './YouFields';
+import { FIELD_DOM_IDS, FieldLabel, PrefilledHint, RequiredMark } from './YouFields';
 import { YouSection, YouSectionLabels } from './YouSection';
 import {
   blockedFieldsOf,
@@ -91,6 +91,7 @@ export const YouStep = ({
       <p>
         <FormattedMessage id="futureMe.you.intro" values={{ strong }} />
       </p>
+      <PrefilledHint />
       {isPrefilled && (
         <p className="prefill-note">
           <FormattedMessage id="futureMe.you.prefillNote" />

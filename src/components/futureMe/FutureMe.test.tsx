@@ -412,13 +412,43 @@ describe('FutureMe', () => {
   });
 
   describe('state pension block', () => {
-    it('starts open with the pension age and the amount to fill in', () => {
+    it('starts open with the pension age and the amount to check', () => {
       renderFutureMe();
 
       expect(blockButton(/^Sulge riiklik pension$/)).toHaveAttribute('aria-expanded', 'true');
       expect(firstPillarField()).toBeVisible();
-      expect(firstPillarField()).toHaveValue(null);
       expect(screen.getByText('eurot kuus, enne tulumaksu.')).toBeVisible();
+    });
+
+    it('prefills the average old-age pension, as no forecast can be calculated from the Tuleva data', () => {
+      renderFutureMe();
+
+      expect(firstPillarField()).toHaveValue(860);
+    });
+
+    it('tells screen readers the amount is prefilled', () => {
+      renderFutureMe();
+
+      expect(firstPillarField()).toHaveAttribute(
+        'aria-describedby',
+        expect.stringContaining('prefilled-hint'),
+      );
+      expect(firstPillarField()).toHaveAccessibleDescription(/Eeltäidetud väli/);
+    });
+
+    it('keeps the prefilled hint out of sight, as one text every prefilled field points to', () => {
+      renderFutureMe();
+
+      expect(screen.getAllByText('Eeltäidetud väli')).toHaveLength(1);
+      expect(screen.getByText('Eeltäidetud väli')).not.toBeVisible();
+    });
+
+    it('drops the prefilled hint once the saver enters their own forecast', () => {
+      renderFutureMe();
+
+      typeInto(firstPillarField(), '700');
+
+      expect(firstPillarField()).not.toHaveAccessibleDescription(/Eeltäidetud väli/);
     });
 
     it('points to the Social Insurance Board calculator for the figures', () => {
@@ -484,6 +514,7 @@ describe('FutureMe', () => {
     it('says the block is unfinished while the pension is empty', () => {
       renderFutureMe();
 
+      userEvent.clear(firstPillarField());
       userEvent.click(blockButton(/^Sulge riiklik pension$/));
 
       expect(blockButton(/^Täida riikliku pensioni andmed$/)).toBeInTheDocument();
@@ -714,9 +745,9 @@ describe('FutureMe', () => {
       userEvent.click(nextButton());
 
       expect(stepCount()).toHaveTextContent('Samm 1 / 7');
-      await waitFor(() => expect(firstPillarField()).toHaveFocus());
-      expect(firstPillarField()).toBeInvalid();
-      expect(screen.getByText('Riikliku pensioni väli on kohustuslik.')).toBeInTheDocument();
+      await waitFor(() => expect(grossSalaryField()).toHaveFocus());
+      expect(grossSalaryField()).toBeInvalid();
+      expect(firstPillarField()).toBeValid();
       expect(screen.getByText('Brutopalga väli on kohustuslik.')).toBeInTheDocument();
       expect(screen.getByText('II samba summa väli on kohustuslik.')).toBeInTheDocument();
       expect(screen.getByText('III samba summa väli on kohustuslik.')).toBeInTheDocument();
@@ -767,23 +798,23 @@ describe('FutureMe', () => {
     it('does not scold an empty amount before the saver has left it', () => {
       renderFutureMe();
 
-      userEvent.click(firstPillarField());
+      userEvent.click(grossSalaryField());
 
-      expect(firstPillarField()).toBeValid();
+      expect(grossSalaryField()).toBeValid();
     });
 
     it('scolds an empty amount once the saver leaves it, and stops when it is filled in', () => {
       renderFutureMe();
 
-      userEvent.click(firstPillarField());
+      userEvent.click(grossSalaryField());
       userEvent.tab();
 
-      expect(firstPillarField()).toBeInvalid();
+      expect(grossSalaryField()).toBeInvalid();
 
-      userEvent.type(firstPillarField(), '700');
+      userEvent.type(grossSalaryField(), '2000');
 
-      expect(firstPillarField()).toBeValid();
-      expect(screen.queryByText('Riikliku pensioni väli on kohustuslik.')).not.toBeInTheDocument();
+      expect(grossSalaryField()).toBeValid();
+      expect(screen.queryByText('Brutopalga väli on kohustuslik.')).not.toBeInTheDocument();
     });
 
     it('rejects a negative amount and names the field', () => {

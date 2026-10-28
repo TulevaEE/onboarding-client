@@ -1,4 +1,11 @@
-import { CURRENT_YEAR, earlyYears, KidsInput, pensionAge, Sex } from './engine/pension';
+import {
+  AVG_OLD_AGE_PENSION,
+  CURRENT_YEAR,
+  earlyYears,
+  KidsInput,
+  pensionAge,
+  Sex,
+} from './engine/pension';
 import { parseBirthYear, YouPrefill } from './prefill';
 import { StepPlanInput } from './steps';
 import { thirdPillarPayoutAge } from './thirdPillarPayoutAges';
@@ -7,6 +14,7 @@ export const FALLBACK_BIRTH_YEAR = 1980;
 export const PENSION_AGE_OPTIONS = [65, 66, 67, 68, 69, 70];
 export const SECOND_PILLAR_RATE_OPTIONS = ['0', '0.02', '0.04', '0.06'];
 export const FUND_RETURNS = { cons: 0, mix: 0.02, index: 0.04 };
+export const PREFILLED_FIRST_PILLAR_MONTHLY = String(Math.round(AVG_OLD_AGE_PENSION));
 
 const UNKNOWN_SEX: Sex = 'X';
 const DEFAULT_SECOND_PILLAR_RATE = '0.02';
@@ -131,7 +139,7 @@ export const initialAnswers = (prefill: YouPrefill): YouAnswers =>
     birthYear: prefill.birthYear?.toString() ?? '',
     sex: prefill.sex ?? UNKNOWN_SEX,
     pensionAgeYears: '',
-    firstPillarMonthly: '',
+    firstPillarMonthly: PREFILLED_FIRST_PILLAR_MONTHLY,
     grossMonthly: '',
     secondPillarRate: prefill.secondPillarRate ?? DEFAULT_SECOND_PILLAR_RATE,
     secondPillarAmount: '',

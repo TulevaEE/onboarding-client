@@ -87,6 +87,35 @@ describe('Sina step help buttons', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 
+  it('tells what the prefilled state pension is and where to check it', () => {
+    renderYouStep();
+    const stateField = screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ });
+
+    userEvent.click(helpButtonBeside(stateField, '.col-12', /Mis on riiklik pension$/));
+    const dialog = screen.getByRole('dialog');
+
+    expect(
+      within(dialog).getByText(/riikliku pensioni arvutuslikku prognoosi/),
+    ).toBeInTheDocument();
+    expect(within(dialog).getByText(/keskmist vanaduspensioni 2026\.\saastal/)).toBeInTheDocument();
+    expect(
+      within(dialog).getByRole('link', { name: /^Sotsiaalkindlustusameti pensionikalkulaatoris/ }),
+    ).toHaveAttribute('href', expect.stringContaining('pension-calculator'));
+  });
+
+  it('writes out the Social Insurance Board self-service in the pension age explanation', () => {
+    renderYouStep();
+    const ageField = screen.getByRole('combobox', { name: /Millal on sinu pensioniiga/ });
+
+    userEvent.click(helpButtonBeside(ageField, '.col-12', /Kuidas pensioniiga määratakse$/));
+
+    expect(
+      within(screen.getByRole('dialog')).getByRole('link', {
+        name: /^Sotsiaalkindlustusameti iseteenindus/,
+      }),
+    ).toBeInTheDocument();
+  });
+
   it('leaves the field labels as they were for screen readers', () => {
     renderYouStep();
 

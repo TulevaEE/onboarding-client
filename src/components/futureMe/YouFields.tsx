@@ -20,6 +20,13 @@ export const FIELD_DOM_IDS: Record<YouField, string> = {
 };
 
 const MIN_AMOUNT = 0;
+const PREFILLED_HINT_ID = 'prefilled-hint';
+
+export const PrefilledHint = () => (
+  <span id={PREFILLED_HINT_ID} hidden>
+    <FormattedMessage id="futureMe.you.prefilledHint" />
+  </span>
+);
 
 interface FieldLabelProps {
   htmlFor: string;
@@ -65,6 +72,7 @@ interface AmountFieldProps {
   inputMode?: 'decimal' | 'numeric';
   shownValue?: string;
   disabled?: boolean;
+  isPrefilled?: boolean;
   help?: HelpTopic;
   onChange: (changes: Partial<YouAnswers>) => void;
   onBlur: (field: YouField) => void;
@@ -90,6 +98,7 @@ export const AmountField = ({
   inputMode = 'decimal',
   shownValue,
   disabled = false,
+  isPrefilled = false,
   help,
   onChange,
   onBlur,
@@ -99,7 +108,11 @@ export const AmountField = ({
   const isRequired = !disabled;
   const problem = touched.has(field) && !disabled ? fieldProblem(answers, field) : null;
   const errorId = `${id}-error`;
-  const describedBy = classNames({ [`${id}-unit`]: unit, [errorId]: problem });
+  const describedBy = classNames({
+    [`${id}-unit`]: unit,
+    [PREFILLED_HINT_ID]: isPrefilled,
+    [errorId]: problem,
+  });
   const limits = limitsOf(field);
   const min = limits?.min ?? MIN_AMOUNT;
   const errorMessage = (() => {

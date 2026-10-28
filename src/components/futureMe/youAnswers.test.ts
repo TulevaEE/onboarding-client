@@ -28,12 +28,12 @@ const filledIn = (overrides: Partial<YouAnswers> = {}): YouAnswers => ({
 });
 
 describe('initial answers', () => {
-  it('starts from the prefill and leaves the amounts empty', () => {
+  it('starts from the prefill, the average old-age pension and empty savings amounts', () => {
     expect(initialAnswers({ birthYear: 1985, sex: 'M', secondPillarRate: '0.04' })).toMatchObject({
       birthYear: '1985',
       sex: 'M',
       secondPillarRate: '0.04',
-      firstPillarMonthly: '',
+      firstPillarMonthly: '860',
       grossMonthly: '',
       secondPillarAmount: '',
       thirdPillarAmount: '',
