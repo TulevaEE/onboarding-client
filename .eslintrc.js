@@ -69,5 +69,23 @@ module.exports = {
         'testing-library/prefer-wait-for': 'error',
       },
     },
+    {
+      files: ['src/**/*.js', 'src/**/*.jsx', 'src/**/*.ts', 'src/**/*.tsx'],
+      excludedFiles: ['src/components/futureMe/**'],
+      rules: {
+        'no-restricted-imports': [
+          'error',
+          {
+            patterns: [
+              {
+                group: ['**/futureMe/**', '!**/futureMe/FutureMe'],
+                message:
+                  'Tulevane Mina keeps its engine and steps to itself: import only futureMe/FutureMe.',
+              },
+            ],
+          },
+        ],
+      },
+    },
   ],
 };
