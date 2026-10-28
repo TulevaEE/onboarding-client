@@ -30,26 +30,29 @@ const typeInto = (field: HTMLElement, text: string) => {
 
 const trail = () => screen.getByRole('navigation', { name: 'Loo etapid' });
 
-const fillInYou = () => {
-  typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ }), '700');
+const fillInYou = (firstPillar: string) => {
+  typeInto(
+    screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ }),
+    firstPillar,
+  );
   typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu brutopalk/ }), '2000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }), '10000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on III\ssambas praegu/ }), '5000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }), '50');
 };
 
-const openResultStep = () => {
+const openResultStep = (firstPillar = '700') => {
   render(
     <IntlProvider locale="et" messages={translations.et}>
       <FutureMe />
     </IntlProvider>,
   );
-  fillInYou();
+  fillInYou(firstPillar);
   userEvent.click(within(trail()).getByRole('button', { name: /^Tulemus, vaatamata$/ }));
 };
 
-const openComparison = () => {
-  openResultStep();
+const openComparison = (firstPillar?: string) => {
+  openResultStep(firstPillar);
   userEvent.click(screen.getByText('Võrdle kõiki väljamakse teid'));
   return screen.getByRole('table', { name: 'Väljamakse teede võrdlus' });
 };
@@ -110,6 +113,15 @@ describe('Result step: payout routes compared', () => {
     expect(
       within(within(table).getByRole('row', { name: /^Kuus 90/ })).getAllByRole('cell')[4],
     ).toHaveTextContent(/€/);
+  });
+
+  it('says the costs are covered past 100 and the money never ends when the pensions carry the plan', () => {
+    const table = openComparison('1200');
+
+    const ownCell = (row: RegExp) =>
+      within(within(table).getByRole('row', { name: row })).getAllByRole('cell')[4];
+    expect(ownCell(/^Kulud kaetud kuni/)).toHaveTextContent('100+');
+    expect(ownCell(/^Samba raha lõpeb/)).toHaveTextContent('ei lõpe');
   });
 
   it('tells in words which column is best, not only by colour', () => {
