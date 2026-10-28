@@ -7,12 +7,16 @@ import { chartRowsOf, chartSeriesOf, startSourcesOf, tableRowsOf } from './chart
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
 
-const contextWith = (specialMonthly = '', age65: Partial<Age65Answers> = {}): ResultContext => {
+const contextWith = (
+  specialMonthly = '',
+  age65: Partial<Age65Answers> = {},
+  grossMonthly = '2000',
+): ResultContext => {
   const you = {
     ...initialAnswers({ birthYear: 1976, sex: null, secondPillarRate: null }),
     pensionAgeYears: '65',
     firstPillarMonthly: '700',
-    grossMonthly: '2000',
+    grossMonthly,
     secondPillarAmount: '10000',
     ...(specialMonthly
       ? { hasSpecialPension: true, workAdded: true, specialPensionStartAge: '55' }
@@ -119,5 +123,28 @@ describe('chartData', () => {
     };
 
     expect(startSourcesOf(nothing)).toEqual(['firstPillar']);
+  });
+
+  it('shows how much is missing at the ages where the money does not cover the costs', () => {
+    const rows = chartRowsOf(resultOf(contextWith('', {}, '600')), 791);
+
+    const last = rows[rows.length - 1];
+    expect(last.shortfall).toBeGreaterThan(0);
+    expect(rows[0].shortfall).toBe(0);
+  });
+
+  it('shows how much is left over when the income is above the costs', () => {
+    const [first] = chartRowsOf(resultOf(contextWith('1500')), 791);
+
+    expect(first.surplus).toBe(first.specialPension + first.firstPillar - first.costs);
+    expect(first.surplus).toBeGreaterThan(0);
+  });
+
+  it('leaves nothing over while the salary pays the costs', () => {
+    const rows = chartRowsOf(resultOf(contextWith('', { work: 'yes', workUntil: '68' })), 791);
+
+    expect(rows.filter(({ salary }) => salary > 0).map(({ surplus }) => surplus)).toEqual([
+      0, 0, 0,
+    ]);
   });
 });

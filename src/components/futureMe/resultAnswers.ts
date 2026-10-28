@@ -39,6 +39,7 @@ export interface ResultContext {
 
 export interface Result extends SimulationResult {
   sustainable: number;
+  scenarioId: string;
 }
 
 export type IncomeSource =
@@ -186,5 +187,6 @@ export const resultOf = (context: ResultContext): Result => {
   return {
     ...simulate(input, lifeTable, scenario),
     sustainable: sustainableNeed(input, lifeTable, scenario),
+    scenarioId: scenario.id,
   };
 };
