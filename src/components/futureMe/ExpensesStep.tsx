@@ -21,6 +21,7 @@ import {
   withLevel,
 } from './expensesAnswers';
 import { ChapterHead } from './ChapterHead';
+import { FieldLabel } from './YouFields';
 import { FutureMeStep } from './steps';
 import { EmojiIcon } from './FutureMeIcon';
 import { strong } from './richText';
@@ -238,9 +239,9 @@ export const ExpensesStep = ({ answers, headingRef, onChange }: Props) => {
       </ChapterHead>
       <div className="household-row">
         <div>
-          <label className="form-label" htmlFor="future-me-household">
+          <FieldLabel htmlFor="future-me-household" help="household">
             <FormattedMessage id="futureMe.expenses.household.label" />
-          </label>
+          </FieldLabel>
           <select
             id="future-me-household"
             className="form-select w-auto"
@@ -268,29 +269,6 @@ export const ExpensesStep = ({ answers, headingRef, onChange }: Props) => {
           </span>
         </div>
       </div>
-      <details className="household-help">
-        <summary>
-          <FormattedMessage id="futureMe.expenses.household.help.title" />
-        </summary>
-        <p>
-          <FormattedMessage id="futureMe.expenses.household.help.compare" />
-        </p>
-        <p>
-          <FormattedMessage id="futureMe.expenses.household.help.benefit" values={{ strong }} />
-        </p>
-        <p className="form-text mb-0">
-          <FormattedMessage
-            id="futureMe.expenses.household.help.source"
-            values={{
-              link: (chunks: React.ReactNode) => (
-                <a href="https://sotsiaalkindlustusamet.ee/pension-ja-seotud-huvitised/muud-pensioniga-seotud-huvitised-ja-toetused/uksi-elava-pensionari">
-                  {chunks}
-                </a>
-              ),
-            }}
-          />
-        </p>
-      </details>
       <p className="text-secondary">
         <FormattedMessage id="futureMe.expenses.intro" />
       </p>

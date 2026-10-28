@@ -8,6 +8,16 @@ export const HELP_TOPICS = [
   'p3Joined',
   'fundCur',
   'pillars',
+  'special',
+  'sp',
+  'spStart',
+  'hazard',
+  'rescue',
+  'civil',
+  'soodusYears',
+  'kids',
+  'kidsWho',
+  'household',
 ] as const;
 
 export type HelpTopic = (typeof HELP_TOPICS)[number];
