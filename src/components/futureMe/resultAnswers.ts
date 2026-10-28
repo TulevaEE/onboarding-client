@@ -39,8 +39,15 @@ export interface ResultContext {
   expenses: ExpensesAnswers;
 }
 
+export interface EarlyPayment {
+  age: number;
+  year: number;
+  amount: number;
+}
+
 export interface Result extends SimulationResult {
   sustainable: number;
+  earlyThirdPillar: EarlyPayment[];
 }
 
 export type IncomeSource =
@@ -88,22 +95,29 @@ const contributionsBefore = (context: ResultContext, untilAge: number): number =
   }).reduce((sum, value) => sum + value, 0);
 };
 
+const fundPensionFrom55Of = (context: ResultContext) => {
+  const { you, plan, age65, age66 } = context;
+  const { pensionAge } = age55Of(you, firstYearShareNow());
+  const paidUntil = Math.max(pensionAge, workUntilOf(age65, plan) ?? pensionAge);
+  const payout = thirdPillarPayout('fund', {
+    ...thirdPillarPayoutInputOf(you, firstYearShareNow(), age66.thirdPillarContract),
+    pensionAge: paidUntil,
+  });
+  return { paidUntil, payout };
+};
+
 const thirdPillarWithdrawnAtOf = (
   context: ResultContext,
 ): Partial<Pick<SeparateThirdPillar, 'amount' | 'mode' | 'start'>> => {
-  const { you, plan, age65, age66 } = context;
-  const { plan: chosen, age, pensionAge } = age55Of(you, firstYearShareNow());
+  const { you, plan } = context;
+  const { plan: chosen, age } = age55Of(you, firstYearShareNow());
   if (chosen === 'lump') {
     return { amount: -contributionsBefore(context, age) };
   }
   if (chosen !== 'fund') {
     return {};
   }
-  const paidUntil = Math.max(pensionAge, workUntilOf(age65, plan) ?? pensionAge);
-  const payout = thirdPillarPayout('fund', {
-    ...thirdPillarPayoutInputOf(you, firstYearShareNow(), age66.thirdPillarContract),
-    pensionAge: paidUntil,
-  });
+  const { paidUntil, payout } = fundPensionFrom55Of(context);
   const yearsUntilPaid = paidUntil - (CURRENT_YEAR - plan.birthYear);
   const leftToday =
     (payout?.leftAtPension ?? 0) / (1 + FUND_RETURNS[you.thirdPillarFund]) ** yearsUntilPaid;
@@ -112,6 +126,15 @@ const thirdPillarWithdrawnAtOf = (
     mode: payoutAtPensionAge('thirdPillar', context) === 'lump' ? 'lump' : 'fund',
     start: age,
   };
+};
+
+export const earlyThirdPillarOf = (context: ResultContext, pensionStartAge: number) => {
+  const isPaidFrom55 =
+    hasPillar('thirdPillar', context) && age55Of(context.you, firstYearShareNow()).plan === 'fund';
+  const monthly = isPaidFrom55 ? fundPensionFrom55Of(context).payout?.monthly ?? [] : [];
+  return monthly
+    .filter(({ age }) => age < pensionStartAge)
+    .map(({ age, amount }) => ({ age, year: context.plan.birthYear + age, amount }));
 };
 
 const thirdPillarOf = (context: ResultContext): PensionInput['p3Sep'] => {
@@ -213,8 +236,10 @@ export const coverageKind = (result: Result): 'all' | 'gap' | 'none' | 'until' =
 export const resultOf = (context: ResultContext): Result => {
   const input = resultInputOf(context);
   const scenario = resultScenarioOf(context);
+  const simulation = simulate(input, lifeTable, scenario);
   return {
-    ...simulate(input, lifeTable, scenario),
+    ...simulation,
     sustainable: sustainableNeed(input, lifeTable, scenario),
+    earlyThirdPillar: earlyThirdPillarOf(context, simulation.pensionStartAge),
   };
 };

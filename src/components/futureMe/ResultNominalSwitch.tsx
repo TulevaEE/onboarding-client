@@ -15,6 +15,7 @@ interface SwitchProps {
 
 export const NominalSwitch = ({ isOn, onChange }: SwitchProps) => (
   <div className="result-nominal">
+    <HelpButton topic="nominal" />
     <div className="form-check form-switch mb-0">
       <input
         id={SWITCH_ID}
@@ -34,7 +35,6 @@ export const NominalSwitch = ({ isOn, onChange }: SwitchProps) => (
         </strong>
       </label>
     </div>
-    <HelpButton topic="nominal" />
   </div>
 );
 

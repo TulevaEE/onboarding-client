@@ -23,6 +23,7 @@ import {
   chartRowsOf,
   chartSeriesOf,
   ChartSourceId,
+  pensionStartRowOf,
   startSourcesOf,
   tableRowsOf,
 } from './chartData';
@@ -52,6 +53,7 @@ const EVENT_DOT_BORDER = 2;
 const TIP_GAP = 10;
 const Y_AXIS_WIDTH = 76;
 const THOUSAND = 1000;
+const NO_COSTS = '–';
 
 ChartJS.register(
   CategoryScale,
@@ -104,7 +106,7 @@ const Summary = ({
   isNominal: boolean;
 }) => {
   const intl = useIntl();
-  const [start] = rows;
+  const start = pensionStartRowOf(rows);
   const sources = startSourcesOf(start).map((id) =>
     intl.formatMessage({ id: SUMMARY_LABELS[id] }, { amount: euro(start[id]) }),
   );
@@ -277,7 +279,8 @@ const IncomeChart = ({ rows, isNominal, events, hidden, announce }: IncomeChartP
   };
 
   const { data, options } = useMemo(() => {
-    const [{ costs }] = rows;
+    const { costs } = pensionStartRowOf(rows);
+    const isCostsFlat = !isNominal && !rows[0].isBeforePension;
     const isNarrow = window.matchMedia(NARROW_SCREEN).matches;
     const tickStep = isNarrow ? NARROW_TICK_STEP : WIDE_TICK_STEP;
     const chartData: ChartData<'line'> = {
@@ -307,7 +310,9 @@ const IncomeChart = ({ rows, isNominal, events, hidden, announce }: IncomeChartP
         marks: marksOf(intl, events),
         costs: {
           amount: costs,
-          amounts: isNominal ? rows.map((row) => row.costs) : undefined,
+          amounts: isCostsFlat
+            ? undefined
+            : rows.map((row) => (row.isBeforePension ? null : row.costs)),
           label: intl.formatMessage(
             { id: 'futureMe.result.chart.costsLabel' },
             { amount: euro(costs) },
@@ -578,7 +583,7 @@ const IncomeTable = ({ rows, isNominal }: { rows: ChartRow[]; isNominal: boolean
                   {euro(row[id])}
                 </td>
               ))}
-              <td className="text-end">{euro(row.costs)}</td>
+              <td className="text-end">{row.isBeforePension ? NO_COSTS : euro(row.costs)}</td>
             </tr>
           ))}
         </tbody>

@@ -807,6 +807,10 @@
     display: flex;
     align-items: center;
 
+    .help-btn {
+      margin: -12px 0 -12px -14px;
+    }
+
     .form-check {
       width: auto;
     }

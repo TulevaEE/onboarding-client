@@ -79,13 +79,15 @@ export const ResultChartTip = forwardRef<HTMLDivElement, Props>(
               </div>
             ))}
         </div>
-        <div className="result-chart-tip-side">
-          <span className="text-secondary">
-            <FormattedMessage id="futureMe.result.chart.tip.costs" />
-          </span>
-          <span className="result-chart-tip-big">{euro(row.costs)}</span>
-          <Cover row={row} />
-        </div>
+        {!row.isBeforePension && (
+          <div className="result-chart-tip-side">
+            <span className="text-secondary">
+              <FormattedMessage id="futureMe.result.chart.tip.costs" />
+            </span>
+            <span className="result-chart-tip-big">{euro(row.costs)}</span>
+            <Cover row={row} />
+          </div>
+        )}
       </div>
     );
   },

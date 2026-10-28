@@ -17,6 +17,7 @@ const rowWith = (changes: Partial<ChartRow>): ChartRow => ({
   costs: 800,
   shortfall: 0,
   surplus: 0,
+  isBeforePension: false,
   ...changes,
 });
 
@@ -27,6 +28,17 @@ describe('chartText', () => {
     expect(announcementOf(intl, rowWith({ shortfall: 100 }), [], layers)).toMatch(
       /^70-⁠aastaselt\. Riiklik pension 700\s€, kulud 800\s€, puudu 100\s€\.$/,
     );
+  });
+
+  it('reads out only the fund pension before the pension age, without costs to cover', () => {
+    const text = announcementOf(
+      intl,
+      rowWith({ age: 58, firstPillar: 0, thirdPillar: 120, costs: 0, isBeforePension: true }),
+      [],
+      ['thirdPillar'],
+    );
+
+    expect(text).toMatch(/^58-⁠aastaselt\. III\ssammas 120\s€\.$/);
   });
 
   it('reads out how much is left over', () => {

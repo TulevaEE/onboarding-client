@@ -35,7 +35,58 @@ const contextWith = (
   };
 };
 
+const withFundPensionFrom55 = (): ResultContext => {
+  const context = contextWith();
+  const you = {
+    ...context.you,
+    thirdPillarJoined: 'before' as const,
+    thirdPillarAmount: '8000',
+    thirdPillarPlan: 'fund' as const,
+  };
+  return { ...context, you, plan: toStepPlanInput(you) };
+};
+
 describe('chartData', () => {
+  describe('with the III pillar fund pension from 55', () => {
+    const result = resultOf(withFundPensionFrom55());
+    const rows = chartRowsOf(result, 791);
+    const beforePension = rows.filter(({ isBeforePension }) => isBeforePension);
+
+    it('starts at the first fund pension payment, before the pension age', () => {
+      expect(rows[0].age).toBe(55);
+      expect(beforePension.map(({ age }) => age)).toEqual(
+        result.earlyThirdPillar.map(({ age }) => age),
+      );
+      expect(rows[beforePension.length].age).toBe(result.pensionStartAge);
+    });
+
+    it('shows only the III pillar fund pension before the pension age, without costs to cover', () => {
+      expect(beforePension[0]).toMatchObject({
+        thirdPillar: Math.round(result.earlyThirdPillar[0].amount),
+        salary: 0,
+        firstPillar: 0,
+        secondPillar: 0,
+        costs: 0,
+        shortfall: 0,
+        surplus: 0,
+      });
+    });
+
+    it('turns the early payments into future euros too', () => {
+      const [first] = chartRowsOf(nominalResultOf(result), 791, true);
+
+      expect(first.thirdPillar).toBe(
+        Math.round(result.earlyThirdPillar[0].amount * nominalFactorAt(first.year)),
+      );
+    });
+
+    it('shows the first fund pension year and the pension age in the table', () => {
+      const ages = tableRowsOf(rows).map(({ age }) => age);
+
+      expect(ages.slice(0, 3)).toEqual([55, 60, result.pensionStartAge]);
+    });
+  });
+
   describe('in future prices', () => {
     const result = resultOf(contextWith());
     const rows = chartRowsOf(nominalResultOf(result), 791, true);

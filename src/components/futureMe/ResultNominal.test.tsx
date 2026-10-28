@@ -107,6 +107,17 @@ describe('future prices switch', () => {
     expect(screen.queryByText('Summad on tänastes eurodes.')).not.toBeInTheDocument();
   });
 
+  it('puts the explanation before the switch', () => {
+    renderChart();
+
+    userEvent.tab();
+    expect(
+      screen.getByRole('button', { name: /^Selgitus: Mida näitab „tuleviku hindades“$/ }),
+    ).toHaveFocus();
+    userEvent.tab();
+    expect(futurePrices()).toHaveFocus();
+  });
+
   it('keeps the note in a polite live region so a screen reader hears the change', () => {
     renderChart();
 
