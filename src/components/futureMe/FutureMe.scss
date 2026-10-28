@@ -211,7 +211,7 @@
     flex-wrap: wrap;
     align-items: flex-end;
     gap: 0.75rem 1rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
   }
 
   .household-note {
@@ -235,22 +235,6 @@
     .line-icon {
       width: 1.75rem;
       height: 1.75rem;
-    }
-  }
-
-  .household-help {
-    margin-bottom: 1rem;
-
-    summary {
-      display: flex;
-      align-items: center;
-      min-height: 44px;
-      color: $blue;
-      cursor: pointer;
-    }
-
-    p {
-      text-wrap: pretty;
     }
   }
 
@@ -1208,6 +1192,10 @@
     .you-section-title {
       display: inline;
     }
+  }
+
+  .form-check .help-btn {
+    margin-left: 0;
   }
 
   .help-btn {

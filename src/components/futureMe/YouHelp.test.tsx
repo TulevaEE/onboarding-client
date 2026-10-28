@@ -26,6 +26,17 @@ const renderYouStep = () => {
   );
 };
 
+const specialCase = (name: RegExp) => screen.getByRole('checkbox', { name });
+
+const addEverything = () => {
+  userEvent.click(screen.getByRole('button', { name: 'Lisa lapsed' }));
+  userEvent.click(screen.getByRole('button', { name: 'Lisa erijuht' }));
+  userEvent.click(specialCase(/tervist kahjustaval tööl/));
+  userEvent.click(specialCase(/Saan või hakkan saama eripensioni/));
+  userEvent.click(specialCase(/Töötasin päästeteenistuses/));
+  userEvent.click(specialCase(/ametnik/i));
+};
+
 const helpButtonBeside = (element: HTMLElement, container: string, question: RegExp) =>
   // eslint-disable-next-line testing-library/no-node-access
   within(element.closest(container) as HTMLElement).getByRole('button', { name: question });
@@ -70,10 +81,31 @@ describe('Sina step help buttons', () => {
       () => screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }),
       /Kuidas III\ssamba sissemakse arvutuses muutub$/,
     ],
+    [
+      'number of kids',
+      () => screen.getByRole('spinbutton', { name: /Mitu last/ }),
+      /Keda loetakse lapse kasvatajaks$/,
+    ],
+    [
+      'hazard list',
+      () => screen.getByRole('combobox', { name: /Millise nimekirja tööl töötasid/ }),
+      /Mis on tervist kahjustav töö$/,
+    ],
+    [
+      'rescue years',
+      () => screen.getByRole('spinbutton', { name: /Mitu aastat töötasid päästeteenistuses/ }),
+      /Mida annab päästeteenistus pensionile$/,
+    ],
+    [
+      'special pension start',
+      () => screen.getByRole('spinbutton', { name: /Mis vanusest eripension algab/ }),
+      /Miks on eripensioni algus oluline$/,
+    ],
   ];
 
   it.each(fieldHelp)('puts the %s explanation beside the label of its field', (_, field, name) => {
     renderYouStep();
+    addEverything();
 
     userEvent.click(helpButtonBeside(field(), '.col-12', name));
 
@@ -89,6 +121,55 @@ describe('Sina step help buttons', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  const checkboxHelp: [string, RegExp, RegExp][] = [
+    ['special pension', /Saan või hakkan saama eripensioni/, /Mis on eripension$/],
+    ['civil servant', /ametnik/i, /Kes saab ametniku teenistusstaaži eest pensioni suurendust$/],
+  ];
+
+  it.each(checkboxHelp)('puts the %s explanation beside its checkbox', (_, label, name) => {
+    renderYouStep();
+    addEverything();
+
+    userEvent.click(helpButtonBeside(specialCase(label), '.form-check', name));
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  const optionalSectionHelp: [string, string, RegExp][] = [
+    ['kids', 'Lapsed', /Kuidas lapsed pensioni mõjutavad$/],
+    [
+      'special cases',
+      'Tööga seotud erijuhud',
+      /Millised tööga seotud erijuhud pensioni mõjutavad$/,
+    ],
+  ];
+
+  it.each(optionalSectionHelp)(
+    'puts the %s explanation beside the section title',
+    (_, title, name) => {
+      renderYouStep();
+      addEverything();
+      const heading = screen.getByRole('heading', { name: title });
+
+      userEvent.click(helpButtonBeside(heading, '.you-section-head', name));
+
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    },
+  );
+
+  it('puts the early retirement explanation beside its field', () => {
+    renderYouStep();
+
+    const field = screen.getByRole('combobox', {
+      name: /Mitu aastat varem plaanid pensionile minna/,
+    });
+    userEvent.click(helpButtonBeside(field, '.col-12', /Mis juhtub, kui lähed varem pensionile$/));
+
+    expect(
+      screen.getByRole('dialog', { name: 'Mis juhtub, kui lähed varem pensionile?' }),
+    ).toBeInTheDocument();
   });
 
   it('tells what the prefilled state pension is and where to check it', () => {
