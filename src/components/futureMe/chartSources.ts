@@ -10,6 +10,15 @@ export const SOURCE_LABELS: Record<ChartSourceId, TranslationKey> = {
   deposit: 'futureMe.result.chart.source.deposit',
 };
 
+export const SUMMARY_LABELS: Record<ChartSourceId, TranslationKey> = {
+  salary: 'futureMe.result.chart.summary.salary',
+  firstPillar: 'futureMe.result.chart.summary.firstPillar',
+  specialPension: 'futureMe.result.chart.summary.specialPension',
+  secondPillar: 'futureMe.result.chart.summary.secondPillar',
+  thirdPillar: 'futureMe.result.chart.summary.thirdPillar',
+  deposit: 'futureMe.result.chart.summary.deposit',
+};
+
 export const SOURCE_COLORS: Record<ChartSourceId, string> = {
   salary: '#4d7c0f',
   firstPillar: '#6a4fc4',

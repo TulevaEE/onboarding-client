@@ -27,19 +27,12 @@ import {
   tableRowsOf,
 } from './chartData';
 import { ChartEvent, chartEventsOf } from './chartEvents';
+import { assumptionOf, SummaryNote, summaryNotesOf } from './chartNotes';
 import { ChartMark, costsLine, marksLine } from './chartPlugins';
-import { SOURCE_COLORS, SOURCE_LABELS } from './chartSources';
+import { SOURCE_COLORS, SOURCE_LABELS, SUMMARY_LABELS } from './chartSources';
 import { announcementOf } from './chartText';
 import { ResultChartTip } from './ResultChartTip';
-
-const SUMMARY_LABELS: Record<ChartSourceId, TranslationKey> = {
-  salary: 'futureMe.result.chart.summary.salary',
-  firstPillar: 'futureMe.result.chart.summary.firstPillar',
-  specialPension: 'futureMe.result.chart.summary.specialPension',
-  secondPillar: 'futureMe.result.chart.summary.secondPillar',
-  thirdPillar: 'futureMe.result.chart.summary.thirdPillar',
-  deposit: 'futureMe.result.chart.summary.deposit',
-};
+import { ChartAssumption, ChartGuide, SummaryNotes } from './ResultChartNotes';
 
 const HALO_COLOR = '#fff';
 const TICK_COLOR = '#6b7074';
@@ -95,7 +88,15 @@ const shortAmount = (value: number | string) => {
     : String(amount);
 };
 
-const Summary = ({ result, rows }: { result: Result; rows: ChartRow[] }) => {
+const Summary = ({
+  result,
+  rows,
+  notes,
+}: {
+  result: Result;
+  rows: ChartRow[];
+  notes: SummaryNote[];
+}) => {
   const intl = useIntl();
   const [start] = rows;
   const sources = startSourcesOf(start).map((id) =>
@@ -115,6 +116,7 @@ const Summary = ({ result, rows }: { result: Result; rows: ChartRow[] }) => {
           values={{ age: result.pensionStartAge, sources: intl.formatList(sources) }}
         />
       </li>
+      <SummaryNotes notes={notes} />
       <li>
         <FormattedMessage
           id="futureMe.result.chart.summary.costs"
@@ -571,6 +573,8 @@ export const ResultChart = ({ result, need }: { result: Result; need: number }) 
   const [announcement, setAnnouncement] = useState('');
   const rows = useMemo(() => chartRowsOf(result, need), [result, need]);
   const events = useMemo(() => chartEventsOf(result), [result]);
+  const notes = useMemo(() => summaryNotesOf(result, rows), [result, rows]);
+  const assumption = assumptionOf(result, rows, events);
 
   const toggleLayer = (id: ChartSourceId) => {
     const isHidden = hidden.has(id);
@@ -615,7 +619,9 @@ export const ResultChart = ({ result, need }: { result: Result; need: number }) 
           />
         </button>
       </div>
-      <Summary result={result} rows={rows} />
+      <Summary result={result} rows={rows} notes={notes} />
+      {assumption && <ChartAssumption assumption={assumption} />}
+      <ChartGuide events={events} />
       <div id="future-me-chart-table">{isTableShown && <IncomeTable rows={rows} />}</div>
       <IncomeChart rows={rows} events={events} hidden={hidden} announce={setAnnouncement} />
       <Legend rows={rows} hidden={hidden} onToggle={toggleLayer} />
