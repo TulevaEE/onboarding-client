@@ -30,6 +30,7 @@ import {
   birthYearOrFallback,
   blockedFieldsOf,
   FIELDS_BY_SECTION,
+  firstInvalidChildIIMonths,
   initialAnswers,
   OptionalSectionId,
   removeOptionalSection,
@@ -73,13 +74,16 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   const [blockedAttempts, setBlockedAttempts] = useState(0);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const firstBlocked = useRef<YouField | undefined>(undefined);
+  const invalidChildMonths = useRef<number | undefined>(undefined);
   const isFirstRender = useRef(true);
 
   const blocked = blockedFields(answers);
   [firstBlocked.current] = blocked;
+  invalidChildMonths.current = firstInvalidChildIIMonths(answers);
   const plan = toStepPlanInput(answers);
   const steps = shownSteps(plan);
-  const isLocked = (target: StepId) => target !== FutureMeStep.YOU && blocked.length > 0;
+  const isLocked = (target: StepId) =>
+    target !== FutureMeStep.YOU && (blocked.length > 0 || invalidChildMonths.current !== undefined);
   const isFirst = step === steps[0];
   const isLast = step === steps[steps.length - 1];
 
@@ -95,8 +99,13 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   }, [step]);
 
   useEffect(() => {
-    if (blockedAttempts > 0 && firstBlocked.current) {
+    if (blockedAttempts === 0) {
+      return;
+    }
+    if (firstBlocked.current) {
       document.getElementById(FIELD_DOM_IDS[firstBlocked.current])?.focus();
+    } else if (invalidChildMonths.current !== undefined) {
+      document.getElementById(`future-me-kid-ii-months-${invalidChildMonths.current + 1}`)?.focus();
     }
   }, [blockedAttempts]);
 
@@ -110,6 +119,9 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
             next[section] = true;
           },
         );
+        if (invalidChildMonths.current !== undefined) {
+          next.kids = true;
+        }
         return next;
       });
       setBlockedAttempts((attempts) => attempts + 1);

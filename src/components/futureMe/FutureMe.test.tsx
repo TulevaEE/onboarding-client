@@ -424,6 +424,31 @@ describe('FutureMe', () => {
       expect(kidMonthsField(1)).toHaveValue(null);
     });
 
+    it('keeps the saver on the step and points at a month count over 36', async () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+      renderFutureMe();
+      fillInRequiredAnswers();
+      typeInto(kidMonthsField(1), '40');
+
+      userEvent.click(nextButton());
+
+      expect(stepCount()).toHaveTextContent(/^Samm 1 /);
+      await waitFor(() => expect(kidMonthsField(1)).toHaveFocus());
+    });
+
+    it('asks whether the state pension typed in already has the supplement for children, and says no by default', () => {
+      withChildren([BOY_BORN_JUNE_2015]);
+
+      renderFutureMe();
+
+      const field = screen.getByRole('combobox', {
+        name: 'Kas sisestatud riiklik pension sisaldab juba laste pensionilisa?',
+      });
+      expect(field).toHaveDisplayValue('ei, lisa see juurde');
+      userEvent.selectOptions(field, 'yes');
+      expect(field).toHaveDisplayValue('jah, see on summas sees');
+    });
+
     it('says the adult children are for the saver to add', () => {
       withChildren([BOY_BORN_JUNE_2015]);
 

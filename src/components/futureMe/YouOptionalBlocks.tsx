@@ -259,6 +259,18 @@ export const KidsSection = ({
               }))}
               onChange={(value) => onChange({ kidsDisabled: value === 'yes' })}
             />
+            <SelectField
+              id="future-me-kids-in-forecast"
+              label="futureMe.you.kidsInForecast.label"
+              value={answers.kidsInForecast}
+              options={(['no', 'yes'] as const).map((value) => ({
+                value,
+                label: intl.formatMessage({ id: `futureMe.you.kidsInForecast.${value}` }),
+              }))}
+              onChange={(value) =>
+                onChange({ kidsInForecast: value as YouAnswers['kidsInForecast'] })
+              }
+            />
             {isKidsRightAvailableToSelf(answers) && (
               <SelectField
                 id="future-me-kids-early-user"

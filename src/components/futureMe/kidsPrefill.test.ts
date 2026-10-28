@@ -48,6 +48,13 @@ describe('birth date from the personal code of a child', () => {
 describe('children prefill from the register and the contributions', () => {
   const children = [{ personalCode: A_BOY_BORN_JUNE_2015 }, { personalCode: A_GIRL_BORN_FEB_2023 }];
 
+  it('leaves the months empty for children whose payment years overlap, as a payment names no child', () => {
+    const siblings = [{ personalCode: '52201100000' }, { personalCode: '62301100000' }];
+    const contributions = monthsFrom(2022, 2, 36).map((time) => parentalBenefit(time));
+
+    expect(deriveKidsPrefill(siblings, contributions)?.iiMonths).toEqual(['', '']);
+  });
+
   it('takes the birth years in the order of the register', () => {
     expect(deriveKidsPrefill(children, [])?.birthYears).toEqual([2015, 2023]);
   });

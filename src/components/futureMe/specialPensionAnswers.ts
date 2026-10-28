@@ -12,7 +12,7 @@ import {
   SimulationResult,
 } from './engine/pension';
 import { StepPlanInput } from './steps';
-import { amountOf, YouAnswers } from './youAnswers';
+import { amountOf, kidsInputOf, YouAnswers } from './youAnswers';
 import { retirementAge } from './planAges';
 
 const STATE_SECOND_PILLAR_RATE = 0.04;
@@ -80,6 +80,7 @@ export const pensionInputOf = (
     grossMonthly: amountOf(you.grossMonthly),
     p2Rate: Number(you.secondPillarRate) || 0,
     soodus: plan.earlyRetirementYears,
+    kids: kidsInputOf(you),
     flexEarly: pensionKind(you) === 'flexible' ? plan.earlyRetirementYears : 0,
     hazard: isHazardous ? you.hazardList : 'no',
     hazardYears: isHazardous ? parseFloat(you.hazardYears) || 0 : 0,

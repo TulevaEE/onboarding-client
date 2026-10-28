@@ -35,8 +35,10 @@ export const childBirthOf = (personalCode: string): ChildBirth | null => {
 const monthIndexOf = (isoTime: string): number =>
   Number(isoTime.slice(0, 4)) * MONTHS_IN_YEAR + Number(isoTime.slice(5, 7)) - 1;
 
+const birthMonthOf = (birth: ChildBirth): number => birth.year * MONTHS_IN_YEAR + birth.month - 1;
+
 const monthsPaidFor = (birth: ChildBirth, contributions: Contribution[]): number => {
-  const firstMonth = birth.year * MONTHS_IN_YEAR + birth.month - 1;
+  const firstMonth = birthMonthOf(birth);
   const lastMonth = firstMonth + PARENTAL_PAYMENT_MONTHS;
   const paidMonths = new Set(
     contributions
@@ -49,8 +51,23 @@ const monthsPaidFor = (birth: ChildBirth, contributions: Contribution[]): number
   return Math.min(paidMonths.size, PARENTAL_PAYMENT_MONTHS);
 };
 
-const iiMonthsOf = (birth: ChildBirth, contributions: Contribution[]): string => {
-  const months = isChildIIMonthsAsked(birth.year) ? monthsPaidFor(birth, contributions) : 0;
+// A payment names no child, so with siblings born within its 36 months it cannot be told whose it is.
+const sharesPaymentYears = (birth: ChildBirth, births: ChildBirth[]): boolean =>
+  births.some(
+    (other) =>
+      other !== birth &&
+      Math.abs(birthMonthOf(other) - birthMonthOf(birth)) <= PARENTAL_PAYMENT_MONTHS,
+  );
+
+const iiMonthsOf = (
+  birth: ChildBirth,
+  births: ChildBirth[],
+  contributions: Contribution[],
+): string => {
+  const months =
+    isChildIIMonthsAsked(birth.year) && !sharesPaymentYears(birth, births)
+      ? monthsPaidFor(birth, contributions)
+      : 0;
   return months > 0 ? String(months) : '';
 };
 
@@ -65,6 +82,6 @@ export const deriveKidsPrefill = (
     ? null
     : {
         birthYears: births.map(({ year }) => year),
-        iiMonths: births.map((birth) => iiMonthsOf(birth, contributions ?? [])),
+        iiMonths: births.map((birth) => iiMonthsOf(birth, births, contributions ?? [])),
       };
 };
