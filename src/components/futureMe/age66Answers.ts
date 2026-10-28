@@ -4,6 +4,7 @@ import { FirstPillarChoice } from './engine/pension';
 import { StepPlanInput } from './steps';
 import { YouAnswers } from './youAnswers';
 import { hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
+import { thirdPillarPayoutAge } from './thirdPillarPayoutAges';
 
 export type Pillar = 'secondPillar' | 'thirdPillar';
 export type Contract = 'yearly' | 'once';
@@ -12,8 +13,6 @@ export type ContractLock = 'none' | 'grow' | 'lump';
 export const CONTRACTS: Contract[] = ['yearly', 'once'];
 
 const LAST_FUND_START_AGE = 85;
-const THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021 = 55;
-const THIRD_PILLAR_PAYOUT_AGE = 60;
 
 export interface Age66Answers {
   secondPillarFrom: string;
@@ -42,9 +41,7 @@ const pillarPayoutAge = (pillar: Pillar, { you, plan }: Pick<Age66Context, 'you'
   if (pillar === 'secondPillar') {
     return payoutAge(plan);
   }
-  return you.thirdPillarJoined === 'before'
-    ? THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021
-    : THIRD_PILLAR_PAYOUT_AGE;
+  return thirdPillarPayoutAge(you.thirdPillarJoined === 'before');
 };
 
 export const fundStartAges = (

@@ -17,10 +17,10 @@ import {
   ThirdPillarPlan,
   YouAnswers,
 } from './youAnswers';
+import { THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021 } from './thirdPillarPayoutAges';
 
 const lifeTable: LifeTable = lifeTableData;
 
-const FAVORABLE_TAX_FROM_AGE = 55;
 const MONTHS_IN_YEAR = 12;
 
 export type Age55Lock = 'noThirdPillar' | 'pensionAge';
@@ -55,7 +55,7 @@ export interface Age55 {
 }
 
 export const withdrawalAge = (currentAge: number): number =>
-  Math.max(FAVORABLE_TAX_FROM_AGE, currentAge);
+  Math.max(THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021, currentAge);
 
 export const isWithdrawalAllowed = ({
   hasThirdPillar,
@@ -67,7 +67,8 @@ export const isWithdrawalAllowed = ({
   pensionAge: number;
 }): boolean => hasThirdPillar && age < pensionAge;
 
-export const isFundPensionAvailable = (age: number): boolean => age >= FAVORABLE_TAX_FROM_AGE;
+export const isFundPensionAvailable = (age: number): boolean =>
+  age >= THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021;
 
 export const effectivePlan = (
   chosen: ThirdPillarPlan,

@@ -8,9 +8,9 @@ import { TAX_SHORT } from './engine/pension';
 import { birthYearOrFallback, ThirdPillarPlan, YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
 import { FutureMeStep } from './steps';
+import { THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021 } from './thirdPillarPayoutAges';
 
 const PLANS: ThirdPillarPlan[] = ['keep', 'fund', 'lump'];
-const FAVORABLE_TAX_AGE = 55;
 const PAYOUTS_URL = 'https://tuleva.ee/pensioni-valjamaksed/';
 
 const strong = (chunks: ReactNode) => <strong>{chunks}</strong>;
@@ -79,8 +79,10 @@ export const Age55Step = ({ answers, age55, headingRef, onChange, onEditThirdPil
             <FormattedMessage
               id="futureMe.age55.intro"
               values={{
-                age: FAVORABLE_TAX_AGE,
-                year: String(birthYearOrFallback(answers) + FAVORABLE_TAX_AGE),
+                age: THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021,
+                year: String(
+                  birthYearOrFallback(answers) + THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021,
+                ),
                 strong,
               }}
             />
