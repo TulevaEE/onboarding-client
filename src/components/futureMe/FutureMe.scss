@@ -1256,6 +1256,21 @@
     }
   }
 
+  .kids-compare-table {
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+
+    th,
+    td {
+      text-align: left;
+    }
+
+    th[scope='row'] {
+      min-width: 8rem;
+      text-wrap: balance;
+    }
+  }
+
   .result-compare-table {
     position: relative;
     margin-top: 0.75rem;
