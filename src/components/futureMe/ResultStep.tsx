@@ -5,6 +5,7 @@ import { euro } from './amountFormat';
 import { ChapterHead } from './ChapterHead';
 import { needMonthly } from './expensesAnswers';
 import { ResultAdvice } from './ResultAdvice';
+import { ResultAssumptions } from './ResultAssumptions';
 import { ResultChart } from './ResultChart';
 import { ResultDecisions } from './ResultDecisions';
 import {
@@ -185,6 +186,7 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       <IncomeAtPensionAge result={result} need={needMonthly(context.expenses)} />
       <ResultChart result={result} need={needMonthly(context.expenses)} />
       <ResultDecisions context={context} />
+      <ResultAssumptions context={context} />
     </section>
   );
 };
