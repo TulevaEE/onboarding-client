@@ -28,7 +28,7 @@ jest.mock('react-chartjs-2', () => {
         mockChart({ data, options, plugins, type });
         useImperativeHandle(ref, () => ({
           chartArea: { top: 10, bottom: 210, left: 0, right: 300 },
-          scales: { x: { getPixelForValue: (index: number) => index * 10 } },
+          scales: { x: { getPixelForValue: (age: number) => (age - 65) * 10 } },
           setActiveElements: mockSetActiveElements,
           update: jest.fn(),
         }));
@@ -77,8 +77,16 @@ const tabToChart = () => {
   Array.from({ length: TAB_STOPS_BEFORE_CHART }).forEach(() => userEvent.tab());
 };
 const press = (key: string) => userEvent.keyboard(`{${key}}`);
-const hoverAt = (index: number) =>
-  act(() => lastChartProps().options.onHover({ x: index * 10 }, [{ index }]));
+const agesOnChart = (): number[] =>
+  Array.from(
+    new Set<number>(lastChartProps().data.datasets[0].data.map(({ x }: { x: number }) => x)),
+  );
+const pointOfAge = (age: number): number =>
+  lastChartProps().data.datasets[0].data.findIndex(({ x }: { x: number }) => x === age);
+const hoverAt = (row: number) =>
+  act(() =>
+    lastChartProps().options.onHover({ x: row * 10 }, [{ index: pointOfAge(agesOnChart()[row]) }]),
+  );
 
 describe('ResultChart interaction', () => {
   beforeEach(() => jest.clearAllMocks());
@@ -104,14 +112,12 @@ describe('ResultChart interaction', () => {
 
     it('draws a bigger dot with a white edge on every layer at an event age', () => {
       renderChart();
-      const { labels, datasets } = lastChartProps().data;
-      const [layer] = datasets;
-      const pensionIndex = labels.indexOf(65);
+      const [layer] = lastChartProps().data.datasets;
 
-      expect(layer.pointRadius[pensionIndex]).toBe(6);
-      expect(layer.pointBorderWidth[pensionIndex]).toBe(2);
+      expect(layer.pointRadius[pointOfAge(65)]).toBe(6);
+      expect(layer.pointBorderWidth[pointOfAge(65)]).toBe(2);
       expect(layer.pointBorderColor).toBe('#fff');
-      expect(layer.pointRadius[labels.indexOf(67)]).toBe(0);
+      expect(layer.pointRadius[pointOfAge(67)]).toBe(0);
     });
   });
 
@@ -153,10 +159,10 @@ describe('ResultChart interaction', () => {
 
     it('says how much is missing at the ages where the money does not cover the costs', () => {
       renderChart(contextWith({}, '600'));
-      const { labels } = lastChartProps().data;
-      const lastAge = labels[labels.length - 1];
+      const ages = agesOnChart();
+      const lastAge = ages[ages.length - 1];
 
-      hoverAt(labels.indexOf(lastAge));
+      hoverAt(ages.indexOf(lastAge));
 
       expect(within(tip() as HTMLElement).getByText(/^Puudu\s[\d\s]+€$/)).toBeInTheDocument();
     });
@@ -251,7 +257,7 @@ describe('ResultChart interaction', () => {
       renderChart();
       hoverAt(3);
 
-      act(() => lastChartProps().options.onHover({ x: 35 }, [{ index: 4 }]));
+      act(() => lastChartProps().options.onHover({ x: 35 }, [{ index: pointOfAge(69) }]));
 
       expect(within(tip() as HTMLElement).getByText('68 a')).toBeInTheDocument();
     });
@@ -260,7 +266,7 @@ describe('ResultChart interaction', () => {
       renderChart();
       hoverAt(3);
 
-      act(() => lastChartProps().options.onHover({ x: 60 }, [{ index: 6 }]));
+      act(() => lastChartProps().options.onHover({ x: 60 }, [{ index: pointOfAge(71) }]));
 
       expect(within(tip() as HTMLElement).getByText('71 a')).toBeInTheDocument();
     });

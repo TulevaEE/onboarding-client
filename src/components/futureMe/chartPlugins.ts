@@ -1,8 +1,12 @@
 import { Chart, ChartType, Plugin } from 'chart.js';
 
-export interface CostsLineOptions {
+export interface CostsPoint {
+  age: number;
   amount: number;
-  amounts?: (number | null)[];
+}
+
+export interface CostsLineOptions {
+  points: CostsPoint[];
   label: string;
 }
 
@@ -20,7 +24,7 @@ declare module 'chart.js' {
 }
 
 export const COSTS_COLOR = '#db2200';
-export const HALO_COLOR = '#fff';
+const LABEL_TEXT_COLOR = '#fff';
 const MARK_LINE_COLOR = 'rgba(33, 37, 41, 0.3)';
 const MARK_PILL = { background: '#edf7fd', text: '#002f63', border: '#c9e0ee' };
 const PILL_FONT = '700 12px Roboto, sans-serif';
@@ -28,6 +32,7 @@ const PILL_HEIGHT = 20;
 const PILL_PADDING = 8;
 const MARK_PILL_GAP = 6;
 const MARK_PILL_ROW_HEIGHT = 24;
+const MARK_PILL_CLEARANCE = 4;
 
 interface PillColors {
   background: string;
@@ -76,76 +81,80 @@ const drawPill = (
   ctx.restore();
 };
 
+interface PillBox {
+  left: number;
+  right: number;
+  top: number;
+}
+
 const costsY = (chart: Chart<'line'>, amount: number) => chart.scales.y.getPixelForValue(amount);
 
-const firstCostsIndex = (amounts: (number | null)[]) =>
-  amounts.findIndex((amount) => amount !== null);
+const costsX = (chart: Chart<'line'>, { age }: CostsPoint) => chart.scales.x.getPixelForValue(age);
 
-const costsX = (chart: Chart<'line'>, amounts: (number | null)[] | undefined, index: number) =>
-  !amounts || index === 0 ? chart.chartArea.left : chart.scales.x.getPixelForValue(index);
+const costsPillBox = (
+  chart: Chart<'line'>,
+  { points }: CostsLineOptions,
+  width: number,
+): PillBox => {
+  const left = costsX(chart, points[0]) + MARK_PILL_GAP;
+  return { left, right: left + width, top: costsY(chart, points[0].amount) - PILL_HEIGHT / 2 };
+};
+
+const overlapsPill = (taken: PillBox[], left: number, right: number, top: number) =>
+  taken.some(
+    (box) =>
+      left < box.right + MARK_PILL_GAP &&
+      right > box.left - MARK_PILL_GAP &&
+      top < box.top + MARK_PILL_ROW_HEIGHT &&
+      top + PILL_HEIGHT > box.top - MARK_PILL_CLEARANCE,
+  );
+
+const freeTop = (taken: PillBox[], left: number, right: number, first: number, limit: number) => {
+  let top = first;
+  while (overlapsPill(taken, left, right, top) && top < limit) {
+    top += MARK_PILL_ROW_HEIGHT;
+  }
+  return top;
+};
 
 export const costsLine: Plugin<'line', CostsLineOptions> = {
   id: 'costs',
-  beforeDatasetsDraw(chart, _args, options: CostsLineOptions) {
-    const { ctx, chartArea } = chart;
-    const { amounts } = options;
-    const y = costsY(chart, options.amount);
-    const trace = () => {
-      if (!amounts) {
-        ctx.moveTo(chartArea.left, y);
-        ctx.lineTo(chartArea.right, y);
-        return;
-      }
-      amounts.forEach((amount, index) => {
-        if (amount === null) {
-          return;
-        }
-        const x = costsX(chart, amounts, index);
-        if (index === firstCostsIndex(amounts)) {
-          ctx.moveTo(x, costsY(chart, amount));
-        } else {
-          ctx.lineTo(x, costsY(chart, amount));
-        }
-      });
-    };
-    const stroke = (color: string, width: number, dash: number[]) => {
-      ctx.save();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = width;
-      ctx.lineCap = 'round';
-      ctx.setLineDash(dash);
-      ctx.beginPath();
-      trace();
-      ctx.stroke();
-      ctx.restore();
-    };
-    stroke(HALO_COLOR, 6, []);
-    stroke(COSTS_COLOR, 2.5, [2, 6]);
-  },
   afterDatasetsDraw(chart, _args, options: CostsLineOptions) {
-    drawPill(
-      chart.ctx,
-      costsX(chart, options.amounts, firstCostsIndex(options.amounts ?? [])) + MARK_PILL_GAP,
-      costsY(chart, options.amount) - PILL_HEIGHT / 2,
-      options.label,
-      { background: COSTS_COLOR, text: HALO_COLOR },
-    );
+    const { ctx } = chart;
+    ctx.save();
+    ctx.strokeStyle = COSTS_COLOR;
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.setLineDash([2, 6]);
+    ctx.beginPath();
+    options.points.forEach((point, index) => {
+      const place = [costsX(chart, point), costsY(chart, point.amount)] as const;
+      if (index === 0) {
+        ctx.moveTo(...place);
+      } else {
+        ctx.lineTo(...place);
+      }
+    });
+    ctx.stroke();
+    ctx.restore();
+    const { left, top } = costsPillBox(chart, options, 0);
+    drawPill(ctx, left, top, options.label, { background: COSTS_COLOR, text: LABEL_TEXT_COLOR });
   },
 };
 
 export const marksLine: Plugin<'line', ChartMark[]> = {
   id: 'marks',
   afterDatasetsDraw(chart, _args, marks: ChartMark[] = []) {
-    const { ctx, chartArea } = chart;
-    const ages = chart.data.labels ?? [];
-    let previousEnd = -Infinity;
-    let row = 0;
+    const { ctx, chartArea, scales } = chart;
+    const costs = chart.options.plugins?.costs as CostsLineOptions | undefined;
+    const taken: PillBox[] = costs
+      ? [costsPillBox(chart, costs, pillWidthOf(ctx, costs.label))]
+      : [];
     marks.forEach(({ age, text }) => {
-      const index = ages.indexOf(age);
-      if (index < 0) {
+      if (age < scales.x.min || age > scales.x.max) {
         return;
       }
-      const x = chart.scales.x.getPixelForValue(index);
+      const x = scales.x.getPixelForValue(age);
       ctx.save();
       ctx.strokeStyle = MARK_LINE_COLOR;
       ctx.setLineDash([4, 4]);
@@ -157,9 +166,10 @@ export const marksLine: Plugin<'line', ChartMark[]> = {
       ctx.restore();
       const width = pillWidthOf(ctx, text);
       const left = x + 4 + width > chartArea.right ? x - 4 - width : x + 4;
-      row = left < previousEnd + MARK_PILL_GAP ? row + 1 : 0;
-      drawPill(ctx, left, chartArea.top + 2 + row * MARK_PILL_ROW_HEIGHT, text, MARK_PILL);
-      previousEnd = left + width;
+      const limit = chartArea.bottom - MARK_PILL_ROW_HEIGHT;
+      const top = freeTop(taken, left, left + width, chartArea.top + 2, limit);
+      taken.push({ left, right: left + width, top });
+      drawPill(ctx, left, top, text, MARK_PILL);
     });
   },
 };

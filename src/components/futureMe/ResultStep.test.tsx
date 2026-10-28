@@ -192,20 +192,19 @@ describe('Result step', () => {
       userEvent.click(screen.getByRole('radio', { name: /^Töötan edasi/ }));
       goTo(/^Tulemus/);
 
-      const { labels, datasets } = lastChartProps().data;
+      const { datasets } = lastChartProps().data;
       const salary = datasets.find((set: { label: string }) => set.label === 'Palk');
-      const radiusAt = (age: number) => salary.pointRadius[labels.indexOf(age)];
-      expect(salary.data[labels.indexOf(70)]).toBe(0);
-      expect(radiusAt(70)).toBe(0);
+      const at70 = salary.data.findIndex(({ x }: { x: number }) => x === 70);
+      expect(salary.data[at70].y).toBe(0);
+      expect(salary.pointRadius[at70]).toBe(0);
     });
 
     it('marks the costs on the chart with their amount', () => {
       openResultStep();
 
-      expect(lastChartProps().options.plugins.costs).toEqual({
-        amount: 791,
-        label: 'Kulud: 791\u00A0€',
-      });
+      const { points, label } = lastChartProps().options.plugins.costs;
+      expect(points[0]).toEqual({ age: 65, amount: 791 });
+      expect(label).toBe('Kulud: 791\u00A0€');
     });
 
     const recordingCanvas = () => {
@@ -238,30 +237,29 @@ describe('Result step', () => {
     const chartOn = (ctx: unknown) => ({
       ctx,
       chartArea: { left: 10, right: 310, top: 0, bottom: 200 },
-      scales: { y: { getPixelForValue: (amount: number) => 1000 - amount } },
+      scales: {
+        x: { getPixelForValue: (age: number) => 10 + (age - 65) * 10 },
+        y: { getPixelForValue: (amount: number) => 1000 - amount },
+      },
     });
 
     const only = (calls: unknown[][], names: string[]) =>
       calls.filter(([name]) => names.includes(name as string));
 
-    it('draws the costs line under the layers, dotted on a halo across the chart at the costs', () => {
+    it('draws the costs line over the layers, dotted and without a white edge', () => {
       openResultStep();
       const { ctx, calls } = recordingCanvas();
 
       const [costsPlugin] = lastChartProps().plugins;
-      costsPlugin.beforeDatasetsDraw(chartOn(ctx), {}, lastChartProps().options.plugins.costs);
+      costsPlugin.afterDatasetsDraw(chartOn(ctx), {}, lastChartProps().options.plugins.costs);
 
-      expect(only(calls, ['strokeStyle', 'lineWidth', 'setLineDash', 'moveTo', 'lineTo'])).toEqual([
-        ['strokeStyle', '#fff'],
-        ['lineWidth', 6],
-        ['setLineDash', []],
-        ['moveTo', 10, 209],
-        ['lineTo', 310, 209],
+      expect(costsPlugin.beforeDatasetsDraw).toBeUndefined();
+      const line = only(calls, ['strokeStyle', 'lineWidth', 'setLineDash', 'moveTo']);
+      expect(line.slice(0, 4)).toEqual([
         ['strokeStyle', '#db2200'],
         ['lineWidth', 2.5],
         ['setLineDash', [2, 6]],
         ['moveTo', 10, 209],
-        ['lineTo', 310, 209],
       ]);
     });
 
@@ -292,22 +290,6 @@ describe('Result step', () => {
         ['createLinearGradient', 0, 0, 0, 200],
         ['addColorStop', 0, 'rgba(106, 79, 196, 0.5)'],
         ['addColorStop', 1, 'rgba(106, 79, 196, 0.08)'],
-      ]);
-    });
-
-    it('hides the line of a layer between two ages it pays nothing at', () => {
-      openResultStep();
-      const [statePension] = lastChartProps().data.datasets;
-      const lineBetween = (from: number, to: number) =>
-        statePension.segment.borderColor({
-          p0: { parsed: { y: from } },
-          p1: { parsed: { y: to } },
-        });
-
-      expect([lineBetween(0, 0), lineBetween(0, 512), lineBetween(512, 0)]).toEqual([
-        'transparent',
-        undefined,
-        undefined,
       ]);
     });
 
@@ -347,7 +329,7 @@ describe('Result step', () => {
     it('labels every fifth age on a wide screen and every tenth on a narrow one', () => {
       openResultStep();
       const wideTick = lastChartProps().options.scales.x.ticks.callback;
-      expect([wideTick(0, 0), wideTick(5, 5)]).toEqual([65, 70]);
+      expect([wideTick(65), wideTick(66), wideTick(70)]).toEqual([65, '', 70]);
 
       const wideMatchMedia = window.matchMedia;
       window.matchMedia = (query: string) => ({ ...wideMatchMedia(query), matches: true });
@@ -356,7 +338,7 @@ describe('Result step', () => {
       window.matchMedia = wideMatchMedia;
 
       const narrowTick = lastChartProps().options.scales.x.ticks.callback;
-      expect([narrowTick(0, 0), narrowTick(5, 5), narrowTick(15, 15)]).toEqual(['', 70, 80]);
+      expect([narrowTick(65), narrowTick(70), narrowTick(80)]).toEqual(['', 70, 80]);
     });
 
     it('hides the numbers on the layers, which the table shows instead', () => {

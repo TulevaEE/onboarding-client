@@ -84,7 +84,8 @@ const pricesGroup = () => screen.getByRole('group', { name: 'Summad graafikul' }
 const todayPrices = () => within(pricesGroup()).getByRole('button', { name: 'Tänased hinnad' });
 const futurePrices = () => within(pricesGroup()).getByRole('button', { name: 'Tuleviku hinnad' });
 const lastChartProps = () => mockChart.mock.calls[mockChart.mock.calls.length - 1][0];
-const costsShown = (): number[] => lastChartProps().options.plugins.costs.amounts;
+const costsShown = (): number[] =>
+  lastChartProps().options.plugins.costs.points.map(({ amount }: { amount: number }) => amount);
 const NOTE_TEXT = /^Graafik, tabel ja kokkuvõte on tuleviku eurodes/;
 
 describe('today’s or future prices', () => {
@@ -155,19 +156,17 @@ describe('today’s or future prices', () => {
     userEvent.click(futurePrices());
 
     const { data, options } = lastChartProps();
-    const yearAt = (index: number) => BIRTH_YEAR + data.labels[index];
-    const last = data.labels.length - 1;
-    expect(data.datasets[0].data[0]).toBe(
-      Math.round(todayLayer.data[0] * nominalFactorAt(yearAt(0))),
+    const { points } = options.plugins.costs;
+    const lastCosts = points[points.length - 1];
+    expect(data.datasets[0].data[0].y).toBe(
+      Math.round(todayLayer.data[0].y * nominalFactorAt(BIRTH_YEAR + points[0].age)),
     );
-    expect(options.plugins.costs.amounts[last]).toBe(
-      Math.round(791 * nominalFactorAt(yearAt(last))),
-    );
+    expect(lastCosts.amount).toBe(Math.round(791 * nominalFactorAt(BIRTH_YEAR + lastCosts.age)));
   });
 
   it('draws the costs as a flat line in today’s prices and as a rising line in future prices', () => {
     renderChart();
-    expect(lastChartProps().options.plugins.costs.amounts).toBeUndefined();
+    expect(new Set(costsShown()).size).toBe(1);
 
     userEvent.click(futurePrices());
 
@@ -182,7 +181,7 @@ describe('today’s or future prices', () => {
     userEvent.click(todayPrices());
 
     expect(todayPrices()).toHaveAttribute('aria-pressed', 'true');
-    expect(lastChartProps().options.plugins.costs.amounts).toBeUndefined();
+    expect(new Set(costsShown()).size).toBe(1);
     expect(screen.getByText('Summad on tänastes eurodes.')).toBeInTheDocument();
   });
 
