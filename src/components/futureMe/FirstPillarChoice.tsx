@@ -13,6 +13,7 @@ interface Props {
   oldAge: number;
   larger: Choice;
   chosen: Choice;
+  laterSpecialStartAge?: number;
   onChange: (choice: Choice) => void;
 }
 
@@ -26,9 +27,11 @@ export const FirstPillarChoice = ({
   oldAge,
   larger,
   chosen,
+  laterSpecialStartAge,
   onChange,
 }: Props) => {
   const amounts = { special, oldAge };
+  const isSpecialLater = laterSpecialStartAge !== undefined;
 
   return (
     <div className="mb-4">
@@ -47,7 +50,10 @@ export const FirstPillarChoice = ({
               checked={chosen === value}
               title={
                 <>
-                  <FormattedMessage id={`futureMe.firstPillarChoice.${value}.title`} />
+                  <FormattedMessage
+                    id={`futureMe.firstPillarChoice.${value}${isSpecialLater ? 'Later' : ''}.title`}
+                    values={{ specialAge: laterSpecialStartAge }}
+                  />
                   {larger === value && (
                     <span className="badge rounded-pill text-bg-success">
                       <FormattedMessage id="futureMe.firstPillarChoice.larger" />
@@ -58,7 +64,10 @@ export const FirstPillarChoice = ({
               text={
                 <FormattedMessage
                   id="futureMe.firstPillarChoice.text"
-                  values={{ amount: euro(amounts[value]), choice: value }}
+                  values={{
+                    amount: euro(amounts[value]),
+                    choice: isSpecialLater ? 'later' : value,
+                  }}
                 />
               }
               onChange={() => onChange(value)}

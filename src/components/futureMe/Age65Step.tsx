@@ -17,6 +17,7 @@ import {
   chosenFirstPillar,
   firstPillarComparison,
   SpecialPensionAnswers,
+  specialPensionStartAge,
 } from './specialPensionAnswers';
 import { exactPercent } from './amountFormat';
 import { retirementYears } from './engine/pension';
@@ -72,6 +73,8 @@ export const Age65Step = ({
   const comparison = plan.hasSpecialPension
     ? firstPillarComparison(specialPension, you, plan, answers, age66)
     : null;
+  const specialAge = specialPensionStartAge(plan);
+  const isSpecialPensionLater = specialAge > age;
   const isChosenAtAnotherStep = isPayoutChoiceMadeAtAnotherStep(plan);
   const hasSecondPillar = plan.savesInSecondPillar;
   const hasThird = hasThirdPillarAt(you, plan, age);
@@ -141,14 +144,19 @@ export const Age65Step = ({
           title={<FormattedMessage id="futureMe.firstPillarChoice.title" />}
           intro={
             <FormattedMessage
-              id="futureMe.firstPillarChoice.intro"
-              values={{ age, isFavourable: kind === 'favourable' }}
+              id={
+                isSpecialPensionLater
+                  ? 'futureMe.firstPillarChoice.introSpecialLater'
+                  : 'futureMe.firstPillarChoice.intro'
+              }
+              values={{ age, specialAge, isFavourable: kind === 'favourable' }}
             />
           }
           special={comparison.special}
           oldAge={comparison.oldAge}
           larger={comparison.larger}
           chosen={chosenFirstPillar(answers.firstPillarChoice, comparison)}
+          laterSpecialStartAge={isSpecialPensionLater ? specialAge : undefined}
           onChange={(firstPillarChoice) => onChange({ ...answers, firstPillarChoice })}
         />
       )}

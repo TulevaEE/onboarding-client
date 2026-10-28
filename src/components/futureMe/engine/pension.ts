@@ -641,7 +641,14 @@ export function simulate(
   // RPKS: only one first pillar pension is paid; flexible pension rules do not apply to a special pension
   const spYear = (input.spMonthly || 0) * 12;
   const spStart = specialStart(input);
-  const soodus = Math.max(0, input.soodus !== undefined ? input.soodus : earlyYears(input));
+  const requestedSoodus = Math.max(
+    0,
+    input.soodus !== undefined ? input.soodus : earlyYears(input),
+  );
+  // RPKS § 9 lg 5: no flexible old-age pension for someone already granted a special pension
+  const isFlexibleBarred =
+    (input.flexEarly || 0) > 0 && spYear > 0 && spStart <= pa - requestedSoodus;
+  const soodus = isFlexibleBarred ? Math.min(requestedSoodus, earlyYears(input)) : requestedSoodus;
   const ret = pa - soodus;
   const deferral = spYear > 0 || soodus > 0 ? 0 : scenario.deferral || 0;
   const p1Start = ret + deferral;
@@ -660,7 +667,8 @@ export function simulate(
     (Math.max(0, input.p1Monthly - earlyCut) + (kidsApplied ? kidsMonthly : 0) + hazardMonthly) *
     12;
   // RPKS § 11¹ lg 4: the increasing coefficient applies to the whole pension
-  const flexEarly = soodus > 0 ? Math.min(5, Math.max(0, input.flexEarly || 0)) : 0;
+  const flexEarly =
+    soodus > 0 && !isFlexibleBarred ? Math.min(5, Math.max(0, input.flexEarly || 0)) : 0;
   const serviceIncrease =
     (input.rescueYears || 0) > 0
       ? rescueIncrease(input.rescueYears, input.birthYear + ret)
@@ -701,7 +709,7 @@ export function simulate(
   const spPaid = spYear > 0 && prefersSpecial(choice, p1Full);
   const p1AtPa = p1Full + accrualYear * workedBefore(pa) * p1Factor;
   const spPaidPa = spPaid && ret < pa ? prefersSpecial(input.firstPillarChoicePa, p1AtPa) : spPaid;
-  const spPaidAt = (age: number) => (age >= pa ? spPaidPa : spPaid);
+  const spPaidAt = (age: number) => age >= spStart && (age >= pa ? spPaidPa : spPaid);
   const p1Year = spPaid ? 0 : p1Full;
   const p1At = (age: number) => {
     if (spPaidAt(age)) {

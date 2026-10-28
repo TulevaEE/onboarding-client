@@ -10,6 +10,7 @@ import {
   earlyRetirementRight,
   earlyRetirementYears,
   earlyRightSources,
+  earlyYearsOptions,
   effectivePensionAge,
   isKidsRightAvailableToSelf,
   isRescueBasisAsked,
@@ -18,7 +19,6 @@ import {
   rescueRightOf,
   RescueBasis,
   isSpecialPensionOnly,
-  maxEarlyYearsOption,
   pensionAgeValue,
   YouAnswers,
 } from './youAnswers';
@@ -194,7 +194,7 @@ export const EarlyRetirementFields = ({ answers, onChange }: Props) => {
             help="soodusYears"
             hint="futureMe.you.earlyYears.hint"
             value={String(earlyRetirementYears(answers))}
-            options={Array.from({ length: maxEarlyYearsOption(answers) + 1 }, (_, years) => ({
+            options={earlyYearsOptions(answers).map((years) => ({
               value: String(years),
               label: earlyYearsLabel(intl, years, right),
             }))}
