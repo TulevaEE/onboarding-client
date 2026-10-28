@@ -11,6 +11,14 @@ import { mockUser } from '../../test/backend-responses';
 jest.mock('../common/apiHooks', () => ({ useMe: jest.fn() }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
 
+const mockChart = jest.fn();
+jest.mock('react-chartjs-2', () => ({
+  Chart: (props: unknown) => {
+    mockChart(props);
+    return <div data-testid="mock-chart" />;
+  },
+}));
+
 const mockUseMe = useMe as jest.MockedFunction<typeof useMe>;
 
 const loggedInAs = (user: Partial<User>) => {
@@ -122,6 +130,10 @@ describe('Result step', () => {
       const list = screen.getByRole('list', { name: 'Kuu sissetulek 65-aastaselt' });
       const costsLine = within(list).getAllByRole('listitem').slice(-1)[0];
       expect(costsLine).toHaveTextContent(/^Kulud1\s261\s€$/);
+
+      const summary = screen.getByRole('list', { name: 'Graafiku kokkuvõte' });
+      expect(summary).toHaveTextContent('Sinu kulud on 1 261 € kuus.');
+      expect(summary).toHaveTextContent('Kulud ei ole kaetud juba pensioni alguses.');
     });
   });
 
@@ -134,6 +146,252 @@ describe('Result step', () => {
       expect(within(list).queryByText('Eripension')).not.toBeInTheDocument();
       expect(within(list).getByText('Kokku')).toBeInTheDocument();
       expect(within(list).getByText('Kulud')).toBeInTheDocument();
+    });
+  });
+
+  describe('income and costs by age', () => {
+    const figure = () => screen.getByRole('figure', { name: 'Sissetulek ja kulud vanuse järgi' });
+    const lastChartProps = () => mockChart.mock.calls[mockChart.mock.calls.length - 1][0];
+
+    it('draws the chart under its title', () => {
+      openResultStep();
+
+      expect(within(figure()).getByTestId('mock-chart')).toBeInTheDocument();
+    });
+
+    const datasetLabels = () =>
+      lastChartProps().data.datasets.map((set: { label: string }) => set.label);
+
+    it('draws only the state pension as a layer when nothing else pays', () => {
+      openResultStep();
+
+      expect(datasetLabels()).toEqual(['Riiklik pension']);
+      expect(lastChartProps().data.datasets[0]).toMatchObject({ type: 'line', fill: 'origin' });
+    });
+
+    it('leaves out the dots of a layer at the ages it pays nothing', () => {
+      openResultStep();
+      goTo(/^65\sa/);
+      userEvent.click(screen.getByRole('radio', { name: /^Töötan edasi/ }));
+      goTo(/^Tulemus/);
+
+      const { labels, datasets } = lastChartProps().data;
+      const salary = datasets.find((set: { label: string }) => set.label === 'Palk');
+      const radiusAt = (age: number) => salary.pointRadius[labels.indexOf(age)];
+      expect(salary.data[labels.indexOf(70)]).toBe(0);
+      expect(radiusAt(70)).toBe(0);
+    });
+
+    it('marks the costs on the chart with their amount', () => {
+      openResultStep();
+
+      expect(lastChartProps().options.plugins.costs).toEqual({
+        amount: 791,
+        label: 'Kulud: 791\u00A0€',
+      });
+    });
+
+    const recordingCanvas = () => {
+      const calls: unknown[][] = [];
+      const gradient = {
+        addColorStop: (...args: unknown[]) => calls.push(['addColorStop', ...args]),
+      };
+      const returns: Record<string, unknown> = {
+        measureText: { width: 60 },
+        createLinearGradient: gradient,
+      };
+      const ctx = new Proxy(
+        {},
+        {
+          get:
+            (_target, name: string) =>
+            (...args: unknown[]) => {
+              calls.push([name, ...args]);
+              return returns[name];
+            },
+          set: (_target, name: string, value) => {
+            calls.push([name, value]);
+            return true;
+          },
+        },
+      );
+      return { ctx, calls, gradient };
+    };
+
+    const chartOn = (ctx: unknown) => ({
+      ctx,
+      chartArea: { left: 10, right: 310, top: 0, bottom: 200 },
+      scales: { y: { getPixelForValue: (amount: number) => 1000 - amount } },
+    });
+
+    const only = (calls: unknown[][], names: string[]) =>
+      calls.filter(([name]) => names.includes(name as string));
+
+    it('draws the costs line under the layers, dotted on a halo across the chart at the costs', () => {
+      openResultStep();
+      const { ctx, calls } = recordingCanvas();
+
+      const [costsPlugin] = lastChartProps().plugins;
+      costsPlugin.beforeDatasetsDraw(chartOn(ctx), {}, lastChartProps().options.plugins.costs);
+
+      expect(only(calls, ['strokeStyle', 'lineWidth', 'setLineDash', 'moveTo', 'lineTo'])).toEqual([
+        ['strokeStyle', '#fff'],
+        ['lineWidth', 6],
+        ['setLineDash', []],
+        ['moveTo', 10, 209],
+        ['lineTo', 310, 209],
+        ['strokeStyle', '#db2200'],
+        ['lineWidth', 2.5],
+        ['setLineDash', [2, 6]],
+        ['moveTo', 10, 209],
+        ['lineTo', 310, 209],
+      ]);
+    });
+
+    it('puts the costs amount in a pill over the left end of the costs line', () => {
+      openResultStep();
+      const { ctx, calls } = recordingCanvas();
+
+      const [costsPlugin] = lastChartProps().plugins;
+      costsPlugin.afterDatasetsDraw(chartOn(ctx), {}, lastChartProps().options.plugins.costs);
+
+      expect(only(calls, ['roundRect', 'fillStyle', 'fill', 'fillText'])).toEqual([
+        ['roundRect', 16, 199, 76, 20, 10],
+        ['fillStyle', '#db2200'],
+        ['fill'],
+        ['fillStyle', '#fff'],
+        ['fillText', 'Kulud: 791 €', 24, 209],
+      ]);
+    });
+
+    it('fades each layer in its own color toward the axis, evenly until the chart has its size', () => {
+      openResultStep();
+      const { ctx, calls, gradient } = recordingCanvas();
+      const [statePension] = lastChartProps().data.datasets;
+
+      expect(statePension.backgroundColor({ chart: { ctx } })).toBe('rgba(106, 79, 196, 0.3)');
+      expect(statePension.backgroundColor({ chart: chartOn(ctx) })).toBe(gradient);
+      expect(calls).toEqual([
+        ['createLinearGradient', 0, 0, 0, 200],
+        ['addColorStop', 0, 'rgba(106, 79, 196, 0.5)'],
+        ['addColorStop', 1, 'rgba(106, 79, 196, 0.08)'],
+      ]);
+    });
+
+    it('hides the line of a layer between two ages it pays nothing at', () => {
+      openResultStep();
+      const [statePension] = lastChartProps().data.datasets;
+      const lineBetween = (from: number, to: number) =>
+        statePension.segment.borderColor({
+          p0: { parsed: { y: from } },
+          p1: { parsed: { y: to } },
+        });
+
+      expect([lineBetween(0, 0), lineBetween(0, 512), lineBetween(512, 0)]).toEqual([
+        'transparent',
+        undefined,
+        undefined,
+      ]);
+    });
+
+    it('shows the age and the monthly amount of each layer in the tooltip', () => {
+      openResultStep();
+      const { title, label } = lastChartProps().options.plugins.tooltip.callbacks;
+
+      expect(title([{ label: '70' }])).toBe('70 a');
+      expect(label({ dataset: { label: 'Riiklik pension' }, parsed: { y: 512 } })).toBe(
+        'Riiklik pension: 512 €',
+      );
+    });
+
+    it('shortens the amounts on the side axis to thousands', () => {
+      openResultStep();
+      const tick = lastChartProps().options.scales.y.ticks.callback;
+
+      expect([tick(500), tick(1000), tick(1500)]).toEqual(['500', '1 tuh', '1,5 tuh']);
+    });
+
+    it('keeps the side axis the same width whatever its amounts', () => {
+      openResultStep();
+      const scale = { width: 31 };
+
+      lastChartProps().options.scales.y.afterFit(scale);
+
+      expect(scale.width).toBe(76);
+    });
+
+    it('names every layer and the costs line in a legend', () => {
+      openResultStep();
+
+      const legend = within(figure()).getByRole('list', { name: 'Graafiku legend' });
+      expect(
+        within(legend)
+          .getAllByRole('listitem')
+          .map((item) => item.textContent),
+      ).toEqual(['Riiklik pension', 'Kulud']);
+    });
+
+    it('labels every fifth age on a wide screen and every tenth on a narrow one', () => {
+      openResultStep();
+      const wideTick = lastChartProps().options.scales.x.ticks.callback;
+      expect([wideTick(0, 0), wideTick(5, 5)]).toEqual([65, 70]);
+
+      const wideMatchMedia = window.matchMedia;
+      window.matchMedia = (query: string) => ({ ...wideMatchMedia(query), matches: true });
+      userEvent.click(within(trail()).getByRole('button', { name: /^Kulud/ }));
+      goTo(/^Tulemus/);
+      window.matchMedia = wideMatchMedia;
+
+      const narrowTick = lastChartProps().options.scales.x.ticks.callback;
+      expect([narrowTick(0, 0), narrowTick(5, 5), narrowTick(15, 15)]).toEqual(['', 70, 80]);
+    });
+
+    it('hides the numbers on the layers, which the table shows instead', () => {
+      openResultStep();
+
+      expect(lastChartProps().options.plugins.datalabels).toEqual({ display: false });
+    });
+
+    it('sums the chart up in words for those who cannot see it', () => {
+      openResultStep();
+
+      const summary = within(figure()).getByRole('list', { name: 'Graafiku kokkuvõte' });
+      expect(summary).toHaveTextContent(
+        /Pensioni alguses \(65-⁠aastaselt\) tuleb kuus [\d\s]+€ riiklikku pensioni \(pärast tulumaksu\)/,
+      );
+      expect(summary).toHaveTextContent('Sinu kulud on 791 € kuus.');
+      expect(summary).toHaveTextContent('Kulud on kaetud kuni 100. eluaastani.');
+    });
+
+    it('keeps the table of the same numbers hidden until it is asked for', () => {
+      openResultStep();
+
+      const toggle = within(figure()).getByRole('button', { name: 'Näita tabelina' });
+      expect(toggle).toHaveAttribute('aria-expanded', 'false');
+      expect(within(figure()).queryByRole('table')).not.toBeInTheDocument();
+
+      userEvent.click(toggle);
+
+      expect(within(figure()).getByRole('button', { name: 'Peida tabel' })).toHaveAttribute(
+        'aria-expanded',
+        'true',
+      );
+      const table = within(figure()).getByRole('table', {
+        name: 'Sissetulek ja kulud kuus vanuse järgi (tänastes eurodes, pärast tulumaksu)',
+      });
+      expect(
+        within(table)
+          .getAllByRole('columnheader')
+          .map((cell) => cell.textContent),
+      ).toEqual(['Vanus', 'Riiklik pension', 'Kulud']);
+      expect(
+        within(table)
+          .getAllByRole('rowheader')
+          .map((cell) => cell.textContent),
+      ).toEqual(['65', '70', '75', '80', '85', '90', '95', '100']);
+      expect(
+        within(figure()).getByRole('region', { name: /^Sissetulek ja kulud kuus/ }),
+      ).toHaveAttribute('tabindex', '0');
     });
   });
 });

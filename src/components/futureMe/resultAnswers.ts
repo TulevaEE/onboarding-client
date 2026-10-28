@@ -170,6 +170,16 @@ export const resultScenarioOf = (context: ResultContext): Scenario => {
     : { ...contractScenario, ...timing };
 };
 
+export const coverageKind = (result: Result): 'all' | 'gap' | 'none' | 'until' => {
+  if (result.coversNeedUntil === null) {
+    return 'all';
+  }
+  if (result.gapTemporary) {
+    return 'gap';
+  }
+  return result.coversNeedUntil <= result.pensionStartAge ? 'none' : 'until';
+};
+
 export const resultOf = (context: ResultContext): Result => {
   const input = resultInputOf(context);
   const scenario = resultScenarioOf(context);

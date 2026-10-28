@@ -4,7 +4,9 @@ import { TranslationKey } from '../translations';
 import { euro } from './amountFormat';
 import { ChapterHead } from './ChapterHead';
 import { needMonthly } from './expensesAnswers';
+import { ResultChart } from './ResultChart';
 import {
+  coverageKind,
   incomeAtStart,
   IncomeSource,
   MAX_AGE_SHOWN,
@@ -26,16 +28,6 @@ const INCOME_LABELS: Record<IncomeSource, TranslationKey> = {
   secondPillar: 'futureMe.result.income.secondPillar',
   thirdPillar: 'futureMe.result.income.thirdPillar',
   deposit: 'futureMe.result.income.deposit',
-};
-
-const coverageKind = (result: Result): 'all' | 'gap' | 'none' | 'until' => {
-  if (result.coversNeedUntil === null) {
-    return 'all';
-  }
-  if (result.gapTemporary) {
-    return 'gap';
-  }
-  return result.coversNeedUntil <= result.pensionStartAge ? 'none' : 'until';
 };
 
 const AnswerText = ({ result, need }: { result: Result; need: number }) => {
@@ -188,6 +180,7 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       </p>
       <Tiles result={result} />
       <IncomeAtPensionAge result={result} need={needMonthly(context.expenses)} />
+      <ResultChart result={result} need={needMonthly(context.expenses)} />
     </section>
   );
 };
