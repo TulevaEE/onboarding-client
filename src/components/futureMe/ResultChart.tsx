@@ -19,8 +19,15 @@ import { Chart } from 'react-chartjs-2';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { euro } from './amountFormat';
-import { MAX_AGE_SHOWN, Result } from './resultAnswers';
-import { ChartRow, chartRowsOf, chartSeriesOf, ChartSourceId, tableRowsOf } from './chartData';
+import { coverageKind, MAX_AGE_SHOWN, Result } from './resultAnswers';
+import {
+  ChartRow,
+  chartRowsOf,
+  chartSeriesOf,
+  ChartSourceId,
+  startSourcesOf,
+  tableRowsOf,
+} from './chartData';
 
 interface CostsLineOptions {
   amount: number;
@@ -163,9 +170,11 @@ const shortAmount = (value: number | string) => {
 const Summary = ({ result, rows }: { result: Result; rows: ChartRow[] }) => {
   const intl = useIntl();
   const [start] = rows;
-  const sources = chartSeriesOf(rows)
-    .filter(({ id }) => start[id] > 0)
-    .map(({ id }) => intl.formatMessage({ id: SUMMARY_LABELS[id] }, { amount: euro(start[id]) }));
+  const sources = startSourcesOf(start).map((id) =>
+    intl.formatMessage({ id: SUMMARY_LABELS[id] }, { amount: euro(start[id]) }),
+  );
+  const until = result.coversNeedUntil ?? MAX_AGE_SHOWN;
+  const gapEnd = result.gapEnd ?? until;
   return (
     <ul
       id="future-me-chart-summary"
@@ -175,7 +184,7 @@ const Summary = ({ result, rows }: { result: Result; rows: ChartRow[] }) => {
       <li>
         <FormattedMessage
           id="futureMe.result.chart.summary.start"
-          values={{ age: start.age, sources: intl.formatList(sources) }}
+          values={{ age: result.pensionStartAge, sources: intl.formatList(sources) }}
         />
       </li>
       <li>
@@ -187,7 +196,12 @@ const Summary = ({ result, rows }: { result: Result; rows: ChartRow[] }) => {
       <li>
         <FormattedMessage
           id="futureMe.result.chart.summary.covered"
-          values={{ until: result.coversNeedUntil ?? MAX_AGE_SHOWN }}
+          values={{
+            kind: coverageKind(result),
+            until,
+            to: gapEnd,
+            isRange: gapEnd > until ? 'yes' : 'no',
+          }}
         />
       </li>
     </ul>
@@ -196,7 +210,6 @@ const Summary = ({ result, rows }: { result: Result; rows: ChartRow[] }) => {
 
 const IncomeChart = ({ rows }: { rows: ChartRow[] }) => {
   const intl = useIntl();
-  // shortcut: read once per render, a resize across the breakpoint redraws only on the next render
   const isNarrow = window.matchMedia(NARROW_SCREEN).matches;
   const tickStep = isNarrow ? NARROW_TICK_STEP : WIDE_TICK_STEP;
   const [{ costs }] = rows;
@@ -264,6 +277,7 @@ const IncomeChart = ({ rows }: { rows: ChartRow[] }) => {
         position: 'right',
         stacked: true,
         beginAtZero: true,
+        suggestedMax: costs,
         grace: '20%',
         border: { display: false },
         grid: { display: false },
@@ -367,9 +381,9 @@ const IncomeTable = ({ rows }: { rows: ChartRow[] }) => {
   );
 };
 
-export const ResultChart = ({ result }: { result: Result }) => {
+export const ResultChart = ({ result, need }: { result: Result; need: number }) => {
   const [isTableShown, setTableShown] = useState(false);
-  const rows = chartRowsOf(result);
+  const rows = chartRowsOf(result, need);
   return (
     <figure className="result-figure" aria-labelledby="future-me-chart-title">
       <div className="result-figure-head">

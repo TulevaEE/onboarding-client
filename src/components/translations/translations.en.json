@@ -2916,7 +2916,7 @@
   "futureMe.result.chart.summary.thirdPillar": "{amount} III sambast",
   "futureMe.result.chart.summary.deposit": "{amount} hoiuselt",
   "futureMe.result.chart.summary.costs": "Sinu kulud on {amount} kuus.",
-  "futureMe.result.chart.summary.covered": "Kulud on kaetud kuni {until}. eluaastani.",
+  "futureMe.result.chart.summary.covered": "{kind, select, all {Kulud on kaetud kuni 100. eluaastani.} none {Kulud ei ole kaetud juba pensioni alguses.} gap {Kulud jäävad katmata {until}{isRange, select, yes {–{to}} other {}}-⁠aastaselt, siis on need jälle kaetud.} other {Kulud on kaetud kuni {until}. eluaastani.}}",
   "futureMe.result.chart.summary.salary": "{amount} palka",
   "futureMe.result.chart.axis.age": "Vanus",
   "futureMe.result.chart.toggle.show": "Näita tabelina",

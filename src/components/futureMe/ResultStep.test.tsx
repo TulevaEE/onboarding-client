@@ -130,6 +130,10 @@ describe('Result step', () => {
       const list = screen.getByRole('list', { name: 'Kuu sissetulek 65-aastaselt' });
       const costsLine = within(list).getAllByRole('listitem').slice(-1)[0];
       expect(costsLine).toHaveTextContent(/^Kulud1\s261\s€$/);
+
+      const summary = screen.getByRole('list', { name: 'Graafiku kokkuvõte' });
+      expect(summary).toHaveTextContent('Sinu kulud on 1 261 € kuus.');
+      expect(summary).toHaveTextContent('Kulud ei ole kaetud juba pensioni alguses.');
     });
   });
 

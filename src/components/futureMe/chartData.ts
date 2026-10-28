@@ -30,7 +30,7 @@ const SOURCE_IDS: ChartSourceId[] = [
 ];
 const TABLE_AGE_STEP = 5;
 
-export const chartRowsOf = (result: Result): ChartRow[] =>
+export const chartRowsOf = (result: Result, need: number): ChartRow[] =>
   result.rows
     .filter(({ age }) => age >= result.pensionStartAge)
     .map((row) => ({
@@ -38,12 +38,17 @@ export const chartRowsOf = (result: Result): ChartRow[] =>
       year: row.year,
       salary: row.work ? Math.round(row.spend) : 0,
       firstPillar: row.work ? 0 : Math.round(row.i1),
-      specialPension: Math.round(row.isp),
+      specialPension: row.work ? 0 : Math.round(row.isp),
       secondPillar: Math.round(row.i2),
       thirdPillar: Math.round(row.i3),
       deposit: Math.round(row.dep),
-      costs: Math.round(row.spend),
+      costs: Math.round(need),
     }));
+
+export const startSourcesOf = (start: ChartRow): ChartSourceId[] => {
+  const paying = SOURCE_IDS.filter((id) => start[id] > 0);
+  return paying.length > 0 ? paying : ['firstPillar'];
+};
 
 export const chartSeriesOf = (rows: ChartRow[]): { id: ChartSourceId; data: number[] }[] =>
   SOURCE_IDS.filter((id) => rows.some((row) => row[id] > 0)).map((id) => ({
