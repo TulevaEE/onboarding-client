@@ -1,9 +1,8 @@
 import { IntlShape } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { retirementAge } from './age65Answers';
-import { payoutAge } from './age60Answers';
 import { retirementYears } from './engine/pension';
 import { FutureMeStep, StepId, StepPlanInput } from './steps';
+import { payoutAge, retirementAge } from './planAges';
 
 const STEP_LABEL_KEYS: Record<StepId, TranslationKey> = {
   [FutureMeStep.YOU]: 'futureMe.trail.step.you',

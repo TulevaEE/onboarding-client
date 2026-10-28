@@ -1,4 +1,5 @@
 import { CURRENT_YEAR, retirementYears } from './engine/pension';
+import { THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021 } from './thirdPillarPayoutAges';
 
 export const FutureMeStep = {
   YOU: 0,
@@ -40,7 +41,6 @@ const ALL_STEPS: StepId[] = [
 
 const SECOND_PILLAR_PAYOUT_YEARS_BEFORE_PENSION = 5;
 const EARLY_WITHDRAWAL_MIN_YEARS_BEFORE_PENSION = 6;
-const THIRD_PILLAR_OPENS_AT_AGE = 55;
 
 const ORDER_SPECIAL_PENSION_BEFORE_AGE_55 = 3.5;
 const ORDER_SPECIAL_PENSION_BEFORE_AGE_60 = 4.5;
@@ -85,7 +85,7 @@ export const isStepSkipped = (step: StepId, input: StepPlanInput): boolean => {
 const specialPensionOrder = (input: StepPlanInput): number => {
   const pensionAgeYears = retirementYears(input);
   const startAge = Math.min(input.specialPensionStartAge ?? pensionAgeYears, pensionAgeYears);
-  if (startAge < THIRD_PILLAR_OPENS_AT_AGE) {
+  if (startAge < THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021) {
     return ORDER_SPECIAL_PENSION_BEFORE_AGE_55;
   }
   if (startAge < pensionAgeYears - SECOND_PILLAR_PAYOUT_YEARS_BEFORE_PENSION) {

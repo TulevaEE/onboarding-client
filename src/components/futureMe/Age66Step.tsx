@@ -1,7 +1,7 @@
 import React, { RefObject } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Age60Answers, payoutAge, payoutAgeTense } from './age60Answers';
-import { isPayoutChoiceMadeAtAnotherStep, retirementAge, Age65Answers } from './age65Answers';
+import { Age60Answers } from './age60Answers';
+import { isPayoutChoiceMadeAtAnotherStep, Age65Answers } from './age65Answers';
 import {
   Age66Answers,
   Age66Context,
@@ -22,6 +22,8 @@ import {
 import { FutureMeStep, StepPlanInput } from './steps';
 import { YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
+import { ageTense, payoutAge, retirementAge } from './planAges';
+import { LinkButton } from './LinkButton';
 
 interface Props {
   answers: Age66Answers;
@@ -45,8 +47,6 @@ const titleStateOf = (isStarting: boolean, isAsked: boolean) => {
 };
 
 const MIN_NOTICEABLE_RISE = 0.5;
-
-const linkButton = 'btn btn-link p-0 align-baseline';
 
 export const Age66Step = ({
   answers,
@@ -90,7 +90,7 @@ export const Age66Step = ({
             values={{
               age: firstAge,
               year: plan.birthYear + firstAge,
-              tense: payoutAgeTense(plan.birthYear, firstAge),
+              tense: ageTense(plan.birthYear, firstAge),
             }}
           />
         </p>
@@ -143,18 +143,14 @@ export const Age66Step = ({
         <p className="payout-note">
           <FormattedMessage id={`futureMe.age66.lock.${secondLock}`} />{' '}
           {secondLock === 'none' ? (
-            <button type="button" className={linkButton} onClick={onEditYou}>
+            <LinkButton onClick={onEditYou}>
               <FormattedMessage id="futureMe.age66.lock.changeAmount" />
               <span className="visually-hidden">
                 <FormattedMessage id="futureMe.age65.inYourData" />
               </span>
-            </button>
+            </LinkButton>
           ) : (
-            <button
-              type="button"
-              className={linkButton}
-              onClick={isSecondChosenAt60 ? onEditAge60 : onEditAge65}
-            >
+            <LinkButton onClick={isSecondChosenAt60 ? onEditAge60 : onEditAge65}>
               {isSecondChosenAt60 ? (
                 <FormattedMessage
                   id="futureMe.age66.lock.changeAt"
@@ -166,7 +162,7 @@ export const Age66Step = ({
               <span className="visually-hidden">
                 <FormattedMessage id="futureMe.age66.lock.changeWhat" />
               </span>
-            </button>
+            </LinkButton>
           )}
         </p>
       )}

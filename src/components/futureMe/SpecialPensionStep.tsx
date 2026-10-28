@@ -1,8 +1,7 @@
 import React, { RefObject, useState } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
-import { payoutAgeTense } from './age60Answers';
-import { Age65Answers, pensionKind, retirementAge } from './age65Answers';
+import { Age65Answers, pensionKind } from './age65Answers';
 import { Age66Answers } from './age66Answers';
 import { euro, exactPercent } from './amountFormat';
 import { ChoiceCard } from './ChoiceCard';
@@ -20,6 +19,9 @@ import { RequiredMark } from './YouFields';
 import { amountOf, YouAnswers } from './youAnswers';
 import { TranslationKey } from '../translations';
 import { ChapterHead } from './ChapterHead';
+import { ageTense, retirementAge } from './planAges';
+import { LinkButton } from './LinkButton';
+import { strong } from './richText';
 
 interface Props {
   answers: SpecialPensionAnswers;
@@ -39,18 +41,16 @@ const WORK_CHOICES = [
 
 const PAY_CHOICES = ['same', 'change'] as const;
 
-const linkButton = 'btn btn-link p-0 align-baseline';
-
 const EditYouButton = ({ labelId, onClick }: { labelId: TranslationKey; onClick: () => void }) => (
-  <button type="button" className={linkButton} onClick={onClick}>
+  <LinkButton onClick={onClick}>
     <FormattedMessage id={labelId} />
     <span className="visually-hidden">
       <FormattedMessage id="futureMe.age65.inYourData" />
     </span>
-  </button>
+  </LinkButton>
 );
 
-const bold = { b: (chunks: React.ReactNode) => <strong>{chunks}</strong> };
+const bold = { b: strong };
 
 export const SpecialPensionStep = ({
   answers,
@@ -85,7 +85,7 @@ export const SpecialPensionStep = ({
         <p className="chapter-kicker">
           <FormattedMessage
             id="futureMe.specialPension.kicker"
-            values={{ age, year, tense: payoutAgeTense(plan.birthYear, age) }}
+            values={{ age, year, tense: ageTense(plan.birthYear, age) }}
           />
         </p>
         <h2

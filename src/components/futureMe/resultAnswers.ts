@@ -1,4 +1,4 @@
-import { Age60Answers, plannedThirdPillarOpenAge } from './age60Answers';
+import { Age60Answers } from './age60Answers';
 import { Age65Answers, thirdPillarAfterAsked } from './age65Answers';
 import { Age66Answers, fundStartOf, hasPillar, payoutAtPensionAge } from './age66Answers';
 import { ExpensesAnswers, needMonthly } from './expensesAnswers';
@@ -20,6 +20,7 @@ import {
 import { pensionInputOf, SpecialPensionAnswers } from './specialPensionAnswers';
 import { StepPlanInput } from './steps';
 import { amountOf, FUND_RETURNS, YouAnswers } from './youAnswers';
+import { plannedThirdPillarOpenAge } from './planAges';
 
 const lifeTable: LifeTable = lifeTableData;
 const MONTHS_IN_YEAR = 12;

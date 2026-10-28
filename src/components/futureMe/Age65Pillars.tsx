@@ -4,6 +4,8 @@ import { TranslationKey } from '../translations';
 import { Age60Answers, PAYOUT_CHOICES, PayoutChoice } from './age60Answers';
 import { Age65Answers } from './age65Answers';
 import { ChoiceCard } from './ChoiceCard';
+import { strong } from './richText';
+import { LinkButton } from './LinkButton';
 
 type Pillar = 'secondPillar' | 'thirdPillar';
 
@@ -20,8 +22,6 @@ interface Props {
 }
 
 const CHOICE_EMOJI: Record<PayoutChoice, string> = { grow: '🌱', fund: '🗓️', lump: '💰' };
-
-const emphasis = (chunks: React.ReactNode) => <strong>{chunks}</strong>;
 
 export const Age65Pillars = ({
   pillar,
@@ -49,28 +49,28 @@ export const Age65Pillars = ({
         <p className="payout-note">
           <FormattedMessage
             id={`futureMe.age65.${pillar}.none` as TranslationKey}
-            values={{ strong: emphasis }}
+            values={{ strong }}
           />{' '}
-          <button type="button" className="btn btn-link p-0 align-baseline" onClick={onEditYou}>
+          <LinkButton onClick={onEditYou}>
             <FormattedMessage id={`futureMe.age65.${pillar}.change` as TranslationKey} />
             <span className="visually-hidden">
               <FormattedMessage id="futureMe.age65.inYourData" />
             </span>
-          </button>
+          </LinkButton>
         </p>
       )}
       {isChosenEarlier && (
         <p className="payout-note">
           <FormattedMessage
             id="futureMe.age65.made"
-            values={{ pillar: pillarKind, age, choice: age60[pillar], strong: emphasis }}
+            values={{ pillar: pillarKind, age, choice: age60[pillar], strong }}
           />{' '}
-          <button type="button" className="btn btn-link p-0 align-baseline" onClick={onEditAge60}>
+          <LinkButton onClick={onEditAge60}>
             <FormattedMessage id="futureMe.age65.madeChange" values={{ pillar: pillarKind }} />
             <span className="visually-hidden">
               <FormattedMessage id="futureMe.age65.madeChangeAge" values={{ age }} />
             </span>
-          </button>
+          </LinkButton>
         </p>
       )}
       {isAsked && (

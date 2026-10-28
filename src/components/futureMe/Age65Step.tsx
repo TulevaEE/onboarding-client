@@ -1,12 +1,11 @@
 import React, { RefObject } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Age60Answers, hasThirdPillarAt, payoutAge, payoutAgeTense } from './age60Answers';
+import { Age60Answers } from './age60Answers';
 import {
   Age65Answers,
   earlyDecrease,
   isPayoutChoiceMadeAtAnotherStep,
   pensionKind,
-  retirementAge,
   thirdPillarAfterAsked,
 } from './age65Answers';
 import { Age65Deferral } from './Age65Deferral';
@@ -25,6 +24,9 @@ import { FundPensionFaq } from './FundPensionFaq';
 import { FutureMeStep, StepPlanInput } from './steps';
 import { YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
+import { ageTense, hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
+import { strong } from './richText';
+import { LinkButton } from './LinkButton';
 
 interface Props {
   answers: Age65Answers;
@@ -45,7 +47,7 @@ const richText = {
   p: (chunks: React.ReactNode) => <p>{chunks}</p>,
   ul: (chunks: React.ReactNode) => <ul>{chunks}</ul>,
   li: (chunks: React.ReactNode) => <li>{chunks}</li>,
-  strong: (chunks: React.ReactNode) => <strong>{chunks}</strong>,
+  strong,
   small: (chunks: React.ReactNode) => <small className="text-secondary">{chunks}</small>,
   link: (chunks: React.ReactNode) => <a href={SOURCE_PAGE}>{chunks}</a>,
 };
@@ -94,7 +96,7 @@ export const Age65Step = ({
         <p className="chapter-kicker">
           <FormattedMessage
             id="futureMe.age65.kicker"
-            values={{ age, year, tense: payoutAgeTense(plan.birthYear, age) }}
+            values={{ age, year, tense: ageTense(plan.birthYear, age) }}
           />
         </p>
         <h2 id="future-me-age65-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
@@ -116,12 +118,12 @@ export const Age65Step = ({
               payoutAge: pensionAge - 5,
             }}
           />{' '}
-          <button type="button" className="btn btn-link p-0 align-baseline" onClick={onEditYou}>
+          <LinkButton onClick={onEditYou}>
             <FormattedMessage id="futureMe.age65.early.change" />
             <span className="visually-hidden">
               <FormattedMessage id="futureMe.age65.inYourData" />
             </span>
-          </button>
+          </LinkButton>
         </p>
       )}
       <Age65Work
