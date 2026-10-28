@@ -6,7 +6,7 @@ import { BIRTH_YEAR_MAX, BIRTH_YEAR_MIN } from './prefill';
 import { EarlyRetirementFields } from './EarlyRetirementFields';
 import { SecondPillarSection, StateSection, ThirdPillarSection } from './YouBlocks';
 import { KidsSection, kidsOptional, WorkSection, workOptional } from './YouOptionalBlocks';
-import { FIELD_DOM_IDS, RequiredMark } from './YouFields';
+import { FIELD_DOM_IDS, FieldLabel, RequiredMark } from './YouFields';
 import { YouSection, YouSectionLabels } from './YouSection';
 import {
   blockedFieldsOf,
@@ -137,9 +137,9 @@ export const YouStep = ({
               )}
             </div>
             <div className="col-12 col-sm-6">
-              <label className="form-label text-balance" htmlFor="future-me-sex">
+              <FieldLabel htmlFor="future-me-sex" help="sex">
                 <FormattedMessage id="futureMe.you.sex.label" />
-              </label>
+              </FieldLabel>
               <select
                 id="future-me-sex"
                 className="form-select"
