@@ -115,6 +115,20 @@ describe('chartPlugins', () => {
       expect(pillAt(ctx, 0).y).toBe(CHART_TOP + 2 + 24);
     });
 
+    it('places the pills on a chart without a costs line', () => {
+      const { ctx, chart } = fakeChart();
+      const withoutCosts = { ...chart, options: { plugins: {} } } as unknown as Chart<'line'>;
+
+      marksLine.afterDatasetsDraw?.(
+        withoutCosts,
+        {} as never,
+        [{ age: 65, text: 'Pension 65' }],
+        false,
+      );
+
+      expect(pillAt(ctx, 0).y).toBe(CHART_TOP + 2);
+    });
+
     it('keeps a pill where the costs label is far away', () => {
       const ctx = drawMarks([{ age: 65, text: 'Pension 65' }]);
 
