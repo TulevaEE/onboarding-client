@@ -490,6 +490,15 @@ describe('ResultChart interaction', () => {
     });
   });
 
+  it('puts the table button right above the chart, after everything else', () => {
+    renderChart();
+    Array.from({ length: TAB_STOPS_BEFORE_CHART - 1 }).forEach(() => userEvent.tab());
+
+    expect(screen.getByRole('button', { name: 'Näita tabelina' })).toHaveFocus();
+    userEvent.tab();
+    expect(chart()).toHaveFocus();
+  });
+
   it('puts the same keys hint in the description of the chart', () => {
     renderChart();
 

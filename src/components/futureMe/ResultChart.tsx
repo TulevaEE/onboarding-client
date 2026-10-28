@@ -640,29 +640,25 @@ export const ResultChart = ({ result, need, nominalReturns }: ResultChartProps) 
         <h3 id="future-me-chart-title" className="h5 section-title">
           <FormattedMessage id="futureMe.result.chart.title" />
         </h3>
-        <div className="result-figure-controls">
-          <NominalChoice isOn={isNominal} onChange={setNominal} />
-          <button
-            type="button"
-            className="btn btn-outline-primary btn-sm"
-            aria-expanded={isTableShown}
-            aria-controls="future-me-chart-table"
-            onClick={() => setTableShown(!isTableShown)}
-          >
-            <FormattedMessage
-              id={
-                isTableShown
-                  ? 'futureMe.result.chart.toggle.hide'
-                  : 'futureMe.result.chart.toggle.show'
-              }
-            />
-          </button>
-        </div>
+        <NominalChoice isOn={isNominal} onChange={setNominal} />
       </div>
       <NominalNote isOn={isNominal} returns={nominalReturns} />
       <Summary result={shown} rows={rows} notes={notes} need={need} isNominal={isNominal} />
       {assumption && <ChartAssumption assumption={assumption} />}
       <ChartGuide events={events} />
+      <button
+        type="button"
+        className="btn btn-outline-primary btn-sm result-chart-table-toggle"
+        aria-expanded={isTableShown}
+        aria-controls="future-me-chart-table"
+        onClick={() => setTableShown(!isTableShown)}
+      >
+        <FormattedMessage
+          id={
+            isTableShown ? 'futureMe.result.chart.toggle.hide' : 'futureMe.result.chart.toggle.show'
+          }
+        />
+      </button>
       <div id="future-me-chart-table">
         {isTableShown && <IncomeTable rows={rows} isNominal={isNominal} />}
       </div>
