@@ -3,6 +3,7 @@ import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses, withLevel } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
+import { age55Of } from './age55';
 import {
   coverageKind,
   incomeAtStart,
@@ -153,6 +154,77 @@ describe('resultAnswers', () => {
 
       expect(openingAt('50')).toBeLessThan(0);
       expect(openingAt('60')).toBeLessThan(openingAt('50'));
+    });
+  });
+
+  describe('with the III pillar plan chosen at 55', () => {
+    const saver = {
+      thirdPillarJoined: 'before' as const,
+      thirdPillarAmount: '8000',
+      thirdPillarMonthly: '100',
+      thirdPillarFund: 'cons' as const,
+    };
+    const separateOf = (changes: Parameters<typeof contextWith>[0], rest = {}) =>
+      resultInputOf(contextWith({ ...saver, ...changes }, rest)).p3Sep;
+
+    it('keeps the savings growing while the plan is to keep them', () => {
+      expect(separateOf({ thirdPillarPlan: 'keep' })).toMatchObject({ amount: 8000 });
+    });
+
+    it('drops the savings and the contributions made before 55 when they are taken at once', () => {
+      const withSavings = separateOf({ thirdPillarPlan: 'lump' });
+      const withMore = separateOf({ thirdPillarPlan: 'lump', thirdPillarAmount: '20000' });
+
+      expect(withSavings?.amount).toBeLessThan(0);
+      expect(withSavings?.amount).toBeCloseTo(withMore?.amount as number);
+      expect(withSavings?.mode).toBe('grow');
+    });
+
+    it('has nothing left to grow when taken at once without further contributions', () => {
+      expect(separateOf({ thirdPillarPlan: 'lump', thirdPillarMonthly: '0' })?.amount).toBeCloseTo(
+        0,
+      );
+    });
+
+    it('starts the fund pension at 55 and carries what is left at the pension age', () => {
+      const fundPlan = { thirdPillarPlan: 'fund' as const, thirdPillarMonthly: '0' };
+
+      expect(separateOf(fundPlan)).toMatchObject({ mode: 'fund', start: 55 });
+      expect(separateOf(fundPlan)?.amount).toBeCloseTo(
+        age55Of(contextWith({ ...saver, ...fundPlan }).you, 1).payout?.leftAtPension as number,
+      );
+    });
+
+    it('starts at the current age for someone already past 55', () => {
+      expect(separateOf({ thirdPillarPlan: 'fund', birthYear: '1966' })?.start).toBe(60);
+    });
+
+    it('follows the contract of the III pillar', () => {
+      const once = { ...initialAge66(), thirdPillarContract: 'once' as const };
+      const leftAfter = (age66 = initialAge66()) =>
+        separateOf({ thirdPillarPlan: 'fund', thirdPillarMonthly: '0' }, { age66 })?.amount;
+
+      expect(separateOf({ thirdPillarPlan: 'fund' }, { age66: once })?.contract).toBe('once');
+      expect(leftAfter(once)).not.toBeCloseTo(leftAfter() as number);
+    });
+
+    it('ignores the plan where it cannot be used', () => {
+      const keeping = separateOf({ thirdPillarPlan: 'keep', thirdPillarJoined: 'after' });
+
+      expect(separateOf({ thirdPillarPlan: 'lump', thirdPillarJoined: 'after' })).toEqual(keeping);
+      expect(separateOf({ thirdPillarPlan: 'fund', birthYear: '1950' })).toEqual(
+        separateOf({ thirdPillarPlan: 'keep', birthYear: '1950' }),
+      );
+    });
+
+    it('leaves a smaller pot at the pension age than keeping it, as the money taken is spent', () => {
+      const potAtPensionStart = (plan: 'keep' | 'lump' | 'fund') => {
+        const result = resultOf(contextWith({ ...saver, thirdPillarPlan: plan }));
+        return result.rows.find((row) => row.age === result.pensionStartAge)?.pot as number;
+      };
+
+      expect(potAtPensionStart('lump')).toBeLessThan(potAtPensionStart('keep'));
+      expect(potAtPensionStart('fund')).toBeLessThan(potAtPensionStart('keep'));
     });
   });
 

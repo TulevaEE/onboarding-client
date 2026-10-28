@@ -1,3 +1,4 @@
+import { age55Of } from './age55';
 import { Age60Answers } from './age60Answers';
 import { Age65Answers, deferralLock, thirdPillarAfterAsked } from './age65Answers';
 import { Age66Answers, fundStartOf, hasPillar, payoutAtPensionAge } from './age66Answers';
@@ -11,6 +12,7 @@ import {
   PensionInput,
   Scenario,
   SCENARIOS,
+  SeparateThirdPillar,
   simulate,
   SimulationResult,
   SimulationRow,
@@ -73,35 +75,62 @@ export const incomeAtStart = (row: IncomeRow): { lines: IncomeLine[]; total: num
 
 const firstYearShareNow = (): number => (MONTHS_IN_YEAR - new Date().getMonth()) / MONTHS_IN_YEAR;
 
-const contributionsBeforeOpening = (context: ResultContext): number => {
+const contributionsBefore = (context: ResultContext, untilAge: number): number => {
   const { you, plan } = context;
   const currentAge = CURRENT_YEAR - plan.birthYear;
-  const openAge = plannedThirdPillarOpenAge(you, plan);
   const growth = 1 + FUND_RETURNS[you.thirdPillarFund];
   const yearly = amountOf(you.thirdPillarMonthly) * MONTHS_IN_YEAR;
   const indexing = { p3Indexed: false, inflation: INFLATION, birthYear: plan.birthYear };
-  return Array.from({ length: Math.max(0, openAge - currentAge) }, (_, offset) => {
+  return Array.from({ length: Math.max(0, untilAge - currentAge) }, (_, offset) => {
     const age = currentAge + offset;
     const share = age === currentAge ? firstYearShareNow() : 1;
     return (yearly * share * p3Factor(indexing, age)) / growth ** (offset + 1);
   }).reduce((sum, value) => sum + value, 0);
 };
 
+const thirdPillarWithdrawnAtOf = (
+  context: ResultContext,
+): Partial<Pick<SeparateThirdPillar, 'amount' | 'mode' | 'start'>> => {
+  const { you, plan, age66 } = context;
+  const {
+    plan: chosen,
+    age,
+    pensionAge,
+    payout,
+  } = age55Of(you, firstYearShareNow(), age66.thirdPillarContract);
+  if (chosen === 'lump') {
+    return { amount: -contributionsBefore(context, age) };
+  }
+  if (chosen === 'fund' && payout) {
+    const yearsToPensionAge = pensionAge - (CURRENT_YEAR - plan.birthYear);
+    const leftToday =
+      payout.leftAtPension / (1 + FUND_RETURNS[you.thirdPillarFund]) ** yearsToPensionAge;
+    return {
+      amount: leftToday - contributionsBefore(context, pensionAge),
+      mode: 'fund',
+      start: age,
+    };
+  }
+  return {};
+};
+
 const thirdPillarOf = (context: ResultContext): PensionInput['p3Sep'] => {
-  const { you, age66 } = context;
+  const { you, plan, age66 } = context;
   if (!hasPillar('thirdPillar', context)) {
     return null;
   }
   const payout = payoutAtPensionAge('thirdPillar', context);
   const start = fundStartOf('thirdPillar', age66, context);
+  const withdrawn = thirdPillarWithdrawnAtOf(context);
+  const savings =
+    you.thirdPillarJoined === 'none'
+      ? -contributionsBefore(context, plannedThirdPillarOpenAge(you, plan))
+      : amountOf(you.thirdPillarAmount);
   return {
-    amount:
-      you.thirdPillarJoined === 'none'
-        ? -contributionsBeforeOpening(context)
-        : amountOf(you.thirdPillarAmount),
-    mode: start === undefined ? payout : 'fund',
+    amount: withdrawn.amount ?? savings,
+    mode: withdrawn.mode ?? (start === undefined ? payout : 'fund'),
     contract: age66.thirdPillarContract,
-    start,
+    start: withdrawn.start ?? start,
   };
 };
 
