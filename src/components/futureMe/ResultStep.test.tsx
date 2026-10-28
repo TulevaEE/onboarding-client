@@ -191,11 +191,133 @@ describe('Result step', () => {
       });
     });
 
-    it('draws the costs line under the layers, so a layer reaching it stays visible', () => {
+    const recordingCanvas = () => {
+      const calls: unknown[][] = [];
+      const gradient = {
+        addColorStop: (...args: unknown[]) => calls.push(['addColorStop', ...args]),
+      };
+      const returns: Record<string, unknown> = {
+        measureText: { width: 60 },
+        createLinearGradient: gradient,
+      };
+      const ctx = new Proxy(
+        {},
+        {
+          get:
+            (_target, name: string) =>
+            (...args: unknown[]) => {
+              calls.push([name, ...args]);
+              return returns[name];
+            },
+          set: (_target, name: string, value) => {
+            calls.push([name, value]);
+            return true;
+          },
+        },
+      );
+      return { ctx, calls, gradient };
+    };
+
+    const chartOn = (ctx: unknown) => ({
+      ctx,
+      chartArea: { left: 10, right: 310, top: 0, bottom: 200 },
+      scales: { y: { getPixelForValue: (amount: number) => 1000 - amount } },
+    });
+
+    const only = (calls: unknown[][], names: string[]) =>
+      calls.filter(([name]) => names.includes(name as string));
+
+    it('draws the costs line under the layers, dotted on a halo across the chart at the costs', () => {
       openResultStep();
+      const { ctx, calls } = recordingCanvas();
 
       const [costsPlugin] = lastChartProps().plugins;
-      expect(costsPlugin.beforeDatasetsDraw).toEqual(expect.any(Function));
+      costsPlugin.beforeDatasetsDraw(chartOn(ctx), {}, lastChartProps().options.plugins.costs);
+
+      expect(only(calls, ['strokeStyle', 'lineWidth', 'setLineDash', 'moveTo', 'lineTo'])).toEqual([
+        ['strokeStyle', '#fff'],
+        ['lineWidth', 6],
+        ['setLineDash', []],
+        ['moveTo', 10, 209],
+        ['lineTo', 310, 209],
+        ['strokeStyle', '#db2200'],
+        ['lineWidth', 2.5],
+        ['setLineDash', [2, 6]],
+        ['moveTo', 10, 209],
+        ['lineTo', 310, 209],
+      ]);
+    });
+
+    it('puts the costs amount in a pill over the left end of the costs line', () => {
+      openResultStep();
+      const { ctx, calls } = recordingCanvas();
+
+      const [costsPlugin] = lastChartProps().plugins;
+      costsPlugin.afterDatasetsDraw(chartOn(ctx), {}, lastChartProps().options.plugins.costs);
+
+      expect(only(calls, ['roundRect', 'fillStyle', 'fill', 'fillText'])).toEqual([
+        ['roundRect', 16, 199, 76, 20, 10],
+        ['fillStyle', '#db2200'],
+        ['fill'],
+        ['fillStyle', '#fff'],
+        ['fillText', 'Kulud: 791 €', 24, 209],
+      ]);
+    });
+
+    it('fades each layer in its own color toward the axis, evenly until the chart has its size', () => {
+      openResultStep();
+      const { ctx, calls, gradient } = recordingCanvas();
+      const [statePension] = lastChartProps().data.datasets;
+
+      expect(statePension.backgroundColor({ chart: { ctx } })).toBe('rgba(106, 79, 196, 0.3)');
+      expect(statePension.backgroundColor({ chart: chartOn(ctx) })).toBe(gradient);
+      expect(calls).toEqual([
+        ['createLinearGradient', 0, 0, 0, 200],
+        ['addColorStop', 0, 'rgba(106, 79, 196, 0.5)'],
+        ['addColorStop', 1, 'rgba(106, 79, 196, 0.08)'],
+      ]);
+    });
+
+    it('hides the line of a layer between two ages it pays nothing at', () => {
+      openResultStep();
+      const [statePension] = lastChartProps().data.datasets;
+      const lineBetween = (from: number, to: number) =>
+        statePension.segment.borderColor({
+          p0: { parsed: { y: from } },
+          p1: { parsed: { y: to } },
+        });
+
+      expect([lineBetween(0, 0), lineBetween(0, 512), lineBetween(512, 0)]).toEqual([
+        'transparent',
+        undefined,
+        undefined,
+      ]);
+    });
+
+    it('shows the age and the monthly amount of each layer in the tooltip', () => {
+      openResultStep();
+      const { title, label } = lastChartProps().options.plugins.tooltip.callbacks;
+
+      expect(title([{ label: '70' }])).toBe('70 a');
+      expect(label({ dataset: { label: 'Riiklik pension' }, parsed: { y: 512 } })).toBe(
+        'Riiklik pension: 512 €',
+      );
+    });
+
+    it('shortens the amounts on the side axis to thousands', () => {
+      openResultStep();
+      const tick = lastChartProps().options.scales.y.ticks.callback;
+
+      expect([tick(500), tick(1000), tick(1500)]).toEqual(['500', '1 tuh', '1,5 tuh']);
+    });
+
+    it('keeps the side axis the same width whatever its amounts', () => {
+      openResultStep();
+      const scale = { width: 31 };
+
+      lastChartProps().options.scales.y.afterFit(scale);
+
+      expect(scale.width).toBe(76);
     });
 
     it('names every layer and the costs line in a legend', () => {

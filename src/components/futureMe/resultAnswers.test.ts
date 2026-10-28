@@ -4,6 +4,7 @@ import { initialAge66 } from './age66Answers';
 import { initialExpenses, withLevel } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import {
+  coverageKind,
   incomeAtStart,
   resultInputOf,
   resultOf,
@@ -236,6 +237,24 @@ describe('resultAnswers', () => {
 
       expect(frugal.coversNeedUntil).toBeNull();
       expect(comfortable.coversNeedUntil).not.toBeNull();
+    });
+  });
+
+  describe('coverage kind', () => {
+    const covering = (coversNeedUntil: number | null, gapTemporary: boolean) => ({
+      ...resultOf(contextWith()),
+      pensionStartAge: 65,
+      coversNeedUntil,
+      gapTemporary,
+    });
+
+    it.each([
+      { kind: 'all', when: 'nothing ever falls short', result: covering(null, false) },
+      { kind: 'gap', when: 'the shortfall ends for good', result: covering(65, true) },
+      { kind: 'none', when: 'the shortfall starts with the pension', result: covering(65, false) },
+      { kind: 'until', when: 'the shortfall starts later and lasts', result: covering(80, false) },
+    ])('is $kind when $when', ({ kind, result }) => {
+      expect(coverageKind(result)).toBe(kind);
     });
   });
 });
