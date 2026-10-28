@@ -1451,6 +1451,18 @@ describe('FutureMe', () => {
         ).toBeVisible();
       });
 
+      it('ask which child is disabled once there are several children', () => {
+        renderFutureMe();
+        addKids(['1990', '1992']);
+
+        const disabledChild = screen.getByRole('combobox', { name: /Kas mõni laps on puudega/ });
+        expect(
+          within(disabledChild)
+            .getAllByRole('option')
+            .map((option) => option.textContent),
+        ).toEqual(['ei', 'jah: 1. laps (1990)', 'jah: 2. laps (1992)']);
+      });
+
       it('give five years for a disabled child', () => {
         renderFutureMe();
         addKids(['1990']);

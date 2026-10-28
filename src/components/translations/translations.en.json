@@ -2597,6 +2597,7 @@
   "futureMe.you.kidsDisabled.label": "Kas mõni laps on puudega?",
   "futureMe.you.kidsDisabled.no": "ei",
   "futureMe.you.kidsDisabled.yes": "jah (keskmine, raske või sügav puue)",
+  "futureMe.you.kidsDisabled.child": "jah: {number}. laps{year, select, none {} other { ({year})}}",
   "futureMe.you.kidsEarlyUser.label": "Kes kasutab varem pensionile mineku õigust?",
   "futureMe.you.kidsEarlyUser.me": "mina",
   "futureMe.you.kidsEarlyUser.other": "teine vanem",

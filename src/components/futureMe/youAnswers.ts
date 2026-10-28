@@ -73,7 +73,7 @@ interface KidsAnswers {
   kidsBirthYears: string[];
   kidsBirthMonths: string[];
   kidsIIMonths: string[];
-  kidsDisabled: boolean;
+  kidsDisabled: boolean[];
   kidsEarlyUser: KidsUser;
   kidsSupUser: KidsUser;
   kidsInForecast: KidsInForecast | '';
@@ -110,7 +110,7 @@ const OPTIONAL_DEFAULTS: { kids: KidsAnswers; work: WorkAnswers } = {
     kidsBirthYears: [],
     kidsBirthMonths: [],
     kidsIIMonths: [],
-    kidsDisabled: false,
+    kidsDisabled: [],
     kidsEarlyUser: 'me',
     kidsSupUser: 'me',
     kidsInForecast: '',
@@ -282,10 +282,10 @@ const typedChildBirthYears = (answers: YouAnswers): string[] =>
 export const hasChildWithoutBirthYear = (answers: YouAnswers): boolean =>
   typedChildBirthYears(answers).some((typed) => typed === '');
 
-const kidsEarlyInput = (earlyUser: KidsUser, isDisabled: boolean, counted: number): KidsInput => ({
+const kidsEarlyInput = (earlyUser: KidsUser, hasDisabled: boolean, counted: number): KidsInput => ({
   b1991: counted,
   earlyUser,
-  disabled: isDisabled && counted > 0,
+  disabled: hasDisabled,
 });
 
 const kidsRetirement = (answers: YouAnswers, earlyUser: KidsUser) => {
@@ -298,9 +298,15 @@ const kidsRetirement = (answers: YouAnswers, earlyUser: KidsUser) => {
   const pensionYear = birthYearOrFallback(answers) + effectivePensionAge(answers);
   const countedBy = (retirementYear: number) =>
     known.filter((year) => year + YEARS_RAISING_A_CHILD <= retirementYear).length + unknown;
+  const isRaisedBy = (typedYear: string, retirementYear: number) => {
+    const year = validChildBirthYear(typedYear, maxYear);
+    return typedYear === '' || (year !== null && year + YEARS_RAISING_A_CHILD <= retirementYear);
+  };
+  const hasDisabledBy = (retirementYear: number) =>
+    typed.some((year, index) => answers.kidsDisabled[index] && isRaisedBy(year, retirementYear));
   const coversRetiringIn = (retirementYear: number) =>
     earlyYears({
-      kids: kidsEarlyInput(earlyUser, answers.kidsDisabled, countedBy(retirementYear)),
+      kids: kidsEarlyInput(earlyUser, hasDisabledBy(retirementYear), countedBy(retirementYear)),
     }) >=
     pensionYear - retirementYear;
   const earliestYearFirst = Array.from(
@@ -311,6 +317,7 @@ const kidsRetirement = (answers: YouAnswers, earlyUser: KidsUser) => {
   const counted = countedBy(retirementYear);
   return {
     counted,
+    hasDisabled: hasDisabledBy(retirementYear),
     late: known.length - (counted - unknown),
     retirementYear,
     yearsEarly: pensionYear - retirementYear,
@@ -319,9 +326,12 @@ const kidsRetirement = (answers: YouAnswers, earlyUser: KidsUser) => {
 
 export const countedKids = (
   answers: YouAnswers,
-): { counted: number; late: number; lateYear: number } => {
-  const { counted, late, retirementYear } = kidsRetirement(answers, answers.kidsEarlyUser);
-  return { counted, late, lateYear: retirementYear };
+): { counted: number; hasDisabled: boolean; late: number; lateYear: number } => {
+  const { counted, hasDisabled, late, retirementYear } = kidsRetirement(
+    answers,
+    answers.kidsEarlyUser,
+  );
+  return { counted, hasDisabled, late, lateYear: retirementYear };
 };
 
 const kidsRightFor = (answers: YouAnswers, earlyUser: YouAnswers['kidsEarlyUser']): number =>
