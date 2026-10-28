@@ -4,6 +4,7 @@ import { TranslationKey } from '../translations';
 import { euro } from './amountFormat';
 import { ChapterHead } from './ChapterHead';
 import { needMonthly } from './expensesAnswers';
+import { ResultChart } from './ResultChart';
 import {
   incomeAtStart,
   IncomeSource,
@@ -188,6 +189,7 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       </p>
       <Tiles result={result} />
       <IncomeAtPensionAge result={result} need={needMonthly(context.expenses)} />
+      <ResultChart result={result} />
     </section>
   );
 };
