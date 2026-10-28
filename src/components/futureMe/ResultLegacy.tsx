@@ -4,20 +4,19 @@ import { TranslationKey } from '../translations';
 import { deferralLock } from './age65Answers';
 import { euro, exactPercent } from './amountFormat';
 import { ChoiceCard } from './ChoiceCard';
+import { ChangeDecisions, useDecisionActions } from './decisionActions';
 import { DecisionChanges } from './decisions';
 import { withOwnCostsRaisedBy } from './expensesAnswers';
 import { LineIcon } from './FutureMeIcon';
 import { HelpButton } from './HelpButton';
 import { keepSecondPillarGrowing, Legacy, legacyOf } from './legacy';
 import { Result, ResultContext } from './resultAnswers';
-import { ChangeDecisions, useDecisionChanges } from './ResultDecisions';
 import { strong } from './richText';
 import { FutureMeStep, StepId } from './steps';
 
 interface Props {
   context: ResultContext;
   result: Result;
-  onGoTo: (step: StepId) => void;
 }
 
 type Surplus = Extract<Legacy, { kind: 'surplus' }>;
@@ -135,12 +134,12 @@ const SurplusCard = ({
 const ShortfallCard = ({
   context,
   legacy,
-  onGoTo,
+  goTo,
   onChange,
 }: {
   context: ResultContext;
   legacy: Shortfall;
-  onGoTo: (step: StepId) => void;
+  goTo: (step: StepId) => void;
   onChange: ChangeDecisions;
 }) => {
   const canDeferStatePension = deferralLock(context.you) === null;
@@ -180,7 +179,7 @@ const ShortfallCard = ({
           <button
             type="button"
             className="btn btn-outline-primary btn-sm"
-            onClick={() => onGoTo(FutureMeStep.AGE_65)}
+            onClick={() => goTo(FutureMeStep.AGE_65)}
           >
             <LineIcon name="landmark" />{' '}
             <FormattedMessage id="futureMe.result.legacy.action.deferral" />
@@ -189,7 +188,7 @@ const ShortfallCard = ({
         <button
           type="button"
           className="btn btn-outline-primary btn-sm"
-          onClick={() => onGoTo(FutureMeStep.COSTS)}
+          onClick={() => goTo(FutureMeStep.COSTS)}
         >
           <LineIcon name="cart" /> <FormattedMessage id="futureMe.result.legacy.action.costs" />
         </button>
@@ -198,11 +197,11 @@ const ShortfallCard = ({
   );
 };
 
-export const ResultLegacy = ({ context, result, onGoTo }: Props) => {
+export const ResultLegacy = ({ context, result }: Props) => {
   const [choice, setChoice] = useState<SurplusChoice | null>(null);
   const [planChanges, setPlanChanges] = useState(0);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const changeDecisions = useDecisionChanges();
+  const { change: changeDecisions, goTo } = useDecisionActions();
   const legacy = legacyOf(context, result);
 
   useEffect(() => {
@@ -236,7 +235,7 @@ export const ResultLegacy = ({ context, result, onGoTo }: Props) => {
           onChange={onChange}
         />
       ) : (
-        <ShortfallCard context={context} legacy={legacy} onGoTo={onGoTo} onChange={onChange} />
+        <ShortfallCard context={context} legacy={legacy} goTo={goTo} onChange={onChange} />
       )}
     </div>
   );

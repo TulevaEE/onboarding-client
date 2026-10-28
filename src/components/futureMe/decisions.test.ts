@@ -42,6 +42,7 @@ describe('decisions', () => {
         'secondPillarAtPayoutAge',
         'statePension',
         'secondPillarAtPensionAge',
+        'fundPension',
       ]);
     });
 
@@ -50,6 +51,7 @@ describe('decisions', () => {
         { id: 'secondPillarAtPayoutAge', age: 60, year: 2040, current: 'grow' },
         { id: 'statePension', age: 65, year: 2045, current: 'full' },
         { id: 'secondPillarAtPensionAge', age: 65, year: 2045, current: 'grow' },
+        { id: 'fundPension', age: 66, year: 2046 },
       ]);
     });
 
@@ -81,6 +83,7 @@ describe('decisions', () => {
         'statePension',
         'secondPillarAtPensionAge',
         'thirdPillarAtPensionAge',
+        'fundPension',
       ]);
     });
 
@@ -95,9 +98,59 @@ describe('decisions', () => {
 
       expect(idsOf(withSpecialPension)).not.toContain('statePension');
     });
+
+    it('lists the special pension at its start age, before the decisions that open later', () => {
+      const withSpecialPension = contextWith(
+        { workAdded: true, hasSpecialPension: true, specialPensionStartAge: '55' },
+        { specialPension: { ...initialSpecialPension(), monthly: '900' } },
+      );
+
+      expect(decisionsOf(withSpecialPension)[0]).toMatchObject({
+        id: 'specialPension',
+        age: 55,
+        choices: [],
+        summary: { hasMonthly: 'yes' },
+      });
+    });
+
+    it('says the special pension amount is missing until it is typed', () => {
+      const withSpecialPension = contextWith({ workAdded: true, hasSpecialPension: true });
+
+      expect(
+        decisionsOf(withSpecialPension).find(({ id }) => id === 'specialPension')?.summary,
+      ).toMatchObject({ hasMonthly: 'no' });
+    });
+
+    it('asks about the fund pension start while a pillar is left to grow', () => {
+      const fundPension = decisionsOf(contextWith()).find(({ id }) => id === 'fundPension');
+
+      expect(fundPension?.summary).toEqual({ kind: 'none', age: 0 });
+    });
+
+    it('shows the earliest fund pension start picked', () => {
+      const startsAt70 = contextWith({}, { age66: { ...initialAge66(), secondPillarFrom: '70' } });
+
+      expect(decisionsOf(startsAt70).find(({ id }) => id === 'fundPension')).toMatchObject({
+        age: 70,
+        year: 2050,
+        summary: { kind: 'start', age: 70 },
+      });
+    });
+
+    it('asks only for the contract when the fund pension was chosen at the payout age', () => {
+      const fundAt60 = contextWith({}, { age60: { ...initialAge60(), secondPillar: 'fund' } });
+
+      expect(decisionsOf(fundAt60).find(({ id }) => id === 'fundPension')?.summary).toMatchObject({
+        kind: 'contract',
+      });
+    });
   });
 
   describe('changing a decision', () => {
+    it('leaves the answers to the step the special pension and fund pension open', () => {
+      expect(withDecision(contextWith(), 'fundPension', '')).toEqual({});
+    });
+
     it('changes how the II pillar is taken out at the payout age', () => {
       const changes = withDecision(contextWith(), 'secondPillarAtPayoutAge', 'lump');
 

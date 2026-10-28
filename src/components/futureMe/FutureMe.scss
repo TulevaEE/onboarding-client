@@ -1131,12 +1131,15 @@
     list-style: none;
   }
 
+  .assumption-list > li {
+    border-bottom: 1px solid $gray-border-3;
+  }
+
   .assumption-row {
     display: grid;
-    grid-template-columns: 2rem 1fr;
+    grid-template-columns: 2rem 1fr auto;
     gap: 0 1rem;
     padding: 0.75rem 0;
-    border-bottom: 1px solid $gray-border-3;
 
     h4 {
       margin-bottom: 0.25rem;
@@ -1144,6 +1147,16 @@
 
     p {
       margin: 0;
+    }
+
+    @media (max-width: 575.98px) {
+      grid-template-columns: 2rem 1fr;
+
+      .btn {
+        grid-column: 2;
+        justify-self: start;
+        padding-left: 0;
+      }
     }
   }
 

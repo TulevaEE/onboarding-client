@@ -92,6 +92,7 @@ describe('Result step: your decisions', () => {
       'Riiklik pension 65-⁠aastaselt',
       'II sammas pensionieas',
       'III sammas pensionieas',
+      'Fondipension',
     ]);
   });
 

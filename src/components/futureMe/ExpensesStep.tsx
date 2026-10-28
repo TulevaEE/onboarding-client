@@ -20,7 +20,7 @@ import {
   withHousehold,
   withLevel,
 } from './expensesAnswers';
-import { ChapterHead } from './ChapterHead';
+import { StepSection } from './StepSection';
 import { FieldLabel } from './YouFields';
 import { FutureMeStep } from './steps';
 import { EmojiIcon } from './FutureMeIcon';
@@ -29,7 +29,8 @@ import { euro } from './amountFormat';
 
 interface Props {
   answers: ExpensesAnswers;
-  headingRef: RefObject<HTMLHeadingElement>;
+  headingRef?: RefObject<HTMLHeadingElement>;
+  isEmbedded?: boolean;
   onChange: (answers: ExpensesAnswers) => void;
 }
 
@@ -223,20 +224,19 @@ const LevelCard = ({ answers, level, widestTotal, onChange }: LevelCardProps) =>
   );
 };
 
-export const ExpensesStep = ({ answers, headingRef, onChange }: Props) => {
+export const ExpensesStep = ({ answers, headingRef, isEmbedded, onChange }: Props) => {
   const intl = useIntl();
   const widestTotal = Math.max(...COST_LEVELS.map((level) => levelTotal(answers.household, level)));
 
   return (
-    <section className="chapter card p-4" aria-labelledby="future-me-expenses-heading">
-      <ChapterHead step={FutureMeStep.COSTS}>
-        <p className="chapter-kicker">
-          <FormattedMessage id="futureMe.expenses.kicker" />
-        </p>
-        <h2 id="future-me-expenses-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
-          <FormattedMessage id="futureMe.expenses.title" />
-        </h2>
-      </ChapterHead>
+    <StepSection
+      step={FutureMeStep.COSTS}
+      headingId="future-me-expenses-heading"
+      headingRef={headingRef}
+      isEmbedded={isEmbedded}
+      kicker={<FormattedMessage id="futureMe.expenses.kicker" />}
+      title={<FormattedMessage id="futureMe.expenses.title" />}
+    >
       <div className="household-row">
         <div>
           <FieldLabel htmlFor="future-me-household" help="household">
@@ -303,6 +303,6 @@ export const ExpensesStep = ({ answers, headingRef, onChange }: Props) => {
         </div>
       </fieldset>
       <ExpensesBreakdown answers={answers} onChange={onChange} />
-    </section>
+    </StepSection>
   );
 };
