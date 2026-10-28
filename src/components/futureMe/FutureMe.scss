@@ -1022,6 +1022,133 @@
     }
   }
 
+  .decision-list {
+    margin: 0 0 1.5rem;
+    padding: 0;
+    list-style: none;
+
+    > li {
+      border-bottom: 1px solid $gray-border-3;
+    }
+  }
+
+  .decision-row {
+    display: grid;
+    grid-template-columns: 5rem 1fr auto;
+    gap: 0.5rem 1rem;
+    padding: 0.75rem 0;
+    align-items: start;
+
+    @media (max-width: 575.98px) {
+      grid-template-columns: 1fr auto;
+
+      .decision-age {
+        grid-column: 1 / -1;
+        flex-direction: row;
+        gap: 0.5rem;
+        align-items: baseline;
+      }
+
+      .decision-rule {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+
+  .decision-age {
+    display: flex;
+    flex-direction: column;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+
+    small {
+      font-weight: 400;
+      color: $text-secondary;
+    }
+  }
+
+  .decision-main {
+    min-width: 0;
+
+    h4 {
+      margin-bottom: 0.25rem;
+    }
+  }
+
+  .decision-current {
+    display: block;
+    color: $text-secondary;
+  }
+
+  .decision-rule {
+    grid-column: 2 / -1;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .decision-panel {
+    padding: 0 0 1rem;
+  }
+
+  .decision-outcome {
+    display: block;
+    margin-top: 0.5rem;
+    font-weight: 500;
+    color: $text-navy;
+  }
+
+  .decision-delta-up,
+  .decision-delta-down {
+    white-space: nowrap;
+  }
+
+  .result-compare {
+    margin-top: 1.5rem;
+
+    summary {
+      font-weight: 500;
+      cursor: pointer;
+    }
+  }
+
+  .result-compare-table {
+    position: relative;
+    margin-top: 0.75rem;
+    font-variant-numeric: tabular-nums;
+
+    caption {
+      text-wrap: pretty;
+    }
+
+    th,
+    td {
+      min-width: 7rem;
+      vertical-align: top;
+    }
+
+    tbody th {
+      position: sticky;
+      left: 0;
+      min-width: 9rem;
+      background: $white;
+    }
+
+    small {
+      display: block;
+      font-weight: 400;
+      color: $text-secondary;
+    }
+  }
+
+  .result-compare-mine,
+  .result-compare-best {
+    background: $blue-bg-1;
+  }
+
+  .result-compare-best {
+    font-weight: 500;
+  }
+
   .step-nav {
     display: flex;
     align-items: center;

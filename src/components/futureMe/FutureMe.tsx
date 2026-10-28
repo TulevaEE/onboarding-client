@@ -12,10 +12,12 @@ import { Age65Step } from './Age65Step';
 import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { Age66Step } from './Age66Step';
+import { DecisionChanges } from './decisions';
 import { initialExpenses } from './expensesAnswers';
 import { ExpensesStep } from './ExpensesStep';
 import { derivePrefill, YouPrefill } from './prefill';
 import { PlaceholderStep } from './PlaceholderStep';
+import { DecisionChangesProvider } from './ResultDecisions';
 import { ResultStep } from './ResultStep';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { SpecialPensionStep } from './SpecialPensionStep';
@@ -136,6 +138,15 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
     goTo(FutureMeStep.YOU);
   };
 
+  const changeDecisions = (changes: DecisionChanges) => {
+    if (changes.age60) {
+      setAge60(changes.age60);
+    }
+    if (changes.age65) {
+      setAge65(changes.age65);
+    }
+  };
+
   const renderStep = () => {
     if (step === FutureMeStep.YOU) {
       return (
@@ -235,10 +246,12 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
     }
     if (step === FutureMeStep.RESULT) {
       return (
-        <ResultStep
-          context={{ you: answers, plan, age60, age65, age66, specialPension, expenses }}
-          headingRef={headingRef}
-        />
+        <DecisionChangesProvider value={changeDecisions}>
+          <ResultStep
+            context={{ you: answers, plan, age60, age65, age66, specialPension, expenses }}
+            headingRef={headingRef}
+          />
+        </DecisionChangesProvider>
       );
     }
     return (

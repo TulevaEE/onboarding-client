@@ -6,6 +6,7 @@ import { ChapterHead } from './ChapterHead';
 import { needMonthly } from './expensesAnswers';
 import { ResultAdvice } from './ResultAdvice';
 import { ResultChart } from './ResultChart';
+import { ResultDecisions } from './ResultDecisions';
 import {
   coverageKind,
   incomeAtStart,
@@ -183,6 +184,7 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       <Tiles result={result} />
       <IncomeAtPensionAge result={result} need={needMonthly(context.expenses)} />
       <ResultChart result={result} need={needMonthly(context.expenses)} />
+      <ResultDecisions context={context} />
     </section>
   );
 };
