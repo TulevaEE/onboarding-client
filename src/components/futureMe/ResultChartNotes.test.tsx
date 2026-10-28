@@ -158,7 +158,7 @@ describe('ResultChart assumption', () => {
 });
 
 describe('ResultChart reading guide', () => {
-  const guide = () => screen.getByRole('group');
+  const guide = () => screen.getByRole('group', { name: '' });
 
   it('is a closed section named for what it explains', () => {
     renderChart();

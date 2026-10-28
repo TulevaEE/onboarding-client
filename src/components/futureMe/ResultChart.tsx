@@ -34,7 +34,7 @@ import { SOURCE_COLORS, SOURCE_LABELS, SUMMARY_LABELS } from './chartSources';
 import { announcementOf } from './chartText';
 import { ResultChartTip } from './ResultChartTip';
 import { ChartAssumption, ChartGuide, SummaryNotes } from './ResultChartNotes';
-import { NominalSwitch, NominalNote } from './ResultNominalSwitch';
+import { NominalChoice, NominalNote } from './ResultNominalChoice';
 import { NominalReturns, nominalResultOf } from './nominal';
 
 const HALO_COLOR = '#fff';
@@ -641,7 +641,7 @@ export const ResultChart = ({ result, need, nominalReturns }: ResultChartProps) 
           <FormattedMessage id="futureMe.result.chart.title" />
         </h3>
         <div className="result-figure-controls">
-          <NominalSwitch isOn={isNominal} onChange={setNominal} />
+          <NominalChoice isOn={isNominal} onChange={setNominal} />
           <button
             type="button"
             className="btn btn-outline-primary btn-sm"

@@ -72,7 +72,7 @@ const chart = () => screen.getByRole('img', { name: 'Sissetulek ja kulud vanuse 
 const readout = () => screen.getByRole('status');
 const tip = () => screen.queryByTestId('chart-tip');
 const lastChartProps = () => mockChart.mock.calls[mockChart.mock.calls.length - 1][0];
-const TAB_STOPS_BEFORE_CHART = 4;
+const TAB_STOPS_BEFORE_CHART = 5;
 const tabToChart = () => {
   Array.from({ length: TAB_STOPS_BEFORE_CHART }).forEach(() => userEvent.tab());
 };

@@ -805,14 +805,21 @@
 
   .result-nominal {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
 
     .help-btn {
-      margin: -10px 0 -12px -14px;
+      margin: -12px 0 -12px -14px;
     }
 
-    .form-check {
-      width: auto;
+    @media (max-width: 359.98px) {
+      .help-btn {
+        margin-right: -6px;
+      }
+
+      .btn {
+        padding-inline: 0.375rem;
+        font-size: 0.8125rem;
+      }
     }
   }
 

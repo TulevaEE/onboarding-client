@@ -5,35 +5,36 @@ import { INFLATION } from './engine/pension';
 import { NominalReturns } from './nominal';
 
 const PERCENT = 100;
-const NO_BREAK_SPACE = '\u00A0';
-const SWITCH_ID = 'future-me-nominal-toggle';
+const GROUP_LABEL_ID = 'future-me-nominal-group';
 
-interface SwitchProps {
+interface ChoiceProps {
   isOn: boolean;
   onChange: (isOn: boolean) => void;
 }
 
-export const NominalSwitch = ({ isOn, onChange }: SwitchProps) => (
+const CHOICES = [
+  { isNominal: false, label: 'futureMe.result.nominal.today' },
+  { isNominal: true, label: 'futureMe.result.nominal.future' },
+] as const;
+
+export const NominalChoice = ({ isOn, onChange }: ChoiceProps) => (
   <div className="result-nominal">
     <HelpButton topic="nominal" />
-    <div className="form-check form-switch mb-0">
-      <input
-        id={SWITCH_ID}
-        type="checkbox"
-        role="switch"
-        className="form-check-input"
-        checked={isOn}
-        onChange={({ target }) => onChange(target.checked)}
-      />
-      <label htmlFor={SWITCH_ID} className="form-check-label">
-        <FormattedMessage id="futureMe.result.nominal.label" />
-        {NO_BREAK_SPACE}
-        <strong>
-          <FormattedMessage
-            id={isOn ? 'futureMe.result.nominal.on' : 'futureMe.result.nominal.off'}
-          />
-        </strong>
-      </label>
+    <span id={GROUP_LABEL_ID} className="visually-hidden">
+      <FormattedMessage id="futureMe.result.nominal.group" />
+    </span>
+    <div className="btn-group" role="group" aria-labelledby={GROUP_LABEL_ID}>
+      {CHOICES.map(({ isNominal, label }) => (
+        <button
+          key={label}
+          type="button"
+          className={`btn btn-sm ${isNominal === isOn ? 'btn-primary' : 'btn-outline-primary'}`}
+          aria-pressed={isNominal === isOn}
+          onClick={() => onChange(isNominal)}
+        >
+          <FormattedMessage id={label} />
+        </button>
+      ))}
     </div>
   </div>
 );
