@@ -3103,5 +3103,16 @@
   "futureMe.result.compare.cell.age": "{age} a",
   "futureMe.result.compare.cell.hundredPlus": "100+",
   "futureMe.result.compare.cell.never": "ei lõpe",
-  "futureMe.result.compare.measure": "Näitaja"
+  "futureMe.result.compare.measure": "Näitaja",
+  "futureMe.result.chart.note.bridge": "Riiklik pension algab alles {age}-⁠aastaselt. Seni tuleb kuus keskmiselt {sources}.",
+  "futureMe.result.chart.note.firstPillarChoice": "Pensionieas makstakse sulle {paid, select, special {eripensioni} other {vanaduspensioni}} {amount} kuus enne maksu (eripension {special}, vanaduspension {oldAge}). Kahte riiklikku pensioni korraga ei maksta.",
+  "futureMe.result.chart.note.statePensionTax": "{hasTax, select, yes {Riiklikust pensionist ({gross} enne maksu) läheb tulumaksuks {tax} kuus: 22% summalt, mis ületab pensionäri maksuvaba tulu {allowance} kuus.} other {Riiklik pension on väiksem kui pensionäri maksuvaba tulu ({allowance} kuus), seega tulumaksu pole.}}",
+  "futureMe.result.chart.note.specialPensionTax": "{hasTax, select, yes {Eripensionist läheb tulumaksuks {tax} kuus: 22% summalt, mis ületab pensionäri maksuvaba tulu {allowance} kuus.} other {Eripension on väiksem kui pensionäri maksuvaba tulu ({allowance} kuus), seega tulumaksu pole.}}",
+  "futureMe.result.chart.assumption": "<strong>Eeldus:</strong> kulud on kaetud kogu elu, kui paned fondipensioni ja riikliku pensioni ülejäägi hoiusele ja kasutad seda, kui fondid saavad otsa ({age}-⁠aastaselt). Kui ülejäägi kulutad, jääb siis puudu kuni {amount} kuus. Teised võimalused: vali fondipensionile keskmisest elueast pikem periood või uus leping igal aastal.",
+  "futureMe.result.chart.guide.title": "Selgitus: kuidas graafikut lugeda",
+  "futureMe.result.chart.guide.layers": "Kihid näitavad, millest sinu kulud igas vanuses kaetakse. Legendis on iga kiht oma värviga ja selle saab peita.",
+  "futureMe.result.chart.guide.costs": "Punane katkendjoon on sinu kulud kuus. Kus kihtide ülaserv jääb sellest allapoole, on raha puudu.",
+  "futureMe.result.chart.guide.events": "Suuremad punktid ja püstjooned on elusündmused, näiteks pensioniiga. Vanuse summad avanevad hiirega, puudutades või nooleklahvidega, samad arvud on tabelis.",
+  "futureMe.result.chart.guide.horizon": "Sündmus „10% sinuvanustest on veel elus“ ({age}-⁠aastaselt) on statistika, mitte sinu elu lõpp: sinu elu võib olla lühem või pikem.",
+  "futureMe.result.chart.guide.fundPeriod": "Fondipensioni periood on {years} aastat ja see on arvutatud keskmise eluea järgi, mitte sinu elu pikkuse järgi. Seepärast lõpeb fondipension kindlal vanusel ja kiht langeb graafikul järsult."
 }
