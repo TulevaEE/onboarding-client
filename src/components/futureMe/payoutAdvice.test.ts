@@ -2,7 +2,7 @@ import { initialAge60 } from './age60Answers';
 import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses, withLevel } from './expensesAnswers';
-import { howToChoose, payoutWarningOf, surplusTipOf } from './payoutAdvice';
+import { HowTo, howToChoose, payoutWarningOf, surplusTipOf } from './payoutAdvice';
 import { ResultContext, resultOf } from './resultAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
@@ -40,7 +40,82 @@ const deferredFive = { ...fundPension, mode: 'defer' as const, years: 5 };
 const warningFor = (context: ResultContext) => payoutWarningOf(context, resultOf(context));
 const tipFor = (context: ResultContext) => surplusTipOf(context, resultOf(context));
 
+const followed = (context: ResultContext, how: HowTo): ResultContext => {
+  const { age60, age65, age66 } = context;
+  const fundAt = how.atPayoutAge
+    ? { age60: { ...age60, secondPillar: 'fund' as const }, age65 }
+    : { age60, age65: { ...age65, secondPillar: 'fund' as const } };
+  switch (how.kind) {
+    case 'lump':
+      return { ...context, age60: { ...age60, secondPillar: 'lump' } };
+    case 'grow':
+      return {
+        ...context,
+        age60: { ...age60, secondPillar: 'grow' },
+        age65: { ...age65, secondPillar: 'grow' },
+      };
+    case 'contract':
+      return { ...context, age66: { ...age66, secondPillarContract: how.contract } };
+    case 'bridge':
+      return {
+        ...context,
+        ...fundAt,
+        age65: { ...fundAt.age65, mode: 'defer', years: how.deferral },
+      };
+    default:
+      return {
+        ...context,
+        ...fundAt,
+        age65: { ...fundAt.age65, mode: 'full' },
+        age66: { ...age66, secondPillarContract: how.contract },
+      };
+  }
+};
+
 describe('payoutAdvice', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-10-15T12:00:00Z'));
+  });
+  afterAll(() => jest.useRealTimers());
+
+  describe('advice that following it gives what it promises', () => {
+    it.each([
+      {
+        chosen: 'a lump sum at the pension age',
+        context: contextWith(
+          {},
+          { ...comfortable, age65: { ...initialAge65(), secondPillar: 'lump' } },
+        ),
+      },
+      {
+        chosen: 'one fund pension contract',
+        context: contextWith(
+          { secondPillarAmount: '100000' },
+          {
+            ...comfortable,
+            age65: fundPension,
+            age66: { ...initialAge66(), secondPillarContract: 'once' },
+          },
+        ),
+      },
+      {
+        chosen: 'half of the state pension for five years',
+        context: contextWith(
+          { secondPillarAmount: '20000', firstPillarMonthly: '500' },
+          { age65: { ...fundPension, mode: 'half', years: 5 } },
+        ),
+      },
+    ])('promises what following it carries after $chosen', ({ context }) => {
+      const warning = warningFor(context);
+      if (warning?.kind !== 'betterPayout') {
+        throw new Error(`Expected a better payout, got ${JSON.stringify(warning)}`);
+      }
+
+      expect(resultOf(followed(context, warning.how)).sustainable).toBe(warning.best);
+    });
+  });
+
   describe('warning', () => {
     it('stays away while the costs are covered for life', () => {
       expect(warningFor(contextWith())).toBeNull();
@@ -100,6 +175,13 @@ describe('payoutAdvice', () => {
   });
 
   describe('how to choose a payout', () => {
+    it('takes the lump sum at the payout age', () => {
+      expect(howToChoose({ id: 'A' }, contextWith())).toMatchObject({
+        kind: 'lump',
+        payoutAge: 60,
+      });
+    });
+
     it('keeps growing from the payout age on', () => {
       expect(howToChoose({ id: 'E' }, contextWith())).toMatchObject({
         kind: 'grow',
@@ -130,6 +212,10 @@ describe('payoutAdvice', () => {
       expect(tipFor(contextWith())).toBeNull();
     });
 
+    it('stays away when the fund pension pays no more than the costs', () => {
+      expect(tipFor(contextWith({}, { ...comfortable, age65: fundPension }))).toBeNull();
+    });
+
     it('tells how much the fund pension pays over the costs and what growing would carry', () => {
       const context = contextWith(
         { secondPillarAmount: '150000', firstPillarMonthly: '900' },
@@ -138,6 +224,34 @@ describe('payoutAdvice', () => {
 
       expect(tipFor(context)).toMatchObject({ from: 65, grow: 1660, mine: 1610 });
       expect(tipFor(context)?.average).toBeGreaterThan(1000);
+    });
+
+    it('keeps the chosen state pension timing in what growing would carry', () => {
+      const context = contextWith(
+        { secondPillarAmount: '100000', firstPillarMonthly: '900' },
+        {
+          age65: { ...fundPension, mode: 'defer', years: 2 },
+          age66: { ...initialAge66(), secondPillarContract: 'once' },
+        },
+      );
+      const growing = {
+        ...context,
+        age65: { ...context.age65, secondPillar: 'grow' as const },
+      };
+
+      expect(tipFor(context)?.grow).toBe(resultOf(growing).sustainable);
+    });
+
+    it('stays away when only the III pillar pays a fund pension', () => {
+      const context = contextWith(
+        { thirdPillarJoined: 'after', thirdPillarAmount: '100000', thirdPillarMonthly: '0' },
+        {
+          age60: { ...initialAge60(), secondPillar: 'lump' },
+          age65: { ...initialAge65(), thirdPillar: 'fund' },
+        },
+      );
+
+      expect(tipFor(context)).toBeNull();
     });
 
     it('leaves growing out when it would not carry more', () => {

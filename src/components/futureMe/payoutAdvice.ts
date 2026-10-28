@@ -67,7 +67,7 @@ export const howToChoose = (scenario: Scenario, context: ResultContext): HowTo =
   const chosenDeferral = resultScenarioOf(context).deferral ?? 0;
   const isFundChosen = isFundPensionChosen(context);
   const base = {
-    contract: (scenario.id === 'B' ? 'once' : 'yearly') as Contract,
+    contract: (scenario.id === 'B' || scenario.contract === 'once' ? 'once' : 'yearly') as Contract,
     deferral: scenario.deferral ?? 0,
     atPayoutAge: age60.secondPillar !== 'grow' || isPayoutChoiceMadeAtAnotherStep(plan),
     payoutAge: payoutAge(plan),
@@ -82,15 +82,32 @@ export const howToChoose = (scenario: Scenario, context: ResultContext): HowTo =
     const isOnlyContractDifferent = isFundChosen && chosenDeferral === scenario.deferral;
     return { ...base, kind: isOnlyContractDifferent ? 'contract' : 'bridge' };
   }
-  return { ...base, kind: isFundChosen && chosenDeferral === 0 ? 'contract' : 'fund' };
+  return { ...base, kind: isFundChosen ? 'contract' : 'fund' };
 };
 
-const comparedScenarios = (input: PensionInput, chosen: Scenario): Scenario[] => {
-  const isDeferralOpen = options(input).deferral.open;
-  const deferral = chosen.deferral || BRIDGE_DEFERRAL_WITHOUT_CHOICE;
+const timingOf = (scenario: Scenario) => ({
+  deferral: scenario.deferral ?? 0,
+  half: scenario.half ?? 0,
+});
+
+const comparedScenarios = (context: ResultContext, chosen: Scenario): Scenario[] => {
+  const isDeferralOpen = options(resultInputOf(context)).deferral.open;
+  const isFundChosen = isFundPensionChosen(context);
+  const asAdvised = (scenario: Scenario): Scenario => {
+    if (scenario.id === 'C') {
+      return {
+        ...scenario,
+        half: 0,
+        deferral: chosen.deferral || BRIDGE_DEFERRAL_WITHOUT_CHOICE,
+        contract: context.age66.secondPillarContract,
+      };
+    }
+    const isFundPensionAdvised = scenario.id === 'B' || scenario.id === 'D';
+    return isFundPensionAdvised && !isFundChosen ? scenario : { ...scenario, ...timingOf(chosen) };
+  };
   return [...SCENARIOS, keepGrowing]
     .filter(({ id }) => id !== 'C' || isDeferralOpen)
-    .map((scenario) => (scenario.id === 'C' ? { ...scenario, deferral } : scenario));
+    .map((scenario) => (scenario.id === chosen.id ? chosen : asAdvised(scenario)));
 };
 
 const carriedBy = (input: PensionInput, scenario: Scenario): number =>
@@ -116,14 +133,12 @@ export const payoutWarningOf = (context: ResultContext, result: Result): PayoutW
       };
     }
   }
-  const compared = comparedScenarios(input, scenario).map((candidate) => ({
+  const compared = comparedScenarios(context, scenario).map((candidate) => ({
     candidate,
     carries: carriedBy(input, candidate),
   }));
   const best = compared.reduce((most, next) => (next.carries > most.carries ? next : most));
-  const isChosenAlready =
-    best.candidate.id === scenario.id && !(scenario.id === 'C' && scenario.contract === 'once');
-  if (best.carries > result.sustainable && !isChosenAlready) {
+  if (best.carries > result.sustainable) {
     return {
       kind: 'betterPayout',
       until,
@@ -154,12 +169,15 @@ const longestSurplusRun = (rows: SimulationRow[]): SimulationRow[] =>
     .reduce((longest, run) => (run.length > longest.length ? run : longest));
 
 export const surplusTipOf = (context: ResultContext, result: Result): SurplusTip | null => {
+  if (!isFundPensionChosen(context)) {
+    return null;
+  }
   const run = longestSurplusRun(result.rows.filter(({ age }) => age >= result.pensionStartAge));
   if (run.length < SURPLUS_MIN_YEARS) {
     return null;
   }
-  const isGrowingChosen = resultScenarioOf(context).id === keepGrowing.id;
-  const grow = isGrowingChosen ? 0 : carriedBy(resultInputOf(context), keepGrowing);
+  const chosen = resultScenarioOf(context);
+  const grow = carriedBy(resultInputOf(context), { ...keepGrowing, ...timingOf(chosen) });
   return {
     from: run[0].age,
     to: run[run.length - 1].age,
