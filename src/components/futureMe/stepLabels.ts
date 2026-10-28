@@ -6,7 +6,6 @@ import { payoutAge, retirementAge } from './planAges';
 
 const STEP_LABEL_KEYS: Record<StepId, TranslationKey> = {
   [FutureMeStep.YOU]: 'futureMe.trail.step.you',
-  [FutureMeStep.EARLY_WITHDRAWAL]: 'futureMe.trail.step.earlyWithdrawal',
   [FutureMeStep.AGE_55]: 'futureMe.trail.step.age55',
   [FutureMeStep.AGE_60]: 'futureMe.trail.step.age60',
   [FutureMeStep.AGE_65]: 'futureMe.trail.step.age65',

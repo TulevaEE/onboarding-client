@@ -1,9 +1,8 @@
-import { CURRENT_YEAR, retirementYears } from './engine/pension';
+import { retirementYears } from './engine/pension';
 import { THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021 } from './thirdPillarPayoutAges';
 
 export const FutureMeStep = {
   YOU: 0,
-  EARLY_WITHDRAWAL: 3,
   AGE_55: 4,
   AGE_60: 5,
   AGE_65: 6,
@@ -15,21 +14,10 @@ export const FutureMeStep = {
 
 export type StepId = (typeof FutureMeStep)[keyof typeof FutureMeStep];
 
-const {
-  YOU,
-  EARLY_WITHDRAWAL,
-  AGE_55,
-  AGE_60,
-  AGE_65,
-  AGE_66_PLUS,
-  COSTS,
-  SPECIAL_PENSION,
-  RESULT,
-} = FutureMeStep;
+const { YOU, AGE_55, AGE_60, AGE_65, AGE_66_PLUS, COSTS, SPECIAL_PENSION, RESULT } = FutureMeStep;
 
 const ALL_STEPS: StepId[] = [
   YOU,
-  EARLY_WITHDRAWAL,
   AGE_55,
   AGE_60,
   AGE_65,
@@ -40,7 +28,6 @@ const ALL_STEPS: StepId[] = [
 ];
 
 const SECOND_PILLAR_PAYOUT_YEARS_BEFORE_PENSION = 5;
-const EARLY_WITHDRAWAL_MIN_YEARS_BEFORE_PENSION = 6;
 
 const ORDER_SPECIAL_PENSION_BEFORE_AGE_55 = 3.5;
 const ORDER_SPECIAL_PENSION_BEFORE_AGE_60 = 4.5;
@@ -58,23 +45,12 @@ export interface StepPlanInput {
   specialPensionStartAge?: number;
   savesInSecondPillar: boolean;
   thirdPillarJoined: 'before' | 'after' | 'none';
-  thirdPillarEarlyWithdrawalAvailable: boolean;
-  thirdPillarEarlyWithdrawalTaken: boolean;
 }
-
-const isSecondPillarEarlyWithdrawalOpen = (input: StepPlanInput): boolean =>
-  input.savesInSecondPillar &&
-  CURRENT_YEAR - input.birthYear <=
-    retirementYears(input) - EARLY_WITHDRAWAL_MIN_YEARS_BEFORE_PENSION;
 
 export const isStepSkipped = (step: StepId, input: StepPlanInput): boolean => {
   switch (step) {
-    case EARLY_WITHDRAWAL:
-      return (
-        !isSecondPillarEarlyWithdrawalOpen(input) && !input.thirdPillarEarlyWithdrawalAvailable
-      );
     case AGE_55:
-      return input.thirdPillarEarlyWithdrawalTaken || input.thirdPillarJoined !== 'before';
+      return input.thirdPillarJoined !== 'before';
     case SPECIAL_PENSION:
       return !input.hasSpecialPension;
     default:

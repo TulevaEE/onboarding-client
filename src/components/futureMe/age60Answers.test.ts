@@ -16,22 +16,5 @@ describe('age60Answers', () => {
         'second',
       );
     });
-
-    it('is second after the early withdrawal decision', () => {
-      expect(
-        decisionOrdinal([FutureMeStep.YOU, FutureMeStep.EARLY_WITHDRAWAL, FutureMeStep.AGE_60]),
-      ).toBe('second');
-    });
-
-    it('is third after both the early withdrawal and the age 55 decisions', () => {
-      expect(
-        decisionOrdinal([
-          FutureMeStep.YOU,
-          FutureMeStep.EARLY_WITHDRAWAL,
-          FutureMeStep.AGE_55,
-          FutureMeStep.AGE_60,
-        ]),
-      ).toBe('third');
-    });
   });
 });

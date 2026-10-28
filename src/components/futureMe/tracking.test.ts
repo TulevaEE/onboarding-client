@@ -8,7 +8,6 @@ const mockTrackCustomEvent = trackCustomEvent as jest.MockedFunction<typeof trac
 
 const measuredNumbers: [string, StepId, number][] = [
   ['You', FutureMeStep.YOU, 0],
-  ['early withdrawal', FutureMeStep.EARLY_WITHDRAWAL, 3],
   ['age 55', FutureMeStep.AGE_55, 4],
   ['age 60', FutureMeStep.AGE_60, 5],
   ['age 65', FutureMeStep.AGE_65, 6],
