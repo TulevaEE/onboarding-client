@@ -43,4 +43,20 @@ describe('children in the result', () => {
       0,
     );
   });
+
+  it('give a smaller supplement for a child over 3 the state paid the II pillar for longer', () => {
+    const supplementWith = (months: string) =>
+      childSupplement(
+        resultInputOf(
+          contextWith({
+            kidsAdded: true,
+            kidsCount: '1',
+            kidsBirthYears: ['2023'],
+            kidsIIMonths: [months],
+          }),
+        ),
+      );
+
+    expect(supplementWith('0')).toBeGreaterThan(supplementWith('36'));
+  });
 });

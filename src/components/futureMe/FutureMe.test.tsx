@@ -1338,7 +1338,7 @@ describe('FutureMe', () => {
         expect(earlyYearsField()).toHaveDisplayValue(withNbsp('5 a, vähendamata (kõige varem)'));
       });
 
-      it('ask who gets the supplement and whether the forecast has it, starting from the saver and unknown', () => {
+      it('ask who gets the supplement and whether the forecast has it, starting from the saver and no for the average pension', () => {
         renderFutureMe();
         addKids(['1990']);
 
@@ -1347,7 +1347,7 @@ describe('FutureMe', () => {
         );
         expect(
           screen.getByRole('combobox', { name: /prognoos sisaldab laste pensionilisa/ }),
-        ).toHaveDisplayValue('ei tea');
+        ).toHaveDisplayValue('ei');
       });
 
       it('ask the birth month only of a child born in 2021 or in the last three years', () => {

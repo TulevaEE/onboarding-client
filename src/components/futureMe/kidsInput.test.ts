@@ -74,6 +74,21 @@ describe('kidsInputOf', () => {
     expect(kids).toMatchObject({ disabled: false });
   });
 
+  it('gives the engine the II pillar months of each child over 3 born from September 2021, in order', () => {
+    const kids = kidsInputOf(
+      withKids(['2025', '2023', '2022'], { kidsIIMonths: ['', '12', '36'] }),
+      october2026,
+    );
+
+    expect(kids).toMatchObject({ u3: 1, iiMonths: [12, 36] });
+  });
+
+  it('leaves the months to the engine when the field is empty or out of 0–36', () => {
+    const kids = kidsInputOf(withKids(['2023', '2022'], { kidsIIMonths: ['', '40'] }), october2026);
+
+    expect(kids?.iiMonths).toEqual([undefined, undefined]);
+  });
+
   it('carries the answers about the early right, the supplement and the forecast', () => {
     const kids = kidsInputOf(
       withKids(['1990'], {

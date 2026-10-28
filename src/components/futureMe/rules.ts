@@ -4,7 +4,13 @@ import { childSupplement, EARLY_DECREASE, retirementYears } from './engine/pensi
 import { retirementAge } from './planAges';
 import { ResultContext, resultInputOf, resultOf, resultScenarioOf } from './resultAnswers';
 import { specialPensionStartAge } from './specialPensionAnswers';
-import { amountOf, earlyRightSources, KidsInForecast, YouAnswers } from './youAnswers';
+import {
+  amountOf,
+  earlyRightSources,
+  KidsInForecast,
+  kidsInForecastOf,
+  YouAnswers,
+} from './youAnswers';
 
 type EarlyRightReason = keyof ReturnType<typeof earlyRightSources>;
 
@@ -66,7 +72,7 @@ const childSupplementRules = (context: ResultContext): Rule[] => {
           id: 'childSupplement',
           ...whenOf(context, retirementAge(context.plan)),
           monthly,
-          inForecast: context.you.kidsInForecast,
+          inForecast: kidsInForecastOf(context.you),
         },
       ]
     : [];

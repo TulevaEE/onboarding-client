@@ -2,6 +2,7 @@ import { KidsInput } from './engine/pension';
 import {
   childRows,
   countedKids,
+  kidsInForecastOf,
   maxChildBirthYear,
   validChildBirthYear,
   YouAnswers,
@@ -28,7 +29,13 @@ interface Under3 {
 interface Child {
   group: Group;
   under3?: Under3;
+  iiMonths?: number;
 }
+
+const iiMonthsOf = (typed: string): number | undefined => {
+  const months = /^\d+$/.test(typed.trim()) ? Number(typed) : NaN;
+  return months <= STATE_PAYS_II_PILLAR_MONTHS ? months : undefined;
+};
 
 export const isChildMonthAsked = (typedYear: string, now: Date = new Date()): boolean => {
   const year = validChildBirthYear(typedYear, Number.POSITIVE_INFINITY);
@@ -87,7 +94,13 @@ const childAt = (
     return null;
   }
   const group = groupOf(year, month);
-  return group === 'b2021' ? { group, under3: under3Of(year, month, now) } : { group };
+  if (group !== 'b2021') {
+    return { group };
+  }
+  const under3 = under3Of(year, month, now);
+  return under3
+    ? { group, under3 }
+    : { group, iiMonths: iiMonthsOf(answers.kidsIIMonths[index] ?? '') };
 };
 
 export const kidsInputOf = (answers: YouAnswers, now: Date = new Date()): KidsInput | undefined => {
@@ -110,11 +123,14 @@ export const kidsInputOf = (answers: YouAnswers, now: Date = new Date()): KidsIn
     u3Left: under3.map(({ left }) => left),
     u3Start: under3.map(({ start = 0 }) => start),
     u3StartMonth: under3.map(({ startMonth = 0 }) => startMonth),
+    iiMonths: children
+      .filter((child) => child.group === 'b2021' && !child.under3)
+      .map((child) => child.iiMonths),
     monthNow: now.getMonth(),
     disabled: answers.kidsDisabled && children.length > 0,
     earlyUser: answers.kidsEarlyUser,
     user: answers.kidsEarlyUser,
     supUser: answers.kidsSupUser,
-    inForecast: answers.kidsInForecast,
+    inForecast: kidsInForecastOf(answers),
   };
 };

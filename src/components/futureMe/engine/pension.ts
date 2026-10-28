@@ -27,7 +27,7 @@ export interface KidsInput {
   u3Left?: (number | undefined)[];
   u3Start?: number[];
   u3StartMonth?: number[];
-  iiMonths?: number[];
+  iiMonths?: (number | undefined)[];
   b2013noII?: number;
   monthNow?: number;
   inForecast?: 'yes' | 'no' | string;

@@ -12,6 +12,7 @@ import {
   isChildIIMonthsInvalid,
   isKidsRightAvailableToSelf,
   KidsInForecast,
+  kidsInForecastOf,
   KidsUser,
   maxChildBirthYear,
   YouAnswers,
@@ -321,7 +322,7 @@ export const KidsSection = ({
               id="future-me-kids-in-forecast"
               label="futureMe.you.kidsInForecast.label"
               hint="futureMe.you.kidsInForecast.hint"
-              value={answers.kidsInForecast}
+              value={kidsInForecastOf(answers)}
               options={KIDS_IN_FORECAST.map((value) => ({
                 value,
                 label: intl.formatMessage({ id: `futureMe.you.kidsInForecast.${value}` }),
