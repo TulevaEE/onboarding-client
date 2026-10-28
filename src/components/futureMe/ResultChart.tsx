@@ -27,6 +27,7 @@ import {
   startSourcesOf,
   tableRowsOf,
 } from './chartData';
+import { ageButtonsOf } from './chartAges';
 import { ChartEvent, chartEventsOf } from './chartEvents';
 import { assumptionOf, SummaryNote, summaryNotesOf } from './chartNotes';
 import { ChartMark, costsLine, lastPointAtAge, marksLine } from './chartPlugins';
@@ -39,7 +40,9 @@ import {
 } from './chartPoints';
 import { SOURCE_COLORS, SOURCE_LABELS, SUMMARY_LABELS } from './chartSources';
 import { announcementOf } from './chartText';
+import { ResultChartAges } from './ResultChartAges';
 import { ResultChartTip } from './ResultChartTip';
+import { useTouchView } from './useTouchView';
 import { ChartAssumption, ChartGuide, SummaryNotes } from './ResultChartNotes';
 import { NominalChoice, NominalNote } from './ResultNominalChoice';
 import { NominalReturns, nominalResultOf } from './nominal';
@@ -52,6 +55,7 @@ const NARROW_SCREEN = '(max-width: 575.98px)';
 const WIDE_TICK_STEP = 5;
 const NARROW_TICK_STEP = 10;
 const DOT_EVERY_YEARS = 2;
+const TOUCH_DOT_EVERY_YEARS = 5;
 const DOT_RADIUS = 3;
 const EVENT_DOT_RADIUS = 6;
 const HOVER_RADIUS = 5;
@@ -178,11 +182,11 @@ const marksOf = (intl: IntlShape, events: ChartEvent[]): ChartMark[] =>
     return id ? [{ age, text: intl.formatMessage({ id }, { age }) }] : [];
   });
 
-const dotRadiusOf = (age: number, isEvent: boolean) => {
+const dotRadiusOf = (age: number, isEvent: boolean, dotEvery: number) => {
   if (isEvent) {
     return EVENT_DOT_RADIUS;
   }
-  return age % DOT_EVERY_YEARS === 0 ? DOT_RADIUS : 0;
+  return age % dotEvery === 0 ? DOT_RADIUS : 0;
 };
 
 const datasetsOf = (
@@ -192,6 +196,7 @@ const datasetsOf = (
   layers: ChartSourceId[],
   hidden: ReadonlySet<ChartSourceId>,
   eventAges: ReadonlySet<number>,
+  dotEvery: number,
 ): ChartData<'line'>['datasets'] => {
   const visible = layers.filter((id) => !hidden.has(id));
   let below: number | 'origin' = 'origin';
@@ -225,7 +230,7 @@ const datasetsOf = (
       borderWidth: 1.5,
       backgroundColor: fadingFill(SOURCE_COLORS[id]),
       pointRadius: points.map((point, at) =>
-        hasDotAt(at) ? dotRadiusOf(point.age, isEventAt(at)) : 0,
+        hasDotAt(at) ? dotRadiusOf(point.age, isEventAt(at), dotEvery) : 0,
       ),
       pointHoverRadius: points.map((_point, at) => {
         if (!isShownAt(at)) {
@@ -251,9 +256,12 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
   const chartRef = useRef<ChartJS<'line'>>(null);
   const plotRef = useRef<HTMLDivElement>(null);
   const tipRef = useRef<HTMLDivElement>(null);
+  const agesRef = useRef<HTMLDivElement>(null);
   const crosshairRef = useRef<HTMLDivElement>(null);
   const isPressedWithMouse = useRef(false);
   const hasHighlight = useRef(false);
+  const isTouchView = useTouchView();
+  const [chartWidth, setChartWidth] = useState(0);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const activeIndexRef = useRef(activeIndex);
   activeIndexRef.current = activeIndex;
@@ -264,6 +272,7 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
     points.findIndex((point) => point.rowIndex === rowIndex && !point.isCarry);
   const visibleLayers = layers.filter((id) => !hidden.has(id));
   const eventAges = useMemo(() => new Set(events.map(({ age }) => age)), [events]);
+  const ageButtons = useMemo(() => ageButtonsOf(rows, events), [rows, events]);
   const stops = useMemo(
     () =>
       rows.flatMap(({ age }, index) =>
@@ -274,6 +283,11 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
 
   const eventsAt = (index: number) => events.filter(({ age }) => age === rows[index].age);
   const close = () => setActiveIndex(null);
+  const closeToAge = () => {
+    agesRef.current?.querySelector<HTMLElement>('[aria-pressed="true"]')?.focus();
+    close();
+  };
+  const dismiss = isTouchView ? closeToAge : close;
   const goTo = (index: number) => {
     setActiveIndex(index);
     announce(
@@ -286,6 +300,8 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
       ),
     );
   };
+
+  const selectAge = (index: number) => (index === activeIndex ? close() : goTo(index));
 
   const isHeadingForTip = (x: number, index: number) => {
     const tip = tipRef.current;
@@ -305,12 +321,21 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
     const isNarrow = window.matchMedia(NARROW_SCREEN).matches;
     const tickStep = isNarrow ? NARROW_TICK_STEP : WIDE_TICK_STEP;
     const chartData: ChartData<'line'> = {
-      datasets: datasetsOf(intl, rows, points, layers, hidden, eventAges),
+      datasets: datasetsOf(
+        intl,
+        rows,
+        points,
+        layers,
+        hidden,
+        eventAges,
+        isTouchView ? TOUCH_DOT_EVERY_YEARS : DOT_EVERY_YEARS,
+      ),
     };
     const chartOptions: ChartOptions<'line'> = {
       responsive: true,
       maintainAspectRatio: false,
       animation: false,
+      ...(isTouchView ? { events: [], onResize: (_chart, { width }) => setChartWidth(width) } : {}),
       interaction: { mode: 'lastPointAtAge', intersect: false },
       onHover: ({ x }, elements) => {
         const [element] = elements;
@@ -346,12 +371,13 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
           grid: { display: false },
           border: { color: AXIS_BORDER_COLOR },
           title: {
-            display: true,
+            display: !isTouchView,
             text: intl.formatMessage({ id: 'futureMe.result.chart.axis.age' }),
             color: TICK_COLOR,
             font: FONT,
           },
           ticks: {
+            display: !isTouchView,
             autoSkip: false,
             maxRotation: 0,
             stepSize: 1,
@@ -376,21 +402,23 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
       },
     };
     return { data: chartData, options: chartOptions };
-  }, [intl, rows, points, events, layers, hidden, eventAges]);
+  }, [intl, rows, points, events, layers, hidden, eventAges, isTouchView]);
 
   useLayoutEffect(() => {
     const chart = chartRef.current;
     const tip = tipRef.current;
     const plot = plotRef.current;
     const crosshair = crosshairRef.current;
-    if (activeIndex === null || !chart || !tip || !plot || !crosshair) {
+    if (activeIndex === null || !chart || !plot || !crosshair) {
       return;
     }
     const x = chart.scales.x.getPixelForValue(rows[activeIndex].age);
-    const fitsRight = x + TIP_GAP + tip.offsetWidth <= plot.clientWidth;
     const { top, bottom } = chart.chartArea;
-    tip.style.left = `${Math.max(0, fitsRight ? x + TIP_GAP : x - TIP_GAP - tip.offsetWidth)}px`;
-    tip.style.top = `${top}px`;
+    if (tip && !isTouchView) {
+      const fitsRight = x + TIP_GAP + tip.offsetWidth <= plot.clientWidth;
+      tip.style.left = `${Math.max(0, fitsRight ? x + TIP_GAP : x - TIP_GAP - tip.offsetWidth)}px`;
+      tip.style.top = `${top}px`;
+    }
     crosshair.style.left = `${x}px`;
     crosshair.style.top = `${top}px`;
     crosshair.style.height = `${bottom - top}px`;
@@ -419,13 +447,16 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
       return undefined;
     }
     const closeWhenOutside = ({ target }: Event) => {
-      if (!plotRef.current?.contains(target as Node)) {
+      const isInside = [plotRef, agesRef, tipRef].some((ref) =>
+        ref.current?.contains(target as Node),
+      );
+      if (!isInside) {
         close();
       }
     };
     const closeOnEscape = ({ key }: KeyboardEvent) => {
       if (key === 'Escape') {
-        close();
+        dismiss();
       }
     };
     document.addEventListener('mousedown', closeWhenOutside);
@@ -466,6 +497,32 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
     }
   };
 
+  const keyboardProps = isTouchView
+    ? {}
+    : {
+        tabIndex: 0,
+        onKeyDown: moveWithKey,
+        onFocus: focusFirstStop,
+        onMouseDown: () => {
+          isPressedWithMouse.current = true;
+        },
+        onMouseUp: () => {
+          isPressedWithMouse.current = false;
+        },
+      };
+
+  const tip = activeIndex !== null && (
+    <ResultChartTip
+      ref={tipRef}
+      row={rows[activeIndex]}
+      events={eventsAt(activeIndex)}
+      layers={visibleLayers}
+      cover={coverOf(rows[activeIndex], layers, hidden)}
+      placement={isTouchView ? 'below' : 'floating'}
+      onClose={dismiss}
+    />
+  );
+
   return (
     <>
       <p className="result-chart-unit text-secondary" aria-hidden="true">
@@ -475,8 +532,8 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
       <div
         ref={plotRef}
         className="result-chart"
-        onMouseLeave={close}
-        onBlur={closeWhenFocusLeaves}
+        onMouseLeave={isTouchView ? undefined : close}
+        onBlur={isTouchView ? undefined : closeWhenFocusLeaves}
       >
         <Chart
           ref={chartRef}
@@ -485,35 +542,33 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
           options={options}
           plugins={[costsLine, marksLine]}
           role="img"
-          tabIndex={0}
           aria-labelledby="future-me-chart-title"
-          aria-describedby="future-me-chart-summary future-me-chart-keys"
-          onKeyDown={moveWithKey}
-          onFocus={focusFirstStop}
-          onMouseDown={() => {
-            isPressedWithMouse.current = true;
-          }}
-          onMouseUp={() => {
-            isPressedWithMouse.current = false;
-          }}
+          aria-describedby={`future-me-chart-summary${isTouchView ? '' : ' future-me-chart-keys'}`}
+          {...keyboardProps}
         />
         {activeIndex !== null && (
-          <>
-            <div ref={crosshairRef} className="result-chart-crosshair" aria-hidden="true" />
-            <ResultChartTip
-              ref={tipRef}
-              row={rows[activeIndex]}
-              events={eventsAt(activeIndex)}
-              layers={visibleLayers}
-              cover={coverOf(rows[activeIndex], layers, hidden)}
-              onClose={close}
-            />
-          </>
+          <div ref={crosshairRef} className="result-chart-crosshair" aria-hidden="true" />
         )}
+        {!isTouchView && tip}
       </div>
-      <p id="future-me-chart-keys" className="visually-hidden">
-        <FormattedMessage id="futureMe.result.chart.keys" />
-      </p>
+      {isTouchView ? (
+        <>
+          <ResultChartAges
+            buttons={ageButtons}
+            events={events}
+            selected={activeIndex}
+            chart={chartRef}
+            chartWidth={chartWidth}
+            toolbarRef={agesRef}
+            onSelect={selectAge}
+          />
+          {tip}
+        </>
+      ) : (
+        <p id="future-me-chart-keys" className="visually-hidden">
+          <FormattedMessage id="futureMe.result.chart.keys" />
+        </p>
+      )}
     </>
   );
 };

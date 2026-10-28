@@ -1053,6 +1053,83 @@
     }
   }
 
+  .result-chart-ages {
+    position: relative;
+    height: 2.75rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .result-chart-age {
+    position: absolute;
+    top: 0;
+    min-width: 2.75rem;
+    height: 2.75rem;
+    padding: 0 0.5rem;
+    border: 1px solid #8a8d91;
+    border-radius: 1.375rem;
+    background: #fff;
+    color: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    transform: translateX(-50%);
+
+    &:hover {
+      background: #f3f5f7;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #006ce6;
+      outline-offset: 2px;
+    }
+
+    &.is-event {
+      border-color: #002f63;
+      color: #002f63;
+      font-weight: 700;
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: -3px;
+        right: -1px;
+        width: 0.5rem;
+        height: 0.5rem;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        background: #002f63;
+        box-sizing: content-box;
+      }
+    }
+
+    &[aria-pressed='true'] {
+      border-color: #002f63;
+      background: #002f63;
+      color: #fff;
+    }
+  }
+
+  .result-chart-ages-hint {
+    margin: 0 0 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .result-chart-tip.is-below {
+    position: relative;
+    max-width: none;
+    margin-bottom: 1rem;
+  }
+
+  @media (pointer: coarse) {
+    .result-figure-controls .btn,
+    .result-chart-toggle,
+    .result-chart-tip-close {
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+    }
+  }
+
   .result-chart-swatch-costs {
     width: 1.5rem;
     height: 0;
