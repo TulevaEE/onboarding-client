@@ -154,7 +154,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           answers={answers}
           touched={touched}
           openSections={openSections}
-          isPrefilled={prefill.birthYear !== null || prefill.sex !== null}
+          prefill={prefill}
           headingRef={headingRef}
           onChange={(changes) => setAnswers((previous) => ({ ...previous, ...changes }))}
           onBlur={(field) => setTouched((previous) => new Set(previous).add(field))}

@@ -536,6 +536,27 @@
     margin-top: 1.5rem;
   }
 
+  .you-list,
+  .you-list + .row {
+    .form-control,
+    .form-select {
+      max-width: 11rem;
+    }
+
+    #future-me-third-pillar-joined,
+    #future-me-second-pillar-fund,
+    #future-me-third-pillar-fund,
+    #future-me-kids-disabled,
+    #future-me-early-years {
+      max-width: 22rem;
+    }
+  }
+
+  .is-prefilled:not(.is-invalid) {
+    border-color: $bright-blue;
+    background-color: $blue-bg-1;
+  }
+
   .you-section-actions {
     margin-top: 0.5rem;
   }

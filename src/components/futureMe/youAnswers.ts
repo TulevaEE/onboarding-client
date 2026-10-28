@@ -155,6 +155,32 @@ export const initialAnswers = (prefill: YouPrefill): YouAnswers =>
     earlyYearsPicked: '',
   } as YouAnswers);
 
+const PREFILLABLE_FIELDS = [
+  'birthYear',
+  'sex',
+  'grossMonthly',
+  'secondPillarRate',
+  'secondPillarAmount',
+  'thirdPillarAmount',
+  'thirdPillarMonthly',
+  'thirdPillarJoined',
+] as const;
+
+export type PrefilledField = (typeof PREFILLABLE_FIELDS)[number] | 'firstPillarMonthly';
+
+export const prefilledFields = (
+  answers: YouAnswers,
+  prefill: YouPrefill,
+): ReadonlySet<PrefilledField> =>
+  new Set<PrefilledField>([
+    ...PREFILLABLE_FIELDS.filter(
+      (field) => prefill[field] != null && answers[field] === String(prefill[field]),
+    ),
+    ...(answers.firstPillarMonthly === PREFILLED_FIRST_PILLAR_MONTHLY
+      ? (['firstPillarMonthly'] as const)
+      : []),
+  ]);
+
 export const removeOptionalSection = (
   answers: YouAnswers,
   section: OptionalSectionId,
