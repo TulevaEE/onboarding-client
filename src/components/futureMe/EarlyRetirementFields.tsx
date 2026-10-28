@@ -2,13 +2,21 @@ import React from 'react';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { formatAmountForCount } from '../common/utils';
 import { EARLY_DECREASE } from './engine/pension';
+import { ChoiceCard } from './ChoiceCard';
+import { HelpButton } from './HelpButton';
 import { SelectField } from './YouFields';
 import {
   birthYearOrFallback,
   earlyRetirementRight,
   earlyRetirementYears,
   earlyRightSources,
+  effectivePensionAge,
   isKidsRightAvailableToSelf,
+  isRescueBasisAsked,
+  isRescueMixOffered,
+  rescueBasisOf,
+  rescueRightOf,
+  RescueBasis,
   isSpecialPensionOnly,
   maxEarlyYearsOption,
   pensionAgeValue,
@@ -96,6 +104,60 @@ const summaryOf = (intl: IntlShape, answers: YouAnswers): React.ReactNode => {
   ) : null;
 };
 
+const RESCUE_BASES: RescueBasis[] = ['mix', 'pension', 'toetus'];
+
+const rescueBasisText = (basis: RescueBasis, answers: YouAnswers) => {
+  const pensionAge = effectivePensionAge(answers);
+  const kidsYears = earlyRightSources(answers).kids;
+  const rescueYears = rescueRightOf(answers);
+  const values = {
+    mix: {
+      toetusYears: rescueYears - kidsYears,
+      toetusFrom: pensionAge - rescueYears,
+      toetusTo: pensionAge - kidsYears - 1,
+      pensionFrom: pensionAge - kidsYears,
+    },
+    pension: { years: kidsYears, age: pensionAge - kidsYears },
+    toetus: { years: rescueYears, age: pensionAge - rescueYears, pensionAge },
+  };
+  return <FormattedMessage id={`futureMe.you.rescueBasis.${basis}.text`} values={values[basis]} />;
+};
+
+const RescueBasisChoice = ({ answers, onChange }: Props) => {
+  const offered = RESCUE_BASES.filter((basis) => basis !== 'mix' || isRescueMixOffered(answers));
+  return (
+    <div className="mb-3">
+      <h3 className="h5 section-title" id="future-me-rescue-basis-title">
+        <FormattedMessage id="futureMe.you.rescueBasis.title" />
+        <HelpButton topic="rescueBasis" />
+      </h3>
+      <p className="you-note" id="future-me-rescue-basis-hint">
+        <FormattedMessage id="futureMe.you.rescueBasis.hint" />
+      </p>
+      <fieldset
+        className="payout-fieldset"
+        aria-labelledby="future-me-rescue-basis-title"
+        aria-describedby="future-me-rescue-basis-hint"
+      >
+        <div className="payout-choices">
+          {offered.map((basis) => (
+            <ChoiceCard
+              key={basis}
+              idPrefix="future-me-rescue-basis"
+              name="future-me-rescue-basis"
+              value={basis}
+              checked={rescueBasisOf(answers) === basis}
+              title={<FormattedMessage id={`futureMe.you.rescueBasis.${basis}.title`} />}
+              text={rescueBasisText(basis, answers)}
+              onChange={() => onChange({ rescueBasis: basis })}
+            />
+          ))}
+        </div>
+      </fieldset>
+    </div>
+  );
+};
+
 interface Props {
   answers: YouAnswers;
   onChange: (changes: Partial<YouAnswers>) => void;
@@ -109,6 +171,7 @@ export const EarlyRetirementFields = ({ answers, onChange }: Props) => {
 
   return (
     <>
+      {isRescueBasisAsked(answers) && <RescueBasisChoice answers={answers} onChange={onChange} />}
       {isSpecialPensionOnly(answers) ? (
         <p className="you-note">
           <FormattedMessage

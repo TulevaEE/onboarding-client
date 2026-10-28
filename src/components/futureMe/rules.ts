@@ -1,10 +1,10 @@
 import { pensionKind } from './age65Answers';
 import { Contract, hasPillar, Pillar } from './age66Answers';
-import { EARLY_DECREASE, retirementYears } from './engine/pension';
+import { childSupplement, EARLY_DECREASE, retirementYears } from './engine/pension';
 import { retirementAge } from './planAges';
 import { ResultContext, resultInputOf, resultOf, resultScenarioOf } from './resultAnswers';
 import { specialPensionStartAge } from './specialPensionAnswers';
-import { amountOf, earlyRightSources, YouAnswers } from './youAnswers';
+import { amountOf, earlyRightSources, KidsInForecast, YouAnswers } from './youAnswers';
 
 type EarlyRightReason = keyof ReturnType<typeof earlyRightSources>;
 
@@ -17,6 +17,7 @@ export type Rule = When &
   (
     | { id: 'earlyRetirement'; years: number; pensionAge: number; reason: EarlyRightReason }
     | { id: 'flexibleRetirement'; years: number; decrease: number }
+    | { id: 'childSupplement'; monthly: number; inForecast: KidsInForecast }
     | { id: 'specialPension'; monthly: number; startAge: number | undefined }
     | { id: 'fundPensionContract'; contracts: Partial<Record<Pillar, Contract>> }
     | { id: 'inheritance'; pillars: 'both' | Pillar }
@@ -55,6 +56,20 @@ const earlyRetirementRules = (context: ResultContext): Rule[] => {
           reason: earlyRightReason(you),
         },
   ];
+};
+
+const childSupplementRules = (context: ResultContext): Rule[] => {
+  const monthly = childSupplement(resultInputOf(context));
+  return monthly > 0
+    ? [
+        {
+          id: 'childSupplement',
+          ...whenOf(context, retirementAge(context.plan)),
+          monthly,
+          inForecast: context.you.kidsInForecast,
+        },
+      ]
+    : [];
 };
 
 const specialPensionRules = (context: ResultContext): Rule[] => {
@@ -117,6 +132,7 @@ const byAge = (a: Rule, b: Rule): number =>
 export const rulesOf = (context: ResultContext): Rule[] =>
   [
     ...earlyRetirementRules(context),
+    ...childSupplementRules(context),
     ...specialPensionRules(context),
     ...fundPensionRules(context),
     ...inheritanceRules(context),

@@ -5,6 +5,9 @@ import {
   earlyRightSources,
   effectivePensionAge,
   isKidsRightAvailableToSelf,
+  isRescueBasisAsked,
+  isRescueMixOffered,
+  rescueBasisOf,
   fieldProblem,
   hasChildWithoutBirthYear,
   initialAnswers,
@@ -548,5 +551,58 @@ describe('prefilled fields', () => {
     expect(Array.from(prefilledFields(initialAnswers(empty), empty))).toEqual([
       'firstPillarMonthly',
     ]);
+  });
+});
+
+describe('rescue allowance or the pension for the children', () => {
+  const threeKidsAndRescue = (overrides: Partial<YouAnswers> = {}) =>
+    filledIn({
+      kidsAdded: true,
+      kidsCount: '3',
+      kidsBirthYears: ['1990', '1992', '1994'],
+      workAdded: true,
+      hasRescue: true,
+      rescueYears: '20',
+      ...overrides,
+    });
+
+  it('is asked only when both the children and the rescue service give the right to retire early', () => {
+    expect(isRescueBasisAsked(threeKidsAndRescue())).toBe(true);
+    expect(isRescueBasisAsked(threeKidsAndRescue({ hasRescue: false }))).toBe(false);
+    expect(isRescueBasisAsked(threeKidsAndRescue({ rescueYears: '10' }))).toBe(false);
+    expect(isRescueBasisAsked(threeKidsAndRescue({ kidsEarlyUser: 'other' }))).toBe(false);
+  });
+
+  it('offers both one after the other only while the rescue right is longer than the children one', () => {
+    expect(isRescueMixOffered(threeKidsAndRescue())).toBe(true);
+    expect(
+      isRescueMixOffered(
+        threeKidsAndRescue({
+          kidsDisabled: true,
+          rescueYears: '15',
+          kidsBirthYears: ['1990', '1992', '1994'],
+        }),
+      ),
+    ).toBe(false);
+  });
+
+  it('is the picked basis for the engine, or none when it is not asked', () => {
+    expect(rescueBasisOf(threeKidsAndRescue({ rescueBasis: 'toetus' }))).toBe('toetus');
+    expect(rescueBasisOf(threeKidsAndRescue({ hasRescue: false }))).toBeUndefined();
+  });
+
+  it('falls back to the pension for the children when both one after the other is not offered', () => {
+    const answers = threeKidsAndRescue({ kidsDisabled: true, rescueBasis: 'mix' });
+
+    expect(rescueBasisOf(answers)).toBe('pension');
+  });
+
+  it('gives no early right from the rescue service when the pension for the children is picked', () => {
+    expect(earlyRightSources(threeKidsAndRescue({ rescueBasis: 'pension' }))).toEqual({
+      kids: 1,
+      hazard: 0,
+      rescue: 0,
+    });
+    expect(earlyRetirementYears(threeKidsAndRescue({ rescueBasis: 'toetus' }))).toBe(5);
   });
 });

@@ -1,7 +1,8 @@
 import { initialAge60 } from './age60Answers';
 import { initialAge66 } from './age66Answers';
-import { ResultContext } from './resultAnswers';
+import { ResultContext, resultInputOf } from './resultAnswers';
 import { contextWith } from './resultContextFixture';
+import { childSupplement } from './engine/pension';
 import { rulesOf } from './rules';
 import { initialSpecialPension } from './specialPensionAnswers';
 
@@ -126,5 +127,43 @@ describe('rules', () => {
         'fundPensionContract',
       );
     });
+  });
+});
+
+describe('child supplement rule', () => {
+  const withGrownChildren = (changes: Partial<ResultContext['you']> = {}) =>
+    contextWith({
+      kidsAdded: true,
+      kidsCount: '2',
+      kidsBirthYears: ['1990', '1992'],
+      ...changes,
+    });
+
+  it('starts with the old-age pension and carries the monthly supplement and the forecast answer', () => {
+    const context = withGrownChildren({ kidsInForecast: 'yes' });
+
+    expect(rulesOf(context)).toContainEqual({
+      id: 'childSupplement',
+      age: 65,
+      year: 2045,
+      monthly: childSupplement(resultInputOf(context)),
+      inForecast: 'yes',
+    });
+  });
+
+  it('follows the early retirement from the children', () => {
+    const context = withGrownChildren({
+      kidsCount: '3',
+      kidsBirthYears: ['1990', '1992', '1994'],
+    });
+
+    expect(rulesOf(context)).toContainEqual(
+      expect.objectContaining({ id: 'childSupplement', age: 64 }),
+    );
+  });
+
+  it('is left out when the other parent gets the supplement or there are no children', () => {
+    expect(idsOf(withGrownChildren({ kidsSupUser: 'other' }))).not.toContain('childSupplement');
+    expect(idsOf(contextWith())).not.toContain('childSupplement');
   });
 });

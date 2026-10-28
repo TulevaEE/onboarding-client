@@ -1,0 +1,46 @@
+import { childSupplement } from './engine/pension';
+import { resultInputOf, resultOf } from './resultAnswers';
+import { contextWith } from './resultContextFixture';
+
+const twoGrownChildren = {
+  kidsAdded: true,
+  kidsCount: '2',
+  kidsBirthYears: ['1990', '1992'],
+};
+
+const statePensionAtStart = (changes: Parameters<typeof contextWith>[0]): number => {
+  const result = resultOf(contextWith({ ...twoGrownChildren, ...changes }));
+  return result.rows.find(({ age }) => age === result.pensionStartAge)?.i1 ?? 0;
+};
+
+describe('children in the result', () => {
+  it('give the engine the children and the supplement they bring', () => {
+    const input = resultInputOf(contextWith(twoGrownChildren));
+
+    expect(input.kids).toMatchObject({ b1991: 1, b2012: 1 });
+    expect(childSupplement(input)).toBeGreaterThan(0);
+  });
+
+  it('have no supplement for the saver when the other parent gets it', () => {
+    const input = resultInputOf(contextWith({ ...twoGrownChildren, kidsSupUser: 'other' }));
+
+    expect(childSupplement(input)).toBe(0);
+  });
+
+  it('add the supplement to the state pension when the forecast does not include it', () => {
+    const supplement = childSupplement(resultInputOf(contextWith(twoGrownChildren)));
+
+    expect(supplement).toBeGreaterThan(0);
+    expect(statePensionAtStart({ kidsInForecast: 'no' })).toBeCloseTo(
+      statePensionAtStart({ kidsInForecast: 'unknown' }) + supplement,
+      0,
+    );
+  });
+
+  it('leave the state pension as it is when the forecast already includes the supplement', () => {
+    expect(statePensionAtStart({ kidsInForecast: 'yes' })).toBeCloseTo(
+      statePensionAtStart({ kidsInForecast: 'unknown' }),
+      0,
+    );
+  });
+});

@@ -1159,6 +1159,71 @@ describe('FutureMe', () => {
         expect(earlyYearsField()).toHaveDisplayValue(withNbsp('5 a, vähendamata (kõige varem)'));
       });
 
+      it('ask who gets the supplement and whether the forecast has it, starting from the saver and unknown', () => {
+        renderFutureMe();
+        addKids(['1990']);
+
+        expect(screen.getByRole('combobox', { name: /Kes saab pensionilisa/ })).toHaveDisplayValue(
+          'mina',
+        );
+        expect(
+          screen.getByRole('combobox', { name: /prognoos sisaldab laste pensionilisa/ }),
+        ).toHaveDisplayValue('ei tea');
+      });
+
+      it('ask the birth month only of a child born in 2021 or in the last three years', () => {
+        renderFutureMe();
+        addKids(['1990', '2025']);
+
+        expect(
+          screen.queryByRole('combobox', { name: /1\. lapse sünnikuu/ }),
+        ).not.toBeInTheDocument();
+        expect(screen.getByRole('combobox', { name: /2\. lapse sünnikuu/ })).toHaveDisplayValue(
+          'ei tea',
+        );
+      });
+
+      describe('with the rescue service too', () => {
+        const addRescueService = () => {
+          addSpecialCases();
+          userEvent.click(specialCase(/Töötasin päästeteenistuses/));
+          typeInto(rescueYearsField(), '20');
+        };
+        const rescueBasis = (name: string) => screen.getByRole('radio', { name });
+
+        it('ask for the rescue allowance or the pension for the children, both one after the other first', () => {
+          renderFutureMe();
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          expect(
+            screen.getByRole('group', { name: /Ootetoetus või laste eest pension/ }),
+          ).toBeVisible();
+          expect(rescueBasis('Mõlemad järjest')).toBeChecked();
+          expect(earlyYearsField()).toHaveDisplayValue(withNbsp('5 a, vähendamata (kõige varem)'));
+        });
+
+        it('take the early right from the children when their pension is picked', () => {
+          renderFutureMe();
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          userEvent.click(rescueBasis('Laste eest pension'));
+
+          expect(earlyYearsField()).toHaveDisplayValue(withNbsp('1 a, vähendamata (kõige varem)'));
+        });
+
+        it('not ask without the right from the children', () => {
+          renderFutureMe();
+          addKids(['1990']);
+          addRescueService();
+
+          expect(
+            screen.queryByRole('radio', { name: 'Ainult ootetoetus' }),
+          ).not.toBeInTheDocument();
+        });
+      });
+
       it('reset on removing, drop the right and move the focus to the add button', () => {
         renderFutureMe();
         addKids(['1990', '1992', '1994']);

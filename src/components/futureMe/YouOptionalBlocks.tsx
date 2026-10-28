@@ -9,9 +9,12 @@ import {
   HazardList,
   isChildBirthYearInvalid,
   isKidsRightAvailableToSelf,
+  KidsInForecast,
+  KidsUser,
   maxChildBirthYear,
   YouAnswers,
 } from './youAnswers';
+import { isChildMonthAsked } from './kidsInput';
 import { AmountField, BlockProps, SelectField } from './YouFields';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';
@@ -49,6 +52,44 @@ export const kidsOptional = (answers: YouAnswers, onAdd: () => void, onRemove: (
 export const workOptional = (answers: YouAnswers, onAdd: () => void, onRemove: () => void) =>
   optionalOf('work', answers.workAdded, onAdd, onRemove);
 
+const KIDS_USERS: KidsUser[] = ['me', 'other'];
+const KIDS_IN_FORECAST: KidsInForecast[] = ['unknown', 'no', 'yes'];
+const MONTHS = Array.from({ length: 12 }, (_, month) => new Date(2000, month, 1));
+
+const ChildBirthMonth = ({
+  id,
+  number,
+  value,
+  onChange,
+}: {
+  id: string;
+  number: number;
+  value: string;
+  onChange: (month: string) => void;
+}) => {
+  const intl = useIntl();
+  return (
+    <div className="mt-2">
+      <label className="form-label text-balance" htmlFor={id}>
+        <FormattedMessage id="futureMe.you.kidBirthMonth.label" values={{ number }} />
+      </label>
+      <select
+        id={id}
+        className="form-select"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+      >
+        <option value="">{intl.formatMessage({ id: 'futureMe.you.kidBirthMonth.unknown' })}</option>
+        {MONTHS.map((date, index) => (
+          <option key={date.getMonth()} value={String(index + 1)}>
+            {intl.formatDate(date, { month: 'long' })}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+};
+
 export const KidsSection = ({
   answers,
   touched,
@@ -70,6 +111,12 @@ export const KidsSection = ({
     const years = Array.from({ length: rows }, (_, row) => answers.kidsBirthYears[row] ?? '');
     years[index] = typed;
     onChange({ kidsBirthYears: years });
+  };
+
+  const changeBirthMonth = (index: number, month: string) => {
+    const months = Array.from({ length: rows }, (_, row) => answers.kidsBirthMonths[row] ?? '');
+    months[index] = month;
+    onChange({ kidsBirthMonths: months });
   };
 
   return (
@@ -150,6 +197,14 @@ export const KidsSection = ({
                           />
                         </div>
                       )}
+                      {isChildMonthAsked(typed) && (
+                        <ChildBirthMonth
+                          id={`future-me-kid-birth-month-${index + 1}`}
+                          number={index + 1}
+                          value={answers.kidsBirthMonths[index] ?? ''}
+                          onChange={(month) => changeBirthMonth(index, month)}
+                        />
+                      )}
                     </div>
                   );
                 })}
@@ -191,11 +246,30 @@ export const KidsSection = ({
                   value,
                   label: intl.formatMessage({ id: `futureMe.you.kidsEarlyUser.${value}` }),
                 }))}
-                onChange={(value) =>
-                  onChange({ kidsEarlyUser: value as YouAnswers['kidsEarlyUser'] })
-                }
+                onChange={(value) => onChange({ kidsEarlyUser: value as KidsUser })}
               />
             )}
+            <SelectField
+              id="future-me-kids-sup-user"
+              label="futureMe.you.kidsSupUser.label"
+              value={answers.kidsSupUser}
+              options={KIDS_USERS.map((value) => ({
+                value,
+                label: intl.formatMessage({ id: `futureMe.you.kidsEarlyUser.${value}` }),
+              }))}
+              onChange={(value) => onChange({ kidsSupUser: value as KidsUser })}
+            />
+            <SelectField
+              id="future-me-kids-in-forecast"
+              label="futureMe.you.kidsInForecast.label"
+              hint="futureMe.you.kidsInForecast.hint"
+              value={answers.kidsInForecast}
+              options={KIDS_IN_FORECAST.map((value) => ({
+                value,
+                label: intl.formatMessage({ id: `futureMe.you.kidsInForecast.${value}` }),
+              }))}
+              onChange={(value) => onChange({ kidsInForecast: value as KidsInForecast })}
+            />
           </>
         )}
       </div>

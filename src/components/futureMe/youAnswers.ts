@@ -67,14 +67,22 @@ export interface YouAnswers extends KidsAnswers, WorkAnswers {
   thirdPillarFund: FundKey;
   thirdPillarPlan: ThirdPillarPlan;
   earlyYearsPicked: string;
+  rescueBasis: RescueBasis;
 }
+
+export type KidsUser = 'me' | 'other';
+export type KidsInForecast = 'unknown' | 'no' | 'yes';
+export type RescueBasis = 'mix' | 'pension' | 'toetus';
 
 interface KidsAnswers {
   kidsAdded: boolean;
   kidsCount: string;
   kidsBirthYears: string[];
+  kidsBirthMonths: string[];
   kidsDisabled: boolean;
-  kidsEarlyUser: 'me' | 'other';
+  kidsEarlyUser: KidsUser;
+  kidsSupUser: KidsUser;
+  kidsInForecast: KidsInForecast;
 }
 
 interface WorkAnswers {
@@ -106,8 +114,11 @@ const OPTIONAL_DEFAULTS: { kids: KidsAnswers; work: WorkAnswers } = {
     kidsAdded: false,
     kidsCount: '1',
     kidsBirthYears: [],
+    kidsBirthMonths: [],
     kidsDisabled: false,
     kidsEarlyUser: 'me',
+    kidsSupUser: 'me',
+    kidsInForecast: 'unknown',
   },
   work: {
     workAdded: false,
@@ -153,6 +164,7 @@ export const initialAnswers = (prefill: YouPrefill): YouAnswers =>
     ...OPTIONAL_DEFAULTS.kids,
     ...OPTIONAL_DEFAULTS.work,
     earlyYearsPicked: '',
+    rescueBasis: 'mix',
   } as YouAnswers);
 
 const PREFILLABLE_FIELDS = [
@@ -222,7 +234,7 @@ export const childRows = (answers: YouAnswers): number =>
 export const maxChildBirthYear = (answers: YouAnswers): number =>
   birthYearOrFallback(answers) + effectivePensionAge(answers);
 
-const validChildBirthYear = (typed: string, maxYear: number): number | null => {
+export const validChildBirthYear = (typed: string, maxYear: number): number | null => {
   const year = Number(typed.trim());
   return CHILD_BIRTH_YEAR_TEXT.test(typed.trim()) && year >= MIN_CHILD_BIRTH_YEAR && year <= maxYear
     ? year
@@ -242,17 +254,13 @@ const typedChildBirthYears = (answers: YouAnswers): string[] =>
 export const hasChildWithoutBirthYear = (answers: YouAnswers): boolean =>
   typedChildBirthYears(answers).some((typed) => typed === '');
 
-const kidsEarlyInput = (
-  earlyUser: YouAnswers['kidsEarlyUser'],
-  isDisabled: boolean,
-  counted: number,
-): KidsInput => ({
+const kidsEarlyInput = (earlyUser: KidsUser, isDisabled: boolean, counted: number): KidsInput => ({
   b1991: counted,
   earlyUser,
   disabled: isDisabled && counted > 0,
 });
 
-const kidsRetirement = (answers: YouAnswers, earlyUser: YouAnswers['kidsEarlyUser']) => {
+const kidsRetirement = (answers: YouAnswers, earlyUser: KidsUser) => {
   const maxYear = maxChildBirthYear(answers);
   const typed = typedChildBirthYears(answers);
   const unknown = typed.filter((year) => year === '').length;
@@ -294,6 +302,27 @@ const kidsRightFor = (answers: YouAnswers, earlyUser: YouAnswers['kidsEarlyUser'
 export const isKidsRightAvailableToSelf = (answers: YouAnswers): boolean =>
   kidsRightFor(answers, 'me') > 0;
 
+export const rescueRightOf = (answers: YouAnswers): number =>
+  answers.workAdded && answers.hasRescue
+    ? earlyYears({ rescueYears: parseInt(answers.rescueYears, 10) || 0 })
+    : 0;
+
+export const isRescueBasisAsked = (answers: YouAnswers): boolean =>
+  kidsRightFor(answers, answers.kidsEarlyUser) > 0 && rescueRightOf(answers) > 0;
+
+export const isRescueMixOffered = (answers: YouAnswers): boolean =>
+  isRescueBasisAsked(answers) &&
+  kidsRightFor(answers, answers.kidsEarlyUser) < rescueRightOf(answers);
+
+export const rescueBasisOf = (answers: YouAnswers): RescueBasis | undefined => {
+  if (!isRescueBasisAsked(answers)) {
+    return undefined;
+  }
+  return answers.rescueBasis === 'mix' && !isRescueMixOffered(answers)
+    ? 'pension'
+    : answers.rescueBasis;
+};
+
 export const earlyRightSources = (
   answers: YouAnswers,
 ): { kids: number; hazard: number; rescue: number } => ({
@@ -305,10 +334,7 @@ export const earlyRightSources = (
           hazardYears: parseFloat(answers.hazardYears) || 0,
         })
       : 0,
-  rescue:
-    answers.workAdded && answers.hasRescue
-      ? earlyYears({ rescueYears: parseInt(answers.rescueYears, 10) || 0 })
-      : 0,
+  rescue: rescueBasisOf(answers) === 'pension' ? 0 : rescueRightOf(answers),
 });
 
 export const earlyRetirementRight = (answers: YouAnswers): number =>
