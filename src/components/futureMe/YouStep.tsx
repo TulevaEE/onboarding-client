@@ -42,6 +42,7 @@ interface Props {
   touched: ReadonlySet<YouField>;
   openSections: Record<YouSectionId, boolean>;
   isPrefilled: boolean;
+  hasRegisterChildren: boolean;
   headingRef: RefObject<HTMLHeadingElement>;
   onChange: (changes: Partial<YouAnswers>) => void;
   onBlur: (field: YouField) => void;
@@ -55,6 +56,7 @@ export const YouStep = ({
   touched,
   openSections,
   isPrefilled,
+  hasRegisterChildren,
   headingRef,
   onChange,
   onBlur,
@@ -161,6 +163,7 @@ export const YouStep = ({
         <ThirdPillarSection {...blockProps('thirdPillar')} />
         <KidsSection
           {...blockProps('kids')}
+          hasRegisterChildren={hasRegisterChildren}
           optional={kidsOptional(
             answers,
             () => onAddSection('kids'),

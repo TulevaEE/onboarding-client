@@ -8,11 +8,13 @@ import {
   hasChildWithoutBirthYear,
   HazardList,
   isChildBirthYearInvalid,
+  isChildIIMonthsAsked,
+  isChildIIMonthsInvalid,
   isKidsRightAvailableToSelf,
   maxChildBirthYear,
   YouAnswers,
 } from './youAnswers';
-import { AmountField, BlockProps, SelectField } from './YouFields';
+import { AmountField, BlockProps, FieldLabel, SelectField } from './YouFields';
 import { sectionLabels } from './YouBlocks';
 import { YouOptionalSection, YouSection } from './YouSection';
 
@@ -24,6 +26,7 @@ const HAZARD_YEARS_NEEDED = { list1: 10, list2: 12.5 };
 const SERVICE_YEARS_NEEDED = { list1: 20, list2: 25 };
 
 type OptionalBlockProps = BlockProps & { optional: YouOptionalSection };
+type KidsBlockProps = OptionalBlockProps & { hasRegisterChildren: boolean };
 
 const optionalOf = (
   block: 'kids' | 'work',
@@ -53,10 +56,11 @@ export const KidsSection = ({
   isOpen,
   isComplete,
   optional,
+  hasRegisterChildren,
   onToggle,
   onChange,
   onBlur,
-}: OptionalBlockProps) => {
+}: KidsBlockProps) => {
   const intl = useIntl();
   const [leftRows, setLeftRows] = useState<ReadonlySet<number>>(new Set());
   const rows = childRows(answers);
@@ -68,6 +72,12 @@ export const KidsSection = ({
     const years = Array.from({ length: rows }, (_, row) => answers.kidsBirthYears[row] ?? '');
     years[index] = typed;
     onChange({ kidsBirthYears: years });
+  };
+
+  const changeIIMonths = (index: number, typed: string) => {
+    const months = Array.from({ length: rows }, (_, row) => answers.kidsIIMonths[row] ?? '');
+    months[index] = typed;
+    onChange({ kidsIIMonths: months });
   };
 
   return (
@@ -112,6 +122,9 @@ export const KidsSection = ({
                   const showError =
                     isChildBirthYearInvalid(answers, index) &&
                     (typed.trim().length === CHILD_BIRTH_YEAR_DIGITS || leftRows.has(index));
+                  const monthsId = `future-me-kid-ii-months-${index + 1}`;
+                  const isMonthsAsked = isChildIIMonthsAsked(Number(typed));
+                  const isMonthsInvalid = isMonthsAsked && isChildIIMonthsInvalid(answers, index);
                   return (
                     <div className="col-12 col-sm-6 col-lg-4" key={id}>
                       <label className="form-label text-balance" htmlFor={id}>
@@ -146,11 +159,56 @@ export const KidsSection = ({
                           />
                         </div>
                       )}
+                      {isMonthsAsked && (
+                        <div className="mt-3">
+                          <FieldLabel htmlFor={monthsId} help="kidIIMonths">
+                            <FormattedMessage
+                              id="futureMe.you.kidIIMonths.label"
+                              values={{ number: index + 1 }}
+                            />
+                          </FieldLabel>
+                          <input
+                            id={monthsId}
+                            className={isMonthsInvalid ? 'form-control is-invalid' : 'form-control'}
+                            type="number"
+                            inputMode="numeric"
+                            min="0"
+                            max="36"
+                            step="1"
+                            value={answers.kidsIIMonths[index] ?? ''}
+                            aria-invalid={isMonthsInvalid}
+                            aria-describedby={
+                              isMonthsInvalid
+                                ? `${monthsId}-hint ${monthsId}-error`
+                                : `${monthsId}-hint`
+                            }
+                            onChange={(event) => changeIIMonths(index, event.target.value)}
+                          />
+                          <div className="form-text" id={`${monthsId}-hint`}>
+                            <FormattedMessage id="futureMe.you.kidIIMonths.hint" />
+                          </div>
+                          {isMonthsInvalid && (
+                            <div className="invalid-feedback" id={`${monthsId}-error`}>
+                              <FormattedMessage
+                                id="futureMe.you.kidIIMonths.error"
+                                values={{ number: index + 1 }}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
               </div>
             </div>
+            {hasRegisterChildren && (
+              <div className="col-12">
+                <div className="form-text mt-0">
+                  <FormattedMessage id="futureMe.you.kids.adultNote" />
+                </div>
+              </div>
+            )}
             {hasChildWithoutBirthYear(answers) && (
               <div className="col-12">
                 <div className="form-text mt-0">

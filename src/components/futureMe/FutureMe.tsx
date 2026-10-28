@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useContributions, useMe, useSourceFunds } from '../common/apiHooks';
+import { useContributions, useEligibleChildren, useMe, useSourceFunds } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { usePageTitle } from '../common/usePageTitle';
 import { Age55Step } from './Age55Step';
@@ -155,6 +155,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           touched={touched}
           openSections={openSections}
           isPrefilled={prefill.birthYear !== null || prefill.sex !== null}
+          hasRegisterChildren={Boolean(prefill.kids)}
           headingRef={headingRef}
           onChange={(changes) => setAnswers((previous) => ({ ...previous, ...changes }))}
           onBlur={(field) => setTouched((previous) => new Set(previous).add(field))}
@@ -314,11 +315,13 @@ export const FutureMe = () => {
   const me = useMe();
   const contributionsQuery = useContributions();
   const sourceFundsQuery = useSourceFunds();
+  const childrenQuery = useEligibleChildren();
   const { data: user } = me;
   const { data: contributions } = contributionsQuery;
   const { data: sourceFunds } = sourceFundsQuery;
+  const { data: children } = childrenQuery;
 
-  if ([me, contributionsQuery, sourceFundsQuery].some(isLoadingForTheFirstTime)) {
+  if ([me, contributionsQuery, sourceFundsQuery, childrenQuery].some(isLoadingForTheFirstTime)) {
     return <Shimmer height={400} />;
   }
 
@@ -326,7 +329,7 @@ export const FutureMe = () => {
     <FutureMeSteps
       prefill={
         user
-          ? derivePrefill(user, { contributions, sourceFunds })
+          ? derivePrefill(user, { contributions, sourceFunds, children })
           : { birthYear: null, sex: null, secondPillarRate: null }
       }
     />

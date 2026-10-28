@@ -1,9 +1,12 @@
 import { Contribution, SecondPillarContribution, SourceFund, User } from '../common/apiModels';
+import { EligibleChild } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 import { CURRENT_YEAR, Sex } from './engine/pension';
+import { deriveKidsPrefill } from './kidsPrefill';
 import {
   contributesMonthlyToThirdPillar,
   latestThirdPillarMonthlyAmount,
 } from '../millionaire/prefill';
+import type { KidsPrefill } from './kidsPrefill';
 import type { ThirdPillarJoined } from './youAnswers';
 
 const ADULT_AGE = 18;
@@ -34,11 +37,13 @@ export interface YouPrefill {
   thirdPillarAmount?: string | null;
   thirdPillarMonthly?: string | null;
   thirdPillarJoined?: ThirdPillarJoined | null;
+  kids?: KidsPrefill | null;
 }
 
 export interface PensionData {
   contributions?: Contribution[];
   sourceFunds?: SourceFund[];
+  children?: Pick<EligibleChild, 'personalCode'>[];
 }
 
 export const parseBirthYear = (typed: string): number | null => {
@@ -125,7 +130,7 @@ export const derivePillarAmount = (sourceFunds: SourceFund[], pillar: 2 | 3): st
 
 export const derivePrefill = (
   user: User,
-  { contributions = [], sourceFunds = [] }: PensionData = {},
+  { contributions = [], sourceFunds = [], children }: PensionData = {},
   today: Date = new Date(),
 ): YouPrefill => {
   const thirdPillarAmount = derivePillarAmount(sourceFunds, 3);
@@ -140,5 +145,6 @@ export const derivePrefill = (
     thirdPillarAmount,
     thirdPillarMonthly: deriveThirdPillarMonthly(contributions, today),
     thirdPillarJoined: hasThirdPillarMoneyWithoutJoinDate ? null : thirdPillarJoined,
+    kids: deriveKidsPrefill(children, contributions),
   };
 };

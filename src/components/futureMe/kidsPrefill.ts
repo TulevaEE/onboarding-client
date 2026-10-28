@@ -1,0 +1,70 @@
+import { Contribution } from '../common/apiModels';
+import { EligibleChild } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
+import { CURRENT_YEAR } from './engine/pension';
+
+const PERSONAL_CODE = /^[1-8]\d{10}$/;
+const MONTHS_IN_YEAR = 12;
+const FIRST_BIRTH_YEAR_WITH_PARENTAL_PAYMENT = 2022;
+const YEARS_OF_PARENTAL_PAYMENT = 3;
+export const PARENTAL_PAYMENT_MONTHS = 36;
+const CENTURY_BY_FIRST_DIGIT = [1800, 1800, 1900, 1900, 2000, 2000, 2100, 2100];
+
+export interface KidsPrefill {
+  birthYears: number[];
+  iiMonths: string[];
+}
+
+type ChildBirth = { year: number; month: number };
+
+export const isChildIIMonthsAsked = (birthYear: number): boolean =>
+  birthYear >= FIRST_BIRTH_YEAR_WITH_PARENTAL_PAYMENT &&
+  birthYear <= CURRENT_YEAR - YEARS_OF_PARENTAL_PAYMENT;
+
+export const childBirthOf = (personalCode: string): ChildBirth | null => {
+  if (!PERSONAL_CODE.test(personalCode)) {
+    return null;
+  }
+  const month = Number(personalCode.slice(3, 5));
+  if (month < 1 || month > MONTHS_IN_YEAR) {
+    return null;
+  }
+  const century = CENTURY_BY_FIRST_DIGIT[Number(personalCode[0]) - 1];
+  return { year: century + Number(personalCode.slice(1, 3)), month };
+};
+
+const monthIndexOf = (isoTime: string): number =>
+  Number(isoTime.slice(0, 4)) * MONTHS_IN_YEAR + Number(isoTime.slice(5, 7)) - 1;
+
+const monthsPaidFor = (birth: ChildBirth, contributions: Contribution[]): number => {
+  const firstMonth = birth.year * MONTHS_IN_YEAR + birth.month - 1;
+  const lastMonth = firstMonth + PARENTAL_PAYMENT_MONTHS;
+  const paidMonths = new Set(
+    contributions
+      .filter(
+        (contribution) => contribution.pillar === 2 && contribution.additionalParentalBenefit > 0,
+      )
+      .map(({ time }) => monthIndexOf(time))
+      .filter((month) => month >= firstMonth && month <= lastMonth),
+  );
+  return Math.min(paidMonths.size, PARENTAL_PAYMENT_MONTHS);
+};
+
+const iiMonthsOf = (birth: ChildBirth, contributions: Contribution[]): string => {
+  const months = isChildIIMonthsAsked(birth.year) ? monthsPaidFor(birth, contributions) : 0;
+  return months > 0 ? String(months) : '';
+};
+
+export const deriveKidsPrefill = (
+  children: Pick<EligibleChild, 'personalCode'>[] | undefined,
+  contributions: Contribution[] | undefined,
+): KidsPrefill | null => {
+  const births = (children ?? [])
+    .map(({ personalCode }) => childBirthOf(personalCode))
+    .filter((birth): birth is ChildBirth => birth !== null);
+  return births.length === 0
+    ? null
+    : {
+        birthYears: births.map(({ year }) => year),
+        iiMonths: births.map((birth) => iiMonthsOf(birth, contributions ?? [])),
+      };
+};

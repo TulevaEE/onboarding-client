@@ -1,3 +1,4 @@
+import { eligibleChildrenProfiles } from './profiles/eligibleChildren';
 import { fundPensionStatusProfiles } from './profiles/fundPensionStatus';
 import { fundsProfiles } from './profiles/funds';
 import { portfolioProfiles } from './profiles/portfolio';
@@ -29,6 +30,7 @@ export type MockModeConfiguration = {
   memberCapital: keyof typeof memberCapitalProfiles | null;
   memberCapitalListings: keyof typeof memberCapitalListingsProfiles | null;
   pendingApplications: keyof typeof pendingApplicationsProfiles | null;
+  eligibleChildren: keyof typeof eligibleChildrenProfiles | null;
   fundPensionStatus: keyof typeof fundPensionStatusProfiles | null;
   funds: keyof typeof fundsProfiles | null;
   portfolio: keyof typeof portfolioProfiles | null;

@@ -360,7 +360,10 @@ export function getKycIdentity(): Promise<KycIdentity> {
 }
 
 export function getEligibleChildren(): Promise<EligibleChild[]> {
-  return getWithAuthentication(getEndpoint('/v1/me/children'));
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/me/children')),
+    'eligibleChildren',
+  );
 }
 
 export function createChild(command: CreateChildCommand): Promise<ChildResponse> {
