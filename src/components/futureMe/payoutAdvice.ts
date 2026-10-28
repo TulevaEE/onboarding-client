@@ -1,0 +1,170 @@
+import { payoutAge } from './planAges';
+import { isPayoutChoiceMadeAtAnotherStep } from './age65Answers';
+import { Contract, hasPillar, payoutAtPensionAge } from './age66Answers';
+import lifeTableData from './engine/lifeTable.json';
+import {
+  bestDeferral,
+  LifeTable,
+  options,
+  PensionInput,
+  Scenario,
+  SCENARIOS,
+  SimulationRow,
+  sustainableNeed,
+} from './engine/pension';
+import {
+  keepGrowing,
+  Result,
+  ResultContext,
+  resultInputOf,
+  resultScenarioOf,
+} from './resultAnswers';
+
+const lifeTable: LifeTable = lifeTableData;
+const BRIDGE_DEFERRAL_WITHOUT_CHOICE = 2;
+const SURPLUS_MIN_MONTHLY = 20;
+const SURPLUS_MIN_YEARS = 3;
+
+export interface HowTo {
+  kind: 'lump' | 'grow' | 'contract' | 'bridge' | 'fund';
+  contract: Contract;
+  deferral: number;
+  atPayoutAge: boolean;
+  payoutAge: number;
+}
+
+export type PayoutWarning =
+  | {
+      kind: 'shorterDeferral';
+      until: number;
+      deferral: number;
+      shorter: number;
+      pensionAge: number;
+    }
+  | {
+      kind: 'betterPayout';
+      until: number;
+      scenarioId: string;
+      best: number;
+      mine: number;
+      how: HowTo;
+    }
+  | { kind: 'noPayoutCovers'; until: number; most: number };
+
+export interface SurplusTip {
+  from: number;
+  to: number;
+  average: number;
+  grow: number | null;
+  mine: number;
+}
+
+const isFundPensionChosen = (context: ResultContext): boolean =>
+  hasPillar('secondPillar', context) && payoutAtPensionAge('secondPillar', context) === 'fund';
+
+export const howToChoose = (scenario: Scenario, context: ResultContext): HowTo => {
+  const { age60, plan } = context;
+  const chosenDeferral = resultScenarioOf(context).deferral ?? 0;
+  const isFundChosen = isFundPensionChosen(context);
+  const base = {
+    contract: (scenario.id === 'B' ? 'once' : 'yearly') as Contract,
+    deferral: scenario.deferral ?? 0,
+    atPayoutAge: age60.secondPillar !== 'grow' || isPayoutChoiceMadeAtAnotherStep(plan),
+    payoutAge: payoutAge(plan),
+  };
+  if (scenario.id === 'A') {
+    return { ...base, kind: 'lump' };
+  }
+  if (scenario.id === 'E') {
+    return { ...base, kind: 'grow' };
+  }
+  if (scenario.id === 'C') {
+    const isOnlyContractDifferent = isFundChosen && chosenDeferral === scenario.deferral;
+    return { ...base, kind: isOnlyContractDifferent ? 'contract' : 'bridge' };
+  }
+  return { ...base, kind: isFundChosen && chosenDeferral === 0 ? 'contract' : 'fund' };
+};
+
+const comparedScenarios = (input: PensionInput, chosen: Scenario): Scenario[] => {
+  const isDeferralOpen = options(input).deferral.open;
+  const deferral = chosen.deferral || BRIDGE_DEFERRAL_WITHOUT_CHOICE;
+  return [...SCENARIOS, keepGrowing]
+    .filter(({ id }) => id !== 'C' || isDeferralOpen)
+    .map((scenario) => (scenario.id === 'C' ? { ...scenario, deferral } : scenario));
+};
+
+const carriedBy = (input: PensionInput, scenario: Scenario): number =>
+  sustainableNeed(input, lifeTable, scenario);
+
+export const payoutWarningOf = (context: ResultContext, result: Result): PayoutWarning | null => {
+  const until = result.coversNeedUntil;
+  if (until === null || until > result.horizonAge) {
+    return null;
+  }
+  const input = resultInputOf(context);
+  const scenario = resultScenarioOf(context);
+  const deferral = scenario.deferral ?? 0;
+  if (deferral > 0) {
+    const shorter = bestDeferral(input, lifeTable, scenario);
+    if (shorter !== null && shorter < deferral) {
+      return {
+        kind: 'shorterDeferral',
+        until,
+        deferral,
+        shorter,
+        pensionAge: result.pensionStartAge,
+      };
+    }
+  }
+  const compared = comparedScenarios(input, scenario).map((candidate) => ({
+    candidate,
+    carries: carriedBy(input, candidate),
+  }));
+  const best = compared.reduce((most, next) => (next.carries > most.carries ? next : most));
+  const isChosenAlready =
+    best.candidate.id === scenario.id && !(scenario.id === 'C' && scenario.contract === 'once');
+  if (best.carries > result.sustainable && !isChosenAlready) {
+    return {
+      kind: 'betterPayout',
+      until,
+      scenarioId: best.candidate.id,
+      best: best.carries,
+      mine: result.sustainable,
+      how: howToChoose(best.candidate, context),
+    };
+  }
+  return { kind: 'noPayoutCovers', until, most: Math.max(best.carries, result.sustainable) };
+};
+
+const surplusOf = (row: SimulationRow): number =>
+  row.fp > 0.5 && !row.work ? Math.max(0, row.i1 + row.isp + row.i23 + row.dep - row.spend) : 0;
+
+const longestSurplusRun = (rows: SimulationRow[]): SimulationRow[] =>
+  rows
+    .reduce<SimulationRow[][]>(
+      (runs, row) => {
+        if (surplusOf(row) <= SURPLUS_MIN_MONTHLY) {
+          return [...runs, []];
+        }
+        const last = runs[runs.length - 1];
+        return [...runs.slice(0, -1), [...last, row]];
+      },
+      [[]],
+    )
+    .reduce((longest, run) => (run.length > longest.length ? run : longest));
+
+export const surplusTipOf = (context: ResultContext, result: Result): SurplusTip | null => {
+  const run = longestSurplusRun(result.rows.filter(({ age }) => age >= result.pensionStartAge));
+  if (run.length < SURPLUS_MIN_YEARS) {
+    return null;
+  }
+  const isGrowingChosen = resultScenarioOf(context).id === keepGrowing.id;
+  const grow = isGrowingChosen ? 0 : carriedBy(resultInputOf(context), keepGrowing);
+  return {
+    from: run[0].age,
+    to: run[run.length - 1].age,
+    average: run.reduce((sum, row) => sum + surplusOf(row), 0) / run.length,
+    grow: grow > result.sustainable ? grow : null,
+    mine: result.sustainable,
+  };
+};
