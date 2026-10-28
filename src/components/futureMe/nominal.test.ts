@@ -1,0 +1,91 @@
+import { initialAge60 } from './age60Answers';
+import { initialAge65 } from './age65Answers';
+import { initialAge66 } from './age66Answers';
+import { initialExpenses } from './expensesAnswers';
+import { CURRENT_YEAR } from './engine/pension';
+import { nominalFactorAt, nominalResultOf, nominalReturnsOf } from './nominal';
+import { ResultContext, resultOf } from './resultAnswers';
+import { initialSpecialPension } from './specialPensionAnswers';
+import { FundKey, initialAnswers, toStepPlanInput } from './youAnswers';
+
+const contextWith = (
+  you: { secondPillarFund?: FundKey; thirdPillarFund?: FundKey } = {},
+  thirdPillarMonthly = '',
+): ResultContext => {
+  const answers = {
+    ...initialAnswers({ birthYear: 1976, sex: null, secondPillarRate: null }),
+    pensionAgeYears: '65',
+    firstPillarMonthly: '700',
+    grossMonthly: '2000',
+    secondPillarAmount: '10000',
+    thirdPillarMonthly,
+    ...you,
+  };
+  return {
+    you: answers,
+    plan: toStepPlanInput(answers),
+    age60: initialAge60(),
+    age65: initialAge65(),
+    age66: initialAge66(),
+    specialPension: initialSpecialPension(),
+    expenses: initialExpenses(),
+  };
+};
+
+describe('nominalFactorAt', () => {
+  it('leaves this year as it is', () => {
+    expect(nominalFactorAt(CURRENT_YEAR)).toBe(1);
+  });
+
+  it('grows prices two percent a year', () => {
+    expect(nominalFactorAt(CURRENT_YEAR + 20)).toBeCloseTo(1.02 ** 20);
+  });
+});
+
+describe('nominalResultOf', () => {
+  const result = resultOf(contextWith());
+  const nominal = nominalResultOf(result);
+  const lateRow = result.rows[result.rows.length - 1];
+  const lateNominal = nominal.rows[nominal.rows.length - 1];
+
+  it('multiplies every amount of a year by that year’s price growth', () => {
+    const factor = nominalFactorAt(lateRow.year);
+
+    expect(lateNominal.i1).toBeCloseTo(lateRow.i1 * factor);
+    expect(lateNominal.i2).toBeCloseTo(lateRow.i2 * factor);
+    expect(lateNominal.spend).toBeCloseTo(lateRow.spend * factor);
+    expect(lateNominal.i1g).toBeCloseTo(lateRow.i1g * factor);
+    expect(lateNominal.tax1).toBeCloseTo(lateRow.tax1 * factor);
+  });
+
+  it('leaves ages, years, the share still alive and the cover ages as they are', () => {
+    expect(lateNominal.age).toBe(lateRow.age);
+    expect(lateNominal.year).toBe(lateRow.year);
+    expect(lateNominal.alive).toBe(lateRow.alive);
+    expect(nominal.coversNeedUntil).toBe(result.coversNeedUntil);
+    expect(nominal.pensionStartAge).toBe(result.pensionStartAge);
+  });
+
+  it('does not change the result it was given', () => {
+    const before = result.rows[0].i1;
+
+    nominalResultOf(result);
+
+    expect(result.rows[0].i1).toBe(before);
+  });
+});
+
+describe('nominalReturnsOf', () => {
+  it('adds the price growth to the second pillar fund’s return when only that pillar exists', () => {
+    expect(nominalReturnsOf(contextWith({ secondPillarFund: 'mix' }))).toEqual({
+      second: 4.0,
+      third: null,
+    });
+  });
+
+  it('keeps the two pillars apart when both exist', () => {
+    expect(
+      nominalReturnsOf(contextWith({ secondPillarFund: 'cons', thirdPillarFund: 'index' }, '50')),
+    ).toEqual({ second: 2.0, third: 6.1 });
+  });
+});

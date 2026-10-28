@@ -7,6 +7,7 @@ import { needMonthly } from './expensesAnswers';
 import { ResultAdvice } from './ResultAdvice';
 import { ResultAssumptions } from './ResultAssumptions';
 import { ResultChart } from './ResultChart';
+import { nominalReturnsOf } from './nominal';
 import { ResultDecisions } from './ResultDecisions';
 import { ResultLegacy } from './ResultLegacy';
 import { ResultRules } from './ResultRules';
@@ -187,7 +188,11 @@ export const ResultStep = ({ context, headingRef, onGoTo }: Props) => {
       <ResultAdvice context={context} result={result} />
       <Tiles result={result} />
       <IncomeAtPensionAge result={result} need={needMonthly(context.expenses)} />
-      <ResultChart result={result} need={needMonthly(context.expenses)} />
+      <ResultChart
+        result={result}
+        need={needMonthly(context.expenses)}
+        nominalReturns={nominalReturnsOf(context)}
+      />
       <ResultLegacy context={context} result={result} onGoTo={onGoTo} />
       <ResultDecisions context={context} />
       <ResultAssumptions context={context} />

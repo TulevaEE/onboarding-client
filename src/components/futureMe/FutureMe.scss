@@ -775,6 +775,27 @@
     }
   }
 
+  .result-figure-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+  }
+
+  .result-nominal {
+    display: flex;
+    align-items: center;
+
+    .form-check {
+      width: auto;
+    }
+  }
+
+  .result-nominal-note {
+    margin: 0 0 0.75rem;
+    font-size: 0.875rem;
+  }
+
   .result-chart-summary {
     margin: 0 0 1rem;
     padding: 0;

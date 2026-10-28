@@ -7,6 +7,7 @@ import { Age66Answers, initialAge66 } from './age66Answers';
 import { initialExpenses, needMonthly } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { ResultChart } from './ResultChart';
+import { nominalReturnsOf } from './nominal';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput, YouAnswers } from './youAnswers';
 import translations from '../translations';
@@ -60,7 +61,11 @@ const renderChart = (changes?: Changes) => {
   const result = resultOf(context);
   render(
     <IntlProvider locale="et" messages={translations.et}>
-      <ResultChart result={result} need={needMonthly(context.expenses)} />
+      <ResultChart
+        result={result}
+        need={needMonthly(context.expenses)}
+        nominalReturns={nominalReturnsOf(context)}
+      />
     </IntlProvider>,
   );
   return result;

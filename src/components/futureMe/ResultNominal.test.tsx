@@ -1,0 +1,214 @@
+import React from 'react';
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { IntlProvider } from 'react-intl';
+import { initialAge60 } from './age60Answers';
+import { initialAge65 } from './age65Answers';
+import { initialAge66 } from './age66Answers';
+import { initialExpenses, needMonthly } from './expensesAnswers';
+import { nominalFactorAt, nominalReturnsOf } from './nominal';
+import { initialSpecialPension } from './specialPensionAnswers';
+import { ResultChart } from './ResultChart';
+import { resultOf, ResultContext } from './resultAnswers';
+import { FundKey, initialAnswers, toStepPlanInput } from './youAnswers';
+import translations from '../translations';
+import { installDialogPolyfill } from './dialogPolyfill';
+
+const BIRTH_YEAR = 1976;
+const mockChart = jest.fn();
+jest.mock('react-chartjs-2', () => {
+  // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
+  const { forwardRef, useImperativeHandle } = require('react');
+  return {
+    Chart: forwardRef(
+      (
+        { data, options, plugins, type, ...domProps }: Record<string, unknown>,
+        ref: React.Ref<unknown>,
+      ) => {
+        mockChart({ data, options, plugins, type });
+        useImperativeHandle(ref, () => null);
+        return <div data-testid="mock-chart" {...domProps} />;
+      },
+    ),
+  };
+});
+
+const contextWith = (
+  funds: { secondPillarFund?: FundKey; thirdPillarFund?: FundKey } = {},
+  thirdPillarMonthly = '',
+): ResultContext => {
+  const you = {
+    ...initialAnswers({ birthYear: BIRTH_YEAR, sex: null, secondPillarRate: null }),
+    pensionAgeYears: '65',
+    firstPillarMonthly: '700',
+    grossMonthly: '2000',
+    secondPillarAmount: '10000',
+    thirdPillarMonthly,
+    ...funds,
+  };
+  return {
+    you,
+    plan: toStepPlanInput(you),
+    age60: initialAge60(),
+    age65: initialAge65(),
+    age66: initialAge66(),
+    specialPension: initialSpecialPension(),
+    expenses: initialExpenses(),
+  };
+};
+
+const renderChart = (context: ResultContext = contextWith()) =>
+  render(
+    <IntlProvider locale="et" messages={translations.et}>
+      <ResultChart
+        result={resultOf(context)}
+        need={needMonthly(context.expenses)}
+        nominalReturns={nominalReturnsOf(context)}
+      />
+    </IntlProvider>,
+  );
+
+const futurePrices = () => screen.getByRole('switch', { name: /^Tuleviku hindades:/ });
+const lastChartProps = () => mockChart.mock.calls[mockChart.mock.calls.length - 1][0];
+const costsShown = (): number[] => lastChartProps().options.plugins.costs.amounts;
+const NOTE_TEXT = /^Graafik, tabel ja kokkuvõte on tuleviku eurodes/;
+
+describe('future prices switch', () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it('is a switch that starts off, says so in words and keeps today’s euros', () => {
+    renderChart();
+
+    expect(futurePrices()).not.toBeChecked();
+    expect(futurePrices()).toHaveAccessibleName(/^Tuleviku hindades:\sväljas$/);
+    expect(screen.getByText('Summad on tänastes eurodes.')).toBeInTheDocument();
+  });
+
+  it('says it is on once turned on, and then explains what the amounts are', () => {
+    renderChart();
+
+    userEvent.click(futurePrices());
+
+    expect(futurePrices()).toBeChecked();
+    expect(futurePrices()).toHaveAccessibleName(/^Tuleviku hindades:\ssees$/);
+    expect(screen.getByText(NOTE_TEXT)).toBeInTheDocument();
+    expect(screen.queryByText('Summad on tänastes eurodes.')).not.toBeInTheDocument();
+  });
+
+  it('keeps the note in a polite live region so a screen reader hears the change', () => {
+    renderChart();
+
+    expect(screen.getByText('Summad on tänastes eurodes.')).toHaveAttribute('aria-live', 'polite');
+  });
+
+  it('names the fund’s return plus the price growth when there is one fund', () => {
+    renderChart(contextWith({ secondPillarFund: 'mix' }));
+
+    userEvent.click(futurePrices());
+
+    expect(screen.getByText(NOTE_TEXT)).toHaveTextContent(
+      /hinnad tõusevad 2%\saastas\).*Fondid kasvavad siis umbes 4%\saastas: sinu valitud tootlus pluss hinnatõus\. Ülejäänud summad on tänastes eurodes\./,
+    );
+  });
+
+  it('names both pillars’ returns when the funds differ', () => {
+    renderChart(contextWith({ secondPillarFund: 'cons', thirdPillarFund: 'index' }, '100'));
+
+    userEvent.click(futurePrices());
+
+    expect(screen.getByText(NOTE_TEXT)).toHaveTextContent(
+      /umbes 2%\s\(II\ssammas\) ja 6,1%\s\(III\ssammas\) aastas/,
+    );
+  });
+
+  it('turns every amount of the chart into the euros of its year', () => {
+    renderChart();
+    const [todayLayer] = lastChartProps().data.datasets;
+
+    userEvent.click(futurePrices());
+
+    const { data, options } = lastChartProps();
+    const yearAt = (index: number) => BIRTH_YEAR + data.labels[index];
+    const last = data.labels.length - 1;
+    expect(data.datasets[0].data[0]).toBe(
+      Math.round(todayLayer.data[0] * nominalFactorAt(yearAt(0))),
+    );
+    expect(options.plugins.costs.amounts[last]).toBe(
+      Math.round(791 * nominalFactorAt(yearAt(last))),
+    );
+  });
+
+  it('draws the costs as a flat line while off and as a rising line while on', () => {
+    renderChart();
+    expect(lastChartProps().options.plugins.costs.amounts).toBeUndefined();
+
+    userEvent.click(futurePrices());
+
+    const amounts = costsShown();
+    expect(amounts[amounts.length - 1]).toBeGreaterThan(amounts[0]);
+  });
+
+  it('goes back to today’s euros when turned off again', () => {
+    renderChart();
+    userEvent.click(futurePrices());
+
+    userEvent.click(futurePrices());
+
+    expect(futurePrices()).not.toBeChecked();
+    expect(lastChartProps().options.plugins.costs.amounts).toBeUndefined();
+    expect(screen.getByText('Summad on tänastes eurodes.')).toBeInTheDocument();
+  });
+
+  it('shows the table in future euros too', () => {
+    renderChart();
+    userEvent.click(screen.getByRole('button', { name: 'Näita tabelina' }));
+    const costsInFirstRow = () => {
+      const [, firstRow] = within(screen.getByRole('region')).getAllByRole('row');
+      return within(firstRow).getAllByRole('cell').pop()?.textContent;
+    };
+    const before = costsInFirstRow();
+
+    userEvent.click(futurePrices());
+
+    expect(costsInFirstRow()).not.toBe(before);
+  });
+
+  it('names the euros of the table in its caption', () => {
+    renderChart();
+    userEvent.click(screen.getByRole('button', { name: 'Näita tabelina' }));
+    expect(screen.getByRole('region')).toHaveAccessibleName(/tänastes eurodes/);
+
+    userEvent.click(futurePrices());
+
+    expect(screen.getByRole('region')).toHaveAccessibleName(/tuleviku eurodes, pärast tulumaksu/);
+  });
+
+  it('states the costs in today’s and in future euros in the summary', () => {
+    renderChart();
+    expect(screen.getByRole('list', { name: 'Graafiku kokkuvõte' })).not.toHaveTextContent(
+      'tuleviku hindades',
+    );
+
+    userEvent.click(futurePrices());
+
+    expect(screen.getByRole('list', { name: 'Graafiku kokkuvõte' })).toHaveTextContent(
+      /Sinu kulud on 791\s€\skuus tänastes hindades, 65-⁠aastaselt tuleviku hindades 1\s065\s€\./,
+    );
+  });
+
+  describe('explanation', () => {
+    beforeAll(installDialogPolyfill);
+
+    it('opens beside the switch', () => {
+      renderChart();
+
+      userEvent.click(
+        screen.getByRole('button', { name: /^Selgitus: Mida näitab „tuleviku hindades“$/ }),
+      );
+
+      expect(
+        screen.getByRole('dialog', { name: 'Mida näitab „tuleviku hindades“?' }),
+      ).toBeInTheDocument();
+    });
+  });
+});
