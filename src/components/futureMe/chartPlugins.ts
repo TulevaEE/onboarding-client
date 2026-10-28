@@ -42,6 +42,15 @@ const pillWidthOf = (ctx: CanvasRenderingContext2D, text: string) => {
   return width;
 };
 
+const tracePill = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number) => {
+  const canRoundCorners = typeof ctx.roundRect === 'function';
+  if (canRoundCorners) {
+    ctx.roundRect(x, y, width, PILL_HEIGHT, PILL_HEIGHT / 2);
+  } else {
+    ctx.rect(x, y, width, PILL_HEIGHT);
+  }
+};
+
 const drawPill = (
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -52,7 +61,7 @@ const drawPill = (
   ctx.save();
   ctx.font = PILL_FONT;
   ctx.beginPath();
-  ctx.roundRect(x, y, pillWidthOf(ctx, text), PILL_HEIGHT, PILL_HEIGHT / 2);
+  tracePill(ctx, x, y, pillWidthOf(ctx, text));
   ctx.fillStyle = colors.background;
   ctx.fill();
   if (colors.border) {

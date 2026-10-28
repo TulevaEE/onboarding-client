@@ -5,7 +5,7 @@ const PILL_TEXT_WIDTH = 40;
 const PILL_WIDTH = PILL_TEXT_WIDTH + 16;
 const CHART_TOP = 10;
 
-const fakeChart = () => {
+const fakeChart = (overrides: Record<string, unknown> = {}) => {
   const ctx = {
     save: jest.fn(),
     restore: jest.fn(),
@@ -18,6 +18,8 @@ const fakeChart = () => {
     roundRect: jest.fn(),
     setLineDash: jest.fn(),
     measureText: jest.fn(() => ({ width: PILL_TEXT_WIDTH })),
+    rect: jest.fn(),
+    ...overrides,
   };
   const chart = {
     ctx,
@@ -51,6 +53,15 @@ describe('chartPlugins', () => {
       expect(ctx.lineTo).toHaveBeenCalledWith(50, 210);
       expect(ctx.fillText).toHaveBeenCalledWith('Töö lõpp', 62, expect.any(Number));
       expect(pillAt(ctx, 0)).toEqual({ x: 54, y: CHART_TOP + 2 });
+    });
+
+    it('draws the pill with square corners in a browser that cannot round them', () => {
+      const { ctx, chart } = fakeChart({ roundRect: undefined });
+
+      marksLine.afterDatasetsDraw?.(chart, {} as never, [{ age: 70, text: 'Töö lõpp' }], false);
+
+      expect(ctx.rect).toHaveBeenCalledWith(54, CHART_TOP + 2, PILL_WIDTH, 20);
+      expect(ctx.fillText).toHaveBeenCalledWith('Töö lõpp', 62, expect.any(Number));
     });
 
     it('skips a mark at an age the chart does not show', () => {
