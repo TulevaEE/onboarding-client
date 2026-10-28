@@ -63,6 +63,9 @@ const EVENT_HOVER_RADIUS = 8;
 const EVENT_DOT_BORDER = 2;
 const TIP_GAP = 10;
 const Y_AXIS_WIDTH = 76;
+const TOUCH_Y_AXIS_WIDTH = 52;
+const MIN_TICK_GAP = 32;
+const EVENT_DOT_ROOM = EVENT_DOT_RADIUS + EVENT_DOT_BORDER;
 const THOUSAND = 1000;
 const NOT_COUNTED = '–';
 const COUNTED_FROM_PENSION_AGE: (ChartSourceId | 'costs')[] = ['salary', 'costs'];
@@ -86,6 +89,9 @@ const fadingFill = (color: string) => (context: ScriptableContext<'line'>) => {
   gradient.addColorStop(1, transparent(color, 0.08));
   return gradient;
 };
+
+const fittingTickStep = (width: number, years: number) =>
+  (width / years) * WIDE_TICK_STEP >= MIN_TICK_GAP ? WIDE_TICK_STEP : NARROW_TICK_STEP;
 
 const shortAmount = (value: number | string) => {
   const amount = Number(value);
@@ -247,6 +253,7 @@ const datasetsOf = (
       pointHoverBorderWidth: EVENT_DOT_BORDER,
       segment: { borderColor: hideEdge },
       tension: 0,
+      clip: EVENT_DOT_ROOM,
     };
   });
 };
@@ -319,7 +326,7 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
   const { data, options } = useMemo(() => {
     const { costs } = pensionStartRowOf(rows);
     const isNarrow = window.matchMedia(NARROW_SCREEN).matches;
-    const tickStep = isNarrow ? NARROW_TICK_STEP : WIDE_TICK_STEP;
+    let tickStep = isNarrow ? NARROW_TICK_STEP : WIDE_TICK_STEP;
     const chartData: ChartData<'line'> = {
       datasets: datasetsOf(
         intl,
@@ -335,6 +342,7 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
       responsive: true,
       maintainAspectRatio: false,
       animation: false,
+      layout: { padding: { left: EVENT_DOT_ROOM } },
       ...(isTouchView ? { events: [], onResize: (_chart, { width }) => setChartWidth(width) } : {}),
       interaction: { mode: 'lastPointAtAge', intersect: false },
       onHover: ({ x }, elements) => {
@@ -370,6 +378,11 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
           max: rows[rows.length - 1].age,
           grid: { display: false },
           border: { color: AXIS_BORDER_COLOR },
+          afterSetDimensions: ({ width }) => {
+            if (isTouchView) {
+              tickStep = fittingTickStep(width, rows.length);
+            }
+          },
           title: {
             display: !isTouchView,
             text: intl.formatMessage({ id: 'futureMe.result.chart.axis.age' }),
@@ -377,7 +390,6 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
             font: FONT,
           },
           ticks: {
-            display: !isTouchView,
             autoSkip: false,
             maxRotation: 0,
             stepSize: 1,
@@ -395,7 +407,7 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
           grid: { display: false },
           afterFit: (scale) => {
             // eslint-disable-next-line no-param-reassign
-            scale.width = Y_AXIS_WIDTH;
+            scale.width = isTouchView ? TOUCH_Y_AXIS_WIDTH : Y_AXIS_WIDTH;
           },
           ticks: { maxTicksLimit: 5, color: TICK_COLOR, font: FONT, callback: shortAmount },
         },

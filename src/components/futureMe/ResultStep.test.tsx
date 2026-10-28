@@ -332,7 +332,10 @@ describe('Result step', () => {
       expect([wideTick(65), wideTick(66), wideTick(70)]).toEqual([65, '', 70]);
 
       const wideMatchMedia = window.matchMedia;
-      window.matchMedia = (query: string) => ({ ...wideMatchMedia(query), matches: true });
+      window.matchMedia = (query: string) => ({
+        ...wideMatchMedia(query),
+        matches: !query.includes('pointer: coarse'),
+      });
       userEvent.click(within(trail()).getByRole('button', { name: /^Kulud/ }));
       goTo(/^Tulemus/);
       window.matchMedia = wideMatchMedia;

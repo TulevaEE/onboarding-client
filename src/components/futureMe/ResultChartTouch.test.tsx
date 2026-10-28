@@ -107,12 +107,27 @@ describe('ResultChart on a touch screen', () => {
       expect(chart()).not.toHaveAttribute('tabindex');
     });
 
-    it('leaves the age numbers to the buttons below instead of the x axis', () => {
+    it('labels every fifth age on the axis when they fit and every tenth when they do not', () => {
       renderChart();
       const { x } = lastChartProps().options.scales;
+      const tickAt = (width: number, age: number) => {
+        x.afterSetDimensions({ width });
+        return x.ticks.callback(age);
+      };
 
-      expect(x.ticks.display).toBe(false);
+      expect([tickAt(1000, 72), tickAt(1000, 75), tickAt(1000, 80)]).toEqual(['', 75, 80]);
+      expect([tickAt(100, 72), tickAt(100, 75), tickAt(100, 80)]).toEqual(['', '', 80]);
+      expect(x.ticks.display).not.toBe(false);
       expect(x.title.display).toBe(false);
+    });
+
+    it('gives the amounts on the side a narrower strip, so the plot gets the width', () => {
+      renderChart();
+      const scale = { width: 31 };
+
+      lastChartProps().options.scales.y.afterFit(scale);
+
+      expect(scale.width).toBe(52);
     });
 
     it('puts a dot every five years, a bigger one at a life event', () => {
@@ -309,7 +324,6 @@ describe('ResultChart with a mouse', () => {
 
     expect(screen.queryByRole('toolbar')).not.toBeInTheDocument();
     expect(lastChartProps().options.events).toBeUndefined();
-    expect(lastChartProps().options.scales.x.ticks.display).not.toBe(false);
     expect(layer.pointRadius[pointOfAge(66)]).toBe(3);
     expect(chart()).toHaveAttribute('tabindex', '0');
   });
