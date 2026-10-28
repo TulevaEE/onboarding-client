@@ -244,6 +244,25 @@ describe('FutureMe', () => {
       expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
     });
 
+    it('keeps what was typed while pension data that could not be loaded is tried again', () => {
+      withPensionData({ contributions: undefined, sourceFunds: undefined });
+      const { rerender } = renderFutureMe();
+      userEvent.type(grossSalaryField(), '2500');
+
+      mockUseContributions.mockReturnValue({
+        data: undefined,
+        isLoading: true,
+        isFetched: true,
+      } as ReturnType<typeof useContributions>);
+      rerender(
+        <IntlProvider locale="et" messages={translations.et}>
+          <FutureMe />
+        </IntlProvider>,
+      );
+
+      expect(grossSalaryField()).toHaveValue(2500);
+    });
+
     it('leaves the fields empty when the pension data could not be loaded', () => {
       withPensionData({ contributions: undefined, sourceFunds: undefined });
 

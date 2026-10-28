@@ -301,13 +301,24 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   );
 };
 
+const isLoadingForTheFirstTime = ({
+  isLoading,
+  isFetched,
+}: {
+  isLoading: boolean;
+  isFetched?: boolean;
+}) => isLoading && !isFetched;
+
 export const FutureMe = () => {
   usePageTitle('pageTitle.futureMe');
-  const { data: user, isLoading: isUserLoading } = useMe();
-  const { data: contributions, isLoading: areContributionsLoading } = useContributions();
-  const { data: sourceFunds, isLoading: areSourceFundsLoading } = useSourceFunds();
+  const me = useMe();
+  const contributionsQuery = useContributions();
+  const sourceFundsQuery = useSourceFunds();
+  const { data: user } = me;
+  const { data: contributions } = contributionsQuery;
+  const { data: sourceFunds } = sourceFundsQuery;
 
-  if (isUserLoading || areContributionsLoading || areSourceFundsLoading) {
+  if ([me, contributionsQuery, sourceFundsQuery].some(isLoadingForTheFirstTime)) {
     return <Shimmer height={400} />;
   }
 
