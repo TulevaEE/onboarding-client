@@ -22,9 +22,16 @@ export interface ChartEvent {
   next?: AfterFundEnd;
 }
 
-const ONE_CONTRACT_SCENARIO = 'B';
+type FundPillar = 'second' | 'third';
+
 const PAID_FROM = 0.5;
 const HAS_MONEY = 1;
+const PAYMENTS: Record<FundPillar, 'i2' | 'i3'> = { second: 'i2', third: 'i3' };
+const OTHER_PILLAR: Record<FundPillar, FundPillar> = { second: 'third', third: 'second' };
+const CONTINUES: Record<FundPillar, AfterFundEnd> = {
+  second: 'secondContinues',
+  third: 'thirdContinues',
+};
 
 const isPaid = (monthly: number) => monthly > PAID_FROM;
 
@@ -46,50 +53,42 @@ export const chartEventsOf = (result: Result): ChartEvent[] => {
     events.push({ kind: 'fundStart', age: fundStart.age });
   }
 
-  const endOfPaymentsOf = (pillar: 'i2' | 'i3') =>
-    rows.find((row, index) => index > 0 && isPaid(rows[index - 1][pillar]) && !isPaid(row[pillar]))
-      ?.age;
-  const fundEnds: Partial<Record<'second' | 'third', number>> =
-    fundStart && result.scenarioId === ONE_CONTRACT_SCENARIO
-      ? { second: endOfPaymentsOf('i2'), third: endOfPaymentsOf('i3') }
-      : {};
+  const rowAt = (age: number) => rows.find((row) => row.age === age);
+  const paysAt = (pillar: FundPillar, age: number) => isPaid(rowAt(age)?.[PAYMENTS[pillar]] ?? 0);
+  const contractsEndingOnTime = (['second', 'third'] as const).flatMap((pillar) => {
+    const contract = result.fundPensionContracts[pillar];
+    return contract && paysAt(pillar, contract.end - 1) ? [{ pillar, ...contract }] : [];
+  });
 
-  const afterFundEnd = (age: number, other?: number): AfterFundEnd => {
-    if (other !== undefined && other > age) {
-      return other === fundEnds.third ? 'thirdContinues' : 'secondContinues';
+  const afterFundEnd = (age: number, pillar?: FundPillar): AfterFundEnd => {
+    if (pillar && paysAt(OTHER_PILLAR[pillar], age)) {
+      return CONTINUES[OTHER_PILLAR[pillar]];
     }
-    return isPaid(rows.find((row) => row.age === age)?.dep ?? 0) ? 'deposit' : 'stateOnly';
+    return isPaid(rowAt(age)?.dep ?? 0) ? 'deposit' : 'stateOnly';
   };
-  const { second, third } = fundEnds;
-  if (fundStart && second !== undefined && second === third) {
-    events.push({
-      kind: 'fundEnd',
-      age: second,
-      pillars: 'both',
-      years: second - fundStart.age,
-      next: afterFundEnd(second),
-    });
-  } else if (fundStart) {
-    (
-      [
-        ['second', second, third],
-        ['third', third, second],
-      ] as const
-    ).forEach(([pillars, age, other]) => {
-      if (age !== undefined) {
-        events.push({
+  const [first, second] = contractsEndingOnTime;
+  const fundEnds: ChartEvent[] =
+    second && first.start === second.start && first.end === second.end
+      ? [
+          {
+            kind: 'fundEnd',
+            age: first.end,
+            pillars: 'both',
+            years: first.end - first.start,
+            next: afterFundEnd(first.end),
+          },
+        ]
+      : contractsEndingOnTime.map(({ pillar, start, end }) => ({
           kind: 'fundEnd',
-          age,
-          pillars,
-          years: age - fundStart.age,
-          next: afterFundEnd(age, other),
-        });
-      }
-    });
-  }
+          age: end,
+          pillars: pillar,
+          years: end - start,
+          next: afterFundEnd(end, pillar),
+        }));
+  events.push(...fundEnds);
 
   const depositStart = rows.find(({ dep }) => isPaid(dep));
-  const fundEndAges = Object.values(fundEnds);
+  const fundEndAges = fundEnds.map(({ age }) => age);
   if (depositStart && !fundEndAges.includes(depositStart.age)) {
     events.push({ kind: 'depositStart', age: depositStart.age });
   }

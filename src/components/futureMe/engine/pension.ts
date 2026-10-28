@@ -160,8 +160,14 @@ export interface FirstPillarComparison {
   larger: FirstPillarChoice;
 }
 
+export interface FundPensionContract {
+  start: number;
+  end: number;
+}
+
 export interface SimulationResult extends SimulationSummary {
   ordinaryPensionAge: number;
+  fundPensionContracts: Record<'second' | 'third', FundPensionContract | null>;
   childSupplement: { monthly: number; applied: boolean } | null;
   rescueAllowance: { from: number; until: number; monthly: number; pension: number } | null;
   hazardSupplement: number | null;
@@ -924,6 +930,11 @@ export function simulate(
   return {
     ...summarize(rows, input, table, ret, p1Start, currentAge),
     ordinaryPensionAge: pa,
+    fundPensionContracts: {
+      second:
+        contractStart !== null ? { start: contractStart, end: contractStart + contractTerm } : null,
+      third: start3 !== null ? { start: start3, end: start3 + term3 } : null,
+    },
     childSupplement: kidsMonthly > 0 ? { monthly: kidsMonthly, applied: kidsApplied } : null,
     rescueAllowance:
       toetusEnd !== null && toetusEnd > ret

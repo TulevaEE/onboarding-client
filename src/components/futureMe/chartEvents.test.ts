@@ -1,16 +1,18 @@
 import { initialAge60 } from './age60Answers';
 import { Age65Answers, initialAge65 } from './age65Answers';
 import { Age66Answers, initialAge66 } from './age66Answers';
-import { initialExpenses } from './expensesAnswers';
+import { initialExpenses, withLevel } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { chartEventsOf } from './chartEvents';
 import { resultOf, ResultContext } from './resultAnswers';
-import { initialAnswers, toStepPlanInput } from './youAnswers';
+import { initialAnswers, toStepPlanInput, YouAnswers } from './youAnswers';
 
 const contextWith = (
   age65: Partial<Age65Answers> = {},
   age66: Partial<Age66Answers> = {},
   gross = '2000',
+  changes: Partial<YouAnswers> = {},
+  expenses = initialExpenses(),
 ): ResultContext => {
   const you = {
     ...initialAnswers({ birthYear: 1976, sex: null, secondPillarRate: null }),
@@ -18,6 +20,7 @@ const contextWith = (
     firstPillarMonthly: '700',
     grossMonthly: gross,
     secondPillarAmount: '10000',
+    ...changes,
   };
   return {
     you,
@@ -26,7 +29,7 @@ const contextWith = (
     age65: { ...initialAge65(), ...age65 },
     age66: { ...initialAge66(), ...age66 },
     specialPension: initialSpecialPension(),
-    expenses: initialExpenses(),
+    expenses,
   };
 };
 
@@ -92,6 +95,97 @@ describe('chartEvents', () => {
 
     it('says what is left after it', () => {
       expect(['stateOnly', 'deposit']).toContain(fundEnd?.next);
+    });
+  });
+
+  describe('fund pension contracts for the average remaining life', () => {
+    const thirdPillar = {
+      thirdPillarJoined: 'after' as const,
+      thirdPillarAmount: '20000',
+      thirdPillarMonthly: '0',
+    };
+    const fundEndsOf = (context: ResultContext) =>
+      chartEventsOf(resultOf(context)).filter(({ kind }) => kind === 'fundEnd');
+
+    it('marks the end of a second pillar contract when the state pension is deferred', () => {
+      expect(
+        fundEndsOf(
+          contextWith(
+            { secondPillar: 'fund', mode: 'defer', years: 2 },
+            { secondPillarContract: 'once' },
+          ),
+        ),
+      ).toEqual([{ kind: 'fundEnd', age: 84, pillars: 'second', years: 19, next: 'stateOnly' }]);
+    });
+
+    it('marks the end of a third pillar contract', () => {
+      expect(
+        fundEndsOf(
+          contextWith(
+            { thirdPillar: 'fund' },
+            { thirdPillarContract: 'once' },
+            '2000',
+            thirdPillar,
+          ),
+        ),
+      ).toEqual([{ kind: 'fundEnd', age: 84, pillars: 'third', years: 19, next: 'deposit' }]);
+    });
+
+    it('says the third pillar goes on when the second pillar contract ends and the third renews every year', () => {
+      expect(
+        fundEndsOf(
+          contextWith(
+            { secondPillar: 'fund', thirdPillar: 'fund' },
+            { secondPillarContract: 'once', thirdPillarContract: 'yearly' },
+            '2000',
+            thirdPillar,
+          ),
+        ),
+      ).toEqual([
+        { kind: 'fundEnd', age: 84, pillars: 'second', years: 19, next: 'thirdContinues' },
+      ]);
+    });
+
+    it('marks one end for second and third pillar contracts that start and end together', () => {
+      expect(
+        fundEndsOf(
+          contextWith(
+            { secondPillar: 'fund', thirdPillar: 'fund' },
+            { secondPillarContract: 'once', thirdPillarContract: 'once' },
+            '2000',
+            thirdPillar,
+          ),
+        ),
+      ).toEqual([{ kind: 'fundEnd', age: 84, pillars: 'both', years: 19, next: 'deposit' }]);
+    });
+
+    it('counts the years of each contract from its own start', () => {
+      expect(
+        fundEndsOf(
+          contextWith(
+            { secondPillar: 'fund', thirdPillar: 'grow' },
+            { secondPillarContract: 'once', thirdPillarContract: 'once', thirdPillarFrom: '75' },
+            '2000',
+            thirdPillar,
+          ),
+        ),
+      ).toEqual([
+        { kind: 'fundEnd', age: 84, pillars: 'second', years: 19, next: 'thirdContinues' },
+        { kind: 'fundEnd', age: 87, pillars: 'third', years: 12, next: 'deposit' },
+      ]);
+    });
+
+    it('does not call a contract emptied early by extra withdrawals the end of its term', () => {
+      const emptiedEarly = contextWith(
+        { secondPillar: 'fund' },
+        { secondPillarContract: 'once' },
+        '2000',
+        { firstPillarMonthly: '400' },
+        withLevel(initialExpenses(), 'comfortable'),
+      );
+
+      expect(fundEndsOf(emptiedEarly)).toEqual([]);
+      expect(kindsOf(emptiedEarly)).toContain('moneyEnd');
     });
   });
 
