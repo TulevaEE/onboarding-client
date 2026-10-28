@@ -6,13 +6,7 @@ import { BIRTH_YEAR_MAX, BIRTH_YEAR_MIN } from './prefill';
 import { EarlyRetirementFields } from './EarlyRetirementFields';
 import { SecondPillarSection, StateSection, ThirdPillarSection } from './YouBlocks';
 import { KidsSection, kidsOptional, WorkSection, workOptional } from './YouOptionalBlocks';
-import {
-  FIELD_DOM_IDS,
-  FieldLabel,
-  PREFILLED_HINT_ID,
-  PrefilledHint,
-  RequiredMark,
-} from './YouFields';
+import { FIELD_DOM_IDS, FieldLabel, PrefilledHint, RequiredMark } from './YouFields';
 import { YouSection, YouSectionLabels } from './YouSection';
 import {
   blockedFieldsOf,
@@ -20,8 +14,6 @@ import {
   YouAnswers,
   YouField,
   YouSectionId,
-  isPrefilledAnswer,
-  PrefilledValues,
 } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
 import { FutureMeStep } from './steps';
@@ -50,7 +42,6 @@ interface Props {
   touched: ReadonlySet<YouField>;
   openSections: Record<YouSectionId, boolean>;
   isPrefilled: boolean;
-  prefilled: PrefilledValues;
   hasRegisterChildren: boolean;
   headingRef: RefObject<HTMLHeadingElement>;
   onChange: (changes: Partial<YouAnswers>) => void;
@@ -65,7 +56,6 @@ export const YouStep = ({
   touched,
   openSections,
   isPrefilled,
-  prefilled,
   hasRegisterChildren,
   headingRef,
   onChange,
@@ -88,7 +78,6 @@ export const YouStep = ({
   });
   const describedBy = classNames('future-me-birth-year-hint', {
     'future-me-birth-year-error': showBirthYearError,
-    [PREFILLED_HINT_ID]: isPrefilledAnswer(answers, prefilled, 'birthYear'),
   });
 
   return (
@@ -158,9 +147,6 @@ export const YouStep = ({
                 id="future-me-sex"
                 className="form-select"
                 value={sex}
-                aria-describedby={
-                  isPrefilledAnswer(answers, prefilled, 'sex') ? PREFILLED_HINT_ID : undefined
-                }
                 onChange={(event) => onChange({ sex: event.target.value as Sex })}
               >
                 {SEX_OPTIONS.map(({ value, label }) => (
@@ -173,12 +159,11 @@ export const YouStep = ({
           </div>
         </YouSection>
         <StateSection {...blockProps('state')} />
-        <SecondPillarSection {...blockProps('secondPillar')} prefilled={prefilled} />
-        <ThirdPillarSection {...blockProps('thirdPillar')} prefilled={prefilled} />
+        <SecondPillarSection {...blockProps('secondPillar')} />
+        <ThirdPillarSection {...blockProps('thirdPillar')} />
         <KidsSection
           {...blockProps('kids')}
           hasRegisterChildren={hasRegisterChildren}
-          prefilled={prefilled}
           optional={kidsOptional(
             answers,
             () => onAddSection('kids'),

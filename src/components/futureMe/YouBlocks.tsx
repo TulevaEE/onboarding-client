@@ -10,9 +10,8 @@ import {
   PREFILLED_FIRST_PILLAR_MONTHLY,
   SECOND_PILLAR_RATE_OPTIONS,
   ThirdPillarJoined,
-  isPrefilledAnswer,
 } from './youAnswers';
-import { AmountField, BlockProps, PrefilledBlockProps, SelectField } from './YouFields';
+import { AmountField, BlockProps, SelectField } from './YouFields';
 import { YouSection, YouSectionLabels } from './YouSection';
 import { euro } from './amountFormat';
 
@@ -131,8 +130,7 @@ export const SecondPillarSection = ({
   onToggle,
   onChange,
   onBlur,
-  prefilled,
-}: PrefilledBlockProps) => {
+}: BlockProps) => {
   const intl = useIntl();
 
   return (
@@ -162,7 +160,6 @@ export const SecondPillarSection = ({
         <AmountField
           field="grossMonthly"
           answers={answers}
-          isPrefilled={isPrefilledAnswer(answers, prefilled, 'grossMonthly')}
           touched={touched}
           label="futureMe.you.grossMonthly.label"
           help="gross"
@@ -177,7 +174,6 @@ export const SecondPillarSection = ({
           label="futureMe.you.secondPillarRate.label"
           help="p2Rate"
           value={answers.secondPillarRate}
-          isPrefilled={isPrefilledAnswer(answers, prefilled, 'secondPillarRate')}
           options={SECOND_PILLAR_RATE_OPTIONS.map((rate) => ({
             value: rate,
             label: rateLabel(intl, rate),
@@ -187,7 +183,6 @@ export const SecondPillarSection = ({
         <AmountField
           field="secondPillarAmount"
           answers={answers}
-          isPrefilled={isPrefilledAnswer(answers, prefilled, 'secondPillarAmount')}
           touched={touched}
           label="futureMe.you.secondPillarAmount.label"
           unit="futureMe.you.secondPillarAmount.unit"
@@ -219,8 +214,7 @@ export const ThirdPillarSection = ({
   onToggle,
   onChange,
   onBlur,
-  prefilled,
-}: PrefilledBlockProps) => {
+}: BlockProps) => {
   const intl = useIntl();
   const hasNotJoined = answers.thirdPillarJoined === 'none';
   const isOpeningPlanned =
@@ -254,7 +248,6 @@ export const ThirdPillarSection = ({
           label="futureMe.you.thirdPillarJoined.label"
           help="p3Joined"
           value={answers.thirdPillarJoined}
-          isPrefilled={isPrefilledAnswer(answers, prefilled, 'thirdPillarJoined')}
           options={THIRD_PILLAR_JOIN_TIMES.map((when) => ({
             value: when,
             label: intl.formatMessage({
@@ -268,7 +261,6 @@ export const ThirdPillarSection = ({
         <AmountField
           field="thirdPillarAmount"
           answers={answers}
-          isPrefilled={isPrefilledAnswer(answers, prefilled, 'thirdPillarAmount')}
           touched={touched}
           label="futureMe.you.thirdPillarAmount.label"
           unit="futureMe.you.thirdPillarAmount.unit"
@@ -282,7 +274,6 @@ export const ThirdPillarSection = ({
         <AmountField
           field="thirdPillarMonthly"
           answers={answers}
-          isPrefilled={isPrefilledAnswer(answers, prefilled, 'thirdPillarMonthly')}
           touched={touched}
           label="futureMe.you.thirdPillarMonthly.label"
           help="p3Monthly"
