@@ -805,10 +805,10 @@
 
   .result-nominal {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 
     .help-btn {
-      margin: -12px 0 -12px -14px;
+      margin: -10px 0 -12px -14px;
     }
 
     .form-check {
