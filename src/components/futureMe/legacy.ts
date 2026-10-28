@@ -33,7 +33,7 @@ export const legacyOf = (context: ResultContext, result: Result): Legacy => {
   const medianAge = medianAgeOf(input);
   const left = result.rows.find((row) => row.age === medianAge)?.moneyLeft ?? 0;
   const isCoverageOverByMedianAge =
-    result.coversNeedUntil !== null && result.coversNeedUntil <= medianAge;
+    result.coversNeedUntil !== null && !result.gapTemporary && result.coversNeedUntil <= medianAge;
   if (left < MIN_LEFT_OVER || isCoverageOverByMedianAge) {
     return {
       kind: 'shortfall',

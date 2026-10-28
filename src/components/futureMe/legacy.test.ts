@@ -50,6 +50,12 @@ const takenAsLumpSum = () =>
     },
   );
 
+const gapThatClosesAgain = () =>
+  contextWith(
+    { birthYear: '1962', firstPillarMonthly: '1200', grossMonthly: '0', secondPillarAmount: '0' },
+    { age65: { ...initialAge65(), mode: 'defer' as const, years: 1 } },
+  );
+
 describe('legacyOf', () => {
   it('has money left at the median age of someone whose pensions out-earn the costs', () => {
     const legacy = legacyFor(wealthy());
@@ -81,6 +87,13 @@ describe('legacyOf', () => {
 
   it('has no money left over when the costs are no longer covered by the median age', () => {
     expect(legacyFor(costsTooHigh()).kind).toBe('shortfall');
+  });
+
+  it('does not read a gap that closes again as no money left', () => {
+    const context = gapThatClosesAgain();
+
+    expect(resultOf(context).gapTemporary).toBe(true);
+    expect(legacyFor(context).kind).toBe('surplus');
   });
 
   it('suggests keeping the second pillar growing only when it was taken out as a lump sum', () => {

@@ -132,6 +132,19 @@ describe('Result legacy card', () => {
     });
   });
 
+  describe("when money is left but the plan cannot carry today's costs", () => {
+    beforeEach(() => {
+      startWith('500', '70000');
+      openResult();
+    });
+
+    it('does not offer to spend more', () => {
+      expect(surplusHeading()).toBeInTheDocument();
+      expect(screen.queryByRole('radio', { name: 'Kulutan ise rohkem' })).not.toBeInTheDocument();
+      expect(screen.getByRole('radio', { name: 'Pärandan lähedastele' })).toBeInTheDocument();
+    });
+  });
+
   describe('when no money is left', () => {
     it('keeps the question about the costs and offers the ways to change the plan', () => {
       startWith('300', '10000');
