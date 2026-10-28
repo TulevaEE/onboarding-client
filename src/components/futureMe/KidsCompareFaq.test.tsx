@@ -2,8 +2,9 @@ import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import translations from '../translations';
-import { RescueCompareFaq } from './KidsCompareFaq';
+import { RescueCompareFaq, SpecialCompareFaq } from './KidsCompareFaq';
 import { contextWith } from './resultContextFixture';
+import { initialSpecialPension } from './specialPensionAnswers';
 
 const threeChildren = {
   kidsAdded: true,
@@ -99,6 +100,39 @@ describe('rescue allowance or the pension for the children question', () => {
 
   it('is not asked without both rights', () => {
     renderEt(<RescueCompareFaq context={contextWith(threeChildren)} />);
+
+    expect(screen.queryByText(/kumb annab rohkem/)).not.toBeInTheDocument();
+  });
+});
+
+describe('special pension or the pension for the children question', () => {
+  const withSpecialPension = (changes = {}) =>
+    contextWith(
+      {
+        ...threeChildren,
+        workAdded: true,
+        hasSpecialPension: true,
+        specialPensionStartAge: '55',
+        ...changes,
+      },
+      { specialPension: { ...initialSpecialPension(), monthly: '900' } },
+    );
+
+  it('compares staying on the special pension with the old-age pension for the children', () => {
+    renderEt(<SpecialCompareFaq context={withSpecialPension()} />);
+
+    expect(
+      screen.getByText('Eripension või laste eest pension: kumb annab rohkem?'),
+    ).toBeInTheDocument();
+    expect(rowNamed(/^Jätkan eripensioniga/)).toBeInTheDocument();
+    expect(rowNamed(/^Laste eest vanaduspension/)).toBeInTheDocument();
+    expect(
+      within(rowNamed(/^Jätkan eripensioniga/)).getByText('eripensionile ei lisandu'),
+    ).toBeInTheDocument();
+  });
+
+  it('is not asked when the other parent uses the right for the children', () => {
+    renderEt(<SpecialCompareFaq context={withSpecialPension({ kidsEarlyUser: 'other' })} />);
 
     expect(screen.queryByText(/kumb annab rohkem/)).not.toBeInTheDocument();
   });

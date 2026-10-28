@@ -6,8 +6,10 @@ import { AVG_OLD_AGE_PENSION } from './engine/pension';
 import {
   Family,
   isRescueComparisonShown,
+  isSpecialComparisonShown,
   rescueComparisonOf,
   RescueRow,
+  specialComparisonOf,
   SupplementState,
 } from './kidsCompare';
 import { ResultContext } from './resultAnswers';
@@ -85,7 +87,15 @@ const familyRow = (family: Family, ownPart: ReactNode, name: string, rest: Parti
 
 const TABLE_TITLE_ID = 'future-me-kids-compare-title';
 
-const CompareTable = ({ rows, pensionAge }: { rows: Row[]; pensionAge: number }) => {
+const CompareTable = ({
+  rows,
+  pensionAge,
+  afterColumn,
+}: {
+  rows: Row[];
+  pensionAge: number;
+  afterColumn: string;
+}) => {
   const hasWork = rows.some(({ work }) => work);
   const columns = [
     'variant',
@@ -93,7 +103,7 @@ const CompareTable = ({ rows, pensionAge }: { rows: Row[]; pensionAge: number })
     'until',
     'total',
     'supplement',
-    'after',
+    afterColumn,
   ];
   return (
     <>
@@ -236,9 +246,75 @@ export const RescueCompareFaq = ({ context }: { context: CompareContext }) => {
         pensionAge,
         aloneAges: agesText(pensionAge - kidsYears, pensionAge - 1),
       })}
-      <CompareTable rows={withFamily} pensionAge={pensionAge} />
+      <CompareTable rows={withFamily} pensionAge={pensionAge} afterColumn="after" />
       <p className="small text-secondary mb-0">
         {message('futureMe.age65.faq.rescueCompare.note', averageNote)}
+      </p>
+    </CompareFaq>
+  );
+};
+
+export const SpecialCompareFaq = ({ context }: { context: CompareContext }) => {
+  if (!isSpecialComparisonShown(context)) {
+    return null;
+  }
+  const { pensionAge, kidsYears, special, oldAge, family, supplement, current, isSpecialHigher } =
+    specialComparisonOf(context);
+  const most = Math.max(special.total, oldAge.total);
+  const part = (kind: 'special' | 'oldAge', option: typeof special) =>
+    message(`futureMe.age65.faq.specialCompare.${kind}Part`, {
+      ages: agesText(option.from, pensionAge - 1),
+      monthly: euro(option.monthly),
+    });
+  const atPensionAge = (option: typeof special) =>
+    message('futureMe.age65.faq.compare.monthly', { amount: euro(option.atPensionAge) });
+  const rows: Row[] = [
+    {
+      key: 'special',
+      name: message('futureMe.age65.faq.specialCompare.special'),
+      isMine: current === 'special',
+      parts: [part('special', special)],
+      total: special.total,
+      isMost: special.total === most,
+      supplement: message('futureMe.age65.faq.specialCompare.specialSupplement'),
+      after: (
+        <>
+          {atPensionAge(special)}
+          {special.isOldAgeAtPensionAge && (
+            <small className="d-block">
+              {message('futureMe.age65.faq.specialCompare.oldAgeAtPensionAge')}
+            </small>
+          )}
+        </>
+      ),
+    },
+    {
+      key: 'oldAge',
+      name: message('futureMe.age65.faq.specialCompare.oldAge'),
+      isMine: current === 'oldAge',
+      parts: [part('oldAge', oldAge)],
+      total: oldAge.total,
+      isMost: oldAge.total === most,
+      supplement: (
+        <Supplement state={supplement.state} from={oldAge.from} monthly={supplement.monthly} />
+      ),
+      after: atPensionAge(oldAge),
+    },
+    familyRow(family, part('special', special), 'futureMe.age65.faq.specialCompare.family', {
+      supplement: message('futureMe.age65.faq.specialCompare.familySupplement'),
+      after: atPensionAge(special),
+    }),
+  ];
+  return (
+    <CompareFaq question="futureMe.age65.faq.specialCompare.q">
+      {message('futureMe.age65.faq.specialCompare.intro', {
+        ...paragraph,
+        kidsYears,
+        isSpecialHigher: isSpecialHigher ? 'yes' : 'no',
+      })}
+      <CompareTable rows={rows} pensionAge={pensionAge} afterColumn="yourAfter" />
+      <p className="small text-secondary mb-0">
+        {message('futureMe.age65.faq.specialCompare.note', averageNote)}
       </p>
     </CompareFaq>
   );
