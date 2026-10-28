@@ -1,6 +1,6 @@
-import { age55Of } from './age55';
+import { age55Of, thirdPillarPayout, thirdPillarPayoutInputOf } from './age55';
 import { Age60Answers } from './age60Answers';
-import { Age65Answers, deferralLock, thirdPillarAfterAsked } from './age65Answers';
+import { Age65Answers, deferralLock, thirdPillarAfterAsked, workUntilOf } from './age65Answers';
 import { Age66Answers, fundStartOf, hasPillar, payoutAtPensionAge } from './age66Answers';
 import { ExpensesAnswers, needMonthly } from './expensesAnswers';
 import lifeTableData from './engine/lifeTable.json';
@@ -91,27 +91,27 @@ const contributionsBefore = (context: ResultContext, untilAge: number): number =
 const thirdPillarWithdrawnAtOf = (
   context: ResultContext,
 ): Partial<Pick<SeparateThirdPillar, 'amount' | 'mode' | 'start'>> => {
-  const { you, plan, age66 } = context;
-  const {
-    plan: chosen,
-    age,
-    pensionAge,
-    payout,
-  } = age55Of(you, firstYearShareNow(), age66.thirdPillarContract);
+  const { you, plan, age65, age66 } = context;
+  const { plan: chosen, age, pensionAge } = age55Of(you, firstYearShareNow());
   if (chosen === 'lump') {
     return { amount: -contributionsBefore(context, age) };
   }
-  if (chosen === 'fund' && payout) {
-    const yearsToPensionAge = pensionAge - (CURRENT_YEAR - plan.birthYear);
-    const leftToday =
-      payout.leftAtPension / (1 + FUND_RETURNS[you.thirdPillarFund]) ** yearsToPensionAge;
-    return {
-      amount: leftToday - contributionsBefore(context, pensionAge),
-      mode: 'fund',
-      start: age,
-    };
+  if (chosen !== 'fund') {
+    return {};
   }
-  return {};
+  const paidUntil = Math.max(pensionAge, workUntilOf(age65, plan) ?? pensionAge);
+  const payout = thirdPillarPayout('fund', {
+    ...thirdPillarPayoutInputOf(you, firstYearShareNow(), age66.thirdPillarContract),
+    pensionAge: paidUntil,
+  });
+  const yearsUntilPaid = paidUntil - (CURRENT_YEAR - plan.birthYear);
+  const leftToday =
+    (payout?.leftAtPension ?? 0) / (1 + FUND_RETURNS[you.thirdPillarFund]) ** yearsUntilPaid;
+  return {
+    amount: leftToday - contributionsBefore(context, paidUntil),
+    mode: payoutAtPensionAge('thirdPillar', context) === 'lump' ? 'lump' : 'fund',
+    start: age,
+  };
 };
 
 const thirdPillarOf = (context: ResultContext): PensionInput['p3Sep'] => {

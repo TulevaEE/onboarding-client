@@ -171,7 +171,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
       return (
         <Age55Step
           answers={answers}
-          age55={age55Of(answers, firstYearShare)}
+          age55={age55Of(answers, firstYearShare, age66.thirdPillarContract)}
           headingRef={headingRef}
           onChange={(changes) => setAnswers((previous) => ({ ...previous, ...changes }))}
           onEditThirdPillar={editThirdPillar}

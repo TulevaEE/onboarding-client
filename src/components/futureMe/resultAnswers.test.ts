@@ -195,6 +195,23 @@ describe('resultAnswers', () => {
       );
     });
 
+    it('pays out the rest at once when that is chosen at the pension age', () => {
+      const lumpAtPensionAge = { age65: { ...initialAge65(), thirdPillar: 'lump' as const } };
+
+      expect(separateOf({ thirdPillarPlan: 'fund' }, lumpAtPensionAge)?.mode).toBe('lump');
+    });
+
+    it('keeps paying the fund pension while working past the pension age', () => {
+      const fundPlan = { thirdPillarPlan: 'fund' as const, thirdPillarMonthly: '0' };
+      const workingUntil70 = {
+        age65: { ...initialAge65(), work: 'yes' as const, workUntil: '70' },
+      };
+
+      expect(separateOf(fundPlan, workingUntil70)?.amount).toBeCloseTo(
+        separateOf({ ...fundPlan, pensionAgeYears: '70' })?.amount as number,
+      );
+    });
+
     it('starts at the current age for someone already past 55', () => {
       expect(separateOf({ thirdPillarPlan: 'fund', birthYear: '1966' })?.start).toBe(60);
     });

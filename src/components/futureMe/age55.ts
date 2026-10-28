@@ -130,6 +130,25 @@ export const thirdPillarPayout = (
   return { gross, tax: 0, net: gross, firstMonthly, leftAtPension: balance };
 };
 
+export const thirdPillarPayoutInputOf = (
+  answers: YouAnswers,
+  firstYearShare: number,
+  contract?: ThirdPillarPayoutInput['contract'],
+): ThirdPillarPayoutInput => {
+  const birthYear = birthYearOrFallback(answers);
+  return {
+    birthYear,
+    sex: answers.sex,
+    pensionAge: pensionAgeValue(answers),
+    age: withdrawalAge(CURRENT_YEAR - birthYear),
+    balance: amountOf(answers.thirdPillarAmount),
+    monthlyContribution: amountOf(answers.thirdPillarMonthly),
+    returnRate: FUND_RETURNS[answers.thirdPillarFund],
+    firstYearShare,
+    contract,
+  };
+};
+
 export const age55Of = (
   answers: YouAnswers,
   firstYearShare: number,
@@ -158,16 +177,6 @@ export const age55Of = (
     lock,
     isFundAvailable,
     plan,
-    payout: thirdPillarPayout(plan, {
-      birthYear,
-      sex: answers.sex,
-      pensionAge,
-      age,
-      balance: amountOf(answers.thirdPillarAmount),
-      monthlyContribution: amountOf(answers.thirdPillarMonthly),
-      returnRate: FUND_RETURNS[answers.thirdPillarFund],
-      firstYearShare,
-      contract,
-    }),
+    payout: thirdPillarPayout(plan, thirdPillarPayoutInputOf(answers, firstYearShare, contract)),
   };
 };
