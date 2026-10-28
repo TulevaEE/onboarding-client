@@ -41,45 +41,6 @@ const contextWith = (
 };
 
 describe('resultAnswers', () => {
-  describe('children', () => {
-    const withKids = (
-      birthYears: string[],
-      iiMonths: string[] = [],
-      changes: Partial<ReturnType<typeof initialAnswers>> = {},
-    ) =>
-      contextWith({
-        kidsAdded: true,
-        kidsCount: String(birthYears.length),
-        kidsBirthYears: birthYears,
-        kidsIIMonths: iiMonths,
-        ...changes,
-      });
-
-    it('adds the pension supplement for raising a child to the state pension', () => {
-      const { childSupplement } = resultOf(withKids(['2005']));
-
-      expect(childSupplement?.applied).toBe(true);
-      expect(childSupplement?.monthly).toBeGreaterThan(0);
-    });
-
-    it('gives less supplement the more months the state paid into the II pillar for the child', () => {
-      const unpaid = resultOf(withKids(['2023'], ['0'])).childSupplement?.monthly ?? 0;
-      const paid = resultOf(withKids(['2023'], ['36'])).childSupplement?.monthly ?? 0;
-
-      expect(unpaid).toBeGreaterThan(paid);
-    });
-
-    it('does not add the supplement again when the state pension typed in includes it', () => {
-      expect(
-        resultOf(withKids(['2005'], [], { kidsInForecast: 'yes' })).childSupplement?.applied,
-      ).toBe(false);
-    });
-
-    it('has no supplement without children', () => {
-      expect(resultOf(contextWith()).childSupplement).toBeNull();
-    });
-  });
-
   describe('engine input', () => {
     it('takes the savings, the return of the chosen fund and the monthly need from the answers', () => {
       const input = resultInputOf(

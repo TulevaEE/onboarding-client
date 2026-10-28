@@ -79,7 +79,6 @@ interface KidsAnswers {
   kidsIIMonths: string[];
   kidsDisabled: boolean;
   kidsEarlyUser: 'me' | 'other';
-  kidsInForecast: 'yes' | 'no';
 }
 
 interface WorkAnswers {
@@ -114,7 +113,6 @@ const OPTIONAL_DEFAULTS: { kids: KidsAnswers; work: WorkAnswers } = {
     kidsIIMonths: [],
     kidsDisabled: false,
     kidsEarlyUser: 'me',
-    kidsInForecast: 'no',
   },
   work: {
     workAdded: false,
@@ -277,52 +275,6 @@ const kidsRetirement = (answers: YouAnswers, earlyUser: YouAnswers['kidsEarlyUse
     late: known.length - (counted - unknown),
     retirementYear,
     yearsEarly: pensionYear - retirementYear,
-  };
-};
-
-const LAST_BIRTH_YEAR_WITH_FULL_SUPPLEMENT = 2012;
-const FIRST_BIRTH_YEAR_BY_II_MONTHS = 2021;
-const YEARS_OF_STATE_II_PAYMENTS = 3;
-
-// RPKS § 24 lg 1¹ and lg 6: a full supplement up to 2012, then only without the II pillar,
-// and from September 2021 less for every month the state paid into it.
-// shortcut: a child born in 2021 counts as born from September, until the birth month is asked.
-export const kidsInputOf = (answers: YouAnswers): KidsInput | undefined => {
-  if (childRows(answers) === 0) {
-    return undefined;
-  }
-  const maxYear = maxChildBirthYear(answers);
-  const { retirementYear } = kidsRetirement(answers, answers.kidsEarlyUser);
-  const kids = { b2012: 0, b2013: 0, b2021: 0, bUnknown: 0, u3: 0, iiMonths: [] as number[] };
-  typedChildBirthYears(answers).forEach((typed, index) => {
-    if (typed === '') {
-      kids.bUnknown += 1;
-      return;
-    }
-    const year = validChildBirthYear(typed, maxYear);
-    if (year === null || year + YEARS_RAISING_A_CHILD > retirementYear) {
-      return;
-    }
-    if (year <= LAST_BIRTH_YEAR_WITH_FULL_SUPPLEMENT) {
-      kids.b2012 += 1;
-    } else if (year < FIRST_BIRTH_YEAR_BY_II_MONTHS) {
-      kids.b2013 += 1;
-    } else {
-      kids.b2021 += 1;
-      const months = (answers.kidsIIMonths[index] ?? '').trim();
-      if (year > CURRENT_YEAR - YEARS_OF_STATE_II_PAYMENTS) {
-        kids.u3 += 1;
-      } else if (months !== '' && !isChildIIMonthsInvalid(answers, index)) {
-        kids.iiMonths.push(Number(months));
-      }
-    }
-  });
-  return {
-    ...kids,
-    earlyUser: answers.kidsEarlyUser,
-    supUser: 'me',
-    disabled: answers.kidsDisabled,
-    inForecast: answers.kidsInForecast,
   };
 };
 
