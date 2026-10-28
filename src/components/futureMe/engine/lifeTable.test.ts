@@ -1,4 +1,4 @@
-import { fundPensionTerm, Sex, survival } from './pension';
+import { fundPensionTerm, LifeTable, Sex, survival } from './pension';
 import { lifeTable, within } from './testUtils';
 
 describe('life table', () => {
@@ -21,5 +21,20 @@ describe('life table', () => {
 
   it('lets about 51% of 65 year old men live to 81', () => {
     expect(survival(lifeTable, 'M', 65, 81)).toBeCloseTo(0.51, within(0.01));
+  });
+
+  it('gives no survival beyond the oldest age in the table', () => {
+    expect(survival(lifeTable, 'M', 65, 101)).toBe(0);
+  });
+
+  it('averages men and women for another sex when a table has no whole-population column', () => {
+    const { M, N } = lifeTable.ellujaajad;
+    const withoutWholePopulation: LifeTable = { ...lifeTable, ellujaajad: { M, N } };
+    const averageAt = (age: number) => (M[age] + N[age]) / 2;
+
+    expect(survival(withoutWholePopulation, 'X', 65, 80)).toBeCloseTo(
+      averageAt(80) / averageAt(65),
+      within(1e-9),
+    );
   });
 });

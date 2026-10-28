@@ -173,6 +173,20 @@ describe('pension rules', () => {
 
       expect(texts).toEqual(expect.arrayContaining([expect.stringContaining('Alates 60')]));
     });
+
+    it('puts the full state pension at the pension age the saver picked', () => {
+      const decisions = decisionMap({ ...base, pensionAgeYears: 67 });
+
+      expect(decisions).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            age: 67,
+            year: base.birthYear + 67,
+            title: 'Riiklik pension täissummas (67 a)',
+          }),
+        ]),
+      );
+    });
   });
 
   describe('second and third pillar fund pension contracts', () => {
