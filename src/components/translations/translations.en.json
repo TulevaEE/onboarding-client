@@ -2991,7 +2991,7 @@
   "futureMe.result.decisions.rule.statePension": "Riiklikku pensioni saab lükata edasi kuni 5 aastat, siis on see eluks ajaks suurem: {increases}. Pool pensionit võttes tõuseb pension pool sellest. Pensionilt maksad tulumaksu 22%, maksuvaba tulu on {allowance} kuus.",
   "futureMe.result.decisions.rule.secondPillarAtPensionAge": "Pensionieas saad II samba raha võtta korraga (10% tulumaks), fondipensionina soovitusliku perioodi peale (0%) või jätta edasi kasvama.",
   "futureMe.result.decisions.rule.thirdPillarAtPensionAge": "Pensionieas saad III samba raha võtta korraga (10% tulumaks), fondipensionina soovitusliku perioodi peale (0%) või jätta edasi kasvama.",
-  "futureMe.result.decisions.covers": "Raha jätkub {isForLife, select, true {elu lõpuni (100+)} other {{age}-⁠aastaseni}}",
+  "futureMe.result.decisions.covers": "Raha jätkub {kind, select, life {elu lõpuni (100+)} gap {elu lõpuni (100+), kuid {from}{isRange, select, yes {–{to}} other {}}-⁠aastaselt jäävad kulud katmata} other {{age}-⁠aastaseni}}",
   "futureMe.result.decisions.covers.now": " · praegu",
   "futureMe.result.decisions.delta": "{direction, select, up {+} other {−}}{years} a",
   "futureMe.result.decisions.delta.hint": " võrreldes praegusega",

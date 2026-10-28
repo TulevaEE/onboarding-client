@@ -84,6 +84,18 @@ describe('comparison', () => {
       expect(mineOf(context)?.result.sustainable).toBe(resultOf(context).sustainable);
     });
 
+    it('keeps the user’s own column when a special pension locks a deferral chosen before', () => {
+      const locked = contextWith(
+        { workAdded: true, hasSpecialPension: true },
+        {
+          specialPension: { ...initialSpecialPension(), monthly: '800' },
+          age65: { ...initialAge65(), secondPillar: 'fund', mode: 'defer', years: 2 },
+        },
+      );
+
+      expect(mineOf(locked)?.result).toEqual(resultOf(locked));
+    });
+
     it('shows a different result for a route that pays out differently', () => {
       const columns = comparisonOf(contextWith());
       const sustainable = (id: string) =>

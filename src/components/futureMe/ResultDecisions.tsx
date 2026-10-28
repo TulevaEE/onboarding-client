@@ -14,7 +14,7 @@ import {
 } from './decisions';
 import { CURRENT_YEAR, DEFERRAL_INCREASE, PENSIONER_ALLOWANCE } from './engine/pension';
 import { ResultComparison } from './ResultComparison';
-import { MAX_AGE_SHOWN, ResultContext, resultOf } from './resultAnswers';
+import { MAX_AGE_SHOWN, Result, ResultContext, resultOf } from './resultAnswers';
 
 type ChangeDecisions = (changes: DecisionChanges) => void;
 
@@ -56,21 +56,37 @@ const choiceKeys = (
   }
 };
 
+const coversKindOf = (result: Result, coversAge: number) => {
+  if (result.gapTemporary) {
+    return 'gap';
+  }
+  return coversAge >= MAX_AGE_SHOWN ? 'life' : 'until';
+};
+
 const Outcome = ({
-  coversAge,
+  result,
   currentAge,
   isCurrent,
 }: {
-  coversAge: number;
+  result: Result;
   currentAge: number;
   isCurrent: boolean;
 }) => {
+  const coversAge = coversAgeOf(result);
   const change = coversAge - currentAge;
+  const { coversNeedUntil, gapEnd } = result;
   return (
     <span className="decision-outcome">
       <FormattedMessage
         id="futureMe.result.decisions.covers"
-        values={{ isForLife: coversAge >= MAX_AGE_SHOWN, age: coversAge }}
+        values={{
+          kind: coversKindOf(result, coversAge),
+          age: coversAge,
+          from: coversNeedUntil,
+          to: gapEnd,
+          isRange:
+            gapEnd !== null && coversNeedUntil !== null && gapEnd > coversNeedUntil ? 'yes' : 'no',
+        }}
       />
       {isCurrent && <FormattedMessage id="futureMe.result.decisions.covers.now" />}
       {!isCurrent && change !== 0 && (
@@ -124,7 +140,7 @@ const DecisionChoices = ({ context, decision, panelId, titleId, onChange }: Pane
                     </>
                   )}
                   <Outcome
-                    coversAge={coversAgeOf(resultOf({ ...context, ...changes }))}
+                    result={resultOf({ ...context, ...changes })}
                     currentAge={currentAge}
                     isCurrent={decision.current === choice}
                   />

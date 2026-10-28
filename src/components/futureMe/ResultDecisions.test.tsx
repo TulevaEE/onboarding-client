@@ -163,6 +163,34 @@ describe('Result step: your decisions', () => {
       );
     });
 
+    it('tells costs left uncovered for a while apart from money running out', () => {
+      render(
+        <IntlProvider locale="et" messages={translations.et}>
+          <FutureMe />
+        </IntlProvider>,
+      );
+      typeInto(
+        screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ }),
+        '1500',
+      );
+      typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu brutopalk/ }), '2000');
+      typeInto(screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }), '0');
+      typeInto(screen.getByRole('spinbutton', { name: /Kui palju on III\ssambas praegu/ }), '0');
+      typeInto(
+        screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }),
+        '0',
+      );
+      userEvent.click(within(trail()).getByRole('button', { name: /^Tulemus, vaatamata$/ }));
+      const statePension = decisionRow(/^Riiklik pension 65-⁠aastaselt$/);
+      userEvent.click(changeButton(statePension));
+
+      expect(
+        within(statePension).getByRole('radio', { name: 'Lükkan edasi' }),
+      ).toHaveAccessibleDescription(
+        /^Raha jätkub elu lõpuni \(100\+\), kuid 65-⁠aastaselt jäävad kulud katmata$/,
+      );
+    });
+
     it('marks only the chosen way as the current one', () => {
       openResultStep();
       userEvent.click(changeButton(secondPillarAt60()));

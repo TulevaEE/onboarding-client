@@ -40,15 +40,10 @@ export interface ComparisonColumn {
   result: Result;
 }
 
-const stateTimingOf = ({ age65 }: ResultContext) => ({
-  deferral: age65.mode === 'defer' ? age65.years : 0,
-  half: age65.mode === 'half' ? age65.years : 0,
-});
-
 export const comparisonScenariosOf = (context: ResultContext): Scenario[] => {
   const isBridgeOpen = options(resultInputOf(context)).deferral.open;
   const mine = resultScenarioOf(context);
-  const timing = stateTimingOf(context);
+  const timing = { deferral: mine.deferral ?? 0, half: mine.half ?? 0 };
   return [...SCENARIOS, KEEP_GROWING]
     .filter(({ id }) => id !== BRIDGE_ID || isBridgeOpen)
     .map((route) => {

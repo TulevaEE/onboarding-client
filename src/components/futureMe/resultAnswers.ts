@@ -1,5 +1,5 @@
 import { Age60Answers } from './age60Answers';
-import { Age65Answers, thirdPillarAfterAsked } from './age65Answers';
+import { Age65Answers, deferralLock, thirdPillarAfterAsked } from './age65Answers';
 import { Age66Answers, fundStartOf, hasPillar, payoutAtPensionAge } from './age66Answers';
 import { ExpensesAnswers, needMonthly } from './expensesAnswers';
 import lifeTableData from './engine/lifeTable.json';
@@ -147,13 +147,14 @@ const scenarioById = (id: string): Scenario =>
   SCENARIOS.find((scenario) => scenario.id === id) ?? { id };
 
 export const resultScenarioOf = (context: ResultContext): Scenario => {
-  const { age65, age66 } = context;
+  const { age65, age66, you } = context;
   const payout = hasPillar('secondPillar', context)
     ? payoutAtPensionAge('secondPillar', context)
     : 'grow';
+  const mode = deferralLock(you) === null ? age65.mode : 'full';
   const timing = {
-    deferral: age65.mode === 'defer' ? age65.years : 0,
-    half: age65.mode === 'half' ? age65.years : 0,
+    deferral: mode === 'defer' ? age65.years : 0,
+    half: mode === 'half' ? age65.years : 0,
   };
   const contractScenario = scenarioById(age66.secondPillarContract === 'yearly' ? 'D' : 'B');
   if (payout === 'lump') {

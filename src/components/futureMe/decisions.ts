@@ -90,4 +90,5 @@ export const withDecision = (
   return { [stage]: { ...context[stage], [pillar]: choice } };
 };
 
-export const coversAgeOf = (result: Result): number => result.coversNeedUntil ?? MAX_AGE_SHOWN;
+export const coversAgeOf = (result: Result): number =>
+  result.coversNeedUntil === null || result.gapTemporary ? MAX_AGE_SHOWN : result.coversNeedUntil;

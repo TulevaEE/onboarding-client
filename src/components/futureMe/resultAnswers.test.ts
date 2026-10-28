@@ -205,6 +205,22 @@ describe('resultAnswers', () => {
       });
     });
 
+    it.each(['defer', 'half'] as const)(
+      'leaves out a %s timing chosen before a special pension locked it',
+      (mode) => {
+        const withSpecialPension = (age65: ReturnType<typeof initialAge65>) =>
+          contextWith(
+            { workAdded: true, hasSpecialPension: true },
+            { specialPension: { ...initialSpecialPension(), monthly: '800' }, age65 },
+          );
+        const fund = { ...initialAge65(), secondPillar: 'fund' as const };
+
+        expect(resultScenarioOf(withSpecialPension({ ...fund, mode, years: 2 }))).toEqual(
+          resultScenarioOf(withSpecialPension(fund)),
+        );
+      },
+    );
+
     it('takes half of the state pension later when that is chosen', () => {
       const age65 = { ...initialAge65(), mode: 'half' as const, years: 3 };
 
