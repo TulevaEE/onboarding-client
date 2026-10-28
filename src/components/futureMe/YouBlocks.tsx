@@ -7,7 +7,6 @@ import {
   FUND_RETURNS,
   FundKey,
   PENSION_AGE_OPTIONS,
-  PREFILLED_FIRST_PILLAR_MONTHLY,
   SECOND_PILLAR_RATE_OPTIONS,
   ThirdPillarJoined,
 } from './youAnswers';
@@ -56,6 +55,7 @@ export const StateSection = ({
   touched,
   isOpen,
   isComplete,
+  prefilled,
   onToggle,
   onChange,
   onBlur,
@@ -110,7 +110,7 @@ export const StateSection = ({
           touched={touched}
           label="futureMe.you.firstPillarMonthly.label"
           help="p1"
-          isPrefilled={answers.firstPillarMonthly === PREFILLED_FIRST_PILLAR_MONTHLY}
+          isPrefilled={prefilled.has('firstPillarMonthly')}
           unit="futureMe.you.firstPillarMonthly.unit"
           name="futureMe.you.firstPillarMonthly.name"
           step={10}
@@ -127,6 +127,7 @@ export const SecondPillarSection = ({
   touched,
   isOpen,
   isComplete,
+  prefilled,
   onToggle,
   onChange,
   onBlur,
@@ -159,6 +160,7 @@ export const SecondPillarSection = ({
       <div className="row g-3">
         <AmountField
           field="grossMonthly"
+          isPrefilled={prefilled.has('grossMonthly')}
           answers={answers}
           touched={touched}
           label="futureMe.you.grossMonthly.label"
@@ -172,6 +174,7 @@ export const SecondPillarSection = ({
         <SelectField
           id="future-me-second-pillar-rate"
           label="futureMe.you.secondPillarRate.label"
+          isPrefilled={prefilled.has('secondPillarRate')}
           help="p2Rate"
           value={answers.secondPillarRate}
           options={SECOND_PILLAR_RATE_OPTIONS.map((rate) => ({
@@ -182,6 +185,7 @@ export const SecondPillarSection = ({
         />
         <AmountField
           field="secondPillarAmount"
+          isPrefilled={prefilled.has('secondPillarAmount')}
           answers={answers}
           touched={touched}
           label="futureMe.you.secondPillarAmount.label"
@@ -211,6 +215,7 @@ export const ThirdPillarSection = ({
   touched,
   isOpen,
   isComplete,
+  prefilled,
   onToggle,
   onChange,
   onBlur,
@@ -246,6 +251,7 @@ export const ThirdPillarSection = ({
         <SelectField
           id="future-me-third-pillar-joined"
           label="futureMe.you.thirdPillarJoined.label"
+          isPrefilled={prefilled.has('thirdPillarJoined')}
           help="p3Joined"
           value={answers.thirdPillarJoined}
           options={THIRD_PILLAR_JOIN_TIMES.map((when) => ({
@@ -260,6 +266,7 @@ export const ThirdPillarSection = ({
         />
         <AmountField
           field="thirdPillarAmount"
+          isPrefilled={prefilled.has('thirdPillarAmount')}
           answers={answers}
           touched={touched}
           label="futureMe.you.thirdPillarAmount.label"
@@ -273,6 +280,7 @@ export const ThirdPillarSection = ({
         />
         <AmountField
           field="thirdPillarMonthly"
+          isPrefilled={prefilled.has('thirdPillarMonthly')}
           answers={answers}
           touched={touched}
           label="futureMe.you.thirdPillarMonthly.label"
