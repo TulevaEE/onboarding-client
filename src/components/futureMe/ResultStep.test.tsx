@@ -326,7 +326,7 @@ describe('Result step', () => {
       ).toEqual(['✓Riiklik pension', 'Kulud']);
     });
 
-    it('labels every fifth age on a wide screen and every tenth on a narrow one', () => {
+    it('labels every fifth age on a wide screen and every tenth on a narrow one, and the pension age on both', () => {
       openResultStep();
       const wideTick = lastChartProps().options.scales.x.ticks.callback;
       expect([wideTick(65), wideTick(66), wideTick(70)]).toEqual([65, '', 70]);
@@ -341,7 +341,12 @@ describe('Result step', () => {
       window.matchMedia = wideMatchMedia;
 
       const narrowTick = lastChartProps().options.scales.x.ticks.callback;
-      expect([narrowTick(65), narrowTick(70), narrowTick(80)]).toEqual(['', 70, 80]);
+      expect([narrowTick(65), narrowTick(70), narrowTick(75), narrowTick(80)]).toEqual([
+        65,
+        70,
+        '',
+        80,
+      ]);
     });
 
     it('hides the numbers on the layers, which the table shows instead', () => {

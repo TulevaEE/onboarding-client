@@ -90,6 +90,11 @@ const fadingFill = (color: string) => (context: ScriptableContext<'line'>) => {
   return gradient;
 };
 
+const isAgeLabelled = (age: number, step: number, pensionAge: number) => {
+  const isNextToPensionAge = Math.abs(age - pensionAge) < step / 2;
+  return age === pensionAge || (age % step === 0 && !isNextToPensionAge);
+};
+
 const fittingTickStep = (width: number, years: number) =>
   (width / years) * WIDE_TICK_STEP >= MIN_TICK_GAP ? WIDE_TICK_STEP : NARROW_TICK_STEP;
 
@@ -324,7 +329,7 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
   };
 
   const { data, options } = useMemo(() => {
-    const { costs } = pensionStartRowOf(rows);
+    const { costs, age: pensionAge } = pensionStartRowOf(rows);
     const isNarrow = window.matchMedia(NARROW_SCREEN).matches;
     let tickStep = isNarrow ? NARROW_TICK_STEP : WIDE_TICK_STEP;
     const chartData: ChartData<'line'> = {
@@ -395,7 +400,7 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
             stepSize: 1,
             color: TICK_COLOR,
             font: FONT,
-            callback: (value) => (Number(value) % tickStep === 0 ? value : ''),
+            callback: (value) => (isAgeLabelled(Number(value), tickStep, pensionAge) ? value : ''),
           },
         },
         y: {

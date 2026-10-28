@@ -36,10 +36,10 @@ jest.mock('react-chartjs-2', () => {
   };
 });
 
-const contextWith = (age65: Partial<Age65Answers> = {}): ResultContext => {
+const contextWith = (age65: Partial<Age65Answers> = {}, pensionAge = '65'): ResultContext => {
   const you = {
     ...initialAnswers({ birthYear: 1976, sex: null, secondPillarRate: null }),
-    pensionAgeYears: '65',
+    pensionAgeYears: pensionAge,
     firstPillarMonthly: '700',
     grossMonthly: '2000',
     secondPillarAmount: '10000',
@@ -119,6 +119,18 @@ describe('ResultChart on a touch screen', () => {
       expect([tickAt(100, 72), tickAt(100, 75), tickAt(100, 80)]).toEqual(['', '', 80]);
       expect(x.ticks.display).not.toBe(false);
       expect(x.title.display).toBe(false);
+    });
+
+    it('labels the pension age on the axis and drops a round age right next to it', () => {
+      renderChart(contextWith({}, '67'));
+      const { x } = lastChartProps().options.scales;
+      x.afterSetDimensions({ width: 1000 });
+
+      expect([x.ticks.callback(65), x.ticks.callback(67), x.ticks.callback(70)]).toEqual([
+        '',
+        67,
+        70,
+      ]);
     });
 
     it('gives the amounts on the side a narrower strip, so the plot gets the width', () => {
@@ -316,6 +328,13 @@ describe('ResultChart with a mouse', () => {
 
   afterEach(() => {
     window.matchMedia = originalMatchMedia;
+  });
+
+  it('labels the pension age on the age axis too', () => {
+    renderChart(contextWith({}, '67'));
+    const { callback } = lastChartProps().options.scales.x.ticks;
+
+    expect([callback(65), callback(67), callback(70)]).toEqual(['', 67, 70]);
   });
 
   it('keeps the age axis, the dots every two years and the keyboard on the chart', () => {
