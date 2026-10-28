@@ -1,9 +1,11 @@
-import React, { RefObject } from 'react';
+import React, { RefObject, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { euro } from './amountFormat';
 import { ChapterHead } from './ChapterHead';
+import { DecisionId } from './decisions';
 import { needMonthly } from './expensesAnswers';
+import { HelpButton } from './HelpButton';
 import { ResultAdvice } from './ResultAdvice';
 import { ResultAssumptions } from './ResultAssumptions';
 import { ResultChart } from './ResultChart';
@@ -76,7 +78,21 @@ const AnswerText = ({ result, need }: { result: Result; need: number }) => {
   );
 };
 
-const Tiles = ({ result }: { result: Result }) => {
+const sustainableHelpValues = (result: Result, need: number) => {
+  const statePensionRow = result.rows.find((row) => row.i1g > 0.5);
+  const pensionStartRow = result.rows.find((row) => row.age === result.pensionStartAge);
+  return {
+    sustainable: euro(result.sustainable),
+    horizonAge: result.horizonAge,
+    hasStatePension: statePensionRow ? 'yes' : 'no',
+    statePension: euro(statePensionRow?.i1g ?? 0),
+    statePensionAge: statePensionRow?.age ?? 0,
+    pot: euro(pensionStartRow?.pot ?? 0),
+    need: euro(need),
+  };
+};
+
+const Tiles = ({ result, need }: { result: Result; need: number }) => {
   const kind = coverageKind(result);
   const until = result.coversNeedUntil ?? MAX_AGE_SHOWN;
   const endAge = result.moneyEndAge ?? 'never';
@@ -117,6 +133,7 @@ const Tiles = ({ result }: { result: Result }) => {
             id="futureMe.result.tile.sustainable.label"
             values={{ age: result.horizonAge }}
           />
+          <HelpButton topic="sustainable" values={sustainableHelpValues(result, need)} />
         </span>
       </li>
     </ul>
@@ -167,6 +184,7 @@ const IncomeAtPensionAge = ({ result, need }: { result: Result; need: number }) 
 
 export const ResultStep = ({ context, headingRef }: Props) => {
   const result = resultOf(context);
+  const [openDecision, setOpenDecision] = useState<DecisionId | null>(null);
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-result-heading">
       <ChapterHead step={FutureMeStep.RESULT}>
@@ -184,8 +202,8 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       >
         <AnswerText result={result} need={needMonthly(context.expenses)} />
       </p>
-      <ResultAdvice context={context} result={result} />
-      <Tiles result={result} />
+      <ResultAdvice context={context} result={result} onOpenDecision={setOpenDecision} />
+      <Tiles result={result} need={needMonthly(context.expenses)} />
       <IncomeAtPensionAge result={result} need={needMonthly(context.expenses)} />
       <ResultChart
         result={result}
@@ -193,7 +211,7 @@ export const ResultStep = ({ context, headingRef }: Props) => {
         nominalReturns={nominalReturnsOf(context)}
       />
       <ResultLegacy context={context} result={result} />
-      <ResultDecisions context={context} />
+      <ResultDecisions context={context} openId={openDecision} onOpen={setOpenDecision} />
       <ResultAssumptions context={context} />
       <ResultRules context={context} />
     </section>

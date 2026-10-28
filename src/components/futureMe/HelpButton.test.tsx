@@ -14,6 +14,8 @@ const renderHelp = (topic: HelpTopic = 'sex') =>
     </IntlProvider>,
   );
 
+const TOPICS_WITHOUT_NUMBERS = HELP_TOPICS.filter((topic) => topic !== 'sustainable');
+
 const openerOf = (name: RegExp) => screen.getByRole('button', { name });
 
 const dialog = () => screen.getByRole('dialog', { name: 'Miks küsime sugu?' });
@@ -98,18 +100,21 @@ describe('HelpButton', () => {
     expect(document.body).not.toHaveStyle({ position: 'fixed' });
   });
 
-  it.each(HELP_TOPICS)('opens the explanation of %s with its question and an answer', (topic) => {
-    renderHelp(topic);
+  it.each(TOPICS_WITHOUT_NUMBERS)(
+    'opens the explanation of %s with its question and an answer',
+    (topic) => {
+      renderHelp(topic);
 
-    userEvent.click(screen.getByRole('button', { name: /^Selgitus: / }));
+      userEvent.click(screen.getByRole('button', { name: /^Selgitus: / }));
 
-    const opened = screen.getByRole('dialog');
-    const question = within(opened).getByRole('heading');
-    expect(opened).toHaveAccessibleName(question.textContent as string);
-    expect(question).not.toHaveTextContent(/^futureMe\./);
-    expect(opened).not.toHaveTextContent(/futureMe\.help|<\/?\w+>/);
-    expect(opened).toHaveTextContent(/[\s\S]{200}/);
-  });
+      const opened = screen.getByRole('dialog');
+      const question = within(opened).getByRole('heading');
+      expect(opened).toHaveAccessibleName(question.textContent as string);
+      expect(question).not.toHaveTextContent(/^futureMe\./);
+      expect(opened).not.toHaveTextContent(/futureMe\.help|<\/?\w+>/);
+      expect(opened).toHaveTextContent(/[\s\S]{200}/);
+    },
+  );
 
   it.each(HELP_TOPICS)('shows the explanation of %s without research notes', (topic) => {
     renderHelp(topic);

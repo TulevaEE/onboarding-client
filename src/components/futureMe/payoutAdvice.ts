@@ -1,6 +1,7 @@
 import { payoutAge } from './planAges';
-import { isPayoutChoiceMadeAtAnotherStep } from './age65Answers';
+import { isPayoutChoiceMadeAtAnotherStep, withMode } from './age65Answers';
 import { Contract, hasPillar, payoutAtPensionAge } from './age66Answers';
+import { DecisionChanges, DecisionId } from './decisions';
 import lifeTableData from './engine/lifeTable.json';
 import {
   bestDeferral,
@@ -19,6 +20,7 @@ import {
   resultInputOf,
   resultScenarioOf,
 } from './resultAnswers';
+import { FutureMeStep, StepId } from './steps';
 
 const lifeTable: LifeTable = lifeTableData;
 const BRIDGE_DEFERRAL_WITHOUT_CHOICE = 2;
@@ -57,19 +59,23 @@ export interface SurplusTip {
   average: number;
   grow: number | null;
   mine: number;
+  decision: DecisionId;
 }
 
 const isFundPensionChosen = (context: ResultContext): boolean =>
   hasPillar('secondPillar', context) && payoutAtPensionAge('secondPillar', context) === 'fund';
 
+const isChosenAtPayoutAge = ({ age60, plan }: ResultContext): boolean =>
+  age60.secondPillar !== 'grow' || isPayoutChoiceMadeAtAnotherStep(plan);
+
 export const howToChoose = (scenario: Scenario, context: ResultContext): HowTo => {
-  const { age60, plan } = context;
+  const { plan } = context;
   const chosenDeferral = resultScenarioOf(context).deferral ?? 0;
   const isFundChosen = isFundPensionChosen(context);
   const base = {
     contract: (scenario.id === 'B' || scenario.contract === 'once' ? 'once' : 'yearly') as Contract,
     deferral: scenario.deferral ?? 0,
-    atPayoutAge: age60.secondPillar !== 'grow' || isPayoutChoiceMadeAtAnotherStep(plan),
+    atPayoutAge: isChosenAtPayoutAge(context),
     payoutAge: payoutAge(plan),
   };
   if (scenario.id === 'A') {
@@ -84,6 +90,17 @@ export const howToChoose = (scenario: Scenario, context: ResultContext): HowTo =
   }
   return { ...base, kind: isFundChosen ? 'contract' : 'fund' };
 };
+
+export const stepToChoose = ({ kind, atPayoutAge }: HowTo): StepId => {
+  if (kind === 'contract') {
+    return FutureMeStep.AGE_66_PLUS;
+  }
+  return atPayoutAge ? FutureMeStep.AGE_60 : FutureMeStep.AGE_65;
+};
+
+export const deferralChanges = ({ age65 }: ResultContext, years: number): DecisionChanges => ({
+  age65: years === 0 ? withMode(age65, 'full') : { ...withMode(age65, 'defer'), years },
+});
 
 const timingOf = (scenario: Scenario) => ({
   deferral: scenario.deferral ?? 0,
@@ -184,5 +201,6 @@ export const surplusTipOf = (context: ResultContext, result: Result): SurplusTip
     average: run.reduce((sum, row) => sum + surplusOf(row), 0) / run.length,
     grow: grow > result.sustainable ? grow : null,
     mine: result.sustainable,
+    decision: isChosenAtPayoutAge(context) ? 'secondPillarAtPayoutAge' : 'secondPillarAtPensionAge',
   };
 };

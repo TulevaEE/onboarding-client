@@ -2,7 +2,15 @@ import { initialAge60 } from './age60Answers';
 import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses, withLevel } from './expensesAnswers';
-import { HowTo, howToChoose, payoutWarningOf, surplusTipOf } from './payoutAdvice';
+import {
+  deferralChanges,
+  HowTo,
+  howToChoose,
+  payoutWarningOf,
+  stepToChoose,
+  surplusTipOf,
+} from './payoutAdvice';
+import { FutureMeStep } from './steps';
 import { ResultContext, resultOf } from './resultAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
@@ -207,6 +215,49 @@ describe('payoutAdvice', () => {
     });
   });
 
+  describe('the step where a payout is chosen', () => {
+    const how = (changes: Partial<HowTo>): HowTo => ({
+      kind: 'fund',
+      contract: 'once',
+      deferral: 0,
+      atPayoutAge: false,
+      payoutAge: 60,
+      ...changes,
+    });
+
+    it('is the payout age step when the choice is made there', () => {
+      expect(stepToChoose(how({ atPayoutAge: true }))).toBe(FutureMeStep.AGE_60);
+    });
+
+    it('is the pension age step otherwise', () => {
+      expect(stepToChoose(how({}))).toBe(FutureMeStep.AGE_65);
+    });
+
+    it('is the pension years step when only the contract changes', () => {
+      expect(stepToChoose(how({ kind: 'contract', atPayoutAge: true }))).toBe(
+        FutureMeStep.AGE_66_PLUS,
+      );
+    });
+  });
+
+  describe('changing the state pension deferral', () => {
+    it('takes the state pension at once when no deferral carries', () => {
+      const context = contextWith({}, { age65: deferredFive });
+
+      expect(deferralChanges(context, 0).age65).toMatchObject({ mode: 'full' });
+    });
+
+    it('defers it by the shorter number of years', () => {
+      const context = contextWith({}, { age65: deferredFive });
+
+      expect(deferralChanges(context, 2).age65).toMatchObject({
+        mode: 'defer',
+        years: 2,
+        secondPillar: 'fund',
+      });
+    });
+  });
+
   describe('surplus tip', () => {
     it('stays away without a fund pension', () => {
       expect(tipFor(contextWith())).toBeNull();
@@ -222,7 +273,12 @@ describe('payoutAdvice', () => {
         { age65: fundPension, age66: { ...initialAge66(), secondPillarContract: 'once' } },
       );
 
-      expect(tipFor(context)).toMatchObject({ from: 65, grow: 1660, mine: 1610 });
+      expect(tipFor(context)).toMatchObject({
+        from: 65,
+        grow: 1660,
+        mine: 1610,
+        decision: 'secondPillarAtPensionAge',
+      });
       expect(tipFor(context)?.average).toBeGreaterThan(1000);
     });
 

@@ -20,6 +20,7 @@ export const HELP_TOPICS = [
   'household',
   'legacyLeft',
   'nominal',
+  'sustainable',
 ] as const;
 
 export type HelpTopic = (typeof HELP_TOPICS)[number];

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { DEFERRAL_YEARS } from './age65Answers';
@@ -165,6 +165,12 @@ const DecisionRow = ({ context, decision, isOpen, onToggle, onChange }: RowProps
     ? intl.formatMessage({ id: `futureMe.result.decisions.current.${id}` }, decision.summary)
     : intl.formatMessage({ id: choiceKeys(id, current).title });
   const increases = deferralIncreases();
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  useLayoutEffect(() => {
+    if (isOpen) {
+      toggleRef.current?.focus();
+    }
+  }, [isOpen]);
   return (
     <li>
       <div className="decision-row">
@@ -192,6 +198,7 @@ const DecisionRow = ({ context, decision, isOpen, onToggle, onChange }: RowProps
           </small>
         </div>
         <button
+          ref={toggleRef}
           type="button"
           className="btn btn-link btn-sm"
           aria-expanded={isOpen}
@@ -236,10 +243,15 @@ const DecisionRow = ({ context, decision, isOpen, onToggle, onChange }: RowProps
   );
 };
 
-const DecisionList = ({ context }: { context: ResultContext }) => {
+interface Props {
+  context: ResultContext;
+  openId: DecisionId | null;
+  onOpen: (id: DecisionId | null) => void;
+}
+
+const DecisionList = ({ context, openId, onOpen }: Props) => {
   const intl = useIntl();
   const { change: onChange } = useDecisionActions();
-  const [openId, setOpenId] = useState<DecisionId | null>(null);
   return (
     <>
       <h3 className="h5 section-title mt-4">
@@ -258,7 +270,7 @@ const DecisionList = ({ context }: { context: ResultContext }) => {
             context={context}
             decision={decision}
             isOpen={openId === decision.id}
-            onToggle={() => setOpenId(openId === decision.id ? null : decision.id)}
+            onToggle={() => onOpen(openId === decision.id ? null : decision.id)}
             onChange={onChange}
           />
         ))}
@@ -267,9 +279,9 @@ const DecisionList = ({ context }: { context: ResultContext }) => {
   );
 };
 
-export const ResultDecisions = ({ context }: { context: ResultContext }) => (
+export const ResultDecisions = ({ context, openId, onOpen }: Props) => (
   <>
-    <DecisionList context={context} />
+    <DecisionList context={context} openId={openId} onOpen={onOpen} />
     <ResultComparison context={context} />
   </>
 );
