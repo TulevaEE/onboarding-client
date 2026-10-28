@@ -1,9 +1,17 @@
 import React, { RefObject } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { TranslationKey } from '../translations';
 import { euro } from './amountFormat';
 import { ChapterHead } from './ChapterHead';
 import { needMonthly } from './expensesAnswers';
-import { MAX_AGE_SHOWN, Result, ResultContext, resultOf } from './resultAnswers';
+import {
+  incomeAtStart,
+  IncomeSource,
+  MAX_AGE_SHOWN,
+  Result,
+  ResultContext,
+  resultOf,
+} from './resultAnswers';
 import { FutureMeStep } from './steps';
 
 interface Props {
@@ -11,15 +19,13 @@ interface Props {
   headingRef: RefObject<HTMLHeadingElement>;
 }
 
-const INCOME_LABELS = {
+const INCOME_LABELS: Record<IncomeSource, TranslationKey> = {
   firstPillar: 'futureMe.result.income.firstPillar',
   specialPension: 'futureMe.result.income.specialPension',
   secondPillar: 'futureMe.result.income.secondPillar',
   thirdPillar: 'futureMe.result.income.thirdPillar',
   deposit: 'futureMe.result.income.deposit',
-} as const;
-
-type IncomeSource = keyof typeof INCOME_LABELS;
+};
 
 const emphasis = (chunks: React.ReactNode) => <strong>{chunks}</strong>;
 
@@ -120,19 +126,11 @@ const Tiles = ({ result }: { result: Result }) => {
   );
 };
 
-const IncomeAtPensionAge = ({ result }: { result: Result }) => {
+const IncomeAtPensionAge = ({ result, need }: { result: Result; need: number }) => {
   const intl = useIntl();
   const age = result.pensionStartAge;
   const row = result.rows.find((candidate) => candidate.age === age) ?? result.rows[0];
-  const allSources: { id: IncomeSource; amount: number }[] = [
-    { id: 'firstPillar', amount: row.i1 },
-    { id: 'specialPension', amount: row.isp },
-    { id: 'secondPillar', amount: row.i2 },
-    { id: 'thirdPillar', amount: row.i3 },
-    { id: 'deposit', amount: row.dep },
-  ];
-  const sources = allSources.filter(({ amount }) => Math.round(amount) > 0);
-  const total = sources.reduce((sum, { amount }) => sum + amount, 0);
+  const { lines: sources, total } = incomeAtStart(row);
   return (
     <>
       <h3 className="h5 section-title">
@@ -163,7 +161,7 @@ const IncomeAtPensionAge = ({ result }: { result: Result }) => {
           <span>
             <FormattedMessage id="futureMe.result.income.costs" />
           </span>
-          <span>{euro(row.spend)}</span>
+          <span>{euro(need)}</span>
         </li>
       </ul>
     </>
@@ -190,7 +188,7 @@ export const ResultStep = ({ context, headingRef }: Props) => {
         <AnswerText result={result} need={needMonthly(context.expenses)} />
       </p>
       <Tiles result={result} />
-      <IncomeAtPensionAge result={result} />
+      <IncomeAtPensionAge result={result} need={needMonthly(context.expenses)} />
     </section>
   );
 };

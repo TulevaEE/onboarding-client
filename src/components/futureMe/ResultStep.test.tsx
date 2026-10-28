@@ -105,6 +105,24 @@ describe('Result step', () => {
       expect(answer()).not.toHaveTextContent('kuni 100. eluaastani');
       expect(tile(0)).not.toHaveTextContent('100+ kulud kaetud kuni');
     });
+
+    it('sets the costs, not what the money stretches to, against the income', () => {
+      openResultStep('400');
+      goTo(/^Sina/);
+      typeInto(screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }), '0');
+      typeInto(screen.getByRole('spinbutton', { name: /Kui palju on III\ssambas praegu/ }), '0');
+      typeInto(
+        screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }),
+        '0',
+      );
+      goTo(/^Kulud, vaatamata$/);
+      userEvent.click(screen.getByRole('radio', { name: /Mugav/ }));
+      goTo(/^Tulemus/);
+
+      const list = screen.getByRole('list', { name: 'Kuu sissetulek 65-aastaselt' });
+      const costsLine = within(list).getAllByRole('listitem').slice(-1)[0];
+      expect(costsLine).toHaveTextContent(/^Kulud1\s261\s€$/);
+    });
   });
 
   describe('monthly income at the pension age', () => {

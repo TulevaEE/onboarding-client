@@ -28,7 +28,7 @@ export const payoutAgeTense = (birthYear: number, age: number): Tense => {
   return age > currentAge ? 'future' : 'present';
 };
 
-const plannedThirdPillarOpenAge = (answers: YouAnswers, plan: StepPlanInput): number => {
+export const plannedThirdPillarOpenAge = (answers: YouAnswers, plan: StepPlanInput): number => {
   const nextAge = CURRENT_YEAR - birthYearOrFallback(answers) + 1;
   const typed = parseInt(answers.thirdPillarOpenAge, 10);
   return Math.min(

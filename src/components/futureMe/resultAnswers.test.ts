@@ -3,7 +3,13 @@ import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses, withLevel } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
-import { resultInputOf, resultOf, ResultContext, resultScenarioOf } from './resultAnswers';
+import {
+  incomeAtStart,
+  resultInputOf,
+  resultOf,
+  ResultContext,
+  resultScenarioOf,
+} from './resultAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
 
 const noPrefill = { birthYear: 1980, sex: null, secondPillarRate: null };
@@ -73,6 +79,92 @@ describe('resultAnswers', () => {
           ),
         ).spMonthly,
       ).toBe(900);
+    });
+
+    it('drops a special pension the saver no longer has, though its amount was typed earlier', () => {
+      const input = resultInputOf(
+        contextWith(
+          { hasSpecialPension: false, workAdded: true },
+          { specialPension: { ...initialSpecialPension(), monthly: '900' } },
+        ),
+      );
+
+      expect(input).toMatchObject({ spHas: false, spMonthly: 0 });
+    });
+
+    describe('for a special pension kept on an early retirement', () => {
+      const earlyWithSpecialPension = {
+        hasSpecialPension: true,
+        workAdded: true,
+        specialPensionStartAge: '55',
+        hazardList: 'list1' as const,
+        hazardYears: '10',
+      };
+      const specialPension = { ...initialSpecialPension(), monthly: '1200' };
+      const choiceAtPensionAge = { ...initialAge66(), firstPillarChoicePa: 'oldAge' as const };
+
+      it('sends the choice made at the pension age while that choice is asked', () => {
+        const workingOn = { ...initialAge65(), work: 'yes' as const, workUntil: '70' };
+
+        expect(
+          resultInputOf(
+            contextWith(earlyWithSpecialPension, {
+              specialPension,
+              age65: workingOn,
+              age66: choiceAtPensionAge,
+            }),
+          ).firstPillarChoicePa,
+        ).toBe('oldAge');
+      });
+
+      it('drops the choice made at the pension age once it is no longer asked', () => {
+        expect(
+          resultInputOf(
+            contextWith(earlyWithSpecialPension, { specialPension, age66: choiceAtPensionAge }),
+          ).firstPillarChoicePa,
+        ).toBeUndefined();
+      });
+    });
+
+    it('carries a changed III pillar contribution after an early retirement into the engine', () => {
+      const early = {
+        workAdded: true,
+        hazardList: 'list1' as const,
+        hazardYears: '10',
+        thirdPillarJoined: 'after' as const,
+        thirdPillarMonthly: '50',
+      };
+      const stopping = {
+        ...initialAge65(),
+        thirdPillarAfterMode: 'change' as const,
+        thirdPillarAfter: '0',
+      };
+
+      expect(resultInputOf(contextWith(early, { age65: stopping })).p3After).toBe(0);
+      expect(resultInputOf(contextWith(early)).p3After).toBeUndefined();
+    });
+
+    it('counts III pillar contributions only from the age the saver plans to open it', () => {
+      const openingAt = (thirdPillarOpenAge: string) =>
+        resultInputOf(
+          contextWith({ thirdPillarJoined: 'none', thirdPillarMonthly: '100', thirdPillarOpenAge }),
+        ).p3Sep?.amount as number;
+
+      expect(openingAt('50')).toBeLessThan(0);
+      expect(openingAt('60')).toBeLessThan(openingAt('50'));
+    });
+  });
+
+  describe('income at the pension start', () => {
+    it('adds up the rounded amounts, so the total matches the lines', () => {
+      expect(incomeAtStart({ i1: 600.4, isp: 0, i2: 100.4, i3: 0, dep: 0 }).total).toBe(700);
+    });
+
+    it('keeps the state pension line while it has not started yet', () => {
+      expect(incomeAtStart({ i1: 0, isp: 0, i2: 300, i3: 0, dep: 0 }).lines).toEqual([
+        { id: 'firstPillar', amount: 0 },
+        { id: 'secondPillar', amount: 300 },
+      ]);
     });
   });
 
