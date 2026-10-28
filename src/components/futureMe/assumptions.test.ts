@@ -39,6 +39,17 @@ describe('assumptions', () => {
     });
   });
 
+  it('gives nothing saved in a III pillar that is only planned, whatever was typed before', () => {
+    const context = contextWith({
+      thirdPillarJoined: 'none',
+      thirdPillarAmount: '5000',
+      thirdPillarMonthly: '50',
+    });
+
+    expect(assumptionsOf(context)[0]).toMatchObject({ thirdPillar: 0 });
+    expect(idsOf(context)).toContain('thirdPillarFund');
+  });
+
   it('gives the special pension when there is one', () => {
     const context = contextWith(
       { workAdded: true, hasSpecialPension: true, specialPensionStartAge: '55' },

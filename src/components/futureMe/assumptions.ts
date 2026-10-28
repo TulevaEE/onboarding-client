@@ -31,12 +31,13 @@ export const assumptionsOf = (context: ResultContext): Assumption[] => {
   const hasSecondPillar = hasPillar('secondPillar', context);
   const hasThirdPillar = hasPillar('thirdPillar', context);
   const specialMonthly = amountOf(specialPension.monthly);
+  const thirdPillarSaved = you.thirdPillarJoined === 'none' ? 0 : amountOf(you.thirdPillarAmount);
   const assumptions: (Assumption | false)[] = [
     {
       id: 'you',
       birthYear: plan.birthYear,
       secondPillar: amountIf(hasSecondPillar, you.secondPillarAmount),
-      thirdPillar: amountIf(hasThirdPillar, you.thirdPillarAmount),
+      thirdPillar: hasThirdPillar ? thirdPillarSaved : null,
       specialPension: plan.hasSpecialPension && specialMonthly > 0 ? specialMonthly : null,
     },
     hasSecondPillar && fundAssumption('secondPillarFund', you.secondPillarFund),
