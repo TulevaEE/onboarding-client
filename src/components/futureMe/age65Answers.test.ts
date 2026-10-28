@@ -5,7 +5,6 @@ import {
   initialAge65,
   isPayoutChoiceMadeAtAnotherStep,
   pensionKind,
-  retirementAge,
   thirdPillarAfterAsked,
   withMode,
   workAccrualMonthly,
@@ -45,17 +44,6 @@ describe('age65Answers', () => {
 
     expect(withMode(deferred, 'half')).toMatchObject({ mode: 'half', years: 3 });
     expect(withMode(deferred, 'full')).toMatchObject({ mode: 'full', years: 3 });
-  });
-
-  describe('retirement age', () => {
-    it('is the pension age without any early years', () => {
-      expect(retirementAge(planOf())).toBe(65);
-    });
-
-    it('subtracts the early years', () => {
-      expect(retirementAge(planOf(FIVE_CHILDREN))).toBe(60);
-      expect(retirementAge(planOf({ earlyYearsPicked: '2' }))).toBe(63);
-    });
   });
 
   describe('pension kind', () => {

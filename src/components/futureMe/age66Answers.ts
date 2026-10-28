@@ -1,8 +1,9 @@
-import { Age60Answers, hasThirdPillarAt, PayoutChoice, payoutAge } from './age60Answers';
-import { Age65Answers, isPayoutChoiceMadeAtAnotherStep, retirementAge } from './age65Answers';
+import { Age60Answers, PayoutChoice } from './age60Answers';
+import { Age65Answers, isPayoutChoiceMadeAtAnotherStep } from './age65Answers';
 import { FirstPillarChoice } from './engine/pension';
 import { StepPlanInput } from './steps';
 import { YouAnswers } from './youAnswers';
+import { hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 
 export type Pillar = 'secondPillar' | 'thirdPillar';
 export type Contract = 'yearly' | 'once';

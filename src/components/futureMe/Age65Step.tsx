@@ -1,12 +1,11 @@
 import React, { RefObject } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Age60Answers, hasThirdPillarAt, payoutAge, payoutAgeTense } from './age60Answers';
+import { Age60Answers } from './age60Answers';
 import {
   Age65Answers,
   earlyDecrease,
   isPayoutChoiceMadeAtAnotherStep,
   pensionKind,
-  retirementAge,
   thirdPillarAfterAsked,
 } from './age65Answers';
 import { Age65Deferral } from './Age65Deferral';
@@ -25,6 +24,7 @@ import { FundPensionFaq } from './FundPensionFaq';
 import { FutureMeStep, StepPlanInput } from './steps';
 import { YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
+import { ageTense, hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 
 interface Props {
   answers: Age65Answers;
@@ -94,7 +94,7 @@ export const Age65Step = ({
         <p className="chapter-kicker">
           <FormattedMessage
             id="futureMe.age65.kicker"
-            values={{ age, year, tense: payoutAgeTense(plan.birthYear, age) }}
+            values={{ age, year, tense: ageTense(plan.birthYear, age) }}
           />
         </p>
         <h2 id="future-me-age65-heading" className="text-balance" tabIndex={-1} ref={headingRef}>

@@ -1,11 +1,12 @@
 import React, { RefObject } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { Age60Answers, DecisionOrdinal, PAYOUT_CHOICES, PayoutChoice, Tense } from './age60Answers';
+import { Age60Answers, DecisionOrdinal, PAYOUT_CHOICES, PayoutChoice } from './age60Answers';
 import { FundPensionFaq } from './FundPensionFaq';
 import { ChapterHead } from './ChapterHead';
 import { FutureMeStep } from './steps';
 import { EmojiIcon } from './FutureMeIcon';
+import { Tense } from './planAges';
 
 type Pillar = 'secondPillar' | 'thirdPillar';
 

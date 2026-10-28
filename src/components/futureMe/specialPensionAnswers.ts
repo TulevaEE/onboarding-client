@@ -1,10 +1,4 @@
-import {
-  Age65Answers,
-  initialAge65,
-  pensionKind,
-  retirementAge,
-  workUntilOf,
-} from './age65Answers';
+import { Age65Answers, initialAge65, pensionKind, workUntilOf } from './age65Answers';
 import { Age66Answers, initialAge66 } from './age66Answers';
 import lifeTableData from './engine/lifeTable.json';
 import {
@@ -19,6 +13,7 @@ import {
 } from './engine/pension';
 import { StepPlanInput } from './steps';
 import { amountOf, YouAnswers } from './youAnswers';
+import { retirementAge } from './planAges';
 
 const STATE_SECOND_PILLAR_RATE = 0.04;
 const lifeTable: LifeTable = lifeTableData;

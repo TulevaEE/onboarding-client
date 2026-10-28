@@ -1,4 +1,4 @@
-import { PayoutChoice, payoutAge } from './age60Answers';
+import { PayoutChoice } from './age60Answers';
 import {
   DEFERRAL_INCREASE,
   EARLY_DECREASE,
@@ -14,6 +14,7 @@ import {
   isSpecialPensionOn,
   YouAnswers,
 } from './youAnswers';
+import { payoutAge, retirementAge } from './planAges';
 
 export type PensionMode = 'full' | 'half' | 'defer';
 export type PensionKind = 'regular' | 'favourable' | 'flexible';
@@ -53,9 +54,6 @@ export const withMode = (answers: Age65Answers, mode: PensionMode): Age65Answers
   ...answers,
   mode,
 });
-
-export const retirementAge = (plan: StepPlanInput): number =>
-  retirementYears(plan) - plan.earlyRetirementYears;
 
 export const isPayoutChoiceMadeAtAnotherStep = (plan: StepPlanInput): boolean =>
   retirementAge(plan) <= payoutAge(plan);

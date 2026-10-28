@@ -1,7 +1,7 @@
 import React, { RefObject } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Age60Answers, payoutAge, payoutAgeTense } from './age60Answers';
-import { isPayoutChoiceMadeAtAnotherStep, retirementAge, Age65Answers } from './age65Answers';
+import { Age60Answers } from './age60Answers';
+import { isPayoutChoiceMadeAtAnotherStep, Age65Answers } from './age65Answers';
 import {
   Age66Answers,
   Age66Context,
@@ -22,6 +22,7 @@ import {
 import { FutureMeStep, StepPlanInput } from './steps';
 import { YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
+import { ageTense, payoutAge, retirementAge } from './planAges';
 
 interface Props {
   answers: Age66Answers;
@@ -90,7 +91,7 @@ export const Age66Step = ({
             values={{
               age: firstAge,
               year: plan.birthYear + firstAge,
-              tense: payoutAgeTense(plan.birthYear, firstAge),
+              tense: ageTense(plan.birthYear, firstAge),
             }}
           />
         </p>

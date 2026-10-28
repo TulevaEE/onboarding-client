@@ -6,13 +6,7 @@ import { Shimmer } from '../common/shimmer/Shimmer';
 import { usePageTitle } from '../common/usePageTitle';
 import { Age55Step } from './Age55Step';
 import { age55Of } from './age55';
-import {
-  decisionOrdinal,
-  hasThirdPillarAt,
-  initialAge60,
-  payoutAge,
-  payoutAgeTense,
-} from './age60Answers';
+import { decisionOrdinal, initialAge60 } from './age60Answers';
 import { Age60Step } from './Age60Step';
 import { Age65Step } from './Age65Step';
 import { initialAge65 } from './age65Answers';
@@ -45,6 +39,7 @@ import {
 import { FIELD_DOM_IDS } from './YouFields';
 import { YouStep } from './YouStep';
 import './FutureMe.scss';
+import { ageTense, hasThirdPillarAt, payoutAge } from './planAges';
 
 const ALL_SECTIONS_OPEN: Record<YouSectionId, boolean> = {
   me: true,
@@ -178,7 +173,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           answers={age60}
           birthYear={birthYearOrFallback(answers)}
           age={payoutAge(plan)}
-          tense={payoutAgeTense(birthYearOrFallback(answers), payoutAge(plan))}
+          tense={ageTense(birthYearOrFallback(answers), payoutAge(plan))}
           ordinal={decisionOrdinal(steps)}
           hasSecondPillar={plan.savesInSecondPillar}
           hasThirdPillar={hasThirdPillarAt(answers, plan, payoutAge(plan))}
