@@ -415,4 +415,31 @@ describe('civil service years in the result', () => {
       6,
     );
   });
+
+  describe('with rescue service years', () => {
+    const retiringBy2042 = { birthYear: '1970' };
+    const alsoRescuer = (rescueYears: string, changes = {}) =>
+      civilServant('20', { hasRescue: true, rescueYears, ...changes });
+
+    it('raise the state pension by the rescue increase alone while it applies', () => {
+      expect(statePensionAtStart(alsoRescuer('12', retiringBy2042))).toBeCloseTo(
+        statePensionAtStart(civilServant('0', retiringBy2042)) * 1.1,
+        6,
+      );
+    });
+
+    it('leave the state pension unraised when the rescue years are too few for the rescue increase', () => {
+      expect(statePensionAtStart(alsoRescuer('5', retiringBy2042))).toBeCloseTo(
+        statePensionAtStart(civilServant('0', retiringBy2042)),
+        6,
+      );
+    });
+
+    it('leave the state pension unraised when the rescue increase has ended by the pension year', () => {
+      expect(statePensionAtStart(alsoRescuer('12'))).toBeCloseTo(
+        statePensionAtStart(civilServant('0')),
+        6,
+      );
+    });
+  });
 });

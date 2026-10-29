@@ -274,12 +274,13 @@ describe('civil service increase', () => {
     });
   });
 
-  it('is not a rule without an increase or when the rescue increase applies instead', () => {
-    const ids = (context: ResultContext) => rulesOf(context).map(({ id }) => id);
+  it('is not a rule without an increase', () => {
+    expect(idsOf(civilServant('9'))).not.toContain('civilServiceIncrease');
+  });
 
-    expect(ids(civilServant('9'))).not.toContain('civilServiceIncrease');
-    expect(ids(civilServant('20', { hasRescue: true, rescueYears: '12' }))).not.toContain(
-      'civilServiceIncrease',
-    );
+  it('is not a rule when the rescue increase applies instead', () => {
+    expect(
+      idsOf(civilServant('20', { birthYear: '1970', hasRescue: true, rescueYears: '12' })),
+    ).not.toContain('civilServiceIncrease');
   });
 });
