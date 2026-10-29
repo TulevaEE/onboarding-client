@@ -70,7 +70,15 @@ const takeSecondPillarAsLumpSum = () => {
   );
 };
 
+const chooseSecondPillarReturn = (percent: string) =>
+  userEvent.selectOptions(
+    screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ }),
+    percent,
+  );
+
 const openResult = () => goTo(/^Tulemus/);
+
+const secondPillarTip = () => screen.getByText(/^Väljavõetud raha seisab hoiusel/);
 
 const surplusHeading = () => screen.queryByRole('heading', { name: /^Sul jääb raha üle/ });
 const shortfallHeading = () => screen.queryByRole('heading', { name: /^Raha üle ei jää/ });
@@ -230,6 +238,38 @@ describe('Result legacy card', () => {
       userEvent.click(screen.getByRole('button', { name: /Jätka II\ssamba kasvatamist/ }));
 
       expect(screen.queryByText('Ära võta II sammast korraga välja.')).not.toBeInTheDocument();
+    });
+
+    it('compares the fund with the deposit’s return the calculation uses', () => {
+      startWith('300', '10000');
+      chooseComfortableCosts();
+      takeSecondPillarAsLumpSum();
+      openResult();
+
+      expect(secondPillarTip()).toHaveTextContent(/arvutuses −1%\saastas pärast inflatsiooni/);
+    });
+
+    it('says the money keeps its value in the fund at the default 0%, rather than that it grows', () => {
+      startWith('300', '10000');
+      chooseComfortableCosts();
+      takeSecondPillarAsLumpSum();
+      openResult();
+
+      expect(secondPillarTip()).toHaveTextContent(
+        /Fondis hoiab see väärtust \(sinu valitud tootlusega 0%\saastas pärast inflatsiooni\)\./,
+      );
+    });
+
+    it('says the money grows on in the fund at a return above 0%', () => {
+      startWith('300', '10000');
+      chooseSecondPillarReturn('2');
+      chooseComfortableCosts();
+      takeSecondPillarAsLumpSum();
+      openResult();
+
+      expect(secondPillarTip()).toHaveTextContent(
+        /Fondis kasvab see edasi \(sinu valitud tootlusega 2%\saastas pärast inflatsiooni\)\./,
+      );
     });
 
     it('moves the focus to the card heading after leaving the second pillar growing, as the advice is gone', () => {

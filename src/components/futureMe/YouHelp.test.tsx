@@ -17,6 +17,7 @@ jest.mock('../common/apiHooks', () => ({
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
 }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
+jest.mock('react-intl', () => jest.requireActual('react-intl'));
 
 const mockUseMe = useMe as jest.MockedFunction<typeof useMe>;
 
@@ -119,7 +120,7 @@ describe('Sina step help buttons', () => {
       /Mida tähendab II\ssamba sissemakse$/,
     ],
     [
-      'second pillar fund',
+      'second pillar return',
       () => screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ }),
       /Mida tähendab „tootlus pärast inflatsiooni“$/,
     ],
@@ -162,6 +163,35 @@ describe('Sina step help buttons', () => {
     userEvent.click(helpButtonBeside(field(), '.col-12', name));
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('explains a zero, a negative and a high return, and that the past promises nothing', () => {
+    renderYouStep();
+    const returnField = screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ });
+
+    userEvent.click(
+      helpButtonBeside(returnField, '.col-12', /Mida tähendab „tootlus pärast inflatsiooni“$/),
+    );
+
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveTextContent(/0%:.*Alla 0%:.*Üle 0%:/);
+    expect(dialog).toHaveTextContent('Varasem tootlus ei taga tulevast tootlust.');
+    expect(dialog).not.toHaveTextContent(/Miks kõige rohkem 4%/);
+  });
+
+  it('says the III pillar money already saved follows the chosen return, without quoting a default', () => {
+    renderYouStep();
+    const monthlyField = screen.getByRole('spinbutton', {
+      name: /Kui palju maksad III\ssambasse kuus/,
+    });
+
+    userEvent.click(
+      helpButtonBeside(monthlyField, '.col-12', /Kuidas III\ssamba sissemakse arvutuses muutub$/),
+    );
+
+    expect(screen.getByRole('dialog')).toHaveTextContent(
+      'See puudutab ainult uut sissemakset: sambas oleva raha ostujõud muutub valitud tootluse võrra.',
+    );
   });
 
   it('puts the pillars explanation beside the second pillar and work title', () => {

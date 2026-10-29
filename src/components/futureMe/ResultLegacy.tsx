@@ -2,10 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { deferralLock } from './age65Answers';
-import { euro, exactPercent } from './amountFormat';
+import { euro, exactPercent, signedPercent } from './amountFormat';
 import { ChoiceCard } from './ChoiceCard';
 import { ChangeDecisions, useDecisionActions } from './decisionActions';
 import { DecisionChanges } from './decisions';
+import { DEPOSIT_REAL_RETURN } from './engine/pension';
 import { withOwnCostsRaisedBy } from './expensesAnswers';
 import { LineIcon } from './FutureMeIcon';
 import { HelpButton } from './HelpButton';
@@ -145,7 +146,7 @@ const ShortfallCard = ({
   const canDeferStatePension = deferralLock(context.you) === null;
   return (
     <>
-      {legacy.isSecondPillarLumpSum && (
+      {legacy.isGrowingSecondPillarSuggested && (
         <ul className="legacy-tips">
           <li>
             <strong className="legacy-tip-title">
@@ -154,7 +155,11 @@ const ShortfallCard = ({
             <p className="text-pretty">
               <FormattedMessage
                 id="futureMe.result.legacy.tip.secondPillar.body"
-                values={{ rate: exactPercent(legacy.secondPillarReturn) }}
+                values={{
+                  rate: exactPercent(legacy.secondPillarReturn),
+                  isGrowing: legacy.secondPillarReturn > 0 ? 'yes' : 'no',
+                  depositRate: signedPercent(DEPOSIT_REAL_RETURN),
+                }}
               />
             </p>
             <button
@@ -171,7 +176,7 @@ const ShortfallCard = ({
       <p className="legacy-hint">
         <FormattedMessage
           id="futureMe.result.legacy.hint"
-          values={{ hasTips: legacy.isSecondPillarLumpSum ? 'yes' : 'no' }}
+          values={{ hasTips: legacy.isGrowingSecondPillarSuggested ? 'yes' : 'no' }}
         />
       </p>
       <div className="legacy-actions">

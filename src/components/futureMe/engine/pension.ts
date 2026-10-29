@@ -282,6 +282,7 @@ const AVG_WAGE = 2092;
 const MIN_WAGE = 946;
 export const WAGE_GROWTH = 0.03;
 export const INFLATION = 0.02;
+export const DEPOSIT_REAL_RETURN = -0.01;
 
 // RPKS § 12 and § 13¹: (insurance part + solidarity part) / 2 × aastahinne per year worked
 export function workAccrual(
@@ -651,7 +652,7 @@ export function simulate(
   const need = needOverride !== undefined ? needOverride : input.needMonthly;
   const r = input.realReturn;
   const r3 = input.realReturn3 !== undefined ? input.realReturn3 : r;
-  const rd = input.depositReturn !== undefined ? input.depositReturn : -0.01;
+  const rd = input.depositReturn !== undefined ? input.depositReturn : DEPOSIT_REAL_RETURN;
   const pa = retirementYears(input);
   const currentAge = CURRENT_YEAR - input.birthYear;
   const startAge = Math.max(currentAge, 55);

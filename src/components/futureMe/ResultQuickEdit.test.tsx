@@ -8,6 +8,9 @@ import { User } from '../common/apiModels';
 import translations from '../translations';
 import { mockUser } from '../../test/backend-responses';
 
+const chooseReturn = (field: HTMLElement, percent: number) =>
+  userEvent.selectOptions(field, String(percent));
+
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: () => ({ data: [], isLoading: false }),
@@ -100,7 +103,7 @@ describe('Result step: quick edit of the assumptions', () => {
   });
 
   describe('the return on the second pillar', () => {
-    it('keeps the fund choices closed until asked for', () => {
+    it('keeps the return choice closed until asked for', () => {
       openResultStep();
 
       expect(toggleIn(assumptionRow(/^II\ssamba tootlus$/))).toHaveAttribute(
@@ -108,7 +111,7 @@ describe('Result step: quick edit of the assumptions', () => {
         'false',
       );
       expect(
-        screen.queryByRole('radio', { name: /konservatiivne võlakirjafond/ }),
+        screen.queryByRole('combobox', { name: /^II\ssamba tootlus$/ }),
       ).not.toBeInTheDocument();
     });
 
@@ -122,27 +125,25 @@ describe('Result step: quick edit of the assumptions', () => {
       ).toBeVisible();
     });
 
-    it('opens the fund choices under the row with the current one checked', () => {
+    it('opens the return choice under the row at the current return', () => {
       openResultStep();
       const row = assumptionRow(/^II\ssamba tootlus$/);
       userEvent.click(toggleIn(row));
 
-      const group = within(row).getByRole('group', { name: /^II\ssamba tootlus$/ });
-      expect(within(group).getAllByRole('radio')).toHaveLength(3);
-      expect(within(group).getAllByRole('radio', { checked: true })).toHaveLength(1);
+      expect(within(row).getByRole('combobox', { name: /^II\ssamba tootlus$/ })).toHaveValue('0');
       expect(toggleIn(row)).toHaveAttribute('aria-expanded', 'true');
     });
 
-    it('recalculates the answer at once when another fund is picked', () => {
+    it('recalculates the answer at once when the return changes', () => {
       openResultStep();
       const tiles = () => screen.getByRole('list', { name: 'Kokkuvõte' }).textContent;
       const before = tiles();
       const row = assumptionRow(/^II\ssamba tootlus$/);
       userEvent.click(toggleIn(row));
 
-      userEvent.click(within(row).getByRole('radio', { name: /konservatiivne võlakirjafond/ }));
+      chooseReturn(within(row).getByRole('combobox'), 5);
 
-      expect(row).toHaveTextContent('Konservatiivne võlakirjafond, 0% aastas pärast inflatsiooni');
+      expect(row).toHaveTextContent('5% aastas pärast inflatsiooni');
       expect(tiles()).not.toBe(before);
     });
 
@@ -152,16 +153,16 @@ describe('Result step: quick edit of the assumptions', () => {
       userEvent.click(toggleIn(row));
       userEvent.click(toggleIn(row));
 
-      expect(within(row).queryByRole('radio')).not.toBeInTheDocument();
+      expect(within(row).queryByRole('combobox')).not.toBeInTheDocument();
     });
 
     it('changes the third pillar return on its own row', () => {
       openResultStep();
       const row = assumptionRow(/^III\ssamba tootlus$/);
       userEvent.click(toggleIn(row));
-      userEvent.click(within(row).getByRole('radio', { name: /madala tasuga indeksfond/ }));
+      chooseReturn(within(row).getByRole('combobox'), -1);
 
-      expect(row).toHaveTextContent('Madala tasuga indeksfond, 4% aastas pärast inflatsiooni');
+      expect(row).toHaveTextContent('−1% aastas pärast inflatsiooni');
     });
   });
 

@@ -6,10 +6,10 @@ import { CURRENT_YEAR } from './engine/pension';
 import { nominalFactorAt, nominalResultOf, nominalReturnsOf } from './nominal';
 import { ResultContext, resultOf } from './resultAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
-import { FundKey, initialAnswers, toStepPlanInput } from './youAnswers';
+import { initialAnswers, toStepPlanInput, YouAnswers } from './youAnswers';
 
 const contextWith = (
-  you: { secondPillarFund?: FundKey; thirdPillarFund?: FundKey } = {},
+  you: Partial<Pick<YouAnswers, 'secondPillarReturnPercent' | 'thirdPillarReturnPercent'>> = {},
   thirdPillarMonthly = '',
 ): ResultContext => {
   const answers = {
@@ -157,7 +157,7 @@ describe('nominalResultOf, special pension against the old-age pension earned by
 
 describe('nominalReturnsOf', () => {
   it('adds the price growth to the second pillar fund’s return when only that pillar exists', () => {
-    expect(nominalReturnsOf(contextWith({ secondPillarFund: 'mix' }))).toEqual({
+    expect(nominalReturnsOf(contextWith({ secondPillarReturnPercent: 2 }))).toEqual({
       second: 4.0,
       third: null,
     });
@@ -165,7 +165,23 @@ describe('nominalReturnsOf', () => {
 
   it('keeps the two pillars apart when both exist', () => {
     expect(
-      nominalReturnsOf(contextWith({ secondPillarFund: 'cons', thirdPillarFund: 'index' }, '50')),
+      nominalReturnsOf(
+        contextWith({ secondPillarReturnPercent: 0, thirdPillarReturnPercent: 4 }, '50'),
+      ),
     ).toEqual({ second: 2.0, third: 6.1 });
+  });
+
+  it('rounds a return that the price growth just cancels to a zero without a minus sign', () => {
+    expect(nominalReturnsOf(contextWith({ secondPillarReturnPercent: -2 }))).toEqual({
+      second: 0,
+      third: null,
+    });
+  });
+
+  it('stays negative when the return falls further below the price growth', () => {
+    expect(nominalReturnsOf(contextWith({ secondPillarReturnPercent: -5 }))).toEqual({
+      second: -3.1,
+      third: null,
+    });
   });
 });

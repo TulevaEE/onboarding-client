@@ -166,7 +166,7 @@ const filledIn = (overrides: Partial<YouAnswers> = {}): YouAnswers => ({
   thirdPillarJoined: 'before',
   thirdPillarAmount: '12000',
   thirdPillarMonthly: '0',
-  thirdPillarFund: 'cons',
+  thirdPillarReturnPercent: 0,
   pensionAgeYears: '65',
   ...overrides,
 });
@@ -218,13 +218,13 @@ describe('age 55 from the answers', () => {
     );
   });
 
-  it('uses the fund return of the III pillar', () => {
+  it('uses the chosen return of the III pillar', () => {
     const cons = age55Of(
-      filledIn({ birthYear: '1975', thirdPillarFund: 'cons', thirdPillarPlan: 'lump' }),
+      filledIn({ birthYear: '1975', thirdPillarReturnPercent: 0, thirdPillarPlan: 'lump' }),
       1,
     );
     const index = age55Of(
-      filledIn({ birthYear: '1975', thirdPillarFund: 'index', thirdPillarPlan: 'lump' }),
+      filledIn({ birthYear: '1975', thirdPillarReturnPercent: 4, thirdPillarPlan: 'lump' }),
       1,
     );
 

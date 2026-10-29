@@ -1,7 +1,9 @@
 import React, { RefObject, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { euro } from './amountFormat';
+import { ProviderDisclaimer } from '../pensionCalculator/ProviderDisclaimer';
+import { euro, signedNumber } from './amountFormat';
+import { assumptionsOf } from './assumptions';
 import { ChapterHead } from './ChapterHead';
 import { DecisionId } from './decisions';
 import { SimulationRow } from './engine/pension';
@@ -234,6 +236,30 @@ const IncomeAtPensionAge = ({ result, need }: { result: Result; need: number }) 
   );
 };
 
+const ReturnAssumption = ({ context }: { context: ResultContext }) => {
+  const percents = assumptionsOf(context).flatMap((assumption) =>
+    'returnPercent' in assumption ? [assumption.returnPercent] : [],
+  );
+  if (percents.length === 0) {
+    return null;
+  }
+  const [second, third] = percents.map(signedNumber);
+  return (
+    <p className="text-pretty">
+      <FormattedMessage
+        id="futureMe.result.returnAssumption"
+        values={{
+          pillars: third === undefined || second === third ? 'one' : 'both',
+          percent: second,
+          second,
+          third,
+          strong,
+        }}
+      />
+    </p>
+  );
+};
+
 export const ResultStep = ({ context, headingRef }: Props) => {
   const result = resultOf(context);
   const [openDecision, setOpenDecision] = useState<DecisionId | null>(null);
@@ -259,6 +285,7 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       >
         <AnswerText result={result} need={needMonthly(context.expenses)} />
       </p>
+      <ReturnAssumption context={context} />
       <ResultAdvice context={context} result={result} onOpenDecision={openAndFocusDecision} />
       <Tiles context={context} result={result} />
       <IncomeAtPensionAge result={result} need={needMonthly(context.expenses)} />
@@ -278,6 +305,9 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       <ResultRules context={context} />
       <ResultSave context={context} />
       <ResultFeedback />
+      <div className="mt-4">
+        <ProviderDisclaimer />
+      </div>
     </section>
   );
 };

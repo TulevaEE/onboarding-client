@@ -46,6 +46,14 @@ const fillInYou = (firstPillar: string) => {
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }), '10000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on III\ssambas praegu/ }), '5000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }), '50');
+  userEvent.selectOptions(
+    screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ }),
+    '2',
+  );
+  userEvent.selectOptions(
+    screen.getByRole('combobox', { name: /tootlust eeldad III\ssambas/ }),
+    '2',
+  );
 };
 
 const openResultStep = (firstPillar = '700') => {

@@ -1,8 +1,16 @@
 import React, { ChangeEvent } from 'react';
 import classNames from 'classnames';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { fieldProblem, limitsOf, PrefilledField, YouAnswers, YouField } from './youAnswers';
+import { signedNumber } from './amountFormat';
+import {
+  fieldProblem,
+  limitsOf,
+  PrefilledField,
+  RETURN_PERCENT_OPTIONS,
+  YouAnswers,
+  YouField,
+} from './youAnswers';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';
 
@@ -173,6 +181,15 @@ export const AmountField = ({
     </div>
   );
 };
+
+export const returnOptions = (intl: IntlShape) =>
+  RETURN_PERCENT_OPTIONS.map((percent) => ({
+    value: String(percent),
+    label: intl.formatMessage(
+      { id: 'futureMe.you.returnRate.option' },
+      { percent: signedNumber(percent) },
+    ),
+  }));
 
 interface SelectFieldProps {
   id: string;

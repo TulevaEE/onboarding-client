@@ -111,7 +111,7 @@ describe('Result step: assumptions', () => {
     openResultStep();
 
     expect(itemTitled(assumptionList(), /^II\ssamba tootlus$/)).toHaveTextContent(
-      /Keskmine pangafond, 2%\saastas pärast inflatsiooni/,
+      /0%\saastas pärast inflatsiooni/,
     );
   });
 
@@ -121,5 +121,54 @@ describe('Result step: assumptions', () => {
     expect(itemTitled(assumptionList(), /^Kulud pensionil$/)).toHaveTextContent(
       /Kokkuhoidlik: \d[\d\s]*\s€\skuus/,
     );
+  });
+});
+
+describe('Result step: the return the answer rests on', () => {
+  beforeEach(() => loggedInAs({ dateOfBirth: '1962-01-01' }));
+
+  const returnLine = () => screen.getByText(/aastase tootluse juures pärast inflatsiooni/);
+
+  const chooseReturnOnRow = (heading: RegExp, percent: number) => {
+    const row = itemTitled(assumptionList(), heading);
+    userEvent.click(within(row).getByRole('button', { name: /^Muuda/ }));
+    userEvent.selectOptions(within(row).getByRole('combobox'), String(percent));
+  };
+
+  it('states the return in bold right under the answer', () => {
+    openResultStep();
+
+    expect(returnLine()).toHaveTextContent(
+      /^Arvutatud 0% aastase tootluse juures pärast inflatsiooni\.$/,
+    );
+    expect(within(returnLine()).getByText('0%').tagName).toBe('STRONG');
+  });
+
+  it('names each pillar’s return when they differ, with a real minus sign', () => {
+    openResultStep();
+
+    chooseReturnOnRow(/^II\ssamba tootlus$/, -2);
+
+    expect(returnLine()).toHaveTextContent(
+      /^Arvutatud II\ssamba −2% ja III\ssamba 0% aastase tootluse juures pärast inflatsiooni\.$/,
+    );
+  });
+
+  it('ends with who provides the service and that the result is no promise', () => {
+    openResultStep();
+
+    expect(screen.getByText(/^Finantsteenust pakub Tuleva Fondid AS\./)).toBeInTheDocument();
+    expect(
+      screen.getByText(/^Tegemist on sinu valitud eeldustel põhineva näitliku arvutusega\./),
+    ).toBeInTheDocument();
+  });
+
+  it('keeps the provider’s links muted like the rest of the footer, as on the calculator', () => {
+    openResultStep();
+
+    const provider = screen.getByText(/^Finantsteenust pakub Tuleva Fondid AS\./);
+    const links = within(provider).getAllByRole('link');
+    expect(links).toHaveLength(3);
+    links.forEach((link) => expect(link).toHaveClass('text-body-secondary'));
   });
 });
