@@ -169,6 +169,22 @@ describe('Result step: save the result', () => {
     expect(isComparisonPrinted).toBe(true);
   });
 
+  it('gives the printed comparison a caption of its own while the page shows the comparison too', () => {
+    let captionIds: string[] = [];
+    window.print = jest.fn(() => {
+      captionIds = screen
+        .getAllByText('Väljamakse teede võrdlus', { selector: 'caption' })
+        .map(({ id }) => id);
+    });
+    openResultStep();
+    userEvent.click(screen.getByText('Võrdle kõiki väljamakse teid'));
+
+    userEvent.click(pdfButton());
+
+    expect(captionIds).toHaveLength(2);
+    expect(new Set(captionIds).size).toBe(2);
+  });
+
   it('opens every accordion for the print', () => {
     window.print = jest.fn(() => expect(chartGuide()).toBeVisible());
     openResultStep();

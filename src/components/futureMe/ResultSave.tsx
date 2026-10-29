@@ -136,7 +136,7 @@ export const ResultSave = ({ context }: { context: ResultContext }) => {
           <h3 className="h5 section-title mt-4">
             <FormattedMessage id="futureMe.result.compare.caption" />
           </h3>
-          <ComparisonTable context={context} />
+          <ComparisonTable context={context} captionId="future-me-save-compare-caption" />
         </div>
       )}
     </div>
