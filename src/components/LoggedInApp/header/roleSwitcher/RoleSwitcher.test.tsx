@@ -235,6 +235,20 @@ describe('RoleSwitcher', () => {
       );
     });
 
+    it('asks for the connected apps as the header loads, so the security row is ready before the menu opens', async () => {
+      const connectedApps = connectedAppsBackend(server);
+      rolesBackend(server, [personalRole]);
+      userBackend(server, { role: personalRole });
+
+      renderRoleSwitcher();
+
+      expect(await screen.findByRole('button', { name: /John Doe/i })).toHaveAttribute(
+        'aria-expanded',
+        'false',
+      );
+      await waitFor(() => expect(connectedApps.listingsAskedFor()).toBeGreaterThan(0));
+    });
+
     it('leaves security out of the menu until the person has connected an app', async () => {
       connectedAppsBackend(server, []);
       rolesBackend(server, [personalRole]);

@@ -10,6 +10,7 @@ import { isChildRole, isCurrentRole } from '../../../common/utils';
 import LanguageSwitcher from '../languageSwitcher';
 import { PII_CLASS } from '../../../tracking/piiMarkup';
 import { SecurityMenuItem } from '../../../security/SecurityMenuItem';
+import { useConnectedApps } from '../../../security/connectedApps/connectedApps.api';
 import {
   childOnboardingLocation,
   pendingChildOnboardings,
@@ -40,6 +41,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
   const { data: roles } = useRoles();
   const { data: pendingOnboardings = [] } = usePendingOnboardings();
   const { data: user } = useMe();
+  const { data: connectedApps = [] } = useConnectedApps();
   const switchRole = useSwitchRole();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLSpanElement>(null);
@@ -107,6 +109,7 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
     }
   };
 
+  const hasConnectedApps = connectedApps.length > 0;
   const displayName = user?.role?.name ?? userName;
   const pendingChildren = pendingChildOnboardings(pendingOnboardings);
   const hasAnotherAccount = (roles?.length ?? 0) > 1 || pendingChildren.length > 0;
@@ -161,7 +164,9 @@ export const RoleSwitcher = ({ userName, onRoleSwitch, onLogout }: Props) => {
             <PhosphorIcon name="house" size={18} className="text-body-secondary" />
             <FormattedMessage id="header.my.account" />
           </Link>
-          <SecurityMenuItem onKeyDown={handleKeyDown} onClick={() => setOpen(false)} />
+          {hasConnectedApps && (
+            <SecurityMenuItem onKeyDown={handleKeyDown} onClick={() => setOpen(false)} />
+          )}
           <LanguageSwitcher onKeyDown={handleKeyDown} onClick={() => setOpen(false)} />
           <hr className="dropdown-divider" />
           {hasAnotherAccount && (
