@@ -7,6 +7,7 @@ import { redirectToPayment } from '../../../common/api';
 import { useMe } from '../../../common/apiHooks';
 import { PaymentChannel, User } from '../../../common/apiModels';
 import { usePageTitle } from '../../../common/usePageTitle';
+import { Pii } from '../../../common/Pii';
 import { PaymentBankButtons } from '../../thirdPillar/ThirdPillarPayment/PaymentBankButtons';
 import { BankKey } from '../../thirdPillar/ThirdPillarPayment/types';
 import {
@@ -109,7 +110,7 @@ const SavingsFundPaymentForm: FC<{ user: User }> = ({ user }) => {
         <p className="m-0 text-center fs-3 fw-medium">
           <FormattedMessage
             id="savingsFund.payment.accountOwner"
-            values={{ accountOwner: accountHolderName(user) }}
+            values={{ accountOwner: <Pii>{accountHolderName(user)}</Pii> }}
           />
         </p>
       </div>
@@ -224,11 +225,15 @@ const SavingsFundPaymentForm: FC<{ user: User }> = ({ user }) => {
                 </Link>
 
                 <button
+                  id="savings-fund-payment-submit"
                   type="submit"
                   className="btn btn-primary btn-loading"
                   disabled={!user.personalCode || isSubmitting}
                 >
-                  <FormattedMessage id="savingsFund.payment.form.submit.label" />
+                  <FormattedMessage
+                    id="savingsFund.payment.form.submit.toAccountOwner"
+                    values={{ accountOwner: <Pii>{accountHolderName(user)}</Pii> }}
+                  />
                 </button>
               </div>
             </div>

@@ -1390,6 +1390,7 @@
   "savingsFund.payment.form.amount.label": "Summa",
   "savingsFund.payment.form.paymentMethod.label": "Vali pank",
   "savingsFund.payment.form.submit.label": "Jätkan",
+  "savingsFund.payment.form.submit.toAccountOwner": "Sissemakse ({accountOwner})",
   "savingsFund.payment.form.cancel.label": "Tagasi",
   "savingsFund.payment.form.paymentType.label": "Millist tüüpi makset soovid teha?",
   "savingsFund.payment.form.paymentType.single": "Ühekordne sissemakse",
