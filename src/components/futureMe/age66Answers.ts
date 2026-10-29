@@ -1,6 +1,6 @@
 import { Age60Answers, PayoutChoice } from './age60Answers';
 import { Age65Answers, isPayoutChoiceMadeAtAnotherStep, workUntilOf } from './age65Answers';
-import { FirstPillarChoice, retirementYears } from './engine/pension';
+import { CURRENT_YEAR, FirstPillarChoice, retirementYears } from './engine/pension';
 import { FutureMeStep, StepId, StepPlanInput } from './steps';
 import { age55Of } from './age55';
 import { YouAnswers } from './youAnswers';
@@ -92,6 +92,13 @@ const payoutOpenAge = (pillar: Pillar, context: Age66Context): number => {
   return Math.max(pensionAge, workEnd, pillarPayoutAge(pillar, context));
 };
 
+const payoutAgeStart = (pillar: Pillar, context: Age66Context): number =>
+  Math.max(
+    payoutAge(context.plan),
+    pillarPayoutAge(pillar, context),
+    CURRENT_YEAR - context.plan.birthYear,
+  );
+
 export const fundPensionStartOf = (
   pillar: Pillar,
   answers: Age66Answers,
@@ -99,6 +106,9 @@ export const fundPensionStartOf = (
 ): number | undefined => {
   if (!hasPillar(pillar, context)) {
     return undefined;
+  }
+  if (context.age60[pillar] === 'fund') {
+    return payoutAgeStart(pillar, context);
   }
   if (payoutAtPensionAge(pillar, context) === 'fund') {
     return payoutOpenAge(pillar, context);

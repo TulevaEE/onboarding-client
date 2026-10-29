@@ -149,14 +149,26 @@ describe('decisions', () => {
       });
     });
 
-    it('starts a fund pension chosen at the payout age at the pension age, as the calculation pays it', () => {
+    it('starts a fund pension chosen at the payout age then, as the calculation pays it', () => {
       const fundAt60 = contextWith({}, { age60: { ...initialAge60(), secondPillar: 'fund' } });
 
       expect(fundPensionOf(fundAt60)).toMatchObject({
-        age: 65,
-        year: 2045,
-        summary: { starts: 'second', secondPillarAge: 65 },
+        age: 60,
+        year: 2040,
+        summary: { starts: 'second', secondPillarAge: 60 },
       });
+    });
+
+    it('starts a fund pension chosen at the payout age while working on after the pension age at the payout age', () => {
+      const fundAt60WorkingUntil67 = contextWith(
+        {},
+        {
+          age60: { ...initialAge60(), secondPillar: 'fund' },
+          age65: { ...initialAge65(), work: 'yes', workUntil: '67' },
+        },
+      );
+
+      expect(fundPensionOf(fundAt60WorkingUntil67)?.age).toBe(60);
     });
 
     it('counts a fund pension chosen at the pension age while the III pillar is left to grow', () => {
@@ -207,12 +219,24 @@ describe('decisions', () => {
     });
 
     it.each([
-      ['a II pillar fund pension chosen at the payout age', {}, { age60: fundAt('secondPillar') }],
-      [
-        'a III pillar fund pension chosen at the payout age',
-        withThirdPillar,
-        { age60: fundAt('thirdPillar') },
-      ],
+      ['II', 'secondPillarContract', 'second', {}, fundAt('secondPillar')],
+      ['III', 'thirdPillarContract', 'third', withThirdPillar, fundAt('thirdPillar')],
+      ['II', 'secondPillarContract', 'second', { birthYear: '1964' }, fundAt('secondPillar')],
+    ] as const)(
+      'lists a %s pillar fund pension chosen at the payout age at the start of its contract in the calculation',
+      (_, contract, pillar, you, age60) => {
+        const context = contextWith(you, {
+          age60,
+          age66: { ...initialAge66(), [contract]: 'once' },
+        });
+
+        expect(fundPensionOf(context)?.age).toBe(
+          resultOf(context).fundPensionContracts[pillar]?.start,
+        );
+      },
+    );
+
+    it.each([
       [
         'a II pillar fund pension chosen at the pension age',
         withThirdPillar,
