@@ -248,6 +248,14 @@ describe('Age 65 step', () => {
       ).toBeInTheDocument();
     });
 
+    it('chooses working on when the line on how much each year worked raises the pension is clicked', () => {
+      openAge65Step();
+
+      userEvent.click(within(workGroup()).getByText(/tõstab iga tööaasta pensioni/));
+
+      expect(within(workGroup()).getByRole('radio', { name: /^Töötan edasi/ })).toBeChecked();
+    });
+
     it('keeps the picked end age', () => {
       openAge65Step();
       userEvent.click(within(workGroup()).getByRole('radio', { name: /^Töötan edasi/ }));

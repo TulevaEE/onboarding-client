@@ -9,6 +9,7 @@ interface Props {
   checked: boolean;
   title: React.ReactNode;
   text?: React.ReactNode;
+  note?: React.ReactNode;
   emoji?: string;
   extra?: React.ReactNode;
   onChange: () => void;
@@ -21,6 +22,7 @@ export const ChoiceCard = ({
   checked,
   title,
   text,
+  note,
   emoji,
   extra,
   onChange,
@@ -48,6 +50,7 @@ export const ChoiceCard = ({
           )}
           <strong id={`${id}-name`}>{title}</strong>
           {text && <small id={`${id}-text`}>{text}</small>}
+          {note && <small className="fw-medium">{note}</small>}
         </span>
       </label>
       {extra && <div className="payout-choice-extra">{extra}</div>}

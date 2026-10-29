@@ -49,18 +49,16 @@ export const Age65Work = ({ answers, you, plan, isThirdPillarAfterAsked, onChang
               checked={answers.work === value}
               title={<FormattedMessage id={`futureMe.age65.work.${value}.title`} />}
               text={<FormattedMessage id={`futureMe.age65.work.${value}.text`} />}
-              extra={
+              note={
                 value === 'yes' && (
-                  <small className="fw-medium">
-                    <FormattedMessage
-                      id="futureMe.age65.work.accrual"
-                      values={{
-                        hasSalary: gross > 0,
-                        gross: euro(gross),
-                        amount: decimalText(workAccrualMonthly(you)),
-                      }}
-                    />
-                  </small>
+                  <FormattedMessage
+                    id="futureMe.age65.work.accrual"
+                    values={{
+                      hasSalary: gross > 0,
+                      gross: euro(gross),
+                      amount: decimalText(workAccrualMonthly(you)),
+                    }}
+                  />
                 )
               }
               onChange={() => onChange({ ...answers, work: value })}

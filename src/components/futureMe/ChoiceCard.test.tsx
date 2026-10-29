@@ -43,6 +43,26 @@ describe('ChoiceCard', () => {
     expect(onChange).toHaveBeenCalledTimes(1);
   });
 
+  it('chooses the card when its note is clicked', () => {
+    const onChange = jest.fn();
+    render(
+      <ChoiceCard
+        idPrefix="test"
+        name="test-choice"
+        value="work"
+        checked={false}
+        title="Töötan edasi"
+        text="Palk katab kulud."
+        note="Brutopalgaga 2 000 € tõstab iga tööaasta pensioni u 12 € kuus."
+        onChange={onChange}
+      />,
+    );
+
+    userEvent.click(screen.getByText(/tõstab iga tööaasta pensioni/));
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
   it('does not choose the card when the label of its extra field is clicked', () => {
     const onChange = jest.fn();
     renderCard(onChange);

@@ -189,13 +189,11 @@ export const SpecialPensionStep = ({
                 checked={answers.work === value}
                 title={<FormattedMessage id={`futureMe.specialPension.work.${value}.title`} />}
                 text={<FormattedMessage id={`futureMe.specialPension.work.${value}.text`} />}
-                extra={
-                  <small className="fw-medium">
-                    <FormattedMessage
-                      id={`futureMe.specialPension.work.${value}.amount`}
-                      values={secondPillarValues}
-                    />
-                  </small>
+                note={
+                  <FormattedMessage
+                    id={`futureMe.specialPension.work.${value}.amount`}
+                    values={secondPillarValues}
+                  />
                 }
                 onChange={() => onChange({ ...answers, work: value })}
               />
