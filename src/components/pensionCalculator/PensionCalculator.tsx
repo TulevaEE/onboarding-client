@@ -33,9 +33,9 @@ import {
   useTransactions,
 } from '../common/apiHooks';
 import { pillarBalance } from '../common/balances';
+import { deriveGrossSalary } from '../common/grossSalary';
 import {
   deriveFeeBounds,
-  deriveGrossSalary,
   deriveSavingsFundMonthly,
   deriveThirdPillarMonthly,
   deriveTulevaFees,
