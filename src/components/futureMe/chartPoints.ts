@@ -31,11 +31,14 @@ export const chartPointsOf = (rows: ChartRow[]): ChartPoint[] =>
     return isTurning ? [{ ...point, isCarry: true, values: valuesOf(before) }, point] : [point];
   });
 
-const totalOf = (point: ChartPoint, layers: ChartSourceId[]) =>
-  layers.reduce((sum, id) => sum + point.values[id], 0);
+const totalOf = (values: Values, layers: ChartSourceId[]) =>
+  layers.reduce((sum, id) => sum + values[id], 0);
+
+const roundingErrorOf = (values: Values, layers: ChartSourceId[]) =>
+  (layers.filter((id) => values[id] > 0).length + 1) / 2;
 
 export const stackedValueOf = (point: ChartPoint, visible: ChartSourceId[], id: ChartSourceId) =>
-  totalOf(point, visible.slice(0, visible.indexOf(id) + 1));
+  totalOf(point.values, visible.slice(0, visible.indexOf(id) + 1));
 
 export const isLayerEdgeHidden = (
   point: ChartPoint,
@@ -45,9 +48,17 @@ export const isLayerEdgeHidden = (
 ) => {
   const above = visible.slice(visible.indexOf(id) + 1);
   const isTop = point.values[id] > 0 && above.every((other) => point.values[other] === 0);
-  const paying = visible.filter((other) => point.values[other] > 0).length;
-  const roundingError = (paying + 1) / 2;
-  return isTop && Math.abs(totalOf(point, visible) - costs) <= roundingError;
+  const difference = Math.abs(totalOf(point.values, visible) - costs);
+  return isTop && difference <= roundingErrorOf(point.values, visible);
+};
+
+const isWorking = ({ salary }: ChartRow) => salary > 0;
+
+const leftOverWithEveryLayerOf = (row: ChartRow, layers: ChartSourceId[]) => {
+  const drawn = totalOf(row, layers) - row.costs;
+  const found = row.shortfall > 0 ? -row.shortfall : row.surplus;
+  const isOnlyRoundedApart = Math.abs(drawn - found) <= roundingErrorOf(row, layers);
+  return isWorking(row) || isOnlyRoundedApart ? drawn : found;
 };
 
 export const coverOf = (
@@ -59,12 +70,10 @@ export const coverOf = (
   if (without.length === 0) {
     return { shortfall: row.shortfall, surplus: row.surplus, without };
   }
-  const shown = layers.filter((id) => !hidden.has(id)).reduce((sum, id) => sum + row[id], 0);
-  const gap = row.costs - shown;
-  const isWorking = row.salary > 0;
+  const leftOver = leftOverWithEveryLayerOf(row, layers) - totalOf(row, without);
   return {
-    shortfall: Math.max(row.shortfall, gap > NOTICEABLE ? Math.round(gap) : 0),
-    surplus: !isWorking && -gap > NOTICEABLE ? Math.round(-gap) : 0,
+    shortfall: -leftOver > NOTICEABLE ? Math.round(-leftOver) : 0,
+    surplus: !isWorking(row) && leftOver > NOTICEABLE ? Math.round(leftOver) : 0,
     without,
   };
 };

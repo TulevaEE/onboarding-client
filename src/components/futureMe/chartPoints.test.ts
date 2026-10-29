@@ -143,16 +143,34 @@ describe('chartPoints', () => {
       });
     });
 
+    it('adds exactly what the hidden layer paid to what the engine found missing, with the III pillar contribution still being paid in it', () => {
+      const layers: ChartSourceId[] = ['firstPillar', 'thirdPillar'];
+      const row = rowWith({ firstPillar: 464, thirdPillar: 90, costs: 1261, shortfall: 807 });
+
+      expect(coverOf(row, layers, hiding('thirdPillar')).shortfall).toBe(897);
+      expect(coverOf(row, layers, hiding('firstPillar')).shortfall).toBe(1271);
+    });
+
+    it('counts from the costs and the layers drawn where the engine is only rounded apart from them', () => {
+      const row = rowWith({ firstPillar: 700, secondPillar: 177, shortfall: 124 });
+
+      expect(coverOf(row, LAYERS, hiding('secondPillar')).shortfall).toBe(300);
+    });
+
     it('does not name a hidden layer that pays nothing at that age', () => {
       const row = rowWith({ firstPillar: 1000 });
 
       expect(coverOf(row, LAYERS, hiding('deposit')).without).toEqual([]);
     });
 
-    it('leaves nothing over while the salary pays the costs, whichever layer is hidden', () => {
+    it('leaves the costs covered and nothing over while the salary pays them, with a layer on top of it hidden', () => {
       const row = rowWith({ salary: 1000, firstPillar: 0, deposit: 100 });
 
-      expect(coverOf(row, LAYERS, hiding('deposit')).surplus).toBe(0);
+      expect(coverOf(row, LAYERS, hiding('deposit'))).toEqual({
+        shortfall: 0,
+        surplus: 0,
+        without: ['deposit'],
+      });
     });
   });
 });
