@@ -155,7 +155,8 @@ export const KidsSection = ({
                         aria-describedby={classNames('future-me-kid-birth-year-hint', {
                           [PREFILLED_HINT_ID]:
                             prefilledKids !== null &&
-                            typed === String(prefilledKids.birthYears[index] ?? ''),
+                            index < prefilledKids.birthYears.length &&
+                            typed === String(prefilledKids.birthYears[index]),
                           [`${id}-error`]: showError,
                         })}
                         onChange={(event) => changeBirthYear(index, event.target.value)}

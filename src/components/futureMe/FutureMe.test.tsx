@@ -469,6 +469,15 @@ describe('FutureMe', () => {
       expect(kidMonthsField(2)).toHaveValue(null);
     });
 
+    it('does not describe an empty child row the saver added as prefilled', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+
+      renderFutureMe();
+      typeInto(kidsCountField(), '2');
+
+      expect(kidBirthYearField(2)).not.toHaveAccessibleDescription(/Eeltäidetud väli/);
+    });
+
     it('lets the saver change a prefilled birth year and the months', () => {
       withChildren([GIRL_BORN_FEB_2023]);
       withPensionData({ contributions: monthsOfParentalBenefit(30) });
