@@ -12,7 +12,7 @@ import { initialAge65 } from './age65Answers';
 import { ResultContext } from './resultAnswers';
 import { contextWith } from './resultContextFixture';
 import { initialSpecialPension } from './specialPensionAnswers';
-import { DecisionChangesProvider } from './ResultDecisions';
+import { DecisionActionsProvider } from './decisionActions';
 import { ResultStep } from './ResultStep';
 
 jest.mock('../common/apiHooks', () => ({
@@ -436,9 +436,9 @@ describe('Result step', () => {
       const openHelpFor = (context: ResultContext) => {
         render(
           <IntlProvider locale="et" messages={translations.et}>
-            <DecisionChangesProvider value={jest.fn()}>
-              <ResultStep context={context} headingRef={createRef()} onGoTo={jest.fn()} />
-            </DecisionChangesProvider>
+            <DecisionActionsProvider value={{ change: jest.fn(), goTo: jest.fn() }}>
+              <ResultStep context={context} headingRef={createRef()} />
+            </DecisionActionsProvider>
           </IntlProvider>,
         );
         userEvent.click(screen.getByRole('button', { name: 'Selgitus: Kuidas see summa tekib' }));
