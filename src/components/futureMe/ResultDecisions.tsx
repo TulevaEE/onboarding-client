@@ -1,8 +1,8 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { DEFERRAL_YEARS } from './age65Answers';
-import { decimalText, euro } from './amountFormat';
+import { Age65Answers, DEFERRAL_YEARS, PensionMode } from './age65Answers';
+import { decimalText } from './amountFormat';
 import { PayoutChoice } from './age60Answers';
 import { ChoiceCard } from './ChoiceCard';
 import { PayoutChoiceText } from './PayoutChoiceText';
@@ -15,21 +15,10 @@ import {
   isStepDecision,
   withDecision,
 } from './decisions';
-import { CURRENT_YEAR, DEFERRAL_INCREASE, PENSIONER_ALLOWANCE } from './engine/pension';
+import { CURRENT_YEAR, DEFERRAL_INCREASE } from './engine/pension';
 import { QuickEditStepDecision } from './QuickEditSteps';
 import { ResultComparison } from './ResultComparison';
 import { MAX_AGE_SHOWN, Result, ResultContext, resultOf } from './resultAnswers';
-
-const MONTHS_IN_YEAR = 12;
-const NO_BREAK_SPACE = ' ';
-
-const deferralIncreases = (): string =>
-  DEFERRAL_YEARS.map(
-    (years) =>
-      `+${decimalText(
-        DEFERRAL_INCREASE[years] * 100,
-      )}%${NO_BREAK_SPACE}(${years}${NO_BREAK_SPACE}a)`,
-  ).join(', ');
 
 const choiceTitle = (id: DecisionId, choice: string): TranslationKey => {
   switch (id) {
@@ -43,28 +32,95 @@ const choiceTitle = (id: DecisionId, choice: string): TranslationKey => {
   }
 };
 
+const isChosenDeferral = (decision: Decision, choice: string): boolean =>
+  decision.id === 'statePension' && decision.current === choice && choice !== 'full';
+
 const endsSecondPillarContributions = (id: DecisionId, context: ResultContext): boolean =>
   id === 'secondPillarAtPayoutAge' ||
   (id === 'secondPillarAtPensionAge' && context.age65.work === 'yes');
 
+const statePensionText = (mode: string, pensionAge: number, years: number) => {
+  if (mode === 'half') {
+    return <FormattedMessage id="futureMe.result.decisions.mode.half.text" />;
+  }
+  if (mode === 'defer') {
+    return (
+      <FormattedMessage
+        id="futureMe.result.decisions.mode.defer.text"
+        values={{
+          age: pensionAge + years,
+          percent: decimalText(DEFERRAL_INCREASE[years] * 100),
+        }}
+      />
+    );
+  }
+  return null;
+};
+
 const ChoiceText = ({
-  id,
+  decision,
   choice,
   context,
 }: {
-  id: DecisionId;
+  decision: Decision;
   choice: string;
   context: ResultContext;
-}) =>
-  id === 'statePension' ? null : (
-    <>
+}) => {
+  const text =
+    decision.id === 'statePension' ? (
+      statePensionText(choice, decision.age, context.age65.years)
+    ) : (
       <PayoutChoiceText
         choice={choice as PayoutChoice}
-        endsSecondPillarContributions={endsSecondPillarContributions(id, context)}
+        endsSecondPillarContributions={endsSecondPillarContributions(decision.id, context)}
       />
-      <br />
+    );
+  return (
+    text && (
+      <>
+        {text}
+        <br />
+      </>
+    )
+  );
+};
+
+const DeferralYearsField = ({
+  mode,
+  pensionAge,
+  answers,
+  onChange,
+}: {
+  mode: PensionMode;
+  pensionAge: number;
+  answers: Age65Answers;
+  onChange: ChangeDecisions;
+}) => {
+  const intl = useIntl();
+  const id = 'future-me-decision-deferral-years';
+  return (
+    <>
+      <label className="form-label small fw-medium mb-0" htmlFor={id}>
+        <FormattedMessage id="futureMe.age65.years.legend" values={{ mode }} />
+      </label>
+      <select
+        id={id}
+        className="form-select form-select-sm"
+        value={answers.years}
+        onChange={(event) => onChange({ age65: { ...answers, years: Number(event.target.value) } })}
+      >
+        {DEFERRAL_YEARS.map((years) => (
+          <option key={years} value={years}>
+            {intl.formatMessage(
+              { id: 'futureMe.age65.years.title' },
+              { mode, years, age: pensionAge + years },
+            )}
+          </option>
+        ))}
+      </select>
     </>
   );
+};
 
 const coversKindOf = (result: Result, coversAge: number) => {
   if (result.gapTemporary) {
@@ -147,13 +203,23 @@ const DecisionChoices = ({ context, decision, panelId, titleId, onChange }: Pane
               title={<FormattedMessage id={choiceTitle(decision.id, choice)} />}
               text={
                 <>
-                  <ChoiceText id={decision.id} choice={choice} context={context} />
+                  <ChoiceText decision={decision} choice={choice} context={context} />
                   <Outcome
                     result={resultOf({ ...context, ...changes })}
                     currentAge={currentAge}
                     isCurrent={decision.current === choice}
                   />
                 </>
+              }
+              extra={
+                isChosenDeferral(decision, choice) && (
+                  <DeferralYearsField
+                    mode={choice as PensionMode}
+                    pensionAge={decision.age}
+                    answers={context.age65}
+                    onChange={onChange}
+                  />
+                )
               }
               onChange={() => onChange(changes)}
             />
@@ -185,7 +251,6 @@ const DecisionRow = ({
   const currentText = isStepDecision(id)
     ? intl.formatMessage({ id: `futureMe.result.decisions.current.${id}` }, decision.summary)
     : intl.formatMessage({ id: choiceTitle(id, current) });
-  const increases = deferralIncreases();
   const toggleRef = useRef<HTMLButtonElement>(null);
   useLayoutEffect(() => {
     if (isOpen) {
@@ -237,14 +302,6 @@ const DecisionRow = ({
             />
           </span>
         </button>
-        {!isStepDecision(id) && (
-          <p className="decision-rule text-pretty">
-            <FormattedMessage
-              id={`futureMe.result.decisions.rule.${id}` as TranslationKey}
-              values={{ increases, allowance: euro(PENSIONER_ALLOWANCE / MONTHS_IN_YEAR) }}
-            />
-          </p>
-        )}
       </div>
       {isOpen && !isStepDecision(id) && (
         <DecisionChoices

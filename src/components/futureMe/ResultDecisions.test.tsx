@@ -87,7 +87,7 @@ describe('Result step: your decisions', () => {
 
     expect(screen.getByRole('heading', { level: 3, name: 'Sinu otsused' })).toBeInTheDocument();
     expect(
-      screen.getByText(/^Iga otsuse juures on, millal see avaneb\. Muuda ükskõik millist valikut/),
+      screen.getByText('Muuda ükskõik millist valikut: vastus arvutatakse kohe uuesti.'),
     ).toBeVisible();
   });
 
@@ -120,11 +120,11 @@ describe('Result step: your decisions', () => {
     expect(decisionRow(/^Riiklik pension/)).not.toHaveTextContent('avanenud');
   });
 
-  it('tells at what tax the money is taken out', () => {
+  it('leaves the rules and taxes to the choices instead of repeating them on every row', () => {
     openResultStep();
 
-    expect(secondPillarAt60()).toHaveTextContent(/Korraga välja võttes on tulumaks 10%/);
-    expect(decisionRow(/^Riiklik pension/)).toHaveTextContent(/tulumaksu 22%/);
+    expect(secondPillarAt60()).not.toHaveTextContent(/tulumaks/);
+    expect(decisionRow(/^Riiklik pension/)).not.toHaveTextContent(/tulumaks/);
   });
 
   it('shows the choice the answers hold now', () => {
@@ -221,7 +221,7 @@ describe('Result step: your decisions', () => {
       expect(
         within(statePension).getByRole('radio', { name: 'Lükkan edasi' }),
       ).toHaveAccessibleDescription(
-        /^Raha jätkub elu lõpuni \(100\+\), kuid 65-⁠aastaselt jäävad kulud katmata$/,
+        /Raha jätkub elu lõpuni \(100\+\), kuid 65-⁠aastaselt jäävad kulud katmata$/,
       );
     });
 
@@ -265,6 +265,65 @@ describe('Result step: your decisions', () => {
       userEvent.click(screen.getByRole('radio', { name: 'Lükkan edasi' }));
 
       expect(decisionRow(/^Riiklik pension/)).toHaveTextContent('Sinu valik: Lükkan edasi');
+    });
+
+    describe('deferring the state pension', () => {
+      const statePensionRow = () => decisionRow(/^Riiklik pension/);
+      const openStatePension = () => {
+        openResultStep();
+        userEvent.click(changeButton(statePensionRow()));
+      };
+      const yearsField = () =>
+        within(statePensionRow()).queryByRole('combobox', { name: 'Mitu aastat lükkad edasi?' });
+
+      it('says how half the pension works', () => {
+        openStatePension();
+
+        expect(screen.getByRole('radio', { name: 'Pool' })).toHaveAccessibleDescription(
+          /^Pool pensionist algab kohe, teine pool tõuseb nagu edasilükkamisel\./,
+        );
+      });
+
+      it('says when the deferred pension starts and how much larger it is', () => {
+        openStatePension();
+
+        expect(screen.getByRole('radio', { name: 'Lükkan edasi' })).toHaveAccessibleDescription(
+          /^Pension algab 66-aastaselt ja on eluks ajaks \+7,9% suurem\./,
+        );
+      });
+
+      it('asks the years only on the chosen deferring card', () => {
+        openStatePension();
+
+        expect(yearsField()).not.toBeInTheDocument();
+
+        userEvent.click(screen.getByRole('radio', { name: 'Lükkan edasi' }));
+
+        expect(yearsField()).toHaveDisplayValue('66-aastaselt');
+      });
+
+      it('recalculates the start and the raise when other years are picked', () => {
+        openStatePension();
+        userEvent.click(screen.getByRole('radio', { name: 'Lükkan edasi' }));
+
+        userEvent.selectOptions(yearsField() as HTMLElement, '3');
+
+        expect(yearsField()).toHaveDisplayValue('68-aastaselt');
+        expect(screen.getByRole('radio', { name: 'Lükkan edasi' })).toHaveAccessibleDescription(
+          /^Pension algab 68-aastaselt ja on eluks ajaks \+27% suurem\./,
+        );
+        expect(screen.getByRole('radio', { name: 'Lükkan edasi' })).toBeChecked();
+      });
+
+      it('asks how many years half the pension is taken on the chosen half card', () => {
+        openStatePension();
+
+        userEvent.click(screen.getByRole('radio', { name: 'Pool' }));
+
+        expect(
+          within(statePensionRow()).getByRole('combobox', { name: 'Mitu aastat võtad poole?' }),
+        ).toHaveDisplayValue(/^1\sa, täis 66-aastaselt$/);
+      });
     });
 
     it('closes the choices again', () => {
