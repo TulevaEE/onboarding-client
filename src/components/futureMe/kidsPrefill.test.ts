@@ -59,6 +59,10 @@ describe('children prefill from the register and the contributions', () => {
     expect(deriveKidsPrefill(children, [])?.birthYears).toEqual([2015, 2023]);
   });
 
+  it('takes the birth months from the personal codes', () => {
+    expect(deriveKidsPrefill(children, [])?.birthMonths).toEqual([6, 2]);
+  });
+
   it('counts the months the state paid into the parent II pillar after the child was born', () => {
     const contributions = monthsFrom(2023, 3, 30).map((time) => parentalBenefit(time));
 

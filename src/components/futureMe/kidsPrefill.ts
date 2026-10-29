@@ -12,6 +12,7 @@ const CENTURY_BY_FIRST_DIGIT = [1800, 1800, 1900, 1900, 2000, 2000, 2100, 2100];
 
 export interface KidsPrefill {
   birthYears: number[];
+  birthMonths: number[];
   iiMonths: string[];
 }
 
@@ -87,6 +88,7 @@ export const deriveKidsPrefill = (
     ? null
     : {
         birthYears: births.map(({ year }) => year),
+        birthMonths: births.map(({ month }) => month),
         iiMonths: births.map((birth) => iiMonthsOf(birth, births, contributions ?? [])),
       };
 };

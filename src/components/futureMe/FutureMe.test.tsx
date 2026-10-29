@@ -333,6 +333,14 @@ describe('FutureMe', () => {
       expect(kidBirthYearField(2)).toHaveValue('2023');
     });
 
+    it('fills the birth month of a recent child from the register', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+
+      renderFutureMe();
+
+      expect(screen.getByRole('combobox', { name: /1\. lapse sünnikuu/ })).toHaveValue('2');
+    });
+
     it('asks for the state payment months only of a child born from September 2021 who is over three', () => {
       withChildren([BOY_BORN_JUNE_2015, GIRL_BORN_FEB_2023]);
 

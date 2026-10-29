@@ -88,7 +88,7 @@ describe('children from the register', () => {
     birthYear: 1985,
     sex: 'M',
     secondPillarRate: '0.02',
-    kids: { birthYears: [2015, 2023], iiMonths: ['', '30'] },
+    kids: { birthYears: [2015, 2023], birthMonths: [6, 2], iiMonths: ['', '30'] },
   });
 
   it('starts with the children added, one row each', () => {
@@ -96,6 +96,7 @@ describe('children from the register', () => {
       kidsAdded: true,
       kidsCount: '2',
       kidsBirthYears: ['2015', '2023'],
+      kidsBirthMonths: ['6', '2'],
       kidsIIMonths: ['', '30'],
     });
   });

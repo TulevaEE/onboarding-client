@@ -169,6 +169,7 @@ export const initialAnswers = (prefill: YouPrefill): YouAnswers =>
       kidsAdded: true,
       kidsCount: String(prefill.kids.birthYears.length),
       kidsBirthYears: prefill.kids.birthYears.map(String),
+      kidsBirthMonths: prefill.kids.birthMonths.map(String),
       kidsIIMonths: prefill.kids.iiMonths,
     }),
     ...OPTIONAL_DEFAULTS.work,
