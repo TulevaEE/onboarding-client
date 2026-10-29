@@ -85,6 +85,18 @@ describe('II pillar payout started five years before the pension age while worki
     });
   });
 
+  describe('working on past the pension age', () => {
+    const workingOn = simulate({ ...fromSixty, workOn: true, workUntil: 67 }, lifeTable, scenarioD);
+
+    it('keeps paying the fund pension while working after the pension age', () => {
+      expect(rowAt(workingOn, 66).i2).toBeGreaterThan(0);
+    });
+
+    it('puts those payouts on the deposit as they are paid', () => {
+      expect(rowAt(workingOn, 67).deposit).toBeGreaterThan(rowAt(workingOn, 66).deposit);
+    });
+  });
+
   it('starts no earlier than five years before the pension age', () => {
     expect(simulate({ ...base, p2PayoutFrom: 55 }, lifeTable, scenarioD).rows).toEqual(
       simulate(fromSixty, lifeTable, scenarioD).rows,
