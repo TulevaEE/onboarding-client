@@ -261,6 +261,30 @@ describe('Sina step help buttons', () => {
     expect(dialog).toHaveTextContent(/allmaatöö[^.]*arvutus veel ei arvesta/i);
   });
 
+  const socialInsuranceBoardPages: [string, () => HTMLElement, RegExp, string][] = [
+    [
+      'hazardous work',
+      openHazardHelp,
+      /^SKA: soodustingimustel vanaduspension/,
+      'https://sotsiaalkindlustusamet.ee/pension-ja-seotud-huvitised/pensioni-liigid/soodustingimustel-vanaduspension',
+    ],
+    [
+      'kids',
+      openKidsHelp,
+      /^SKA: laste kasvatamine ja pension/,
+      'https://sotsiaalkindlustusamet.ee/pension-ja-seotud-huvitised/pensioni-suurus/laste-kasvatamine-ja-pension',
+    ],
+  ];
+
+  it.each(socialInsuranceBoardPages)(
+    'links the %s explanation to the Social Insurance Board page in Estonian',
+    (_, openHelp, name, href) => {
+      renderYouStep();
+
+      expect(within(openHelp()).getByRole('link', { name })).toHaveAttribute('href', href);
+    },
+  );
+
   it('leaves the field labels as they were for screen readers', () => {
     renderYouStep();
 

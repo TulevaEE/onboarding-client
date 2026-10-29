@@ -19,13 +19,13 @@ export const HELP_LINKS = {
     'https://sotsiaalkindlustusamet.ee/pension-ja-seotud-huvitised/pensioni-liigid/eripensionid',
   hazardLists: 'https://www.riigiteataja.ee/akt/24317',
   skaFavourableTerms:
-    'https://sotsiaalkindlustusamet.ee/en/pension-and-benefits/types-pensions/old-age-pension-under-favourable-conditions',
+    'https://sotsiaalkindlustusamet.ee/pension-ja-seotud-huvitised/pensioni-liigid/soodustingimustel-vanaduspension',
   svps: 'https://www.riigiteataja.ee/akt/SVPS',
   rescueService: 'https://www.riigiteataja.ee/akt/106072023069?leiaKehtiv',
   publicServiceAct: 'https://www.riigiteataja.ee/akt/ATS?leiaKehtiv',
   pensionikeskusPayouts: 'https://www.pensionikeskus.ee/ii-sammas/valjamaksed/',
   skaChildren:
-    'https://sotsiaalkindlustusamet.ee/en/pension-and-benefits/pension-amount/raising-children-impacts-pensions',
+    'https://sotsiaalkindlustusamet.ee/pension-ja-seotud-huvitised/pensioni-suurus/laste-kasvatamine-ja-pension',
   skaSingleBenefit:
     'https://sotsiaalkindlustusamet.ee/pension-ja-seotud-huvitised/muud-pensioniga-seotud-huvitised-ja-toetused/uksi-elava-pensionari',
 } as const;
