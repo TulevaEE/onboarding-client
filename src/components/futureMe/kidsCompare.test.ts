@@ -1,3 +1,4 @@
+import { initialAge65 } from './age65Answers';
 import { AVG_OLD_AGE_PENSION } from './engine/pension';
 import { isRescueComparisonShown, rescueComparisonOf } from './kidsCompare';
 import { contextWith } from './resultContextFixture';
@@ -8,14 +9,17 @@ const threeChildren = {
   kidsBirthYears: ['1990', '1992', '1994'],
 };
 
-const withRescue = (changes = {}) =>
-  contextWith({
-    ...threeChildren,
-    workAdded: true,
-    hasRescue: true,
-    rescueYears: '20',
-    ...changes,
-  });
+const withRescue = (changes = {}, rest = {}) =>
+  contextWith(
+    {
+      ...threeChildren,
+      workAdded: true,
+      hasRescue: true,
+      rescueYears: '20',
+      ...changes,
+    },
+    rest,
+  );
 
 const amountsOf = (rows: ReturnType<typeof rescueComparisonOf>['rows']) =>
   rows.map(({ basis, toetus, pension, total, atPensionAge }) => ({
@@ -82,6 +86,14 @@ describe('rescue allowance or the pension for the children', () => {
       { basis: 'pension', toetus: null, pension: 692, total: 8302, atPensionAge: 692 },
       { basis: 'toetus', toetus: 791, pension: null, total: 47449, atPensionAge: 791 },
     ]);
+  });
+
+  it('leaves every way at its earliest, without the work the saver continues at the pension age', () => {
+    const workingUntil65 = { age65: { ...initialAge65(), work: 'yes' as const, workUntil: '65' } };
+
+    expect(amountsOf(rescueComparisonOf(withRescue({}, workingUntil65)).rows)).toEqual(
+      amountsOf(rescueComparisonOf(withRescue()).rows),
+    );
   });
 
   it('adds the family with the other parent retiring early for the children on the average pension', () => {

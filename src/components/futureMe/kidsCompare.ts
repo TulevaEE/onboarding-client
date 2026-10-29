@@ -70,7 +70,7 @@ const answersFor = (you: YouAnswers, basis: RescueBasis): YouAnswers => ({
 const rowInputOf = (context: CompareContext, basis: RescueBasis): PensionInput => {
   const you = answersFor(context.you, basis);
   const input = compareInputOf({ ...context, you, plan: toStepPlanInput(you) });
-  return { ...input, kids: { ...input.kids, yearsEarly: kidsYearsOf(you) } };
+  return { ...input, kids: { ...input.kids, yearsEarly: kidsYearsOf(you) }, workOn: false };
 };
 
 const familyOf = (kidsYears: number, ownTotal: number): Family => {
