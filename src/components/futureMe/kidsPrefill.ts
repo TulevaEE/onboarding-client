@@ -72,6 +72,39 @@ const iiMonthsOf = (
   return months > 0 ? String(months) : '';
 };
 
+export const isPrefilledChild = (
+  prefill: KidsPrefill,
+  birthYears: string[],
+  index: number,
+): boolean =>
+  index < prefill.birthYears.length && birthYears[index] === String(prefill.birthYears[index]);
+
+const sharesPaymentYearsWithAddedChild = (
+  prefill: KidsPrefill,
+  birthYears: string[],
+  index: number,
+): boolean =>
+  birthYears.some(
+    (typed, other) =>
+      other !== index &&
+      !isPrefilledChild(prefill, birthYears, other) &&
+      Math.abs(Number(typed) - prefill.birthYears[index]) <= YEARS_OF_PARENTAL_PAYMENT,
+  );
+
+export const attributableIIMonths = (
+  prefill: KidsPrefill | null,
+  birthYears: string[],
+  iiMonths: string[],
+): string[] =>
+  iiMonths.map((months, index) =>
+    prefill !== null &&
+    isPrefilledChild(prefill, birthYears, index) &&
+    months === prefill.iiMonths[index] &&
+    sharesPaymentYearsWithAddedChild(prefill, birthYears, index)
+      ? ''
+      : months,
+  );
+
 export const tulevaChildrenOf = (
   user: User,
   roles: Role[] = [],

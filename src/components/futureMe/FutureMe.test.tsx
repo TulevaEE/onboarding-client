@@ -469,6 +469,30 @@ describe('FutureMe', () => {
       expect(kidMonthsField(2)).toHaveValue(null);
     });
 
+    it('clears the prefilled months once the saver adds a sibling born within three years, as a payment names no child', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+      withPensionData({ contributions: monthsOfParentalBenefit(24) });
+
+      renderFutureMe();
+      typeInto(kidsCountField(), '2');
+      typeInto(kidBirthYearField(2), '2022');
+
+      expect(kidMonthsField(1)).toHaveValue(null);
+      expect(kidMonthsField(1)).not.toHaveAccessibleDescription(/Eeltäidetud väli/);
+    });
+
+    it('keeps the prefilled months when the sibling the saver adds is born more than three years apart', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+      withPensionData({ contributions: monthsOfParentalBenefit(24) });
+
+      renderFutureMe();
+      typeInto(kidsCountField(), '2');
+      typeInto(kidBirthYearField(2), '2015');
+
+      expect(kidMonthsField(1)).toHaveValue(24);
+      expect(kidMonthsField(1)).toHaveAccessibleDescription(/Eeltäidetud väli/);
+    });
+
     it('does not describe an empty child row the saver added as prefilled', () => {
       withChildren([GIRL_BORN_FEB_2023]);
 

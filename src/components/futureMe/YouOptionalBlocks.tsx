@@ -15,7 +15,7 @@ import {
   maxChildBirthYear,
   YouAnswers,
 } from './youAnswers';
-import { KidsPrefill } from './kidsPrefill';
+import { attributableIIMonths, isPrefilledChild, KidsPrefill } from './kidsPrefill';
 import { AmountField, BlockProps, FieldLabel, PREFILLED_HINT_ID, SelectField } from './YouFields';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';
@@ -75,7 +75,10 @@ export const KidsSection = ({
   const changeBirthYear = (index: number, typed: string) => {
     const years = Array.from({ length: rows }, (_, row) => answers.kidsBirthYears[row] ?? '');
     years[index] = typed;
-    onChange({ kidsBirthYears: years });
+    onChange({
+      kidsBirthYears: years,
+      kidsIIMonths: attributableIIMonths(prefilledKids, years, answers.kidsIIMonths),
+    });
   };
 
   const changeIIMonths = (index: number, typed: string) => {
@@ -155,8 +158,7 @@ export const KidsSection = ({
                         aria-describedby={classNames('future-me-kid-birth-year-hint', {
                           [PREFILLED_HINT_ID]:
                             prefilledKids !== null &&
-                            index < prefilledKids.birthYears.length &&
-                            typed === String(prefilledKids.birthYears[index]),
+                            isPrefilledChild(prefilledKids, answers.kidsBirthYears, index),
                           [`${id}-error`]: showError,
                         })}
                         onChange={(event) => changeBirthYear(index, event.target.value)}
