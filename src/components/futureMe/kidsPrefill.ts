@@ -1,5 +1,6 @@
 import { Contribution, PendingOnboarding, Role, User } from '../common/apiModels';
 import { isChildRole } from '../common/utils';
+import { dayInTallinn } from '../common/dateFormatter';
 import { EligibleChild } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 import { CURRENT_YEAR } from './engine/pension';
 
@@ -33,8 +34,10 @@ export const childBirthOf = (personalCode: string): ChildBirth | null => {
   return { year: century + Number(personalCode.slice(1, 3)), month };
 };
 
-const monthIndexOf = (isoTime: string): number =>
-  Number(isoTime.slice(0, 4)) * MONTHS_IN_YEAR + Number(isoTime.slice(5, 7)) - 1;
+const monthIndexOf = (isoTime: string): number => {
+  const day = dayInTallinn(isoTime);
+  return Number(day.slice(0, 4)) * MONTHS_IN_YEAR + Number(day.slice(5, 7)) - 1;
+};
 
 const birthMonthOf = (birth: ChildBirth): number => birth.year * MONTHS_IN_YEAR + birth.month - 1;
 

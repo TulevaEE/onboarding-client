@@ -4,6 +4,7 @@ import { attributableIIMonths, childBirthOf, deriveKidsPrefill } from './kidsPre
 const A_GIRL_BORN_FEB_2023 = '62302200000';
 const A_BOY_BORN_JUNE_2015 = '51506150000';
 const A_GIRL_BORN_DEC_2023 = '62312100000';
+const A_GIRL_BORN_MAR_2023 = '62303100000';
 
 const monthsFrom = (year: number, month: number, count: number): string[] =>
   Array.from({ length: count }, (_, offset) => {
@@ -92,6 +93,15 @@ describe('children prefill from the register and the contributions', () => {
       '',
       '36',
     ]);
+  });
+
+  it('reads the month in Tallinn time, so a payment dated the first of the month counts in that month', () => {
+    const paidOnFirstOfMarchInTallinn = parentalBenefit('2023-02-28T22:00:00Z');
+
+    expect(
+      deriveKidsPrefill([{ personalCode: A_GIRL_BORN_MAR_2023 }], [paidOnFirstOfMarchInTallinn])
+        ?.iiMonths,
+    ).toEqual(['1']);
   });
 
   it('never gives more than 36 months', () => {
