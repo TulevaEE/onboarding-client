@@ -145,7 +145,7 @@ const ShortfallCard = ({
   const canDeferStatePension = deferralLock(context.you) === null;
   return (
     <>
-      {legacy.isSecondPillarLumpSum && (
+      {legacy.isGrowingSecondPillarSuggested && (
         <ul className="legacy-tips">
           <li>
             <strong className="legacy-tip-title">
@@ -171,7 +171,7 @@ const ShortfallCard = ({
       <p className="legacy-hint">
         <FormattedMessage
           id="futureMe.result.legacy.hint"
-          values={{ hasTips: legacy.isSecondPillarLumpSum ? 'yes' : 'no' }}
+          values={{ hasTips: legacy.isGrowingSecondPillarSuggested ? 'yes' : 'no' }}
         />
       </p>
       <div className="legacy-actions">

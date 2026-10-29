@@ -10,7 +10,7 @@ import { nominalFactorAt, nominalReturnsOf } from './nominal';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { ResultChart } from './ResultChart';
 import { resultOf, ResultContext } from './resultAnswers';
-import { FundKey, initialAnswers, toStepPlanInput } from './youAnswers';
+import { initialAnswers, toStepPlanInput, YouAnswers } from './youAnswers';
 import translations from '../translations';
 import { installDialogPolyfill } from './dialogPolyfill';
 
@@ -34,7 +34,7 @@ jest.mock('react-chartjs-2', () => {
 });
 
 const contextWith = (
-  funds: { secondPillarFund?: FundKey; thirdPillarFund?: FundKey } = {},
+  funds: Partial<Pick<YouAnswers, 'secondPillarReturnPercent' | 'thirdPillarReturnPercent'>> = {},
   thirdPillarMonthly = '',
 ): ResultContext => {
   const you = {
@@ -130,7 +130,7 @@ describe('today’s or future prices', () => {
   });
 
   it('names the fund’s return plus the price growth when there is one fund', () => {
-    renderChart(contextWith({ secondPillarFund: 'mix' }));
+    renderChart(contextWith({ secondPillarReturnPercent: 2 }));
 
     userEvent.click(futurePrices());
 
@@ -140,7 +140,7 @@ describe('today’s or future prices', () => {
   });
 
   it('names both pillars’ returns when the funds differ', () => {
-    renderChart(contextWith({ secondPillarFund: 'cons', thirdPillarFund: 'index' }, '100'));
+    renderChart(contextWith({ secondPillarReturnPercent: 0, thirdPillarReturnPercent: 4 }, '100'));
 
     userEvent.click(futurePrices());
 

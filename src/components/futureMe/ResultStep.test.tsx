@@ -62,6 +62,14 @@ const fillInYou = (firstPillar: string) => {
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }), '10000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on III\ssambas praegu/ }), '5000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }), '50');
+  userEvent.selectOptions(
+    screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ }),
+    '2',
+  );
+  userEvent.selectOptions(
+    screen.getByRole('combobox', { name: /tootlust eeldad III\ssambas/ }),
+    '2',
+  );
 };
 
 const goTo = (name: RegExp) => userEvent.click(within(trail()).getByRole('button', { name }));
@@ -441,7 +449,7 @@ describe('Result step', () => {
       it('counts the pillar money taken as a lump sum, which waits on a deposit', () => {
         const dialog = openHelpFor(
           contextWith(
-            { secondPillarAmount: '100000' },
+            { secondPillarAmount: '100000', secondPillarReturnPercent: 2 },
             { age65: { ...initialAge65(), secondPillar: 'lump' } },
           ),
         );
@@ -525,7 +533,9 @@ describe('Result step', () => {
       });
 
       it('leaves the deposit out while nothing is paid out to it', () => {
-        const dialog = openHelpFor(contextWith({ secondPillarAmount: '100000' }));
+        const dialog = openHelpFor(
+          contextWith({ secondPillarAmount: '100000', secondPillarReturnPercent: 2 }),
+        );
 
         expect(dialog).toHaveTextContent(/sammastes u 179\s554\s€ pensionile minnes;/);
         expect(dialog).not.toHaveTextContent(/hoiusel/);

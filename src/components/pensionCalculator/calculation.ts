@@ -108,6 +108,9 @@ const renewalYears = (strategy: PayoutStrategy, age: number, currentAge: number)
 // return (Finantsinspektsioon guidance; same rule as the millionaire calculator).
 // The saver raises the slider themselves.
 export const DEFAULT_RETURN_PERCENT = 0;
+export const RETURN_MIN = -10;
+export const RETURN_MAX = 10;
+export const RETURN_STEP = 1;
 // The ECB's symmetric 2% target — the only official long-run anchor. Estonia has
 // historically run a point or so hotter (price-level convergence), which the saver
 // can model with the slider; the default sticks to the number the ECB commits to.

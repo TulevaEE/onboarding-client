@@ -5,6 +5,8 @@ const PERCENT_FRACTION_DIGITS = 2;
 const TRAILING_ZERO_DECIMAL = /,0$/;
 const TRAILING_ZEROS = /,?0+$/;
 
+export const signedNumber = (value: number): string => String(value).replace('-', '\u2212');
+
 export const euro = (value: number): string => formatAmountForCurrency(Math.round(value), 0);
 
 export const decimalText = (value: number): string =>

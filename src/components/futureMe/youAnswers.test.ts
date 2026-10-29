@@ -76,8 +76,8 @@ describe('initial answers', () => {
       sex: 'X',
       secondPillarRate: '0.02',
       thirdPillarJoined: 'after',
-      secondPillarFund: 'mix',
-      thirdPillarFund: 'mix',
+      secondPillarReturnPercent: 0,
+      thirdPillarReturnPercent: 0,
     });
   });
 });

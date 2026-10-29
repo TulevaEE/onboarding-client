@@ -42,9 +42,9 @@ const contextWith = (
 
 describe('resultAnswers', () => {
   describe('engine input', () => {
-    it('takes the savings, the return of the chosen fund and the monthly need from the answers', () => {
+    it('takes the savings, the chosen return and the monthly need from the answers', () => {
       const input = resultInputOf(
-        contextWith({ secondPillarAmount: '25000', secondPillarFund: 'index' }),
+        contextWith({ secondPillarAmount: '25000', secondPillarReturnPercent: 4 }),
       );
 
       expect(input).toMatchObject({
@@ -61,14 +61,14 @@ describe('resultAnswers', () => {
 
     it('keeps the III pillar apart with its own fund and the payout chosen for it', () => {
       const context = contextWith(
-        { thirdPillarJoined: 'before', thirdPillarAmount: '8000', thirdPillarFund: 'cons' },
+        { thirdPillarJoined: 'before', thirdPillarAmount: '8000', thirdPillarReturnPercent: -3 },
         { age65: { ...initialAge65(), thirdPillar: 'lump' } },
       );
 
       const input = resultInputOf(context);
 
       expect(input.p3Sep).toMatchObject({ amount: 8000, mode: 'lump' });
-      expect(input.realReturn3).toBe(0);
+      expect(input.realReturn3).toBe(-0.03);
     });
 
     it('has no special pension unless an amount was typed for it', () => {
@@ -162,7 +162,7 @@ describe('resultAnswers', () => {
       thirdPillarJoined: 'before' as const,
       thirdPillarAmount: '8000',
       thirdPillarMonthly: '100',
-      thirdPillarFund: 'cons' as const,
+      thirdPillarReturnPercent: 0,
     };
     const separateOf = (changes: Parameters<typeof contextWith>[0], rest = {}) =>
       resultInputOf(contextWith({ ...saver, ...changes }, rest)).p3Sep;

@@ -4,15 +4,13 @@ import { TranslationKey } from '../translations';
 import {
   amountOf,
   effectivePensionAge,
-  FUND_RETURNS,
-  FundKey,
   PENSION_AGE_OPTIONS,
   SECOND_PILLAR_RATE_OPTIONS,
   ThirdPillarJoined,
 } from './youAnswers';
-import { AmountField, BlockProps, SelectField } from './YouFields';
+import { AmountField, BlockProps, returnOptions, SelectField } from './YouFields';
 import { YouSection, YouSectionLabels } from './YouSection';
-import { euro } from './amountFormat';
+import { euro, signedNumber } from './amountFormat';
 
 export const sectionLabels = (
   block: 'state' | 'secondPillar' | 'thirdPillar' | 'kids' | 'work',
@@ -26,7 +24,6 @@ export const sectionLabels = (
   incomplete: 'futureMe.you.me.incomplete',
 });
 
-const FUND_KEYS = Object.keys(FUND_RETURNS) as FundKey[];
 const THIRD_PILLAR_JOIN_TIMES: ThirdPillarJoined[] = ['after', 'before', 'none'];
 const MAX_OPEN_AGE_DIGITS = 2;
 const NON_DIGITS = /\D/g;
@@ -40,15 +37,6 @@ const rateLabel = (intl: IntlShape, rate: string): string =>
         { percent: percentOf(Number(rate)) },
       )
     : intl.formatMessage({ id: 'futureMe.you.secondPillarRate.none' });
-
-const fundOptions = (intl: IntlShape) =>
-  FUND_KEYS.map((fund) => ({
-    value: fund,
-    label: intl.formatMessage(
-      { id: `futureMe.you.fund.${fund}` as TranslationKey },
-      { percent: percentOf(FUND_RETURNS[fund]) },
-    ),
-  }));
 
 export const StateSection = ({
   answers,
@@ -147,7 +135,7 @@ export const SecondPillarSection = ({
             amount: euro(amountOf(answers.secondPillarAmount)),
             paysIn: Number(answers.secondPillarRate) > 0 ? 'yes' : 'no',
             rate: rateLabel(intl, answers.secondPillarRate),
-            returnRate: percentOf(FUND_RETURNS[answers.secondPillarFund]),
+            returnRate: signedNumber(answers.secondPillarReturnPercent),
             nowrap: (chunks: React.ReactNode) => <span className="text-nowrap">{chunks}</span>,
           }}
         />
@@ -196,14 +184,12 @@ export const SecondPillarSection = ({
           onBlur={onBlur}
         />
         <SelectField
-          id="future-me-second-pillar-fund"
+          id="future-me-second-pillar-return"
           label="futureMe.you.secondPillarFund.label"
           help="fundCur"
-          value={answers.secondPillarFund}
-          options={fundOptions(intl)}
-          onChange={(secondPillarFund) =>
-            onChange({ secondPillarFund: secondPillarFund as FundKey })
-          }
+          value={String(answers.secondPillarReturnPercent)}
+          options={returnOptions(intl)}
+          onChange={(percent) => onChange({ secondPillarReturnPercent: Number(percent) })}
         />
       </div>
     </YouSection>
@@ -238,7 +224,7 @@ export const ThirdPillarSection = ({
             openAge: answers.thirdPillarOpenAge,
             amount: euro(amountOf(answers.thirdPillarAmount)),
             monthly: euro(amountOf(answers.thirdPillarMonthly)),
-            returnRate: percentOf(FUND_RETURNS[answers.thirdPillarFund]),
+            returnRate: signedNumber(answers.thirdPillarReturnPercent),
           }}
         />
       }
@@ -316,11 +302,11 @@ export const ThirdPillarSection = ({
           </div>
         )}
         <SelectField
-          id="future-me-third-pillar-fund"
+          id="future-me-third-pillar-return"
           label="futureMe.you.thirdPillarFund.label"
-          value={answers.thirdPillarFund}
-          options={fundOptions(intl)}
-          onChange={(thirdPillarFund) => onChange({ thirdPillarFund: thirdPillarFund as FundKey })}
+          value={String(answers.thirdPillarReturnPercent)}
+          options={returnOptions(intl)}
+          onChange={(percent) => onChange({ thirdPillarReturnPercent: Number(percent) })}
         />
       </div>
     </YouSection>

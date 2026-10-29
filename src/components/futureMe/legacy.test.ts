@@ -19,6 +19,8 @@ const contextWith = (
     firstPillarMonthly: '700',
     grossMonthly: '2000',
     secondPillarAmount: '10000',
+    secondPillarReturnPercent: 2,
+    thirdPillarReturnPercent: 2,
     ...changes,
   };
   return {
@@ -123,11 +125,21 @@ describe('legacyOf', () => {
   it('suggests keeping the second pillar growing only when it was taken out as a lump sum', () => {
     expect(legacyFor(takenAsLumpSum())).toMatchObject({
       kind: 'shortfall',
-      isSecondPillarLumpSum: true,
+      isGrowingSecondPillarSuggested: true,
     });
     expect(legacyFor(costsTooHigh())).toMatchObject({
       kind: 'shortfall',
-      isSecondPillarLumpSum: false,
+      isGrowingSecondPillarSuggested: false,
+    });
+  });
+
+  it('does not suggest keeping the second pillar growing when its return is no better than the deposit', () => {
+    const context = takenAsLumpSum();
+    const atDepositReturn = { ...context, you: { ...context.you, secondPillarReturnPercent: -1 } };
+
+    expect(legacyFor(atDepositReturn)).toMatchObject({
+      kind: 'shortfall',
+      isGrowingSecondPillarSuggested: false,
     });
   });
 });

@@ -27,6 +27,8 @@ const contextWith = (
     firstPillarMonthly: '700',
     grossMonthly: '2000',
     secondPillarAmount: '10000',
+    secondPillarReturnPercent: 2,
+    thirdPillarReturnPercent: 2,
     ...changes,
   };
   return {

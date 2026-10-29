@@ -119,9 +119,9 @@ describe('Sina step help buttons', () => {
       /Mida tähendab II\ssamba sissemakse$/,
     ],
     [
-      'second pillar fund',
+      'second pillar return',
       () => screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ }),
-      /Mida tähendab „tootlus pärast inflatsiooni“$/,
+      /What does “return after inflation” mean$/,
     ],
     [
       'third pillar joined',
@@ -162,6 +162,20 @@ describe('Sina step help buttons', () => {
     userEvent.click(helpButtonBeside(field(), '.col-12', name));
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('explains a zero, a negative and a high return, and that the past promises nothing', () => {
+    renderYouStep();
+    const returnField = screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ });
+
+    userEvent.click(
+      helpButtonBeside(returnField, '.col-12', /What does “return after inflation” mean$/),
+    );
+
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveTextContent(/0%:.*Alla 0%:.*Üle 0%:/);
+    expect(dialog).toHaveTextContent('Varasem tootlus ei taga tulevast tootlust.');
+    expect(dialog).not.toHaveTextContent(/Miks kõige rohkem 4%/);
   });
 
   it('puts the pillars explanation beside the second pillar and work title', () => {

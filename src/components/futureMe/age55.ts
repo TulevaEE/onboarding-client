@@ -13,8 +13,8 @@ import {
 import {
   amountOf,
   birthYearOrFallback,
-  FUND_RETURNS,
   pensionAgeValue,
+  rateOf,
   ThirdPillarPlan,
   YouAnswers,
 } from './youAnswers';
@@ -152,7 +152,7 @@ export const thirdPillarPayoutInputOf = (
     age: withdrawalAge(CURRENT_YEAR - birthYear),
     balance: amountOf(answers.thirdPillarAmount),
     monthlyContribution: amountOf(answers.thirdPillarMonthly),
-    returnRate: FUND_RETURNS[answers.thirdPillarFund],
+    returnRate: rateOf(answers.thirdPillarReturnPercent),
     firstYearShare,
     contract,
   };

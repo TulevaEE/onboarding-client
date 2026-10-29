@@ -59,19 +59,11 @@ describe('assumptions', () => {
     expect(assumptionsOf(context)[0]).toMatchObject({ specialPension: 800 });
   });
 
-  it('gives the fund and its return after inflation', () => {
-    const context = contextWith({ secondPillarFund: 'index', thirdPillarAmount: '5000' });
+  it('gives each pillar’s return after inflation', () => {
+    const context = contextWith({ secondPillarReturnPercent: 4, thirdPillarAmount: '5000' });
 
-    expect(assumptionsOf(context)).toContainEqual({
-      id: 'secondPillarFund',
-      fund: 'index',
-      realReturn: 0.04,
-    });
-    expect(assumptionsOf(context)).toContainEqual({
-      id: 'thirdPillarFund',
-      fund: 'mix',
-      realReturn: 0.02,
-    });
+    expect(assumptionsOf(context)).toContainEqual({ id: 'secondPillarFund', returnPercent: 4 });
+    expect(assumptionsOf(context)).toContainEqual({ id: 'thirdPillarFund', returnPercent: 0 });
   });
 
   it('gives the cost level, what it comes to and whether it was edited', () => {

@@ -1,3 +1,4 @@
+import { DEFAULT_RETURN_PERCENT } from '../pensionCalculator/calculation';
 import {
   AVG_OLD_AGE_PENSION,
   earlyYears,
@@ -15,7 +16,6 @@ import { StepPlanInput } from './steps';
 export const FALLBACK_BIRTH_YEAR = 1980;
 export const PENSION_AGE_OPTIONS = [65, 66, 67, 68, 69, 70];
 export const SECOND_PILLAR_RATE_OPTIONS = ['0', '0.02', '0.04', '0.06'];
-export const FUND_RETURNS = { cons: 0, mix: 0.02, index: 0.04 };
 export const PREFILLED_FIRST_PILLAR_MONTHLY = String(Math.round(AVG_OLD_AGE_PENSION));
 
 const UNKNOWN_SEX: Sex = 'X';
@@ -30,7 +30,6 @@ const FLEXIBLE_PENSION_MAX_YEARS_EARLY = 5;
 const SPECIAL_PENSION_START_AGE_LIMITS = { min: 35, max: 70 };
 const WORK_YEARS_LIMITS = { min: 0, max: 50 };
 
-export type FundKey = keyof typeof FUND_RETURNS;
 export type ThirdPillarJoined = 'before' | 'after' | 'none';
 export type ThirdPillarPlan = 'keep' | 'fund' | 'lump';
 export type HazardList = 'no' | 'list1' | 'list2';
@@ -62,12 +61,12 @@ export interface YouAnswers extends KidsAnswers, WorkAnswers {
   grossMonthly: string;
   secondPillarRate: string;
   secondPillarAmount: string;
-  secondPillarFund: FundKey;
+  secondPillarReturnPercent: number;
   thirdPillarJoined: ThirdPillarJoined;
   thirdPillarAmount: string;
   thirdPillarMonthly: string;
   thirdPillarOpenAge: string;
-  thirdPillarFund: FundKey;
+  thirdPillarReturnPercent: number;
   thirdPillarPlan: ThirdPillarPlan;
   earlyYearsPicked: string;
   rescueBasis: RescueBasis;
@@ -159,12 +158,12 @@ export const initialAnswers = (prefill: YouPrefill): YouAnswers =>
     grossMonthly: prefill.grossMonthly ?? '',
     secondPillarRate: prefill.secondPillarRate ?? DEFAULT_SECOND_PILLAR_RATE,
     secondPillarAmount: prefill.secondPillarAmount ?? '',
-    secondPillarFund: 'mix',
+    secondPillarReturnPercent: DEFAULT_RETURN_PERCENT,
     thirdPillarJoined: prefill.thirdPillarJoined ?? 'after',
     thirdPillarAmount: prefill.thirdPillarAmount ?? '',
     thirdPillarMonthly: prefill.thirdPillarMonthly ?? '',
     thirdPillarOpenAge: '',
-    thirdPillarFund: 'mix',
+    thirdPillarReturnPercent: DEFAULT_RETURN_PERCENT,
     thirdPillarPlan: 'keep',
     ...OPTIONAL_DEFAULTS.kids,
     ...(prefill.kids && {
@@ -220,6 +219,8 @@ export const birthYearOrFallback = (answers: YouAnswers): number =>
 export const effectivePensionAge = (answers: YouAnswers): number =>
   Number(answers.pensionAgeYears) ||
   Math.min(MAX_PENSION_AGE, pensionAge(birthYearOrFallback(answers)).years);
+
+export const rateOf = (percent: number): number => percent / 100;
 
 export const amountOf = (typed: string): number => Math.max(0, parseFloat(typed) || 0);
 

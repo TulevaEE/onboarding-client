@@ -2,7 +2,7 @@ import { hasPillar } from './age66Answers';
 import { CostLevel } from './engine/expenses';
 import { isLevelEdited, levelNeed } from './expensesAnswers';
 import { ResultContext } from './resultAnswers';
-import { amountOf, FUND_RETURNS, FundKey } from './youAnswers';
+import { amountOf } from './youAnswers';
 
 export type FundAssumptionId = 'secondPillarFund' | 'thirdPillarFund';
 
@@ -14,17 +14,11 @@ export type Assumption =
       thirdPillar: number | null;
       specialPension: number | null;
     }
-  | { id: FundAssumptionId; fund: FundKey; realReturn: number }
+  | { id: FundAssumptionId; returnPercent: number }
   | { id: 'expenses'; level: CostLevel; amount: number; isEdited: boolean };
 
 const amountIf = (isPresent: boolean, typed: string): number | null =>
   isPresent ? amountOf(typed) : null;
-
-const fundAssumption = (id: FundAssumptionId, fund: FundKey): Assumption => ({
-  id,
-  fund,
-  realReturn: FUND_RETURNS[fund],
-});
 
 export const assumptionsOf = (context: ResultContext): Assumption[] => {
   const { you, plan, expenses, specialPension } = context;
@@ -40,8 +34,8 @@ export const assumptionsOf = (context: ResultContext): Assumption[] => {
       thirdPillar: hasThirdPillar ? thirdPillarSaved : null,
       specialPension: plan.hasSpecialPension && specialMonthly > 0 ? specialMonthly : null,
     },
-    hasSecondPillar && fundAssumption('secondPillarFund', you.secondPillarFund),
-    hasThirdPillar && fundAssumption('thirdPillarFund', you.thirdPillarFund),
+    hasSecondPillar && { id: 'secondPillarFund', returnPercent: you.secondPillarReturnPercent },
+    hasThirdPillar && { id: 'thirdPillarFund', returnPercent: you.thirdPillarReturnPercent },
     {
       id: 'expenses',
       level: expenses.level,

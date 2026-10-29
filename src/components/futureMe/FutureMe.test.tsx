@@ -198,7 +198,7 @@ const secondPillarRateField = () =>
   screen.getByRole('combobox', { name: /Kui palju maksad II\ssambasse/ });
 const secondPillarAmountField = () =>
   screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ });
-const secondPillarFundField = () =>
+const secondPillarReturnField = () =>
   screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ });
 const thirdPillarJoinedField = () =>
   screen.getByRole('combobox', { name: /Kas oled III\ssambaga liitunud/ });
@@ -208,8 +208,10 @@ const thirdPillarMonthlyField = () =>
   screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ });
 const thirdPillarOpenAgeField = () =>
   screen.getByRole('textbox', { name: /Mis vanuses avad III\ssamba/ });
-const thirdPillarFundField = () =>
+const thirdPillarReturnField = () =>
   screen.getByRole('combobox', { name: /tootlust eeldad III\ssambas/ });
+const chooseReturn = (field: HTMLElement, percent: number) =>
+  userEvent.selectOptions(field, String(percent));
 
 const typeBirthYear = (year: string) => {
   userEvent.clear(birthYearField());
@@ -1028,19 +1030,22 @@ describe('FutureMe', () => {
       ).toEqual(['0', '0.02', '0.04', '0.06']);
     });
 
-    it('offers the three return assumptions, starting from the middle one', () => {
+    it('offers a return from −10% to 10% a year in whole percents, starting at 0%', () => {
       renderFutureMe();
 
-      expect(
-        within(secondPillarFundField())
-          .getAllByRole('option')
-          .map((option) => option.textContent),
-      ).toEqual([
-        '0% aastas (konservatiivne võlakirjafond)',
-        '2% aastas (keskmine pangafond)',
-        '4% aastas (madala tasuga indeksfond)',
-      ]);
-      expect(secondPillarFundField()).toHaveDisplayValue(/^2% aastas/);
+      const values = within(secondPillarReturnField())
+        .getAllByRole('option')
+        .map((option) => option.getAttribute('value'));
+      expect(values).toEqual(Array.from({ length: 21 }, (_, index) => String(index - 10)));
+      expect(secondPillarReturnField()).toHaveValue('0');
+    });
+
+    it('says a negative return with a real minus sign', () => {
+      renderFutureMe();
+
+      chooseReturn(secondPillarReturnField(), -3);
+
+      expect(secondPillarReturnField()).toHaveDisplayValue(/^−3%\sa year$/);
     });
 
     it('marks the salary and the balance as required', () => {
@@ -1058,7 +1063,7 @@ describe('FutureMe', () => {
       typeInto(grossSalaryField(), '2000');
       typeInto(secondPillarAmountField(), '10000');
       userEvent.selectOptions(secondPillarRateField(), '4% palgast');
-      userEvent.selectOptions(secondPillarFundField(), '4% aastas (madala tasuga indeksfond)');
+      chooseReturn(secondPillarReturnField(), 4);
       userEvent.click(blockButton(/^Sulge töö ja II\ssammas$/));
 
       expect(screen.getByText(/^Palk 2\s000\s€ kuus/)).toHaveTextContent(
@@ -1074,7 +1079,7 @@ describe('FutureMe', () => {
       userEvent.selectOptions(secondPillarRateField(), 'ei maksa');
       userEvent.click(blockButton(/^Sulge töö ja II\ssammas$/));
 
-      expect(screen.getByText('Palk 2 000 € kuus · II sammas 10 000 € · tootlus 2%')).toBeVisible();
+      expect(screen.getByText('Palk 2 000 € kuus · II sammas 10 000 € · tootlus 0%')).toBeVisible();
     });
   });
 
@@ -1145,7 +1150,7 @@ describe('FutureMe', () => {
         userEvent.click(blockButton(/^Sulge III\ssammas$/));
 
         expect(
-          screen.getByText('Ei ole liitunud · avad 40-aastaselt, 50 € kuus · tootlus 2%'),
+          screen.getByText('Ei ole liitunud · avad 40-aastaselt, 50 € kuus · tootlus 0%'),
         ).toBeVisible();
       });
     });
@@ -1155,10 +1160,10 @@ describe('FutureMe', () => {
 
       typeInto(thirdPillarAmountField(), '5000');
       typeInto(thirdPillarMonthlyField(), '50');
-      userEvent.selectOptions(thirdPillarFundField(), '0% aastas (konservatiivne võlakirjafond)');
+      chooseReturn(thirdPillarReturnField(), -2);
       userEvent.click(blockButton(/^Sulge III\ssammas$/));
 
-      expect(screen.getByText('5 000 € · 50 € kuus · tootlus 0%')).toBeVisible();
+      expect(screen.getByText('5 000 € · 50 € kuus · tootlus −2%')).toBeVisible();
       expect(blockButton(/^Muuda III\ssammast$/)).toBeInTheDocument();
     });
 
@@ -1995,6 +2000,7 @@ describe('FutureMe', () => {
       userEvent.selectOptions(thirdPillarJoinedField(), 'jah, enne 2021. a');
       typeInto(thirdPillarAmountField(), '5000');
       typeInto(thirdPillarMonthlyField(), '0');
+      chooseReturn(thirdPillarReturnField(), 2);
       userEvent.click(within(trail()).getByRole('button', { name: /^55\sa/ }));
     };
 
