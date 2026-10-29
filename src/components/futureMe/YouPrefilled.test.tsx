@@ -32,25 +32,43 @@ const secondPillarFund: SourceFund = {
   units: 24586,
 };
 
-const renderYouStep = () => {
+const thirdPillarFund: SourceFund = {
+  ...secondPillarFund,
+  isin: 'EE3',
+  pillar: 3,
+  price: 5000,
+  contributions: 5000,
+  units: 5000,
+};
+
+const givenSourceFunds = (sourceFunds: SourceFund[]) =>
+  (useSourceFunds as jest.Mock).mockReturnValue({ data: sourceFunds, isLoading: false });
+
+const futureMe = () => (
+  <IntlProvider locale="et" messages={translations.et}>
+    <FutureMe />
+  </IntlProvider>
+);
+
+const renderYouStep = (sourceFunds = [secondPillarFund]) => {
   (useMe as jest.Mock).mockReturnValue({ data: mockUser, isLoading: false });
   (useContributions as jest.Mock).mockReturnValue({ data: [], isLoading: false });
-  (useSourceFunds as jest.Mock).mockReturnValue({ data: [secondPillarFund], isLoading: false });
-  render(
-    <IntlProvider locale="et" messages={translations.et}>
-      <FutureMe />
-    </IntlProvider>,
-  );
+  givenSourceFunds(sourceFunds);
+  return render(futureMe());
 };
 
 const birthYearField = () => screen.getByRole('spinbutton', { name: /Mis aastal oled sündinud/ });
+const secondPillarAmountField = () =>
+  screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ });
+const thirdPillarAmountField = () =>
+  screen.getByRole('spinbutton', { name: /Kui palju on III\ssambas praegu/ });
 
 const prefilledFieldsOnScreen = () => [
   birthYearField(),
   screen.getByRole('combobox', { name: /Mis on sinu sugu/ }),
   screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ }),
   screen.getByRole('combobox', { name: /Kui palju maksad II\ssambasse/ }),
-  screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }),
+  secondPillarAmountField(),
 ];
 
 describe('Sina step prefilled fields', () => {
@@ -66,11 +84,22 @@ describe('Sina step prefilled fields', () => {
   it('leaves a field the data did not fill unmarked', () => {
     renderYouStep();
 
-    const thirdPillarAmount = screen.getByRole('spinbutton', {
-      name: /Kui palju on III\ssambas praegu/,
-    });
-    expect(thirdPillarAmount).not.toHaveClass('is-prefilled');
-    expect(thirdPillarAmount).not.toHaveAccessibleDescription(/Eeltäidetud väli/);
+    expect(thirdPillarAmountField()).not.toHaveClass('is-prefilled');
+    expect(thirdPillarAmountField()).not.toHaveAccessibleDescription(/Eeltäidetud väli/);
+  });
+
+  it('drops the mark from the III pillar amount once the saver says they have not joined, as it then shows 0 and is not asked', () => {
+    renderYouStep([secondPillarFund, thirdPillarFund]);
+    expect(thirdPillarAmountField()).toHaveClass('is-prefilled');
+
+    userEvent.selectOptions(
+      screen.getByRole('combobox', { name: /Kas oled III\ssambaga liitunud/ }),
+      'none',
+    );
+
+    expect(thirdPillarAmountField()).toBeDisabled();
+    expect(thirdPillarAmountField()).not.toHaveClass('is-prefilled');
+    expect(thirdPillarAmountField()).not.toHaveAccessibleDescription(/Eeltäidetud väli/);
   });
 
   it('drops the mark once the saver changes the value', () => {

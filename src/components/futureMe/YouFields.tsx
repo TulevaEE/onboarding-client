@@ -107,11 +107,12 @@ export const AmountField = ({
   const intl = useIntl();
   const id = FIELD_DOM_IDS[field];
   const isRequired = !disabled;
+  const showsPrefilled = isPrefilled && !disabled;
   const problem = touched.has(field) && !disabled ? fieldProblem(answers, field) : null;
   const errorId = `${id}-error`;
   const describedBy = classNames({
     [`${id}-unit`]: unit,
-    [PREFILLED_HINT_ID]: isPrefilled,
+    [PREFILLED_HINT_ID]: showsPrefilled,
     [errorId]: problem,
   });
   const limits = limitsOf(field);
@@ -138,7 +139,7 @@ export const AmountField = ({
         id={id}
         className={classNames('form-control', {
           'is-invalid': problem,
-          'is-prefilled': isPrefilled,
+          'is-prefilled': showsPrefilled,
         })}
         type="number"
         inputMode={inputMode}
