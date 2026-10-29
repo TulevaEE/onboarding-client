@@ -2,8 +2,10 @@ import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import translations from '../translations';
-import { RescueCompareFaq } from './KidsCompareFaq';
+import { RescueCompareFaq, SpecialCompareFaq } from './KidsCompareFaq';
+import { initialAge65 } from './age65Answers';
 import { contextWith } from './resultContextFixture';
+import { initialSpecialPension } from './specialPensionAnswers';
 
 const threeChildren = {
   kidsAdded: true,
@@ -99,6 +101,83 @@ describe('rescue allowance or the pension for the children question', () => {
 
   it('is not asked without both rights', () => {
     renderEt(<RescueCompareFaq context={contextWith(threeChildren)} />);
+
+    expect(screen.queryByText(/kumb annab rohkem/)).not.toBeInTheDocument();
+  });
+});
+
+describe('special pension or the pension for the children question', () => {
+  const withSpecialPension = (changes = {}, monthly = '900', age65 = {}) =>
+    contextWith(
+      {
+        ...threeChildren,
+        workAdded: true,
+        hasSpecialPension: true,
+        specialPensionStartAge: '55',
+        ...changes,
+      },
+      {
+        specialPension: { ...initialSpecialPension(), monthly },
+        age65: { ...initialAge65(), ...age65 },
+      },
+    );
+
+  it('compares staying on the special pension with the old-age pension for the children', () => {
+    renderEt(<SpecialCompareFaq context={withSpecialPension()} />);
+
+    expect(
+      screen.getByText('Eripension või laste eest pension: kumb annab rohkem?'),
+    ).toBeInTheDocument();
+    expect(rowNamed(/^Jätkan eripensioniga/)).toBeInTheDocument();
+    expect(rowNamed(/^Laste eest vanaduspension/)).toBeInTheDocument();
+    expect(
+      within(rowNamed(/^Jätkan eripensioniga/)).getByText('eripensionile ei lisandu'),
+    ).toBeInTheDocument();
+  });
+
+  it('says what each pays a month and in total until the pension age, and at it', () => {
+    renderEt(<SpecialCompareFaq context={withSpecialPension()} />);
+
+    const special = within(rowNamed(/^Jätkan eripensioniga/));
+    expect(special.getByText(/^64\sa eripension 900\s€\skuus$/)).toBeInTheDocument();
+    expect(special.getByText(/^10\s800\s€$/)).toBeInTheDocument();
+    expect(special.getByText(/^900\s€\skuus$/)).toBeInTheDocument();
+    const oldAge = within(rowNamed(/^Laste eest vanaduspension/));
+    expect(oldAge.getByText(/^64\sa vanaduspension 692\s€\skuus$/)).toBeInTheDocument();
+    expect(oldAge.getByText(/^8\s302\s€$/)).toBeInTheDocument();
+    expect(oldAge.getByText(/^692\s€\skuus$/)).toBeInTheDocument();
+    expect(within(rowNamed(/^Pere kokku/)).getByText(/^21\s123\s€$/)).toBeInTheDocument();
+  });
+
+  it('marks the old-age pension as the saver’s choice once the saver picks it', () => {
+    renderEt(
+      <SpecialCompareFaq
+        context={withSpecialPension({}, '900', { firstPillarChoice: 'oldAge' as const })}
+      />,
+    );
+
+    expect(rowNamed(/^Laste eest vanaduspension/)).toHaveTextContent(/sinu valik/);
+    expect(rowNamed(/^Jätkan eripensioniga/)).not.toHaveTextContent(/sinu valik/);
+  });
+
+  it('marks the one that gives the most until the pension age', () => {
+    renderEt(<SpecialCompareFaq context={withSpecialPension()} />);
+
+    expect(within(rowNamed(/^Jätkan eripensioniga/)).getByText('kõige rohkem')).toBeInTheDocument();
+    expect(
+      within(rowNamed(/^Laste eest vanaduspension/)).queryByText('kõige rohkem'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('marks neither as giving the most when both give the same in whole euros', () => {
+    renderEt(<SpecialCompareFaq context={withSpecialPension({}, '691.8')} />);
+
+    expect(screen.getAllByRole('rowheader')).toHaveLength(3);
+    expect(screen.queryByText('kõige rohkem')).not.toBeInTheDocument();
+  });
+
+  it('is not asked when the other parent uses the right for the children', () => {
+    renderEt(<SpecialCompareFaq context={withSpecialPension({ kidsEarlyUser: 'other' })} />);
 
     expect(screen.queryByText(/kumb annab rohkem/)).not.toBeInTheDocument();
   });

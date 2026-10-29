@@ -2,11 +2,13 @@ import lifeTableData from './engine/lifeTable.json';
 import {
   AVG_OLD_AGE_PENSION,
   childSupplement,
+  FirstPillarChoice,
   LifeTable,
   PensionInput,
   retirementYears,
   simulate,
   SimulationResult,
+  specialStart,
 } from './engine/pension';
 import { ageTense } from './planAges';
 import { ResultContext } from './resultAnswers';
@@ -50,6 +52,13 @@ export interface Family {
   partnerMonthly: number;
   partnerTotal: number;
   total: number;
+}
+
+interface SpecialOption {
+  from: number;
+  monthly: number;
+  total: number;
+  atPensionAge: number;
 }
 
 const isSpecialPensionCounted = ({ plan, specialPension }: CompareContext): boolean =>
@@ -175,5 +184,69 @@ export const rescueComparisonOf = (context: CompareContext) => {
     family: toetus ? familyOf(kidsYears, toetus.total) : null,
     supplement: supplementOf(input),
     current: input.rescueBasis,
+  };
+};
+
+export const isSpecialComparisonShown = (context: CompareContext): boolean => {
+  const input = compareInputOf(context);
+  const kidsYears = kidsYearsOf(context.you);
+  const earlyYearForKids = retirementYears(input) - kidsYears;
+  return (
+    input.spHas &&
+    (input.spMonthly ?? 0) > 0 &&
+    (input.soodus ?? 0) > 0 &&
+    !input.flexEarly &&
+    input.kids?.earlyUser === 'me' &&
+    kidsYears > 0 &&
+    ageTense(context.plan.birthYear, earlyYearForKids) !== 'past' &&
+    specialStart(input) <= earlyYearForKids
+  );
+};
+
+const specialAndStatePension = (row: SimulationResult['rows'][number]): number =>
+  row.ispg + row.i1g;
+
+const specialOptionOf = (
+  input: PensionInput,
+  choice: FirstPillarChoice,
+  pensionAge: number,
+): SpecialOption & { isOldAgeAtPensionAge: boolean } => {
+  const simulation = simulate(
+    { ...input, firstPillarChoice: choice, firstPillarChoicePa: undefined },
+    lifeTable,
+    WITHOUT_DEFERRAL,
+  );
+  return {
+    from: simulation.pensionStartAge,
+    monthly: monthlyAt(simulation, simulation.pensionStartAge, specialAndStatePension),
+    total: totalBefore(simulation, pensionAge, specialAndStatePension),
+    atPensionAge: monthlyAt(simulation, pensionAge, specialAndStatePension),
+    isOldAgeAtPensionAge: simulation.firstPillar?.atPa?.paid === 'oldAge',
+  };
+};
+
+const withEarlyRetirementForKidsOnly = (input: PensionInput, kidsYears: number): PensionInput => ({
+  ...input,
+  soodus: kidsYears,
+  rescueBasis: 'pension',
+});
+
+export const specialComparisonOf = (context: CompareContext) => {
+  const input = compareInputOf(context);
+  const pensionAge = retirementYears(input);
+  const kidsYears = kidsYearsOf(context.you);
+  const kidsOnlyInput = withEarlyRetirementForKidsOnly(input, kidsYears);
+  const special = specialOptionOf(kidsOnlyInput, 'special', pensionAge);
+  const oldAge = specialOptionOf(kidsOnlyInput, 'oldAge', pensionAge);
+  const larger: FirstPillarChoice = special.monthly >= oldAge.monthly ? 'special' : 'oldAge';
+  return {
+    pensionAge,
+    kidsYears,
+    special,
+    oldAge,
+    family: familyOf(kidsYears, special.total),
+    supplement: supplementOf(input),
+    current: input.firstPillarChoice ?? larger,
+    isSpecialHigher: larger === 'special',
   };
 };

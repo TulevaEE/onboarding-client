@@ -1,6 +1,11 @@
 import { initialAge65 } from './age65Answers';
 import { AVG_OLD_AGE_PENSION } from './engine/pension';
-import { isRescueComparisonShown, rescueComparisonOf } from './kidsCompare';
+import {
+  isRescueComparisonShown,
+  isSpecialComparisonShown,
+  rescueComparisonOf,
+  specialComparisonOf,
+} from './kidsCompare';
 import { contextWith } from './resultContextFixture';
 import { initialSpecialPension } from './specialPensionAnswers';
 
@@ -30,6 +35,31 @@ const amountsOf = (rows: ReturnType<typeof rescueComparisonOf>['rows']) =>
     total: Math.round(total),
     atPensionAge: Math.round(atPensionAge),
   }));
+
+const withSpecialPension = (changes = {}, monthly = '900', age65 = {}) =>
+  contextWith(
+    {
+      ...threeChildren,
+      workAdded: true,
+      hasSpecialPension: true,
+      specialPensionStartAge: '55',
+      ...changes,
+    },
+    {
+      specialPension: { ...initialSpecialPension(), monthly },
+      age65: { ...initialAge65(), ...age65 },
+    },
+  );
+
+const optionsOf = (context: ReturnType<typeof withSpecialPension>) => {
+  const { special, oldAge } = specialComparisonOf(context);
+  return [special, oldAge].map(({ from, monthly, total, atPensionAge }) => ({
+    from,
+    monthly: Math.round(monthly),
+    total: Math.round(total),
+    atPensionAge: Math.round(atPensionAge),
+  }));
+};
 
 describe('rescue allowance or the pension for the children', () => {
   it('is compared only when both rights are the saver’s', () => {
@@ -129,5 +159,90 @@ describe('rescue allowance or the pension for the children', () => {
     expect(rescueComparisonOf(withRescue({ kidsSupUser: 'other' })).supplement.state).toBe(
       'otherParent',
     );
+  });
+});
+
+describe('special pension or the pension for the children', () => {
+  it('is compared only with a special pension, an early right from the children and no flexible pension', () => {
+    expect(isSpecialComparisonShown(withSpecialPension())).toBe(true);
+    expect(isSpecialComparisonShown(withSpecialPension({ kidsAdded: false }))).toBe(false);
+    expect(isSpecialComparisonShown(withSpecialPension({ kidsEarlyUser: 'other' }))).toBe(false);
+    expect(isSpecialComparisonShown(withSpecialPension({ hasSpecialPension: false }))).toBe(false);
+    expect(isSpecialComparisonShown(withSpecialPension({}, ''))).toBe(false);
+    expect(isSpecialComparisonShown(withSpecialPension({ earlyYearsPicked: '3' }))).toBe(false);
+  });
+
+  it('is compared while the early retirement for the children starts this year or later, not once it has started', () => {
+    expect(isSpecialComparisonShown(withSpecialPension({ birthYear: '1962' }))).toBe(true);
+    expect(isSpecialComparisonShown(withSpecialPension({ birthYear: '1961' }))).toBe(false);
+  });
+
+  it('is compared only once the special pension has started by the early retirement for the children', () => {
+    const fourChildren = {
+      kidsCount: '4',
+      kidsBirthYears: ['1990', '1992', '1994', '1996'],
+    };
+
+    expect(
+      isSpecialComparisonShown(
+        withSpecialPension({ ...fourChildren, specialPensionStartAge: '62' }),
+      ),
+    ).toBe(true);
+    expect(
+      isSpecialComparisonShown(
+        withSpecialPension({ ...fourChildren, specialPensionStartAge: '63' }),
+      ),
+    ).toBe(false);
+    expect(isSpecialComparisonShown(withSpecialPension({ specialPensionStartAge: '65' }))).toBe(
+      false,
+    );
+  });
+
+  it('pays each a month and in total from the early retirement for the children, and the pension at the pension age', () => {
+    const { pensionAge, kidsYears } = specialComparisonOf(withSpecialPension());
+
+    expect({ pensionAge, kidsYears }).toEqual({ pensionAge: 65, kidsYears: 1 });
+    expect(optionsOf(withSpecialPension())).toEqual([
+      { from: 64, monthly: 900, total: 10800, atPensionAge: 900 },
+      { from: 64, monthly: 692, total: 8302, atPensionAge: 692 },
+    ]);
+  });
+
+  it('adds the family with the saver on the special pension and the other parent retiring early for the children', () => {
+    const { family } = specialComparisonOf(withSpecialPension());
+
+    expect(family).toEqual({
+      kidsYears: 1,
+      partnerMonthly: AVG_OLD_AGE_PENSION,
+      partnerTotal: AVG_OLD_AGE_PENSION * 12,
+      total: 900 * 12 + AVG_OLD_AGE_PENSION * 12,
+    });
+  });
+
+  it('starts both at the early retirement for the children, not at an earlier one from the rescue service or hazardous work', () => {
+    expect(optionsOf(withSpecialPension({ hasRescue: true, rescueYears: '20' }))).toEqual([
+      { from: 64, monthly: 900, total: 10800, atPensionAge: 900 },
+      { from: 64, monthly: 692, total: 8302, atPensionAge: 692 },
+    ]);
+    expect(optionsOf(withSpecialPension({ hazardList: 'list1', hazardYears: '10' }))).toEqual([
+      { from: 64, monthly: 900, total: 10800, atPensionAge: 900 },
+      { from: 64, monthly: 695, total: 8341, atPensionAge: 695 },
+    ]);
+  });
+
+  it('marks the larger one as the choice until the saver picks, and the saver’s pick once made', () => {
+    const choiceOf = (context: ReturnType<typeof withSpecialPension>) => {
+      const { current, isSpecialHigher } = specialComparisonOf(context);
+      return { current, isSpecialHigher };
+    };
+
+    expect(choiceOf(withSpecialPension())).toEqual({ current: 'special', isSpecialHigher: true });
+    expect(choiceOf(withSpecialPension({}, '500'))).toEqual({
+      current: 'oldAge',
+      isSpecialHigher: false,
+    });
+    expect(
+      choiceOf(withSpecialPension({}, '900', { firstPillarChoice: 'oldAge' as const })),
+    ).toEqual({ current: 'oldAge', isSpecialHigher: true });
   });
 });

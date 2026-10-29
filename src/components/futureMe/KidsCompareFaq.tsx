@@ -6,8 +6,10 @@ import { AVG_OLD_AGE_PENSION } from './engine/pension';
 import {
   Family,
   isRescueComparisonShown,
+  isSpecialComparisonShown,
   rescueComparisonOf,
   RescueRow,
+  specialComparisonOf,
   SupplementState,
 } from './kidsCompare';
 import { ResultContext } from './resultAnswers';
@@ -60,6 +62,13 @@ const WorkUntil = ({ age, moreYears }: { age: number; moreYears: number }) => (
 
 const averageNote = { average: euro(AVG_OLD_AGE_PENSION) };
 
+const isMostAmong = (totals: number[]) => {
+  const roundedTotals = totals.map((total) => Math.round(total));
+  const most = Math.max(...roundedTotals);
+  const isMostSetApart = roundedTotals.some((total) => total < most);
+  return (total: number): boolean => isMostSetApart && Math.round(total) === most;
+};
+
 const familyRow = (family: Family, ownPart: ReactNode, name: string, rest: Partial<Row>): Row => ({
   key: 'family',
   name: message(name),
@@ -85,7 +94,15 @@ const familyRow = (family: Family, ownPart: ReactNode, name: string, rest: Parti
 
 const TABLE_TITLE_ID = 'future-me-kids-compare-title';
 
-const CompareTable = ({ rows, pensionAge }: { rows: Row[]; pensionAge: number }) => {
+const CompareTable = ({
+  rows,
+  pensionAge,
+  afterColumn,
+}: {
+  rows: Row[];
+  pensionAge: number;
+  afterColumn: string;
+}) => {
   const hasWork = rows.some(({ work }) => work);
   const columns = [
     'variant',
@@ -93,7 +110,7 @@ const CompareTable = ({ rows, pensionAge }: { rows: Row[]; pensionAge: number })
     'until',
     'total',
     'supplement',
-    'after',
+    afterColumn,
   ];
   return (
     <>
@@ -193,9 +210,7 @@ export const RescueCompareFaq = ({ context }: { context: CompareContext }) => {
     return null;
   }
   const { pensionAge, kidsYears, rows, family, supplement, current } = rescueComparisonOf(context);
-  const roundedTotals = rows.map(({ total }) => Math.round(total));
-  const most = Math.max(...roundedTotals);
-  const isMostSetApart = roundedTotals.some((total) => total < most);
+  const isMost = isMostAmong(rows.map(({ total }) => total));
   const firstToLeave = Math.min(...rows.map(({ workUntil }) => workUntil));
   const tableRows: Row[] = rows.map((row) => ({
     key: row.basis,
@@ -204,7 +219,7 @@ export const RescueCompareFaq = ({ context }: { context: CompareContext }) => {
     work: <WorkUntil age={row.workUntil} moreYears={row.workUntil - firstToLeave} />,
     parts: rescuePartsOf(row),
     total: row.total,
-    isMost: isMostSetApart && Math.round(row.total) === most,
+    isMost: isMost(row.total),
     supplement: (
       <Supplement
         state={supplement.state}
@@ -236,9 +251,75 @@ export const RescueCompareFaq = ({ context }: { context: CompareContext }) => {
         pensionAge,
         aloneAges: agesText(pensionAge - kidsYears, pensionAge - 1),
       })}
-      <CompareTable rows={withFamily} pensionAge={pensionAge} />
+      <CompareTable rows={withFamily} pensionAge={pensionAge} afterColumn="after" />
       <p className="small text-secondary mb-0">
         {message('futureMe.age65.faq.rescueCompare.note', averageNote)}
+      </p>
+    </CompareFaq>
+  );
+};
+
+export const SpecialCompareFaq = ({ context }: { context: CompareContext }) => {
+  if (!isSpecialComparisonShown(context)) {
+    return null;
+  }
+  const { pensionAge, kidsYears, special, oldAge, family, supplement, current, isSpecialHigher } =
+    specialComparisonOf(context);
+  const isMost = isMostAmong([special.total, oldAge.total]);
+  const part = (kind: 'special' | 'oldAge', option: typeof special) =>
+    message(`futureMe.age65.faq.specialCompare.${kind}Part`, {
+      ages: agesText(option.from, pensionAge - 1),
+      monthly: euro(option.monthly),
+    });
+  const atPensionAge = (option: typeof special) =>
+    message('futureMe.age65.faq.compare.monthly', { amount: euro(option.atPensionAge) });
+  const rows: Row[] = [
+    {
+      key: 'special',
+      name: message('futureMe.age65.faq.specialCompare.special'),
+      isMine: current === 'special',
+      parts: [part('special', special)],
+      total: special.total,
+      isMost: isMost(special.total),
+      supplement: message('futureMe.age65.faq.specialCompare.specialSupplement'),
+      after: (
+        <>
+          {atPensionAge(special)}
+          {special.isOldAgeAtPensionAge && (
+            <small className="d-block">
+              {message('futureMe.age65.faq.specialCompare.oldAgeAtPensionAge')}
+            </small>
+          )}
+        </>
+      ),
+    },
+    {
+      key: 'oldAge',
+      name: message('futureMe.age65.faq.specialCompare.oldAge'),
+      isMine: current === 'oldAge',
+      parts: [part('oldAge', oldAge)],
+      total: oldAge.total,
+      isMost: isMost(oldAge.total),
+      supplement: (
+        <Supplement state={supplement.state} from={oldAge.from} monthly={supplement.monthly} />
+      ),
+      after: atPensionAge(oldAge),
+    },
+    familyRow(family, part('special', special), 'futureMe.age65.faq.specialCompare.family', {
+      supplement: message('futureMe.age65.faq.specialCompare.familySupplement'),
+      after: atPensionAge(special),
+    }),
+  ];
+  return (
+    <CompareFaq question="futureMe.age65.faq.specialCompare.q">
+      {message('futureMe.age65.faq.specialCompare.intro', {
+        ...paragraph,
+        kidsYears,
+        isSpecialHigher: isSpecialHigher ? 'yes' : 'no',
+      })}
+      <CompareTable rows={rows} pensionAge={pensionAge} afterColumn="yourAfter" />
+      <p className="small text-secondary mb-0">
+        {message('futureMe.age65.faq.specialCompare.note', averageNote)}
       </p>
     </CompareFaq>
   );

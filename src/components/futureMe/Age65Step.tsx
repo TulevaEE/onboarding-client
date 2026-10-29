@@ -21,7 +21,7 @@ import {
 import { exactPercent } from './amountFormat';
 import { retirementYears } from './engine/pension';
 import { FundPensionFaq } from './FundPensionFaq';
-import { RescueCompareFaq } from './KidsCompareFaq';
+import { RescueCompareFaq, SpecialCompareFaq } from './KidsCompareFaq';
 import { FutureMeStep, StepPlanInput } from './steps';
 import { YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
@@ -166,6 +166,7 @@ export const Age65Step = ({
       <Age65Pillars pillar="thirdPillar" hasPillar={hasThird} {...pillarProps} />
       <FundPensionFaq withFundQuestions={isAnyPayoutAsked}>
         <RescueCompareFaq context={compareContext} />
+        <SpecialCompareFaq context={compareContext} />
         <details className="faq-item">
           <summary>
             <FormattedMessage id="futureMe.age65.faq.yearScore.q" />
