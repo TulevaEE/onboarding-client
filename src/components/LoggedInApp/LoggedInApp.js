@@ -52,6 +52,7 @@ import { TransactionDetailPage } from '../account/TransactionSection/Transaction
 import { SecondPillarPaymentRate } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRate';
 import { SecondPillarRejoin } from '../flows/secondPillarRejoin/SecondPillarRejoin';
 import { SecondPillarRejoinSuccess } from '../flows/secondPillarRejoin/SecondPillarRejoinSuccess';
+import { RejoinGatekeep } from '../flows/secondPillarRejoin/RejoinGatekeep';
 import {
   flowPath as secondPillarRejoinFlowPath,
   successPath as secondPillarRejoinSuccessPath,
@@ -184,9 +185,11 @@ export class LoggedInApp extends PureComponent {
             <Route
               path="/2nd-pillar-flow"
               render={() => (
-                <ContactDetailsGatekeep>
-                  <SecondPillarFlow />
-                </ContactDetailsGatekeep>
+                <RejoinGatekeep>
+                  <ContactDetailsGatekeep>
+                    <SecondPillarFlow />
+                  </ContactDetailsGatekeep>
+                </RejoinGatekeep>
               )}
             />
             <Route
@@ -292,9 +295,11 @@ export class LoggedInApp extends PureComponent {
             <Route
               path="/2nd-pillar-payment-rate"
               render={() => (
-                <ContactDetailsGatekeep>
-                  <SecondPillarPaymentRate />
-                </ContactDetailsGatekeep>
+                <RejoinGatekeep>
+                  <ContactDetailsGatekeep>
+                    <SecondPillarPaymentRate />
+                  </ContactDetailsGatekeep>
+                </RejoinGatekeep>
               )}
             />
             <Route
