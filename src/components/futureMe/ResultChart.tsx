@@ -603,7 +603,10 @@ export const ResultChart = ({ result, need, nominalReturns }: ResultChartProps) 
   const rows = useMemo(() => chartRowsOf(shown, need, isNominal), [shown, need, isNominal]);
   const events = useMemo(() => chartEventsOf(result), [result]);
   const notes = useMemo(() => summaryNotesOf(shown, rows, isNominal), [shown, rows, isNominal]);
-  const assumption = assumptionOf(result, rows, events);
+  const assumption = useMemo(
+    () => assumptionOf(result, chartRowsOf(result, need), events),
+    [result, need, events],
+  );
 
   const toggleLayer = (id: ChartSourceId) => {
     const isHidden = hidden.has(id);

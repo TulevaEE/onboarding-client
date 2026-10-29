@@ -57,6 +57,18 @@ const contextWith = (
   };
 };
 
+const withOneFundContract = (): ResultContext => {
+  const context = contextWith({}, '100');
+  const you = { ...context.you, thirdPillarJoined: 'before' as const, thirdPillarAmount: '10000' };
+  return {
+    ...context,
+    you,
+    plan: toStepPlanInput(you),
+    age65: { ...context.age65, secondPillar: 'fund', thirdPillar: 'fund' },
+    age66: { ...context.age66, secondPillarContract: 'once', thirdPillarContract: 'once' },
+  };
+};
+
 const renderChart = (context: ResultContext = contextWith()) =>
   render(
     <IntlProvider locale="et" messages={translations.et}>
@@ -194,6 +206,16 @@ describe('future prices switch', () => {
     expect(screen.getByRole('list', { name: 'Graafiku kokkuvõte' })).toHaveTextContent(
       /Sinu kulud on 791\s€\skuus tänastes hindades, 65-⁠aastaselt tuleviku hindades 1\s065\s€\./,
     );
+  });
+
+  it('keeps the assumption in today’s euros, as the note says of the other amounts', () => {
+    renderChart(withOneFundContract());
+    const missing = /Kui ülejäägi kulutad, jääb siis puudu kuni 91\s€\skuus\./;
+    expect(screen.getByText(missing)).toBeInTheDocument();
+
+    userEvent.click(futurePrices());
+
+    expect(screen.getByText(missing)).toBeInTheDocument();
   });
 
   describe('explanation', () => {
