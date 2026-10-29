@@ -1283,6 +1283,17 @@
       font-weight: 400;
       color: $text-secondary;
     }
+
+    @media print {
+      overflow: visible;
+      font-size: 0.875rem;
+
+      th,
+      td,
+      tbody th {
+        min-width: 0;
+      }
+    }
   }
 
   .result-compare-mine,
