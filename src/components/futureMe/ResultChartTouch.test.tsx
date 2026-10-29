@@ -67,12 +67,24 @@ const renderChart = (context: ResultContext = contextWith()) =>
   );
 
 const originalMatchMedia = window.matchMedia;
+const screenChangeListeners = new Set<() => void>();
+let isTouchScreen = false;
 const useScreen = (isTouch: boolean) => {
+  isTouchScreen = isTouch;
   window.matchMedia = ((query: string) => ({
-    matches: isTouch && query.includes('pointer: coarse'),
+    get matches() {
+      return isTouchScreen && query.includes('pointer: coarse');
+    },
     addListener: jest.fn(),
     removeListener: jest.fn(),
+    addEventListener: (_type: string, listener: () => void) => screenChangeListeners.add(listener),
+    removeEventListener: (_type: string, listener: () => void) =>
+      screenChangeListeners.delete(listener),
   })) as unknown as typeof window.matchMedia;
+};
+const turnScreen = (isTouch: boolean) => {
+  isTouchScreen = isTouch;
+  act(() => screenChangeListeners.forEach((listener) => listener()));
 };
 
 const lastChartProps = () => mockChart.mock.calls[mockChart.mock.calls.length - 1][0];
@@ -329,6 +341,8 @@ describe('ResultChart on a touch screen', () => {
 });
 
 describe('ResultChart with a mouse', () => {
+  const POINTER_EVENTS = ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'];
+
   beforeEach(() => {
     jest.clearAllMocks();
     useScreen(false);
@@ -350,8 +364,18 @@ describe('ResultChart with a mouse', () => {
     const [layer] = lastChartProps().data.datasets;
 
     expect(screen.queryByRole('toolbar')).not.toBeInTheDocument();
-    expect(lastChartProps().options.events).toBeUndefined();
+    expect(lastChartProps().options.events).toEqual(POINTER_EVENTS);
     expect(layer.pointRadius[pointOfAge(66)]).toBe(3);
     expect(chart()).toHaveAttribute('tabindex', '0');
+  });
+
+  it('takes the pointer again when a tablet turned wide leaves the touch view', () => {
+    useScreen(true);
+    renderChart();
+
+    turnScreen(false);
+
+    expect(screen.queryByRole('toolbar')).not.toBeInTheDocument();
+    expect(lastChartProps().options.events).toEqual(POINTER_EVENTS);
   });
 });

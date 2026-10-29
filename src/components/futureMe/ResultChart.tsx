@@ -348,7 +348,9 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
       maintainAspectRatio: false,
       animation: false,
       layout: { padding: { left: EVENT_DOT_ROOM } },
-      ...(isTouchView ? { events: [], onResize: (_chart, { width }) => setChartWidth(width) } : {}),
+      ...(isTouchView
+        ? { events: [], onResize: (_chart, { width }) => setChartWidth(width) }
+        : { events: ChartJS.defaults.events }),
       interaction: { mode: 'lastPointAtAge', intersect: false },
       onHover: ({ x }, elements) => {
         const [element] = elements;
