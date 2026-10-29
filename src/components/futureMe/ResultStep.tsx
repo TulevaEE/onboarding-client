@@ -14,6 +14,7 @@ import { nominalReturnsOf } from './nominal';
 import { ResultDecisions } from './ResultDecisions';
 import { ResultLegacy } from './ResultLegacy';
 import { ResultRules } from './ResultRules';
+import { ResultSave } from './ResultSave';
 import {
   coverageKind,
   incomeAtStart,
@@ -274,6 +275,7 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       />
       <ResultAssumptions context={context} />
       <ResultRules context={context} />
+      <ResultSave context={context} />
     </section>
   );
 };

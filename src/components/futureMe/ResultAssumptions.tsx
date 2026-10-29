@@ -142,7 +142,7 @@ interface EditButtonProps {
 }
 
 const EditPanel = ({ id, context }: { id: EditableId; context: ResultContext }) => (
-  <div id={`future-me-assumption-${id}-panel`}>
+  <div id={`future-me-assumption-${id}-panel`} className="d-print-none">
     {id === 'expenses' ? (
       <QuickEditExpenses context={context} />
     ) : (
