@@ -63,6 +63,10 @@ describe('children', () => {
       expect(earlyYears(withChildren({ b2012: 1, disabled: true }))).toBe(5);
     });
 
+    it('lets a parent retire as many years early as the birth dates give, when they are given', () => {
+      expect(earlyYears(withChildren({ b2012: 1, disabled: true, yearsEarly: 2 }))).toBe(2);
+    });
+
     it('counts the children of every birth period together', () => {
       expect(earlyYears(withChildren({ b1991: 2, b2013: 2 }))).toBe(3);
     });

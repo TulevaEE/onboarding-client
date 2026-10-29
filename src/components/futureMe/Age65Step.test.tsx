@@ -284,6 +284,28 @@ describe('Age 65 step', () => {
     expect(screen.getByText('Mis on fondipension?')).toBeInTheDocument();
   });
 
+  it('compares the rescue allowance with the pension for the children when both rights are the saver’s', () => {
+    loggedInAs({ dateOfBirth: '1970-01-01' });
+    render(
+      <IntlProvider locale="et" messages={translations.et}>
+        <FutureMe />
+      </IntlProvider>,
+    );
+    fillInYou();
+    addFiveChildren();
+    userEvent.click(screen.getByRole('button', { name: 'Lisa erijuht' }));
+    userEvent.click(screen.getByRole('checkbox', { name: /Töötasin päästeteenistuses/ }));
+    typeInto(
+      screen.getByRole('spinbutton', { name: /Mitu aastat töötasid päästeteenistuses/ }),
+      '20',
+    );
+    userEvent.click(within(trail()).getByRole('button', { name: /pension, vaatamata$/ }));
+
+    expect(
+      screen.getByText('Ootetoetus või laste eest pension: kumb annab rohkem?'),
+    ).toBeInTheDocument();
+  });
+
   describe('retiring early on favourable terms', () => {
     beforeEach(() => {
       loggedInAs({ dateOfBirth: '1970-01-01' });
