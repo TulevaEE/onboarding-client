@@ -17,6 +17,7 @@ jest.mock('../common/apiHooks', () => ({
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
 }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
+jest.mock('react-intl', () => jest.requireActual('react-intl'));
 
 const mockUseMe = useMe as jest.MockedFunction<typeof useMe>;
 
@@ -121,7 +122,7 @@ describe('Sina step help buttons', () => {
     [
       'second pillar return',
       () => screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ }),
-      /What does “return after inflation” mean$/,
+      /Mida tähendab „tootlus pärast inflatsiooni“$/,
     ],
     [
       'third pillar joined',
@@ -169,7 +170,7 @@ describe('Sina step help buttons', () => {
     const returnField = screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ });
 
     userEvent.click(
-      helpButtonBeside(returnField, '.col-12', /What does “return after inflation” mean$/),
+      helpButtonBeside(returnField, '.col-12', /Mida tähendab „tootlus pärast inflatsiooni“$/),
     );
 
     const dialog = screen.getByRole('dialog');

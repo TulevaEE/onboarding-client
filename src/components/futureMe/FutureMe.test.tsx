@@ -32,6 +32,7 @@ jest.mock('../common/apiHooks', () => ({
   usePendingOnboardings: jest.fn(),
 }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
+jest.mock('react-intl', () => jest.requireActual('react-intl'));
 
 const mockUseMe = useMe as jest.MockedFunction<typeof useMe>;
 const mockUseContributions = useContributions as jest.MockedFunction<typeof useContributions>;
@@ -1045,7 +1046,7 @@ describe('FutureMe', () => {
 
       chooseReturn(secondPillarReturnField(), -3);
 
-      expect(secondPillarReturnField()).toHaveDisplayValue(/^−3%\sa year$/);
+      expect(secondPillarReturnField()).toHaveDisplayValue(/^−3%\saastas$/);
     });
 
     it('marks the salary and the balance as required', () => {
