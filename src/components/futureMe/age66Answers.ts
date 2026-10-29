@@ -142,7 +142,7 @@ export const contractChosenAt = (
   if (pillar === 'thirdPillar' && age55.plan === 'fund') {
     return { age: age55.age, step: FutureMeStep.AGE_55 };
   }
-  return context.age60[pillar] === 'fund' && !isPayoutChoiceMadeAtAnotherStep(context.plan)
+  return context.age60[pillar] === 'fund'
     ? { age: payoutAge(context.plan), step: FutureMeStep.AGE_60 }
     : null;
 };

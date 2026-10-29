@@ -1,6 +1,7 @@
 import { initialAge60 } from './age60Answers';
 import { initialAge65 } from './age65Answers';
 import {
+  contractChosenAt,
   contractLock,
   fundStartAges,
   fundStartOf,
@@ -9,6 +10,7 @@ import {
   isContractAsked,
   payoutAtPensionAge,
 } from './age66Answers';
+import { FutureMeStep } from './steps';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
 
 const noPrefill = { birthYear: 1980, sex: null, secondPillarRate: null };
@@ -75,6 +77,15 @@ describe('age66Answers', () => {
       expect(fundStartAges('thirdPillar', earlyContext({ thirdPillarJoined: 'before' }))[0]).toBe(
         56,
       );
+    });
+
+    it('takes the contract chosen under the fund pension on the payout age step', () => {
+      const fundAt60 = { ...initialAge60(), secondPillar: 'fund' as const };
+
+      expect(contractChosenAt('secondPillar', { ...earlyContext({}), age60: fundAt60 })).toEqual({
+        age: 60,
+        step: FutureMeStep.AGE_60,
+      });
     });
 
     it('counts a III pillar that opens after the early retirement', () => {
