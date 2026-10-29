@@ -1,4 +1,4 @@
-import { PensionInput, simulate, yearlyContractTerm } from './pension';
+import { LifeTable, PensionInput, simulate, yearlyContractTerm } from './pension';
 import { lifeTable, scenarioD } from './testUtils';
 
 const MONTHS_IN_YEAR = 12;
@@ -36,6 +36,15 @@ describe('fund pension with a new contract every year', () => {
     const months = ages.map((age) => yearlyContractTerm(lifeTable, 'N', age) * MONTHS_IN_YEAR);
 
     expect(months).toEqual(months.map(Math.round));
+  });
+
+  it("uses the person's own sex column when the life table has no whole-population column", () => {
+    const { M, N } = lifeTable.elada_jaanud;
+    const withoutWholePopulation: LifeTable = { ...lifeTable, elada_jaanud: { M, N } };
+
+    expect(yearlyContractTerm(withoutWholePopulation, 'M', 65)).toBe(
+      Math.round(MONTHS_IN_YEAR * M[65]) / MONTHS_IN_YEAR,
+    );
   });
 
   it('shortens the term every year', () => {
