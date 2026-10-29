@@ -27,6 +27,23 @@ describe('started fund pensions', () => {
     },
   );
 
+  it('puts a fund pension started at the pension age on the payout age step when retiring early makes the choice there', () => {
+    const retiringEarly = {
+      ...you,
+      birthYear: '1961',
+      workAdded: true,
+      hazardList: 'list1' as const,
+      hazardYears: '10',
+    };
+
+    expect(
+      startedFundPensionStep(
+        { pillar: 'SECOND', startYear: 2026, startAge: 65 },
+        toStepPlanInput(retiringEarly),
+      ),
+    ).toBe(FutureMeStep.AGE_60);
+  });
+
   it('picks the fund pension card on the step where each was started', () => {
     expect(
       startedFundPensionAnswers(
