@@ -140,6 +140,5 @@ export const kidsInputOf = (answers: YouAnswers, now: Date = new Date()): KidsIn
     earlyUser: answers.kidsEarlyUser,
     user: answers.kidsEarlyUser,
     supUser: answers.kidsSupUser,
-    inForecast: 'no',
   };
 };

@@ -40,7 +40,6 @@ const withChildren = (kids: KidsInput): PensionInput => ({
     b2013: 0,
     disabled: false,
     user: 'me',
-    inForecast: 'no',
     ...kids,
   },
 });
@@ -259,7 +258,7 @@ describe('children', () => {
       const young: PensionInput = { ...base, birthYear: 1994, p2Rate: 0.02, grossMonthly: 2000 };
       const youngRetirementAge = retirementYears(young);
       const withChild = simulate(
-        { ...young, kids: { b2021: 1, u3: 1, user: 'me', inForecast: 'no' } },
+        { ...young, kids: { b2021: 1, u3: 1, user: 'me' } },
         lifeTable,
         scenarioD,
       );
@@ -272,39 +271,14 @@ describe('children', () => {
   });
 
   describe('supplement in the state pension', () => {
-    const notInForecast = simulate(withChildren({ b2012: 2 }), lifeTable, keepGrowingScenario);
-    const inForecast = simulate(
-      withChildren({ b2012: 2, inForecast: 'yes' }),
-      lifeTable,
-      keepGrowingScenario,
-    );
-    const unknownForecast = simulate(
-      withChildren({ b2012: 2, inForecast: 'unknown' }),
-      lifeTable,
-      keepGrowingScenario,
-    );
+    const withSupplement = simulate(withChildren({ b2012: 2 }), lifeTable, keepGrowingScenario);
 
-    it('is added when the forecast does not include it', () => {
-      expect(rowAt(notInForecast, retirementAge).i1g).toBeCloseTo(900 + 7 * AASTAHINNE, 6);
+    it('is added on top of the state pension', () => {
+      expect(rowAt(withSupplement, retirementAge).i1g).toBeCloseTo(900 + 7 * AASTAHINNE, 6);
     });
 
-    it('is not added when the forecast already includes it', () => {
-      expect(rowAt(inForecast, retirementAge).i1g).toBeCloseTo(900, 6);
-    });
-
-    it('is not added when it is unknown whether the forecast includes it', () => {
-      expect(rowAt(unknownForecast, retirementAge).i1g).toBeCloseTo(900, 6);
-    });
-
-    it('is reported as applied when added', () => {
-      expect(notInForecast.childSupplement).toEqual({ monthly: 7 * AASTAHINNE, applied: true });
-    });
-
-    it('is reported as not applied when it is unknown whether the forecast includes it', () => {
-      expect(unknownForecast.childSupplement).toEqual({
-        monthly: 7 * AASTAHINNE,
-        applied: false,
-      });
+    it('is reported with its monthly amount', () => {
+      expect(withSupplement.childSupplement).toEqual({ monthly: 7 * AASTAHINNE });
     });
 
     it('is raised by the deferral increase along with the rest of the pension', () => {
@@ -337,7 +311,7 @@ describe('children', () => {
       simulate(
         {
           ...base,
-          kids: { b1991: 0, b2012: 0, b2013: 0, user: 'me', inForecast: 'no' },
+          kids: { b1991: 0, b2012: 0, b2013: 0, user: 'me' },
         },
         lifeTable,
         scenarioD,

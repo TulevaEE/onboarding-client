@@ -436,7 +436,7 @@ describe('special pension', () => {
       p2Rate: 0.06,
       spMonthly: 1050,
       spStartAge: 50,
-      kids: { b2012: 5, earlyUser: 'me', supUser: 'me', inForecast: 'no' },
+      kids: { b2012: 5, earlyUser: 'me', supUser: 'me' },
     };
     const ordinaryRetirementAge = retirementYears(input);
     const idle = simulateKeepGrowing(input);

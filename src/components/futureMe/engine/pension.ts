@@ -31,7 +31,6 @@ export interface KidsInput {
   iiMonths?: (number | undefined)[];
   b2013noII?: number;
   monthNow?: number;
-  inForecast?: 'yes' | 'no' | string;
 }
 
 export interface SeparateThirdPillar {
@@ -170,7 +169,7 @@ export interface SimulationResult extends SimulationSummary {
   ordinaryPensionAge: number;
   p1FullAge: number;
   fundPensionContracts: Record<'second' | 'third', FundPensionContract | null>;
-  childSupplement: { monthly: number; applied: boolean } | null;
+  childSupplement: { monthly: number } | null;
   rescueAllowance: { from: number; until: number; monthly: number; pension: number } | null;
   hazardSupplement: number | null;
   p2Early: EarlyWithdrawalResult | null;
@@ -657,15 +656,12 @@ export function simulate(
       ? Math.min(5, Math.max(0, scenario.half || 0))
       : 0;
   const kidsMonthly = childSupplement(input);
-  const kidsApplied = kidsMonthly > 0 && (input.kids || {}).inForecast === 'no';
   const hazardMonthly = hazardSupplement(input);
   const earlyMissing = soodus > 0 && currentAge < ret ? soodus : 0;
   const earlyCut =
     earlyMissing *
     workAccrual(input.grossMonthly || 0, (input.p2Rate || 0) > 0, (input.p2Rate || 0) > 0);
-  const p1Base =
-    (Math.max(0, input.p1Monthly - earlyCut) + (kidsApplied ? kidsMonthly : 0) + hazardMonthly) *
-    12;
+  const p1Base = (Math.max(0, input.p1Monthly - earlyCut) + kidsMonthly + hazardMonthly) * 12;
   // RPKS § 11¹ lg 4: the increasing coefficient applies to the whole pension
   const flexEarly =
     soodus > 0 && !isFlexibleBarred ? Math.min(5, Math.max(0, input.flexEarly || 0)) : 0;
@@ -679,9 +675,7 @@ export function simulate(
     (1 + serviceIncrease);
   const p1Full = p1Base * p1Factor;
   const toetusEnd = flexEarly > 0 ? null : rescueUntil(input);
-  const kidsInP1 =
-    kidsApplied || (kidsMonthly > 0 && (input.kids || {}).inForecast === 'yes') ? kidsMonthly : 0;
-  const toetusYear = Math.max(0, p1Full - kidsInP1 * 12 * p1Factor);
+  const toetusYear = Math.max(0, p1Full - kidsMonthly * 12 * p1Factor);
   const workOn = input.workOn !== undefined ? !!input.workOn : soodus > 0 && !!input.soodusWork;
   let defaultWorkUntil = ret + 1;
   if (input.workUntil !== undefined) {
@@ -949,7 +943,7 @@ export function simulate(
         contractStart !== null ? { start: contractStart, end: contractStart + contractTerm } : null,
       third: start3 !== null ? { start: start3, end: start3 + term3 } : null,
     },
-    childSupplement: kidsMonthly > 0 ? { monthly: kidsMonthly, applied: kidsApplied } : null,
+    childSupplement: kidsMonthly > 0 ? { monthly: kidsMonthly } : null,
     rescueAllowance:
       toetusEnd !== null && toetusEnd > ret
         ? { from: ret, until: toetusEnd, monthly: toetusYear / 12, pension: p1Year / 12 }

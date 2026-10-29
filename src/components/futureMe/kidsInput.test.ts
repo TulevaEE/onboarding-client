@@ -133,7 +133,7 @@ describe('kidsInputOf', () => {
     expect(kids?.iiMonths).toEqual([undefined, undefined]);
   });
 
-  it('carries the answers about the early right and the supplement, and that the state pension has no supplement', () => {
+  it('carries the answers about the early right and the supplement', () => {
     const kids = kidsInputOf(
       withKids(['1990'], {
         kidsDisabled: [true],
@@ -148,7 +148,6 @@ describe('kidsInputOf', () => {
       earlyUser: 'other',
       user: 'other',
       supUser: 'other',
-      inForecast: 'no',
       monthNow: 9,
     });
   });
