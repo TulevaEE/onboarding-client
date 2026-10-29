@@ -170,7 +170,7 @@
     height: 4.5rem;
     border: 1px solid $blue-border-1;
     border-radius: 1rem;
-    background: linear-gradient(135deg, $blue-bg-1, #e6f6fd);
+    background: linear-gradient(135deg, $blue-bg-1, $blue-bg-2);
     color: $blue;
 
     .line-icon {
@@ -562,7 +562,7 @@
   .you-note {
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
-    background: var(--gray-light, #f4f5f7);
+    background: $gray-bg-2;
     text-wrap: pretty;
   }
 
@@ -852,9 +852,9 @@
   .result-chart-assumption {
     margin: 0 0 1rem;
     padding: 0.75rem 1rem;
-    border-left: 4px solid #c9e0ee;
+    border-left: 4px solid $blue-border-2;
     border-radius: 0.25rem;
-    background: #edf7fd;
+    background: $blue-bg-2;
     text-wrap: pretty;
   }
 
@@ -916,24 +916,24 @@
     display: inline-flex;
     align-items: center;
     gap: 0.375rem;
-    border: 1px solid #006ce6;
-    background: #edf7fd;
-    color: #002f63;
+    border: 1px solid $blue;
+    background: $blue-bg-2;
+    color: $text-navy;
     white-space: nowrap;
 
     &:hover {
-      background: #dcefff;
-      border-color: #006ce6;
-      color: #002f63;
+      background: $blue-border-1;
+      border-color: $blue;
+      color: $text-navy;
     }
 
     &[aria-pressed='false'] {
-      background: #fff;
-      border-color: #8a8d91;
+      background: $white;
+      border-color: $text-tertiary;
       color: inherit;
 
       &:hover {
-        background: #f3f5f7;
+        background: $gray-bg-2;
         color: inherit;
       }
     }
@@ -959,7 +959,7 @@
   .result-chart-crosshair {
     position: absolute;
     width: 1px;
-    background: #bfc6cd;
+    background: $gray-border-3;
     pointer-events: none;
   }
 
@@ -972,7 +972,7 @@
     max-width: min(384px, 92%);
     padding: 12px 40px 12px 16px;
     border-radius: 6px;
-    background: #fff;
+    background: $white;
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.16), 0 1px 2px 0 rgba(0, 0, 0, 0.04),
       0 4px 8px 0 rgba(0, 0, 0, 0.04), 0 0 16px 0 rgba(0, 0, 0, 0.16);
     font-size: 14px;
@@ -1000,16 +1000,16 @@
     grid-column: 1 / -1;
     margin: 0 0 0.25rem;
     padding: 0 0 0.5rem;
-    border-bottom: 1px solid #d9dee3;
+    border-bottom: 1px solid $gray-border-2;
     list-style: none;
     font-weight: 700;
-    color: #002f63;
+    color: $text-navy;
     text-wrap: pretty;
   }
 
   .result-chart-tip-bad,
   .result-chart-tip-missing {
-    color: #db2200;
+    color: $red;
   }
 
   .result-chart-tip-missing {
@@ -1041,12 +1041,12 @@
     justify-content: center;
     gap: 0.1rem;
     padding-left: 1.25rem;
-    border-left: 1px solid #d9dee3;
+    border-left: 1px solid $gray-border-2;
     text-align: center;
 
     @media (max-width: 575.98px) {
       padding: 0.5rem 0 0;
-      border-top: 1px solid #d9dee3;
+      border-top: 1px solid $gray-border-2;
       border-left: 0;
       text-align: left;
     }
@@ -1063,10 +1063,10 @@
     background: none;
     font-size: 1.25rem;
     line-height: 1;
-    color: #6b7074;
+    color: $text-secondary;
 
     &:hover {
-      background: #f3f5f7;
+      background: $gray-bg-2;
     }
   }
 
@@ -1082,9 +1082,9 @@
     min-width: 2.75rem;
     height: 2.75rem;
     padding: 0 0.5rem;
-    border: 1px solid #8a8d91;
+    border: 1px solid $text-tertiary;
     border-radius: 1.375rem;
-    background: #fff;
+    background: $white;
     color: inherit;
     font-size: 0.875rem;
     font-weight: 500;
@@ -1093,17 +1093,17 @@
     transform: translateX(-50%);
 
     &:hover {
-      background: #f3f5f7;
+      background: $gray-bg-2;
     }
 
     &:focus-visible {
-      outline: 2px solid #006ce6;
+      outline: 2px solid $blue;
       outline-offset: 2px;
     }
 
     &.is-event {
-      border-color: #002f63;
-      color: #002f63;
+      border-color: $navy-blue;
+      color: $text-navy;
       font-weight: 700;
 
       &::after {
@@ -1113,17 +1113,17 @@
         right: -1px;
         width: 0.5rem;
         height: 0.5rem;
-        border: 2px solid #fff;
+        border: 2px solid $white;
         border-radius: 50%;
-        background: #002f63;
+        background: $navy-blue;
         box-sizing: content-box;
       }
     }
 
     &[aria-pressed='true'] {
-      border-color: #002f63;
-      background: #002f63;
-      color: #fff;
+      border-color: $navy-blue;
+      background: $navy-blue;
+      color: $white;
     }
   }
 
@@ -1151,7 +1151,7 @@
     width: 1.5rem;
     height: 0;
     border-radius: 0;
-    border-top: 3px dotted #db2200;
+    border-top: 3px dotted $red;
   }
 
   .result-chart-table {

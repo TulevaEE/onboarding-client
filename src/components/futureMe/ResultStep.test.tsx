@@ -24,6 +24,7 @@ jest.mock('../common/apiHooks', () => ({
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
 }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
+jest.unmock('react-intl');
 
 const mockChart = jest.fn();
 jest.mock('react-chartjs-2', () => {
@@ -308,11 +309,15 @@ describe('Result step', () => {
       expect(lastChartProps().options.plugins.tooltip).toEqual({ enabled: false });
     });
 
-    it('shortens the amounts on the side axis to thousands', () => {
+    it("shortens the amounts on the side axis to thousands in the page's language", () => {
       openResultStep();
       const tick = lastChartProps().options.scales.y.ticks.callback;
 
-      expect([tick(500), tick(1000), tick(1500)]).toEqual(['500', '1 tuh', '1,5 tuh']);
+      expect([tick(500), tick(1000), tick(1500)]).toEqual([
+        '500',
+        expect.stringMatching(/^1\stuh$/),
+        expect.stringMatching(/^1,5\stuh$/),
+      ]);
     });
 
     it('keeps the side axis the same width whatever its amounts', () => {

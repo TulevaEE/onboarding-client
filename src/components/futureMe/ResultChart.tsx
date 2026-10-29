@@ -39,7 +39,7 @@ import {
   stackedValueOf,
 } from './chartPoints';
 import { SOURCE_COLORS, SOURCE_LABELS, SUMMARY_LABELS } from './chartSources';
-import { announcementOf } from './chartText';
+import { announcementOf, axisAmountOf } from './chartText';
 import { ResultChartAges } from './ResultChartAges';
 import { ResultChartTip } from './ResultChartTip';
 import { useTouchView } from './useTouchView';
@@ -66,7 +66,6 @@ const Y_AXIS_WIDTH = 76;
 const TOUCH_Y_AXIS_WIDTH = 52;
 const MIN_TICK_GAP = 32;
 const EVENT_DOT_ROOM = EVENT_DOT_RADIUS + EVENT_DOT_BORDER;
-const THOUSAND = 1000;
 const NOT_COUNTED = '–';
 const COUNTED_FROM_PENSION_AGE: (ChartSourceId | 'costs')[] = ['salary', 'costs'];
 
@@ -97,13 +96,6 @@ const isAgeLabelled = (age: number, step: number, pensionAge: number) => {
 
 const fittingTickStep = (width: number, years: number) =>
   (width / years) * WIDE_TICK_STEP >= MIN_TICK_GAP ? WIDE_TICK_STEP : NARROW_TICK_STEP;
-
-const shortAmount = (value: number | string) => {
-  const amount = Number(value);
-  return amount >= THOUSAND
-    ? `${(amount / THOUSAND).toLocaleString('et-EE', { maximumFractionDigits: 1 })} tuh`
-    : String(amount);
-};
 
 const Summary = ({
   result,
@@ -416,7 +408,12 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
             // eslint-disable-next-line no-param-reassign
             scale.width = isTouchView ? TOUCH_Y_AXIS_WIDTH : Y_AXIS_WIDTH;
           },
-          ticks: { maxTicksLimit: 5, color: TICK_COLOR, font: FONT, callback: shortAmount },
+          ticks: {
+            maxTicksLimit: 5,
+            color: TICK_COLOR,
+            font: FONT,
+            callback: (value) => axisAmountOf(intl, value),
+          },
         },
       },
     };
