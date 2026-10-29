@@ -3,6 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { euro } from './amountFormat';
 import { ChoiceCard } from './ChoiceCard';
 import { FirstPillarChoice as Choice } from './engine/pension';
+import { SectionTitle } from './StepSection';
 
 interface Props {
   idPrefix: string;
@@ -31,9 +32,9 @@ export const FirstPillarChoice = ({
 
   return (
     <div className="mb-4">
-      <h3 className="h5 section-title mt-4" id={`${idPrefix}-title`}>
+      <SectionTitle className="h5 section-title mt-4" id={`${idPrefix}-title`}>
         {title}
-      </h3>
+      </SectionTitle>
       <p className="text-secondary text-pretty">{intro}</p>
       <fieldset className="payout-fieldset" aria-labelledby={`${idPrefix}-title`}>
         <div className="payout-choices">

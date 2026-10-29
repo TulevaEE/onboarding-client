@@ -18,7 +18,7 @@ import { StepPlanInput, FutureMeStep } from './steps';
 import { RequiredMark } from './YouFields';
 import { amountOf, YouAnswers } from './youAnswers';
 import { TranslationKey } from '../translations';
-import { StepSection } from './StepSection';
+import { SectionTitle, StepSection } from './StepSection';
 import { ageTense, retirementAge } from './planAges';
 import { LinkButton } from './LinkButton';
 import { strong } from './richText';
@@ -99,9 +99,9 @@ export const SpecialPensionStep = ({
         <FormattedMessage id="futureMe.specialPension.intro" values={{ age, year, isStarted }} />{' '}
         <EditYouButton labelId="futureMe.specialPension.changeStart" onClick={onEditYou} />
       </p>
-      <h3 className="h5 section-title">
+      <SectionTitle className="h5 section-title">
         <FormattedMessage id="futureMe.specialPension.pensionAge.title" />
-      </h3>
+      </SectionTitle>
       <p className="text-pretty">
         {comparison ? (
           <FormattedMessage

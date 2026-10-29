@@ -1,6 +1,25 @@
-import React, { ReactNode, RefObject } from 'react';
+import React, { createContext, ReactNode, RefObject, useContext } from 'react';
 import { ChapterHead } from './ChapterHead';
 import { StepId } from './steps';
+
+const EmbeddedStepContext = createContext(false);
+
+export const SectionTitle = ({
+  id,
+  className,
+  children,
+}: {
+  id?: string;
+  className: string;
+  children: ReactNode;
+}) => {
+  const Heading = useContext(EmbeddedStepContext) ? 'h5' : 'h3';
+  return (
+    <Heading id={id} className={className}>
+      {children}
+    </Heading>
+  );
+};
 
 interface Props {
   step: StepId;
@@ -22,7 +41,11 @@ export const StepSection = ({
   children,
 }: Props) => {
   if (isEmbedded) {
-    return <div className="step-body">{children}</div>;
+    return (
+      <EmbeddedStepContext.Provider value>
+        <div className="step-body">{children}</div>
+      </EmbeddedStepContext.Provider>
+    );
   }
   return (
     <section className="chapter card p-4" aria-labelledby={headingId}>

@@ -327,5 +327,15 @@ describe('Result step: quick edit of the other decisions', () => {
         screen.queryByRole('heading', { level: 2, name: 'Eripension algab' }),
       ).not.toBeInTheDocument();
     });
+
+    it('puts its section titles under the row heading', () => {
+      openResultStep({ withSpecialPension: true });
+      const row = decisionRow(/^Eripension$/);
+      userEvent.click(toggleIn(row));
+
+      expect(
+        within(row).getByRole('heading', { level: 5, name: 'Mis saab pensionieas?' }),
+      ).toBeVisible();
+    });
   });
 });
