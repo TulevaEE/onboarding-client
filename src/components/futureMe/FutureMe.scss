@@ -1325,6 +1325,29 @@
       display: block;
     }
 
+    .result-tiles,
+    .result-income,
+    .result-advice,
+    .result-chart,
+    .result-chart-legend,
+    .legacy-card,
+    .decision-list > li,
+    .assumption-row,
+    table,
+    tr {
+      break-inside: avoid;
+    }
+
+    h3,
+    h4 {
+      break-after: avoid;
+    }
+
+    .result-income,
+    .result-compare-table {
+      break-before: avoid;
+    }
+
     > nav,
     .step-nav,
     .result-save-actions,
