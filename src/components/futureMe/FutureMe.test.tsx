@@ -391,7 +391,7 @@ describe('FutureMe', () => {
       );
 
       const dialog = screen.getByRole('dialog');
-      expect(within(dialog).getByText(/kellele oled Tulevas konto avanud/)).toBeInTheDocument();
+      expect(within(dialog).getByText(/need, kellel on Tulevas konto/)).toBeInTheDocument();
       expect(within(dialog).getByText(/Rahvastikuregistrist me lapsi ei päri/)).toBeInTheDocument();
     });
 
