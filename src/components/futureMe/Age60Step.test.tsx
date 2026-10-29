@@ -158,6 +158,41 @@ describe('Age 60 step', () => {
     });
   });
 
+  it('describes each payout choice with the same text for both pillars', () => {
+    openAge60Step();
+
+    [secondPillarGroup(), thirdPillarGroup()].forEach((group) => {
+      expect(choice(group, 'Jätkan kasvatamist')).toHaveAccessibleDescription(
+        /^Raha jääb fondi kasvama\. Pensionieas võtad vajadusel osa välja, 10%\stulumaks\.$/,
+      );
+      expect(choice(group, 'Fondipension')).toHaveAccessibleDescription(
+        /^Maksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud raha kasvab fondis edasi\./,
+      );
+      expect(choice(group, 'Kõik korraga')).toHaveAccessibleDescription(
+        /^Kogu raha korraga välja, 10%\stulumaks\. Raha on hoiusel\./,
+      );
+    });
+  });
+
+  it('says on the second pillar payout cards, not in the intro, that the contributions end', () => {
+    openAge60Step();
+
+    const contributionsEnd = /Sinu ja riigi II\ssamba sissemaksed lõpevad\.$/;
+    expect(choice(secondPillarGroup(), 'Fondipension')).toHaveAccessibleDescription(
+      contributionsEnd,
+    );
+    expect(choice(secondPillarGroup(), 'Kõik korraga')).toHaveAccessibleDescription(
+      contributionsEnd,
+    );
+    expect(choice(secondPillarGroup(), 'Jätkan kasvatamist')).not.toHaveAccessibleDescription(
+      /sissemaksed/,
+    );
+    expect(choice(thirdPillarGroup(), 'Fondipension')).not.toHaveAccessibleDescription(
+      /sissemaksed/,
+    );
+    expect(screen.getByText(/aastal oled \d+-aastane/)).not.toHaveTextContent(/sissemaksed/);
+  });
+
   it('warns that working on after a second pillar payout request ends the contributions', () => {
     openAge60Step();
 

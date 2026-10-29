@@ -298,6 +298,41 @@ describe('Age 65 step', () => {
       });
     });
 
+    it('describes each payout choice with the same text as the earlier steps', () => {
+      openAge65Step();
+
+      expect(choice(thirdPillarGroup(), 'Kasvatan edasi')).toHaveAccessibleDescription(
+        /^Raha jääb fondi kasvama\. Pensionieas võtad vajadusel osa välja, 10%\stulumaks\.$/,
+      );
+      expect(choice(thirdPillarGroup(), 'Fondipension')).toHaveAccessibleDescription(
+        /^Maksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud raha kasvab fondis edasi\.$/,
+      );
+      expect(choice(thirdPillarGroup(), 'Kõik korraga')).toHaveAccessibleDescription(
+        /^Kogu raha korraga välja, 10%\stulumaks\. Raha on hoiusel\.$/,
+      );
+    });
+
+    it('says the second pillar contributions end only when the saver works on', () => {
+      openAge65Step();
+      const contributionsEnd = /Sinu ja riigi II\ssamba sissemaksed lõpevad\.$/;
+
+      expect(choice(secondPillarGroup(), 'Fondipension')).not.toHaveAccessibleDescription(
+        contributionsEnd,
+      );
+
+      userEvent.click(within(workGroup()).getByRole('radio', { name: /^Töötan edasi/ }));
+
+      expect(choice(secondPillarGroup(), 'Fondipension')).toHaveAccessibleDescription(
+        contributionsEnd,
+      );
+      expect(choice(secondPillarGroup(), 'Kõik korraga')).toHaveAccessibleDescription(
+        contributionsEnd,
+      );
+      expect(choice(thirdPillarGroup(), 'Fondipension')).not.toHaveAccessibleDescription(
+        contributionsEnd,
+      );
+    });
+
     it('keeps each pillar choice after leaving the step', () => {
       openAge65Step();
 

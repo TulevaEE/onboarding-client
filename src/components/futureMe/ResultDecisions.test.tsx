@@ -164,6 +164,24 @@ describe('Result step: your decisions', () => {
       expect(changeButton(secondPillarAt60())).toHaveAttribute('aria-expanded', 'true');
     });
 
+    it('describes each way with the same text as the step, and says the II pillar contributions end', () => {
+      openResultStep();
+      userEvent.click(changeButton(secondPillarAt60()));
+
+      expect(screen.getByRole('radio', { name: 'Fondipension' })).toHaveAccessibleDescription(
+        /^Maksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud raha kasvab fondis edasi\. Sinu ja riigi II\ssamba sissemaksed lõpevad\./,
+      );
+    });
+
+    it('does not say the II pillar contributions end at the pension age when the saver stops working', () => {
+      openResultStep();
+      userEvent.click(changeButton(decisionRow(/^II\ssammas pensionieas$/)));
+
+      expect(screen.getByRole('radio', { name: 'Fondipension' })).not.toHaveAccessibleDescription(
+        /sissemaksed/,
+      );
+    });
+
     it('shows how long the money lasts with each way, set against the current one', () => {
       openResultStep();
       userEvent.click(changeButton(secondPillarAt60()));

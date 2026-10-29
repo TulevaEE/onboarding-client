@@ -2030,7 +2030,6 @@ describe('FutureMe', () => {
       expect(screen.getByText(/Liitusid III\ssambaga enne 2021/)).toHaveTextContent(
         /alates 55\u2011aastaselt \(2044\)/,
       );
-      expect(screen.getByText(/läheb tulumaksuks 10%/)).toBeInTheDocument();
     });
 
     it('names each plan by its title and describes it by its text', () => {
@@ -2040,8 +2039,22 @@ describe('FutureMe', () => {
 
       expect(fundPlan()).toHaveAccessibleName('Fondipension');
       expect(fundPlan()).toHaveAccessibleDescription(
-        /^Igakuine maksuvaba väljamakse elada jäänud aastate peale/,
+        /^Maksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud raha kasvab fondis edasi\.$/,
       );
+      expect(keepPlan()).toHaveAccessibleDescription(
+        /^Raha jääb fondi kasvama\. Pensionieas võtad vajadusel osa välja, 10%\stulumaks\.$/,
+      );
+      expect(lumpPlan()).toHaveAccessibleDescription(
+        /^Kogu raha korraga välja, 10%\stulumaks\. Raha on hoiusel\.$/,
+      );
+    });
+
+    it('leaves the taxes to the cards instead of repeating them in a list', () => {
+      renderFutureMe();
+
+      openAge55();
+
+      expect(screen.queryByText(/läheb tulumaksuks 10%/)).not.toBeInTheDocument();
     });
 
     it('lets the money keep growing by default and shows no payout, in a status region ready to announce one', () => {

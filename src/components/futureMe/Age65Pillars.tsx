@@ -6,6 +6,7 @@ import { Age65Answers } from './age65Answers';
 import { ChoiceCard } from './ChoiceCard';
 import { ChoiceMadeNote } from './ChoiceMadeNote';
 import { FundPensionChoice } from './prefill';
+import { PayoutChoiceText } from './PayoutChoiceText';
 import { strong } from './richText';
 import { LinkButton } from './LinkButton';
 
@@ -23,7 +24,6 @@ interface Props {
   onEditAge60: () => void;
   startedFundPension?: FundPensionChoice;
 }
-
 
 export const Age65Pillars = ({
   pillar,
@@ -102,7 +102,12 @@ export const Age65Pillars = ({
                   />
                 }
                 text={
-                  <FormattedMessage id={`futureMe.age65.payout.${choice}.text` as TranslationKey} />
+                  <PayoutChoiceText
+                    choice={choice}
+                    endsSecondPillarContributions={
+                      pillar === 'secondPillar' && answers.work === 'yes'
+                    }
+                  />
                 }
                 onChange={() => onChange({ ...answers, [pillar]: choice })}
               />

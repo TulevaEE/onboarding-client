@@ -3,7 +3,9 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { DEFERRAL_YEARS } from './age65Answers';
 import { decimalText, euro } from './amountFormat';
+import { PayoutChoice } from './age60Answers';
 import { ChoiceCard } from './ChoiceCard';
+import { PayoutChoiceText } from './PayoutChoiceText';
 import { ChangeDecisions, useDecisionActions } from './decisionActions';
 import {
   coversAgeOf,
@@ -29,28 +31,40 @@ const deferralIncreases = (): string =>
       )}%${NO_BREAK_SPACE}(${years}${NO_BREAK_SPACE}a)`,
   ).join(', ');
 
-const choiceKeys = (
-  id: DecisionId,
-  choice: string,
-): { title: TranslationKey; text?: TranslationKey } => {
+const choiceTitle = (id: DecisionId, choice: string): TranslationKey => {
   switch (id) {
     case 'statePension':
-      return { title: `futureMe.age65.mode.${choice}.title` as TranslationKey };
+      return `futureMe.age65.mode.${choice}.title` as TranslationKey;
     case 'secondPillarAtPayoutAge':
-    case 'thirdPillarAtPayoutAge': {
-      const pillar = id === 'secondPillarAtPayoutAge' ? 'secondPillar' : 'thirdPillar';
-      return {
-        title: `futureMe.age60.choice.${choice}` as TranslationKey,
-        text: `futureMe.age60.${pillar}.${choice}` as TranslationKey,
-      };
-    }
+    case 'thirdPillarAtPayoutAge':
+      return `futureMe.age60.choice.${choice}` as TranslationKey;
     default:
-      return {
-        title: `futureMe.age65.payout.${choice}.title` as TranslationKey,
-        text: `futureMe.age65.payout.${choice}.text` as TranslationKey,
-      };
+      return `futureMe.age65.payout.${choice}.title` as TranslationKey;
   }
 };
+
+const endsSecondPillarContributions = (id: DecisionId, context: ResultContext): boolean =>
+  id === 'secondPillarAtPayoutAge' ||
+  (id === 'secondPillarAtPensionAge' && context.age65.work === 'yes');
+
+const ChoiceText = ({
+  id,
+  choice,
+  context,
+}: {
+  id: DecisionId;
+  choice: string;
+  context: ResultContext;
+}) =>
+  id === 'statePension' ? null : (
+    <>
+      <PayoutChoiceText
+        choice={choice as PayoutChoice}
+        endsSecondPillarContributions={endsSecondPillarContributions(id, context)}
+      />
+      <br />
+    </>
+  );
 
 const coversKindOf = (result: Result, coversAge: number) => {
   if (result.gapTemporary) {
@@ -122,7 +136,6 @@ const DecisionChoices = ({ context, decision, panelId, titleId, onChange }: Pane
     >
       <div className="payout-choices">
         {decision.choices.map((choice) => {
-          const keys = choiceKeys(decision.id, choice);
           const changes = withDecision(context, decision.id, choice);
           return (
             <ChoiceCard
@@ -131,15 +144,10 @@ const DecisionChoices = ({ context, decision, panelId, titleId, onChange }: Pane
               name={`future-me-decision-${decision.id}`}
               value={choice}
               checked={decision.current === choice}
-              title={<FormattedMessage id={keys.title} />}
+              title={<FormattedMessage id={choiceTitle(decision.id, choice)} />}
               text={
                 <>
-                  {keys.text && (
-                    <>
-                      <FormattedMessage id={keys.text} />
-                      <br />
-                    </>
-                  )}
+                  <ChoiceText id={decision.id} choice={choice} context={context} />
                   <Outcome
                     result={resultOf({ ...context, ...changes })}
                     currentAge={currentAge}
@@ -176,7 +184,7 @@ const DecisionRow = ({
   const { current, id } = decision;
   const currentText = isStepDecision(id)
     ? intl.formatMessage({ id: `futureMe.result.decisions.current.${id}` }, decision.summary)
-    : intl.formatMessage({ id: choiceKeys(id, current).title });
+    : intl.formatMessage({ id: choiceTitle(id, current) });
   const increases = deferralIncreases();
   const toggleRef = useRef<HTMLButtonElement>(null);
   useLayoutEffect(() => {
