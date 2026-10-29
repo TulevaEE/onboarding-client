@@ -198,4 +198,10 @@ describe('ResultChart reading guide', () => {
 
     expect(guide()).not.toHaveTextContent('Fondipensioni periood');
   });
+
+  it('leaves the years before the pension age out when the chart starts at the pension age', () => {
+    renderChart();
+
+    expect(guide()).not.toHaveTextContent('Enne pensioniiga');
+  });
 });

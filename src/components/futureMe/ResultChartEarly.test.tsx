@@ -107,6 +107,14 @@ describe('ResultChart with the III pillar fund pension from 55', () => {
     );
   });
 
+  it('explains in the guide that only the fund pension is shown before the pension age', () => {
+    showChart();
+
+    expect(screen.getByRole('group', { name: '' })).toHaveTextContent(
+      'Enne pensioniiga on graafikul ainult III samba fondipension. Kulud ja palk on graafikul pensionieast alates, tabelis on enne seda nende kohal „–“.',
+    );
+  });
+
   it('shows a dash instead of costs before the pension age in the table', () => {
     showChart();
     userEvent.click(screen.getByRole('button', { name: 'Näita tabelina' }));

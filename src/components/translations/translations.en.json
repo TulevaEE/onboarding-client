@@ -3032,6 +3032,7 @@
   "futureMe.result.chart.guide.events": "Suuremad punktid ja püstjooned on elusündmused, näiteks pensioniiga. Vanuse summad avanevad hiirega, puudutades või nooleklahvidega, samad arvud on tabelis.",
   "futureMe.result.chart.guide.horizon": "Sündmus „10% sinuvanustest on veel elus“ ({age}-⁠aastaselt) on statistika, mitte sinu elu lõpp: sinu elu võib olla lühem või pikem.",
   "futureMe.result.chart.guide.fundPeriod": "Fondipensioni periood on {years} aastat ja see on arvutatud keskmise eluea järgi, mitte sinu elu pikkuse järgi. Seepärast lõpeb fondipension kindlal vanusel ja kiht langeb graafikul järsult.",
+  "futureMe.result.chart.guide.beforePension": "Enne pensioniiga on graafikul ainult III samba fondipension. Kulud ja palk on graafikul pensionieast alates, tabelis on enne seda nende kohal „–“.",
   "futureMe.result.assumptions.title": "Eeldused",
   "futureMe.result.assumptions.intro": "Arvutus tugineb neile andmetele ja eeldustele. Tootlust ja kulupaketti saad muuta siin, oma andmeid sammus „Sina“: tulemus arvutatakse kohe uuesti.",
   "futureMe.result.assumptions.you.title": "Sinu andmed",

@@ -649,7 +649,7 @@ export const ResultChart = ({ result, need, nominalReturns }: ResultChartProps) 
       <NominalNote isOn={isNominal} returns={nominalReturns} />
       <Summary result={shown} rows={rows} notes={notes} need={need} isNominal={isNominal} />
       {assumption && <ChartAssumption assumption={assumption} />}
-      <ChartGuide events={events} />
+      <ChartGuide events={events} startsBeforePension={rows[0].isBeforePension} />
       <button
         type="button"
         className="btn btn-outline-primary btn-sm result-chart-table-toggle"

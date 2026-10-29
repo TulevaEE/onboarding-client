@@ -72,9 +72,10 @@ export const ChartAssumption = ({ assumption }: { assumption: Assumption }) => (
 
 interface GuideProps {
   events: ChartEvent[];
+  startsBeforePension: boolean;
 }
 
-export const ChartGuide = ({ events }: GuideProps) => {
+export const ChartGuide = ({ events, startsBeforePension }: GuideProps) => {
   const intl = useIntl();
   const horizon = events.find(({ kind }) => kind === 'horizon');
   const fundPeriods = Array.from(
@@ -92,6 +93,11 @@ export const ChartGuide = ({ events }: GuideProps) => {
         <li>
           <FormattedMessage id="futureMe.result.chart.guide.costs" />
         </li>
+        {startsBeforePension && (
+          <li>
+            <FormattedMessage id="futureMe.result.chart.guide.beforePension" />
+          </li>
+        )}
         <li>
           <FormattedMessage id="futureMe.result.chart.guide.events" />
         </li>
