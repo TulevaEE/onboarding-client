@@ -334,6 +334,17 @@ describe('Sina step help buttons', () => {
     },
   );
 
+  it('names the rescue service and links the calculator in the early retirement explanation', () => {
+    renderYouStep();
+
+    const dialog = openEarlyRetirementHelp();
+
+    expect(dialog).toHaveTextContent(/Päästeteenistuse staažiga \(vähemalt 15\sa\)/);
+    expect(
+      within(dialog).getByRole('link', { name: /^Sotsiaalkindlustusameti pensionikalkulaator/ }),
+    ).toHaveAttribute('href', expect.stringContaining('pension-calculator'));
+  });
+
   it('leaves the field labels as they were for screen readers', () => {
     renderYouStep();
 
