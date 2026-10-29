@@ -1,4 +1,4 @@
-import { ChartRow, ChartSourceId } from './chartData';
+import { ChartRow, ChartSourceId, SOURCE_IDS } from './chartData';
 
 type Values = Record<ChartSourceId, number>;
 
@@ -8,15 +8,6 @@ export interface ChartPoint {
   isCarry: boolean;
   values: Values;
 }
-
-const SOURCE_IDS: ChartSourceId[] = [
-  'salary',
-  'firstPillar',
-  'specialPension',
-  'secondPillar',
-  'thirdPillar',
-  'deposit',
-];
 
 const valuesOf = (row: ChartRow): Values =>
   Object.fromEntries(SOURCE_IDS.map((id) => [id, row[id]])) as Values;

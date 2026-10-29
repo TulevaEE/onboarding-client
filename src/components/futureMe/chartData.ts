@@ -25,7 +25,7 @@ export interface ChartRow {
   isBeforePension: boolean;
 }
 
-const SOURCE_IDS: ChartSourceId[] = [
+export const SOURCE_IDS: ChartSourceId[] = [
   'salary',
   'firstPillar',
   'specialPension',
