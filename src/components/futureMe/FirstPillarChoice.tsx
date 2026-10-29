@@ -49,7 +49,7 @@ export const FirstPillarChoice = ({
               value={value}
               checked={chosen === value}
               title={
-                <>
+                <span className="d-inline-flex flex-wrap align-items-center column-gap-2 row-gap-1">
                   <FormattedMessage
                     id={`futureMe.firstPillarChoice.${value}${isSpecialLater ? 'Later' : ''}.title`}
                     values={{ specialAge: laterSpecialStartAge }}
@@ -59,7 +59,7 @@ export const FirstPillarChoice = ({
                       <FormattedMessage id="futureMe.firstPillarChoice.larger" />
                     </span>
                   )}
-                </>
+                </span>
               }
               text={
                 <FormattedMessage
