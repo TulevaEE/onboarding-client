@@ -1,8 +1,9 @@
 import React, { RefObject } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
-import Radio from '../common/radio';
 import { Age55, ThirdPillarPayout } from './age55';
+import { PAYOUT_CHOICE_EMOJI } from './age60Answers';
+import { ChoiceCard } from './ChoiceCard';
 import { TAX_SHORT } from './engine/pension';
 import { birthYearOrFallback, ThirdPillarPlan, YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
@@ -17,6 +18,11 @@ import { ChoiceMadeNote } from './ChoiceMadeNote';
 import { FundPensionChoice } from './prefill';
 
 const PLANS: ThirdPillarPlan[] = ['keep', 'fund', 'lump'];
+const PLAN_EMOJI: Record<ThirdPillarPlan, string> = {
+  keep: PAYOUT_CHOICE_EMOJI.grow,
+  fund: PAYOUT_CHOICE_EMOJI.fund,
+  lump: PAYOUT_CHOICE_EMOJI.lump,
+};
 const PAYOUTS_URL = 'https://tuleva.ee/pensioni-valjamaksed/';
 
 const percent = (rate: number) => Math.round(rate * 100);
@@ -123,32 +129,29 @@ export const Age55Step = ({
           </LinkButton>
         </p>
       )}
-      <fieldset disabled={!!age55.lock} className="mb-3">
+      <fieldset disabled={!!age55.lock} className="payout-fieldset mb-3">
         <legend className="form-label fs-6 fw-medium">
           <FormattedMessage id="futureMe.age55.plan.legend" />
         </legend>
         {startedFundPension && <ChoiceMadeNote choice={startedFundPension} />}
-        {PLANS.map((plan) => {
-          const { title, hint } = planTexts(plan);
-          return (
-            <Radio
-              key={plan}
-              id={`future-me-age-55-plan-${plan}`}
-              name="future-me-age-55-plan"
-              className="mb-2"
-              selected={age55.plan === plan}
-              disabled={!!age55.lock}
-              onSelect={() => onChange({ thirdPillarPlan: plan })}
-            >
-              <strong className="d-block">
-                <FormattedMessage id={title} />
-              </strong>
-              <span className="d-block text-secondary text-pretty">
-                <FormattedMessage id={hint} values={{ tax: percent(TAX_SHORT) }} />
-              </span>
-            </Radio>
-          );
-        })}
+        <div className="payout-choices">
+          {PLANS.map((plan) => {
+            const { title, hint } = planTexts(plan);
+            return (
+              <ChoiceCard
+                key={plan}
+                idPrefix="future-me-age-55-plan"
+                name="future-me-age-55-plan"
+                value={plan}
+                emoji={PLAN_EMOJI[plan]}
+                checked={age55.plan === plan}
+                title={<FormattedMessage id={title} />}
+                text={<FormattedMessage id={hint} values={{ tax: percent(TAX_SHORT) }} />}
+                onChange={() => onChange({ thirdPillarPlan: plan })}
+              />
+            );
+          })}
+        </div>
       </fieldset>
       {age55.plan === 'fund' && (
         <ContractChoices

@@ -2033,6 +2033,17 @@ describe('FutureMe', () => {
       expect(screen.getByText(/läheb tulumaksuks 10%/)).toBeInTheDocument();
     });
 
+    it('names each plan by its title and describes it by its text', () => {
+      renderFutureMe();
+
+      openAge55();
+
+      expect(fundPlan()).toHaveAccessibleName('Fondipension');
+      expect(fundPlan()).toHaveAccessibleDescription(
+        /^Igakuine maksuvaba väljamakse elada jäänud aastate peale/,
+      );
+    });
+
     it('lets the money keep growing by default and shows no payout, in a status region ready to announce one', () => {
       renderFutureMe();
 
