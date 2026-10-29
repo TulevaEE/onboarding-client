@@ -35,10 +35,14 @@ const contextWith = (
   };
 };
 
-const withFundPensionFrom55 = (age65: Partial<Age65Answers> = {}): ResultContext => {
+const withFundPensionFrom55 = (
+  age65: Partial<Age65Answers> = {},
+  pensionAgeYears = '65',
+): ResultContext => {
   const context = contextWith('', age65);
   const you = {
     ...context.you,
+    pensionAgeYears,
     thirdPillarJoined: 'before' as const,
     thirdPillarAmount: '8000',
     thirdPillarPlan: 'fund' as const,
@@ -84,6 +88,14 @@ describe('chartData', () => {
       const ages = tableRowsOf(rows).map(({ age }) => age);
 
       expect(ages.slice(0, 3)).toEqual([55, 60, result.pensionStartAge]);
+    });
+
+    it('shows the pension age in the table when it falls between the five-year steps', () => {
+      const laterResult = resultOf(withFundPensionFrom55({}, '66'));
+      const ages = tableRowsOf(chartRowsOf(laterResult, 791)).map(({ age }) => age);
+
+      expect(laterResult.pensionStartAge).toBe(66);
+      expect(ages.slice(0, 5)).toEqual([55, 60, 65, 66, 70]);
     });
   });
 
