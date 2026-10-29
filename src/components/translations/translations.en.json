@@ -3227,5 +3227,5 @@
   "futureMe.result.feedback.failed": "Sending failed. Please try again.",
   "futureMe.result.feedback.thanks.title": "Thank you!",
   "futureMe.result.feedback.thanks.body": "We read every answer.",
-  "futureMe.choiceMade.fundPension": "You have already made this choice: your {pillar, select, SECOND {II pillar} other {III pillar}} fund pension started in {startYear}, when you were {startAge}."
+  "futureMe.choiceMade.fundPension": "Oled selle valiku juba teinud: {pillar, select, SECOND {II samba} other {III samba}} fondipension algas {startYear}. aastal, kui olid {startAge}-aastane."
 }
