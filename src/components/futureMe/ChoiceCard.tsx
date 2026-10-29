@@ -28,6 +28,7 @@ export const ChoiceCard = ({
   onChange,
 }: Props) => {
   const id = `${idPrefix}-${value}`;
+  const describedBy = classNames({ [`${id}-text`]: text, [`${id}-note`]: note });
 
   return (
     <div className={classNames('payout-choice', { 'is-checked': checked })}>
@@ -36,7 +37,7 @@ export const ChoiceCard = ({
           type="radio"
           id={id}
           aria-labelledby={`${id}-name`}
-          aria-describedby={text ? `${id}-text` : undefined}
+          aria-describedby={describedBy || undefined}
           name={name}
           value={value}
           checked={checked}
@@ -50,7 +51,11 @@ export const ChoiceCard = ({
           )}
           <strong id={`${id}-name`}>{title}</strong>
           {text && <small id={`${id}-text`}>{text}</small>}
-          {note && <small className="fw-medium">{note}</small>}
+          {note && (
+            <small id={`${id}-note`} className="fw-medium">
+              {note}
+            </small>
+          )}
         </span>
       </label>
       {extra && <div className="payout-choice-extra">{extra}</div>}

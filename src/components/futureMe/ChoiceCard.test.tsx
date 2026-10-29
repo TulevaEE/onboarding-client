@@ -25,6 +25,20 @@ const renderCard = (onChange = jest.fn(), checked = false) =>
     />,
   );
 
+const renderCardWithNote = (onChange = jest.fn()) =>
+  render(
+    <ChoiceCard
+      idPrefix="test"
+      name="test-choice"
+      value="work"
+      checked={false}
+      title="Töötan edasi"
+      text="Palk katab kulud."
+      note="Brutopalgaga 2 000 € tõstab iga tööaasta pensioni u 12 € kuus."
+      onChange={onChange}
+    />,
+  );
+
 describe('ChoiceCard', () => {
   it('names the radio by its title and describes it by its text', () => {
     renderCard();
@@ -45,22 +59,19 @@ describe('ChoiceCard', () => {
 
   it('chooses the card when its note is clicked', () => {
     const onChange = jest.fn();
-    render(
-      <ChoiceCard
-        idPrefix="test"
-        name="test-choice"
-        value="work"
-        checked={false}
-        title="Töötan edasi"
-        text="Palk katab kulud."
-        note="Brutopalgaga 2 000 € tõstab iga tööaasta pensioni u 12 € kuus."
-        onChange={onChange}
-      />,
-    );
+    renderCardWithNote(onChange);
 
     userEvent.click(screen.getByText(/tõstab iga tööaasta pensioni/));
 
     expect(onChange).toHaveBeenCalledTimes(1);
+  });
+
+  it('describes the radio by its text and its note', () => {
+    renderCardWithNote();
+
+    expect(screen.getByRole('radio', { name: 'Töötan edasi' })).toHaveAccessibleDescription(
+      'Palk katab kulud. Brutopalgaga 2 000 € tõstab iga tööaasta pensioni u 12 € kuus.',
+    );
   });
 
   it('does not choose the card when the label of its extra field is clicked', () => {
