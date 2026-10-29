@@ -3070,6 +3070,7 @@
   "futureMe.result.chart.announce.hidden": "{layer} peidetud.",
   "futureMe.result.chart.announce.shown": "{layer} nähtav.",
   "futureMe.result.chart.announce.without": "{count, plural, one {peidetud kihita} other {peidetud kihtideta}}: {layers}",
+  "futureMe.result.chart.announce.covered": "kaetud",
   "futureMe.result.chart.keys": "Nooleklahvidega liigud graafiku punktide vahel, Esc sulgeb selgituse. Andmed on ka tabelis.",
   "futureMe.result.warn.title": "Hoiatus: sinu valitud plaan ei kanna kulusid elu lõpuni",
   "futureMe.result.warn.until": "(kaetud kuni {until}. eluaastani).",

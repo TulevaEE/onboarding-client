@@ -48,13 +48,16 @@ export const announcementOf = (
   const coverLine = (id: TranslationKey, amount: number) => [
     intl.formatMessage({ id }, { amount: euro(amount) }),
   ];
+  const isCountedWithoutHiddenLayers = cover.without.length > 0;
   let coverLines: string[] = [];
   if (cover.shortfall > 0) {
     coverLines = coverLine('futureMe.result.chart.announce.missing', cover.shortfall);
   } else if (cover.surplus > 0) {
     coverLines = coverLine('futureMe.result.chart.announce.surplus', cover.surplus);
+  } else if (isCountedWithoutHiddenLayers) {
+    coverLines = [intl.formatMessage({ id: 'futureMe.result.chart.announce.covered' })];
   }
-  if (cover.without.length > 0) {
+  if (isCountedWithoutHiddenLayers) {
     coverLines.push(withoutLayersTextOf(intl, 'futureMe.result.chart.announce.without', cover));
   }
   const details = (row.isBeforePension ? amounts : [...amounts, costs, ...coverLines]).join(', ');

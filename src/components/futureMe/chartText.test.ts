@@ -88,6 +88,14 @@ describe('chartText', () => {
     );
   });
 
+  it('says the shown layers cover the costs before naming the hidden layer', () => {
+    const cover = { shortfall: 0, surplus: 0, without: ['deposit' as const] };
+
+    expect(announcementOf(intl, rowWith({ firstPillar: 800 }), [], layers, cover)).toMatch(
+      /kulud 800\s€, kaetud, peidetud kihita: Hoiuselt\.$/,
+    );
+  });
+
   it('names the events at that age first', () => {
     expect(
       announcementOf(
