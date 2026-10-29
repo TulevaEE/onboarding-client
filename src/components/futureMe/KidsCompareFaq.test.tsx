@@ -106,7 +106,7 @@ describe('rescue allowance or the pension for the children question', () => {
 });
 
 describe('special pension or the pension for the children question', () => {
-  const withSpecialPension = (changes = {}) =>
+  const withSpecialPension = (changes = {}, monthly = '900') =>
     contextWith(
       {
         ...threeChildren,
@@ -115,7 +115,7 @@ describe('special pension or the pension for the children question', () => {
         specialPensionStartAge: '55',
         ...changes,
       },
-      { specialPension: { ...initialSpecialPension(), monthly: '900' } },
+      { specialPension: { ...initialSpecialPension(), monthly } },
     );
 
   it('compares staying on the special pension with the old-age pension for the children', () => {
@@ -129,6 +129,22 @@ describe('special pension or the pension for the children question', () => {
     expect(
       within(rowNamed(/^Jätkan eripensioniga/)).getByText('eripensionile ei lisandu'),
     ).toBeInTheDocument();
+  });
+
+  it('marks the one that gives the most until the pension age', () => {
+    renderEt(<SpecialCompareFaq context={withSpecialPension()} />);
+
+    expect(within(rowNamed(/^Jätkan eripensioniga/)).getByText('kõige rohkem')).toBeInTheDocument();
+    expect(
+      within(rowNamed(/^Laste eest vanaduspension/)).queryByText('kõige rohkem'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('marks neither as giving the most when both give the same in whole euros', () => {
+    renderEt(<SpecialCompareFaq context={withSpecialPension({}, '691.8')} />);
+
+    expect(screen.getAllByRole('rowheader')).toHaveLength(3);
+    expect(screen.queryByText('kõige rohkem')).not.toBeInTheDocument();
   });
 
   it('is not asked when the other parent uses the right for the children', () => {

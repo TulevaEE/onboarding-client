@@ -62,6 +62,13 @@ const WorkUntil = ({ age, moreYears }: { age: number; moreYears: number }) => (
 
 const averageNote = { average: euro(AVG_OLD_AGE_PENSION) };
 
+const isMostAmong = (totals: number[]) => {
+  const roundedTotals = totals.map((total) => Math.round(total));
+  const most = Math.max(...roundedTotals);
+  const isMostSetApart = roundedTotals.some((total) => total < most);
+  return (total: number): boolean => isMostSetApart && Math.round(total) === most;
+};
+
 const familyRow = (family: Family, ownPart: ReactNode, name: string, rest: Partial<Row>): Row => ({
   key: 'family',
   name: message(name),
@@ -203,9 +210,7 @@ export const RescueCompareFaq = ({ context }: { context: CompareContext }) => {
     return null;
   }
   const { pensionAge, kidsYears, rows, family, supplement, current } = rescueComparisonOf(context);
-  const roundedTotals = rows.map(({ total }) => Math.round(total));
-  const most = Math.max(...roundedTotals);
-  const isMostSetApart = roundedTotals.some((total) => total < most);
+  const isMost = isMostAmong(rows.map(({ total }) => total));
   const firstToLeave = Math.min(...rows.map(({ workUntil }) => workUntil));
   const tableRows: Row[] = rows.map((row) => ({
     key: row.basis,
@@ -214,7 +219,7 @@ export const RescueCompareFaq = ({ context }: { context: CompareContext }) => {
     work: <WorkUntil age={row.workUntil} moreYears={row.workUntil - firstToLeave} />,
     parts: rescuePartsOf(row),
     total: row.total,
-    isMost: isMostSetApart && Math.round(row.total) === most,
+    isMost: isMost(row.total),
     supplement: (
       <Supplement
         state={supplement.state}
@@ -260,7 +265,7 @@ export const SpecialCompareFaq = ({ context }: { context: CompareContext }) => {
   }
   const { pensionAge, kidsYears, special, oldAge, family, supplement, current, isSpecialHigher } =
     specialComparisonOf(context);
-  const most = Math.max(special.total, oldAge.total);
+  const isMost = isMostAmong([special.total, oldAge.total]);
   const part = (kind: 'special' | 'oldAge', option: typeof special) =>
     message(`futureMe.age65.faq.specialCompare.${kind}Part`, {
       ages: agesText(option.from, pensionAge - 1),
@@ -275,7 +280,7 @@ export const SpecialCompareFaq = ({ context }: { context: CompareContext }) => {
       isMine: current === 'special',
       parts: [part('special', special)],
       total: special.total,
-      isMost: special.total === most,
+      isMost: isMost(special.total),
       supplement: message('futureMe.age65.faq.specialCompare.specialSupplement'),
       after: (
         <>
@@ -294,7 +299,7 @@ export const SpecialCompareFaq = ({ context }: { context: CompareContext }) => {
       isMine: current === 'oldAge',
       parts: [part('oldAge', oldAge)],
       total: oldAge.total,
-      isMost: oldAge.total === most,
+      isMost: isMost(oldAge.total),
       supplement: (
         <Supplement state={supplement.state} from={oldAge.from} monthly={supplement.monthly} />
       ),
