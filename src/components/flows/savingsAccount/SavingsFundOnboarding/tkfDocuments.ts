@@ -22,6 +22,8 @@ const DOCUMENTS_IN_FORCE: { field: string; labelId: TranslationKey }[] = [
   },
 ];
 
+export const TKF_DOCUMENTS_IN_FORCE_COUNT = DOCUMENTS_IN_FORCE.length;
+
 const FUND_DOCUMENTS_PAGE_LINK: TkfDocumentLink = {
   href: FUND_DOCUMENTS_PAGE_URL,
   labelId: 'flows.savingsFundOnboarding.termsStep.linkText.allDocuments',
@@ -65,6 +67,7 @@ export const useTkfDocuments = (): TkfDocumentLink[] | undefined => {
     queryFn: getFundPageFields,
     retry: false,
     networkMode: 'always',
+    cacheTime: Infinity,
   });
 
   const hasNeverAnswered = !data && errorUpdateCount === 0;

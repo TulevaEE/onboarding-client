@@ -3,8 +3,7 @@ import { Control, Controller, Path } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SharedOnboardingFields } from '../types';
 import { TranslationKey } from '../../../../translations';
-import Loader from '../../../../common/loader';
-import { useTkfDocuments } from '../tkfDocuments';
+import { TKF_DOCUMENTS_IN_FORCE_COUNT, useTkfDocuments } from '../tkfDocuments';
 
 type TermsStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> = {
   control: Control<T>;
@@ -91,7 +90,7 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
               </DocumentLink>
             ))
           ) : (
-            <Loader className="align-middle" />
+            <DocumentLinkPlaceholders />
           )}
         </div>
         <Controller
@@ -133,13 +132,36 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
   );
 };
 
+const DOCUMENT_CARD_CLASSES =
+  'd-flex align-items-center gap-2 p-3 p-sm-4 bg-blue-1 border border-blue-2 rounded-3 lead';
+
+const DocumentLinkPlaceholders = () => {
+  const { formatMessage } = useIntl();
+  return (
+    <div
+      className="d-flex flex-column gap-3 placeholder-glow"
+      role="status"
+      aria-label={formatMessage({ id: 'common.loading' })}
+    >
+      {Array.from({ length: TKF_DOCUMENTS_IN_FORCE_COUNT }, (_, index) => (
+        <div
+          key={index}
+          className={DOCUMENT_CARD_CLASSES}
+          data-testid="document-placeholder"
+          aria-hidden="true"
+        >
+          <span className="flex-shrink-0" style={{ width: '24px', height: '24px' }} />
+          <span className="flex-fill">
+            <span className="placeholder col-4" />
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const DocumentLink = ({ href, children }: { href: string; children: ReactNode }) => (
-  <a
-    className="d-flex align-items-center gap-2 p-3 p-sm-4 bg-blue-1 border border-blue-2 rounded-3 lead"
-    href={href}
-    target="_blank"
-    rel="noreferrer"
-  >
+  <a className={DOCUMENT_CARD_CLASSES} href={href} target="_blank" rel="noreferrer">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
