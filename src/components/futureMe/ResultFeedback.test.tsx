@@ -48,7 +48,7 @@ const openResultStep = () => {
 };
 
 const feedbackField = () =>
-  screen.getByRole('textbox', { name: /^Kas Tulevane\sMina aitas sul oma kogumist planeerida\?$/ });
+  screen.getByRole('textbox', { name: 'Mis sulle selgeks sai ja mida sa nüüd teisiti teed?' });
 const sendButton = () => screen.getByRole('button', { name: 'Saada tagasiside' });
 
 const isAfter = (earlier: HTMLElement, later: HTMLElement) =>
@@ -66,9 +66,7 @@ describe('Result step: feedback', () => {
   it('asks for feedback after the save buttons, with a hint on what to write', () => {
     openResultStep();
 
-    expect(feedbackField()).toHaveAccessibleDescription(
-      'Kirjuta, mis aitas, mis jäi segaseks ja mida plaanid nüüd teha.',
-    );
+    expect(feedbackField()).toHaveAccessibleDescription('Kirjuta ka, mis jäi segaseks.');
     expect(isAfter(screen.getByRole('button', { name: 'Laadi alla (PDF)' }), feedbackField())).toBe(
       true,
     );
@@ -82,6 +80,7 @@ describe('Result step: feedback', () => {
     userEvent.click(sendButton());
 
     expect(await screen.findByText('Aitäh!')).toBeVisible();
+    expect(screen.getByText('Loeme kõik vastused läbi.')).toBeVisible();
     expect(mockCreateTrackedEvent).toHaveBeenCalledTimes(1);
     expect(mockCreateTrackedEvent).toHaveBeenCalledWith('CLICK', {
       target: 'future_me_feedback',
@@ -90,7 +89,7 @@ describe('Result step: feedback', () => {
       comment: 'Sain aru, millal III sammas avaneb.',
     });
     expect(
-      screen.queryByRole('textbox', { name: /Kas Tulevane Mina aitas/ }),
+      screen.queryByRole('textbox', { name: /Mis sulle selgeks sai/ }),
     ).not.toBeInTheDocument();
   });
 
@@ -115,9 +114,7 @@ describe('Result step: feedback', () => {
 
     expect(feedbackField()).toBeValid();
     expect(feedbackField()).not.toBeRequired();
-    expect(feedbackField()).toHaveAccessibleDescription(
-      'Kirjuta, mis aitas, mis jäi segaseks ja mida plaanid nüüd teha.',
-    );
+    expect(feedbackField()).toHaveAccessibleDescription('Kirjuta ka, mis jäi segaseks.');
     expect(mockCreateTrackedEvent).not.toHaveBeenCalled();
   });
 
@@ -146,6 +143,6 @@ describe('Result step: feedback', () => {
     const [[blob]] = createObjectURL.mock.calls;
     const file = await new Response(blob).text();
     expect(file).toContain('Kas raha jätkub elu lõpuni?');
-    expect(file).not.toContain('Kas Tulevane Mina aitas');
+    expect(file).not.toContain('Mis sulle selgeks sai');
   });
 });
