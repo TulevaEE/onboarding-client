@@ -3,6 +3,7 @@ import { render, screen, within } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import translations from '../translations';
 import { RescueCompareFaq, SpecialCompareFaq } from './KidsCompareFaq';
+import { initialAge65 } from './age65Answers';
 import { contextWith } from './resultContextFixture';
 import { initialSpecialPension } from './specialPensionAnswers';
 
@@ -106,7 +107,7 @@ describe('rescue allowance or the pension for the children question', () => {
 });
 
 describe('special pension or the pension for the children question', () => {
-  const withSpecialPension = (changes = {}, monthly = '900') =>
+  const withSpecialPension = (changes = {}, monthly = '900', age65 = {}) =>
     contextWith(
       {
         ...threeChildren,
@@ -115,7 +116,10 @@ describe('special pension or the pension for the children question', () => {
         specialPensionStartAge: '55',
         ...changes,
       },
-      { specialPension: { ...initialSpecialPension(), monthly } },
+      {
+        specialPension: { ...initialSpecialPension(), monthly },
+        age65: { ...initialAge65(), ...age65 },
+      },
     );
 
   it('compares staying on the special pension with the old-age pension for the children', () => {
@@ -129,6 +133,31 @@ describe('special pension or the pension for the children question', () => {
     expect(
       within(rowNamed(/^Jätkan eripensioniga/)).getByText('eripensionile ei lisandu'),
     ).toBeInTheDocument();
+  });
+
+  it('says what each pays a month and in total until the pension age, and at it', () => {
+    renderEt(<SpecialCompareFaq context={withSpecialPension()} />);
+
+    const special = within(rowNamed(/^Jätkan eripensioniga/));
+    expect(special.getByText(/^64\sa eripension 900\s€\skuus$/)).toBeInTheDocument();
+    expect(special.getByText(/^10\s800\s€$/)).toBeInTheDocument();
+    expect(special.getByText(/^900\s€\skuus$/)).toBeInTheDocument();
+    const oldAge = within(rowNamed(/^Laste eest vanaduspension/));
+    expect(oldAge.getByText(/^64\sa vanaduspension 692\s€\skuus$/)).toBeInTheDocument();
+    expect(oldAge.getByText(/^8\s302\s€$/)).toBeInTheDocument();
+    expect(oldAge.getByText(/^692\s€\skuus$/)).toBeInTheDocument();
+    expect(within(rowNamed(/^Pere kokku/)).getByText(/^21\s123\s€$/)).toBeInTheDocument();
+  });
+
+  it('marks the old-age pension as the saver’s choice once the saver picks it', () => {
+    renderEt(
+      <SpecialCompareFaq
+        context={withSpecialPension({}, '900', { firstPillarChoice: 'oldAge' as const })}
+      />,
+    );
+
+    expect(rowNamed(/^Laste eest vanaduspension/)).toHaveTextContent(/sinu valik/);
+    expect(rowNamed(/^Jätkan eripensioniga/)).not.toHaveTextContent(/sinu valik/);
   });
 
   it('marks the one that gives the most until the pension age', () => {
