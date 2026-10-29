@@ -38,6 +38,11 @@ describe('rescue allowance or the pension for the children', () => {
     expect(isRescueComparisonShown(contextWith(threeChildren))).toBe(false);
   });
 
+  it('is compared while the earliest way starts this year or later, not once it has started', () => {
+    expect(isRescueComparisonShown(withRescue({ birthYear: '1966' }))).toBe(true);
+    expect(isRescueComparisonShown(withRescue({ birthYear: '1965' }))).toBe(false);
+  });
+
   it('is not compared while a special pension is counted, as only one state pension is paid', () => {
     const specialPensionFrom55 = withRescue(
       { hasSpecialPension: true, specialPensionStartAge: '55' },

@@ -285,6 +285,7 @@ describe('Age 65 step', () => {
   });
 
   it('compares the rescue allowance with the pension for the children when both rights are the saver’s', () => {
+    loggedInAs({ dateOfBirth: '1970-01-01' });
     render(
       <IntlProvider locale="et" messages={translations.et}>
         <FutureMe />

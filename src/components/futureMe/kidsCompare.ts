@@ -8,6 +8,7 @@ import {
   simulate,
   SimulationResult,
 } from './engine/pension';
+import { ageTense } from './planAges';
 import { ResultContext } from './resultAnswers';
 import { pensionInputOf } from './specialPensionAnswers';
 import {
@@ -15,6 +16,7 @@ import {
   earlyRightSources,
   isRescueBasisAsked,
   isRescueMixOffered,
+  pensionAgeValue,
   RescueBasis,
   toStepPlanInput,
   YouAnswers,
@@ -70,6 +72,16 @@ const answersFor = (you: YouAnswers, basis: RescueBasis): YouAnswers => ({
   rescueBasis: basis,
   earlyYearsPicked: '',
 });
+
+const basesOf = (you: YouAnswers): RescueBasis[] =>
+  isRescueMixOffered(you) ? ['mix', 'pension', 'toetus'] : ['pension', 'toetus'];
+
+const isEarliestStartAhead = ({ you, plan }: CompareContext): boolean => {
+  const earliestStart = Math.min(
+    ...basesOf(you).map((basis) => pensionAgeValue(answersFor(you, basis))),
+  );
+  return ageTense(plan.birthYear, earliestStart) !== 'past';
+};
 
 const rowInputOf = (context: CompareContext, basis: RescueBasis): PensionInput => {
   const you = answersFor(context.you, basis);
@@ -146,15 +158,14 @@ const rescueRowOf = (
 };
 
 export const isRescueComparisonShown = (context: CompareContext): boolean =>
-  isRescueBasisAsked(context.you) && !isSpecialPensionCounted(context);
+  isRescueBasisAsked(context.you) &&
+  !isSpecialPensionCounted(context) &&
+  isEarliestStartAhead(context);
 
 export const rescueComparisonOf = (context: CompareContext) => {
   const input = compareInputOf(context);
   const pensionAge = retirementYears(input);
-  const bases: RescueBasis[] = isRescueMixOffered(context.you)
-    ? ['mix', 'pension', 'toetus']
-    : ['pension', 'toetus'];
-  const rows = bases.map((basis) => rescueRowOf(context, basis, pensionAge));
+  const rows = basesOf(context.you).map((basis) => rescueRowOf(context, basis, pensionAge));
   const toetus = rows.find(({ basis }) => basis === 'toetus');
   const kidsYears = kidsYearsOf(context.you);
   return {
