@@ -1,10 +1,10 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
-  CategoryScale,
   Chart as ChartJS,
   ChartData,
   ChartOptions,
   Filler,
+  Interaction,
   LinearScale,
   LineController,
   LineElement,
@@ -29,7 +29,8 @@ import {
 } from './chartData';
 import { ChartEvent, chartEventsOf } from './chartEvents';
 import { assumptionOf, SummaryNote, summaryNotesOf } from './chartNotes';
-import { ChartMark, costsLine, marksLine } from './chartPlugins';
+import { ChartMark, costsLine, lastPointAtAge, marksLine } from './chartPlugins';
+import { ChartPoint, chartPointsOf, isLayerEdgeHidden, stackedValueOf } from './chartPoints';
 import { SOURCE_COLORS, SOURCE_LABELS, SUMMARY_LABELS } from './chartSources';
 import { announcementOf } from './chartText';
 import { ResultChartTip } from './ResultChartTip';
@@ -56,15 +57,8 @@ const THOUSAND = 1000;
 const NOT_COUNTED = '–';
 const COUNTED_FROM_PENSION_AGE: (ChartSourceId | 'costs')[] = ['salary', 'costs'];
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  LineController,
-  LineElement,
-  PointElement,
-  Filler,
-  Tooltip,
-);
+ChartJS.register(LinearScale, LineController, LineElement, PointElement, Filler, Tooltip);
+Interaction.modes.lastPointAtAge = lastPointAtAge;
 
 const transparent = (hex: string, alpha: number) => {
   const value = parseInt(hex.slice(1), 16);
@@ -82,9 +76,6 @@ const fadingFill = (color: string) => (context: ScriptableContext<'line'>) => {
   gradient.addColorStop(1, transparent(color, 0.08));
   return gradient;
 };
-
-const hideWherePaysNothing = ({ p0, p1 }: ScriptableLineSegmentContext) =>
-  p0.parsed.y === 0 && p1.parsed.y === 0 ? 'transparent' : undefined;
 
 const shortAmount = (value: number | string) => {
   const amount = Number(value);
@@ -156,7 +147,6 @@ const Summary = ({
 
 interface IncomeChartProps {
   rows: ChartRow[];
-  isNominal: boolean;
   events: ChartEvent[];
   hidden: ReadonlySet<ChartSourceId>;
   announce: (text: string) => void;
@@ -192,51 +182,65 @@ const dotRadiusOf = (age: number, isEvent: boolean) => {
 const datasetsOf = (
   intl: IntlShape,
   rows: ChartRow[],
+  points: ChartPoint[],
   layers: ChartSourceId[],
   hidden: ReadonlySet<ChartSourceId>,
   eventAges: ReadonlySet<number>,
 ): ChartData<'line'>['datasets'] => {
+  const visible = layers.filter((id) => !hidden.has(id));
   let below: number | 'origin' = 'origin';
   return layers.map((id, index) => {
-    const values = rows.map((row) => row[id]);
     const isHidden = hidden.has(id);
     const fill = isHidden ? false : below;
     if (!isHidden) {
       below = index;
     }
-    const paysAt = (row: number) => values[row] > 0;
-    const isEventAt = (row: number) => eventAges.has(rows[row].age);
+    const paysAt = (at: number) => points[at].values[id] > 0;
+    const isEventAt = (at: number) => eventAges.has(points[at].age);
+    const isUnderCostsLineAt = (at: number) =>
+      !isHidden && isLayerEdgeHidden(points[at], rows[points[at].rowIndex].costs, visible, id);
+    const isShownAt = (at: number) => paysAt(at) && !points[at].isCarry;
+    const hasDotAt = (at: number) => isShownAt(at) && (isEventAt(at) || !isUnderCostsLineAt(at));
+    const hideEdge = ({ p0DataIndex, p1DataIndex }: ScriptableLineSegmentContext) => {
+      const paysNothing = !paysAt(p0DataIndex) && !paysAt(p1DataIndex);
+      const isUnderCostsLine = isUnderCostsLineAt(p0DataIndex) && isUnderCostsLineAt(p1DataIndex);
+      return paysNothing || isUnderCostsLine ? 'transparent' : undefined;
+    };
     return {
       type: 'line' as const,
       label: intl.formatMessage({ id: SOURCE_LABELS[id] }),
-      data: values,
+      data: points.map((point) => ({
+        x: point.age,
+        y: isHidden ? 0 : stackedValueOf(point, visible, id),
+      })),
       hidden: isHidden,
       fill,
-      stack: 'income',
       borderColor: SOURCE_COLORS[id],
       borderWidth: 1.5,
       backgroundColor: fadingFill(SOURCE_COLORS[id]),
-      pointRadius: rows.map((row, at) => (paysAt(at) ? dotRadiusOf(row.age, isEventAt(at)) : 0)),
-      pointHoverRadius: rows.map((_row, at) => {
-        if (!paysAt(at)) {
+      pointRadius: points.map((point, at) =>
+        hasDotAt(at) ? dotRadiusOf(point.age, isEventAt(at)) : 0,
+      ),
+      pointHoverRadius: points.map((_point, at) => {
+        if (!isShownAt(at)) {
           return 0;
         }
         return isEventAt(at) ? EVENT_HOVER_RADIUS : HOVER_RADIUS;
       }),
       pointBackgroundColor: SOURCE_COLORS[id],
       pointBorderColor: HALO_COLOR,
-      pointBorderWidth: rows.map((_row, at) =>
-        paysAt(at) && isEventAt(at) ? EVENT_DOT_BORDER : 0,
+      pointBorderWidth: points.map((_point, at) =>
+        isShownAt(at) && isEventAt(at) ? EVENT_DOT_BORDER : 0,
       ),
       pointHoverBorderColor: HALO_COLOR,
       pointHoverBorderWidth: EVENT_DOT_BORDER,
-      segment: { borderColor: hideWherePaysNothing },
-      tension: 0.2,
+      segment: { borderColor: hideEdge },
+      tension: 0,
     };
   });
 };
 
-const IncomeChart = ({ rows, isNominal, events, hidden, announce }: IncomeChartProps) => {
+const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
   const intl = useIntl();
   const chartRef = useRef<ChartJS<'line'>>(null);
   const plotRef = useRef<HTMLDivElement>(null);
@@ -249,6 +253,9 @@ const IncomeChart = ({ rows, isNominal, events, hidden, announce }: IncomeChartP
   activeIndexRef.current = activeIndex;
 
   const layers = useMemo(() => chartSeriesOf(rows).map(({ id }) => id), [rows]);
+  const points = useMemo(() => chartPointsOf(rows), [rows]);
+  const rowPointAt = (rowIndex: number) =>
+    points.findIndex((point) => point.rowIndex === rowIndex && !point.isCarry);
   const visibleLayers = layers.filter((id) => !hidden.has(id));
   const eventAges = useMemo(() => new Set(events.map(({ age }) => age)), [events]);
   const stops = useMemo(
@@ -272,7 +279,7 @@ const IncomeChart = ({ rows, isNominal, events, hidden, announce }: IncomeChartP
     if (!tip || !chart) {
       return false;
     }
-    const lineX = chart.scales.x.getPixelForValue(index);
+    const lineX = chart.scales.x.getPixelForValue(rows[index].age);
     const tipRight = tip.offsetLeft + tip.offsetWidth;
     return tip.offsetLeft > lineX
       ? x > lineX && x < tip.offsetLeft + 2
@@ -281,18 +288,16 @@ const IncomeChart = ({ rows, isNominal, events, hidden, announce }: IncomeChartP
 
   const { data, options } = useMemo(() => {
     const { costs } = pensionStartRowOf(rows);
-    const isCostsFlat = !isNominal && !rows[0].isBeforePension;
     const isNarrow = window.matchMedia(NARROW_SCREEN).matches;
     const tickStep = isNarrow ? NARROW_TICK_STEP : WIDE_TICK_STEP;
     const chartData: ChartData<'line'> = {
-      labels: rows.map(({ age }) => age),
-      datasets: datasetsOf(intl, rows, layers, hidden, eventAges),
+      datasets: datasetsOf(intl, rows, points, layers, hidden, eventAges),
     };
     const chartOptions: ChartOptions<'line'> = {
       responsive: true,
       maintainAspectRatio: false,
       animation: false,
-      interaction: { mode: 'index', intersect: false },
+      interaction: { mode: 'lastPointAtAge', intersect: false },
       onHover: ({ x }, elements) => {
         const [element] = elements;
         if (!element) {
@@ -301,7 +306,7 @@ const IncomeChart = ({ rows, isNominal, events, hidden, announce }: IncomeChartP
         const shown = activeIndexRef.current;
         const isOnWayToTip = shown !== null && x !== null && isHeadingForTip(x, shown);
         if (!isOnWayToTip) {
-          setActiveIndex(element.index);
+          setActiveIndex(points[element.index].rowIndex);
         }
       },
       plugins: {
@@ -310,10 +315,9 @@ const IncomeChart = ({ rows, isNominal, events, hidden, announce }: IncomeChartP
         tooltip: { enabled: false },
         marks: marksOf(intl, events),
         costs: {
-          amount: costs,
-          amounts: isCostsFlat
-            ? undefined
-            : rows.map((row) => (row.isBeforePension ? null : row.costs)),
+          points: rows
+            .filter((row) => !row.isBeforePension)
+            .map((row) => ({ age: row.age, amount: row.costs })),
           label: intl.formatMessage(
             { id: 'futureMe.result.chart.costsLabel' },
             { amount: euro(costs) },
@@ -322,6 +326,9 @@ const IncomeChart = ({ rows, isNominal, events, hidden, announce }: IncomeChartP
       },
       scales: {
         x: {
+          type: 'linear',
+          min: rows[0].age,
+          max: rows[rows.length - 1].age,
           grid: { display: false },
           border: { color: AXIS_BORDER_COLOR },
           title: {
@@ -333,14 +340,14 @@ const IncomeChart = ({ rows, isNominal, events, hidden, announce }: IncomeChartP
           ticks: {
             autoSkip: false,
             maxRotation: 0,
+            stepSize: 1,
             color: TICK_COLOR,
             font: FONT,
-            callback: (_value, index) => (rows[index].age % tickStep === 0 ? rows[index].age : ''),
+            callback: (value) => (Number(value) % tickStep === 0 ? value : ''),
           },
         },
         y: {
           position: 'right',
-          stacked: true,
           beginAtZero: true,
           suggestedMax: Math.max(...rows.map((row) => row.costs)),
           grace: '20%',
@@ -355,7 +362,7 @@ const IncomeChart = ({ rows, isNominal, events, hidden, announce }: IncomeChartP
       },
     };
     return { data: chartData, options: chartOptions };
-  }, [intl, rows, isNominal, events, layers, hidden, eventAges]);
+  }, [intl, rows, points, events, layers, hidden, eventAges]);
 
   useLayoutEffect(() => {
     const chart = chartRef.current;
@@ -365,7 +372,7 @@ const IncomeChart = ({ rows, isNominal, events, hidden, announce }: IncomeChartP
     if (activeIndex === null || !chart || !tip || !plot || !crosshair) {
       return;
     }
-    const x = chart.scales.x.getPixelForValue(activeIndex);
+    const x = chart.scales.x.getPixelForValue(rows[activeIndex].age);
     const fitsRight = x + TIP_GAP + tip.offsetWidth <= plot.clientWidth;
     const { top, bottom } = chart.chartArea;
     tip.style.left = `${Math.max(0, fitsRight ? x + TIP_GAP : x - TIP_GAP - tip.offsetWidth)}px`;
@@ -386,7 +393,7 @@ const IncomeChart = ({ rows, isNominal, events, hidden, announce }: IncomeChartP
         ? []
         : layers.flatMap((id, datasetIndex) =>
             !hidden.has(id) && rows[activeIndex][id] > 0
-              ? [{ datasetIndex, index: activeIndex }]
+              ? [{ datasetIndex, index: rowPointAt(activeIndex) }]
               : [],
           );
     chart.setActiveElements(highlighted);
@@ -666,13 +673,7 @@ export const ResultChart = ({ result, need, nominalReturns }: ResultChartProps) 
       <div id="future-me-chart-table">
         {isTableShown && <IncomeTable rows={rows} isNominal={isNominal} />}
       </div>
-      <IncomeChart
-        rows={rows}
-        isNominal={isNominal}
-        events={events}
-        hidden={hidden}
-        announce={setAnnouncement}
-      />
+      <IncomeChart rows={rows} events={events} hidden={hidden} announce={setAnnouncement} />
       <Legend rows={rows} hidden={hidden} onToggle={toggleLayer} />
       <p role="status" className="visually-hidden">
         {announcement}

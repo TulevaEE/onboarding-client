@@ -81,21 +81,16 @@ describe('ResultChart with the III pillar fund pension from 55', () => {
       /^III\ssammas$/.test(label),
     );
 
-    expect(data.labels[0]).toBe(55);
-    expect(thirdPillar.data[0]).toBeGreaterThan(0);
+    expect(data.datasets[0].data[0].x).toBe(55);
+    expect(thirdPillar.data[0].y).toBeGreaterThan(0);
   });
 
   it('draws the costs only from the pension age', () => {
     const result = showChart();
-    const { data, options } = lastChartProps();
-    const pensionIndex = data.labels.indexOf(result.pensionStartAge);
+    const { options } = lastChartProps();
+    const { points } = options.plugins.costs;
 
-    expect(
-      options.plugins.costs.amounts
-        .slice(0, pensionIndex)
-        .every((amount: number | null) => amount === null),
-    ).toBe(true);
-    expect(options.plugins.costs.amounts[pensionIndex]).toBe(791);
+    expect(points[0]).toEqual({ age: result.pensionStartAge, amount: 791 });
     expect(options.plugins.costs.label).toBe('Kulud: 791\u00A0€');
   });
 
