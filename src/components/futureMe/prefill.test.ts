@@ -1,9 +1,11 @@
 import { mockUser } from '../../test/backend-responses';
 import { Contribution, SourceFund } from '../common/apiModels';
+import { FundPension } from '../common/apiModels/withdrawals';
 import {
   BIRTH_YEAR_MAX,
   BIRTH_YEAR_MIN,
   deriveBirthYear,
+  deriveFundPensionChoices,
   deriveGrossMonthly,
   derivePillarAmount,
   derivePrefill,
@@ -14,6 +16,15 @@ import {
 } from './prefill';
 
 const TODAY = new Date('2026-10-28T12:00:00Z');
+
+const fundPension = (overrides: Partial<FundPension>): FundPension => ({
+  pillar: 'THIRD',
+  active: true,
+  startDate: '2021-03-01',
+  endDate: null,
+  durationYears: 20,
+  ...overrides,
+});
 
 const secondPillarPayment = (time: string, socialTaxPortion: number): Contribution => ({
   time,
@@ -133,6 +144,35 @@ describe('prefill for the You step', () => {
 
   it('reads a user outside the II pillar as paying nothing into it', () => {
     expect(derivePrefill({ ...mockUser, secondPillarActive: false }).secondPillarRate).toBe('0');
+  });
+});
+
+describe('fund pensions the user has already started', () => {
+  it('names the pillar, the year and the age at the start', () => {
+    const choices = deriveFundPensionChoices({ fundPensions: [fundPension({})] }, 1966);
+
+    expect(choices).toEqual([{ pillar: 'THIRD', startYear: 2021, startAge: 55 }]);
+  });
+
+  it('keeps a fund pension that has already ended', () => {
+    const ended = fundPension({ pillar: 'SECOND', active: false, endDate: '2030-03-01' });
+
+    expect(deriveFundPensionChoices({ fundPensions: [ended] }, 1960)).toEqual([
+      { pillar: 'SECOND', startYear: 2021, startAge: 61 },
+    ]);
+  });
+
+  it('gives nothing without fund pensions or without a birth year', () => {
+    expect(deriveFundPensionChoices({ fundPensions: [] }, 1966)).toEqual([]);
+    expect(deriveFundPensionChoices({ fundPensions: [fundPension({})] }, null)).toEqual([]);
+  });
+
+  it('are part of the prefill', () => {
+    const user = { ...mockUser, dateOfBirth: '1966-05-01' };
+
+    expect(
+      derivePrefill(user, { fundPensionStatus: { fundPensions: [fundPension({})] } }).fundPensions,
+    ).toEqual([{ pillar: 'THIRD', startYear: 2021, startAge: 55 }]);
   });
 });
 

@@ -4,6 +4,8 @@ import { TranslationKey } from '../translations';
 import { Age60Answers, PAYOUT_CHOICES, PayoutChoice } from './age60Answers';
 import { Age65Answers } from './age65Answers';
 import { ChoiceCard } from './ChoiceCard';
+import { ChoiceMadeNote } from './ChoiceMadeNote';
+import { FundPensionChoice } from './prefill';
 import { strong } from './richText';
 import { LinkButton } from './LinkButton';
 
@@ -19,6 +21,7 @@ interface Props {
   onChange: (answers: Age65Answers) => void;
   onEditYou: () => void;
   onEditAge60: () => void;
+  startedFundPension?: FundPensionChoice;
 }
 
 const CHOICE_EMOJI: Record<PayoutChoice, string> = { grow: '🌱', fund: '🗓️', lump: '💰' };
@@ -33,6 +36,7 @@ export const Age65Pillars = ({
   onChange,
   onEditYou,
   onEditAge60,
+  startedFundPension,
 }: Props) => {
   const isAsked = !isChosenAtAnotherStep && (!hasPillar || age60[pillar] === 'grow');
   const isChosenEarlier = hasPillar && !isAsked;
@@ -83,6 +87,7 @@ export const Age65Pillars = ({
               <FormattedMessage id={`futureMe.age65.${pillar}.intro` as TranslationKey} />
             </p>
           )}
+          {startedFundPension && <ChoiceMadeNote choice={startedFundPension} />}
           <div className="payout-choices">
             {PAYOUT_CHOICES.map((choice) => (
               <ChoiceCard

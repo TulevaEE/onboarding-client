@@ -11,6 +11,7 @@ import { mockUser } from '../../test/backend-responses';
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: () => ({ data: [], isLoading: false }),
+  useFundPensionStatus: () => ({ data: { fundPensions: [] }, isLoading: false }),
   useSourceFunds: () => ({ data: [], isLoading: false }),
   useRoles: () => ({ data: [], isLoading: false }),
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
@@ -90,6 +91,14 @@ describe('Age 60 step', () => {
     ).toBeInTheDocument();
   });
 
+  it('says that a payout taken while still working goes to the deposit', () => {
+    openAge60Step();
+
+    expect(
+      screen.getByText(/Kui töötad samal ajal edasi, läheb väljamakse hoiusele/),
+    ).toBeInTheDocument();
+  });
+
   it('offers growing, a fund pension and everything at once for both pillars, growing preselected', () => {
     openAge60Step();
 
@@ -112,6 +121,41 @@ describe('Age 60 step', () => {
     expect(choice(secondPillarGroup(), 'Fondipension')).toBeChecked();
     expect(choice(thirdPillarGroup(), 'Kõik korraga')).toBeChecked();
     expect(choice(secondPillarGroup(), 'Jätkan kasvatamist')).not.toBeChecked();
+  });
+
+  describe('fund pension contract', () => {
+    const contractGroup = (pillar: 'II' | 'III') =>
+      screen.queryByRole('group', {
+        name: new RegExp(`^${pillar}\\ssamba fondipensioni leping$`),
+      });
+
+    it('is asked right under the fund pension choice, a new contract every year preselected', () => {
+      openAge60Step();
+
+      expect(contractGroup('II')).not.toBeInTheDocument();
+
+      userEvent.click(choice(secondPillarGroup(), 'Fondipension'));
+      userEvent.click(choice(thirdPillarGroup(), 'Fondipension'));
+
+      expect(choice(contractGroup('II') as HTMLElement, 'Uus leping igal aastal')).toBeChecked();
+      expect(choice(contractGroup('III') as HTMLElement, 'Uus leping igal aastal')).toBeChecked();
+    });
+
+    it('shows the contract chosen here on the 66+ step, with a link back to change it', () => {
+      openAge60Step();
+      userEvent.click(choice(secondPillarGroup(), 'Fondipension'));
+      userEvent.click(choice(contractGroup('II') as HTMLElement, 'Üks leping'));
+      userEvent.click(within(trail()).getByRole('button', { name: /^66\+/ }));
+
+      expect(contractGroup('II')).not.toBeInTheDocument();
+      expect(screen.getByText(/II\ssamba lepingu valisid \d+-aastaselt/)).toHaveTextContent(
+        /Üks leping/,
+      );
+
+      userEvent.click(screen.getByRole('button', { name: /Muuda II\ssamba lepingut/ }));
+
+      expect(choice(contractGroup('II') as HTMLElement, 'Üks leping')).toBeChecked();
+    });
   });
 
   it('warns that working on after a second pillar payout request ends the contributions', () => {

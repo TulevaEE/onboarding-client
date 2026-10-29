@@ -231,3 +231,34 @@ describe('age 55 from the answers', () => {
     expect(index.payout?.gross).toBeCloseTo((cons.payout?.gross ?? 0) * 1.04 ** 4, 6);
   });
 });
+
+describe('fund pension from 55 compared with keeping the money growing', () => {
+  const saver = payoutInput({
+    birthYear: 1991,
+    age: 55,
+    pensionAge: 69,
+    balance: 60000,
+    monthlyContribution: 200,
+    returnRate: 0.04,
+  });
+
+  it('loses nothing: the payouts grown at the fund return plus what is left equal keeping it', () => {
+    const fund = payoutOf('fund', saver);
+    const kept = payoutOf('lump', { ...saver, age: saver.pensionAge }).gross;
+    const paidGrown = fund.monthly.reduce(
+      (sum, { age, amount }) =>
+        sum + amount * 12 * (1 + saver.returnRate) ** (saver.pensionAge - age),
+      0,
+    );
+
+    expect(fund.leftAtPension + paidGrown).toBeCloseTo(kept, 6);
+  });
+
+  it('leaves less in the pillar at the pension age than keeping it, by the money paid out', () => {
+    const fund = payoutOf('fund', saver);
+    const kept = payoutOf('lump', { ...saver, age: saver.pensionAge }).gross;
+
+    expect(fund.leftAtPension).toBeLessThan(kept);
+    expect(fund.gross).toBeGreaterThan(0);
+  });
+});

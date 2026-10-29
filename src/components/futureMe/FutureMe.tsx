@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
 import {
   useContributions,
+  useFundPensionStatus,
   useMe,
   usePendingOnboardings,
   useRoles,
@@ -13,11 +14,10 @@ import { Shimmer } from '../common/shimmer/Shimmer';
 import { usePageTitle } from '../common/usePageTitle';
 import { Age55Step } from './Age55Step';
 import { age55Of } from './age55';
-import { decisionOrdinal, initialAge60 } from './age60Answers';
+import { decisionOrdinal } from './age60Answers';
 import { Age60Step } from './Age60Step';
 import { Age65Step } from './Age65Step';
-import { initialAge65 } from './age65Answers';
-import { initialAge66 } from './age66Answers';
+import { contractField, initialAge66 } from './age66Answers';
 import { Age66Step } from './Age66Step';
 import { DecisionActionsProvider } from './decisionActions';
 import { DecisionChanges } from './decisions';
@@ -25,6 +25,7 @@ import { initialExpenses } from './expensesAnswers';
 import { ExpensesStep } from './ExpensesStep';
 import { derivePrefill, YouPrefill } from './prefill';
 import { ResultStep } from './ResultStep';
+import { startedFundPensionAnswers, startedFundPensionsAt } from './startedFundPensions';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { SpecialPensionStep } from './SpecialPensionStep';
 import { StepTrail } from './StepTrail';
@@ -64,9 +65,12 @@ const ADDED_FLAGS = { kids: 'kidsAdded', work: 'workAdded' } as const;
 
 const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   const [prefillAtStart] = useState(prefill);
-  const [answers, setAnswers] = useState(() => initialAnswers(prefillAtStart));
-  const [age60, setAge60] = useState(initialAge60);
-  const [age65, setAge65] = useState(initialAge65);
+  const [started] = useState(() =>
+    startedFundPensionAnswers(prefillAtStart.fundPensions ?? [], initialAnswers(prefillAtStart)),
+  );
+  const [answers, setAnswers] = useState(started.you);
+  const [age60, setAge60] = useState(started.age60);
+  const [age65, setAge65] = useState(started.age65);
   const [age66, setAge66] = useState(initialAge66);
   const [expenses, setExpenses] = useState(initialExpenses);
   const [specialPension, setSpecialPension] = useState(initialSpecialPension);
@@ -196,6 +200,8 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
         />
       );
     }
+    const startedAt = (at: StepId) =>
+      startedFundPensionsAt(prefillAtStart.fundPensions ?? [], at, plan);
     if (step === FutureMeStep.AGE_55) {
       const firstYearShare = (MONTHS_IN_YEAR - new Date().getMonth()) / MONTHS_IN_YEAR;
       return (
@@ -203,7 +209,12 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           answers={answers}
           age55={age55Of(answers, firstYearShare, age66.thirdPillarContract)}
           headingRef={headingRef}
+          contract={age66.thirdPillarContract}
+          startedFundPension={startedAt(FutureMeStep.AGE_55).thirdPillar}
           onChange={(changes) => setAnswers((previous) => ({ ...previous, ...changes }))}
+          onContractChange={(thirdPillarContract) =>
+            setAge66((previous) => ({ ...previous, thirdPillarContract }))
+          }
           onEditThirdPillar={editThirdPillar}
         />
       );
@@ -219,7 +230,12 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           hasSecondPillar={plan.savesInSecondPillar}
           hasThirdPillar={hasThirdPillarAt(answers, plan, payoutAge(plan))}
           headingRef={headingRef}
+          contracts={age66}
+          startedFundPensions={startedAt(FutureMeStep.AGE_60)}
           onChange={setAge60}
+          onContractChange={(pillar, contract) =>
+            setAge66((previous) => ({ ...previous, [contractField(pillar)]: contract }))
+          }
           onEditYou={() => goTo(FutureMeStep.YOU)}
         />
       );
@@ -234,6 +250,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           age66={age66}
           specialPension={specialPension}
           headingRef={headingRef}
+          startedFundPensions={startedAt(FutureMeStep.AGE_65)}
           onChange={setAge65}
           onEditYou={() => goTo(FutureMeStep.YOU)}
           onEditAge60={() => goTo(FutureMeStep.AGE_60)}
@@ -254,6 +271,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           onEditYou={() => goTo(FutureMeStep.YOU)}
           onEditAge60={() => goTo(FutureMeStep.AGE_60)}
           onEditAge65={() => goTo(FutureMeStep.AGE_65)}
+          onEditStep={goTo}
         />
       );
     }
@@ -338,6 +356,7 @@ export const FutureMe = () => {
   usePageTitle('pageTitle.futureMe');
   const me = useMe();
   const contributionsQuery = useContributions();
+  const fundPensionStatusQuery = useFundPensionStatus();
   const sourceFundsQuery = useSourceFunds();
   const rolesQuery = useRoles();
   const pendingOnboardingsQuery = usePendingOnboardings();
@@ -346,9 +365,14 @@ export const FutureMe = () => {
   const { data: sourceFunds } = sourceFundsQuery;
 
   if (
-    [me, contributionsQuery, sourceFundsQuery, rolesQuery, pendingOnboardingsQuery].some(
-      isLoadingForTheFirstTime,
-    )
+    [
+      me,
+      contributionsQuery,
+      fundPensionStatusQuery,
+      sourceFundsQuery,
+      rolesQuery,
+      pendingOnboardingsQuery,
+    ].some(isLoadingForTheFirstTime)
   ) {
     return <Shimmer height={400} />;
   }
@@ -359,6 +383,7 @@ export const FutureMe = () => {
         user
           ? derivePrefill(user, {
               contributions,
+              fundPensionStatus: fundPensionStatusQuery.data,
               sourceFunds,
               children: tulevaChildrenOf(user, rolesQuery.data, pendingOnboardingsQuery.data),
             })

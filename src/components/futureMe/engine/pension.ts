@@ -91,6 +91,8 @@ export interface PensionInput {
   firstPillarChoice?: FirstPillarChoice;
   firstPillarChoicePa?: FirstPillarChoice;
   p2Early?: SecondPillarEarlyWithdrawal | null;
+  p2PayoutFrom?: number;
+  p3PayoutFrom?: number;
 }
 
 export interface Scenario {
@@ -598,7 +600,8 @@ export function decisionMap(input: PensionInput): Decision[] {
     pa.label = `${input.pensionAgeYears} a`;
   }
   const at = (age: number) => input.birthYear + age;
-  const p3Age = input.p3Before2021 ? 55 : 60;
+  const payoutAge = pa.years - 5;
+  const p3Age = input.p3Before2021 ? 55 : payoutAge;
   return [
     {
       age: p3Age,
@@ -607,12 +610,12 @@ export function decisionMap(input: PensionInput): Decision[] {
       text: `Väljamaksed 10% tulumaksuga (regulaarne pikk väljamakse 0%), kui kogumist on vähemalt 5 aastat.${
         input.p3Before2021
           ? ' Alates 55, sest alustasid enne 2021.'
-          : ' Alates 60, sest alustasid 2021 või hiljem.'
+          : ` Alates ${payoutAge}, 5 aastat enne pensioniiga, sest alustasid 2021 või hiljem.`
       }`,
     },
     {
-      age: 60,
-      year: at(60),
+      age: payoutAge,
+      year: at(payoutAge),
       title: 'II sammas ja paindlik riiklik pension',
       text: 'II sammas: ühekordne või lühike fondipension 10%, pikk fondipension 0%. Väljamaksete alustamisel lõpevad II samba sissemaksed igaveseks. Riiklikku pensioni saab võtta kuni 5 aastat varem, vähendatult.',
     },
@@ -749,7 +752,8 @@ export function simulate(
     return age >= pa ? allowance : generalAt(age);
   };
   const open2 = Math.max(workEnd, pa - 5);
-  const open3 = Math.max(workEnd, input.p3Before2021 ? 55 : 60);
+  const thirdPillarOpenAge = input.p3Before2021 ? 55 : pa - 5;
+  const open3 = Math.max(workEnd, thirdPillarOpenAge);
 
   const sep = input.p3Sep || null;
   const c3 = sep ? (input.p3Monthly || 0) * 12 : 0;
@@ -764,6 +768,56 @@ export function simulate(
       : 1;
   // KoPS § 43¹: one early II pillar withdrawal, 22% income tax, rejoining after 5 years
   const peAge = pe && isEarlyAgeValid(pe.age) ? pe.age : null;
+  const onceC = scenario.id === 'C' && scenario.contract === 'once';
+  const payoutWhileWorkingFrom =
+    input.p2PayoutFrom !== undefined
+      ? Math.max(input.p2PayoutFrom, pa - 5, currentAge)
+      : Number.POSITIVE_INFINITY;
+  const isPayingWhileWorking = payoutWhileWorkingFrom < workEnd;
+  const fundFrom = isPayingWhileWorking
+    ? payoutWhileWorkingFrom
+    : Math.max(open2, scenario.fundFrom || 0);
+  const contractStart = scenario.id === 'B' || onceC ? Math.max(fundFrom, currentAge) : null;
+  const contractTerm =
+    contractStart !== null ? fundPensionTerm(table, input.sex, contractStart) : 0;
+  const scheduledPayout = (pot: number, age: number) => {
+    if (scenario.id === 'D' || (scenario.id === 'C' && !onceC)) {
+      return pot / fundPensionTerm(table, input.sex, age);
+    }
+    if (contractStart !== null && age >= contractStart) {
+      // KoPS § 52³ lg 8, § 60¹ lg 5: units are divided by the number of payments still due
+      const left = contractTerm - (age - contractStart);
+      return left > 0 ? pot / left : 0;
+    }
+    return 0;
+  };
+  const thirdPayoutWhileWorkingFrom =
+    sep && input.p3PayoutFrom !== undefined
+      ? Math.max(input.p3PayoutFrom, thirdPillarOpenAge, currentAge)
+      : Number.POSITIVE_INFINITY;
+  const isPayingThirdWhileWorking = thirdPayoutWhileWorkingFrom < workEnd;
+  const once3 = !!(sep && sep.mode === 'fund' && sep.contract === 'once');
+  let start3: number | null = null;
+  if (sep && once3) {
+    if (sep.start !== undefined) {
+      start3 = sep.start;
+    } else {
+      start3 = isPayingThirdWhileWorking
+        ? thirdPayoutWhileWorkingFrom
+        : Math.max(open3, currentAge);
+    }
+  }
+  const term3 = start3 !== null ? fundPensionTerm(table, input.sex, start3) : 0;
+  const scheduledThirdPayout = (pot: number, age: number) => {
+    if (start3 === null) {
+      return pot / fundPensionTerm(table, input.sex, age);
+    }
+    const left3 = term3 - (age - start3);
+    return left3 > 0 ? pot / left3 : 0;
+  };
+  const paidWhileWorking = new Map<number, number>();
+  const thirdPaidWhileWorking = new Map<number, number>();
+  let paidBeforeRetirement = 0;
   let early: EarlyWithdrawalResult | null = null;
   for (let a = currentAge; a < workEnd; a += 1) {
     if (pe && a === peAge) {
@@ -771,8 +825,35 @@ export function simulate(
       early = { age: a, gross: fund, tax, net: fund - tax, rejoin: !!pe.rejoin, save: !!pe.save };
       fund = 0;
     }
+    const isPayingAt = isPayingWhileWorking && a >= payoutWhileWorkingFrom;
+    if (isPayingAt) {
+      const paid =
+        scenario.id === 'A' ? fund * (1 - TAX_SHORT) : Math.min(fund, scheduledPayout(fund, a));
+      fund = scenario.id === 'A' ? 0 : fund - paid;
+      if (a < ret) {
+        paidBeforeRetirement += paid * (1 + rd) ** (ret - a);
+      } else {
+        paidWhileWorking.set(a, paid);
+      }
+    }
+    if (sep && isPayingThirdWhileWorking && a >= thirdPayoutWhileWorkingFrom) {
+      let paid3 = 0;
+      if (sep.mode === 'lump' && a === thirdPayoutWhileWorkingFrom) {
+        paid3 = Math.max(0, fund3) * (1 - TAX_SHORT);
+        fund3 = 0;
+      } else if (sep.mode === 'fund') {
+        paid3 = Math.max(0, Math.min(fund3, scheduledThirdPayout(fund3, a)));
+        fund3 -= paid3;
+      }
+      if (a < ret) {
+        paidBeforeRetirement += paid3 * (1 + rd) ** (ret - a);
+      } else {
+        thirdPaidWhileWorking.set(a, paid3);
+      }
+    }
     const c3a = c3 * p3Factor(input, a) * share(a);
-    const stopII = pe !== null && peAge !== null && a >= peAge && !(pe.rejoin && a >= peAge + 5);
+    const stopII =
+      isPayingAt || (pe !== null && peAge !== null && a >= peAge && !(pe.rejoin && a >= peAge + 5));
     const contrib = stopII
       ? (input.p3Monthly || 0) * 12 * p3Factor(input, a)
       : yearlyContribution(input, a);
@@ -782,6 +863,7 @@ export function simulate(
 
   let deposit =
     (input.extraDeposit || 0) +
+    paidBeforeRetirement +
     (early && early.save ? early.net * (1 + rd) ** Math.max(0, ret - early.age) : 0);
   const firstRetAge = Math.max(open2, startAge);
   const lump3Age = Math.max(open3, startAge);
@@ -799,17 +881,6 @@ export function simulate(
     return gross - TAX_SHORT * (gross - used);
   };
   const lumpOut = (pot: number) => (taxOn ? lumpNet(pot) : pot * (1 - TAX_SHORT));
-  const onceC = scenario.id === 'C' && scenario.contract === 'once';
-  const fundFrom = Math.max(open2, scenario.fundFrom || 0);
-  const contractStart = scenario.id === 'B' || onceC ? Math.max(fundFrom, currentAge) : null;
-  const contractTerm =
-    contractStart !== null ? fundPensionTerm(table, input.sex, contractStart) : 0;
-  const once3 = !!(sep && sep.mode === 'fund' && sep.contract === 'once');
-  let start3: number | null = null;
-  if (sep && once3) {
-    start3 = sep.start !== undefined ? sep.start : Math.max(open3, currentAge);
-  }
-  const term3 = start3 !== null ? fundPensionTerm(table, input.sex, start3) : 0;
 
   const rows: SimulationRow[] = [];
   for (let age = startAge; age <= MAX_AGE; age += 1) {
@@ -847,18 +918,13 @@ export function simulate(
     let sched3 = 0;
     let extra3 = 0;
     if (work) {
-      saved = i1 + isp;
+      sched = paidWhileWorking.get(age) ?? 0;
+      sched3 = thirdPaidWhileWorking.get(age) ?? 0;
+      saved = i1 + isp + sched + sched3;
       deposit += saved;
     } else if (age >= ret) {
-      if (age < open2 || (scenario.id === 'D' && age < fundFrom)) {
-        sched = 0;
-      } else if (scenario.id === 'D' || (scenario.id === 'C' && !onceC)) {
-        sched = fund / fundPensionTerm(table, input.sex, age);
-      } else if (contractStart !== null && age >= contractStart) {
-        // KoPS § 52³ lg 8, § 60¹ lg 5: units are divided by the number of payments still due
-        const left = contractTerm - (age - contractStart);
-        sched = left > 0 ? fund / left : 0;
-      }
+      sched =
+        age < open2 || (scenario.id === 'D' && age < fundFrom) ? 0 : scheduledPayout(fund, age);
       fund -= sched;
       if (
         sep &&
@@ -866,12 +932,7 @@ export function simulate(
         age >= open3 &&
         (start3 !== null ? age >= start3 : sep.start === undefined || age >= sep.start)
       ) {
-        if (start3 !== null) {
-          const left3 = term3 - (age - start3);
-          sched3 = left3 > 0 ? fund3 / left3 : 0;
-        } else {
-          sched3 = fund3 / fundPensionTerm(table, input.sex, age);
-        }
+        sched3 = scheduledThirdPayout(fund3, age);
         fund3 -= sched3;
       }
       const c3a = age < pa ? c3After : 0;

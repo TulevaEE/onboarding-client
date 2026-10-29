@@ -13,6 +13,7 @@ jest.mock('../common/apiHooks', () => ({
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
   useMe: jest.fn(),
   useContributions: jest.fn(),
+  useFundPensionStatus: () => ({ data: { fundPensions: [] }, isLoading: false }),
   useSourceFunds: jest.fn(),
 }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));

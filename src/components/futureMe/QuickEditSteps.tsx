@@ -55,6 +55,7 @@ const QuickEditFundPension = ({ context }: Props) => {
       onEditYou={() => goTo(FutureMeStep.YOU)}
       onEditAge60={() => goTo(FutureMeStep.AGE_60)}
       onEditAge65={() => goTo(FutureMeStep.AGE_65)}
+      onEditStep={goTo}
     />
   );
 };

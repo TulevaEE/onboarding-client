@@ -22,7 +22,7 @@ import {
 import { pensionInputOf, SpecialPensionAnswers } from './specialPensionAnswers';
 import { StepPlanInput } from './steps';
 import { amountOf, FUND_RETURNS, YouAnswers } from './youAnswers';
-import { plannedThirdPillarOpenAge } from './planAges';
+import { hasThirdPillarAt, payoutAge, plannedThirdPillarOpenAge } from './planAges';
 
 const lifeTable: LifeTable = lifeTableData;
 const MONTHS_IN_YEAR = 12;
@@ -170,6 +170,21 @@ const withChoiceAtPensionAgeWhileAsked = (input: PensionInput): PensionInput => 
   return isAsked ? input : withoutChoice;
 };
 
+const secondPillarPayoutFromOf = (context: ResultContext): number | undefined =>
+  hasPillar('secondPillar', context) && context.age60.secondPillar !== 'grow'
+    ? payoutAge(context.plan)
+    : undefined;
+
+const thirdPillarPayoutFromOf = (context: ResultContext): number | undefined => {
+  const { you, plan, age60 } = context;
+  const isPaidFrom55 = age55Of(you, firstYearShareNow()).plan === 'fund';
+  return hasThirdPillarAt(you, plan, payoutAge(plan)) &&
+    age60.thirdPillar !== 'grow' &&
+    !isPaidFrom55
+    ? payoutAge(plan)
+    : undefined;
+};
+
 export const resultInputOf = (context: ResultContext): PensionInput => {
   const { you, plan, age65, age66, specialPension, expenses } = context;
   const hasSpecialPension = plan.hasSpecialPension && amountOf(specialPension.monthly) > 0;
@@ -177,8 +192,10 @@ export const resultInputOf = (context: ResultContext): PensionInput => {
     ...pensionInputOf(specialPension, you, plan, age65, age66),
     spHas: hasSpecialPension,
     spMonthly: hasSpecialPension ? amountOf(specialPension.monthly) : 0,
+    p2PayoutFrom: secondPillarPayoutFromOf(context),
     p3: 0,
     p3Sep: thirdPillarOf(context),
+    p3PayoutFrom: thirdPillarPayoutFromOf(context),
     p3Monthly: amountOf(you.thirdPillarMonthly),
     p3Before2021: you.thirdPillarJoined === 'before',
     p3Indexed: false,

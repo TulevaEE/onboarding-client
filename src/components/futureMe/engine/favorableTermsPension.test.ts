@@ -163,16 +163,41 @@ describe('pension on favorable terms', () => {
         keepGrowingScenario,
       );
 
-      it('keeps the III pillar locked until 60', () => {
-        const ages = agesFrom(pensionAge - 10, 60);
+      it('keeps the III pillar locked until five years before the pension age', () => {
+        const ages = agesFrom(pensionAge - 10, pensionAge - 5);
 
         expect(valuesByAge(ages, (age) => rowAt(separateThirdPillar, age).i3)).toEqual(
           valuesByAge(ages, () => 0),
         );
       });
 
-      it('opens the III pillar at 60', () => {
-        expect(rowAt(separateThirdPillar, 60).i3).toBeGreaterThan(0);
+      it('opens the III pillar five years before the pension age', () => {
+        expect(rowAt(separateThirdPillar, pensionAge - 5).i3).toBeGreaterThan(0);
+      });
+    });
+
+    describe('with a separate III pillar joined in 2021 or later and a pension age of 68', () => {
+      const pensionAgeOf68 = simulate(
+        {
+          ...tenYearsEarly,
+          pensionAgeYears: 68,
+          p3Sep: { amount: 20000, mode: 'fund', contract: 'yearly' },
+          p3Before2021: false,
+        },
+        lifeTable,
+        keepGrowingScenario,
+      );
+
+      it('keeps the III pillar locked until five years before the pension age', () => {
+        const ages = agesFrom(58, 63);
+
+        expect(valuesByAge(ages, (age) => rowAt(pensionAgeOf68, age).i3)).toEqual(
+          valuesByAge(ages, () => 0),
+        );
+      });
+
+      it('opens the III pillar five years before the pension age', () => {
+        expect(rowAt(pensionAgeOf68, 63).i3).toBeGreaterThan(0);
       });
     });
   });

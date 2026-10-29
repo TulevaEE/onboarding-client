@@ -62,6 +62,15 @@ describe('age66Answers', () => {
       );
     });
 
+    it('starts a III pillar joined in 2021 or later no earlier than five years before a pension age of 68', () => {
+      expect(
+        fundStartAges(
+          'thirdPillar',
+          earlyContext({ thirdPillarJoined: 'after', pensionAgeYears: '68' }),
+        )[0],
+      ).toBe(63);
+    });
+
     it('starts a III pillar joined before 2021 from the year after retiring', () => {
       expect(fundStartAges('thirdPillar', earlyContext({ thirdPillarJoined: 'before' }))[0]).toBe(
         56,

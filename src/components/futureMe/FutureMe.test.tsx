@@ -6,12 +6,14 @@ import { FutureMe } from './FutureMe';
 import {
   useContributions,
   useEligibleChildren,
+  useFundPensionStatus,
   useMe,
   usePendingOnboardings,
   useRoles,
   useSourceFunds,
 } from '../common/apiHooks';
 import { Contribution, PendingOnboarding, SourceFund, User } from '../common/apiModels';
+import { FundPension } from '../common/apiModels/withdrawals';
 import { EligibleChild } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 import translations from '../translations';
 import { pensionAge } from './engine/pension';
@@ -23,6 +25,7 @@ import { formatAmountForCurrency } from '../common/utils';
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: jest.fn(),
+  useFundPensionStatus: jest.fn(),
   useSourceFunds: jest.fn(),
   useEligibleChildren: jest.fn(),
   useRoles: jest.fn(),
@@ -45,15 +48,25 @@ const loggedInAs = (user: Partial<User> | undefined) => {
   } as ReturnType<typeof useMe>);
 };
 
+const mockUseFundPensionStatus = useFundPensionStatus as jest.MockedFunction<
+  typeof useFundPensionStatus
+>;
+
 const withPensionData = ({
   contributions = [],
   sourceFunds = [],
+  fundPensions = [],
   isLoading = false,
 }: {
   contributions?: Contribution[] | undefined;
   sourceFunds?: SourceFund[] | undefined;
+  fundPensions?: FundPension[];
   isLoading?: boolean;
 }) => {
+  mockUseFundPensionStatus.mockReturnValue({
+    data: { fundPensions },
+    isLoading,
+  } as ReturnType<typeof useFundPensionStatus>);
   mockUseContributions.mockReturnValue({
     data: contributions,
     isLoading,
@@ -2045,6 +2058,62 @@ describe('FutureMe', () => {
       expect(screen.getByRole('status')).toHaveTextContent(/esimene väljamakse on u/);
     });
 
+    const contractGroup = () =>
+      screen.queryByRole('group', { name: /^III\ssamba fondipensioni leping$/ });
+    const contract = (name: RegExp) =>
+      within(contractGroup() as HTMLElement).getByRole('radio', { name });
+
+    describe('with a III pillar fund pension already started at 57', () => {
+      const startedAt57 = (dateOfBirth: string) => {
+        loggedInAs({ dateOfBirth, personalCode: '49001011234' });
+        withPensionData({
+          fundPensions: [
+            {
+              pillar: 'THIRD',
+              active: true,
+              startDate: `${Number(dateOfBirth.slice(0, 4)) + 57}-03-01`,
+              endDate: null,
+              durationYears: 20,
+            },
+          ],
+        });
+      };
+
+      it('picks the fund pension card and says the choice is already made', () => {
+        startedAt57('1967-05-01');
+        renderFutureMe();
+        openAge55();
+
+        expect(fundPlan()).toBeChecked();
+        expect(
+          screen.getByText(
+            /Oled selle valiku juba teinud: III\ssamba fondipension algas 2024\. aastal, kui olid 57-aastane\./,
+          ),
+        ).toBeInTheDocument();
+      });
+
+      it('keeps the other cards open', () => {
+        startedAt57('1967-05-01');
+        renderFutureMe();
+        openAge55();
+
+        userEvent.click(keepPlan());
+
+        expect(keepPlan()).toBeChecked();
+      });
+    });
+
+    it('asks for the fund pension contract right under the fund pension choice', () => {
+      renderFutureMe();
+      openAge55();
+
+      expect(contractGroup()).not.toBeInTheDocument();
+
+      userEvent.click(fundPlan());
+
+      expect(contract(/^Uus leping igal aastal/)).toBeChecked();
+    });
+
     it('shows the fund pension figures of the contract chosen for the III pillar', () => {
       renderFutureMe();
       openAge55();
@@ -2054,20 +2123,44 @@ describe('FutureMe', () => {
         ' ',
       );
 
-      userEvent.click(within(trail()).getByRole('button', { name: /^66\+/ }));
-      const thirdPillarStart = screen.getByRole('combobox', {
-        name: /Mis vanusest hakkad III\ssambast fondipensioni võtma\?/,
-      });
-      userEvent.selectOptions(thirdPillarStart, within(thirdPillarStart).getAllByRole('option')[1]);
-      userEvent.click(
-        within(screen.getByRole('group', { name: /^III\ssamba fondipensioni leping$/ })).getByRole(
-          'radio',
-          { name: /^Üks leping/ },
-        ),
-      );
-      userEvent.click(within(trail()).getByRole('button', { name: /^55\sa/ }));
+      userEvent.click(contract(/^Üks leping/));
 
       expect(screen.getByRole('status')).not.toHaveTextContent(withYearlyContract);
+    });
+
+    it('shows the contract chosen at 55 on the 66+ step, with a link back to change it', () => {
+      renderFutureMe();
+      openAge55();
+      userEvent.click(fundPlan());
+      userEvent.click(contract(/^Üks leping/));
+      userEvent.click(within(trail()).getByRole('button', { name: /^66\+/ }));
+
+      expect(contractGroup()).not.toBeInTheDocument();
+      expect(screen.getByText(/III\ssamba lepingu valisid 55-aastaselt/)).toHaveTextContent(
+        /Üks leping/,
+      );
+
+      userEvent.click(screen.getByRole('button', { name: /Muuda III\ssamba lepingut/ }));
+
+      expect(age55Heading()).toBeInTheDocument();
+    });
+
+    it('does not explain growing on the 66+ step when both fund pensions start earlier', () => {
+      renderFutureMe();
+      openAge55();
+      userEvent.click(fundPlan());
+      userEvent.click(screen.getByRole('button', { name: /Edasi/ }));
+      userEvent.click(
+        within(screen.getByRole('group', { name: /^II\ssamba väljamakse viis$/ })).getByRole(
+          'radio',
+          { name: /Fondipension/ },
+        ),
+      );
+      userEvent.click(within(trail()).getByRole('button', { name: /^66\+/ }));
+
+      expect(
+        screen.queryByText(/raha kasvab fondis ja võtad vajadusel välja/),
+      ).not.toBeInTheDocument();
     });
 
     it('keeps the choice when the saver leaves the step and comes back', () => {
