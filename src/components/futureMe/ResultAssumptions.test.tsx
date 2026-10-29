@@ -162,4 +162,13 @@ describe('Result step: the return the answer rests on', () => {
       screen.getByText(/^Tegemist on sinu valitud eeldustel põhineva näitliku arvutusega\./),
     ).toBeInTheDocument();
   });
+
+  it('keeps the provider’s links muted like the rest of the footer, as on the calculator', () => {
+    openResultStep();
+
+    const provider = screen.getByText(/^Finantsteenust pakub Tuleva Fondid AS\./);
+    const links = within(provider).getAllByRole('link');
+    expect(links).toHaveLength(3);
+    links.forEach((link) => expect(link).toHaveClass('text-body-secondary'));
+  });
 });

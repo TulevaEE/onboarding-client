@@ -1,6 +1,7 @@
 import React, { RefObject, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
+import { ProviderDisclaimer } from '../pensionCalculator/ProviderDisclaimer';
 import { euro, signedNumber } from './amountFormat';
 import { assumptionsOf } from './assumptions';
 import { ChapterHead } from './ChapterHead';
@@ -259,24 +260,6 @@ const ReturnAssumption = ({ context }: { context: ResultContext }) => {
   );
 };
 
-const Disclaimer = () => {
-  const paragraph = (chunks: React.ReactNode) => <p>{chunks}</p>;
-  return (
-    <div className="form-text mt-4">
-      <FormattedMessage
-        id="pensionCalculator.provider"
-        values={{
-          p: paragraph,
-          a: (chunks: React.ReactNode) => <a href="https://tuleva.ee">{chunks}</a>,
-          mail: (chunks: React.ReactNode) => <a href="mailto:tuleva@tuleva.ee">{chunks}</a>,
-          tel: (chunks: React.ReactNode) => <a href="tel:+3726445100">{chunks}</a>,
-        }}
-      />
-      <FormattedMessage id="pensionCalculator.disclaimer" values={{ p: paragraph }} />
-    </div>
-  );
-};
-
 export const ResultStep = ({ context, headingRef }: Props) => {
   const result = resultOf(context);
   const [openDecision, setOpenDecision] = useState<DecisionId | null>(null);
@@ -322,7 +305,9 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       <ResultRules context={context} />
       <ResultSave context={context} />
       <ResultFeedback />
-      <Disclaimer />
+      <div className="mt-4">
+        <ProviderDisclaimer />
+      </div>
     </section>
   );
 };
