@@ -53,6 +53,19 @@ const openKidsHelp = () => {
   return screen.getByRole('dialog');
 };
 
+const openHazardHelp = () => {
+  userEvent.click(screen.getByRole('button', { name: 'Lisa erijuht' }));
+  userEvent.click(specialCase(/tervist kahjustaval tööl/));
+  userEvent.click(
+    helpButtonBeside(
+      screen.getByRole('combobox', { name: /Millise nimekirja tööl töötasid/ }),
+      '.col-12',
+      /Mis on tervist kahjustav töö$/,
+    ),
+  );
+  return screen.getByRole('dialog');
+};
+
 describe('Sina step help buttons', () => {
   beforeAll(installDialogPolyfill);
 
@@ -229,6 +242,15 @@ describe('Sina step help buttons', () => {
     expect(dialog).toHaveTextContent(/1991\.–2012\.\sa sündinud laps: 3,5 aastahinnet/);
     expect(dialog).toHaveTextContent(/enne 1991\.\sa sündinud laps: 1,5 aastahinnet/);
     expect(dialog).not.toHaveTextContent(/1981/);
+  });
+
+  it('tells in the hazardous work explanation that too few list years leave out early retirement, as the field hint does', () => {
+    renderYouStep();
+
+    const dialog = openHazardHelp();
+
+    expect(dialog).toHaveTextContent(/Elukaar kontrollib ainult nimekirja tööaastaid/);
+    expect(dialog).not.toHaveTextContent(/Elukaar tingimusi ei kontrolli/);
   });
 
   it('leaves the field labels as they were for screen readers', () => {
