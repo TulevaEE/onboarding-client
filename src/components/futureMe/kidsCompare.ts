@@ -8,6 +8,7 @@ import {
   retirementYears,
   simulate,
   SimulationResult,
+  specialStart,
 } from './engine/pension';
 import { ageTense } from './planAges';
 import { ResultContext } from './resultAnswers';
@@ -197,7 +198,8 @@ export const isSpecialComparisonShown = (context: CompareContext): boolean => {
     !input.flexEarly &&
     input.kids?.earlyUser === 'me' &&
     kidsYears > 0 &&
-    ageTense(context.plan.birthYear, earlyYearForKids) !== 'past'
+    ageTense(context.plan.birthYear, earlyYearForKids) !== 'past' &&
+    specialStart(input) <= earlyYearForKids
   );
 };
 
