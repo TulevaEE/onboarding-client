@@ -12,6 +12,7 @@ interface Props {
   events: ChartEvent[];
   layers: ChartSourceId[];
   cover: CoverState;
+  placement?: 'floating' | 'below';
   onClose: () => void;
 }
 
@@ -50,14 +51,26 @@ const Cover = ({ cover }: { cover: CoverState }) => {
 };
 
 export const ResultChartTip = forwardRef<HTMLDivElement, Props>(
-  ({ row, events, layers, cover, onClose }, ref) => {
+  ({ row, events, layers, cover, placement = 'floating', onClose }, ref) => {
     const intl = useIntl();
+    const isBelow = placement === 'below';
+    const regionProps = isBelow
+      ? {
+          role: 'region',
+          'aria-label': intl.formatMessage({ id: 'futureMe.result.chart.tip.region' }),
+        }
+      : { 'aria-hidden': true };
     return (
-      <div ref={ref} className="result-chart-tip" data-testid="chart-tip" aria-hidden="true">
+      <div
+        ref={ref}
+        className={`result-chart-tip${isBelow ? ' is-below' : ''}`}
+        data-testid="chart-tip"
+        {...regionProps}
+      >
         <button
           type="button"
           className="result-chart-tip-close"
-          tabIndex={-1}
+          tabIndex={isBelow ? 0 : -1}
           aria-label={intl.formatMessage({ id: 'futureMe.result.chart.tip.close' })}
           onClick={onClose}
         >

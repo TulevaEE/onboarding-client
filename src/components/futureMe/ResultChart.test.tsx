@@ -120,6 +120,15 @@ describe('ResultChart interaction', () => {
       expect(layer.pointBorderColor).toBe('#fff');
       expect(layer.pointRadius[pointOfAge(67)]).toBe(0);
     });
+
+    it('leaves room for the whole event dot at the first and the last age', () => {
+      renderChart();
+      const { datasets } = lastChartProps().data;
+      const { padding } = lastChartProps().options.layout;
+
+      expect(datasets.every(({ clip }: { clip: number }) => clip === 8)).toBe(true);
+      expect(padding).toEqual({ left: 8 });
+    });
   });
 
   describe('tooltip opened by the pointer', () => {
