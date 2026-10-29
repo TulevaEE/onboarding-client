@@ -1,5 +1,13 @@
 import { PensionInput, simulate, TAX_SHORT, yearlyContribution } from './pension';
-import { lifeTable, rowAt, scenarioA, scenarioB, scenarioD, within } from './testUtils';
+import {
+  keepGrowingScenario,
+  lifeTable,
+  rowAt,
+  scenarioA,
+  scenarioB,
+  scenarioD,
+  within,
+} from './testUtils';
 
 const base: PensionInput = {
   birthYear: 1975,
@@ -61,6 +69,12 @@ describe('II pillar payout started five years before the pension age while worki
   it('starts no earlier than five years before the pension age', () => {
     expect(simulate({ ...base, p2PayoutFrom: 55 }, lifeTable, scenarioD).rows).toEqual(
       simulate(fromSixty, lifeTable, scenarioD).rows,
+    );
+  });
+
+  it('keeps the II pillar contributions in the comparison that keeps the money growing', () => {
+    expect(simulate(fromSixty, lifeTable, keepGrowingScenario).rows).toEqual(
+      simulate(base, lifeTable, keepGrowingScenario).rows,
     );
   });
 });

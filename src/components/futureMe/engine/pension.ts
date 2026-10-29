@@ -773,7 +773,8 @@ export function simulate(
     input.p2PayoutFrom !== undefined
       ? Math.max(input.p2PayoutFrom, pa - 5, currentAge)
       : Number.POSITIVE_INFINITY;
-  const isPayingWhileWorking = payoutWhileWorkingFrom < workEnd;
+  const takesSecondPillarOut = SCENARIOS.some(({ id }) => id === scenario.id);
+  const isPayingWhileWorking = takesSecondPillarOut && payoutWhileWorkingFrom < workEnd;
   const fundFrom = isPayingWhileWorking
     ? payoutWhileWorkingFrom
     : Math.max(open2, scenario.fundFrom || 0);
