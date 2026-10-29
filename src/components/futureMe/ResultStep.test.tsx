@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
@@ -8,6 +8,11 @@ import { User } from '../common/apiModels';
 import translations from '../translations';
 import { mockUser } from '../../test/backend-responses';
 import { installDialogPolyfill } from './dialogPolyfill';
+import { initialAge65 } from './age65Answers';
+import { ResultContext } from './resultAnswers';
+import { contextWith } from './resultContextFixture';
+import { DecisionChangesProvider } from './ResultDecisions';
+import { ResultStep } from './ResultStep';
 
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
@@ -418,6 +423,47 @@ describe('Result step', () => {
       expect(dialog).toHaveTextContent(/sammastes praegu u 105\s000\s€;/);
       expect(dialog).not.toHaveTextContent(/pensionile minnes/);
       expect(dialog).not.toHaveTextContent(/alates 70-/);
+    });
+
+    describe('for a plan', () => {
+      beforeAll(() => {
+        jest.useFakeTimers();
+        jest.setSystemTime(new Date('2026-10-15T12:00:00Z'));
+      });
+      afterAll(() => jest.useRealTimers());
+
+      const openHelpFor = (context: ResultContext) => {
+        render(
+          <IntlProvider locale="et" messages={translations.et}>
+            <DecisionChangesProvider value={jest.fn()}>
+              <ResultStep context={context} headingRef={createRef()} onGoTo={jest.fn()} />
+            </DecisionChangesProvider>
+          </IntlProvider>,
+        );
+        userEvent.click(screen.getByRole('button', { name: 'Selgitus: Kuidas see summa tekib' }));
+        return screen.getByRole('dialog', { name: 'Kuidas see summa tekib?' });
+      };
+
+      it('counts the pillar money taken as a lump sum, which waits on a deposit', () => {
+        const dialog = openHelpFor(
+          contextWith(
+            { secondPillarAmount: '100000' },
+            { age65: { ...initialAge65(), secondPillar: 'lump' } },
+          ),
+        );
+
+        expect(dialog).toHaveTextContent(/sammastes u 0\s€ pensionile minnes;/);
+        expect(dialog).toHaveTextContent(
+          /hoiusel u 161\s690\s€ pensionile minnes \(välja makstud, kulutamata raha\);/,
+        );
+      });
+
+      it('leaves the deposit out while nothing is paid out to it', () => {
+        const dialog = openHelpFor(contextWith({ secondPillarAmount: '100000' }));
+
+        expect(dialog).toHaveTextContent(/sammastes u 179\s554\s€ pensionile minnes;/);
+        expect(dialog).not.toHaveTextContent(/hoiusel/);
+      });
     });
   });
 });

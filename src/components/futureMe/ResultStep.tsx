@@ -87,6 +87,7 @@ const savingsAtPensionStartOrToday = ({ rows, pensionStartAge }: Result): Simula
 
 const sustainableHelpValues = (result: Result, need: number) => {
   const statePensionRow = result.rows.find((row) => row.i1g > 0.5);
+  const savings = savingsAtPensionStartOrToday(result);
   return {
     sustainable: euro(result.sustainable),
     horizonAge: result.horizonAge,
@@ -94,7 +95,9 @@ const sustainableHelpValues = (result: Result, need: number) => {
     statePension: euro(statePensionRow?.i1g ?? 0),
     statePensionAge: result.p1StartAge,
     isPastPensionAge: isPastPensionAge(result) ? 'yes' : 'no',
-    pot: euro(savingsAtPensionStartOrToday(result).pot),
+    pot: euro(savings.pot),
+    hasDeposit: savings.deposit > 0.5 ? 'yes' : 'no',
+    deposit: euro(savings.deposit),
     need: euro(need),
   };
 };
