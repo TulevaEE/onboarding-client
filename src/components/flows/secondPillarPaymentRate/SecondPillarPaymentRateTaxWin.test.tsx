@@ -37,6 +37,8 @@ const createSecondPillarContributionWithEmployeePortion = (
   currency: 'EUR',
 });
 
+const instantAtLocalTime = (localDateTime: string) => new Date(localDateTime).toISOString();
+
 const createThirdPillarContributionWithAmount = (
   totalAmount: number,
   contributionDate: string,
@@ -161,8 +163,8 @@ describe('SecondPillarPaymentRateTaxWin', () => {
   it('handles edge case of contributions exactly on year boundary', () => {
     const employeeWithheldPortion100Euros = 100;
     const employeeWithheldPortion200Euros = 200;
-    const lastSecondOfPreviousYear = '2023-12-31T23:59:59Z';
-    const firstSecondOfCurrentYear = '2024-01-01T00:00:00Z';
+    const lastSecondOfPreviousYear = instantAtLocalTime('2023-12-31T23:59:59');
+    const firstSecondOfCurrentYear = instantAtLocalTime('2024-01-01T00:00:00');
     const expectedTaxBenefit44Euros = '44 €';
 
     const contributionsOnYearBoundary = [
@@ -349,8 +351,8 @@ describe('SecondPillarPaymentRateTaxWin', () => {
 
   it('handles contributions on different days of the same year', () => {
     const employeeWithheldPortion50Euros = 50;
-    const january1st = '2024-01-01T00:00:00Z';
-    const december31st = '2024-12-31T23:59:59Z';
+    const january1st = instantAtLocalTime('2024-01-01T00:00:00');
+    const december31st = instantAtLocalTime('2024-12-31T23:59:59');
     const expectedFullYearTaxBenefit = '22 €';
 
     const fullYearContributions = [

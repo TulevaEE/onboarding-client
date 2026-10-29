@@ -1,8 +1,10 @@
 import { Contribution } from '../common/apiModels';
-import { childBirthOf, deriveKidsPrefill } from './kidsPrefill';
+import { attributableIIMonths, childBirthOf, deriveKidsPrefill } from './kidsPrefill';
 
 const A_GIRL_BORN_FEB_2023 = '62302200000';
 const A_BOY_BORN_JUNE_2015 = '51506150000';
+const A_GIRL_BORN_DEC_2023 = '62312100000';
+const A_GIRL_BORN_MAR_2023 = '62303100000';
 
 const monthsFrom = (year: number, month: number, count: number): string[] =>
   Array.from({ length: count }, (_, offset) => {
@@ -45,7 +47,7 @@ describe('birth date from the personal code of a child', () => {
   });
 });
 
-describe('children prefill from the register and the contributions', () => {
+describe('children prefill from the roles and the contributions', () => {
   const children = [{ personalCode: A_BOY_BORN_JUNE_2015 }, { personalCode: A_GIRL_BORN_FEB_2023 }];
 
   it('leaves the months empty for children whose payment years overlap, as a payment names no child', () => {
@@ -55,7 +57,7 @@ describe('children prefill from the register and the contributions', () => {
     expect(deriveKidsPrefill(siblings, contributions)?.iiMonths).toEqual(['', '']);
   });
 
-  it('takes the birth years in the order of the register', () => {
+  it('takes the birth years in the order of the roles', () => {
     expect(deriveKidsPrefill(children, [])?.birthYears).toEqual([2015, 2023]);
   });
 
@@ -113,10 +115,43 @@ describe('children prefill from the register and the contributions', () => {
     ]);
   });
 
+  it('reads the month in Tallinn time, so a payment dated the first of the month counts in that month', () => {
+    const paidOnFirstOfMarchInTallinn = parentalBenefit('2023-02-28T22:00:00Z');
+
+    expect(
+      deriveKidsPrefill([{ personalCode: A_GIRL_BORN_MAR_2023 }], [paidOnFirstOfMarchInTallinn])
+        ?.iiMonths,
+    ).toEqual(['1']);
+  });
+
   it('never gives more than 36 months', () => {
     const contributions = monthsFrom(2023, 2, 37).map((time) => parentalBenefit(time));
 
     expect(deriveKidsPrefill(children, contributions)?.iiMonths).toEqual(['', '36']);
+  });
+
+  it('leaves the months empty while the state is still paying for a child under three', () => {
+    const paidSoFar = monthsFrom(2024, 1, 34).map((time) => parentalBenefit(time));
+
+    expect(
+      deriveKidsPrefill(
+        [{ personalCode: A_GIRL_BORN_DEC_2023 }],
+        paidSoFar,
+        new Date('2026-10-15T12:00:00Z'),
+      )?.iiMonths,
+    ).toEqual(['']);
+  });
+
+  it('counts the months once the three years of state payments are over', () => {
+    const paid = monthsFrom(2024, 1, 34).map((time) => parentalBenefit(time));
+
+    expect(
+      deriveKidsPrefill(
+        [{ personalCode: A_GIRL_BORN_DEC_2023 }],
+        paid,
+        new Date('2027-01-15T12:00:00Z'),
+      )?.iiMonths,
+    ).toEqual(['34']);
   });
 
   it('leaves the months empty when no payment can be found, so the saver says it', () => {
@@ -132,5 +167,47 @@ describe('children prefill from the register and the contributions', () => {
 
   it.each([[undefined], [[]], [[{ personalCode: 'x' }]]])('gives nothing for %p', (given) => {
     expect(deriveKidsPrefill(given, [])).toBeNull();
+  });
+});
+
+describe('prefilled months once the saver enters more children', () => {
+  const prefill = { birthYears: [2015, 2023], birthMonths: [6, 2], iiMonths: ['', '24'] };
+
+  it.each(['2020', '2022', '2026'])(
+    'clears them when an added child is born in %p, within three years, as a payment names no child',
+    (added) => {
+      expect(attributableIIMonths(prefill, ['2015', '2023', added], ['', '24', ''])).toEqual([
+        '',
+        '',
+        '',
+      ]);
+    },
+  );
+
+  it.each(['2019', '2027', '', '202'])(
+    'keeps them while the added child is born four or more years apart or its year is not typed yet: %p',
+    (added) => {
+      expect(attributableIIMonths(prefill, ['2015', '2023', added], ['', '24', ''])).toEqual([
+        '',
+        '24',
+        '',
+      ]);
+    },
+  );
+
+  it('clears them when the saver changes the year of another prefilled child to within three years', () => {
+    expect(attributableIIMonths(prefill, ['2021', '2023'], ['', '24'])).toEqual(['', '']);
+  });
+
+  it('keeps a month count the saver typed', () => {
+    expect(attributableIIMonths(prefill, ['2015', '2023', '2022'], ['', '12', ''])).toEqual([
+      '',
+      '12',
+      '',
+    ]);
+  });
+
+  it('keeps the months when nothing was prefilled', () => {
+    expect(attributableIIMonths(null, ['2023', '2022'], ['12', ''])).toEqual(['12', '']);
   });
 });

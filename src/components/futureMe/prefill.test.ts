@@ -27,6 +27,18 @@ const secondPillarPayment = (time: string, socialTaxPortion: number): Contributi
   interest: 0,
 });
 
+const parentalBenefitPayment = (time: string): Contribution => ({
+  time,
+  sender: 'Riik',
+  amount: 76.12,
+  currency: 'EUR',
+  pillar: 2,
+  additionalParentalBenefit: 76.12,
+  employeeWithheldPortion: 0,
+  socialTaxPortion: 0,
+  interest: 0,
+});
+
 const thirdPillarPayment = (time: string, amount: number): Contribution => ({
   time,
   sender: 'Me',
@@ -257,6 +269,19 @@ describe('prefill from the pension data', () => {
     );
 
     expect(prefill.thirdPillarJoined).toBeNull();
+  });
+
+  it('leaves the state payment months of a child under three empty, as the state is still paying', () => {
+    const prefill = derivePrefill(
+      mockUser,
+      {
+        contributions: [parentalBenefitPayment('2026-09-10')],
+        children: [{ personalCode: '62312100000' }],
+      },
+      TODAY,
+    );
+
+    expect(prefill.kids).toEqual({ birthYears: [2023], iiMonths: [''] });
   });
 
   it('leaves the pension data fields empty when it could not be loaded', () => {

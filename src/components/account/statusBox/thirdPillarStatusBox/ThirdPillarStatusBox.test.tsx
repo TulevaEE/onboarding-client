@@ -8,7 +8,9 @@ import * as apiHooks from '../../../common/apiHooks';
 jest.mock('../../../common/apiHooks', () => ({
   useFundPensionStatus: () => ({ data: { fundPensions: [] } }),
   usePendingApplications: () => ({ data: [] }),
-  useMandateDeadlines: () => ({ data: { thirdPillarPaymentDeadline: '2023-12-28T13:59:59Z' } }),
+  useMandateDeadlines: () => ({
+    data: { thirdPillarPaymentDeadline: new Date('2023-12-28T13:59:59').toISOString() },
+  }),
 }));
 
 /**

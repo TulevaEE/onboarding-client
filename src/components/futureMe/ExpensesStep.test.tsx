@@ -14,7 +14,8 @@ jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: () => ({ data: [], isLoading: false }),
   useSourceFunds: () => ({ data: [], isLoading: false }),
-  useEligibleChildren: () => ({ data: [], isLoading: false }),
+  useRoles: () => ({ data: [], isLoading: false }),
+  usePendingOnboardings: () => ({ data: [], isLoading: false }),
 }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
 
@@ -206,7 +207,10 @@ describe('Costs step', () => {
       expect(screen.queryByText(/200\s€ üks kord aastas/)).not.toBeInTheDocument();
 
       userEvent.click(
-        screen.getByRole('button', { name: 'Selgitus: Mis muutub, kui elad pensionil üksi' }),
+        // eslint-disable-next-line testing-library/no-node-access
+        within(householdField().parentElement as HTMLElement).getByRole('button', {
+          name: 'Selgitus: Mis muutub, kui elad pensionil üksi',
+        }),
       );
 
       const help = screen.getByRole('dialog', { name: 'Mis muutub, kui elad pensionil üksi?' });

@@ -12,7 +12,8 @@ jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: () => ({ data: [], isLoading: false }),
   useSourceFunds: () => ({ data: [], isLoading: false }),
-  useEligibleChildren: () => ({ data: [], isLoading: false }),
+  useRoles: () => ({ data: [], isLoading: false }),
+  usePendingOnboardings: () => ({ data: [], isLoading: false }),
 }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
 jest.mock('react-chartjs-2', () => ({
@@ -73,6 +74,14 @@ describe('Result step: assumptions', () => {
 
     expect(screen.getByRole('heading', { level: 3, name: 'Eeldused' })).toBeInTheDocument();
     expect(screen.getByText(/Arvutus tugineb neile andmetele ja eeldustele/)).toBeVisible();
+  });
+
+  it('says the return and the costs change right here and only the data in the You step', () => {
+    openResultStep();
+
+    expect(
+      screen.getByText(/Tootlust ja kulupaketti saad muuta siin, oma andmeid sammus „Sina“/),
+    ).toBeVisible();
   });
 
   it('lists the data, the return of each pillar and the costs', () => {

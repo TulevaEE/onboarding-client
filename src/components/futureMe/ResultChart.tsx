@@ -23,6 +23,7 @@ import {
   chartRowsOf,
   chartSeriesOf,
   ChartSourceId,
+  pensionStartRowOf,
   startSourcesOf,
   tableRowsOf,
 } from './chartData';
@@ -33,6 +34,8 @@ import { SOURCE_COLORS, SOURCE_LABELS, SUMMARY_LABELS } from './chartSources';
 import { announcementOf } from './chartText';
 import { ResultChartTip } from './ResultChartTip';
 import { ChartAssumption, ChartGuide, SummaryNotes } from './ResultChartNotes';
+import { NominalChoice, NominalNote } from './ResultNominalChoice';
+import { NominalReturns, nominalResultOf } from './nominal';
 
 const HALO_COLOR = '#fff';
 const TICK_COLOR = '#6b7074';
@@ -50,6 +53,8 @@ const EVENT_DOT_BORDER = 2;
 const TIP_GAP = 10;
 const Y_AXIS_WIDTH = 76;
 const THOUSAND = 1000;
+const NOT_COUNTED = '–';
+const COUNTED_FROM_PENSION_AGE: (ChartSourceId | 'costs')[] = ['salary', 'costs'];
 
 ChartJS.register(
   CategoryScale,
@@ -92,13 +97,17 @@ const Summary = ({
   result,
   rows,
   notes,
+  need,
+  isNominal,
 }: {
   result: Result;
   rows: ChartRow[];
   notes: SummaryNote[];
+  need: number;
+  isNominal: boolean;
 }) => {
   const intl = useIntl();
-  const [start] = rows;
+  const start = pensionStartRowOf(rows);
   const sources = startSourcesOf(start).map((id) =>
     intl.formatMessage({ id: SUMMARY_LABELS[id] }, { amount: euro(start[id]) }),
   );
@@ -118,10 +127,17 @@ const Summary = ({
       </li>
       <SummaryNotes notes={notes} />
       <li>
-        <FormattedMessage
-          id="futureMe.result.chart.summary.costs"
-          values={{ amount: euro(start.costs) }}
-        />
+        {isNominal ? (
+          <FormattedMessage
+            id="futureMe.result.chart.summary.costsNominal"
+            values={{ today: euro(need), age: result.pensionStartAge, future: euro(start.costs) }}
+          />
+        ) : (
+          <FormattedMessage
+            id="futureMe.result.chart.summary.costs"
+            values={{ amount: euro(start.costs) }}
+          />
+        )}
       </li>
       <li>
         <FormattedMessage
@@ -140,6 +156,7 @@ const Summary = ({
 
 interface IncomeChartProps {
   rows: ChartRow[];
+  isNominal: boolean;
   events: ChartEvent[];
   hidden: ReadonlySet<ChartSourceId>;
   announce: (text: string) => void;
@@ -219,7 +236,7 @@ const datasetsOf = (
   });
 };
 
-const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
+const IncomeChart = ({ rows, isNominal, events, hidden, announce }: IncomeChartProps) => {
   const intl = useIntl();
   const chartRef = useRef<ChartJS<'line'>>(null);
   const plotRef = useRef<HTMLDivElement>(null);
@@ -263,7 +280,8 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
   };
 
   const { data, options } = useMemo(() => {
-    const [{ costs }] = rows;
+    const { costs } = pensionStartRowOf(rows);
+    const isCostsFlat = !isNominal && !rows[0].isBeforePension;
     const isNarrow = window.matchMedia(NARROW_SCREEN).matches;
     const tickStep = isNarrow ? NARROW_TICK_STEP : WIDE_TICK_STEP;
     const chartData: ChartData<'line'> = {
@@ -293,6 +311,9 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
         marks: marksOf(intl, events),
         costs: {
           amount: costs,
+          amounts: isCostsFlat
+            ? undefined
+            : rows.map((row) => (row.isBeforePension ? null : row.costs)),
           label: intl.formatMessage(
             { id: 'futureMe.result.chart.costsLabel' },
             { amount: euro(costs) },
@@ -321,7 +342,7 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
           position: 'right',
           stacked: true,
           beginAtZero: true,
-          suggestedMax: costs,
+          suggestedMax: Math.max(...rows.map((row) => row.costs)),
           grace: '20%',
           border: { display: false },
           grid: { display: false },
@@ -334,7 +355,7 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
       },
     };
     return { data: chartData, options: chartOptions };
-  }, [intl, rows, events, layers, hidden, eventAges]);
+  }, [intl, rows, isNominal, events, layers, hidden, eventAges]);
 
   useLayoutEffect(() => {
     const chart = chartRef.current;
@@ -519,7 +540,10 @@ const Legend = ({ rows, hidden, onToggle }: LegendProps) => {
   );
 };
 
-const IncomeTable = ({ rows }: { rows: ChartRow[] }) => {
+const tableAmountOf = (row: ChartRow, id: ChartSourceId | 'costs') =>
+  row.isBeforePension && COUNTED_FROM_PENSION_AGE.includes(id) ? NOT_COUNTED : euro(row[id]);
+
+const IncomeTable = ({ rows, isNominal }: { rows: ChartRow[]; isNominal: boolean }) => {
   const sources = chartSeriesOf(rows).map(({ id }) => id);
   return (
     <div
@@ -531,7 +555,13 @@ const IncomeTable = ({ rows }: { rows: ChartRow[] }) => {
     >
       <table className="table table-sm align-middle mb-0">
         <caption id="future-me-chart-table-caption">
-          <FormattedMessage id="futureMe.result.chart.table.caption" />
+          <FormattedMessage
+            id={
+              isNominal
+                ? 'futureMe.result.chart.table.captionNominal'
+                : 'futureMe.result.chart.table.caption'
+            }
+          />
         </caption>
         <thead>
           <tr>
@@ -554,10 +584,10 @@ const IncomeTable = ({ rows }: { rows: ChartRow[] }) => {
               <th scope="row">{row.age}</th>
               {sources.map((id) => (
                 <td key={id} className="text-end">
-                  {euro(row[id])}
+                  {tableAmountOf(row, id)}
                 </td>
               ))}
-              <td className="text-end">{euro(row.costs)}</td>
+              <td className="text-end">{tableAmountOf(row, 'costs')}</td>
             </tr>
           ))}
         </tbody>
@@ -566,15 +596,26 @@ const IncomeTable = ({ rows }: { rows: ChartRow[] }) => {
   );
 };
 
-export const ResultChart = ({ result, need }: { result: Result; need: number }) => {
+interface ResultChartProps {
+  result: Result;
+  need: number;
+  nominalReturns: NominalReturns;
+}
+
+export const ResultChart = ({ result, need, nominalReturns }: ResultChartProps) => {
   const intl = useIntl();
   const [isTableShown, setTableShown] = useState(false);
   const [hidden, setHidden] = useState<ReadonlySet<ChartSourceId>>(new Set());
   const [announcement, setAnnouncement] = useState('');
-  const rows = useMemo(() => chartRowsOf(result, need), [result, need]);
+  const [isNominal, setNominal] = useState(false);
+  const shown = useMemo(() => (isNominal ? nominalResultOf(result) : result), [result, isNominal]);
+  const rows = useMemo(() => chartRowsOf(shown, need, isNominal), [shown, need, isNominal]);
   const events = useMemo(() => chartEventsOf(result), [result]);
-  const notes = useMemo(() => summaryNotesOf(result, rows), [result, rows]);
-  const assumption = assumptionOf(result, rows, events);
+  const notes = useMemo(() => summaryNotesOf(shown, rows, isNominal), [shown, rows, isNominal]);
+  const assumption = useMemo(
+    () => assumptionOf(result, chartRowsOf(result, need), events),
+    [result, need, events],
+  );
 
   const toggleLayer = (id: ChartSourceId) => {
     const isHidden = hidden.has(id);
@@ -603,27 +644,35 @@ export const ResultChart = ({ result, need }: { result: Result; need: number }) 
         <h3 id="future-me-chart-title" className="h5 section-title">
           <FormattedMessage id="futureMe.result.chart.title" />
         </h3>
-        <button
-          type="button"
-          className="btn btn-outline-primary btn-sm"
-          aria-expanded={isTableShown}
-          aria-controls="future-me-chart-table"
-          onClick={() => setTableShown(!isTableShown)}
-        >
-          <FormattedMessage
-            id={
-              isTableShown
-                ? 'futureMe.result.chart.toggle.hide'
-                : 'futureMe.result.chart.toggle.show'
-            }
-          />
-        </button>
+        <NominalChoice isOn={isNominal} onChange={setNominal} />
       </div>
-      <Summary result={result} rows={rows} notes={notes} />
+      <NominalNote isOn={isNominal} returns={nominalReturns} />
+      <Summary result={shown} rows={rows} notes={notes} need={need} isNominal={isNominal} />
       {assumption && <ChartAssumption assumption={assumption} />}
-      <ChartGuide events={events} />
-      <div id="future-me-chart-table">{isTableShown && <IncomeTable rows={rows} />}</div>
-      <IncomeChart rows={rows} events={events} hidden={hidden} announce={setAnnouncement} />
+      <ChartGuide events={events} startsBeforePension={rows[0].isBeforePension} />
+      <button
+        type="button"
+        className="btn btn-outline-primary btn-sm result-chart-table-toggle"
+        aria-expanded={isTableShown}
+        aria-controls="future-me-chart-table"
+        onClick={() => setTableShown(!isTableShown)}
+      >
+        <FormattedMessage
+          id={
+            isTableShown ? 'futureMe.result.chart.toggle.hide' : 'futureMe.result.chart.toggle.show'
+          }
+        />
+      </button>
+      <div id="future-me-chart-table">
+        {isTableShown && <IncomeTable rows={rows} isNominal={isNominal} />}
+      </div>
+      <IncomeChart
+        rows={rows}
+        isNominal={isNominal}
+        events={events}
+        hidden={hidden}
+        announce={setAnnouncement}
+      />
       <Legend rows={rows} hidden={hidden} onToggle={toggleLayer} />
       <p role="status" className="visually-hidden">
         {announcement}

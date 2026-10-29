@@ -4,6 +4,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Sex } from './engine/pension';
 import { BIRTH_YEAR_MAX, BIRTH_YEAR_MIN, YouPrefill } from './prefill';
 import { EarlyRetirementFields } from './EarlyRetirementFields';
+import { KidsPrefill } from './kidsPrefill';
 import { SecondPillarSection, StateSection, ThirdPillarSection } from './YouBlocks';
 import { KidsSection, kidsOptional, WorkSection, workOptional } from './YouOptionalBlocks';
 import {
@@ -49,7 +50,7 @@ interface Props {
   touched: ReadonlySet<YouField>;
   openSections: Record<YouSectionId, boolean>;
   prefill: YouPrefill;
-  hasRegisterChildren: boolean;
+  prefilledKids: KidsPrefill | null;
   headingRef: RefObject<HTMLHeadingElement>;
   onChange: (changes: Partial<YouAnswers>) => void;
   onBlur: (field: YouField) => void;
@@ -63,7 +64,7 @@ export const YouStep = ({
   touched,
   openSections,
   prefill,
-  hasRegisterChildren,
+  prefilledKids,
   headingRef,
   onChange,
   onBlur,
@@ -178,7 +179,7 @@ export const YouStep = ({
         <ThirdPillarSection {...blockProps('thirdPillar')} />
         <KidsSection
           {...blockProps('kids')}
-          hasRegisterChildren={hasRegisterChildren}
+          prefilledKids={prefilledKids}
           optional={kidsOptional(
             answers,
             () => onAddSection('kids'),

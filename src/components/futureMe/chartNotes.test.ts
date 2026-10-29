@@ -5,6 +5,7 @@ import { chartRowsOf } from './chartData';
 import { assumptionOf, summaryNotesOf } from './chartNotes';
 import { chartEventsOf } from './chartEvents';
 import { initialExpenses, needMonthly } from './expensesAnswers';
+import { nominalFactorAt, nominalResultOf } from './nominal';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { initialAnswers, toStepPlanInput, YouAnswers } from './youAnswers';
@@ -58,6 +59,12 @@ const notesOf = (changes?: Changes) => {
   return summaryNotesOf(result, chartRowsOf(result, needMonthly(context.expenses)));
 };
 
+const nominalNotesOf = (changes?: Changes) => {
+  const context = contextWith(changes);
+  const result = nominalResultOf(resultOf(context));
+  return summaryNotesOf(result, chartRowsOf(result, needMonthly(context.expenses), true), true);
+};
+
 const assumptionFor = (changes?: Changes) => {
   const context = contextWith(changes);
   const result = resultOf(context);
@@ -82,6 +89,18 @@ describe('summaryNotesOf', () => {
       );
 
       expect(tax).toBeCloseTo(0.22 * Math.max(0, gross - allowance), 2);
+    });
+
+    it('lets the tax-free income grow with prices in future prices', () => {
+      const { allowance } = taxNoteOf({}, 'statePensionTax');
+      const paidYear = resultOf(contextWith()).rows.find(
+        ({ work, i1g }) => !work && i1g > 0.5,
+      )?.year;
+      const nominal = nominalNotesOf().find(({ kind }) => kind === 'statePensionTax');
+
+      expect(nominal?.kind === 'statePensionTax' && nominal.allowance).toBeCloseTo(
+        allowance * nominalFactorAt(paidYear ?? 0),
+      );
     });
 
     it('describes the full pension after taking half of it for a few years', () => {

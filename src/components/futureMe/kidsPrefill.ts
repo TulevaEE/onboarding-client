@@ -1,13 +1,19 @@
-import { Contribution } from '../common/apiModels';
-import { EligibleChild } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
+import { Contribution, PendingOnboarding, Role, User } from '../common/apiModels';
+import { isChildRole } from '../common/utils';
+import { dayInTallinn } from '../common/dateFormatter';
 
 const PERSONAL_CODE = /^[1-8]\d{10}$/;
 const MONTHS_IN_YEAR = 12;
 const FIRST_BIRTH_YEAR_WITH_PARENTAL_PAYMENT = 2021;
 const FIRST_BIRTH_MONTH_WITH_PARENTAL_PAYMENT = 9;
 const YEARS_UNDER_3_WITHOUT_BIRTH_MONTH = 2;
+const YEARS_OF_PARENTAL_PAYMENT = 3;
 export const PARENTAL_PAYMENT_MONTHS = 36;
 const CENTURY_BY_FIRST_DIGIT = [1800, 1800, 1900, 1900, 2000, 2000, 2100, 2100];
+
+export interface TulevaChild {
+  personalCode: string;
+}
 
 export interface KidsPrefill {
   birthYears: number[];
@@ -52,8 +58,10 @@ export const childBirthOf = (personalCode: string): ChildBirth | null => {
   return { year: century + Number(personalCode.slice(1, 3)), month };
 };
 
-const monthIndexOf = (isoTime: string): number =>
-  Number(isoTime.slice(0, 4)) * MONTHS_IN_YEAR + Number(isoTime.slice(5, 7)) - 1;
+const monthIndexOf = (isoTime: string): number => {
+  const day = dayInTallinn(isoTime);
+  return Number(day.slice(0, 4)) * MONTHS_IN_YEAR + Number(day.slice(5, 7)) - 1;
+};
 
 const monthsPaidFor = (birth: ChildBirth, contributions: Contribution[]): number => {
   const firstMonth = birthMonthOf(birth);
@@ -77,6 +85,9 @@ const sharesPaymentYears = (birth: ChildBirth, births: ChildBirth[]): boolean =>
       Math.abs(birthMonthOf(other) - birthMonthOf(birth)) <= PARENTAL_PAYMENT_MONTHS,
   );
 
+const isPaymentPeriodOver = (birth: ChildBirth, today: Date): boolean =>
+  monthIndexOf(today.toISOString()) > birthMonthOf(birth) + PARENTAL_PAYMENT_MONTHS;
+
 const iiMonthsOf = (
   birth: ChildBirth,
   births: ChildBirth[],
@@ -84,14 +95,60 @@ const iiMonthsOf = (
   today: Date,
 ): string => {
   const months =
-    isParentalPaymentMonthsAsked(birth, today) && !sharesPaymentYears(birth, births)
+    isParentalPaymentMonthsAsked(birth, today) &&
+    isPaymentPeriodOver(birth, today) &&
+    !sharesPaymentYears(birth, births)
       ? monthsPaidFor(birth, contributions)
       : 0;
   return months > 0 ? String(months) : '';
 };
 
+export const isPrefilledChild = (
+  prefill: KidsPrefill,
+  birthYears: string[],
+  index: number,
+): boolean =>
+  index < prefill.birthYears.length && birthYears[index] === String(prefill.birthYears[index]);
+
+const sharesPaymentYearsWithAddedChild = (
+  prefill: KidsPrefill,
+  birthYears: string[],
+  index: number,
+): boolean =>
+  birthYears.some(
+    (typed, other) =>
+      other !== index &&
+      !isPrefilledChild(prefill, birthYears, other) &&
+      Math.abs(Number(typed) - prefill.birthYears[index]) <= YEARS_OF_PARENTAL_PAYMENT,
+  );
+
+export const attributableIIMonths = (
+  prefill: KidsPrefill | null,
+  birthYears: string[],
+  iiMonths: string[],
+): string[] =>
+  iiMonths.map((months, index) =>
+    prefill !== null &&
+    isPrefilledChild(prefill, birthYears, index) &&
+    months === prefill.iiMonths[index] &&
+    sharesPaymentYearsWithAddedChild(prefill, birthYears, index)
+      ? ''
+      : months,
+  );
+
+export const tulevaChildrenOf = (
+  user: User,
+  roles: Role[] = [],
+  pendingOnboardings: PendingOnboarding[] = [],
+): TulevaChild[] => {
+  const codes = [...roles, ...pendingOnboardings]
+    .filter((role) => isChildRole(role, user))
+    .map(({ code }) => code);
+  return Array.from(new Set(codes)).map((code) => ({ personalCode: code }));
+};
+
 export const deriveKidsPrefill = (
-  children: Pick<EligibleChild, 'personalCode'>[] | undefined,
+  children: TulevaChild[] | undefined,
   contributions: Contribution[] | undefined,
   today: Date = new Date(),
 ): KidsPrefill | null => {

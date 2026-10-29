@@ -234,6 +234,37 @@ describe('resultAnswers', () => {
       );
     });
 
+    it('lists the monthly fund pension paid before the pension age', () => {
+      const result = resultOf(contextWith({ ...saver, thirdPillarPlan: 'fund' }));
+
+      expect(result.earlyThirdPillar.map(({ age }) => age)).toEqual(
+        Array.from({ length: result.pensionStartAge - 55 }, (_, offset) => 55 + offset),
+      );
+      expect(result.earlyThirdPillar[0].amount).toBeGreaterThan(0);
+    });
+
+    it('lists no fund pension before the pension age when the savings are kept or taken at once', () => {
+      expect(resultOf(contextWith({ ...saver, thirdPillarPlan: 'keep' })).earlyThirdPillar).toEqual(
+        [],
+      );
+      expect(resultOf(contextWith({ ...saver, thirdPillarPlan: 'lump' })).earlyThirdPillar).toEqual(
+        [],
+      );
+    });
+
+    it('lists the fund pension until work ends while working past the pension age', () => {
+      const result = resultOf(
+        contextWith(
+          { ...saver, thirdPillarPlan: 'fund' },
+          { age65: { ...initialAge65(), work: 'yes' as const, workUntil: '70' } },
+        ),
+      );
+
+      expect(result.earlyThirdPillar.map(({ age }) => age)).toEqual(
+        Array.from({ length: 70 - 55 }, (_, offset) => 55 + offset),
+      );
+    });
+
     it('leaves a smaller pot at the pension age than keeping it, as the money taken is spent', () => {
       const potAtPensionStart = (plan: 'keep' | 'lump' | 'fund') => {
         const result = resultOf(contextWith({ ...saver, thirdPillarPlan: plan }));

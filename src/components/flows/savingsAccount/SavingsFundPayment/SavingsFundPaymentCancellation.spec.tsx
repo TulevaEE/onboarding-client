@@ -10,6 +10,14 @@ import { initializeConfiguration } from '../../../config/config';
 import { applicationsBackend, useTestBackends } from '../../../../test/backend';
 import { savingFundPaymentApplication } from '../../../account/ApplicationSection/fixtures';
 
+const paymentCancellableUntilTheEndOfFebruary15InLocalTime = {
+  ...savingFundPaymentApplication,
+  details: {
+    ...savingFundPaymentApplication.details,
+    cancellationDeadline: new Date('2024-02-15T23:59:59.999').toISOString(),
+  },
+};
+
 describe('SavingsFundPaymentCancellation', () => {
   const server = setupServer();
   let history: History;
@@ -27,7 +35,7 @@ describe('SavingsFundPaymentCancellation', () => {
   beforeEach(async () => {
     initializeConfiguration();
     useTestBackends(server);
-    applicationsBackend(server, [savingFundPaymentApplication]);
+    applicationsBackend(server, [paymentCancellableUntilTheEndOfFebruary15InLocalTime]);
     initApp();
     history.push('/savings-fund/payment/PAYMENT123456/cancellation');
   });

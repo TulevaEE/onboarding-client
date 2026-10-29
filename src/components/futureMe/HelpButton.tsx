@@ -1,4 +1,4 @@
-import React, { MouseEvent, useLayoutEffect, useRef, useState } from 'react';
+import React, { MouseEvent, ReactNode, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
@@ -11,12 +11,15 @@ const WORD_JOINER = '\u2060';
 const TITLE_ID = 'future-me-help-title';
 const TRAILING_PUNCTUATION = /[?:]$/;
 
+type HelpValues = Record<string, ReactNode>;
+
 interface DialogProps {
   topic: HelpTopic;
+  values?: HelpValues;
   onClose: () => void;
 }
 
-const HelpDialog = ({ topic, onClose }: DialogProps) => {
+const HelpDialog = ({ topic, values, onClose }: DialogProps) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
 
@@ -57,7 +60,7 @@ const HelpDialog = ({ topic, onClose }: DialogProps) => {
       <div className="help-body">
         <FormattedMessage
           id={`futureMe.help.${topic}.body` as TranslationKey}
-          values={helpRichText}
+          values={{ ...helpRichText, ...values }}
         />
       </div>
     </dialog>,
@@ -65,7 +68,7 @@ const HelpDialog = ({ topic, onClose }: DialogProps) => {
   );
 };
 
-export const HelpButton = ({ topic }: { topic: HelpTopic }) => {
+export const HelpButton = ({ topic, values }: { topic: HelpTopic; values?: HelpValues }) => {
   const intl = useIntl();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -93,7 +96,7 @@ export const HelpButton = ({ topic }: { topic: HelpTopic }) => {
           {intl.formatMessage({ id: 'futureMe.help.open' }, { title })}
         </span>
       </button>
-      {isOpen && <HelpDialog topic={topic} onClose={close} />}
+      {isOpen && <HelpDialog topic={topic} values={values} onClose={close} />}
     </>
   );
 };

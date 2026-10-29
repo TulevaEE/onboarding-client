@@ -7,6 +7,7 @@ import { Age66Answers, initialAge66 } from './age66Answers';
 import { initialExpenses, needMonthly } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { ResultChart } from './ResultChart';
+import { nominalReturnsOf } from './nominal';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput, YouAnswers } from './youAnswers';
 import translations from '../translations';
@@ -60,7 +61,11 @@ const renderChart = (changes?: Changes) => {
   const result = resultOf(context);
   render(
     <IntlProvider locale="et" messages={translations.et}>
-      <ResultChart result={result} need={needMonthly(context.expenses)} />
+      <ResultChart
+        result={result}
+        need={needMonthly(context.expenses)}
+        nominalReturns={nominalReturnsOf(context)}
+      />
     </IntlProvider>,
   );
   return result;
@@ -153,7 +158,7 @@ describe('ResultChart assumption', () => {
 });
 
 describe('ResultChart reading guide', () => {
-  const guide = () => screen.getByRole('group');
+  const guide = () => screen.getByRole('group', { name: '' });
 
   it('is a closed section named for what it explains', () => {
     renderChart();
@@ -192,5 +197,11 @@ describe('ResultChart reading guide', () => {
     renderChart();
 
     expect(guide()).not.toHaveTextContent('Fondipensioni periood');
+  });
+
+  it('leaves the years before the pension age out when the chart starts at the pension age', () => {
+    renderChart();
+
+    expect(guide()).not.toHaveTextContent('Enne pensioniiga');
   });
 });

@@ -2,6 +2,7 @@ import { Chart, ChartType, Plugin } from 'chart.js';
 
 export interface CostsLineOptions {
   amount: number;
+  amounts?: (number | null)[];
   label: string;
 }
 
@@ -77,11 +78,36 @@ const drawPill = (
 
 const costsY = (chart: Chart<'line'>, amount: number) => chart.scales.y.getPixelForValue(amount);
 
+const firstCostsIndex = (amounts: (number | null)[]) =>
+  amounts.findIndex((amount) => amount !== null);
+
+const costsX = (chart: Chart<'line'>, amounts: (number | null)[] | undefined, index: number) =>
+  !amounts || index === 0 ? chart.chartArea.left : chart.scales.x.getPixelForValue(index);
+
 export const costsLine: Plugin<'line', CostsLineOptions> = {
   id: 'costs',
   beforeDatasetsDraw(chart, _args, options: CostsLineOptions) {
     const { ctx, chartArea } = chart;
+    const { amounts } = options;
     const y = costsY(chart, options.amount);
+    const trace = () => {
+      if (!amounts) {
+        ctx.moveTo(chartArea.left, y);
+        ctx.lineTo(chartArea.right, y);
+        return;
+      }
+      amounts.forEach((amount, index) => {
+        if (amount === null) {
+          return;
+        }
+        const x = costsX(chart, amounts, index);
+        if (index === firstCostsIndex(amounts)) {
+          ctx.moveTo(x, costsY(chart, amount));
+        } else {
+          ctx.lineTo(x, costsY(chart, amount));
+        }
+      });
+    };
     const stroke = (color: string, width: number, dash: number[]) => {
       ctx.save();
       ctx.strokeStyle = color;
@@ -89,8 +115,7 @@ export const costsLine: Plugin<'line', CostsLineOptions> = {
       ctx.lineCap = 'round';
       ctx.setLineDash(dash);
       ctx.beginPath();
-      ctx.moveTo(chartArea.left, y);
-      ctx.lineTo(chartArea.right, y);
+      trace();
       ctx.stroke();
       ctx.restore();
     };
@@ -100,7 +125,7 @@ export const costsLine: Plugin<'line', CostsLineOptions> = {
   afterDatasetsDraw(chart, _args, options: CostsLineOptions) {
     drawPill(
       chart.ctx,
-      chart.chartArea.left + MARK_PILL_GAP,
+      costsX(chart, options.amounts, firstCostsIndex(options.amounts ?? [])) + MARK_PILL_GAP,
       costsY(chart, options.amount) - PILL_HEIGHT / 2,
       options.label,
       { background: COSTS_COLOR, text: HALO_COLOR },

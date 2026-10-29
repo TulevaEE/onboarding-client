@@ -1,4 +1,11 @@
-import { CostLevel, CostLine, CostLineId, costLines, Household } from './engine/expenses';
+import {
+  CostLevel,
+  CostLine,
+  CostLineId,
+  costLines,
+  Household,
+  OWN_COST_LINE,
+} from './engine/expenses';
 
 type LineEdits = Partial<Record<CostLineId, string>>;
 
@@ -66,3 +73,8 @@ export const withoutLevelEdits = (answers: ExpensesAnswers, level: CostLevel): E
   ...answers,
   edits: { ...answers.edits, [level]: {} },
 });
+
+export const withOwnCostsRaisedBy = (answers: ExpensesAnswers, extra: number): ExpensesAnswers => {
+  const own = amountAt(answers, answers.level, { id: OWN_COST_LINE, amount: 0 });
+  return withLineEdit(answers, OWN_COST_LINE, String(Math.round(own + extra)));
+};

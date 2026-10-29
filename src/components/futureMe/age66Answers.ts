@@ -1,5 +1,5 @@
 import { Age60Answers, PayoutChoice } from './age60Answers';
-import { Age65Answers, isPayoutChoiceMadeAtAnotherStep } from './age65Answers';
+import { Age65Answers, isPayoutChoiceMadeAtAnotherStep, workUntilOf } from './age65Answers';
 import { FirstPillarChoice } from './engine/pension';
 import { StepPlanInput } from './steps';
 import { YouAnswers } from './youAnswers';
@@ -83,6 +83,27 @@ export const fundStartOf = (
   return isGrowing(pillar, context) && fundStartAges(pillar, context).includes(picked)
     ? picked
     : undefined;
+};
+
+const payoutOpenAge = (pillar: Pillar, context: Age66Context): number => {
+  const pensionAge = retirementAge(context.plan);
+  const workEnd = workUntilOf(context.age65, context.plan) ?? pensionAge;
+  return Math.max(pensionAge, workEnd, pillarPayoutAge(pillar, context));
+};
+
+export const fundPensionStartOf = (
+  pillar: Pillar,
+  answers: Age66Answers,
+  context: Age66Context,
+): number | undefined => {
+  if (!hasPillar(pillar, context)) {
+    return undefined;
+  }
+  if (payoutAtPensionAge(pillar, context) === 'fund') {
+    return payoutOpenAge(pillar, context);
+  }
+  const picked = fundStartOf(pillar, answers, context);
+  return picked === undefined ? undefined : Math.max(picked, payoutOpenAge(pillar, context));
 };
 
 export const isContractAsked = (

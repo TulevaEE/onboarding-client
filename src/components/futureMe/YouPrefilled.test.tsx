@@ -9,10 +9,11 @@ import translations from '../translations';
 import { mockUser } from '../../test/backend-responses';
 
 jest.mock('../common/apiHooks', () => ({
+  useRoles: () => ({ data: [], isLoading: false }),
+  usePendingOnboardings: () => ({ data: [], isLoading: false }),
   useMe: jest.fn(),
   useContributions: jest.fn(),
   useSourceFunds: jest.fn(),
-  useEligibleChildren: () => ({ data: [], isLoading: false }),
 }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
 

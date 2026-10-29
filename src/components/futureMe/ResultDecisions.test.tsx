@@ -12,7 +12,8 @@ jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: () => ({ data: [], isLoading: false }),
   useSourceFunds: () => ({ data: [], isLoading: false }),
-  useEligibleChildren: () => ({ data: [], isLoading: false }),
+  useRoles: () => ({ data: [], isLoading: false }),
+  usePendingOnboardings: () => ({ data: [], isLoading: false }),
 }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
 jest.mock('react-chartjs-2', () => ({
@@ -77,7 +78,7 @@ describe('Result step: your decisions', () => {
 
     expect(screen.getByRole('heading', { level: 3, name: 'Sinu otsused' })).toBeInTheDocument();
     expect(
-      screen.getByText(/Iga otsuse juures on, millal see avaneb ja mis maksuga/),
+      screen.getByText(/^Iga otsuse juures on, millal see avaneb\. Muuda ükskõik millist valikut/),
     ).toBeVisible();
   });
 
@@ -93,6 +94,7 @@ describe('Result step: your decisions', () => {
       'Riiklik pension 65-⁠aastaselt',
       'II sammas pensionieas',
       'III sammas pensionieas',
+      'Fondipension',
     ]);
   });
 

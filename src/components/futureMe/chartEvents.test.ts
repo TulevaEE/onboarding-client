@@ -37,6 +37,18 @@ const kindsOf = (context: ResultContext) =>
   chartEventsOf(resultOf(context)).map(({ kind }) => kind);
 
 describe('chartEvents', () => {
+  it('marks the fund pension start at 55 when the III pillar pays from then', () => {
+    const context = contextWith({}, {}, '2000', {
+      thirdPillarJoined: 'before',
+      thirdPillarAmount: '8000',
+      thirdPillarPlan: 'fund',
+    });
+
+    const fundStarts = chartEventsOf(resultOf(context)).filter(({ kind }) => kind === 'fundStart');
+
+    expect(fundStarts.map(({ age }) => age)).toEqual([55]);
+  });
+
   it('starts at the pension age and ends where the share of people alive of the same age drops to 10%', () => {
     const result = resultOf(contextWith());
 

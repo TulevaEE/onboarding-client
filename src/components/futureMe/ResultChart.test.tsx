@@ -8,6 +8,7 @@ import { initialAge66 } from './age66Answers';
 import { initialExpenses, needMonthly } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { ResultChart } from './ResultChart';
+import { nominalReturnsOf } from './nominal';
 import { ResultChartTip } from './ResultChartTip';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
@@ -59,7 +60,11 @@ const contextWith = (age65: Partial<Age65Answers> = {}, gross = '2000'): ResultC
 const renderChart = (context: ResultContext = contextWith()) =>
   render(
     <IntlProvider locale="et" messages={translations.et}>
-      <ResultChart result={resultOf(context)} need={needMonthly(context.expenses)} />
+      <ResultChart
+        result={resultOf(context)}
+        need={needMonthly(context.expenses)}
+        nominalReturns={nominalReturnsOf(context)}
+      />
     </IntlProvider>,
   );
 
@@ -67,9 +72,9 @@ const chart = () => screen.getByRole('img', { name: 'Sissetulek ja kulud vanuse 
 const readout = () => screen.getByRole('status');
 const tip = () => screen.queryByTestId('chart-tip');
 const lastChartProps = () => mockChart.mock.calls[mockChart.mock.calls.length - 1][0];
+const TAB_STOPS_BEFORE_CHART = 5;
 const tabToChart = () => {
-  userEvent.tab();
-  userEvent.tab();
+  Array.from({ length: TAB_STOPS_BEFORE_CHART }).forEach(() => userEvent.tab());
 };
 const press = (key: string) => userEvent.keyboard(`{${key}}`);
 const hoverAt = (index: number) =>
@@ -271,7 +276,7 @@ describe('ResultChart interaction', () => {
   });
 
   describe('tooltip content', () => {
-    const tipFor = (changes: { shortfall?: number; surplus?: number }) =>
+    const tipFor = (changes: { shortfall?: number; surplus?: number; isBeforePension?: boolean }) =>
       render(
         <IntlProvider locale="et" messages={translations.et}>
           <ResultChartTip
@@ -285,6 +290,7 @@ describe('ResultChart interaction', () => {
               thirdPillar: 0,
               deposit: 0,
               costs: 800,
+              isBeforePension: false,
               shortfall: 0,
               surplus: 0,
               ...changes,
@@ -300,6 +306,13 @@ describe('ResultChart interaction', () => {
       tipFor({ surplus: 200 });
 
       expect(screen.getByText(/^Üle jääb 200\s€$/)).toBeInTheDocument();
+    });
+
+    it('leaves out the costs and their cover before the pension age', () => {
+      tipFor({ isBeforePension: true, surplus: 200 });
+
+      expect(screen.queryByText('Kulud')).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Üle jääb/)).not.toBeInTheDocument();
     });
 
     it('shows an event that goes wrong in its own colour', () => {
@@ -475,6 +488,15 @@ describe('ResultChart interaction', () => {
 
       expect(readout()).toHaveTextContent('Palk peidetud.');
     });
+  });
+
+  it('puts the table button right above the chart, after everything else', () => {
+    renderChart();
+    Array.from({ length: TAB_STOPS_BEFORE_CHART - 1 }).forEach(() => userEvent.tab());
+
+    expect(screen.getByRole('button', { name: 'Näita tabelina' })).toHaveFocus();
+    userEvent.tab();
+    expect(chart()).toHaveFocus();
   });
 
   it('puts the same keys hint in the description of the chart', () => {

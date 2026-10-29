@@ -1,7 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useContributions, useEligibleChildren, useMe, useSourceFunds } from '../common/apiHooks';
+import { FormattedMessage } from 'react-intl';
+import {
+  useContributions,
+  useMe,
+  usePendingOnboardings,
+  useRoles,
+  useSourceFunds,
+} from '../common/apiHooks';
+import { tulevaChildrenOf } from './kidsPrefill';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { usePageTitle } from '../common/usePageTitle';
 import { Age55Step } from './Age55Step';
@@ -12,17 +19,15 @@ import { Age65Step } from './Age65Step';
 import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { Age66Step } from './Age66Step';
+import { DecisionActionsProvider } from './decisionActions';
 import { DecisionChanges } from './decisions';
 import { initialExpenses } from './expensesAnswers';
 import { ExpensesStep } from './ExpensesStep';
 import { derivePrefill, YouPrefill } from './prefill';
-import { PlaceholderStep } from './PlaceholderStep';
-import { DecisionChangesProvider } from './ResultDecisions';
 import { ResultStep } from './ResultStep';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { SpecialPensionStep } from './SpecialPensionStep';
 import { StepTrail } from './StepTrail';
-import { stepLabel } from './stepLabels';
 import { FutureMeStep, neighbouringStep, shownSteps, StepId } from './steps';
 import { trackFutureMeStep } from './tracking';
 import {
@@ -58,7 +63,6 @@ const MONTHS_IN_YEAR = 12;
 const ADDED_FLAGS = { kids: 'kidsAdded', work: 'workAdded' } as const;
 
 const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
-  const intl = useIntl();
   const [prefillAtStart] = useState(prefill);
   const [answers, setAnswers] = useState(() => initialAnswers(prefillAtStart));
   const [age60, setAge60] = useState(initialAge60);
@@ -152,11 +156,23 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   };
 
   const changeDecisions = (changes: DecisionChanges) => {
+    if (changes.you) {
+      setAnswers(changes.you);
+    }
     if (changes.age60) {
       setAge60(changes.age60);
     }
     if (changes.age65) {
       setAge65(changes.age65);
+    }
+    if (changes.age66) {
+      setAge66(changes.age66);
+    }
+    if (changes.specialPension) {
+      setSpecialPension(changes.specialPension);
+    }
+    if (changes.expenses) {
+      setExpenses(changes.expenses);
     }
   };
 
@@ -168,7 +184,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           touched={touched}
           openSections={openSections}
           prefill={prefillAtStart}
-          hasRegisterChildren={Boolean(prefillAtStart.kids)}
+          prefilledKids={prefillAtStart.kids ?? null}
           headingRef={headingRef}
           onChange={(changes) => setAnswers((previous) => ({ ...previous, ...changes }))}
           onBlur={(field) => setTouched((previous) => new Set(previous).add(field))}
@@ -258,18 +274,13 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
     if (step === FutureMeStep.COSTS) {
       return <ExpensesStep answers={expenses} headingRef={headingRef} onChange={setExpenses} />;
     }
-    if (step === FutureMeStep.RESULT) {
-      return (
-        <DecisionChangesProvider value={changeDecisions}>
-          <ResultStep
-            context={{ you: answers, plan, age60, age65, age66, specialPension, expenses }}
-            headingRef={headingRef}
-          />
-        </DecisionChangesProvider>
-      );
-    }
     return (
-      <PlaceholderStep step={step} label={stepLabel(intl, step, plan)} headingRef={headingRef} />
+      <DecisionActionsProvider value={{ change: changeDecisions, goTo }}>
+        <ResultStep
+          context={{ you: answers, plan, age60, age65, age66, specialPension, expenses }}
+          headingRef={headingRef}
+        />
+      </DecisionActionsProvider>
     );
   };
 
@@ -328,13 +339,17 @@ export const FutureMe = () => {
   const me = useMe();
   const contributionsQuery = useContributions();
   const sourceFundsQuery = useSourceFunds();
-  const childrenQuery = useEligibleChildren();
+  const rolesQuery = useRoles();
+  const pendingOnboardingsQuery = usePendingOnboardings();
   const { data: user } = me;
   const { data: contributions } = contributionsQuery;
   const { data: sourceFunds } = sourceFundsQuery;
-  const { data: children } = childrenQuery;
 
-  if ([me, contributionsQuery, sourceFundsQuery, childrenQuery].some(isLoadingForTheFirstTime)) {
+  if (
+    [me, contributionsQuery, sourceFundsQuery, rolesQuery, pendingOnboardingsQuery].some(
+      isLoadingForTheFirstTime,
+    )
+  ) {
     return <Shimmer height={400} />;
   }
 
@@ -342,7 +357,11 @@ export const FutureMe = () => {
     <FutureMeSteps
       prefill={
         user
-          ? derivePrefill(user, { contributions, sourceFunds, children })
+          ? derivePrefill(user, {
+              contributions,
+              sourceFunds,
+              children: tulevaChildrenOf(user, rolesQuery.data, pendingOnboardingsQuery.data),
+            })
           : { birthYear: null, sex: null, secondPillarRate: null }
       }
     />

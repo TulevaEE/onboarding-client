@@ -21,7 +21,7 @@ import {
 } from './specialPensionAnswers';
 import { FutureMeStep, StepPlanInput } from './steps';
 import { YouAnswers } from './youAnswers';
-import { ChapterHead } from './ChapterHead';
+import { StepSection } from './StepSection';
 import { ageTense, payoutAge, retirementAge } from './planAges';
 import { LinkButton } from './LinkButton';
 
@@ -32,7 +32,8 @@ interface Props {
   age60: Age60Answers;
   age65: Age65Answers;
   specialPension: SpecialPensionAnswers;
-  headingRef: RefObject<HTMLHeadingElement>;
+  headingRef?: RefObject<HTMLHeadingElement>;
+  isEmbedded?: boolean;
   onChange: (answers: Age66Answers) => void;
   onEditYou: () => void;
   onEditAge60: () => void;
@@ -56,6 +57,7 @@ export const Age66Step = ({
   age65,
   specialPension,
   headingRef,
+  isEmbedded,
   onChange,
   onEditYou,
   onEditAge60,
@@ -82,22 +84,23 @@ export const Age66Step = ({
   const isThirdContractAsked = isContractAsked('thirdPillar', answers, context);
 
   return (
-    <section className="chapter card p-4" aria-labelledby="future-me-age66-heading">
-      <ChapterHead step={FutureMeStep.AGE_66_PLUS}>
-        <p className="chapter-kicker">
-          <FormattedMessage
-            id="futureMe.age66.kicker"
-            values={{
-              age: firstAge,
-              year: plan.birthYear + firstAge,
-              tense: ageTense(plan.birthYear, firstAge),
-            }}
-          />
-        </p>
-        <h2 id="future-me-age66-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
-          <FormattedMessage id="futureMe.age66.title" values={{ state: titleState }} />
-        </h2>
-      </ChapterHead>
+    <StepSection
+      step={FutureMeStep.AGE_66_PLUS}
+      headingId="future-me-age66-heading"
+      headingRef={headingRef}
+      isEmbedded={isEmbedded}
+      kicker={
+        <FormattedMessage
+          id="futureMe.age66.kicker"
+          values={{
+            age: firstAge,
+            year: plan.birthYear + firstAge,
+            tense: ageTense(plan.birthYear, firstAge),
+          }}
+        />
+      }
+      title={<FormattedMessage id="futureMe.age66.title" values={{ state: titleState }} />}
+    >
       {comparison && atPensionAge && (
         <FirstPillarChoice
           idPrefix="future-me-first-pillar-at-pension-age"
@@ -166,7 +169,7 @@ export const Age66Step = ({
           )}
         </p>
       )}
-      <FundPensionFaq />
-    </section>
+      {!isEmbedded && <FundPensionFaq />}
+    </StepSection>
   );
 };
