@@ -50,8 +50,12 @@ export interface Family {
   total: number;
 }
 
-const compareInputOf = ({ you, plan, age65, age66, specialPension }: CompareContext) => {
-  const hasSpecialPension = plan.hasSpecialPension && amountOf(specialPension.monthly) > 0;
+const isSpecialPensionCounted = ({ plan, specialPension }: CompareContext): boolean =>
+  plan.hasSpecialPension && amountOf(specialPension.monthly) > 0;
+
+const compareInputOf = (context: CompareContext) => {
+  const { you, plan, age65, age66, specialPension } = context;
+  const hasSpecialPension = isSpecialPensionCounted(context);
   return {
     ...pensionInputOf(specialPension, you, plan, age65, age66),
     spHas: hasSpecialPension,
@@ -141,8 +145,8 @@ const rescueRowOf = (
   };
 };
 
-export const isRescueComparisonShown = ({ you }: CompareContext): boolean =>
-  isRescueBasisAsked(you);
+export const isRescueComparisonShown = (context: CompareContext): boolean =>
+  isRescueBasisAsked(context.you) && !isSpecialPensionCounted(context);
 
 export const rescueComparisonOf = (context: CompareContext) => {
   const input = compareInputOf(context);

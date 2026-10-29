@@ -2,6 +2,7 @@ import { initialAge65 } from './age65Answers';
 import { AVG_OLD_AGE_PENSION } from './engine/pension';
 import { isRescueComparisonShown, rescueComparisonOf } from './kidsCompare';
 import { contextWith } from './resultContextFixture';
+import { initialSpecialPension } from './specialPensionAnswers';
 
 const threeChildren = {
   kidsAdded: true,
@@ -35,6 +36,15 @@ describe('rescue allowance or the pension for the children', () => {
     expect(isRescueComparisonShown(withRescue())).toBe(true);
     expect(isRescueComparisonShown(withRescue({ kidsEarlyUser: 'other' }))).toBe(false);
     expect(isRescueComparisonShown(contextWith(threeChildren))).toBe(false);
+  });
+
+  it('is not compared while a special pension is counted, as only one state pension is paid', () => {
+    const specialPensionFrom55 = withRescue(
+      { hasSpecialPension: true, specialPensionStartAge: '55' },
+      { specialPension: { ...initialSpecialPension(), monthly: '1200' } },
+    );
+
+    expect(isRescueComparisonShown(specialPensionFrom55)).toBe(false);
   });
 
   it('lays out when each way leaves work, pays the allowance and then the pension', () => {
