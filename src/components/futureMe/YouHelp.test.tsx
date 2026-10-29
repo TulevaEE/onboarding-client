@@ -135,8 +135,8 @@ describe('Sina step help buttons', () => {
       /Kuidas III\ssamba sissemakse arvutuses muutub$/,
     ],
     [
-      'number of kids',
-      () => screen.getByRole('spinbutton', { name: /Mitu last/ }),
+      'who raises the kids',
+      () => screen.getByRole('combobox', { name: /Kes saab pensionilisa/ }),
       /Keda loetakse lapse kasvatajaks$/,
     ],
     [

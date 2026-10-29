@@ -11,7 +11,7 @@ import {
   rescueBasisOf,
   fieldProblem,
   firstInvalidChildIIMonths,
-  hasChildWithoutBirthYear,
+  childNoteOf,
   initialAnswers,
   isChildIIMonthsAsked,
   isChildIIMonthsInvalid,
@@ -394,13 +394,28 @@ describe('retiring early', () => {
     ).toBe(0);
   });
 
-  it('notes as counted raised only the children with no birth year at all', () => {
-    expect(hasChildWithoutBirthYear(withKids(['1990', '2050']))).toBe(false);
-    expect(hasChildWithoutBirthYear(withKids(['1990', '']))).toBe(true);
+  it('does not count a child without a birth year', () => {
+    expect(earlyRetirementYears(withKids(['1990', '1992', '']))).toBe(0);
+    expect(countedKids(withKids(['1990', '']))).toMatchObject({ counted: 1, late: 0 });
   });
 
-  it('counts a child without a valid birth year as raised', () => {
-    expect(earlyRetirementYears(withKids(['1990', '1992', '']))).toBe(1);
+  it('notes under a child without a birth year that the child is not counted', () => {
+    expect(childNoteOf(withKids(['1990', '']), 1)).toEqual({ kind: 'noBirthYear' });
+  });
+
+  it('notes under a child raised for less than eight years when the child turns eight', () => {
+    expect(childNoteOf(withKids(['1990', '2040'], { pensionAgeYears: '65' }), 1)).toEqual({
+      kind: 'late',
+      turnsEight: 2048,
+      retirementYear: 2045,
+    });
+  });
+
+  it('has no note for a counted child or a birth year the field rejects', () => {
+    const answers = withKids(['1990', '19'], { pensionAgeYears: '65' });
+
+    expect(childNoteOf(answers, 0)).toBeNull();
+    expect(childNoteOf(answers, 1)).toBeNull();
   });
 
   it('counts only children raised for eight years by the retirement year', () => {

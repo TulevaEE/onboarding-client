@@ -61,10 +61,12 @@ const fillInYou = ({ secondPillar = true, thirdPillar = true } = {}) => {
 
 const addFiveChildren = () => {
   userEvent.click(screen.getByRole('button', { name: 'Lisa lapsed' }));
-  typeInto(screen.getByRole('spinbutton', { name: /Mitu last\?/ }), '5');
+  [2, 3, 4, 5].forEach(() => userEvent.click(screen.getByRole('button', { name: 'Lisa laps' })));
   ['1990', '1992', '1994', '1996', '1998'].forEach((year, index) =>
     typeInto(
-      screen.getByRole('textbox', { name: new RegExp(`${index + 1}\\. lapse sünniaasta`) }),
+      within(screen.getByRole('group', { name: `Laps ${index + 1}` })).getByRole('textbox', {
+        name: 'Sünniaasta',
+      }),
       year,
     ),
   );
