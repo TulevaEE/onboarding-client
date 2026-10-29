@@ -100,13 +100,33 @@ describe('chartPlugins', () => {
     });
 
     it('moves a pill off every pill drawn before it, not only the last one', () => {
+      const { ctx, chart } = fakeChart({
+        measureText: jest.fn((text: string) => ({ width: text.length * 5 })),
+      });
+
+      marksLine.afterDatasetsDraw?.(
+        chart,
+        {} as never,
+        [
+          { age: 65, text: 'Fondipension lõpeb' },
+          { age: 67, text: 'Töö' },
+          { age: 72, text: 'Raha' },
+        ],
+        false,
+      );
+
+      expect(pillAt(ctx, 2).y).toBe(CHART_TOP + 2 + 24);
+    });
+
+    it('puts a pill back on the top row once it is clear of the pills there', () => {
       const ctx = drawMarks([
         { age: 65, text: 'Pension 65' },
-        { age: 67, text: 'Töö lõpp' },
-        { age: 68, text: 'Raha otsas' },
+        { age: 69, text: 'Töö lõpp' },
+        { age: 72, text: 'Raha otsas' },
       ]);
 
-      expect(pillAt(ctx, 2).y).toBe(CHART_TOP + 2 + 48);
+      expect(pillAt(ctx, 1).y).toBe(CHART_TOP + 2 + 24);
+      expect(pillAt(ctx, 2).y).toBe(CHART_TOP + 2);
     });
 
     it('moves a pill that would sit on the costs label', () => {

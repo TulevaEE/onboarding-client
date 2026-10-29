@@ -120,9 +120,12 @@ describe('ResultChart drawing', () => {
   it('draws the costs line over the layers, age by age, from the pension age', () => {
     renderChart();
     const { points } = lastProps().options.plugins.costs;
+    const ages = layer(STATE_PENSION)
+      .data.map(({ x }: Point) => x)
+      .filter((age: number, index: number, all: number[]) => all.indexOf(age) === index);
 
     expect(points[0]).toEqual({ age: PENSION_AGE, amount: 791 });
-    expect(lastProps().options.plugins.costs.amounts).toBeUndefined();
+    expect(points.map(({ age }: { age: number }) => age)).toEqual(ages);
   });
 
   describe('where the layers add up to the costs', () => {
