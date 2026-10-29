@@ -8,6 +8,7 @@ import { ResultAdvice } from './ResultAdvice';
 import { ResultAssumptions } from './ResultAssumptions';
 import { ResultChart } from './ResultChart';
 import { ResultDecisions } from './ResultDecisions';
+import { ResultLegacy } from './ResultLegacy';
 import { ResultRules } from './ResultRules';
 import {
   coverageKind,
@@ -18,12 +19,13 @@ import {
   ResultContext,
   resultOf,
 } from './resultAnswers';
-import { FutureMeStep } from './steps';
+import { FutureMeStep, StepId } from './steps';
 import { strong } from './richText';
 
 interface Props {
   context: ResultContext;
   headingRef: RefObject<HTMLHeadingElement>;
+  onGoTo: (step: StepId) => void;
 }
 
 const INCOME_LABELS: Record<IncomeSource, TranslationKey> = {
@@ -163,7 +165,7 @@ const IncomeAtPensionAge = ({ result, need }: { result: Result; need: number }) 
   );
 };
 
-export const ResultStep = ({ context, headingRef }: Props) => {
+export const ResultStep = ({ context, headingRef, onGoTo }: Props) => {
   const result = resultOf(context);
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-result-heading">
@@ -186,6 +188,7 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       <Tiles result={result} />
       <IncomeAtPensionAge result={result} need={needMonthly(context.expenses)} />
       <ResultChart result={result} need={needMonthly(context.expenses)} />
+      <ResultLegacy context={context} result={result} onGoTo={onGoTo} />
       <ResultDecisions context={context} />
       <ResultAssumptions context={context} />
       <ResultRules context={context} />

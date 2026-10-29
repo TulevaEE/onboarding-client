@@ -16,11 +16,19 @@ import { CURRENT_YEAR, DEFERRAL_INCREASE, PENSIONER_ALLOWANCE } from './engine/p
 import { ResultComparison } from './ResultComparison';
 import { MAX_AGE_SHOWN, Result, ResultContext, resultOf } from './resultAnswers';
 
-type ChangeDecisions = (changes: DecisionChanges) => void;
+export type ChangeDecisions = (changes: DecisionChanges) => void;
 
 const DecisionChangesContext = createContext<ChangeDecisions | null>(null);
 
 export const DecisionChangesProvider = DecisionChangesContext.Provider;
+
+export const useDecisionChanges = (): ChangeDecisions => {
+  const onChange = useContext(DecisionChangesContext);
+  if (!onChange) {
+    throw new Error('Decision changes need DecisionChangesProvider');
+  }
+  return onChange;
+};
 
 const MONTHS_IN_YEAR = 12;
 const NO_BREAK_SPACE = ' ';
@@ -233,11 +241,8 @@ const DecisionRow = ({ context, decision, isOpen, onToggle, onChange }: RowProps
 
 const DecisionList = ({ context }: { context: ResultContext }) => {
   const intl = useIntl();
-  const onChange = useContext(DecisionChangesContext);
+  const onChange = useDecisionChanges();
   const [openId, setOpenId] = useState<DecisionId | null>(null);
-  if (!onChange) {
-    throw new Error('ResultDecisions needs DecisionChangesProvider');
-  }
   return (
     <>
       <h3 className="h5 section-title mt-4">

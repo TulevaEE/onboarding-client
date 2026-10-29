@@ -8,6 +8,7 @@ import {
   withHousehold,
   withLevel,
   withLineEdit,
+  withOwnCostsRaisedBy,
   withoutLevelEdits,
 } from './expensesAnswers';
 
@@ -97,6 +98,21 @@ describe('expensesAnswers', () => {
       expect(levelNeed(reset, 'optimal')).toBe(891);
       expect(levelNeed(reset, 'frugal')).toBe(791 - 221 + 300);
       expect(isLevelEdited(reset, 'optimal')).toBe(false);
+    });
+  });
+
+  describe('raising the own costs line', () => {
+    it('adds the rounded extra to the own costs of the chosen level', () => {
+      const answers = withOwnCostsRaisedBy(initialExpenses(), 120.4);
+
+      expect(shownAmount(answers, { id: 'other', amount: 0 })).toBe('120');
+      expect(needMonthly(answers)).toBe(791 + 120);
+    });
+
+    it('builds on what was already typed into the own costs line', () => {
+      const typed = withLineEdit(initialExpenses(), 'other', '100');
+
+      expect(needMonthly(withOwnCostsRaisedBy(typed, 50.2))).toBe(791 + 150);
     });
   });
 });
