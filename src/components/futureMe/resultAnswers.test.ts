@@ -394,3 +394,25 @@ describe('resultAnswers', () => {
     });
   });
 });
+
+describe('civil service years in the result', () => {
+  const civilServant = (civilYears: string, changes = {}) =>
+    contextWith({ workAdded: true, isCivilServant: true, civilYears, ...changes });
+  const statePensionAtStart = (context: ResultContext): number => {
+    const result = resultOf(context);
+    return result.rows.find(({ age }) => age === result.pensionStartAge)?.i1g ?? 0;
+  };
+
+  it('give the engine the civil service years once the saver ticks the civil servant', () => {
+    expect(resultInputOf(civilServant('20')).civilYears).toBe(20);
+    expect(resultInputOf(civilServant('20', { isCivilServant: false })).civilYears).toBe(0);
+    expect(resultInputOf(civilServant('20', { workAdded: false })).civilYears).toBe(0);
+  });
+
+  it('raise the state pension by the civil service increase', () => {
+    expect(statePensionAtStart(civilServant('20'))).toBeCloseTo(
+      statePensionAtStart(civilServant('0')) * 1.2,
+      6,
+    );
+  });
+});

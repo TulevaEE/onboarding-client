@@ -16,6 +16,7 @@ export const FIELD_DOM_IDS: Record<YouField, string> = {
   kidsCount: 'future-me-kids-count',
   hazardYears: 'future-me-hazard-years',
   rescueYears: 'future-me-rescue-years',
+  civilYears: 'future-me-civil-years',
   specialPensionStartAge: 'future-me-special-pension-start-age',
 };
 

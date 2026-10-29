@@ -37,6 +37,7 @@ export type YouField =
   | 'kidsCount'
   | 'hazardYears'
   | 'rescueYears'
+  | 'civilYears'
   | 'specialPensionStartAge';
 
 export type OptionalSectionId = 'kids' | 'work';
@@ -87,6 +88,7 @@ interface WorkAnswers {
   hasSpecialPension: boolean;
   specialPensionStartAge: string;
   isCivilServant: boolean;
+  civilYears: string;
   hasOtherSpecialCase: boolean;
 }
 
@@ -96,6 +98,7 @@ const FIELD_LIMITS: Partial<Record<YouField, FieldLimits>> = {
   kidsCount: { min: 0 },
   hazardYears: WORK_YEARS_LIMITS,
   rescueYears: WORK_YEARS_LIMITS,
+  civilYears: WORK_YEARS_LIMITS,
   specialPensionStartAge: SPECIAL_PENSION_START_AGE_LIMITS,
 };
 
@@ -122,6 +125,7 @@ const OPTIONAL_DEFAULTS: { kids: KidsAnswers; work: WorkAnswers } = {
     hasSpecialPension: false,
     specialPensionStartAge: '',
     isCivilServant: false,
+    civilYears: '',
     hasOtherSpecialCase: false,
   },
 };
@@ -132,7 +136,7 @@ export const FIELDS_BY_SECTION: Record<YouSectionId, YouField[]> = {
   secondPillar: ['grossMonthly', 'secondPillarAmount'],
   thirdPillar: ['thirdPillarAmount', 'thirdPillarMonthly'],
   kids: ['kidsCount'],
-  work: ['hazardYears', 'rescueYears', 'specialPensionStartAge'],
+  work: ['hazardYears', 'rescueYears', 'civilYears', 'specialPensionStartAge'],
 };
 
 export const SECTION_IDS = Object.keys(FIELDS_BY_SECTION) as YouSectionId[];
@@ -450,6 +454,8 @@ const isFieldAsked = (answers: YouAnswers, field: YouField): boolean => {
       return answers.workAdded && answers.hazardList !== 'no';
     case 'rescueYears':
       return answers.workAdded && answers.hasRescue;
+    case 'civilYears':
+      return answers.workAdded && answers.isCivilServant;
     case 'specialPensionStartAge':
       return isSpecialPensionOn(answers);
     default:

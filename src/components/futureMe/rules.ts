@@ -1,6 +1,6 @@
 import { pensionKind } from './age65Answers';
 import { Contract, hasPillar, Pillar } from './age66Answers';
-import { EARLY_DECREASE, retirementYears, SimulationResult } from './engine/pension';
+import { civilIncrease, EARLY_DECREASE, retirementYears, SimulationResult } from './engine/pension';
 import { retirementAge } from './planAges';
 import { ResultContext, resultInputOf, resultOf, resultScenarioOf } from './resultAnswers';
 import { specialPensionStartAge } from './specialPensionAnswers';
@@ -18,6 +18,7 @@ export type Rule = When &
     | { id: 'earlyRetirement'; years: number; pensionAge: number; reason: EarlyRightReason }
     | { id: 'flexibleRetirement'; years: number; decrease: number }
     | { id: 'childSupplement'; monthly: number }
+    | { id: 'civilServiceIncrease'; increase: number }
     | { id: 'specialPension'; monthly: number; startAge: number | undefined }
     | { id: 'fundPensionContract'; contracts: Partial<Record<Pillar, Contract>> }
     | { id: 'inheritance'; pillars: 'both' | Pillar }
@@ -83,6 +84,15 @@ const childSupplementRules = (context: ResultContext): Rule[] => {
     : [];
 };
 
+const civilServiceRules = (context: ResultContext): Rule[] => {
+  const input = resultInputOf(context);
+  const increase = (input.rescueYears ?? 0) > 0 ? 0 : civilIncrease(input.civilYears);
+  const age = oldAgePensionStartAge(resultOf(context), specialPensionStartAge(context.plan));
+  return increase > 0 && age !== null
+    ? [{ id: 'civilServiceIncrease', ...whenOf(context, age), increase }]
+    : [];
+};
+
 const specialPensionRules = (context: ResultContext): Rule[] => {
   const { plan, specialPension } = context;
   const monthly = amountOf(specialPension.monthly);
@@ -144,6 +154,7 @@ export const rulesOf = (context: ResultContext): Rule[] =>
   [
     ...earlyRetirementRules(context),
     ...childSupplementRules(context),
+    ...civilServiceRules(context),
     ...specialPensionRules(context),
     ...fundPensionRules(context),
     ...inheritanceRules(context),

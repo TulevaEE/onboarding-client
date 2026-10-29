@@ -88,6 +88,7 @@ export const pensionInputOf = (
     hazardYears: isHazardous ? parseFloat(you.hazardYears) || 0 : 0,
     undergroundYears: isHazardous ? parseInt(you.undergroundYears, 10) || 0 : 0,
     rescueYears: you.workAdded && you.hasRescue ? parseInt(you.rescueYears, 10) || 0 : 0,
+    civilYears: you.workAdded && you.isCivilServant ? parseInt(you.civilYears, 10) || 0 : 0,
     spHas: true,
     spMonthly: amountOf(answers.monthly),
     spStartAge: plan.specialPensionStartAge,

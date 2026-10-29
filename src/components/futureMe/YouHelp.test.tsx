@@ -210,6 +210,22 @@ describe('Sina step help buttons', () => {
     },
   );
 
+  it('says in the special cases table that Elukaar adds the civil servant increase itself', () => {
+    renderYouStep();
+    addEverything();
+    const heading = screen.getByRole('heading', { name: 'Tööga seotud erijuhud' });
+
+    userEvent.click(
+      helpButtonBeside(heading, '.you-section-head', /Millised tööga seotud erijuhud/),
+    );
+    const civilRow = within(screen.getByRole('dialog')).getByRole('row', {
+      name: /^Ametnik enne 2013/,
+    });
+
+    expect(civilRow).toHaveTextContent(/Elukaar lisab selle riiklikule pensionile ise/);
+    expect(civilRow).not.toHaveTextContent(/Sotsiaalkindlustusameti prognoosi/);
+  });
+
   it('puts the early retirement explanation beside its field', () => {
     renderYouStep();
 
@@ -265,6 +281,20 @@ describe('Sina step help buttons', () => {
     );
     expect(within(dialog).getAllByRole('listitem')).toContain(childrenStep);
     expect(within(dialog).queryByText(/küsib laste juures üle/)).not.toBeInTheDocument();
+  });
+
+  it('tells, in a step of its own, to check the state pension without the civil servant option, since Elukaar adds the increase', () => {
+    renderYouStep();
+    const stateField = screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ });
+
+    userEvent.click(helpButtonBeside(stateField, '.col-12', /Mis on riiklik pension$/));
+    const dialog = screen.getByRole('dialog');
+
+    const civilServantStep = within(dialog).getByText(
+      /^Jäta „Olen töötanud vähemalt 10\saastat avalikus teenistuses kuni 31\.03\.2018“ välja lülitatuks: ametniku staaži suurenduse lisab Elukaar ise/,
+    );
+    expect(within(dialog).getAllByRole('listitem')).toContain(civilServantStep);
+    expect(within(dialog).queryByText(/Kui olid ametnik enne 2013/)).not.toBeInTheDocument();
   });
 
   it('writes out the Social Insurance Board self-service in the pension age explanation', () => {
