@@ -201,7 +201,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
       );
     }
     const startedAt = (at: StepId) =>
-      startedFundPensionsAt(prefillAtStart.fundPensions ?? [], at, plan);
+      startedFundPensionsAt(prefillAtStart.fundPensions ?? [], at, toStepPlanInput(started.you));
     if (step === FutureMeStep.AGE_55) {
       const firstYearShare = (MONTHS_IN_YEAR - new Date().getMonth()) / MONTHS_IN_YEAR;
       return (

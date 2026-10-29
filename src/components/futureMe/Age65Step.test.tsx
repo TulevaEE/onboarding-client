@@ -129,6 +129,25 @@ describe('Age 65 step', () => {
       ).toBeInTheDocument();
     });
 
+    it('keeps saying the choice is made next to the picked card when the pension age changes', () => {
+      render(
+        <IntlProvider locale="et" messages={translations.et}>
+          <FutureMe />
+        </IntlProvider>,
+      );
+      fillInYou();
+      userEvent.selectOptions(
+        screen.getByRole('combobox', { name: /Millal on sinu pensioniiga/ }),
+        '67',
+      );
+      userEvent.click(within(trail()).getByRole('button', { name: /^67\sa, vaatamata$/ }));
+
+      expect(choice(secondPillarGroup(), 'Fondipension')).toBeChecked();
+      expect(
+        within(secondPillarGroup()).getByText(/Oled selle valiku juba teinud/),
+      ).toBeInTheDocument();
+    });
+
     it('keeps the other cards open', () => {
       openAge65Step();
 
