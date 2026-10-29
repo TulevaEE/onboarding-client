@@ -1,7 +1,7 @@
 import { Age60Answers, initialAge60 } from './age60Answers';
 import { Age65Answers, initialAge65 } from './age65Answers';
-import { retirementYears } from './engine/pension';
-import { payoutAge } from './planAges';
+import { CURRENT_YEAR, retirementYears } from './engine/pension';
+import { payoutAge, retirementAge } from './planAges';
 import { FundPensionChoice } from './prefill';
 import { FutureMeStep, StepId, StepPlanInput } from './steps';
 import { toStepPlanInput, YouAnswers } from './youAnswers';
@@ -18,7 +18,8 @@ export const startedFundPensionStep = (
   if (startAge >= retirementYears(plan)) {
     return FutureMeStep.AGE_65;
   }
-  return startAge >= payoutAge(plan) || pillar === 'SECOND'
+  const isRetired = CURRENT_YEAR - plan.birthYear >= retirementAge(plan);
+  return startAge >= payoutAge(plan) || pillar === 'SECOND' || isRetired
     ? FutureMeStep.AGE_60
     : FutureMeStep.AGE_55;
 };

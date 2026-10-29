@@ -43,6 +43,18 @@ describe('started fund pensions', () => {
     });
   });
 
+  it('picks the fund pension card at the payout age for a III pillar one started before it once the pension age has passed', () => {
+    const retired = { ...you, birthYear: '1960' };
+
+    expect(
+      startedFundPensionAnswers([{ pillar: 'THIRD', startYear: 2017, startAge: 57 }], retired),
+    ).toEqual({
+      you: retired,
+      age60: { ...initialAge60(), thirdPillar: 'fund' },
+      age65: initialAge65(),
+    });
+  });
+
   it('picks the fund pension card at the pension age for one started then', () => {
     expect(
       startedFundPensionAnswers([{ pillar: 'SECOND', startYear: 2027, startAge: 65 }], you).age65,
