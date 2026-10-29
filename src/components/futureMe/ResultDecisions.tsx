@@ -16,7 +16,7 @@ import { CURRENT_YEAR, DEFERRAL_INCREASE, PENSIONER_ALLOWANCE } from './engine/p
 import { ResultComparison } from './ResultComparison';
 import { MAX_AGE_SHOWN, Result, ResultContext, resultOf } from './resultAnswers';
 
-type ChangeDecisions = (changes: DecisionChanges) => void;
+export type ChangeDecisions = (changes: DecisionChanges) => void;
 
 const DecisionChangesContext = createContext<ChangeDecisions | null>(null);
 

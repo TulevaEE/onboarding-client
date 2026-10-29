@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { deferralLock } from './age65Answers';
 import { euro, exactPercent } from './amountFormat';
 import { ChoiceCard } from './ChoiceCard';
+import { DecisionChanges } from './decisions';
 import { withOwnCostsRaisedBy } from './expensesAnswers';
 import { LineIcon } from './FutureMeIcon';
 import { HelpButton } from './HelpButton';
 import { keepSecondPillarGrowing, Legacy, legacyOf } from './legacy';
 import { Result, ResultContext } from './resultAnswers';
-import { useDecisionChanges } from './ResultDecisions';
+import { ChangeDecisions, useDecisionChanges } from './ResultDecisions';
 import { strong } from './richText';
 import { FutureMeStep, StepId } from './steps';
 
@@ -79,19 +80,17 @@ const SurplusCard = ({
   legacy,
   choice,
   onChoose,
+  onChange,
 }: {
   context: ResultContext;
   legacy: Surplus;
   choice: SurplusChoice | null;
   onChoose: (choice: SurplusChoice) => void;
+  onChange: ChangeDecisions;
 }) => {
-  const onChange = useDecisionChanges();
   const isSpendingOffered = legacy.extra > 0 || choice === 'spend';
   return (
     <>
-      <h3 className="h5">
-        <FormattedMessage id="futureMe.result.legacy.surplus.title" />
-      </h3>
       <p className="text-pretty">
         <FormattedMessage
           id="futureMe.result.legacy.surplus.intro"
@@ -137,18 +136,16 @@ const ShortfallCard = ({
   context,
   legacy,
   onGoTo,
+  onChange,
 }: {
   context: ResultContext;
   legacy: Shortfall;
   onGoTo: (step: StepId) => void;
+  onChange: ChangeDecisions;
 }) => {
-  const onChange = useDecisionChanges();
   const canDeferStatePension = deferralLock(context.you) === null;
   return (
     <>
-      <h3 className="h5">
-        <FormattedMessage id="futureMe.result.legacy.shortfall.title" />
-      </h3>
       {legacy.isSecondPillarLumpSum && (
         <ul className="legacy-tips">
           <li>
@@ -203,13 +200,43 @@ const ShortfallCard = ({
 
 export const ResultLegacy = ({ context, result, onGoTo }: Props) => {
   const [choice, setChoice] = useState<SurplusChoice | null>(null);
+  const [planChanges, setPlanChanges] = useState(0);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const changeDecisions = useDecisionChanges();
   const legacy = legacyOf(context, result);
+
+  useEffect(() => {
+    if (planChanges > 0) {
+      headingRef.current?.focus();
+    }
+  }, [planChanges]);
+
+  const onChange = (changes: DecisionChanges) => {
+    changeDecisions(changes);
+    setPlanChanges((count) => count + 1);
+  };
+
   return (
     <div className="legacy-card">
+      <h3 className="h5" tabIndex={-1} ref={headingRef}>
+        <FormattedMessage
+          id={
+            legacy.kind === 'surplus'
+              ? 'futureMe.result.legacy.surplus.title'
+              : 'futureMe.result.legacy.shortfall.title'
+          }
+        />
+      </h3>
       {legacy.kind === 'surplus' ? (
-        <SurplusCard context={context} legacy={legacy} choice={choice} onChoose={setChoice} />
+        <SurplusCard
+          context={context}
+          legacy={legacy}
+          choice={choice}
+          onChoose={setChoice}
+          onChange={onChange}
+        />
       ) : (
-        <ShortfallCard context={context} legacy={legacy} onGoTo={onGoTo} />
+        <ShortfallCard context={context} legacy={legacy} onGoTo={onGoTo} onChange={onChange} />
       )}
     </div>
   );

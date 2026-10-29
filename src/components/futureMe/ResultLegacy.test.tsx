@@ -131,6 +131,15 @@ describe('Result legacy card', () => {
       );
     });
 
+    it('moves the focus to the card heading after trying the spending, as the button is gone', () => {
+      userEvent.click(screen.getByRole('radio', { name: 'Kulutan ise rohkem' }));
+
+      userEvent.click(screen.getByRole('button', { name: /^Proovi [\d\s]+€\skuus$/ }));
+
+      expect(screen.queryByRole('button', { name: /^Proovi/ })).not.toBeInTheDocument();
+      expect(surplusHeading()).toHaveFocus();
+    });
+
     it('keeps spending more chosen after trying it, and says the plan carries no more than the new costs', () => {
       userEvent.click(screen.getByRole('radio', { name: 'Kulutan ise rohkem' }));
       const tryButton = screen.getByRole('button', { name: /^Proovi [\d\s]+€\skuus$/ });
@@ -214,6 +223,17 @@ describe('Result legacy card', () => {
       userEvent.click(screen.getByRole('button', { name: /Jätka II\ssamba kasvatamist/ }));
 
       expect(screen.queryByText('Ära võta II sammast korraga välja.')).not.toBeInTheDocument();
+    });
+
+    it('moves the focus to the card heading after leaving the second pillar growing, as the advice is gone', () => {
+      startWith('300', '10000');
+      chooseComfortableCosts();
+      takeSecondPillarAsLumpSum();
+      openResult();
+
+      userEvent.click(screen.getByRole('button', { name: /Jätka II\ssamba kasvatamist/ }));
+
+      expect(shortfallHeading()).toHaveFocus();
     });
   });
 });
