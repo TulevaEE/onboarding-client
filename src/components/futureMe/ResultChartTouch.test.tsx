@@ -297,25 +297,33 @@ describe('ResultChart on a touch screen', () => {
   });
 
   describe('room for the buttons', () => {
-    const BOX_WIDTH = 400;
     const BUTTON_WIDTH = 44;
-
-    beforeEach(() => {
+    const giveRoom = (boxWidth: number) =>
       jest
         .spyOn(HTMLElement.prototype, 'offsetWidth', 'get')
         .mockImplementation(function width(this: HTMLElement) {
-          return this.classList.contains('result-chart-ages') ? BOX_WIDTH : BUTTON_WIDTH;
+          return this.classList.contains('result-chart-ages') ? boxWidth : BUTTON_WIDTH;
         });
-    });
 
     afterEach(() => jest.restoreAllMocks());
 
     it('drops a five-year age that would cover a life event', () => {
+      giveRoom(400);
       renderChart(contextWith({ work: 'yes', workUntil: '67' }));
 
       expect(within(toolbar()).queryByRole('button', { name: /^70/ })).not.toBeInTheDocument();
       expect(ageButton(/^67/)).toBeInTheDocument();
       expect(ageButton(/^75/)).toBeInTheDocument();
+    });
+
+    it('drops the five-year ages on a narrow phone rather than push the pension age off it', () => {
+      giveRoom(288);
+      renderChart(contextWith({ work: 'yes', workUntil: '66', mode: 'defer', years: 2 }));
+
+      expect(parseFloat(ageButton(/^65.*Pensioniiga/).style.left)).toBeGreaterThanOrEqual(22);
+      expect(within(toolbar()).queryByRole('button', { name: /^75/ })).not.toBeInTheDocument();
+      expect(within(toolbar()).queryByRole('button', { name: /^85/ })).not.toBeInTheDocument();
+      expect(ageButton(/^80/)).toBeInTheDocument();
     });
   });
 });

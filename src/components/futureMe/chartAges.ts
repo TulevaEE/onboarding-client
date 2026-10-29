@@ -2,6 +2,7 @@ import { ChartRow } from './chartData';
 import { ChartEvent } from './chartEvents';
 
 const AGE_STEP = 5;
+const ROUND_AGE_STEPS = [AGE_STEP, AGE_STEP * 2];
 const GAP = 4;
 const HALF = 2;
 
@@ -38,9 +39,21 @@ const coversEvent = (slot: AgeSlot, events: AgeSlot[]) =>
   !slot.isEvent &&
   events.some((event) => Math.abs(event.centre - slot.centre) < spacingOf(event, slot));
 
-export const placeAgeButtons = (slots: AgeSlot[], boxWidth: number): AgePlacement[] => {
+const neededWidthOf = (slots: AgeSlot[]) =>
+  slots.reduce((sum, { width }) => sum + width + GAP, -GAP);
+
+const fittingSlotsOf = (slots: AgeSlot[], boxWidth: number) => {
   const events = slots.filter(({ isEvent }) => isEvent);
-  const shown = slots.filter((slot) => !coversEvent(slot, events));
+  const uncovering = slots.filter((slot) => !coversEvent(slot, events));
+  return (
+    ROUND_AGE_STEPS.map((step) =>
+      uncovering.filter(({ age, isEvent }) => isEvent || age % step === 0),
+    ).find((shown) => neededWidthOf(shown) <= boxWidth) ?? events
+  );
+};
+
+export const placeAgeButtons = (slots: AgeSlot[], boxWidth: number): AgePlacement[] => {
+  const shown = fittingSlotsOf(slots, boxWidth);
   const lefts = new Map<number, number>();
   shown.forEach((slot, index) => {
     const before = shown[index - 1];

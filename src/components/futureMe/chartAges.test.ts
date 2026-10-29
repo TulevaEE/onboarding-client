@@ -86,4 +86,36 @@ describe('placeAgeButtons', () => {
 
     expect(leftOf(placements, 50)).toBe(22);
   });
+
+  describe('on a phone too narrow for every button', () => {
+    const PHONE_BOX = 288;
+    const workToSixtySixAndDeferTwoYears = [
+      slot(65, 60, true),
+      slot(66, 66.5, true),
+      slot(67, 73, true),
+      slot(70, 92.6),
+      slot(75, 125.1),
+      slot(80, 157.7),
+      slot(85, 190.3),
+      slot(90, 222.9),
+      slot(95, 255.4),
+      slot(96, 261.9, true),
+      slot(100, 288),
+    ];
+    const shownOf = (placements: ReturnType<typeof placeAgeButtons>) =>
+      placements.filter(({ isHidden: hidden }) => !hidden);
+
+    it('drops round ages rather than push a life event out of the box', () => {
+      const shown = shownOf(placeAgeButtons(workToSixtySixAndDeferTwoYears, PHONE_BOX));
+
+      expect(shown.map(({ age }) => age)).toEqual(expect.arrayContaining([65, 66, 67, 96]));
+      expect(shown.every(({ left }) => left >= 22 && left <= PHONE_BOX - 22)).toBe(true);
+    });
+
+    it('drops the five-year ages before the ten-year ones', () => {
+      const shown = shownOf(placeAgeButtons(workToSixtySixAndDeferTwoYears, PHONE_BOX));
+
+      expect(shown.map(({ age }) => age)).toEqual([65, 66, 67, 80, 96]);
+    });
+  });
 });
