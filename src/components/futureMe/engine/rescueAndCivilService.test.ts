@@ -95,6 +95,11 @@ describe('rescue service', () => {
         ).toBeCloseTo(supplement * 1.2, 6);
       });
 
+      it('pays the allowance until the pension for children starts in the year the birth dates give', () => {
+        const dated = simulateOneContract({ ...family, kids: { ...kids, yearsEarly: 1 } });
+        expect(dated.rescueAllowance?.until).toBe(ordinaryAge - 1);
+      });
+
       it('pays the allowance until the pension age when only the allowance is chosen', () => {
         expect(allowanceOnly.rescueAllowance?.until).toBe(ordinaryAge);
       });

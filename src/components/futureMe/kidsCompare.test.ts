@@ -51,6 +51,31 @@ describe('rescue allowance or the pension for the children', () => {
     ]);
   });
 
+  it('starts the pension for a disabled child only once the child has been raised for eight years', () => {
+    const { kidsYears, rows, family } = rescueComparisonOf(
+      withRescue({
+        birthYear: '1970',
+        kidsCount: '1',
+        kidsBirthYears: ['2025'],
+        kidsDisabled: [true],
+      }),
+    );
+
+    expect(
+      rows.map(({ basis, workUntil, toetus, pension }) => ({
+        basis,
+        workUntil,
+        toetus: toetus && [toetus.from, toetus.to],
+        pension: pension && [pension.from, pension.to],
+      })),
+    ).toEqual([
+      { basis: 'mix', workUntil: 60, toetus: [60, 62], pension: [63, 64] },
+      { basis: 'pension', workUntil: 63, toetus: null, pension: [63, 64] },
+      { basis: 'toetus', workUntil: 60, toetus: [60, 64], pension: null },
+    ]);
+    expect([kidsYears, family?.kidsYears]).toEqual([2, 2]);
+  });
+
   it('pays each way a month and in total before the pension age, and the pension at it', () => {
     expect(amountsOf(rescueComparisonOf(withRescue()).rows)).toEqual([
       { basis: 'mix', toetus: 791, pension: 791, total: 47449, atPensionAge: 791 },

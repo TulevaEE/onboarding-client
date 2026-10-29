@@ -23,6 +23,7 @@ export interface KidsInput {
   earlyUser?: string;
   supUser?: string;
   disabled?: boolean;
+  yearsEarly?: number;
   u3?: number;
   u3Left?: (number | undefined)[];
   u3Start?: number[];
@@ -456,7 +457,9 @@ export function earlyYears(input: Partial<PensionInput>): number {
   const earlyUser = kids.earlyUser || kids.user;
   let kidsYears = 0;
   if (earlyUser === 'me') {
-    if (kids.disabled || count >= 5) {
+    if (kids.yearsEarly !== undefined) {
+      kidsYears = kids.yearsEarly;
+    } else if (kids.disabled || count >= 5) {
       kidsYears = 5;
     } else if (count === 4) {
       kidsYears = 3;

@@ -2,7 +2,6 @@ import lifeTableData from './engine/lifeTable.json';
 import {
   AVG_OLD_AGE_PENSION,
   childSupplement,
-  earlyYears,
   LifeTable,
   PensionInput,
   retirementYears,
@@ -11,7 +10,15 @@ import {
 } from './engine/pension';
 import { ResultContext } from './resultAnswers';
 import { pensionInputOf } from './specialPensionAnswers';
-import { amountOf, isRescueBasisAsked, isRescueMixOffered, RescueBasis } from './youAnswers';
+import {
+  amountOf,
+  earlyRightSources,
+  isRescueBasisAsked,
+  isRescueMixOffered,
+  RescueBasis,
+  toStepPlanInput,
+  YouAnswers,
+} from './youAnswers';
 
 const lifeTable: LifeTable = lifeTableData;
 const WITHOUT_DEFERRAL = { id: 'compare' };
@@ -52,10 +59,21 @@ const compareInputOf = ({ you, plan, age65, age66, specialPension }: CompareCont
   };
 };
 
-const kidsYearsOf = (input: PensionInput): number => earlyYears({ kids: input.kids });
+const kidsYearsOf = (you: YouAnswers): number => earlyRightSources(you).kids;
 
-const familyOf = (input: PensionInput, ownTotal: number): Family => {
-  const kidsYears = kidsYearsOf(input);
+const answersFor = (you: YouAnswers, basis: RescueBasis): YouAnswers => ({
+  ...you,
+  rescueBasis: basis,
+  earlyYearsPicked: '',
+});
+
+const rowInputOf = (context: CompareContext, basis: RescueBasis): PensionInput => {
+  const you = answersFor(context.you, basis);
+  const input = compareInputOf({ ...context, you, plan: toStepPlanInput(you) });
+  return { ...input, kids: { ...input.kids, yearsEarly: kidsYearsOf(you) } };
+};
+
+const familyOf = (kidsYears: number, ownTotal: number): Family => {
   const partnerTotal = AVG_OLD_AGE_PENSION * MONTHS_IN_YEAR * kidsYears;
   return {
     kidsYears,
@@ -94,12 +112,12 @@ const totalBefore = (
 
 const statePension = (row: SimulationResult['rows'][number]): number => row.i1g;
 
-const rescueRowOf = (input: PensionInput, basis: RescueBasis, pensionAge: number): RescueRow => {
-  const simulation = simulate(
-    { ...input, rescueBasis: basis, soodus: undefined, flexEarly: 0 },
-    lifeTable,
-    WITHOUT_DEFERRAL,
-  );
+const rescueRowOf = (
+  context: CompareContext,
+  basis: RescueBasis,
+  pensionAge: number,
+): RescueRow => {
+  const simulation = simulate(rowInputOf(context, basis), lifeTable, WITHOUT_DEFERRAL);
   const allowance = simulation.rescueAllowance;
   const pensionFrom = allowance ? allowance.until : simulation.pensionStartAge;
   return {
@@ -132,13 +150,14 @@ export const rescueComparisonOf = (context: CompareContext) => {
   const bases: RescueBasis[] = isRescueMixOffered(context.you)
     ? ['mix', 'pension', 'toetus']
     : ['pension', 'toetus'];
-  const rows = bases.map((basis) => rescueRowOf(input, basis, pensionAge));
+  const rows = bases.map((basis) => rescueRowOf(context, basis, pensionAge));
   const toetus = rows.find(({ basis }) => basis === 'toetus');
+  const kidsYears = kidsYearsOf(context.you);
   return {
     pensionAge,
-    kidsYears: kidsYearsOf(input),
+    kidsYears,
     rows,
-    family: toetus ? familyOf(input, toetus.total) : null,
+    family: toetus ? familyOf(kidsYears, toetus.total) : null,
     supplement: supplementOf(input),
     current: input.rescueBasis,
   };
