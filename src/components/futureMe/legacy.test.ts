@@ -1,7 +1,7 @@
 import { initialAge60 } from './age60Answers';
 import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
-import { initialExpenses, needMonthly, withLevel } from './expensesAnswers';
+import { initialExpenses, withLevel } from './expensesAnswers';
 import { keepSecondPillarGrowing, legacyOf } from './legacy';
 import { ResultContext, resultOf } from './resultAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
@@ -74,25 +74,25 @@ describe('legacyOf', () => {
     expect(legacy.kind).toBe('surplus');
   });
 
-  it('takes the median age from the life table: the age half of those born in the same year reach', () => {
-    const legacy = legacyFor(wealthy());
-
-    expect(legacy).toMatchObject({ medianAge: expect.any(Number) });
-    const { medianAge } = legacy as { medianAge: number };
-    expect(medianAge).toBeGreaterThanOrEqual(80);
-    expect(medianAge).toBeLessThanOrEqual(95);
-  });
-
-  it('reports the money left at the median age and what the plan can carry to the end', () => {
+  it('reports the money left at the median age: the first age at most half of those now the same age reach', () => {
     const context = wealthy();
     const result = resultOf(context);
-    const legacy = legacyOf(context, result);
+    const atMostHalfAlive = result.rows.find((row) => row.alive <= 0.5);
 
-    expect(legacy).toMatchObject({
-      left: result.rows.find((row) => row.age === (legacy as { medianAge: number }).medianAge)
-        ?.moneyLeft,
+    expect(legacyOf(context, result)).toMatchObject({
+      medianAge: atMostHalfAlive?.age,
+      left: atMostHalfAlive?.moneyLeft,
+    });
+  });
+
+  it('reports what the plan can carry to the end and how much more that is than the frugal costs', () => {
+    const context = wealthy();
+    const result = resultOf(context);
+
+    expect(legacyOf(context, result)).toMatchObject({
       sustainable: result.sustainable,
-      extra: result.sustainable - needMonthly(context.expenses),
+      costs: 791,
+      extra: result.sustainable - 791,
     });
   });
 
