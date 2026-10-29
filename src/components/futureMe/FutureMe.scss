@@ -1315,15 +1315,7 @@
     align-items: center;
   }
 
-  .result-save-print {
-    display: none;
-  }
-
   @media print {
-    .result-save-print {
-      display: block;
-    }
-
     .result-tiles,
     .result-income,
     .result-advice,
@@ -1342,8 +1334,7 @@
       break-after: avoid;
     }
 
-    .result-income,
-    .result-compare-table {
+    .result-income {
       break-before: avoid;
     }
 
@@ -1366,9 +1357,7 @@
       print-color-adjust: exact;
     }
 
-    .result-compare,
-    .result-save > h3,
-    .result-save-print caption {
+    .result-save > h3 {
       display: none;
     }
 
@@ -1387,15 +1376,6 @@
     }
   }
 
-  .result-compare {
-    margin-top: 1.5rem;
-
-    summary {
-      font-weight: 500;
-      cursor: pointer;
-    }
-  }
-
   .kids-compare-table {
     font-size: 0.875rem;
     font-variant-numeric: tabular-nums;
@@ -1409,55 +1389,6 @@
       min-width: 8rem;
       text-wrap: balance;
     }
-  }
-
-  .result-compare-table {
-    position: relative;
-    margin-top: 0.75rem;
-    font-variant-numeric: tabular-nums;
-
-    caption {
-      text-wrap: pretty;
-    }
-
-    th,
-    td {
-      min-width: 7rem;
-      vertical-align: top;
-    }
-
-    tbody th {
-      position: sticky;
-      left: 0;
-      min-width: 9rem;
-      background: $white;
-    }
-
-    small {
-      display: block;
-      font-weight: 400;
-      color: $text-secondary;
-    }
-
-    @media print {
-      overflow: visible;
-      font-size: 0.875rem;
-
-      th,
-      td,
-      tbody th {
-        min-width: 0;
-      }
-    }
-  }
-
-  .result-compare-mine,
-  .result-compare-best {
-    background: $blue-bg-1;
-  }
-
-  .result-compare-best {
-    font-weight: 500;
   }
 
   .label-line {

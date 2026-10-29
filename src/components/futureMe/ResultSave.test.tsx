@@ -121,7 +121,7 @@ describe('Result step: save the result', () => {
     expect(file).toContain('### Reeglid ja maksud');
   });
 
-  it('puts the income table and the comparison into the file even when they are closed', async () => {
+  it('puts the income table into the file even when it is closed, and no payout comparison', async () => {
     jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
     openResultStep();
 
@@ -130,10 +130,7 @@ describe('Result step: save the result', () => {
     const file = await downloadedFile();
     expect(file).toContain('**Sissetulek ja kulud kuus vanuse järgi');
     expect(file).toMatch(/\n\| Vanus \| .+ \| Kulud \|\n\| --- \|/);
-    expect(file).toContain('**Väljamakse teede võrdlus**');
-    expect(
-      screen.queryByRole('table', { name: 'Väljamakse teede võrdlus' }),
-    ).not.toBeInTheDocument();
+    expect(file).not.toContain('Väljamakse teede võrdlus');
   });
 
   it('leaves the buttons out of the file', async () => {
@@ -179,8 +176,8 @@ describe('Result step: save the result', () => {
       window.dispatchEvent(new Event('afterprint'));
     });
 
-  it('opens the print window with the comparison shown', () => {
-    let isComparisonPrinted = false;
+  it('prints without a payout comparison', () => {
+    let isComparisonPrinted = true;
     window.print = jest.fn(() => {
       isComparisonPrinted = comparisonTable() !== null;
     });
@@ -189,23 +186,7 @@ describe('Result step: save the result', () => {
     userEvent.click(pdfButton());
 
     expect(window.print).toHaveBeenCalledTimes(1);
-    expect(isComparisonPrinted).toBe(true);
-  });
-
-  it('gives the printed comparison a caption of its own while the page shows the comparison too', () => {
-    let captionIds: string[] = [];
-    window.print = jest.fn(() => {
-      captionIds = screen
-        .getAllByText('Väljamakse teede võrdlus', { selector: 'caption' })
-        .map(({ id }) => id);
-    });
-    openResultStep();
-    userEvent.click(screen.getByText('Võrdle kõiki väljamakse teid'));
-
-    userEvent.click(pdfButton());
-
-    expect(captionIds).toHaveLength(2);
-    expect(new Set(captionIds).size).toBe(2);
+    expect(isComparisonPrinted).toBe(false);
   });
 
   it('opens every accordion for the print', () => {
@@ -222,11 +203,10 @@ describe('Result step: save the result', () => {
     window.print = jest.fn();
     openResultStep();
     userEvent.click(pdfButton());
-    expect(comparisonTable()).toBeInTheDocument();
+    expect(chartGuide()).toBeVisible();
 
     closePrintWindow();
 
-    expect(comparisonTable()).not.toBeInTheDocument();
     expect(chartGuide()).not.toBeVisible();
   });
 });

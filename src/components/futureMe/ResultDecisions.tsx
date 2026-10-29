@@ -10,7 +10,6 @@ import { ChangeDecisions, useDecisionActions } from './decisionActions';
 import { Decision, DecisionId, decisionsOf, isStepDecision, withDecision } from './decisions';
 import { CURRENT_YEAR, DEFERRAL_INCREASE } from './engine/pension';
 import { QuickEditStepDecision } from './QuickEditSteps';
-import { ResultComparison } from './ResultComparison';
 import { ResultContext } from './resultAnswers';
 
 const choiceTitle = (id: DecisionId, choice: string): TranslationKey => {
@@ -268,8 +267,5 @@ const DecisionList = ({ context, openId, onOpen, focusRequests }: Props) => {
 };
 
 export const ResultDecisions = ({ context, openId, onOpen, focusRequests }: Props) => (
-  <>
-    <DecisionList context={context} openId={openId} onOpen={onOpen} focusRequests={focusRequests} />
-    <ResultComparison context={context} />
-  </>
+  <DecisionList context={context} openId={openId} onOpen={onOpen} focusRequests={focusRequests} />
 );

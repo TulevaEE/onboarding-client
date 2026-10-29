@@ -92,6 +92,15 @@ const tile = (index: number) =>
 describe('Result step', () => {
   beforeEach(() => loggedInAs({ dateOfBirth: '1962-01-01' }));
 
+  it('has no table comparing every payout route, as it is too much at once', () => {
+    openResultStep();
+
+    expect(screen.queryByText('Võrdle kõiki väljamakse teid')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('table', { name: 'Väljamakse teede võrdlus' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('replaces the placeholder with the question the result answers', () => {
     openResultStep();
 
