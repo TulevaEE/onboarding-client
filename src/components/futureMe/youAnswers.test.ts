@@ -10,6 +10,7 @@ import {
   isRescueMixOffered,
   rescueBasisOf,
   fieldProblem,
+  firstInvalidChildIIMonths,
   hasChildWithoutBirthYear,
   initialAnswers,
   isChildIIMonthsAsked,
@@ -108,13 +109,35 @@ describe('children from the register', () => {
 
 describe('the months the state paid into the II pillar for a child', () => {
   it.each([
-    [2021, false],
-    [2022, true],
-    [2023, true],
-    [2024, false],
-    [2030, false],
-  ])('is asked for a child born in %p: %p', (year, isAsked) => {
-    expect(isChildIIMonthsAsked(year)).toBe(isAsked);
+    ['2021', '8', false],
+    ['2021', '', false],
+    ['2021', '9', true],
+    ['2021', '12', true],
+    ['2022', '', true],
+    ['2023', '', true],
+    ['2024', '', false],
+    ['2030', '', false],
+  ])('is asked for a child born in %p, month %p: %p', (year, month, isAsked) => {
+    const answers = filledIn({
+      kidsAdded: true,
+      kidsCount: '1',
+      kidsBirthYears: [year],
+      kidsBirthMonths: [month],
+    });
+
+    expect(isChildIIMonthsAsked(answers, 0)).toBe(isAsked);
+  });
+
+  it('points at a month count over 36 of a child born from September 2021', () => {
+    const answers = filledIn({
+      kidsAdded: true,
+      kidsCount: '2',
+      kidsBirthYears: ['2015', '2021'],
+      kidsBirthMonths: ['', '10'],
+      kidsIIMonths: ['', '40'],
+    });
+
+    expect(firstInvalidChildIIMonths(answers)).toBe(1);
   });
 
   it.each(['', '0', '12', '36'])('accepts %p', (typed) => {

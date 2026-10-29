@@ -175,7 +175,7 @@ export const KidsSection = ({
                     isChildBirthYearInvalid(answers, index) &&
                     (typed.trim().length === CHILD_BIRTH_YEAR_DIGITS || leftRows.has(index));
                   const monthsId = `future-me-kid-ii-months-${index + 1}`;
-                  const isMonthsAsked = isChildIIMonthsAsked(Number(typed));
+                  const isMonthsAsked = isChildIIMonthsAsked(answers, index);
                   const isMonthsInvalid = isMonthsAsked && isChildIIMonthsInvalid(answers, index);
                   return (
                     <div className="col-12 col-sm-6 col-lg-4" key={id}>

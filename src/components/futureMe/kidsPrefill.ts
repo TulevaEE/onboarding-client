@@ -4,7 +4,8 @@ import { CURRENT_YEAR } from './engine/pension';
 
 const PERSONAL_CODE = /^[1-8]\d{10}$/;
 const MONTHS_IN_YEAR = 12;
-const FIRST_BIRTH_YEAR_WITH_PARENTAL_PAYMENT = 2022;
+const FIRST_BIRTH_YEAR_WITH_PARENTAL_PAYMENT = 2021;
+const FIRST_BIRTH_MONTH_WITH_PARENTAL_PAYMENT = 9;
 const YEARS_OF_PARENTAL_PAYMENT = 3;
 export const PARENTAL_PAYMENT_MONTHS = 36;
 const CENTURY_BY_FIRST_DIGIT = [1800, 1800, 1900, 1900, 2000, 2000, 2100, 2100];
@@ -14,11 +15,15 @@ export interface KidsPrefill {
   iiMonths: string[];
 }
 
-type ChildBirth = { year: number; month: number };
+export type ChildBirth = { year: number; month: number };
 
-export const isChildIIMonthsAsked = (birthYear: number): boolean =>
-  birthYear >= FIRST_BIRTH_YEAR_WITH_PARENTAL_PAYMENT &&
-  birthYear <= CURRENT_YEAR - YEARS_OF_PARENTAL_PAYMENT;
+const isBornWithParentalPayment = ({ year, month }: ChildBirth): boolean =>
+  year > FIRST_BIRTH_YEAR_WITH_PARENTAL_PAYMENT ||
+  (year === FIRST_BIRTH_YEAR_WITH_PARENTAL_PAYMENT &&
+    month >= FIRST_BIRTH_MONTH_WITH_PARENTAL_PAYMENT);
+
+export const isParentalPaymentMonthsAsked = (birth: ChildBirth): boolean =>
+  isBornWithParentalPayment(birth) && birth.year <= CURRENT_YEAR - YEARS_OF_PARENTAL_PAYMENT;
 
 export const childBirthOf = (personalCode: string): ChildBirth | null => {
   if (!PERSONAL_CODE.test(personalCode)) {
@@ -65,7 +70,7 @@ const iiMonthsOf = (
   contributions: Contribution[],
 ): string => {
   const months =
-    isChildIIMonthsAsked(birth.year) && !sharesPaymentYears(birth, births)
+    isParentalPaymentMonthsAsked(birth) && !sharesPaymentYears(birth, births)
       ? monthsPaidFor(birth, contributions)
       : 0;
   return months > 0 ? String(months) : '';

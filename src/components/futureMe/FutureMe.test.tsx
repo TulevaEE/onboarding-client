@@ -333,7 +333,7 @@ describe('FutureMe', () => {
       expect(kidBirthYearField(2)).toHaveValue('2023');
     });
 
-    it('asks for the state payment months only of a child born from 2022 who is over three', () => {
+    it('asks for the state payment months only of a child born from September 2021 who is over three', () => {
       withChildren([BOY_BORN_JUNE_2015, GIRL_BORN_FEB_2023]);
 
       renderFutureMe();
@@ -418,6 +418,20 @@ describe('FutureMe', () => {
       expect(kidsCountField()).toHaveValue(1);
       expect(kidMonthsField(1)).toHaveValue(null);
       expect(screen.queryByText(/Täisealised lapsed lisa ise/)).not.toBeInTheDocument();
+    });
+
+    it('asks for the state payment months of a child born from September 2021', () => {
+      withChildren([]);
+
+      renderFutureMe();
+      userEvent.click(addKidsButton() as HTMLElement);
+      typeInto(kidBirthYearField(1), '2021');
+      const birthMonth = screen.getByRole('combobox', { name: /1\. lapse sünnikuu/ });
+
+      userEvent.selectOptions(birthMonth, '8');
+      expect(queryKidMonthsField(1)).not.toBeInTheDocument();
+      userEvent.selectOptions(birthMonth, '10');
+      expect(kidMonthsField(1)).toHaveValue(null);
     });
 
     it('says a number of months outside 0–36 is not possible', () => {

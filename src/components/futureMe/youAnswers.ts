@@ -6,12 +6,10 @@ import {
   pensionAge,
   Sex,
 } from './engine/pension';
-import { isChildIIMonthsAsked, PARENTAL_PAYMENT_MONTHS } from './kidsPrefill';
+import { isParentalPaymentMonthsAsked, PARENTAL_PAYMENT_MONTHS } from './kidsPrefill';
 import { parseBirthYear, YouPrefill } from './prefill';
 import { StepPlanInput } from './steps';
 import { thirdPillarPayoutAge } from './thirdPillarPayoutAges';
-
-export { isChildIIMonthsAsked } from './kidsPrefill';
 
 export const FALLBACK_BIRTH_YEAR = 1980;
 export const PENSION_AGE_OPTIONS = [65, 66, 67, 68, 69, 70];
@@ -247,11 +245,15 @@ export const isChildIIMonthsInvalid = (answers: YouAnswers, index: number): bool
   return typed !== '' && !(/^\d+$/.test(typed) && Number(typed) <= PARENTAL_PAYMENT_MONTHS);
 };
 
+export const isChildIIMonthsAsked = (answers: YouAnswers, index: number): boolean =>
+  isParentalPaymentMonthsAsked({
+    year: Number((answers.kidsBirthYears[index] ?? '').trim()),
+    month: parseInt(answers.kidsBirthMonths[index] ?? '', 10) || 0,
+  });
+
 export const firstInvalidChildIIMonths = (answers: YouAnswers): number | undefined =>
   Array.from({ length: childRows(answers) }, (_, index) => index).find(
-    (index) =>
-      isChildIIMonthsAsked(Number((answers.kidsBirthYears[index] ?? '').trim())) &&
-      isChildIIMonthsInvalid(answers, index),
+    (index) => isChildIIMonthsAsked(answers, index) && isChildIIMonthsInvalid(answers, index),
   );
 
 export const maxChildBirthYear = (answers: YouAnswers): number =>
