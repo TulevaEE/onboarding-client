@@ -2,15 +2,22 @@ import React, { ChangeEvent, RefObject } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Sex } from './engine/pension';
-import { BIRTH_YEAR_MAX, BIRTH_YEAR_MIN } from './prefill';
+import { BIRTH_YEAR_MAX, BIRTH_YEAR_MIN, YouPrefill } from './prefill';
 import { EarlyRetirementFields } from './EarlyRetirementFields';
 import { SecondPillarSection, StateSection, ThirdPillarSection } from './YouBlocks';
 import { KidsSection, kidsOptional, WorkSection, workOptional } from './YouOptionalBlocks';
-import { FIELD_DOM_IDS, FieldLabel, PrefilledHint, RequiredMark } from './YouFields';
+import {
+  FIELD_DOM_IDS,
+  FieldLabel,
+  PREFILLED_HINT_ID,
+  PrefilledHint,
+  RequiredMark,
+} from './YouFields';
 import { YouSection, YouSectionLabels } from './YouSection';
 import {
   blockedFieldsOf,
   OptionalSectionId,
+  prefilledFields,
   YouAnswers,
   YouField,
   YouSectionId,
@@ -41,7 +48,7 @@ interface Props {
   answers: YouAnswers;
   touched: ReadonlySet<YouField>;
   openSections: Record<YouSectionId, boolean>;
-  isPrefilled: boolean;
+  prefill: YouPrefill;
   headingRef: RefObject<HTMLHeadingElement>;
   onChange: (changes: Partial<YouAnswers>) => void;
   onBlur: (field: YouField) => void;
@@ -54,7 +61,7 @@ export const YouStep = ({
   answers,
   touched,
   openSections,
-  isPrefilled,
+  prefill,
   headingRef,
   onChange,
   onBlur,
@@ -64,17 +71,21 @@ export const YouStep = ({
 }: Props) => {
   const intl = useIntl();
   const { birthYear, sex } = answers;
+  const prefilled = prefilledFields(answers, prefill);
+  const showsPrefillNote = prefill.birthYear !== null || prefill.sex !== null;
   const showBirthYearError = touched.has('birthYear') && blockedFieldsOf(answers, 'me').length > 0;
   const blockProps = (section: Exclude<YouSectionId, 'me'>) => ({
     answers,
     touched,
     isOpen: openSections[section],
     isComplete: blockedFieldsOf(answers, section).length === 0,
+    prefilled,
     onToggle: () => onToggle(section),
     onChange,
     onBlur,
   });
   const describedBy = classNames('future-me-birth-year-hint', {
+    [PREFILLED_HINT_ID]: prefilled.has('birthYear'),
     'future-me-birth-year-error': showBirthYearError,
   });
 
@@ -92,7 +103,7 @@ export const YouStep = ({
         <FormattedMessage id="futureMe.you.intro" values={{ strong }} />
       </p>
       <PrefilledHint />
-      {isPrefilled && (
+      {showsPrefillNote && (
         <p className="prefill-note">
           <FormattedMessage id="futureMe.you.prefillNote" />
         </p>
@@ -114,7 +125,10 @@ export const YouStep = ({
               </label>
               <input
                 id={FIELD_DOM_IDS.birthYear}
-                className={classNames('form-control', { 'is-invalid': showBirthYearError })}
+                className={classNames('form-control', {
+                  'is-invalid': showBirthYearError,
+                  'is-prefilled': prefilled.has('birthYear'),
+                })}
                 type="number"
                 inputMode="numeric"
                 min={BIRTH_YEAR_MIN}
@@ -143,7 +157,8 @@ export const YouStep = ({
               </FieldLabel>
               <select
                 id="future-me-sex"
-                className="form-select"
+                className={classNames('form-select', { 'is-prefilled': prefilled.has('sex') })}
+                aria-describedby={prefilled.has('sex') ? PREFILLED_HINT_ID : undefined}
                 value={sex}
                 onChange={(event) => onChange({ sex: event.target.value as Sex })}
               >
