@@ -110,6 +110,20 @@ describe('chartPlugins', () => {
       expect(ctx.setLineDash.mock.calls).toEqual([[[]], [[2, 6]]]);
     });
 
+    it('follows the costs age by age when they change', () => {
+      const { ctx, chart } = fakeChart();
+
+      costsLine.beforeDatasetsDraw?.(chart, {} as never, { ...options, amounts: [800, 900, 1000] });
+
+      expect(ctx.moveTo).toHaveBeenCalledWith(0, 130);
+      expect(ctx.lineTo.mock.calls).toEqual([
+        [10, 120],
+        [20, 110],
+        [10, 120],
+        [20, 110],
+      ]);
+    });
+
     it('labels the costs line with a red pill at its start', () => {
       const { ctx, chart } = fakeChart();
 
