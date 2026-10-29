@@ -25,6 +25,7 @@ import {
 } from './resultAnswers';
 import { FutureMeStep } from './steps';
 import { strong } from './richText';
+import { specialPensionStartAge } from './specialPensionAnswers';
 
 interface Props {
   context: ResultContext;
@@ -99,21 +100,37 @@ const statePensionValues = (result: Result) => {
     : { hasStatePension: 'no' };
 };
 
-const sustainableHelpValues = (result: Result, need: number) => {
+const specialPensionValues = ({ plan }: ResultContext, result: Result) => {
+  const paid = result.rows.filter((row) => row.ispg > 0.5);
+  if (paid.length === 0) {
+    return { hasSpecialPension: 'no' };
+  }
+  const lastPaid = paid[paid.length - 1];
+  return {
+    hasSpecialPension: 'yes',
+    specialPension: euro(paid[0].ispg),
+    specialPensionAge: paidFromAge(result, paid[0], specialPensionStartAge(plan)),
+    isSpecialPensionForLife: lastPaid === result.rows[result.rows.length - 1] ? 'yes' : 'no',
+    specialPensionUntil: lastPaid.age,
+  };
+};
+
+const sustainableHelpValues = (context: ResultContext, result: Result) => {
   const savings = savingsAtPensionStartOrToday(result);
   return {
     sustainable: euro(result.sustainable),
     horizonAge: result.horizonAge,
+    ...specialPensionValues(context, result),
     ...statePensionValues(result),
     isPastPensionAge: isPastPensionAge(result) ? 'yes' : 'no',
     pot: euro(savings.pot),
     hasDeposit: savings.deposit > 0.5 ? 'yes' : 'no',
     deposit: euro(savings.deposit),
-    need: euro(need),
+    need: euro(needMonthly(context.expenses)),
   };
 };
 
-const Tiles = ({ result, need }: { result: Result; need: number }) => {
+const Tiles = ({ context, result }: { context: ResultContext; result: Result }) => {
   const kind = coverageKind(result);
   const until = result.coversNeedUntil ?? MAX_AGE_SHOWN;
   const endAge = result.moneyEndAge ?? 'never';
@@ -154,7 +171,7 @@ const Tiles = ({ result, need }: { result: Result; need: number }) => {
             id="futureMe.result.tile.sustainable.label"
             values={{ age: result.horizonAge }}
           />
-          <HelpButton topic="sustainable" values={sustainableHelpValues(result, need)} />
+          <HelpButton topic="sustainable" values={sustainableHelpValues(context, result)} />
         </span>
       </li>
     </ul>
@@ -229,7 +246,7 @@ export const ResultStep = ({ context, headingRef }: Props) => {
         <AnswerText result={result} need={needMonthly(context.expenses)} />
       </p>
       <ResultAdvice context={context} result={result} onOpenDecision={openAndFocusDecision} />
-      <Tiles result={result} need={needMonthly(context.expenses)} />
+      <Tiles context={context} result={result} />
       <IncomeAtPensionAge result={result} need={needMonthly(context.expenses)} />
       <ResultChart
         result={result}

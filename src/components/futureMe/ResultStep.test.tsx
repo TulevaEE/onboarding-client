@@ -459,26 +459,62 @@ describe('Result step', () => {
         );
       });
 
+      const specialPensionFrom55 = {
+        workAdded: true,
+        hasSpecialPension: true,
+        specialPensionStartAge: '55',
+      };
+      const specialPensionOf900 = { ...initialSpecialPension(), monthly: '900' };
+      const specialPensionUntilThePensionAge = contextWith(
+        {
+          ...specialPensionFrom55,
+          hazardList: 'list1',
+          hazardYears: '20',
+          firstPillarMonthly: '895',
+        },
+        {
+          specialPension: specialPensionOf900,
+          age65: { ...initialAge65(), work: 'yes', workUntil: '70', secondPillar: 'fund' },
+        },
+      );
+
       it('starts the state pension where it is paid, after a special pension until the pension age', () => {
+        const dialog = openHelpFor(specialPensionUntilThePensionAge);
+
+        expect(dialog).toHaveTextContent(
+          /riiklik pension 901\s€ kuus enne tulumaksu, alates 65-\u2060aastaselt;/,
+        );
+      });
+
+      it('names the special pension until the state pension takes its place', () => {
+        const dialog = openHelpFor(specialPensionUntilThePensionAge);
+
+        expect(dialog).toHaveTextContent(
+          /eripension 900\s€ kuus enne tulumaksu, 55–\u206064-\u2060aastaselt;/,
+        );
+      });
+
+      it('names the special pension paid for life instead of a state pension', () => {
+        const dialog = openHelpFor(
+          contextWith(specialPensionFrom55, { specialPension: specialPensionOf900 }),
+        );
+
+        expect(dialog).toHaveTextContent(
+          /eripension 900\s€ kuus enne tulumaksu, alates 55-\u2060aastaselt;/,
+        );
+        expect(dialog).not.toHaveTextContent(/riiklik pension/);
+      });
+
+      it('starts the special pension of someone already past the pension age where it began', () => {
         const dialog = openHelpFor(
           contextWith(
-            {
-              workAdded: true,
-              hazardList: 'list1',
-              hazardYears: '20',
-              hasSpecialPension: true,
-              specialPensionStartAge: '55',
-              firstPillarMonthly: '895',
-            },
-            {
-              specialPension: { ...initialSpecialPension(), monthly: '900' },
-              age65: { ...initialAge65(), work: 'yes', workUntil: '70', secondPillar: 'fund' },
-            },
+            { ...specialPensionFrom55, birthYear: '1956' },
+            { specialPension: specialPensionOf900 },
           ),
         );
 
         expect(dialog).toHaveTextContent(
-          /riiklik pension 901\s€ kuus enne tulumaksu, alates 65-\u2060aastaselt;/,
+          /eripension 900\s€ kuus enne tulumaksu, alates 55-\u2060aastaselt;/,
         );
       });
 
