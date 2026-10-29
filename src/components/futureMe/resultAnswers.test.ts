@@ -252,7 +252,7 @@ describe('resultAnswers', () => {
       );
     });
 
-    it('lists the fund pension only until the pension age while working past it', () => {
+    it('lists the fund pension until work ends while working past the pension age', () => {
       const result = resultOf(
         contextWith(
           { ...saver, thirdPillarPlan: 'fund' },
@@ -260,7 +260,9 @@ describe('resultAnswers', () => {
         ),
       );
 
-      expect(result.earlyThirdPillar.every(({ age }) => age < result.pensionStartAge)).toBe(true);
+      expect(result.earlyThirdPillar.map(({ age }) => age)).toEqual(
+        Array.from({ length: 70 - 55 }, (_, offset) => 55 + offset),
+      );
     });
 
     it('leaves a smaller pot at the pension age than keeping it, as the money taken is spent', () => {

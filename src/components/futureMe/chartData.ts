@@ -56,28 +56,33 @@ const earlyRowOf = ({ age, year, amount }: EarlyPayment): ChartRow => ({
   isBeforePension: true,
 });
 
-export const chartRowsOf = (result: Result, need: number, isNominal = false): ChartRow[] => [
-  ...result.earlyThirdPillar.map(earlyRowOf),
-  ...result.rows
-    .filter(({ age }) => age >= result.pensionStartAge)
-    .map((row) => {
-      const costs = isNominal ? need * nominalFactorAt(row.year) : need;
-      return {
-        age: row.age,
-        year: row.year,
-        salary: row.work ? Math.round(row.spend) : 0,
-        firstPillar: row.work ? 0 : Math.round(row.i1),
-        specialPension: row.work ? 0 : Math.round(row.isp),
-        secondPillar: Math.round(row.i2),
-        thirdPillar: Math.round(row.i3),
-        deposit: Math.round(row.dep),
-        costs: Math.round(costs),
-        shortfall: row.shortfall > NOTICEABLE ? Math.round(row.shortfall) : 0,
-        surplus: surplusOf(row, costs),
-        isBeforePension: false,
-      };
-    }),
-];
+export const chartRowsOf = (result: Result, need: number, isNominal = false): ChartRow[] => {
+  const isBeforePensionAge = ({ age }: { age: number }) => age < result.pensionStartAge;
+  const fundPensionFrom55At = (age: number) =>
+    result.earlyThirdPillar.find((payment) => payment.age === age)?.amount ?? 0;
+  return [
+    ...result.earlyThirdPillar.filter(isBeforePensionAge).map(earlyRowOf),
+    ...result.rows
+      .filter((row) => !isBeforePensionAge(row))
+      .map((row) => {
+        const costs = isNominal ? need * nominalFactorAt(row.year) : need;
+        return {
+          age: row.age,
+          year: row.year,
+          salary: row.work ? Math.round(row.spend) : 0,
+          firstPillar: row.work ? 0 : Math.round(row.i1),
+          specialPension: row.work ? 0 : Math.round(row.isp),
+          secondPillar: Math.round(row.i2),
+          thirdPillar: Math.round(row.i3 + fundPensionFrom55At(row.age)),
+          deposit: Math.round(row.dep),
+          costs: Math.round(costs),
+          shortfall: row.shortfall > NOTICEABLE ? Math.round(row.shortfall) : 0,
+          surplus: surplusOf(row, costs),
+          isBeforePension: false,
+        };
+      }),
+  ];
+};
 
 export const pensionStartRowOf = (rows: ChartRow[]): ChartRow =>
   rows.find(({ isBeforePension }) => !isBeforePension) ?? rows[0];

@@ -60,18 +60,15 @@ export const comparisonScenariosOf = (context: ResultContext): Scenario[] => {
 export const comparisonOf = (context: ResultContext): ComparisonColumn[] => {
   const input = resultInputOf(context);
   const mine = resultScenarioOf(context);
-  return comparisonScenariosOf(context).map((scenario) => {
-    const simulation = simulate(input, lifeTable, scenario);
-    return {
-      id: scenario.id,
-      isMine: scenario.id === mine.id,
-      result: {
-        ...simulation,
-        sustainable: sustainableNeed(input, lifeTable, scenario),
-        earlyThirdPillar: earlyThirdPillarOf(context, simulation.pensionStartAge),
-      },
-    };
-  });
+  return comparisonScenariosOf(context).map((scenario) => ({
+    id: scenario.id,
+    isMine: scenario.id === mine.id,
+    result: {
+      ...simulate(input, lifeTable, scenario),
+      sustainable: sustainableNeed(input, lifeTable, scenario),
+      earlyThirdPillar: earlyThirdPillarOf(context),
+    },
+  }));
 };
 
 export const comparisonRowsOf = (result: Result): ComparisonRow[] => {

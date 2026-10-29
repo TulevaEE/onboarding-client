@@ -35,8 +35,8 @@ const contextWith = (
   };
 };
 
-const withFundPensionFrom55 = (): ResultContext => {
-  const context = contextWith();
+const withFundPensionFrom55 = (age65: Partial<Age65Answers> = {}): ResultContext => {
+  const context = contextWith('', age65);
   const you = {
     ...context.you,
     thirdPillarJoined: 'before' as const,
@@ -84,6 +84,18 @@ describe('chartData', () => {
       const ages = tableRowsOf(rows).map(({ age }) => age);
 
       expect(ages.slice(0, 3)).toEqual([55, 60, result.pensionStartAge]);
+    });
+  });
+
+  describe('with the III pillar fund pension from 55 while working past the pension age', () => {
+    const result = resultOf(withFundPensionFrom55({ work: 'yes', workUntil: '70' }));
+    const untilWorkEnd = chartRowsOf(result, 791).filter(({ age }) => age < 70);
+
+    it('keeps showing the fund pension in the years worked past the pension age', () => {
+      expect(untilWorkEnd.map(({ age }) => age)).toEqual(
+        Array.from({ length: 70 - 55 }, (_, offset) => 55 + offset),
+      );
+      expect(untilWorkEnd.every(({ thirdPillar }) => thirdPillar > 0)).toBe(true);
     });
   });
 
