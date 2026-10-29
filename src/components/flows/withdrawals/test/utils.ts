@@ -1,7 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { screen, waitForElementToBeRemoved, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import moment from 'moment';
 import { WithdrawalMandateDetails } from '../../../common/apiModels/withdrawals';
+import { mandateDeadlinesResponse } from '../../../../test/backend-responses';
 
 export const singleWithdrawalCheckbox = async () =>
   screen.findByRole('checkbox', { name: 'Withdraw some money right away' });
@@ -207,7 +209,14 @@ export const assertFundPensionMandate = async (
     const cancelDeadline = within(fundPensionSection).getByText(
       /I can cancel the application until/,
     );
-    expect(within(cancelDeadline).getByText(/December 31 at 21:59/)).toBeInTheDocument();
+    const withdrawalCancellationDeadlineInLocalTime = moment(
+      mandateDeadlinesResponse.withdrawalCancellationDeadline,
+    ).format('HH:mm');
+    expect(
+      within(cancelDeadline).getByText(
+        new RegExp(`December 31 at ${withdrawalCancellationDeadlineInLocalTime}`),
+      ),
+    ).toBeInTheDocument();
   }
 };
 
