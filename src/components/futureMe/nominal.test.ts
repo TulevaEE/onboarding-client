@@ -170,4 +170,18 @@ describe('nominalReturnsOf', () => {
       ),
     ).toEqual({ second: 2.0, third: 6.1 });
   });
+
+  it('rounds a return that the price growth just cancels to a zero without a minus sign', () => {
+    expect(nominalReturnsOf(contextWith({ secondPillarReturnPercent: -2 }))).toEqual({
+      second: 0,
+      third: null,
+    });
+  });
+
+  it('stays negative when the return falls further below the price growth', () => {
+    expect(nominalReturnsOf(contextWith({ secondPillarReturnPercent: -5 }))).toEqual({
+      second: -3.1,
+      third: null,
+    });
+  });
 });

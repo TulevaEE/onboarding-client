@@ -135,7 +135,7 @@ describe('today’s or future prices', () => {
     userEvent.click(futurePrices());
 
     expect(screen.getByText(NOTE_TEXT)).toHaveTextContent(
-      /hinnad tõusevad 2%\saastas\).*Fondid kasvavad siis umbes 4%\saastas: sinu valitud tootlus pluss hinnatõus\. Ülejäänud summad on tänastes eurodes\./,
+      /hinnad tõusevad 2%\saastas\).*Fondide tootlus on siis umbes 4%\saastas: sinu valitud tootlus pluss hinnatõus\. Ülejäänud summad on tänastes eurodes\./,
     );
   });
 
@@ -146,6 +146,26 @@ describe('today’s or future prices', () => {
 
     expect(screen.getByText(NOTE_TEXT)).toHaveTextContent(
       /umbes 2%\s\(II\ssammas\) ja 6,1%\s\(III\ssammas\) aastas/,
+    );
+  });
+
+  it('calls the fund’s yearly change a return, not growth, when prices rise faster than the fund', () => {
+    renderChart(contextWith({ secondPillarReturnPercent: -5 }));
+
+    userEvent.click(futurePrices());
+
+    expect(screen.getByText(NOTE_TEXT)).toHaveTextContent(
+      /Fondide tootlus on siis umbes −3,1%\saastas: sinu valitud tootlus pluss hinnatõus\./,
+    );
+  });
+
+  it('says zero without a minus sign when prices rise as fast as the fund falls', () => {
+    renderChart(contextWith({ secondPillarReturnPercent: -2 }));
+
+    userEvent.click(futurePrices());
+
+    expect(screen.getByText(NOTE_TEXT)).toHaveTextContent(
+      /Fondide tootlus on siis umbes 0%\saastas:/,
     );
   });
 

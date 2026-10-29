@@ -3130,7 +3130,7 @@
   "futureMe.result.legacy.action.deferral": "Lükka riiklik pension edasi",
   "futureMe.result.legacy.action.costs": "Vali teine kulupakett",
   "futureMe.result.nominal.note.today": "Summad on tänastes eurodes.",
-  "futureMe.result.nominal.note.future": "Graafik, tabel ja kokkuvõte on tuleviku eurodes (hinnad tõusevad {inflation}% aastas).{funds, select, none {} both { Fondid kasvavad siis umbes {second, number}% (II sammas) ja {third, number}% (III sammas) aastas: sinu valitud tootlus pluss hinnatõus.} other { Fondid kasvavad siis umbes {rate, number}% aastas: sinu valitud tootlus pluss hinnatõus.}} Ülejäänud summad on tänastes eurodes.",
+  "futureMe.result.nominal.note.future": "Graafik, tabel ja kokkuvõte on tuleviku eurodes (hinnad tõusevad {inflation}% aastas).{funds, select, none {} both { Fondide tootlus on siis umbes {second, number}% (II sammas) ja {third, number}% (III sammas) aastas: sinu valitud tootlus pluss hinnatõus.} other { Fondide tootlus on siis umbes {rate, number}% aastas: sinu valitud tootlus pluss hinnatõus.}} Ülejäänud summad on tänastes eurodes.",
   "futureMe.result.assumptions.what.secondPillarFund": "II samba tootlust",
   "futureMe.result.assumptions.what.thirdPillarFund": "III samba tootlust",
   "futureMe.result.assumptions.what.expenses": "kulupaketti",
