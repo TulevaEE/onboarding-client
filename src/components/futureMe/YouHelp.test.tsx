@@ -79,6 +79,17 @@ const openRescueHelp = () => {
   return screen.getByRole('dialog');
 };
 
+const openEarlyRetirementHelp = () => {
+  userEvent.click(
+    helpButtonBeside(
+      screen.getByRole('combobox', { name: /Mitu aastat varem plaanid pensionile minna/ }),
+      '.col-12',
+      /Mis juhtub, kui lähed varem pensionile$/,
+    ),
+  );
+  return screen.getByRole('dialog');
+};
+
 describe('Sina step help buttons', () => {
   beforeAll(installDialogPolyfill);
 
@@ -305,6 +316,23 @@ describe('Sina step help buttons', () => {
       /Elukaar arvestab suurendust, kui lähed pensionile hiljemalt 2042\.\saastal/,
     );
   });
+
+  const threeChildrenExample: [string, () => HTMLElement][] = [
+    ['kids', openKidsHelp],
+    ['early retirement', openEarlyRetirementHelp],
+  ];
+
+  it.each(threeChildrenExample)(
+    'quotes the same totals for retiring a year early with three children in the %s explanation',
+    (_, openHelp) => {
+      renderYouStep();
+
+      const dialog = openHelp();
+
+      expect(dialog).toHaveTextContent(/19\saasta[^.]*u 2 700 €/);
+      expect(dialog).toHaveTextContent(/10 200 €/);
+    },
+  );
 
   it('leaves the field labels as they were for screen readers', () => {
     renderYouStep();
