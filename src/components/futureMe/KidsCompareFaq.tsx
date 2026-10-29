@@ -83,6 +83,8 @@ const familyRow = (family: Family, ownPart: ReactNode, name: string, rest: Parti
   ...rest,
 });
 
+const TABLE_TITLE_ID = 'future-me-kids-compare-title';
+
 const CompareTable = ({ rows, pensionAge }: { rows: Row[]; pensionAge: number }) => {
   const hasWork = rows.some(({ work }) => work);
   const columns = [
@@ -95,9 +97,20 @@ const CompareTable = ({ rows, pensionAge }: { rows: Row[]; pensionAge: number })
   ];
   return (
     <>
-      <h4 className="h6 mb-2">{message('futureMe.age65.faq.compare.tableTitle')}</h4>
-      <div className="table-responsive">
-        <table className="table table-sm align-top mb-2 kids-compare-table">
+      <h4 className="h6 mb-2" id={TABLE_TITLE_ID}>
+        {message('futureMe.age65.faq.compare.tableTitle')}
+      </h4>
+      <div
+        className="table-responsive"
+        role="region"
+        aria-labelledby={TABLE_TITLE_ID}
+        // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrolling region must take keyboard focus (WCAG 2.1.1)
+        tabIndex={0}
+      >
+        <table
+          className="table table-sm align-top mb-2 kids-compare-table"
+          aria-labelledby={TABLE_TITLE_ID}
+        >
           <thead>
             <tr>
               {columns.map((column) => (

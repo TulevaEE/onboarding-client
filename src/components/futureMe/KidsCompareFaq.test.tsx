@@ -64,6 +64,16 @@ describe('rescue allowance or the pension for the children question', () => {
     expect(mix.getByText(/^64\sa pension 791\s€\skuus$/)).toBeInTheDocument();
   });
 
+  it('names the table and lets the keyboard scroll it on a narrow screen', () => {
+    renderEt(<RescueCompareFaq context={withRescue()} />);
+
+    expect(screen.getByRole('region', { name: 'Võrdlus: mis aitab valida?' })).toHaveAttribute(
+      'tabindex',
+      '0',
+    );
+    expect(screen.getByRole('table', { name: 'Võrdlus: mis aitab valida?' })).toBeInTheDocument();
+  });
+
   it('marks the ways that give the most until the pension age', () => {
     renderEt(<RescueCompareFaq context={withRescue()} />);
 
