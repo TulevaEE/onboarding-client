@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useContributions, useMe, useSourceFunds } from '../common/apiHooks';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { usePageTitle } from '../common/usePageTitle';
@@ -12,17 +12,15 @@ import { Age65Step } from './Age65Step';
 import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { Age66Step } from './Age66Step';
+import { DecisionActionsProvider } from './decisionActions';
 import { DecisionChanges } from './decisions';
 import { initialExpenses } from './expensesAnswers';
 import { ExpensesStep } from './ExpensesStep';
 import { derivePrefill, YouPrefill } from './prefill';
-import { PlaceholderStep } from './PlaceholderStep';
-import { DecisionChangesProvider } from './ResultDecisions';
 import { ResultStep } from './ResultStep';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { SpecialPensionStep } from './SpecialPensionStep';
 import { StepTrail } from './StepTrail';
-import { stepLabel } from './stepLabels';
 import { FutureMeStep, neighbouringStep, shownSteps, StepId } from './steps';
 import { trackFutureMeStep } from './tracking';
 import {
@@ -57,7 +55,6 @@ const MONTHS_IN_YEAR = 12;
 const ADDED_FLAGS = { kids: 'kidsAdded', work: 'workAdded' } as const;
 
 const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
-  const intl = useIntl();
   const [answers, setAnswers] = useState(() => initialAnswers(prefill));
   const [age60, setAge60] = useState(initialAge60);
   const [age65, setAge65] = useState(initialAge65);
@@ -139,11 +136,23 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   };
 
   const changeDecisions = (changes: DecisionChanges) => {
+    if (changes.you) {
+      setAnswers(changes.you);
+    }
     if (changes.age60) {
       setAge60(changes.age60);
     }
     if (changes.age65) {
       setAge65(changes.age65);
+    }
+    if (changes.age66) {
+      setAge66(changes.age66);
+    }
+    if (changes.specialPension) {
+      setSpecialPension(changes.specialPension);
+    }
+    if (changes.expenses) {
+      setExpenses(changes.expenses);
     }
   };
 
@@ -244,18 +253,13 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
     if (step === FutureMeStep.COSTS) {
       return <ExpensesStep answers={expenses} headingRef={headingRef} onChange={setExpenses} />;
     }
-    if (step === FutureMeStep.RESULT) {
-      return (
-        <DecisionChangesProvider value={changeDecisions}>
-          <ResultStep
-            context={{ you: answers, plan, age60, age65, age66, specialPension, expenses }}
-            headingRef={headingRef}
-          />
-        </DecisionChangesProvider>
-      );
-    }
     return (
-      <PlaceholderStep step={step} label={stepLabel(intl, step, plan)} headingRef={headingRef} />
+      <DecisionActionsProvider value={{ change: changeDecisions, goTo }}>
+        <ResultStep
+          context={{ you: answers, plan, age60, age65, age66, specialPension, expenses }}
+          headingRef={headingRef}
+        />
+      </DecisionActionsProvider>
     );
   };
 

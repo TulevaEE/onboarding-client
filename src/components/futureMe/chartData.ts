@@ -1,4 +1,5 @@
 import { SimulationRow } from './engine/pension';
+import { nominalFactorAt } from './nominal';
 import { Result } from './resultAnswers';
 
 export type ChartSourceId =
@@ -39,22 +40,25 @@ const surplusOf = ({ work, i1, isp, i2, i3, dep }: SimulationRow, need: number) 
   return !work && over > NOTICEABLE ? Math.round(over) : 0;
 };
 
-export const chartRowsOf = (result: Result, need: number): ChartRow[] =>
+export const chartRowsOf = (result: Result, need: number, isNominal = false): ChartRow[] =>
   result.rows
     .filter(({ age }) => age >= result.pensionStartAge)
-    .map((row) => ({
-      age: row.age,
-      year: row.year,
-      salary: row.work ? Math.round(row.spend) : 0,
-      firstPillar: row.work ? 0 : Math.round(row.i1),
-      specialPension: row.work ? 0 : Math.round(row.isp),
-      secondPillar: Math.round(row.i2),
-      thirdPillar: Math.round(row.i3),
-      deposit: Math.round(row.dep),
-      costs: Math.round(need),
-      shortfall: row.shortfall > NOTICEABLE ? Math.round(row.shortfall) : 0,
-      surplus: surplusOf(row, need),
-    }));
+    .map((row) => {
+      const costs = isNominal ? need * nominalFactorAt(row.year) : need;
+      return {
+        age: row.age,
+        year: row.year,
+        salary: row.work ? Math.round(row.spend) : 0,
+        firstPillar: row.work ? 0 : Math.round(row.i1),
+        specialPension: row.work ? 0 : Math.round(row.isp),
+        secondPillar: Math.round(row.i2),
+        thirdPillar: Math.round(row.i3),
+        deposit: Math.round(row.dep),
+        costs: Math.round(costs),
+        shortfall: row.shortfall > NOTICEABLE ? Math.round(row.shortfall) : 0,
+        surplus: surplusOf(row, costs),
+      };
+    });
 
 export const startSourcesOf = (start: ChartRow): ChartSourceId[] => {
   const paying = SOURCE_IDS.filter((id) => start[id] > 0);

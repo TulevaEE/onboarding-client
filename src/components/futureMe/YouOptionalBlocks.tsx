@@ -13,6 +13,8 @@ import {
   YouAnswers,
 } from './youAnswers';
 import { AmountField, BlockProps, SelectField } from './YouFields';
+import { HelpButton } from './HelpButton';
+import { HelpTopic } from './helpTopics';
 import { sectionLabels } from './YouBlocks';
 import { YouOptionalSection, YouSection } from './YouSection';
 
@@ -74,6 +76,7 @@ export const KidsSection = ({
     <YouSection
       id="future-me-kids"
       title={<FormattedMessage id="futureMe.you.kids.title" />}
+      help="kids"
       summary={<FormattedMessage id="futureMe.you.kids.summary" values={{ count: rows }} />}
       labels={sectionLabels('kids')}
       isOpen={isOpen}
@@ -87,6 +90,7 @@ export const KidsSection = ({
           answers={answers}
           touched={touched}
           label="futureMe.you.kidsCount.label"
+          help="kidsWho"
           name="futureMe.you.kidsCount.name"
           step={1}
           inputMode="numeric"
@@ -207,6 +211,13 @@ const SPECIAL_CASE_CHECKBOXES = [
   { id: 'future-me-case-other', label: 'futureMe.you.work.other' },
 ] as const;
 
+type SpecialCaseId = (typeof SPECIAL_CASE_CHECKBOXES)[number]['id'];
+
+const SPECIAL_CASE_HELP: Partial<Record<SpecialCaseId, HelpTopic>> = {
+  'future-me-case-special-pension': 'sp',
+  'future-me-case-civil': 'civil',
+};
+
 export const WorkSection = ({
   answers,
   touched,
@@ -222,7 +233,7 @@ export const WorkSection = ({
   const hasHazard = hazardList !== 'no';
   const hazardYears = parseFloat(answers.hazardYears);
   const hazardNeeded = hasHazard ? HAZARD_YEARS_NEEDED[hazardList] : 0;
-  const isChecked: Record<(typeof SPECIAL_CASE_CHECKBOXES)[number]['id'], boolean> = {
+  const isChecked: Record<SpecialCaseId, boolean> = {
     'future-me-case-hazard': hasHazard,
     'future-me-case-special-pension': answers.hasSpecialPension,
     'future-me-case-rescue': answers.hasRescue,
@@ -248,6 +259,7 @@ export const WorkSection = ({
     <YouSection
       id="future-me-work"
       title={<FormattedMessage id="futureMe.you.work.title" />}
+      help="special"
       summary={
         <FormattedMessage
           id="futureMe.you.work.summary"
@@ -276,6 +288,7 @@ export const WorkSection = ({
             <label className="form-check-label" htmlFor={id}>
               <FormattedMessage id={label} />
             </label>
+            {SPECIAL_CASE_HELP[id] && <HelpButton topic={SPECIAL_CASE_HELP[id] as HelpTopic} />}
           </div>
         ))}
       </div>
@@ -300,6 +313,7 @@ export const WorkSection = ({
             <SelectField
               id="future-me-hazard-list"
               label="futureMe.you.hazardList.label"
+              help="hazard"
               value={hazardList}
               hint="futureMe.you.hazardList.hint"
               options={HAZARD_LISTS.map((list) => ({
@@ -338,6 +352,7 @@ export const WorkSection = ({
             answers={answers}
             touched={touched}
             label="futureMe.you.rescueYears.label"
+            help="rescue"
             unit="futureMe.you.rescueYears.hint"
             name="futureMe.you.rescueYears.name"
             step={1}
@@ -352,6 +367,7 @@ export const WorkSection = ({
             answers={answers}
             touched={touched}
             label="futureMe.you.specialPensionStart.label"
+            help="spStart"
             unit="futureMe.you.specialPensionStart.unit"
             emptyError="futureMe.you.specialPensionStart.error"
             name="futureMe.you.specialPensionStart.name"

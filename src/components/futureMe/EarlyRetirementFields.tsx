@@ -121,6 +121,7 @@ export const EarlyRetirementFields = ({ answers, onChange }: Props) => {
           <SelectField
             id="future-me-early-years"
             label="futureMe.you.earlyYears.label"
+            help="soodusYears"
             hint="futureMe.you.earlyYears.hint"
             value={String(earlyRetirementYears(answers))}
             options={Array.from({ length: maxEarlyYearsOption(answers) + 1 }, (_, years) => ({

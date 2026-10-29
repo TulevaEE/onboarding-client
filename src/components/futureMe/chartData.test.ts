@@ -4,6 +4,8 @@ import { initialAge66 } from './age66Answers';
 import { initialExpenses } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { chartRowsOf, chartSeriesOf, startSourcesOf, tableRowsOf } from './chartData';
+import { CURRENT_YEAR } from './engine/pension';
+import { nominalFactorAt, nominalResultOf } from './nominal';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
 
@@ -34,6 +36,30 @@ const contextWith = (
 };
 
 describe('chartData', () => {
+  describe('in future prices', () => {
+    const result = resultOf(contextWith());
+    const rows = chartRowsOf(nominalResultOf(result), 791, true);
+    const last = rows[rows.length - 1];
+
+    it('lets the costs grow with prices year by year', () => {
+      expect(rows[0].costs).toBe(Math.round(791 * nominalFactorAt(rows[0].year)));
+      expect(last.costs).toBe(Math.round(791 * nominalFactorAt(last.year)));
+      expect(last.year).toBeGreaterThan(CURRENT_YEAR);
+    });
+
+    it('measures a shortfall against that year’s costs', () => {
+      const shortfallRows = chartRowsOf(
+        nominalResultOf(resultOf(contextWith('', {}, '500'))),
+        3000,
+        true,
+      );
+
+      shortfallRows.forEach((row) => {
+        expect(row.shortfall > 0 && row.surplus > 0).toBe(false);
+      });
+    });
+  });
+
   it('starts at the pension age and ends at the last age the result covers', () => {
     const result = resultOf(contextWith());
 

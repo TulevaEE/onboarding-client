@@ -2,6 +2,7 @@ import { Chart, ChartType, Plugin } from 'chart.js';
 
 export interface CostsLineOptions {
   amount: number;
+  amounts?: number[];
   label: string;
 }
 
@@ -81,7 +82,18 @@ export const costsLine: Plugin<'line', CostsLineOptions> = {
   id: 'costs',
   beforeDatasetsDraw(chart, _args, options: CostsLineOptions) {
     const { ctx, chartArea } = chart;
+    const { amounts } = options;
     const y = costsY(chart, options.amount);
+    const trace = () => {
+      ctx.moveTo(chartArea.left, y);
+      if (!amounts) {
+        ctx.lineTo(chartArea.right, y);
+        return;
+      }
+      amounts.slice(1).forEach((amount, index) => {
+        ctx.lineTo(chart.scales.x.getPixelForValue(index + 1), costsY(chart, amount));
+      });
+    };
     const stroke = (color: string, width: number, dash: number[]) => {
       ctx.save();
       ctx.strokeStyle = color;
@@ -89,8 +101,7 @@ export const costsLine: Plugin<'line', CostsLineOptions> = {
       ctx.lineCap = 'round';
       ctx.setLineDash(dash);
       ctx.beginPath();
-      ctx.moveTo(chartArea.left, y);
-      ctx.lineTo(chartArea.right, y);
+      trace();
       ctx.stroke();
       ctx.restore();
     };
