@@ -518,6 +518,19 @@ describe('Result step', () => {
         );
       });
 
+      it('says the state pension rises once the years of taking half of it are over', () => {
+        const dialog = openHelpFor(
+          contextWith(
+            {},
+            { age65: { ...initialAge65(), secondPillar: 'fund', mode: 'half', years: 3 } },
+          ),
+        );
+
+        expect(dialog).toHaveTextContent(
+          /riiklik pension 350\s€ kuus enne tulumaksu, alates 65-\u2060aastaselt pool pensionit ja alates 68-\u2060aastaselt 795\s€ kuus;/,
+        );
+      });
+
       it('leaves the deposit out while nothing is paid out to it', () => {
         const dialog = openHelpFor(contextWith({ secondPillarAmount: '100000' }));
 

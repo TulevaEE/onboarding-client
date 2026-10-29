@@ -89,6 +89,17 @@ const savingsAtPensionStartOrToday = ({ rows, pensionStartAge }: Result): Simula
 const paidFromAge = ({ rows }: Result, firstPaid: SimulationRow, startAge: number): number =>
   firstPaid === rows[0] ? startAge : firstPaid.age;
 
+const fullAfterHalfValues = (result: Result, firstPaid: SimulationRow) => {
+  const fullPaid = result.rows.find((row) => row.age === result.p1FullAge);
+  return fullPaid && fullPaid.age > firstPaid.age
+    ? {
+        isHalfFirst: 'yes',
+        statePensionFull: euro(fullPaid.i1g),
+        statePensionFullAge: fullPaid.age,
+      }
+    : { isHalfFirst: 'no' };
+};
+
 const statePensionValues = (result: Result) => {
   const firstPaid = result.rows.find((row) => row.i1g > 0.5);
   return firstPaid
@@ -96,6 +107,7 @@ const statePensionValues = (result: Result) => {
         hasStatePension: 'yes',
         statePension: euro(firstPaid.i1g),
         statePensionAge: paidFromAge(result, firstPaid, result.p1StartAge),
+        ...fullAfterHalfValues(result, firstPaid),
       }
     : { hasStatePension: 'no' };
 };
