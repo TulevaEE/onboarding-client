@@ -179,6 +179,21 @@ describe('Sina step help buttons', () => {
     expect(dialog).not.toHaveTextContent(/Miks kõige rohkem 4%/);
   });
 
+  it('says the III pillar money already saved follows the chosen return, without quoting a default', () => {
+    renderYouStep();
+    const monthlyField = screen.getByRole('spinbutton', {
+      name: /Kui palju maksad III\ssambasse kuus/,
+    });
+
+    userEvent.click(
+      helpButtonBeside(monthlyField, '.col-12', /Kuidas III\ssamba sissemakse arvutuses muutub$/),
+    );
+
+    expect(screen.getByRole('dialog')).toHaveTextContent(
+      'See puudutab ainult uut sissemakset: sambas oleva raha ostujõud muutub valitud tootluse võrra.',
+    );
+  });
+
   it('puts the pillars explanation beside the second pillar and work title', () => {
     renderYouStep();
     const heading = screen.getByRole('heading', { name: /^Töö ja II\ssammas$/ });
