@@ -11,8 +11,9 @@ import {
   simulate,
   SimulationResult,
 } from './engine/pension';
+import { kidsInputOf } from './kidsInput';
 import { StepPlanInput } from './steps';
-import { amountOf, YouAnswers } from './youAnswers';
+import { amountOf, rescueBasisOf, YouAnswers } from './youAnswers';
 import { retirementAge } from './planAges';
 
 const STATE_SECOND_PILLAR_RATE = 0.04;
@@ -72,7 +73,7 @@ export const pensionInputOf = (
     birthYear: plan.birthYear,
     sex: you.sex,
     p1Monthly: amountOf(you.firstPillarMonthly),
-    p2: 0,
+    p2: amountOf(you.secondPillarAmount),
     p3: 0,
     needMonthly: 0,
     realReturn: 0,
@@ -81,6 +82,8 @@ export const pensionInputOf = (
     p2Rate: Number(you.secondPillarRate) || 0,
     soodus: plan.earlyRetirementYears,
     flexEarly: pensionKind(you) === 'flexible' ? plan.earlyRetirementYears : 0,
+    kids: kidsInputOf(you),
+    rescueBasis: rescueBasisOf(you),
     hazard: isHazardous ? you.hazardList : 'no',
     hazardYears: isHazardous ? parseFloat(you.hazardYears) || 0 : 0,
     undergroundYears: isHazardous ? parseInt(you.undergroundYears, 10) || 0 : 0,

@@ -49,6 +49,11 @@ const choiceOf = (rule: Rule, intl: IntlShape): string | null => {
     case 'earlyRetirement':
     case 'flexibleRetirement':
       return format(`futureMe.result.rules.${rule.id}.choice`, ruleValues(rule));
+    case 'childSupplement':
+      return format('futureMe.result.rules.childSupplement.choice', {
+        monthly: euro(rule.monthly),
+        inForecast: rule.inForecast,
+      });
     case 'specialPension':
       return format('futureMe.result.rules.specialPension.choice', {
         monthly: euro(rule.monthly),

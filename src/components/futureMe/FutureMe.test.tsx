@@ -406,7 +406,15 @@ describe('FutureMe', () => {
       expect(kidBirthYearField(2)).toHaveValue('2023');
     });
 
-    it('asks for the state payment months only of a child born from 2022 to three years ago', () => {
+    it('fills the birth month of a recent child from the personal code', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+
+      renderFutureMe();
+
+      expect(screen.getByRole('combobox', { name: /1\. lapse sünnikuu/ })).toHaveValue('2');
+    });
+
+    it('asks for the state payment months only of a child born from September 2021 who is over three', () => {
       withChildren([BOY_BORN_JUNE_2015, GIRL_BORN_FEB_2023]);
 
       renderFutureMe();
@@ -529,6 +537,20 @@ describe('FutureMe', () => {
       expect(kidMonthsField(1)).toHaveValue(null);
     });
 
+    it('asks for the state payment months of a child born from September 2021', () => {
+      withChildren([]);
+
+      renderFutureMe();
+      userEvent.click(addKidsButton() as HTMLElement);
+      typeInto(kidBirthYearField(1), '2021');
+      const birthMonth = screen.getByRole('combobox', { name: /1\. lapse sünnikuu/ });
+
+      userEvent.selectOptions(birthMonth, '8');
+      expect(queryKidMonthsField(1)).not.toBeInTheDocument();
+      userEvent.selectOptions(birthMonth, '10');
+      expect(kidMonthsField(1)).toHaveValue(null);
+    });
+
     it('says a number of months outside 0–36 is not possible', () => {
       withChildren([GIRL_BORN_FEB_2023]);
 
@@ -559,15 +581,17 @@ describe('FutureMe', () => {
       ).toBeInTheDocument();
     });
 
-    it('says in the „?“ that the result does not count the state payment months yet', () => {
+    it('says in the „?“ that the state payment months set the part of the supplement the result counts', () => {
       withChildren([GIRL_BORN_FEB_2023]);
 
       renderFutureMe();
       userEvent.click(screen.getByRole('button', { name: /^Selgitus: Mitu kuud maksis riik/ }));
 
       const dialog = screen.getByRole('dialog');
-      expect(within(dialog).getByText(/Tulemus seda veel ei arvesta/)).toBeInTheDocument();
-      expect(within(dialog).queryByText(/arvestame, et riik maksis/)).not.toBeInTheDocument();
+      expect(
+        within(dialog).getByText(/seda suurem osa lisast tuleb pensionile juurde\.$/),
+      ).toBeInTheDocument();
+      expect(within(dialog).queryByText(/veel ei arvesta/)).not.toBeInTheDocument();
     });
 
     it('waits for the roles before showing the form', () => {
@@ -1277,9 +1301,7 @@ describe('FutureMe', () => {
 
         expect(addKidsButton()).not.toHaveAttribute('aria-expanded');
         expect(
-          screen.getByText(
-            'Lapsed võivad tuua pensioni varem. Pensionilisa laste eest arvutus veel ei arvesta.',
-          ),
+          screen.getByText('Lapsed annavad pensionilisa ja võivad tuua pensioni varem.'),
         ).toBeVisible();
         expect(screen.queryByRole('spinbutton', { name: /Mitu last/ })).not.toBeInTheDocument();
       });
@@ -1439,6 +1461,81 @@ describe('FutureMe', () => {
         );
 
         expect(earlyYearsField()).toHaveDisplayValue(withNbsp('5 a, vähendamata (kõige varem)'));
+      });
+
+      it('ask who gets the supplement and whether the forecast has it, starting from the saver and no for the average pension', () => {
+        renderFutureMe();
+        addKids(['1990']);
+
+        expect(screen.getByRole('combobox', { name: /Kes saab pensionilisa/ })).toHaveDisplayValue(
+          'mina',
+        );
+        expect(
+          screen.getByRole('combobox', { name: /prognoos sisaldab laste pensionilisa/ }),
+        ).toHaveDisplayValue('ei');
+      });
+
+      it('ask the birth month only of a child born in 2021 or in the last three years', () => {
+        renderFutureMe();
+        addKids(['1990', '2025']);
+
+        expect(
+          screen.queryByRole('combobox', { name: /1\. lapse sünnikuu/ }),
+        ).not.toBeInTheDocument();
+        expect(screen.getByRole('combobox', { name: /2\. lapse sünnikuu/ })).toHaveDisplayValue(
+          'ei tea',
+        );
+      });
+
+      describe('with the rescue service too', () => {
+        const addRescueService = () => {
+          addSpecialCases();
+          userEvent.click(specialCase(/Töötasin päästeteenistuses/));
+          typeInto(rescueYearsField(), '20');
+        };
+        const rescueBasis = (name: string) => screen.getByRole('radio', { name });
+
+        it('ask for the rescue allowance or the pension for the children, both one after the other first', () => {
+          renderFutureMe();
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          expect(
+            screen.getByRole('group', { name: /Ootetoetus või laste eest pension/ }),
+          ).toBeVisible();
+          expect(rescueBasis('Mõlemad järjest')).toBeChecked();
+          expect(earlyYearsField()).toHaveDisplayValue(withNbsp('5 a, vähendamata (kõige varem)'));
+        });
+
+        it('say under the early years that the rescue allowance runs until the pension for the children when both are taken', () => {
+          renderFutureMe();
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          expect(screen.getByRole('status')).toHaveTextContent(
+            /päästeteenistusest \(5\sa: päästeasutus maksab sulle 65-\u2060aastaseks saamiseni toetust vanaduspensioni suuruses, siis saad laste eest pensioni\)/,
+          );
+        });
+
+        it('take the early right from the children when their pension is picked', () => {
+          renderFutureMe();
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          userEvent.click(rescueBasis('Laste eest pension'));
+
+          expect(earlyYearsField()).toHaveDisplayValue(withNbsp('1 a, vähendamata (kõige varem)'));
+        });
+
+        it('not ask without the right from the children', () => {
+          renderFutureMe();
+          addKids(['1990']);
+          addRescueService();
+
+          expect(
+            screen.queryByRole('radio', { name: 'Ainult ootetoetus' }),
+          ).not.toBeInTheDocument();
+        });
       });
 
       it('reset on removing, drop the right and move the focus to the add button', () => {

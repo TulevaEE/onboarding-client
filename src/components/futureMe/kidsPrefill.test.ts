@@ -61,10 +61,30 @@ describe('children prefill from the roles and the contributions', () => {
     expect(deriveKidsPrefill(children, [])?.birthYears).toEqual([2015, 2023]);
   });
 
+  it('takes the birth months from the personal codes', () => {
+    expect(deriveKidsPrefill(children, [])?.birthMonths).toEqual([6, 2]);
+  });
+
   it('counts the months the state paid into the parent II pillar after the child was born', () => {
     const contributions = monthsFrom(2023, 3, 30).map((time) => parentalBenefit(time));
 
     expect(deriveKidsPrefill(children, contributions)?.iiMonths).toEqual(['', '30']);
+  });
+
+  it('counts the months for a child born from September 2021', () => {
+    const bornOctober2021 = [{ personalCode: '62110100000' }];
+    const contributions = monthsFrom(2021, 11, 16).map((time) => parentalBenefit(time));
+
+    expect(deriveKidsPrefill(bornOctober2021, contributions)?.iiMonths).toEqual(['16']);
+  });
+
+  it('leaves the months empty for a child still under 3, whose months the calculation does not ask', () => {
+    const bornNovember2023 = [{ personalCode: '62311100000' }];
+    const contributions = monthsFrom(2023, 12, 35).map((time) => parentalBenefit(time));
+
+    expect(
+      deriveKidsPrefill(bornNovember2023, contributions, new Date(2026, 9, 28))?.iiMonths,
+    ).toEqual(['']);
   });
 
   it('counts a month with two payments once', () => {
@@ -151,7 +171,7 @@ describe('children prefill from the roles and the contributions', () => {
 });
 
 describe('prefilled months once the saver enters more children', () => {
-  const prefill = { birthYears: [2015, 2023], iiMonths: ['', '24'] };
+  const prefill = { birthYears: [2015, 2023], birthMonths: [6, 2], iiMonths: ['', '24'] };
 
   it.each(['2020', '2022', '2026'])(
     'clears them when an added child is born in %p, within three years, as a payment names no child',

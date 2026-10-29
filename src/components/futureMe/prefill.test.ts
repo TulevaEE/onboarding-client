@@ -281,7 +281,7 @@ describe('prefill from the pension data', () => {
       TODAY,
     );
 
-    expect(prefill.kids).toEqual({ birthYears: [2023], iiMonths: [''] });
+    expect(prefill.kids).toEqual({ birthYears: [2023], birthMonths: [12], iiMonths: [''] });
   });
 
   it('leaves the pension data fields empty when it could not be loaded', () => {

@@ -145,4 +145,32 @@ describe('Result step: rules that follow from the answers', () => {
 
     expect(itemTitled(ruleList(), rule)).toHaveTextContent(choice);
   });
+
+  describe('child supplement', () => {
+    const grownChildren = { kidsAdded: true, kidsCount: '2', kidsBirthYears: ['1990', '1992'] };
+
+    it.each([
+      { inForecast: 'no', choice: /^Sinu valik: \+\d+\s€\skuus$/ },
+      { inForecast: 'yes', choice: /^Sinu valik: \+\d+\s€\skuus \(prognoosis juba sees\)$/ },
+      {
+        inForecast: 'unknown',
+        choice: /^Sinu valik: \+\d+\s€\skuus \(ei arvestatud: ei tea, kas prognoosis on\)$/,
+      },
+    ])('says whether it is counted when the forecast is $inForecast', ({ inForecast, choice }) => {
+      renderRules(contextWith({ ...grownChildren, kidsInForecast: inForecast as 'no' }));
+
+      const rule = itemTitled(ruleList(), /^Laste pensionilisa$/);
+      expect(within(rule).getByText(choice)).toBeInTheDocument();
+      expect(rule).toHaveTextContent(/Eripensionile lisa ei lisata/);
+    });
+
+    it('dates the groups from children born in 1991, as the kids „?“ and the Social Insurance Board do', () => {
+      renderRules(contextWith(grownChildren));
+
+      const rule = itemTitled(ruleList(), /^Laste pensionilisa$/);
+      expect(rule).toHaveTextContent(/1991\.–2012\.\sa sündinud lapse eest 3,5\saastahinnet/);
+      expect(rule).toHaveTextContent(/enne 1991\.\sa sündinud lapse eest 1,5\saastahinnet/);
+      expect(rule).not.toHaveTextContent(/1981/);
+    });
+  });
 });

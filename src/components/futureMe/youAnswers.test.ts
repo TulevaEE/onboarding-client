@@ -5,18 +5,24 @@ import {
   earlyRightSources,
   effectivePensionAge,
   isKidsRightAvailableToSelf,
+  isRescueBasisAsked,
+  kidsInForecastOf,
+  isRescueMixOffered,
+  rescueBasisOf,
   fieldProblem,
+  firstInvalidChildIIMonths,
   hasChildWithoutBirthYear,
   initialAnswers,
+  isChildIIMonthsAsked,
   isChildIIMonthsInvalid,
   isSpecialPensionOnly,
   pensionAgeValue,
   prefilledFields,
   removeOptionalSection,
   toStepPlanInput,
+  PREFILLED_FIRST_PILLAR_MONTHLY,
   YouAnswers,
 } from './youAnswers';
-import { isChildIIMonthsAsked } from './kidsPrefill';
 import { pensionAge } from './engine/pension';
 import { FutureMeStep, shownSteps } from './steps';
 
@@ -82,7 +88,7 @@ describe("children from Tuleva's own data", () => {
     birthYear: 1985,
     sex: 'M',
     secondPillarRate: '0.02',
-    kids: { birthYears: [2015, 2023], iiMonths: ['', '30'] },
+    kids: { birthYears: [2015, 2023], birthMonths: [6, 2], iiMonths: ['', '30'] },
   });
 
   it('starts with the children added, one row each', () => {
@@ -90,6 +96,7 @@ describe("children from Tuleva's own data", () => {
       kidsAdded: true,
       kidsCount: '2',
       kidsBirthYears: ['2015', '2023'],
+      kidsBirthMonths: ['6', '2'],
       kidsIIMonths: ['', '30'],
     });
   });
@@ -102,14 +109,48 @@ describe("children from Tuleva's own data", () => {
 });
 
 describe('the months the state paid into the II pillar for a child', () => {
+  const october2026 = new Date(2026, 9, 28);
+  const bornIn = (year: string, month: string, iiMonths = '') =>
+    filledIn({
+      kidsAdded: true,
+      kidsCount: '1',
+      kidsBirthYears: [year],
+      kidsBirthMonths: [month],
+      kidsIIMonths: [iiMonths],
+    });
+
   it.each([
-    [2021, false],
-    [2022, true],
-    [2023, true],
-    [2024, false],
-    [2030, false],
-  ])('is asked for a child born in %p: %p', (year, isAsked) => {
-    expect(isChildIIMonthsAsked(year)).toBe(isAsked);
+    ['2021', '8', false],
+    ['2021', '', false],
+    ['2021', '9', true],
+    ['2021', '12', true],
+    ['2022', '', true],
+    ['2023', '', true],
+    ['2024', '', false],
+    ['2030', '', false],
+  ])('is asked for a child born in %p, month %p: %p', (year, month, isAsked) => {
+    expect(isChildIIMonthsAsked(bornIn(year, month), 0, october2026)).toBe(isAsked);
+  });
+
+  it('is not asked of a child still under 3 by the birth month, whose months the calculation does not use', () => {
+    expect(isChildIIMonthsAsked(bornIn('2023', '11'), 0, october2026)).toBe(false);
+    expect(firstInvalidChildIIMonths(bornIn('2023', '11', '40'), october2026)).toBeUndefined();
+  });
+
+  it('is asked once the child turns 3, by the clock rather than the calculation year', () => {
+    expect(isChildIIMonthsAsked(bornIn('2024', '1'), 0, new Date(2027, 1, 15))).toBe(true);
+  });
+
+  it('points at a month count over 36 of a child born from September 2021', () => {
+    const answers = filledIn({
+      kidsAdded: true,
+      kidsCount: '2',
+      kidsBirthYears: ['2015', '2021'],
+      kidsBirthMonths: ['', '10'],
+      kidsIIMonths: ['', '40'],
+    });
+
+    expect(firstInvalidChildIIMonths(answers, october2026)).toBe(1);
   });
 
   it.each(['', '0', '12', '36'])('accepts %p', (typed) => {
@@ -555,5 +596,79 @@ describe('prefilled fields', () => {
     expect(Array.from(prefilledFields(initialAnswers(empty), empty))).toEqual([
       'firstPillarMonthly',
     ]);
+  });
+});
+
+describe('rescue allowance or the pension for the children', () => {
+  const threeKidsAndRescue = (overrides: Partial<YouAnswers> = {}) =>
+    filledIn({
+      kidsAdded: true,
+      kidsCount: '3',
+      kidsBirthYears: ['1990', '1992', '1994'],
+      workAdded: true,
+      hasRescue: true,
+      rescueYears: '20',
+      ...overrides,
+    });
+
+  it('is asked only when both the children and the rescue service give the right to retire early', () => {
+    expect(isRescueBasisAsked(threeKidsAndRescue())).toBe(true);
+    expect(isRescueBasisAsked(threeKidsAndRescue({ hasRescue: false }))).toBe(false);
+    expect(isRescueBasisAsked(threeKidsAndRescue({ rescueYears: '10' }))).toBe(false);
+    expect(isRescueBasisAsked(threeKidsAndRescue({ kidsEarlyUser: 'other' }))).toBe(false);
+  });
+
+  it('offers both one after the other only while the rescue right is longer than the children one', () => {
+    expect(isRescueMixOffered(threeKidsAndRescue())).toBe(true);
+    expect(
+      isRescueMixOffered(
+        threeKidsAndRescue({
+          kidsDisabled: true,
+          rescueYears: '15',
+          kidsBirthYears: ['1990', '1992', '1994'],
+        }),
+      ),
+    ).toBe(false);
+  });
+
+  it('is the picked basis for the engine, or none when it is not asked', () => {
+    expect(rescueBasisOf(threeKidsAndRescue({ rescueBasis: 'toetus' }))).toBe('toetus');
+    expect(rescueBasisOf(threeKidsAndRescue({ hasRescue: false }))).toBeUndefined();
+  });
+
+  it('falls back to the pension for the children when both one after the other is not offered', () => {
+    const answers = threeKidsAndRescue({ kidsDisabled: true, rescueBasis: 'mix' });
+
+    expect(rescueBasisOf(answers)).toBe('pension');
+  });
+
+  it('gives no early right from the rescue service when the pension for the children is picked', () => {
+    expect(earlyRightSources(threeKidsAndRescue({ rescueBasis: 'pension' }))).toEqual({
+      kids: 1,
+      hazard: 0,
+      rescue: 0,
+    });
+    expect(earlyRetirementYears(threeKidsAndRescue({ rescueBasis: 'toetus' }))).toBe(5);
+  });
+});
+
+describe('whether the state pension forecast has the child supplement', () => {
+  it('is no while the state pension is still the prefilled average, which has no supplement', () => {
+    const answers = initialAnswers({ birthYear: 1980, sex: 'N', secondPillarRate: '0.02' });
+
+    expect(kidsInForecastOf(answers)).toBe('no');
+  });
+
+  it('is unknown once the saver types their own forecast', () => {
+    expect(kidsInForecastOf(filledIn({ firstPillarMonthly: '700' }))).toBe('unknown');
+  });
+
+  it('is what the saver picked', () => {
+    expect(kidsInForecastOf(filledIn({ kidsInForecast: 'yes' }))).toBe('yes');
+    expect(
+      kidsInForecastOf(
+        filledIn({ firstPillarMonthly: PREFILLED_FIRST_PILLAR_MONTHLY, kidsInForecast: 'unknown' }),
+      ),
+    ).toBe('unknown');
   });
 });

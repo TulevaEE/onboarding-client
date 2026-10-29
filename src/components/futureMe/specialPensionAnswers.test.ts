@@ -85,6 +85,25 @@ describe('specialPensionAnswers', () => {
     ).toMatchObject({ special: 500, oldAge: 700, larger: 'oldAge' });
   });
 
+  it('compares with the old-age pension the result pays, its child supplement counting the II pillar money saved', () => {
+    const changes = {
+      secondPillarRate: '0',
+      secondPillarAmount: '20000',
+      kidsAdded: true,
+      kidsCount: '1',
+      kidsBirthYears: ['2022'],
+      kidsInForecast: 'no' as const,
+    };
+
+    expect(
+      firstPillarComparison(
+        { ...initialSpecialPension(), monthly: '720' },
+        youWith(changes),
+        planOf(changes),
+      ),
+    ).toMatchObject({ special: 720, oldAge: 700, larger: 'special' });
+  });
+
   describe('compares with the old-age pension as the saver retires', () => {
     const withAmount = { ...initialSpecialPension(), monthly: '900' };
     const oldAgeFor = (changes: Partial<ReturnType<typeof initialAnswers>>) =>

@@ -1,10 +1,16 @@
 import { pensionKind } from './age65Answers';
 import { Contract, hasPillar, Pillar } from './age66Answers';
-import { EARLY_DECREASE, retirementYears } from './engine/pension';
+import { EARLY_DECREASE, retirementYears, SimulationResult } from './engine/pension';
 import { retirementAge } from './planAges';
 import { ResultContext, resultInputOf, resultOf, resultScenarioOf } from './resultAnswers';
 import { specialPensionStartAge } from './specialPensionAnswers';
-import { amountOf, earlyRightSources, YouAnswers } from './youAnswers';
+import {
+  amountOf,
+  earlyRightSources,
+  KidsInForecast,
+  kidsInForecastOf,
+  YouAnswers,
+} from './youAnswers';
 
 type EarlyRightReason = keyof ReturnType<typeof earlyRightSources>;
 
@@ -17,6 +23,7 @@ export type Rule = When &
   (
     | { id: 'earlyRetirement'; years: number; pensionAge: number; reason: EarlyRightReason }
     | { id: 'flexibleRetirement'; years: number; decrease: number }
+    | { id: 'childSupplement'; monthly: number; inForecast: KidsInForecast }
     | { id: 'specialPension'; monthly: number; startAge: number | undefined }
     | { id: 'fundPensionContract'; contracts: Partial<Record<Pillar, Contract>> }
     | { id: 'inheritance'; pillars: 'both' | Pillar }
@@ -55,6 +62,32 @@ const earlyRetirementRules = (context: ResultContext): Rule[] => {
           reason: earlyRightReason(you),
         },
   ];
+};
+
+const oldAgePensionStartAge = ({
+  firstPillar,
+  rescueAllowance,
+  p1StartAge,
+}: SimulationResult): number | null => {
+  if (firstPillar?.paid === 'special') {
+    return firstPillar.atPa?.paid === 'oldAge' ? firstPillar.atPa.age : null;
+  }
+  return rescueAllowance?.until ?? p1StartAge;
+};
+
+const childSupplementRules = (context: ResultContext): Rule[] => {
+  const result = resultOf(context);
+  const age = oldAgePensionStartAge(result);
+  return result.childSupplement && age !== null
+    ? [
+        {
+          id: 'childSupplement',
+          ...whenOf(context, age),
+          monthly: result.childSupplement.monthly,
+          inForecast: kidsInForecastOf(context.you),
+        },
+      ]
+    : [];
 };
 
 const specialPensionRules = (context: ResultContext): Rule[] => {
@@ -117,6 +150,7 @@ const byAge = (a: Rule, b: Rule): number =>
 export const rulesOf = (context: ResultContext): Rule[] =>
   [
     ...earlyRetirementRules(context),
+    ...childSupplementRules(context),
     ...specialPensionRules(context),
     ...fundPensionRules(context),
     ...inheritanceRules(context),

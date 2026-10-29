@@ -177,7 +177,6 @@ export const resultInputOf = (context: ResultContext): PensionInput => {
     ...pensionInputOf(specialPension, you, plan, age65, age66),
     spHas: hasSpecialPension,
     spMonthly: hasSpecialPension ? amountOf(specialPension.monthly) : 0,
-    p2: amountOf(you.secondPillarAmount),
     p3: 0,
     p3Sep: thirdPillarOf(context),
     p3Monthly: amountOf(you.thirdPillarMonthly),
