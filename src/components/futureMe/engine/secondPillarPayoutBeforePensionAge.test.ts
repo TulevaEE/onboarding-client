@@ -66,6 +66,25 @@ describe('II pillar payout started five years before the pension age while worki
     });
   });
 
+  describe('everything at once after retiring early and working on', () => {
+    const result = simulate(
+      { ...fromSixty, soodus: 5, workOn: true, workUntil: 65 },
+      lifeTable,
+      scenarioA,
+    );
+
+    it('has the money on the deposit from 60', () => {
+      expect(rowAt(result, 60).deposit).toBeCloseTo(
+        savedUntilSixty * (1 - TAX_SHORT),
+        within(1e-6),
+      );
+    });
+
+    it('pays no fund pension', () => {
+      expect(result.rows.filter(({ fp }) => fp > 0)).toEqual([]);
+    });
+  });
+
   it('starts no earlier than five years before the pension age', () => {
     expect(simulate({ ...base, p2PayoutFrom: 55 }, lifeTable, scenarioD).rows).toEqual(
       simulate(fromSixty, lifeTable, scenarioD).rows,

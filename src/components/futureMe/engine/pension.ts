@@ -818,6 +818,9 @@ export function simulate(
   };
   const paidWhileWorking = new Map<number, number>();
   const thirdPaidWhileWorking = new Map<number, number>();
+  const lumpsWhileWorking = new Map<number, number>();
+  const addLumpWhileWorking = (age: number, net: number) =>
+    lumpsWhileWorking.set(age, (lumpsWhileWorking.get(age) ?? 0) + net);
   let paidBeforeRetirement = 0;
   let early: EarlyWithdrawalResult | null = null;
   for (let a = currentAge; a < workEnd; a += 1) {
@@ -828,11 +831,13 @@ export function simulate(
     }
     const isPayingAt = isPayingWhileWorking && a >= payoutWhileWorkingFrom;
     if (isPayingAt) {
-      const paid =
-        scenario.id === 'A' ? fund * (1 - TAX_SHORT) : Math.min(fund, scheduledPayout(fund, a));
-      fund = scenario.id === 'A' ? 0 : fund - paid;
+      const isLump = scenario.id === 'A';
+      const paid = isLump ? fund * (1 - TAX_SHORT) : Math.min(fund, scheduledPayout(fund, a));
+      fund = isLump ? 0 : fund - paid;
       if (a < ret) {
         paidBeforeRetirement += paid * (1 + rd) ** (ret - a);
+      } else if (isLump) {
+        addLumpWhileWorking(a, paid);
       } else {
         paidWhileWorking.set(a, paid);
       }
@@ -848,6 +853,8 @@ export function simulate(
       }
       if (a < ret) {
         paidBeforeRetirement += paid3 * (1 + rd) ** (ret - a);
+      } else if (sep.mode === 'lump') {
+        addLumpWhileWorking(a, paid3);
       } else {
         thirdPaidWhileWorking.set(a, paid3);
       }
@@ -885,6 +892,7 @@ export function simulate(
 
   const rows: SimulationRow[] = [];
   for (let age = startAge; age <= MAX_AGE; age += 1) {
+    deposit += lumpsWhileWorking.get(age) ?? 0;
     if (scenario.id === 'A' && age === firstRetAge) {
       deposit += lumpOut(fund);
       fund = 0;

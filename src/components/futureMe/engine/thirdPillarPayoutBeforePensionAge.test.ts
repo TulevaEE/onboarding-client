@@ -46,6 +46,22 @@ describe('III pillar payout started five years before the pension age while work
     });
   });
 
+  describe('everything at once after retiring early and working on', () => {
+    const result = simulate(
+      { ...separate('lump'), p3PayoutFrom: 60, soodus: 5, workOn: true, workUntil: 65 },
+      lifeTable,
+      keepGrowingScenario,
+    );
+
+    it('has the money on the deposit from 60', () => {
+      expect(rowAt(result, 60).deposit).toBeCloseTo(20000 * (1 - TAX_SHORT), within(1e-6));
+    });
+
+    it('pays no fund pension', () => {
+      expect(result.rows.filter(({ fp }) => fp > 0)).toEqual([]);
+    });
+  });
+
   describe('fund pension', () => {
     const started = rowAt(
       simulate({ ...separate('fund'), p3PayoutFrom: 60 }, lifeTable, keepGrowingScenario),
