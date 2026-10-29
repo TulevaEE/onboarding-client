@@ -8,11 +8,11 @@ export const TKF_DOCUMENTS: { href: string; labelId: TranslationKey }[] = [
     labelId: 'flows.savingsFundOnboarding.termsStep.linkText.terms',
   },
   {
-    href: 'https://tuleva.ee/wp-content/uploads/2026/08/TKF100-Prospekt-alates-18.09.2026.pdf',
+    href: 'https://tuleva.ee/wp-content/uploads/2026/09/TKF100-Prospekt-alates-29.10.2026.pdf',
     labelId: 'flows.savingsFundOnboarding.termsStep.linkText.prospectus',
   },
   {
-    href: 'https://tuleva.ee/wp-content/uploads/2026/09/TKF100-Pohiteave-kehtib-alates-18.09.2026.pdf',
+    href: 'https://tuleva.ee/wp-content/uploads/2026/10/TKF100-Pohiteave-kehtib-alates-29.10.2026.pdf',
     labelId: 'flows.savingsFundOnboarding.termsStep.linkText.keyInfo',
   },
 ];
