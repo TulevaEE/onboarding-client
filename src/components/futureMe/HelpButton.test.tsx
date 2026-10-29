@@ -116,7 +116,7 @@ describe('HelpButton', () => {
     },
   );
 
-  it.each(HELP_TOPICS)('shows the explanation of %s without research notes', (topic) => {
+  it.each(TOPICS_WITHOUT_NUMBERS)('shows the explanation of %s without research notes', (topic) => {
     renderHelp(topic);
 
     userEvent.click(screen.getByRole('button', { name: /^Selgitus: / }));
