@@ -3,10 +3,19 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { FutureMe } from './FutureMe';
-import { useContributions, useMe, useSourceFunds } from '../common/apiHooks';
-import { Contribution, SourceFund, User } from '../common/apiModels';
+import {
+  useContributions,
+  useEligibleChildren,
+  useMe,
+  usePendingOnboardings,
+  useRoles,
+  useSourceFunds,
+} from '../common/apiHooks';
+import { Contribution, PendingOnboarding, SourceFund, User } from '../common/apiModels';
+import { EligibleChild } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 import translations from '../translations';
 import { pensionAge } from './engine/pension';
+import { installDialogPolyfill } from './dialogPolyfill';
 import { trackCustomEvent } from '../tracking/actions';
 import { mockUser } from '../../test/backend-responses';
 import { formatAmountForCurrency } from '../common/utils';
@@ -15,12 +24,18 @@ jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: jest.fn(),
   useSourceFunds: jest.fn(),
+  useEligibleChildren: jest.fn(),
+  useRoles: jest.fn(),
+  usePendingOnboardings: jest.fn(),
 }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
 
 const mockUseMe = useMe as jest.MockedFunction<typeof useMe>;
 const mockUseContributions = useContributions as jest.MockedFunction<typeof useContributions>;
 const mockUseSourceFunds = useSourceFunds as jest.MockedFunction<typeof useSourceFunds>;
+const mockUseEligibleChildren = useEligibleChildren as jest.MockedFunction<
+  typeof useEligibleChildren
+>;
 const mockTrackCustomEvent = trackCustomEvent as jest.MockedFunction<typeof trackCustomEvent>;
 
 const loggedInAs = (user: Partial<User> | undefined) => {
@@ -48,6 +63,58 @@ const withPensionData = ({
     isLoading,
   } as ReturnType<typeof useSourceFunds>);
 };
+
+const mockUseRoles = useRoles as jest.MockedFunction<typeof useRoles>;
+const mockUsePendingOnboardings = usePendingOnboardings as jest.MockedFunction<
+  typeof usePendingOnboardings
+>;
+
+const withChildren = (children: { personalCode: string }[] | undefined, isLoading = false) => {
+  mockUseRoles.mockReturnValue({
+    data: children && [
+      { type: 'PERSON', code: mockUser.personalCode, name: 'John Doe' },
+      { type: 'LEGAL_ENTITY', code: '12345678', name: 'Firma OÜ' },
+      ...children.map(({ personalCode }) => ({ type: 'PERSON', code: personalCode, name: 'Laps' })),
+    ],
+    isLoading,
+  } as ReturnType<typeof useRoles>);
+  mockUsePendingOnboardings.mockReturnValue({
+    data: [] as PendingOnboarding[],
+    isLoading: false,
+  } as ReturnType<typeof usePendingOnboardings>);
+  mockUseEligibleChildren.mockReturnValue({
+    data: [] as EligibleChild[],
+    isLoading: false,
+  } as ReturnType<typeof useEligibleChildren>);
+};
+
+const withPendingChild = ({ personalCode }: { personalCode: string }) => {
+  mockUsePendingOnboardings.mockReturnValue({
+    data: [{ type: 'PERSON', code: personalCode, name: 'Laps' }],
+    isLoading: false,
+  } as ReturnType<typeof usePendingOnboardings>);
+};
+
+const BOY_BORN_JUNE_2015 = { personalCode: '51506150000' };
+const GIRL_BORN_FEB_2023 = { personalCode: '62302200000' };
+
+const parentalBenefitInMonth = (year: number, month: number): Contribution => ({
+  time: `${year}-${String(month).padStart(2, '0')}-10T08:00:00Z`,
+  sender: 'Riik',
+  amount: 50,
+  currency: 'EUR',
+  pillar: 2,
+  additionalParentalBenefit: 50,
+  employeeWithheldPortion: 0,
+  socialTaxPortion: 0,
+  interest: 0,
+});
+
+const monthsOfParentalBenefit = (count: number): Contribution[] =>
+  Array.from({ length: count }, (_, offset) => {
+    const index = 2023 * 12 + 2 + offset;
+    return parentalBenefitInMonth(Math.floor(index / 12), (index % 12) + 1);
+  });
 
 const monthsAgo = (months: number): string => {
   const now = new Date();
@@ -159,6 +226,7 @@ describe('FutureMe', () => {
     mockTrackCustomEvent.mockClear();
     loggedInAs({ dateOfBirth: '1989-01-01', personalCode: '39001011234' });
     withPensionData({});
+    withChildren([]);
   });
 
   describe('while the user is loading', () => {
@@ -270,6 +338,244 @@ describe('FutureMe', () => {
 
       expect(grossSalaryField()).toHaveValue(null);
       expect(secondPillarAmountField()).toHaveValue(null);
+    });
+  });
+
+  describe('children with a Tuleva account', () => {
+    beforeAll(installDialogPolyfill);
+
+    const addKidsButton = () => screen.queryByRole('button', { name: 'Lisa lapsed' });
+    const kidsCountField = () => screen.getByRole('spinbutton', { name: /Mitu last\?/ });
+    const kidBirthYearField = (number: number) =>
+      screen.getByRole('textbox', { name: new RegExp(`${number}\\. lapse sünniaasta`) });
+    const kidMonthsField = (number: number) =>
+      screen.getByRole('spinbutton', {
+        name: new RegExp(`${number}\\. lapse riigi lisamakse II\\ssambasse`),
+      });
+    const queryKidMonthsField = (number: number) =>
+      screen.queryByRole('spinbutton', {
+        name: new RegExp(`${number}\\. lapse riigi lisamakse II\\ssambasse`),
+      });
+    it('never asks the population register', () => {
+      withChildren([BOY_BORN_JUNE_2015]);
+
+      renderFutureMe();
+
+      expect(mockUseEligibleChildren).not.toHaveBeenCalled();
+    });
+
+    it('adds a child whose account the other guardian opened', () => {
+      withChildren([]);
+      withPendingChild(GIRL_BORN_FEB_2023);
+
+      renderFutureMe();
+
+      expect(kidsCountField()).toHaveValue(1);
+      expect(kidBirthYearField(1)).toHaveValue('2023');
+    });
+
+    it('does not count the saver or a company as a child', () => {
+      withChildren([BOY_BORN_JUNE_2015]);
+
+      renderFutureMe();
+
+      expect(kidsCountField()).toHaveValue(1);
+    });
+
+    it('says in the „?“ that only children with a Tuleva account are prefilled', () => {
+      withChildren([BOY_BORN_JUNE_2015]);
+
+      renderFutureMe();
+      userEvent.click(
+        screen.getByRole('button', { name: /^Selgitus: Kuidas lapsed pensioni mõjutavad/ }),
+      );
+
+      const dialog = screen.getByRole('dialog');
+      expect(within(dialog).getByText(/need, kellel on Tulevas konto/)).toBeInTheDocument();
+      expect(within(dialog).getByText(/Rahvastikuregistrist me lapsi ei päri/)).toBeInTheDocument();
+    });
+
+    it('opens the children block with the children who have a Tuleva account', () => {
+      withChildren([BOY_BORN_JUNE_2015, GIRL_BORN_FEB_2023]);
+
+      renderFutureMe();
+
+      expect(addKidsButton()).not.toBeInTheDocument();
+      expect(kidsCountField()).toHaveValue(2);
+      expect(kidBirthYearField(1)).toHaveValue('2015');
+      expect(kidBirthYearField(2)).toHaveValue('2023');
+    });
+
+    it('asks for the state payment months only of a child born from 2022 to three years ago', () => {
+      withChildren([BOY_BORN_JUNE_2015, GIRL_BORN_FEB_2023]);
+
+      renderFutureMe();
+
+      expect(queryKidMonthsField(1)).not.toBeInTheDocument();
+      expect(kidMonthsField(2)).toBeInTheDocument();
+    });
+
+    it('fills those months from the state payments into the II pillar', () => {
+      withChildren([BOY_BORN_JUNE_2015, GIRL_BORN_FEB_2023]);
+      withPensionData({ contributions: monthsOfParentalBenefit(30) });
+
+      renderFutureMe();
+
+      expect(kidMonthsField(2)).toHaveValue(30);
+    });
+
+    it('leaves the months empty when no state payment is found', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+
+      renderFutureMe();
+
+      expect(kidMonthsField(1)).toHaveValue(null);
+    });
+
+    it('keeps the saver on the step and points at a month count over 36', async () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+      renderFutureMe();
+      fillInRequiredAnswers();
+      typeInto(kidMonthsField(1), '40');
+
+      userEvent.click(nextButton());
+
+      expect(stepCount()).toHaveTextContent(/^Samm 1 /);
+      await waitFor(() => expect(kidMonthsField(1)).toHaveFocus());
+    });
+
+    it('marks the prefilled children for screen readers until the saver changes them', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+      withPensionData({ contributions: monthsOfParentalBenefit(30) });
+
+      renderFutureMe();
+
+      expect(kidsCountField()).toHaveAccessibleDescription(/Eeltäidetud väli/);
+      expect(kidBirthYearField(1)).toHaveAccessibleDescription(/Eeltäidetud väli/);
+      expect(kidMonthsField(1)).toHaveAccessibleDescription(/Eeltäidetud väli/);
+      typeInto(kidMonthsField(1), '12');
+      expect(kidMonthsField(1)).not.toHaveAccessibleDescription(/Eeltäidetud väli/);
+      expect(screen.queryByText(/Täisealised lapsed lisa ise/)).not.toBeInTheDocument();
+    });
+
+    it('lets the saver add a child that Tuleva does not know', () => {
+      withChildren([BOY_BORN_JUNE_2015]);
+
+      renderFutureMe();
+      typeInto(kidsCountField(), '2');
+      typeInto(kidBirthYearField(2), '2022');
+
+      expect(kidBirthYearField(2)).toHaveValue('2022');
+      expect(kidMonthsField(2)).toHaveValue(null);
+    });
+
+    it('clears the prefilled months once the saver adds a sibling born within three years, as a payment names no child', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+      withPensionData({ contributions: monthsOfParentalBenefit(24) });
+
+      renderFutureMe();
+      typeInto(kidsCountField(), '2');
+      typeInto(kidBirthYearField(2), '2022');
+
+      expect(kidMonthsField(1)).toHaveValue(null);
+      expect(kidMonthsField(1)).not.toHaveAccessibleDescription(/Eeltäidetud väli/);
+    });
+
+    it('keeps the prefilled months when the sibling the saver adds is born more than three years apart', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+      withPensionData({ contributions: monthsOfParentalBenefit(24) });
+
+      renderFutureMe();
+      typeInto(kidsCountField(), '2');
+      typeInto(kidBirthYearField(2), '2015');
+
+      expect(kidMonthsField(1)).toHaveValue(24);
+      expect(kidMonthsField(1)).toHaveAccessibleDescription(/Eeltäidetud väli/);
+    });
+
+    it('does not describe an empty child row the saver added as prefilled', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+
+      renderFutureMe();
+      typeInto(kidsCountField(), '2');
+
+      expect(kidBirthYearField(2)).not.toHaveAccessibleDescription(/Eeltäidetud väli/);
+    });
+
+    it('lets the saver change a prefilled birth year and the months', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+      withPensionData({ contributions: monthsOfParentalBenefit(30) });
+
+      renderFutureMe();
+      typeInto(kidBirthYearField(1), '2010');
+
+      expect(queryKidMonthsField(1)).not.toBeInTheDocument();
+      typeInto(kidBirthYearField(1), '2022');
+      typeInto(kidMonthsField(1), '12');
+      expect(kidMonthsField(1)).toHaveValue(12);
+    });
+
+    it.each([
+      ['Tuleva knows no children', []],
+      ['the roles could not be read', undefined],
+    ])('keeps adding children by hand when %s', (_, children) => {
+      withChildren(children);
+
+      renderFutureMe();
+      userEvent.click(addKidsButton() as HTMLElement);
+      typeInto(kidBirthYearField(1), '2023');
+
+      expect(kidsCountField()).toHaveValue(1);
+      expect(kidMonthsField(1)).toHaveValue(null);
+    });
+
+    it('says a number of months outside 0–36 is not possible', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+
+      renderFutureMe();
+      typeInto(kidMonthsField(1), '40');
+
+      expect(kidMonthsField(1)).toBeInvalid();
+      expect(
+        screen.getByText(/1\. lapse riigi lisamakse: sisesta täisarv vahemikus 0–36/),
+      ).toBeInTheDocument();
+    });
+
+    it('explains the number in a dialog behind a „?“ button', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+
+      renderFutureMe();
+      userEvent.click(screen.getByRole('button', { name: /^Selgitus: Mitu kuud maksis riik/ }));
+
+      const dialog = screen.getByRole('dialog');
+      expect(within(dialog).getByText(/lapse esimese 36 elukuu eest/)).toBeInTheDocument();
+      expect(within(dialog).getByText(/36:/)).toBeInTheDocument();
+      expect(within(dialog).getByText(/sündinud 2013\. aastal või hiljem/)).toBeInTheDocument();
+      expect(within(dialog).getByText(/iga lapse eest eraldi/)).toBeInTheDocument();
+      expect(within(dialog).getByText(/vähem kui 3\saastase vahega/)).toBeInTheDocument();
+      expect(within(dialog).getByText(/kui laps pole veel 3-aastane/)).toBeInTheDocument();
+      expect(
+        within(dialog).getByText(/2021\. aasta septembris või hiljem sündinud lapse puhul/),
+      ).toBeInTheDocument();
+    });
+
+    it('says in the „?“ that the result does not count the state payment months yet', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+
+      renderFutureMe();
+      userEvent.click(screen.getByRole('button', { name: /^Selgitus: Mitu kuud maksis riik/ }));
+
+      const dialog = screen.getByRole('dialog');
+      expect(within(dialog).getByText(/Tulemus seda veel ei arvesta/)).toBeInTheDocument();
+      expect(within(dialog).queryByText(/arvestame, et riik maksis/)).not.toBeInTheDocument();
+    });
+
+    it('waits for the roles before showing the form', () => {
+      withChildren(undefined, true);
+
+      renderFutureMe();
+
+      expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
     });
   });
 

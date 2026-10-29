@@ -1,7 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
-import { useContributions, useMe, useSourceFunds } from '../common/apiHooks';
+import {
+  useContributions,
+  useMe,
+  usePendingOnboardings,
+  useRoles,
+  useSourceFunds,
+} from '../common/apiHooks';
+import { tulevaChildrenOf } from './kidsPrefill';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { usePageTitle } from '../common/usePageTitle';
 import { Age55Step } from './Age55Step';
@@ -28,6 +35,7 @@ import {
   birthYearOrFallback,
   blockedFieldsOf,
   FIELDS_BY_SECTION,
+  firstInvalidChildIIMonths,
   initialAnswers,
   OptionalSectionId,
   removeOptionalSection,
@@ -69,13 +77,16 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   const [blockedAttempts, setBlockedAttempts] = useState(0);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const firstBlocked = useRef<YouField | undefined>(undefined);
+  const invalidChildMonths = useRef<number | undefined>(undefined);
   const isFirstRender = useRef(true);
 
   const blocked = blockedFields(answers);
   [firstBlocked.current] = blocked;
+  invalidChildMonths.current = firstInvalidChildIIMonths(answers);
   const plan = toStepPlanInput(answers);
   const steps = shownSteps(plan);
-  const isLocked = (target: StepId) => target !== FutureMeStep.YOU && blocked.length > 0;
+  const isLocked = (target: StepId) =>
+    target !== FutureMeStep.YOU && (blocked.length > 0 || invalidChildMonths.current !== undefined);
   const isFirst = step === steps[0];
   const isLast = step === steps[steps.length - 1];
 
@@ -91,8 +102,13 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   }, [step]);
 
   useEffect(() => {
-    if (blockedAttempts > 0 && firstBlocked.current) {
+    if (blockedAttempts === 0) {
+      return;
+    }
+    if (firstBlocked.current) {
       document.getElementById(FIELD_DOM_IDS[firstBlocked.current])?.focus();
+    } else if (invalidChildMonths.current !== undefined) {
+      document.getElementById(`future-me-kid-ii-months-${invalidChildMonths.current + 1}`)?.focus();
     }
   }, [blockedAttempts]);
 
@@ -106,6 +122,9 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
             next[section] = true;
           },
         );
+        if (invalidChildMonths.current !== undefined) {
+          next.kids = true;
+        }
         return next;
       });
       setBlockedAttempts((attempts) => attempts + 1);
@@ -165,6 +184,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           touched={touched}
           openSections={openSections}
           prefill={prefillAtStart}
+          prefilledKids={prefillAtStart.kids ?? null}
           headingRef={headingRef}
           onChange={(changes) => setAnswers((previous) => ({ ...previous, ...changes }))}
           onBlur={(field) => setTouched((previous) => new Set(previous).add(field))}
@@ -319,11 +339,17 @@ export const FutureMe = () => {
   const me = useMe();
   const contributionsQuery = useContributions();
   const sourceFundsQuery = useSourceFunds();
+  const rolesQuery = useRoles();
+  const pendingOnboardingsQuery = usePendingOnboardings();
   const { data: user } = me;
   const { data: contributions } = contributionsQuery;
   const { data: sourceFunds } = sourceFundsQuery;
 
-  if ([me, contributionsQuery, sourceFundsQuery].some(isLoadingForTheFirstTime)) {
+  if (
+    [me, contributionsQuery, sourceFundsQuery, rolesQuery, pendingOnboardingsQuery].some(
+      isLoadingForTheFirstTime,
+    )
+  ) {
     return <Shimmer height={400} />;
   }
 
@@ -331,7 +357,11 @@ export const FutureMe = () => {
     <FutureMeSteps
       prefill={
         user
-          ? derivePrefill(user, { contributions, sourceFunds })
+          ? derivePrefill(user, {
+              contributions,
+              sourceFunds,
+              children: tulevaChildrenOf(user, rolesQuery.data, pendingOnboardingsQuery.data),
+            })
           : { birthYear: null, sex: null, secondPillarRate: null }
       }
     />

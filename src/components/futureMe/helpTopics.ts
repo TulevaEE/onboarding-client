@@ -20,6 +20,7 @@ export const HELP_TOPICS = [
   'household',
   'legacyLeft',
   'nominal',
+  'kidIIMonths',
   'sustainable',
 ] as const;
 

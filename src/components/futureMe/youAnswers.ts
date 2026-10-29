@@ -1,4 +1,5 @@
 import { AVG_OLD_AGE_PENSION, earlyYears, KidsInput, pensionAge, Sex } from './engine/pension';
+import { isChildIIMonthsAsked, PARENTAL_PAYMENT_MONTHS } from './kidsPrefill';
 import { parseBirthYear, YouPrefill } from './prefill';
 import { StepPlanInput } from './steps';
 
@@ -65,6 +66,7 @@ interface KidsAnswers {
   kidsAdded: boolean;
   kidsCount: string;
   kidsBirthYears: string[];
+  kidsIIMonths: string[];
   kidsDisabled: boolean;
   kidsEarlyUser: 'me' | 'other';
 }
@@ -98,6 +100,7 @@ const OPTIONAL_DEFAULTS: { kids: KidsAnswers; work: WorkAnswers } = {
     kidsAdded: false,
     kidsCount: '1',
     kidsBirthYears: [],
+    kidsIIMonths: [],
     kidsDisabled: false,
     kidsEarlyUser: 'me',
   },
@@ -143,6 +146,12 @@ export const initialAnswers = (prefill: YouPrefill): YouAnswers =>
     thirdPillarFund: 'mix',
     thirdPillarPlan: 'keep',
     ...OPTIONAL_DEFAULTS.kids,
+    ...(prefill.kids && {
+      kidsAdded: true,
+      kidsCount: String(prefill.kids.birthYears.length),
+      kidsBirthYears: prefill.kids.birthYears.map(String),
+      kidsIIMonths: prefill.kids.iiMonths,
+    }),
     ...OPTIONAL_DEFAULTS.work,
     earlyYearsPicked: '',
   } as YouAnswers);
@@ -210,6 +219,18 @@ export const childRows = (answers: YouAnswers): number =>
   answers.kidsAdded
     ? Math.min(MAX_CHILD_ROWS, Math.max(0, parseInt(answers.kidsCount, 10) || 0))
     : 0;
+
+export const isChildIIMonthsInvalid = (answers: YouAnswers, index: number): boolean => {
+  const typed = (answers.kidsIIMonths[index] ?? '').trim();
+  return typed !== '' && !(/^\d+$/.test(typed) && Number(typed) <= PARENTAL_PAYMENT_MONTHS);
+};
+
+export const firstInvalidChildIIMonths = (answers: YouAnswers): number | undefined =>
+  Array.from({ length: childRows(answers) }, (_, index) => index).find(
+    (index) =>
+      isChildIIMonthsAsked(Number((answers.kidsBirthYears[index] ?? '').trim())) &&
+      isChildIIMonthsInvalid(answers, index),
+  );
 
 export const maxChildBirthYear = (answers: YouAnswers): number =>
   birthYearOrFallback(answers) + effectivePensionAge(answers);

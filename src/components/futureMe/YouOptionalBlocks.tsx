@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import {
@@ -8,11 +9,18 @@ import {
   hasChildWithoutBirthYear,
   HazardList,
   isChildBirthYearInvalid,
+  isChildIIMonthsInvalid,
   isKidsRightAvailableToSelf,
   maxChildBirthYear,
   YouAnswers,
 } from './youAnswers';
-import { AmountField, BlockProps, SelectField } from './YouFields';
+import {
+  attributableIIMonths,
+  isChildIIMonthsAsked,
+  isPrefilledChild,
+  KidsPrefill,
+} from './kidsPrefill';
+import { AmountField, BlockProps, FieldLabel, PREFILLED_HINT_ID, SelectField } from './YouFields';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';
 import { sectionLabels } from './YouBlocks';
@@ -26,6 +34,7 @@ const HAZARD_YEARS_NEEDED = { list1: 10, list2: 12.5 };
 const SERVICE_YEARS_NEEDED = { list1: 20, list2: 25 };
 
 type OptionalBlockProps = BlockProps & { optional: YouOptionalSection };
+type KidsBlockProps = OptionalBlockProps & { prefilledKids: KidsPrefill | null };
 
 const optionalOf = (
   block: 'kids' | 'work',
@@ -55,10 +64,11 @@ export const KidsSection = ({
   isOpen,
   isComplete,
   optional,
+  prefilledKids,
   onToggle,
   onChange,
   onBlur,
-}: OptionalBlockProps) => {
+}: KidsBlockProps) => {
   const intl = useIntl();
   const [leftRows, setLeftRows] = useState<ReadonlySet<number>>(new Set());
   const rows = childRows(answers);
@@ -69,7 +79,16 @@ export const KidsSection = ({
   const changeBirthYear = (index: number, typed: string) => {
     const years = Array.from({ length: rows }, (_, row) => answers.kidsBirthYears[row] ?? '');
     years[index] = typed;
-    onChange({ kidsBirthYears: years });
+    onChange({
+      kidsBirthYears: years,
+      kidsIIMonths: attributableIIMonths(prefilledKids, years, answers.kidsIIMonths),
+    });
+  };
+
+  const changeIIMonths = (index: number, typed: string) => {
+    const months = Array.from({ length: rows }, (_, row) => answers.kidsIIMonths[row] ?? '');
+    months[index] = typed;
+    onChange({ kidsIIMonths: months });
   };
 
   return (
@@ -88,6 +107,9 @@ export const KidsSection = ({
         <AmountField
           field="kidsCount"
           answers={answers}
+          isPrefilled={
+            prefilledKids !== null && answers.kidsCount === String(prefilledKids.birthYears.length)
+          }
           touched={touched}
           label="futureMe.you.kidsCount.label"
           help="kidsWho"
@@ -116,6 +138,9 @@ export const KidsSection = ({
                   const showError =
                     isChildBirthYearInvalid(answers, index) &&
                     (typed.trim().length === CHILD_BIRTH_YEAR_DIGITS || leftRows.has(index));
+                  const monthsId = `future-me-kid-ii-months-${index + 1}`;
+                  const isMonthsAsked = isChildIIMonthsAsked(Number(typed));
+                  const isMonthsInvalid = isMonthsAsked && isChildIIMonthsInvalid(answers, index);
                   return (
                     <div className="col-12 col-sm-6 col-lg-4" key={id}>
                       <label className="form-label text-balance" htmlFor={id}>
@@ -134,11 +159,12 @@ export const KidsSection = ({
                         autoComplete="off"
                         value={typed}
                         aria-invalid={showError}
-                        aria-describedby={
-                          showError
-                            ? `future-me-kid-birth-year-hint ${id}-error`
-                            : 'future-me-kid-birth-year-hint'
-                        }
+                        aria-describedby={classNames('future-me-kid-birth-year-hint', {
+                          [PREFILLED_HINT_ID]:
+                            prefilledKids !== null &&
+                            isPrefilledChild(prefilledKids, answers.kidsBirthYears, index),
+                          [`${id}-error`]: showError,
+                        })}
                         onChange={(event) => changeBirthYear(index, event.target.value)}
                         onBlur={() => setLeftRows((previous) => new Set(previous).add(index))}
                       />
@@ -148,6 +174,45 @@ export const KidsSection = ({
                             id="futureMe.you.kidBirthYear.error"
                             values={{ number: index + 1, ...birthYearValues }}
                           />
+                        </div>
+                      )}
+                      {isMonthsAsked && (
+                        <div className="mt-3">
+                          <FieldLabel htmlFor={monthsId} help="kidIIMonths">
+                            <FormattedMessage
+                              id="futureMe.you.kidIIMonths.label"
+                              values={{ number: index + 1 }}
+                            />
+                          </FieldLabel>
+                          <input
+                            id={monthsId}
+                            className={isMonthsInvalid ? 'form-control is-invalid' : 'form-control'}
+                            type="number"
+                            inputMode="numeric"
+                            min="0"
+                            max="36"
+                            step="1"
+                            value={answers.kidsIIMonths[index] ?? ''}
+                            aria-invalid={isMonthsInvalid}
+                            aria-describedby={classNames(`${monthsId}-hint`, {
+                              [PREFILLED_HINT_ID]:
+                                Boolean(prefilledKids?.iiMonths[index]) &&
+                                answers.kidsIIMonths[index] === prefilledKids?.iiMonths[index],
+                              [`${monthsId}-error`]: isMonthsInvalid,
+                            })}
+                            onChange={(event) => changeIIMonths(index, event.target.value)}
+                          />
+                          <div className="form-text" id={`${monthsId}-hint`}>
+                            <FormattedMessage id="futureMe.you.kidIIMonths.hint" />
+                          </div>
+                          {isMonthsInvalid && (
+                            <div className="invalid-feedback" id={`${monthsId}-error`}>
+                              <FormattedMessage
+                                id="futureMe.you.kidIIMonths.error"
+                                values={{ number: index + 1 }}
+                              />
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
