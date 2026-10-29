@@ -581,15 +581,17 @@ describe('FutureMe', () => {
       ).toBeInTheDocument();
     });
 
-    it('says in the „?“ that the result does not count the state payment months yet', () => {
+    it('says in the „?“ that the state payment months set the part of the supplement the result counts', () => {
       withChildren([GIRL_BORN_FEB_2023]);
 
       renderFutureMe();
       userEvent.click(screen.getByRole('button', { name: /^Selgitus: Mitu kuud maksis riik/ }));
 
       const dialog = screen.getByRole('dialog');
-      expect(within(dialog).getByText(/Tulemus seda veel ei arvesta/)).toBeInTheDocument();
-      expect(within(dialog).queryByText(/arvestame, et riik maksis/)).not.toBeInTheDocument();
+      expect(
+        within(dialog).getByText(/seda suurem osa lisast tuleb pensionile juurde\.$/),
+      ).toBeInTheDocument();
+      expect(within(dialog).queryByText(/veel ei arvesta/)).not.toBeInTheDocument();
     });
 
     it('waits for the roles before showing the form', () => {
@@ -1299,9 +1301,7 @@ describe('FutureMe', () => {
 
         expect(addKidsButton()).not.toHaveAttribute('aria-expanded');
         expect(
-          screen.getByText(
-            'Lapsed võivad tuua pensioni varem. Pensionilisa laste eest arvutus veel ei arvesta.',
-          ),
+          screen.getByText('Lapsed annavad pensionilisa ja võivad tuua pensioni varem.'),
         ).toBeVisible();
         expect(screen.queryByRole('spinbutton', { name: /Mitu last/ })).not.toBeInTheDocument();
       });
