@@ -173,9 +173,7 @@ describe('Age 65 step', () => {
 
       expect(mode(/^Kohe täissumma/)).toBeChecked();
       expect(screen.getByText('700 € kuus enne maksu, kohe 65-aastaselt')).toBeInTheDocument();
-      expect(
-        screen.queryByRole('group', { name: 'Kui vanalt alustad?' }),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByRole('group', { name: 'Kui vanalt alustad?' })).not.toBeInTheDocument();
     });
 
     it('shows what deferring raises the pension to, year by year', () => {
