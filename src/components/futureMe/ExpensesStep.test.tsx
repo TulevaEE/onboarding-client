@@ -8,6 +8,7 @@ import { User } from '../common/apiModels';
 import translations from '../translations';
 import { trackCustomEvent } from '../tracking/actions';
 import { mockUser } from '../../test/backend-responses';
+import { installDialogPolyfill } from './dialogPolyfill';
 
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
@@ -63,6 +64,8 @@ const breakdownTotal = () =>
 const resetButton = () => screen.queryByRole('button', { name: 'Taasta taseme summad' });
 
 describe('Costs step', () => {
+  beforeAll(installDialogPolyfill);
+
   beforeEach(() => {
     mockTrackCustomEvent.mockClear();
     loggedInAs({ dateOfBirth: '1989-01-01', personalCode: '39001011234' });
@@ -196,18 +199,26 @@ describe('Costs step', () => {
       expect(screen.getByText(/Summad on sinu osa paari kuludest/)).toBeInTheDocument();
     });
 
-    it('explains the single pensioner’s benefit in a closed help section', () => {
+    it('explains the single pensioner’s benefit behind a help button beside the household field', () => {
       renderCostsStep();
 
-      expect(screen.getByText('Mis muutub, kui elad pensionil üksi?')).toBeInTheDocument();
-      expect(screen.getByText(/200\s€ üks kord aastas/)).not.toBeVisible();
+      expect(screen.queryByText(/200\s€ üks kord aastas/)).not.toBeInTheDocument();
 
-      userEvent.click(screen.getByText('Mis muutub, kui elad pensionil üksi?'));
+      userEvent.click(
+        // eslint-disable-next-line testing-library/no-node-access
+        within(householdField().parentElement as HTMLElement).getByRole('button', {
+          name: 'Selgitus: Mis muutub, kui elad pensionil üksi',
+        }),
+      );
 
-      expect(screen.getByText(/200\s€ üks kord aastas/)).toBeVisible();
+      const help = screen.getByRole('dialog', { name: 'Mis muutub, kui elad pensionil üksi?' });
+      expect(within(help).getByText(/200\s€ üks kord aastas/)).toBeInTheDocument();
       expect(
-        screen.getByRole('link', { name: 'SKA: üksi elava pensionäri toetus' }),
-      ).not.toHaveAttribute('target');
+        within(help).getByRole('link', { name: /^SKA: üksi elava pensionäri toetus/ }),
+      ).toHaveAttribute(
+        'href',
+        'https://sotsiaalkindlustusamet.ee/pension-ja-seotud-huvitised/muud-pensioniga-seotud-huvitised-ja-toetused/uksi-elava-pensionari',
+      );
     });
   });
 

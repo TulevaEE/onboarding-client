@@ -110,4 +110,12 @@ describe('HelpButton', () => {
     expect(opened).not.toHaveTextContent(/futureMe\.help|<\/?\w+>/);
     expect(opened).toHaveTextContent(/[\s\S]{200}/);
   });
+
+  it.each(HELP_TOPICS)('shows the explanation of %s without research notes', (topic) => {
+    renderHelp(topic);
+
+    userEvent.click(screen.getByRole('button', { name: /^Selgitus: / }));
+
+    expect(screen.getByRole('dialog')).not.toHaveTextContent(/\[[^\]]*\]/);
+  });
 });
