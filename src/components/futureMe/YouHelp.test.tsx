@@ -66,6 +66,19 @@ const openHazardHelp = () => {
   return screen.getByRole('dialog');
 };
 
+const openRescueHelp = () => {
+  userEvent.click(screen.getByRole('button', { name: 'Lisa erijuht' }));
+  userEvent.click(specialCase(/Töötasin päästeteenistuses/));
+  userEvent.click(
+    helpButtonBeside(
+      screen.getByRole('spinbutton', { name: /Mitu aastat töötasid päästeteenistuses/ }),
+      '.col-12',
+      /Mida annab päästeteenistus pensionile$/,
+    ),
+  );
+  return screen.getByRole('dialog');
+};
+
 describe('Sina step help buttons', () => {
   beforeAll(installDialogPolyfill);
 
@@ -284,6 +297,14 @@ describe('Sina step help buttons', () => {
       expect(within(openHelp()).getByRole('link', { name })).toHaveAttribute('href', href);
     },
   );
+
+  it('tells a rescuer until which year of retirement the calculation counts the service increase', () => {
+    renderYouStep();
+
+    expect(openRescueHelp()).toHaveTextContent(
+      /Elukaar arvestab suurendust, kui lähed pensionile hiljemalt 2042\.\saastal/,
+    );
+  });
 
   it('leaves the field labels as they were for screen readers', () => {
     renderYouStep();
