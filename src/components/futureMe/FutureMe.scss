@@ -536,6 +536,27 @@
     margin-top: 1.5rem;
   }
 
+  .you-list,
+  .you-list + .row {
+    .form-control,
+    .form-select {
+      max-width: 11rem;
+    }
+
+    #future-me-third-pillar-joined,
+    #future-me-second-pillar-fund,
+    #future-me-third-pillar-fund,
+    #future-me-kids-disabled,
+    #future-me-early-years {
+      max-width: 22rem;
+    }
+  }
+
+  .is-prefilled:not(.is-invalid) {
+    border-color: $bright-blue;
+    background-color: $blue-bg-1;
+  }
+
   .you-section-actions {
     margin-top: 0.5rem;
   }
@@ -775,19 +796,23 @@
     }
   }
 
-  .result-figure-controls {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem 1rem;
+  .result-chart-table-toggle {
+    margin-bottom: 1rem;
   }
 
   .result-nominal {
     display: flex;
     align-items: center;
 
-    .form-check {
-      width: auto;
+    .help-btn {
+      margin: -12px 0 -12px -14px;
+    }
+
+    @media (max-width: 359.98px) {
+      .btn {
+        padding-inline: 0.25rem;
+        font-size: 0.8125rem;
+      }
     }
   }
 
@@ -1166,6 +1191,62 @@
     color: $text-navy;
   }
 
+  .result-save-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .result-save-print {
+    display: none;
+  }
+
+  @media print {
+    .result-save-print {
+      display: block;
+    }
+
+    > nav,
+    .step-nav,
+    .result-save-actions,
+    .result-chart-legend-hint,
+    .result-chart-toggle-icon,
+    .btn:not(.result-chart-toggle) {
+      display: none !important;
+    }
+
+    .result-chart-toggle {
+      padding: 0;
+      border: 0;
+      color: inherit;
+    }
+
+    .result-chart-toggle-dot {
+      print-color-adjust: exact;
+    }
+
+    .result-compare,
+    .result-save > h3,
+    .result-save-print caption {
+      display: none;
+    }
+
+    .result-chart-unit {
+      break-after: avoid;
+    }
+
+    .result-chart {
+      height: auto;
+      break-inside: avoid;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+  }
+
   .result-compare {
     margin-top: 1.5rem;
 
@@ -1201,6 +1282,17 @@
       display: block;
       font-weight: 400;
       color: $text-secondary;
+    }
+
+    @media print {
+      overflow: visible;
+      font-size: 0.875rem;
+
+      th,
+      td,
+      tbody th {
+        min-width: 0;
+      }
     }
   }
 
@@ -1523,5 +1615,11 @@ html.scroll-locked {
       font-size: 0.875rem;
       color: $text-secondary;
     }
+  }
+}
+
+@media print {
+  .container:has(.future-me) {
+    max-width: none;
   }
 }

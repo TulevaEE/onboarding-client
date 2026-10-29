@@ -2,7 +2,7 @@ import React, { ChangeEvent } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { fieldProblem, limitsOf, YouAnswers, YouField } from './youAnswers';
+import { fieldProblem, limitsOf, PrefilledField, YouAnswers, YouField } from './youAnswers';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';
 
@@ -53,6 +53,7 @@ export interface BlockProps {
   touched: ReadonlySet<YouField>;
   isOpen: boolean;
   isComplete: boolean;
+  prefilled: ReadonlySet<PrefilledField>;
   onToggle: () => void;
   onChange: (changes: Partial<YouAnswers>) => void;
   onBlur: (field: YouField) => void;
@@ -106,11 +107,12 @@ export const AmountField = ({
   const intl = useIntl();
   const id = FIELD_DOM_IDS[field];
   const isRequired = !disabled;
+  const showsPrefilled = isPrefilled && !disabled;
   const problem = touched.has(field) && !disabled ? fieldProblem(answers, field) : null;
   const errorId = `${id}-error`;
   const describedBy = classNames({
     [`${id}-unit`]: unit,
-    [PREFILLED_HINT_ID]: isPrefilled,
+    [PREFILLED_HINT_ID]: showsPrefilled,
     [errorId]: problem,
   });
   const limits = limitsOf(field);
@@ -135,7 +137,10 @@ export const AmountField = ({
       </FieldLabel>
       <input
         id={id}
-        className={classNames('form-control', { 'is-invalid': problem })}
+        className={classNames('form-control', {
+          'is-invalid': problem,
+          'is-prefilled': showsPrefilled,
+        })}
         type="number"
         inputMode={inputMode}
         min={min}
@@ -175,6 +180,7 @@ interface SelectFieldProps {
   options: { value: string; label: string }[];
   hint?: TranslationKey;
   help?: HelpTopic;
+  isPrefilled?: boolean;
   onChange: (value: string) => void;
 }
 
@@ -185,6 +191,7 @@ export const SelectField = ({
   options,
   hint,
   help,
+  isPrefilled = false,
   onChange,
 }: SelectFieldProps) => (
   <div className="col-12 col-sm-6">
@@ -193,9 +200,11 @@ export const SelectField = ({
     </FieldLabel>
     <select
       id={id}
-      className="form-select"
+      className={classNames('form-select', { 'is-prefilled': isPrefilled })}
       value={value}
-      aria-describedby={hint ? `${id}-hint` : undefined}
+      aria-describedby={
+        classNames({ [`${id}-hint`]: hint, [PREFILLED_HINT_ID]: isPrefilled }) || undefined
+      }
       onChange={(event) => onChange(event.target.value)}
     >
       {options.map((option) => (

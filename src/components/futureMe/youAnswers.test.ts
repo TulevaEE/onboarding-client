@@ -11,6 +11,7 @@ import {
   isChildIIMonthsInvalid,
   isSpecialPensionOnly,
   pensionAgeValue,
+  prefilledFields,
   removeOptionalSection,
   toStepPlanInput,
   YouAnswers,
@@ -512,5 +513,47 @@ describe('where the right to retire early comes from', () => {
 
   it('has no children right without enough children', () => {
     expect(isKidsRightAvailableToSelf(withKids(['1990']))).toBe(false);
+  });
+});
+
+describe('prefilled fields', () => {
+  const prefill = {
+    birthYear: 1980,
+    sex: 'N' as const,
+    secondPillarRate: '0.04',
+    grossMonthly: '2000',
+    secondPillarAmount: '24586',
+    thirdPillarAmount: null,
+    thirdPillarJoined: 'before' as const,
+  };
+
+  it('lists every field that still holds the value taken from the saver’s data', () => {
+    expect(Array.from(prefilledFields(initialAnswers(prefill), prefill)).sort()).toEqual([
+      'birthYear',
+      'firstPillarMonthly',
+      'grossMonthly',
+      'secondPillarAmount',
+      'secondPillarRate',
+      'sex',
+      'thirdPillarJoined',
+    ]);
+  });
+
+  it('drops a field once the saver changes its value', () => {
+    const answers = { ...initialAnswers(prefill), grossMonthly: '2100', sex: 'M' as const };
+
+    const prefilled = prefilledFields(answers, prefill);
+
+    expect(prefilled.has('grossMonthly')).toBe(false);
+    expect(prefilled.has('sex')).toBe(false);
+    expect(prefilled.has('birthYear')).toBe(true);
+  });
+
+  it('marks nothing but the average state pension when there is no data to prefill from', () => {
+    const empty = { birthYear: null, sex: null, secondPillarRate: null };
+
+    expect(Array.from(prefilledFields(initialAnswers(empty), empty))).toEqual([
+      'firstPillarMonthly',
+    ]);
   });
 });

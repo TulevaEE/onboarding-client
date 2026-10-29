@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
@@ -7,6 +7,13 @@ import { useMe } from '../common/apiHooks';
 import { User } from '../common/apiModels';
 import translations from '../translations';
 import { mockUser } from '../../test/backend-responses';
+import { installDialogPolyfill } from './dialogPolyfill';
+import { initialAge65 } from './age65Answers';
+import { ResultContext } from './resultAnswers';
+import { contextWith } from './resultContextFixture';
+import { initialSpecialPension } from './specialPensionAnswers';
+import { DecisionActionsProvider } from './decisionActions';
+import { ResultStep } from './ResultStep';
 
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
@@ -398,6 +405,140 @@ describe('Result step', () => {
       expect(
         within(figure()).getByRole('region', { name: /^Sissetulek ja kulud kuus/ }),
       ).toHaveAttribute('tabindex', '0');
+    });
+  });
+  describe('the help on how the most the plan carries is worked out', () => {
+    beforeAll(installDialogPolyfill);
+
+    it('counts the savings and the state pension of someone already past the pension age', () => {
+      loggedInAs({ dateOfBirth: '1956-01-01' });
+      openResultStep();
+      goTo(/^Sina/);
+      typeInto(
+        screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }),
+        '100000',
+      );
+      goTo(/^Tulemus/);
+
+      userEvent.click(screen.getByRole('button', { name: 'Selgitus: Kuidas see summa tekib' }));
+
+      const dialog = screen.getByRole('dialog', { name: 'Kuidas see summa tekib?' });
+      expect(dialog).toHaveTextContent(/sammastes praegu u 105\s000\s€;/);
+      expect(dialog).not.toHaveTextContent(/pensionile minnes/);
+      expect(dialog).not.toHaveTextContent(/alates 70-/);
+    });
+
+    describe('for a plan', () => {
+      beforeAll(() => {
+        jest.useFakeTimers();
+        jest.setSystemTime(new Date('2026-10-15T12:00:00Z'));
+      });
+      afterAll(() => jest.useRealTimers());
+
+      const openHelpFor = (context: ResultContext) => {
+        render(
+          <IntlProvider locale="et" messages={translations.et}>
+            <DecisionActionsProvider value={{ change: jest.fn(), goTo: jest.fn() }}>
+              <ResultStep context={context} headingRef={createRef()} />
+            </DecisionActionsProvider>
+          </IntlProvider>,
+        );
+        userEvent.click(screen.getByRole('button', { name: 'Selgitus: Kuidas see summa tekib' }));
+        return screen.getByRole('dialog', { name: 'Kuidas see summa tekib?' });
+      };
+
+      it('counts the pillar money taken as a lump sum, which waits on a deposit', () => {
+        const dialog = openHelpFor(
+          contextWith(
+            { secondPillarAmount: '100000' },
+            { age65: { ...initialAge65(), secondPillar: 'lump' } },
+          ),
+        );
+
+        expect(dialog).toHaveTextContent(/sammastes u 0\s€ pensionile minnes;/);
+        expect(dialog).toHaveTextContent(
+          /hoiusel u 161\s690\s€ pensionile minnes \(välja makstud, kulutamata raha\);/,
+        );
+      });
+
+      const specialPensionFrom55 = {
+        workAdded: true,
+        hasSpecialPension: true,
+        specialPensionStartAge: '55',
+      };
+      const specialPensionOf900 = { ...initialSpecialPension(), monthly: '900' };
+      const specialPensionUntilThePensionAge = contextWith(
+        {
+          ...specialPensionFrom55,
+          hazardList: 'list1',
+          hazardYears: '20',
+          firstPillarMonthly: '895',
+        },
+        {
+          specialPension: specialPensionOf900,
+          age65: { ...initialAge65(), work: 'yes', workUntil: '70', secondPillar: 'fund' },
+        },
+      );
+
+      it('starts the state pension where it is paid, after a special pension until the pension age', () => {
+        const dialog = openHelpFor(specialPensionUntilThePensionAge);
+
+        expect(dialog).toHaveTextContent(
+          /riiklik pension 901\s€ kuus enne tulumaksu, alates 65-\u2060aastaselt;/,
+        );
+      });
+
+      it('names the special pension until the state pension takes its place', () => {
+        const dialog = openHelpFor(specialPensionUntilThePensionAge);
+
+        expect(dialog).toHaveTextContent(
+          /eripension 900\s€ kuus enne tulumaksu, 55–\u206064-\u2060aastaselt;/,
+        );
+      });
+
+      it('names the special pension paid for life instead of a state pension', () => {
+        const dialog = openHelpFor(
+          contextWith(specialPensionFrom55, { specialPension: specialPensionOf900 }),
+        );
+
+        expect(dialog).toHaveTextContent(
+          /eripension 900\s€ kuus enne tulumaksu, alates 55-\u2060aastaselt;/,
+        );
+        expect(dialog).not.toHaveTextContent(/riiklik pension/);
+      });
+
+      it('starts the special pension of someone already past the pension age where it began', () => {
+        const dialog = openHelpFor(
+          contextWith(
+            { ...specialPensionFrom55, birthYear: '1956' },
+            { specialPension: specialPensionOf900 },
+          ),
+        );
+
+        expect(dialog).toHaveTextContent(
+          /eripension 900\s€ kuus enne tulumaksu, alates 55-\u2060aastaselt;/,
+        );
+      });
+
+      it('says the state pension rises once the years of taking half of it are over', () => {
+        const dialog = openHelpFor(
+          contextWith(
+            {},
+            { age65: { ...initialAge65(), secondPillar: 'fund', mode: 'half', years: 3 } },
+          ),
+        );
+
+        expect(dialog).toHaveTextContent(
+          /riiklik pension 350\s€ kuus enne tulumaksu, alates 65-\u2060aastaselt pool pensionit ja alates 68-\u2060aastaselt 795\s€ kuus;/,
+        );
+      });
+
+      it('leaves the deposit out while nothing is paid out to it', () => {
+        const dialog = openHelpFor(contextWith({ secondPillarAmount: '100000' }));
+
+        expect(dialog).toHaveTextContent(/sammastes u 179\s554\s€ pensionile minnes;/);
+        expect(dialog).not.toHaveTextContent(/hoiusel/);
+      });
     });
   });
 });

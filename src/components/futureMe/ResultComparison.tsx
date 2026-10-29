@@ -36,19 +36,25 @@ const Cell = ({ rowId, value }: { rowId: ComparisonRowId; value: number }) => {
   return <>{intl.formatNumber(value, { style: 'percent', maximumFractionDigits: 0 })}</>;
 };
 
-const ComparisonTable = ({ context }: { context: ResultContext }) => {
+export const ComparisonTable = ({
+  context,
+  captionId,
+}: {
+  context: ResultContext;
+  captionId: string;
+}) => {
   const columns = comparisonOf(context);
   const cells = columns.map(({ result }) => comparisonRowsOf(result));
   return (
     <div
       className="table-responsive result-compare-table"
       role="region"
-      aria-labelledby="future-me-compare-caption"
+      aria-labelledby={captionId}
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- a scrolling region must take keyboard focus (WCAG 2.1.1)
       tabIndex={0}
     >
       <table className="table table-sm align-middle mb-0">
-        <caption id="future-me-compare-caption">
+        <caption id={captionId}>
           <FormattedMessage id="futureMe.result.compare.caption" />
         </caption>
         <thead>
@@ -115,7 +121,7 @@ export const ResultComparison = ({ context }: { context: ResultContext }) => {
       >
         <FormattedMessage id="futureMe.result.compare.title" />
       </summary>
-      {isOpen && <ComparisonTable context={context} />}
+      {isOpen && <ComparisonTable context={context} captionId="future-me-compare-caption" />}
     </details>
   );
 };

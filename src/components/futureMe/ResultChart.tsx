@@ -23,6 +23,7 @@ import {
   chartRowsOf,
   chartSeriesOf,
   ChartSourceId,
+  pensionStartRowOf,
   startSourcesOf,
   tableRowsOf,
 } from './chartData';
@@ -33,7 +34,7 @@ import { SOURCE_COLORS, SOURCE_LABELS, SUMMARY_LABELS } from './chartSources';
 import { announcementOf } from './chartText';
 import { ResultChartTip } from './ResultChartTip';
 import { ChartAssumption, ChartGuide, SummaryNotes } from './ResultChartNotes';
-import { NominalSwitch, NominalNote } from './ResultNominalSwitch';
+import { NominalChoice, NominalNote } from './ResultNominalChoice';
 import { NominalReturns, nominalResultOf } from './nominal';
 
 const HALO_COLOR = '#fff';
@@ -52,6 +53,8 @@ const EVENT_DOT_BORDER = 2;
 const TIP_GAP = 10;
 const Y_AXIS_WIDTH = 76;
 const THOUSAND = 1000;
+const NOT_COUNTED = '–';
+const COUNTED_FROM_PENSION_AGE: (ChartSourceId | 'costs')[] = ['salary', 'costs'];
 
 ChartJS.register(
   CategoryScale,
@@ -104,7 +107,7 @@ const Summary = ({
   isNominal: boolean;
 }) => {
   const intl = useIntl();
-  const [start] = rows;
+  const start = pensionStartRowOf(rows);
   const sources = startSourcesOf(start).map((id) =>
     intl.formatMessage({ id: SUMMARY_LABELS[id] }, { amount: euro(start[id]) }),
   );
@@ -277,7 +280,8 @@ const IncomeChart = ({ rows, isNominal, events, hidden, announce }: IncomeChartP
   };
 
   const { data, options } = useMemo(() => {
-    const [{ costs }] = rows;
+    const { costs } = pensionStartRowOf(rows);
+    const isCostsFlat = !isNominal && !rows[0].isBeforePension;
     const isNarrow = window.matchMedia(NARROW_SCREEN).matches;
     const tickStep = isNarrow ? NARROW_TICK_STEP : WIDE_TICK_STEP;
     const chartData: ChartData<'line'> = {
@@ -307,7 +311,9 @@ const IncomeChart = ({ rows, isNominal, events, hidden, announce }: IncomeChartP
         marks: marksOf(intl, events),
         costs: {
           amount: costs,
-          amounts: isNominal ? rows.map((row) => row.costs) : undefined,
+          amounts: isCostsFlat
+            ? undefined
+            : rows.map((row) => (row.isBeforePension ? null : row.costs)),
           label: intl.formatMessage(
             { id: 'futureMe.result.chart.costsLabel' },
             { amount: euro(costs) },
@@ -534,6 +540,9 @@ const Legend = ({ rows, hidden, onToggle }: LegendProps) => {
   );
 };
 
+const tableAmountOf = (row: ChartRow, id: ChartSourceId | 'costs') =>
+  row.isBeforePension && COUNTED_FROM_PENSION_AGE.includes(id) ? NOT_COUNTED : euro(row[id]);
+
 const IncomeTable = ({ rows, isNominal }: { rows: ChartRow[]; isNominal: boolean }) => {
   const sources = chartSeriesOf(rows).map(({ id }) => id);
   return (
@@ -575,10 +584,10 @@ const IncomeTable = ({ rows, isNominal }: { rows: ChartRow[]; isNominal: boolean
               <th scope="row">{row.age}</th>
               {sources.map((id) => (
                 <td key={id} className="text-end">
-                  {euro(row[id])}
+                  {tableAmountOf(row, id)}
                 </td>
               ))}
-              <td className="text-end">{euro(row.costs)}</td>
+              <td className="text-end">{tableAmountOf(row, 'costs')}</td>
             </tr>
           ))}
         </tbody>
@@ -635,29 +644,25 @@ export const ResultChart = ({ result, need, nominalReturns }: ResultChartProps) 
         <h3 id="future-me-chart-title" className="h5 section-title">
           <FormattedMessage id="futureMe.result.chart.title" />
         </h3>
-        <div className="result-figure-controls">
-          <NominalSwitch isOn={isNominal} onChange={setNominal} />
-          <button
-            type="button"
-            className="btn btn-outline-primary btn-sm"
-            aria-expanded={isTableShown}
-            aria-controls="future-me-chart-table"
-            onClick={() => setTableShown(!isTableShown)}
-          >
-            <FormattedMessage
-              id={
-                isTableShown
-                  ? 'futureMe.result.chart.toggle.hide'
-                  : 'futureMe.result.chart.toggle.show'
-              }
-            />
-          </button>
-        </div>
+        <NominalChoice isOn={isNominal} onChange={setNominal} />
       </div>
       <NominalNote isOn={isNominal} returns={nominalReturns} />
       <Summary result={shown} rows={rows} notes={notes} need={need} isNominal={isNominal} />
       {assumption && <ChartAssumption assumption={assumption} />}
-      <ChartGuide events={events} />
+      <ChartGuide events={events} startsBeforePension={rows[0].isBeforePension} />
+      <button
+        type="button"
+        className="btn btn-outline-primary btn-sm result-chart-table-toggle"
+        aria-expanded={isTableShown}
+        aria-controls="future-me-chart-table"
+        onClick={() => setTableShown(!isTableShown)}
+      >
+        <FormattedMessage
+          id={
+            isTableShown ? 'futureMe.result.chart.toggle.hide' : 'futureMe.result.chart.toggle.show'
+          }
+        />
+      </button>
       <div id="future-me-chart-table">
         {isTableShown && <IncomeTable rows={rows} isNominal={isNominal} />}
       </div>

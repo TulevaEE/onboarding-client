@@ -41,7 +41,7 @@ export const announcementOf = (
   } else if (row.surplus > 0) {
     cover = coverLine('futureMe.result.chart.announce.surplus', row.surplus);
   }
-  const details = [...amounts, costs, ...cover].join(', ');
+  const details = (row.isBeforePension ? amounts : [...amounts, costs, ...cover]).join(', ');
   return events.length
     ? intl.formatMessage(
         { id: 'futureMe.result.chart.announce.withEvents' },

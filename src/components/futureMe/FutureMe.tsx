@@ -63,7 +63,8 @@ const MONTHS_IN_YEAR = 12;
 const ADDED_FLAGS = { kids: 'kidsAdded', work: 'workAdded' } as const;
 
 const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
-  const [answers, setAnswers] = useState(() => initialAnswers(prefill));
+  const [prefillAtStart] = useState(prefill);
+  const [answers, setAnswers] = useState(() => initialAnswers(prefillAtStart));
   const [age60, setAge60] = useState(initialAge60);
   const [age65, setAge65] = useState(initialAge65);
   const [age66, setAge66] = useState(initialAge66);
@@ -182,8 +183,8 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           answers={answers}
           touched={touched}
           openSections={openSections}
-          isPrefilled={prefill.birthYear !== null || prefill.sex !== null}
-          prefilledKids={prefill.kids ?? null}
+          prefill={prefillAtStart}
+          prefilledKids={prefillAtStart.kids ?? null}
           headingRef={headingRef}
           onChange={(changes) => setAnswers((previous) => ({ ...previous, ...changes }))}
           onBlur={(field) => setTouched((previous) => new Set(previous).add(field))}

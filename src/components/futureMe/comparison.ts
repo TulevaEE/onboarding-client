@@ -8,6 +8,7 @@ import {
   sustainableNeed,
 } from './engine/pension';
 import {
+  earlyThirdPillarOf,
   MAX_AGE_SHOWN,
   Result,
   ResultContext,
@@ -65,6 +66,7 @@ export const comparisonOf = (context: ResultContext): ComparisonColumn[] => {
     result: {
       ...simulate(input, lifeTable, scenario),
       sustainable: sustainableNeed(input, lifeTable, scenario),
+      earlyThirdPillar: earlyThirdPillarOf(context),
     },
   }));
 };

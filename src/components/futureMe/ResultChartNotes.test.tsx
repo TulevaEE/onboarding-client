@@ -158,7 +158,7 @@ describe('ResultChart assumption', () => {
 });
 
 describe('ResultChart reading guide', () => {
-  const guide = () => screen.getByRole('group');
+  const guide = () => screen.getByRole('group', { name: '' });
 
   it('is a closed section named for what it explains', () => {
     renderChart();
@@ -197,5 +197,11 @@ describe('ResultChart reading guide', () => {
     renderChart();
 
     expect(guide()).not.toHaveTextContent('Fondipensioni periood');
+  });
+
+  it('leaves the years before the pension age out when the chart starts at the pension age', () => {
+    renderChart();
+
+    expect(guide()).not.toHaveTextContent('Enne pensioniiga');
   });
 });

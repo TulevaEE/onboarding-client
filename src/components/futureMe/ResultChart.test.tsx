@@ -72,7 +72,7 @@ const chart = () => screen.getByRole('img', { name: 'Sissetulek ja kulud vanuse 
 const readout = () => screen.getByRole('status');
 const tip = () => screen.queryByTestId('chart-tip');
 const lastChartProps = () => mockChart.mock.calls[mockChart.mock.calls.length - 1][0];
-const TAB_STOPS_BEFORE_CHART = 4;
+const TAB_STOPS_BEFORE_CHART = 5;
 const tabToChart = () => {
   Array.from({ length: TAB_STOPS_BEFORE_CHART }).forEach(() => userEvent.tab());
 };
@@ -276,7 +276,7 @@ describe('ResultChart interaction', () => {
   });
 
   describe('tooltip content', () => {
-    const tipFor = (changes: { shortfall?: number; surplus?: number }) =>
+    const tipFor = (changes: { shortfall?: number; surplus?: number; isBeforePension?: boolean }) =>
       render(
         <IntlProvider locale="et" messages={translations.et}>
           <ResultChartTip
@@ -290,6 +290,7 @@ describe('ResultChart interaction', () => {
               thirdPillar: 0,
               deposit: 0,
               costs: 800,
+              isBeforePension: false,
               shortfall: 0,
               surplus: 0,
               ...changes,
@@ -305,6 +306,13 @@ describe('ResultChart interaction', () => {
       tipFor({ surplus: 200 });
 
       expect(screen.getByText(/^Üle jääb 200\s€$/)).toBeInTheDocument();
+    });
+
+    it('leaves out the costs and their cover before the pension age', () => {
+      tipFor({ isBeforePension: true, surplus: 200 });
+
+      expect(screen.queryByText('Kulud')).not.toBeInTheDocument();
+      expect(screen.queryByText(/^Üle jääb/)).not.toBeInTheDocument();
     });
 
     it('shows an event that goes wrong in its own colour', () => {
@@ -480,6 +488,15 @@ describe('ResultChart interaction', () => {
 
       expect(readout()).toHaveTextContent('Palk peidetud.');
     });
+  });
+
+  it('puts the table button right above the chart, after everything else', () => {
+    renderChart();
+    Array.from({ length: TAB_STOPS_BEFORE_CHART - 1 }).forEach(() => userEvent.tab());
+
+    expect(screen.getByRole('button', { name: 'Näita tabelina' })).toHaveFocus();
+    userEvent.tab();
+    expect(chart()).toHaveFocus();
   });
 
   it('puts the same keys hint in the description of the chart', () => {
