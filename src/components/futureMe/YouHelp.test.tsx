@@ -21,10 +21,10 @@ jest.mock('react-intl', () => jest.requireActual('react-intl'));
 
 const mockUseMe = useMe as jest.MockedFunction<typeof useMe>;
 
-const renderYouStep = () => {
+const renderYouStep = (locale: 'et' | 'en' = 'et') => {
   mockUseMe.mockReturnValue({ data: mockUser, isLoading: false } as ReturnType<typeof useMe>);
   render(
-    <IntlProvider locale="et" messages={translations.et}>
+    <IntlProvider locale={locale} messages={translations[locale]}>
       <FutureMe />
     </IntlProvider>,
   );
@@ -130,6 +130,11 @@ describe('Sina step help buttons', () => {
       /Miks on oluline, millal III\ssambaga liitusid$/,
     ],
     [
+      'third pillar return',
+      () => screen.getByRole('combobox', { name: /tootlust eeldad III\ssambas/ }),
+      /Mida tähendab „tootlus pärast inflatsiooni“$/,
+    ],
+    [
       'third pillar monthly',
       () => screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }),
       /Kuidas III\ssamba sissemakse arvutuses muutub$/,
@@ -177,6 +182,75 @@ describe('Sina step help buttons', () => {
     expect(dialog).toHaveTextContent(/0%:.*Alla 0%:.*Üle 0%:/);
     expect(dialog).toHaveTextContent('Varasem tootlus ei taga tulevast tootlust.');
     expect(dialog).not.toHaveTextContent(/Miks kõige rohkem 4%/);
+  });
+
+  const openReturnHelp = (pillar: 'II' | 'III') => {
+    renderYouStep();
+    userEvent.click(
+      helpButtonBeside(
+        screen.getByRole('combobox', { name: new RegExp(`tootlust eeldad ${pillar}\\ssambas`) }),
+        '.col-12',
+        /Mida tähendab „tootlus pärast inflatsiooni“$/,
+      ),
+    );
+    return screen.getByRole('dialog');
+  };
+
+  it.each(['II', 'III'] as const)(
+    'describes the fund types by what they hold and cost beside the %s pillar return, promising none of them',
+    (pillar) => {
+      const dialog = openReturnHelp(pillar);
+
+      expect(within(dialog).getByText('Indeksfond')).toBeInTheDocument();
+      expect(within(dialog).getByText('Aktiivselt juhitud fond')).toBeInTheDocument();
+      expect(within(dialog).getByText('Aktsiafond')).toBeInTheDocument();
+      expect(within(dialog).getByText('Võlakirjafond')).toBeInTheDocument();
+      expect(within(dialog).getByText('Segafond')).toBeInTheDocument();
+      expect(within(dialog).getByText(/jälgib turuindeksit/)).toBeInTheDocument();
+      expect(within(dialog).queryByText(/parim|alati/i)).not.toBeInTheDocument();
+      expect(within(dialog).queryByText(/pank/i)).not.toBeInTheDocument();
+    },
+  );
+
+  it.each([
+    ['II', 'https://www.pensionikeskus.ee/statistika/ii-sammas/'],
+    ['III', 'https://www.pensionikeskus.ee/statistika/iii-sammas/'],
+  ] as const)('links the %s pillar fund returns and fees on Pensionikeskus', (pillar, href) => {
+    const dialog = openReturnHelp(pillar);
+
+    expect(
+      within(dialog).getByRole('link', {
+        name: new RegExp(`^Pensionikeskus: ${pillar}\\ssamba fondide tootlused ja tasud`),
+      }),
+    ).toHaveAttribute('href', href);
+  });
+
+  it('explains the fund types and links Pensionikeskus in English too', () => {
+    renderYouStep('en');
+    userEvent.click(
+      screen.getAllByRole('button', { name: /What does “return after inflation” mean/ })[1],
+    );
+    const dialog = screen.getByRole('dialog');
+
+    expect(within(dialog).getByText('Index fund')).toBeInTheDocument();
+    expect(within(dialog).getByText('Actively managed fund')).toBeInTheDocument();
+    expect(
+      within(dialog).getByText(/Pensionikeskus returns are before inflation/),
+    ).toBeInTheDocument();
+    expect(
+      within(dialog).getByRole('link', {
+        name: /^Pensionikeskus: III\spillar fund returns and fees/,
+      }),
+    ).toHaveAttribute('href', 'https://www.pensionikeskus.ee/statistika/iii-sammas/');
+  });
+
+  it('tells how to turn a Pensionikeskus return into the return after inflation', () => {
+    const dialog = openReturnHelp('III');
+
+    expect(
+      within(dialog).getByText(/Pensionikeskuse tootlused on enne inflatsiooni/),
+    ).toBeInTheDocument();
+    expect(within(dialog).getByText(/lahuta umbes 2%/)).toBeInTheDocument();
   });
 
   it('says the III pillar money already saved follows the chosen return, without quoting a default', () => {
