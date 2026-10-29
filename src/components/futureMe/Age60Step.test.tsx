@@ -145,7 +145,7 @@ describe('Age 60 step', () => {
       openAge60Step();
       userEvent.click(choice(secondPillarGroup(), 'Fondipension'));
       userEvent.click(choice(contractGroup('II') as HTMLElement, 'Üks leping'));
-      userEvent.click(within(trail()).getByRole('button', { name: /^66\+/ }));
+      userEvent.click(within(trail()).getByRole('button', { name: /^\d+\+\sa/ }));
 
       expect(contractGroup('II')).not.toBeInTheDocument();
       expect(screen.getByText(/II\ssamba lepingu valisid \d+-aastaselt/)).toHaveTextContent(

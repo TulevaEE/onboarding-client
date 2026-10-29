@@ -65,7 +65,7 @@ const openAge66Step = (answers: Parameters<typeof fillInYou>[0] = {}) => {
     </IntlProvider>,
   );
   fillInYou(answers);
-  goTo(/^66\+, vaatamata$/);
+  goTo(/^\d+\+\sa, vaatamata$/);
 };
 
 const startField = (pillar: 'II' | 'III') =>
@@ -86,7 +86,7 @@ const setPayoutAtPensionAge = (pillar: 'II' | 'III', choice: string) => {
       }),
     ).getByRole('radio', { name: new RegExp(choice) }),
   );
-  goTo(/^66\+/);
+  goTo(/^\d+\+\sa/);
 };
 
 describe('Age 66+ step', () => {

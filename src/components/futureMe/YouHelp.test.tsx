@@ -454,7 +454,7 @@ describe('Sina step help buttons', () => {
 
     const dialog = openKidsHelp();
 
-    expect(dialog).toHaveTextContent(/5\saastat varem pensionile minnes „60\sa sambad“/);
+    expect(dialog).toHaveTextContent(/5\saastat varem pensionile minnes samm „sambad“/);
   });
 
   it('dates the child supplement from children born in 1991, as the Social Insurance Board does', () => {

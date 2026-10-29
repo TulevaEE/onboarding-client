@@ -26,6 +26,8 @@ const stepAge = (step: StepId, plan: StepPlanInput): number => {
       return payoutAge(plan);
     case FutureMeStep.AGE_65:
       return retirementAge(plan);
+    case FutureMeStep.AGE_66_PLUS:
+      return retirementAge(plan) + 1;
     default:
       return plan.specialPensionStartAge ?? retirementYears(plan);
   }
