@@ -13,7 +13,7 @@ import { markdownOf, markdownTable } from './resultMarkdown';
 type SaveFormat = 'markdown' | 'pdf';
 
 const LEFT_OUT_OF_FILE =
-  '.d-print-none, .result-save, .result-compare, #future-me-chart-table, .result-chart-legend-hint, .result-chart-legend';
+  '.d-print-none, .result-tiles, .result-save, .result-compare, #future-me-chart-table, .result-chart-legend-hint, .result-chart-legend';
 const OBJECT_URL_LIFETIME_MS = 1000;
 const PRINT_CHART_WIDTH = 1000;
 const PRINT_CHART_HEIGHT = 352;

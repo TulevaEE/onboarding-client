@@ -136,6 +136,18 @@ describe('Result step: save the result', () => {
     expect(file).not.toContain('Laadi alla');
   });
 
+  it('leaves the summary tiles out of the file, as the answer above them says the same', async () => {
+    jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    openResultStep();
+
+    userEvent.click(markdownButton());
+
+    const file = await downloadedFile();
+    expect(file).toContain('Sinu kulud (791 € kuus) on kaetud kuni 81. eluaastani.');
+    expect(file).not.toContain('kulud kaetud kuni');
+    expect(file).not.toContain('samba raha lõpeb');
+  });
+
   it('leaves the open choices and editors out of the file, so only the chosen plan is in it', async () => {
     jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
     openResultStep();
