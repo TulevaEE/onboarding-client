@@ -7,6 +7,7 @@ import { useMe } from '../common/apiHooks';
 import { User } from '../common/apiModels';
 import translations from '../translations';
 import { mockUser } from '../../test/backend-responses';
+import { installDialogPolyfill } from './dialogPolyfill';
 
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
@@ -70,6 +71,30 @@ const chooseSecondPillarFundPension = () => {
   );
 };
 
+const chooseSecondPillarFundPensionAtPayoutAge = () => {
+  goTo(/^60\sa, vaatamata$/);
+  userEvent.click(
+    within(screen.getByRole('group', { name: /^II\ssamba väljamakse viis$/ })).getByRole('radio', {
+      name: /Fondipension/,
+    }),
+  );
+};
+
+const deferStatePensionFiveYears = () => {
+  goTo(/^65\sa,/);
+  userEvent.click(
+    within(screen.getByRole('group', { name: 'Kuidas võtad riikliku pensioni?' })).getByRole(
+      'radio',
+      { name: /^Lükkan edasi/ },
+    ),
+  );
+  userEvent.click(
+    within(screen.getByRole('group', { name: 'Mitu aastat lükkad edasi?' })).getByRole('radio', {
+      name: /^70-aastaselt/,
+    }),
+  );
+};
+
 const openResult = () => goTo(/^Tulemus/);
 
 const warning = () =>
@@ -78,6 +103,7 @@ const warning = () =>
   });
 
 describe('Result advice', () => {
+  beforeAll(installDialogPolyfill);
   beforeEach(() => loggedInAs({ dateOfBirth: '1962-01-01' }));
 
   it('neither warns nor advises while the pensions cover the costs', () => {
@@ -111,5 +137,131 @@ describe('Result advice', () => {
     expect(screen.getByText(/Fondipension maksab/)).toHaveTextContent(
       /Fondipensioni saad ka peatada ja hiljem uuesti alustada/,
     );
+  });
+
+  it('opens the step where the better payout is chosen', () => {
+    startWith('400');
+    chooseComfortableCosts();
+    openResult();
+
+    userEvent.click(within(warning() as HTMLElement).getByRole('button', { name: /: vali .+$/ }));
+
+    expect(
+      screen.getByRole('group', { name: /^II\ssamba väljamakse viis pensionieas$/ }),
+    ).toBeInTheDocument();
+  });
+
+  it('opens the pension age step when the fund pension is chosen at the payout age and only the deferral is left', () => {
+    startWith('700', '30000');
+    chooseComfortableCosts();
+    chooseSecondPillarFundPensionAtPayoutAge();
+    openResult();
+
+    userEvent.click(
+      within(warning() as HTMLElement).getByRole('button', {
+        name: /^Muuda pensionieas\s*: vali Sild ja riiklik pension hiljem$/,
+      }),
+    );
+
+    expect(
+      screen.getByRole('group', { name: 'Kuidas võtad riikliku pensioni?' }),
+    ).toBeInTheDocument();
+  });
+
+  it('changes the state pension to the shorter deferral that carries the costs', () => {
+    startWith('700', '30000');
+    chooseSecondPillarFundPension();
+    deferStatePensionFiveYears();
+    openResult();
+
+    userEvent.click(
+      within(warning() as HTMLElement).getByRole('button', {
+        name: /^Muuda valik: riiklik pension 3\sa hiljem$/,
+      }),
+    );
+
+    expect(warning()).not.toBeInTheDocument();
+    goTo(/^65\sa,/);
+    expect(
+      within(screen.getByRole('group', { name: 'Mitu aastat lükkad edasi?' })).getByRole('radio', {
+        name: /^68-aastaselt/,
+      }),
+    ).toBeChecked();
+  });
+
+  it('moves the focus to the state pension decision once the shorter deferral is set', () => {
+    startWith('700', '30000');
+    chooseSecondPillarFundPension();
+    deferStatePensionFiveYears();
+    openResult();
+
+    userEvent.click(
+      within(warning() as HTMLElement).getByRole('button', {
+        name: /^Muuda valik: riiklik pension/,
+      }),
+    );
+
+    expect(
+      screen.getByRole('button', { expanded: true, name: /Riiklik pension 65-\u2060aastaselt/ }),
+    ).toHaveFocus();
+  });
+
+  it('opens the costs step when no payout carries the costs', () => {
+    startWith('700', '20000');
+    chooseComfortableCosts();
+    chooseSecondPillarFundPension();
+    deferStatePensionFiveYears();
+    openResult();
+    expect(warning()).toHaveTextContent(/Ükski väljamakse viis ei kanna neid kulusid/);
+
+    userEvent.click(
+      within(warning() as HTMLElement).getByRole('button', { name: 'Muuda kulusid' }),
+    );
+
+    expect(
+      screen.getByRole('heading', { level: 2, name: 'Mis elu sa pensionil elada tahad?' }),
+    ).toBeInTheDocument();
+  });
+
+  it('opens the payout decision below when the surplus advice is followed', () => {
+    startWith('900', '150000');
+    chooseSecondPillarFundPension();
+    openResult();
+
+    userEvent.click(screen.getByRole('button', { name: 'Muuda samba väljamakse viisi' }));
+
+    expect(screen.getByRole('button', { expanded: true, name: /II\ssammas/ })).toHaveFocus();
+  });
+
+  it('brings the payout decision back into focus when the surplus advice is followed while it is open', () => {
+    startWith('900', '150000');
+    chooseSecondPillarFundPension();
+    openResult();
+    const advice = screen.getByRole('button', { name: 'Muuda samba väljamakse viisi' });
+    userEvent.click(advice);
+    const toggle = screen.getByRole('button', { expanded: true, name: /II\ssammas/ });
+    userEvent.tab();
+    expect(toggle).not.toHaveFocus();
+
+    userEvent.click(advice);
+
+    expect(toggle).toHaveFocus();
+  });
+
+  it('explains with the numbers of the user what the plan carries to the end of life', () => {
+    startWith('1200');
+    openResult();
+
+    userEvent.click(screen.getByRole('button', { name: 'Selgitus: Kuidas see summa tekib' }));
+
+    const dialog = screen.getByRole('dialog', { name: 'Kuidas see summa tekib?' });
+    expect(dialog).toHaveTextContent(
+      /^Kuidas see summa tekib\?.*[\d\s]+€ kuus on suurim kuukulu, mille juures sinu raha jätkub \d+\. eluaastani\./,
+    );
+    expect(dialog).toHaveTextContent(
+      /riiklik pension [\d\s]+€ kuus enne tulumaksu, alates 65-\u2060aastaselt/,
+    );
+    expect(dialog).toHaveTextContent(/sammastes u [\d\s]+€ pensionile minnes/);
+    expect(dialog).toHaveTextContent('Sinu kulud on 791 € kuus.');
   });
 });
