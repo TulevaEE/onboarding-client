@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import { Control, Controller, Path } from 'react-hook-form';
+import { ReactNode, useEffect } from 'react';
+import { Control, Path, useController } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SharedOnboardingFields } from '../types';
 import { TranslationKey } from '../../../../translations';
@@ -64,6 +64,26 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
 }: TermsStepProps<T>) => {
   const intl = useIntl();
   const documents = useTkfDocuments();
+  const {
+    field,
+    fieldState: { error },
+  } = useController({
+    control,
+    name: 'termsAccepted' as Path<T>,
+    rules: {
+      validate: (value) =>
+        value === true || intl.formatMessage({ id: 'flows.savingsFundOnboarding.termsStep.error' }),
+    },
+  });
+  const documentsShown = documents !== undefined;
+  const { value: termsAccepted, onChange: setTermsAccepted } = field;
+
+  useEffect(() => {
+    if (!documentsShown && termsAccepted) {
+      setTermsAccepted(false);
+    }
+  }, [documentsShown, termsAccepted, setTermsAccepted]);
+
   return (
     <section className="d-flex flex-column gap-4" key="conditions">
       <div className="d-flex flex-column gap-1">
@@ -93,40 +113,29 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
             <DocumentLinkPlaceholders />
           )}
         </div>
-        <Controller
-          control={control}
-          name={'termsAccepted' as Path<T>}
-          rules={{
-            validate: (value) =>
-              value === true ||
-              intl.formatMessage({ id: 'flows.savingsFundOnboarding.termsStep.error' }),
-          }}
-          render={({ field, fieldState: { error } }) => (
-            <div className="form-check m-0 lead">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                id="terms-accepted"
-                disabled={!documents}
-                checked={field.value as boolean}
-                onChange={field.onChange}
-              />
-              <label className="form-check-label w-100" htmlFor="terms-accepted">
-                <FormattedMessage id={confirmTextId} />
-              </label>
-              {showError && (
-                <p className="m-0 text-danger fs-base" role="alert">
-                  <FormattedMessage id="flows.savingsFundOnboarding.termsStep.error" />
-                </p>
-              )}
-              {error && error.message ? (
-                <p className="m-0 text-danger fs-base" role="alert">
-                  {error.message}
-                </p>
-              ) : null}
-            </div>
+        <div className="form-check m-0 lead">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="terms-accepted"
+            disabled={!documentsShown}
+            checked={termsAccepted as boolean}
+            onChange={setTermsAccepted}
+          />
+          <label className="form-check-label w-100" htmlFor="terms-accepted">
+            <FormattedMessage id={confirmTextId} />
+          </label>
+          {showError && (
+            <p className="m-0 text-danger fs-base" role="alert">
+              <FormattedMessage id="flows.savingsFundOnboarding.termsStep.error" />
+            </p>
           )}
-        />
+          {error && error.message ? (
+            <p className="m-0 text-danger fs-base" role="alert">
+              {error.message}
+            </p>
+          ) : null}
+        </div>
       </div>
     </section>
   );

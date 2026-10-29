@@ -282,6 +282,30 @@ describe('TermsStep', () => {
     });
   });
 
+  test('clears the confirmation when the links have to load again', async () => {
+    const queryClient = new QueryClient();
+    const history = createMemoryHistory();
+    renderWrapped(<TermsStepWrapper />, history, createDefaultStore(history), queryClient);
+    expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+    const termsCheckbox = screen.getByRole('checkbox', { name: /^I confirm that I have reviewed/ });
+    userEvent.click(termsCheckbox);
+    expect(termsCheckbox).toBeChecked();
+
+    jest.useFakeTimers();
+    unresponsiveTkfDocumentsBackend(server);
+    await act(async () => {
+      queryClient.resetQueries();
+      await Promise.resolve();
+      jest.advanceTimersByTime(0);
+    });
+
+    expect(screen.queryByRole('link', { name: /^Terms/ })).not.toBeInTheDocument();
+    expect(termsCheckbox).not.toBeChecked();
+    act(() => {
+      jest.advanceTimersByTime(5000);
+    });
+  });
+
   test('links the fund documents page when the fund page does not answer within 5 seconds', async () => {
     jest.useFakeTimers();
     unresponsiveTkfDocumentsBackend(server);

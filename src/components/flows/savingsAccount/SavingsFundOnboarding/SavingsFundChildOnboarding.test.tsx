@@ -420,6 +420,23 @@ describe('SavingsFundChildOnboarding', () => {
     expect(switchBackend.switchedRole).toEqual({ type: 'PERSON', code: mockUser.personalCode });
   });
 
+  it('asks for the terms again when a failed submit reloads the fund documents', async () => {
+    server.use(
+      rest.post('http://localhost/v1/kyc/surveys', (req, res, ctx) => res(ctx.status(500))),
+    );
+    renderWrapped(<SavingsFundChildOnboarding />);
+
+    await verifyChild();
+    await advanceToTerms();
+    userEvent.click(screen.getByRole('checkbox', { name: /legal representative/i }));
+    userEvent.click(continueButton());
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: /legal representative/i })).not.toBeChecked();
+    expect(continueButton()).toBeDisabled();
+  });
+
   it('submits the child KYC without citizenship or PEP items', async () => {
     let body: { answers: { type: string }[] } | null = null;
     savingsFundOnboardingSurveyBackend(server, (captured) => {
