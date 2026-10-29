@@ -406,7 +406,7 @@ describe('FutureMe', () => {
       expect(kidBirthYearField(2)).toHaveValue('2023');
     });
 
-    it('asks for the state payment months only of a child born from 2022 who is over three', () => {
+    it('asks for the state payment months only of a child born from 2022 to three years ago', () => {
       withChildren([BOY_BORN_JUNE_2015, GIRL_BORN_FEB_2023]);
 
       renderFutureMe();
@@ -553,6 +553,7 @@ describe('FutureMe', () => {
       expect(within(dialog).getByText(/sündinud 2013\. aastal või hiljem/)).toBeInTheDocument();
       expect(within(dialog).getByText(/iga lapse eest eraldi/)).toBeInTheDocument();
       expect(within(dialog).getByText(/vähem kui 3\saastase vahega/)).toBeInTheDocument();
+      expect(within(dialog).getByText(/kui laps pole veel 3-aastane/)).toBeInTheDocument();
       expect(
         within(dialog).getByText(/2021\. aasta septembris või hiljem sündinud lapse puhul/),
       ).toBeInTheDocument();

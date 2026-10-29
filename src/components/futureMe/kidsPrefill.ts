@@ -60,13 +60,19 @@ const sharesPaymentYears = (birth: ChildBirth, births: ChildBirth[]): boolean =>
       Math.abs(birthMonthOf(other) - birthMonthOf(birth)) <= PARENTAL_PAYMENT_MONTHS,
   );
 
+const isPaymentPeriodOver = (birth: ChildBirth, today: Date): boolean =>
+  monthIndexOf(today.toISOString()) > birthMonthOf(birth) + PARENTAL_PAYMENT_MONTHS;
+
 const iiMonthsOf = (
   birth: ChildBirth,
   births: ChildBirth[],
   contributions: Contribution[],
+  today: Date,
 ): string => {
   const months =
-    isChildIIMonthsAsked(birth.year) && !sharesPaymentYears(birth, births)
+    isChildIIMonthsAsked(birth.year) &&
+    isPaymentPeriodOver(birth, today) &&
+    !sharesPaymentYears(birth, births)
       ? monthsPaidFor(birth, contributions)
       : 0;
   return months > 0 ? String(months) : '';
@@ -119,6 +125,7 @@ export const tulevaChildrenOf = (
 export const deriveKidsPrefill = (
   children: Pick<EligibleChild, 'personalCode'>[] | undefined,
   contributions: Contribution[] | undefined,
+  today: Date = new Date(),
 ): KidsPrefill | null => {
   const births = (children ?? [])
     .map(({ personalCode }) => childBirthOf(personalCode))
@@ -127,6 +134,6 @@ export const deriveKidsPrefill = (
     ? null
     : {
         birthYears: births.map(({ year }) => year),
-        iiMonths: births.map((birth) => iiMonthsOf(birth, births, contributions ?? [])),
+        iiMonths: births.map((birth) => iiMonthsOf(birth, births, contributions ?? [], today)),
       };
 };

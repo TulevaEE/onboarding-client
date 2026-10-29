@@ -3,6 +3,7 @@ import { attributableIIMonths, childBirthOf, deriveKidsPrefill } from './kidsPre
 
 const A_GIRL_BORN_FEB_2023 = '62302200000';
 const A_BOY_BORN_JUNE_2015 = '51506150000';
+const A_GIRL_BORN_DEC_2023 = '62312100000';
 
 const monthsFrom = (year: number, month: number, count: number): string[] =>
   Array.from({ length: count }, (_, offset) => {
@@ -97,6 +98,30 @@ describe('children prefill from the register and the contributions', () => {
     const contributions = monthsFrom(2023, 2, 37).map((time) => parentalBenefit(time));
 
     expect(deriveKidsPrefill(children, contributions)?.iiMonths).toEqual(['', '36']);
+  });
+
+  it('leaves the months empty while the state is still paying for a child under three', () => {
+    const paidSoFar = monthsFrom(2024, 1, 34).map((time) => parentalBenefit(time));
+
+    expect(
+      deriveKidsPrefill(
+        [{ personalCode: A_GIRL_BORN_DEC_2023 }],
+        paidSoFar,
+        new Date('2026-10-15T12:00:00Z'),
+      )?.iiMonths,
+    ).toEqual(['']);
+  });
+
+  it('counts the months once the three years of state payments are over', () => {
+    const paid = monthsFrom(2024, 1, 34).map((time) => parentalBenefit(time));
+
+    expect(
+      deriveKidsPrefill(
+        [{ personalCode: A_GIRL_BORN_DEC_2023 }],
+        paid,
+        new Date('2027-01-15T12:00:00Z'),
+      )?.iiMonths,
+    ).toEqual(['34']);
   });
 
   it('leaves the months empty when no payment can be found, so the saver says it', () => {
