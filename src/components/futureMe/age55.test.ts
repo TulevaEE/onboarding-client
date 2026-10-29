@@ -8,7 +8,7 @@ import {
   ThirdPillarPayoutInput,
   withdrawalAge,
 } from './age55';
-import { fundPensionTerm } from './engine/pension';
+import { fundPensionTerm, yearlyContractTerm } from './engine/pension';
 import { lifeTable } from './engine/testUtils';
 import { initialAnswers, ThirdPillarPlan, YouAnswers } from './youAnswers';
 
@@ -118,10 +118,13 @@ describe('payout', () => {
   });
 
   describe('fund pension', () => {
-    it('pays tax-free monthly amounts over the years left by the life table', () => {
+    it('pays tax-free monthly amounts over the months left by the life table', () => {
       const payout = payoutOf('fund', payoutInput());
 
-      expect(payout.firstMonthly).toBeCloseTo(12000 / fundPensionTerm(lifeTable, 'N', 56) / 12, 6);
+      expect(payout.firstMonthly).toBeCloseTo(
+        12000 / yearlyContractTerm(lifeTable, 'N', 56) / 12,
+        6,
+      );
       expect(payout.tax).toBe(0);
       expect(payout.net).toBe(payout.gross);
     });

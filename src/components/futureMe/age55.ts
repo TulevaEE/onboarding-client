@@ -9,6 +9,7 @@ import {
   SeparateThirdPillar,
   Sex,
   TAX_SHORT,
+  yearlyContractTerm,
 } from './engine/pension';
 import {
   amountOf,
@@ -119,7 +120,7 @@ export const thirdPillarPayout = (
 
   const firstTerm = fundPensionTerm(lifeTable, sex, age);
   const yearsLeftAt = (at: number): number =>
-    input.contract === 'once' ? firstTerm - (at - age) : fundPensionTerm(lifeTable, sex, at);
+    input.contract === 'once' ? firstTerm - (at - age) : yearlyContractTerm(lifeTable, sex, at);
 
   let gross = 0;
   const monthly: ThirdPillarPayout['monthly'] = [];
