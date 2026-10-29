@@ -174,6 +174,26 @@ describe('special pension or the pension for the children', () => {
     expect(special.total).toBeCloseTo(900 * 12);
   });
 
+  it('starts both at the early retirement for the children, not at an earlier one from the rescue service or hazardous work', () => {
+    const optionsOf = (context: ReturnType<typeof withSpecialPension>) => {
+      const { special, oldAge } = specialComparisonOf(context);
+      return [special, oldAge].map(({ from, monthly, total }) => ({
+        from,
+        monthly: Math.round(monthly),
+        total: Math.round(total),
+      }));
+    };
+
+    expect(optionsOf(withSpecialPension({ hasRescue: true, rescueYears: '20' }))).toEqual([
+      { from: 64, monthly: 900, total: 10800 },
+      { from: 64, monthly: 692, total: 8302 },
+    ]);
+    expect(optionsOf(withSpecialPension({ hazardList: 'list1', hazardYears: '10' }))).toEqual([
+      { from: 64, monthly: 900, total: 10800 },
+      { from: 64, monthly: 695, total: 8341 },
+    ]);
+  });
+
   it('marks the larger one as the choice until the saver picks', () => {
     const comparison = specialComparisonOf(withSpecialPension());
 

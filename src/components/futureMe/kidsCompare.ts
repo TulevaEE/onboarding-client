@@ -223,13 +223,20 @@ const specialOptionOf = (
   };
 };
 
+const withEarlyRetirementForKidsOnly = (input: PensionInput, kidsYears: number): PensionInput => ({
+  ...input,
+  soodus: kidsYears,
+  rescueBasis: 'pension',
+});
+
 export const specialComparisonOf = (context: CompareContext) => {
   const input = compareInputOf(context);
   const pensionAge = retirementYears(input);
-  const special = specialOptionOf(input, 'special', pensionAge);
-  const oldAge = specialOptionOf(input, 'oldAge', pensionAge);
-  const larger: FirstPillarChoice = special.monthly >= oldAge.monthly ? 'special' : 'oldAge';
   const kidsYears = kidsYearsOf(context.you);
+  const kidsOnlyInput = withEarlyRetirementForKidsOnly(input, kidsYears);
+  const special = specialOptionOf(kidsOnlyInput, 'special', pensionAge);
+  const oldAge = specialOptionOf(kidsOnlyInput, 'oldAge', pensionAge);
+  const larger: FirstPillarChoice = special.monthly >= oldAge.monthly ? 'special' : 'oldAge';
   return {
     pensionAge,
     kidsYears,
