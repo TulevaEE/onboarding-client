@@ -221,6 +221,16 @@ describe('Sina step help buttons', () => {
     expect(dialog).toHaveTextContent(/5\saastat varem pensionile minnes „60\sa sambad“/);
   });
 
+  it('dates the child supplement from children born in 1991, as the Social Insurance Board does', () => {
+    renderYouStep();
+
+    const dialog = openKidsHelp();
+
+    expect(dialog).toHaveTextContent(/1991\.–2012\.\sa sündinud laps: 3,5 aastahinnet/);
+    expect(dialog).toHaveTextContent(/enne 1991\.\sa sündinud laps: 1,5 aastahinnet/);
+    expect(dialog).not.toHaveTextContent(/1981/);
+  });
+
   it('leaves the field labels as they were for screen readers', () => {
     renderYouStep();
 
