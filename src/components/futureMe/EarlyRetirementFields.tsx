@@ -57,7 +57,14 @@ const reasonsText = (intl: IntlShape, answers: YouAnswers): string => {
     hazard > 0 &&
       intl.formatMessage({ id: 'futureMe.you.earlyYears.reasonHazard' }, { years: hazard }),
     rescue > 0 &&
-      intl.formatMessage({ id: 'futureMe.you.earlyYears.reasonRescue' }, { years: rescue }),
+      intl.formatMessage(
+        { id: 'futureMe.you.earlyYears.reasonRescue' },
+        {
+          years: rescue,
+          isMix: rescueBasisOf(answers) === 'mix' ? 'yes' : 'no',
+          pensionFrom: effectivePensionAge(answers) - kids,
+        },
+      ),
   ].filter((reason): reason is string => reason !== false);
   const [first, second, third] = reasons;
   return intl.formatMessage(

@@ -1404,6 +1404,16 @@ describe('FutureMe', () => {
           expect(earlyYearsField()).toHaveDisplayValue(withNbsp('5 a, vähendamata (kõige varem)'));
         });
 
+        it('say under the early years that the rescue allowance runs until the pension for the children when both are taken', () => {
+          renderFutureMe();
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          expect(screen.getByRole('status')).toHaveTextContent(
+            /päästeteenistusest \(5\sa: päästeasutus maksab sulle 65-\u2060aastaseks saamiseni toetust vanaduspensioni suuruses, siis saad laste eest pensioni\)/,
+          );
+        });
+
         it('take the early right from the children when their pension is picked', () => {
           renderFutureMe();
           addKids(['1990', '1992', '1994']);

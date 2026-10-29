@@ -2737,7 +2737,7 @@
   "futureMe.you.earlyYears.summaryOtherParent": "Varem pensionile mineku õigust kasutab teine vanem, sinu pensioniiga ei muutu.",
   "futureMe.you.earlyYears.reasonKids": "lastest ({years} a)",
   "futureMe.you.earlyYears.reasonHazard": "tervist kahjustavast tööst ({years} a)",
-  "futureMe.you.earlyYears.reasonRescue": "päästeteenistusest ({years} a: päästeasutus maksab sulle pensioniealiseks saamiseni toetust vanaduspensioni suuruses)",
+  "futureMe.you.earlyYears.reasonRescue": "päästeteenistusest ({years} a: päästeasutus maksab sulle {isMix, select, yes {{pensionFrom}-⁠aastaseks saamiseni toetust vanaduspensioni suuruses, siis saad laste eest pensioni} other {pensioniealiseks saamiseni toetust vanaduspensioni suuruses}})",
   "futureMe.you.earlyYears.reasons": "{count, select, 1 {{first}} 2 {{first} ja {second}} other {{first}, {second} ja {third}}}",
   "futureMe.you.prefilledHint": "Eeltäidetud väli",
   "futureMe.you.kidBirthMonth.label": "{number}. lapse sünnikuu",
