@@ -149,18 +149,11 @@ describe('Result step: rules that follow from the answers', () => {
   describe('child supplement', () => {
     const grownChildren = { kidsAdded: true, kidsCount: '2', kidsBirthYears: ['1990', '1992'] };
 
-    it.each([
-      { inForecast: 'no', choice: /^Sinu valik: \+\d+\s€\skuus$/ },
-      { inForecast: 'yes', choice: /^Sinu valik: \+\d+\s€\skuus \(prognoosis juba sees\)$/ },
-      {
-        inForecast: 'unknown',
-        choice: /^Sinu valik: \+\d+\s€\skuus \(ei arvestatud: ei tea, kas prognoosis on\)$/,
-      },
-    ])('says whether it is counted when the forecast is $inForecast', ({ inForecast, choice }) => {
-      renderRules(contextWith({ ...grownChildren, kidsInForecast: inForecast as 'no' }));
+    it('shows the supplement as counted, with no note about the state pension forecast', () => {
+      renderRules(contextWith(grownChildren));
 
       const rule = itemTitled(ruleList(), /^Laste pensionilisa$/);
-      expect(within(rule).getByText(choice)).toBeInTheDocument();
+      expect(within(rule).getByText(/^Sinu valik: \+\d+\s€\skuus$/)).toBeInTheDocument();
       expect(rule).toHaveTextContent(/Eripensionile lisa ei lisata/);
     });
 

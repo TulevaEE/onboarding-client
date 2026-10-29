@@ -70,7 +70,7 @@ describe('rescue service', () => {
     });
 
     describe('with early retirement for children', () => {
-      const kids: KidsInput = { b2012: 4, earlyUser: 'me', supUser: 'me', inForecast: 'no' };
+      const kids: KidsInput = { b2012: 4, earlyUser: 'me', supUser: 'me' };
       const family: PensionInput = { ...base, birthYear: 1975, rescueYears: 20, kids };
       const ordinaryAge = retirementYears(family);
       const supplement = childSupplement(family);

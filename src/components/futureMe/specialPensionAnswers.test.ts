@@ -92,7 +92,6 @@ describe('specialPensionAnswers', () => {
       kidsAdded: true,
       kidsCount: '1',
       kidsBirthYears: ['2022'],
-      kidsInForecast: 'no' as const,
     };
 
     expect(

@@ -253,6 +253,20 @@ describe('Sina step help buttons', () => {
     ).toHaveAttribute('href', expect.stringContaining('pension-calculator'));
   });
 
+  it('tells every saver, in a step of its own, to check the state pension without the children, since Elukaar adds their supplement', () => {
+    renderYouStep();
+    const stateField = screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ });
+
+    userEvent.click(helpButtonBeside(stateField, '.col-12', /Mis on riiklik pension$/));
+    const dialog = screen.getByRole('dialog');
+
+    const childrenStep = within(dialog).getByText(
+      /^Jäta „Pensionilisa“ alla lapsed lisamata: laste pensionilisa lisab Elukaar ise/,
+    );
+    expect(within(dialog).getAllByRole('listitem')).toContain(childrenStep);
+    expect(within(dialog).queryByText(/küsib laste juures üle/)).not.toBeInTheDocument();
+  });
+
   it('writes out the Social Insurance Board self-service in the pension age explanation', () => {
     renderYouStep();
     const ageField = screen.getByRole('combobox', { name: /Millal on sinu pensioniiga/ });
