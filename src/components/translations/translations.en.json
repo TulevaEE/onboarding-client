@@ -3027,7 +3027,7 @@
   "futureMe.result.chart.guide.horizon": "Sündmus „10% sinuvanustest on veel elus“ ({age}-⁠aastaselt) on statistika, mitte sinu elu lõpp: sinu elu võib olla lühem või pikem.",
   "futureMe.result.chart.guide.fundPeriod": "Fondipensioni periood on {years} aastat ja see on arvutatud keskmise eluea järgi, mitte sinu elu pikkuse järgi. Seepärast lõpeb fondipension kindlal vanusel ja kiht langeb graafikul järsult.",
   "futureMe.result.assumptions.title": "Eeldused",
-  "futureMe.result.assumptions.intro": "Arvutus tugineb neile andmetele ja eeldustele. Kui miski ei klapi, muuda seda vastavas sammus: tulemus arvutatakse uuesti.",
+  "futureMe.result.assumptions.intro": "Arvutus tugineb neile andmetele ja eeldustele. Tootlust ja kulupaketti saad muuta siin, oma andmeid sammus „Sina“: tulemus arvutatakse kohe uuesti.",
   "futureMe.result.assumptions.you.title": "Sinu andmed",
   "futureMe.result.assumptions.you.text": "Sündinud {birthYear}{hasSecondPillar, select, yes {, II sammas {secondPillar}} other {}}{hasThirdPillar, select, yes {, III sammas {thirdPillar}} other {}}{hasSpecialPension, select, yes {, eripension {specialPension} kuus} other {}}",
   "futureMe.result.assumptions.you.change": "Muuda sammus „Sina“",
