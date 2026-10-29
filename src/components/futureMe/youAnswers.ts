@@ -3,8 +3,6 @@ import { isChildIIMonthsAsked, PARENTAL_PAYMENT_MONTHS } from './kidsPrefill';
 import { parseBirthYear, YouPrefill } from './prefill';
 import { StepPlanInput } from './steps';
 
-export { isChildIIMonthsAsked } from './kidsPrefill';
-
 export const FALLBACK_BIRTH_YEAR = 1980;
 export const PENSION_AGE_OPTIONS = [65, 66, 67, 68, 69, 70];
 export const SECOND_PILLAR_RATE_OPTIONS = ['0', '0.02', '0.04', '0.06'];

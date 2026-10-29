@@ -9,13 +9,17 @@ import {
   hasChildWithoutBirthYear,
   HazardList,
   isChildBirthYearInvalid,
-  isChildIIMonthsAsked,
   isChildIIMonthsInvalid,
   isKidsRightAvailableToSelf,
   maxChildBirthYear,
   YouAnswers,
 } from './youAnswers';
-import { attributableIIMonths, isPrefilledChild, KidsPrefill } from './kidsPrefill';
+import {
+  attributableIIMonths,
+  isChildIIMonthsAsked,
+  isPrefilledChild,
+  KidsPrefill,
+} from './kidsPrefill';
 import { AmountField, BlockProps, FieldLabel, PREFILLED_HINT_ID, SelectField } from './YouFields';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';

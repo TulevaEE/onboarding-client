@@ -8,7 +8,6 @@ import {
   fieldProblem,
   hasChildWithoutBirthYear,
   initialAnswers,
-  isChildIIMonthsAsked,
   isChildIIMonthsInvalid,
   isSpecialPensionOnly,
   pensionAgeValue,
@@ -16,6 +15,7 @@ import {
   toStepPlanInput,
   YouAnswers,
 } from './youAnswers';
+import { isChildIIMonthsAsked } from './kidsPrefill';
 import { pensionAge } from './engine/pension';
 import { FutureMeStep, shownSteps } from './steps';
 
