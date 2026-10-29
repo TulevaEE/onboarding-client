@@ -3,11 +3,11 @@ import {
   earlyYears,
   KidsInput,
   PensionInput,
-  pensionAge,
   ServiceIncrease,
   serviceIncreaseOf,
   Sex,
 } from './engine/pension';
+import { startingRetirementAge } from '../pensionCalculator/calculation';
 import { isParentalPaymentMonthsAsked, PARENTAL_PAYMENT_MONTHS } from './kidsPrefill';
 import { parseBirthYear, YouPrefill } from './prefill';
 import { StepPlanInput } from './steps';
@@ -63,6 +63,7 @@ export interface YouAnswers extends KidsAnswers, WorkAnswers {
   birthYear: string;
   sex: Sex;
   pensionAgeYears: string;
+  registerPensionAge: number | null;
   firstPillarMonthly: string;
   grossMonthly: string;
   secondPillarRate: string;
@@ -160,6 +161,7 @@ export const initialAnswers = (prefill: YouPrefill): YouAnswers =>
     birthYear: prefill.birthYear?.toString() ?? '',
     sex: prefill.sex ?? UNKNOWN_SEX,
     pensionAgeYears: '',
+    registerPensionAge: prefill.registerPensionAge ?? null,
     firstPillarMonthly: PREFILLED_FIRST_PILLAR_MONTHLY,
     grossMonthly: prefill.grossMonthly ?? '',
     secondPillarRate: prefill.secondPillarRate ?? DEFAULT_SECOND_PILLAR_RATE,
@@ -224,7 +226,10 @@ export const birthYearOrFallback = (answers: YouAnswers): number =>
 
 export const effectivePensionAge = (answers: YouAnswers): number =>
   Number(answers.pensionAgeYears) ||
-  Math.min(MAX_PENSION_AGE, pensionAge(birthYearOrFallback(answers)).years);
+  Math.min(
+    MAX_PENSION_AGE,
+    startingRetirementAge(answers.registerPensionAge ?? undefined, birthYearOrFallback(answers)),
+  );
 
 export const rateOf = (percent: number): number => percent / 100;
 

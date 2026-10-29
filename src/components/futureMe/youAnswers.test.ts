@@ -22,7 +22,6 @@ import {
   toStepPlanInput,
   YouAnswers,
 } from './youAnswers';
-import { pensionAge } from './engine/pension';
 import { FutureMeStep, shownSteps } from './steps';
 
 const filledIn = (overrides: Partial<YouAnswers> = {}): YouAnswers => ({
@@ -163,13 +162,25 @@ describe('the months the state paid into the II pillar for a child', () => {
 
 describe('pension age', () => {
   it('follows the pension age rule of the birth year until the saver picks one', () => {
-    expect(effectivePensionAge(filledIn({ birthYear: '1960' }))).toBe(pensionAge(1960).years);
+    expect(effectivePensionAge(filledIn({ birthYear: '1960' }))).toBe(65);
   });
 
   it('keeps a picked age when the birth year changes', () => {
     const answers = filledIn({ pensionAgeYears: '68', birthYear: '1960' });
 
     expect(effectivePensionAge(answers)).toBe(68);
+  });
+
+  it('follows the retirement age of the pension calculator for a young saver', () => {
+    expect(effectivePensionAge(filledIn({ birthYear: '1991' }))).toBe(69);
+  });
+
+  it('starts from the register pension age when it is higher than the projection', () => {
+    expect(effectivePensionAge(filledIn({ birthYear: '1962', registerPensionAge: 66 }))).toBe(66);
+  });
+
+  it('stays within the pension age options', () => {
+    expect(effectivePensionAge(filledIn({ birthYear: '2008', registerPensionAge: 66 }))).toBe(70);
   });
 
   it('uses 1980 for the rule while the birth year is not valid', () => {

@@ -16,7 +16,6 @@ import { Contribution, PendingOnboarding, SourceFund, User } from '../common/api
 import { FundPension } from '../common/apiModels/withdrawals';
 import { EligibleChild } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 import translations from '../translations';
-import { pensionAge } from './engine/pension';
 import { installDialogPolyfill } from './dialogPolyfill';
 import { trackCustomEvent } from '../tracking/actions';
 import { mockUser } from '../../test/backend-responses';
@@ -225,6 +224,7 @@ const typeInto = (field: HTMLElement, text: string) => {
 };
 
 const fillInRequiredAnswers = () => {
+  userEvent.selectOptions(pensionAgeField(), '66');
   typeInto(firstPillarField(), '700');
   typeInto(grossSalaryField(), '2000');
   typeInto(secondPillarAmountField(), '10000');
@@ -959,18 +959,20 @@ describe('FutureMe', () => {
       ).toEqual(['65', '66', '67', '68', '69', '70']);
     });
 
-    it('proposes the pension age of the birth year', () => {
+    it('proposes the retirement age of the pension calculator for the birth year', () => {
+      loggedInAs({ retirementAge: 66 });
       renderFutureMe();
 
-      expect(pensionAgeField()).toHaveValue(String(pensionAge(1989).years));
+      expect(pensionAgeField()).toHaveValue('68');
     });
 
     it('follows a changed birth year until the saver picks a pension age', () => {
+      loggedInAs({ retirementAge: 66 });
       renderFutureMe();
 
       typeBirthYear('2005');
 
-      expect(pensionAgeField()).toHaveValue(String(pensionAge(2005).years));
+      expect(pensionAgeField()).toHaveValue('70');
     });
 
     it('keeps the picked pension age when the birth year changes', () => {
@@ -1565,6 +1567,7 @@ describe('FutureMe', () => {
 
         it('say under the early years that the rescue allowance runs until the pension for the children when both are taken', () => {
           renderFutureMe();
+          userEvent.selectOptions(pensionAgeField(), '66');
           addKids(['1990', '1992', '1994']);
           addRescueService();
 

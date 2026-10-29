@@ -8,6 +8,7 @@ import {
   project,
   projectedRemainingYears,
   projectedRetirementAge,
+  startingRetirementAge,
   SHORT_PERIOD_TAX_RATE,
   thirdPillarTaxCapMonthly,
 } from './calculation';
@@ -547,6 +548,30 @@ describe('projected retirement age and payout period', () => {
   it('creeps up about 1.5 months per birth year under the life-expectancy link', () => {
     expect(projectedRetirementAge(1991)).toBe(69);
     expect(projectedRetirementAge(2005)).toBe(70);
+  });
+});
+
+describe('the retirement age a saver starts from', () => {
+  it('is the register age when the projection for the birth year is lower', () => {
+    expect(startingRetirementAge(66, 1962)).toBe(66);
+  });
+
+  it('is the projection for a young saver, past the register age', () => {
+    expect(startingRetirementAge(65, 1991)).toBe(69);
+  });
+
+  it('stays within the flexible pension window above the register age', () => {
+    expect(startingRetirementAge(65, 2005)).toBe(70);
+    expect(startingRetirementAge(60, 2005)).toBe(65);
+  });
+
+  it('falls back to 65 as the register age', () => {
+    expect(startingRetirementAge(undefined, 1950)).toBe(65);
+    expect(startingRetirementAge(undefined, 1991)).toBe(69);
+  });
+
+  it('is the register age when the birth year is not a number', () => {
+    expect(startingRetirementAge(66, NaN)).toBe(66);
   });
 });
 

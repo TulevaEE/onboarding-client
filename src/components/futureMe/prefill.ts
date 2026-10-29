@@ -31,6 +31,7 @@ const MONTHS_IN_YEAR = 12;
 export interface YouPrefill {
   birthYear: number | null;
   sex: Sex | null;
+  registerPensionAge?: number | null;
   secondPillarRate: string | null;
   grossMonthly?: string | null;
   secondPillarAmount?: string | null;
@@ -159,6 +160,7 @@ export const derivePrefill = (
   return {
     birthYear,
     sex: deriveSex(user.personalCode),
+    registerPensionAge: user.retirementAge ?? null,
     secondPillarRate: deriveSecondPillarRate(user),
     grossMonthly: deriveGrossMonthly(contributions, today),
     secondPillarAmount: derivePillarAmount(sourceFunds, 2),

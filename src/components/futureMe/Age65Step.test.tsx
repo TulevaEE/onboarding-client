@@ -414,7 +414,7 @@ describe('Age 65 step', () => {
 
   describe('retiring early on favourable terms', () => {
     beforeEach(() => {
-      loggedInAs({ dateOfBirth: '1970-01-01' });
+      loggedInAs({ dateOfBirth: '1970-01-01', retirementAge: 66 });
       openAge65Step({ withFiveChildren: true, trailName: /^61\sa pension, vaatamata$/ });
     });
 
