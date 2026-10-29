@@ -1,6 +1,6 @@
 import { pensionKind } from './age65Answers';
 import { Contract, hasPillar, Pillar } from './age66Answers';
-import { childSupplement, EARLY_DECREASE, retirementYears } from './engine/pension';
+import { EARLY_DECREASE, retirementYears, SimulationResult } from './engine/pension';
 import { retirementAge } from './planAges';
 import { ResultContext, resultInputOf, resultOf, resultScenarioOf } from './resultAnswers';
 import { specialPensionStartAge } from './specialPensionAnswers';
@@ -64,14 +64,26 @@ const earlyRetirementRules = (context: ResultContext): Rule[] => {
   ];
 };
 
+const oldAgePensionStartAge = ({
+  firstPillar,
+  rescueAllowance,
+  p1StartAge,
+}: SimulationResult): number | null => {
+  if (firstPillar?.paid === 'special') {
+    return firstPillar.atPa?.paid === 'oldAge' ? firstPillar.atPa.age : null;
+  }
+  return rescueAllowance?.until ?? p1StartAge;
+};
+
 const childSupplementRules = (context: ResultContext): Rule[] => {
-  const monthly = childSupplement(resultInputOf(context));
-  return monthly > 0
+  const result = resultOf(context);
+  const age = oldAgePensionStartAge(result);
+  return result.childSupplement && age !== null
     ? [
         {
           id: 'childSupplement',
-          ...whenOf(context, retirementAge(context.plan)),
-          monthly,
+          ...whenOf(context, age),
+          monthly: result.childSupplement.monthly,
           inForecast: kidsInForecastOf(context.you),
         },
       ]

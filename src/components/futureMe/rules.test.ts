@@ -1,4 +1,5 @@
 import { initialAge60 } from './age60Answers';
+import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { ResultContext, resultInputOf } from './resultAnswers';
 import { contextWith } from './resultContextFixture';
@@ -159,6 +160,81 @@ describe('child supplement rule', () => {
 
     expect(rulesOf(context)).toContainEqual(
       expect.objectContaining({ id: 'childSupplement', age: 64 }),
+    );
+  });
+
+  describe('as a rescuer with three grown children', () => {
+    const rescuerWith = (rescueBasis: ResultContext['you']['rescueBasis']) =>
+      withGrownChildren({
+        kidsCount: '3',
+        kidsBirthYears: ['1990', '1992', '1994'],
+        workAdded: true,
+        hasRescue: true,
+        rescueYears: '20',
+        rescueBasis,
+      });
+
+    it('starts when the pension for the children follows the rescue allowance', () => {
+      expect(rulesOf(rescuerWith('mix'))).toContainEqual(
+        expect.objectContaining({ id: 'childSupplement', age: 64, year: 2044 }),
+      );
+    });
+
+    it('starts at the pension age when only the rescue allowance is taken until then', () => {
+      expect(rulesOf(rescuerWith('toetus'))).toContainEqual(
+        expect.objectContaining({ id: 'childSupplement', age: 65, year: 2045 }),
+      );
+    });
+  });
+
+  it('starts with the deferred old-age pension', () => {
+    const context = contextWith(
+      { kidsAdded: true, kidsCount: '2', kidsBirthYears: ['1990', '1992'] },
+      { age65: { ...initialAge65(), mode: 'defer', years: 2 } },
+    );
+
+    expect(rulesOf(context)).toContainEqual(
+      expect.objectContaining({ id: 'childSupplement', age: 67, year: 2047 }),
+    );
+  });
+
+  it('is left out when the special pension is paid instead of the old-age pension for life', () => {
+    const context = contextWith(
+      {
+        kidsAdded: true,
+        kidsCount: '2',
+        kidsBirthYears: ['1990', '1992'],
+        workAdded: true,
+        hasSpecialPension: true,
+        specialPensionStartAge: '65',
+      },
+      { specialPension: { ...initialSpecialPension(), monthly: '900' } },
+    );
+
+    expect(idsOf(context)).not.toContain('childSupplement');
+  });
+
+  it('starts at the pension age when the old-age pension is chosen there over the special pension', () => {
+    const context = contextWith(
+      {
+        kidsAdded: true,
+        kidsCount: '2',
+        kidsBirthYears: ['1990', '1992'],
+        workAdded: true,
+        hazardList: 'list1',
+        hazardYears: '10',
+        hasSpecialPension: true,
+        specialPensionStartAge: '50',
+      },
+      {
+        specialPension: { ...initialSpecialPension(), monthly: '900' },
+        age65: { ...initialAge65(), work: 'yes', workUntil: '65' },
+        age66: { ...initialAge66(), firstPillarChoicePa: 'oldAge' },
+      },
+    );
+
+    expect(rulesOf(context)).toContainEqual(
+      expect.objectContaining({ id: 'childSupplement', age: 65, year: 2045 }),
     );
   });
 
