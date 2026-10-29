@@ -412,6 +412,9 @@ export const earlyYearsOptions = (answers: YouAnswers): number[] =>
       years <= earlyRetirementRight(answers) || !isFlexibleBarredBySpecialPension(answers, years),
   );
 
+export const isAnyFlexibleYearBarredBySpecialPension = (answers: YouAnswers): boolean =>
+  earlyYearsOptions(answers).length <= maxEarlyYearsOption(answers);
+
 export const earlyRetirementYears = (answers: YouAnswers): number => {
   const right = earlyRetirementRight(answers);
   if (isSpecialPensionOn(answers) && right === 0) {

@@ -12,6 +12,7 @@ import {
   earlyRightSources,
   earlyYearsOptions,
   effectivePensionAge,
+  isAnyFlexibleYearBarredBySpecialPension,
   isKidsRightAvailableToSelf,
   isRescueBasisAsked,
   isRescueMixOffered,
@@ -192,7 +193,11 @@ export const EarlyRetirementFields = ({ answers, onChange }: Props) => {
             id="future-me-early-years"
             label="futureMe.you.earlyYears.label"
             help="soodusYears"
-            hint="futureMe.you.earlyYears.hint"
+            hint={
+              isAnyFlexibleYearBarredBySpecialPension(answers)
+                ? 'futureMe.you.earlyYears.hintSpecialPension'
+                : 'futureMe.you.earlyYears.hint'
+            }
             value={String(earlyRetirementYears(answers))}
             options={earlyYearsOptions(answers).map((years) => ({
               value: String(years),

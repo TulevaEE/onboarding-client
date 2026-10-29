@@ -2647,6 +2647,7 @@
   "futureMe.you.earlyYears.reasonHazard": "tervist kahjustavast tööst ({years} a)",
   "futureMe.you.earlyYears.reasonRescue": "päästeteenistusest ({years} a: päästeasutus maksab sulle {isMix, select, yes {{pensionFrom}-⁠aastaseks saamiseni toetust vanaduspensioni suuruses, siis saad laste eest pensioni} other {pensioniealiseks saamiseni toetust vanaduspensioni suuruses}})",
   "futureMe.you.earlyYears.reasons": "{count, select, 1 {{first}} 2 {{first} ja {second}} other {{first}, {second} ja {third}}}",
+  "futureMe.you.earlyYears.hintSpecialPension": "Laste, tervist kahjustava töö või päästeteenistuse eest varem minnes pensioni ei vähendata. Paindlikku pensioni, mida vähendatakse eluks ajaks, saab võtta vaid enne eripensioni algust.",
   "futureMe.you.prefilledHint": "Eeltäidetud väli",
   "futureMe.you.kidIIMonths.label": "{number}. lapse riigi lisamakse II sambasse (kuud)",
   "futureMe.you.kidIIMonths.hint": "Arv vahemikus 0–36.",

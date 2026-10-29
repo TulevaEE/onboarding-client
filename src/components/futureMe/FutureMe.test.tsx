@@ -1587,6 +1587,21 @@ describe('FutureMe', () => {
         ]);
       });
 
+      it('says why the flexible years are missing once the special pension has started by then', () => {
+        renderFutureMe();
+        addKids(['1990', '1992', '1994']);
+        addSpecialCases();
+        userEvent.click(specialCase(/Saan või hakkan saama eripensioni/));
+
+        expect(earlyYearsField()).toHaveAccessibleDescription(/Muidu vähendatakse eluks ajaks\.$/);
+
+        typeInto(specialPensionStartField(), '60');
+
+        expect(earlyYearsField()).toHaveAccessibleDescription(
+          /Paindlikku pensioni, mida vähendatakse eluks ajaks, saab võtta vaid enne eripensioni algust\.$/,
+        );
+      });
+
       it('says the reduction applies when the saver picks more than the right', () => {
         renderFutureMe();
 
