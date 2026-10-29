@@ -2,6 +2,7 @@ import golden from './golden.json';
 import goldenProfiles from './goldenProfiles.json';
 import lifeTableData from './lifeTable.json';
 import {
+  EARLY_DECREASE,
   LifeTable,
   PensionInput,
   pensionAge,
@@ -93,5 +94,116 @@ describe('pension engine', () => {
     expect(pensionAge(1962).label).toBe('65 a 1 k');
     expect(pensionAge(1963).label).toBe('65 a 3 k');
     expect(pensionAge(1964).label).toBe('65 a 4 k');
+  });
+
+  describe('special pension', () => {
+    const hazardList1WithSpecialPensionFrom58: PensionInput = {
+      birthYear: 1980,
+      sex: 'M',
+      p1Monthly: 903,
+      p2: 0,
+      p3: 0,
+      pensionAgeYears: 66,
+      needMonthly: 791,
+      realReturn: 0.02,
+      hazard: 'list1',
+      spHas: true,
+      spMonthly: 1200,
+      spStartAge: 58,
+      firstPillarChoice: 'special',
+    };
+
+    it('pays the old-age pension from retirement until the special pension starts', () => {
+      const { rows } = simulate(hazardList1WithSpecialPensionFrom58, lifeTable, scenarioA);
+      const at = (age: number) => rows.find((row) => row.age === age);
+      expect(at(56)?.i1g).toBeGreaterThan(0);
+      expect(at(57)?.i1g).toBeGreaterThan(0);
+      expect(at(57)?.ispg).toBe(0);
+      expect(at(58)?.i1g).toBe(0);
+      expect(at(58)?.ispg).toBeGreaterThan(0);
+    });
+
+    const threeKidsChoosingFlexibleFourYearsEarly: PensionInput = {
+      birthYear: 1980,
+      sex: 'N',
+      p1Monthly: 903,
+      p2: 0,
+      p3: 0,
+      pensionAgeYears: 66,
+      needMonthly: 791,
+      realReturn: 0.02,
+      kids: { b2012: 3, earlyUser: 'me' },
+      soodus: 4,
+      flexEarly: 4,
+      spHas: true,
+      spMonthly: 800,
+      firstPillarChoice: 'oldAge',
+    };
+
+    it('grants no flexible pension when the special pension is already paid at its start', () => {
+      const withSpecialPensionFrom60 = {
+        ...threeKidsChoosingFlexibleFourYearsEarly,
+        spStartAge: 60,
+      };
+      const { rows, firstPillar } = simulate(withSpecialPensionFrom60, lifeTable, scenarioA);
+      const oldAgePensionAt = (age: number) => rows.find((row) => row.age === age)?.i1g;
+      expect(firstPillar?.oldAge).toBe(903);
+      expect(oldAgePensionAt(64)).toBe(0);
+      expect(oldAgePensionAt(65)).toBeGreaterThan(0);
+    });
+
+    it('keeps the flexible pension when the special pension starts after it', () => {
+      const withSpecialPensionFrom64 = {
+        ...threeKidsChoosingFlexibleFourYearsEarly,
+        spStartAge: 64,
+      };
+      const { firstPillar } = simulate(withSpecialPensionFrom64, lifeTable, scenarioA);
+      expect(firstPillar?.oldAge).toBeCloseTo(903 * (1 - EARLY_DECREASE[4]));
+    });
+
+    const retiringFiveYearsEarlyAndWorkingOnUntil66: PensionInput = {
+      birthYear: 1989,
+      sex: 'N',
+      p1Monthly: 931,
+      p2: 0,
+      p3: 0,
+      pensionAgeYears: 66,
+      needMonthly: 791,
+      realReturn: 0.02,
+      grossMonthly: 2000,
+      p2Rate: 0.02,
+      soodus: 5,
+      workOn: true,
+      workUntil: 66,
+      spHas: true,
+      spMonthly: 900,
+    };
+
+    it('compares a special pension starting after retirement with the old-age pension paid by its start', () => {
+      const withSpecialPensionFrom63 = {
+        ...retiringFiveYearsEarlyAndWorkingOnUntil66,
+        spStartAge: 63,
+      };
+      const { firstPillar } = simulate(withSpecialPensionFrom63, lifeTable, scenarioA);
+      const { rows } = simulate(
+        { ...withSpecialPensionFrom63, firstPillarChoice: 'oldAge' },
+        lifeTable,
+        scenarioA,
+      );
+      const oldAgePensionAt63 = rows.find((row) => row.age === 63)?.i1g;
+      expect(firstPillar?.oldAge).toBeCloseTo(oldAgePensionAt63 as number);
+      expect(firstPillar?.oldAge).toBeGreaterThan(900);
+      expect(firstPillar).toMatchObject({ larger: 'oldAge', paid: 'oldAge' });
+    });
+
+    it('does not ask again at the pension age when the special pension starts there', () => {
+      const withLargerSpecialPensionFrom66 = {
+        ...retiringFiveYearsEarlyAndWorkingOnUntil66,
+        spMonthly: 1000,
+        spStartAge: 66,
+      };
+      const { firstPillar } = simulate(withLargerSpecialPensionFrom66, lifeTable, scenarioA);
+      expect(firstPillar).toMatchObject({ paid: 'special', atPa: null });
+    });
   });
 });

@@ -214,6 +214,24 @@ describe('child supplement rule', () => {
     expect(idsOf(context)).not.toContain('childSupplement');
   });
 
+  it('starts with the old-age pension paid until a later special pension replaces it', () => {
+    const context = contextWith(
+      {
+        kidsAdded: true,
+        kidsCount: '3',
+        kidsBirthYears: ['1990', '1992', '1994'],
+        workAdded: true,
+        hasSpecialPension: true,
+        specialPensionStartAge: '65',
+      },
+      { specialPension: { ...initialSpecialPension(), monthly: '900' } },
+    );
+
+    expect(rulesOf(context)).toContainEqual(
+      expect.objectContaining({ id: 'childSupplement', age: 64, year: 2044 }),
+    );
+  });
+
   it('starts at the pension age when the old-age pension is chosen there over the special pension', () => {
     const context = contextWith(
       {

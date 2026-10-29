@@ -34,7 +34,7 @@ const typeInto = (field: HTMLElement, text: string) => {
 const trail = () => screen.getByRole('navigation', { name: 'Loo etapid' });
 const goTo = (name: RegExp) => userEvent.click(within(trail()).getByRole('button', { name }));
 
-const fillInYou = ({ withEarlyRetirement = false } = {}) => {
+const fillInYou = ({ withEarlyRetirement = false, specialPensionStartAge = '55' } = {}) => {
   typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ }), '700');
   typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu brutopalk/ }), '2000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }), '10000');
@@ -42,7 +42,10 @@ const fillInYou = ({ withEarlyRetirement = false } = {}) => {
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }), '50');
   userEvent.click(screen.getByRole('button', { name: 'Lisa erijuht' }));
   userEvent.click(screen.getByRole('checkbox', { name: /Saan või hakkan saama eripensioni/ }));
-  typeInto(screen.getByRole('spinbutton', { name: /Mis vanusest eripension algab/ }), '55');
+  typeInto(
+    screen.getByRole('spinbutton', { name: /Mis vanusest eripension algab/ }),
+    specialPensionStartAge,
+  );
   if (withEarlyRetirement) {
     userEvent.click(screen.getByRole('button', { name: 'Lisa lapsed' }));
     typeInto(screen.getByRole('spinbutton', { name: /Mitu last\?/ }), '5');
@@ -55,8 +58,8 @@ const fillInYou = ({ withEarlyRetirement = false } = {}) => {
   }
 };
 
-const enterSpecialPensionAmount = (amount: string) => {
-  goTo(/^55\sa/);
+const enterSpecialPensionAmount = (amount: string, specialPensionStep = /^55\sa/) => {
+  goTo(specialPensionStep);
   typeInto(screen.getByRole('spinbutton', { name: /Eripensioni suurus/ }), amount);
 };
 
@@ -107,6 +110,61 @@ describe('Choosing between the special pension and the old-age pension', () => {
         /^700\s€ kuus enne maksu$/,
       );
       expect(within(group).getByText('suurem')).toBeInTheDocument();
+    });
+
+    it('says the special pension starts later when it begins after retiring', () => {
+      openFutureMe({ withEarlyRetirement: true, specialPensionStartAge: '63' });
+      enterSpecialPensionAmount('900', /^63\sa/);
+      goTo(earlyRetirementStep);
+
+      expect(
+        screen.getByText(
+          /^61-aastaselt \(soodustingimustel\) on sul õigus vanaduspensionile, 63-aastaselt ka eripensionile\./,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(/õigus nii eripensionile kui ka vanaduspensionile/),
+      ).not.toBeInTheDocument();
+    });
+
+    it('offers taking the special pension later instead of continuing with it', () => {
+      openFutureMe({ withEarlyRetirement: true, specialPensionStartAge: '63' });
+      enterSpecialPensionAmount('900', /^63\sa/);
+      goTo(earlyRetirementStep);
+
+      const group = choiceGroup(AGE_65_GROUP);
+      expect(choice(group, /^Võtan 63-aastaselt eripensioni/)).toBeChecked();
+      expect(choice(group, /^Jään vanaduspensionile/)).not.toBeChecked();
+      expect(within(group).queryByText(/avaldust pole vaja/)).not.toBeInTheDocument();
+    });
+
+    it('compares a later special pension with the old-age pension raised by the years worked until it starts', () => {
+      openFutureMe({ withEarlyRetirement: true, specialPensionStartAge: '63' });
+      enterSpecialPensionAmount('670', /^63\sa/);
+      goTo(earlyRetirementStep);
+
+      userEvent.click(screen.getByRole('radio', { name: /^Töötan edasi/ }));
+
+      const group = choiceGroup(AGE_65_GROUP);
+      expect(choice(group, /^Jään vanaduspensionile/)).toBeChecked();
+      expect(choice(group, /^Jään vanaduspensionile/)).toHaveAccessibleDescription(
+        /^675\s€ kuus enne maksu$/,
+      );
+    });
+
+    it('names the old-age pension at the start of a later special pension on its step', () => {
+      openFutureMe({ withEarlyRetirement: true, specialPensionStartAge: '63' });
+      enterSpecialPensionAmount('670', /^63\sa/);
+      goTo(earlyRetirementStep);
+      userEvent.click(screen.getByRole('radio', { name: /^Töötan edasi/ }));
+
+      goTo(/^63\sa/);
+
+      expect(
+        screen.getByText(
+          /on sul õigus vanaduspensionile\. .* Eripension algab 63-aastaselt, vanaduspension on siis 675\s€ kuus\. Vanaduspension on suurem/,
+        ),
+      ).toBeInTheDocument();
     });
 
     it('preselects the old-age pension when it is larger and lets the saver switch back', () => {

@@ -3,6 +3,7 @@ import {
   countedKids,
   earlyRetirementYears,
   earlyRightSources,
+  earlyYearsOptions,
   effectivePensionAge,
   isKidsRightAvailableToSelf,
   isRescueBasisAsked,
@@ -497,6 +498,31 @@ describe('a special pension', () => {
 
     expect(isSpecialPensionOnly(answers)).toBe(false);
     expect(earlyRetirementYears(answers)).toBe(10);
+  });
+
+  describe('with three children, which give one unreduced year', () => {
+    const withThreeKidsAndSpecialPensionFrom = (specialPensionStartAge: string) =>
+      specialPension({
+        kidsAdded: true,
+        kidsCount: '3',
+        kidsBirthYears: ['1990', '1992', '1994'],
+        pensionAgeYears: '66',
+        specialPensionStartAge,
+      });
+
+    it('offers no flexible years when the special pension is already paid by then', () => {
+      const answers = withThreeKidsAndSpecialPensionFrom('60');
+
+      expect(earlyYearsOptions(answers)).toEqual([0, 1]);
+      expect(earlyRetirementYears({ ...answers, earlyYearsPicked: '4' })).toBe(1);
+    });
+
+    it('offers the flexible years that start before the special pension', () => {
+      const answers = withThreeKidsAndSpecialPensionFrom('64');
+
+      expect(earlyYearsOptions(answers)).toEqual([0, 1, 3, 4, 5]);
+      expect(earlyRetirementYears({ ...answers, earlyYearsPicked: '4' })).toBe(4);
+    });
   });
 
   it('adds its step to the trail, placed by the start age', () => {

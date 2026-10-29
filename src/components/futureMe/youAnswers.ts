@@ -391,6 +391,30 @@ export const isSpecialPensionOnly = (answers: YouAnswers): boolean =>
 export const maxEarlyYearsOption = (answers: YouAnswers): number =>
   Math.max(FLEXIBLE_PENSION_MAX_YEARS_EARLY, earlyRetirementRight(answers));
 
+const specialPensionStartAgeOf = (answers: YouAnswers): number | undefined => {
+  const typed = answers.specialPensionStartAge.trim();
+  if (!isSpecialPensionOn(answers) || typed === '') {
+    return undefined;
+  }
+  const { min, max } = SPECIAL_PENSION_START_AGE_LIMITS;
+  return Math.min(max, Math.max(min, parseInt(typed, 10) || 0));
+};
+
+// RPKS § 9 lg 5: no flexible old-age pension for someone already granted a special pension
+const isFlexibleBarredBySpecialPension = (answers: YouAnswers, years: number): boolean => {
+  const specialStartAge = specialPensionStartAgeOf(answers);
+  return specialStartAge !== undefined && specialStartAge <= effectivePensionAge(answers) - years;
+};
+
+export const earlyYearsOptions = (answers: YouAnswers): number[] =>
+  Array.from({ length: maxEarlyYearsOption(answers) + 1 }, (_, years) => years).filter(
+    (years) =>
+      years <= earlyRetirementRight(answers) || !isFlexibleBarredBySpecialPension(answers, years),
+  );
+
+export const isAnyFlexibleYearBarredBySpecialPension = (answers: YouAnswers): boolean =>
+  earlyYearsOptions(answers).length <= maxEarlyYearsOption(answers);
+
 export const earlyRetirementYears = (answers: YouAnswers): number => {
   const right = earlyRetirementRight(answers);
   if (isSpecialPensionOn(answers) && right === 0) {
@@ -401,20 +425,11 @@ export const earlyRetirementYears = (answers: YouAnswers): number => {
     return right;
   }
   const years = Math.max(0, parseInt(picked, 10) || 0);
-  return years > maxEarlyYearsOption(answers) ? right : years;
+  return earlyYearsOptions(answers).includes(years) ? years : right;
 };
 
 export const pensionAgeValue = (answers: YouAnswers): number =>
   effectivePensionAge(answers) - earlyRetirementYears(answers);
-
-const specialPensionStartAgeOf = (answers: YouAnswers): number | undefined => {
-  const typed = answers.specialPensionStartAge.trim();
-  if (!isSpecialPensionOn(answers) || typed === '') {
-    return undefined;
-  }
-  const { min, max } = SPECIAL_PENSION_START_AGE_LIMITS;
-  return Math.min(max, Math.max(min, parseInt(typed, 10) || 0));
-};
 
 export const fieldProblem = (answers: YouAnswers, field: YouField): FieldProblem | null => {
   const typed = answers[field].trim();

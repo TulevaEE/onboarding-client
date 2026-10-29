@@ -64,12 +64,12 @@ const earlyRetirementRules = (context: ResultContext): Rule[] => {
   ];
 };
 
-const oldAgePensionStartAge = ({
-  firstPillar,
-  rescueAllowance,
-  p1StartAge,
-}: SimulationResult): number | null => {
-  if (firstPillar?.paid === 'special') {
+const oldAgePensionStartAge = (
+  { firstPillar, rescueAllowance, p1StartAge }: SimulationResult,
+  specialStartAge: number,
+): number | null => {
+  const isOldAgePaidBeforeSpecial = p1StartAge < specialStartAge;
+  if (firstPillar?.paid === 'special' && !isOldAgePaidBeforeSpecial) {
     return firstPillar.atPa?.paid === 'oldAge' ? firstPillar.atPa.age : null;
   }
   return rescueAllowance?.until ?? p1StartAge;
@@ -77,7 +77,7 @@ const oldAgePensionStartAge = ({
 
 const childSupplementRules = (context: ResultContext): Rule[] => {
   const result = resultOf(context);
-  const age = oldAgePensionStartAge(result);
+  const age = oldAgePensionStartAge(result, specialPensionStartAge(context.plan));
   return result.childSupplement && age !== null
     ? [
         {

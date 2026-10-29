@@ -113,11 +113,12 @@ describe('specialPensionAnswers', () => {
       expect(oldAgeFor({ hazardList: 'list1', hazardYears: '10' })).toBeLessThan(700);
     });
 
-    it('lowers the old-age pension further when retiring early with a flexible pension', () => {
+    it('lowers the old-age pension further with a flexible pension that starts before the special pension', () => {
       const threeChildren = {
         kidsAdded: true,
         kidsCount: '3',
         kidsBirthYears: ['2000', '2002', '2004'],
+        specialPensionStartAge: '62',
       };
 
       expect(oldAgeFor({ ...threeChildren, earlyYearsPicked: '5' })).toBeLessThan(
