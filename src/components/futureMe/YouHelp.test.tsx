@@ -188,6 +188,17 @@ describe('Sina step help buttons', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 
+  it('offers the civil servant explanation once, beside its checkbox and not again beside the years', () => {
+    renderYouStep();
+    addEverything();
+
+    expect(
+      screen.getAllByRole('button', {
+        name: /Kes saab ametniku teenistusstaaži eest pensioni suurendust$/,
+      }),
+    ).toHaveLength(1);
+  });
+
   const optionalSectionHelp: [string, string, RegExp][] = [
     ['kids', 'Lapsed', /Kuidas lapsed pensioni mõjutavad$/],
     [

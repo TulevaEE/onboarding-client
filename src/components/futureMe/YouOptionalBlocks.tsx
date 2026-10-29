@@ -516,7 +516,6 @@ export const WorkSection = ({
             answers={answers}
             touched={touched}
             label="futureMe.you.civilYears.label"
-            help="civil"
             unit="futureMe.you.civilYears.hint"
             unitValues={civilIncreaseText}
             name="futureMe.you.civilYears.name"
