@@ -115,6 +115,46 @@ describe('nominalResultOf, special pension against the old-age pension', () => {
   });
 });
 
+describe('nominalResultOf, special pension against the old-age pension earned by the pension age', () => {
+  const you = {
+    ...initialAnswers({ birthYear: 1976, sex: null, secondPillarRate: null }),
+    pensionAgeYears: '65',
+    firstPillarMonthly: '850',
+    grossMonthly: '2000',
+    secondPillarAmount: '10000',
+    workAdded: true,
+    hasSpecialPension: true,
+    specialPensionStartAge: '55',
+    hazardList: 'list1' as const,
+    hazardYears: '10',
+  };
+  const context: ResultContext = {
+    you,
+    plan: toStepPlanInput(you),
+    age60: initialAge60(),
+    age65: { ...initialAge65(), work: 'yes', workUntil: '65' },
+    age66: initialAge66(),
+    specialPension: { ...initialSpecialPension(), monthly: '1000' },
+    expenses: initialExpenses(),
+  };
+  const result = resultOf(context);
+  const atPa = result.firstPillar?.atPa;
+  const factorAtPensionAge = nominalFactorAt(
+    result.rows.find((row) => row.age === atPa?.age)?.year ?? 0,
+  );
+
+  it('compares the two in the prices of the pension age year, after retiring early', () => {
+    const nominal = nominalResultOf(result);
+
+    expect(result.pensionStartAge).toBeLessThan(atPa?.age ?? 0);
+    expect(nominal.firstPillar?.special).toBeCloseTo(
+      (result.firstPillar?.special ?? 0) * factorAtPensionAge,
+    );
+    expect(nominal.firstPillar?.atPa?.oldAge).toBeCloseTo((atPa?.oldAge ?? 0) * factorAtPensionAge);
+    expect(nominal.firstPillar?.atPa?.paid).toBe(atPa?.paid);
+  });
+});
+
 describe('nominalReturnsOf', () => {
   it('adds the price growth to the second pillar fund’s return when only that pillar exists', () => {
     expect(nominalReturnsOf(contextWith({ secondPillarFund: 'mix' }))).toEqual({

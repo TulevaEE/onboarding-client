@@ -53,7 +53,7 @@ const nominalFirstPillarOf = ({ firstPillar, rows, pensionStartAge, p1StartAge }
   const { atPa } = firstPillar;
   return {
     ...firstPillar,
-    special: firstPillar.special * factorAt(pensionStartAge),
+    special: firstPillar.special * factorAt(atPa?.age ?? pensionStartAge),
     oldAge: firstPillar.oldAge * factorAt(p1StartAge),
     atPa: atPa && { ...atPa, oldAge: atPa.oldAge * factorAt(atPa.age) },
   };
