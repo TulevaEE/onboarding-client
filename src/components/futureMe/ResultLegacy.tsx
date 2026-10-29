@@ -31,6 +31,16 @@ const SURPLUS_CHOICES = [
 
 type SurplusChoice = (typeof SURPLUS_CHOICES)[number]['id'];
 
+const noteOf = (choice: SurplusChoice | null, legacy: Surplus): TranslationKey => {
+  if (choice === null) {
+    return 'futureMe.result.legacy.note.none';
+  }
+  if (choice === 'spend' && legacy.extra === 0) {
+    return 'futureMe.result.legacy.note.spendAtLimit';
+  }
+  return `futureMe.result.legacy.note.${choice}` as TranslationKey;
+};
+
 const SurplusNote = ({
   choice,
   legacy,
@@ -41,18 +51,15 @@ const SurplusNote = ({
   onTrySpending: () => void;
 }) => (
   <div className="legacy-note" aria-live="polite">
-    {choice === null ? (
-      <FormattedMessage id="futureMe.result.legacy.note.none" />
-    ) : (
-      <FormattedMessage
-        id={`futureMe.result.legacy.note.${choice}` as TranslationKey}
-        values={{
-          left: euro(legacy.left),
-          sustainable: euro(legacy.sustainable),
-          extra: euro(legacy.extra),
-        }}
-      />
-    )}
+    <FormattedMessage
+      id={noteOf(choice, legacy)}
+      values={{
+        left: euro(legacy.left),
+        sustainable: euro(legacy.sustainable),
+        costs: euro(legacy.costs),
+        extra: euro(legacy.extra),
+      }}
+    />
     {choice === 'spend' && legacy.extra > 0 && (
       <>
         {' '}
@@ -79,8 +86,7 @@ const SurplusCard = ({
   onChoose: (choice: SurplusChoice) => void;
 }) => {
   const onChange = useDecisionChanges();
-  const canSpendMore = legacy.extra > 0;
-  const shownChoice = choice === 'spend' && !canSpendMore ? null : choice;
+  const isSpendingOffered = legacy.extra > 0 || choice === 'spend';
   return (
     <>
       <h3 className="h5">
@@ -98,14 +104,14 @@ const SurplusCard = ({
           <FormattedMessage id="futureMe.result.legacy.surplus.legend" />
         </legend>
         <div className="payout-choices legacy-choices">
-          {SURPLUS_CHOICES.filter(({ id }) => id !== 'spend' || canSpendMore).map(
+          {SURPLUS_CHOICES.filter(({ id }) => id !== 'spend' || isSpendingOffered).map(
             ({ id, emoji }) => (
               <ChoiceCard
                 key={id}
                 idPrefix="future-me-legacy"
                 name="future-me-legacy"
                 value={id}
-                checked={shownChoice === id}
+                checked={choice === id}
                 emoji={emoji}
                 title={
                   <FormattedMessage id={`futureMe.result.legacy.choice.${id}` as TranslationKey} />
@@ -117,7 +123,7 @@ const SurplusCard = ({
         </div>
       </fieldset>
       <SurplusNote
-        choice={shownChoice}
+        choice={choice}
         legacy={legacy}
         onTrySpending={() =>
           onChange({ expenses: withOwnCostsRaisedBy(context.expenses, legacy.extra) })

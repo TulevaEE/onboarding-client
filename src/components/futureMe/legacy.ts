@@ -17,7 +17,14 @@ const NOTICEABLE_SHORTFALL = 0.5;
 
 export type Legacy =
   | { kind: 'shortfall'; isSecondPillarLumpSum: boolean; secondPillarReturn: number }
-  | { kind: 'surplus'; medianAge: number; left: number; sustainable: number; extra: number };
+  | {
+      kind: 'surplus';
+      medianAge: number;
+      left: number;
+      sustainable: number;
+      costs: number;
+      extra: number;
+    };
 
 const medianAgeOf = ({ birthYear, sex }: PensionInput): number => {
   const currentAge = CURRENT_YEAR - birthYear;
@@ -43,12 +50,14 @@ export const legacyOf = (context: ResultContext, result: Result): Legacy => {
       secondPillarReturn: input.realReturn,
     };
   }
+  const costs = needMonthly(context.expenses);
   return {
     kind: 'surplus',
     medianAge,
     left,
     sustainable: result.sustainable,
-    extra: Math.max(0, result.sustainable - needMonthly(context.expenses)),
+    costs,
+    extra: Math.max(0, result.sustainable - costs),
   };
 };
 

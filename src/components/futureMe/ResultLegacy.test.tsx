@@ -130,6 +130,22 @@ describe('Result legacy card', () => {
         new RegExp(`Sinu kulud \\(${digits.split('').join('\\s?')}\\s€\\skuus\\)`),
       );
     });
+
+    it('keeps spending more chosen after trying it, and says the plan carries no more than the new costs', () => {
+      userEvent.click(screen.getByRole('radio', { name: 'Kulutan ise rohkem' }));
+      const tryButton = screen.getByRole('button', { name: /^Proovi [\d\s]+€\skuus$/ });
+      const digits = (tryButton.textContent ?? '').replace(/\D/g, '');
+
+      userEvent.click(tryButton);
+
+      expect(screen.getByRole('radio', { name: 'Kulutan ise rohkem' })).toBeChecked();
+      expect(
+        screen.getByText(
+          /^Sinu kulud on nüüd [\d\s]+ € kuus\. Rohkem plaan elu lõpuni ei kanna\.$/,
+        ),
+      ).toHaveTextContent(new RegExp(`nüüd ${digits.split('').join('\\s?')}\\s€`));
+      expect(screen.queryByText('Vali üks variant.')).not.toBeInTheDocument();
+    });
   });
 
   describe("when money is left but the plan cannot carry today's costs", () => {

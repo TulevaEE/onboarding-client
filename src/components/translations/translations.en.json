@@ -3043,6 +3043,7 @@
   "futureMe.result.legacy.note.donate": "{left} võiks toetada sulle olulist eesmärki. Annetuse saad testamendis määrata.",
   "futureMe.result.legacy.note.spend": "Elu lõpuni kannab plaan {sustainable} kuus. See on {extra} rohkem kui praegu.",
   "futureMe.result.legacy.note.care": "Puhver katab ootamatud kulud ja hooldekodu, nii ei pea lapsed maksma.",
+  "futureMe.result.legacy.note.spendAtLimit": "Sinu kulud on nüüd {costs} kuus. Rohkem plaan elu lõpuni ei kanna.",
   "futureMe.result.legacy.trySpend": "Proovi {amount} kuus",
   "futureMe.result.legacy.shortfall.title": "Raha üle ei jää. Mida saaks muuta?",
   "futureMe.result.legacy.tip.secondPillar.title": "Ära võta II sammast korraga välja.",
