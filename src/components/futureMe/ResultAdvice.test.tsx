@@ -88,9 +88,6 @@ const deferStatePensionFiveYears = () => {
 
 const openResult = () => goTo(/^Tulemus/);
 
-const resultHeading = () =>
-  screen.queryByRole('heading', { level: 2, name: 'Kas raha jätkub elu lõpuni?' });
-
 const warning = () =>
   screen.queryByRole('status', {
     name: 'Hoiatus: sinu valitud plaan ei kanna kulusid elu lõpuni',
@@ -140,7 +137,9 @@ describe('Result advice', () => {
 
     userEvent.click(within(warning() as HTMLElement).getByRole('button', { name: /: vali .+$/ }));
 
-    expect(resultHeading()).not.toBeInTheDocument();
+    expect(
+      screen.getByRole('group', { name: /^II\ssamba väljamakse viis pensionieas$/ }),
+    ).toBeInTheDocument();
   });
 
   it('changes the state pension to the shorter deferral that carries the costs', () => {
@@ -156,6 +155,12 @@ describe('Result advice', () => {
     );
 
     expect(warning()).not.toBeInTheDocument();
+    goTo(/^65\sa,/);
+    expect(
+      within(screen.getByRole('group', { name: 'Mitu aastat lükkad edasi?' })).getByRole('radio', {
+        name: /^68-aastaselt/,
+      }),
+    ).toBeChecked();
   });
 
   it('opens the costs step when no payout carries the costs', () => {
