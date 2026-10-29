@@ -35,6 +35,35 @@ describe('kidsInputOf', () => {
     expect(kids).toMatchObject({ b1991: 1, b2012: 0, b2021: 0, bUnknown: 0 });
   });
 
+  it('counts a child raised 8 years by the retirement the saver plans, not the earliest one the children allow', () => {
+    const kids = kidsInputOf(
+      withKids(['1990', '1992', '1994', '2037'], { earlyYearsPicked: '0' }),
+      october2026,
+    );
+
+    expect(kids).toMatchObject({ b1991: 1, b2012: 2, b2021: 1 });
+  });
+
+  describe('as a rescuer', () => {
+    const rescuerWith = (birthYears: string[], rescueBasis: YouAnswers['rescueBasis']) =>
+      withKids(birthYears, { workAdded: true, hasRescue: true, rescueYears: '20', rescueBasis });
+
+    it('counts a child raised 8 years by the pension age when only the rescue allowance is taken until then', () => {
+      const kids = kidsInputOf(
+        rescuerWith(['1990', '1992', '1994', '2037'], 'toetus'),
+        october2026,
+      );
+
+      expect(kids).toMatchObject({ b2021: 1 });
+    });
+
+    it('counts a child raised 8 years by the time the pension for the children follows the rescue allowance', () => {
+      const kids = kidsInputOf(rescuerWith(['1990', '1992', '2034'], 'mix'), october2026);
+
+      expect(kids).toMatchObject({ b1991: 1, b2012: 1, b2021: 1 });
+    });
+  });
+
   it('puts a 2021 child born before September among those born 2013 to August 2021', () => {
     const kids = kidsInputOf(
       withKids(['2021', '2021'], { kidsBirthMonths: ['8', ''] }),

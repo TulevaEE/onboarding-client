@@ -1,9 +1,13 @@
 import { KidsInput } from './engine/pension';
 import {
+  birthYearOrFallback,
   childRows,
   countedKids,
+  effectivePensionAge,
   kidsInForecastOf,
   maxChildBirthYear,
+  pensionAgeValue,
+  rescueBasisOf,
   validChildBirthYear,
   YouAnswers,
 } from './youAnswers';
@@ -103,13 +107,23 @@ const childAt = (
     : { group, iiMonths: iiMonthsOf(answers.kidsIIMonths[index] ?? '') };
 };
 
+const oldAgePensionYearOf = (answers: YouAnswers): number => {
+  const birthYear = birthYearOrFallback(answers);
+  const basis = rescueBasisOf(answers);
+  if (basis === 'toetus') {
+    return birthYear + effectivePensionAge(answers);
+  }
+  const retirementYear = birthYear + pensionAgeValue(answers);
+  return basis === 'mix' ? Math.max(retirementYear, countedKids(answers).lateYear) : retirementYear;
+};
+
 export const kidsInputOf = (answers: YouAnswers, now: Date = new Date()): KidsInput | undefined => {
   if (!answers.kidsAdded) {
     return undefined;
   }
-  const { lateYear } = countedKids(answers);
+  const pensionYear = oldAgePensionYearOf(answers);
   const children = Array.from({ length: childRows(answers) }, (_, index) =>
-    childAt(answers, index, lateYear, now),
+    childAt(answers, index, pensionYear, now),
   ).filter((child): child is Child => child !== null);
   const countOf = (group: Group) => children.filter((child) => child.group === group).length;
   const under3 = children.flatMap(({ under3: child }) => (child ? [child] : []));
