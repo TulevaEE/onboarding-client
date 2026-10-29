@@ -260,3 +260,27 @@ describe('child supplement rule', () => {
     expect(idsOf(contextWith())).not.toContain('childSupplement');
   });
 });
+
+describe('civil service increase', () => {
+  const civilServant = (civilYears: string, changes = {}) =>
+    contextWith({ workAdded: true, isCivilServant: true, civilYears, ...changes });
+
+  it('starts with the old-age pension and carries the increase', () => {
+    expect(rulesOf(civilServant('20'))).toContainEqual({
+      id: 'civilServiceIncrease',
+      age: 65,
+      year: 2045,
+      increase: 0.2,
+    });
+  });
+
+  it('is not a rule without an increase', () => {
+    expect(idsOf(civilServant('9'))).not.toContain('civilServiceIncrease');
+  });
+
+  it('is not a rule when the rescue increase applies instead', () => {
+    expect(
+      idsOf(civilServant('20', { birthYear: '1970', hasRescue: true, rescueYears: '12' })),
+    ).not.toContain('civilServiceIncrease');
+  });
+});

@@ -123,6 +123,11 @@ describe('Result step: rules that follow from the answers', () => {
 
   it.each([
     {
+      rule: /^Ametniku staaži suurendus/,
+      context: contextWith({ workAdded: true, isCivilServant: true, civilYears: '20' }),
+      choice: /\+20%/,
+    },
+    {
       rule: /^Paindlik pension varem/,
       context: contextWith({ earlyYearsPicked: '3' }),
       choice: /3\sa varem, pension [\d,]+% väiksem/,

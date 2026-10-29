@@ -916,6 +916,16 @@ describe('FutureMe', () => {
       ).toHaveAttribute('href', expect.stringContaining('sotsiaalkindlustusamet.ee'));
     });
 
+    it('tells a civil servant to leave the civil service out of the calculator forecast, as Elukaar asks it with the special cases', () => {
+      renderFutureMe();
+
+      expect(
+        screen.getByText(
+          /Kui olid ametnik enne 2013\. a, jäta seal avaliku teenistuse staaž lisamata: Elukaar küsib selle erijuhtude juures/,
+        ),
+      ).toBeVisible();
+    });
+
     it('opens the calculator in the same tab, as most savers are on a phone', () => {
       renderFutureMe();
 
@@ -1286,6 +1296,8 @@ describe('FutureMe', () => {
       screen.getByRole('spinbutton', { name: /Mitu aastat töötasid päästeteenistuses/ });
     const specialPensionStartField = () =>
       screen.getByRole('spinbutton', { name: /Mis vanusest eripension algab/ });
+    const civilYearsField = () =>
+      screen.getByRole('spinbutton', { name: /Mitu aastat oli sul avaliku teenistuse staaži/ });
 
     const addKids = (birthYears: string[]) => {
       userEvent.click(addKidsButton());
@@ -1780,14 +1792,103 @@ describe('FutureMe', () => {
         ).toBeVisible();
       });
 
-      it('explain the civil servant and the other case, which Elukaar does not calculate', () => {
+      it('ask the civil service years and say how much they raise the state pension', () => {
         renderFutureMe();
         addSpecialCases();
 
         userEvent.click(specialCase(/Olin ametnik/));
+        typeInto(civilYearsField(), '20');
+
+        expect(screen.getByText(/Riiklik pension suureneb 20%/)).toBeVisible();
+        expect(
+          screen.queryByText(/Lülita Sotsiaalkindlustusameti kalkulaatoris sisse/),
+        ).not.toBeInTheDocument();
+      });
+
+      it('say that fewer than ten civil service years do not raise the state pension', () => {
+        renderFutureMe();
+        addSpecialCases();
+
+        userEvent.click(specialCase(/Olin ametnik/));
+        typeInto(civilYearsField(), '9');
+
+        expect(
+          screen.getByText(/Alla 10 aasta staaž riiklikku pensioni ei suurenda/),
+        ).toBeVisible();
+      });
+
+      it('say that a saver who also worked in the rescue service gets the rescue increase instead', () => {
+        renderFutureMe();
+        typeBirthYear('1970');
+        addSpecialCases();
+
+        userEvent.click(specialCase(/Olin ametnik/));
+        userEvent.click(specialCase(/Töötasin päästeteenistuses/));
+        typeInto(rescueYearsField(), '12');
+        typeInto(civilYearsField(), '20');
+
+        expect(screen.getByText(/arvestame päästeteenistuse suurendust/)).toBeVisible();
+      });
+
+      it('say that the state pension does not rise when the rescue service years are too few for the rescue increase', () => {
+        renderFutureMe();
+        typeBirthYear('1970');
+        addSpecialCases();
+
+        userEvent.click(specialCase(/Olin ametnik/));
+        userEvent.click(specialCase(/Töötasin päästeteenistuses/));
+        typeInto(rescueYearsField(), '5');
+        typeInto(civilYearsField(), '20');
+
+        expect(screen.getByText(/seega riiklik pension ei suurene/)).toBeVisible();
+        expect(screen.queryByText(/arvestame päästeteenistuse suurendust/)).not.toBeInTheDocument();
+      });
+
+      it('say that the state pension does not rise when the rescue increase has ended by the pension year', () => {
+        renderFutureMe();
+        typeBirthYear('1980');
+        addSpecialCases();
+
+        userEvent.click(specialCase(/Olin ametnik/));
+        userEvent.click(specialCase(/Töötasin päästeteenistuses/));
+        typeInto(rescueYearsField(), '12');
+        typeInto(civilYearsField(), '20');
+
+        expect(screen.getByText(/seega riiklik pension ei suurene/)).toBeVisible();
+        expect(screen.queryByText(/arvestame päästeteenistuse suurendust/)).not.toBeInTheDocument();
+      });
+
+      it('keep the civil service increase while the rescue service years are none', () => {
+        renderFutureMe();
+        addSpecialCases();
+
+        userEvent.click(specialCase(/Olin ametnik/));
+        userEvent.click(specialCase(/Töötasin päästeteenistuses/));
+        typeInto(rescueYearsField(), '0');
+        typeInto(civilYearsField(), '20');
+
+        expect(screen.getByText(/Riiklik pension suureneb 20%/)).toBeVisible();
+      });
+
+      it('limit the civil service years to 0–50 and name the field', () => {
+        renderFutureMe();
+        addSpecialCases();
+        userEvent.click(specialCase(/Olin ametnik/));
+
+        typeInto(civilYearsField(), '60');
+        userEvent.tab();
+
+        expect(
+          screen.getByText('Avaliku teenistuse aastate väljale sisesta number vahemikus 0–50.'),
+        ).toBeVisible();
+      });
+
+      it('explain the other case, which Elukaar does not calculate', () => {
+        renderFutureMe();
+        addSpecialCases();
+
         userEvent.click(specialCase(/Muu erijuht/));
 
-        expect(screen.getByText(/Avaliku teenistuse staaži suurendus/)).toBeVisible();
         expect(screen.getByText(/Neid erijuhte Elukaar ei arvuta/)).toBeVisible();
       });
 

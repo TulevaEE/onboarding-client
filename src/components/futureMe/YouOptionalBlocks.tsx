@@ -14,6 +14,7 @@ import {
   isKidsRightAvailableToSelf,
   KidsUser,
   maxChildBirthYear,
+  serviceIncreaseAtPension,
   YouAnswers,
 } from './youAnswers';
 import { isChildMonthAsked } from './kidsInput';
@@ -55,6 +56,17 @@ export const kidsOptional = (answers: YouAnswers, onAdd: () => void, onRemove: (
 
 export const workOptional = (answers: YouAnswers, onAdd: () => void, onRemove: () => void) =>
   optionalOf('work', answers.workAdded, onAdd, onRemove);
+
+const civilIncreaseOf = (answers: YouAnswers) => {
+  const { source, increase } = serviceIncreaseAtPension(answers);
+  if (source === 'rescue') {
+    return { state: increase > 0 ? 'rescue' : 'rescueNone', percent: 0 };
+  }
+  if (answers.civilYears.trim() === '') {
+    return { state: 'empty', percent: 0 };
+  }
+  return { state: increase > 0 ? 'raises' : 'none', percent: Math.round(increase * 100) };
+};
 
 const KIDS_USERS: KidsUser[] = ['me', 'other'];
 const NO_DISABLED_CHILD = 'no';
@@ -374,6 +386,7 @@ export const WorkSection = ({
   const hasHazard = hazardList !== 'no';
   const hazardYears = parseFloat(answers.hazardYears);
   const hazardNeeded = hasHazard ? HAZARD_YEARS_NEEDED[hazardList] : 0;
+  const civilIncreaseText = civilIncreaseOf(answers);
   const isChecked: Record<SpecialCaseId, boolean> = {
     'future-me-case-hazard': hasHazard,
     'future-me-case-special-pension': answers.hasSpecialPension,
@@ -433,11 +446,6 @@ export const WorkSection = ({
           </div>
         ))}
       </div>
-      {answers.isCivilServant && (
-        <p className="you-note">
-          <FormattedMessage id="futureMe.you.work.civilNote" />
-        </p>
-      )}
       {answers.hasOtherSpecialCase && (
         <p className="you-note">
           <FormattedMessage
@@ -496,6 +504,21 @@ export const WorkSection = ({
             help="rescue"
             unit="futureMe.you.rescueYears.hint"
             name="futureMe.you.rescueYears.name"
+            step={1}
+            inputMode="numeric"
+            onChange={onChange}
+            onBlur={onBlur}
+          />
+        )}
+        {answers.isCivilServant && (
+          <AmountField
+            field="civilYears"
+            answers={answers}
+            touched={touched}
+            label="futureMe.you.civilYears.label"
+            unit="futureMe.you.civilYears.hint"
+            unitValues={civilIncreaseText}
+            name="futureMe.you.civilYears.name"
             step={1}
             inputMode="numeric"
             onChange={onChange}

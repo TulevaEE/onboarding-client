@@ -394,3 +394,52 @@ describe('resultAnswers', () => {
     });
   });
 });
+
+describe('civil service years in the result', () => {
+  const civilServant = (civilYears: string, changes = {}) =>
+    contextWith({ workAdded: true, isCivilServant: true, civilYears, ...changes });
+  const statePensionAtStart = (context: ResultContext): number => {
+    const result = resultOf(context);
+    return result.rows.find(({ age }) => age === result.pensionStartAge)?.i1g ?? 0;
+  };
+
+  it('give the engine the civil service years once the saver ticks the civil servant', () => {
+    expect(resultInputOf(civilServant('20')).civilYears).toBe(20);
+    expect(resultInputOf(civilServant('20', { isCivilServant: false })).civilYears).toBe(0);
+    expect(resultInputOf(civilServant('20', { workAdded: false })).civilYears).toBe(0);
+  });
+
+  it('raise the state pension by the civil service increase', () => {
+    expect(statePensionAtStart(civilServant('20'))).toBeCloseTo(
+      statePensionAtStart(civilServant('0')) * 1.2,
+      6,
+    );
+  });
+
+  describe('with rescue service years', () => {
+    const retiringBy2042 = { birthYear: '1970' };
+    const alsoRescuer = (rescueYears: string, changes = {}) =>
+      civilServant('20', { hasRescue: true, rescueYears, ...changes });
+
+    it('raise the state pension by the rescue increase alone while it applies', () => {
+      expect(statePensionAtStart(alsoRescuer('12', retiringBy2042))).toBeCloseTo(
+        statePensionAtStart(civilServant('0', retiringBy2042)) * 1.1,
+        6,
+      );
+    });
+
+    it('leave the state pension unraised when the rescue years are too few for the rescue increase', () => {
+      expect(statePensionAtStart(alsoRescuer('5', retiringBy2042))).toBeCloseTo(
+        statePensionAtStart(civilServant('0', retiringBy2042)),
+        6,
+      );
+    });
+
+    it('leave the state pension unraised when the rescue increase has ended by the pension year', () => {
+      expect(statePensionAtStart(alsoRescuer('12'))).toBeCloseTo(
+        statePensionAtStart(civilServant('0')),
+        6,
+      );
+    });
+  });
+});
