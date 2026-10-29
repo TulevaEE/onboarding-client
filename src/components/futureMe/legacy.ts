@@ -1,7 +1,13 @@
 import { DecisionChanges } from './decisions';
 import { needMonthly } from './expensesAnswers';
 import lifeTableData from './engine/lifeTable.json';
-import { CURRENT_YEAR, LifeTable, PensionInput, survival } from './engine/pension';
+import {
+  CURRENT_YEAR,
+  DEPOSIT_REAL_RETURN,
+  LifeTable,
+  PensionInput,
+  survival,
+} from './engine/pension';
 import {
   MAX_AGE_SHOWN,
   Result,
@@ -14,7 +20,6 @@ const lifeTable: LifeTable = lifeTableData;
 const MEDIAN_SURVIVAL = 0.5;
 const MIN_LEFT_OVER = 1000;
 const NOTICEABLE_SHORTFALL = 0.5;
-const DEPOSIT_REAL_RETURN = -0.01;
 
 export type Legacy =
   | { kind: 'shortfall'; isGrowingSecondPillarSuggested: boolean; secondPillarReturn: number }

@@ -232,6 +232,17 @@ describe('Result legacy card', () => {
       expect(screen.queryByText('Ära võta II sammast korraga välja.')).not.toBeInTheDocument();
     });
 
+    it('compares the fund with the deposit’s return the calculation uses', () => {
+      startWith('300', '10000');
+      chooseComfortableCosts();
+      takeSecondPillarAsLumpSum();
+      openResult();
+
+      expect(screen.getByText(/^Väljavõetud raha seisab hoiusel/)).toHaveTextContent(
+        /arvutuses −1%\saastas pärast inflatsiooni/,
+      );
+    });
+
     it('moves the focus to the card heading after leaving the second pillar growing, as the advice is gone', () => {
       startWith('300', '10000');
       chooseComfortableCosts();
