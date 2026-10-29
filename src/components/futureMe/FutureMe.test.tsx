@@ -1522,6 +1522,16 @@ describe('FutureMe', () => {
         ).not.toBeInTheDocument();
       });
 
+      it('let the other parent get the supplement', () => {
+        renderFutureMe();
+        addKids(['1990']);
+        const supplementUser = screen.getByRole('combobox', { name: /Kes saab pensionilisa/ });
+
+        userEvent.selectOptions(supplementUser, 'teine vanem');
+
+        expect(supplementUser).toHaveDisplayValue('teine vanem');
+      });
+
       it('ask the birth month of every child, not known at first', () => {
         renderFutureMe();
         addKids(['1990', '2025']);
