@@ -1,7 +1,6 @@
 import { Contribution, PendingOnboarding, Role, User } from '../common/apiModels';
 import { isChildRole } from '../common/utils';
 import { dayInTallinn } from '../common/dateFormatter';
-import { EligibleChild } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 import { CURRENT_YEAR } from './engine/pension';
 
 const PERSONAL_CODE = /^[1-8]\d{10}$/;
@@ -10,6 +9,10 @@ const FIRST_BIRTH_YEAR_WITH_PARENTAL_PAYMENT = 2022;
 const YEARS_OF_PARENTAL_PAYMENT = 3;
 export const PARENTAL_PAYMENT_MONTHS = 36;
 const CENTURY_BY_FIRST_DIGIT = [1800, 1800, 1900, 1900, 2000, 2000, 2100, 2100];
+
+export interface TulevaChild {
+  personalCode: string;
+}
 
 export interface KidsPrefill {
   birthYears: number[];
@@ -118,7 +121,7 @@ export const tulevaChildrenOf = (
   user: User,
   roles: Role[] = [],
   pendingOnboardings: PendingOnboarding[] = [],
-): Pick<EligibleChild, 'personalCode'>[] => {
+): TulevaChild[] => {
   const codes = [...roles, ...pendingOnboardings]
     .filter((role) => isChildRole(role, user))
     .map(({ code }) => code);
@@ -126,7 +129,7 @@ export const tulevaChildrenOf = (
 };
 
 export const deriveKidsPrefill = (
-  children: Pick<EligibleChild, 'personalCode'>[] | undefined,
+  children: TulevaChild[] | undefined,
   contributions: Contribution[] | undefined,
   today: Date = new Date(),
 ): KidsPrefill | null => {

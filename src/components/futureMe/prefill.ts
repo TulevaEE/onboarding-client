@@ -1,12 +1,11 @@
 import { Contribution, SecondPillarContribution, SourceFund, User } from '../common/apiModels';
-import { EligibleChild } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 import { CURRENT_YEAR, Sex } from './engine/pension';
 import { deriveKidsPrefill } from './kidsPrefill';
 import {
   contributesMonthlyToThirdPillar,
   latestThirdPillarMonthlyAmount,
 } from '../millionaire/prefill';
-import type { KidsPrefill } from './kidsPrefill';
+import type { KidsPrefill, TulevaChild } from './kidsPrefill';
 import type { ThirdPillarJoined } from './youAnswers';
 
 const ADULT_AGE = 18;
@@ -43,7 +42,7 @@ export interface YouPrefill {
 export interface PensionData {
   contributions?: Contribution[];
   sourceFunds?: SourceFund[];
-  children?: Pick<EligibleChild, 'personalCode'>[];
+  children?: TulevaChild[];
 }
 
 export const parseBirthYear = (typed: string): number | null => {
