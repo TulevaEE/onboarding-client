@@ -98,8 +98,14 @@ const fundPensionDecision = (context: ResultContext): Decision | false => {
   const firstAge = startAges.length > 0 ? Math.min(...startAges) : retirementAge(plan) + 1;
   return decisionAt(context, 'fundPension', firstAge, '', [], {
     starts: startingPillarsOf(secondPillarAge, thirdPillarAge),
-    ...(secondPillarAge !== undefined && { secondPillarAge }),
-    ...(thirdPillarAge !== undefined && { thirdPillarAge }),
+    ...(secondPillarAge !== undefined && {
+      secondPillarAge,
+      secondPillarContract: age66.secondPillarContract,
+    }),
+    ...(thirdPillarAge !== undefined && {
+      thirdPillarAge,
+      thirdPillarContract: age66.thirdPillarContract,
+    }),
   });
 };
 

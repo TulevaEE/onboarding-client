@@ -182,6 +182,18 @@ describe('decisions', () => {
       });
     });
 
+    it('names the contract of each pillar that pays a fund pension', () => {
+      const bothStart = contextWith(withThirdPillar, {
+        age65: { ...initialAge65(), secondPillar: 'fund' },
+        age66: { ...initialAge66(), thirdPillarFrom: '70', secondPillarContract: 'once' },
+      });
+
+      expect(fundPensionOf(bothStart)?.summary).toMatchObject({
+        secondPillarContract: 'once',
+        thirdPillarContract: 'yearly',
+      });
+    });
+
     it('starts the fund pension once the work kept on after the pension age ends', () => {
       const workingUntil68 = contextWith(
         {},

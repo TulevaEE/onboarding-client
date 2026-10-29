@@ -209,12 +209,10 @@ describe('Result step: quick edit of the other decisions', () => {
       expect(titles[titles.length - 1]).toBe('Fondipension');
     });
 
-    it('says the fund pension has not been started yet', () => {
+    it('says the saver keeps growing the money while no fund pension is started', () => {
       openResultStep();
 
-      expect(decisionRow(/^Fondipension$/)).toHaveTextContent(
-        'Sinu valik: Fondipensioni algust pole valitud',
-      );
+      expect(decisionRow(/^Fondipension$/)).toHaveTextContent('Sinu valik: Kasvatan edasi');
     });
 
     it('opens the start age and contract under the row without the step heading', () => {
@@ -240,8 +238,24 @@ describe('Result step: quick edit of the other decisions', () => {
         '70',
       );
 
-      expect(row).toHaveTextContent('Sinu valik: II sambast alates 70-⁠aastaselt');
+      expect(row).toHaveTextContent(
+        'Sinu valik: II sambast alates 70-⁠aastaselt, uus leping igal aastal',
+      );
       expect(row).toHaveTextContent(/70\sa/);
+    });
+
+    it('shows the contract picked under the row', () => {
+      openResultStep();
+      const row = decisionRow(/^Fondipension$/);
+      userEvent.click(toggleIn(row));
+      userEvent.selectOptions(
+        within(row).getByRole('combobox', { name: /Mis vanusest hakkad II\ssambast/ }),
+        '70',
+      );
+
+      userEvent.click(within(row).getByRole('radio', { name: /^Üks leping/ }));
+
+      expect(row).toHaveTextContent('Sinu valik: II sambast alates 70-⁠aastaselt, üks leping');
     });
 
     it('names the pillar whose fund pension was chosen at the pension age next to the one picked here', () => {
@@ -258,7 +272,7 @@ describe('Result step: quick edit of the other decisions', () => {
       );
 
       expect(row).toHaveTextContent(
-        'Sinu valik: II sambast alates 65-⁠aastaselt, III sambast alates 70-⁠aastaselt',
+        'Sinu valik: II sambast alates 65-⁠aastaselt, uus leping igal aastal; III sambast alates 70-⁠aastaselt, uus leping igal aastal',
       );
       expect(row).toHaveTextContent(/65\sa/);
     });
