@@ -98,3 +98,10 @@ To see the page with test data, open it with `?dev` and pick mock profiles
 - How `lifeTable.json` and `expenses.json` are generated again: the generators are outside this repository.
 - The pension ages for 2027–2029 come from the RPKS § 7 formula; they have not been checked against the minister's
   regulation yet.
+
+## Possible later work
+
+- **Splitting rights between parents.** Parents can also split the up to 5 years of early retirement they get for
+  their children. For now the calculator gives the early retirement to one parent, and the "?" help text explains the
+  split; the split itself may be calculated later. The same question may affect the rescue worker's benefit and some
+  special pensions; this has not been checked against the law yet.
