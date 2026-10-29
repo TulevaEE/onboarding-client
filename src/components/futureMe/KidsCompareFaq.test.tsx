@@ -60,8 +60,8 @@ describe('rescue allowance or the pension for the children question', () => {
 
     const mix = within(rowNamed(/^Mõlemad järjest/));
     expect(mix.getByText(/^60\sa$/)).toBeInTheDocument();
-    expect(mix.getByText(/^60–\u206063\sa ootetoetus [\d\s]+€\skuus$/)).toBeInTheDocument();
-    expect(mix.getByText(/^64\sa pension [\d\s]+€\skuus$/)).toBeInTheDocument();
+    expect(mix.getByText(/^60–\u206063\sa ootetoetus 791\s€\skuus$/)).toBeInTheDocument();
+    expect(mix.getByText(/^64\sa pension 791\s€\skuus$/)).toBeInTheDocument();
   });
 
   it('is not asked without both rights', () => {

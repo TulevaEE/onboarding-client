@@ -17,6 +17,15 @@ const withRescue = (changes = {}) =>
     ...changes,
   });
 
+const amountsOf = (rows: ReturnType<typeof rescueComparisonOf>['rows']) =>
+  rows.map(({ basis, toetus, pension, total, atPensionAge }) => ({
+    basis,
+    toetus: toetus && Math.round(toetus.monthly),
+    pension: pension && Math.round(pension.monthly),
+    total: Math.round(total),
+    atPensionAge: Math.round(atPensionAge),
+  }));
+
 describe('rescue allowance or the pension for the children', () => {
   it('is compared only when both rights are the saver’s', () => {
     expect(isRescueComparisonShown(withRescue())).toBe(true);
@@ -39,6 +48,14 @@ describe('rescue allowance or the pension for the children', () => {
       { basis: 'mix', workUntil: 60, toetus: [60, 63], pension: [64, 64] },
       { basis: 'pension', workUntil: 64, toetus: null, pension: [64, 64] },
       { basis: 'toetus', workUntil: 60, toetus: [60, 64], pension: null },
+    ]);
+  });
+
+  it('pays each way a month and in total before the pension age, and the pension at it', () => {
+    expect(amountsOf(rescueComparisonOf(withRescue()).rows)).toEqual([
+      { basis: 'mix', toetus: 791, pension: 791, total: 47449, atPensionAge: 791 },
+      { basis: 'pension', toetus: null, pension: 692, total: 8302, atPensionAge: 692 },
+      { basis: 'toetus', toetus: 791, pension: null, total: 47449, atPensionAge: 791 },
     ]);
   });
 
