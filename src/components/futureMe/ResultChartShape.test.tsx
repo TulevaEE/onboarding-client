@@ -184,6 +184,19 @@ describe('ResultChart drawing', () => {
     });
   });
 
+  describe('with a layer hidden', () => {
+    it('counts the cover from the layers that are shown and names the hidden one', () => {
+      renderChart();
+      userEvent.click(screen.getByRole('button', { name: SECOND_PILLAR }));
+
+      act(() => lastProps().options.onHover({ x: 0 }, [{ index: 0 }]));
+
+      const tip = within(screen.getByTestId('chart-tip'));
+      expect(tip.getByText('Puudu 91 €')).toBeInTheDocument();
+      expect(tip.getByText('peidetud kihita: II sammas')).toBeInTheDocument();
+    });
+  });
+
   describe('in future prices', () => {
     const turnOnFuturePrices = () =>
       userEvent.click(screen.getByRole('button', { name: 'Tuleviku hinnad' }));
@@ -204,6 +217,19 @@ describe('ResultChart drawing', () => {
 
       expect(second.pointRadius[rowPointOf(second, 68)]).toBe(0);
       expect(layer(STATE_PENSION).pointRadius[rowPointOf(layer(STATE_PENSION), 68)]).toBe(3);
+    });
+
+    it('says how much is missing without a hidden layer in the euros of that year', () => {
+      renderChart();
+      turnOnFuturePrices();
+      const [{ amount: costs }] = lastProps().options.plugins.costs.points;
+      const missingAmount = costs - layer(STATE_PENSION).data[0].y;
+
+      userEvent.click(screen.getByRole('button', { name: SECOND_PILLAR }));
+      act(() => lastProps().options.onHover({ x: 0 }, [{ index: 0 }]));
+
+      const missing = within(screen.getByTestId('chart-tip')).getByText(/^Puudu/);
+      expect(missing).toHaveTextContent(new RegExp(`^Puudu ${missingAmount}\\s€$`));
     });
   });
 });

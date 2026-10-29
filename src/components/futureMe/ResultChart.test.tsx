@@ -7,6 +7,7 @@ import { Age65Answers, initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses, needMonthly } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
+import { ChartSourceId } from './chartData';
 import { ResultChart } from './ResultChart';
 import { nominalReturnsOf } from './nominal';
 import { ResultChartTip } from './ResultChartTip';
@@ -282,7 +283,10 @@ describe('ResultChart interaction', () => {
   });
 
   describe('tooltip content', () => {
-    const tipFor = (changes: { shortfall?: number; surplus?: number; isBeforePension?: boolean }) =>
+    const tipFor = (
+      changes: { shortfall?: number; surplus?: number; isBeforePension?: boolean },
+      without: ChartSourceId[] = [],
+    ) =>
       render(
         <IntlProvider locale="et" messages={translations.et}>
           <ResultChartTip
@@ -303,6 +307,7 @@ describe('ResultChart interaction', () => {
             }}
             events={[{ kind: 'moneyEnd', age: 70, bad: true }]}
             layers={['firstPillar', 'secondPillar']}
+            cover={{ shortfall: changes.shortfall ?? 0, surplus: changes.surplus ?? 0, without }}
             onClose={jest.fn()}
           />
         </IntlProvider>,
@@ -312,6 +317,19 @@ describe('ResultChart interaction', () => {
       tipFor({ surplus: 200 });
 
       expect(screen.getByText(/^Üle jääb 200\s€$/)).toBeInTheDocument();
+    });
+
+    it('names the hidden layer the missing amount is counted without', () => {
+      tipFor({ shortfall: 300 }, ['deposit']);
+
+      expect(screen.getByText('Puudu 300 €')).toBeInTheDocument();
+      expect(screen.getByText('peidetud kihita: Hoiuselt')).toBeInTheDocument();
+    });
+
+    it('names every hidden layer in the plural when more than one is hidden', () => {
+      tipFor({ shortfall: 300 }, ['secondPillar', 'deposit']);
+
+      expect(screen.getByText(/^peidetud kihtideta: II\ssammas .+ Hoiuselt$/)).toBeInTheDocument();
     });
 
     it('leaves out the costs and their cover before the pension age', () => {

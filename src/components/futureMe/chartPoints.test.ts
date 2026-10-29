@@ -1,5 +1,5 @@
 import { ChartRow, ChartSourceId } from './chartData';
-import { chartPointsOf, isLayerEdgeHidden, stackedValueOf } from './chartPoints';
+import { chartPointsOf, coverOf, isLayerEdgeHidden, stackedValueOf } from './chartPoints';
 
 const rowWith = (changes: Partial<ChartRow>): ChartRow => ({
   age: 66,
@@ -18,6 +18,7 @@ const rowWith = (changes: Partial<ChartRow>): ChartRow => ({
 });
 
 const LAYERS: ChartSourceId[] = ['salary', 'firstPillar', 'secondPillar', 'deposit'];
+const hiding = (...ids: ChartSourceId[]) => new Set<ChartSourceId>(ids);
 
 describe('chartPoints', () => {
   describe('points', () => {
@@ -103,6 +104,73 @@ describe('chartPoints', () => {
 
     it('stays on a layer that is not the top one', () => {
       expect(hiddenAt(rowWith({ firstPillar: 400, secondPillar: 600 }), 'firstPillar')).toBe(false);
+    });
+  });
+
+  describe('cover', () => {
+    it('is what the engine found while every layer is shown', () => {
+      const row = rowWith({ firstPillar: 700, shortfall: 300 });
+
+      expect(coverOf(row, LAYERS, hiding())).toEqual({ shortfall: 300, surplus: 0, without: [] });
+    });
+
+    it('counts only the visible layers: what the hidden one paid is missing', () => {
+      const row = rowWith({ firstPillar: 700, deposit: 300 });
+
+      expect(coverOf(row, LAYERS, hiding('deposit'))).toEqual({
+        shortfall: 300,
+        surplus: 0,
+        without: ['deposit'],
+      });
+    });
+
+    it('shows what is left over from the visible layers only', () => {
+      const row = rowWith({ firstPillar: 900, deposit: 500, surplus: 400 });
+
+      expect(coverOf(row, LAYERS, hiding('deposit'))).toEqual({
+        shortfall: 100,
+        surplus: 0,
+        without: ['deposit'],
+      });
+      expect(
+        coverOf(
+          rowWith({ firstPillar: 1200, deposit: 500, surplus: 700 }),
+          LAYERS,
+          hiding('deposit'),
+        ),
+      ).toMatchObject({
+        surplus: 200,
+      });
+    });
+
+    it('adds exactly what the hidden layer paid to what the engine found missing, with the III pillar contribution still being paid in it', () => {
+      const layers: ChartSourceId[] = ['firstPillar', 'thirdPillar'];
+      const row = rowWith({ firstPillar: 464, thirdPillar: 90, costs: 1261, shortfall: 807 });
+
+      expect(coverOf(row, layers, hiding('thirdPillar')).shortfall).toBe(897);
+      expect(coverOf(row, layers, hiding('firstPillar')).shortfall).toBe(1271);
+    });
+
+    it('counts from the costs and the layers drawn where the engine is only rounded apart from them', () => {
+      const row = rowWith({ firstPillar: 700, secondPillar: 177, shortfall: 124 });
+
+      expect(coverOf(row, LAYERS, hiding('secondPillar')).shortfall).toBe(300);
+    });
+
+    it('does not name a hidden layer that pays nothing at that age', () => {
+      const row = rowWith({ firstPillar: 1000 });
+
+      expect(coverOf(row, LAYERS, hiding('deposit')).without).toEqual([]);
+    });
+
+    it('leaves the costs covered and nothing over while the salary pays them, with a layer on top of it hidden', () => {
+      const row = rowWith({ salary: 1000, firstPillar: 0, deposit: 100 });
+
+      expect(coverOf(row, LAYERS, hiding('deposit'))).toEqual({
+        shortfall: 0,
+        surplus: 0,
+        without: ['deposit'],
+      });
     });
   });
 });

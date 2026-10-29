@@ -4,38 +4,53 @@ import { euro } from './amountFormat';
 import { ChartRow, ChartSourceId } from './chartData';
 import { ChartEvent } from './chartEvents';
 import { SOURCE_COLORS, SOURCE_LABELS } from './chartSources';
-import { eventTextOf } from './chartText';
+import { Cover as CoverState } from './chartPoints';
+import { eventTextOf, withoutLayersTextOf } from './chartText';
 
 interface Props {
   row: ChartRow;
   events: ChartEvent[];
   layers: ChartSourceId[];
+  cover: CoverState;
   onClose: () => void;
 }
 
-const Cover = ({ row }: { row: ChartRow }) => {
-  if (row.shortfall > 0) {
-    return (
-      <span className="result-chart-tip-missing">
-        <FormattedMessage
-          id="futureMe.result.chart.tip.missing"
-          values={{ amount: euro(row.shortfall) }}
-        />
-      </span>
+const Cover = ({ cover }: { cover: CoverState }) => {
+  const intl = useIntl();
+  const state = (() => {
+    if (cover.shortfall > 0) {
+      return (
+        <span className="result-chart-tip-missing">
+          <FormattedMessage
+            id="futureMe.result.chart.tip.missing"
+            values={{ amount: euro(cover.shortfall) }}
+          />
+        </span>
+      );
+    }
+    return cover.surplus > 0 ? (
+      <FormattedMessage
+        id="futureMe.result.chart.tip.surplus"
+        values={{ amount: euro(cover.surplus) }}
+      />
+    ) : (
+      <FormattedMessage id="futureMe.result.chart.tip.covered" />
     );
-  }
-  return row.surplus > 0 ? (
-    <FormattedMessage
-      id="futureMe.result.chart.tip.surplus"
-      values={{ amount: euro(row.surplus) }}
-    />
-  ) : (
-    <FormattedMessage id="futureMe.result.chart.tip.covered" />
+  })();
+  return (
+    <>
+      {state}
+      {cover.without.length > 0 && (
+        <span className="text-secondary">
+          {withoutLayersTextOf(intl, 'futureMe.result.chart.tip.without', cover)}
+        </span>
+      )}
+    </>
   );
 };
 
 export const ResultChartTip = forwardRef<HTMLDivElement, Props>(
-  ({ row, events, layers, onClose }, ref) => {
+  ({ row, events, layers, cover, onClose }, ref) => {
     const intl = useIntl();
     return (
       <div ref={ref} className="result-chart-tip" data-testid="chart-tip" aria-hidden="true">
@@ -85,7 +100,7 @@ export const ResultChartTip = forwardRef<HTMLDivElement, Props>(
               <FormattedMessage id="futureMe.result.chart.tip.costs" />
             </span>
             <span className="result-chart-tip-big">{euro(row.costs)}</span>
-            <Cover row={row} />
+            <Cover cover={cover} />
           </div>
         )}
       </div>
