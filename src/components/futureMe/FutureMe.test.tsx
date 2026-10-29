@@ -668,19 +668,19 @@ describe('FutureMe', () => {
         'Sina, praegune samm',
         '61\u00A0a, vaatamata',
         '66\u00A0a, vaatamata',
-        '67+\u00A0a, vaatamata',
+        '66+\u00A0a, vaatamata',
         'Kulud, vaatamata',
         'Tulemus, vaatamata',
       ]);
     });
 
-    it('names the last age step after the year after the pension age the saver picked', () => {
+    it('names the step from the pension age on after the pension age the saver picked', () => {
       renderFutureMe();
       fillInRequiredAnswers();
 
       userEvent.selectOptions(pensionAgeField(), '68');
 
-      expect(trailNames()).toContain('69+\u00A0a, vaatamata');
+      expect(trailNames()).toContain('68+\u00A0a, vaatamata');
     });
 
     it('shows an icon for each step instead of its number', () => {
@@ -725,7 +725,7 @@ describe('FutureMe', () => {
         'Sina',
         '60\u00A0a',
         '65\u00A0a',
-        '66+\u00A0a',
+        '65+\u00A0a',
         'Kulud',
         'Tulemus',
       ]);
