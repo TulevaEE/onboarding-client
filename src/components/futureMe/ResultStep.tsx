@@ -85,15 +85,26 @@ const isPastPensionAge = ({ rows, pensionStartAge }: Result): boolean =>
 const savingsAtPensionStartOrToday = ({ rows, pensionStartAge }: Result): SimulationRow =>
   rows.find(({ age }) => age === pensionStartAge) ?? rows[0];
 
+const paidFromAge = ({ rows }: Result, firstPaid: SimulationRow, startAge: number): number =>
+  firstPaid === rows[0] ? startAge : firstPaid.age;
+
+const statePensionValues = (result: Result) => {
+  const firstPaid = result.rows.find((row) => row.i1g > 0.5);
+  return firstPaid
+    ? {
+        hasStatePension: 'yes',
+        statePension: euro(firstPaid.i1g),
+        statePensionAge: paidFromAge(result, firstPaid, result.p1StartAge),
+      }
+    : { hasStatePension: 'no' };
+};
+
 const sustainableHelpValues = (result: Result, need: number) => {
-  const statePensionRow = result.rows.find((row) => row.i1g > 0.5);
   const savings = savingsAtPensionStartOrToday(result);
   return {
     sustainable: euro(result.sustainable),
     horizonAge: result.horizonAge,
-    hasStatePension: statePensionRow ? 'yes' : 'no',
-    statePension: euro(statePensionRow?.i1g ?? 0),
-    statePensionAge: result.p1StartAge,
+    ...statePensionValues(result),
     isPastPensionAge: isPastPensionAge(result) ? 'yes' : 'no',
     pot: euro(savings.pot),
     hasDeposit: savings.deposit > 0.5 ? 'yes' : 'no',

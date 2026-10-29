@@ -11,6 +11,7 @@ import { installDialogPolyfill } from './dialogPolyfill';
 import { initialAge65 } from './age65Answers';
 import { ResultContext } from './resultAnswers';
 import { contextWith } from './resultContextFixture';
+import { initialSpecialPension } from './specialPensionAnswers';
 import { DecisionChangesProvider } from './ResultDecisions';
 import { ResultStep } from './ResultStep';
 
@@ -455,6 +456,29 @@ describe('Result step', () => {
         expect(dialog).toHaveTextContent(/sammastes u 0\s€ pensionile minnes;/);
         expect(dialog).toHaveTextContent(
           /hoiusel u 161\s690\s€ pensionile minnes \(välja makstud, kulutamata raha\);/,
+        );
+      });
+
+      it('starts the state pension where it is paid, after a special pension until the pension age', () => {
+        const dialog = openHelpFor(
+          contextWith(
+            {
+              workAdded: true,
+              hazardList: 'list1',
+              hazardYears: '20',
+              hasSpecialPension: true,
+              specialPensionStartAge: '55',
+              firstPillarMonthly: '895',
+            },
+            {
+              specialPension: { ...initialSpecialPension(), monthly: '900' },
+              age65: { ...initialAge65(), work: 'yes', workUntil: '70', secondPillar: 'fund' },
+            },
+          ),
+        );
+
+        expect(dialog).toHaveTextContent(
+          /riiklik pension 901\s€ kuus enne tulumaksu, alates 65-\u2060aastaselt;/,
         );
       });
 
