@@ -253,6 +253,35 @@ describe('TermsStep', () => {
     });
   });
 
+  test('shows the links at once when the step opens again long after it was left', async () => {
+    const queryClient = new QueryClient();
+    const history = createMemoryHistory();
+    const { unmount } = renderWrapped(
+      <TermsStepWrapper />,
+      history,
+      createDefaultStore(history),
+      queryClient,
+    );
+    expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+
+    jest.useFakeTimers();
+    unmount();
+    act(() => {
+      jest.advanceTimersByTime(60 * 60 * 1000);
+    });
+    unresponsiveTkfDocumentsBackend(server);
+    renderWrapped(<TermsStepWrapper />, history, createDefaultStore(history), queryClient);
+
+    expect(screen.getByRole('link', { name: /^Terms/ })).toHaveAttribute(
+      'href',
+      TKF_DOCUMENT_FIELDS.terms_file,
+    );
+    expect(screen.getByRole('checkbox', { name: /^I confirm that I have reviewed/ })).toBeEnabled();
+    act(() => {
+      jest.advanceTimersByTime(5000);
+    });
+  });
+
   test('links the fund documents page when the fund page does not answer within 5 seconds', async () => {
     jest.useFakeTimers();
     unresponsiveTkfDocumentsBackend(server);
@@ -288,6 +317,16 @@ describe('TermsStep', () => {
         name: 'I confirm that I have reviewed the documents and understand that the investment may increase or decrease in value over time',
       }),
     ).toBeInTheDocument();
+  });
+
+  test('holds a card for each document while the links load', async () => {
+    renderWrapped(<TermsStepWrapper />);
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(screen.getAllByTestId('document-placeholder')).toHaveLength(3);
+
+    expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+    expect(screen.queryByTestId('document-placeholder')).not.toBeInTheDocument();
   });
 
   test('lets the terms be accepted only once the document links are shown', async () => {
