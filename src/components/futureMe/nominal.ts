@@ -62,6 +62,10 @@ const nominalFirstPillarOf = ({ firstPillar, rows, pensionStartAge, p1StartAge }
 export const nominalResultOf = (result: Result): Result => ({
   ...result,
   rows: result.rows.map(nominalRowOf),
+  earlyThirdPillar: result.earlyThirdPillar.map((payment) => ({
+    ...payment,
+    amount: payment.amount * nominalFactorAt(payment.year),
+  })),
   firstPillar: nominalFirstPillarOf(result),
 });
 

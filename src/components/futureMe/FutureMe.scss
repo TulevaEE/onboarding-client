@@ -796,19 +796,23 @@
     }
   }
 
-  .result-figure-controls {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem 1rem;
+  .result-chart-table-toggle {
+    margin-bottom: 1rem;
   }
 
   .result-nominal {
     display: flex;
     align-items: center;
 
-    .form-check {
-      width: auto;
+    .help-btn {
+      margin: -12px 0 -12px -14px;
+    }
+
+    @media (max-width: 359.98px) {
+      .btn {
+        padding-inline: 0.25rem;
+        font-size: 0.8125rem;
+      }
     }
   }
 

@@ -80,31 +80,46 @@ const renderChart = (context: ResultContext = contextWith()) =>
     </IntlProvider>,
   );
 
-const futurePrices = () => screen.getByRole('switch', { name: /^Tuleviku hindades:/ });
+const pricesGroup = () => screen.getByRole('group', { name: 'Summad graafikul' });
+const todayPrices = () => within(pricesGroup()).getByRole('button', { name: 'Tänased hinnad' });
+const futurePrices = () => within(pricesGroup()).getByRole('button', { name: 'Tuleviku hinnad' });
 const lastChartProps = () => mockChart.mock.calls[mockChart.mock.calls.length - 1][0];
 const costsShown = (): number[] => lastChartProps().options.plugins.costs.amounts;
 const NOTE_TEXT = /^Graafik, tabel ja kokkuvõte on tuleviku eurodes/;
 
-describe('future prices switch', () => {
+describe('today’s or future prices', () => {
   beforeEach(() => jest.clearAllMocks());
 
-  it('is a switch that starts off, says so in words and keeps today’s euros', () => {
+  it('starts on today’s prices, named in words on both buttons', () => {
     renderChart();
 
-    expect(futurePrices()).not.toBeChecked();
-    expect(futurePrices()).toHaveAccessibleName(/^Tuleviku hindades:\sväljas$/);
+    expect(todayPrices()).toHaveAttribute('aria-pressed', 'true');
+    expect(futurePrices()).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByText('Summad on tänastes eurodes.')).toBeInTheDocument();
   });
 
-  it('says it is on once turned on, and then explains what the amounts are', () => {
+  it('marks future prices as chosen once picked, and then explains what the amounts are', () => {
     renderChart();
 
     userEvent.click(futurePrices());
 
-    expect(futurePrices()).toBeChecked();
-    expect(futurePrices()).toHaveAccessibleName(/^Tuleviku hindades:\ssees$/);
+    expect(futurePrices()).toHaveAttribute('aria-pressed', 'true');
+    expect(todayPrices()).toHaveAttribute('aria-pressed', 'false');
     expect(screen.getByText(NOTE_TEXT)).toBeInTheDocument();
     expect(screen.queryByText('Summad on tänastes eurodes.')).not.toBeInTheDocument();
+  });
+
+  it('puts the explanation before the choice', () => {
+    renderChart();
+
+    userEvent.tab();
+    expect(
+      screen.getByRole('button', { name: /^Selgitus: Mida näitab „tuleviku hindades“$/ }),
+    ).toHaveFocus();
+    userEvent.tab();
+    expect(todayPrices()).toHaveFocus();
+    userEvent.tab();
+    expect(futurePrices()).toHaveFocus();
   });
 
   it('keeps the note in a polite live region so a screen reader hears the change', () => {
@@ -150,7 +165,7 @@ describe('future prices switch', () => {
     );
   });
 
-  it('draws the costs as a flat line while off and as a rising line while on', () => {
+  it('draws the costs as a flat line in today’s prices and as a rising line in future prices', () => {
     renderChart();
     expect(lastChartProps().options.plugins.costs.amounts).toBeUndefined();
 
@@ -160,13 +175,13 @@ describe('future prices switch', () => {
     expect(amounts[amounts.length - 1]).toBeGreaterThan(amounts[0]);
   });
 
-  it('goes back to today’s euros when turned off again', () => {
+  it('goes back to today’s euros when today’s prices are picked again', () => {
     renderChart();
     userEvent.click(futurePrices());
 
-    userEvent.click(futurePrices());
+    userEvent.click(todayPrices());
 
-    expect(futurePrices()).not.toBeChecked();
+    expect(todayPrices()).toHaveAttribute('aria-pressed', 'true');
     expect(lastChartProps().options.plugins.costs.amounts).toBeUndefined();
     expect(screen.getByText('Summad on tänastes eurodes.')).toBeInTheDocument();
   });
@@ -221,7 +236,7 @@ describe('future prices switch', () => {
   describe('explanation', () => {
     beforeAll(installDialogPolyfill);
 
-    it('opens beside the switch', () => {
+    it('opens beside the choice', () => {
       renderChart();
 
       userEvent.click(

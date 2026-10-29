@@ -44,6 +44,7 @@ export interface ThirdPillarPayout {
   net: number;
   firstMonthly: number;
   leftAtPension: number;
+  monthly: { age: number; amount: number }[];
 }
 
 export interface Age55 {
@@ -112,6 +113,7 @@ export const thirdPillarPayout = (
       net: balance * (1 - rate),
       firstMonthly: 0,
       leftAtPension: 0,
+      monthly: [],
     };
   }
 
@@ -120,14 +122,21 @@ export const thirdPillarPayout = (
     input.contract === 'once' ? firstTerm - (at - age) : fundPensionTerm(lifeTable, sex, at);
 
   let gross = 0;
-  let firstMonthly = 0;
+  const monthly: ThirdPillarPayout['monthly'] = [];
   for (let at = age; at < pensionAge; at += 1) {
     const payment = balance / yearsLeftAt(at);
-    firstMonthly = at === age ? payment / MONTHS_IN_YEAR : firstMonthly;
+    monthly.push({ age: at, amount: payment / MONTHS_IN_YEAR });
     gross += payment;
     balance = grow(balance - payment, at);
   }
-  return { gross, tax: 0, net: gross, firstMonthly, leftAtPension: balance };
+  return {
+    gross,
+    tax: 0,
+    net: gross,
+    firstMonthly: monthly[0]?.amount ?? 0,
+    leftAtPension: balance,
+    monthly,
+  };
 };
 
 export const thirdPillarPayoutInputOf = (

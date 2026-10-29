@@ -1,6 +1,6 @@
 import { SimulationRow } from './engine/pension';
 import { nominalFactorAt } from './nominal';
-import { Result } from './resultAnswers';
+import { EarlyPayment, Result } from './resultAnswers';
 
 export type ChartSourceId =
   | 'salary'
@@ -22,6 +22,7 @@ export interface ChartRow {
   costs: number;
   shortfall: number;
   surplus: number;
+  isBeforePension: boolean;
 }
 
 const SOURCE_IDS: ChartSourceId[] = [
@@ -40,25 +41,51 @@ const surplusOf = ({ work, i1, isp, i2, i3, dep }: SimulationRow, need: number) 
   return !work && over > NOTICEABLE ? Math.round(over) : 0;
 };
 
-export const chartRowsOf = (result: Result, need: number, isNominal = false): ChartRow[] =>
-  result.rows
-    .filter(({ age }) => age >= result.pensionStartAge)
-    .map((row) => {
-      const costs = isNominal ? need * nominalFactorAt(row.year) : need;
-      return {
-        age: row.age,
-        year: row.year,
-        salary: row.work ? Math.round(row.spend) : 0,
-        firstPillar: row.work ? 0 : Math.round(row.i1),
-        specialPension: row.work ? 0 : Math.round(row.isp),
-        secondPillar: Math.round(row.i2),
-        thirdPillar: Math.round(row.i3),
-        deposit: Math.round(row.dep),
-        costs: Math.round(costs),
-        shortfall: row.shortfall > NOTICEABLE ? Math.round(row.shortfall) : 0,
-        surplus: surplusOf(row, costs),
-      };
-    });
+const earlyRowOf = ({ age, year, amount }: EarlyPayment): ChartRow => ({
+  age,
+  year,
+  salary: 0,
+  firstPillar: 0,
+  specialPension: 0,
+  secondPillar: 0,
+  thirdPillar: Math.round(amount),
+  deposit: 0,
+  costs: 0,
+  shortfall: 0,
+  surplus: 0,
+  isBeforePension: true,
+});
+
+export const chartRowsOf = (result: Result, need: number, isNominal = false): ChartRow[] => {
+  const isBeforePensionAge = ({ age }: { age: number }) => age < result.pensionStartAge;
+  const fundPensionFrom55At = (age: number) =>
+    result.earlyThirdPillar.find((payment) => payment.age === age)?.amount ?? 0;
+  return [
+    ...result.earlyThirdPillar.filter(isBeforePensionAge).map(earlyRowOf),
+    ...result.rows
+      .filter((row) => !isBeforePensionAge(row))
+      .map((row) => {
+        const costs = isNominal ? need * nominalFactorAt(row.year) : need;
+        return {
+          age: row.age,
+          year: row.year,
+          salary: row.work ? Math.round(row.spend) : 0,
+          firstPillar: row.work ? 0 : Math.round(row.i1),
+          specialPension: row.work ? 0 : Math.round(row.isp),
+          secondPillar: Math.round(row.i2),
+          thirdPillar: Math.round(row.i3 + fundPensionFrom55At(row.age)),
+          deposit: Math.round(row.dep),
+          costs: Math.round(costs),
+          shortfall: row.shortfall > NOTICEABLE ? Math.round(row.shortfall) : 0,
+          surplus: surplusOf(row, costs),
+          isBeforePension: false,
+        };
+      }),
+  ];
+};
+
+export const pensionStartRowOf = (rows: ChartRow[]): ChartRow =>
+  rows.find(({ isBeforePension }) => !isBeforePension) ?? rows[0];
 
 export const startSourcesOf = (start: ChartRow): ChartSourceId[] => {
   const paying = SOURCE_IDS.filter((id) => start[id] > 0);
@@ -73,7 +100,9 @@ export const chartSeriesOf = (rows: ChartRow[]): { id: ChartSourceId; data: numb
 
 export const tableRowsOf = (rows: ChartRow[]): ChartRow[] => {
   const workEnd = rows.find((row, index) => index > 0 && rows[index - 1].salary > 0 && !row.salary);
+  const pensionStart = pensionStartRowOf(rows);
   return rows.filter(
-    (row, index) => index === 0 || row === workEnd || row.age % TABLE_AGE_STEP === 0,
+    (row, index) =>
+      index === 0 || row === pensionStart || row === workEnd || row.age % TABLE_AGE_STEP === 0,
   );
 };

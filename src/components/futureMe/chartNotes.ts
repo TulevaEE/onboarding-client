@@ -41,7 +41,10 @@ export interface Assumption {
 const average = (values: number[]) => values.reduce((sum, value) => sum + value, 0) / values.length;
 
 const bridgeNoteOf = (result: Result, rows: ChartRow[]): SummaryNote[] => {
-  const bridge = rows.filter(({ age, salary }) => age < result.p1StartAge && salary === 0);
+  const bridge = rows.filter(
+    ({ age, salary, isBeforePension }) =>
+      age < result.p1StartAge && salary === 0 && !isBeforePension,
+  );
   const sources = BRIDGE_SOURCES.map((id) => ({
     id,
     amount: Math.round(average(bridge.map((row) => row[id]))),

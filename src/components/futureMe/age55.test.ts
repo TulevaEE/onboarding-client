@@ -139,6 +139,19 @@ describe('payout', () => {
       expect(payout.gross).toBeCloseTo((9 * 12000) / fundPensionTerm(lifeTable, 'N', 56), 6);
     });
 
+    it('lists the monthly payment of every year before the pension age', () => {
+      const payout = payoutOf('fund', payoutInput());
+      const yearly = payout.monthly.map(({ amount }) => amount * 12);
+
+      expect(payout.monthly[0]).toEqual({ age: 56, amount: payout.firstMonthly });
+      expect(payout.monthly.map(({ age }) => age)).toEqual([56, 57, 58, 59, 60, 61, 62, 63, 64]);
+      expect(yearly.reduce((sum, amount) => sum + amount, 0)).toBeCloseTo(payout.gross, 6);
+    });
+
+    it('lists no monthly payments when all is taken at once', () => {
+      expect(payoutOf('lump', payoutInput()).monthly).toEqual([]);
+    });
+
     it('pays more per month when started later', () => {
       const early = payoutOf('fund', payoutInput({ birthYear: 1971, age: 55 }));
       const late = payoutOf('fund', payoutInput({ birthYear: 1971, age: 60 }));
