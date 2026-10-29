@@ -206,7 +206,6 @@ const ICON_BY_EMOJI: Record<string, IconName> = {
 
 const STEP_ICONS: Record<StepId, IconName> = {
   [FutureMeStep.YOU]: 'user',
-  [FutureMeStep.EARLY_WITHDRAWAL]: 'briefcase',
   [FutureMeStep.AGE_55]: 'lockOpen',
   [FutureMeStep.AGE_60]: 'briefcase',
   [FutureMeStep.AGE_65]: 'sun',

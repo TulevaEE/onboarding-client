@@ -1,14 +1,6 @@
-import {
-  AVG_OLD_AGE_PENSION,
-  CURRENT_YEAR,
-  earlyYears,
-  KidsInput,
-  pensionAge,
-  Sex,
-} from './engine/pension';
+import { AVG_OLD_AGE_PENSION, earlyYears, KidsInput, pensionAge, Sex } from './engine/pension';
 import { parseBirthYear, YouPrefill } from './prefill';
 import { StepPlanInput } from './steps';
-import { thirdPillarPayoutAge } from './thirdPillarPayoutAges';
 
 export const FALLBACK_BIRTH_YEAR = 1980;
 export const PENSION_AGE_OPTIONS = [65, 66, 67, 68, 69, 70];
@@ -363,18 +355,6 @@ export const blockedFieldsOf = (answers: YouAnswers, section: YouSectionId): You
 export const blockedFields = (answers: YouAnswers): YouField[] =>
   SECTION_IDS.flatMap((section) => blockedFieldsOf(answers, section));
 
-const isThirdPillarEarlyWithdrawalAvailable = (answers: YouAnswers): boolean => {
-  const birthYear = birthYearOrFallback(answers);
-  const currentAge = CURRENT_YEAR - birthYear;
-  const benefitStartsAtAge = thirdPillarPayoutAge(answers.thirdPillarJoined === 'before');
-  const lastEarlyAge = Math.min(benefitStartsAtAge, effectivePensionAge(answers)) - 1;
-  return (
-    isThirdPillarBalanceAsked(answers) &&
-    amountOf(answers.thirdPillarAmount) > 0 &&
-    currentAge <= lastEarlyAge
-  );
-};
-
 export const toStepPlanInput = (answers: YouAnswers): StepPlanInput => ({
   birthYear: birthYearOrFallback(answers),
   pensionAgeYears: effectivePensionAge(answers),
@@ -384,6 +364,4 @@ export const toStepPlanInput = (answers: YouAnswers): StepPlanInput => ({
   savesInSecondPillar:
     amountOf(answers.secondPillarAmount) > 0 || Number(answers.secondPillarRate) > 0,
   thirdPillarJoined: answers.thirdPillarJoined,
-  thirdPillarEarlyWithdrawalAvailable: isThirdPillarEarlyWithdrawalAvailable(answers),
-  thirdPillarEarlyWithdrawalTaken: false,
 });

@@ -15,7 +15,7 @@ import {
   YouAnswers,
 } from './youAnswers';
 import { pensionAge } from './engine/pension';
-import { isStepSkipped, FutureMeStep, shownSteps } from './steps';
+import { FutureMeStep, shownSteps } from './steps';
 
 const filledIn = (overrides: Partial<YouAnswers> = {}): YouAnswers => ({
   ...initialAnswers({ birthYear: 1980, sex: 'N', secondPillarRate: '0.02' }),
@@ -182,45 +182,6 @@ describe('step plan', () => {
     const plan = toStepPlanInput(filledIn({ thirdPillarJoined: when }));
 
     expect(shownSteps(plan)).not.toContain(FutureMeStep.AGE_55);
-  });
-
-  describe('early withdrawal step', () => {
-    const withoutSecondPillar = { secondPillarRate: '0', secondPillarAmount: '' } as const;
-
-    it('opens for a III pillar saver below the age the III pillar benefit starts', () => {
-      const plan = toStepPlanInput(
-        filledIn({ ...withoutSecondPillar, birthYear: '1975', thirdPillarJoined: 'before' }),
-      );
-
-      expect(plan.thirdPillarEarlyWithdrawalAvailable).toBe(true);
-      expect(isStepSkipped(FutureMeStep.EARLY_WITHDRAWAL, plan)).toBe(false);
-    });
-
-    it('is closed when there is nothing in the III pillar yet', () => {
-      const plan = toStepPlanInput(
-        filledIn({ ...withoutSecondPillar, thirdPillarJoined: 'before', thirdPillarAmount: '0' }),
-      );
-
-      expect(plan.thirdPillarEarlyWithdrawalAvailable).toBe(false);
-    });
-
-    it('is closed for a saver who has not joined', () => {
-      const plan = toStepPlanInput(filledIn({ thirdPillarJoined: 'none' }));
-
-      expect(plan.thirdPillarEarlyWithdrawalAvailable).toBe(false);
-    });
-
-    it('is closed once the saver has reached the age the III pillar benefit starts', () => {
-      const plan = toStepPlanInput(filledIn({ birthYear: '1965', thirdPillarJoined: 'after' }));
-
-      expect(plan.thirdPillarEarlyWithdrawalAvailable).toBe(false);
-    });
-
-    it('opens through the II pillar alone for a saver with years to the pension age', () => {
-      const plan = toStepPlanInput(filledIn({ thirdPillarJoined: 'none' }));
-
-      expect(isStepSkipped(FutureMeStep.EARLY_WITHDRAWAL, plan)).toBe(false);
-    });
   });
 });
 
