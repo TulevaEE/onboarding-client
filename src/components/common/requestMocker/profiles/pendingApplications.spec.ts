@@ -28,9 +28,10 @@ describe('pending applications mock profiles', () => {
 
   it('starts contributions from a filed rejoin on the first day of the sixth month after its cancellation deadline, whenever the mock is opened', () => {
     const [rejoin] = profilesLoadedAt('2027-02-10T10:00:00Z').SECOND_PILLAR_REJOIN;
+    const endOfFebruary17InLocalTime = new Date('2027-02-17T23:59:59.999').toISOString();
 
     expect(rejoin.details).toEqual({
-      cancellationDeadline: '2027-02-17T23:59:59.999Z',
+      cancellationDeadline: endOfFebruary17InLocalTime,
       fulfillmentDate: '2027-08-01',
     });
   });
