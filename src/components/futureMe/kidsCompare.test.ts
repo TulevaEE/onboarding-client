@@ -156,6 +156,11 @@ describe('special pension or the pension for the children', () => {
     expect(isSpecialComparisonShown(withSpecialPension({ kidsEarlyUser: 'other' }))).toBe(false);
   });
 
+  it('is compared while the early retirement for the children starts this year or later, not once it has started', () => {
+    expect(isSpecialComparisonShown(withSpecialPension({ birthYear: '1962' }))).toBe(true);
+    expect(isSpecialComparisonShown(withSpecialPension({ birthYear: '1961' }))).toBe(false);
+  });
+
   it('compares the special pension with the old-age pension from the early retirement', () => {
     const { special, oldAge, pensionAge, kidsYears } = specialComparisonOf(withSpecialPension());
 

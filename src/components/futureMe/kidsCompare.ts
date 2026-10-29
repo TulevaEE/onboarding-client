@@ -188,13 +188,16 @@ export const rescueComparisonOf = (context: CompareContext) => {
 
 export const isSpecialComparisonShown = (context: CompareContext): boolean => {
   const input = compareInputOf(context);
+  const kidsYears = kidsYearsOf(context.you);
+  const earlyYearForKids = retirementYears(input) - kidsYears;
   return (
     input.spHas &&
     (input.spMonthly ?? 0) > 0 &&
     (input.soodus ?? 0) > 0 &&
     !input.flexEarly &&
     input.kids?.earlyUser === 'me' &&
-    kidsYearsOf(context.you) > 0
+    kidsYears > 0 &&
+    ageTense(context.plan.birthYear, earlyYearForKids) !== 'past'
   );
 };
 
