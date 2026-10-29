@@ -41,6 +41,18 @@ const helpButtonBeside = (element: HTMLElement, container: string, question: Reg
   // eslint-disable-next-line testing-library/no-node-access
   within(element.closest(container) as HTMLElement).getByRole('button', { name: question });
 
+const openKidsHelp = () => {
+  userEvent.click(screen.getByRole('button', { name: 'Lisa lapsed' }));
+  userEvent.click(
+    helpButtonBeside(
+      screen.getByRole('heading', { name: 'Lapsed' }),
+      '.you-section-head',
+      /Kuidas lapsed pensioni mõjutavad$/,
+    ),
+  );
+  return screen.getByRole('dialog');
+};
+
 describe('Sina step help buttons', () => {
   beforeAll(installDialogPolyfill);
 
@@ -199,6 +211,14 @@ describe('Sina step help buttons', () => {
         name: /^Sotsiaalkindlustusameti iseteenindus/,
       }),
     ).toBeInTheDocument();
+  });
+
+  it('tells a parent retiring five years early that the II pillar payout is chosen on the pillars step', () => {
+    renderYouStep();
+
+    const dialog = openKidsHelp();
+
+    expect(dialog).toHaveTextContent(/5\saastat varem pensionile minnes „60\sa sambad“/);
   });
 
   it('leaves the field labels as they were for screen readers', () => {
