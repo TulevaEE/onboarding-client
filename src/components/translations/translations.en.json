@@ -1308,6 +1308,7 @@
   "savingsFund.payment.form.amount.label": "Amount",
   "savingsFund.payment.form.paymentMethod.label": "Select bank",
   "savingsFund.payment.form.submit.label": "Continue",
+  "savingsFund.payment.form.submit.toAccountOwner": "Deposit ({accountOwner})",
   "savingsFund.payment.form.cancel.label": "Back",
   "savingsFund.payment.form.paymentType.label": "What kind of payment would you like to make?",
   "savingsFund.payment.form.paymentType.single": "Single payment",
