@@ -3305,5 +3305,11 @@
   "futureMe.result.save.pdfHint": "PDF: vali printimisaknas „Salvesta PDF-⁠ina“.",
   "futureMe.result.save.file.title": "Tulevane Mina: minu pensionilugu",
   "futureMe.result.save.file.intro": "Koostatud {date}. Summad on tänastes eurodes. See ei ole finants- ega maksunõu.",
-  "futureMe.result.save.file.footer": "Tulevane Mina · reeglid: Pensionikeskus ja Sotsiaalkindlustusamet"
+  "futureMe.result.save.file.footer": "Tulevane Mina · reeglid: Pensionikeskus ja Sotsiaalkindlustusamet",
+  "futureMe.result.feedback.label": "Mis sulle selgeks sai ja mida sa nüüd teisiti teed?",
+  "futureMe.result.feedback.hint": "Kirjuta ka, mis jäi segaseks.",
+  "futureMe.result.feedback.send": "Saada tagasiside",
+  "futureMe.result.feedback.failed": "Tagasiside saatmine ei õnnestunud. Proovi uuesti.",
+  "futureMe.result.feedback.thanks.title": "Aitäh!",
+  "futureMe.result.feedback.thanks.body": "Loeme kõik vastused läbi."
 }

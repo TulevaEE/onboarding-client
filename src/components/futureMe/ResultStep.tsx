@@ -12,6 +12,7 @@ import { ResultAssumptions } from './ResultAssumptions';
 import { ResultChart } from './ResultChart';
 import { nominalReturnsOf } from './nominal';
 import { ResultDecisions } from './ResultDecisions';
+import { ResultFeedback } from './ResultFeedback';
 import { ResultLegacy } from './ResultLegacy';
 import { ResultRules } from './ResultRules';
 import { ResultSave } from './ResultSave';
@@ -276,6 +277,7 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       <ResultAssumptions context={context} />
       <ResultRules context={context} />
       <ResultSave context={context} />
+      <ResultFeedback />
     </section>
   );
 };
