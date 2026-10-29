@@ -5,12 +5,16 @@ import { IntlProvider } from 'react-intl';
 import { FutureMe } from './FutureMe';
 import { useMe } from '../common/apiHooks';
 import { User } from '../common/apiModels';
+import { FundPension } from '../common/apiModels/withdrawals';
 import translations from '../translations';
 import { mockUser } from '../../test/backend-responses';
+
+let mockFundPensions: FundPension[] = [];
 
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: () => ({ data: [], isLoading: false }),
+  useFundPensionStatus: () => ({ data: { fundPensions: mockFundPensions }, isLoading: false }),
   useSourceFunds: () => ({ data: [], isLoading: false }),
   useRoles: () => ({ data: [], isLoading: false }),
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
@@ -96,7 +100,62 @@ const choice = (group: HTMLElement, name: string) =>
   within(group).getByRole('radio', { name: new RegExp(name) });
 
 describe('Age 65 step', () => {
-  beforeEach(() => loggedInAs({ dateOfBirth: '1962-01-01' }));
+  beforeEach(() => {
+    loggedInAs({ dateOfBirth: '1962-01-01' });
+    mockFundPensions = [];
+  });
+
+  describe('with a II pillar fund pension started at the pension age', () => {
+    beforeEach(() => {
+      mockFundPensions = [
+        {
+          pillar: 'SECOND',
+          active: true,
+          startDate: '2027-03-01',
+          endDate: null,
+          durationYears: 20,
+        },
+      ];
+    });
+
+    it('picks the fund pension card and says the choice is already made', () => {
+      openAge65Step();
+
+      expect(choice(secondPillarGroup(), 'Fondipension')).toBeChecked();
+      expect(
+        within(secondPillarGroup()).getByText(
+          /Oled selle valiku juba teinud: II\ssamba fondipension algas 2027\. aastal, kui olid 65-aastane\./,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('keeps saying the choice is made next to the picked card when the pension age changes', () => {
+      render(
+        <IntlProvider locale="et" messages={translations.et}>
+          <FutureMe />
+        </IntlProvider>,
+      );
+      fillInYou();
+      userEvent.selectOptions(
+        screen.getByRole('combobox', { name: /Millal on sinu pensioniiga/ }),
+        '67',
+      );
+      userEvent.click(within(trail()).getByRole('button', { name: /^67\sa, vaatamata$/ }));
+
+      expect(choice(secondPillarGroup(), 'Fondipension')).toBeChecked();
+      expect(
+        within(secondPillarGroup()).getByText(/Oled selle valiku juba teinud/),
+      ).toBeInTheDocument();
+    });
+
+    it('keeps the other cards open', () => {
+      openAge65Step();
+
+      userEvent.click(choice(secondPillarGroup(), 'Kõik korraga'));
+
+      expect(choice(secondPillarGroup(), 'Kõik korraga')).toBeChecked();
+    });
+  });
 
   it('replaces the placeholder with the pension age choices', () => {
     openAge65Step();

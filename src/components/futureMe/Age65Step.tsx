@@ -28,6 +28,7 @@ import { YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
 import { ageTense, hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 import { strong } from './richText';
+import { FundPensionChoice } from './prefill';
 import { LinkButton } from './LinkButton';
 
 interface Props {
@@ -38,6 +39,7 @@ interface Props {
   age66: Age66Answers;
   specialPension: SpecialPensionAnswers;
   headingRef: RefObject<HTMLHeadingElement>;
+  startedFundPensions?: Partial<Record<'secondPillar' | 'thirdPillar', FundPensionChoice>>;
   onChange: (answers: Age65Answers) => void;
   onEditYou: () => void;
   onEditAge60: () => void;
@@ -62,6 +64,7 @@ export const Age65Step = ({
   age66,
   specialPension,
   headingRef,
+  startedFundPensions = {},
   onChange,
   onEditYou,
   onEditAge60,
@@ -170,8 +173,18 @@ export const Age65Step = ({
       <h3 className="h5 section-title mt-4">
         <FormattedMessage id="futureMe.age65.pillars.title" />
       </h3>
-      <Age65Pillars pillar="secondPillar" hasPillar={hasSecondPillar} {...pillarProps} />
-      <Age65Pillars pillar="thirdPillar" hasPillar={hasThird} {...pillarProps} />
+      <Age65Pillars
+        pillar="secondPillar"
+        hasPillar={hasSecondPillar}
+        startedFundPension={startedFundPensions.secondPillar}
+        {...pillarProps}
+      />
+      <Age65Pillars
+        pillar="thirdPillar"
+        hasPillar={hasThird}
+        startedFundPension={startedFundPensions.thirdPillar}
+        {...pillarProps}
+      />
       <FundPensionFaq withFundQuestions={isAnyPayoutAsked}>
         <RescueCompareFaq context={compareContext} />
         <SpecialCompareFaq context={compareContext} />

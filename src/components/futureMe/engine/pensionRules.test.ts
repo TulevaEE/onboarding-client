@@ -13,6 +13,7 @@ import {
   PENSIONER_ALLOWANCE,
   PensionInput,
   rescueIncrease,
+  retirementYears,
   Scenario,
   SeparateThirdPillar,
   simulate,
@@ -166,12 +167,32 @@ describe('pension rules', () => {
       expect(texts).toEqual(expect.arrayContaining([expect.stringContaining('Alates 55')]));
     });
 
-    it('opens third pillar preferential withdrawals at 60 for savers who joined in 2021 or later', () => {
+    it('opens third pillar preferential withdrawals five years before the pension age for savers who joined in 2021 or later', () => {
       const texts = decisionMap({ ...base, p3: 10000, p3Before2021: false }).map(
         ({ text }) => text,
       );
 
-      expect(texts).toEqual(expect.arrayContaining([expect.stringContaining('Alates 60')]));
+      expect(texts).toEqual(
+        expect.arrayContaining([
+          expect.stringContaining(`Alates ${retirementYears(base) - 5}, 5 aastat enne pensioniiga`),
+        ]),
+      );
+    });
+
+    it('opens the II and III pillar five years before a pension age of 68 for savers who joined in 2021 or later', () => {
+      const decisions = decisionMap({
+        ...base,
+        p3: 10000,
+        p3Before2021: false,
+        pensionAgeYears: 68,
+      });
+
+      expect(decisions).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ age: 63, title: 'III sammas soodusmaksuga' }),
+          expect.objectContaining({ age: 63, title: 'II sammas ja paindlik riiklik pension' }),
+        ]),
+      );
     });
 
     it('puts the full state pension at the pension age the saver picked', () => {

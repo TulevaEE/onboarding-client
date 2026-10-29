@@ -9,8 +9,12 @@ import { EmojiIcon } from './FutureMeIcon';
 import { Tense } from './planAges';
 import { strong } from './richText';
 import { LinkButton } from './LinkButton';
+import { Age66Answers, Contract, contractField, Pillar } from './age66Answers';
+import { ContractChoices } from './ContractChoices';
+import { ChoiceMadeNote } from './ChoiceMadeNote';
+import { FundPensionChoice } from './prefill';
 
-type Pillar = 'secondPillar' | 'thirdPillar';
+type Contracts = Pick<Age66Answers, 'secondPillarContract' | 'thirdPillarContract'>;
 
 interface Props {
   answers: Age60Answers;
@@ -21,7 +25,10 @@ interface Props {
   hasSecondPillar: boolean;
   hasThirdPillar: boolean;
   headingRef: RefObject<HTMLHeadingElement>;
+  contracts: Contracts;
+  startedFundPensions?: Partial<Record<Pillar, FundPensionChoice>>;
   onChange: (answers: Age60Answers) => void;
+  onContractChange: (pillar: Pillar, contract: Contract) => void;
   onEditYou: () => void;
 }
 
@@ -31,7 +38,10 @@ interface PillarProps {
   pillar: Pillar;
   answers: Age60Answers;
   hasPillar: boolean;
+  contracts: Contracts;
+  startedFundPension?: FundPensionChoice;
   onChange: (answers: Age60Answers) => void;
+  onContractChange: (pillar: Pillar, contract: Contract) => void;
   onEditYou: () => void;
   children?: React.ReactNode;
 }
@@ -40,7 +50,10 @@ const PillarChoices = ({
   pillar,
   answers,
   hasPillar,
+  contracts,
+  startedFundPension,
   onChange,
+  onContractChange,
   onEditYou,
   children,
 }: PillarProps) => {
@@ -69,6 +82,7 @@ const PillarChoices = ({
         <legend className="visually-hidden" id={legendId}>
           <FormattedMessage id={`futureMe.age60.${pillar}.legend` as TranslationKey} />
         </legend>
+        {startedFundPension && <ChoiceMadeNote choice={startedFundPension} />}
         <div className="payout-choices">
           {PAYOUT_CHOICES.map((choice) => (
             <label key={choice} className="payout-choice" htmlFor={`future-me-${pillar}-${choice}`}>
@@ -97,6 +111,14 @@ const PillarChoices = ({
           ))}
         </div>
       </fieldset>
+      {hasPillar && answers[pillar] === 'fund' && (
+        <ContractChoices
+          pillar={pillar}
+          idPrefix="future-me-60"
+          contract={contracts[contractField(pillar)]}
+          onChange={(contract) => onContractChange(pillar, contract)}
+        />
+      )}
       {children}
     </>
   );
@@ -111,7 +133,10 @@ export const Age60Step = ({
   hasSecondPillar,
   hasThirdPillar,
   headingRef,
+  contracts,
+  startedFundPensions = {},
   onChange,
+  onContractChange,
   onEditYou,
 }: Props) => {
   const year = birthYear + age;
@@ -133,7 +158,10 @@ export const Age60Step = ({
         pillar="secondPillar"
         answers={answers}
         hasPillar={hasSecondPillar}
+        contracts={contracts}
+        startedFundPension={startedFundPensions.secondPillar}
         onChange={onChange}
+        onContractChange={onContractChange}
         onEditYou={onEditYou}
       >
         {hasSecondPillar && (
@@ -146,7 +174,10 @@ export const Age60Step = ({
         pillar="thirdPillar"
         answers={answers}
         hasPillar={hasThirdPillar}
+        contracts={contracts}
+        startedFundPension={startedFundPensions.thirdPillar}
         onChange={onChange}
+        onContractChange={onContractChange}
         onEditYou={onEditYou}
       />
       <FundPensionFaq />

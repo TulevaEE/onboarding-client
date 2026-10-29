@@ -11,6 +11,10 @@ import { THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021 } from './thirdPillarPayoutA
 import { strong } from './richText';
 import { euro } from './amountFormat';
 import { LinkButton } from './LinkButton';
+import { Contract } from './age66Answers';
+import { ContractChoices } from './ContractChoices';
+import { ChoiceMadeNote } from './ChoiceMadeNote';
+import { FundPensionChoice } from './prefill';
 
 const PLANS: ThirdPillarPlan[] = ['keep', 'fund', 'lump'];
 const PAYOUTS_URL = 'https://tuleva.ee/pensioni-valjamaksed/';
@@ -21,7 +25,10 @@ interface Props {
   answers: YouAnswers;
   age55: Age55;
   headingRef: RefObject<HTMLHeadingElement>;
+  contract: Contract;
+  startedFundPension?: FundPensionChoice;
   onChange: (changes: Partial<YouAnswers>) => void;
+  onContractChange: (contract: Contract) => void;
   onEditThirdPillar: () => void;
 }
 
@@ -58,7 +65,16 @@ const PlanOutcome = ({
     />
   );
 
-export const Age55Step = ({ answers, age55, headingRef, onChange, onEditThirdPillar }: Props) => {
+export const Age55Step = ({
+  answers,
+  age55,
+  headingRef,
+  contract,
+  startedFundPension,
+  onChange,
+  onContractChange,
+  onEditThirdPillar,
+}: Props) => {
   const intl = useIntl();
   const lockMessage: TranslationKey | null = age55.lock && `futureMe.age55.lock.${age55.lock}`;
   const planTexts = (plan: ThirdPillarPlan) => ({
@@ -111,6 +127,7 @@ export const Age55Step = ({ answers, age55, headingRef, onChange, onEditThirdPil
         <legend className="form-label fs-6 fw-medium">
           <FormattedMessage id="futureMe.age55.plan.legend" />
         </legend>
+        {startedFundPension && <ChoiceMadeNote choice={startedFundPension} />}
         {PLANS.map((plan) => {
           const { title, hint } = planTexts(plan);
           return (
@@ -133,6 +150,14 @@ export const Age55Step = ({ answers, age55, headingRef, onChange, onEditThirdPil
           );
         })}
       </fieldset>
+      {age55.plan === 'fund' && (
+        <ContractChoices
+          pillar="thirdPillar"
+          idPrefix="future-me-55"
+          contract={contract}
+          onChange={onContractChange}
+        />
+      )}
       <p className={age55.payout ? 'you-note text-pretty' : undefined} role="status">
         {age55.payout && <PlanOutcome plan={age55.plan} age={age55.age} payout={age55.payout} />}
       </p>

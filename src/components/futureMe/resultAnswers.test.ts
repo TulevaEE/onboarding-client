@@ -289,6 +289,75 @@ describe('resultAnswers', () => {
     });
   });
 
+  describe('payout chosen five years before the pension age', () => {
+    it.each(['fund', 'lump'] as const)(
+      'starts the %s payout five years before the pension age',
+      (secondPillar) => {
+        const context = contextWith({}, { age60: { ...initialAge60(), secondPillar } });
+
+        expect(resultInputOf(context).p2PayoutFrom).toBe(60);
+      },
+    );
+
+    it('leaves the start to the pension age while the money keeps growing', () => {
+      expect(resultInputOf(contextWith()).p2PayoutFrom).toBeUndefined();
+    });
+
+    describe('for the III pillar', () => {
+      const saver = {
+        thirdPillarJoined: 'after' as const,
+        thirdPillarAmount: '5000',
+        thirdPillarMonthly: '50',
+      };
+
+      it.each(['fund', 'lump'] as const)(
+        'starts the %s payout five years before the pension age',
+        (thirdPillar) => {
+          const context = contextWith(saver, { age60: { ...initialAge60(), thirdPillar } });
+
+          expect(resultInputOf(context).p3PayoutFrom).toBe(60);
+        },
+      );
+
+      it('leaves the start to the pension age while the money keeps growing', () => {
+        expect(resultInputOf(contextWith(saver)).p3PayoutFrom).toBeUndefined();
+      });
+
+      it('keeps the fund pension started at 55', () => {
+        const context = contextWith(
+          { ...saver, thirdPillarJoined: 'before', thirdPillarPlan: 'fund' },
+          { age60: { ...initialAge60(), thirdPillar: 'lump' } },
+        );
+
+        expect(resultInputOf(context).p3PayoutFrom).toBeUndefined();
+      });
+
+      it('leaves nothing in the III pillar at the pension age when taken at once at 55 and at 60', () => {
+        const potAtPensionAge = (changes: Parameters<typeof contextWith>[0], rest = {}) =>
+          resultOf(contextWith({ ...saver, ...changes }, rest)).rows.find(({ age }) => age === 65)
+            ?.pot;
+        const withoutThirdPillar = potAtPensionAge({
+          thirdPillarAmount: '0',
+          thirdPillarMonthly: '0',
+        });
+
+        expect(
+          potAtPensionAge(
+            { thirdPillarJoined: 'before', thirdPillarPlan: 'lump' },
+            { age60: { ...initialAge60(), thirdPillar: 'lump' } },
+          ),
+        ).toBeCloseTo(withoutThirdPillar as number);
+      });
+    });
+
+    it('has the money taken while working on the deposit at the pension age', () => {
+      const context = contextWith({}, { age60: { ...initialAge60(), secondPillar: 'fund' } });
+      const atPensionAge = resultOf(context).rows.find(({ age }) => age === 65);
+
+      expect(atPensionAge?.deposit).toBeGreaterThan(0);
+    });
+  });
+
   describe('payout scenario', () => {
     it('keeps growing the money by default', () => {
       expect(resultScenarioOf(contextWith()).id).toBe('E');

@@ -1,7 +1,8 @@
 import { Age60Answers, PayoutChoice } from './age60Answers';
 import { Age65Answers, isPayoutChoiceMadeAtAnotherStep, workUntilOf } from './age65Answers';
-import { FirstPillarChoice } from './engine/pension';
-import { StepPlanInput } from './steps';
+import { CURRENT_YEAR, FirstPillarChoice, retirementYears } from './engine/pension';
+import { FutureMeStep, StepId, StepPlanInput } from './steps';
+import { age55Of } from './age55';
 import { YouAnswers } from './youAnswers';
 import { hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 import { thirdPillarPayoutAge } from './thirdPillarPayoutAges';
@@ -41,7 +42,7 @@ const pillarPayoutAge = (pillar: Pillar, { you, plan }: Pick<Age66Context, 'you'
   if (pillar === 'secondPillar') {
     return payoutAge(plan);
   }
-  return thirdPillarPayoutAge(you.thirdPillarJoined === 'before');
+  return thirdPillarPayoutAge(you.thirdPillarJoined === 'before', retirementYears(plan));
 };
 
 export const fundStartAges = (
@@ -91,6 +92,13 @@ const payoutOpenAge = (pillar: Pillar, context: Age66Context): number => {
   return Math.max(pensionAge, workEnd, pillarPayoutAge(pillar, context));
 };
 
+const payoutAgeStart = (pillar: Pillar, context: Age66Context): number =>
+  Math.max(
+    payoutAge(context.plan),
+    pillarPayoutAge(pillar, context),
+    CURRENT_YEAR - context.plan.birthYear,
+  );
+
 export const fundPensionStartOf = (
   pillar: Pillar,
   answers: Age66Answers,
@@ -98,6 +106,9 @@ export const fundPensionStartOf = (
 ): number | undefined => {
   if (!hasPillar(pillar, context)) {
     return undefined;
+  }
+  if (context.age60[pillar] === 'fund') {
+    return payoutAgeStart(pillar, context);
   }
   if (payoutAtPensionAge(pillar, context) === 'fund') {
     return payoutOpenAge(pillar, context);
@@ -114,6 +125,27 @@ export const isContractAsked = (
   hasPillar(pillar, context) &&
   (payoutAtPensionAge(pillar, context) === 'fund' ||
     fundStartOf(pillar, answers, context) !== undefined);
+
+export interface ContractChoiceMade {
+  age: number;
+  step: StepId;
+}
+
+export const contractChosenAt = (
+  pillar: Pillar,
+  context: Age66Context,
+): ContractChoiceMade | null => {
+  if (!hasPillar(pillar, context)) {
+    return null;
+  }
+  const age55 = age55Of(context.you, 1);
+  if (pillar === 'thirdPillar' && age55.plan === 'fund') {
+    return { age: age55.age, step: FutureMeStep.AGE_55 };
+  }
+  return context.age60[pillar] === 'fund'
+    ? { age: payoutAge(context.plan), step: FutureMeStep.AGE_60 }
+    : null;
+};
 
 export const contractLock = (
   pillar: Pillar,
