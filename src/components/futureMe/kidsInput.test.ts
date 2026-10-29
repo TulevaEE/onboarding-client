@@ -23,10 +23,16 @@ describe('kidsInputOf', () => {
     expect(kids).toMatchObject({ b1991: 1, b2012: 1, b2013: 1, b2021: 1, bUnknown: 0 });
   });
 
-  it('counts a child with a missing or invalid birth year as unknown', () => {
-    const kids = kidsInputOf(withKids(['', '19']), october2026);
+  it('counts a child with a missing birth year as unknown', () => {
+    const kids = kidsInputOf(withKids(['', '']), october2026);
 
     expect(kids).toMatchObject({ bUnknown: 2, b1991: 0 });
+  });
+
+  it('leaves out a child whose birth year is invalid, as the early right from the children does', () => {
+    const kids = kidsInputOf(withKids(['1995', '1998', '19', '2050']), october2026);
+
+    expect(kids).toMatchObject({ b2012: 2, bUnknown: 0 });
   });
 
   it('leaves out a child who has not been raised for 8 years by the retirement', () => {

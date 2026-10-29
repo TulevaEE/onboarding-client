@@ -83,12 +83,13 @@ const childAt = (
   retirementYear: number,
   now: Date,
 ): Child | null => {
-  const year = validChildBirthYear(answers.kidsBirthYears[index] ?? '', maxChildBirthYear(answers));
-  const month = parseInt(answers.kidsBirthMonths[index] ?? '', 10) || 0;
-  if (year === null) {
+  const typed = (answers.kidsBirthYears[index] ?? '').trim();
+  if (typed === '') {
     return { group: 'bUnknown' };
   }
-  if (year + YEARS_RAISING_A_CHILD > retirementYear) {
+  const year = validChildBirthYear(typed, maxChildBirthYear(answers));
+  const month = parseInt(answers.kidsBirthMonths[index] ?? '', 10) || 0;
+  if (year === null || year + YEARS_RAISING_A_CHILD > retirementYear) {
     return null;
   }
   const group = groupOf(year, month);
