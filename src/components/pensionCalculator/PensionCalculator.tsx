@@ -56,9 +56,6 @@ import {
   projectedRemainingYears,
   projectedRetirementAge,
   RETIREMENT_AGE_DEFAULT,
-  RETURN_MAX,
-  RETURN_MIN,
-  RETURN_STEP,
   SMART_PAYOUT_HORIZON_AGE,
   SECOND_PILLAR_RATES,
   thirdPillarTaxCapMonthly,
@@ -104,6 +101,9 @@ const HOW_IT_WORKS = [
   { heading: 'pensionCalculator.how.tax.heading', body: 'pensionCalculator.how.tax.body' },
 ] as const;
 
+const RETURN_MIN = -10;
+const RETURN_MAX = 10;
+const RETURN_STEP = 1;
 const HISTORICAL_RETURN = 7; // long-run historical stock return, marked on the slider
 const HISTORICAL_RETURN_LEFT = ((HISTORICAL_RETURN - RETURN_MIN) / (RETURN_MAX - RETURN_MIN)) * 100;
 const FEE_STEP = 0.01;

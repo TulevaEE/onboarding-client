@@ -1,4 +1,3 @@
-import { DEFAULT_RETURN_PERCENT } from '../pensionCalculator/calculation';
 import {
   AVG_OLD_AGE_PENSION,
   earlyYears,
@@ -20,6 +19,7 @@ export const PREFILLED_FIRST_PILLAR_MONTHLY = String(Math.round(AVG_OLD_AGE_PENS
 
 const UNKNOWN_SEX: Sex = 'X';
 const DEFAULT_SECOND_PILLAR_RATE = '0.02';
+const DEFAULT_RETURN_PERCENT = 0;
 const MAX_PENSION_AGE = Math.max(...PENSION_AGE_OPTIONS);
 const MIN_CHILD_BIRTH_YEAR = 1930;
 const YEARS_RAISING_A_CHILD = 8;
@@ -29,6 +29,12 @@ const CHILD_BIRTH_YEAR_TEXT = /^\d{4}$/;
 const FLEXIBLE_PENSION_MAX_YEARS_EARLY = 5;
 const SPECIAL_PENSION_START_AGE_LIMITS = { min: 35, max: 70 };
 const WORK_YEARS_LIMITS = { min: 0, max: 50 };
+const RETURN_PERCENT_LIMITS = { min: -10, max: 10 };
+
+export const RETURN_PERCENT_OPTIONS = Array.from(
+  { length: RETURN_PERCENT_LIMITS.max - RETURN_PERCENT_LIMITS.min + 1 },
+  (_, index) => RETURN_PERCENT_LIMITS.min + index,
+);
 
 export type ThirdPillarJoined = 'before' | 'after' | 'none';
 export type ThirdPillarPlan = 'keep' | 'fund' | 'lump';

@@ -2,9 +2,15 @@ import React, { ChangeEvent } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { RETURN_MAX, RETURN_MIN, RETURN_STEP } from '../pensionCalculator/calculation';
 import { signedNumber } from './amountFormat';
-import { fieldProblem, limitsOf, PrefilledField, YouAnswers, YouField } from './youAnswers';
+import {
+  fieldProblem,
+  limitsOf,
+  PrefilledField,
+  RETURN_PERCENT_OPTIONS,
+  YouAnswers,
+  YouField,
+} from './youAnswers';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';
 
@@ -176,13 +182,8 @@ export const AmountField = ({
   );
 };
 
-const RETURN_PERCENTS = Array.from(
-  { length: (RETURN_MAX - RETURN_MIN) / RETURN_STEP + 1 },
-  (_, index) => RETURN_MIN + index * RETURN_STEP,
-);
-
 export const returnOptions = (intl: IntlShape) =>
-  RETURN_PERCENTS.map((percent) => ({
+  RETURN_PERCENT_OPTIONS.map((percent) => ({
     value: String(percent),
     label: intl.formatMessage(
       { id: 'futureMe.you.returnRate.option' },
