@@ -13,6 +13,7 @@ import {
 const lifeTable: LifeTable = lifeTableData;
 const MEDIAN_SURVIVAL = 0.5;
 const MIN_LEFT_OVER = 1000;
+const NOTICEABLE_SHORTFALL = 0.5;
 
 export type Legacy =
   | { kind: 'shortfall'; isSecondPillarLumpSum: boolean; secondPillarReturn: number }
@@ -32,8 +33,9 @@ export const legacyOf = (context: ResultContext, result: Result): Legacy => {
   const input = resultInputOf(context);
   const medianAge = medianAgeOf(input);
   const left = result.rows.find((row) => row.age === medianAge)?.moneyLeft ?? 0;
-  const isCoverageOverByMedianAge =
-    result.coversNeedUntil !== null && !result.gapTemporary && result.coversNeedUntil <= medianAge;
+  const isCoverageOverByMedianAge = result.rows
+    .filter((row) => row.age >= medianAge)
+    .every((row) => row.shortfall > NOTICEABLE_SHORTFALL);
   if (left < MIN_LEFT_OVER || isCoverageOverByMedianAge) {
     return {
       kind: 'shortfall',

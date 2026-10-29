@@ -56,6 +56,17 @@ const gapThatClosesAgain = () =>
     { age65: { ...initialAge65(), mode: 'defer' as const, years: 1 } },
   );
 
+const earlyGapThenLateGap = () =>
+  contextWith({
+    sex: 'M',
+    workAdded: true,
+    hazardList: 'list1',
+    hazardYears: '15',
+    firstPillarMonthly: '500',
+    grossMonthly: '0',
+    secondPillarAmount: '50000',
+  });
+
 describe('legacyOf', () => {
   it('has money left at the median age of someone whose pensions out-earn the costs', () => {
     const legacy = legacyFor(wealthy());
@@ -94,6 +105,19 @@ describe('legacyOf', () => {
 
     expect(resultOf(context).gapTemporary).toBe(true);
     expect(legacyFor(context).kind).toBe('surplus');
+  });
+
+  it('has money left when an early gap closes and the costs run short again only after the median age', () => {
+    const context = earlyGapThenLateGap();
+    const result = resultOf(context);
+    const legacy = legacyOf(context, result);
+
+    expect(result.coversNeedUntil).toBe(55);
+    expect(result.gapTemporary).toBe(false);
+    expect(legacy).toMatchObject({ kind: 'surplus', medianAge: 79 });
+    const { medianAge } = legacy as { medianAge: number };
+    expect(result.rows.find((row) => row.age === medianAge)?.shortfall).toBe(0);
+    expect(result.rows.some((row) => row.age > medianAge && row.shortfall > 0.5)).toBe(true);
   });
 
   it('suggests keeping the second pillar growing only when it was taken out as a lump sum', () => {
