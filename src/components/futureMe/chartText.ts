@@ -20,6 +20,9 @@ const EVENT_LABELS: Record<ChartEventKind, TranslationKey> = {
 export const eventTextOf = (intl: IntlShape, { kind, pillars, years, next }: ChartEvent) =>
   intl.formatMessage({ id: EVENT_LABELS[kind] }, { pillars, years, next });
 
+export const axisAmountOf = (intl: IntlShape, value: number | string) =>
+  intl.formatNumber(Number(value), { notation: 'compact', maximumFractionDigits: 1 });
+
 export const withoutLayersTextOf = (intl: IntlShape, id: TranslationKey, cover: Cover) =>
   intl.formatMessage(
     { id },

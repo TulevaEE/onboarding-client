@@ -2,9 +2,10 @@ import { createIntl } from 'react-intl';
 import translations from '../translations';
 import { ChartRow } from './chartData';
 import { Cover } from './chartPoints';
-import { announcementOf, eventTextOf } from './chartText';
+import { announcementOf, axisAmountOf, eventTextOf } from './chartText';
 
 const intl = createIntl({ locale: 'et', messages: translations.et });
+const englishIntl = createIntl({ locale: 'en', messages: translations.en });
 
 const rowWith = (changes: Partial<ChartRow>): ChartRow => ({
   age: 70,
@@ -118,5 +119,27 @@ describe('chartText', () => {
         next: 'thirdContinues',
       }),
     ).toMatch(/^II\ssamba fondipension lõpeb \(periood keskmise eluea järgi, 20\sa\), III jätkub$/);
+  });
+});
+
+describe('axisAmountOf', () => {
+  it('keeps amounts under a thousand as they are', () => {
+    expect(axisAmountOf(intl, 950)).toBe('950');
+  });
+
+  it('shortens thousands in Estonian', () => {
+    expect(axisAmountOf(intl, 12500)).toMatch(/^12,5\stuh$/);
+  });
+
+  it('shortens thousands in English', () => {
+    expect(axisAmountOf(englishIntl, 12500)).toBe('12.5K');
+  });
+
+  it('shortens millions instead of counting thousands', () => {
+    expect(axisAmountOf(intl, 1_000_000)).toMatch(/^1\smln$/);
+  });
+
+  it('reads the amounts Chart.js gives as strings', () => {
+    expect(axisAmountOf(intl, '145000')).toMatch(/^145\stuh$/);
   });
 });

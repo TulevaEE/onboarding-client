@@ -312,7 +312,7 @@ describe('Result step', () => {
       openResultStep();
       const tick = lastChartProps().options.scales.y.ticks.callback;
 
-      expect([tick(500), tick(1000), tick(1500)]).toEqual(['500', '1 tuh', '1,5 tuh']);
+      expect([tick(500), tick(1000), tick(1500)]).toEqual(['500', '1K', '1.5K']);
     });
 
     it('keeps the side axis the same width whatever its amounts', () => {
