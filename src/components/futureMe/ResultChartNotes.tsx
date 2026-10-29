@@ -5,6 +5,7 @@ import { Assumption, SummaryNote } from './chartNotes';
 import { ChartEvent } from './chartEvents';
 import { SUMMARY_LABELS } from './chartSources';
 import { strong } from './richText';
+import { useTouchView } from './useTouchView';
 
 const TAX_FROM = 0.5;
 
@@ -77,6 +78,7 @@ interface GuideProps {
 
 export const ChartGuide = ({ events, startsBeforePension }: GuideProps) => {
   const intl = useIntl();
+  const isTouchView = useTouchView();
   const horizon = events.find(({ kind }) => kind === 'horizon');
   const fundPeriods = Array.from(
     new Set(events.flatMap(({ kind, years }) => (kind === 'fundEnd' && years ? [years] : []))),
@@ -99,7 +101,13 @@ export const ChartGuide = ({ events, startsBeforePension }: GuideProps) => {
           </li>
         )}
         <li>
-          <FormattedMessage id="futureMe.result.chart.guide.events" />
+          <FormattedMessage
+            id={
+              isTouchView
+                ? 'futureMe.result.chart.guide.eventsTouch'
+                : 'futureMe.result.chart.guide.events'
+            }
+          />
         </li>
         {horizon && (
           <li>

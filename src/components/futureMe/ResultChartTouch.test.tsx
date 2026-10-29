@@ -164,6 +164,16 @@ describe('ResultChart on a touch screen', () => {
     });
   });
 
+  describe('the reading guide', () => {
+    it('sends the saver to the ages below the chart, as touching the chart opens nothing', () => {
+      renderChart();
+      const guide = screen.getByRole('group', { name: '' });
+
+      expect(guide).toHaveTextContent('Vanuse summad avanevad, kui valid graafiku all vanuse.');
+      expect(guide).not.toHaveTextContent('puudutades');
+    });
+  });
+
   describe('age buttons', () => {
     it('stand in a toolbar below the chart, one for every five years', () => {
       renderChart();
