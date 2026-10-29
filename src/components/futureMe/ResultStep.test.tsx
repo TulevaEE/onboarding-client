@@ -415,7 +415,8 @@ describe('Result step', () => {
       userEvent.click(screen.getByRole('button', { name: 'Selgitus: Kuidas see summa tekib' }));
 
       const dialog = screen.getByRole('dialog', { name: 'Kuidas see summa tekib?' });
-      expect(dialog).toHaveTextContent(/sammastes u [1-9]/);
+      expect(dialog).toHaveTextContent(/sammastes praegu u 105\s000\s€;/);
+      expect(dialog).not.toHaveTextContent(/pensionile minnes/);
       expect(dialog).not.toHaveTextContent(/alates 70-/);
     });
   });

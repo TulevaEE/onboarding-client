@@ -4,6 +4,7 @@ import { TranslationKey } from '../translations';
 import { euro } from './amountFormat';
 import { ChapterHead } from './ChapterHead';
 import { DecisionId } from './decisions';
+import { SimulationRow } from './engine/pension';
 import { needMonthly } from './expensesAnswers';
 import { HelpButton } from './HelpButton';
 import { ResultAdvice } from './ResultAdvice';
@@ -78,18 +79,22 @@ const AnswerText = ({ result, need }: { result: Result; need: number }) => {
   );
 };
 
+const isPastPensionAge = ({ rows, pensionStartAge }: Result): boolean =>
+  rows[0].age > pensionStartAge;
+
+const savingsAtPensionStartOrToday = ({ rows, pensionStartAge }: Result): SimulationRow =>
+  rows.find(({ age }) => age === pensionStartAge) ?? rows[0];
+
 const sustainableHelpValues = (result: Result, need: number) => {
   const statePensionRow = result.rows.find((row) => row.i1g > 0.5);
-  // Someone past the pension age has no row at it: the first row is what they have today.
-  const pensionStartRow =
-    result.rows.find((row) => row.age === result.pensionStartAge) ?? result.rows[0];
   return {
     sustainable: euro(result.sustainable),
     horizonAge: result.horizonAge,
     hasStatePension: statePensionRow ? 'yes' : 'no',
     statePension: euro(statePensionRow?.i1g ?? 0),
     statePensionAge: result.p1StartAge,
-    pot: euro(pensionStartRow?.pot ?? 0),
+    isPastPensionAge: isPastPensionAge(result) ? 'yes' : 'no',
+    pot: euro(savingsAtPensionStartOrToday(result).pot),
     need: euro(need),
   };
 };
