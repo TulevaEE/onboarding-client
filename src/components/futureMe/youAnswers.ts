@@ -246,15 +246,25 @@ export const isChildIIMonthsInvalid = (answers: YouAnswers, index: number): bool
   return typed !== '' && !(/^\d+$/.test(typed) && Number(typed) <= PARENTAL_PAYMENT_MONTHS);
 };
 
-export const isChildIIMonthsAsked = (answers: YouAnswers, index: number): boolean =>
-  isParentalPaymentMonthsAsked({
-    year: Number((answers.kidsBirthYears[index] ?? '').trim()),
-    month: parseInt(answers.kidsBirthMonths[index] ?? '', 10) || 0,
-  });
+export const isChildIIMonthsAsked = (
+  answers: YouAnswers,
+  index: number,
+  now: Date = new Date(),
+): boolean =>
+  isParentalPaymentMonthsAsked(
+    {
+      year: Number((answers.kidsBirthYears[index] ?? '').trim()),
+      month: parseInt(answers.kidsBirthMonths[index] ?? '', 10) || 0,
+    },
+    now,
+  );
 
-export const firstInvalidChildIIMonths = (answers: YouAnswers): number | undefined =>
+export const firstInvalidChildIIMonths = (
+  answers: YouAnswers,
+  now: Date = new Date(),
+): number | undefined =>
   Array.from({ length: childRows(answers) }, (_, index) => index).find(
-    (index) => isChildIIMonthsAsked(answers, index) && isChildIIMonthsInvalid(answers, index),
+    (index) => isChildIIMonthsAsked(answers, index, now) && isChildIIMonthsInvalid(answers, index),
   );
 
 export const maxChildBirthYear = (answers: YouAnswers): number =>

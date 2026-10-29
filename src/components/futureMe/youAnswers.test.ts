@@ -109,6 +109,16 @@ describe('children from the register', () => {
 });
 
 describe('the months the state paid into the II pillar for a child', () => {
+  const october2026 = new Date(2026, 9, 28);
+  const bornIn = (year: string, month: string, iiMonths = '') =>
+    filledIn({
+      kidsAdded: true,
+      kidsCount: '1',
+      kidsBirthYears: [year],
+      kidsBirthMonths: [month],
+      kidsIIMonths: [iiMonths],
+    });
+
   it.each([
     ['2021', '8', false],
     ['2021', '', false],
@@ -119,14 +129,16 @@ describe('the months the state paid into the II pillar for a child', () => {
     ['2024', '', false],
     ['2030', '', false],
   ])('is asked for a child born in %p, month %p: %p', (year, month, isAsked) => {
-    const answers = filledIn({
-      kidsAdded: true,
-      kidsCount: '1',
-      kidsBirthYears: [year],
-      kidsBirthMonths: [month],
-    });
+    expect(isChildIIMonthsAsked(bornIn(year, month), 0, october2026)).toBe(isAsked);
+  });
 
-    expect(isChildIIMonthsAsked(answers, 0)).toBe(isAsked);
+  it('is not asked of a child still under 3 by the birth month, whose months the calculation does not use', () => {
+    expect(isChildIIMonthsAsked(bornIn('2023', '11'), 0, october2026)).toBe(false);
+    expect(firstInvalidChildIIMonths(bornIn('2023', '11', '40'), october2026)).toBeUndefined();
+  });
+
+  it('is asked once the child turns 3, by the clock rather than the calculation year', () => {
+    expect(isChildIIMonthsAsked(bornIn('2024', '1'), 0, new Date(2027, 1, 15))).toBe(true);
   });
 
   it('points at a month count over 36 of a child born from September 2021', () => {
@@ -138,7 +150,7 @@ describe('the months the state paid into the II pillar for a child', () => {
       kidsIIMonths: ['', '40'],
     });
 
-    expect(firstInvalidChildIIMonths(answers)).toBe(1);
+    expect(firstInvalidChildIIMonths(answers, october2026)).toBe(1);
   });
 
   it.each(['', '0', '12', '36'])('accepts %p', (typed) => {

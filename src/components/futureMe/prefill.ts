@@ -145,6 +145,6 @@ export const derivePrefill = (
     thirdPillarAmount,
     thirdPillarMonthly: deriveThirdPillarMonthly(contributions, today),
     thirdPillarJoined: hasThirdPillarMoneyWithoutJoinDate ? null : thirdPillarJoined,
-    kids: deriveKidsPrefill(children, contributions),
+    kids: deriveKidsPrefill(children, contributions, today),
   };
 };

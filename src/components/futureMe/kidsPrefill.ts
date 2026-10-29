@@ -1,12 +1,11 @@
 import { Contribution } from '../common/apiModels';
 import { EligibleChild } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
-import { CURRENT_YEAR } from './engine/pension';
 
 const PERSONAL_CODE = /^[1-8]\d{10}$/;
 const MONTHS_IN_YEAR = 12;
 const FIRST_BIRTH_YEAR_WITH_PARENTAL_PAYMENT = 2021;
 const FIRST_BIRTH_MONTH_WITH_PARENTAL_PAYMENT = 9;
-const YEARS_OF_PARENTAL_PAYMENT = 3;
+const YEARS_UNDER_3_WITHOUT_BIRTH_MONTH = 2;
 export const PARENTAL_PAYMENT_MONTHS = 36;
 const CENTURY_BY_FIRST_DIGIT = [1800, 1800, 1900, 1900, 2000, 2000, 2100, 2100];
 
@@ -23,8 +22,23 @@ const isBornWithParentalPayment = ({ year, month }: ChildBirth): boolean =>
   (year === FIRST_BIRTH_YEAR_WITH_PARENTAL_PAYMENT &&
     month >= FIRST_BIRTH_MONTH_WITH_PARENTAL_PAYMENT);
 
-export const isParentalPaymentMonthsAsked = (birth: ChildBirth): boolean =>
-  isBornWithParentalPayment(birth) && birth.year <= CURRENT_YEAR - YEARS_OF_PARENTAL_PAYMENT;
+const birthMonthOf = (birth: ChildBirth): number => birth.year * MONTHS_IN_YEAR + birth.month - 1;
+
+export const monthsSinceBirth = (birth: ChildBirth, now: Date): number =>
+  now.getFullYear() * MONTHS_IN_YEAR + now.getMonth() - birthMonthOf(birth);
+
+export const isUnder3 = (birth: ChildBirth, now: Date): boolean => {
+  if (birth.year > now.getFullYear()) {
+    return true;
+  }
+  if (birth.month) {
+    return monthsSinceBirth(birth, now) < PARENTAL_PAYMENT_MONTHS;
+  }
+  return birth.year >= now.getFullYear() - YEARS_UNDER_3_WITHOUT_BIRTH_MONTH;
+};
+
+export const isParentalPaymentMonthsAsked = (birth: ChildBirth, now: Date): boolean =>
+  isBornWithParentalPayment(birth) && !isUnder3(birth, now);
 
 export const childBirthOf = (personalCode: string): ChildBirth | null => {
   if (!PERSONAL_CODE.test(personalCode)) {
@@ -40,8 +54,6 @@ export const childBirthOf = (personalCode: string): ChildBirth | null => {
 
 const monthIndexOf = (isoTime: string): number =>
   Number(isoTime.slice(0, 4)) * MONTHS_IN_YEAR + Number(isoTime.slice(5, 7)) - 1;
-
-const birthMonthOf = (birth: ChildBirth): number => birth.year * MONTHS_IN_YEAR + birth.month - 1;
 
 const monthsPaidFor = (birth: ChildBirth, contributions: Contribution[]): number => {
   const firstMonth = birthMonthOf(birth);
@@ -69,9 +81,10 @@ const iiMonthsOf = (
   birth: ChildBirth,
   births: ChildBirth[],
   contributions: Contribution[],
+  today: Date,
 ): string => {
   const months =
-    isParentalPaymentMonthsAsked(birth) && !sharesPaymentYears(birth, births)
+    isParentalPaymentMonthsAsked(birth, today) && !sharesPaymentYears(birth, births)
       ? monthsPaidFor(birth, contributions)
       : 0;
   return months > 0 ? String(months) : '';
@@ -80,6 +93,7 @@ const iiMonthsOf = (
 export const deriveKidsPrefill = (
   children: Pick<EligibleChild, 'personalCode'>[] | undefined,
   contributions: Contribution[] | undefined,
+  today: Date = new Date(),
 ): KidsPrefill | null => {
   const births = (children ?? [])
     .map(({ personalCode }) => childBirthOf(personalCode))
@@ -89,6 +103,6 @@ export const deriveKidsPrefill = (
     : {
         birthYears: births.map(({ year }) => year),
         birthMonths: births.map(({ month }) => month),
-        iiMonths: births.map((birth) => iiMonthsOf(birth, births, contributions ?? [])),
+        iiMonths: births.map((birth) => iiMonthsOf(birth, births, contributions ?? [], today)),
       };
 };

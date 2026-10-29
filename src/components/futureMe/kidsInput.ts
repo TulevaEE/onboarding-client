@@ -1,4 +1,5 @@
 import { KidsInput } from './engine/pension';
+import { isUnder3, monthsSinceBirth } from './kidsPrefill';
 import {
   birthYearOrFallback,
   childRows,
@@ -18,9 +19,7 @@ const LAST_MONTH_BEFORE_II_PILLAR_PAYMENTS = 8;
 const FIRST_YEAR_OF_II_PILLAR_PAYMENTS = 2021;
 const LAST_YEAR_OF_1991_GROUP = 1990;
 const LAST_YEAR_OF_2012_GROUP = 2012;
-const MONTHS_IN_YEAR = 12;
 const YEARS_THE_BIRTH_MONTH_IS_ASKED = 3;
-const YEARS_UNDER_3_WITHOUT_BIRTH_MONTH = 2;
 
 type Group = 'b1991' | 'b2012' | 'b2013' | 'b2021' | 'bUnknown';
 
@@ -50,11 +49,10 @@ export const isChildMonthAsked = (typedYear: string, now: Date = new Date()): bo
   );
 };
 
-const monthsSince = (year: number, month: number, now: Date): number =>
-  now.getFullYear() * MONTHS_IN_YEAR + now.getMonth() - (year * MONTHS_IN_YEAR + month - 1);
-
 const under3Of = (year: number, month: number, now: Date): Under3 | undefined => {
-  const monthsLeft = STATE_PAYS_II_PILLAR_MONTHS - monthsSince(year, month, now);
+  if (!isUnder3({ year, month }, now)) {
+    return undefined;
+  }
   if (year > now.getFullYear()) {
     return {
       left: STATE_PAYS_II_PILLAR_MONTHS,
@@ -62,12 +60,8 @@ const under3Of = (year: number, month: number, now: Date): Under3 | undefined =>
       startMonth: month || 1,
     };
   }
-  if (month) {
-    return monthsLeft > 0 ? { left: Math.min(STATE_PAYS_II_PILLAR_MONTHS, monthsLeft) } : undefined;
-  }
-  return year >= now.getFullYear() - YEARS_UNDER_3_WITHOUT_BIRTH_MONTH
-    ? { left: undefined }
-    : undefined;
+  const monthsLeft = STATE_PAYS_II_PILLAR_MONTHS - monthsSinceBirth({ year, month }, now);
+  return { left: month ? Math.min(STATE_PAYS_II_PILLAR_MONTHS, monthsLeft) : undefined };
 };
 
 const groupOf = (year: number, month: number): Group => {

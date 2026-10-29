@@ -76,6 +76,15 @@ describe('children prefill from the register and the contributions', () => {
     expect(deriveKidsPrefill(bornOctober2021, contributions)?.iiMonths).toEqual(['16']);
   });
 
+  it('leaves the months empty for a child still under 3, whose months the calculation does not ask', () => {
+    const bornNovember2023 = [{ personalCode: '62311100000' }];
+    const contributions = monthsFrom(2023, 12, 35).map((time) => parentalBenefit(time));
+
+    expect(
+      deriveKidsPrefill(bornNovember2023, contributions, new Date(2026, 9, 28))?.iiMonths,
+    ).toEqual(['']);
+  });
+
   it('counts a month with two payments once', () => {
     const contributions = [...monthsFrom(2023, 3, 12), ...monthsFrom(2023, 3, 12)].map((time) =>
       parentalBenefit(time),
