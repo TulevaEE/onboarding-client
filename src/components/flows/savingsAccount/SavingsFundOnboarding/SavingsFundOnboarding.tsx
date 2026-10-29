@@ -24,7 +24,6 @@ import {
 import { transformFormDataToOnboardingSurveryCommand } from '../utils';
 import { ErrorResponse } from '../../../common/apiModels';
 import { OnboardingFlowLayout } from './OnboardingFlowLayout';
-import { TKF_DOCUMENTS } from './tkfDocuments';
 
 const buildSteps = (
   control: Control<OnboardingFormData>,
@@ -101,7 +100,7 @@ const buildSteps = (
       fields: ['personalInvestmentProfile.sourceOfIncome'],
     },
     {
-      component: <TermsStep key="terms" control={control} documents={TKF_DOCUMENTS} />,
+      component: <TermsStep key="terms" control={control} />,
       fields: ['termsAccepted'],
     },
   ];

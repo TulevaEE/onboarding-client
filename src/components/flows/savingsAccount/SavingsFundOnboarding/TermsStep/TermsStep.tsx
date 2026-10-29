@@ -1,12 +1,12 @@
-import { ReactNode } from 'react';
-import { Control, Controller, Path } from 'react-hook-form';
+import { ReactNode, useEffect } from 'react';
+import { Control, Path, useController } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SharedOnboardingFields } from '../types';
 import { TranslationKey } from '../../../../translations';
+import { TKF_DOCUMENTS_IN_FORCE_COUNT, useTkfDocuments } from '../tkfDocuments';
 
 type TermsStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> = {
   control: Control<T>;
-  documents: { href: string; labelId: TranslationKey }[];
   showError?: boolean;
   confirmTextId?: TranslationKey;
 };
@@ -59,11 +59,31 @@ const SUMMARY_BULLETS: { icon: keyof typeof featureIcons; messageId: Translation
 
 export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFields>({
   control,
-  documents,
   showError,
   confirmTextId = 'flows.savingsFundOnboarding.termsStep.confirmText',
 }: TermsStepProps<T>) => {
   const intl = useIntl();
+  const documents = useTkfDocuments();
+  const {
+    field,
+    fieldState: { error },
+  } = useController({
+    control,
+    name: 'termsAccepted' as Path<T>,
+    rules: {
+      validate: (value) =>
+        value === true || intl.formatMessage({ id: 'flows.savingsFundOnboarding.termsStep.error' }),
+    },
+  });
+  const documentsShown = documents !== undefined;
+  const { value: termsAccepted, onChange: setTermsAccepted } = field;
+
+  useEffect(() => {
+    if (!documentsShown && termsAccepted) {
+      setTermsAccepted(false);
+    }
+  }, [documentsShown, termsAccepted, setTermsAccepted]);
+
   return (
     <section className="d-flex flex-column gap-4" key="conditions">
       <div className="d-flex flex-column gap-1">
@@ -83,57 +103,74 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
           ))}
         </ul>
         <div className="d-flex flex-column gap-3">
-          {documents.map(({ href, labelId }) => (
-            <DocumentLink key={href} href={href}>
-              <FormattedMessage id={labelId} />
-            </DocumentLink>
-          ))}
-        </div>
-        <Controller
-          control={control}
-          name={'termsAccepted' as Path<T>}
-          rules={{
-            validate: (value) =>
-              value === true ||
-              intl.formatMessage({ id: 'flows.savingsFundOnboarding.termsStep.error' }),
-          }}
-          render={({ field, fieldState: { error } }) => (
-            <div className="form-check m-0 lead">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                id="terms-accepted"
-                checked={field.value as boolean}
-                onChange={field.onChange}
-              />
-              <label className="form-check-label w-100" htmlFor="terms-accepted">
-                <FormattedMessage id={confirmTextId} />
-              </label>
-              {showError && (
-                <p className="m-0 text-danger fs-base" role="alert">
-                  <FormattedMessage id="flows.savingsFundOnboarding.termsStep.error" />
-                </p>
-              )}
-              {error && error.message ? (
-                <p className="m-0 text-danger fs-base" role="alert">
-                  {error.message}
-                </p>
-              ) : null}
-            </div>
+          {documents ? (
+            documents.map(({ href, labelId }) => (
+              <DocumentLink key={labelId} href={href}>
+                <FormattedMessage id={labelId} />
+              </DocumentLink>
+            ))
+          ) : (
+            <DocumentLinkPlaceholders />
           )}
-        />
+        </div>
+        <div className="form-check m-0 lead">
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id="terms-accepted"
+            disabled={!documentsShown}
+            checked={termsAccepted as boolean}
+            onChange={setTermsAccepted}
+          />
+          <label className="form-check-label w-100" htmlFor="terms-accepted">
+            <FormattedMessage id={confirmTextId} />
+          </label>
+          {showError && (
+            <p className="m-0 text-danger fs-base" role="alert">
+              <FormattedMessage id="flows.savingsFundOnboarding.termsStep.error" />
+            </p>
+          )}
+          {error && error.message ? (
+            <p className="m-0 text-danger fs-base" role="alert">
+              {error.message}
+            </p>
+          ) : null}
+        </div>
       </div>
     </section>
   );
 };
 
+const DOCUMENT_CARD_CLASSES =
+  'd-flex align-items-center gap-2 p-3 p-sm-4 bg-blue-1 border border-blue-2 rounded-3 lead';
+
+const DocumentLinkPlaceholders = () => {
+  const { formatMessage } = useIntl();
+  return (
+    <div
+      className="d-flex flex-column gap-3 placeholder-glow"
+      role="status"
+      aria-label={formatMessage({ id: 'common.loading' })}
+    >
+      {Array.from({ length: TKF_DOCUMENTS_IN_FORCE_COUNT }, (_, index) => (
+        <div
+          key={index}
+          className={DOCUMENT_CARD_CLASSES}
+          data-testid="document-placeholder"
+          aria-hidden="true"
+        >
+          <span className="flex-shrink-0" style={{ width: '24px', height: '24px' }} />
+          <span className="flex-fill">
+            <span className="placeholder col-4" />
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const DocumentLink = ({ href, children }: { href: string; children: ReactNode }) => (
-  <a
-    className="d-flex align-items-center gap-2 p-3 p-sm-4 bg-blue-1 border border-blue-2 rounded-3 lead"
-    href={href}
-    target="_blank"
-    rel="noreferrer"
-  >
+  <a className={DOCUMENT_CARD_CLASSES} href={href} target="_blank" rel="noreferrer">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="24"
