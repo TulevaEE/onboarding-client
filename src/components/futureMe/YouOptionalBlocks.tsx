@@ -59,6 +59,7 @@ export const workOptional = (answers: YouAnswers, onAdd: () => void, onRemove: (
   optionalOf('work', answers.workAdded, onAdd, onRemove);
 
 const KIDS_USERS: KidsUser[] = ['me', 'other'];
+const NO_DISABLED_CHILD = 'no';
 const KIDS_IN_FORECAST: KidsInForecast[] = ['unknown', 'no', 'yes'];
 const MONTHS = Array.from({ length: 12 }, (_, month) => new Date(2000, month, 1));
 
@@ -122,6 +123,23 @@ export const KidsSection = ({
       kidsIIMonths: attributableIIMonths(prefilledKids, years, answers.kidsIIMonths),
     });
   };
+
+  const disabledChild = Array.from({ length: rows }, (_, row) => row).find(
+    (row) => answers.kidsDisabled[row],
+  );
+  const disabledChildOptions = [
+    { value: NO_DISABLED_CHILD, label: intl.formatMessage({ id: 'futureMe.you.kidsDisabled.no' }) },
+    ...Array.from({ length: rows }, (_, row) => ({
+      value: String(row),
+      label:
+        rows === 1
+          ? intl.formatMessage({ id: 'futureMe.you.kidsDisabled.yes' })
+          : intl.formatMessage(
+              { id: 'futureMe.you.kidsDisabled.child' },
+              { number: row + 1, year: answers.kidsBirthYears[row]?.trim() || 'none' },
+            ),
+    })),
+  ];
 
   const changeIIMonths = (index: number, typed: string) => {
     const months = Array.from({ length: rows }, (_, row) => answers.kidsIIMonths[row] ?? '');
@@ -292,12 +310,13 @@ export const KidsSection = ({
             <SelectField
               id="future-me-kids-disabled"
               label="futureMe.you.kidsDisabled.label"
-              value={answers.kidsDisabled ? 'yes' : 'no'}
-              options={(['no', 'yes'] as const).map((value) => ({
-                value,
-                label: intl.formatMessage({ id: `futureMe.you.kidsDisabled.${value}` }),
-              }))}
-              onChange={(value) => onChange({ kidsDisabled: value === 'yes' })}
+              value={disabledChild === undefined ? NO_DISABLED_CHILD : String(disabledChild)}
+              options={disabledChildOptions}
+              onChange={(value) =>
+                onChange({
+                  kidsDisabled: Array.from({ length: rows }, (_, row) => String(row) === value),
+                })
+              }
             />
             {isKidsRightAvailableToSelf(answers) && (
               <SelectField

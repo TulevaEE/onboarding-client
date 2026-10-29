@@ -117,6 +117,7 @@ export const kidsInputOf = (answers: YouAnswers, now: Date = new Date()): KidsIn
     return undefined;
   }
   const pensionYear = oldAgePensionYearOf(answers);
+  const { hasDisabled } = countedKids(answers);
   const children = Array.from({ length: childRows(answers) }, (_, index) =>
     childAt(answers, index, pensionYear, now),
   ).filter((child): child is Child => child !== null);
@@ -136,7 +137,7 @@ export const kidsInputOf = (answers: YouAnswers, now: Date = new Date()): KidsIn
       .filter((child) => child.group === 'b2021' && !child.under3)
       .map((child) => child.iiMonths),
     monthNow: now.getMonth(),
-    disabled: answers.kidsDisabled && children.length > 0,
+    disabled: hasDisabled,
     earlyUser: answers.kidsEarlyUser,
     user: answers.kidsEarlyUser,
     supUser: answers.kidsSupUser,

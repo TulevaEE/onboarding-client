@@ -104,7 +104,16 @@ describe('kidsInputOf', () => {
   });
 
   it('has no disabled child when every child is left out for being raised under 8 years', () => {
-    const kids = kidsInputOf(withKids(['2040'], { kidsDisabled: true }), october2026);
+    const kids = kidsInputOf(withKids(['2040'], { kidsDisabled: [true] }), october2026);
+
+    expect(kids).toMatchObject({ disabled: false });
+  });
+
+  it('has no disabled child when only another child was raised for 8 years', () => {
+    const kids = kidsInputOf(
+      withKids(['1990', '2040'], { kidsDisabled: [false, true] }),
+      october2026,
+    );
 
     expect(kids).toMatchObject({ disabled: false });
   });
@@ -127,7 +136,7 @@ describe('kidsInputOf', () => {
   it('carries the answers about the early right, the supplement and the forecast', () => {
     const kids = kidsInputOf(
       withKids(['1990'], {
-        kidsDisabled: true,
+        kidsDisabled: [true],
         kidsEarlyUser: 'other',
         kidsSupUser: 'other',
         kidsInForecast: 'no',

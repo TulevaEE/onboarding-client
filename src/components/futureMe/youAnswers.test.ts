@@ -380,7 +380,7 @@ describe('retiring early', () => {
   });
 
   it('is five years for a disabled child', () => {
-    expect(earlyRetirementYears(withKids(['1990'], { kidsDisabled: true }))).toBe(5);
+    expect(earlyRetirementYears(withKids(['1990'], { kidsDisabled: [true] }))).toBe(5);
   });
 
   it('goes to the other parent when the saver says so', () => {
@@ -419,14 +419,23 @@ describe('retiring early', () => {
 
   it('gives a disabled child the right only once the child has been raised for eight years', () => {
     expect(
-      earlyRetirementYears(withKids(['2040'], { kidsDisabled: true, pensionAgeYears: '65' })),
+      earlyRetirementYears(withKids(['2040'], { kidsDisabled: [true], pensionAgeYears: '65' })),
     ).toBe(0);
   });
 
-  it('forgets the children when the block is removed', () => {
-    expect(earlyRetirementYears(withKids(['1990'], { kidsDisabled: true, kidsAdded: false }))).toBe(
+  it('gives five years only for a disabled child raised for eight years, not for another child', () => {
+    expect(earlyRetirementYears(withKids(['1990', '2040'], { kidsDisabled: [false, true] }))).toBe(
       0,
     );
+    expect(earlyRetirementYears(withKids(['1990', '2040'], { kidsDisabled: [true, false] }))).toBe(
+      5,
+    );
+  });
+
+  it('forgets the children when the block is removed', () => {
+    expect(
+      earlyRetirementYears(withKids(['1990'], { kidsDisabled: [true], kidsAdded: false })),
+    ).toBe(0);
   });
 
   it('is ten years for list 1 work of ten years, and nothing for fewer', () => {
@@ -623,7 +632,7 @@ describe('rescue allowance or the pension for the children', () => {
     expect(
       isRescueMixOffered(
         threeKidsAndRescue({
-          kidsDisabled: true,
+          kidsDisabled: [true],
           rescueYears: '15',
           kidsBirthYears: ['1990', '1992', '1994'],
         }),
@@ -637,7 +646,7 @@ describe('rescue allowance or the pension for the children', () => {
   });
 
   it('falls back to the pension for the children when both one after the other is not offered', () => {
-    const answers = threeKidsAndRescue({ kidsDisabled: true, rescueBasis: 'mix' });
+    const answers = threeKidsAndRescue({ kidsDisabled: [true], rescueBasis: 'mix' });
 
     expect(rescueBasisOf(answers)).toBe('pension');
   });
