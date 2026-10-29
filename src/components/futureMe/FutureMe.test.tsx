@@ -916,6 +916,16 @@ describe('FutureMe', () => {
       ).toHaveAttribute('href', expect.stringContaining('sotsiaalkindlustusamet.ee'));
     });
 
+    it('tells a civil servant to leave the civil service out of the calculator forecast, as Elukaar asks it with the special cases', () => {
+      renderFutureMe();
+
+      expect(
+        screen.getByText(
+          /Kui olid ametnik enne 2013\. a, jäta seal avaliku teenistuse staaž lisamata: Elukaar küsib selle erijuhtude juures/,
+        ),
+      ).toBeVisible();
+    });
+
     it('opens the calculator in the same tab, as most savers are on a phone', () => {
       renderFutureMe();
 

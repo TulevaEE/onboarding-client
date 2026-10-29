@@ -2527,7 +2527,7 @@
   "futureMe.you.state.editLabel": "Muuda riiklikku pensioni",
   "futureMe.you.state.fill": "Täida",
   "futureMe.you.state.fillLabel": "Täida riikliku pensioni andmed",
-  "futureMe.you.state.socialInsuranceBoardCalculator": "Vajalikud andmed leiad <link>Sotsiaalkindlustusameti kalkulaatorist</link>.",
+  "futureMe.you.state.socialInsuranceBoardCalculator": "Vajalikud andmed leiad <link>Sotsiaalkindlustusameti kalkulaatorist</link>. Kui olid ametnik enne 2013. a, jäta seal avaliku teenistuse staaž lisamata: Elukaar küsib selle erijuhtude juures.",
   "futureMe.you.pensionAge.label": "Millal on sinu pensioniiga?",
   "futureMe.you.pensionAge.option": "{years} a",
   "futureMe.you.firstPillarMonthly.label": "Kui suur on sinu riiklik pension?",
