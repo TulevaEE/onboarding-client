@@ -102,6 +102,17 @@ describe('Sina step prefilled fields', () => {
     expect(thirdPillarAmountField()).not.toHaveAccessibleDescription(/Eeltäidetud väli/);
   });
 
+  it('keeps the mark on an unchanged field when the pension data is fetched again with a newer value', () => {
+    const { rerender } = renderYouStep();
+
+    givenSourceFunds([{ ...secondPillarFund, price: 24612 }]);
+    rerender(futureMe());
+
+    expect(secondPillarAmountField()).toHaveValue(24586);
+    expect(secondPillarAmountField()).toHaveClass('is-prefilled');
+    expect(secondPillarAmountField()).toHaveAccessibleDescription(/Eeltäidetud väli/);
+  });
+
   it('drops the mark once the saver changes the value', () => {
     renderYouStep();
 
