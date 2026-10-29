@@ -5,7 +5,9 @@ import { SwedbankRecurringPaymentDetails } from './paymentDetails/SwedbankRecurr
 import { SebRecurringPaymentDetails } from './paymentDetails/SebRecurringPaymentDetails';
 import { LhvRecurringPaymentDetails } from './paymentDetails/LhvRecurringPaymentDetails';
 import { CoopRecurringPaymentDetails } from './paymentDetails/CoopRecurringPaymentDetails';
-import { BankKey } from './types';
+import { WiseRecurringPaymentDetails } from './paymentDetails/WiseRecurringPaymentDetails';
+import { InternetBankRecurringPaymentDetails } from './paymentDetails/InternetBankRecurringPaymentDetails';
+import { BankKey, hasStandingOrderLink } from './types';
 
 type Props = {
   paymentBank: BankKey | 'other';
@@ -27,11 +29,28 @@ export const RecurringPaymentDetails = ({ paymentBank, paymentAmount, personalCo
 
     {paymentBank === 'coop' && <CoopRecurringPaymentDetails />}
 
-    {paymentBank === 'other' && (
+    {paymentBank === 'wise' && (
+      <WiseRecurringPaymentDetails amount={paymentAmount} personalCode={personalCode} />
+    )}
+
+    {(paymentBank === 'citadele' || paymentBank === 'bigbank') && (
+      <InternetBankRecurringPaymentDetails
+        bank={paymentBank}
+        amount={paymentAmount}
+        personalCode={personalCode}
+      />
+    )}
+
+    {!hasStandingOrderLink(paymentBank) && (
       <OtherBankPaymentDetails
         personalCode={personalCode}
         amount={paymentAmount}
         paymentType="RECURRING"
+        titleId={
+          paymentBank === 'other'
+            ? 'thirdPillarPayment.RECURRING.other'
+            : 'thirdPillarPayment.RECURRING.yourBank'
+        }
       />
     )}
   </>

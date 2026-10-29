@@ -78,6 +78,96 @@ describe('When a user is making a third pillar payment', () => {
     expect(windowLocation).toHaveBeenCalledTimes(1);
   });
 
+  test.each([
+    ['Wise', 'WISE'],
+    ['Citadele', 'CITADELE'],
+    ['Revolut', 'REVOLUT'],
+    ['Bigbank', 'BIGBANK'],
+    ['N26', 'N26'],
+  ])('can start a one time payment from %s', async (bankName, paymentChannel) => {
+    const amount = await amountInput();
+    userEvent.clear(amount);
+    userEvent.type(amount, '23');
+    userEvent.click(await screen.findByLabelText(bankName));
+    userEvent.click(await makePaymentButton());
+
+    await waitFor(() =>
+      expect(windowLocation).toHaveBeenCalledWith(
+        `https://sandbox-payments.montonio.com?payment_token=example.jwt.token.with.23.EUR.${paymentChannel}`,
+      ),
+    );
+  });
+
+  test('sees how to set up the recurring payment by hand in a bank with no standing order link', async () => {
+    userEvent.click(await recurringPaymentOption());
+    userEvent.click(await screen.findByLabelText('Revolut'));
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'How to set up a recurring payment in your bank',
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('Pay to:')).toBeInTheDocument();
+    expect(screen.getByText('AS Pensionikeskus')).toBeInTheDocument();
+    expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
+    expect(queryLogIntoInternetBankButton()).not.toBeInTheDocument();
+    expect(await confirmDoneLink()).toBeInTheDocument();
+  });
+
+  test.each([
+    ['Citadele', 'CITADELE'],
+    ['Bigbank', 'BIGBANK'],
+  ])(
+    'sees how to set up the recurring payment in %s and opens its internet bank',
+    async (bank, paymentChannel) => {
+      userEvent.click(await recurringPaymentOption());
+      userEvent.click(await screen.findByLabelText(bank));
+
+      expect(
+        await screen.findByRole('heading', {
+          name: `How to set up a recurring payment in ${bank}`,
+        }),
+      ).toBeInTheDocument();
+      expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
+
+      userEvent.click(await logIntoInternetBankButton());
+
+      await waitFor(() =>
+        expect(windowLocation).toHaveBeenCalledWith(
+          `https://${paymentChannel}.EE/RECURRING.200.EUR`,
+        ),
+      );
+    },
+  );
+
+  test('sees how to schedule the recurring payment in Wise and opens Wise', async () => {
+    userEvent.click(await recurringPaymentOption());
+    userEvent.click(await screen.findByLabelText('Wise'));
+
+    expect(
+      await screen.findByRole('heading', { name: 'How to set up a recurring payment in Wise' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('EE362200221067235244')).toBeInTheDocument();
+    expect(screen.getByText('30101119828, IK:39001011234, EE3600001707')).toBeInTheDocument();
+
+    userEvent.click(await screen.findByRole('button', { name: 'Open Wise' }));
+
+    await waitFor(() =>
+      expect(windowLocation).toHaveBeenCalledWith('https://WISE.EE/RECURRING.200.EUR'),
+    );
+  });
+
+  test('is told the Wise schedule is free but not that it can be changed in an internet bank', async () => {
+    userEvent.click(await recurringPaymentOption());
+    userEvent.click(await screen.findByLabelText('Wise'));
+
+    expect(await screen.findByRole('button', { name: 'Open Wise' })).toBeInTheDocument();
+    expect(screen.getByText(/Setting up a standing order is/)).toBeInTheDocument();
+    expect(
+      screen.queryByText('You can change your standing order in your internet bank at any time.'),
+    ).not.toBeInTheDocument();
+  });
+
   test('prefills the suggested single payment amount', async () => {
     const amount = await amountInput();
     expect(amount.value).toBe('1000');
@@ -142,6 +232,39 @@ describe('When a user is making a third pillar payment', () => {
     ).toBeInTheDocument();
     windowOpen.mockRestore();
   });
+
+  test.each([
+    ['Wise', 'WISE', 'Open Wise', 'EE362200221067235244'],
+    ['Citadele', 'CITADELE', 'Log into internet bank', 'EE362200221067235244'],
+    ['Bigbank', 'BIGBANK', 'Log into internet bank', 'EE362200221067235244'],
+    ['Luminor', 'LUMINOR', 'Log into internet bank', 'EE961700017004379157'],
+  ])(
+    'keeps the details to copy on screen after %s opens in a new tab',
+    async (bank, paymentChannel, openButton, pensionikeskusIban) => {
+      const fakeWindow = { location: { replace: jest.fn() }, document: { write: jest.fn() } };
+      const windowOpen = jest
+        .spyOn(window, 'open')
+        .mockReturnValue(fakeWindow as unknown as Window);
+
+      userEvent.click(await recurringPaymentOption());
+      userEvent.click(await screen.findByLabelText(bank));
+      userEvent.click(await screen.findByRole('button', { name: openButton }));
+
+      await waitFor(() =>
+        expect(fakeWindow.location.replace).toHaveBeenCalledWith(
+          `https://${paymentChannel}.EE/RECURRING.200.EUR`,
+        ),
+      );
+      expect(
+        screen.getByRole('heading', { name: `How to set up a recurring payment in ${bank}` }),
+      ).toBeInTheDocument();
+      expect(screen.getByText(pensionikeskusIban)).toBeInTheDocument();
+      expect(
+        screen.queryByRole('heading', { name: 'Did you set up the recurring payment?' }),
+      ).not.toBeInTheDocument();
+      windowOpen.mockRestore();
+    },
+  );
 
   test('confirming the recurring payment shows the nudge from the server and cancels the payment reminder', async () => {
     const reminderCancellation = jest.fn();

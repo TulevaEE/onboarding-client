@@ -900,10 +900,16 @@ export function paymentLinkBackend(server: SetupServerApi): void {
         if (!channel) {
           return res(ctx.json(base));
         }
+        const hostsWithOwnDomain: Record<string, string> = {
+          WISE: 'wise.com',
+          CITADELE: 'online.citadele.lv',
+          BIGBANK: 'auth.bigbank.eu',
+        };
+        const host = hostsWithOwnDomain[channel] ?? `${channel.toLowerCase()}.ee`;
         return res(
           ctx.json({
             ...base,
-            url: `https://${channel.toLowerCase()}.ee/recurring?amount=${amount}&desc=${personalCode}`,
+            url: `https://${host}/recurring?amount=${amount}&desc=${personalCode}`,
           }),
         );
       }

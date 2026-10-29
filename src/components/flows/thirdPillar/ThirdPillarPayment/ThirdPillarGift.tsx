@@ -5,12 +5,11 @@ import './Payment.scss';
 import { Link } from 'react-router-dom';
 import { captureException } from '@sentry/browser';
 import { redirectToPayment } from '../../../common/api';
-import { PaymentChannel } from '../../../common/apiModels';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { PaymentAmountInput } from './PaymentAmountInput';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
 import { isValidPersonalCode } from '../../../common/personalCode';
-import { BankKey } from './types';
+import { BankKey, paymentChannelFor } from './types';
 import { PaymentBankButtons } from './PaymentBankButtons';
 
 export const ThirdPillarGift: React.FunctionComponent = () => {
@@ -44,7 +43,7 @@ export const ThirdPillarGift: React.FunctionComponent = () => {
         amount: Number(paymentAmount.replace(',', '.')),
         currency: 'EUR',
         type: 'GIFT',
-        paymentChannel: paymentBank?.toUpperCase() as PaymentChannel,
+        paymentChannel: paymentChannelFor(paymentBank),
       });
     } catch (e) {
       setError(true);

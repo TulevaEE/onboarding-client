@@ -5,10 +5,14 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 import { redirectToPayment } from '../../../common/api';
 import { useMe } from '../../../common/apiHooks';
-import { PaymentChannel, User } from '../../../common/apiModels';
+import { User } from '../../../common/apiModels';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { PaymentBankButtons } from '../../thirdPillar/ThirdPillarPayment/PaymentBankButtons';
-import { BankKey } from '../../thirdPillar/ThirdPillarPayment/types';
+import {
+  BankKey,
+  hasStandingOrderLink,
+  paymentChannelFor,
+} from '../../thirdPillar/ThirdPillarPayment/types';
 import {
   AccountHolder,
   accountHolderFor,
@@ -19,7 +23,10 @@ import { AmountInput } from '../AmountInput';
 import { InfoSection } from '../InfoSection';
 import { PaymentTypeSelection, SavingsFundPaymentType } from './PaymentTypeSelection';
 import { SavingsFundOtherBankDetails } from './SavingsFundOtherBankDetails';
-import { SavingsFundRecurringDetails } from './SavingsFundRecurringDetails';
+import {
+  BankKey as RecurringBankKey,
+  SavingsFundRecurringDetails,
+} from './SavingsFundRecurringDetails';
 
 const MONTONIO_MAX_AMOUNT = 15000;
 const MIN_RECURRING_AMOUNT = 1;
@@ -29,11 +36,11 @@ const CHILD_DEFAULT_AMOUNT = 80;
 const defaultAmountFor = (accountHolder: AccountHolder): number =>
   accountHolder === 'child' ? CHILD_DEFAULT_AMOUNT : DEFAULT_AMOUNT;
 
-const RECURRING_BANK_KEYS = ['LHV', 'COOP', 'SWEDBANK', 'SEB', 'LUMINOR', 'OTHER'] as const;
-type RecurringBankKey = (typeof RECURRING_BANK_KEYS)[number];
-const toRecurringBank = (value: string | undefined): RecurringBankKey | null => {
-  const upper = value?.toUpperCase();
-  return RECURRING_BANK_KEYS.find((key) => key === upper) ?? null;
+const toRecurringBank = (bank: BankKey | 'other' | undefined): RecurringBankKey | null => {
+  if (!bank) {
+    return null;
+  }
+  return hasStandingOrderLink(bank) ? (bank.toUpperCase() as Uppercase<typeof bank>) : 'OTHER';
 };
 
 type IPaymentForm = {
@@ -92,7 +99,7 @@ const SavingsFundPaymentForm: FC<{ user: User }> = ({ user }) => {
         amount: data.amount ?? undefined,
         currency: 'EUR',
         type: 'SAVINGS',
-        paymentChannel: data.paymentMethod?.toUpperCase() as PaymentChannel,
+        paymentChannel: paymentChannelFor(data.paymentMethod ?? null),
       });
     } catch (e) {
       setSubmitError(true);

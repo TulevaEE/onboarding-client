@@ -5,25 +5,16 @@ import { captureException } from '@sentry/browser';
 import { logo } from '../../../common';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { PaymentBankButtons } from '../../thirdPillar/ThirdPillarPayment/PaymentBankButtons';
-import { BankKey } from '../../thirdPillar/ThirdPillarPayment/types';
+import { BankKey, paymentChannelFor } from '../../thirdPillar/ThirdPillarPayment/types';
 import { CurrencyInput } from '../../../common/input/CurrencyInput';
 import { SimpleList, SimpleListItem } from '../../../common/simpleList';
 import { Deposit, Defer, Verify } from '../InfoSection/assets';
-import { PaymentChannel } from '../../../common/apiModels';
 import { GiftBankDetails } from './GiftBankDetails';
 import { GiftDisclaimer } from './GiftDisclaimer';
 import { startGiftPayment, usePublicGiftLink } from './api/giftLink.api';
 
 const MONTONIO_MAX_AMOUNT = 15000;
 const MAX_MESSAGE_LENGTH = 300;
-
-const PAYMENT_CHANNEL_BY_BANK: Record<BankKey, PaymentChannel> = {
-  swedbank: 'SWEDBANK',
-  seb: 'SEB',
-  lhv: 'LHV',
-  luminor: 'LUMINOR',
-  coop: 'COOP',
-};
 
 export const PublicGiftPage: FC = () => {
   usePageTitle('giftLink.public.pageTitle');
@@ -68,7 +59,7 @@ export const PublicGiftPage: FC = () => {
   }
 
   const payingByHand = bank === 'other' || (amount ?? 0) > MONTONIO_MAX_AMOUNT;
-  const paymentChannel = bank && bank !== 'other' ? PAYMENT_CHANNEL_BY_BANK[bank] : null;
+  const paymentChannel = paymentChannelFor(bank);
   const canSubmit = !!paymentChannel && !payingByHand && (amount ?? 0) >= 1 && !submitting;
   const canCarryAGreeting = !payingByHand;
 
