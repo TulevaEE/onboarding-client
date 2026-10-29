@@ -1190,6 +1190,10 @@
         gap: 0.5rem;
         align-items: baseline;
       }
+
+      .decision-rule {
+        grid-column: 1 / -1;
+      }
     }
   }
 
@@ -1216,6 +1220,12 @@
   .decision-current {
     display: block;
     color: $text-secondary;
+  }
+
+  .decision-rule {
+    grid-column: 2 / -1;
+    margin: 0;
+    font-size: 0.875rem;
   }
 
   .decision-panel {
