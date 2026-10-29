@@ -163,5 +163,14 @@ describe('Result step: rules that follow from the answers', () => {
       expect(within(rule).getByText(choice)).toBeInTheDocument();
       expect(rule).toHaveTextContent(/Eripensionile lisa ei lisata/);
     });
+
+    it('dates the groups from children born in 1991, as the kids „?“ and the Social Insurance Board do', () => {
+      renderRules(contextWith(grownChildren));
+
+      const rule = itemTitled(ruleList(), /^Laste pensionilisa$/);
+      expect(rule).toHaveTextContent(/1991\.–2012\.\sa sündinud lapse eest 3,5\saastahinnet/);
+      expect(rule).toHaveTextContent(/enne 1991\.\sa sündinud lapse eest 1,5\saastahinnet/);
+      expect(rule).not.toHaveTextContent(/1981/);
+    });
   });
 });
