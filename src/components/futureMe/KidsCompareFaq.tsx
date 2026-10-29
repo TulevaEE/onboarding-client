@@ -180,7 +180,9 @@ export const RescueCompareFaq = ({ context }: { context: CompareContext }) => {
     return null;
   }
   const { pensionAge, kidsYears, rows, family, supplement, current } = rescueComparisonOf(context);
-  const most = Math.max(...rows.map(({ total }) => total));
+  const roundedTotals = rows.map(({ total }) => Math.round(total));
+  const most = Math.max(...roundedTotals);
+  const isMostSetApart = roundedTotals.some((total) => total < most);
   const firstToLeave = Math.min(...rows.map(({ workUntil }) => workUntil));
   const tableRows: Row[] = rows.map((row) => ({
     key: row.basis,
@@ -189,7 +191,7 @@ export const RescueCompareFaq = ({ context }: { context: CompareContext }) => {
     work: <WorkUntil age={row.workUntil} moreYears={row.workUntil - firstToLeave} />,
     parts: rescuePartsOf(row),
     total: row.total,
-    isMost: row.total === most,
+    isMost: isMostSetApart && Math.round(row.total) === most,
     supplement: (
       <Supplement
         state={supplement.state}

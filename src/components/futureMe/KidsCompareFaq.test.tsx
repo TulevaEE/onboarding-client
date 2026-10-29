@@ -64,6 +64,29 @@ describe('rescue allowance or the pension for the children question', () => {
     expect(mix.getByText(/^64\sa pension 791\s€\skuus$/)).toBeInTheDocument();
   });
 
+  it('marks the ways that give the most until the pension age', () => {
+    renderEt(<RescueCompareFaq context={withRescue()} />);
+
+    expect(within(rowNamed(/^Ainult ootetoetus/)).getByText('kõige rohkem')).toBeInTheDocument();
+    expect(
+      within(rowNamed(/^Laste eest pension/)).queryByText('kõige rohkem'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('marks no way as giving the most when every way gives the same', () => {
+    renderEt(
+      <RescueCompareFaq
+        context={withRescue({
+          kidsCount: '5',
+          kidsBirthYears: ['1985', '1986', '1987', '1988', '1989'],
+        })}
+      />,
+    );
+
+    expect(screen.getAllByRole('rowheader')).toHaveLength(3);
+    expect(screen.queryByText('kõige rohkem')).not.toBeInTheDocument();
+  });
+
   it('is not asked without both rights', () => {
     renderEt(<RescueCompareFaq context={contextWith(threeChildren)} />);
 
