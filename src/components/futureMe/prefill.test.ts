@@ -12,6 +12,7 @@ import {
   deriveThirdPillarMonthly,
   parseBirthYear,
 } from './prefill';
+import { forecastStatePension } from './statePensionForecast';
 
 const TODAY = new Date('2026-10-28T12:00:00Z');
 
@@ -282,6 +283,38 @@ describe('prefill from the pension data', () => {
     );
 
     expect(prefill.kids).toEqual({ birthYears: [2023], birthMonths: [12], iiMonths: [''] });
+  });
+
+  it('forecasts the state pension from the II pillar contributions and the salary today', () => {
+    const contributions = [secondPillarPayment('2026-09-10', 80)];
+    const prefill = derivePrefill(
+      { ...mockUser, dateOfBirth: '1990-05-01' },
+      { contributions },
+      TODAY,
+    );
+
+    expect(prefill.firstPillarMonthly).toBe(
+      String(
+        Math.round(
+          forecastStatePension({
+            contributions,
+            birthYear: 1990,
+            grossMonthly: 2000,
+            today: TODAY,
+          }) ?? 0,
+        ),
+      ),
+    );
+  });
+
+  it('leaves the state pension to the average when no forecast can be made', () => {
+    const prefill = derivePrefill(
+      { ...mockUser, dateOfBirth: '1980-05-01' },
+      { contributions: [secondPillarPayment('2026-09-10', 80)] },
+      TODAY,
+    );
+
+    expect(prefill.firstPillarMonthly).toBeNull();
   });
 
   it('leaves the pension data fields empty when it could not be loaded', () => {

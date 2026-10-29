@@ -599,6 +599,20 @@ describe('prefilled fields', () => {
     expect(prefilled.has('birthYear')).toBe(true);
   });
 
+  it('starts the state pension from the forecast and marks it prefilled until it is changed', () => {
+    const withForecast = { ...prefill, firstPillarMonthly: '1234' };
+    const answers = initialAnswers(withForecast);
+
+    expect(answers.firstPillarMonthly).toBe('1234');
+    expect(prefilledFields(answers, withForecast).has('firstPillarMonthly')).toBe(true);
+    expect(
+      prefilledFields(
+        { ...answers, firstPillarMonthly: PREFILLED_FIRST_PILLAR_MONTHLY },
+        withForecast,
+      ).has('firstPillarMonthly'),
+    ).toBe(false);
+  });
+
   it('marks nothing but the average state pension when there is no data to prefill from', () => {
     const empty = { birthYear: null, sex: null, secondPillarRate: null };
 
@@ -664,6 +678,17 @@ describe('rescue allowance or the pension for the children', () => {
 describe('whether the state pension forecast has the child supplement', () => {
   it('is no while the state pension is still the prefilled average, which has no supplement', () => {
     const answers = initialAnswers({ birthYear: 1980, sex: 'N', secondPillarRate: '0.02' });
+
+    expect(kidsInForecastOf(answers)).toBe('no');
+  });
+
+  it('is no while the state pension is still the prefilled forecast, which counts no children', () => {
+    const answers = initialAnswers({
+      birthYear: 1990,
+      sex: 'N',
+      secondPillarRate: '0.02',
+      firstPillarMonthly: '1234',
+    });
 
     expect(kidsInForecastOf(answers)).toBe('no');
   });

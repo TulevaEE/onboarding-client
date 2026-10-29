@@ -1,6 +1,7 @@
 import { Contribution, SecondPillarContribution, SourceFund, User } from '../common/apiModels';
 import { CURRENT_YEAR, Sex } from './engine/pension';
 import { deriveKidsPrefill } from './kidsPrefill';
+import { forecastStatePension } from './statePensionForecast';
 import {
   contributesMonthlyToThirdPillar,
   latestThirdPillarMonthlyAmount,
@@ -37,6 +38,7 @@ export interface YouPrefill {
   thirdPillarMonthly?: string | null;
   thirdPillarJoined?: ThirdPillarJoined | null;
   kids?: KidsPrefill | null;
+  firstPillarMonthly?: string | null;
 }
 
 export interface PensionData {
@@ -135,11 +137,23 @@ export const derivePrefill = (
   const thirdPillarAmount = derivePillarAmount(sourceFunds, 3);
   const thirdPillarJoined = deriveThirdPillarJoined(user);
   const hasThirdPillarMoneyWithoutJoinDate = thirdPillarJoined === 'none' && thirdPillarAmount;
+  const birthYear = deriveBirthYear(user.dateOfBirth);
+  const grossMonthly = deriveGrossMonthly(contributions, today);
+  const statePension =
+    birthYear === null
+      ? null
+      : forecastStatePension({
+          contributions,
+          birthYear,
+          grossMonthly: Number(grossMonthly ?? 0),
+          today,
+        });
   return {
-    birthYear: deriveBirthYear(user.dateOfBirth),
+    birthYear,
     sex: deriveSex(user.personalCode),
     secondPillarRate: deriveSecondPillarRate(user),
-    grossMonthly: deriveGrossMonthly(contributions, today),
+    grossMonthly,
+    firstPillarMonthly: statePension === null ? null : roundedEuros(statePension),
     secondPillarAmount: derivePillarAmount(sourceFunds, 2),
     thirdPillarAmount,
     thirdPillarMonthly: deriveThirdPillarMonthly(contributions, today),

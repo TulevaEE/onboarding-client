@@ -260,6 +260,8 @@ export const PENSIONER_ALLOWANCE = 776 * 12;
 export const GENERAL_ALLOWANCE = 700 * 12;
 // SKA, from 1.04.2026
 export const AASTAHINNE = 10.477;
+// SKA, from 1.04.2026: the average old-age pension 860.23 € minus 44 years × aastahinne
+export const STATE_PENSION_BASE = 399.24;
 // Statistikaamet PA103, average gross monthly wage 2025
 const AVG_WAGE = 2092;
 // Minimum wage from 1.04.2026

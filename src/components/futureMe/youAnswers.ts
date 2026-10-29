@@ -49,6 +49,7 @@ export interface YouAnswers extends KidsAnswers, WorkAnswers {
   sex: Sex;
   pensionAgeYears: string;
   firstPillarMonthly: string;
+  prefilledFirstPillarMonthly: string;
   grossMonthly: string;
   secondPillarRate: string;
   secondPillarAmount: string;
@@ -145,7 +146,8 @@ export const initialAnswers = (prefill: YouPrefill): YouAnswers =>
     birthYear: prefill.birthYear?.toString() ?? '',
     sex: prefill.sex ?? UNKNOWN_SEX,
     pensionAgeYears: '',
-    firstPillarMonthly: PREFILLED_FIRST_PILLAR_MONTHLY,
+    firstPillarMonthly: prefill.firstPillarMonthly ?? PREFILLED_FIRST_PILLAR_MONTHLY,
+    prefilledFirstPillarMonthly: prefill.firstPillarMonthly ?? PREFILLED_FIRST_PILLAR_MONTHLY,
     grossMonthly: prefill.grossMonthly ?? '',
     secondPillarRate: prefill.secondPillarRate ?? DEFAULT_SECOND_PILLAR_RATE,
     secondPillarAmount: prefill.secondPillarAmount ?? '',
@@ -190,7 +192,7 @@ export const prefilledFields = (
     ...PREFILLABLE_FIELDS.filter(
       (field) => prefill[field] != null && answers[field] === String(prefill[field]),
     ),
-    ...(answers.firstPillarMonthly === PREFILLED_FIRST_PILLAR_MONTHLY
+    ...(answers.firstPillarMonthly === answers.prefilledFirstPillarMonthly
       ? (['firstPillarMonthly'] as const)
       : []),
   ]);
@@ -344,7 +346,7 @@ export const kidsInForecastOf = (answers: YouAnswers): KidsInForecast => {
   if (answers.kidsInForecast !== '') {
     return answers.kidsInForecast;
   }
-  return answers.firstPillarMonthly === PREFILLED_FIRST_PILLAR_MONTHLY ? 'no' : 'unknown';
+  return answers.firstPillarMonthly === answers.prefilledFirstPillarMonthly ? 'no' : 'unknown';
 };
 
 export const rescueRightOf = (answers: YouAnswers): number =>
