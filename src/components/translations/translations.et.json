@@ -3067,7 +3067,7 @@
   "futureMe.result.decisions.year": "{year}{isOpened, select, true {, avanenud} other {}}",
   "futureMe.result.decisions.current": "Sinu valik: {choice}",
   "futureMe.result.decisions.current.specialPension": "{hasMonthly, select, yes {{monthly} kuus enne maksu} other {Summa pole sisestatud}}",
-  "futureMe.result.decisions.current.fundPension": "{kind, select, start {Fondipension alates {age}-⁠aastaselt} contract {Fondipensioni leping} other {Fondipensioni algust pole valitud}}",
+  "futureMe.result.decisions.current.fundPension": "{starts, select, second {II sambast alates {secondPillarAge}-⁠aastaselt} third {III sambast alates {thirdPillarAge}-⁠aastaselt} both {II sambast alates {secondPillarAge}-⁠aastaselt, III sambast alates {thirdPillarAge}-⁠aastaselt} other {Fondipensioni algust pole valitud}}",
   "futureMe.result.decisions.change": "Muuda",
   "futureMe.result.decisions.close": "Sulge",
   "futureMe.result.decisions.name.secondPillarAtPayoutAge": "II sammas {age}-⁠aastaselt",

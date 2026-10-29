@@ -240,8 +240,27 @@ describe('Result step: quick edit of the other decisions', () => {
         '70',
       );
 
-      expect(row).toHaveTextContent('Sinu valik: Fondipension alates 70-⁠aastaselt');
+      expect(row).toHaveTextContent('Sinu valik: II sambast alates 70-⁠aastaselt');
       expect(row).toHaveTextContent(/70\sa/);
+    });
+
+    it('names the pillar whose fund pension was chosen at the pension age next to the one picked here', () => {
+      openResultStep();
+      const atPensionAge = decisionRow(/^II\ssammas pensionieas$/);
+      userEvent.click(toggleIn(atPensionAge));
+      userEvent.click(within(atPensionAge).getByRole('radio', { name: /^Fondipension/ }));
+      const row = decisionRow(/^Fondipension$/);
+      userEvent.click(toggleIn(row));
+
+      userEvent.selectOptions(
+        within(row).getByRole('combobox', { name: /Mis vanusest hakkad III\ssambast/ }),
+        '70',
+      );
+
+      expect(row).toHaveTextContent(
+        'Sinu valik: II sambast alates 65-⁠aastaselt, III sambast alates 70-⁠aastaselt',
+      );
+      expect(row).toHaveTextContent(/65\sa/);
     });
 
     it('names what the change button changes', () => {

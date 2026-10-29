@@ -5,7 +5,7 @@ import {
   PENSION_MODES,
   withMode,
 } from './age65Answers';
-import { Age66Context, fundStartOf, isContractAsked, isGrowing, Pillar } from './age66Answers';
+import { Age66Context, fundPensionStartOf, isGrowing, Pillar } from './age66Answers';
 import { hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 import { euro } from './amountFormat';
 import { MAX_AGE_SHOWN, Result, ResultContext } from './resultAnswers';
@@ -67,32 +67,39 @@ const specialPensionDecision = (context: ResultContext): Decision => {
   });
 };
 
-const fundPensionKind = (
-  startAge: number | undefined,
-  isAnyGrowing: boolean,
-): 'start' | 'none' | 'contract' => {
-  if (startAge !== undefined) {
-    return 'start';
+type StartingPillars = 'both' | 'second' | 'third' | 'none';
+
+const startingPillarsOf = (
+  secondPillarAge: number | undefined,
+  thirdPillarAge: number | undefined,
+): StartingPillars => {
+  if (secondPillarAge !== undefined && thirdPillarAge !== undefined) {
+    return 'both';
   }
-  return isAnyGrowing ? 'none' : 'contract';
+  if (secondPillarAge !== undefined) {
+    return 'second';
+  }
+  return thirdPillarAge !== undefined ? 'third' : 'none';
 };
 
 const fundPensionDecision = (context: ResultContext): Decision | false => {
   const { age60, age65, age66, you, plan } = context;
   const fundContext: Age66Context = { age60, age65, you, plan };
-  const pillars: Pillar[] = ['secondPillar', 'thirdPillar'];
-  const startAges = pillars
-    .map((pillar) => fundStartOf(pillar, age66, fundContext))
-    .filter((age): age is number => age !== undefined);
-  const isAnyGrowing = pillars.some((pillar) => isGrowing(pillar, fundContext));
-  const isAnyContractAsked = pillars.some((pillar) => isContractAsked(pillar, age66, fundContext));
-  if (!isAnyGrowing && !isAnyContractAsked) {
+  const secondPillarAge = fundPensionStartOf('secondPillar', age66, fundContext);
+  const thirdPillarAge = fundPensionStartOf('thirdPillar', age66, fundContext);
+  const startAges = [secondPillarAge, thirdPillarAge].filter(
+    (age): age is number => age !== undefined,
+  );
+  const isAnyGrowing =
+    isGrowing('secondPillar', fundContext) || isGrowing('thirdPillar', fundContext);
+  if (!isAnyGrowing && startAges.length === 0) {
     return false;
   }
-  const startAge = startAges.length > 0 ? Math.min(...startAges) : undefined;
-  return decisionAt(context, 'fundPension', startAge ?? retirementAge(plan) + 1, '', [], {
-    kind: fundPensionKind(startAge, isAnyGrowing),
-    age: startAge ?? 0,
+  const firstAge = startAges.length > 0 ? Math.min(...startAges) : retirementAge(plan) + 1;
+  return decisionAt(context, 'fundPension', firstAge, '', [], {
+    starts: startingPillarsOf(secondPillarAge, thirdPillarAge),
+    ...(secondPillarAge !== undefined && { secondPillarAge }),
+    ...(thirdPillarAge !== undefined && { thirdPillarAge }),
   });
 };
 
