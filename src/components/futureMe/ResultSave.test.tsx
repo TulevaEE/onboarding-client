@@ -136,6 +136,19 @@ describe('Result step: save the result', () => {
     expect(file).not.toContain('Laadi alla');
   });
 
+  it('leaves the open choices and editors out of the file, so only the chosen plan is in it', async () => {
+    jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    openResultStep();
+    userEvent.click(markdownButton());
+
+    userEvent.click(screen.getByRole('button', { name: /^Muuda II\ssammas 60/ }));
+    userEvent.click(screen.getByRole('button', { name: 'Muuda kulupaketti' }));
+    userEvent.click(markdownButton());
+
+    const [[closedBlob], [openBlob]] = createObjectURL.mock.calls;
+    expect(await textOf(openBlob)).toBe(await textOf(closedBlob));
+  });
+
   const comparisonTable = () => screen.queryByRole('table', { name: 'Väljamakse teede võrdlus' });
   const chartGuide = () => screen.getByText(/^Kihid näitavad, millest sinu kulud/);
   const closePrintWindow = () =>

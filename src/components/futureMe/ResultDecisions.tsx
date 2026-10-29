@@ -114,7 +114,12 @@ interface PanelProps {
 const DecisionChoices = ({ context, decision, panelId, titleId, onChange }: PanelProps) => {
   const currentAge = coversAgeOf(resultOf(context));
   return (
-    <div role="group" id={panelId} aria-labelledby={titleId} className="decision-panel">
+    <div
+      role="group"
+      id={panelId}
+      aria-labelledby={titleId}
+      className="decision-panel d-print-none"
+    >
       <div className="payout-choices">
         {decision.choices.map((choice) => {
           const keys = choiceKeys(decision.id, choice);
@@ -243,7 +248,12 @@ const DecisionRow = ({
         />
       )}
       {isOpen && isStepDecision(id) && (
-        <div role="group" id={panelId} aria-labelledby={titleId} className="decision-panel">
+        <div
+          role="group"
+          id={panelId}
+          aria-labelledby={titleId}
+          className="decision-panel d-print-none"
+        >
           <QuickEditStepDecision id={id} context={context} />
         </div>
       )}
