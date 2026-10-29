@@ -1,4 +1,4 @@
-import { Chart, ChartType, Plugin } from 'chart.js';
+import { Chart, ChartType, Interaction, InteractionModeFunction, Plugin } from 'chart.js';
 
 export interface CostsPoint {
   age: number;
@@ -21,7 +21,21 @@ declare module 'chart.js' {
     costs?: CostsLineOptions;
     marks?: ChartMark[];
   }
+
+  interface InteractionModeMap {
+    lastPointAtAge: InteractionModeFunction;
+  }
 }
+
+export const lastPointAtAge: InteractionModeFunction = (chart, event, options, useFinalPosition) =>
+  Interaction.modes
+    .index(chart, event, options, useFinalPosition)
+    .map(({ datasetIndex, index }) => {
+      const { data } = chart.getDatasetMeta(datasetIndex);
+      const places = data.map(({ x }) => x);
+      const last = places.lastIndexOf(places[index]);
+      return { datasetIndex, index: last, element: data[last] };
+    });
 
 export const COSTS_COLOR = '#db2200';
 const LABEL_TEXT_COLOR = '#fff';

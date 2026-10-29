@@ -4,6 +4,7 @@ import {
   ChartData,
   ChartOptions,
   Filler,
+  Interaction,
   LinearScale,
   LineController,
   LineElement,
@@ -28,7 +29,7 @@ import {
 } from './chartData';
 import { ChartEvent, chartEventsOf } from './chartEvents';
 import { assumptionOf, SummaryNote, summaryNotesOf } from './chartNotes';
-import { ChartMark, costsLine, marksLine } from './chartPlugins';
+import { ChartMark, costsLine, lastPointAtAge, marksLine } from './chartPlugins';
 import { ChartPoint, chartPointsOf, isLayerEdgeHidden, stackedValueOf } from './chartPoints';
 import { SOURCE_COLORS, SOURCE_LABELS, SUMMARY_LABELS } from './chartSources';
 import { announcementOf } from './chartText';
@@ -57,6 +58,7 @@ const NOT_COUNTED = '–';
 const COUNTED_FROM_PENSION_AGE: (ChartSourceId | 'costs')[] = ['salary', 'costs'];
 
 ChartJS.register(LinearScale, LineController, LineElement, PointElement, Filler, Tooltip);
+Interaction.modes.lastPointAtAge = lastPointAtAge;
 
 const transparent = (hex: string, alpha: number) => {
   const value = parseInt(hex.slice(1), 16);
@@ -295,7 +297,7 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
       responsive: true,
       maintainAspectRatio: false,
       animation: false,
-      interaction: { mode: 'index', intersect: false },
+      interaction: { mode: 'lastPointAtAge', intersect: false },
       onHover: ({ x }, elements) => {
         const [element] = elements;
         if (!element) {

@@ -1,5 +1,5 @@
-import { Chart } from 'chart.js';
-import { ChartMark, costsLine, CostsLineOptions, marksLine } from './chartPlugins';
+import { Chart, ChartEvent, InteractionOptions } from 'chart.js';
+import { ChartMark, costsLine, CostsLineOptions, lastPointAtAge, marksLine } from './chartPlugins';
 
 const PILL_TEXT_WIDTH = 40;
 const PILL_WIDTH = PILL_TEXT_WIDTH + 16;
@@ -141,6 +141,47 @@ describe('chartPlugins', () => {
       marksLine.afterDatasetsDraw?.(chart, {} as never, undefined as never, false);
 
       expect(ctx.stroke).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('the points under the pointer', () => {
+    const AGES_WITH_WORK_END_AT_68 = [67, 68, 68, 69];
+    const pointAt = (age: number) => {
+      const place = { x: (age - 65) * 10, y: 100 };
+      return { ...place, skip: false, inRange: () => false, getCenterPoint: () => place };
+    };
+    const layerAt = (index: number) => ({
+      index,
+      data: AGES_WITH_WORK_END_AT_68.map(pointAt),
+      _sorted: true,
+      controller: { _cachedMeta: { iScale: { axis: 'x' } } },
+    });
+    const layers = [layerAt(0), layerAt(1)];
+    const chart = {
+      isPointInArea: () => true,
+      getSortedVisibleDatasetMetas: () => layers,
+      getDatasetMeta: (index: number) => layers[index],
+    } as unknown as Chart;
+    const pointsUnder = (x: number) =>
+      lastPointAtAge(
+        chart,
+        { native: {}, x, y: 100 } as unknown as ChartEvent,
+        { intersect: false } as InteractionOptions,
+      );
+
+    it('picks the point of the age on both sides of a vertical line, not its extra point', () => {
+      const rowPoints = layers.map(({ index, data }) => ({
+        datasetIndex: index,
+        index: 2,
+        element: data[2],
+      }));
+
+      expect(pointsUnder(28)).toEqual(rowPoints);
+      expect(pointsUnder(32)).toEqual(rowPoints);
+    });
+
+    it('picks the point of an age without a vertical line', () => {
+      expect(pointsUnder(21).map(({ index }) => index)).toEqual([0, 0]);
     });
   });
 

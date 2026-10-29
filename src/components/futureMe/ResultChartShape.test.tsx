@@ -1,12 +1,14 @@
 import React from 'react';
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Interaction, InteractionMode } from 'chart.js';
 import { IntlProvider } from 'react-intl';
 import { initialAge60 } from './age60Answers';
 import { Age65Answers, initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses, needMonthly } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
+import { lastPointAtAge } from './chartPlugins';
 import { ResultChart } from './ResultChart';
 import { nominalReturnsOf } from './nominal';
 import { resultOf, ResultContext } from './resultAnswers';
@@ -169,6 +171,13 @@ describe('ResultChart drawing', () => {
       act(() => lastProps().options.onHover({ x: 30 }, [{ index: carry }]));
 
       expect(within(screen.getByTestId('chart-tip')).getByText('68 a')).toBeInTheDocument();
+    });
+
+    it('has Chart.js light up the dots of that age, as the tooltip does', () => {
+      renderChart(contextWith({ work: 'yes', workUntil: '68' }));
+      const { mode } = lastProps().options.interaction;
+
+      expect(Interaction.modes[mode as InteractionMode]).toBe(lastPointAtAge);
     });
   });
 
