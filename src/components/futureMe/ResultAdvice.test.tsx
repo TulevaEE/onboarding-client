@@ -189,6 +189,23 @@ describe('Result advice', () => {
     ).toBeChecked();
   });
 
+  it('moves the focus to the state pension decision once the shorter deferral is set', () => {
+    startWith('700', '30000');
+    chooseSecondPillarFundPension();
+    deferStatePensionFiveYears();
+    openResult();
+
+    userEvent.click(
+      within(warning() as HTMLElement).getByRole('button', {
+        name: /^Muuda valik: riiklik pension/,
+      }),
+    );
+
+    expect(
+      screen.getByRole('button', { expanded: true, name: /Riiklik pension 65-\u2060aastaselt/ }),
+    ).toHaveFocus();
+  });
+
   it('opens the costs step when no payout carries the costs', () => {
     startWith('700', '20000');
     chooseComfortableCosts();

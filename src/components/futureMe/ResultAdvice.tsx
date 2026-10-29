@@ -25,6 +25,7 @@ interface Props {
 interface WarningProps {
   context: ResultContext;
   warning: PayoutWarning;
+  onOpenDecision: (id: DecisionId) => void;
 }
 
 const SCENARIO_NAMES: Record<string, TranslationKey> = {
@@ -37,21 +38,21 @@ const SCENARIO_NAMES: Record<string, TranslationKey> = {
 
 const emphasis = (chunks: React.ReactNode) => <strong>{chunks}</strong>;
 
-const WarningAdvice = ({ context, warning }: WarningProps) => {
+const WarningAdvice = ({ context, warning, onOpenDecision }: WarningProps) => {
   const { change, goTo } = useDecisionActions();
   if (warning.kind === 'shorterDeferral') {
     const isNow = warning.shorter === 0 ? 'yes' : 'no';
+    const setShorterDeferral = () => {
+      change(deferralChanges(context, warning.shorter));
+      onOpenDecision('statePension');
+    };
     return (
       <>
         <FormattedMessage
           id="futureMe.result.warn.shorterDeferral"
           values={{ ...warning, isNow }}
         />{' '}
-        <button
-          type="button"
-          className="btn btn-sm btn-primary"
-          onClick={() => change(deferralChanges(context, warning.shorter))}
-        >
+        <button type="button" className="btn btn-sm btn-primary" onClick={setShorterDeferral}>
           <FormattedMessage
             id="futureMe.result.warn.setDeferral"
             values={{ isNow, years: warning.shorter }}
@@ -105,7 +106,7 @@ const WarningAdvice = ({ context, warning }: WarningProps) => {
   );
 };
 
-const Warning = ({ context, warning }: WarningProps) => (
+const Warning = ({ context, warning, onOpenDecision }: WarningProps) => (
   <div className="result-advice result-advice-warn" role="status" aria-labelledby="future-me-warn">
     <p>
       <strong id="future-me-warn">
@@ -114,7 +115,7 @@ const Warning = ({ context, warning }: WarningProps) => (
       <FormattedMessage id="futureMe.result.warn.until" values={{ until: warning.until }} />
     </p>
     <p>
-      <WarningAdvice context={context} warning={warning} />
+      <WarningAdvice context={context} warning={warning} onOpenDecision={onOpenDecision} />
     </p>
   </div>
 );
@@ -154,7 +155,7 @@ export const ResultAdvice = ({ context, result, onOpenDecision }: Props) => {
   const tip = surplusTipOf(context, result);
   return (
     <>
-      {warning && <Warning context={context} warning={warning} />}
+      {warning && <Warning context={context} warning={warning} onOpenDecision={onOpenDecision} />}
       {tip && <Surplus tip={tip} onOpenDecision={onOpenDecision} />}
     </>
   );
