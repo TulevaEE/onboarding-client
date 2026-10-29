@@ -195,14 +195,13 @@ const datasetsOf = (
     }
     const paysAt = (at: number) => points[at].values[id] > 0;
     const isEventAt = (at: number) => eventAges.has(points[at].age);
-    const isEdgeHiddenAt = (at: number) =>
-      !isHidden &&
-      isLayerEdgeHidden(points[at], rows[points[at].rowIndex].costs, visible, id) &&
-      !isEventAt(at);
+    const isUnderCostsLineAt = (at: number) =>
+      !isHidden && isLayerEdgeHidden(points[at], rows[points[at].rowIndex].costs, visible, id);
     const isShownAt = (at: number) => paysAt(at) && !points[at].isCarry;
+    const hasDotAt = (at: number) => isShownAt(at) && (isEventAt(at) || !isUnderCostsLineAt(at));
     const hideEdge = ({ p0DataIndex, p1DataIndex }: ScriptableLineSegmentContext) => {
       const paysNothing = !paysAt(p0DataIndex) && !paysAt(p1DataIndex);
-      const isUnderCostsLine = isEdgeHiddenAt(p0DataIndex) && isEdgeHiddenAt(p1DataIndex);
+      const isUnderCostsLine = isUnderCostsLineAt(p0DataIndex) && isUnderCostsLineAt(p1DataIndex);
       return paysNothing || isUnderCostsLine ? 'transparent' : undefined;
     };
     return {
@@ -218,7 +217,7 @@ const datasetsOf = (
       borderWidth: 1.5,
       backgroundColor: fadingFill(SOURCE_COLORS[id]),
       pointRadius: points.map((point, at) =>
-        isShownAt(at) && !isEdgeHiddenAt(at) ? dotRadiusOf(point.age, isEventAt(at)) : 0,
+        hasDotAt(at) ? dotRadiusOf(point.age, isEventAt(at)) : 0,
       ),
       pointHoverRadius: points.map((_point, at) => {
         if (!isShownAt(at)) {

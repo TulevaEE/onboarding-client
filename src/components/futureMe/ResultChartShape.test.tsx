@@ -136,6 +136,19 @@ describe('ResultChart drawing', () => {
       const edge = second.segment.borderColor({ p0DataIndex: from, p1DataIndex: from + 1 });
       expect(edge).toBe('transparent');
     });
+
+    it('leaves out the edge of the top layer next to an event too', () => {
+      renderChart();
+      const second = layer(SECOND_PILLAR);
+      const lastAge = second.data[second.data.length - 1].x;
+      const edgeFrom = (age: number) => {
+        const from = rowPointOf(second, age);
+        return second.segment.borderColor({ p0DataIndex: from, p1DataIndex: from + 1 });
+      };
+
+      expect(edgeFrom(PENSION_AGE)).toBe('transparent');
+      expect(edgeFrom(lastAge - 1)).toBe('transparent');
+    });
   });
 
   it('hides the line of a layer between two ages it pays nothing at', () => {
