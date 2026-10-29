@@ -36,6 +36,13 @@ interface Props {
   onEditThirdPillar: () => void;
 }
 
+const PlanText = ({ plan }: { plan: ThirdPillarPlan }) =>
+  plan === 'lump' ? (
+    <FormattedMessage id="futureMe.age55.plan.lump.text" />
+  ) : (
+    <PayoutChoiceText choice={PLAN_PAYOUT_CHOICE[plan]} />
+  );
+
 const PlanOutcome = ({
   plan,
   age,
@@ -131,7 +138,7 @@ export const Age55Step = ({
               title={
                 <FormattedMessage id={`futureMe.age55.plan.${plan}.title` as TranslationKey} />
               }
-              text={<PayoutChoiceText choice={PLAN_PAYOUT_CHOICE[plan]} />}
+              text={<PlanText plan={plan} />}
               onChange={() => onChange({ thirdPillarPlan: plan })}
             />
           ))}

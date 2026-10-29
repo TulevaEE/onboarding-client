@@ -2844,6 +2844,7 @@
   "futureMe.age55.plan.keep.title": "Jätan kasvama",
   "futureMe.age55.plan.fund.title": "Fondipension",
   "futureMe.age55.plan.lump.title": "Võtan korraga välja",
+  "futureMe.age55.plan.lump.text": "Kogu raha korraga välja, 10% tulumaks. Kasutad raha ära enne pensioniiga.",
   "futureMe.age55.lock.noThirdPillar": "Sul ei ole III sammast (III samba summa ja sissemakse on sinu andmetes 0), seega siin pole midagi välja võtta.",
   "futureMe.age55.lock.pensionAge": "Oled juba pensionieas, seega kasutad III sammast koos II sambaga pensionieas.",
   "futureMe.age55.lock.edit": "Muuda III sammast",

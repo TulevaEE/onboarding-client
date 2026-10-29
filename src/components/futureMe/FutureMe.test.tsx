@@ -2044,8 +2044,15 @@ describe('FutureMe', () => {
       expect(keepPlan()).toHaveAccessibleDescription(
         /^Raha jääb fondi kasvama\. Pensionieas võtad vajadusel osa välja, 10%\stulumaks\.$/,
       );
+    });
+
+    it('says the money taken out at once is used up before the pension age, as the calculation leaves none of it for retirement', () => {
+      renderFutureMe();
+
+      openAge55();
+
       expect(lumpPlan()).toHaveAccessibleDescription(
-        /^Kogu raha korraga välja, 10%\stulumaks\. Raha on hoiusel\.$/,
+        /^Kogu raha korraga välja, 10%\stulumaks\. Kasutad raha ära enne pensioniiga\.$/,
       );
     });
 
