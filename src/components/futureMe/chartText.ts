@@ -24,6 +24,7 @@ export const withoutLayersTextOf = (intl: IntlShape, id: TranslationKey, cover: 
   intl.formatMessage(
     { id },
     {
+      count: cover.without.length,
       layers: intl.formatList(
         cover.without.map((layer) => intl.formatMessage({ id: SOURCE_LABELS[layer] })),
       ),

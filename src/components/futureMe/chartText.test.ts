@@ -76,6 +76,18 @@ describe('chartText', () => {
     );
   });
 
+  it('names every hidden layer the missing amount is counted without, in the plural', () => {
+    const cover = {
+      shortfall: 300,
+      surplus: 0,
+      without: ['secondPillar' as const, 'deposit' as const],
+    };
+
+    expect(announcementOf(intl, rowWith({}), [], layers, cover)).toMatch(
+      /puudu 300\s€, peidetud kihtideta: II\ssammas ja Hoiuselt\.$/,
+    );
+  });
+
   it('names the events at that age first', () => {
     expect(
       announcementOf(

@@ -326,6 +326,12 @@ describe('ResultChart interaction', () => {
       expect(screen.getByText('peidetud kihita: Hoiuselt')).toBeInTheDocument();
     });
 
+    it('names every hidden layer in the plural when more than one is hidden', () => {
+      tipFor({ shortfall: 300 }, ['secondPillar', 'deposit']);
+
+      expect(screen.getByText(/^peidetud kihtideta: II\ssammas .+ Hoiuselt$/)).toBeInTheDocument();
+    });
+
     it('leaves out the costs and their cover before the pension age', () => {
       tipFor({ isBeforePension: true, surplus: 200 });
 
