@@ -70,7 +70,15 @@ const takeSecondPillarAsLumpSum = () => {
   );
 };
 
+const chooseSecondPillarReturn = (percent: string) =>
+  userEvent.selectOptions(
+    screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ }),
+    percent,
+  );
+
 const openResult = () => goTo(/^Tulemus/);
+
+const secondPillarTip = () => screen.getByText(/^Väljavõetud raha seisab hoiusel/);
 
 const surplusHeading = () => screen.queryByRole('heading', { name: /^Sul jääb raha üle/ });
 const shortfallHeading = () => screen.queryByRole('heading', { name: /^Raha üle ei jää/ });
@@ -238,8 +246,29 @@ describe('Result legacy card', () => {
       takeSecondPillarAsLumpSum();
       openResult();
 
-      expect(screen.getByText(/^Väljavõetud raha seisab hoiusel/)).toHaveTextContent(
-        /arvutuses −1%\saastas pärast inflatsiooni/,
+      expect(secondPillarTip()).toHaveTextContent(/arvutuses −1%\saastas pärast inflatsiooni/);
+    });
+
+    it('says the money keeps its value in the fund at the default 0%, rather than that it grows', () => {
+      startWith('300', '10000');
+      chooseComfortableCosts();
+      takeSecondPillarAsLumpSum();
+      openResult();
+
+      expect(secondPillarTip()).toHaveTextContent(
+        /Fondis hoiab see väärtust \(sinu valitud tootlusega 0%\saastas pärast inflatsiooni\)\./,
+      );
+    });
+
+    it('says the money grows on in the fund at a return above 0%', () => {
+      startWith('300', '10000');
+      chooseSecondPillarReturn('2');
+      chooseComfortableCosts();
+      takeSecondPillarAsLumpSum();
+      openResult();
+
+      expect(secondPillarTip()).toHaveTextContent(
+        /Fondis kasvab see edasi \(sinu valitud tootlusega 2%\saastas pärast inflatsiooni\)\./,
       );
     });
 

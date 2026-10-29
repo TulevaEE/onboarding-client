@@ -142,6 +142,17 @@ describe('legacyOf', () => {
       isGrowingSecondPillarSuggested: false,
     });
   });
+
+  it('suggests keeping the second pillar in the fund at the default 0%, as it beats the deposit', () => {
+    const context = takenAsLumpSum();
+    const atZeroReturn = { ...context, you: { ...context.you, secondPillarReturnPercent: 0 } };
+
+    expect(legacyFor(atZeroReturn)).toMatchObject({
+      kind: 'shortfall',
+      isGrowingSecondPillarSuggested: true,
+      secondPillarReturn: 0,
+    });
+  });
 });
 
 describe('keepSecondPillarGrowing', () => {

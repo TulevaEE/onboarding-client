@@ -3124,7 +3124,7 @@
   "futureMe.result.legacy.trySpend": "Proovi {amount} kuus",
   "futureMe.result.legacy.shortfall.title": "Raha üle ei jää. Mida saaks muuta?",
   "futureMe.result.legacy.tip.secondPillar.title": "Ära võta II sammast korraga välja.",
-  "futureMe.result.legacy.tip.secondPillar.body": "Väljavõetud raha seisab hoiusel ja inflatsioon sööb selle väärtust (arvutuses {depositRate} aastas pärast inflatsiooni). Fondis kasvab see edasi (sinu valitud tootlusega {rate} aastas pärast inflatsiooni). Kui oled raha juba välja võtnud, pane see uuesti kasvama (nt indeksfondi), ära hoia seda arvel ega padja all.",
+  "futureMe.result.legacy.tip.secondPillar.body": "Väljavõetud raha seisab hoiusel ja inflatsioon sööb selle väärtust (arvutuses {depositRate} aastas pärast inflatsiooni). {isGrowing, select, yes {Fondis kasvab see edasi} other {Fondis hoiab see väärtust}} (sinu valitud tootlusega {rate} aastas pärast inflatsiooni). Kui oled raha juba välja võtnud, pane see uuesti kasvama (nt indeksfondi), ära hoia seda arvel ega padja all.",
   "futureMe.result.legacy.tip.secondPillar.action": "Jätka II samba kasvatamist",
   "futureMe.result.legacy.hint": "{hasTips, select, yes {Või proovi} other {Proovi}} mõnda neist ja vaata, kuidas tulemus muutub.",
   "futureMe.result.legacy.action.deferral": "Lükka riiklik pension edasi",
