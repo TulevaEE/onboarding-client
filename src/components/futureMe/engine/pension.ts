@@ -706,7 +706,8 @@ export function simulate(
     }
     return spYear >= oldAgeYear;
   };
-  const spPaid = spYear > 0 && prefersSpecial(choice, p1Full);
+  const p1AtSpStart = p1Full + accrualYear * workedBefore(spStart) * p1Factor;
+  const spPaid = spYear > 0 && prefersSpecial(choice, p1AtSpStart);
   const p1AtPa = p1Full + accrualYear * workedBefore(pa) * p1Factor;
   const spPaidPa = spPaid && ret < pa ? prefersSpecial(input.firstPillarChoicePa, p1AtPa) : spPaid;
   const spPaidAt = (age: number) => age >= spStart && (age >= pa ? spPaidPa : spPaid);
@@ -938,7 +939,7 @@ export function simulate(
       alive: survival(table, input.sex, currentAge, age),
     });
   }
-  const showAtPa = spPaid && ret < pa && (p1AtPa > p1Full + 0.5 * 12 || p1AtPa > spYear);
+  const showAtPa = spPaid && ret < pa && (p1AtPa > p1AtSpStart + 0.5 * 12 || p1AtPa > spYear);
   return {
     ...summarize(rows, input, table, ret, p1Start, currentAge),
     ordinaryPensionAge: pa,
@@ -959,9 +960,9 @@ export function simulate(
       spYear > 0
         ? {
             special: spYear / 12,
-            oldAge: p1Full / 12,
+            oldAge: p1AtSpStart / 12,
             paid: spPaid ? 'special' : 'oldAge',
-            larger: spYear >= p1Full ? 'special' : 'oldAge',
+            larger: spYear >= p1AtSpStart ? 'special' : 'oldAge',
             atPa: showAtPa
               ? {
                   age: pa,

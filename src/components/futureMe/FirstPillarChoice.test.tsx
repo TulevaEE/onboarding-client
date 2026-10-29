@@ -138,6 +138,35 @@ describe('Choosing between the special pension and the old-age pension', () => {
       expect(within(group).queryByText(/avaldust pole vaja/)).not.toBeInTheDocument();
     });
 
+    it('compares a later special pension with the old-age pension raised by the years worked until it starts', () => {
+      openFutureMe({ withEarlyRetirement: true, specialPensionStartAge: '63' });
+      enterSpecialPensionAmount('670', /^63\sa/);
+      goTo(earlyRetirementStep);
+
+      userEvent.click(screen.getByRole('radio', { name: /^Töötan edasi/ }));
+
+      const group = choiceGroup(AGE_65_GROUP);
+      expect(choice(group, /^Jään vanaduspensionile/)).toBeChecked();
+      expect(choice(group, /^Jään vanaduspensionile/)).toHaveAccessibleDescription(
+        /^675\s€ kuus enne maksu$/,
+      );
+    });
+
+    it('names the old-age pension at the start of a later special pension on its step', () => {
+      openFutureMe({ withEarlyRetirement: true, specialPensionStartAge: '63' });
+      enterSpecialPensionAmount('670', /^63\sa/);
+      goTo(earlyRetirementStep);
+      userEvent.click(screen.getByRole('radio', { name: /^Töötan edasi/ }));
+
+      goTo(/^63\sa/);
+
+      expect(
+        screen.getByText(
+          /on sul õigus vanaduspensionile\. .* Eripension algab 63-aastaselt, vanaduspension on siis 675\s€ kuus\. Vanaduspension on suurem/,
+        ),
+      ).toBeInTheDocument();
+    });
+
     it('preselects the old-age pension when it is larger and lets the saver switch back', () => {
       openFutureMe();
       enterSpecialPensionAmount('500');

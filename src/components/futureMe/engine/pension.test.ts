@@ -160,5 +160,50 @@ describe('pension engine', () => {
       const { firstPillar } = simulate(withSpecialPensionFrom64, lifeTable, scenarioA);
       expect(firstPillar?.oldAge).toBeCloseTo(903 * (1 - EARLY_DECREASE[4]));
     });
+
+    const retiringFiveYearsEarlyAndWorkingOnUntil66: PensionInput = {
+      birthYear: 1989,
+      sex: 'N',
+      p1Monthly: 931,
+      p2: 0,
+      p3: 0,
+      pensionAgeYears: 66,
+      needMonthly: 791,
+      realReturn: 0.02,
+      grossMonthly: 2000,
+      p2Rate: 0.02,
+      soodus: 5,
+      workOn: true,
+      workUntil: 66,
+      spHas: true,
+      spMonthly: 900,
+    };
+
+    it('compares a special pension starting after retirement with the old-age pension paid by its start', () => {
+      const withSpecialPensionFrom63 = {
+        ...retiringFiveYearsEarlyAndWorkingOnUntil66,
+        spStartAge: 63,
+      };
+      const { firstPillar } = simulate(withSpecialPensionFrom63, lifeTable, scenarioA);
+      const { rows } = simulate(
+        { ...withSpecialPensionFrom63, firstPillarChoice: 'oldAge' },
+        lifeTable,
+        scenarioA,
+      );
+      const oldAgePensionAt63 = rows.find((row) => row.age === 63)?.i1g;
+      expect(firstPillar?.oldAge).toBeCloseTo(oldAgePensionAt63 as number);
+      expect(firstPillar?.oldAge).toBeGreaterThan(900);
+      expect(firstPillar).toMatchObject({ larger: 'oldAge', paid: 'oldAge' });
+    });
+
+    it('does not ask again at the pension age when the special pension starts there', () => {
+      const withLargerSpecialPensionFrom66 = {
+        ...retiringFiveYearsEarlyAndWorkingOnUntil66,
+        spMonthly: 1000,
+        spStartAge: 66,
+      };
+      const { firstPillar } = simulate(withLargerSpecialPensionFrom66, lifeTable, scenarioA);
+      expect(firstPillar).toMatchObject({ paid: 'special', atPa: null });
+    });
   });
 });
