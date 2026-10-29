@@ -20,13 +20,12 @@ import {
   ResultContext,
   resultOf,
 } from './resultAnswers';
-import { FutureMeStep, StepId } from './steps';
+import { FutureMeStep } from './steps';
 import { strong } from './richText';
 
 interface Props {
   context: ResultContext;
   headingRef: RefObject<HTMLHeadingElement>;
-  onGoTo: (step: StepId) => void;
 }
 
 const INCOME_LABELS: Record<IncomeSource, TranslationKey> = {
@@ -166,7 +165,7 @@ const IncomeAtPensionAge = ({ result, need }: { result: Result; need: number }) 
   );
 };
 
-export const ResultStep = ({ context, headingRef, onGoTo }: Props) => {
+export const ResultStep = ({ context, headingRef }: Props) => {
   const result = resultOf(context);
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-result-heading">
@@ -193,7 +192,7 @@ export const ResultStep = ({ context, headingRef, onGoTo }: Props) => {
         need={needMonthly(context.expenses)}
         nominalReturns={nominalReturnsOf(context)}
       />
-      <ResultLegacy context={context} result={result} onGoTo={onGoTo} />
+      <ResultLegacy context={context} result={result} />
       <ResultDecisions context={context} />
       <ResultAssumptions context={context} />
       <ResultRules context={context} />

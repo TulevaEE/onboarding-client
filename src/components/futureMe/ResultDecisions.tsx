@@ -1,34 +1,22 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { DEFERRAL_YEARS } from './age65Answers';
 import { decimalText, euro } from './amountFormat';
 import { ChoiceCard } from './ChoiceCard';
+import { ChangeDecisions, useDecisionActions } from './decisionActions';
 import {
   coversAgeOf,
   Decision,
-  DecisionChanges,
   DecisionId,
   decisionsOf,
+  isStepDecision,
   withDecision,
 } from './decisions';
 import { CURRENT_YEAR, DEFERRAL_INCREASE, PENSIONER_ALLOWANCE } from './engine/pension';
+import { QuickEditStepDecision } from './QuickEditSteps';
 import { ResultComparison } from './ResultComparison';
 import { MAX_AGE_SHOWN, Result, ResultContext, resultOf } from './resultAnswers';
-
-export type ChangeDecisions = (changes: DecisionChanges) => void;
-
-const DecisionChangesContext = createContext<ChangeDecisions | null>(null);
-
-export const DecisionChangesProvider = DecisionChangesContext.Provider;
-
-export const useDecisionChanges = (): ChangeDecisions => {
-  const onChange = useContext(DecisionChangesContext);
-  if (!onChange) {
-    throw new Error('Decision changes need DecisionChangesProvider');
-  }
-  return onChange;
-};
 
 const MONTHS_IN_YEAR = 12;
 const NO_BREAK_SPACE = ' ';
@@ -173,7 +161,9 @@ const DecisionRow = ({ context, decision, isOpen, onToggle, onChange }: RowProps
   const titleId = `future-me-decision-${decision.id}-title`;
   const panelId = `future-me-decision-${decision.id}-panel`;
   const { current, id } = decision;
-  const currentTitle = choiceKeys(id, current).title;
+  const currentText = isStepDecision(id)
+    ? intl.formatMessage({ id: `futureMe.result.decisions.current.${id}` }, decision.summary)
+    : intl.formatMessage({ id: choiceKeys(id, current).title });
   const increases = deferralIncreases();
   return (
     <li>
@@ -197,7 +187,7 @@ const DecisionRow = ({ context, decision, isOpen, onToggle, onChange }: RowProps
           <small className="decision-current">
             <FormattedMessage
               id="futureMe.result.decisions.current"
-              values={{ choice: intl.formatMessage({ id: currentTitle }) }}
+              values={{ choice: currentText }}
             />
           </small>
         </div>
@@ -219,14 +209,16 @@ const DecisionRow = ({ context, decision, isOpen, onToggle, onChange }: RowProps
             />
           </span>
         </button>
-        <p className="decision-rule text-pretty">
-          <FormattedMessage
-            id={`futureMe.result.decisions.rule.${id}` as TranslationKey}
-            values={{ increases, allowance: euro(PENSIONER_ALLOWANCE / MONTHS_IN_YEAR) }}
-          />
-        </p>
+        {!isStepDecision(id) && (
+          <p className="decision-rule text-pretty">
+            <FormattedMessage
+              id={`futureMe.result.decisions.rule.${id}` as TranslationKey}
+              values={{ increases, allowance: euro(PENSIONER_ALLOWANCE / MONTHS_IN_YEAR) }}
+            />
+          </p>
+        )}
       </div>
-      {isOpen && (
+      {isOpen && !isStepDecision(id) && (
         <DecisionChoices
           context={context}
           decision={decision}
@@ -235,13 +227,18 @@ const DecisionRow = ({ context, decision, isOpen, onToggle, onChange }: RowProps
           onChange={onChange}
         />
       )}
+      {isOpen && isStepDecision(id) && (
+        <div role="group" id={panelId} aria-labelledby={titleId} className="decision-panel">
+          <QuickEditStepDecision id={id} context={context} />
+        </div>
+      )}
     </li>
   );
 };
 
 const DecisionList = ({ context }: { context: ResultContext }) => {
   const intl = useIntl();
-  const onChange = useDecisionChanges();
+  const { change: onChange } = useDecisionActions();
   const [openId, setOpenId] = useState<DecisionId | null>(null);
   return (
     <>

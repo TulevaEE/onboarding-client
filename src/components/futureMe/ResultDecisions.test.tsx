@@ -76,7 +76,7 @@ describe('Result step: your decisions', () => {
 
     expect(screen.getByRole('heading', { level: 3, name: 'Sinu otsused' })).toBeInTheDocument();
     expect(
-      screen.getByText(/Iga otsuse juures on, millal see avaneb ja mis maksuga/),
+      screen.getByText(/^Iga otsuse juures on, millal see avaneb\. Muuda ükskõik millist valikut/),
     ).toBeVisible();
   });
 
@@ -92,6 +92,7 @@ describe('Result step: your decisions', () => {
       'Riiklik pension 65-⁠aastaselt',
       'II sammas pensionieas',
       'III sammas pensionieas',
+      'Fondipension',
     ]);
   });
 
