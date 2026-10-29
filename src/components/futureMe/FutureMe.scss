@@ -1211,9 +1211,19 @@
     .step-nav,
     .result-save-actions,
     .result-chart-legend-hint,
-    .result-chart-legend,
-    .btn {
+    .result-chart-toggle-icon,
+    .btn:not(.result-chart-toggle) {
       display: none !important;
+    }
+
+    .result-chart-toggle {
+      padding: 0;
+      border: 0;
+      color: inherit;
+    }
+
+    .result-chart-toggle-dot {
+      print-color-adjust: exact;
     }
 
     .result-compare,
