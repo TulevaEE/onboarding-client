@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { EmojiIcon } from './FutureMeIcon';
 
 interface Props {
@@ -27,27 +28,29 @@ export const ChoiceCard = ({
   const id = `${idPrefix}-${value}`;
 
   return (
-    <label className="payout-choice" htmlFor={id}>
-      <input
-        type="radio"
-        id={id}
-        aria-labelledby={`${id}-name`}
-        aria-describedby={text ? `${id}-text` : undefined}
-        name={name}
-        value={value}
-        checked={checked}
-        onChange={onChange}
-      />
-      <span className="payout-choice-body">
-        {emoji && (
-          <span className="payout-choice-emoji" aria-hidden="true">
-            <EmojiIcon emoji={emoji} />
-          </span>
-        )}
-        <strong id={`${id}-name`}>{title}</strong>
-        {text && <small id={`${id}-text`}>{text}</small>}
-        {extra}
-      </span>
-    </label>
+    <div className={classNames('payout-choice', { 'is-checked': checked })}>
+      <label className="payout-choice-label" htmlFor={id}>
+        <input
+          type="radio"
+          id={id}
+          aria-labelledby={`${id}-name`}
+          aria-describedby={text ? `${id}-text` : undefined}
+          name={name}
+          value={value}
+          checked={checked}
+          onChange={onChange}
+        />
+        <span className="payout-choice-body">
+          {emoji && (
+            <span className="payout-choice-emoji" aria-hidden="true">
+              <EmojiIcon emoji={emoji} />
+            </span>
+          )}
+          <strong id={`${id}-name`}>{title}</strong>
+          {text && <small id={`${id}-text`}>{text}</small>}
+        </span>
+      </label>
+      {extra && <div className="payout-choice-extra">{extra}</div>}
+    </div>
   );
 };

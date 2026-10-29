@@ -584,8 +584,11 @@
     border: 0;
 
     &:disabled .payout-choice {
-      cursor: not-allowed;
       opacity: 0.55;
+    }
+
+    &:disabled .payout-choice-label {
+      cursor: not-allowed;
     }
   }
 
@@ -608,9 +611,17 @@
   }
 
   .payout-choice {
+    $padding-y: 0.9rem;
+    $padding-x: 1rem;
+    $gap: 0.25rem;
+
     position: relative;
-    display: block;
-    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid $gray-border-3;
+    border-radius: 0.75rem;
+    background: $white;
+    transition: border-color 0.15s, box-shadow 0.15s;
 
     input {
       position: absolute;
@@ -621,35 +632,43 @@
       accent-color: $blue;
     }
 
-    &:hover .payout-choice-body {
+    &:hover {
       border-color: $blue;
     }
 
-    input:checked + .payout-choice-body {
+    &.is-checked {
       border-color: $blue;
       box-shadow: 0 0 0 2px $blue;
       background: $blue-bg-1;
     }
 
-    input:focus-visible + .payout-choice-body {
+    &:has(input:focus-visible) {
       outline: 3px solid $text-navy;
       outline-offset: 2px;
     }
-  }
 
-  .payout-choice-body {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    height: 100%;
-    padding: 0.9rem 2.75rem 0.9rem 1rem;
-    border: 1px solid $gray-border-3;
-    border-radius: 0.75rem;
-    background: $white;
-    transition: border-color 0.15s, box-shadow 0.15s;
+    .payout-choice-label {
+      flex: 1;
+      cursor: pointer;
+    }
 
-    strong {
-      color: $text-navy;
+    .payout-choice-body {
+      display: flex;
+      flex-direction: column;
+      gap: $gap;
+      padding: $padding-y 2.75rem $padding-y $padding-x;
+
+      strong {
+        color: $text-navy;
+      }
+    }
+
+    .payout-choice-extra {
+      display: flex;
+      flex-direction: column;
+      gap: $gap;
+      margin-top: $gap - $padding-y;
+      padding: 0 $padding-x $padding-y;
     }
 
     small {
