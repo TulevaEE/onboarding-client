@@ -506,7 +506,6 @@ describe('FutureMe', () => {
 
       expect(trailNames()).toEqual([
         'Sina, praegune samm',
-        '18–55, vaatamata',
         '61\u00A0a, vaatamata',
         '66\u00A0a, vaatamata',
         '66+, vaatamata',
@@ -586,7 +585,7 @@ describe('FutureMe', () => {
       expect(
         screen.getByRole('heading', { level: 2, name: 'Kes sa oled ja mis sul juba on?' }),
       ).toBeInTheDocument();
-      expect(stepCount()).toHaveTextContent('Samm 1 / 7');
+      expect(stepCount()).toHaveTextContent('Samm 1 / 6');
       expect(backButton()).toBeDisabled();
     });
 
@@ -596,8 +595,10 @@ describe('FutureMe', () => {
       fillInRequiredAnswers();
       userEvent.click(nextButton());
 
-      expect(screen.getByRole('heading', { level: 2, name: '18–55' })).toBeInTheDocument();
-      expect(stepCount()).toHaveTextContent('Samm 2 / 7');
+      expect(
+        within(trail()).getByRole('button', { name: /^61\sa, praegune samm$/ }),
+      ).toBeInTheDocument();
+      expect(stepCount()).toHaveTextContent('Samm 2 / 6');
 
       userEvent.click(backButton());
 
@@ -612,9 +613,7 @@ describe('FutureMe', () => {
       fillInRequiredAnswers();
       userEvent.click(nextButton());
 
-      await waitFor(() =>
-        expect(screen.getByRole('heading', { level: 2, name: '18–55' })).toHaveFocus(),
-      );
+      await waitFor(() => expect(screen.getByRole('heading', { level: 2 })).toHaveFocus());
     });
 
     it('offers to show the result on the step before it, and has nowhere to go from the result', () => {
@@ -627,7 +626,7 @@ describe('FutureMe', () => {
       expect(
         screen.getByRole('heading', { level: 2, name: 'Kas raha jätkub elu lõpuni?' }),
       ).toBeInTheDocument();
-      expect(stepCount()).toHaveTextContent('Samm 7 / 7');
+      expect(stepCount()).toHaveTextContent('Samm 6 / 6');
       expect(nextButton()).toBeDisabled();
     });
   });
@@ -688,7 +687,7 @@ describe('FutureMe', () => {
 
       userEvent.click(nextButton());
 
-      expect(stepCount()).toHaveTextContent('Samm 1 / 7');
+      expect(stepCount()).toHaveTextContent('Samm 1 / 6');
       await waitFor(() => expect(birthYearField()).toHaveFocus());
       expect(birthYearField()).toBeInvalid();
       expect(screen.getByText('Sünniaasta peab olema vahemikus 1930–2008.')).toBeInTheDocument();
@@ -709,7 +708,7 @@ describe('FutureMe', () => {
 
       userEvent.click(within(trail()).getByRole('button', { name: /^Kulud, lukus/ }));
 
-      expect(stepCount()).toHaveTextContent('Samm 1 / 7');
+      expect(stepCount()).toHaveTextContent('Samm 1 / 6');
       await waitFor(() => expect(birthYearField()).toHaveFocus());
     });
 
@@ -720,7 +719,7 @@ describe('FutureMe', () => {
       fillInRequiredAnswers();
       userEvent.click(nextButton());
 
-      expect(stepCount()).toHaveTextContent('Samm 2 / 7');
+      expect(stepCount()).toHaveTextContent('Samm 2 / 6');
     });
   });
 
@@ -1014,40 +1013,15 @@ describe('FutureMe', () => {
       expect(trailLabels()).toContain('55 a');
     });
 
-    it('drops the early withdrawal step when nothing opens it', () => {
-      loggedInAs({ secondPillarActive: false });
-      renderFutureMe();
-
-      expect(trailLabels()).not.toContain('18–55');
-    });
-
-    it('brings it back when the III pillar has money that can be taken out early', () => {
-      loggedInAs({ secondPillarActive: false });
+    it('leaves out the 18–55 step, as Tulevane Mina does not plan early withdrawals', () => {
+      loggedInAs({ dateOfBirth: '1980-01-01', secondPillarActive: true });
       renderFutureMe();
 
       userEvent.selectOptions(thirdPillarJoinedField(), 'jah, enne 2021. a');
       typeInto(thirdPillarAmountField(), '5000');
-
-      expect(trailLabels()).toContain('18–55');
-    });
-
-    it('brings it back when the saver puts money into the II pillar', () => {
-      loggedInAs({ secondPillarActive: false });
-      renderFutureMe();
-
-      userEvent.selectOptions(secondPillarRateField(), '2% palgast');
-
-      expect(trailLabels()).toContain('18–55');
-    });
-
-    it('counts a pension age chosen later as a longer wait for the early withdrawal step', () => {
-      loggedInAs({ dateOfBirth: '1962-01-01', secondPillarActive: true });
-      renderFutureMe();
-      expect(trailLabels()).not.toContain('18–55');
-
       userEvent.selectOptions(pensionAgeField(), '70');
 
-      expect(trailLabels()).toContain('18–55');
+      expect(trailLabels()).not.toContain('18–55');
     });
   });
 
@@ -1057,7 +1031,7 @@ describe('FutureMe', () => {
 
       userEvent.click(nextButton());
 
-      expect(stepCount()).toHaveTextContent('Samm 1 / 7');
+      expect(stepCount()).toHaveTextContent('Samm 1 / 6');
       await waitFor(() => expect(grossSalaryField()).toHaveFocus());
       expect(grossSalaryField()).toBeInvalid();
       expect(firstPillarField()).toBeValid();
@@ -1105,7 +1079,7 @@ describe('FutureMe', () => {
 
       userEvent.click(nextButton());
 
-      expect(stepCount()).toHaveTextContent('Samm 2 / 7');
+      expect(stepCount()).toHaveTextContent('Samm 2 / 6');
     });
 
     it('does not scold an empty amount before the saver has left it', () => {
@@ -1182,7 +1156,9 @@ describe('FutureMe', () => {
 
         expect(addKidsButton()).not.toHaveAttribute('aria-expanded');
         expect(
-          screen.getByText('Lapsed annavad pensionilisa ja võivad tuua pensioni varem.'),
+          screen.getByText(
+            'Lapsed võivad tuua pensioni varem. Pensionilisa laste eest arvutus veel ei arvesta.',
+          ),
         ).toBeVisible();
         expect(screen.queryByRole('spinbutton', { name: /Mitu last/ })).not.toBeInTheDocument();
       });
@@ -1840,7 +1816,7 @@ describe('FutureMe', () => {
       userEvent.click(nextButton());
       userEvent.click(within(trail()).getByRole('button', { name: 'Tulemus, vaatamata' }));
 
-      await waitFor(() => expect(reportedSteps()).toEqual([{ step: 0 }, { step: 3 }, { step: 9 }]));
+      await waitFor(() => expect(reportedSteps()).toEqual([{ step: 0 }, { step: 5 }, { step: 9 }]));
     });
 
     it('does not report the same step twice in a row', () => {

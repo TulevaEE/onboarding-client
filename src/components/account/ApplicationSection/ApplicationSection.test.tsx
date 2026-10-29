@@ -439,7 +439,7 @@ describe('Application section', () => {
     });
 
     it('does not let you cancel a rejoin application from the day after the deadline', async () => {
-      mockApplications([withCancellationDeadline(rejoin, '2026-11-29T23:59:59.999Z')]);
+      mockApplications([withCancellationDeadline(rejoin, '2026-11-29T21:59:59.999999999Z')]);
       initializeComponent();
 
       expect(await screen.findByText(/^II\spillar rejoin application$/)).toBeInTheDocument();

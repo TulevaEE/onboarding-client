@@ -8,6 +8,18 @@ export const HELP_TOPICS = [
   'p3Joined',
   'fundCur',
   'pillars',
+  'special',
+  'sp',
+  'spStart',
+  'hazard',
+  'rescue',
+  'civil',
+  'soodusYears',
+  'kids',
+  'kidsWho',
+  'household',
+  'legacyLeft',
+  'nominal',
   'kidIIMonths',
 ] as const;
 

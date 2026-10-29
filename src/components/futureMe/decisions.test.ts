@@ -35,6 +35,18 @@ const contextWith = (
 
 const idsOf = (context: ResultContext) => decisionsOf(context).map(({ id }) => id);
 
+const fundPensionOf = (context: ResultContext) =>
+  decisionsOf(context).find(({ id }) => id === 'fundPension');
+
+const withThirdPillar = { thirdPillarMonthly: '50', thirdPillarAmount: '5000' };
+
+const fundAt = (pillar: 'secondPillar' | 'thirdPillar') => ({
+  ...initialAge60(),
+  [pillar]: 'fund' as const,
+});
+
+const PAID_FROM = 0.5;
+
 describe('decisions', () => {
   describe('which decisions the answers ask for', () => {
     it('asks about the II pillar and the state pension when there is no III pillar', () => {
@@ -42,6 +54,7 @@ describe('decisions', () => {
         'secondPillarAtPayoutAge',
         'statePension',
         'secondPillarAtPensionAge',
+        'fundPension',
       ]);
     });
 
@@ -50,6 +63,7 @@ describe('decisions', () => {
         { id: 'secondPillarAtPayoutAge', age: 60, year: 2040, current: 'grow' },
         { id: 'statePension', age: 65, year: 2045, current: 'full' },
         { id: 'secondPillarAtPensionAge', age: 65, year: 2045, current: 'grow' },
+        { id: 'fundPension', age: 66, year: 2046 },
       ]);
     });
 
@@ -73,7 +87,7 @@ describe('decisions', () => {
     });
 
     it('asks about the III pillar once there is money or a contribution in it', () => {
-      const withThird = contextWith({ thirdPillarMonthly: '50', thirdPillarAmount: '5000' });
+      const withThird = contextWith(withThirdPillar);
 
       expect(idsOf(withThird)).toEqual([
         'secondPillarAtPayoutAge',
@@ -81,6 +95,7 @@ describe('decisions', () => {
         'statePension',
         'secondPillarAtPensionAge',
         'thirdPillarAtPensionAge',
+        'fundPension',
       ]);
     });
 
@@ -95,9 +110,138 @@ describe('decisions', () => {
 
       expect(idsOf(withSpecialPension)).not.toContain('statePension');
     });
+
+    it('lists the special pension at its start age, before the decisions that open later', () => {
+      const withSpecialPension = contextWith(
+        { workAdded: true, hasSpecialPension: true, specialPensionStartAge: '55' },
+        { specialPension: { ...initialSpecialPension(), monthly: '900' } },
+      );
+
+      expect(decisionsOf(withSpecialPension)[0]).toMatchObject({
+        id: 'specialPension',
+        age: 55,
+        choices: [],
+        summary: { hasMonthly: 'yes' },
+      });
+    });
+
+    it('says the special pension amount is missing until it is typed', () => {
+      const withSpecialPension = contextWith({ workAdded: true, hasSpecialPension: true });
+
+      expect(
+        decisionsOf(withSpecialPension).find(({ id }) => id === 'specialPension')?.summary,
+      ).toMatchObject({ hasMonthly: 'no' });
+    });
+
+    it('asks about the fund pension start while a pillar is left to grow', () => {
+      const fundPension = decisionsOf(contextWith()).find(({ id }) => id === 'fundPension');
+
+      expect(fundPension).toMatchObject({ age: 66, summary: { starts: 'none' } });
+    });
+
+    it('shows the earliest fund pension start picked', () => {
+      const startsAt70 = contextWith({}, { age66: { ...initialAge66(), secondPillarFrom: '70' } });
+
+      expect(fundPensionOf(startsAt70)).toMatchObject({
+        age: 70,
+        year: 2050,
+        summary: { starts: 'second', secondPillarAge: 70 },
+      });
+    });
+
+    it('starts a fund pension chosen at the payout age at the pension age, as the calculation pays it', () => {
+      const fundAt60 = contextWith({}, { age60: { ...initialAge60(), secondPillar: 'fund' } });
+
+      expect(fundPensionOf(fundAt60)).toMatchObject({
+        age: 65,
+        year: 2045,
+        summary: { starts: 'second', secondPillarAge: 65 },
+      });
+    });
+
+    it('counts a fund pension chosen at the pension age while the III pillar is left to grow', () => {
+      const fundAtPensionAge = contextWith(withThirdPillar, {
+        age65: { ...initialAge65(), secondPillar: 'fund' },
+      });
+
+      expect(fundPensionOf(fundAtPensionAge)).toMatchObject({
+        age: 65,
+        summary: { starts: 'second', secondPillarAge: 65 },
+      });
+    });
+
+    it('names the start of each pillar when both pay a fund pension', () => {
+      const bothStart = contextWith(withThirdPillar, {
+        age65: { ...initialAge65(), secondPillar: 'fund' },
+        age66: { ...initialAge66(), thirdPillarFrom: '70' },
+      });
+
+      expect(fundPensionOf(bothStart)).toMatchObject({
+        age: 65,
+        summary: { starts: 'both', secondPillarAge: 65, thirdPillarAge: 70 },
+      });
+    });
+
+    it('names the contract of each pillar that pays a fund pension', () => {
+      const bothStart = contextWith(withThirdPillar, {
+        age65: { ...initialAge65(), secondPillar: 'fund' },
+        age66: { ...initialAge66(), thirdPillarFrom: '70', secondPillarContract: 'once' },
+      });
+
+      expect(fundPensionOf(bothStart)?.summary).toMatchObject({
+        secondPillarContract: 'once',
+        thirdPillarContract: 'yearly',
+      });
+    });
+
+    it('starts the fund pension once the work kept on after the pension age ends', () => {
+      const workingUntil68 = contextWith(
+        {},
+        { age65: { ...initialAge65(), secondPillar: 'fund', work: 'yes', workUntil: '68' } },
+      );
+
+      expect(fundPensionOf(workingUntil68)).toMatchObject({
+        age: 68,
+        summary: { starts: 'second', secondPillarAge: 68 },
+      });
+    });
+
+    it.each([
+      ['a II pillar fund pension chosen at the payout age', {}, { age60: fundAt('secondPillar') }],
+      [
+        'a III pillar fund pension chosen at the payout age',
+        withThirdPillar,
+        { age60: fundAt('thirdPillar') },
+      ],
+      [
+        'a II pillar fund pension chosen at the pension age',
+        withThirdPillar,
+        { age65: { ...initialAge65(), secondPillar: 'fund' as const } },
+      ],
+      [
+        'a picked start while working on',
+        {},
+        {
+          age65: { ...initialAge65(), work: 'yes' as const, workUntil: '68' },
+          age66: { ...initialAge66(), secondPillarFrom: '66' },
+        },
+      ],
+    ])('lists %s at the age the calculation pays it from', (_, you, rest) => {
+      const context = contextWith(you, rest);
+      const result = resultOf(context);
+      const firstPayment = result.rows.find(
+        ({ age, fp }) => age >= result.pensionStartAge && fp > PAID_FROM,
+      );
+
+      expect(fundPensionOf(context)?.age).toBe(firstPayment?.age);
+    });
   });
 
   describe('changing a decision', () => {
+    it('leaves the answers to the step the special pension and fund pension open', () => {
+      expect(withDecision(contextWith(), 'fundPension', '')).toEqual({});
+    });
+
     it('changes how the II pillar is taken out at the payout age', () => {
       const changes = withDecision(contextWith(), 'secondPillarAtPayoutAge', 'lump');
 

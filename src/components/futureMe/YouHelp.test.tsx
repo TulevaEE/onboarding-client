@@ -27,9 +27,69 @@ const renderYouStep = () => {
   );
 };
 
+const specialCase = (name: RegExp) => screen.getByRole('checkbox', { name });
+
+const addEverything = () => {
+  userEvent.click(screen.getByRole('button', { name: 'Lisa lapsed' }));
+  userEvent.click(screen.getByRole('button', { name: 'Lisa erijuht' }));
+  userEvent.click(specialCase(/tervist kahjustaval tööl/));
+  userEvent.click(specialCase(/Saan või hakkan saama eripensioni/));
+  userEvent.click(specialCase(/Töötasin päästeteenistuses/));
+  userEvent.click(specialCase(/ametnik/i));
+};
+
 const helpButtonBeside = (element: HTMLElement, container: string, question: RegExp) =>
   // eslint-disable-next-line testing-library/no-node-access
   within(element.closest(container) as HTMLElement).getByRole('button', { name: question });
+
+const openKidsHelp = () => {
+  userEvent.click(screen.getByRole('button', { name: 'Lisa lapsed' }));
+  userEvent.click(
+    helpButtonBeside(
+      screen.getByRole('heading', { name: 'Lapsed' }),
+      '.you-section-head',
+      /Kuidas lapsed pensioni mõjutavad$/,
+    ),
+  );
+  return screen.getByRole('dialog');
+};
+
+const openHazardHelp = () => {
+  userEvent.click(screen.getByRole('button', { name: 'Lisa erijuht' }));
+  userEvent.click(specialCase(/tervist kahjustaval tööl/));
+  userEvent.click(
+    helpButtonBeside(
+      screen.getByRole('combobox', { name: /Millise nimekirja tööl töötasid/ }),
+      '.col-12',
+      /Mis on tervist kahjustav töö$/,
+    ),
+  );
+  return screen.getByRole('dialog');
+};
+
+const openRescueHelp = () => {
+  userEvent.click(screen.getByRole('button', { name: 'Lisa erijuht' }));
+  userEvent.click(specialCase(/Töötasin päästeteenistuses/));
+  userEvent.click(
+    helpButtonBeside(
+      screen.getByRole('spinbutton', { name: /Mitu aastat töötasid päästeteenistuses/ }),
+      '.col-12',
+      /Mida annab päästeteenistus pensionile$/,
+    ),
+  );
+  return screen.getByRole('dialog');
+};
+
+const openEarlyRetirementHelp = () => {
+  userEvent.click(
+    helpButtonBeside(
+      screen.getByRole('combobox', { name: /Mitu aastat varem plaanid pensionile minna/ }),
+      '.col-12',
+      /Mis juhtub, kui lähed varem pensionile$/,
+    ),
+  );
+  return screen.getByRole('dialog');
+};
 
 describe('Sina step help buttons', () => {
   beforeAll(installDialogPolyfill);
@@ -71,10 +131,31 @@ describe('Sina step help buttons', () => {
       () => screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }),
       /Kuidas III\ssamba sissemakse arvutuses muutub$/,
     ],
+    [
+      'number of kids',
+      () => screen.getByRole('spinbutton', { name: /Mitu last/ }),
+      /Keda loetakse lapse kasvatajaks$/,
+    ],
+    [
+      'hazard list',
+      () => screen.getByRole('combobox', { name: /Millise nimekirja tööl töötasid/ }),
+      /Mis on tervist kahjustav töö$/,
+    ],
+    [
+      'rescue years',
+      () => screen.getByRole('spinbutton', { name: /Mitu aastat töötasid päästeteenistuses/ }),
+      /Mida annab päästeteenistus pensionile$/,
+    ],
+    [
+      'special pension start',
+      () => screen.getByRole('spinbutton', { name: /Mis vanusest eripension algab/ }),
+      /Miks on eripensioni algus oluline$/,
+    ],
   ];
 
   it.each(fieldHelp)('puts the %s explanation beside the label of its field', (_, field, name) => {
     renderYouStep();
+    addEverything();
 
     userEvent.click(helpButtonBeside(field(), '.col-12', name));
 
@@ -90,6 +171,55 @@ describe('Sina step help buttons', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  const checkboxHelp: [string, RegExp, RegExp][] = [
+    ['special pension', /Saan või hakkan saama eripensioni/, /Mis on eripension$/],
+    ['civil servant', /ametnik/i, /Kes saab ametniku teenistusstaaži eest pensioni suurendust$/],
+  ];
+
+  it.each(checkboxHelp)('puts the %s explanation beside its checkbox', (_, label, name) => {
+    renderYouStep();
+    addEverything();
+
+    userEvent.click(helpButtonBeside(specialCase(label), '.form-check', name));
+
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  const optionalSectionHelp: [string, string, RegExp][] = [
+    ['kids', 'Lapsed', /Kuidas lapsed pensioni mõjutavad$/],
+    [
+      'special cases',
+      'Tööga seotud erijuhud',
+      /Millised tööga seotud erijuhud pensioni mõjutavad$/,
+    ],
+  ];
+
+  it.each(optionalSectionHelp)(
+    'puts the %s explanation beside the section title',
+    (_, title, name) => {
+      renderYouStep();
+      addEverything();
+      const heading = screen.getByRole('heading', { name: title });
+
+      userEvent.click(helpButtonBeside(heading, '.you-section-head', name));
+
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    },
+  );
+
+  it('puts the early retirement explanation beside its field', () => {
+    renderYouStep();
+
+    const field = screen.getByRole('combobox', {
+      name: /Mitu aastat varem plaanid pensionile minna/,
+    });
+    userEvent.click(helpButtonBeside(field, '.col-12', /Mis juhtub, kui lähed varem pensionile$/));
+
+    expect(
+      screen.getByRole('dialog', { name: 'Mis juhtub, kui lähed varem pensionile?' }),
+    ).toBeInTheDocument();
   });
 
   it('tells what the prefilled state pension is and where to check it', () => {
@@ -119,6 +249,101 @@ describe('Sina step help buttons', () => {
         name: /^Sotsiaalkindlustusameti iseteenindus/,
       }),
     ).toBeInTheDocument();
+  });
+
+  it('tells a parent retiring five years early that the II pillar payout is chosen on the pillars step', () => {
+    renderYouStep();
+
+    const dialog = openKidsHelp();
+
+    expect(dialog).toHaveTextContent(/5\saastat varem pensionile minnes „60\sa sambad“/);
+  });
+
+  it('dates the child supplement from children born in 1991, as the Social Insurance Board does', () => {
+    renderYouStep();
+
+    const dialog = openKidsHelp();
+
+    expect(dialog).toHaveTextContent(/1991\.–2012\.\sa sündinud laps: 3,5 aastahinnet/);
+    expect(dialog).toHaveTextContent(/enne 1991\.\sa sündinud laps: 1,5 aastahinnet/);
+    expect(dialog).not.toHaveTextContent(/1981/);
+  });
+
+  it('tells in the hazardous work explanation that too few list years leave out early retirement, as the field hint does', () => {
+    renderYouStep();
+
+    const dialog = openHazardHelp();
+
+    expect(dialog).toHaveTextContent(/Elukaar kontrollib ainult nimekirja tööaastaid/);
+    expect(dialog).not.toHaveTextContent(/Elukaar tingimusi ei kontrolli/);
+  });
+
+  it('tells in the hazardous work explanation that the underground work supplement is not in the calculation', () => {
+    renderYouStep();
+
+    const dialog = openHazardHelp();
+
+    expect(dialog).toHaveTextContent(/allmaatöö[^.]*arvutus veel ei arvesta/i);
+  });
+
+  const socialInsuranceBoardPages: [string, () => HTMLElement, RegExp, string][] = [
+    [
+      'hazardous work',
+      openHazardHelp,
+      /^SKA: soodustingimustel vanaduspension/,
+      'https://sotsiaalkindlustusamet.ee/pension-ja-seotud-huvitised/pensioni-liigid/soodustingimustel-vanaduspension',
+    ],
+    [
+      'kids',
+      openKidsHelp,
+      /^SKA: laste kasvatamine ja pension/,
+      'https://sotsiaalkindlustusamet.ee/pension-ja-seotud-huvitised/pensioni-suurus/laste-kasvatamine-ja-pension',
+    ],
+  ];
+
+  it.each(socialInsuranceBoardPages)(
+    'links the %s explanation to the Social Insurance Board page in Estonian',
+    (_, openHelp, name, href) => {
+      renderYouStep();
+
+      expect(within(openHelp()).getByRole('link', { name })).toHaveAttribute('href', href);
+    },
+  );
+
+  it('tells a rescuer until which year of retirement the calculation counts the service increase', () => {
+    renderYouStep();
+
+    expect(openRescueHelp()).toHaveTextContent(
+      /Elukaar arvestab suurendust, kui lähed pensionile hiljemalt 2042\.\saastal/,
+    );
+  });
+
+  const threeChildrenExample: [string, () => HTMLElement][] = [
+    ['kids', openKidsHelp],
+    ['early retirement', openEarlyRetirementHelp],
+  ];
+
+  it.each(threeChildrenExample)(
+    'quotes the same totals for retiring a year early with three children in the %s explanation',
+    (_, openHelp) => {
+      renderYouStep();
+
+      const dialog = openHelp();
+
+      expect(dialog).toHaveTextContent(/19\saasta[^.]*u 2 700 €/);
+      expect(dialog).toHaveTextContent(/10 200 €/);
+    },
+  );
+
+  it('names the rescue service and links the calculator in the early retirement explanation', () => {
+    renderYouStep();
+
+    const dialog = openEarlyRetirementHelp();
+
+    expect(dialog).toHaveTextContent(/Päästeteenistuse staažiga \(vähemalt 15\sa\)/);
+    expect(
+      within(dialog).getByRole('link', { name: /^Sotsiaalkindlustusameti pensionikalkulaator/ }),
+    ).toHaveAttribute('href', expect.stringContaining('pension-calculator'));
   });
 
   it('leaves the field labels as they were for screen readers', () => {

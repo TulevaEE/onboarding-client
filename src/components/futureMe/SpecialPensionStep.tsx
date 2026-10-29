@@ -18,7 +18,7 @@ import { StepPlanInput, FutureMeStep } from './steps';
 import { RequiredMark } from './YouFields';
 import { amountOf, YouAnswers } from './youAnswers';
 import { TranslationKey } from '../translations';
-import { ChapterHead } from './ChapterHead';
+import { SectionTitle, StepSection } from './StepSection';
 import { ageTense, retirementAge } from './planAges';
 import { LinkButton } from './LinkButton';
 import { strong } from './richText';
@@ -29,7 +29,8 @@ interface Props {
   plan: StepPlanInput;
   age65: Age65Answers;
   age66: Age66Answers;
-  headingRef: RefObject<HTMLHeadingElement>;
+  headingRef?: RefObject<HTMLHeadingElement>;
+  isEmbedded?: boolean;
   onChange: (answers: SpecialPensionAnswers) => void;
   onEditYou: () => void;
 }
@@ -59,6 +60,7 @@ export const SpecialPensionStep = ({
   age65,
   age66,
   headingRef,
+  isEmbedded,
   onChange,
   onEditYou,
 }: Props) => {
@@ -80,30 +82,26 @@ export const SpecialPensionStep = ({
   };
 
   return (
-    <section className="chapter card p-4" aria-labelledby="future-me-special-pension-heading">
-      <ChapterHead step={FutureMeStep.SPECIAL_PENSION}>
-        <p className="chapter-kicker">
-          <FormattedMessage
-            id="futureMe.specialPension.kicker"
-            values={{ age, year, tense: ageTense(plan.birthYear, age) }}
-          />
-        </p>
-        <h2
-          id="future-me-special-pension-heading"
-          className="text-balance"
-          tabIndex={-1}
-          ref={headingRef}
-        >
-          <FormattedMessage id="futureMe.specialPension.title" values={{ isStarted }} />
-        </h2>
-      </ChapterHead>
+    <StepSection
+      step={FutureMeStep.SPECIAL_PENSION}
+      headingId="future-me-special-pension-heading"
+      headingRef={headingRef}
+      isEmbedded={isEmbedded}
+      kicker={
+        <FormattedMessage
+          id="futureMe.specialPension.kicker"
+          values={{ age, year, tense: ageTense(plan.birthYear, age) }}
+        />
+      }
+      title={<FormattedMessage id="futureMe.specialPension.title" values={{ isStarted }} />}
+    >
       <p className="payout-note">
         <FormattedMessage id="futureMe.specialPension.intro" values={{ age, year, isStarted }} />{' '}
         <EditYouButton labelId="futureMe.specialPension.changeStart" onClick={onEditYou} />
       </p>
-      <h3 className="h5 section-title">
+      <SectionTitle className="h5 section-title">
         <FormattedMessage id="futureMe.specialPension.pensionAge.title" />
-      </h3>
+      </SectionTitle>
       <p className="text-pretty">
         {comparison ? (
           <FormattedMessage
@@ -273,6 +271,6 @@ export const SpecialPensionStep = ({
       <p className="text-secondary small mb-0 text-pretty">
         <FormattedMessage id="futureMe.specialPension.footer" />
       </p>
-    </section>
+    </StepSection>
   );
 };

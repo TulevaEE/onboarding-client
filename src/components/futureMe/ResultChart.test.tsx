@@ -8,6 +8,7 @@ import { initialAge66 } from './age66Answers';
 import { initialExpenses, needMonthly } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { ResultChart } from './ResultChart';
+import { nominalReturnsOf } from './nominal';
 import { ResultChartTip } from './ResultChartTip';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
@@ -59,7 +60,11 @@ const contextWith = (age65: Partial<Age65Answers> = {}, gross = '2000'): ResultC
 const renderChart = (context: ResultContext = contextWith()) =>
   render(
     <IntlProvider locale="et" messages={translations.et}>
-      <ResultChart result={resultOf(context)} need={needMonthly(context.expenses)} />
+      <ResultChart
+        result={resultOf(context)}
+        need={needMonthly(context.expenses)}
+        nominalReturns={nominalReturnsOf(context)}
+      />
     </IntlProvider>,
   );
 
@@ -67,9 +72,9 @@ const chart = () => screen.getByRole('img', { name: 'Sissetulek ja kulud vanuse 
 const readout = () => screen.getByRole('status');
 const tip = () => screen.queryByTestId('chart-tip');
 const lastChartProps = () => mockChart.mock.calls[mockChart.mock.calls.length - 1][0];
+const TAB_STOPS_BEFORE_CHART = 4;
 const tabToChart = () => {
-  userEvent.tab();
-  userEvent.tab();
+  Array.from({ length: TAB_STOPS_BEFORE_CHART }).forEach(() => userEvent.tab());
 };
 const press = (key: string) => userEvent.keyboard(`{${key}}`);
 const hoverAt = (index: number) =>

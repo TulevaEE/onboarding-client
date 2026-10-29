@@ -704,6 +704,7 @@ describe('RoleSwitcher', () => {
     userEvent.type(toggle, '{arrowdown}', { skipClick: true });
     await waitFor(() => expect(dropdownItems()[0]).toHaveFocus());
     expect(await screen.findByRole('button', { name: 'Test OÜ' })).toBeInTheDocument();
+    expect(await screen.findByRole('link', { name: 'Security' })).toBeInTheDocument();
 
     userEvent.type(dropdownItems()[0], '{arrowdown}', { skipClick: true });
     await waitFor(() => expect(dropdownItems()[1]).toHaveFocus());
