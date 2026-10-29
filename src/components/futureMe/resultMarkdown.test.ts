@@ -51,6 +51,16 @@ describe('result markdown', () => {
     );
   });
 
+  it('keeps the text a table gives screen readers and separates the lines of a cell', () => {
+    const table = elementOf(
+      '<table><thead><tr><td><span class="visually-hidden">Näitaja</span></td><th>Kõik korraga<small>sinu valik</small></th></tr></thead><tbody><tr><th>Kulud kaetud kuni</th><td>81 a<span class="visually-hidden"> parim</span></td></tr></tbody></table>',
+    );
+
+    expect(markdownOf(table)).toBe(
+      '| Näitaja | Kõik korraga · sinu valik |\n| --- | --- |\n| Kulud kaetud kuni | 81 a parim |',
+    );
+  });
+
   it('writes the summary of a closed details as a heading and keeps its content', () => {
     const details = elementOf(
       '<details><summary>Kuidas graafikut lugeda</summary><p>Kihid näitavad sissetulekut.</p></details>',
