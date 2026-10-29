@@ -5,7 +5,7 @@ import { Age60Answers, DecisionOrdinal, PAYOUT_CHOICES, PayoutChoice } from './a
 import { FundPensionFaq } from './FundPensionFaq';
 import { ChapterHead } from './ChapterHead';
 import { FutureMeStep } from './steps';
-import { EmojiIcon } from './FutureMeIcon';
+import { ChoiceCard } from './ChoiceCard';
 import { Tense } from './planAges';
 import { strong } from './richText';
 import { LinkButton } from './LinkButton';
@@ -85,29 +85,19 @@ const PillarChoices = ({
         {startedFundPension && <ChoiceMadeNote choice={startedFundPension} />}
         <div className="payout-choices">
           {PAYOUT_CHOICES.map((choice) => (
-            <label key={choice} className="payout-choice" htmlFor={`future-me-${pillar}-${choice}`}>
-              <input
-                type="radio"
-                id={`future-me-${pillar}-${choice}`}
-                aria-labelledby={`future-me-${pillar}-${choice}-name`}
-                aria-describedby={`future-me-${pillar}-${choice}-text`}
-                name={`future-me-${pillar}-payout`}
-                value={choice}
-                checked={answers[pillar] === choice}
-                onChange={() => onChange({ ...answers, [pillar]: choice })}
-              />
-              <span className="payout-choice-body">
-                <span className="payout-choice-emoji" aria-hidden="true">
-                  <EmojiIcon emoji={CHOICE_EMOJI[choice]} />
-                </span>
-                <strong id={`future-me-${pillar}-${choice}-name`}>
-                  <FormattedMessage id={`futureMe.age60.choice.${choice}` as TranslationKey} />
-                </strong>
-                <small id={`future-me-${pillar}-${choice}-text`}>
-                  <FormattedMessage id={`futureMe.age60.${pillar}.${choice}` as TranslationKey} />
-                </small>
-              </span>
-            </label>
+            <ChoiceCard
+              key={choice}
+              idPrefix={`future-me-${pillar}`}
+              name={`future-me-${pillar}-payout`}
+              value={choice}
+              emoji={CHOICE_EMOJI[choice]}
+              checked={answers[pillar] === choice}
+              title={<FormattedMessage id={`futureMe.age60.choice.${choice}` as TranslationKey} />}
+              text={
+                <FormattedMessage id={`futureMe.age60.${pillar}.${choice}` as TranslationKey} />
+              }
+              onChange={() => onChange({ ...answers, [pillar]: choice })}
+            />
           ))}
         </div>
       </fieldset>

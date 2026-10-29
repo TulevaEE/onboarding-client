@@ -120,6 +120,14 @@ describe('Special pension step', () => {
     expect(within(workGroup()).getByText(/II\ssambasse laekub 0 € kuus/)).toBeVisible();
   });
 
+  it('chooses not working when the line on what the second pillar gets is clicked', () => {
+    openSpecialPensionStep();
+
+    userEvent.click(within(workGroup()).getByText(/II\ssambasse laekub 0 € kuus/));
+
+    expect(within(workGroup()).getByRole('radio', { name: /Ei tööta/ })).toBeChecked();
+  });
+
   it('draws the work choices with line icons instead of emoji', () => {
     openSpecialPensionStep();
 

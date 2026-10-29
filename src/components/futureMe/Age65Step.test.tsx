@@ -248,6 +248,24 @@ describe('Age 65 step', () => {
       ).toBeInTheDocument();
     });
 
+    it('chooses working on when the line on how much each year worked raises the pension is clicked', () => {
+      openAge65Step();
+
+      userEvent.click(within(workGroup()).getByText(/tõstab iga tööaasta pensioni/));
+
+      expect(within(workGroup()).getByRole('radio', { name: /^Töötan edasi/ })).toBeChecked();
+    });
+
+    it('tells a screen reader how much each year worked raises the pension', () => {
+      openAge65Step();
+
+      expect(
+        within(workGroup()).getByRole('radio', { name: /^Töötan edasi/ }),
+      ).toHaveAccessibleDescription(
+        /Iga tööaasta tõstab pensioni\. Brutopalgaga 2\s000\s€ tõstab iga tööaasta pensioni u \d+(,\d)?\s€ kuus\.$/,
+      );
+    });
+
     it('keeps the picked end age', () => {
       openAge65Step();
       userEvent.click(within(workGroup()).getByRole('radio', { name: /^Töötan edasi/ }));
