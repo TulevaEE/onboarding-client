@@ -2972,7 +2972,7 @@
   "futureMe.result.warn.scenario.E": "Jätkan kasvatamist",
   "futureMe.result.surplus": "Fondipension maksab {from}–⁠{to}-⁠aastaselt keskmiselt <strong>{average} kuus rohkem</strong>, kui kulud vajavad. Ülejääk seisab hoiusel ja kaotab väärtust (−1% aastas pärast inflatsiooni).{hasGrow, select, yes { Kui jätad raha fondi („Kasvatan edasi“), kannab plaan elu lõpuni <strong>{grow} kuus</strong> (praegu {mine}).} other {}} Fondipensioni saad ka peatada ja hiljem uuesti alustada, näiteks kui riiklik pension algab ja katab suurema osa kuludest.",
   "futureMe.result.decisions.title": "Sinu otsused",
-  "futureMe.result.decisions.intro": "Iga otsuse juures on, millal see avaneb ja mis maksuga. Muuda ükskõik millist valikut: vastus arvutatakse kohe uuesti. Reeglid: Pensionikeskus ja Sotsiaalkindlustusamet, 2026.",
+  "futureMe.result.decisions.intro": "Iga otsuse juures on, millal see avaneb. Muuda ükskõik millist valikut: vastus arvutatakse kohe uuesti. Reeglid: Pensionikeskus ja Sotsiaalkindlustusamet, 2026.",
   "futureMe.result.decisions.age": "{age} a",
   "futureMe.result.decisions.year": "{year}{isOpened, select, true {, avanenud} other {}}",
   "futureMe.result.decisions.current": "Sinu valik: {choice}",
