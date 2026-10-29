@@ -253,6 +253,14 @@ describe('Sina step help buttons', () => {
     expect(dialog).not.toHaveTextContent(/Elukaar tingimusi ei kontrolli/);
   });
 
+  it('tells in the hazardous work explanation that the underground work supplement is not in the calculation', () => {
+    renderYouStep();
+
+    const dialog = openHazardHelp();
+
+    expect(dialog).toHaveTextContent(/allmaatöö[^.]*arvutus veel ei arvesta/i);
+  });
+
   it('leaves the field labels as they were for screen readers', () => {
     renderYouStep();
 
