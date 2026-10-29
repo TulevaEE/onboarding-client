@@ -1,7 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
-import { useContributions, useEligibleChildren, useMe, useSourceFunds } from '../common/apiHooks';
+import {
+  useContributions,
+  useMe,
+  usePendingOnboardings,
+  useRoles,
+  useSourceFunds,
+} from '../common/apiHooks';
+import { tulevaChildrenOf } from './kidsPrefill';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { usePageTitle } from '../common/usePageTitle';
 import { Age55Step } from './Age55Step';
@@ -176,7 +183,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           touched={touched}
           openSections={openSections}
           isPrefilled={prefill.birthYear !== null || prefill.sex !== null}
-          hasRegisterChildren={Boolean(prefill.kids)}
+          prefilledKids={prefill.kids ?? null}
           headingRef={headingRef}
           onChange={(changes) => setAnswers((previous) => ({ ...previous, ...changes }))}
           onBlur={(field) => setTouched((previous) => new Set(previous).add(field))}
@@ -331,13 +338,17 @@ export const FutureMe = () => {
   const me = useMe();
   const contributionsQuery = useContributions();
   const sourceFundsQuery = useSourceFunds();
-  const childrenQuery = useEligibleChildren();
+  const rolesQuery = useRoles();
+  const pendingOnboardingsQuery = usePendingOnboardings();
   const { data: user } = me;
   const { data: contributions } = contributionsQuery;
   const { data: sourceFunds } = sourceFundsQuery;
-  const { data: children } = childrenQuery;
 
-  if ([me, contributionsQuery, sourceFundsQuery, childrenQuery].some(isLoadingForTheFirstTime)) {
+  if (
+    [me, contributionsQuery, sourceFundsQuery, rolesQuery, pendingOnboardingsQuery].some(
+      isLoadingForTheFirstTime,
+    )
+  ) {
     return <Shimmer height={400} />;
   }
 
@@ -345,7 +356,11 @@ export const FutureMe = () => {
     <FutureMeSteps
       prefill={
         user
-          ? derivePrefill(user, { contributions, sourceFunds, children })
+          ? derivePrefill(user, {
+              contributions,
+              sourceFunds,
+              children: tulevaChildrenOf(user, rolesQuery.data, pendingOnboardingsQuery.data),
+            })
           : { birthYear: null, sex: null, secondPillarRate: null }
       }
     />

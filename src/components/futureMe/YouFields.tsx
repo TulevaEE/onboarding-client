@@ -20,7 +20,7 @@ export const FIELD_DOM_IDS: Record<YouField, string> = {
 };
 
 const MIN_AMOUNT = 0;
-const PREFILLED_HINT_ID = 'prefilled-hint';
+export const PREFILLED_HINT_ID = 'prefilled-hint';
 
 export const PrefilledHint = () => (
   <span id={PREFILLED_HINT_ID} hidden>

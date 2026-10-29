@@ -3,8 +3,16 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { FutureMe } from './FutureMe';
-import { useContributions, useEligibleChildren, useMe, useSourceFunds } from '../common/apiHooks';
-import { Contribution, SourceFund, User } from '../common/apiModels';
+import {
+  useContributions,
+  useEligibleChildren,
+  useMe,
+  usePendingOnboardings,
+  useRoles,
+  useSourceFunds,
+} from '../common/apiHooks';
+import { Contribution, PendingOnboarding, SourceFund, User } from '../common/apiModels';
+import { EligibleChild } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 import translations from '../translations';
 import { pensionAge } from './engine/pension';
 import { installDialogPolyfill } from './dialogPolyfill';
@@ -17,6 +25,8 @@ jest.mock('../common/apiHooks', () => ({
   useContributions: jest.fn(),
   useSourceFunds: jest.fn(),
   useEligibleChildren: jest.fn(),
+  useRoles: jest.fn(),
+  usePendingOnboardings: jest.fn(),
 }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
 
@@ -54,11 +64,35 @@ const withPensionData = ({
   } as ReturnType<typeof useSourceFunds>);
 };
 
+const mockUseRoles = useRoles as jest.MockedFunction<typeof useRoles>;
+const mockUsePendingOnboardings = usePendingOnboardings as jest.MockedFunction<
+  typeof usePendingOnboardings
+>;
+
 const withChildren = (children: { personalCode: string }[] | undefined, isLoading = false) => {
-  mockUseEligibleChildren.mockReturnValue({
-    data: children,
+  mockUseRoles.mockReturnValue({
+    data: children && [
+      { type: 'PERSON', code: mockUser.personalCode, name: 'John Doe' },
+      { type: 'LEGAL_ENTITY', code: '12345678', name: 'Firma OÜ' },
+      ...children.map(({ personalCode }) => ({ type: 'PERSON', code: personalCode, name: 'Laps' })),
+    ],
     isLoading,
+  } as ReturnType<typeof useRoles>);
+  mockUsePendingOnboardings.mockReturnValue({
+    data: [] as PendingOnboarding[],
+    isLoading: false,
+  } as ReturnType<typeof usePendingOnboardings>);
+  mockUseEligibleChildren.mockReturnValue({
+    data: [] as EligibleChild[],
+    isLoading: false,
   } as ReturnType<typeof useEligibleChildren>);
+};
+
+const withPendingChild = ({ personalCode }: { personalCode: string }) => {
+  mockUsePendingOnboardings.mockReturnValue({
+    data: [{ type: 'PERSON', code: personalCode, name: 'Laps' }],
+    isLoading: false,
+  } as ReturnType<typeof usePendingOnboardings>);
 };
 
 const BOY_BORN_JUNE_2015 = { personalCode: '51506150000' };
@@ -307,7 +341,7 @@ describe('FutureMe', () => {
     });
   });
 
-  describe('children from the register', () => {
+  describe('children with a Tuleva account', () => {
     beforeAll(installDialogPolyfill);
 
     const addKidsButton = () => screen.queryByRole('button', { name: 'Lisa lapsed' });
@@ -322,7 +356,46 @@ describe('FutureMe', () => {
       screen.queryByRole('spinbutton', {
         name: new RegExp(`${number}\\. lapse riigi lisamakse II\\ssambasse`),
       });
-    it('opens the children block with the minors of the register', () => {
+    it('never asks the population register', () => {
+      withChildren([BOY_BORN_JUNE_2015]);
+
+      renderFutureMe();
+
+      expect(mockUseEligibleChildren).not.toHaveBeenCalled();
+    });
+
+    it('adds a child whose account the other guardian opened', () => {
+      withChildren([]);
+      withPendingChild(GIRL_BORN_FEB_2023);
+
+      renderFutureMe();
+
+      expect(kidsCountField()).toHaveValue(1);
+      expect(kidBirthYearField(1)).toHaveValue('2023');
+    });
+
+    it('does not count the saver or a company as a child', () => {
+      withChildren([BOY_BORN_JUNE_2015]);
+
+      renderFutureMe();
+
+      expect(kidsCountField()).toHaveValue(1);
+    });
+
+    it('says in the „?“ that only children with a Tuleva account are prefilled', () => {
+      withChildren([BOY_BORN_JUNE_2015]);
+
+      renderFutureMe();
+      userEvent.click(
+        screen.getByRole('button', { name: /^Selgitus: Kuidas lapsed pensioni mõjutavad/ }),
+      );
+
+      const dialog = screen.getByRole('dialog');
+      expect(within(dialog).getByText(/kellele oled Tulevas konto avanud/)).toBeInTheDocument();
+      expect(within(dialog).getByText(/Rahvastikuregistrist me lapsi ei päri/)).toBeInTheDocument();
+    });
+
+    it('opens the children block with the children who have a Tuleva account', () => {
       withChildren([BOY_BORN_JUNE_2015, GIRL_BORN_FEB_2023]);
 
       renderFutureMe();
@@ -371,17 +444,21 @@ describe('FutureMe', () => {
       await waitFor(() => expect(kidMonthsField(1)).toHaveFocus());
     });
 
-    it('says the adult children are for the saver to add', () => {
-      withChildren([BOY_BORN_JUNE_2015]);
+    it('marks the prefilled children for screen readers until the saver changes them', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+      withPensionData({ contributions: monthsOfParentalBenefit(30) });
 
       renderFutureMe();
 
-      expect(
-        screen.getByText(/Täisealised lapsed lisa ise: suurenda laste arvu ja sisesta sünniaasta/),
-      ).toBeInTheDocument();
+      expect(kidsCountField()).toHaveAccessibleDescription(/Eeltäidetud väli/);
+      expect(kidBirthYearField(1)).toHaveAccessibleDescription(/Eeltäidetud väli/);
+      expect(kidMonthsField(1)).toHaveAccessibleDescription(/Eeltäidetud väli/);
+      typeInto(kidMonthsField(1), '12');
+      expect(kidMonthsField(1)).not.toHaveAccessibleDescription(/Eeltäidetud väli/);
+      expect(screen.queryByText(/Täisealised lapsed lisa ise/)).not.toBeInTheDocument();
     });
 
-    it('lets the saver add a child that the register does not list', () => {
+    it('lets the saver add a child that Tuleva does not know', () => {
       withChildren([BOY_BORN_JUNE_2015]);
 
       renderFutureMe();
@@ -406,8 +483,8 @@ describe('FutureMe', () => {
     });
 
     it.each([
-      ['the register lists no minors', []],
-      ['the register could not be read', undefined],
+      ['Tuleva knows no children', []],
+      ['the roles could not be read', undefined],
     ])('keeps adding children by hand when %s', (_, children) => {
       withChildren(children);
 
@@ -417,7 +494,6 @@ describe('FutureMe', () => {
 
       expect(kidsCountField()).toHaveValue(1);
       expect(kidMonthsField(1)).toHaveValue(null);
-      expect(screen.queryByText(/Täisealised lapsed lisa ise/)).not.toBeInTheDocument();
     });
 
     it('says a number of months outside 0–36 is not possible', () => {

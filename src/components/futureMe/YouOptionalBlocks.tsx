@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import {
@@ -14,7 +15,8 @@ import {
   maxChildBirthYear,
   YouAnswers,
 } from './youAnswers';
-import { AmountField, BlockProps, FieldLabel, SelectField } from './YouFields';
+import { KidsPrefill } from './kidsPrefill';
+import { AmountField, BlockProps, FieldLabel, PREFILLED_HINT_ID, SelectField } from './YouFields';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';
 import { sectionLabels } from './YouBlocks';
@@ -28,7 +30,7 @@ const HAZARD_YEARS_NEEDED = { list1: 10, list2: 12.5 };
 const SERVICE_YEARS_NEEDED = { list1: 20, list2: 25 };
 
 type OptionalBlockProps = BlockProps & { optional: YouOptionalSection };
-type KidsBlockProps = OptionalBlockProps & { hasRegisterChildren: boolean };
+type KidsBlockProps = OptionalBlockProps & { prefilledKids: KidsPrefill | null };
 
 const optionalOf = (
   block: 'kids' | 'work',
@@ -58,7 +60,7 @@ export const KidsSection = ({
   isOpen,
   isComplete,
   optional,
-  hasRegisterChildren,
+  prefilledKids,
   onToggle,
   onChange,
   onBlur,
@@ -98,6 +100,9 @@ export const KidsSection = ({
         <AmountField
           field="kidsCount"
           answers={answers}
+          isPrefilled={
+            prefilledKids !== null && answers.kidsCount === String(prefilledKids.birthYears.length)
+          }
           touched={touched}
           label="futureMe.you.kidsCount.label"
           help="kidsWho"
@@ -147,11 +152,12 @@ export const KidsSection = ({
                         autoComplete="off"
                         value={typed}
                         aria-invalid={showError}
-                        aria-describedby={
-                          showError
-                            ? `future-me-kid-birth-year-hint ${id}-error`
-                            : 'future-me-kid-birth-year-hint'
-                        }
+                        aria-describedby={classNames('future-me-kid-birth-year-hint', {
+                          [PREFILLED_HINT_ID]:
+                            prefilledKids !== null &&
+                            typed === String(prefilledKids.birthYears[index] ?? ''),
+                          [`${id}-error`]: showError,
+                        })}
                         onChange={(event) => changeBirthYear(index, event.target.value)}
                         onBlur={() => setLeftRows((previous) => new Set(previous).add(index))}
                       />
@@ -181,11 +187,12 @@ export const KidsSection = ({
                             step="1"
                             value={answers.kidsIIMonths[index] ?? ''}
                             aria-invalid={isMonthsInvalid}
-                            aria-describedby={
-                              isMonthsInvalid
-                                ? `${monthsId}-hint ${monthsId}-error`
-                                : `${monthsId}-hint`
-                            }
+                            aria-describedby={classNames(`${monthsId}-hint`, {
+                              [PREFILLED_HINT_ID]:
+                                Boolean(prefilledKids?.iiMonths[index]) &&
+                                answers.kidsIIMonths[index] === prefilledKids?.iiMonths[index],
+                              [`${monthsId}-error`]: isMonthsInvalid,
+                            })}
                             onChange={(event) => changeIIMonths(index, event.target.value)}
                           />
                           <div className="form-text" id={`${monthsId}-hint`}>
@@ -206,13 +213,6 @@ export const KidsSection = ({
                 })}
               </div>
             </div>
-            {hasRegisterChildren && (
-              <div className="col-12">
-                <div className="form-text mt-0">
-                  <FormattedMessage id="futureMe.you.kids.adultNote" />
-                </div>
-              </div>
-            )}
             {hasChildWithoutBirthYear(answers) && (
               <div className="col-12">
                 <div className="form-text mt-0">

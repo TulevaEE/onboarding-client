@@ -1,4 +1,5 @@
-import { Contribution } from '../common/apiModels';
+import { Contribution, PendingOnboarding, Role, User } from '../common/apiModels';
+import { isChildRole } from '../common/utils';
 import { EligibleChild } from '../flows/savingsAccount/SavingsFundOnboarding/types.api';
 import { CURRENT_YEAR } from './engine/pension';
 
@@ -69,6 +70,17 @@ const iiMonthsOf = (
       ? monthsPaidFor(birth, contributions)
       : 0;
   return months > 0 ? String(months) : '';
+};
+
+export const tulevaChildrenOf = (
+  user: User,
+  roles: Role[] = [],
+  pendingOnboardings: PendingOnboarding[] = [],
+): Pick<EligibleChild, 'personalCode'>[] => {
+  const codes = [...roles, ...pendingOnboardings]
+    .filter((role) => isChildRole(role, user))
+    .map(({ code }) => code);
+  return Array.from(new Set(codes)).map((code) => ({ personalCode: code }));
 };
 
 export const deriveKidsPrefill = (

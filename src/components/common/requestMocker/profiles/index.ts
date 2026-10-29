@@ -1,4 +1,3 @@
-import { eligibleChildrenProfiles } from './eligibleChildren';
 import { fundPensionStatusProfiles } from './fundPensionStatus';
 import { fundsProfiles } from './funds';
 import { portfolioProfiles } from './portfolio';
@@ -31,7 +30,6 @@ export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string
   memberCapital: memberCapitalProfiles,
   memberCapitalListings: memberCapitalListingsProfiles,
   pendingApplications: pendingApplicationsProfiles,
-  eligibleChildren: eligibleChildrenProfiles,
   fundPensionStatus: fundPensionStatusProfiles,
   funds: fundsProfiles,
   portfolio: portfolioProfiles,
