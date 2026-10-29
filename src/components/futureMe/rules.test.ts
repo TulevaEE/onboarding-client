@@ -140,15 +140,14 @@ describe('child supplement rule', () => {
       ...changes,
     });
 
-  it('starts with the old-age pension and carries the monthly supplement and the forecast answer', () => {
-    const context = withGrownChildren({ kidsInForecast: 'yes' });
+  it('starts with the old-age pension and carries the monthly supplement', () => {
+    const context = withGrownChildren();
 
     expect(rulesOf(context)).toContainEqual({
       id: 'childSupplement',
       age: 65,
       year: 2045,
       monthly: childSupplement(resultInputOf(context)),
-      inForecast: 'yes',
     });
   });
 

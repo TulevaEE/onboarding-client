@@ -63,7 +63,7 @@ describe('rescue allowance or the pension for the children question', () => {
     const mix = within(rowNamed(/^Mõlemad järjest/));
     expect(mix.getByText(/^60\sa$/)).toBeInTheDocument();
     expect(mix.getByText(/^60–\u206063\sa ootetoetus 791\s€\skuus$/)).toBeInTheDocument();
-    expect(mix.getByText(/^64\sa pension 791\s€\skuus$/)).toBeInTheDocument();
+    expect(mix.getByText(/^64\sa pension 923\s€\skuus$/)).toBeInTheDocument();
   });
 
   it('names the table and lets the keyboard scroll it on a narrow screen', () => {
@@ -79,9 +79,9 @@ describe('rescue allowance or the pension for the children question', () => {
   it('marks the ways that give the most until the pension age', () => {
     renderEt(<RescueCompareFaq context={withRescue()} />);
 
-    expect(within(rowNamed(/^Ainult ootetoetus/)).getByText('kõige rohkem')).toBeInTheDocument();
+    expect(within(rowNamed(/^Mõlemad järjest/)).getByText('kõige rohkem')).toBeInTheDocument();
     expect(
-      within(rowNamed(/^Laste eest pension/)).queryByText('kõige rohkem'),
+      within(rowNamed(/^Ainult ootetoetus/)).queryByText('kõige rohkem'),
     ).not.toBeInTheDocument();
   });
 
@@ -91,6 +91,7 @@ describe('rescue allowance or the pension for the children question', () => {
         context={withRescue({
           kidsCount: '5',
           kidsBirthYears: ['1985', '1986', '1987', '1988', '1989'],
+          kidsSupUser: 'other',
         })}
       />,
     );
@@ -143,9 +144,9 @@ describe('special pension or the pension for the children question', () => {
     expect(special.getByText(/^10\s800\s€$/)).toBeInTheDocument();
     expect(special.getByText(/^900\s€\skuus$/)).toBeInTheDocument();
     const oldAge = within(rowNamed(/^Laste eest vanaduspension/));
-    expect(oldAge.getByText(/^64\sa vanaduspension 692\s€\skuus$/)).toBeInTheDocument();
-    expect(oldAge.getByText(/^8\s302\s€$/)).toBeInTheDocument();
-    expect(oldAge.getByText(/^692\s€\skuus$/)).toBeInTheDocument();
+    expect(oldAge.getByText(/^64\sa vanaduspension 802\s€\skuus$/)).toBeInTheDocument();
+    expect(oldAge.getByText(/^9\s622\s€$/)).toBeInTheDocument();
+    expect(oldAge.getByText(/^802\s€\skuus$/)).toBeInTheDocument();
     expect(within(rowNamed(/^Pere kokku/)).getByText(/^21\s123\s€$/)).toBeInTheDocument();
   });
 
@@ -170,7 +171,7 @@ describe('special pension or the pension for the children question', () => {
   });
 
   it('marks neither as giving the most when both give the same in whole euros', () => {
-    renderEt(<SpecialCompareFaq context={withSpecialPension({}, '691.8')} />);
+    renderEt(<SpecialCompareFaq context={withSpecialPension({}, '801.8')} />);
 
     expect(screen.getAllByRole('rowheader')).toHaveLength(3);
     expect(screen.queryByText('kõige rohkem')).not.toBeInTheDocument();

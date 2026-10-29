@@ -64,7 +64,6 @@ export interface YouAnswers extends KidsAnswers, WorkAnswers {
 }
 
 export type KidsUser = 'me' | 'other';
-export type KidsInForecast = 'unknown' | 'no' | 'yes';
 export type RescueBasis = 'mix' | 'pension' | 'toetus';
 
 interface KidsAnswers {
@@ -76,7 +75,6 @@ interface KidsAnswers {
   kidsDisabled: boolean[];
   kidsEarlyUser: KidsUser;
   kidsSupUser: KidsUser;
-  kidsInForecast: KidsInForecast | '';
 }
 
 interface WorkAnswers {
@@ -113,7 +111,6 @@ const OPTIONAL_DEFAULTS: { kids: KidsAnswers; work: WorkAnswers } = {
     kidsDisabled: [],
     kidsEarlyUser: 'me',
     kidsSupUser: 'me',
-    kidsInForecast: '',
   },
   work: {
     workAdded: false,
@@ -339,13 +336,6 @@ const kidsRightFor = (answers: YouAnswers, earlyUser: YouAnswers['kidsEarlyUser'
 
 export const isKidsRightAvailableToSelf = (answers: YouAnswers): boolean =>
   kidsRightFor(answers, 'me') > 0;
-
-export const kidsInForecastOf = (answers: YouAnswers): KidsInForecast => {
-  if (answers.kidsInForecast !== '') {
-    return answers.kidsInForecast;
-  }
-  return answers.firstPillarMonthly === PREFILLED_FIRST_PILLAR_MONTHLY ? 'no' : 'unknown';
-};
 
 export const rescueRightOf = (answers: YouAnswers): number =>
   answers.workAdded && answers.hasRescue

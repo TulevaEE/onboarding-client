@@ -30,7 +30,7 @@ const MONTHS_IN_YEAR = 12;
 
 type CompareContext = Pick<ResultContext, 'you' | 'plan' | 'age65' | 'age66' | 'specialPension'>;
 
-export type SupplementState = 'otherParent' | 'none' | 'unknown' | 'no' | 'yes';
+export type SupplementState = 'otherParent' | 'none' | 'self';
 
 interface Period {
   from: number;
@@ -108,12 +108,11 @@ const familyOf = (kidsYears: number, ownTotal: number): Family => {
   };
 };
 
-const supplementOf = (input: PensionInput) => {
+const supplementOf = (input: PensionInput): { monthly: number; state: SupplementState } => {
   const monthly = childSupplement(input);
   const kids = input.kids ?? {};
   const isOtherParents = (kids.supUser || kids.user) === 'other';
-  const forecastState = (kids.inForecast ?? 'unknown') as SupplementState;
-  const state: SupplementState = isOtherParents ? 'otherParent' : forecastState;
+  const state: SupplementState = isOtherParents ? 'otherParent' : 'self';
   return { monthly, state: monthly > 0 || isOtherParents ? state : 'none' };
 };
 

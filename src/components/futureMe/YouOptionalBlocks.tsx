@@ -12,8 +12,6 @@ import {
   isChildIIMonthsAsked,
   isChildIIMonthsInvalid,
   isKidsRightAvailableToSelf,
-  KidsInForecast,
-  kidsInForecastOf,
   KidsUser,
   maxChildBirthYear,
   YouAnswers,
@@ -60,7 +58,6 @@ export const workOptional = (answers: YouAnswers, onAdd: () => void, onRemove: (
 
 const KIDS_USERS: KidsUser[] = ['me', 'other'];
 const NO_DISABLED_CHILD = 'no';
-const KIDS_IN_FORECAST: KidsInForecast[] = ['unknown', 'no', 'yes'];
 const MONTHS = Array.from({ length: 12 }, (_, month) => new Date(2000, month, 1));
 
 const ChildBirthMonth = ({
@@ -339,17 +336,6 @@ export const KidsSection = ({
                 label: intl.formatMessage({ id: `futureMe.you.kidsEarlyUser.${value}` }),
               }))}
               onChange={(value) => onChange({ kidsSupUser: value as KidsUser })}
-            />
-            <SelectField
-              id="future-me-kids-in-forecast"
-              label="futureMe.you.kidsInForecast.label"
-              hint="futureMe.you.kidsInForecast.hint"
-              value={kidsInForecastOf(answers)}
-              options={KIDS_IN_FORECAST.map((value) => ({
-                value,
-                label: intl.formatMessage({ id: `futureMe.you.kidsInForecast.${value}` }),
-              }))}
-              onChange={(value) => onChange({ kidsInForecast: value as KidsInForecast })}
             />
           </>
         )}

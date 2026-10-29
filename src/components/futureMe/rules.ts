@@ -4,13 +4,7 @@ import { EARLY_DECREASE, retirementYears, SimulationResult } from './engine/pens
 import { retirementAge } from './planAges';
 import { ResultContext, resultInputOf, resultOf, resultScenarioOf } from './resultAnswers';
 import { specialPensionStartAge } from './specialPensionAnswers';
-import {
-  amountOf,
-  earlyRightSources,
-  KidsInForecast,
-  kidsInForecastOf,
-  YouAnswers,
-} from './youAnswers';
+import { amountOf, earlyRightSources, YouAnswers } from './youAnswers';
 
 type EarlyRightReason = keyof ReturnType<typeof earlyRightSources>;
 
@@ -23,7 +17,7 @@ export type Rule = When &
   (
     | { id: 'earlyRetirement'; years: number; pensionAge: number; reason: EarlyRightReason }
     | { id: 'flexibleRetirement'; years: number; decrease: number }
-    | { id: 'childSupplement'; monthly: number; inForecast: KidsInForecast }
+    | { id: 'childSupplement'; monthly: number }
     | { id: 'specialPension'; monthly: number; startAge: number | undefined }
     | { id: 'fundPensionContract'; contracts: Partial<Record<Pillar, Contract>> }
     | { id: 'inheritance'; pillars: 'both' | Pillar }
@@ -84,7 +78,6 @@ const childSupplementRules = (context: ResultContext): Rule[] => {
           id: 'childSupplement',
           ...whenOf(context, age),
           monthly: result.childSupplement.monthly,
-          inForecast: kidsInForecastOf(context.you),
         },
       ]
     : [];

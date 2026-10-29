@@ -7,7 +7,6 @@ import {
   effectivePensionAge,
   isKidsRightAvailableToSelf,
   isRescueBasisAsked,
-  kidsInForecastOf,
   isRescueMixOffered,
   rescueBasisOf,
   fieldProblem,
@@ -21,7 +20,6 @@ import {
   prefilledFields,
   removeOptionalSection,
   toStepPlanInput,
-  PREFILLED_FIRST_PILLAR_MONTHLY,
   YouAnswers,
 } from './youAnswers';
 import { pensionAge } from './engine/pension';
@@ -684,26 +682,5 @@ describe('rescue allowance or the pension for the children', () => {
       rescue: 0,
     });
     expect(earlyRetirementYears(threeKidsAndRescue({ rescueBasis: 'toetus' }))).toBe(5);
-  });
-});
-
-describe('whether the state pension forecast has the child supplement', () => {
-  it('is no while the state pension is still the prefilled average, which has no supplement', () => {
-    const answers = initialAnswers({ birthYear: 1980, sex: 'N', secondPillarRate: '0.02' });
-
-    expect(kidsInForecastOf(answers)).toBe('no');
-  });
-
-  it('is unknown once the saver types their own forecast', () => {
-    expect(kidsInForecastOf(filledIn({ firstPillarMonthly: '700' }))).toBe('unknown');
-  });
-
-  it('is what the saver picked', () => {
-    expect(kidsInForecastOf(filledIn({ kidsInForecast: 'yes' }))).toBe('yes');
-    expect(
-      kidsInForecastOf(
-        filledIn({ firstPillarMonthly: PREFILLED_FIRST_PILLAR_MONTHLY, kidsInForecast: 'unknown' }),
-      ),
-    ).toBe('unknown');
   });
 });
