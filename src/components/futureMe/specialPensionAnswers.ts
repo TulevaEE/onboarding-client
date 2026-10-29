@@ -73,7 +73,7 @@ export const pensionInputOf = (
     birthYear: plan.birthYear,
     sex: you.sex,
     p1Monthly: amountOf(you.firstPillarMonthly),
-    p2: 0,
+    p2: amountOf(you.secondPillarAmount),
     p3: 0,
     needMonthly: 0,
     realReturn: 0,
