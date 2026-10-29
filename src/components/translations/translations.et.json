@@ -1705,6 +1705,7 @@
   "flows.savingsFundOnboarding.termsStep.linkText.terms": "Tingimused",
   "flows.savingsFundOnboarding.termsStep.linkText.prospectus": "Prospekt",
   "flows.savingsFundOnboarding.termsStep.linkText.keyInfo": "Põhiteave",
+  "flows.savingsFundOnboarding.termsStep.linkText.allDocuments": "Kõik fondi dokumendid",
   "flows.savingsFundOnboarding.termsStep.confirmText": "Kinnitan, et olen dokumentidega tutvunud ja mõistan, et investeering võib ajas nii kasvada kui kahaneda",
   "flows.savingsFundOnboarding.termsStep.error": "Jätkamiseks pead dokumentidega tutvuma.",
   "flows.savingsFundOnboarding.termsStep.confirmTextCompany": "Kinnitan ettevõtte nimel, et olen dokumentidega tutvunud ja mõistan, et investeering võib ajas nii kasvada kui kahaneda",
