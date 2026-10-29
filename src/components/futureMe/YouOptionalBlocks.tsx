@@ -14,9 +14,9 @@ import {
   isKidsRightAvailableToSelf,
   KidsUser,
   maxChildBirthYear,
+  serviceIncreaseAtPension,
   YouAnswers,
 } from './youAnswers';
-import { civilIncrease } from './engine/pension';
 import { isChildMonthAsked } from './kidsInput';
 import { attributableIIMonths, isPrefilledChild, KidsPrefill } from './kidsPrefill';
 import { AmountField, BlockProps, FieldLabel, PREFILLED_HINT_ID, SelectField } from './YouFields';
@@ -58,9 +58,9 @@ export const workOptional = (answers: YouAnswers, onAdd: () => void, onRemove: (
   optionalOf('work', answers.workAdded, onAdd, onRemove);
 
 const civilIncreaseOf = (answers: YouAnswers) => {
-  const increase = civilIncrease(parseInt(answers.civilYears, 10) || 0);
-  if (answers.hasRescue && (parseInt(answers.rescueYears, 10) || 0) > 0) {
-    return { state: 'rescue', percent: 0 };
+  const { source, increase } = serviceIncreaseAtPension(answers);
+  if (source === 'rescue') {
+    return { state: increase > 0 ? 'rescue' : 'rescueNone', percent: 0 };
   }
   if (answers.civilYears.trim() === '') {
     return { state: 'empty', percent: 0 };

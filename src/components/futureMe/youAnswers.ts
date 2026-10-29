@@ -1,4 +1,13 @@
-import { AVG_OLD_AGE_PENSION, earlyYears, KidsInput, pensionAge, Sex } from './engine/pension';
+import {
+  AVG_OLD_AGE_PENSION,
+  earlyYears,
+  KidsInput,
+  PensionInput,
+  pensionAge,
+  ServiceIncrease,
+  serviceIncreaseOf,
+  Sex,
+} from './engine/pension';
 import { isParentalPaymentMonthsAsked, PARENTAL_PAYMENT_MONTHS } from './kidsPrefill';
 import { parseBirthYear, YouPrefill } from './prefill';
 import { StepPlanInput } from './steps';
@@ -424,6 +433,20 @@ export const earlyRetirementYears = (answers: YouAnswers): number => {
 
 export const pensionAgeValue = (answers: YouAnswers): number =>
   effectivePensionAge(answers) - earlyRetirementYears(answers);
+
+export const serviceYearsOf = (
+  answers: YouAnswers,
+): Required<Pick<PensionInput, 'rescueYears' | 'civilYears'>> => ({
+  rescueYears: answers.workAdded && answers.hasRescue ? parseInt(answers.rescueYears, 10) || 0 : 0,
+  civilYears:
+    answers.workAdded && answers.isCivilServant ? parseInt(answers.civilYears, 10) || 0 : 0,
+});
+
+export const serviceIncreaseAtPension = (answers: YouAnswers): ServiceIncrease =>
+  serviceIncreaseOf(
+    serviceYearsOf(answers),
+    birthYearOrFallback(answers) + pensionAgeValue(answers),
+  );
 
 export const fieldProblem = (answers: YouAnswers, field: YouField): FieldProblem | null => {
   const typed = answers[field].trim();

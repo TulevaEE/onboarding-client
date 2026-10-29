@@ -1,6 +1,6 @@
 import { pensionKind } from './age65Answers';
 import { Contract, hasPillar, Pillar } from './age66Answers';
-import { civilIncrease, EARLY_DECREASE, retirementYears, SimulationResult } from './engine/pension';
+import { EARLY_DECREASE, retirementYears, SimulationResult } from './engine/pension';
 import { retirementAge } from './planAges';
 import { ResultContext, resultInputOf, resultOf, resultScenarioOf } from './resultAnswers';
 import { specialPensionStartAge } from './specialPensionAnswers';
@@ -85,10 +85,10 @@ const childSupplementRules = (context: ResultContext): Rule[] => {
 };
 
 const civilServiceRules = (context: ResultContext): Rule[] => {
-  const input = resultInputOf(context);
-  const increase = (input.rescueYears ?? 0) > 0 ? 0 : civilIncrease(input.civilYears);
-  const age = oldAgePensionStartAge(resultOf(context), specialPensionStartAge(context.plan));
-  return increase > 0 && age !== null
+  const result = resultOf(context);
+  const { source, increase } = result.serviceIncrease;
+  const age = oldAgePensionStartAge(result, specialPensionStartAge(context.plan));
+  return source === 'civil' && increase > 0 && age !== null
     ? [{ id: 'civilServiceIncrease', ...whenOf(context, age), increase }]
     : [];
 };

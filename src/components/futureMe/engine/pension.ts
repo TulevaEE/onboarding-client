@@ -172,6 +172,7 @@ export interface SimulationResult extends SimulationSummary {
   childSupplement: { monthly: number } | null;
   rescueAllowance: { from: number; until: number; monthly: number; pension: number } | null;
   hazardSupplement: number | null;
+  serviceIncrease: ServiceIncrease;
   p2Early: EarlyWithdrawalResult | null;
   firstPillar:
     | (FirstPillarComparison & {
@@ -249,6 +250,20 @@ export function rescueIncrease(years?: number, pensionYear?: number): number {
     return 0.1;
   }
   return 0;
+}
+
+export interface ServiceIncrease {
+  source: 'rescue' | 'civil';
+  increase: number;
+}
+
+export function serviceIncreaseOf(
+  input: Pick<PensionInput, 'rescueYears' | 'civilYears'>,
+  pensionYear: number,
+): ServiceIncrease {
+  return (input.rescueYears || 0) > 0
+    ? { source: 'rescue', increase: rescueIncrease(input.rescueYears, pensionYear) }
+    : { source: 'civil', increase: civilIncrease(input.civilYears) };
 }
 
 export const TAX_SHORT = 0.1;
@@ -665,14 +680,11 @@ export function simulate(
   // RPKS § 11¹ lg 4: the increasing coefficient applies to the whole pension
   const flexEarly =
     soodus > 0 && !isFlexibleBarred ? Math.min(5, Math.max(0, input.flexEarly || 0)) : 0;
-  const serviceIncrease =
-    (input.rescueYears || 0) > 0
-      ? rescueIncrease(input.rescueYears, input.birthYear + ret)
-      : civilIncrease(input.civilYears);
+  const serviceIncrease = serviceIncreaseOf(input, input.birthYear + ret);
   const p1Factor =
     (1 + DEFERRAL_INCREASE[deferral] + DEFERRAL_INCREASE[half] / 2) *
     (1 - EARLY_DECREASE[flexEarly]) *
-    (1 + serviceIncrease);
+    (1 + serviceIncrease.increase);
   const p1Full = p1Base * p1Factor;
   const toetusEnd = flexEarly > 0 ? null : rescueUntil(input);
   const toetusYear = Math.max(0, p1Full - kidsMonthly * 12 * p1Factor);
@@ -777,7 +789,7 @@ export function simulate(
     if (age < p1Start) {
       return 0;
     }
-    return age < ret + half ? (p1Base / 2) * (1 + serviceIncrease) : p1At(age);
+    return age < ret + half ? (p1Base / 2) * (1 + serviceIncrease.increase) : p1At(age);
   };
   let allowAtPa =
     firstRetAge >= pa ? Math.max(0, allowance - firstPillarAt(firstRetAge) - spAt(firstRetAge)) : 0;
@@ -949,6 +961,7 @@ export function simulate(
         ? { from: ret, until: toetusEnd, monthly: toetusYear / 12, pension: p1Year / 12 }
         : null,
     hazardSupplement: hazardMonthly > 0 ? hazardMonthly : null,
+    serviceIncrease,
     p2Early: early,
     firstPillar:
       spYear > 0

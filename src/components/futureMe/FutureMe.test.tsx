@@ -1809,6 +1809,7 @@ describe('FutureMe', () => {
 
       it('say that a saver who also worked in the rescue service gets the rescue increase instead', () => {
         renderFutureMe();
+        typeBirthYear('1970');
         addSpecialCases();
 
         userEvent.click(specialCase(/Olin ametnik/));
@@ -1817,6 +1818,34 @@ describe('FutureMe', () => {
         typeInto(civilYearsField(), '20');
 
         expect(screen.getByText(/arvestame päästeteenistuse suurendust/)).toBeVisible();
+      });
+
+      it('say that the state pension does not rise when the rescue service years are too few for the rescue increase', () => {
+        renderFutureMe();
+        typeBirthYear('1970');
+        addSpecialCases();
+
+        userEvent.click(specialCase(/Olin ametnik/));
+        userEvent.click(specialCase(/Töötasin päästeteenistuses/));
+        typeInto(rescueYearsField(), '5');
+        typeInto(civilYearsField(), '20');
+
+        expect(screen.getByText(/seega riiklik pension ei suurene/)).toBeVisible();
+        expect(screen.queryByText(/arvestame päästeteenistuse suurendust/)).not.toBeInTheDocument();
+      });
+
+      it('say that the state pension does not rise when the rescue increase has ended by the pension year', () => {
+        renderFutureMe();
+        typeBirthYear('1980');
+        addSpecialCases();
+
+        userEvent.click(specialCase(/Olin ametnik/));
+        userEvent.click(specialCase(/Töötasin päästeteenistuses/));
+        typeInto(rescueYearsField(), '12');
+        typeInto(civilYearsField(), '20');
+
+        expect(screen.getByText(/seega riiklik pension ei suurene/)).toBeVisible();
+        expect(screen.queryByText(/arvestame päästeteenistuse suurendust/)).not.toBeInTheDocument();
       });
 
       it('keep the civil service increase while the rescue service years are none', () => {

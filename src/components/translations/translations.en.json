@@ -2664,7 +2664,7 @@
   "futureMe.you.rescueBasis.toetus.text": "{years} a varem ({age} a) kuni pensionieani. Laste lisa alles {pensionAge}-⁠aastaselt.",
   "futureMe.you.civilYears.label": "Mitu aastat oli sul avaliku teenistuse staaži?",
   "futureMe.you.civilYears.name": "Avaliku teenistuse aastate",
-  "futureMe.you.civilYears.hint": "Staaž kuni 31.03.2018, nagu Sotsiaalkindlustusameti kalkulaatoris.{state, select, rescue { Kuna töötasid ka päästeteenistuses, arvestame päästeteenistuse suurendust: need ei liitu.} none { Alla 10 aasta staaž riiklikku pensioni ei suurenda.} raises { Riiklik pension suureneb {percent}%.} other {}}",
+  "futureMe.you.civilYears.hint": "Staaž kuni 31.03.2018, nagu Sotsiaalkindlustusameti kalkulaatoris.{state, select, rescue { Kuna töötasid ka päästeteenistuses, arvestame päästeteenistuse suurendust: need ei liitu.} rescueNone { Kuna töötasid ka päästeteenistuses, ametniku suurendust ei arvesta. Päästeteenistuse suurendust sinu staaži ja pensioniaasta järgi ei tule, seega riiklik pension ei suurene.} none { Alla 10 aasta staaž riiklikku pensioni ei suurenda.} raises { Riiklik pension suureneb {percent}%.} other {}}",
   "futureMe.expenses.kicker": "Viimane valik",
   "futureMe.expenses.title": "Mis elu sa pensionil elada tahad?",
   "futureMe.expenses.household.label": "Pensionil elan",
