@@ -91,11 +91,12 @@ export const howToChoose = (scenario: Scenario, context: ResultContext): HowTo =
   return { ...base, kind: isFundChosen ? 'contract' : 'fund' };
 };
 
-export const stepToChoose = ({ kind, atPayoutAge }: HowTo): StepId => {
+export const stepToChoose = ({ kind, atPayoutAge }: HowTo, context: ResultContext): StepId => {
   if (kind === 'contract') {
     return FutureMeStep.AGE_66_PLUS;
   }
-  return atPayoutAge ? FutureMeStep.AGE_60 : FutureMeStep.AGE_65;
+  const isOnlyDeferralLeft = kind === 'bridge' && isFundPensionChosen(context);
+  return atPayoutAge && !isOnlyDeferralLeft ? FutureMeStep.AGE_60 : FutureMeStep.AGE_65;
 };
 
 export const deferralChanges = ({ age65 }: ResultContext, years: number): DecisionChanges => ({

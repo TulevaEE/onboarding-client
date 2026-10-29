@@ -71,6 +71,7 @@ const WarningAdvice = ({ context, warning }: WarningProps) => {
     );
   }
   const { how } = warning;
+  const step = stepToChoose(how, context);
   const name = <FormattedMessage id={SCENARIO_NAMES[warning.scenarioId]} />;
   return (
     <>
@@ -87,16 +88,12 @@ const WarningAdvice = ({ context, warning }: WarningProps) => {
         id="futureMe.result.warn.how"
         values={{ ...how, atPayoutAge: how.atPayoutAge ? 'yes' : 'no' }}
       />{' '}
-      <button
-        type="button"
-        className="btn btn-sm btn-primary"
-        onClick={() => goTo(stepToChoose(how))}
-      >
+      <button type="button" className="btn btn-sm btn-primary" onClick={() => goTo(step)}>
         <FormattedMessage
           id="futureMe.result.warn.goTo"
           values={{
             kind: how.kind,
-            atPayoutAge: how.atPayoutAge ? 'yes' : 'no',
+            atPayoutAge: step === FutureMeStep.AGE_60 ? 'yes' : 'no',
             payoutAge: how.payoutAge,
           }}
         />

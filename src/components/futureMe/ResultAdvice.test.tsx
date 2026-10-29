@@ -71,6 +71,15 @@ const chooseSecondPillarFundPension = () => {
   );
 };
 
+const chooseSecondPillarFundPensionAtPayoutAge = () => {
+  goTo(/^60\sa, vaatamata$/);
+  userEvent.click(
+    within(screen.getByRole('group', { name: /^II\ssamba väljamakse viis$/ })).getByRole('radio', {
+      name: /Fondipension/,
+    }),
+  );
+};
+
 const deferStatePensionFiveYears = () => {
   goTo(/^65\sa,/);
   userEvent.click(
@@ -139,6 +148,23 @@ describe('Result advice', () => {
 
     expect(
       screen.getByRole('group', { name: /^II\ssamba väljamakse viis pensionieas$/ }),
+    ).toBeInTheDocument();
+  });
+
+  it('opens the pension age step when the fund pension is chosen at the payout age and only the deferral is left', () => {
+    startWith('700', '30000');
+    chooseComfortableCosts();
+    chooseSecondPillarFundPensionAtPayoutAge();
+    openResult();
+
+    userEvent.click(
+      within(warning() as HTMLElement).getByRole('button', {
+        name: /^Muuda pensionieas\s*: vali Sild ja riiklik pension hiljem$/,
+      }),
+    );
+
+    expect(
+      screen.getByRole('group', { name: 'Kuidas võtad riikliku pensioni?' }),
     ).toBeInTheDocument();
   });
 

@@ -226,17 +226,31 @@ describe('payoutAdvice', () => {
     });
 
     it('is the payout age step when the choice is made there', () => {
-      expect(stepToChoose(how({ atPayoutAge: true }))).toBe(FutureMeStep.AGE_60);
+      expect(stepToChoose(how({ atPayoutAge: true }), contextWith())).toBe(FutureMeStep.AGE_60);
     });
 
     it('is the pension age step otherwise', () => {
-      expect(stepToChoose(how({}))).toBe(FutureMeStep.AGE_65);
+      expect(stepToChoose(how({}), contextWith())).toBe(FutureMeStep.AGE_65);
     });
 
     it('is the pension years step when only the contract changes', () => {
-      expect(stepToChoose(how({ kind: 'contract', atPayoutAge: true }))).toBe(
+      expect(stepToChoose(how({ kind: 'contract', atPayoutAge: true }), contextWith())).toBe(
         FutureMeStep.AGE_66_PLUS,
       );
+    });
+
+    it('is the pension age step when the fund pension is chosen at the payout age and only the deferral is left', () => {
+      const context = contextWith(
+        { secondPillarAmount: '30000' },
+        { ...comfortable, age60: { ...initialAge60(), secondPillar: 'fund' } },
+      );
+      const warning = warningFor(context);
+      if (warning?.kind !== 'betterPayout') {
+        throw new Error(`Expected a better payout, got ${JSON.stringify(warning)}`);
+      }
+
+      expect(warning.how).toMatchObject({ kind: 'bridge', atPayoutAge: true });
+      expect(stepToChoose(warning.how, context)).toBe(FutureMeStep.AGE_65);
     });
   });
 
