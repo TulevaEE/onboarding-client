@@ -32,19 +32,17 @@ const thirdPillar = (amount: number, months: number): ThirdPillarContribution =>
 
 const salaryEveryMonth = [salary(0), salary(1), salary(2), salary(3)];
 
-// The state paid the parental benefit for the first 30 months of a child born in
-// February 2023, on top of the salary: the 36 months of the first three years, less six.
-const PARENTAL_BENEFIT_FIRST_MONTH = { year: 2023, month: 3 };
-const PARENTAL_BENEFIT_MONTHS = 30;
-const parentalBenefit = (offset: number): SecondPillarContribution => ({
+const CHILD_BORN_FEB_2023 = { year: 2023, month: 2 };
+const MONTHS_OF_PARENTAL_BENEFIT_PAID_OF_36 = 30;
+const parentalBenefitMonthsAfterBirth = (months: number): SecondPillarContribution => ({
   pillar: 2,
   socialTaxPortion: 0,
   employeeWithheldPortion: 0,
   additionalParentalBenefit: 50,
   interest: 0,
   time: new Date(
-    PARENTAL_BENEFIT_FIRST_MONTH.year,
-    PARENTAL_BENEFIT_FIRST_MONTH.month - 1 + offset,
+    CHILD_BORN_FEB_2023.year,
+    CHILD_BORN_FEB_2023.month - 1 + months,
     10,
   ).toISOString(),
   amount: 50,
@@ -63,7 +61,9 @@ export const contributionsProfiles: Record<string, Contribution[]> = {
   SECOND_PILLAR_ONLY: salaryEveryMonth,
   SECOND_PILLAR_WITH_PARENTAL_BENEFIT: [
     ...salaryEveryMonth,
-    ...Array.from({ length: PARENTAL_BENEFIT_MONTHS }, (_, offset) => parentalBenefit(offset)),
+    ...Array.from({ length: MONTHS_OF_PARENTAL_BENEFIT_PAID_OF_36 }, (_, offset) =>
+      parentalBenefitMonthsAfterBirth(offset + 1),
+    ),
   ],
   // One lump sum: contributing, but no standing order to recognise.
   THIRD_PILLAR_ONE_OFF: [...salaryEveryMonth, thirdPillar(1200, 1)],

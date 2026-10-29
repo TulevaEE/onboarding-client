@@ -570,7 +570,7 @@ describe('FutureMe', () => {
       expect(within(dialog).queryByText(/arvestame, et riik maksis/)).not.toBeInTheDocument();
     });
 
-    it('waits for the register before showing the form', () => {
+    it('waits for the roles before showing the form', () => {
       withChildren(undefined, true);
 
       renderFutureMe();

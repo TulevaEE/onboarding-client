@@ -76,7 +76,7 @@ describe('initial answers', () => {
   });
 });
 
-describe('children from the register', () => {
+describe("children from Tuleva's own data", () => {
   const withKids = initialAnswers({
     birthYear: 1985,
     sex: 'M',
@@ -93,7 +93,7 @@ describe('children from the register', () => {
     });
   });
 
-  it('starts without children when the register has none', () => {
+  it('starts without children when Tuleva knows none', () => {
     expect(
       initialAnswers({ birthYear: 1985, sex: 'M', secondPillarRate: '0.02', kids: null }),
     ).toMatchObject({ kidsAdded: false, kidsBirthYears: [], kidsIIMonths: [] });
