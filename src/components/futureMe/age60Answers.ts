@@ -5,6 +5,12 @@ export type DecisionOrdinal = 'first' | 'second';
 
 export const PAYOUT_CHOICES: PayoutChoice[] = ['grow', 'fund', 'lump'];
 
+export const PAYOUT_CHOICE_EMOJI: Record<PayoutChoice, string> = {
+  grow: '🌱',
+  fund: '🗓️',
+  lump: '💰',
+};
+
 export interface Age60Answers {
   secondPillar: PayoutChoice;
   thirdPillar: PayoutChoice;

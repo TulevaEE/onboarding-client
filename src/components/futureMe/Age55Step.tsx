@@ -1,9 +1,10 @@
 import React, { RefObject } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
-import Radio from '../common/radio';
 import { Age55, ThirdPillarPayout } from './age55';
-import { TAX_SHORT } from './engine/pension';
+import { PAYOUT_CHOICE_EMOJI, PayoutChoice } from './age60Answers';
+import { ChoiceCard } from './ChoiceCard';
+import { PayoutChoiceText } from './PayoutChoiceText';
 import { birthYearOrFallback, ThirdPillarPlan, YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
 import { FutureMeStep } from './steps';
@@ -17,9 +18,12 @@ import { ChoiceMadeNote } from './ChoiceMadeNote';
 import { FundPensionChoice } from './prefill';
 
 const PLANS: ThirdPillarPlan[] = ['keep', 'fund', 'lump'];
+const PLAN_PAYOUT_CHOICE: Record<ThirdPillarPlan, PayoutChoice> = {
+  keep: 'grow',
+  fund: 'fund',
+  lump: 'lump',
+};
 const PAYOUTS_URL = 'https://tuleva.ee/pensioni-valjamaksed/';
-
-const percent = (rate: number) => Math.round(rate * 100);
 
 interface Props {
   answers: YouAnswers;
@@ -31,6 +35,13 @@ interface Props {
   onContractChange: (contract: Contract) => void;
   onEditThirdPillar: () => void;
 }
+
+const PlanText = ({ plan }: { plan: ThirdPillarPlan }) =>
+  plan === 'lump' ? (
+    <FormattedMessage id="futureMe.age55.plan.lump.text" />
+  ) : (
+    <PayoutChoiceText choice={PLAN_PAYOUT_CHOICE[plan]} />
+  );
 
 const PlanOutcome = ({
   plan,
@@ -77,10 +88,6 @@ export const Age55Step = ({
 }: Props) => {
   const intl = useIntl();
   const lockMessage: TranslationKey | null = age55.lock && `futureMe.age55.lock.${age55.lock}`;
-  const planTexts = (plan: ThirdPillarPlan) => ({
-    title: `futureMe.age55.plan.${plan}.title` as TranslationKey,
-    hint: `futureMe.age55.plan.${plan}.hint` as TranslationKey,
-  });
 
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-age-55-heading">
@@ -90,27 +97,18 @@ export const Age55Step = ({
         </h2>
       </ChapterHead>
       {age55.hasThirdPillar && (
-        <>
-          <p className="text-pretty">
-            <FormattedMessage
-              id="futureMe.age55.intro"
-              values={{
-                age: THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021,
-                year: String(
-                  birthYearOrFallback(answers) + THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021,
-                ),
-                strong,
-              }}
-            />
-          </p>
-          <ul className="small">
-            {(['lump', 'fund', 'keep'] as const).map((plan) => (
-              <li key={plan}>
-                <FormattedMessage id={`futureMe.age55.rule.${plan}`} values={{ strong }} />
-              </li>
-            ))}
-          </ul>
-        </>
+        <p className="text-pretty">
+          <FormattedMessage
+            id="futureMe.age55.intro"
+            values={{
+              age: THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021,
+              year: String(
+                birthYearOrFallback(answers) + THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021,
+              ),
+              strong,
+            }}
+          />
+        </p>
       )}
       {lockMessage && (
         <p className="you-note">
@@ -123,32 +121,28 @@ export const Age55Step = ({
           </LinkButton>
         </p>
       )}
-      <fieldset disabled={!!age55.lock} className="mb-3">
+      <fieldset disabled={!!age55.lock} className="payout-fieldset mb-3">
         <legend className="form-label fs-6 fw-medium">
           <FormattedMessage id="futureMe.age55.plan.legend" />
         </legend>
         {startedFundPension && <ChoiceMadeNote choice={startedFundPension} />}
-        {PLANS.map((plan) => {
-          const { title, hint } = planTexts(plan);
-          return (
-            <Radio
+        <div className="payout-choices">
+          {PLANS.map((plan) => (
+            <ChoiceCard
               key={plan}
-              id={`future-me-age-55-plan-${plan}`}
+              idPrefix="future-me-age-55-plan"
               name="future-me-age-55-plan"
-              className="mb-2"
-              selected={age55.plan === plan}
-              disabled={!!age55.lock}
-              onSelect={() => onChange({ thirdPillarPlan: plan })}
-            >
-              <strong className="d-block">
-                <FormattedMessage id={title} />
-              </strong>
-              <span className="d-block text-secondary text-pretty">
-                <FormattedMessage id={hint} values={{ tax: percent(TAX_SHORT) }} />
-              </span>
-            </Radio>
-          );
-        })}
+              value={plan}
+              emoji={PAYOUT_CHOICE_EMOJI[PLAN_PAYOUT_CHOICE[plan]]}
+              checked={age55.plan === plan}
+              title={
+                <FormattedMessage id={`futureMe.age55.plan.${plan}.title` as TranslationKey} />
+              }
+              text={<PlanText plan={plan} />}
+              onChange={() => onChange({ thirdPillarPlan: plan })}
+            />
+          ))}
+        </div>
       </fieldset>
       {age55.plan === 'fund' && (
         <ContractChoices

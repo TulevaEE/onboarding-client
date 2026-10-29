@@ -1,105 +1,95 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { DEFERRAL_YEARS } from './age65Answers';
-import { decimalText, euro } from './amountFormat';
+import { Age65Answers, DEFERRAL_YEARS, PensionMode } from './age65Answers';
+import { decimalText } from './amountFormat';
+import { PayoutChoice } from './age60Answers';
 import { ChoiceCard } from './ChoiceCard';
+import { PayoutChoiceText } from './PayoutChoiceText';
 import { ChangeDecisions, useDecisionActions } from './decisionActions';
-import {
-  coversAgeOf,
-  Decision,
-  DecisionId,
-  decisionsOf,
-  isStepDecision,
-  withDecision,
-} from './decisions';
-import { CURRENT_YEAR, DEFERRAL_INCREASE, PENSIONER_ALLOWANCE } from './engine/pension';
+import { Decision, DecisionId, decisionsOf, isStepDecision, withDecision } from './decisions';
+import { CURRENT_YEAR, DEFERRAL_INCREASE } from './engine/pension';
 import { QuickEditStepDecision } from './QuickEditSteps';
 import { ResultComparison } from './ResultComparison';
-import { MAX_AGE_SHOWN, Result, ResultContext, resultOf } from './resultAnswers';
+import { ResultContext } from './resultAnswers';
 
-const MONTHS_IN_YEAR = 12;
-const NO_BREAK_SPACE = ' ';
-
-const deferralIncreases = (): string =>
-  DEFERRAL_YEARS.map(
-    (years) =>
-      `+${decimalText(
-        DEFERRAL_INCREASE[years] * 100,
-      )}%${NO_BREAK_SPACE}(${years}${NO_BREAK_SPACE}a)`,
-  ).join(', ');
-
-const choiceKeys = (
-  id: DecisionId,
-  choice: string,
-): { title: TranslationKey; text?: TranslationKey } => {
+const choiceTitle = (id: DecisionId, choice: string): TranslationKey => {
   switch (id) {
     case 'statePension':
-      return { title: `futureMe.age65.mode.${choice}.title` as TranslationKey };
+      return `futureMe.age65.mode.${choice}.title` as TranslationKey;
     case 'secondPillarAtPayoutAge':
-    case 'thirdPillarAtPayoutAge': {
-      const pillar = id === 'secondPillarAtPayoutAge' ? 'secondPillar' : 'thirdPillar';
-      return {
-        title: `futureMe.age60.choice.${choice}` as TranslationKey,
-        text: `futureMe.age60.${pillar}.${choice}` as TranslationKey,
-      };
-    }
+    case 'thirdPillarAtPayoutAge':
+      return `futureMe.age60.choice.${choice}` as TranslationKey;
     default:
-      return {
-        title: `futureMe.age65.payout.${choice}.title` as TranslationKey,
-        text: `futureMe.age65.payout.${choice}.text` as TranslationKey,
-      };
+      return `futureMe.age65.payout.${choice}.title` as TranslationKey;
   }
 };
 
-const coversKindOf = (result: Result, coversAge: number) => {
-  if (result.gapTemporary) {
-    return 'gap';
-  }
-  return coversAge >= MAX_AGE_SHOWN ? 'life' : 'until';
-};
+const isChosenDeferral = (decision: Decision, choice: string): boolean =>
+  decision.id === 'statePension' && decision.current === choice && choice !== 'full';
 
-const Outcome = ({
-  result,
-  currentAge,
-  isCurrent,
-}: {
-  result: Result;
-  currentAge: number;
-  isCurrent: boolean;
-}) => {
-  const coversAge = coversAgeOf(result);
-  const change = coversAge - currentAge;
-  const { coversNeedUntil, gapEnd } = result;
-  return (
-    <span className="decision-outcome">
+const statePensionText = (mode: string, pensionAge: number, years: number) => {
+  if (mode === 'half') {
+    return <FormattedMessage id="futureMe.result.decisions.mode.half.text" />;
+  }
+  if (mode === 'defer') {
+    return (
       <FormattedMessage
-        id="futureMe.result.decisions.covers"
+        id="futureMe.result.decisions.mode.defer.text"
         values={{
-          kind: coversKindOf(result, coversAge),
-          age: coversAge,
-          from: coversNeedUntil,
-          to: gapEnd,
-          isRange:
-            gapEnd !== null && coversNeedUntil !== null && gapEnd > coversNeedUntil ? 'yes' : 'no',
+          age: pensionAge + years,
+          percent: decimalText(DEFERRAL_INCREASE[years] * 100),
         }}
       />
-      {isCurrent && <FormattedMessage id="futureMe.result.decisions.covers.now" />}
-      {!isCurrent && change !== 0 && (
-        <>
-          {' '}
-          <span className={change > 0 ? 'decision-delta-up' : 'decision-delta-down'}>
-            <FormattedMessage
-              id="futureMe.result.decisions.delta"
-              values={{ direction: change > 0 ? 'up' : 'down', years: Math.abs(change) }}
-            />
-            <span className="visually-hidden">
-              <FormattedMessage id="futureMe.result.decisions.delta.hint" />
-            </span>
-          </span>
-        </>
-      )}
-    </span>
+    );
+  }
+  return null;
+};
+
+const choiceText = (decision: Decision, choice: string, context: ResultContext) =>
+  decision.id === 'statePension' ? (
+    statePensionText(choice, decision.age, context.age65.years)
+  ) : (
+    <PayoutChoiceText
+      choice={choice as PayoutChoice}
+      endsSecondPillarContributions={decision.id === 'secondPillarAtPayoutAge'}
+    />
+  );
+
+const DeferralYearsField = ({
+  mode,
+  pensionAge,
+  answers,
+  onChange,
+}: {
+  mode: PensionMode;
+  pensionAge: number;
+  answers: Age65Answers;
+  onChange: ChangeDecisions;
+}) => {
+  const intl = useIntl();
+  const id = 'future-me-decision-deferral-years';
+  return (
+    <>
+      <label className="form-label small fw-medium mb-0" htmlFor={id}>
+        <FormattedMessage id="futureMe.age65.years.legend" values={{ mode }} />
+      </label>
+      <select
+        id={id}
+        className="form-select form-select-sm"
+        value={answers.years}
+        onChange={(event) => onChange({ age65: { ...answers, years: Number(event.target.value) } })}
+      >
+        {DEFERRAL_YEARS.map((years) => (
+          <option key={years} value={years}>
+            {intl.formatMessage(
+              { id: 'futureMe.age65.years.title' },
+              { mode, years, age: pensionAge + years },
+            )}
+          </option>
+        ))}
+      </select>
+    </>
   );
 };
 
@@ -111,50 +101,37 @@ interface PanelProps {
   onChange: ChangeDecisions;
 }
 
-const DecisionChoices = ({ context, decision, panelId, titleId, onChange }: PanelProps) => {
-  const currentAge = coversAgeOf(resultOf(context));
-  return (
-    <div
-      role="group"
-      id={panelId}
-      aria-labelledby={titleId}
-      className="decision-panel d-print-none"
-    >
-      <div className="payout-choices">
-        {decision.choices.map((choice) => {
-          const keys = choiceKeys(decision.id, choice);
-          const changes = withDecision(context, decision.id, choice);
-          return (
-            <ChoiceCard
-              key={choice}
-              idPrefix={`future-me-decision-${decision.id}`}
-              name={`future-me-decision-${decision.id}`}
-              value={choice}
-              checked={decision.current === choice}
-              title={<FormattedMessage id={keys.title} />}
-              text={
-                <>
-                  {keys.text && (
-                    <>
-                      <FormattedMessage id={keys.text} />
-                      <br />
-                    </>
-                  )}
-                  <Outcome
-                    result={resultOf({ ...context, ...changes })}
-                    currentAge={currentAge}
-                    isCurrent={decision.current === choice}
-                  />
-                </>
-              }
-              onChange={() => onChange(changes)}
-            />
-          );
-        })}
-      </div>
+const DecisionChoices = ({ context, decision, panelId, titleId, onChange }: PanelProps) => (
+  <div role="group" id={panelId} aria-labelledby={titleId} className="decision-panel d-print-none">
+    <div className="payout-choices">
+      {decision.choices.map((choice) => {
+        const changes = withDecision(context, decision.id, choice);
+        return (
+          <ChoiceCard
+            key={choice}
+            idPrefix={`future-me-decision-${decision.id}`}
+            name={`future-me-decision-${decision.id}`}
+            value={choice}
+            checked={decision.current === choice}
+            title={<FormattedMessage id={choiceTitle(decision.id, choice)} />}
+            text={choiceText(decision, choice, context)}
+            extra={
+              isChosenDeferral(decision, choice) && (
+                <DeferralYearsField
+                  mode={choice as PensionMode}
+                  pensionAge={decision.age}
+                  answers={context.age65}
+                  onChange={onChange}
+                />
+              )
+            }
+            onChange={() => onChange(changes)}
+          />
+        );
+      })}
     </div>
-  );
-};
+  </div>
+);
 
 interface RowProps extends Omit<PanelProps, 'panelId' | 'titleId'> {
   isOpen: boolean;
@@ -176,8 +153,7 @@ const DecisionRow = ({
   const { current, id } = decision;
   const currentText = isStepDecision(id)
     ? intl.formatMessage({ id: `futureMe.result.decisions.current.${id}` }, decision.summary)
-    : intl.formatMessage({ id: choiceKeys(id, current).title });
-  const increases = deferralIncreases();
+    : intl.formatMessage({ id: choiceTitle(id, current) });
   const toggleRef = useRef<HTMLButtonElement>(null);
   useLayoutEffect(() => {
     if (isOpen) {
@@ -229,14 +205,6 @@ const DecisionRow = ({
             />
           </span>
         </button>
-        {!isStepDecision(id) && (
-          <p className="decision-rule text-pretty">
-            <FormattedMessage
-              id={`futureMe.result.decisions.rule.${id}` as TranslationKey}
-              values={{ increases, allowance: euro(PENSIONER_ALLOWANCE / MONTHS_IN_YEAR) }}
-            />
-          </p>
-        )}
       </div>
       {isOpen && !isStepDecision(id) && (
         <DecisionChoices

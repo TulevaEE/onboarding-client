@@ -1,11 +1,12 @@
 import React, { RefObject } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { Age60Answers, DecisionOrdinal, PAYOUT_CHOICES, PayoutChoice } from './age60Answers';
+import { Age60Answers, DecisionOrdinal, PAYOUT_CHOICE_EMOJI, PAYOUT_CHOICES } from './age60Answers';
 import { FundPensionFaq } from './FundPensionFaq';
 import { ChapterHead } from './ChapterHead';
 import { FutureMeStep } from './steps';
 import { ChoiceCard } from './ChoiceCard';
+import { PayoutChoiceText } from './PayoutChoiceText';
 import { Tense } from './planAges';
 import { strong } from './richText';
 import { LinkButton } from './LinkButton';
@@ -31,8 +32,6 @@ interface Props {
   onContractChange: (pillar: Pillar, contract: Contract) => void;
   onEditYou: () => void;
 }
-
-const CHOICE_EMOJI: Record<PayoutChoice, string> = { grow: '🌱', fund: '🗓️', lump: '💰' };
 
 interface PillarProps {
   pillar: Pillar;
@@ -90,11 +89,14 @@ const PillarChoices = ({
               idPrefix={`future-me-${pillar}`}
               name={`future-me-${pillar}-payout`}
               value={choice}
-              emoji={CHOICE_EMOJI[choice]}
+              emoji={PAYOUT_CHOICE_EMOJI[choice]}
               checked={answers[pillar] === choice}
               title={<FormattedMessage id={`futureMe.age60.choice.${choice}` as TranslationKey} />}
               text={
-                <FormattedMessage id={`futureMe.age60.${pillar}.${choice}` as TranslationKey} />
+                <PayoutChoiceText
+                  choice={choice}
+                  endsSecondPillarContributions={pillar === 'secondPillar'}
+                />
               }
               onChange={() => onChange({ ...answers, [pillar]: choice })}
             />

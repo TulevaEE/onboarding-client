@@ -1,11 +1,12 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { Age60Answers, PAYOUT_CHOICES, PayoutChoice } from './age60Answers';
+import { Age60Answers, PAYOUT_CHOICE_EMOJI, PAYOUT_CHOICES } from './age60Answers';
 import { Age65Answers } from './age65Answers';
 import { ChoiceCard } from './ChoiceCard';
 import { ChoiceMadeNote } from './ChoiceMadeNote';
 import { FundPensionChoice } from './prefill';
+import { PayoutChoiceText } from './PayoutChoiceText';
 import { strong } from './richText';
 import { LinkButton } from './LinkButton';
 
@@ -23,8 +24,6 @@ interface Props {
   onEditAge60: () => void;
   startedFundPension?: FundPensionChoice;
 }
-
-const CHOICE_EMOJI: Record<PayoutChoice, string> = { grow: '🌱', fund: '🗓️', lump: '💰' };
 
 export const Age65Pillars = ({
   pillar,
@@ -95,16 +94,14 @@ export const Age65Pillars = ({
                 idPrefix={`future-me-65-${pillar}`}
                 name={`future-me-65-${pillar}-payout`}
                 value={choice}
-                emoji={CHOICE_EMOJI[choice]}
+                emoji={PAYOUT_CHOICE_EMOJI[choice]}
                 checked={answers[pillar] === choice}
                 title={
                   <FormattedMessage
                     id={`futureMe.age65.payout.${choice}.title` as TranslationKey}
                   />
                 }
-                text={
-                  <FormattedMessage id={`futureMe.age65.payout.${choice}.text` as TranslationKey} />
-                }
+                text={<PayoutChoiceText choice={choice} />}
                 onChange={() => onChange({ ...answers, [pillar]: choice })}
               />
             ))}

@@ -1,7 +1,7 @@
 import { initialAge60 } from './age60Answers';
 import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
-import { coversAgeOf, decisionsOf, withDecision } from './decisions';
+import { decisionsOf, withDecision } from './decisions';
 import { initialExpenses } from './expensesAnswers';
 import { ResultContext, resultOf } from './resultAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
@@ -282,20 +282,6 @@ describe('decisions', () => {
       const changes = withDecision(contextWith(), 'statePension', 'defer');
 
       expect(changes.age65).toMatchObject({ mode: 'defer', years: 1 });
-    });
-  });
-
-  describe('how long the money lasts', () => {
-    it('is the age the costs stop being covered at', () => {
-      const result = { ...resultOf(contextWith()), coversNeedUntil: 83 };
-
-      expect(coversAgeOf(result)).toBe(83);
-    });
-
-    it('is 100 when the costs are covered for life', () => {
-      const result = { ...resultOf(contextWith()), coversNeedUntil: null };
-
-      expect(coversAgeOf(result)).toBe(100);
     });
   });
 });
