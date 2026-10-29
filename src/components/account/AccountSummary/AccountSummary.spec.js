@@ -107,7 +107,7 @@ describe('Account summary', () => {
           },
         ]}
         savingsFundBalance={{
-          isin: 'EE0000000000',
+          isin: 'EE0000003283',
           price: 12,
           unavailablePrice: 0,
           activeFund: false,
@@ -116,7 +116,7 @@ describe('Account summary', () => {
           fundManager: { name: 'Tuleva' },
           managementFeePercent: 0.2,
           pillar: null,
-          ongoingChargesFigure: 0.0045,
+          ongoingChargesFigure: 0.0026,
           contributions: 10,
           subtractions: 0,
           profit: 2,
@@ -299,7 +299,7 @@ describe('Account summary', () => {
           {
             isin: 'EE3600109435',
             name: 'TUK75',
-            ongoingChargesFigure: 0.0039,
+            ongoingChargesFigure: 0.0028,
             contributions: 0,
             subtractions: 0,
             profit: 0,
@@ -318,7 +318,7 @@ describe('Account summary', () => {
           fundManager: { name: 'Tuleva' },
           managementFeePercent: 0.0029,
           pillar: null,
-          ongoingChargesFigure: 0.0029,
+          ongoingChargesFigure: 0.0026,
           contributions: 0,
           subtractions: 0,
           profit: 0,
@@ -330,8 +330,8 @@ describe('Account summary', () => {
     const { footer: feesPercentFooter } = tableProp('columns')[1];
     const { footer: feesEuroFooter } = tableProp('columns')[2];
 
-    expect(feesEuroFooter.props.amount).toBeCloseTo(-329, 2);
-    expect(feesPercentFooter.props.value).toBeCloseTo(329 / 110000, 6);
+    expect(feesEuroFooter.props.amount).toBeCloseTo(-288, 2);
+    expect(feesPercentFooter.props.value).toBeCloseTo(288 / 110000, 6);
   });
 
   const tableProp = (name) => component.find(Table).prop(name);

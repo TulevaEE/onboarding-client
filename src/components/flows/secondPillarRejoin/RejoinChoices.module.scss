@@ -1,10 +1,20 @@
-.choices {
+.unfold {
   display: grid;
   grid-template-rows: 1fr;
   animation: unfold 160ms ease-out;
 }
 
-.choicesContent {
+.fold {
+  display: grid;
+  grid-template-rows: 0fr;
+  animation: fold 160ms ease-in;
+}
+
+.quick {
+  animation-duration: 100ms;
+}
+
+.unfoldContent {
   min-height: 0;
   overflow: hidden;
   padding: 0.25rem;
@@ -17,8 +27,15 @@
   }
 }
 
+@keyframes fold {
+  from {
+    grid-template-rows: 1fr;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .choices {
-    animation: none;
+  .unfold,
+  .fold {
+    animation-duration: 1ms;
   }
 }

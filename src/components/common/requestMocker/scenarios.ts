@@ -214,8 +214,8 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     user: 'LEFT_SECOND_PILLAR_PAYMENT_RATE_2',
     sourceFunds: 'ONLY_THIRD_PILLAR',
   },
-  // A leaver whose fund is still the Tuleva stock fund: asked only the rate, so no fund
-  // selection is filed and there are no fund terms to confirm.
+  // A leaver whose fund is still the Tuleva stock fund: keeping it files no fund selection,
+  // so there are no fund terms to confirm.
   SECOND_PILLAR_REJOIN_RATE_ONLY: {
     user: 'LEFT_SECOND_PILLAR_PAYMENT_RATE_2',
     sourceFunds: 'BOTH_PILLARS',

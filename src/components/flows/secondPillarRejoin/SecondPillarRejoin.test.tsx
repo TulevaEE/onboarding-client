@@ -110,47 +110,29 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(disclaimers).toHaveTextContent(/your I\spillar\..*can't stop contributions/);
   });
 
-  test('opens the application with 6% and the Tuleva stock fund preselected and collapsed', async () => {
+  test('opens the application with every rate and fund option in view, and 6% and the Tuleva stock fund chosen', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
-    expect(paymentRateRow()).toHaveTextContent('6% of gross salary');
+    expect(within(paymentRateRow()).getAllByRole('radio')).toEqual(
+      radiosNamed([/^2% of gross salary/i, /^4% of gross salary/i, /^6% of gross salary/i]),
+    );
+    expectChosenRate(6);
     expect(paymentRateRow()).not.toHaveTextContent('salary:');
     expect(paymentRateRow()).not.toHaveTextContent('a month');
-    expect(fundRow()).toHaveTextContent('Tuleva World Stocks Pension Fund');
-    expect(fundRow()).toHaveTextContent(/Fees\s*0\.39%/);
-    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+    expect(within(fundRow()).getAllByRole('radio')).toEqual(
+      radiosNamed([/^Tuleva World Stocks Pension Fund/, 'Another fund']),
+    );
+    expect(within(fundRow()).getByRole('radio', { checked: true })).toHaveAccessibleName(
+      /^Tuleva World Stocks Pension Fund/,
+    );
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Change' })).not.toBeInTheDocument();
   });
 
   test('names the page in the browser tab', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
     expect(document.title).toMatch(/^Rejoining the II\spillar – Tuleva$/);
-  });
-
-  test('says why each default is a good choice while the choices are still closed', async () => {
-    await renderAt('/2nd-pillar-rejoin');
-
-    expect(paymentRateRow()).toHaveTextContent(/greatest tax benefit/);
-    expect(fundRow()).toHaveTextContent('A low-cost index fund that invests entirely in stocks');
-    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
-  });
-
-  test('drops the reason once a smaller rate or another fund is chosen', async () => {
-    await renderAt('/2nd-pillar-rejoin');
-
-    userEvent.click(within(paymentRateRow()).getByRole('button', { name: 'Change' }));
-    userEvent.click(screen.getByRole('radio', { name: /^4% of gross salary/i }));
-    userEvent.click(within(paymentRateRow()).getByRole('button', { name: 'Done' }));
-    userEvent.click(within(fundRow()).getByRole('button', { name: 'Change' }));
-    userEvent.click(screen.getByRole('radio', { name: 'Another fund' }));
-    userEvent.selectOptions(
-      screen.getByRole('combobox', { name: 'Select a pension fund' }),
-      'EE3600019758',
-    );
-    userEvent.click(within(fundRow()).getByRole('button', { name: 'Done' }));
-
-    expect(paymentRateRow()).not.toHaveTextContent(/greatest tax benefit/);
-    expect(fundRow()).not.toHaveTextContent('A low-cost index fund');
   });
 
   test('reviews the three applications read-only before signing, like other batch applications', async () => {
@@ -188,25 +170,23 @@ describe('When an eligible person rejoins the II pillar', () => {
 
   test('keeps the choices when going back from the review', async () => {
     await renderAt('/2nd-pillar-rejoin');
-    userEvent.click(within(paymentRateRow()).getByRole('button', { name: 'Change' }));
     userEvent.click(screen.getByRole('radio', { name: /^2% of gross salary/i }));
 
     userEvent.click(nextButton());
     userEvent.click(screen.getByRole('button', { name: 'Back' }));
 
-    expect(paymentRateRow()).toHaveTextContent('2% of gross salary');
+    expectChosenRate(2);
   });
 
   test('keeps the choices when going back from the review with the browser', async () => {
     await renderAt('/2nd-pillar-rejoin');
-    userEvent.click(within(paymentRateRow()).getByRole('button', { name: 'Change' }));
     userEvent.click(screen.getByRole('radio', { name: /^2% of gross salary/i }));
 
     userEvent.click(nextButton());
     act(() => history.goBack());
 
     expect(history.location.pathname).toBe('/2nd-pillar-rejoin');
-    expect(paymentRateRow()).toHaveTextContent('2% of gross salary');
+    expectChosenRate(2);
   });
 
   test('starts from the application when the review is opened without choosing first, as after a reload', async () => {
@@ -231,10 +211,9 @@ describe('When an eligible person rejoins the II pillar', () => {
     await renderAt('/2nd-pillar-rejoin');
     reviewAndAgree();
     userEvent.click(screen.getByRole('button', { name: 'Back' }));
-    userEvent.click(within(fundRow()).getByRole('button', { name: 'Change' }));
     userEvent.click(screen.getByRole('radio', { name: 'Another fund' }));
     userEvent.selectOptions(
-      screen.getByRole('combobox', { name: 'Select a pension fund' }),
+      screen.getByRole('combobox', { name: 'Select a fund' }),
       'EE3600109443',
     );
     userEvent.click(nextButton());
@@ -251,8 +230,6 @@ describe('When an eligible person rejoins the II pillar', () => {
 
   test('explains what each payment rate means, in the words of the payment rate page', async () => {
     await renderAt('/2nd-pillar-rejoin');
-
-    userEvent.click(within(paymentRateRow()).getByRole('button', { name: 'Change' }));
 
     expect(screen.getByRole('radio', { name: /^2% of gross salary/i })).toHaveAccessibleName(
       /^2% of gross salary\s*You contribute 2% and the state\s4%, totaling\s6%$/i,
@@ -303,7 +280,7 @@ describe('When an eligible person rejoins the II pillar', () => {
 
     expect(history.location.pathname).toBe('/2nd-pillar-rejoin');
     expect(
-      screen.queryByRole('heading', { name: 'Get the tax win again' }),
+      screen.queryByRole('heading', { name: 'Save in the II pillar again and win on taxes' }),
     ).not.toBeInTheDocument();
     expect(await pendingHeading()).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Next' })).not.toBeInTheDocument();
@@ -518,14 +495,9 @@ describe('When an eligible person rejoins the II pillar', () => {
   test('staying at 2% says the contribution stays at 2%', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
-    userEvent.click(within(paymentRateRow()).getByRole('button', { name: 'Change' }));
     userEvent.click(screen.getByRole('radio', { name: /^2% of gross salary/i }));
 
-    expect(paymentRateRow()).toHaveTextContent('2% of gross salary');
-
-    userEvent.click(within(paymentRateRow()).getByRole('button', { name: 'Done' }));
-
-    expect(screen.queryByRole('radio')).not.toBeInTheDocument();
+    expectChosenRate(2);
 
     userEvent.click(nextButton());
 
@@ -551,7 +523,7 @@ describe('When an eligible person rejoins the II pillar', () => {
       new QueryClient({ defaultOptions: { queries: { retry: false } } }),
     );
 
-    expect(paymentRateRow()).toHaveTextContent('6% of gross salary');
+    expectChosenRate(6);
 
     signApplications();
 
@@ -559,11 +531,11 @@ describe('When an eligible person rejoins the II pillar', () => {
     expectSignedBatch('SIX', 'EE3600109435');
   });
 
-  test('skips the contribution question for someone whose rate on file is already 6%', async () => {
+  test('offers the contribution to someone whose rate on file is already 6%, and files no change to it', async () => {
     userBackend(server, { secondPillarPaymentRates: { current: 6, pending: null } });
     await renderAt('/2nd-pillar-rejoin');
 
-    expect(screen.queryByRole('group', { name: 'Your contribution' })).not.toBeInTheDocument();
+    expectChosenRate(6);
     expect(fundRow()).toHaveTextContent('Tuleva World Stocks Pension Fund');
 
     userEvent.click(nextButton());
@@ -581,18 +553,35 @@ describe('When an eligible person rejoins the II pillar', () => {
     expectSignedBatchOf([REJOIN, selectionOf('EE3600109435')]);
   });
 
+  test('files a smaller rate when someone whose rate on file is already 6% chooses it', async () => {
+    userBackend(server, { secondPillarPaymentRates: { current: 6, pending: null } });
+    await renderAt('/2nd-pillar-rejoin');
+
+    userEvent.click(screen.getByRole('radio', { name: /^4% of gross salary/i }));
+    signApplications();
+
+    expect(await successHeading()).toBeInTheDocument();
+    expectSummary('4%', 'Tuleva World Stocks Pension Fund');
+    expectSignedBatch('FOUR', 'EE3600109435');
+  });
+
   test('counts a pending change to 6% as the rate on file', async () => {
     userBackend(server, { secondPillarPaymentRates: { current: 2, pending: 6 } });
     await renderAt('/2nd-pillar-rejoin');
 
-    expect(screen.queryByRole('group', { name: 'Your contribution' })).not.toBeInTheDocument();
+    expectChosenRate(6);
+
+    signApplications();
+
+    expect(await successHeading()).toBeInTheDocument();
+    expectSignedBatchOf([REJOIN, selectionOf('EE3600109435')]);
   });
 
   test('asks for the contribution when a pending change takes the rate on file below 6%', async () => {
     userBackend(server, { secondPillarPaymentRates: { current: 6, pending: 2 } });
     await renderAt('/2nd-pillar-rejoin');
 
-    expect(paymentRateRow()).toHaveTextContent('6% of gross salary');
+    expectChosenRate(6);
 
     signApplications();
 
@@ -600,13 +589,13 @@ describe('When an eligible person rejoins the II pillar', () => {
     expectSignedBatch('SIX', 'EE3600109435');
   });
 
-  test('files only the application for making contributions when the rate and the fund are already in place', async () => {
+  test('files only the application for making contributions when the rate and the fund chosen are already in place', async () => {
     userBackend(server, { secondPillarPaymentRates: { current: 6, pending: null } });
     pensionAccountStatementBackend(server, [contributingTo(fundWithIsin('EE3600109435'))]);
     await renderAt('/2nd-pillar-rejoin');
 
-    expect(screen.queryByRole('group', { name: 'Your contribution' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('group', { name: 'Fund' })).not.toBeInTheDocument();
+    expectChosenRate(6);
+    expect(fundRow()).toHaveTextContent('Tuleva World Stocks Pension Fund');
 
     userEvent.click(nextButton());
 
@@ -621,37 +610,76 @@ describe('When an eligible person rejoins the II pillar', () => {
     expectSignedBatchOf([REJOIN]);
   });
 
-  test('keeps the chosen value in view and the other choice as it is while choosing', async () => {
+  test('shows the list of funds and the fees of the fund chosen from it inside the other fund choice', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
-    userEvent.click(within(paymentRateRow()).getByRole('button', { name: 'Change' }));
-    userEvent.click(within(fundRow()).getByRole('button', { name: 'Change' }));
+    userEvent.click(screen.getByRole('radio', { name: 'Another fund' }));
+    userEvent.selectOptions(
+      screen.getByRole('combobox', { name: 'Select a fund' }),
+      'EE3600019758',
+    );
 
-    expect(paymentRateRow()).toHaveTextContent('6% of gross salary');
-    expect(within(paymentRateRow()).getAllByRole('radio')).toHaveLength(3);
-    expect(within(fundRow()).getAllByRole('radio')).toHaveLength(2);
+    expect(within(fundRow()).getByRole('radio', { checked: true })).toHaveAccessibleName(
+      /^Another fund\s*Swedbank Pension Fund K60\s*Fees\s*0\.65%/,
+    );
   });
 
-  test('keeps the choices open after picking one so they can still be compared', async () => {
+  test('keeps another fund picked when the Tuleva stock fund is chosen from the list, and files it', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
-    userEvent.click(within(paymentRateRow()).getByRole('button', { name: 'Change' }));
-    userEvent.click(screen.getByRole('radio', { name: /^4% of gross salary/i }));
+    userEvent.click(screen.getByRole('radio', { name: 'Another fund' }));
+    userEvent.selectOptions(
+      screen.getByRole('combobox', { name: 'Select a fund' }),
+      'EE3600109435',
+    );
 
-    expect(paymentRateRow()).toHaveTextContent('4% of gross salary');
-    expect(within(paymentRateRow()).getAllByRole('radio')).toHaveLength(3);
-    expect(screen.getByRole('radio', { name: /^4% of gross salary/i })).toBeChecked();
+    expect(within(fundRow()).getByRole('radio', { checked: true })).toHaveAccessibleName(
+      /^Another fund\s*Tuleva World Stocks Pension Fund\s*Fees\s*0\.28%/,
+    );
+
+    signApplications();
+
+    expect(await successHeading()).toBeInTheDocument();
+    expectSummary('6%', 'Tuleva World Stocks Pension Fund');
+    expectSignedBatch('SIX', 'EE3600109435');
+  });
+
+  test('puts the list and its fees away again when the Tuleva stock fund is picked after another fund', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+    userEvent.click(screen.getByRole('radio', { name: 'Another fund' }));
+    userEvent.selectOptions(
+      screen.getByRole('combobox', { name: 'Select a fund' }),
+      'EE3600019758',
+    );
+
+    userEvent.click(screen.getByRole('radio', { name: /^Tuleva World Stocks Pension Fund/ }));
+
+    expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Another fund' })).not.toBeChecked();
+  });
+
+  test('moves on only once a fund is chosen from the list after picking another fund', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    userEvent.click(screen.getByRole('radio', { name: 'Another fund' }));
+
+    expect(nextButton()).toBeDisabled();
+
+    userEvent.selectOptions(
+      screen.getByRole('combobox', { name: 'Select a fund' }),
+      'EE3600019758',
+    );
+
+    expect(nextButton()).toBeEnabled();
   });
 
   test('explains the default fund and its fees right in the choice, without recommending it', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
-    userEvent.click(within(fundRow()).getByRole('button', { name: 'Change' }));
-
     expect(
       screen.getByRole('radio', { name: /^Tuleva World Stocks Pension Fund/ }),
     ).toHaveAccessibleName(
-      /^Tuleva World Stocks Pension Fund\s*A low-cost index fund that invests entirely in stocks\s*Fees\s*0\.39%/,
+      /^Tuleva World Stocks Pension Fund\s*A low-cost index fund that invests entirely in stocks\s*Fees\s*0\.28%/,
     );
     expect(
       screen.getByRole('radio', { name: /^Tuleva World Stocks Pension Fund/ }),
@@ -661,16 +689,14 @@ describe('When an eligible person rejoins the II pillar', () => {
   test('offers the stock fund and every II pillar fund behind another fund', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
-    userEvent.click(within(fundRow()).getByRole('button', { name: 'Change' }));
-
-    expect(screen.getAllByRole('radio')).toEqual(
+    expect(within(fundRow()).getAllByRole('radio')).toEqual(
       radiosNamed([/^Tuleva World Stocks Pension Fund/, 'Another fund']),
     );
 
     userEvent.click(screen.getByRole('radio', { name: 'Another fund' }));
 
     expect(
-      within(screen.getByRole('combobox', { name: 'Select a pension fund' }))
+      within(screen.getByRole('combobox', { name: 'Select a fund' }))
         .getAllByRole('option')
         .map((option) => option.textContent),
     ).toEqual([
@@ -681,12 +707,11 @@ describe('When an eligible person rejoins the II pillar', () => {
     ]);
 
     userEvent.selectOptions(
-      screen.getByRole('combobox', { name: 'Select a pension fund' }),
+      screen.getByRole('combobox', { name: 'Select a fund' }),
       'EE3600109443',
     );
 
     expect(fundRow()).toHaveTextContent('Tuleva World Bonds Pension Fund');
-    expect(fundRow()).toHaveTextContent(/Fees\s*0\.39%/);
 
     signApplications();
 
@@ -697,10 +722,9 @@ describe('When an eligible person rejoins the II pillar', () => {
 
   test('files no fund selection when the fund chosen is the one their contributions already go to', async () => {
     await renderAt('/2nd-pillar-rejoin');
-    userEvent.click(within(fundRow()).getByRole('button', { name: 'Change' }));
     userEvent.click(screen.getByRole('radio', { name: 'Another fund' }));
     userEvent.selectOptions(
-      screen.getByRole('combobox', { name: 'Select a pension fund' }),
+      screen.getByRole('combobox', { name: 'Select a fund' }),
       'EE3600019758',
     );
     userEvent.click(nextButton());
@@ -737,12 +761,28 @@ describe('When an eligible person rejoins the II pillar', () => {
     expectSignedBatch('SIX', 'EE3600109435');
   });
 
-  test('skips the fund question for someone already saving in the Tuleva stock fund', async () => {
+  test('files another fund when someone already saving in the Tuleva stock fund chooses it', async () => {
     pensionAccountStatementBackend(server, [contributingTo(fundWithIsin('EE3600109435'))]);
     await renderAt('/2nd-pillar-rejoin');
 
-    expect(paymentRateRow()).toHaveTextContent('6% of gross salary');
-    expect(screen.queryByRole('group', { name: 'Fund' })).not.toBeInTheDocument();
+    userEvent.click(screen.getByRole('radio', { name: 'Another fund' }));
+    userEvent.selectOptions(
+      screen.getByRole('combobox', { name: 'Select a fund' }),
+      'EE3600109443',
+    );
+    signApplications();
+
+    expect(await successHeading()).toBeInTheDocument();
+    expectSummary('6%', 'Tuleva World Bonds Pension Fund');
+    expectSignedBatch('SIX', 'EE3600109443');
+  });
+
+  test('offers the fund to someone already saving in the Tuleva stock fund, and files no selection for it', async () => {
+    pensionAccountStatementBackend(server, [contributingTo(fundWithIsin('EE3600109435'))]);
+    await renderAt('/2nd-pillar-rejoin');
+
+    expectChosenRate(6);
+    expect(fundRow()).toHaveTextContent('Tuleva World Stocks Pension Fund');
 
     userEvent.click(nextButton());
 
@@ -792,7 +832,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     rejoinPermissionBackend(server, { permitted: false });
     await renderAt('/2nd-pillar-rejoin');
 
-    expect(paymentRateRow()).toHaveTextContent('6% of gross salary');
+    expectChosenRate(6);
 
     signApplications();
 
@@ -818,10 +858,15 @@ describe('When an eligible person rejoins the II pillar', () => {
   const DEADLINE_JUST_PAST_MIDNIGHT_IN_ESTONIA = rejoinWindow('2026-11-30T22:30:00Z', '2027-05-01');
   const restriction =
     "You can use the money from age 60. After rejoining, you can't stop contributions again or withdraw the money a second time.";
-  const heading = () => screen.findByRole('heading', { name: 'Get the tax win again' });
+  const heading = () =>
+    screen.findByRole('heading', { name: 'Save in the II pillar again and win on taxes' });
   const lead = () => screen.getByText(/^The state directs/);
   const paymentRateRow = () => screen.getByRole('group', { name: 'Your contribution' });
   const fundRow = () => screen.getByRole('group', { name: 'Fund' });
+  const expectChosenRate = (rate: number) =>
+    expect(within(paymentRateRow()).getByRole('radio', { checked: true })).toHaveAccessibleName(
+      new RegExp(`^${rate}% of gross salary`, 'i'),
+    );
   const signButton = () => screen.getByRole('button', { name: 'Sign and send mandate' });
   const nextButton = () => screen.getByRole('button', { name: 'Next' });
   const termsCheckbox = () => screen.getByRole('checkbox', { name: /prospectuses/ });

@@ -17,13 +17,13 @@ export const transfer2Pillar = {
       name: 'Tuleva Maailma Aktsiate Pensionifond',
       managementFeeRate: 0.0034,
       pillar: 2,
-      ongoingChargesFigure: 0.0042,
+      ongoingChargesFigure: 0.0028,
     },
     exchanges: [
       {
         targetFund: {
           fundManager: { name: 'Swedbank' },
-          isin: 'EE3600109443',
+          isin: 'EE3600019733',
           name: 'Swedbank I',
           managementFeeRate: 0.0034,
           pillar: 2,
@@ -59,7 +59,7 @@ export const transferPIK = {
       name: 'Tuleva Maailma Aktsiate Pensionifond',
       managementFeeRate: 0.0034,
       pillar: 2,
-      ongoingChargesFigure: 0.0042,
+      ongoingChargesFigure: 0.0028,
     },
     exchanges: [
       {
@@ -102,7 +102,7 @@ export const transfer3Pillar = {
           name: 'Tuleva III Samba Pensionifond',
           managementFeeRate: 0.003,
           pillar: 3,
-          ongoingChargesFigure: 0.0049,
+          ongoingChargesFigure: 0.0029,
           status: 'ACTIVE',
         },
         amount: 1310.247,
@@ -191,7 +191,7 @@ export const payment = {
       name: 'Tuleva III Samba Pensionifond',
       managementFeeRate: 0.0023,
       pillar: 3,
-      ongoingChargesFigure: 0.0035,
+      ongoingChargesFigure: 0.0029,
       status: 'ACTIVE',
     },
   },

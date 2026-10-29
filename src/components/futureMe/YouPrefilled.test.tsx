@@ -27,7 +27,7 @@ const secondPillarFund: SourceFund = {
   price: 24586,
   unavailablePrice: 0,
   currency: 'EUR',
-  ongoingChargesFigure: 0.004,
+  ongoingChargesFigure: 0.0028,
   contributions: 24586,
   subtractions: 0,
   profit: 0,

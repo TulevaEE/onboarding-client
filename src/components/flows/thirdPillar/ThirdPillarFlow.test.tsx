@@ -189,7 +189,7 @@ const tulevaFund: FundBalance = {
     name: 'Tuleva III Samba Pensionifond',
     managementFeeRate: 0.003,
     pillar: 3,
-    ongoingChargesFigure: 0.0043,
+    ongoingChargesFigure: 0.0029,
     status: 'ACTIVE',
     inceptionDate: '2017-01-01',
     nav: 1,

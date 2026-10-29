@@ -57,7 +57,7 @@ const fund = (pillar: 2 | 3, price: number, unavailablePrice = 0): SourceFund =>
   price,
   unavailablePrice,
   currency: 'EUR',
-  ongoingChargesFigure: 0.004,
+  ongoingChargesFigure: 0.0028,
   contributions: price,
   subtractions: 0,
   profit: 0,

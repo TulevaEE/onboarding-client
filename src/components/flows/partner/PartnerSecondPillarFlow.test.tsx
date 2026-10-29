@@ -164,7 +164,7 @@ describe('partner 2nd pillar flow', () => {
 
     userEvent.selectOptions(
       // eslint-disable-next-line testing-library/no-node-access
-      screen.getByText('Select a pension fund').closest('select') as HTMLSelectElement,
+      screen.getByText('Select a fund').closest('select') as HTMLSelectElement,
       'Tuleva World Stocks Pension Fund',
     );
 
