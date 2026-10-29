@@ -559,6 +559,17 @@ describe('FutureMe', () => {
       ).toBeInTheDocument();
     });
 
+    it('says in the „?“ that the result does not count the state payment months yet', () => {
+      withChildren([GIRL_BORN_FEB_2023]);
+
+      renderFutureMe();
+      userEvent.click(screen.getByRole('button', { name: /^Selgitus: Mitu kuud maksis riik/ }));
+
+      const dialog = screen.getByRole('dialog');
+      expect(within(dialog).getByText(/Tulemus seda veel ei arvesta/)).toBeInTheDocument();
+      expect(within(dialog).queryByText(/arvestame, et riik maksis/)).not.toBeInTheDocument();
+    });
+
     it('waits for the register before showing the form', () => {
       withChildren(undefined, true);
 
