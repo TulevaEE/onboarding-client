@@ -182,6 +182,26 @@ describe('Result step: your decisions', () => {
       );
     });
 
+    it('does not say the II pillar contributions end at the pension age when the saver works on, as the payout starts when the work ends', () => {
+      openResultStep();
+      userEvent.click(within(trail()).getByRole('button', { name: /^65\sa/ }));
+      userEvent.click(
+        within(screen.getByRole('group', { name: 'Kas töötad pensioni ajal edasi?' })).getByRole(
+          'radio',
+          { name: /^Töötan edasi/ },
+        ),
+      );
+      userEvent.click(within(trail()).getByRole('button', { name: /^Tulemus/ }));
+      userEvent.click(changeButton(decisionRow(/^II\ssammas pensionieas$/)));
+
+      expect(screen.getByRole('radio', { name: 'Fondipension' })).not.toHaveAccessibleDescription(
+        /sissemaksed/,
+      );
+      expect(screen.getByRole('radio', { name: 'Kõik korraga' })).not.toHaveAccessibleDescription(
+        /sissemaksed/,
+      );
+    });
+
     it('leaves how long the money lasts to the result instead of repeating it on every card', () => {
       openResultStep();
       userEvent.click(changeButton(secondPillarAt60()));

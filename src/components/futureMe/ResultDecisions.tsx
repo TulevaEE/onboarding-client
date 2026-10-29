@@ -28,10 +28,6 @@ const choiceTitle = (id: DecisionId, choice: string): TranslationKey => {
 const isChosenDeferral = (decision: Decision, choice: string): boolean =>
   decision.id === 'statePension' && decision.current === choice && choice !== 'full';
 
-const endsSecondPillarContributions = (id: DecisionId, context: ResultContext): boolean =>
-  id === 'secondPillarAtPayoutAge' ||
-  (id === 'secondPillarAtPensionAge' && context.age65.work === 'yes');
-
 const statePensionText = (mode: string, pensionAge: number, years: number) => {
   if (mode === 'half') {
     return <FormattedMessage id="futureMe.result.decisions.mode.half.text" />;
@@ -56,7 +52,7 @@ const choiceText = (decision: Decision, choice: string, context: ResultContext) 
   ) : (
     <PayoutChoiceText
       choice={choice as PayoutChoice}
-      endsSecondPillarContributions={endsSecondPillarContributions(decision.id, context)}
+      endsSecondPillarContributions={decision.id === 'secondPillarAtPayoutAge'}
     />
   );
 

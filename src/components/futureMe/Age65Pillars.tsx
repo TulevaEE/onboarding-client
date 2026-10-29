@@ -101,14 +101,7 @@ export const Age65Pillars = ({
                     id={`futureMe.age65.payout.${choice}.title` as TranslationKey}
                   />
                 }
-                text={
-                  <PayoutChoiceText
-                    choice={choice}
-                    endsSecondPillarContributions={
-                      pillar === 'secondPillar' && answers.work === 'yes'
-                    }
-                  />
-                }
+                text={<PayoutChoiceText choice={choice} />}
                 onChange={() => onChange({ ...answers, [pillar]: choice })}
               />
             ))}
