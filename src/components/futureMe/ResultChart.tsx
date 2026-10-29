@@ -53,7 +53,8 @@ const EVENT_DOT_BORDER = 2;
 const TIP_GAP = 10;
 const Y_AXIS_WIDTH = 76;
 const THOUSAND = 1000;
-const NO_COSTS = '–';
+const NOT_COUNTED = '–';
+const COUNTED_FROM_PENSION_AGE: (ChartSourceId | 'costs')[] = ['salary', 'costs'];
 
 ChartJS.register(
   CategoryScale,
@@ -539,6 +540,9 @@ const Legend = ({ rows, hidden, onToggle }: LegendProps) => {
   );
 };
 
+const tableAmountOf = (row: ChartRow, id: ChartSourceId | 'costs') =>
+  row.isBeforePension && COUNTED_FROM_PENSION_AGE.includes(id) ? NOT_COUNTED : euro(row[id]);
+
 const IncomeTable = ({ rows, isNominal }: { rows: ChartRow[]; isNominal: boolean }) => {
   const sources = chartSeriesOf(rows).map(({ id }) => id);
   return (
@@ -580,10 +584,10 @@ const IncomeTable = ({ rows, isNominal }: { rows: ChartRow[]; isNominal: boolean
               <th scope="row">{row.age}</th>
               {sources.map((id) => (
                 <td key={id} className="text-end">
-                  {euro(row[id])}
+                  {tableAmountOf(row, id)}
                 </td>
               ))}
-              <td className="text-end">{row.isBeforePension ? NO_COSTS : euro(row.costs)}</td>
+              <td className="text-end">{tableAmountOf(row, 'costs')}</td>
             </tr>
           ))}
         </tbody>

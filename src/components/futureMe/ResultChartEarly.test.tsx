@@ -3,7 +3,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { initialAge60 } from './age60Answers';
-import { initialAge65 } from './age65Answers';
+import { Age65Answers, initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses, needMonthly } from './expensesAnswers';
 import { nominalReturnsOf } from './nominal';
@@ -32,7 +32,7 @@ jest.mock('react-chartjs-2', () => {
   };
 });
 
-const withFundPensionFrom55 = (): ResultContext => {
+const withFundPensionFrom55 = (age65: Partial<Age65Answers>): ResultContext => {
   const you = {
     ...initialAnswers({ birthYear: BIRTH_YEAR, sex: null, secondPillarRate: null }),
     pensionAgeYears: '65',
@@ -47,15 +47,15 @@ const withFundPensionFrom55 = (): ResultContext => {
     you,
     plan: toStepPlanInput(you),
     age60: initialAge60(),
-    age65: initialAge65(),
+    age65: { ...initialAge65(), ...age65 },
     age66: initialAge66(),
     specialPension: initialSpecialPension(),
     expenses: initialExpenses(),
   };
 };
 
-const showChart = () => {
-  const context = withFundPensionFrom55();
+const showChart = (age65: Partial<Age65Answers> = {}) => {
+  const context = withFundPensionFrom55(age65);
   const result = resultOf(context);
   render(
     <IntlProvider locale="et" messages={translations.et}>
@@ -114,5 +114,17 @@ describe('ResultChart with the III pillar fund pension from 55', () => {
 
     expect(within(firstRow).getByRole('rowheader')).toHaveTextContent('55');
     expect(within(firstRow).getAllByRole('cell').pop()).toHaveTextContent(/^–$/);
+  });
+
+  it('shows a dash instead of the salary before the pension age while working past it', () => {
+    showChart({ work: 'yes', workUntil: '70' });
+    userEvent.click(screen.getByRole('button', { name: 'Näita tabelina' }));
+    const table = within(screen.getByRole('region'));
+    const salaryCell =
+      table.getAllByRole('columnheader').findIndex(({ textContent }) => textContent === 'Palk') - 1;
+    const [, firstRow] = table.getAllByRole('row');
+
+    expect(within(firstRow).getByRole('rowheader')).toHaveTextContent('55');
+    expect(within(firstRow).getAllByRole('cell')[salaryCell]).toHaveTextContent(/^–$/);
   });
 });
