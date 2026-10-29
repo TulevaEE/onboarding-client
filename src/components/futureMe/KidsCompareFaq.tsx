@@ -36,15 +36,8 @@ const message = (id: string, values: Record<string, ReactNode> = {}) => (
   <FormattedMessage id={id as TranslationKey} values={values} />
 );
 
-const Supplement = ({
-  state,
-  from,
-  monthly,
-}: {
-  state: SupplementState;
-  from: number;
-  monthly: number;
-}) => message('futureMe.age65.faq.compare.supplement', { state, from, monthly: euro(monthly) });
+const Supplement = ({ state, from }: { state: SupplementState; from: number }) =>
+  message('futureMe.age65.faq.compare.supplement', { state, from });
 
 const agesText = (from: number, to: number): string =>
   from === to ? String(from) : `${from}–\u2060${to}`;
@@ -220,13 +213,7 @@ export const RescueCompareFaq = ({ context }: { context: CompareContext }) => {
     parts: rescuePartsOf(row),
     total: row.total,
     isMost: isMost(row.total),
-    supplement: (
-      <Supplement
-        state={supplement.state}
-        from={row.pension?.from ?? pensionAge}
-        monthly={supplement.monthly}
-      />
-    ),
+    supplement: <Supplement state={supplement} from={row.pension?.from ?? pensionAge} />,
     after: message('futureMe.age65.faq.compare.monthly', { amount: euro(row.atPensionAge) }),
   }));
   const toetus = rows.find(({ basis }) => basis === 'toetus');
@@ -300,9 +287,7 @@ export const SpecialCompareFaq = ({ context }: { context: CompareContext }) => {
       parts: [part('oldAge', oldAge)],
       total: oldAge.total,
       isMost: isMost(oldAge.total),
-      supplement: (
-        <Supplement state={supplement.state} from={oldAge.from} monthly={supplement.monthly} />
-      ),
+      supplement: <Supplement state={supplement} from={oldAge.from} />,
       after: atPensionAge(oldAge),
     },
     familyRow(family, part('special', special), 'futureMe.age65.faq.specialCompare.family', {

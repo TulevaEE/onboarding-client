@@ -66,6 +66,14 @@ describe('rescue allowance or the pension for the children question', () => {
     expect(mix.getByText(/^64\sa pension 923\s€\skuus$/)).toBeInTheDocument();
   });
 
+  it('says from when the saver gets the child supplement, without an amount that the allowance and the pension beside it do not differ by', () => {
+    renderEt(<RescueCompareFaq context={withRescue()} />);
+
+    expect(
+      within(rowNamed(/^Mõlemad järjest/)).getByText(/^sinul alates 64\sa$/),
+    ).toBeInTheDocument();
+  });
+
   it('names the table and lets the keyboard scroll it on a narrow screen', () => {
     renderEt(<RescueCompareFaq context={withRescue()} />);
 

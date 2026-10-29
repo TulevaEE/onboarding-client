@@ -108,12 +108,12 @@ const familyOf = (kidsYears: number, ownTotal: number): Family => {
   };
 };
 
-const supplementOf = (input: PensionInput): { monthly: number; state: SupplementState } => {
-  const monthly = childSupplement(input);
+const supplementOf = (input: PensionInput): SupplementState => {
   const kids = input.kids ?? {};
-  const isOtherParents = (kids.supUser || kids.user) === 'other';
-  const state: SupplementState = isOtherParents ? 'otherParent' : 'self';
-  return { monthly, state: monthly > 0 || isOtherParents ? state : 'none' };
+  if ((kids.supUser || kids.user) === 'other') {
+    return 'otherParent';
+  }
+  return childSupplement(input) > 0 ? 'self' : 'none';
 };
 
 const monthlyAt = (

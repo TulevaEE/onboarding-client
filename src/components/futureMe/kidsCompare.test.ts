@@ -154,10 +154,8 @@ describe('rescue allowance or the pension for the children', () => {
   });
 
   it('says who gets the child supplement', () => {
-    expect(rescueComparisonOf(withRescue()).supplement.state).toBe('self');
-    expect(rescueComparisonOf(withRescue({ kidsSupUser: 'other' })).supplement.state).toBe(
-      'otherParent',
-    );
+    expect(rescueComparisonOf(withRescue()).supplement).toBe('self');
+    expect(rescueComparisonOf(withRescue({ kidsSupUser: 'other' })).supplement).toBe('otherParent');
   });
 });
 
