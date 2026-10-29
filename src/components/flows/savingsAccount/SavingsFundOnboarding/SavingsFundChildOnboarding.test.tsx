@@ -10,6 +10,7 @@ import {
   savingsFundOnboardingStatusBackend,
   savingsFundOnboardingSurveyBackend,
   switchRoleBackend,
+  tkfDocumentsBackend,
   userBackend,
 } from '../../../../test/backend';
 import { mockUser } from '../../../../test/backend-responses';
@@ -33,6 +34,7 @@ beforeEach(() => {
   savingsFundOnboardingSurveyBackend(server);
   switchRoleBackend(server);
   savingsFundOnboardingStatusBackend(server, 'COMPLETED');
+  tkfDocumentsBackend(server);
 });
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
@@ -74,6 +76,7 @@ const advanceToTerms = async () => {
   userEvent.click(continueButton());
 
   expect(await screen.findByText('9/9')).toBeInTheDocument(); // terms
+  expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
 };
 
 describe('SavingsFundChildOnboarding', () => {

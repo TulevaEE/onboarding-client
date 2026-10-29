@@ -3,10 +3,11 @@ import { Control, Controller, Path } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SharedOnboardingFields } from '../types';
 import { TranslationKey } from '../../../../translations';
+import Loader from '../../../../common/loader';
+import { useTkfDocuments } from '../tkfDocuments';
 
 type TermsStepProps<T extends SharedOnboardingFields = SharedOnboardingFields> = {
   control: Control<T>;
-  documents: { href: string; labelId: TranslationKey }[];
   showError?: boolean;
   confirmTextId?: TranslationKey;
 };
@@ -59,11 +60,11 @@ const SUMMARY_BULLETS: { icon: keyof typeof featureIcons; messageId: Translation
 
 export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFields>({
   control,
-  documents,
   showError,
   confirmTextId = 'flows.savingsFundOnboarding.termsStep.confirmText',
 }: TermsStepProps<T>) => {
   const intl = useIntl();
+  const documents = useTkfDocuments();
   return (
     <section className="d-flex flex-column gap-4" key="conditions">
       <div className="d-flex flex-column gap-1">
@@ -83,11 +84,15 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
           ))}
         </ul>
         <div className="d-flex flex-column gap-3">
-          {documents.map(({ href, labelId }) => (
-            <DocumentLink key={href} href={href}>
-              <FormattedMessage id={labelId} />
-            </DocumentLink>
-          ))}
+          {documents ? (
+            documents.map(({ href, labelId }) => (
+              <DocumentLink key={labelId} href={href}>
+                <FormattedMessage id={labelId} />
+              </DocumentLink>
+            ))
+          ) : (
+            <Loader className="align-middle" />
+          )}
         </div>
         <Controller
           control={control}
@@ -103,6 +108,7 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
                 className="form-check-input"
                 type="checkbox"
                 id="terms-accepted"
+                disabled={!documents}
                 checked={field.value as boolean}
                 onChange={field.onChange}
               />
