@@ -7,18 +7,11 @@ import { PayoutChoice } from './age60Answers';
 import { ChoiceCard } from './ChoiceCard';
 import { PayoutChoiceText } from './PayoutChoiceText';
 import { ChangeDecisions, useDecisionActions } from './decisionActions';
-import {
-  coversAgeOf,
-  Decision,
-  DecisionId,
-  decisionsOf,
-  isStepDecision,
-  withDecision,
-} from './decisions';
+import { Decision, DecisionId, decisionsOf, isStepDecision, withDecision } from './decisions';
 import { CURRENT_YEAR, DEFERRAL_INCREASE } from './engine/pension';
 import { QuickEditStepDecision } from './QuickEditSteps';
 import { ResultComparison } from './ResultComparison';
-import { MAX_AGE_SHOWN, Result, ResultContext, resultOf } from './resultAnswers';
+import { ResultContext } from './resultAnswers';
 
 const choiceTitle = (id: DecisionId, choice: string): TranslationKey => {
   switch (id) {
@@ -57,33 +50,15 @@ const statePensionText = (mode: string, pensionAge: number, years: number) => {
   return null;
 };
 
-const ChoiceText = ({
-  decision,
-  choice,
-  context,
-}: {
-  decision: Decision;
-  choice: string;
-  context: ResultContext;
-}) => {
-  const text =
-    decision.id === 'statePension' ? (
-      statePensionText(choice, decision.age, context.age65.years)
-    ) : (
-      <PayoutChoiceText
-        choice={choice as PayoutChoice}
-        endsSecondPillarContributions={endsSecondPillarContributions(decision.id, context)}
-      />
-    );
-  return (
-    text && (
-      <>
-        {text}
-        <br />
-      </>
-    )
+const choiceText = (decision: Decision, choice: string, context: ResultContext) =>
+  decision.id === 'statePension' ? (
+    statePensionText(choice, decision.age, context.age65.years)
+  ) : (
+    <PayoutChoiceText
+      choice={choice as PayoutChoice}
+      endsSecondPillarContributions={endsSecondPillarContributions(decision.id, context)}
+    />
   );
-};
 
 const DeferralYearsField = ({
   mode,
@@ -122,57 +97,6 @@ const DeferralYearsField = ({
   );
 };
 
-const coversKindOf = (result: Result, coversAge: number) => {
-  if (result.gapTemporary) {
-    return 'gap';
-  }
-  return coversAge >= MAX_AGE_SHOWN ? 'life' : 'until';
-};
-
-const Outcome = ({
-  result,
-  currentAge,
-  isCurrent,
-}: {
-  result: Result;
-  currentAge: number;
-  isCurrent: boolean;
-}) => {
-  const coversAge = coversAgeOf(result);
-  const change = coversAge - currentAge;
-  const { coversNeedUntil, gapEnd } = result;
-  return (
-    <span className="decision-outcome">
-      <FormattedMessage
-        id="futureMe.result.decisions.covers"
-        values={{
-          kind: coversKindOf(result, coversAge),
-          age: coversAge,
-          from: coversNeedUntil,
-          to: gapEnd,
-          isRange:
-            gapEnd !== null && coversNeedUntil !== null && gapEnd > coversNeedUntil ? 'yes' : 'no',
-        }}
-      />
-      {isCurrent && <FormattedMessage id="futureMe.result.decisions.covers.now" />}
-      {!isCurrent && change !== 0 && (
-        <>
-          {' '}
-          <span className={change > 0 ? 'decision-delta-up' : 'decision-delta-down'}>
-            <FormattedMessage
-              id="futureMe.result.decisions.delta"
-              values={{ direction: change > 0 ? 'up' : 'down', years: Math.abs(change) }}
-            />
-            <span className="visually-hidden">
-              <FormattedMessage id="futureMe.result.decisions.delta.hint" />
-            </span>
-          </span>
-        </>
-      )}
-    </span>
-  );
-};
-
 interface PanelProps {
   context: ResultContext;
   decision: Decision;
@@ -181,54 +105,37 @@ interface PanelProps {
   onChange: ChangeDecisions;
 }
 
-const DecisionChoices = ({ context, decision, panelId, titleId, onChange }: PanelProps) => {
-  const currentAge = coversAgeOf(resultOf(context));
-  return (
-    <div
-      role="group"
-      id={panelId}
-      aria-labelledby={titleId}
-      className="decision-panel d-print-none"
-    >
-      <div className="payout-choices">
-        {decision.choices.map((choice) => {
-          const changes = withDecision(context, decision.id, choice);
-          return (
-            <ChoiceCard
-              key={choice}
-              idPrefix={`future-me-decision-${decision.id}`}
-              name={`future-me-decision-${decision.id}`}
-              value={choice}
-              checked={decision.current === choice}
-              title={<FormattedMessage id={choiceTitle(decision.id, choice)} />}
-              text={
-                <>
-                  <ChoiceText decision={decision} choice={choice} context={context} />
-                  <Outcome
-                    result={resultOf({ ...context, ...changes })}
-                    currentAge={currentAge}
-                    isCurrent={decision.current === choice}
-                  />
-                </>
-              }
-              extra={
-                isChosenDeferral(decision, choice) && (
-                  <DeferralYearsField
-                    mode={choice as PensionMode}
-                    pensionAge={decision.age}
-                    answers={context.age65}
-                    onChange={onChange}
-                  />
-                )
-              }
-              onChange={() => onChange(changes)}
-            />
-          );
-        })}
-      </div>
+const DecisionChoices = ({ context, decision, panelId, titleId, onChange }: PanelProps) => (
+  <div role="group" id={panelId} aria-labelledby={titleId} className="decision-panel d-print-none">
+    <div className="payout-choices">
+      {decision.choices.map((choice) => {
+        const changes = withDecision(context, decision.id, choice);
+        return (
+          <ChoiceCard
+            key={choice}
+            idPrefix={`future-me-decision-${decision.id}`}
+            name={`future-me-decision-${decision.id}`}
+            value={choice}
+            checked={decision.current === choice}
+            title={<FormattedMessage id={choiceTitle(decision.id, choice)} />}
+            text={choiceText(decision, choice, context)}
+            extra={
+              isChosenDeferral(decision, choice) && (
+                <DeferralYearsField
+                  mode={choice as PensionMode}
+                  pensionAge={decision.age}
+                  answers={context.age65}
+                  onChange={onChange}
+                />
+              )
+            }
+            onChange={() => onChange(changes)}
+          />
+        );
+      })}
     </div>
-  );
-};
+  </div>
+);
 
 interface RowProps extends Omit<PanelProps, 'panelId' | 'titleId'> {
   isOpen: boolean;

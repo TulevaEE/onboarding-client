@@ -182,59 +182,12 @@ describe('Result step: your decisions', () => {
       );
     });
 
-    it('shows how long the money lasts with each way, set against the current one', () => {
+    it('leaves how long the money lasts to the result instead of repeating it on every card', () => {
       openResultStep();
       userEvent.click(changeButton(secondPillarAt60()));
+      userEvent.click(changeButton(decisionRow(/^Riiklik pension/)));
 
-      const group = within(secondPillarAt60()).getByRole('group');
-      expect(
-        within(group).getByRole('radio', { name: 'Jätkan kasvatamist' }),
-      ).toHaveAccessibleDescription(/Raha jätkub 81-\u2060aastaseni\s·\spraegu/);
-      expect(
-        within(group).getByRole('radio', { name: 'Kõik korraga' }),
-      ).toHaveAccessibleDescription(
-        /Raha jätkub \d+-\u2060aastaseni [+−]\d+\sa võrreldes praegusega/,
-      );
-    });
-
-    it('tells costs left uncovered for a while apart from money running out', () => {
-      render(
-        <IntlProvider locale="et" messages={translations.et}>
-          <FutureMe />
-        </IntlProvider>,
-      );
-      typeInto(
-        screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ }),
-        '1500',
-      );
-      typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu brutopalk/ }), '2000');
-      typeInto(screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }), '0');
-      typeInto(screen.getByRole('spinbutton', { name: /Kui palju on III\ssambas praegu/ }), '0');
-      typeInto(
-        screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }),
-        '0',
-      );
-      userEvent.click(within(trail()).getByRole('button', { name: /^Tulemus, vaatamata$/ }));
-      const statePension = decisionRow(/^Riiklik pension 65-⁠aastaselt$/);
-      userEvent.click(changeButton(statePension));
-
-      expect(
-        within(statePension).getByRole('radio', { name: 'Lükkan edasi' }),
-      ).toHaveAccessibleDescription(
-        /Raha jätkub elu lõpuni \(100\+\), kuid 65-⁠aastaselt jäävad kulud katmata$/,
-      );
-    });
-
-    it('marks only the chosen way as the current one', () => {
-      openResultStep();
-      userEvent.click(changeButton(secondPillarAt60()));
-
-      const group = within(secondPillarAt60()).getByRole('group');
-      const notChosen = within(group)
-        .getAllByRole('radio')
-        .filter((radio) => !(radio as HTMLInputElement).checked);
-      notChosen.forEach((radio) => expect(radio).not.toHaveAccessibleDescription(/· praegu/));
-      expect(within(group).getAllByText(/· praegu/)).toHaveLength(1);
+      expect(within(decisionList()).queryByText(/Raha jätkub/)).not.toBeInTheDocument();
     });
 
     it('recalculates the answer at once when another way is picked', () => {

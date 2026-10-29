@@ -8,7 +8,7 @@ import {
 import { Age66Context, fundPensionStartOf, isGrowing, Pillar } from './age66Answers';
 import { hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 import { euro } from './amountFormat';
-import { MAX_AGE_SHOWN, Result, ResultContext } from './resultAnswers';
+import { ResultContext } from './resultAnswers';
 import { specialPensionStartAge } from './specialPensionAnswers';
 import { amountOf } from './youAnswers';
 
@@ -158,6 +158,3 @@ export const withDecision = (
   const { stage, pillar } = PAYOUT_DECISION_FIELDS[id];
   return { [stage]: { ...context[stage], [pillar]: choice } };
 };
-
-export const coversAgeOf = (result: Result): number =>
-  result.coversNeedUntil === null || result.gapTemporary ? MAX_AGE_SHOWN : result.coversNeedUntil;
