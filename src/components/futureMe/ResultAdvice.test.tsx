@@ -92,7 +92,7 @@ const deferStatePensionFiveYears = () => {
     ),
   );
   userEvent.click(
-    within(screen.getByRole('group', { name: 'Mitu aastat lükkad edasi?' })).getByRole('radio', {
+    within(screen.getByRole('group', { name: 'Kui vanalt alustad?' })).getByRole('radio', {
       name: /^70-aastaselt/,
     }),
   );
@@ -186,7 +186,7 @@ describe('Result advice', () => {
     expect(warning()).not.toBeInTheDocument();
     goTo(/^65\sa,/);
     expect(
-      within(screen.getByRole('group', { name: 'Mitu aastat lükkad edasi?' })).getByRole('radio', {
+      within(screen.getByRole('group', { name: 'Kui vanalt alustad?' })).getByRole('radio', {
         name: /^68-aastaselt/,
       }),
     ).toBeChecked();

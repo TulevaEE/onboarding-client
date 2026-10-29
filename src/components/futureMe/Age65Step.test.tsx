@@ -174,7 +174,7 @@ describe('Age 65 step', () => {
       expect(mode(/^Kohe täissumma/)).toBeChecked();
       expect(screen.getByText('700 € kuus enne maksu, kohe 65-aastaselt')).toBeInTheDocument();
       expect(
-        screen.queryByRole('group', { name: 'Mitu aastat lükkad edasi?' }),
+        screen.queryByRole('group', { name: 'Kui vanalt alustad?' }),
       ).not.toBeInTheDocument();
     });
 
@@ -182,7 +182,7 @@ describe('Age 65 step', () => {
       openAge65Step();
 
       userEvent.click(mode(/^Lükkan edasi/));
-      const years = within(yearsGroup('Mitu aastat lükkad edasi?'));
+      const years = within(yearsGroup('Kui vanalt alustad?'));
 
       expect(years.getAllByRole('radio')).toHaveLength(5);
       expect(years.getByRole('radio', { name: /^66-aastaselt/ })).toBeChecked();
@@ -205,7 +205,7 @@ describe('Age 65 step', () => {
 
       userEvent.click(mode(/^Lükkan edasi/));
       userEvent.click(
-        within(yearsGroup('Mitu aastat lükkad edasi?')).getByRole('radio', {
+        within(yearsGroup('Kui vanalt alustad?')).getByRole('radio', {
           name: /^68-aastaselt/,
         }),
       );
