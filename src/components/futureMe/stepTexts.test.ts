@@ -120,8 +120,8 @@ describe('Step texts', () => {
     ).toEqual([]);
   });
 
-  it('use US spelling in English', () => {
-    expect(keysWithText('en', /colour|defence forces|favourable (conditions|terms)/)).toEqual([]);
+  it('use UK spelling in English, as the Tuleva style guide asks', () => {
+    expect(keysWithText('en', /\b(color|defense|favorable)\b/)).toEqual([]);
   });
 
   it('put the euro sign after an amount, as the app formats amounts in English too', () => {
