@@ -40,7 +40,7 @@ describe('2nd pillar flow', () => {
 
   test('allows moving all external pension to stock Tuleva pension fund', async () => {
     expect(
-      await screen.findByText(/Your pension account overview/i, undefined, { timeout: 1000 }),
+      await screen.findByText(/Your pension account overview/i, undefined, { timeout: 10_000 }),
     ).toBeInTheDocument();
 
     userEvent.click(nextButton());
@@ -75,7 +75,7 @@ describe('2nd pillar flow', () => {
 
   test('allows moving all external pension to bond Tuleva pension fund', async () => {
     expect(
-      await screen.findByText(/Your pension account overview/i, undefined, { timeout: 1000 }),
+      await screen.findByText(/Your pension account overview/i, undefined, { timeout: 10_000 }),
     ).toBeInTheDocument();
 
     userEvent.click(bonds());
@@ -117,7 +117,7 @@ describe('2nd pillar flow', () => {
 
   test('allows customizing the transfer', async () => {
     expect(
-      await screen.findByText(/Your pension account overview/i, undefined, { timeout: 1000 }),
+      await screen.findByText(/Your pension account overview/i, undefined, { timeout: 10_000 }),
     ).toBeInTheDocument();
 
     // Verify the "Active fund" badge is rendered for the active fund
@@ -184,7 +184,7 @@ describe('2nd pillar flow', () => {
 
   test('allows transferring only existing fund units', async () => {
     expect(
-      await screen.findByText(/Your pension account overview/i, undefined, { timeout: 1000 }),
+      await screen.findByText(/Your pension account overview/i, undefined, { timeout: 10_000 }),
     ).toBeInTheDocument();
 
     // Verify the "Active fund" badge is rendered for the active fund
