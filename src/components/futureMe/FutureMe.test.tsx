@@ -1579,12 +1579,42 @@ describe('FutureMe', () => {
         expect(addChildButton()).toHaveFocus();
       });
 
-      it('offer no removing of a single child, only of the whole block', () => {
+      it('offer removing the last child too, and keep the block open with the add button', () => {
         renderFutureMe();
         userEvent.click(addKidsButton());
 
-        expect(screen.queryByRole('button', { name: /^Eemalda laps \d/ })).not.toBeInTheDocument();
-        expect(screen.getByRole('button', { name: 'Eemalda lapsed' })).toBeVisible();
+        userEvent.click(screen.getByRole('button', { name: 'Eemalda laps 1' }));
+
+        expect(screen.queryByRole('group', { name: /^Laps \d+$/ })).not.toBeInTheDocument();
+        expect(addChildButton()).toHaveFocus();
+        expect(
+          screen.queryByRole('combobox', { name: /Kes saab pensionilisa/ }),
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByRole('heading', { name: 'Laste soodustused' }),
+        ).not.toBeInTheDocument();
+      });
+
+      it('put „Eemalda kõik lapsed“ below „Lisa laps“', () => {
+        renderFutureMe();
+        userEvent.click(addKidsButton());
+        const buttons = screen.getAllByRole('button');
+
+        expect(
+          buttons.indexOf(screen.getByRole('button', { name: 'Eemalda kõik lapsed' })),
+        ).toBeGreaterThan(buttons.indexOf(addChildButton()));
+      });
+
+      it('put the questions on the rights under the heading „Laste soodustused“', () => {
+        renderFutureMe();
+        addKids(['1990', '1992', '1994']);
+
+        expect(screen.getByRole('heading', { level: 4, name: 'Laste soodustused' })).toBeVisible();
+        const rights = within(screen.getByRole('group', { name: 'Laste soodustused' }));
+        expect(
+          rights.getByRole('combobox', { name: /Kes kasutab varem pensionile mineku õigust/ }),
+        ).toBeVisible();
+        expect(rights.getByRole('combobox', { name: /Kes saab pensionilisa/ })).toBeVisible();
       });
 
       it('summarise the number of children when closed', () => {
@@ -1869,7 +1899,7 @@ describe('FutureMe', () => {
         renderFutureMe();
         addKids(['1990', '1992', '1994']);
 
-        userEvent.click(screen.getByRole('button', { name: 'Eemalda lapsed' }));
+        userEvent.click(screen.getByRole('button', { name: 'Eemalda kõik lapsed' }));
 
         expect(addKidsButton()).toHaveFocus();
         expect(screen.queryByRole('spinbutton', { name: /Mitu last/ })).not.toBeInTheDocument();

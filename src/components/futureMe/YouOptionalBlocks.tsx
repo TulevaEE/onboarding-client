@@ -201,19 +201,14 @@ export const KidsSection = ({
               <h4 id={headingId}>
                 <FormattedMessage id="futureMe.you.kid.title" values={{ number }} />
               </h4>
-              {rows > 1 && (
-                <button
-                  type="button"
-                  className="btn btn-link btn-sm px-0"
-                  aria-label={intl.formatMessage(
-                    { id: 'futureMe.you.kid.removeLabel' },
-                    { number },
-                  )}
-                  onClick={() => removeChild(index)}
-                >
-                  <FormattedMessage id="futureMe.you.kid.remove" />
-                </button>
-              )}
+              <button
+                type="button"
+                className="btn btn-link btn-sm px-0"
+                aria-label={intl.formatMessage({ id: 'futureMe.you.kid.removeLabel' }, { number })}
+                onClick={() => removeChild(index)}
+              >
+                <FormattedMessage id="futureMe.you.kid.remove" />
+              </button>
             </div>
             <div className="row g-3">
               <div className="col-6 col-sm-4">
@@ -333,48 +328,59 @@ export const KidsSection = ({
         <span aria-hidden="true">+ </span>
         <FormattedMessage id="futureMe.you.kid.add" />
       </button>
-      <div className="row g-3 mt-0">
-        {isKidsRightAvailableToSelf(answers) && (
-          <SelectField
-            id="future-me-kids-early-user"
-            label="futureMe.you.kidsEarlyUser.label"
-            hint="futureMe.you.kidsEarlyUser.hint"
-            help="kidsEarlyUser"
-            value={answers.kidsEarlyUser}
-            options={(['me', 'other'] as const).map((value) => ({
-              value,
-              label: intl.formatMessage({ id: `futureMe.you.kidsEarlyUser.${value}` }),
-            }))}
-            onChange={(value) =>
-              onChange({ kidsEarlyUser: value as KidsUser, earlyYearsPicked: '' })
-            }
-          />
-        )}
-        <SelectField
-          id="future-me-kids-sup-user"
-          label="futureMe.you.kidsSupUser.label"
-          help="kidsSupUser"
-          value={answers.kidsSupUser}
-          options={SUPPLEMENT_USERS.map((value) => ({
-            value,
-            label: intl.formatMessage({ id: `futureMe.you.kidsSupUser.${value}` }),
-          }))}
-          onChange={(value) => onChange({ kidsSupUser: value as KidsSupplementUser })}
-        />
-        {isIIPaymentUserAsked(answers) && (
-          <SelectField
-            id="future-me-kids-ii-user"
-            label="futureMe.you.kidsIIUser.label"
-            help="kidsIIUser"
-            value={answers.kidsIIUser}
-            options={KIDS_USERS.map((value) => ({
-              value,
-              label: intl.formatMessage({ id: `futureMe.you.kidsEarlyUser.${value}` }),
-            }))}
-            onChange={(value) => onChange({ kidsIIUser: value as KidsUser })}
-          />
-        )}
-      </div>
+      {rows > 0 && (
+        <div
+          className="future-me-kids-rights"
+          role="group"
+          aria-labelledby="future-me-kids-rights-title"
+        >
+          <h4 id="future-me-kids-rights-title">
+            <FormattedMessage id="futureMe.you.kidsRights.title" />
+          </h4>
+          <div className="row g-3 mt-0">
+            {isKidsRightAvailableToSelf(answers) && (
+              <SelectField
+                id="future-me-kids-early-user"
+                label="futureMe.you.kidsEarlyUser.label"
+                hint="futureMe.you.kidsEarlyUser.hint"
+                help="kidsEarlyUser"
+                value={answers.kidsEarlyUser}
+                options={(['me', 'other'] as const).map((value) => ({
+                  value,
+                  label: intl.formatMessage({ id: `futureMe.you.kidsEarlyUser.${value}` }),
+                }))}
+                onChange={(value) =>
+                  onChange({ kidsEarlyUser: value as KidsUser, earlyYearsPicked: '' })
+                }
+              />
+            )}
+            <SelectField
+              id="future-me-kids-sup-user"
+              label="futureMe.you.kidsSupUser.label"
+              help="kidsSupUser"
+              value={answers.kidsSupUser}
+              options={SUPPLEMENT_USERS.map((value) => ({
+                value,
+                label: intl.formatMessage({ id: `futureMe.you.kidsSupUser.${value}` }),
+              }))}
+              onChange={(value) => onChange({ kidsSupUser: value as KidsSupplementUser })}
+            />
+            {isIIPaymentUserAsked(answers) && (
+              <SelectField
+                id="future-me-kids-ii-user"
+                label="futureMe.you.kidsIIUser.label"
+                help="kidsIIUser"
+                value={answers.kidsIIUser}
+                options={KIDS_USERS.map((value) => ({
+                  value,
+                  label: intl.formatMessage({ id: `futureMe.you.kidsEarlyUser.${value}` }),
+                }))}
+                onChange={(value) => onChange({ kidsIIUser: value as KidsUser })}
+              />
+            )}
+          </div>
+        </div>
+      )}
     </YouSection>
   );
 };
