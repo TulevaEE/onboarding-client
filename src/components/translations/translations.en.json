@@ -2658,7 +2658,6 @@
   "futureMe.you.civilYears.hint": "Staaž kuni 31.03.2018, nagu Sotsiaalkindlustusameti kalkulaatoris.{state, select, rescue { Kuna töötasid ka päästeteenistuses, arvestame päästeteenistuse suurendust: need ei liitu.} rescueNone { Kuna töötasid ka päästeteenistuses, ametniku suurendust ei arvesta. Päästeteenistuse suurendust sinu staaži ja pensioniaasta järgi ei tule, seega riiklik pension ei suurene.} none { Alla 10 aasta staaž riiklikku pensioni ei suurenda.} raises { Riiklik pension suureneb {percent}%.} other {}}",
   "futureMe.you.returnRate.value": "{percent}% a year",
   "futureMe.you.returnRate.option": "{percent}% a year",
-  "futureMe.you.returnRate.check": "You can check the funds’ returns at <link>Pensionikeskus</link>.",
   "futureMe.you.kid.title": "Laps {number}",
   "futureMe.you.kid.add": "Lisa laps",
   "futureMe.you.kid.remove": "Eemalda",

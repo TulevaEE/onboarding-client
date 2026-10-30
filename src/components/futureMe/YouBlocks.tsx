@@ -188,7 +188,6 @@ export const SecondPillarSection = ({
           label="futureMe.you.secondPillarFund.label"
           help="fundCur"
           value={answers.secondPillarReturnPercent}
-          fundReturnsLink="pensionikeskusStatsII"
           onChange={(secondPillarReturnPercent) => onChange({ secondPillarReturnPercent })}
         />
       </div>
@@ -306,7 +305,6 @@ export const ThirdPillarSection = ({
           label="futureMe.you.thirdPillarFund.label"
           help="fundCur"
           value={answers.thirdPillarReturnPercent}
-          fundReturnsLink="pensionikeskusStatsIII"
           onChange={(thirdPillarReturnPercent) => onChange({ thirdPillarReturnPercent })}
         />
       </div>
