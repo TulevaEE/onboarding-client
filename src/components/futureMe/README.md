@@ -65,6 +65,21 @@ The engine is in [engine/](engine/). It has no React and no API calls.
 | Survival, life horizon, fund pension term | `survival`, `horizonAge`, `fundPensionTerm`, data in `lifeTable.json` | Statistikaamet |
 | Cost levels and what a level buys | `expenses.ts`, data in `expenses.json` | Statistikaamet household budget survey |
 
+## How costs are covered: the deposit assumption
+
+Every year from the retirement age, `simulate` covers the saver's costs in this order:
+
+1. The state pension, the special pension and the fund pension payouts the saver chose.
+2. **The deposit.** Pillar money taken out in one go, and any year's surplus, goes to the deposit and is spent later
+   when costs are higher than income. After the retirement age the deposit loses 1% a year after inflation
+   (`DEPOSIT_REAL_RETURN`).
+3. **The II pillar, then the III pillar, as withdrawals with 10% income tax**, once they are open, when the saver has
+   not chosen a fund pension yet or chose to start it later.
+
+So the cost cover in the chart comes from the deposit and the funds too, not only from pensions. Both are large
+assumptions: that a saver who takes pillar money out keeps it on a deposit for later, and that a saver who left the
+money growing takes out exactly what is missing each year.
+
 ## Tests
 
 Run them as the repository's `CLAUDE.md` says, with `--testPathPattern=futureMe`.
@@ -105,3 +120,10 @@ To see the page with test data, open it with `?dev` and pick mock profiles
   their children. For now the calculator gives the early retirement to one parent, and the "?" help text explains the
   split; the split itself may be calculated later. The same question may affect the rescue worker's benefit and some
   special pensions; this has not been checked against the law yet.
+- **Changing the deposit assumption, if needed.** One option: money left growing stays in the fund and is not taken
+  out to cover costs; the chart shows only the payouts the saver chose, and the result says what the grown fund is
+  worth at the end. A first version of this change exists but is not merged.
+- **Assets outside the pension system** (most asked for in user tests): savings and investments the saver has
+  elsewhere, counted in the result and the chart.
+- **A step from 18 to the pension age** (asked for by younger savers): what they plan to do with the pillars in the
+  meantime, with their own numbers. The prototype's 18–55 step was not ported, see above.
