@@ -6,6 +6,7 @@ import { ExpensesAnswers, needMonthly } from './expensesAnswers';
 import lifeTableData from './engine/lifeTable.json';
 import {
   CURRENT_YEAR,
+  DEPOSIT_REAL_RETURN,
   INFLATION,
   LifeTable,
   p3Factor,
@@ -22,7 +23,7 @@ import {
 import { pensionInputOf, SpecialPensionAnswers } from './specialPensionAnswers';
 import { StepPlanInput } from './steps';
 import { amountOf, rateOf, YouAnswers } from './youAnswers';
-import { hasThirdPillarAt, payoutAge, plannedThirdPillarOpenAge } from './planAges';
+import { hasThirdPillarAt, payoutAge, plannedThirdPillarOpenAge, retirementAge } from './planAges';
 
 const lifeTable: LifeTable = lifeTableData;
 const MONTHS_IN_YEAR = 12;
@@ -128,6 +129,24 @@ const thirdPillarWithdrawnAtOf = (
   };
 };
 
+const thirdPillarDepositOf = (context: ResultContext): number => {
+  const { you, plan } = context;
+  const { plan: chosen, age } = age55Of(you, firstYearShareNow());
+  const atRetirement = (amount: number, paidAt: number) =>
+    amount * (1 + DEPOSIT_REAL_RETURN) ** (retirementAge(plan) - paidAt);
+  if (!hasPillar('thirdPillar', context) || chosen === 'keep') {
+    return 0;
+  }
+  if (chosen === 'lump') {
+    const taken = thirdPillarPayout('lump', thirdPillarPayoutInputOf(you, firstYearShareNow()));
+    return atRetirement(taken?.net ?? 0, age);
+  }
+  return (fundPensionFrom55Of(context).payout?.monthly ?? []).reduce(
+    (sum, { age: paidAt, amount }) => sum + atRetirement(amount * MONTHS_IN_YEAR, paidAt),
+    0,
+  );
+};
+
 export const earlyThirdPillarOf = (context: ResultContext): EarlyPayment[] => {
   const isPaidFrom55 =
     hasPillar('thirdPillar', context) && age55Of(context.you, firstYearShareNow()).plan === 'fund';
@@ -195,6 +214,7 @@ export const resultInputOf = (context: ResultContext): PensionInput => {
     p2PayoutFrom: secondPillarPayoutFromOf(context),
     p3: 0,
     p3Sep: thirdPillarOf(context),
+    extraDeposit: thirdPillarDepositOf(context),
     p3PayoutFrom: thirdPillarPayoutFromOf(context),
     p3Monthly: amountOf(you.thirdPillarMonthly),
     p3Before2021: you.thirdPillarJoined === 'before',

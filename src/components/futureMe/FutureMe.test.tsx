@@ -2069,7 +2069,7 @@ describe('FutureMe', () => {
       openAge55();
 
       expect(lumpPlan()).toHaveAccessibleDescription(
-        /^Kogu raha korraga välja, 10%\stulumaks\. Kasutad raha ära enne pensioniiga\.$/,
+        /^Kogu raha korraga välja, 10%\stulumaks\. Raha läheb hoiusele ja kasutad seda pensionieas\.$/,
       );
     });
 
@@ -2101,6 +2101,29 @@ describe('FutureMe', () => {
       );
       expect(screen.getByRole('status')).toHaveTextContent(amountText(5000 * 1.02 ** 18));
       expect(screen.getByRole('status')).toHaveTextContent(amountText(5000 * 1.02 ** 18 * 0.9));
+    });
+
+    it('says that the money taken at once goes to the deposit for later', () => {
+      renderFutureMe();
+      openAge55();
+
+      userEvent.click(lumpPlan());
+
+      expect(screen.getByRole('status')).toHaveTextContent(
+        /Raha läheb hoiusele ja kasutad seda pensionieas\./,
+      );
+      expect(screen.getByRole('status')).not.toHaveTextContent(/raha ei jää/);
+    });
+
+    it('says that the fund pension payments go to the deposit for later', () => {
+      renderFutureMe();
+      openAge55();
+
+      userEvent.click(fundPlan());
+
+      expect(screen.getByRole('status')).toHaveTextContent(
+        /Väljamaksed lähevad hoiusele ja kasutad neid pensionieas\./,
+      );
     });
 
     it('shows the monthly amount of a fund pension', () => {

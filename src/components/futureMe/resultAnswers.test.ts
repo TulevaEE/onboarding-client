@@ -3,7 +3,8 @@ import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses, withLevel } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
-import { age55Of } from './age55';
+import { age55Of, thirdPillarPayout, thirdPillarPayoutInputOf } from './age55';
+import { DEPOSIT_REAL_RETURN } from './engine/pension';
 import {
   coverageKind,
   incomeAtStart,
@@ -265,14 +266,51 @@ describe('resultAnswers', () => {
       );
     });
 
-    it('leaves a smaller pot at the pension age than keeping it, as the money taken is spent', () => {
-      const potAtPensionStart = (plan: 'keep' | 'lump' | 'fund') => {
+    it('leaves a smaller pot at the pension age than keeping it, as the money taken moves to the deposit', () => {
+      const atPensionStart = (plan: 'keep' | 'lump' | 'fund') => {
         const result = resultOf(contextWith({ ...saver, thirdPillarPlan: plan }));
-        return result.rows.find((row) => row.age === result.pensionStartAge)?.pot as number;
+        return result.rows.find((row) => row.age === result.pensionStartAge);
       };
 
-      expect(potAtPensionStart('lump')).toBeLessThan(potAtPensionStart('keep'));
-      expect(potAtPensionStart('fund')).toBeLessThan(potAtPensionStart('keep'));
+      expect(atPensionStart('lump')?.pot).toBeLessThan(atPensionStart('keep')?.pot as number);
+      expect(atPensionStart('fund')?.pot).toBeLessThan(atPensionStart('keep')?.pot as number);
+      expect(atPensionStart('lump')?.deposit).toBeGreaterThan(
+        atPensionStart('keep')?.deposit as number,
+      );
+      expect(atPensionStart('fund')?.deposit).toBeGreaterThan(
+        atPensionStart('keep')?.deposit as number,
+      );
+    });
+
+    describe('money taken before the pension age', () => {
+      const withoutContributions = { ...saver, thirdPillarMonthly: '0' };
+      const depositOf = (plan: 'keep' | 'lump' | 'fund') =>
+        resultInputOf(contextWith({ ...withoutContributions, thirdPillarPlan: plan }))
+          .extraDeposit ?? 0;
+      const payoutOf = (plan: 'lump' | 'fund') => {
+        const { you } = contextWith({ ...withoutContributions, thirdPillarPlan: plan });
+        return thirdPillarPayout(plan, thirdPillarPayoutInputOf(you, 1, 'yearly'));
+      };
+      const atRetirement = (amount: number, age: number) =>
+        amount * (1 + DEPOSIT_REAL_RETURN) ** (65 - age);
+
+      it('puts nothing on the deposit while the savings keep growing', () => {
+        expect(depositOf('keep')).toBe(0);
+      });
+
+      it('puts the money taken at once at 55 on the deposit after tax, losing value until retirement', () => {
+        expect(depositOf('lump')).toBeCloseTo(atRetirement(payoutOf('lump')?.net as number, 55));
+      });
+
+      it('puts each fund pension payment on the deposit, losing value until retirement', () => {
+        const paid = (payoutOf('fund')?.monthly ?? []).reduce(
+          (sum, { age, amount }) => sum + atRetirement(amount * 12, age),
+          0,
+        );
+
+        expect(paid).toBeGreaterThan(0);
+        expect(depositOf('fund')).toBeCloseTo(paid);
+      });
     });
   });
 
