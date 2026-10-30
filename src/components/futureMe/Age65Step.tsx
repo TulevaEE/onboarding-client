@@ -49,15 +49,11 @@ interface Props {
   onEditAge55: () => void;
 }
 
-const SOURCE_PAGE = 'https://www.riigiteataja.ee/akt/RPKS';
-
 const richText = {
   p: (chunks: React.ReactNode) => <p>{chunks}</p>,
   ul: (chunks: React.ReactNode) => <ul>{chunks}</ul>,
   li: (chunks: React.ReactNode) => <li>{chunks}</li>,
   strong,
-  small: (chunks: React.ReactNode) => <small className="text-secondary">{chunks}</small>,
-  link: (chunks: React.ReactNode) => <a href={SOURCE_PAGE}>{chunks}</a>,
 };
 
 export const Age65Step = ({

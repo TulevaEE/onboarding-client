@@ -150,7 +150,11 @@ export const KidsSection = ({
       kidsDisabled: withoutChild(answers.kidsDisabled),
     });
     setLeftRows(new Set());
-    addChildRef.current?.focus();
+    const buttonToFocus =
+      rows === 1
+        ? addChildRef.current
+        : document.getElementById(`future-me-kid-remove-${Math.min(index, rows - 2) + 1}`);
+    buttonToFocus?.focus();
   };
 
   const changeDisabled = (index: number, isDisabled: boolean) => {
@@ -202,6 +206,7 @@ export const KidsSection = ({
                 <FormattedMessage id="futureMe.you.kid.title" values={{ number }} />
               </h4>
               <button
+                id={`future-me-kid-remove-${number}`}
                 type="button"
                 className="btn btn-link btn-sm px-0"
                 aria-label={intl.formatMessage({ id: 'futureMe.you.kid.removeLabel' }, { number })}

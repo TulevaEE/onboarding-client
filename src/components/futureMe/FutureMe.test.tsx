@@ -1576,7 +1576,24 @@ describe('FutureMe', () => {
         expect(childCount()).toBe(2);
         expect(kidBirthYearField(1)).toHaveValue('1990');
         expect(kidBirthYearField(2)).toHaveValue('1994');
-        expect(addChildButton()).toHaveFocus();
+      });
+
+      it('keep the focus on the same „Eemalda“ button when a child in the middle is removed', () => {
+        renderFutureMe();
+        addKids(['1990', '1992', '1994']);
+
+        userEvent.click(screen.getByRole('button', { name: 'Eemalda laps 2' }));
+
+        expect(screen.getByRole('button', { name: 'Eemalda laps 2' })).toHaveFocus();
+      });
+
+      it('move the focus to the „Eemalda“ button of the previous child when the last of several is removed', () => {
+        renderFutureMe();
+        addKids(['1990', '1992', '1994']);
+
+        userEvent.click(screen.getByRole('button', { name: 'Eemalda laps 3' }));
+
+        expect(screen.getByRole('button', { name: 'Eemalda laps 2' })).toHaveFocus();
       });
 
       it('offer removing the last child too, and keep the block open with the add button', () => {
