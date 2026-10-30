@@ -27,6 +27,20 @@ describe('started fund pensions', () => {
     },
   );
 
+  it('leaves a III pillar fund pension started before the payout age on the 55 step until the saver reaches the pension age', () => {
+    const midOctober2026 = new Date(2026, 9, 15);
+    const bornIn1961 = (birthMonth: number) =>
+      toStepPlanInput({ ...you, birthYear: '1961', birthMonth });
+    const startedAt57 = { pillar: 'THIRD', startYear: 2018, startAge: 57 } as const;
+
+    expect(startedFundPensionStep(startedAt57, bornIn1961(12), midOctober2026)).toBe(
+      FutureMeStep.AGE_55,
+    );
+    expect(startedFundPensionStep(startedAt57, bornIn1961(1), midOctober2026)).toBe(
+      FutureMeStep.AGE_60,
+    );
+  });
+
   it('puts a fund pension started at the pension age on the payout age step when retiring early makes the choice there', () => {
     const retiringEarly = {
       ...you,
