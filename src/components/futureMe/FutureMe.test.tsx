@@ -1378,6 +1378,18 @@ describe('FutureMe', () => {
       expect(grossSalaryField()).toHaveFocus();
     });
 
+    it('opens a block closed after the list appeared before pointing at its empty field', async () => {
+      renderFutureMe();
+      typeInto(firstPillarField(), '700');
+      userEvent.click(nextButton());
+      await waitFor(() => expect(errorSummary()).toHaveFocus());
+      userEvent.click(blockButton(/^Sulge töö ja II\ssammas$/));
+
+      userEvent.click(summaryLink(/brutopalk/));
+
+      expect(grossSalaryField()).toHaveFocus();
+    });
+
     it('locks the later steps on the trail while an amount is missing', () => {
       renderFutureMe();
 

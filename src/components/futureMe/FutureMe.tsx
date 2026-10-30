@@ -106,12 +106,14 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           ...blocked.map((field) => ({
             id: FIELD_DOM_IDS[field],
             label: <FieldLabelText field={field} answers={answers} />,
+            section: SECTION_IDS.find((section) => FIELDS_BY_SECTION[section].includes(field)),
           })),
           ...(invalidChildMonths === undefined
             ? []
             : [
                 {
                   id: `future-me-kid-ii-months-${invalidChildMonths + 1}`,
+                  section: 'kids' as const,
                   label: (
                     <FormattedMessage
                       id="futureMe.errorSummary.kidIIMonths"
@@ -392,7 +394,13 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
         onSelect={goTo}
       />
       {shownMissingFields.length > 0 && (
-        <ErrorSummary fields={shownMissingFields} summaryRef={summaryRef} />
+        <ErrorSummary
+          fields={shownMissingFields}
+          summaryRef={summaryRef}
+          onOpenSection={(section) =>
+            setOpenSections((previous) => ({ ...previous, [section]: true }))
+          }
+        />
       )}
       {renderStep()}
       {step !== FutureMeStep.RESULT && <PotBar context={resultContext} />}
