@@ -227,7 +227,7 @@ describe('ResultChart reading guide', () => {
       renderChart(fundPensionWithSurplus);
 
       expect(steps()[0]).toBe(
-        'Riiklik pension ja fondipensioni väljamaksed. Fondipensioni makse on lepingu järgi kindel summa.',
+        'Riiklik pension ja fondipensioni väljamaksed. Fondipensioni makse tuleb lepingu järgi, mitte kulude järgi, ja selle suurus kõigub koos fondi väärtusega.',
       );
       expect(guide()).toHaveTextContent(
         /Hoius \(kiht „Hoiuselt“\): raha, mis on välja makstud, aga kuludeks veel vaja ei olnud\. Seal kaotab see väärtust 1%\saastas pärast inflatsiooni\./,
