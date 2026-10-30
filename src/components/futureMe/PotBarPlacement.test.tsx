@@ -36,7 +36,7 @@ const renderFutureMe = () =>
     </IntlProvider>,
   );
 
-const trail = () => within(screen.getByRole('navigation', { name: 'Loo etapid' }));
+const trail = () => within(screen.getByRole('navigation', { name: 'Tulevase Mina sammud' }));
 const potBar = () => screen.queryByRole('complementary', { name: 'Jooksev kokkuvõte' });
 
 describe('the running summary bar', () => {

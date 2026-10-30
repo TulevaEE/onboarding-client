@@ -52,7 +52,7 @@ const typeInto = (field: HTMLElement, text: string) => {
   userEvent.type(field, text);
 };
 
-const trail = () => screen.getByRole('navigation', { name: 'Loo etapid' });
+const trail = () => screen.getByRole('navigation', { name: 'Tulevase Mina sammud' });
 
 const fillInYou = (firstPillar: string) => {
   typeInto(

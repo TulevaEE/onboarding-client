@@ -44,7 +44,7 @@ const openResultStep = () => {
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on III\ssambas praegu/ }), '5000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }), '50');
   userEvent.click(
-    within(screen.getByRole('navigation', { name: 'Loo etapid' })).getByRole('button', {
+    within(screen.getByRole('navigation', { name: 'Tulevase Mina sammud' })).getByRole('button', {
       name: /^Tulemus, vaatamata$/,
     }),
   );

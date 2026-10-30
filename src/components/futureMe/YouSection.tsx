@@ -83,7 +83,7 @@ export const YouSection = ({
     <li className={classNames('you-section', { 'is-open': isIncluded && isOpen })}>
       <div className="you-section-head">
         <div>
-          <div className="you-section-title-line">
+          <div className="you-section-title-line text-balance">
             <h3 className="you-section-title" id={`${id}-title`}>
               {title}
             </h3>
