@@ -5,6 +5,8 @@ import {
   Age66Context,
   contractChosenAt,
   contractField,
+  contractStartAgeOf,
+  endAgeField,
   fundStartAges,
   fundStartField,
   isContractAsked,
@@ -95,7 +97,12 @@ export const Age66Pillar = ({
           idPrefix="future-me-66"
           contract={contract}
           isLegendShown={isLegendShown}
+          startAge={contractStartAgeOf(pillar, answers, context) ?? 0}
+          birthYear={context.plan.birthYear}
+          sex={context.you.sex}
+          endAge={answers[endAgeField(pillar)]}
           onChange={(chosen) => onChange({ ...answers, [contractField(pillar)]: chosen })}
+          onEndAgeChange={(endAge) => onChange({ ...answers, [endAgeField(pillar)]: endAge })}
         />
       )}
     </>

@@ -259,7 +259,18 @@ describe('Result step: quick edit of the other decisions', () => {
 
       userEvent.click(within(row).getByRole('radio', { name: /^Üks leping/ }));
 
-      expect(row).toHaveTextContent('Sinu valik: II sambast alates 70-⁠aastaselt, üks leping');
+      expect(row).toHaveTextContent(
+        /Sinu valik: II sambast alates 70-⁠aastaselt, üks leping kuni \d+-⁠aastaseni/,
+      );
+
+      userEvent.selectOptions(
+        within(row).getByRole('combobox', { name: 'Mis vanuseni maksed kestavad?' }),
+        '97',
+      );
+
+      expect(row).toHaveTextContent(
+        'Sinu valik: II sambast alates 70-⁠aastaselt, üks leping kuni 97-⁠aastaseni',
+      );
     });
 
     it('names the pillar whose fund pension was chosen at the pension age next to the one picked here', () => {

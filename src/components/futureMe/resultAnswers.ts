@@ -1,7 +1,13 @@
 import { age55Of, thirdPillarPayout, thirdPillarPayoutInputOf } from './age55';
 import { Age60Answers } from './age60Answers';
 import { Age65Answers, deferralLock, thirdPillarAfterAsked, workUntilOf } from './age65Answers';
-import { Age66Answers, fundStartOf, hasPillar, payoutAtPensionAge } from './age66Answers';
+import {
+  Age66Answers,
+  contractEndAgeOf,
+  fundStartOf,
+  hasPillar,
+  payoutAtPensionAge,
+} from './age66Answers';
 import { ExpensesAnswers, needMonthly } from './expensesAnswers';
 import lifeTableData from './engine/lifeTable.json';
 import {
@@ -101,7 +107,12 @@ const fundPensionFrom55Of = (context: ResultContext) => {
   const { pensionAge } = age55Of(you, firstYearShareNow());
   const paidUntil = Math.max(pensionAge, workUntilOf(age65, plan) ?? pensionAge);
   const payout = thirdPillarPayout('fund', {
-    ...thirdPillarPayoutInputOf(you, firstYearShareNow(), age66.thirdPillarContract),
+    ...thirdPillarPayoutInputOf(
+      you,
+      firstYearShareNow(),
+      age66.thirdPillarContract,
+      contractEndAgeOf('thirdPillar', age66, context),
+    ),
     pensionAge: paidUntil,
   });
   return { paidUntil, payout };
@@ -171,6 +182,7 @@ const thirdPillarOf = (context: ResultContext): PensionInput['p3Sep'] => {
     mode: withdrawn.mode ?? (start === undefined ? payout : 'fund'),
     contract: age66.thirdPillarContract,
     start: withdrawn.start ?? start,
+    endAge: contractEndAgeOf('thirdPillar', age66, context),
   };
 };
 
@@ -242,7 +254,10 @@ export const resultScenarioOf = (context: ResultContext): Scenario => {
     deferral: mode === 'defer' ? age65.years : 0,
     half: mode === 'half' ? age65.years : 0,
   };
-  const contractScenario = scenarioById(age66.secondPillarContract === 'yearly' ? 'D' : 'B');
+  const contractScenario = {
+    ...scenarioById(age66.secondPillarContract === 'yearly' ? 'D' : 'B'),
+    endAge: contractEndAgeOf('secondPillar', age66, context),
+  };
   if (payout === 'lump') {
     return { ...scenarioById('A'), ...timing };
   }
@@ -253,7 +268,12 @@ export const resultScenarioOf = (context: ResultContext): Scenario => {
       : { ...contractScenario, ...timing, fundFrom };
   }
   return timing.deferral > 0
-    ? { ...scenarioById('C'), ...timing, contract: age66.secondPillarContract }
+    ? {
+        ...scenarioById('C'),
+        ...timing,
+        contract: age66.secondPillarContract,
+        endAge: contractScenario.endAge,
+      }
     : { ...contractScenario, ...timing };
 };
 

@@ -141,6 +141,38 @@ describe('Age 60 step', () => {
       expect(choice(contractGroup('III') as HTMLElement, 'Uus leping igal aastal')).toBeChecked();
     });
 
+    it('asks for one contract until which age the payouts last, from the average life expectancy up to 100', () => {
+      openAge60Step();
+      userEvent.click(choice(secondPillarGroup(), 'Fondipension'));
+      const group = contractGroup('II') as HTMLElement;
+      const endAgeField = () =>
+        within(group).queryByRole('combobox', { name: 'Mis vanuseni maksed kestavad?' });
+
+      expect(endAgeField()).not.toBeInTheDocument();
+
+      userEvent.click(choice(group, 'Üks leping'));
+      const options = within(endAgeField() as HTMLElement).getAllByRole('option');
+
+      expect(options[0]).toHaveTextContent(/^\d+-aastaseni \(\d{4}\) · keskmine eluiga$/);
+      expect(options[options.length - 1]).toHaveTextContent(/^100-aastaseni \(2062\)$/);
+      expect(endAgeField()).toHaveAccessibleDescription(
+        /elueast lühem periood ei ole maksuvaba.*väiksemat kuu väljamakset.*Iga kümnes \d+-aastane mees elab \d+-aastaseks/,
+      );
+
+      userEvent.selectOptions(endAgeField() as HTMLElement, '95');
+
+      expect(endAgeField()).toHaveValue('95');
+    });
+
+    it('says one contract pays tax-free until the chosen age, at least the average life expectancy', () => {
+      openAge60Step();
+      userEvent.click(choice(secondPillarGroup(), 'Fondipension'));
+
+      expect(choice(contractGroup('II') as HTMLElement, 'Üks leping')).toHaveAccessibleDescription(
+        'Maksuvaba väljamakse kuni valitud vanuseni, vähemalt keskmise elueani. Siis leping ja väljamaksed lõpevad.',
+      );
+    });
+
     it('shows the contract chosen here on the 66+ step, with a link back to change it', () => {
       openAge60Step();
       userEvent.click(choice(secondPillarGroup(), 'Fondipension'));

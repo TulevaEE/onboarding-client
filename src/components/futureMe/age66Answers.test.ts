@@ -3,6 +3,8 @@ import { initialAge65 } from './age65Answers';
 import {
   contractChosenAt,
   contractLock,
+  endAgeOf,
+  endAges,
   fundStartAges,
   fundStartOf,
   hasPillar,
@@ -10,9 +12,12 @@ import {
   isContractAsked,
   payoutAtPensionAge,
 } from './age66Answers';
+import { fundPensionTerm, LifeTable } from './engine/pension';
+import lifeTableData from './engine/lifeTable.json';
 import { FutureMeStep } from './steps';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
 
+const lifeTable: LifeTable = lifeTableData;
 const noPrefill = { birthYear: 1980, sex: null, secondPillarRate: null };
 const you = { ...initialAnswers(noPrefill), pensionAgeYears: '65', thirdPillarMonthly: '50' };
 const plan = toStepPlanInput(you);
@@ -31,8 +36,32 @@ describe('age66Answers', () => {
       thirdPillarFrom: '',
       secondPillarContract: 'yearly',
       thirdPillarContract: 'yearly',
+      secondPillarEndAge: '',
+      thirdPillarEndAge: '',
       firstPillarChoicePa: null,
     });
+  });
+
+  describe('end age of one fund pension contract', () => {
+    const averageEnd = 65 + fundPensionTerm(lifeTable, 'N', 65);
+
+    it('offers the ages from the average life expectancy up to 100', () => {
+      const ages = endAges('N', 65);
+
+      expect(ages[0]).toBe(averageEnd);
+      expect(ages[ages.length - 1]).toBe(100);
+    });
+
+    it('takes a later age the saver picked', () => {
+      expect(endAgeOf('95', 'N', 65)).toBe(95);
+    });
+
+    it.each(['', String(averageEnd - 1), '101', 'abc'])(
+      'keeps the average life expectancy for %p',
+      (picked) => {
+        expect(endAgeOf(picked, 'N', 65)).toBeUndefined();
+      },
+    );
   });
 
   it('offers the start ages from the year after the pension age up to 85', () => {
