@@ -14,6 +14,10 @@ export const HELP_LINKS = {
   pensionikeskus: 'https://www.pensionikeskus.ee/',
   pensionikeskusStatsII: 'https://www.pensionikeskus.ee/statistika/ii-sammas/',
   pensionikeskusStatsIII: 'https://www.pensionikeskus.ee/statistika/iii-sammas/',
+  pensionikeskusStatsIIEn:
+    'https://www.pensionikeskus.ee/en/statistics/ii-pillar/funded-pension-daily-statistics/',
+  pensionikeskusStatsIIIEn:
+    'https://www.pensionikeskus.ee/en/statistics/iii-pillar/suppl-funded-pension-daily-statistics/',
   tuleva: 'https://tuleva.ee/',
   ska: 'https://sotsiaalkindlustusamet.ee/et',
   skaSelfService: 'https://iseteenindus.sotsiaalkindlustusamet.ee/',

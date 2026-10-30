@@ -202,7 +202,7 @@ describe('Sina step help buttons', () => {
       const dialog = openReturnHelp(pillar);
 
       expect(within(dialog).getByText('Indeksfond')).toBeInTheDocument();
-      expect(within(dialog).getByText('Aktiivselt juhitud fond')).toBeInTheDocument();
+      expect(within(dialog).getByText('Aktiivse juhtimisega fond')).toBeInTheDocument();
       expect(within(dialog).getByText('Aktsiafond')).toBeInTheDocument();
       expect(within(dialog).getByText('Võlakirjafond')).toBeInTheDocument();
       expect(within(dialog).getByText('Segafond')).toBeInTheDocument();
@@ -225,6 +225,16 @@ describe('Sina step help buttons', () => {
     ).toHaveAttribute('href', href);
   });
 
+  it('names the filters as the Estonian Pensionikeskus page shows them', () => {
+    const dialog = openReturnHelp('III');
+
+    expect(
+      within(dialog).getByText(
+        /„Indeksfondid“, „Aktiivse juhtimisega fondid“ ja „Riskitase“ \(Madal, Keskmine, Kõrge\)/,
+      ),
+    ).toBeInTheDocument();
+  });
+
   it('explains the fund types and links Pensionikeskus in English too', () => {
     renderYouStep('en');
     userEvent.click(
@@ -238,10 +248,26 @@ describe('Sina step help buttons', () => {
       within(dialog).getByText(/Pensionikeskus returns are before inflation/),
     ).toBeInTheDocument();
     expect(
+      within(dialog).getByText(
+        /“Index funds”, “Actively managed funds” and “Risk level” \(Low, Medium, High\)/,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(dialog).getByRole('link', {
+        name: /^Pensionikeskus: II\spillar fund returns and fees/,
+      }),
+    ).toHaveAttribute(
+      'href',
+      'https://www.pensionikeskus.ee/en/statistics/ii-pillar/funded-pension-daily-statistics/',
+    );
+    expect(
       within(dialog).getByRole('link', {
         name: /^Pensionikeskus: III\spillar fund returns and fees/,
       }),
-    ).toHaveAttribute('href', 'https://www.pensionikeskus.ee/statistika/iii-sammas/');
+    ).toHaveAttribute(
+      'href',
+      'https://www.pensionikeskus.ee/en/statistics/iii-pillar/suppl-funded-pension-daily-statistics/',
+    );
   });
 
   it('tells how to turn a Pensionikeskus return into the return after inflation', () => {
