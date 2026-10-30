@@ -2328,6 +2328,33 @@ describe('FutureMe', () => {
       });
     });
 
+    it('lists the order of using the savings when the saver has both pillars', () => {
+      renderFutureMe();
+      openAge55();
+
+      userEvent.click(screen.getByText('Mis järjekorras on mõttekas sääste kasutada?'));
+
+      expect(
+        within(screen.getByRole('list', { name: 'Säästude kasutamise järjekord' }))
+          .getAllByRole('listitem')
+          .map(({ textContent }) => textContent?.replace(/\s/g, ' ')),
+      ).toEqual(['hoius', 'muud investeeringud', 'III sammas', 'II sammas']);
+    });
+
+    it('leaves out the order of using the savings without a II pillar', () => {
+      renderFutureMe();
+      fillInRequiredAnswers();
+      typeInto(secondPillarAmountField(), '0');
+      userEvent.selectOptions(secondPillarRateField(), 'ei maksa');
+      userEvent.selectOptions(thirdPillarJoinedField(), 'jah, enne 2021. a');
+      userEvent.click(within(trail()).getByRole('button', { name: /^55\sa/ }));
+
+      expect(age55Heading()).toBeInTheDocument();
+      expect(
+        screen.queryByText('Mis järjekorras on mõttekas sääste kasutada?'),
+      ).not.toBeInTheDocument();
+    });
+
     it('asks for the fund pension contract right under the fund pension choice', () => {
       renderFutureMe();
       openAge55();

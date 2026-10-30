@@ -90,6 +90,18 @@ const setPayoutAtPensionAge = (pillar: 'II' | 'III', choice: string) => {
 };
 
 describe('Age 66+ step', () => {
+  it('explains why the monthly payout of a new contract every year falls in very old age', () => {
+    openAge66Step();
+    const question = screen
+      .getAllByRole('group')
+      .find((group) =>
+        /^Miks uue lepinguga kuu väljamakse kõrges eas väheneb\?/.test(group.textContent ?? ''),
+      );
+
+    expect(question).toHaveTextContent(/elada jäänud aeg/);
+    expect(question).not.toHaveTextContent(/raha|kuumakse/);
+  });
+
   beforeEach(() => loggedInAs({ dateOfBirth: '1962-01-01' }));
 
   it('starts at the pension age before a fund pension start is picked', () => {

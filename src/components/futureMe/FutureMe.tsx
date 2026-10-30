@@ -221,6 +221,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
       return (
         <Age55Step
           answers={answers}
+          hasSecondPillar={plan.savesInSecondPillar}
           age55={age55Of(
             answers,
             firstYearShare,

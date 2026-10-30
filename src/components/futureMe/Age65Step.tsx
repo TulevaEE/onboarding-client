@@ -192,7 +192,10 @@ export const Age65Step = ({
         startedFundPension={startedFundPensions.thirdPillar}
         {...pillarProps}
       />
-      <FundPensionFaq withFundQuestions={isAnyPayoutAsked}>
+      <FundPensionFaq
+        withFundQuestions={isAnyPayoutAsked}
+        hasBothPillars={hasSecondPillar && hasThird}
+      >
         <RescueCompareFaq context={compareContext} />
         <SpecialCompareFaq context={compareContext} />
         <details className="faq-item">
