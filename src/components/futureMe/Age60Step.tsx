@@ -11,7 +11,8 @@ import { Tense } from './planAges';
 import { strong } from './richText';
 import { LinkButton } from './LinkButton';
 import { Age66Answers, Contract, contractField, endAgeField, Pillar } from './age66Answers';
-import { Sex } from './engine/pension';
+import { EarlyPayout, Sex } from './engine/pension';
+import { euro } from './amountFormat';
 import { ContractChoices } from './ContractChoices';
 import { ChoiceMadeNote } from './ChoiceMadeNote';
 import { FundPensionChoice } from './prefill';
@@ -38,7 +39,10 @@ interface Props {
   onContractChange: (pillar: Pillar, contract: Contract) => void;
   onEndAgeChange: (pillar: Pillar, endAge: string) => void;
   onEditYou: () => void;
+  earlyPayouts: EarlyPayouts;
 }
+
+export type EarlyPayouts = Record<Pillar, EarlyPayout | null> & { moneyUseAge: number };
 
 interface PillarProps {
   pillar: Pillar;
@@ -53,8 +57,37 @@ interface PillarProps {
   onContractChange: (pillar: Pillar, contract: Contract) => void;
   onEndAgeChange: (pillar: Pillar, endAge: string) => void;
   onEditYou: () => void;
+  earlyPayout: EarlyPayout | null;
+  moneyUseAge: number;
   children?: React.ReactNode;
 }
+
+const EarlyPayoutNote = ({
+  pillar,
+  isLump,
+  payout,
+  moneyUseAge,
+}: {
+  pillar: Pillar;
+  isLump: boolean;
+  payout: EarlyPayout;
+  moneyUseAge: number;
+}) => (
+  <FormattedMessage
+    id={isLump ? 'futureMe.age60.outcome.lump' : 'futureMe.age60.outcome.fund'}
+    values={{
+      pillar,
+      age: payout.from,
+      gross: euro(payout.gross),
+      tax: euro(payout.tax),
+      net: euro(payout.net),
+      monthly: euro(payout.firstMonthly),
+      useAge: moneyUseAge,
+      atUse: euro(payout.atMoneyUse),
+      strong,
+    }}
+  />
+);
 
 const PillarChoices = ({
   pillar,
@@ -69,9 +102,13 @@ const PillarChoices = ({
   onContractChange,
   onEndAgeChange,
   onEditYou,
+  earlyPayout,
+  moneyUseAge,
   children,
 }: PillarProps) => {
   const legendId = `future-me-${pillar}-legend`;
+  const chosen = answers[pillar];
+  const isPaidOut = hasPillar && !startedFundPension && chosen !== 'grow' && earlyPayout;
 
   return (
     <>
@@ -131,6 +168,16 @@ const PillarChoices = ({
           onEndAgeChange={(endAge) => onEndAgeChange(pillar, endAge)}
         />
       )}
+      <p className={isPaidOut ? 'you-note text-pretty' : undefined} role="status">
+        {isPaidOut && (
+          <EarlyPayoutNote
+            pillar={pillar}
+            isLump={chosen === 'lump'}
+            payout={earlyPayout}
+            moneyUseAge={moneyUseAge}
+          />
+        )}
+      </p>
       {children}
     </>
   );
@@ -153,6 +200,7 @@ export const Age60Step = ({
   onContractChange,
   onEndAgeChange,
   onEditYou,
+  earlyPayouts,
 }: Props) => {
   const year = birthYear + age;
 
@@ -178,6 +226,8 @@ export const Age60Step = ({
         hasPillar={hasSecondPillar}
         contracts={contracts}
         startedFundPension={startedFundPensions.secondPillar}
+        earlyPayout={earlyPayouts.secondPillar}
+        moneyUseAge={earlyPayouts.moneyUseAge}
         onChange={onChange}
         onContractChange={onContractChange}
         onEndAgeChange={onEndAgeChange}
@@ -198,6 +248,8 @@ export const Age60Step = ({
         hasPillar={hasThirdPillar}
         contracts={contracts}
         startedFundPension={startedFundPensions.thirdPillar}
+        earlyPayout={earlyPayouts.thirdPillar}
+        moneyUseAge={earlyPayouts.moneyUseAge}
         onChange={onChange}
         onContractChange={onContractChange}
         onEndAgeChange={onEndAgeChange}
