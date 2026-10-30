@@ -3079,7 +3079,7 @@
   "futureMe.result.chart.guide.eventsTouch": "Suuremad punktid ja püstjooned on elusündmused, näiteks pensioniiga. Vanuse summad avanevad, kui valid graafiku all vanuse. Samad arvud on tabelis.",
   "futureMe.result.chart.guide.order.title": "Kulud kaetakse igal aastal selles järjekorras:",
   "futureMe.result.chart.guide.order.pensions": "{hasFundPension, select, yes {Riiklik pension ja fondipensioni väljamaksed. Fondipensioni makse on lepingu järgi kindel summa.} other {Riiklik pension.}}",
-  "futureMe.result.chart.guide.order.deposit": "Hoius (kiht „Hoiuselt“): raha, mis on välja makstud, aga kuludeks veel vaja ei olnud. Seal kaotab see väärtust {depositRate} aastas pärast inflatsiooni.",
+  "futureMe.result.chart.guide.order.deposit": "Hoius (kiht „Hoiuselt“): raha, mis on välja makstud, aga kuludeks veel vaja ei olnud. Seal kaotab see väärtust {depositLoss} aastas pärast inflatsiooni.",
   "futureMe.result.chart.guide.order.secondPillar": "II sammas (viirutatud kiht): Elukaar eeldab, et võtad pensionieast alates igal aastal fondist välja nii palju, kui eelmistest puudu jääb. Sellelt läheb 10% tulumaksu.",
   "futureMe.result.chart.guide.order.thirdPillar": "III sammas{afterSecond, select, yes {, kui II sambast enam ei jätku} other {}}: Elukaar eeldab, et võtad igal aastal fondist välja nii palju, kui eelmistest puudu jääb. Sellelt läheb 10% tulumaksu. See on III samba kihis.",
   "futureMe.result.chart.guide.order.notTaken": "Kui sa raha välja ei võta, jääb see fondi kasvama ja kulud jäävad selle võrra katmata.",

@@ -230,7 +230,7 @@ describe('ResultChart reading guide', () => {
         'Riiklik pension ja fondipensioni väljamaksed. Fondipensioni makse on lepingu järgi kindel summa.',
       );
       expect(guide()).toHaveTextContent(
-        /Hoius \(kiht „Hoiuselt“\): raha, mis on välja makstud, aga kuludeks veel vaja ei olnud\. Seal kaotab see väärtust −1%\saastas pärast inflatsiooni\./,
+        /Hoius \(kiht „Hoiuselt“\): raha, mis on välja makstud, aga kuludeks veel vaja ei olnud\. Seal kaotab see väärtust 1%\saastas pärast inflatsiooni\./,
       );
     });
 

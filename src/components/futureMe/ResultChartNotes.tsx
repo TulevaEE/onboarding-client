@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
-import { euro, signedPercent } from './amountFormat';
+import { euro, exactPercent } from './amountFormat';
 import { Assumption, CoverSteps, SummaryNote } from './chartNotes';
 import { ChartEvent } from './chartEvents';
 import { DEPOSIT_REAL_RETURN } from './engine/pension';
@@ -95,7 +95,7 @@ const CoverOrder = ({ cover }: { cover: CoverSteps }) => {
           <li>
             <FormattedMessage
               id="futureMe.result.chart.guide.order.deposit"
-              values={{ depositRate: signedPercent(DEPOSIT_REAL_RETURN) }}
+              values={{ depositLoss: exactPercent(-DEPOSIT_REAL_RETURN) }}
             />
           </li>
         )}
