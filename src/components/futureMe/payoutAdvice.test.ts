@@ -99,6 +99,17 @@ describe('payoutAdvice', () => {
         ),
       },
       {
+        chosen: 'one fund pension contract until 95',
+        context: contextWith(
+          { secondPillarAmount: '40000' },
+          {
+            ...comfortable,
+            age65: fundPension,
+            age66: { ...initialAge66(), secondPillarContract: 'once', secondPillarEndAge: '95' },
+          },
+        ),
+      },
+      {
         chosen: 'one fund pension contract',
         context: contextWith(
           { secondPillarAmount: '100000' },
