@@ -99,7 +99,6 @@ export const Age66Pillar = ({
           isLegendShown={isLegendShown}
           startAge={contractStartAgeOf(pillar, answers, context) ?? 0}
           birthYear={context.plan.birthYear}
-          sex={context.you.sex}
           endAge={answers[endAgeField(pillar)]}
           onChange={(chosen) => onChange({ ...answers, [contractField(pillar)]: chosen })}
           onEndAgeChange={(endAge) => onChange({ ...answers, [endAgeField(pillar)]: endAge })}

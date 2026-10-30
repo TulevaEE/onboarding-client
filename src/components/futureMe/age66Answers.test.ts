@@ -44,23 +44,23 @@ describe('age66Answers', () => {
   });
 
   describe('end age of one fund pension contract', () => {
-    const averageEnd = 65 + fundPensionTerm(lifeTable, 'N', 65);
+    const averageEnd = 65 + fundPensionTerm(lifeTable, 65);
 
     it('offers the ages from the average life expectancy up to 100', () => {
-      const ages = endAges('N', 65);
+      const ages = endAges(65);
 
       expect(ages[0]).toBe(averageEnd);
       expect(ages[ages.length - 1]).toBe(100);
     });
 
     it('takes a later age the saver picked', () => {
-      expect(endAgeOf('95', 'N', 65)).toBe(95);
+      expect(endAgeOf('95', 65)).toBe(95);
     });
 
     it.each(['', String(averageEnd - 1), '101', 'abc'])(
       'keeps the average life expectancy for %p',
       (picked) => {
-        expect(endAgeOf(picked, 'N', 65)).toBeUndefined();
+        expect(endAgeOf(picked, 65)).toBeUndefined();
       },
     );
   });

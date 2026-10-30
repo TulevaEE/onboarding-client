@@ -33,22 +33,22 @@ const directionChanges = (values: number[]): number => {
 
 describe('fund pension with a new contract every year', () => {
   it('counts the remaining life expectancy in whole months', () => {
-    const months = ages.map((age) => yearlyContractTerm(lifeTable, 'N', age) * MONTHS_IN_YEAR);
+    const months = ages.map((age) => yearlyContractTerm(lifeTable, age) * MONTHS_IN_YEAR);
 
     expect(months).toEqual(months.map(Math.round));
   });
 
-  it("uses the person's own sex column when the life table has no whole-population column", () => {
+  it('averages men and women when the life table has no whole-population column', () => {
     const { M, N } = lifeTable.elada_jaanud;
     const withoutWholePopulation: LifeTable = { ...lifeTable, elada_jaanud: { M, N } };
 
-    expect(yearlyContractTerm(withoutWholePopulation, 'M', 65)).toBe(
-      Math.round(MONTHS_IN_YEAR * M[65]) / MONTHS_IN_YEAR,
+    expect(yearlyContractTerm(withoutWholePopulation, 65)).toBe(
+      Math.round((MONTHS_IN_YEAR * (M[65] + N[65])) / 2) / MONTHS_IN_YEAR,
     );
   });
 
   it('shortens the term every year', () => {
-    const terms = ages.map((age) => yearlyContractTerm(lifeTable, 'N', age));
+    const terms = ages.map((age) => yearlyContractTerm(lifeTable, age));
 
     expect(terms.slice(1).every((term, index) => term < terms[index])).toBe(true);
   });

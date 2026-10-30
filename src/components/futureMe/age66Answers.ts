@@ -7,7 +7,6 @@ import {
   horizonAge,
   LifeTable,
   retirementYears,
-  Sex,
 } from './engine/pension';
 import lifeTableData from './engine/lifeTable.json';
 import { FutureMeStep, StepId, StepPlanInput } from './steps';
@@ -53,20 +52,19 @@ export const initialAge66 = (): Age66Answers => ({
   firstPillarChoicePa: null,
 });
 
-export const endAges = (sex: Sex, startAge: number): number[] => {
-  const first = startAge + fundPensionTerm(lifeTable, sex, startAge);
+export const endAges = (startAge: number): number[] => {
+  const first = startAge + fundPensionTerm(lifeTable, startAge);
   return Array.from(
     { length: Math.max(0, LAST_END_AGE - first + 1) },
     (_, offset) => first + offset,
   );
 };
 
-export const longLifeAge = (sex: Sex, startAge: number): number =>
-  horizonAge(lifeTable, sex, startAge);
+export const longLifeAge = (startAge: number): number => horizonAge(lifeTable, startAge);
 
-export const endAgeOf = (picked: string, sex: Sex, startAge: number): number | undefined => {
+export const endAgeOf = (picked: string, startAge: number): number | undefined => {
   const age = Number(picked);
-  return picked !== '' && endAges(sex, startAge).includes(age) ? age : undefined;
+  return picked !== '' && endAges(startAge).includes(age) ? age : undefined;
 };
 
 const pillarPayoutAge = (pillar: Pillar, { you, plan }: Pick<Age66Context, 'you' | 'plan'>) => {
@@ -199,7 +197,7 @@ export const contractEndAgeOf = (
 ): number | undefined => {
   const startAge = contractStartAgeOf(pillar, answers, context);
   return answers[contractField(pillar)] === 'once' && startAge !== undefined
-    ? endAgeOf(answers[endAgeField(pillar)], context.you.sex, startAge)
+    ? endAgeOf(answers[endAgeField(pillar)], startAge)
     : undefined;
 };
 

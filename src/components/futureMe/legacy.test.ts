@@ -66,7 +66,7 @@ const earlyGapThenLateGap = () =>
     hazardYears: '15',
     firstPillarMonthly: '500',
     grossMonthly: '0',
-    secondPillarAmount: '50000',
+    secondPillarAmount: '70000',
   });
 
 describe('legacyOf', () => {
@@ -116,7 +116,7 @@ describe('legacyOf', () => {
 
     expect(result.coversNeedUntil).toBe(55);
     expect(result.gapTemporary).toBe(false);
-    expect(legacy).toMatchObject({ kind: 'surplus', medianAge: 79 });
+    expect(legacy).toMatchObject({ kind: 'surplus', medianAge: 84 });
     const { medianAge } = legacy as { medianAge: number };
     expect(result.rows.find((row) => row.age === medianAge)?.shortfall).toBe(0);
     expect(result.rows.some((row) => row.age > medianAge && row.shortfall > 0.5)).toBe(true);

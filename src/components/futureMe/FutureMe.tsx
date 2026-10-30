@@ -294,7 +294,6 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
         <Age60Step
           answers={age60}
           birthYear={birthYearOrFallback(answers)}
-          sex={answers.sex}
           age={payoutAge(plan)}
           tense={ageTense(birthYearOrFallback(answers), payoutAge(plan))}
           pillarsOpening={pillarsOpeningAt60(

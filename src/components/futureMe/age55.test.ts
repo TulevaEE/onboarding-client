@@ -22,7 +22,6 @@ const payoutOf = (plan: ThirdPillarPlan, input: ThirdPillarPayoutInput): ThirdPi
 
 const payoutInput = (overrides: Partial<ThirdPillarPayoutInput> = {}): ThirdPillarPayoutInput => ({
   birthYear: 1970,
-  sex: 'N',
   pensionAge: 65,
   age: 56,
   balance: 12000,
@@ -121,10 +120,7 @@ describe('payout', () => {
     it('pays tax-free monthly amounts over the months left by the life table', () => {
       const payout = payoutOf('fund', payoutInput());
 
-      expect(payout.firstMonthly).toBeCloseTo(
-        12000 / yearlyContractTerm(lifeTable, 'N', 56) / 12,
-        6,
-      );
+      expect(payout.firstMonthly).toBeCloseTo(12000 / yearlyContractTerm(lifeTable, 56) / 12, 6);
       expect(payout.tax).toBe(0);
       expect(payout.net).toBe(payout.gross);
     });
@@ -139,7 +135,7 @@ describe('payout', () => {
     it('pays the same every year from a single contract, which keeps the years left of the first payment', () => {
       const payout = payoutOf('fund', payoutInput({ contract: 'once' }));
 
-      expect(payout.gross).toBeCloseTo((9 * 12000) / fundPensionTerm(lifeTable, 'N', 56), 6);
+      expect(payout.gross).toBeCloseTo((9 * 12000) / fundPensionTerm(lifeTable, 56), 6);
     });
 
     it('lists the monthly payment of every year before the pension age', () => {

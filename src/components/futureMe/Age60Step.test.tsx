@@ -160,7 +160,7 @@ describe('Age 60 step', () => {
       expect(options[0]).toHaveTextContent(/^\d+-aastaseni \(\d{4}\) · keskmine eluiga$/);
       expect(options[options.length - 1]).toHaveTextContent(/^100-aastaseni \(2062\)$/);
       expect(endAgeField()).toHaveAccessibleDescription(
-        /elueast lühem periood ei ole tulumaksuvaba.*väiksemat kuu väljamakset.*Iga kümnes \d+-aastane mees elab \d+-aastaseks/,
+        /elueast lühem periood ei ole tulumaksuvaba.*väiksemat kuu väljamakset.*Iga kümnes \d+-aastane elab \d+-aastaseks/,
       );
 
       userEvent.selectOptions(endAgeField() as HTMLElement, '95');
@@ -178,9 +178,9 @@ describe('Age 60 step', () => {
       });
 
       expect(within(endAgeField).getAllByRole('option')[0]).toHaveTextContent(
-        new RegExp(`^${64 + fundPensionTerm(lifeTable, 'M', 64)}-aastaseni`),
+        new RegExp(`^${64 + fundPensionTerm(lifeTable, 64)}-aastaseni`),
       );
-      expect(endAgeField).toHaveAccessibleDescription(/Iga kümnes 64-aastane mees/);
+      expect(endAgeField).toHaveAccessibleDescription(/Iga kümnes 64-aastane elab/);
     });
 
     it('says one contract pays tax-free until the chosen age, at least the average life expectancy', () => {

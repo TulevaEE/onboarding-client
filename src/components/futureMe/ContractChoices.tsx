@@ -2,13 +2,11 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ChoiceCard } from './ChoiceCard';
 import { Contract, CONTRACTS, endAgeOf, endAges, longLifeAge, Pillar } from './age66Answers';
-import { Sex } from './engine/pension';
 
 interface EndAgeProps {
   id: string;
   startAge: number;
   birthYear: number;
-  sex: Sex;
   endAge: string;
   onEndAgeChange: (endAge: string) => void;
 }
@@ -23,9 +21,9 @@ interface Props extends Omit<EndAgeProps, 'id'> {
 
 const CONTRACT_EMOJI: Record<Contract, string> = { yearly: '♻️', once: '📜' };
 
-const EndAgeField = ({ id, startAge, birthYear, sex, endAge, onEndAgeChange }: EndAgeProps) => {
+const EndAgeField = ({ id, startAge, birthYear, endAge, onEndAgeChange }: EndAgeProps) => {
   const intl = useIntl();
-  const [averageAge, ...laterAges] = endAges(sex, startAge);
+  const [averageAge, ...laterAges] = endAges(startAge);
   const optionText = (age: number, isAverage: boolean) =>
     intl.formatMessage(
       { id: 'futureMe.age66.contract.endAge.option' },
@@ -41,7 +39,7 @@ const EndAgeField = ({ id, startAge, birthYear, sex, endAge, onEndAgeChange }: E
         id={id}
         className="form-select"
         aria-describedby={`${id}-hint`}
-        value={endAgeOf(endAge, sex, startAge) ?? ''}
+        value={endAgeOf(endAge, startAge) ?? ''}
         onChange={(event) => onEndAgeChange(event.target.value)}
       >
         <option value="">{optionText(averageAge, true)}</option>
@@ -54,7 +52,7 @@ const EndAgeField = ({ id, startAge, birthYear, sex, endAge, onEndAgeChange }: E
       <p id={`${id}-hint`} className="contract-end-age-hint text-pretty">
         <FormattedMessage
           id="futureMe.age66.contract.endAge.hint"
-          values={{ sex, startAge, longLifeAge: longLifeAge(sex, startAge) }}
+          values={{ startAge, longLifeAge: longLifeAge(startAge) }}
         />
       </p>
     </>

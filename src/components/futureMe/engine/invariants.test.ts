@@ -304,8 +304,7 @@ describe('pension engine single fund pension contract', () => {
     .map(({ label, input }) => ({ label, input: { ...input, needMonthly: 1, extraDeposit: 0 } }));
   const contractStartAge = (input: PensionInput) =>
     Math.max(retirementYears(input), CURRENT_YEAR - input.birthYear);
-  const contractTerm = (input: PensionInput) =>
-    fundPensionTerm(lifeTable, input.sex, contractStartAge(input));
+  const contractTerm = (input: PensionInput) => fundPensionTerm(lifeTable, contractStartAge(input));
 
   it('pays a monthly amount that follows the fund value over the contract term', () => {
     expect(

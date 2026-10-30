@@ -168,7 +168,6 @@ export const Age55Step = ({
           contract={contract}
           startAge={age55.age}
           birthYear={birthYear}
-          sex={answers.sex}
           endAge={endAge}
           onChange={onContractChange}
           onEndAgeChange={onEndAgeChange}

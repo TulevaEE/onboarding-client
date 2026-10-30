@@ -7,7 +7,6 @@ import {
   oneContractTerm,
   p3Factor,
   SeparateThirdPillar,
-  Sex,
   TAX_SHORT,
   yearlyContractTerm,
 } from './engine/pension';
@@ -30,7 +29,6 @@ export type Age55Lock = 'noThirdPillar' | 'pensionAge';
 
 export interface ThirdPillarPayoutInput {
   birthYear: number;
-  sex: Sex;
   pensionAge: number;
   age: number;
   balance: number;
@@ -91,7 +89,7 @@ export const thirdPillarPayout = (
   if (plan === 'keep') {
     return null;
   }
-  const { birthYear, sex, pensionAge, age, monthlyContribution, returnRate } = input;
+  const { birthYear, pensionAge, age, monthlyContribution, returnRate } = input;
   const currentAge = CURRENT_YEAR - birthYear;
   const contributionAt = (at: number): number =>
     monthlyContribution *
@@ -118,9 +116,9 @@ export const thirdPillarPayout = (
     };
   }
 
-  const firstTerm = oneContractTerm(lifeTable, sex, age, input.endAge);
+  const firstTerm = oneContractTerm(lifeTable, age, input.endAge);
   const yearsLeftAt = (at: number): number =>
-    input.contract === 'once' ? firstTerm - (at - age) : yearlyContractTerm(lifeTable, sex, at);
+    input.contract === 'once' ? firstTerm - (at - age) : yearlyContractTerm(lifeTable, at);
 
   let gross = 0;
   const monthly: ThirdPillarPayout['monthly'] = [];
@@ -149,7 +147,6 @@ export const thirdPillarPayoutInputOf = (
   const birthYear = birthYearOrFallback(answers);
   return {
     birthYear,
-    sex: answers.sex,
     pensionAge: pensionAgeValue(answers),
     age: withdrawalAge(CURRENT_YEAR - birthYear),
     balance: amountOf(answers.thirdPillarAmount),

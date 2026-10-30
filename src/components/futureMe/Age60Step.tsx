@@ -11,7 +11,6 @@ import { Tense } from './planAges';
 import { strong } from './richText';
 import { LinkButton } from './LinkButton';
 import { Age66Answers, Contract, contractField, endAgeField, Pillar } from './age66Answers';
-import { Sex } from './engine/pension';
 import { ContractChoices } from './ContractChoices';
 import { ChoiceMadeNote } from './ChoiceMadeNote';
 import { FundPensionChoice } from './prefill';
@@ -24,7 +23,6 @@ type Contracts = Pick<
 interface Props {
   answers: Age60Answers;
   birthYear: number;
-  sex: Sex;
   age: number;
   tense: Tense;
   pillarsOpening: PillarsOpening;
@@ -44,7 +42,6 @@ interface PillarProps {
   pillar: Pillar;
   answers: Age60Answers;
   birthYear: number;
-  sex: Sex;
   hasPillar: boolean;
   contracts: Contracts;
   contractStartAge: number;
@@ -60,7 +57,6 @@ const PillarChoices = ({
   pillar,
   answers,
   birthYear,
-  sex,
   contractStartAge,
   hasPillar,
   contracts,
@@ -125,7 +121,6 @@ const PillarChoices = ({
           contract={contracts[contractField(pillar)]}
           startAge={contractStartAge}
           birthYear={birthYear}
-          sex={sex}
           endAge={contracts[endAgeField(pillar)]}
           onChange={(contract) => onContractChange(pillar, contract)}
           onEndAgeChange={(endAge) => onEndAgeChange(pillar, endAge)}
@@ -139,7 +134,6 @@ const PillarChoices = ({
 export const Age60Step = ({
   answers,
   birthYear,
-  sex,
   age,
   tense,
   pillarsOpening,
@@ -173,7 +167,6 @@ export const Age60Step = ({
         pillar="secondPillar"
         answers={answers}
         birthYear={birthYear}
-        sex={sex}
         contractStartAge={contractStartAges.secondPillar}
         hasPillar={hasSecondPillar}
         contracts={contracts}
@@ -193,7 +186,6 @@ export const Age60Step = ({
         pillar="thirdPillar"
         answers={answers}
         birthYear={birthYear}
-        sex={sex}
         contractStartAge={contractStartAges.thirdPillar}
         hasPillar={hasThirdPillar}
         contracts={contracts}

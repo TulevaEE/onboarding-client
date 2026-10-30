@@ -59,7 +59,7 @@ describe('fund pension start after the pension age', () => {
 
   describe('single contract started at 70', () => {
     const from70 = simulate(base, lifeTable, { ...scenarioB, fundFrom: 70 });
-    const termFrom70 = fundPensionTerm(lifeTable, 'N', 70);
+    const termFrom70 = fundPensionTerm(lifeTable, 70);
 
     it('lets the payment follow the fund value', () => {
       expect(rowAt(from70, 71).i2).toBeCloseTo(rowAt(from70, 70).i2 * 1.02, within(1e-6));
@@ -105,7 +105,7 @@ describe('fund pension start after the pension age', () => {
   );
 
   describe('contracts for the average remaining life', () => {
-    const termFrom70 = fundPensionTerm(lifeTable, 'N', 70);
+    const termFrom70 = fundPensionTerm(lifeTable, 70);
     const thirdPillarFrom70 = (contract: string): PensionInput => ({
       ...base,
       p3Sep: { amount: 30000, mode: 'fund', contract, start: 70 },

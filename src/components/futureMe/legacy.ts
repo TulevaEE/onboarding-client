@@ -26,10 +26,10 @@ export type Legacy =
       extra: number;
     };
 
-const medianAgeOf = ({ birthYear, sex }: PensionInput): number => {
+const medianAgeOf = ({ birthYear }: PensionInput): number => {
   const currentAge = CURRENT_YEAR - birthYear;
   for (let age = currentAge; age <= MAX_AGE_SHOWN; age += 1) {
-    if (survival(lifeTable, sex, currentAge, age) <= MEDIAN_SURVIVAL) {
+    if (survival(lifeTable, currentAge, age) <= MEDIAN_SURVIVAL) {
       return age;
     }
   }

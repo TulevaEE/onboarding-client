@@ -265,7 +265,7 @@ describe('payout scenarios', () => {
       );
     const once = simulateThirdPillar({ contract: 'once' }, keepGrowingScenario);
     const yearly = simulateThirdPillar({ contract: 'yearly' }, keepGrowingScenario);
-    const term = fundPensionTerm(lifeTable, 'N', 65);
+    const term = fundPensionTerm(lifeTable, 65);
 
     it('lets a single contract payment follow the fund value', () => {
       expect(rowAt(once, 65 + term - 1).i23 / rowAt(once, 66).i23).toBeCloseTo(
@@ -289,7 +289,7 @@ describe('payout scenarios', () => {
     });
 
     it('counts the term from 55 when the fund pension starts at 55', () => {
-      const termFrom55 = fundPensionTerm(lifeTable, 'N', 55);
+      const termFrom55 = fundPensionTerm(lifeTable, 55);
       const from55 = simulateThirdPillar({ contract: 'once', start: 55 }, keepGrowingScenario);
 
       expect(rowAt(from55, 55 + termFrom55 - 1).i23).toBeGreaterThan(0);

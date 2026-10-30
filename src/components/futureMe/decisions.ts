@@ -93,7 +93,7 @@ const startingPillarsOf = (
 
 const endAgeShownOf = (pillar: Pillar, age66: Age66Answers, context: Age66Context): number =>
   contractEndAgeOf(pillar, age66, context) ??
-  endAges(context.you.sex, contractStartAgeOf(pillar, age66, context) ?? 0)[0];
+  endAges(contractStartAgeOf(pillar, age66, context) ?? 0)[0];
 
 const fundPensionDecision = (context: ResultContext): Decision | false => {
   const { age60, age65, age66, you, plan } = context;

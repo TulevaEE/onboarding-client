@@ -234,10 +234,7 @@ describe('pension scenarios without income tax', () => {
       scenarioB,
     );
 
-    expect(rowAt(simulation, 70).i23 * 12).toBeCloseTo(
-      21000 / fundPensionTerm(lifeTable, 'N', 70),
-      2,
-    );
+    expect(rowAt(simulation, 70).i23 * 12).toBeCloseTo(21000 / fundPensionTerm(lifeTable, 70), 2);
   });
 
   it('bridges a deferred state pension with a tax-free fund pension from pension age', () => {

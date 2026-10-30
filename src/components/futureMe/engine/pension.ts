@@ -410,10 +410,7 @@ export function pensionAge(birthYear: number, birthMonth = 1): PensionAge {
 
 const averageColumns = new WeakMap<LifeTable, Partial<Record<LifeTableKey, number[]>>>();
 
-function column(table: LifeTable, key: LifeTableKey, sex: Sex): number[] {
-  if (sex !== 'X') {
-    return table[key][sex];
-  }
+function column(table: LifeTable, key: LifeTableKey): number[] {
   const total = table[key].K;
   if (total) {
     return total;
@@ -429,8 +426,8 @@ function column(table: LifeTable, key: LifeTableKey, sex: Sex): number[] {
   return cached[key] as number[];
 }
 
-export function survival(table: LifeTable, sex: Sex, fromAge: number, age: number): number {
-  const survivors = column(table, 'ellujaajad', sex);
+export function survival(table: LifeTable, fromAge: number, age: number): number {
+  const survivors = column(table, 'ellujaajad');
   if (age > MAX_AGE) {
     return 0;
   }
@@ -440,36 +437,27 @@ export function survival(table: LifeTable, sex: Sex, fromAge: number, age: numbe
   return survivors[age] / survivors[fromAge];
 }
 
-export function horizonAge(table: LifeTable, sex: Sex, fromAge: number): number {
+export function horizonAge(table: LifeTable, fromAge: number): number {
   for (let a = fromAge; a <= MAX_AGE; a += 1) {
-    if (survival(table, sex, fromAge, a) <= HORIZON_SURVIVAL) {
+    if (survival(table, fromAge, a) <= HORIZON_SURVIVAL) {
       return a;
     }
   }
   return MAX_AGE;
 }
 
-const remainingLifeYears = (table: LifeTable, sex: Sex, age: number): number => {
-  const total = table.elada_jaanud && table.elada_jaanud.K;
-  return (total || column(table, 'elada_jaanud', sex))[Math.min(age, MAX_AGE)];
-};
+const remainingLifeYears = (table: LifeTable, age: number): number =>
+  column(table, 'elada_jaanud')[Math.min(age, MAX_AGE)];
 
-export function fundPensionTerm(table: LifeTable, sex: Sex, age: number): number {
-  return Math.max(1, Math.round(remainingLifeYears(table, sex, age)));
+export function fundPensionTerm(table: LifeTable, age: number): number {
+  return Math.max(1, Math.round(remainingLifeYears(table, age)));
 }
 
-export const oneContractTerm = (
-  table: LifeTable,
-  sex: Sex,
-  start: number,
-  endAge: number = start,
-): number => Math.max(fundPensionTerm(table, sex, start), endAge - start);
+export const oneContractTerm = (table: LifeTable, start: number, endAge: number = start): number =>
+  Math.max(fundPensionTerm(table, start), endAge - start);
 
-export function yearlyContractTerm(table: LifeTable, sex: Sex, age: number): number {
-  return Math.max(
-    1,
-    Math.round(MONTHS_IN_YEAR * remainingLifeYears(table, sex, age)) / MONTHS_IN_YEAR,
-  );
+export function yearlyContractTerm(table: LifeTable, age: number): number {
+  return Math.max(1, Math.round(MONTHS_IN_YEAR * remainingLifeYears(table, age)) / MONTHS_IN_YEAR);
 }
 
 export function retirementYears(
@@ -799,10 +787,10 @@ export function simulate(
     : Math.max(open2, scenario.fundFrom || 0);
   const contractStart = scenario.id === 'B' || onceC ? Math.max(fundFrom, currentAge) : null;
   const contractTerm =
-    contractStart !== null ? oneContractTerm(table, input.sex, contractStart, scenario.endAge) : 0;
+    contractStart !== null ? oneContractTerm(table, contractStart, scenario.endAge) : 0;
   const scheduledPayout = (pot: number, age: number) => {
     if (scenario.id === 'D' || (scenario.id === 'C' && !onceC)) {
-      return pot / yearlyContractTerm(table, input.sex, age);
+      return pot / yearlyContractTerm(table, age);
     }
     if (contractStart !== null && age >= contractStart) {
       // KoPS § 52³ lg 8, § 60¹ lg 5: units are divided by the number of payments still due
@@ -827,10 +815,10 @@ export function simulate(
         : Math.max(open3, currentAge);
     }
   }
-  const term3 = start3 !== null ? oneContractTerm(table, input.sex, start3, sep?.endAge) : 0;
+  const term3 = start3 !== null ? oneContractTerm(table, start3, sep?.endAge) : 0;
   const scheduledThirdPayout = (pot: number, age: number) => {
     if (start3 === null) {
-      return pot / yearlyContractTerm(table, input.sex, age);
+      return pot / yearlyContractTerm(table, age);
     }
     const left3 = term3 - (age - start3);
     return left3 > 0 ? pot / left3 : 0;
@@ -1036,7 +1024,7 @@ export function simulate(
       pot2: secondPillarStart,
       pot3: thirdPillarStart,
       deposit: depositStart,
-      alive: survival(table, input.sex, currentAge, age),
+      alive: survival(table, currentAge, age),
     });
   }
   const showAtPa = spPaid && ret < pa && (p1AtPa > p1AtSpStart + 0.5 * 12 || p1AtPa > spYear);
@@ -1136,7 +1124,7 @@ function summarize(
   const empty = fromPa.find((x) => x.moneyLeft < 1 && x.age >= p1Start);
   const at = (age: number) => rows.find((x) => x.age === age);
   const startRow = at(pa) || rows[0];
-  const horizon = horizonAge(table, input.sex, currentAge);
+  const horizon = horizonAge(table, currentAge);
   return {
     rows,
     potAtPension: {

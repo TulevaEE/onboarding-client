@@ -174,7 +174,7 @@ describe('Result legacy card', () => {
 
   describe("when money is left but the plan cannot carry today's costs", () => {
     beforeEach(() => {
-      startWith('500', '70000');
+      startWith('500', '80000');
       chooseSecondPillarReturn('2');
       openResult();
     });
