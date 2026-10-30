@@ -14,6 +14,7 @@ import {
   PrefilledHint,
   RequiredMark,
 } from './YouFields';
+import { YouFaq } from './YouFaq';
 import { YouSection, YouSectionLabels } from './YouSection';
 import {
   blockedFieldsOf,
@@ -196,6 +197,7 @@ export const YouStep = ({
         />
       </ul>
       <EarlyRetirementFields answers={answers} onChange={onChange} />
+      <YouFaq />
     </section>
   );
 };
