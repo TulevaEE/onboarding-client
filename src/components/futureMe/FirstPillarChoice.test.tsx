@@ -99,6 +99,14 @@ describe('Choosing between the special pension and the old-age pension', () => {
       expect(queryChoiceGroup(AGE_65_GROUP)).not.toBeInTheDocument();
     });
 
+    it('titles the step only by the pension age when the special pension is compared there', () => {
+      openFutureMe();
+      enterSpecialPensionAmount('900');
+      goTo(pensionAgeStep);
+
+      expect(screen.getByRole('heading', { level: 2, name: 'Pensioniiga' })).toBeInTheDocument();
+    });
+
     it('asks which pension to take and preselects the larger special pension', () => {
       openFutureMe();
       enterSpecialPensionAmount('900');
