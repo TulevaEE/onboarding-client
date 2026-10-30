@@ -485,6 +485,37 @@ describe('ResultChart interaction', () => {
       expect(datasets[2].fill).toBe(1);
     });
 
+    describe('the other layers', () => {
+      const stateLayer = () => {
+        renderChart();
+        return lastChartProps().data.datasets.find(
+          ({ label }: { label: string }) => label === 'Riiklik pension',
+        );
+      };
+
+      it('fade from their colour at the top of the chart to almost clear at the bottom', () => {
+        const gradient = { addColorStop: jest.fn() };
+        const createLinearGradient = jest.fn(() => gradient);
+
+        const fill = stateLayer().backgroundColor({
+          chart: { chartArea: { top: 10, bottom: 210 }, ctx: { createLinearGradient } },
+        });
+
+        expect(fill).toBe(gradient);
+        expect(createLinearGradient).toHaveBeenCalledWith(0, 10, 0, 210);
+        expect(gradient.addColorStop.mock.calls).toEqual([
+          [0, 'rgba(106, 79, 196, 0.5)'],
+          [1, 'rgba(106, 79, 196, 0.08)'],
+        ]);
+      });
+
+      it('take a light fill of their colour before the chart has an area', () => {
+        expect(stateLayer().backgroundColor({ chart: { ctx: {} } })).toBe(
+          'rgba(106, 79, 196, 0.3)',
+        );
+      });
+    });
+
     describe('the II pillar money taken when needed', () => {
       const taxedLayer = () => {
         renderChart(contextWith({ work: 'yes', workUntil: '68' }));
