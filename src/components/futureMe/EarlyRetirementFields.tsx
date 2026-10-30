@@ -47,7 +47,7 @@ const earlyYearsLabel = (intl: IntlShape, years: number, right: number): string 
   }
   return intl.formatMessage(
     { id: 'futureMe.you.earlyYears.flexible' },
-    { years, percent: percentText(-EARLY_DECREASE[years]) },
+    { years, percent: percentText(EARLY_DECREASE[years]) },
   );
 };
 

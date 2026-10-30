@@ -115,10 +115,10 @@ describe('Result step: save the result', () => {
     expect(file).toContain('## Kas raha jätkub elu lõpuni?');
     expect(file).toContain('### Sinu otsused');
     expect(file).toContain(
-      '- 60 a · 2022, avanenud · II sammas 60-aastaselt · Sinu valik: Jätkan kasvatamist',
+      '- 60 a · 2022, avanenud · II sammas 60-aastaselt · Sinu valik: Kasvatan edasi',
     );
     expect(file).toContain('### Eeldused');
-    expect(file).toContain('### Reeglid ja maksud');
+    expect(file).toContain('### Reeglid ja tulumaksud');
   });
 
   it('puts the income table into the file even when it is closed, and no payout comparison', async () => {

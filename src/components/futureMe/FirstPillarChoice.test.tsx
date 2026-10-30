@@ -111,10 +111,10 @@ describe('Choosing between the special pension and the old-age pension', () => {
       const group = choiceGroup(AGE_65_GROUP);
       expect(choice(group, /^Jätkan eripensioniga/)).toBeChecked();
       expect(choice(group, /^Jätkan eripensioniga/)).toHaveAccessibleDescription(
-        /^900\s€ kuus enne maksu\. Ei muutu, avaldust pole vaja$/,
+        /^900\s€ kuus enne tulumaksu\. Ei muutu, avaldust pole vaja$/,
       );
       expect(choice(group, /^Lähen üle vanaduspensionile/)).toHaveAccessibleDescription(
-        /^700\s€ kuus enne maksu$/,
+        /^700\s€ kuus enne tulumaksu$/,
       );
       expect(within(group).getByText('suurem')).toBeInTheDocument();
     });
@@ -155,7 +155,7 @@ describe('Choosing between the special pension and the old-age pension', () => {
       const group = choiceGroup(AGE_65_GROUP);
       expect(choice(group, /^Jään vanaduspensionile/)).toBeChecked();
       expect(choice(group, /^Jään vanaduspensionile/)).toHaveAccessibleDescription(
-        /^859\s€ kuus enne maksu$/,
+        /^859\s€ kuus enne tulumaksu$/,
       );
     });
 

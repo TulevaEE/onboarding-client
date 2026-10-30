@@ -123,10 +123,10 @@ describe('Age 65 step', () => {
     it('picks the fund pension card and says the choice is already made', () => {
       openAge65Step();
 
-      expect(choice(secondPillarGroup(), 'Fondipension')).toBeChecked();
+      expect(choice(secondPillarGroup(), 'Võtan igakuiselt')).toBeChecked();
       expect(
         within(secondPillarGroup()).getByText(
-          /Oled selle valiku juba teinud: II\ssamba fondipension algas 2027\. aastal, kui olid 65-aastane\./,
+          /Oled selle valiku juba teinud: II\ssamba igakuised väljamaksed algasid 2027\. aastal, kui olid 65-aastane\./,
         ),
       ).toBeInTheDocument();
     });
@@ -144,7 +144,7 @@ describe('Age 65 step', () => {
       );
       userEvent.click(within(trail()).getByRole('button', { name: /^67\sa, vaatamata$/ }));
 
-      expect(choice(secondPillarGroup(), 'Fondipension')).toBeChecked();
+      expect(choice(secondPillarGroup(), 'Võtan igakuiselt')).toBeChecked();
       expect(
         within(secondPillarGroup()).getByText(/Oled selle valiku juba teinud/),
       ).toBeInTheDocument();
@@ -153,17 +153,19 @@ describe('Age 65 step', () => {
     it('keeps the other cards open', () => {
       openAge65Step();
 
-      userEvent.click(choice(secondPillarGroup(), 'Kõik korraga'));
+      userEvent.click(choice(secondPillarGroup(), 'Võtan korraga välja'));
 
-      expect(choice(secondPillarGroup(), 'Kõik korraga')).toBeChecked();
+      expect(choice(secondPillarGroup(), 'Võtan korraga välja')).toBeChecked();
     });
   });
 
   it('replaces the placeholder with the pension age choices', () => {
     openAge65Step();
 
-    expect(screen.getByRole('heading', { level: 2, name: 'Pensioniiga' })).toBeInTheDocument();
-    expect(screen.getByText('65-aastane · 2027 · Sinu tulevik')).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 2, name: /^Pensioniiga: riiklik pension ja sambad$/ }),
+    ).toBeInTheDocument();
+    expect(screen.getByText('65-aastane · 2027. a · Sinu tulevik')).toBeInTheDocument();
     expect(screen.queryByText('Selle sammu sisu lisandub hiljem.')).not.toBeInTheDocument();
   });
 
@@ -172,7 +174,7 @@ describe('Age 65 step', () => {
       openAge65Step();
 
       expect(mode(/^Kohe täissumma/)).toBeChecked();
-      expect(screen.getByText('700 € kuus enne maksu, kohe 65-aastaselt')).toBeInTheDocument();
+      expect(screen.getByText('700 € kuus enne tulumaksu, kohe 65-aastaselt')).toBeInTheDocument();
       expect(screen.queryByRole('group', { name: 'Kui vanalt alustad?' })).not.toBeInTheDocument();
     });
 
@@ -184,7 +186,7 @@ describe('Age 65 step', () => {
 
       expect(years.getAllByRole('radio')).toHaveLength(5);
       expect(years.getByRole('radio', { name: /^66-aastaselt/ })).toBeChecked();
-      expect(years.getByText('756 € kuus enne maksu (+7,9%)')).toBeInTheDocument();
+      expect(years.getByText('756 € kuus enne tulumaksu (+7,9%)')).toBeInTheDocument();
       expect(screen.getByText('Kõige kauem 70-aastaseni: 1 061 € kuus')).toBeInTheDocument();
     });
 
@@ -195,7 +197,7 @@ describe('Age 65 step', () => {
       const years = within(yearsGroup('Mitu aastat võtad poole?'));
 
       expect(years.getByRole('radio', { name: /^1\sa, täis 66-aastaselt/ })).toBeChecked();
-      expect(years.getByText('Siis 728 € kuus enne maksu (+4%)')).toBeInTheDocument();
+      expect(years.getByText('Siis 728 € kuus enne tulumaksu (+4%)')).toBeInTheDocument();
     });
 
     it('keeps the picked number of years', () => {
@@ -302,13 +304,13 @@ describe('Age 65 step', () => {
       openAge65Step();
 
       expect(choice(thirdPillarGroup(), 'Kasvatan edasi')).toHaveAccessibleDescription(
-        /^Raha jääb fondi kasvama\. Pensionieas võtad vajadusel osa välja, 10%\stulumaks\.$/,
+        /^Vara jääb fondi ja kasvab edasi\.$/,
       );
-      expect(choice(thirdPillarGroup(), 'Fondipension')).toHaveAccessibleDescription(
-        /^Maksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud raha kasvab fondis edasi\.$/,
+      expect(choice(thirdPillarGroup(), 'Võtan igakuiselt')).toHaveAccessibleDescription(
+        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara kasvab fondis edasi\.$/,
       );
-      expect(choice(thirdPillarGroup(), 'Kõik korraga')).toHaveAccessibleDescription(
-        /^Kogu raha korraga välja, 10%\stulumaks\. Raha on hoiusel\.$/,
+      expect(choice(thirdPillarGroup(), 'Võtan korraga välja')).toHaveAccessibleDescription(
+        /^Kogu vara korraga välja, 10%\stulumaks\. Raha on hoiusel\.$/,
       );
     });
 
@@ -317,10 +319,10 @@ describe('Age 65 step', () => {
 
       userEvent.click(within(workGroup()).getByRole('radio', { name: /^Töötan edasi/ }));
 
-      expect(choice(secondPillarGroup(), 'Fondipension')).not.toHaveAccessibleDescription(
+      expect(choice(secondPillarGroup(), 'Võtan igakuiselt')).not.toHaveAccessibleDescription(
         /sissemaksed/,
       );
-      expect(choice(secondPillarGroup(), 'Kõik korraga')).not.toHaveAccessibleDescription(
+      expect(choice(secondPillarGroup(), 'Võtan korraga välja')).not.toHaveAccessibleDescription(
         /sissemaksed/,
       );
     });
@@ -328,13 +330,13 @@ describe('Age 65 step', () => {
     it('keeps each pillar choice after leaving the step', () => {
       openAge65Step();
 
-      userEvent.click(choice(secondPillarGroup(), 'Fondipension'));
-      userEvent.click(choice(thirdPillarGroup(), 'Kõik korraga'));
+      userEvent.click(choice(secondPillarGroup(), 'Võtan igakuiselt'));
+      userEvent.click(choice(thirdPillarGroup(), 'Võtan korraga välja'));
       userEvent.click(screen.getByRole('button', { name: /Edasi/ }));
       userEvent.click(screen.getByRole('button', { name: /Tagasi/ }));
 
-      expect(choice(secondPillarGroup(), 'Fondipension')).toBeChecked();
-      expect(choice(thirdPillarGroup(), 'Kõik korraga')).toBeChecked();
+      expect(choice(secondPillarGroup(), 'Võtan igakuiselt')).toBeChecked();
+      expect(choice(thirdPillarGroup(), 'Võtan korraga välja')).toBeChecked();
     });
 
     it('shows the choice made at the earlier step instead of asking again, and leads back to it', () => {
@@ -346,18 +348,23 @@ describe('Age 65 step', () => {
       fillInYou();
       userEvent.click(within(trail()).getByRole('button', { name: /^60\sa, vaatamata$/ }));
       userEvent.click(
-        choice(screen.getByRole('group', { name: /^II\ssamba väljamakse viis$/ }), 'Fondipension'),
+        choice(
+          screen.getByRole('group', { name: /^II\ssamba väljamakse viis$/ }),
+          'Võtan igakuiselt',
+        ),
       );
       userEvent.click(within(trail()).getByRole('button', { name: /^65\sa, vaatamata$/ }));
 
       expect(
         screen.queryByRole('group', { name: /^II\ssamba väljamakse viis pensionieas/ }),
       ).not.toBeInTheDocument();
-      expect(screen.getByText(/valik 60-aastaselt: fondipension\./)).toBeInTheDocument();
+      expect(screen.getByText(/valik 60-aastaselt: igakuised väljamaksed\./)).toBeInTheDocument();
 
       userEvent.click(screen.getByRole('button', { name: /Muuda II\ssamba valikut 60-aastaselt/ }));
 
-      expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(/^60-aastaselt/);
+      expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
+        /^II(\sja\sIII)?\ssammas avane/,
+      );
     });
 
     it('disables the choices of a pillar the saver does not have and says why', () => {
@@ -385,7 +392,7 @@ describe('Age 65 step', () => {
     openAge65Step();
 
     expect(screen.getByText('Mis on aastahinne ja staažiaasta?')).toBeInTheDocument();
-    expect(screen.getByText('Mis on fondipension?')).toBeInTheDocument();
+    expect(screen.getByText('Mis on igakuised väljamaksed?')).toBeInTheDocument();
   });
 
   it('compares the rescue allowance with the pension for the children when both rights are the saver’s', () => {
@@ -431,7 +438,7 @@ describe('Age 65 step', () => {
       expect(
         screen.queryByRole('group', { name: 'Kuidas võtad riikliku pensioni?' }),
       ).not.toBeInTheDocument();
-      expect(screen.getByText(/Lähed pensionile varem soodustusega/)).toBeInTheDocument();
+      expect(screen.getByText(/Lähed pensionile soodustingimustel/)).toBeInTheDocument();
 
       userEvent.click(screen.getByRole('button', { name: /Muuda varem pensionile minekut/ }));
 

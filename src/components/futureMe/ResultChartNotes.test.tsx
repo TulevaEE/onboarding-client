@@ -76,7 +76,7 @@ describe('ResultChart summary notes', () => {
 
     expect(
       screen.getByText(
-        'Riiklik pension on väiksem kui pensionäri maksuvaba tulu (776 € kuus), seega tulumaksu pole.',
+        'Riiklik pension on väiksem kui pensionäri tulumaksuvaba tulu (776 € kuus), seega tulumaksu pole.',
       ),
     ).toBeInTheDocument();
   });
@@ -86,7 +86,7 @@ describe('ResultChart summary notes', () => {
 
     expect(
       screen.getByText(
-        /Riiklikust pensionist \(1\s?000 € enne maksu\) läheb tulumaksuks 49 € kuus: 22% summalt, mis ületab pensionäri maksuvaba tulu 776 € kuus\./,
+        /Riiklikust pensionist \(1\s?000 € enne tulumaksu\) läheb tulumaksuks 49 € kuus: 22% summalt, mis ületab pensionäri tulumaksuvaba tulu 776 € kuus\./,
       ),
     ).toBeInTheDocument();
   });
@@ -99,7 +99,7 @@ describe('ResultChart summary notes', () => {
 
     expect(
       screen.getByText(
-        'Pensionieas makstakse sulle eripensioni 900 € kuus enne maksu (eripension 900 €, vanaduspension 700 €). Kahte riiklikku pensioni korraga ei maksta.',
+        'Pensionieas makstakse sulle eripensioni 900 € kuus enne tulumaksu (eripension 900 €, vanaduspension 700 €). Kahte riiklikku pensioni korraga ei maksta.',
       ),
     ).toBeInTheDocument();
   });
@@ -124,7 +124,7 @@ describe('ResultChart summary notes', () => {
 
 describe('ResultChart assumption', () => {
   const assumption =
-    /kulud on kaetud kogu elu, kui paned fondipensioni ja riikliku pensioni ülejäägi hoiusele/;
+    /kulud on kaetud kogu elu, kui paned igakuiste väljamaksete ja riikliku pensioni ülejäägi hoiusele/;
 
   it('says the costs are covered for life only if the surplus goes to the deposit, and what is missing without it', () => {
     renderChart(oneFundContract);
@@ -142,7 +142,7 @@ describe('ResultChart assumption', () => {
 
     expect(
       screen.getByText(
-        /Teised võimalused: vali fondipensionile keskmisest elueast pikem periood või uus leping igal aastal\./,
+        /Teised võimalused: vali väljamaksetele keskmisest elueast pikem periood või uus leping igal aastal\./,
       ),
     ).toBeInTheDocument();
   });
@@ -186,14 +186,14 @@ describe('ResultChart reading guide', () => {
     renderChart(oneFundContract);
 
     expect(guide()).toHaveTextContent(
-      /Fondipensioni periood on \d+ aastat ja see on arvutatud keskmise eluea järgi, mitte sinu elu pikkuse järgi\./,
+      /Igakuiste väljamaksete periood on \d+ aastat ja see on arvutatud keskmise eluea järgi, mitte sinu elu pikkuse järgi\./,
     );
   });
 
   it('leaves the fund pension period out when no fund pension ends', () => {
     renderChart();
 
-    expect(guide()).not.toHaveTextContent('Fondipensioni periood');
+    expect(guide()).not.toHaveTextContent('Igakuiste väljamaksete periood');
   });
 
   describe('the order the costs are covered in', () => {
@@ -212,7 +212,7 @@ describe('ResultChart reading guide', () => {
       expect(steps()).toEqual([
         'Riiklik pension.',
         expect.stringMatching(
-          /^II\ssammas \(viirutatud kiht\): Elukaar eeldab, et võtad pensionieast alates igal aastal fondist välja nii palju, kui eelmistest puudu jääb\. Sellelt läheb 10% tulumaksu\.$/,
+          /^II\ssammas \(viirutatud kiht\): Arvutus eeldab, et võtad pensionieast alates igal aastal fondist välja nii palju, kui eelmistest puudu jääb\. Sellelt läheb 10% tulumaksu\.$/,
         ),
       ]);
       expect(guide()).toHaveTextContent(
@@ -224,7 +224,7 @@ describe('ResultChart reading guide', () => {
       renderChart(fundPensionWithSurplus);
 
       expect(steps()[0]).toBe(
-        'Riiklik pension ja fondipensioni väljamaksed. Fondipensioni makse tuleb lepingu järgi, mitte kulude järgi, ja selle suurus kõigub koos fondi väärtusega.',
+        'Riiklik pension ja igakuised väljamaksed. Väljamakse tuleb lepingu järgi, mitte kulude järgi, ja selle suurus kõigub koos fondi väärtusega.',
       );
       expect(guide()).toHaveTextContent(
         /Hoius \(kiht „Hoiuselt“\): raha, mis on välja makstud, aga kuludeks veel vaja ei olnud\. Seal kaotab see väärtust 1%\saastas pärast inflatsiooni\./,
@@ -237,7 +237,7 @@ describe('ResultChart reading guide', () => {
       });
 
       expect(steps()).toContainEqual(
-        expect.stringMatching(/^III\ssammas, kui II\ssambast enam ei jätku: Elukaar eeldab/),
+        expect.stringMatching(/^III\ssammas, kui II\ssambast enam ei jätku: Arvutus eeldab/),
       );
     });
 
@@ -254,7 +254,7 @@ describe('ResultChart reading guide', () => {
 
       expect(steps()).toContainEqual(
         expect.stringMatching(
-          /^III\ssammas: Elukaar eeldab, et võtad igal aastal fondist välja nii palju, kui eelmistest puudu jääb\. Sellelt läheb 10% tulumaksu\. See on III\ssamba kihis\.$/,
+          /^III\ssammas: Arvutus eeldab, et võtad igal aastal fondist välja nii palju, kui eelmistest puudu jääb\. Sellelt läheb 10% tulumaksu\. See on III\ssamba kihis\.$/,
         ),
       );
     });

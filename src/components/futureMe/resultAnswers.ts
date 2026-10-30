@@ -35,7 +35,7 @@ import { hasThirdPillarAt, payoutAge, plannedThirdPillarOpenAge, retirementAge }
 const lifeTable: LifeTable = lifeTableData;
 const MONTHS_IN_YEAR = 12;
 export const MAX_AGE_SHOWN = 100;
-export const keepGrowing: Scenario = { id: 'E', name: 'Jätkan kasvatamist' };
+export const keepGrowing: Scenario = { id: 'E' };
 
 export interface ResultContext {
   you: YouAnswers;

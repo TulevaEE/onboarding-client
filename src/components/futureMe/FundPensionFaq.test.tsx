@@ -35,17 +35,17 @@ describe('fund pension FAQ', () => {
     renderFaq();
     const [first] = screen.getAllByRole('group');
 
-    expect(first).toHaveTextContent(/^Kuidas valida fondipensioni lepingut\?/);
+    expect(first).toHaveTextContent(/^Kuidas valida igakuiste väljamaksete lepingut\?/);
     expect(first).toHaveTextContent(/keskmise elueani.*maksuvaba/);
     expect(first).toHaveTextContent(/väiksem.*kauem/);
-    expect(first).toHaveTextContent(/lühem.*ei ole maksuvaba/i);
+    expect(first).toHaveTextContent(/lühem.*ei ole tulumaksuvaba/i);
   });
 
   it('asks about starting five years before the pension age, not at a fixed age', () => {
     renderFaq();
 
     expect(
-      screen.getByText(/^Kas fondipensioni saab alustada juba 5\sa enne pensioniiga\?$/),
+      screen.getByText(/^Kas igakuisi väljamakseid saab alustada juba 5\sa enne pensioniiga\?$/),
     ).toBeInTheDocument();
   });
 
@@ -53,7 +53,7 @@ describe('fund pension FAQ', () => {
     renderFaq();
 
     expect(
-      screen.getByText(/III\ssambast saad fondipensioni alates 55-aastaselt/),
+      screen.getByText(/III\ssambast saad igakuisi väljamakseid alates 55-aastaselt/),
     ).toHaveTextContent(/või 5\sa enne pensioniiga\./);
   });
 });

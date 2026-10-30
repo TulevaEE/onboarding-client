@@ -93,7 +93,7 @@ describe('ResultChart interaction', () => {
 
       expect(lastChartProps().options.plugins.marks).toContainEqual({
         age: 65,
-        text: 'Pension\u00A065',
+        text: 'Pension\u00A065\u00A0a',
       });
     });
 
@@ -478,7 +478,7 @@ describe('ResultChart interaction', () => {
       expect(datasets.map(labelOf)).toEqual([
         'Palk',
         'Riiklik pension',
-        'II\u00A0sammas (10% maksuga)',
+        'II\u00A0sammas (10% tulumaksuga)',
         'Hoiuselt',
       ]);
       expect(datasets[1].fill).toBe('origin');
@@ -489,7 +489,7 @@ describe('ResultChart interaction', () => {
       const taxedLayer = () => {
         renderChart(contextWith({ work: 'yes', workUntil: '68' }));
         return lastChartProps().data.datasets.find(
-          ({ label }: { label: string }) => label === 'II\u00A0sammas (10% maksuga)',
+          ({ label }: { label: string }) => label === 'II\u00A0sammas (10% tulumaksuga)',
         );
       };
       const chartContextWith = (pattern: string | null) => ({
@@ -572,7 +572,8 @@ describe('ResultChart interaction', () => {
   });
 
   describe('II pillar tax in the legend', () => {
-    const taxedToggle = () => screen.queryByRole('button', { name: /II\ssammas \(10% maksuga\)/ });
+    const taxedToggle = () =>
+      screen.queryByRole('button', { name: /II\ssammas \(10% tulumaksuga\)/ });
 
     it('shows the II pillar money taken when needed as its own layer with the 10% tax', () => {
       renderChart(contextWith({ secondPillar: 'grow' }));
@@ -584,7 +585,7 @@ describe('ResultChart interaction', () => {
       renderChart(contextWith({ secondPillar: 'fund' }));
 
       expect(
-        screen.getByRole('button', { name: /^II\ssammas \(maksuvaba\)$/ }),
+        screen.getByRole('button', { name: /^II\ssammas \(tulumaksuvaba\)$/ }),
       ).toBeInTheDocument();
     });
 
@@ -604,7 +605,7 @@ describe('ResultChart interaction', () => {
       const hiddenLabels = lastChartProps()
         .data.datasets.filter(({ hidden }: { hidden: boolean }) => hidden)
         .map(({ label }: { label: string }) => label);
-      expect(hiddenLabels).toEqual(['II\u00A0sammas (10% maksuga)']);
+      expect(hiddenLabels).toEqual(['II\u00A0sammas (10% tulumaksuga)']);
     });
   });
 

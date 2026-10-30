@@ -214,18 +214,20 @@ describe('Result step: quick edit of the other decisions', () => {
       const titles = within(screen.getByRole('list', { name: 'Sinu otsused' }))
         .getAllByRole('heading', { level: 4 })
         .map((heading) => heading.textContent);
-      expect(titles[titles.length - 1]).toBe('Fondipension');
+      expect(titles[titles.length - 1]).toBe('Igakuised väljamaksed');
     });
 
     it('says the saver keeps growing the money while no fund pension is started', () => {
       openResultStep();
 
-      expect(decisionRow(/^Fondipension$/)).toHaveTextContent('Sinu valik: Kasvatan edasi');
+      expect(decisionRow(/^Igakuised väljamaksed$/)).toHaveTextContent(
+        'Sinu valik: Kasvatan edasi',
+      );
     });
 
     it('opens the start age and contract under the row without the step heading', () => {
       openResultStep();
-      const row = decisionRow(/^Fondipension$/);
+      const row = decisionRow(/^Igakuised väljamaksed$/);
       userEvent.click(toggleIn(row));
 
       expect(
@@ -238,7 +240,7 @@ describe('Result step: quick edit of the other decisions', () => {
 
     it('shows the chosen start age on the row', () => {
       openResultStep();
-      const row = decisionRow(/^Fondipension$/);
+      const row = decisionRow(/^Igakuised väljamaksed$/);
       userEvent.click(toggleIn(row));
 
       userEvent.selectOptions(
@@ -254,7 +256,7 @@ describe('Result step: quick edit of the other decisions', () => {
 
     it('shows the contract picked under the row', () => {
       openResultStep();
-      const row = decisionRow(/^Fondipension$/);
+      const row = decisionRow(/^Igakuised väljamaksed$/);
       userEvent.click(toggleIn(row));
       userEvent.selectOptions(
         within(row).getByRole('combobox', { name: /Mis vanusest hakkad II\ssambast/ }),
@@ -268,7 +270,7 @@ describe('Result step: quick edit of the other decisions', () => {
       );
 
       userEvent.selectOptions(
-        within(row).getByRole('combobox', { name: 'Mis vanuseni maksed kestavad?' }),
+        within(row).getByRole('combobox', { name: 'Mis vanuseni väljamaksed kestavad?' }),
         '97',
       );
 
@@ -281,8 +283,8 @@ describe('Result step: quick edit of the other decisions', () => {
       openResultStep();
       const atPensionAge = decisionRow(/^II\ssammas pensionieas$/);
       userEvent.click(toggleIn(atPensionAge));
-      userEvent.click(within(atPensionAge).getByRole('radio', { name: /^Fondipension/ }));
-      const row = decisionRow(/^Fondipension$/);
+      userEvent.click(within(atPensionAge).getByRole('radio', { name: /^Võtan igakuiselt/ }));
+      const row = decisionRow(/^Igakuised väljamaksed$/);
       userEvent.click(toggleIn(row));
 
       userEvent.selectOptions(
@@ -300,8 +302,8 @@ describe('Result step: quick edit of the other decisions', () => {
       openResultStep();
 
       expect(
-        within(decisionRow(/^Fondipension$/)).getByRole('button', {
-          name: 'Muuda Fondipension',
+        within(decisionRow(/^Igakuised väljamaksed$/)).getByRole('button', {
+          name: 'Muuda Igakuised väljamaksed',
         }),
       ).toBeVisible();
     });
@@ -325,7 +327,7 @@ describe('Result step: quick edit of the other decisions', () => {
       const row = decisionRow(/^Eripension$/);
 
       expect(row).toHaveTextContent(/60\sa/);
-      expect(row).toHaveTextContent(/Sinu valik: 800\s€ kuus enne maksu/);
+      expect(row).toHaveTextContent(/Sinu valik: 800\s€ kuus enne tulumaksu/);
     });
 
     it('changes the amount under the row', () => {
@@ -335,7 +337,7 @@ describe('Result step: quick edit of the other decisions', () => {
 
       typeInto(within(row).getByRole('spinbutton', { name: /Eripensioni suurus/ }), '900');
 
-      expect(row).toHaveTextContent(/Sinu valik: 900\s€ kuus enne maksu/);
+      expect(row).toHaveTextContent(/Sinu valik: 900\s€ kuus enne tulumaksu/);
     });
 
     it('opens without the step heading', () => {

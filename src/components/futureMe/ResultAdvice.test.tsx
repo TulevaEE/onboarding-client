@@ -74,7 +74,7 @@ const chooseSecondPillarFundPension = () => {
   userEvent.click(
     within(
       screen.getByRole('group', { name: /^II\ssamba väljamakse viis pensionieas$/ }),
-    ).getByRole('radio', { name: /Fondipension/ }),
+    ).getByRole('radio', { name: /Võtan igakuiselt/ }),
   );
 };
 
@@ -82,7 +82,7 @@ const chooseSecondPillarFundPensionAtPayoutAge = () => {
   goTo(/^60\sa, vaatamata$/);
   userEvent.click(
     within(screen.getByRole('group', { name: /^II\ssamba väljamakse viis$/ })).getByRole('radio', {
-      name: /Fondipension/,
+      name: /Võtan igakuiselt/,
     }),
   );
 };
@@ -118,7 +118,7 @@ describe('Result advice', () => {
     openResult();
 
     expect(warning()).not.toBeInTheDocument();
-    expect(screen.queryByText(/Fondipension maksab/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Igakuised väljamaksed on/)).not.toBeInTheDocument();
   });
 
   it('warns when the chosen payout runs short and names the one that carries more', () => {
@@ -138,11 +138,11 @@ describe('Result advice', () => {
     chooseSecondPillarFundPension();
     openResult();
 
-    expect(screen.getByText(/Fondipension maksab/)).toHaveTextContent(
-      /^Fondipension maksab 65–\u2060\d+-\u2060aastaselt keskmiselt [\d\s]+€ kuus rohkem, kui kulud vajavad\. Ülejääk seisab hoiusel/,
+    expect(screen.getByText(/Igakuised väljamaksed on/)).toHaveTextContent(
+      /^Igakuised väljamaksed on 65–\u2060\d+-\u2060aastaselt keskmiselt [\d\s]+€ kuus suuremad, kui kulud vajavad\. Ülejääk seisab hoiusel/,
     );
-    expect(screen.getByText(/Fondipension maksab/)).toHaveTextContent(
-      /Fondipensioni saad ka peatada ja hiljem uuesti alustada/,
+    expect(screen.getByText(/Igakuised väljamaksed on/)).toHaveTextContent(
+      /Väljamaksed saad ka peatada ja hiljem uuesti alustada/,
     );
   });
 
@@ -166,7 +166,7 @@ describe('Result advice', () => {
 
     userEvent.click(
       within(warning() as HTMLElement).getByRole('button', {
-        name: /^Muuda pensionieas\s*: vali Sild ja riiklik pension hiljem$/,
+        name: /^Muuda pensionieas\s*: vali Riiklik pension hiljem$/,
       }),
     );
 

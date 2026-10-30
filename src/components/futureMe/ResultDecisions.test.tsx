@@ -86,9 +86,7 @@ describe('Result step: your decisions', () => {
     openResultStep();
 
     expect(screen.getByRole('heading', { level: 3, name: 'Sinu otsused' })).toBeInTheDocument();
-    expect(
-      screen.getByText('Muuda ükskõik millist valikut: vastus arvutatakse kohe uuesti.'),
-    ).toBeVisible();
+    expect(screen.getByText('Kui muudad valikut, arvutame tulemuse kohe uuesti.')).toBeVisible();
   });
 
   it('lists every decision in the order it opens', () => {
@@ -103,7 +101,7 @@ describe('Result step: your decisions', () => {
       'Riiklik pension 65-⁠aastaselt',
       'II sammas pensionieas',
       'III sammas pensionieas',
-      'Fondipension',
+      'Igakuised väljamaksed',
     ]);
   });
 
@@ -130,7 +128,7 @@ describe('Result step: your decisions', () => {
   it('shows the choice the answers hold now', () => {
     openResultStep();
 
-    expect(secondPillarAt60()).toHaveTextContent('Sinu valik: Jätkan kasvatamist');
+    expect(secondPillarAt60()).toHaveTextContent('Sinu valik: Kasvatan edasi');
     expect(decisionRow(/^Riiklik pension/)).toHaveTextContent('Sinu valik: Kohe täissumma');
   });
 
@@ -138,7 +136,7 @@ describe('Result step: your decisions', () => {
     it('keeps the choices closed until asked for', () => {
       openResultStep();
 
-      expect(screen.queryByRole('radio', { name: 'Kõik korraga' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('radio', { name: 'Võtan korraga välja' })).not.toBeInTheDocument();
       expect(changeButton(secondPillarAt60())).toHaveAttribute('aria-expanded', 'false');
     });
 
@@ -160,7 +158,7 @@ describe('Result step: your decisions', () => {
         name: /^II\ssammas 60-⁠aastaselt$/,
       });
       expect(within(group).getAllByRole('radio')).toHaveLength(3);
-      expect(within(group).getByRole('radio', { name: 'Jätkan kasvatamist' })).toBeChecked();
+      expect(within(group).getByRole('radio', { name: 'Kasvatan edasi' })).toBeChecked();
       expect(changeButton(secondPillarAt60())).toHaveAttribute('aria-expanded', 'true');
     });
 
@@ -168,8 +166,8 @@ describe('Result step: your decisions', () => {
       openResultStep();
       userEvent.click(changeButton(secondPillarAt60()));
 
-      expect(screen.getByRole('radio', { name: 'Fondipension' })).toHaveAccessibleDescription(
-        /^Maksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud raha kasvab fondis edasi\. Sinu ja riigi II\ssamba sissemaksed lõpevad\./,
+      expect(screen.getByRole('radio', { name: 'Võtan igakuiselt' })).toHaveAccessibleDescription(
+        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara kasvab fondis edasi\. Sinu ja riigi II\ssamba sissemaksed lõpevad\./,
       );
     });
 
@@ -177,9 +175,9 @@ describe('Result step: your decisions', () => {
       openResultStep();
       userEvent.click(changeButton(decisionRow(/^II\ssammas pensionieas$/)));
 
-      expect(screen.getByRole('radio', { name: 'Fondipension' })).not.toHaveAccessibleDescription(
-        /sissemaksed/,
-      );
+      expect(
+        screen.getByRole('radio', { name: 'Võtan igakuiselt' }),
+      ).not.toHaveAccessibleDescription(/sissemaksed/);
     });
 
     it('does not say the II pillar contributions end at the pension age when the saver works on, as the payout starts when the work ends', () => {
@@ -194,12 +192,12 @@ describe('Result step: your decisions', () => {
       userEvent.click(within(trail()).getByRole('button', { name: /^Tulemus/ }));
       userEvent.click(changeButton(decisionRow(/^II\ssammas pensionieas$/)));
 
-      expect(screen.getByRole('radio', { name: 'Fondipension' })).not.toHaveAccessibleDescription(
-        /sissemaksed/,
-      );
-      expect(screen.getByRole('radio', { name: 'Kõik korraga' })).not.toHaveAccessibleDescription(
-        /sissemaksed/,
-      );
+      expect(
+        screen.getByRole('radio', { name: 'Võtan igakuiselt' }),
+      ).not.toHaveAccessibleDescription(/sissemaksed/);
+      expect(
+        screen.getByRole('radio', { name: 'Võtan korraga välja' }),
+      ).not.toHaveAccessibleDescription(/sissemaksed/);
     });
 
     it('leaves how long the money lasts to the result instead of repeating it on every card', () => {
@@ -216,16 +214,16 @@ describe('Result step: your decisions', () => {
       const before = spendAt90();
 
       userEvent.click(changeButton(secondPillarAt60()));
-      userEvent.click(screen.getByRole('radio', { name: 'Kõik korraga' }));
+      userEvent.click(screen.getByRole('radio', { name: 'Võtan korraga välja' }));
 
       expect(spendAt90()).not.toBe(before);
-      expect(secondPillarAt60()).toHaveTextContent('Sinu valik: Kõik korraga');
+      expect(secondPillarAt60()).toHaveTextContent('Sinu valik: Võtan korraga välja');
     });
 
     it('stops asking about the pension age once the money is taken out earlier', () => {
       openResultStep();
       userEvent.click(changeButton(secondPillarAt60()));
-      userEvent.click(screen.getByRole('radio', { name: 'Kõik korraga' }));
+      userEvent.click(screen.getByRole('radio', { name: 'Võtan korraga välja' }));
 
       expect(
         screen.queryByRole('heading', { name: /^II\ssammas pensionieas$/ }),
@@ -304,7 +302,7 @@ describe('Result step: your decisions', () => {
       userEvent.click(changeButton(secondPillarAt60()));
       userEvent.click(changeButton(secondPillarAt60()));
 
-      expect(screen.queryByRole('radio', { name: 'Kõik korraga' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('radio', { name: 'Võtan korraga välja' })).not.toBeInTheDocument();
     });
   });
 });

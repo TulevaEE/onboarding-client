@@ -65,7 +65,7 @@ const takeSecondPillarAsLumpSum = () => {
   goTo(/^60\sa, vaatamata$/);
   userEvent.click(
     within(screen.getByRole('group', { name: /^II\ssamba väljamakse viis$/ })).getByRole('radio', {
-      name: /Kõik korraga/,
+      name: /Võtan korraga välja/,
     }),
   );
 };
@@ -211,7 +211,7 @@ describe('Result legacy card', () => {
 
       userEvent.click(screen.getByRole('button', { name: /Lükka riiklik pension edasi/ }));
 
-      expect(screen.getByRole('heading', { level: 2, name: 'Pensioniiga' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 2, name: /^Pensioniiga/ })).toBeInTheDocument();
     });
 
     it('opens the costs step from the button', () => {

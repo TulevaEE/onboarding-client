@@ -16,6 +16,7 @@ import { Contract } from './age66Answers';
 import { ContractChoices } from './ContractChoices';
 import { ChoiceMadeNote } from './ChoiceMadeNote';
 import { FundPensionChoice } from './prefill';
+import { ageTense } from './planAges';
 
 const PLANS: ThirdPillarPlan[] = ['keep', 'fund', 'lump'];
 const PLAN_PAYOUT_CHOICE: Record<ThirdPillarPlan, PayoutChoice> = {
@@ -94,11 +95,22 @@ export const Age55Step = ({
   onEditThirdPillar,
 }: Props) => {
   const intl = useIntl();
+  const birthYear = birthYearOrFallback(answers);
   const lockMessage: TranslationKey | null = age55.lock && `futureMe.age55.lock.${age55.lock}`;
 
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-age-55-heading">
       <ChapterHead step={FutureMeStep.AGE_55}>
+        <p className="chapter-kicker">
+          <FormattedMessage
+            id="futureMe.age55.kicker"
+            values={{
+              age: THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021,
+              year: birthYear + THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021,
+              tense: ageTense(birthYear, THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021),
+            }}
+          />
+        </p>
         <h2 id="future-me-age-55-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
           <FormattedMessage id="futureMe.age55.title" />
         </h2>
@@ -109,9 +121,7 @@ export const Age55Step = ({
             id="futureMe.age55.intro"
             values={{
               age: THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021,
-              year: String(
-                birthYearOrFallback(answers) + THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021,
-              ),
+              year: String(birthYear + THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021),
               strong,
             }}
           />
@@ -157,7 +167,7 @@ export const Age55Step = ({
           idPrefix="future-me-55"
           contract={contract}
           startAge={age55.age}
-          birthYear={birthYearOrFallback(answers)}
+          birthYear={birthYear}
           sex={answers.sex}
           endAge={endAge}
           onChange={onContractChange}

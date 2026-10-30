@@ -15,7 +15,7 @@ import { usePageTitle } from '../common/usePageTitle';
 import { ACCOUNT_PATH } from '../paths';
 import { Age55Step } from './Age55Step';
 import { age55Of } from './age55';
-import { decisionOrdinal } from './age60Answers';
+import { pillarsOpeningAt60 } from './age60Answers';
 import { Age60Step } from './Age60Step';
 import { isThirdPillarAfterMissing } from './age65Answers';
 import { Age65Step } from './Age65Step';
@@ -297,7 +297,10 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           sex={answers.sex}
           age={payoutAge(plan)}
           tense={ageTense(birthYearOrFallback(answers), payoutAge(plan))}
-          ordinal={decisionOrdinal(steps)}
+          pillarsOpening={pillarsOpeningAt60(
+            steps,
+            hasThirdPillarAt(answers, plan, payoutAge(plan)),
+          )}
           hasSecondPillar={plan.savesInSecondPillar}
           hasThirdPillar={hasThirdPillarAt(answers, plan, payoutAge(plan))}
           headingRef={headingRef}
