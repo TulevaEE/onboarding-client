@@ -24,10 +24,12 @@ const PLAN_PAYOUT_CHOICE: Record<ThirdPillarPlan, PayoutChoice> = {
   lump: 'lump',
 };
 const PAYOUTS_URL = 'https://tuleva.ee/pensioni-valjamaksed/';
+const SAVINGS_ORDER = ['deposit', 'investments', 'thirdPillar', 'secondPillar'] as const;
 
 interface Props {
   answers: YouAnswers;
   age55: Age55;
+  hasSecondPillar: boolean;
   headingRef: RefObject<HTMLHeadingElement>;
   contract: Contract;
   endAge: string;
@@ -81,6 +83,7 @@ const PlanOutcome = ({
 export const Age55Step = ({
   answers,
   age55,
+  hasSecondPillar,
   headingRef,
   contract,
   endAge,
@@ -187,6 +190,26 @@ export const Age55Step = ({
           </a>
         </p>
       </details>
+      {hasSecondPillar && (
+        <details className="mt-3">
+          <summary className="fw-medium">
+            <FormattedMessage id="futureMe.age55.faq.order.question" />
+          </summary>
+          <p className="mt-2">
+            <FormattedMessage id="futureMe.age55.faq.order.intro" />
+          </p>
+          <ol aria-label={intl.formatMessage({ id: 'futureMe.age55.faq.order.listLabel' })}>
+            {SAVINGS_ORDER.map((savings) => (
+              <li key={savings}>
+                <FormattedMessage id={`futureMe.age55.faq.order.${savings}`} />
+              </li>
+            ))}
+          </ol>
+          <p className="mb-0">
+            <FormattedMessage id="futureMe.age55.faq.order.why" />
+          </p>
+        </details>
+      )}
     </section>
   );
 };

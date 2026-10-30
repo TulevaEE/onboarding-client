@@ -203,7 +203,7 @@ export const Age60Step = ({
         onEndAgeChange={onEndAgeChange}
         onEditYou={onEditYou}
       />
-      <FundPensionFaq />
+      <FundPensionFaq hasBothPillars={hasSecondPillar && hasThirdPillar} />
     </section>
   );
 };

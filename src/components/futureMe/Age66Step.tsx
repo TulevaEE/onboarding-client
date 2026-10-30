@@ -8,6 +8,7 @@ import {
   contractChosenAt,
   contractLock,
   fundStartOf,
+  hasPillar,
   isContractAsked,
   isGrowing,
   Pillar,
@@ -51,6 +52,8 @@ const titleStateOf = (isStarting: boolean, isAsked: boolean) => {
 };
 
 const MIN_NOTICEABLE_RISE = 0.5;
+
+const paragraph = (chunks: React.ReactNode) => <p>{chunks}</p>;
 
 export const Age66Step = ({
   answers,
@@ -177,7 +180,20 @@ export const Age66Step = ({
           )}
         </p>
       )}
-      {!isEmbedded && <FundPensionFaq />}
+      {!isEmbedded && (
+        <FundPensionFaq
+          hasBothPillars={hasPillar('secondPillar', context) && hasPillar('thirdPillar', context)}
+        >
+          <details className="faq-item">
+            <summary>
+              <FormattedMessage id="futureMe.age66.faq.yearlyFalls.q" />
+            </summary>
+            <div className="faq-body">
+              <FormattedMessage id="futureMe.age66.faq.yearlyFalls.a" values={{ p: paragraph }} />
+            </div>
+          </details>
+        </FundPensionFaq>
+      )}
     </StepSection>
   );
 };
