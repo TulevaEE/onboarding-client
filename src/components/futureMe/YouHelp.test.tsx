@@ -295,7 +295,7 @@ describe('Sina step help buttons', () => {
     expect(within(dialog).queryByText(/veel ei arvesta/)).not.toBeInTheDocument();
   });
 
-  it('tells what the prefilled state pension is and where to check it', () => {
+  it('says the prefilled state pension is the average, not a forecast, and where to check it', () => {
     renderYouStep();
     const stateField = screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ });
 
@@ -303,9 +303,12 @@ describe('Sina step help buttons', () => {
     const dialog = screen.getByRole('dialog');
 
     expect(
-      within(dialog).getByText(/riikliku pensioni arvutuslikku prognoosi/),
+      within(dialog).getByText(/See on keskmine vanaduspension 2026\.\saastal/),
     ).toBeInTheDocument();
-    expect(within(dialog).getByText(/keskmist vanaduspensioni 2026\.\saastal/)).toBeInTheDocument();
+    expect(
+      within(dialog).getByText(/See ei ole sinu riikliku pensioni prognoos/),
+    ).toBeInTheDocument();
+    expect(within(dialog).queryByText(/arvutuslikku prognoosi/)).not.toBeInTheDocument();
     expect(
       within(dialog).getByRole('link', { name: /^Sotsiaalkindlustusameti pensionikalkulaatoris/ }),
     ).toHaveAttribute('href', expect.stringContaining('pension-calculator'));
