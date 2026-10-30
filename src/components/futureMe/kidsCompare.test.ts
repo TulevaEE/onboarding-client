@@ -158,6 +158,18 @@ describe('rescue allowance or the pension for the children', () => {
     expect(rescueComparisonOf(withRescue({ kidsSupUser: 'other' })).supplement).toBe('otherParent');
     expect(rescueComparisonOf(withRescue({ kidsSupUser: 'split' })).supplement).toBe('split');
   });
+
+  it('says the saver gets a supplement when the other parent gets it but the saver got the II pillar payment for the unpaid months', () => {
+    const youngestUnpaidFor12Months = withRescue({
+      kidsBirthYears: ['1990', '1992', '2022'],
+      kidsBirthMonths: ['', '', '3'],
+      kidsIIMonths: ['', '', '24'],
+      kidsSupUser: 'other',
+      kidsIIUser: 'me',
+    });
+
+    expect(rescueComparisonOf(youngestUnpaidFor12Months).supplement).toBe('self');
+  });
 });
 
 describe('special pension or the pension for the children', () => {

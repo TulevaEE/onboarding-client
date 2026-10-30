@@ -110,13 +110,10 @@ const familyOf = (kidsYears: number, ownTotal: number): Family => {
 
 const supplementOf = (input: PensionInput): SupplementState => {
   const kids = input.kids ?? {};
-  if ((kids.supUser || kids.user) === 'other') {
-    return 'otherParent';
+  if (childSupplement(input) > 0) {
+    return kids.supUser === 'split' ? 'split' : 'self';
   }
-  if (childSupplement(input) === 0) {
-    return 'none';
-  }
-  return kids.supUser === 'split' ? 'split' : 'self';
+  return (kids.supUser || kids.user) === 'other' ? 'otherParent' : 'none';
 };
 
 const monthlyAt = (
