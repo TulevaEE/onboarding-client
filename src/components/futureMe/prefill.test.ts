@@ -125,6 +125,7 @@ describe('sex from the personal code', () => {
 describe('prefill for the You step', () => {
   it('takes the birth year and sex from the user', () => {
     expect(derivePrefill(mockUser)).toMatchObject({ birthYear: 1989, sex: 'M' });
+    expect(derivePrefill({ ...mockUser, retirementAge: 66 }).registerPensionAge).toBe(66);
   });
 
   it('leaves out what the user does not tell', () => {

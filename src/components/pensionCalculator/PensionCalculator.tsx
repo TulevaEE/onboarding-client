@@ -51,14 +51,15 @@ import {
   DEFAULT_RETURN_PERCENT,
   MAX_SALARY,
   MEMBERSHIP_BONUS_RATE,
+  PAINDLIK_PENSION_YEARS,
   PAYOUT_STRATEGIES,
   PayoutStrategy,
   project,
   projectedRemainingYears,
-  projectedRetirementAge,
   RETIREMENT_AGE_DEFAULT,
   SMART_PAYOUT_HORIZON_AGE,
   SECOND_PILLAR_RATES,
+  startingRetirementAge,
   thirdPillarTaxCapMonthly,
 } from './calculation';
 
@@ -108,9 +109,6 @@ const RETURN_STEP = 1;
 const HISTORICAL_RETURN = 7; // long-run historical stock return, marked on the slider
 const HISTORICAL_RETURN_LEFT = ((HISTORICAL_RETURN - RETURN_MIN) / (RETURN_MAX - RETURN_MIN)) * 100;
 const FEE_STEP = 0.01;
-// Paindlik pension: the state pension can start up to five years before the
-// statutory age or be deferred past it, so the slider runs statutory ±5.
-const PAINDLIK_PENSION_YEARS = 5;
 // No statutory minimum exists: shorter periods are legal and simply taxed at 10%
 // below the recommended duration, so the floor is only what a slider needs.
 const WITHDRAWAL_YEARS_MIN = 1;
@@ -390,20 +388,8 @@ export const PensionCalculator: React.FC = () => {
       capitalRowsSettled
     ) {
       const now = new Date();
-      // The register's retirement age is the statutory floor, established only two
-      // years ahead. For young savers the life-expectancy link will have raised it
-      // well past 65 by the time they get there, so start the slider from the
-      // higher of the register's age and our projection for their birth year —
-      // kept inside the slider's paindlik pension window.
-      const statutoryAge = user.retirementAge || RETIREMENT_AGE_DEFAULT;
       const birthYear = new Date(user.dateOfBirth).getFullYear();
-      const retirementAge = Math.min(
-        Math.max(
-          statutoryAge,
-          Number.isFinite(birthYear) ? projectedRetirementAge(birthYear) : statutoryAge,
-        ),
-        statutoryAge + PAINDLIK_PENSION_YEARS,
-      );
+      const retirementAge = startingRetirementAge(user.retirementAge, birthYear);
       setInputs({
         currentAge: user.age,
         retirementAge,

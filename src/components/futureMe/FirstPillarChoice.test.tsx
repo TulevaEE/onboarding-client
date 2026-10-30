@@ -36,6 +36,10 @@ const trail = () => screen.getByRole('navigation', { name: 'Loo etapid' });
 const goTo = (name: RegExp) => userEvent.click(within(trail()).getByRole('button', { name }));
 
 const fillInYou = ({ withEarlyRetirement = false, specialPensionStartAge = '55' } = {}) => {
+  userEvent.selectOptions(
+    screen.getByRole('combobox', { name: /Millal on sinu pensioniiga/ }),
+    '66',
+  );
   typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ }), '700');
   typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu brutopalk/ }), '2000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }), '10000');

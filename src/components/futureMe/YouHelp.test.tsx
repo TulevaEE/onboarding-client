@@ -342,6 +342,26 @@ describe('Sina step help buttons', () => {
     expect(within(dialog).queryByText(/Kui olid ametnik enne 2013/)).not.toBeInTheDocument();
   });
 
+  it('tells that the pension age is projected from Tuleva’s data, not taken from the Social Insurance Board calculator', () => {
+    renderYouStep();
+    const ageField = screen.getByRole('combobox', { name: /Millal on sinu pensioniiga/ });
+
+    userEvent.click(helpButtonBeside(ageField, '.col-12', /Kuidas pensioniiga määratakse$/));
+    const dialog = within(screen.getByRole('dialog'));
+
+    expect(
+      dialog.getByText(
+        /Pensioniiga on prognoositud Tuleva andmete järgi, mitte Sotsiaalkindlustusameti kalkulaatori järgi/,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      dialog.queryByText(/Arvutame nagu Sotsiaalkindlustusameti kalkulaator/),
+    ).not.toBeInTheDocument();
+    expect(
+      dialog.queryByText(/kui Sotsiaalkindlustusameti kalkulaator näitab/),
+    ).not.toBeInTheDocument();
+  });
+
   it('writes out the Social Insurance Board self-service in the pension age explanation', () => {
     renderYouStep();
     const ageField = screen.getByRole('combobox', { name: /Millal on sinu pensioniiga/ });
