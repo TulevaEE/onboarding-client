@@ -17,7 +17,12 @@ import {
   serviceIncreaseAtPension,
   YouAnswers,
 } from './youAnswers';
-import { attributableIIMonths, isPrefilledChild, KidsPrefill } from './kidsPrefill';
+import {
+  attributableIIMonths,
+  isPrefilledChild,
+  isPrefilledIIMonths,
+  KidsPrefill,
+} from './kidsPrefill';
 import { AmountField, BlockProps, FieldLabel, PREFILLED_HINT_ID, SelectField } from './YouFields';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';
@@ -265,9 +270,12 @@ export const KidsSection = ({
                     value={answers.kidsIIMonths[index] ?? ''}
                     aria-invalid={isMonthsInvalid}
                     aria-describedby={classNames(`${monthsId}-hint`, {
-                      [PREFILLED_HINT_ID]:
-                        Boolean(prefilledKids?.iiMonths[index]) &&
-                        answers.kidsIIMonths[index] === prefilledKids?.iiMonths[index],
+                      [PREFILLED_HINT_ID]: isPrefilledIIMonths(
+                        prefilledKids,
+                        answers.kidsBirthYears,
+                        answers.kidsIIMonths,
+                        index,
+                      ),
                       [`${monthsId}-error`]: isMonthsInvalid,
                     })}
                     onChange={(event) => changeIIMonths(index, event.target.value)}
