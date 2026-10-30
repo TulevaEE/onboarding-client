@@ -1,7 +1,7 @@
 import { Age60Answers, initialAge60 } from './age60Answers';
 import { Age65Answers, initialAge65, isPayoutChoiceMadeAtAnotherStep } from './age65Answers';
-import { CURRENT_YEAR, retirementYears } from './engine/pension';
-import { payoutAge, retirementAge } from './planAges';
+import { retirementYears } from './engine/pension';
+import { hasReachedAge, payoutAge, retirementAge } from './planAges';
 import { FundPensionChoice } from './prefill';
 import { FutureMeStep, StepId, StepPlanInput } from './steps';
 import { toStepPlanInput, YouAnswers } from './youAnswers';
@@ -14,11 +14,12 @@ const pillarOf = ({ pillar }: FundPensionChoice): Pillar =>
 export const startedFundPensionStep = (
   { pillar, startAge }: FundPensionChoice,
   plan: StepPlanInput,
+  today: Date = new Date(),
 ): StepId => {
   if (startAge >= retirementYears(plan) && !isPayoutChoiceMadeAtAnotherStep(plan)) {
     return FutureMeStep.AGE_65;
   }
-  const isRetired = CURRENT_YEAR - plan.birthYear >= retirementAge(plan);
+  const isRetired = hasReachedAge(plan, retirementAge(plan), today);
   return startAge >= payoutAge(plan) || pillar === 'SECOND' || isRetired
     ? FutureMeStep.AGE_60
     : FutureMeStep.AGE_55;

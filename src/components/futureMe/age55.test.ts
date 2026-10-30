@@ -44,15 +44,15 @@ describe('withdrawal age', () => {
 
 describe('withdrawal allowed', () => {
   it('needs a III pillar', () => {
-    expect(isWithdrawalAllowed({ hasThirdPillar: false, age: 55, pensionAge: 65 })).toBe(false);
+    expect(isWithdrawalAllowed({ hasThirdPillar: false, hasReachedPensionAge: false })).toBe(false);
   });
 
   it('is open before the pension age', () => {
-    expect(isWithdrawalAllowed({ hasThirdPillar: true, age: 64, pensionAge: 65 })).toBe(true);
+    expect(isWithdrawalAllowed({ hasThirdPillar: true, hasReachedPensionAge: false })).toBe(true);
   });
 
   it('is closed from the pension age on', () => {
-    expect(isWithdrawalAllowed({ hasThirdPillar: true, age: 65, pensionAge: 65 })).toBe(false);
+    expect(isWithdrawalAllowed({ hasThirdPillar: true, hasReachedPensionAge: true })).toBe(false);
   });
 });
 
@@ -207,6 +207,17 @@ describe('age 55 from the answers', () => {
     const view = age55Of(filledIn({ birthYear: '1950', thirdPillarPlan: 'fund' }), 1);
 
     expect(view).toMatchObject({ lock: 'pensionAge', plan: 'keep', payout: null });
+  });
+
+  it('stays open in the year of the pension age until the birth month, keeping a fund pension', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(2026, 9, 15));
+    const bornIn1961 = (birthMonth: number) =>
+      age55Of(filledIn({ birthYear: '1961', birthMonth, thirdPillarPlan: 'fund' }), 1);
+
+    expect(bornIn1961(12)).toMatchObject({ lock: null, plan: 'fund' });
+    expect(bornIn1961(1)).toMatchObject({ lock: 'pensionAge', plan: 'keep' });
+    jest.useRealTimers();
   });
 
   it('retires earlier with the early retirement years the user picked', () => {

@@ -2,7 +2,6 @@ import { Age65Answers, initialAge65, pensionKind, workUntilOf } from './age65Ans
 import { Age66Answers, initialAge66 } from './age66Answers';
 import lifeTableData from './engine/lifeTable.json';
 import {
-  CURRENT_YEAR,
   FirstPillarChoice,
   LifeTable,
   PensionInput,
@@ -14,7 +13,7 @@ import {
 import { kidsInputOf } from './kidsInput';
 import { StepPlanInput } from './steps';
 import { amountOf, rescueBasisOf, serviceYearsOf, YouAnswers } from './youAnswers';
-import { retirementAge } from './planAges';
+import { hasReachedAge, retirementAge } from './planAges';
 
 const STATE_SECOND_PILLAR_RATE = 0.04;
 const lifeTable: LifeTable = lifeTableData;
@@ -36,8 +35,8 @@ export const initialSpecialPension = (): SpecialPensionAnswers => ({
 export const specialPensionStartAge = (plan: StepPlanInput): number =>
   plan.specialPensionStartAge ?? retirementYears(plan);
 
-export const isSpecialPensionStarted = (plan: StepPlanInput): boolean =>
-  specialPensionStartAge(plan) < CURRENT_YEAR - plan.birthYear;
+export const isSpecialPensionStarted = (plan: StepPlanInput, today: Date = new Date()): boolean =>
+  hasReachedAge(plan, specialPensionStartAge(plan), today);
 
 export const isWorkAsked = (plan: StepPlanInput): boolean =>
   specialPensionStartAge(plan) < retirementAge(plan) && !isSpecialPensionStarted(plan);

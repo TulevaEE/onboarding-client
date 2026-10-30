@@ -19,6 +19,7 @@ import {
   ThirdPillarPlan,
   YouAnswers,
 } from './youAnswers';
+import { hasReachedAge } from './planAges';
 import { THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021 } from './thirdPillarPayoutAges';
 
 const lifeTable: LifeTable = lifeTableData;
@@ -64,13 +65,11 @@ export const withdrawalAge = (currentAge: number): number =>
 
 export const isWithdrawalAllowed = ({
   hasThirdPillar,
-  age,
-  pensionAge,
+  hasReachedPensionAge,
 }: {
   hasThirdPillar: boolean;
-  age: number;
-  pensionAge: number;
-}): boolean => hasThirdPillar && age < pensionAge;
+  hasReachedPensionAge: boolean;
+}): boolean => hasThirdPillar && !hasReachedPensionAge;
 
 export const isFundPensionAvailable = (age: number): boolean =>
   age >= THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021;
@@ -173,15 +172,19 @@ export const age55Of = (
   const pensionAge = pensionAgeValue(answers);
   const hasThirdPillar =
     amountOf(answers.thirdPillarAmount) > 0 || amountOf(answers.thirdPillarMonthly) > 0;
+  const hasReachedPensionAge = hasReachedAge(
+    { birthYear, birthMonth: answers.birthMonth ?? undefined },
+    pensionAge,
+  );
   const isAllowed =
     answers.thirdPillarJoined === 'before' &&
-    isWithdrawalAllowed({ hasThirdPillar, age, pensionAge });
+    isWithdrawalAllowed({ hasThirdPillar, hasReachedPensionAge });
   const isFundAvailable = isFundPensionAvailable(age);
   const plan = effectivePlan(answers.thirdPillarPlan, { isAllowed, isFundAvailable });
   let lock: Age55Lock | null = null;
   if (!hasThirdPillar) {
     lock = 'noThirdPillar';
-  } else if (age >= pensionAge) {
+  } else if (hasReachedPensionAge) {
     lock = 'pensionAge';
   }
   return {

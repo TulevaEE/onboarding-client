@@ -1,5 +1,5 @@
 import { retirementYears } from './engine/pension';
-import { ageTense, hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
+import { ageTense, hasReachedAge, hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
 
 const noPrefill = { birthYear: 1980, sex: null, secondPillarRate: null };
@@ -113,5 +113,20 @@ describe('planAges', () => {
         }),
       ).toBe(true);
     });
+  });
+});
+
+describe('whether the saver has reached an age by a date', () => {
+  const midOctober2026 = new Date(2026, 9, 15);
+
+  it('counts the birth month', () => {
+    expect(hasReachedAge({ birthYear: 1961, birthMonth: 12 }, 65, midOctober2026)).toBe(false);
+    expect(hasReachedAge({ birthYear: 1961, birthMonth: 10 }, 65, midOctober2026)).toBe(true);
+    expect(hasReachedAge({ birthYear: 1961, birthMonth: 1 }, 65, midOctober2026)).toBe(true);
+  });
+
+  it('takes January when the birth month is not known', () => {
+    expect(hasReachedAge({ birthYear: 1961 }, 65, midOctober2026)).toBe(true);
+    expect(hasReachedAge({ birthYear: 1962 }, 65, midOctober2026)).toBe(false);
   });
 });
