@@ -25,6 +25,12 @@ describe('fund pension FAQ', () => {
     expect(second).toHaveTextContent(/Kui sa enam tööd ei tee.*on sambad üsna võrdsed/);
   });
 
+  it('answers without a source line under the answers', () => {
+    renderFaq({ hasBothPillars: true });
+
+    expect(document.body).not.toHaveTextContent(/Allikas/);
+  });
+
   it('does not ask which pillar to use first with only one pillar', () => {
     renderFaq();
 
