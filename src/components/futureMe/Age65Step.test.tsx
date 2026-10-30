@@ -227,6 +227,42 @@ describe('Age 65 step', () => {
     });
   });
 
+  describe('the FAQ on deferring and half the pension', () => {
+    const openDeferralAnswer = () =>
+      userEvent.click(screen.getByText('Mida tähendab pensioni edasilükkamine või pool pensioni?'));
+
+    it("shows what deferring by a year does to the saver's own pension, for life", () => {
+      openAge65Step();
+      openDeferralAnswer();
+
+      expect(
+        screen.getByText(
+          /1 aasta edasi lükates on sinu pension 700\s€ asemel 756\s€ kuus, 56\s€ rohkem kogu elu/,
+        ),
+      ).toBeVisible();
+    });
+
+    it('shows that the untaken half grows like a deferred pension, but by half', () => {
+      openAge65Step();
+      openDeferralAnswer();
+
+      expect(
+        screen.getByText(/saad kohe 350\s€ kuus\..*1 aasta pärast on täissumma 728\s€ kuus/),
+      ).toBeVisible();
+    });
+
+    it('says when deferring by a year has paid back the pension not taken', () => {
+      openAge65Step();
+      openDeferralAnswer();
+
+      expect(
+        screen.getByText(
+          /jääb saamata 8\s400\s€\. Suurem pension teenib selle tagasi umbes 13 aastaga/,
+        ),
+      ).toBeVisible();
+    });
+  });
+
   describe('working during retirement', () => {
     it('is not chosen by default and shows no end age', () => {
       openAge65Step();
@@ -445,6 +481,12 @@ describe('Age 65 step', () => {
       expect(
         screen.getByRole('heading', { level: 2, name: 'Kes sa oled ja mis sul juba on?' }),
       ).toBeInTheDocument();
+    });
+
+    it('leaves out the FAQ on deferring, as the pension cannot be deferred', () => {
+      expect(
+        screen.queryByText('Mida tähendab pensioni edasilükkamine või pool pensioni?'),
+      ).not.toBeInTheDocument();
     });
 
     it('asks whether the third pillar contribution changes while not working', () => {

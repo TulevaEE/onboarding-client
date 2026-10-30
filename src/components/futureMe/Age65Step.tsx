@@ -10,6 +10,7 @@ import {
 } from './age65Answers';
 import { age55Of } from './age55';
 import { Age65Deferral } from './Age65Deferral';
+import { Age65DeferralFaq } from './Age65DeferralFaq';
 import { Age65Pillars } from './Age65Pillars';
 import { Age65Work } from './Age65Work';
 import { Age66Answers } from './age66Answers';
@@ -213,6 +214,7 @@ export const Age65Step = ({
       >
         <RescueCompareFaq context={compareContext} />
         <SpecialCompareFaq context={compareContext} />
+        <Age65DeferralFaq you={you} />
         <details className="faq-item">
           <summary>
             <FormattedMessage id="futureMe.age65.faq.yearScore.q" />

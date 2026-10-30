@@ -21,6 +21,8 @@ export const HELP_LINKS = {
   tuleva: 'https://tuleva.ee/',
   ska: 'https://sotsiaalkindlustusamet.ee/et',
   skaSelfService: 'https://iseteenindus.sotsiaalkindlustusamet.ee/',
+  skaFlexiblePension:
+    'https://sotsiaalkindlustusamet.ee/pension-ja-seotud-huvitised/pensioni-liigid/paindlik-pension',
   skaSpecialPensions:
     'https://sotsiaalkindlustusamet.ee/pension-ja-seotud-huvitised/pensioni-liigid/eripensionid',
   hazardLists: 'https://www.riigiteataja.ee/akt/24317',
