@@ -12,6 +12,8 @@ export const HELP_LINKS = {
   kops: 'https://www.riigiteataja.ee/akt/KoPS',
   emta: 'https://www.emta.ee/',
   pensionikeskus: 'https://www.pensionikeskus.ee/',
+  pensionikeskusStatsII: 'https://www.pensionikeskus.ee/statistika/ii-sammas/',
+  pensionikeskusStatsIII: 'https://www.pensionikeskus.ee/statistika/iii-sammas/',
   tuleva: 'https://tuleva.ee/',
   ska: 'https://sotsiaalkindlustusamet.ee/et',
   skaSelfService: 'https://iseteenindus.sotsiaalkindlustusamet.ee/',

@@ -304,6 +304,7 @@ export const ThirdPillarSection = ({
         <SelectField
           id="future-me-third-pillar-return"
           label="futureMe.you.thirdPillarFund.label"
+          help="fundCur"
           value={String(answers.thirdPillarReturnPercent)}
           options={returnOptions(intl)}
           onChange={(percent) => onChange({ thirdPillarReturnPercent: Number(percent) })}
