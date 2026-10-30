@@ -115,6 +115,7 @@ export const YouStep = ({
       <ul className="you-list">
         <YouSection
           id="future-me-me"
+          icon="user"
           title={<FormattedMessage id="futureMe.you.me.title" />}
           summary={<FormattedMessage id="futureMe.you.me.summary" values={{ birthYear, sex }} />}
           labels={ME_SECTION_LABELS}

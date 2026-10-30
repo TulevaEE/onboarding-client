@@ -409,7 +409,9 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
         />
       )}
       {renderStep()}
-      {step !== FutureMeStep.RESULT && <PotBar context={resultContext} />}
+      {step !== FutureMeStep.RESULT && (
+        <PotBar context={resultContext} isCostsChosen={visited.has(FutureMeStep.COSTS)} />
+      )}
       <div className="step-nav">
         <button
           type="button"

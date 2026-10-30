@@ -2112,7 +2112,7 @@ describe('FutureMe', () => {
         ).toBeVisible();
       });
 
-      it('count list 1 work of less than ten years for nothing', () => {
+      it('count list 1 work of less than ten years for nothing, without a note saying so', () => {
         renderFutureMe();
         addSpecialCases();
         userEvent.click(specialCase(/Töötasin tervist kahjustaval tööl/));
@@ -2122,7 +2122,7 @@ describe('FutureMe', () => {
         expect(earlyYearsField()).toHaveDisplayValue(
           withNbsp('ei lähe varem (tavalises pensionieas)'),
         );
-        expect(screen.getByText(/9 aastast ei piisa/)).toBeVisible();
+        expect(screen.queryByText(/aastast ei piisa/)).not.toBeInTheDocument();
       });
 
       it('switch to list 2, which needs twelve and a half years and gives five', () => {
@@ -2763,7 +2763,7 @@ describe('FutureMe', () => {
       renderFutureMe();
       openAge55();
 
-      const question = screen.getByText('Mis on igakuised väljamaksed?');
+      const question = screen.getByText('Mis on igakuised väljamaksed ehk fondipension?');
       userEvent.click(question);
       // eslint-disable-next-line testing-library/no-node-access
       const answer = question.closest('details') as HTMLElement;
@@ -2778,7 +2778,7 @@ describe('FutureMe', () => {
       renderFutureMe();
       openAge55();
 
-      expect(screen.getAllByText('Mis on igakuised väljamaksed?')).toHaveLength(1);
+      expect(screen.getAllByText('Mis on igakuised väljamaksed ehk fondipension?')).toHaveLength(1);
       [
         'Kuidas valida igakuiste väljamaksete lepingut?',
         'Millal valida igakuised väljamaksed?',

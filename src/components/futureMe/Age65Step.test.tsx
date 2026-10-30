@@ -89,6 +89,23 @@ const openAge65Step = ({
   userEvent.click(within(trail()).getByRole('button', { name: trailName }));
 };
 
+const openWithRescueService = () => {
+  loggedInAs({ dateOfBirth: '1970-01-01', retirementAge: 66 });
+  render(
+    <IntlProvider locale="et" messages={translations.et}>
+      <FutureMe />
+    </IntlProvider>,
+  );
+  fillInYou();
+  userEvent.click(screen.getByRole('button', { name: 'Lisa erijuht' }));
+  userEvent.click(screen.getByRole('checkbox', { name: /Töötasin päästeteenistuses/ }));
+  typeInto(
+    screen.getByRole('spinbutton', { name: /Mitu aastat töötasid päästeteenistuses/ }),
+    '20',
+  );
+  userEvent.click(within(trail()).getByRole('button', { name: /pension, vaatamata$/ }));
+};
+
 const pensionModeGroup = () =>
   screen.getByRole('group', { name: 'Kuidas võtad riikliku pensioni?' });
 const mode = (name: RegExp) => within(pensionModeGroup()).getByRole('radio', { name });
@@ -428,7 +445,7 @@ describe('Age 65 step', () => {
     openAge65Step();
 
     expect(screen.getByText('Mis on aastahinne ja staažiaasta?')).toBeInTheDocument();
-    expect(screen.getByText('Mis on igakuised väljamaksed?')).toBeInTheDocument();
+    expect(screen.getByText('Mis on igakuised väljamaksed ehk fondipension?')).toBeInTheDocument();
   });
 
   it('compares the rescue allowance with the pension for the children when both rights are the saver’s', () => {
@@ -451,6 +468,39 @@ describe('Age 65 step', () => {
     expect(
       screen.getByText('Ootetoetus või laste eest pension: kumb annab rohkem?'),
     ).toBeInTheDocument();
+  });
+
+  describe('with rescue service', () => {
+    const noteItem = (start: string) =>
+      screen.getByText(
+        (_, element) => element?.tagName === 'LI' && !!element.textContent?.startsWith(start),
+      );
+
+    beforeEach(openWithRescueService);
+
+    it('says who pays the waiting allowance until the pension age', () => {
+      expect(noteItem('Kes maksab:')).toHaveTextContent(
+        /kuni 66-aastaseks saamiseni maksab sulle päästeasutus vanaduspensioni ootel oleva päästeteenistuja toetust/,
+      );
+      expect(noteItem('Kes maksab:')).toHaveTextContent(
+        /Alates 66\. eluaastast maksab vanaduspensioni Sotsiaalkindlustusamet/,
+      );
+    });
+
+    it('says the rescue increase starts right away on the waiting allowance', () => {
+      expect(noteItem('Päästja suurendus:')).toHaveTextContent(
+        /staaž 20\sa, \+20% kohe ootetoetusele 61-aastaselt ja hiljem ka vanaduspensionile\./,
+      );
+    });
+
+    it('says the allowance and the increase are paid only while not working as a rescuer', () => {
+      expect(noteItem('Töö:')).toHaveTextContent(
+        /makstakse ainult siis, kui sa ei tööta päästjana\. Muul erialal võid edasi töötada\./,
+      );
+      expect(noteItem('Töö:')).toHaveTextContent(
+        /ära alusta II\ssamba väljamakseid enne töö lõppu/,
+      );
+    });
   });
 
   describe('retiring early on favourable terms', () => {

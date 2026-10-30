@@ -7,6 +7,7 @@ import { useMe } from '../common/apiHooks';
 import { User } from '../common/apiModels';
 import translations from '../translations';
 import { mockUser } from '../../test/backend-responses';
+import { installDialogPolyfill } from './dialogPolyfill';
 
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
@@ -90,6 +91,19 @@ describe('Special pension step', () => {
     expect(amountField()).toBeRequired();
     expect(screen.getByText(/Sisesta eripensioni suurus, siis näed/)).toBeVisible();
     expect(screen.getByText(/kaitseväel ja politseil 50% ametipalgast/)).toBeVisible();
+  });
+
+  it('explains behind a help button where to find the special pension amount', () => {
+    installDialogPolyfill();
+    openSpecialPensionStep();
+
+    userEvent.click(
+      screen.getByRole('button', { name: 'Selgitus: Kust leian oma eripensioni summa' }),
+    );
+
+    const dialog = screen.getByRole('dialog', { name: 'Kust leian oma eripensioni summa?' });
+    expect(within(dialog).getByRole('link', { name: /^SKA iseteeninduses/ })).toBeInTheDocument();
+    expect(within(dialog).getByText(/Ametipalga näed oma palgateatiselt/)).toBeInTheDocument();
   });
 
   it('keeps the larger special pension at the pension age', () => {

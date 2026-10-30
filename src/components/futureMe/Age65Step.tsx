@@ -18,6 +18,7 @@ import { FirstPillarChoice } from './FirstPillarChoice';
 import {
   chosenFirstPillar,
   firstPillarComparison,
+  pensionInputOf,
   SpecialPensionAnswers,
   specialPensionStartAge,
 } from './specialPensionAnswers';
@@ -25,6 +26,7 @@ import { exactPercent } from './amountFormat';
 import { retirementYears } from './engine/pension';
 import { FundPensionFaq } from './FundPensionFaq';
 import { RescueCompareFaq, SpecialCompareFaq } from './KidsCompareFaq';
+import { RescueNotes } from './RescueNotes';
 import { FutureMeStep, StepPlanInput } from './steps';
 import { YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
@@ -151,6 +153,11 @@ export const Age65Step = ({
           </LinkButton>
         </p>
       )}
+      <RescueNotes
+        input={pensionInputOf(specialPension, you, plan, answers, age66)}
+        age={age}
+        pensionAge={pensionAge}
+      />
       <Age65Work
         answers={answers}
         you={you}

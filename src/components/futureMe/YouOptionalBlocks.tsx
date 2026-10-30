@@ -178,6 +178,7 @@ export const KidsSection = ({
   return (
     <YouSection
       id="future-me-kids"
+      icon="users"
       title={<FormattedMessage id="futureMe.you.kids.title" />}
       help="kids"
       summary={<FormattedMessage id="futureMe.you.kids.summary" values={{ count: rows }} />}
@@ -418,7 +419,6 @@ export const WorkSection = ({
   const intl = useIntl();
   const { hazardList } = answers;
   const hasHazard = hazardList !== 'no';
-  const hazardYears = parseFloat(answers.hazardYears);
   const hazardNeeded = hasHazard ? HAZARD_YEARS_NEEDED[hazardList] : 0;
   const civilIncreaseText = civilIncreaseOf(answers);
   const isChecked: Record<SpecialCaseId, boolean> = {
@@ -476,8 +476,6 @@ export const WorkSection = ({
                 list: hazardList,
                 needed: hazardNeeded,
                 service: SERVICE_YEARS_NEEDED[hazardList],
-                isTooShort: hazardYears >= 0 && hazardYears < hazardNeeded ? 'yes' : 'no',
-                years: hazardYears,
               }}
               name="futureMe.you.hazardYears.name"
               step={0.5}
@@ -558,6 +556,7 @@ export const WorkSection = ({
   return (
     <YouSection
       id="future-me-work"
+      icon="shield"
       title={<FormattedMessage id="futureMe.you.work.title" />}
       help="special"
       summary={

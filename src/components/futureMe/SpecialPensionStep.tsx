@@ -1,6 +1,7 @@
 import React, { RefObject, useState } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
+import { HelpButton } from './HelpButton';
 import { Age65Answers, pensionKind } from './age65Answers';
 import { Age66Answers } from './age66Answers';
 import { euro, exactPercent } from './amountFormat';
@@ -156,6 +157,7 @@ export const SpecialPensionStep = ({
             <>
               {' '}
               <FormattedMessage id="futureMe.specialPension.monthly.hint" />
+              <HelpButton topic="spMonthly" />
             </>
           )}
         </div>
@@ -268,7 +270,7 @@ export const SpecialPensionStep = ({
           <EditYouButton labelId="futureMe.specialPension.changeStart" onClick={onEditYou} />
         </p>
       )}
-      <p className="text-secondary small mb-0 text-pretty">
+      <p className="text-secondary mb-0 text-pretty">
         <FormattedMessage id="futureMe.specialPension.footer" />
       </p>
     </StepSection>

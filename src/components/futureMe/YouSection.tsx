@@ -4,6 +4,7 @@ import { useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';
+import { IconName, LineIcon } from './FutureMeIcon';
 
 export interface YouSectionLabels {
   close: TranslationKey;
@@ -30,6 +31,7 @@ export interface YouOptionalSection {
 
 interface Props {
   id: string;
+  icon: IconName;
   title: ReactNode;
   help?: HelpTopic;
   summary: ReactNode;
@@ -43,6 +45,7 @@ interface Props {
 
 export const YouSection = ({
   id,
+  icon,
   title,
   help,
   summary,
@@ -82,7 +85,10 @@ export const YouSection = ({
   return (
     <li className={classNames('you-section', { 'is-open': isIncluded && isOpen })}>
       <div className="you-section-head">
-        <div>
+        <span className="you-section-icon">
+          <LineIcon name={icon} />
+        </span>
+        <div className="you-section-text">
           <div className="you-section-title-line text-balance">
             <h3 className="you-section-title" id={`${id}-title`}>
               {title}

@@ -12,6 +12,7 @@ export const HELP_TOPICS = [
   'special',
   'sp',
   'spStart',
+  'spMonthly',
   'hazard',
   'rescue',
   'rescueBasis',

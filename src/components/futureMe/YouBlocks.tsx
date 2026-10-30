@@ -53,6 +53,7 @@ export const StateSection = ({
   return (
     <YouSection
       id="future-me-state"
+      icon="landmark"
       title={<FormattedMessage id="futureMe.you.state.title" />}
       summary={
         <FormattedMessage
@@ -125,6 +126,7 @@ export const SecondPillarSection = ({
   return (
     <YouSection
       id="future-me-second-pillar"
+      icon="briefcase"
       title={<FormattedMessage id="futureMe.you.secondPillar.title" />}
       help="pillars"
       summary={
@@ -215,6 +217,7 @@ export const ThirdPillarSection = ({
   return (
     <YouSection
       id="future-me-third-pillar"
+      icon="tree"
       title={<FormattedMessage id="futureMe.you.thirdPillar.title" />}
       summary={
         <FormattedMessage
