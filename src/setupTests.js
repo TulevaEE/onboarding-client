@@ -35,17 +35,21 @@ window.matchMedia = () => ({
 
 configure({ adapter: new Adapter() });
 
-// Tulevane Mina's values and expected numbers are for 2026; Jest 27 can fake the date only with the timers
-const FUTURE_ME_TODAY = Date.parse('2026-10-15T12:00:00Z');
-if (expect.getState().testPath?.includes('/components/futureMe/')) {
+const DAY_FUTURE_ME_VALUES_ARE_FOR = Date.parse('2026-10-15T12:00:00Z');
+
+const pinTodayWithoutFakeTimers = (today) => {
   const RealDate = Date;
   global.Date = class extends RealDate {
     constructor(...args) {
-      super(...(args.length > 0 ? args : [FUTURE_ME_TODAY]));
+      super(...(args.length > 0 ? args : [today]));
     }
 
     static now() {
-      return FUTURE_ME_TODAY;
+      return today;
     }
   };
+};
+
+if (expect.getState().testPath?.includes('/components/futureMe/')) {
+  pinTodayWithoutFakeTimers(DAY_FUTURE_ME_VALUES_ARE_FOR);
 }
