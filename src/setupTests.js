@@ -10,6 +10,7 @@ configureTestingLibrary({ asyncUtilTimeout: 3000 });
 
 jest.mock('react-intl', () => {
   const reactIntl = jest.requireActual('react-intl');
+  const { useContext } = jest.requireActual('react');
   const intl = reactIntl.createIntl({
     locale: 'en',
     messages: mockTranslations.en,
@@ -23,7 +24,7 @@ jest.mock('react-intl', () => {
 
   return {
     ...reactIntl,
-    useIntl: () => intl,
+    useIntl: () => useContext(reactIntl.IntlContext) || intl,
   };
 });
 
