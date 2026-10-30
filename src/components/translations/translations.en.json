@@ -3237,5 +3237,9 @@
   "futureMe.choiceMade.fundPension": "Oled selle valiku juba teinud: {pillar, select, SECOND {II samba} other {III samba}} fondipension algas {startYear}. aastal, kui olid {startAge}-aastane.",
   "futureMe.payoutChoice.grow": "Raha jääb fondi kasvama. Pensionieas võtad vajadusel osa välja, 10% tulumaks.",
   "futureMe.payoutChoice.fund": "Maksuvaba väljamakse igal kuul elada jäänud aastate peale. Ülejäänud raha kasvab fondis edasi.{endsSecondPillarContributions, select, yes { Sinu ja riigi II samba sissemaksed lõpevad.} other {}}",
-  "futureMe.payoutChoice.lump": "Kogu raha korraga välja, 10% tulumaks. Raha on hoiusel.{endsSecondPillarContributions, select, yes { Sinu ja riigi II samba sissemaksed lõpevad.} other {}}"
+  "futureMe.payoutChoice.lump": "Kogu raha korraga välja, 10% tulumaks. Raha on hoiusel.{endsSecondPillarContributions, select, yes { Sinu ja riigi II samba sissemaksed lõpevad.} other {}}",
+  "futureMe.potBar.ariaLabel": "Jooksev kokkuvõte",
+  "futureMe.potBar.secondPillar": "II sammas {age}‑aastaselt",
+  "futureMe.potBar.thirdPillar": "III sammas {age}‑aastaselt",
+  "futureMe.potBar.deposit": "Hoius {age}‑aastaselt"
 }

@@ -35,6 +35,7 @@ import { ExpensesStep } from './ExpensesStep';
 import { derivePrefill, YouPrefill } from './prefill';
 import { ResultStep } from './ResultStep';
 import { startedFundPensionAnswers, startedFundPensionsAt } from './startedFundPensions';
+import { PotBar } from './PotBar';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { SpecialPensionStep } from './SpecialPensionStep';
 import { StepTrail } from './StepTrail';
@@ -105,6 +106,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
     target !== FutureMeStep.YOU && (blocked.length > 0 || invalidChildMonths.current !== undefined);
   const isFirst = step === steps[0];
   const isLast = step === steps[steps.length - 1];
+  const resultContext = { you: answers, plan, age60, age65, age66, specialPension, expenses };
 
   useEffect(() => {
     trackFutureMeStep(step);
@@ -327,10 +329,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
     }
     return (
       <DecisionActionsProvider value={{ change: changeDecisions, goTo }}>
-        <ResultStep
-          context={{ you: answers, plan, age60, age65, age66, specialPension, expenses }}
-          headingRef={headingRef}
-        />
+        <ResultStep context={resultContext} headingRef={headingRef} />
       </DecisionActionsProvider>
     );
   };
@@ -349,6 +348,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
         onSelect={goTo}
       />
       {renderStep()}
+      {step !== FutureMeStep.RESULT && <PotBar context={resultContext} />}
       <div className="step-nav">
         <button
           type="button"
