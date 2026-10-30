@@ -199,6 +199,23 @@ describe('ResultChart reading guide', () => {
     expect(guide()).not.toHaveTextContent('Fondipensioni periood');
   });
 
+  it('explains the hatched layer as yearly withdrawals of what the costs miss, with 10% tax', () => {
+    renderChart();
+
+    expect(guide()).toHaveTextContent(
+      /Viirutatud kiht „II\ssammas \(10% maksuga\)“ on raha, mille Elukaar eeldab, et võtad pensionieast alates igal aastal fondist välja/,
+    );
+    expect(guide()).toHaveTextContent(
+      'Kui sa raha välja ei võta, jääb see fondi kasvama ja kulud jäävad selle võrra katmata.',
+    );
+  });
+
+  it('leaves the withdrawals out when the chart has no hatched layer', () => {
+    renderChart({ you: { firstPillarMonthly: '1500' } });
+
+    expect(guide()).not.toHaveTextContent('Viirutatud kiht');
+  });
+
   it('leaves the years before the pension age out when the chart starts at the pension age', () => {
     renderChart();
 
