@@ -30,7 +30,7 @@ const MONTHS_IN_YEAR = 12;
 
 type CompareContext = Pick<ResultContext, 'you' | 'plan' | 'age65' | 'age66' | 'specialPension'>;
 
-export type SupplementState = 'otherParent' | 'none' | 'self';
+export type SupplementState = 'otherParent' | 'none' | 'self' | 'split';
 
 interface Period {
   from: number;
@@ -113,7 +113,10 @@ const supplementOf = (input: PensionInput): SupplementState => {
   if ((kids.supUser || kids.user) === 'other') {
     return 'otherParent';
   }
-  return childSupplement(input) > 0 ? 'self' : 'none';
+  if (childSupplement(input) === 0) {
+    return 'none';
+  }
+  return kids.supUser === 'split' ? 'split' : 'self';
 };
 
 const monthlyAt = (

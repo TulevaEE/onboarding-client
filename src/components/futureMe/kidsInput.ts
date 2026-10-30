@@ -5,7 +5,6 @@ import {
   childRows,
   countedKids,
   effectivePensionAge,
-  maxChildBirthYear,
   pensionAgeValue,
   rescueBasisOf,
   validChildBirthYear,
@@ -73,7 +72,7 @@ const childAt = (
   now: Date,
 ): Child | null => {
   const typed = (answers.kidsBirthYears[index] ?? '').trim();
-  const year = validChildBirthYear(typed, maxChildBirthYear(answers));
+  const year = validChildBirthYear(typed, answers);
   const month = parseInt(answers.kidsBirthMonths[index] ?? '', 10) || 0;
   if (year === null || year + YEARS_RAISING_A_CHILD > retirementYear) {
     return null;
@@ -97,6 +96,12 @@ const oldAgePensionYearOf = (answers: YouAnswers): number => {
   const retirementYear = birthYear + pensionAgeValue(answers);
   return basis === 'mix' ? Math.max(retirementYear, countedKids(answers).lateYear) : retirementYear;
 };
+
+const isInSecondPillar = (answers: YouAnswers): boolean =>
+  (Number(answers.secondPillarRate) || 0) > 0 || (Number(answers.secondPillarAmount) || 0) > 0;
+
+export const isIIPaymentUserAsked = (answers: YouAnswers, now: Date = new Date()): boolean =>
+  isInSecondPillar(answers) && (kidsInputOf(answers, now)?.b2021 ?? 0) > 0;
 
 export const kidsInputOf = (answers: YouAnswers, now: Date = new Date()): KidsInput | undefined => {
   if (!answers.kidsAdded) {
@@ -126,5 +131,6 @@ export const kidsInputOf = (answers: YouAnswers, now: Date = new Date()): KidsIn
     earlyUser: answers.kidsEarlyUser,
     user: answers.kidsEarlyUser,
     supUser: answers.kidsSupUser,
+    iiUser: isInSecondPillar(answers) ? answers.kidsIIUser : 'me',
   };
 };

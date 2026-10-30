@@ -140,9 +140,9 @@ describe('Sina step help buttons', () => {
       /Kuidas III\ssamba sissemakse arvutuses muutub$/,
     ],
     [
-      'who raises the kids',
+      'kids supplement',
       () => screen.getByRole('combobox', { name: /Kes saab pensionilisa/ }),
-      /Keda loetakse lapse kasvatajaks$/,
+      /Mis on pensionilisa ja kuidas seda jagada$/,
     ],
     [
       'hazard list',

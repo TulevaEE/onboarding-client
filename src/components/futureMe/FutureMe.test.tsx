@@ -1384,6 +1384,8 @@ describe('FutureMe', () => {
     });
 
     describe('children', () => {
+      beforeAll(installDialogPolyfill);
+
       it('open on adding, ask for one child and keep the focus on the button', () => {
         renderFutureMe();
 
@@ -1451,7 +1453,7 @@ describe('FutureMe', () => {
 
         expect(kidBirthYearField(1)).toBeInvalid();
         expect(
-          screen.getByText(/1\. lapse sünniaasta: sisesta aasta vahemikus 1930–\d{4}/),
+          screen.getByText(/1\. lapse sünniaasta: sisesta aasta vahemikus \d{4}–\d{4}/),
         ).toBeVisible();
       });
 
@@ -1555,6 +1557,92 @@ describe('FutureMe', () => {
         userEvent.selectOptions(supplementUser, 'teine vanem');
 
         expect(supplementUser).toHaveDisplayValue('teine vanem');
+      });
+
+      it('offer to share the supplement equally between the parents', () => {
+        renderFutureMe();
+        addKids(['1990']);
+
+        expect(
+          within(screen.getByRole('combobox', { name: /^Kes saab pensionilisa\?/ }))
+            .getAllByRole('option')
+            .map((option) => option.textContent),
+        ).toEqual(['mina', 'teine vanem', 'jagame võrdselt']);
+      });
+
+      it('ask who gets the state II pillar payment only for a child born from September 2021', () => {
+        const iiPaymentUser = () =>
+          screen.queryByRole('combobox', { name: /^Kes saab riigi lisamakse II\ssambasse\?/ });
+        renderFutureMe();
+        addKids(['1990']);
+
+        expect(iiPaymentUser()).not.toBeInTheDocument();
+
+        userEvent.click(addChildButton());
+        typeInto(kidBirthYearField(2), '2025');
+
+        expect(iiPaymentUser()).toHaveDisplayValue('mina');
+        expect(
+          within(iiPaymentUser() as HTMLElement)
+            .getAllByRole('option')
+            .map((option) => option.textContent),
+        ).toEqual(['mina', 'teine vanem']);
+      });
+
+      it('set the years early back to the regular age when the other parent takes the right', () => {
+        renderFutureMe();
+        addKids(['1990', '1992', '1994', '1996', '1998']);
+        userEvent.selectOptions(earlyYearsField(), '5');
+
+        userEvent.selectOptions(
+          screen.getByRole('combobox', { name: /Kes kasutab varem pensionile mineku õigust/ }),
+          'teine vanem',
+        );
+
+        expect(earlyYearsField()).toHaveDisplayValue(
+          withNbsp('ei lähe varem (tavalises pensionieas)'),
+        );
+      });
+
+      it('say under the early retirement question that without an agreement each parent gets half', () => {
+        renderFutureMe();
+        addKids(['1990', '1992', '1994']);
+
+        expect(
+          screen.getByRole('combobox', { name: /Kes kasutab varem pensionile mineku õigust/ }),
+        ).toHaveAccessibleDescription(
+          'Kirjaliku kokkuleppeta saab kumbki vanem poole ajast. Elukaar arvestab ainult täisaastaid.',
+        );
+      });
+
+      it.each([
+        [
+          'who gets the supplement',
+          /^Selgitus: Mis on pensionilisa ja kuidas seda jagada$/,
+          /jagatakse see vanemate vahel võrdselt/,
+        ],
+        [
+          'who gets the state II pillar payment',
+          /^Selgitus: Kes saab riigi lisamakse II\ssambasse$/,
+          /pooleks ei jagata/,
+        ],
+        [
+          'who retires early',
+          /^Selgitus: Kes saab laste eest varem pensionile minna$/,
+          /kumbki vanem poole ajast/,
+        ],
+        [
+          'a disabled child',
+          /^Selgitus: Mida annab puudega lapse kasvatamine$/,
+          /keskmise, raske või sügava puudega/,
+        ],
+      ])('explain %s behind its own „?“', (_, button, content) => {
+        renderFutureMe();
+        addKids(['1990', '1992', '2025']);
+
+        userEvent.click(screen.getAllByRole('button', { name: button })[0]);
+
+        expect(within(screen.getByRole('dialog')).getByText(content)).toBeInTheDocument();
       });
 
       it('ask the birth month of every child, not known at first', () => {
