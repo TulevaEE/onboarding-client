@@ -152,12 +152,17 @@ describe('Result step: the return the answer rests on', () => {
     );
   });
 
-  it('ends with who provides the service and that the result is no promise', () => {
+  it('ends with who provides the service, that the result is no promise and that taxes depend on the person', () => {
     openResultStep();
 
     expect(screen.getByText(/^Finantsteenust pakub Tuleva Fondid AS\./)).toBeInTheDocument();
     expect(
       screen.getByText(/^Tegemist on sinu valitud eeldustel põhineva näitliku arvutusega\./),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Maksustamine oleneb isikuga seotud asjaoludest, sh residentsusest. Maksuseadused muutuvad ajas.',
+      ),
     ).toBeInTheDocument();
   });
 
