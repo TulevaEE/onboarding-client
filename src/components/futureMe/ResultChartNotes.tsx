@@ -1,8 +1,9 @@
 import React from 'react';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
-import { euro } from './amountFormat';
-import { Assumption, SummaryNote } from './chartNotes';
+import { euro, signedPercent } from './amountFormat';
+import { Assumption, CoverSteps, SummaryNote } from './chartNotes';
 import { ChartEvent } from './chartEvents';
+import { DEPOSIT_REAL_RETURN } from './engine/pension';
 import { SUMMARY_LABELS } from './chartSources';
 import { strong } from './richText';
 import { useTouchView } from './useTouchView';
@@ -71,13 +72,59 @@ export const ChartAssumption = ({ assumption }: { assumption: Assumption }) => (
   </p>
 );
 
+const COVER_ORDER_ID = 'future-me-chart-cover-order';
+
+const CoverOrder = ({ cover }: { cover: CoverSteps }) => {
+  const hasWithdrawals = cover.hasSecondPillarWithdrawal || cover.hasThirdPillarWithdrawal;
+  if (!cover.hasDeposit && !hasWithdrawals) {
+    return null;
+  }
+  return (
+    <li>
+      <span id={COVER_ORDER_ID}>
+        <FormattedMessage id="futureMe.result.chart.guide.order.title" />
+      </span>
+      <ol aria-labelledby={COVER_ORDER_ID}>
+        <li>
+          <FormattedMessage
+            id="futureMe.result.chart.guide.order.pensions"
+            values={{ hasFundPension: cover.hasFundPension ? 'yes' : 'no' }}
+          />
+        </li>
+        {cover.hasDeposit && (
+          <li>
+            <FormattedMessage
+              id="futureMe.result.chart.guide.order.deposit"
+              values={{ depositRate: signedPercent(DEPOSIT_REAL_RETURN) }}
+            />
+          </li>
+        )}
+        {cover.hasSecondPillarWithdrawal && (
+          <li>
+            <FormattedMessage id="futureMe.result.chart.guide.order.secondPillar" />
+          </li>
+        )}
+        {cover.hasThirdPillarWithdrawal && (
+          <li>
+            <FormattedMessage
+              id="futureMe.result.chart.guide.order.thirdPillar"
+              values={{ afterSecond: cover.hasSecondPillarWithdrawal ? 'yes' : 'no' }}
+            />
+          </li>
+        )}
+      </ol>
+      {hasWithdrawals && <FormattedMessage id="futureMe.result.chart.guide.order.notTaken" />}
+    </li>
+  );
+};
+
 interface GuideProps {
   events: ChartEvent[];
   startsBeforePension: boolean;
-  hasWithdrawals: boolean;
+  cover: CoverSteps;
 }
 
-export const ChartGuide = ({ events, startsBeforePension, hasWithdrawals }: GuideProps) => {
+export const ChartGuide = ({ events, startsBeforePension, cover }: GuideProps) => {
   const intl = useIntl();
   const isTouchView = useTouchView();
   const horizon = events.find(({ kind }) => kind === 'horizon');
@@ -118,11 +165,7 @@ export const ChartGuide = ({ events, startsBeforePension, hasWithdrawals }: Guid
             />
           </li>
         )}
-        {hasWithdrawals && (
-          <li>
-            <FormattedMessage id="futureMe.result.chart.guide.withdrawals" />
-          </li>
-        )}
+        <CoverOrder cover={cover} />
         {fundPeriods.length > 0 && (
           <li>
             <FormattedMessage
