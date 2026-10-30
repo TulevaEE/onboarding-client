@@ -550,3 +550,10 @@ describe('civil service years in the result', () => {
     });
   });
 });
+
+describe('birth month in the result', () => {
+  it('gives the engine the month the saver was born in', () => {
+    expect(resultInputOf(contextWith({ birthMonth: 6 })).birthMonth).toBe(6);
+    expect(resultInputOf(contextWith({ birthMonth: null })).birthMonth).toBeUndefined();
+  });
+});

@@ -20,6 +20,7 @@ const BIRTH_YEAR_TEXT = /^\d{4}$/;
 const MALE_FIRST_DIGITS = ['1', '3', '5', '7'];
 const FEMALE_FIRST_DIGITS = ['2', '4', '6', '8'];
 const ISO_YEAR = /^(\d{4})-/;
+const ISO_MONTH = /^\d{4}-(\d{2})-/;
 
 const DEFAULT_SECOND_PILLAR_RATE_PERCENT = 2;
 const NO_SECOND_PILLAR_RATE = '0';
@@ -31,6 +32,7 @@ const MONTHS_IN_YEAR = 12;
 export interface YouPrefill {
   birthYear: number | null;
   sex: Sex | null;
+  birthMonth?: number | null;
   registerPensionAge?: number | null;
   secondPillarRate: string | null;
   grossMonthly?: string | null;
@@ -63,6 +65,11 @@ export const parseBirthYear = (typed: string): number | null => {
 
 export const deriveBirthYear = (dateOfBirth: string): number | null =>
   parseBirthYear(ISO_YEAR.exec(dateOfBirth)?.[1] ?? '');
+
+export const deriveBirthMonth = (dateOfBirth: string): number | null => {
+  const month = Number(ISO_MONTH.exec(dateOfBirth)?.[1]);
+  return month >= 1 && month <= 12 ? month : null;
+};
 
 export const deriveSex = (personalCode: string): Sex | null => {
   if (!PERSONAL_CODE.test(personalCode)) {
@@ -158,6 +165,7 @@ export const derivePrefill = (
   return {
     birthYear,
     sex: deriveSex(user.personalCode),
+    birthMonth: deriveBirthMonth(user.dateOfBirth),
     registerPensionAge: user.retirementAge ?? null,
     secondPillarRate: deriveSecondPillarRate(user),
     grossMonthly: deriveGrossMonthly(contributions, today),

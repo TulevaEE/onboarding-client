@@ -128,6 +128,13 @@ describe('prefill for the You step', () => {
     expect(derivePrefill({ ...mockUser, retirementAge: 66 }).registerPensionAge).toBe(66);
   });
 
+  it('takes the birth month from the date of birth, and nothing when there is none', () => {
+    expect(derivePrefill({ ...mockUser, dateOfBirth: '1989-11-05' }).birthMonth).toBe(11);
+    expect(derivePrefill({ ...mockUser, dateOfBirth: '1989-01-01T00:00:00Z' }).birthMonth).toBe(1);
+    expect(derivePrefill({ ...mockUser, dateOfBirth: '' }).birthMonth).toBeNull();
+    expect(derivePrefill({ ...mockUser, dateOfBirth: '1989-13-05' }).birthMonth).toBeNull();
+  });
+
   it('leaves out what the user does not tell', () => {
     expect(derivePrefill({ ...mockUser, dateOfBirth: '', personalCode: '12345678' })).toMatchObject(
       {

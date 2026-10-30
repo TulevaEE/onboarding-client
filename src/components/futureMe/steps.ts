@@ -39,6 +39,7 @@ const MEASURED_RESULT_STEP = 9;
 
 export interface StepPlanInput {
   birthYear: number;
+  birthMonth?: number;
   pensionAgeYears?: number;
   earlyRetirementYears: number;
   hasSpecialPension: boolean;
