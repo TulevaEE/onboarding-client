@@ -18,7 +18,14 @@ import { age55Of } from './age55';
 import { decisionOrdinal } from './age60Answers';
 import { Age60Step } from './Age60Step';
 import { Age65Step } from './Age65Step';
-import { contractField, initialAge66 } from './age66Answers';
+import {
+  contractEndAgeOf,
+  contractField,
+  contractStartAgeOf,
+  endAgeField,
+  initialAge66,
+  Pillar,
+} from './age66Answers';
 import { Age66Step } from './Age66Step';
 import { DecisionActionsProvider } from './decisionActions';
 import { DecisionChanges } from './decisions';
@@ -201,6 +208,8 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
         />
       );
     }
+    const contractStartAgeAt60 = (pillar: Pillar) =>
+      contractStartAgeOf(pillar, age66, { you: answers, plan, age60, age65 }) ?? payoutAge(plan);
     const startedAt = (at: StepId) =>
       startedFundPensionsAt(prefillAtStart.fundPensions ?? [], at, toStepPlanInput(started.you));
     if (step === FutureMeStep.AGE_55) {
@@ -208,13 +217,22 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
       return (
         <Age55Step
           answers={answers}
-          age55={age55Of(answers, firstYearShare, age66.thirdPillarContract)}
+          age55={age55Of(
+            answers,
+            firstYearShare,
+            age66.thirdPillarContract,
+            contractEndAgeOf('thirdPillar', age66, { age60, age65, you: answers, plan }),
+          )}
           headingRef={headingRef}
           contract={age66.thirdPillarContract}
+          endAge={age66.thirdPillarEndAge}
           startedFundPension={startedAt(FutureMeStep.AGE_55).thirdPillar}
           onChange={(changes) => setAnswers((previous) => ({ ...previous, ...changes }))}
           onContractChange={(thirdPillarContract) =>
             setAge66((previous) => ({ ...previous, thirdPillarContract }))
+          }
+          onEndAgeChange={(thirdPillarEndAge) =>
+            setAge66((previous) => ({ ...previous, thirdPillarEndAge }))
           }
           onEditThirdPillar={editThirdPillar}
         />
@@ -225,6 +243,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
         <Age60Step
           answers={age60}
           birthYear={birthYearOrFallback(answers)}
+          sex={answers.sex}
           age={payoutAge(plan)}
           tense={ageTense(birthYearOrFallback(answers), payoutAge(plan))}
           ordinal={decisionOrdinal(steps)}
@@ -232,10 +251,17 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           hasThirdPillar={hasThirdPillarAt(answers, plan, payoutAge(plan))}
           headingRef={headingRef}
           contracts={age66}
+          contractStartAges={{
+            secondPillar: contractStartAgeAt60('secondPillar'),
+            thirdPillar: contractStartAgeAt60('thirdPillar'),
+          }}
           startedFundPensions={startedAt(FutureMeStep.AGE_60)}
           onChange={setAge60}
           onContractChange={(pillar, contract) =>
             setAge66((previous) => ({ ...previous, [contractField(pillar)]: contract }))
+          }
+          onEndAgeChange={(pillar, endAge) =>
+            setAge66((previous) => ({ ...previous, [endAgeField(pillar)]: endAge }))
           }
           onEditYou={() => goTo(FutureMeStep.YOU)}
         />

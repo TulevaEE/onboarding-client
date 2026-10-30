@@ -704,6 +704,15 @@
       padding: 0 $padding-x $padding-y;
     }
 
+    .contract-end-age-hint {
+      margin: 0;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid $note-border;
+      border-radius: $border-radius;
+      background: $note-bg;
+      font-size: 0.875rem;
+    }
+
     small {
       color: $text-secondary;
       text-wrap: pretty;

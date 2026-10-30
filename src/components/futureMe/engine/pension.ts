@@ -39,6 +39,7 @@ export interface SeparateThirdPillar {
   mode: 'grow' | 'lump' | 'fund';
   contract?: 'once' | string;
   start?: number;
+  endAge?: number;
 }
 
 export interface SecondPillarEarlyWithdrawal {
@@ -105,6 +106,7 @@ export interface Scenario {
   half?: number;
   contract?: 'once' | string;
   fundFrom?: number;
+  endAge?: number;
 }
 
 export interface SimulationRow {
@@ -415,6 +417,13 @@ const remainingLifeYears = (table: LifeTable, sex: Sex, age: number): number => 
 export function fundPensionTerm(table: LifeTable, sex: Sex, age: number): number {
   return Math.max(1, Math.round(remainingLifeYears(table, sex, age)));
 }
+
+export const oneContractTerm = (
+  table: LifeTable,
+  sex: Sex,
+  start: number,
+  endAge: number = start,
+): number => Math.max(fundPensionTerm(table, sex, start), endAge - start);
 
 export function yearlyContractTerm(table: LifeTable, sex: Sex, age: number): number {
   return Math.max(
@@ -792,7 +801,7 @@ export function simulate(
     : Math.max(open2, scenario.fundFrom || 0);
   const contractStart = scenario.id === 'B' || onceC ? Math.max(fundFrom, currentAge) : null;
   const contractTerm =
-    contractStart !== null ? fundPensionTerm(table, input.sex, contractStart) : 0;
+    contractStart !== null ? oneContractTerm(table, input.sex, contractStart, scenario.endAge) : 0;
   const scheduledPayout = (pot: number, age: number) => {
     if (scenario.id === 'D' || (scenario.id === 'C' && !onceC)) {
       return pot / yearlyContractTerm(table, input.sex, age);
@@ -820,7 +829,7 @@ export function simulate(
         : Math.max(open3, currentAge);
     }
   }
-  const term3 = start3 !== null ? fundPensionTerm(table, input.sex, start3) : 0;
+  const term3 = start3 !== null ? oneContractTerm(table, input.sex, start3, sep?.endAge) : 0;
   const scheduledThirdPayout = (pot: number, age: number) => {
     if (start3 === null) {
       return pot / yearlyContractTerm(table, input.sex, age);

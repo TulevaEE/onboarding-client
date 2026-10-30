@@ -12,6 +12,16 @@ const renderFaq = () =>
   );
 
 describe('fund pension FAQ', () => {
+  it('starts with how to choose the contract and until which age one contract pays', () => {
+    renderFaq();
+    const [first] = screen.getAllByRole('group');
+
+    expect(first).toHaveTextContent(/^Kuidas valida fondipensioni lepingut\?/);
+    expect(first).toHaveTextContent(/keskmise elueani.*maksuvaba/);
+    expect(first).toHaveTextContent(/väiksem.*kauem/);
+    expect(first).toHaveTextContent(/lühem.*ei ole maksuvaba/i);
+  });
+
   it('asks about starting five years before the pension age, not at a fixed age', () => {
     renderFaq();
 

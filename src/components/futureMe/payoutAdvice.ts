@@ -1,6 +1,6 @@
 import { payoutAge } from './planAges';
 import { isPayoutChoiceMadeAtAnotherStep, withMode } from './age65Answers';
-import { Contract, hasPillar, payoutAtPensionAge } from './age66Answers';
+import { Contract, contractEndAgeOf, hasPillar, payoutAtPensionAge } from './age66Answers';
 import { DecisionChanges, DecisionId } from './decisions';
 import lifeTableData from './engine/lifeTable.json';
 import {
@@ -111,6 +111,7 @@ const timingOf = (scenario: Scenario) => ({
 const comparedScenarios = (context: ResultContext, chosen: Scenario): Scenario[] => {
   const isDeferralOpen = options(resultInputOf(context)).deferral.open;
   const isFundChosen = isFundPensionChosen(context);
+  const endAge = contractEndAgeOf('secondPillar', context.age66, context);
   const asAdvised = (scenario: Scenario): Scenario => {
     if (scenario.id === 'C') {
       return {
@@ -118,10 +119,12 @@ const comparedScenarios = (context: ResultContext, chosen: Scenario): Scenario[]
         half: 0,
         deferral: chosen.deferral || BRIDGE_DEFERRAL_WITHOUT_CHOICE,
         contract: context.age66.secondPillarContract,
+        endAge,
       };
     }
     const isFundPensionAdvised = scenario.id === 'B' || scenario.id === 'D';
-    return isFundPensionAdvised && !isFundChosen ? scenario : { ...scenario, ...timingOf(chosen) };
+    const advised = { ...scenario, endAge };
+    return isFundPensionAdvised && !isFundChosen ? advised : { ...advised, ...timingOf(chosen) };
   };
   return [...SCENARIOS, keepGrowing]
     .filter(({ id }) => id !== 'C' || isDeferralOpen)

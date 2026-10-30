@@ -3,7 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { strong } from './richText';
 
-const FAQ_ITEMS = ['what', 'when', 'surplus', 'know', 'at60'] as const;
+const FAQ_ITEMS = ['choose', 'what', 'when', 'surplus', 'know', 'at60'] as const;
 
 const PAYOUTS_PAGE = 'https://tuleva.ee/pensioni-valjamaksed/';
 const PENSIONIKESKUS_TERM_PAGE =

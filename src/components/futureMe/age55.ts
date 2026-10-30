@@ -1,10 +1,10 @@
 import lifeTableData from './engine/lifeTable.json';
 import {
   CURRENT_YEAR,
-  fundPensionTerm,
   INCOME_TAX,
   INFLATION,
   LifeTable,
+  oneContractTerm,
   p3Factor,
   SeparateThirdPillar,
   Sex,
@@ -37,6 +37,7 @@ export interface ThirdPillarPayoutInput {
   returnRate: number;
   firstYearShare: number;
   contract?: SeparateThirdPillar['contract'];
+  endAge?: number;
 }
 
 export interface ThirdPillarPayout {
@@ -118,7 +119,7 @@ export const thirdPillarPayout = (
     };
   }
 
-  const firstTerm = fundPensionTerm(lifeTable, sex, age);
+  const firstTerm = oneContractTerm(lifeTable, sex, age, input.endAge);
   const yearsLeftAt = (at: number): number =>
     input.contract === 'once' ? firstTerm - (at - age) : yearlyContractTerm(lifeTable, sex, at);
 
@@ -144,6 +145,7 @@ export const thirdPillarPayoutInputOf = (
   answers: YouAnswers,
   firstYearShare: number,
   contract?: ThirdPillarPayoutInput['contract'],
+  endAge?: number,
 ): ThirdPillarPayoutInput => {
   const birthYear = birthYearOrFallback(answers);
   return {
@@ -156,6 +158,7 @@ export const thirdPillarPayoutInputOf = (
     returnRate: rateOf(answers.thirdPillarReturnPercent),
     firstYearShare,
     contract,
+    endAge,
   };
 };
 
@@ -163,6 +166,7 @@ export const age55Of = (
   answers: YouAnswers,
   firstYearShare: number,
   contract?: ThirdPillarPayoutInput['contract'],
+  endAge?: number,
 ): Age55 => {
   const birthYear = birthYearOrFallback(answers);
   const age = withdrawalAge(CURRENT_YEAR - birthYear);
@@ -187,6 +191,9 @@ export const age55Of = (
     lock,
     isFundAvailable,
     plan,
-    payout: thirdPillarPayout(plan, thirdPillarPayoutInputOf(answers, firstYearShare, contract)),
+    payout: thirdPillarPayout(
+      plan,
+      thirdPillarPayoutInputOf(answers, firstYearShare, contract, endAge),
+    ),
   };
 };

@@ -2229,6 +2229,21 @@ describe('FutureMe', () => {
       expect(screen.getByRole('status')).not.toHaveTextContent(withYearlyContract);
     });
 
+    it('shows the fund pension figures of one contract until the age picked', () => {
+      renderFutureMe();
+      openAge55();
+      userEvent.click(fundPlan());
+      userEvent.click(contract(/^Üks leping/));
+      const untilAverage = (screen.getByRole('status').textContent ?? '').replace(/\s+/g, ' ');
+
+      userEvent.selectOptions(
+        screen.getByRole('combobox', { name: 'Mis vanuseni maksed kestavad?' }),
+        '95',
+      );
+
+      expect(screen.getByRole('status')).not.toHaveTextContent(untilAverage);
+    });
+
     it('shows the contract chosen at 55 on the 66+ step, with a link back to change it', () => {
       renderFutureMe();
       openAge55();

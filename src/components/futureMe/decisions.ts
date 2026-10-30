@@ -5,7 +5,16 @@ import {
   PENSION_MODES,
   withMode,
 } from './age65Answers';
-import { Age66Context, fundPensionStartOf, isGrowing, Pillar } from './age66Answers';
+import {
+  Age66Answers,
+  Age66Context,
+  contractEndAgeOf,
+  contractStartAgeOf,
+  endAges,
+  fundPensionStartOf,
+  isGrowing,
+  Pillar,
+} from './age66Answers';
 import { hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 import { euro } from './amountFormat';
 import { ResultContext } from './resultAnswers';
@@ -82,6 +91,10 @@ const startingPillarsOf = (
   return thirdPillarAge !== undefined ? 'third' : 'none';
 };
 
+const endAgeShownOf = (pillar: Pillar, age66: Age66Answers, context: Age66Context): number =>
+  contractEndAgeOf(pillar, age66, context) ??
+  endAges(context.you.sex, contractStartAgeOf(pillar, age66, context) ?? 0)[0];
+
 const fundPensionDecision = (context: ResultContext): Decision | false => {
   const { age60, age65, age66, you, plan } = context;
   const fundContext: Age66Context = { age60, age65, you, plan };
@@ -101,10 +114,12 @@ const fundPensionDecision = (context: ResultContext): Decision | false => {
     ...(secondPillarAge !== undefined && {
       secondPillarAge,
       secondPillarContract: age66.secondPillarContract,
+      secondPillarEndAge: endAgeShownOf('secondPillar', age66, fundContext),
     }),
     ...(thirdPillarAge !== undefined && {
       thirdPillarAge,
       thirdPillarContract: age66.thirdPillarContract,
+      thirdPillarEndAge: endAgeShownOf('thirdPillar', age66, fundContext),
     }),
   });
 };

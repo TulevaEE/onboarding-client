@@ -226,6 +226,22 @@ describe('resultAnswers', () => {
       expect(leftAfter(once)).not.toBeCloseTo(leftAfter() as number);
     });
 
+    it('lasts until the age chosen for one contract', () => {
+      const until95 = {
+        ...initialAge66(),
+        thirdPillarContract: 'once' as const,
+        thirdPillarEndAge: '95',
+      };
+      const fundPlan = { ...saver, thirdPillarPlan: 'fund' as const };
+      const byAverage = resultOf(
+        contextWith(fundPlan, { age66: { ...until95, thirdPillarEndAge: '' } }),
+      );
+      const result = resultOf(contextWith(fundPlan, { age66: until95 }));
+
+      expect(result.fundPensionContracts.third).toEqual({ start: 55, end: 95 });
+      expect(result.earlyThirdPillar[0].amount).toBeLessThan(byAverage.earlyThirdPillar[0].amount);
+    });
+
     it('ignores the plan where it cannot be used', () => {
       const keeping = separateOf({ thirdPillarPlan: 'keep', thirdPillarJoined: 'after' });
 
@@ -416,6 +432,34 @@ describe('resultAnswers', () => {
           contextWith({}, { age65, age66: { ...initialAge66(), secondPillarContract: 'once' } }),
         ).id,
       ).toBe('B');
+    });
+
+    it('lasts until the age chosen for one contract', () => {
+      const age65 = { ...initialAge65(), secondPillar: 'fund' as const };
+      const scenarioWith = (changes: Partial<ReturnType<typeof initialAge66>>) =>
+        resultScenarioOf(contextWith({}, { age65, age66: { ...initialAge66(), ...changes } }));
+
+      expect(scenarioWith({ secondPillarContract: 'once', secondPillarEndAge: '95' }).endAge).toBe(
+        95,
+      );
+      expect(scenarioWith({ secondPillarContract: 'once' }).endAge).toBeUndefined();
+      expect(
+        scenarioWith({ secondPillarContract: 'once', secondPillarEndAge: '70' }).endAge,
+      ).toBeUndefined();
+      expect(scenarioWith({ secondPillarEndAge: '95' }).endAge).toBeUndefined();
+    });
+
+    it('lasts until the age chosen for one III pillar contract at the pension age', () => {
+      const age65 = { ...initialAge65(), thirdPillar: 'fund' as const };
+      const age66 = {
+        ...initialAge66(),
+        thirdPillarContract: 'once' as const,
+        thirdPillarEndAge: '95',
+      };
+      const context = contextWith({ thirdPillarAmount: '8000' }, { age65, age66 });
+
+      expect(resultInputOf(context).p3Sep?.endAge).toBe(95);
+      expect(resultOf(context).fundPensionContracts.third?.end).toBe(95);
     });
 
     it('bridges with the II pillar while the state pension is deferred', () => {

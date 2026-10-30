@@ -30,9 +30,11 @@ interface Props {
   age55: Age55;
   headingRef: RefObject<HTMLHeadingElement>;
   contract: Contract;
+  endAge: string;
   startedFundPension?: FundPensionChoice;
   onChange: (changes: Partial<YouAnswers>) => void;
   onContractChange: (contract: Contract) => void;
+  onEndAgeChange: (endAge: string) => void;
   onEditThirdPillar: () => void;
 }
 
@@ -81,9 +83,11 @@ export const Age55Step = ({
   age55,
   headingRef,
   contract,
+  endAge,
   startedFundPension,
   onChange,
   onContractChange,
+  onEndAgeChange,
   onEditThirdPillar,
 }: Props) => {
   const intl = useIntl();
@@ -149,7 +153,12 @@ export const Age55Step = ({
           pillar="thirdPillar"
           idPrefix="future-me-55"
           contract={contract}
+          startAge={age55.age}
+          birthYear={birthYearOrFallback(answers)}
+          sex={answers.sex}
+          endAge={endAge}
           onChange={onContractChange}
+          onEndAgeChange={onEndAgeChange}
         />
       )}
       <p className={age55.payout ? 'you-note text-pretty' : undefined} role="status">

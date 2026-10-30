@@ -206,6 +206,18 @@ describe('decisions', () => {
       });
     });
 
+    it('names the age until which one contract pays, the average life expectancy by default', () => {
+      const once = (secondPillarEndAge: string) =>
+        contextWith(withThirdPillar, {
+          age65: { ...initialAge65(), secondPillar: 'fund' },
+          age66: { ...initialAge66(), secondPillarContract: 'once', secondPillarEndAge },
+        });
+      const averageEnd = resultOf(once('')).fundPensionContracts.second?.end;
+
+      expect(fundPensionOf(once(''))?.summary).toMatchObject({ secondPillarEndAge: averageEnd });
+      expect(fundPensionOf(once('97'))?.summary).toMatchObject({ secondPillarEndAge: 97 });
+    });
+
     it('starts the fund pension once the work kept on after the pension age ends', () => {
       const workingUntil68 = contextWith(
         {},

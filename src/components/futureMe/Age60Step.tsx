@@ -10,16 +10,21 @@ import { PayoutChoiceText } from './PayoutChoiceText';
 import { Tense } from './planAges';
 import { strong } from './richText';
 import { LinkButton } from './LinkButton';
-import { Age66Answers, Contract, contractField, Pillar } from './age66Answers';
+import { Age66Answers, Contract, contractField, endAgeField, Pillar } from './age66Answers';
+import { Sex } from './engine/pension';
 import { ContractChoices } from './ContractChoices';
 import { ChoiceMadeNote } from './ChoiceMadeNote';
 import { FundPensionChoice } from './prefill';
 
-type Contracts = Pick<Age66Answers, 'secondPillarContract' | 'thirdPillarContract'>;
+type Contracts = Pick<
+  Age66Answers,
+  'secondPillarContract' | 'thirdPillarContract' | 'secondPillarEndAge' | 'thirdPillarEndAge'
+>;
 
 interface Props {
   answers: Age60Answers;
   birthYear: number;
+  sex: Sex;
   age: number;
   tense: Tense;
   ordinal: DecisionOrdinal;
@@ -27,20 +32,26 @@ interface Props {
   hasThirdPillar: boolean;
   headingRef: RefObject<HTMLHeadingElement>;
   contracts: Contracts;
+  contractStartAges: Record<Pillar, number>;
   startedFundPensions?: Partial<Record<Pillar, FundPensionChoice>>;
   onChange: (answers: Age60Answers) => void;
   onContractChange: (pillar: Pillar, contract: Contract) => void;
+  onEndAgeChange: (pillar: Pillar, endAge: string) => void;
   onEditYou: () => void;
 }
 
 interface PillarProps {
   pillar: Pillar;
   answers: Age60Answers;
+  birthYear: number;
+  sex: Sex;
   hasPillar: boolean;
   contracts: Contracts;
+  contractStartAge: number;
   startedFundPension?: FundPensionChoice;
   onChange: (answers: Age60Answers) => void;
   onContractChange: (pillar: Pillar, contract: Contract) => void;
+  onEndAgeChange: (pillar: Pillar, endAge: string) => void;
   onEditYou: () => void;
   children?: React.ReactNode;
 }
@@ -48,11 +59,15 @@ interface PillarProps {
 const PillarChoices = ({
   pillar,
   answers,
+  birthYear,
+  sex,
+  contractStartAge,
   hasPillar,
   contracts,
   startedFundPension,
   onChange,
   onContractChange,
+  onEndAgeChange,
   onEditYou,
   children,
 }: PillarProps) => {
@@ -108,7 +123,12 @@ const PillarChoices = ({
           pillar={pillar}
           idPrefix="future-me-60"
           contract={contracts[contractField(pillar)]}
+          startAge={contractStartAge}
+          birthYear={birthYear}
+          sex={sex}
+          endAge={contracts[endAgeField(pillar)]}
           onChange={(contract) => onContractChange(pillar, contract)}
+          onEndAgeChange={(endAge) => onEndAgeChange(pillar, endAge)}
         />
       )}
       {children}
@@ -119,6 +139,7 @@ const PillarChoices = ({
 export const Age60Step = ({
   answers,
   birthYear,
+  sex,
   age,
   tense,
   ordinal,
@@ -126,9 +147,11 @@ export const Age60Step = ({
   hasThirdPillar,
   headingRef,
   contracts,
+  contractStartAges,
   startedFundPensions = {},
   onChange,
   onContractChange,
+  onEndAgeChange,
   onEditYou,
 }: Props) => {
   const year = birthYear + age;
@@ -149,11 +172,15 @@ export const Age60Step = ({
       <PillarChoices
         pillar="secondPillar"
         answers={answers}
+        birthYear={birthYear}
+        sex={sex}
+        contractStartAge={contractStartAges.secondPillar}
         hasPillar={hasSecondPillar}
         contracts={contracts}
         startedFundPension={startedFundPensions.secondPillar}
         onChange={onChange}
         onContractChange={onContractChange}
+        onEndAgeChange={onEndAgeChange}
         onEditYou={onEditYou}
       >
         {hasSecondPillar && (
@@ -165,11 +192,15 @@ export const Age60Step = ({
       <PillarChoices
         pillar="thirdPillar"
         answers={answers}
+        birthYear={birthYear}
+        sex={sex}
+        contractStartAge={contractStartAges.thirdPillar}
         hasPillar={hasThirdPillar}
         contracts={contracts}
         startedFundPension={startedFundPensions.thirdPillar}
         onChange={onChange}
         onContractChange={onContractChange}
+        onEndAgeChange={onEndAgeChange}
         onEditYou={onEditYou}
       />
       <FundPensionFaq />
