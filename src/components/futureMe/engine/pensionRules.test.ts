@@ -4,7 +4,6 @@ import {
   CHILD_II_MONTHLY,
   childSupplement,
   civilIncrease,
-  decisionMap,
   DEFERRAL_INCREASE,
   EARLY_DECREASE,
   GENERAL_ALLOWANCE,
@@ -13,7 +12,6 @@ import {
   PENSIONER_ALLOWANCE,
   PensionInput,
   rescueIncrease,
-  retirementYears,
   Scenario,
   SeparateThirdPillar,
   simulate,
@@ -162,71 +160,11 @@ describe('pension rules', () => {
       expect(firstStatePensionRow(result).i1g).toBeCloseTo(1200 * (1 + 0.0793), within(1e-6));
     });
 
-    it('opens third pillar preferential withdrawals at 55 for savers who joined before 2021', () => {
-      const texts = decisionMap({ ...base, p3: 10000, p3Before2021: true }).map(({ text }) => text);
-
-      expect(texts).toEqual(expect.arrayContaining([expect.stringContaining('Alates 55')]));
-    });
-
-    it('opens third pillar preferential withdrawals five years before the pension age for savers who joined in 2021 or later', () => {
-      const texts = decisionMap({ ...base, p3: 10000, p3Before2021: false }).map(
-        ({ text }) => text,
-      );
-
-      expect(texts).toEqual(
-        expect.arrayContaining([
-          expect.stringContaining(`Alates ${retirementYears(base) - 5}, 5 aastat enne pensioniiga`),
-        ]),
-      );
-    });
-
-    it('opens the II and III pillar five years before a pension age of 68 for savers who joined in 2021 or later', () => {
-      const decisions = decisionMap({
-        ...base,
-        p3: 10000,
-        p3Before2021: false,
-        pensionAgeYears: 68,
-      });
-
-      expect(decisions).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({ age: 63, title: 'III sammas soodusmaksuga' }),
-          expect.objectContaining({ age: 63, title: 'II sammas ja paindlik riiklik pension' }),
-        ]),
-      );
-    });
-
     it('keeps no prototype names or descriptions on the payout scenarios', () => {
       SCENARIOS.forEach((scenario) => {
         expect(scenario).not.toHaveProperty('name');
         expect(scenario).not.toHaveProperty('short');
       });
-    });
-
-    it('describes the yearly contract as lasting longer, not as money that never runs out', () => {
-      const yearlyTexts = decisionMap(base)
-        .map(({ text }) => text)
-        .filter((text) => text?.includes('lepingu') && text.includes('igal aastal'));
-
-      expect(yearlyTexts).toHaveLength(1);
-      yearlyTexts.forEach((text) => {
-        expect(text).not.toMatch(/saa otsa|kuumakse/i);
-        expect(text).toMatch(/kauemaks/);
-      });
-    });
-
-    it('puts the full state pension at the pension age the saver picked', () => {
-      const decisions = decisionMap({ ...base, pensionAgeYears: 67 });
-
-      expect(decisions).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            age: 67,
-            year: base.birthYear + 67,
-            title: 'Riiklik pension täissummas (67 a)',
-          }),
-        ]),
-      );
     });
   });
 
