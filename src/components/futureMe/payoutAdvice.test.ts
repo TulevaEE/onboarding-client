@@ -252,6 +252,14 @@ describe('payoutAdvice', () => {
       );
     });
 
+    it('is the payout age step when the contract was chosen there, as the 66+ step is left out', () => {
+      const context = contextWith({}, { age60: { ...initialAge60(), secondPillar: 'fund' } });
+
+      expect(stepToChoose(how({ kind: 'contract', atPayoutAge: true }), context)).toBe(
+        FutureMeStep.AGE_60,
+      );
+    });
+
     it('is the pension age step when the fund pension is chosen at the payout age and only the deferral is left', () => {
       const context = contextWith(
         { secondPillarAmount: '30000' },

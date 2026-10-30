@@ -2573,6 +2573,7 @@
   "futureMe.trail.step.costs": "Kulud",
   "futureMe.trail.step.specialPension": "{age} a",
   "futureMe.trail.step.result": "Tulemus",
+  "futureMe.trail.step.age65Open": "{age}+ a",
   "futureMe.trail.current": "{label}, praegune samm",
   "futureMe.trail.visited": "{label}, vaadatud",
   "futureMe.trail.unvisited": "{label}, vaatamata",

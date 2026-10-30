@@ -34,6 +34,10 @@ describe('shown steps', () => {
     expect(shownSteps(planFor({}))).toEqual([YOU, AGE_60, AGE_65, AGE_66_PLUS, COSTS, RESULT]);
   });
 
+  it('leaves out the 66+ step when nothing is asked there', () => {
+    expect(shownSteps(planFor({}), false)).toEqual([YOU, AGE_60, AGE_65, COSTS, RESULT]);
+  });
+
   describe('age 55 step', () => {
     it('is shown only to those who joined the III pillar before 2021', () => {
       expect(isStepSkipped(AGE_55, planFor({ thirdPillarJoined: 'before' }))).toBe(false);

@@ -209,6 +209,33 @@ describe('Age 60 step', () => {
     });
   });
 
+  describe('when nothing is left to decide after the pension age', () => {
+    const trailButtons = () => within(trail()).getAllByRole('button');
+    const trailLabels = () =>
+      trailButtons().map(({ textContent }) => textContent?.replace(/\s/g, ' '));
+
+    it('drops the 66+ step and calls the pension age step "65+"', () => {
+      openAge60Step({ thirdPillar: false });
+      const stepsBefore = trailButtons().length;
+
+      expect(trailLabels()).toContain('65 a');
+
+      userEvent.click(choice(secondPillarGroup(), 'Fondipension'));
+
+      expect(trailButtons()).toHaveLength(stepsBefore - 1);
+      expect(trailLabels()).toEqual(['Sina', '60 a', '65+ a', 'Kulud', 'Tulemus']);
+    });
+
+    it('keeps the 66+ step while the III pillar still grows', () => {
+      openAge60Step();
+      const stepsBefore = trailButtons().length;
+
+      userEvent.click(choice(secondPillarGroup(), 'Fondipension'));
+
+      expect(trailButtons()).toHaveLength(stepsBefore);
+    });
+  });
+
   it('describes each payout choice with the same text for both pillars', () => {
     openAge60Step();
 
