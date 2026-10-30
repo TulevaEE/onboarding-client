@@ -28,7 +28,7 @@ import {
 } from './engine/pension';
 import { pensionInputOf, SpecialPensionAnswers } from './specialPensionAnswers';
 import { StepPlanInput } from './steps';
-import { amountOf, rateOf, YouAnswers } from './youAnswers';
+import { amountOf, realReturnOf, YouAnswers } from './youAnswers';
 import { hasThirdPillarAt, payoutAge, plannedThirdPillarOpenAge, retirementAge } from './planAges';
 
 const lifeTable: LifeTable = lifeTableData;
@@ -92,7 +92,7 @@ const firstYearShareNow = (): number => (MONTHS_IN_YEAR - new Date().getMonth())
 const contributionsBefore = (context: ResultContext, untilAge: number): number => {
   const { you, plan } = context;
   const currentAge = CURRENT_YEAR - plan.birthYear;
-  const growth = 1 + rateOf(you.thirdPillarReturnPercent);
+  const growth = 1 + realReturnOf(you.thirdPillarReturnPercent);
   const yearly = amountOf(you.thirdPillarMonthly) * MONTHS_IN_YEAR;
   const indexing = { p3Indexed: false, inflation: INFLATION, birthYear: plan.birthYear };
   return Array.from({ length: Math.max(0, untilAge - currentAge) }, (_, offset) => {
@@ -132,7 +132,8 @@ const thirdPillarWithdrawnAtOf = (
   const { paidUntil, payout } = fundPensionFrom55Of(context);
   const yearsUntilPaid = paidUntil - (CURRENT_YEAR - plan.birthYear);
   const leftToday =
-    (payout?.leftAtPension ?? 0) / (1 + rateOf(you.thirdPillarReturnPercent)) ** yearsUntilPaid;
+    (payout?.leftAtPension ?? 0) /
+    (1 + realReturnOf(you.thirdPillarReturnPercent)) ** yearsUntilPaid;
   return {
     amount: leftToday - contributionsBefore(context, paidUntil),
     mode: payoutAtPensionAge('thirdPillar', context) === 'lump' ? 'lump' : 'fund',
@@ -232,8 +233,8 @@ export const resultInputOf = (context: ResultContext): PensionInput => {
     p3Before2021: you.thirdPillarJoined === 'before',
     p3Indexed: false,
     needMonthly: needMonthly(expenses),
-    realReturn: rateOf(you.secondPillarReturnPercent),
-    realReturn3: rateOf(you.thirdPillarReturnPercent),
+    realReturn: realReturnOf(you.secondPillarReturnPercent),
+    realReturn3: realReturnOf(you.thirdPillarReturnPercent),
     p3After: thirdPillarAfterOf(context),
     wageGrowth: WAGE_GROWTH,
     inflation: INFLATION,

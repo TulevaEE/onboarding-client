@@ -72,7 +72,7 @@ const takeSecondPillarAsLumpSum = () => {
 
 const chooseSecondPillarReturn = (percent: string) =>
   userEvent.selectOptions(
-    screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ }),
+    screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(II\ssammas\)$/ }),
     percent,
   );
 
@@ -175,6 +175,7 @@ describe('Result legacy card', () => {
   describe("when money is left but the plan cannot carry today's costs", () => {
     beforeEach(() => {
       startWith('500', '70000');
+      chooseSecondPillarReturn('2');
       openResult();
     });
 
@@ -227,6 +228,7 @@ describe('Result legacy card', () => {
 
     it('advises against the lump sum and leaves the second pillar growing from the button', () => {
       startWith('300', '10000');
+      chooseSecondPillarReturn('2');
       chooseComfortableCosts();
       takeSecondPillarAsLumpSum();
       openResult();
@@ -240,8 +242,18 @@ describe('Result legacy card', () => {
       expect(screen.queryByText('Ära võta II sammast korraga välja.')).not.toBeInTheDocument();
     });
 
+    it('leaves the advice out at the default 0%, where the fund loses value after inflation', () => {
+      startWith('300', '10000');
+      chooseComfortableCosts();
+      takeSecondPillarAsLumpSum();
+      openResult();
+
+      expect(screen.queryByText('Ära võta II sammast korraga välja.')).not.toBeInTheDocument();
+    });
+
     it('compares the fund with the deposit’s return the calculation uses', () => {
       startWith('300', '10000');
+      chooseSecondPillarReturn('2');
       chooseComfortableCosts();
       takeSecondPillarAsLumpSum();
       openResult();
@@ -249,18 +261,7 @@ describe('Result legacy card', () => {
       expect(secondPillarTip()).toHaveTextContent(/arvutuses −1%\saastas pärast inflatsiooni/);
     });
 
-    it('says the money keeps its value in the fund at the default 0%, rather than that it grows', () => {
-      startWith('300', '10000');
-      chooseComfortableCosts();
-      takeSecondPillarAsLumpSum();
-      openResult();
-
-      expect(secondPillarTip()).toHaveTextContent(
-        /Fondis hoiab see väärtust \(sinu valitud tootlusega 0%\saastas pärast inflatsiooni\)\./,
-      );
-    });
-
-    it('says the money grows on in the fund at a return above 0%', () => {
+    it('says the money keeps its value in the fund at a 2% return, rather than that it grows', () => {
       startWith('300', '10000');
       chooseSecondPillarReturn('2');
       chooseComfortableCosts();
@@ -268,12 +269,25 @@ describe('Result legacy card', () => {
       openResult();
 
       expect(secondPillarTip()).toHaveTextContent(
-        /Fondis kasvab see edasi \(sinu valitud tootlusega 2%\saastas pärast inflatsiooni\)\./,
+        /Fondis hoiab see väärtust \(sinu valitud tootlus 2%\saastas on pärast inflatsiooni 0%\)\./,
+      );
+    });
+
+    it('says the money grows on in the fund at a return above 2%', () => {
+      startWith('300', '10000');
+      chooseSecondPillarReturn('4');
+      chooseComfortableCosts();
+      takeSecondPillarAsLumpSum();
+      openResult();
+
+      expect(secondPillarTip()).toHaveTextContent(
+        /Fondis kasvab see edasi \(sinu valitud tootlus 4%\saastas on pärast inflatsiooni 1,96%\)\./,
       );
     });
 
     it('moves the focus to the card heading after leaving the second pillar growing, as the advice is gone', () => {
       startWith('300', '10000');
+      chooseSecondPillarReturn('2');
       chooseComfortableCosts();
       takeSecondPillarAsLumpSum();
       openResult();

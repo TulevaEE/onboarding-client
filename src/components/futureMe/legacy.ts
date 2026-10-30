@@ -1,13 +1,7 @@
 import { DecisionChanges } from './decisions';
 import { needMonthly } from './expensesAnswers';
 import lifeTableData from './engine/lifeTable.json';
-import {
-  CURRENT_YEAR,
-  DEPOSIT_REAL_RETURN,
-  LifeTable,
-  PensionInput,
-  survival,
-} from './engine/pension';
+import { CURRENT_YEAR, LifeTable, PensionInput, survival } from './engine/pension';
 import {
   MAX_AGE_SHOWN,
   Result,
@@ -52,8 +46,7 @@ export const legacyOf = (context: ResultContext, result: Result): Legacy => {
   if (left < MIN_LEFT_OVER || isCoverageOverByMedianAge) {
     return {
       kind: 'shortfall',
-      isGrowingSecondPillarSuggested:
-        resultScenarioOf(context).id === 'A' && input.realReturn > DEPOSIT_REAL_RETURN,
+      isGrowingSecondPillarSuggested: resultScenarioOf(context).id === 'A' && input.realReturn >= 0,
       secondPillarReturn: input.realReturn,
     };
   }

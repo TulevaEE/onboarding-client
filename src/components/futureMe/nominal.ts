@@ -1,7 +1,5 @@
 import { CURRENT_YEAR, INFLATION, SimulationRow } from './engine/pension';
-import { hasPillar } from './age66Answers';
-import { Result, ResultContext } from './resultAnswers';
-import { rateOf } from './youAnswers';
+import { Result } from './resultAnswers';
 
 type Amount = Exclude<
   {
@@ -28,13 +26,6 @@ const AMOUNT_FIELDS: Amount[] = [
   'shortfall',
   'moneyLeft',
 ];
-const PERCENT = 100;
-const TENTH = 10;
-
-export interface NominalReturns {
-  second: number | null;
-  third: number | null;
-}
 
 export const nominalFactorAt = (year: number): number => (1 + INFLATION) ** (year - CURRENT_YEAR);
 
@@ -68,18 +59,4 @@ export const nominalResultOf = (result: Result): Result => ({
     amount: payment.amount * nominalFactorAt(payment.year),
   })),
   firstPillar: nominalFirstPillarOf(result),
-});
-
-const withoutNegativeZero = (value: number): number => (Object.is(value, -0) ? 0 : value);
-
-const nominalReturnOf = (real: number): number =>
-  withoutNegativeZero(Math.round(((1 + real) * (1 + INFLATION) - 1) * PERCENT * TENTH) / TENTH);
-
-export const nominalReturnsOf = (context: ResultContext): NominalReturns => ({
-  second: hasPillar('secondPillar', context)
-    ? nominalReturnOf(rateOf(context.you.secondPillarReturnPercent))
-    : null,
-  third: hasPillar('thirdPillar', context)
-    ? nominalReturnOf(rateOf(context.you.thirdPillarReturnPercent))
-    : null,
 });

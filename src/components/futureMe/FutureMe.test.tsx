@@ -199,7 +199,7 @@ const secondPillarRateField = () =>
 const secondPillarAmountField = () =>
   screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ });
 const secondPillarReturnField = () =>
-  screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ });
+  screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(II\ssammas\)$/ });
 const thirdPillarJoinedField = () =>
   screen.getByRole('combobox', { name: /Kas oled III\ssambaga liitunud/ });
 const thirdPillarAmountField = () =>
@@ -209,7 +209,10 @@ const thirdPillarMonthlyField = () =>
 const thirdPillarOpenAgeField = () =>
   screen.getByRole('textbox', { name: /Mis vanuses avad III\ssamba/ });
 const thirdPillarReturnField = () =>
-  screen.getByRole('combobox', { name: /tootlust eeldad III\ssambas/ });
+  screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(III\ssammas\)$/ });
+const returnHintOf = (field: HTMLElement) =>
+  // eslint-disable-next-line testing-library/no-node-access
+  within(field.closest('.col-12') as HTMLElement);
 const chooseReturn = (field: HTMLElement, percent: number) =>
   userEvent.selectOptions(field, String(percent));
 
@@ -1064,6 +1067,37 @@ describe('FutureMe', () => {
       expect(values).toEqual(Array.from({ length: 21 }, (_, index) => String(index - 10)));
       expect(secondPillarReturnField()).toHaveValue('0');
     });
+
+    it('shows the label „Eeldatav tootlus aastas“, as in the millionaire calculator', () => {
+      renderFutureMe();
+
+      expect(screen.getAllByText('Eeldatav tootlus aastas')).toHaveLength(2);
+    });
+
+    it('picks the historical stock return of 7% from the line under the choice', () => {
+      renderFutureMe();
+
+      userEvent.click(
+        returnHintOf(secondPillarReturnField()).getByRole('button', { name: 'tootlus 7%' }),
+      );
+
+      expect(secondPillarReturnField()).toHaveValue('7');
+      expect(thirdPillarReturnField()).toHaveValue('0');
+    });
+
+    it.each([
+      ['II', secondPillarReturnField, 'https://www.pensionikeskus.ee/statistika/ii-sammas/'],
+      ['III', thirdPillarReturnField, 'https://www.pensionikeskus.ee/statistika/iii-sammas/'],
+    ])(
+      'links the %s pillar funds’ returns at Pensionikeskus to check against',
+      (_, field, href) => {
+        renderFutureMe();
+
+        expect(
+          returnHintOf(field()).getByRole('link', { name: /Pensionikeskusest/ }),
+        ).toHaveAttribute('href', href);
+      },
+    );
 
     it('says a negative return with a real minus sign', () => {
       renderFutureMe();
@@ -2129,7 +2163,7 @@ describe('FutureMe', () => {
       userEvent.selectOptions(thirdPillarJoinedField(), 'jah, enne 2021. a');
       typeInto(thirdPillarAmountField(), '5000');
       typeInto(thirdPillarMonthlyField(), '0');
-      chooseReturn(thirdPillarReturnField(), 2);
+      chooseReturn(thirdPillarReturnField(), 4);
       userEvent.click(within(trail()).getByRole('button', { name: /^55\sa/ }));
     };
 
@@ -2210,8 +2244,10 @@ describe('FutureMe', () => {
       expect(screen.getByRole('status')).toHaveTextContent(
         /Võtad III\ssamba 55\u2011aastaselt korraga välja/,
       );
-      expect(screen.getByRole('status')).toHaveTextContent(amountText(5000 * 1.02 ** 18));
-      expect(screen.getByRole('status')).toHaveTextContent(amountText(5000 * 1.02 ** 18 * 0.9));
+      expect(screen.getByRole('status')).toHaveTextContent(amountText(5000 * (1.04 / 1.02) ** 18));
+      expect(screen.getByRole('status')).toHaveTextContent(
+        amountText(5000 * (1.04 / 1.02) ** 18 * 0.9),
+      );
     });
 
     it('says that the money taken at once goes to the deposit for later', () => {

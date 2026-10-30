@@ -12,7 +12,6 @@ import { HelpButton } from './HelpButton';
 import { ResultAdvice } from './ResultAdvice';
 import { ResultAssumptions } from './ResultAssumptions';
 import { ResultChart } from './ResultChart';
-import { nominalReturnsOf } from './nominal';
 import { ResultDecisions } from './ResultDecisions';
 import { ResultFeedback } from './ResultFeedback';
 import { ResultLegacy } from './ResultLegacy';
@@ -289,11 +288,7 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       <ResultAdvice context={context} result={result} onOpenDecision={openAndFocusDecision} />
       <Tiles context={context} result={result} />
       <IncomeAtPensionAge result={result} need={needMonthly(context.expenses)} />
-      <ResultChart
-        result={result}
-        need={needMonthly(context.expenses)}
-        nominalReturns={nominalReturnsOf(context)}
-      />
+      <ResultChart result={result} need={needMonthly(context.expenses)} />
       <ResultLegacy context={context} result={result} />
       <ResultDecisions
         context={context}

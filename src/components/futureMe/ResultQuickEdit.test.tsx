@@ -143,7 +143,8 @@ describe('Result step: quick edit of the assumptions', () => {
 
       chooseReturn(within(row).getByRole('combobox'), 5);
 
-      expect(row).toHaveTextContent('5% aastas pärast inflatsiooni');
+      expect(row).toHaveTextContent('5% aastas');
+      expect(row).not.toHaveTextContent('pärast inflatsiooni');
       expect(tiles()).not.toBe(before);
     });
 
@@ -162,7 +163,8 @@ describe('Result step: quick edit of the assumptions', () => {
       userEvent.click(toggleIn(row));
       chooseReturn(within(row).getByRole('combobox'), -1);
 
-      expect(row).toHaveTextContent('−1% aastas pärast inflatsiooni');
+      expect(row).toHaveTextContent('−1% aastas');
+      expect(row).not.toHaveTextContent('pärast inflatsiooni');
     });
   });
 

@@ -6,7 +6,6 @@ import { initialAge60 } from './age60Answers';
 import { Age65Answers, initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses, needMonthly } from './expensesAnswers';
-import { nominalReturnsOf } from './nominal';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { ResultChart } from './ResultChart';
 import { resultOf, ResultContext } from './resultAnswers';
@@ -59,11 +58,7 @@ const showChart = (age65: Partial<Age65Answers> = {}) => {
   const result = resultOf(context);
   render(
     <IntlProvider locale="et" messages={translations.et}>
-      <ResultChart
-        result={result}
-        need={needMonthly(context.expenses)}
-        nominalReturns={nominalReturnsOf(context)}
-      />
+      <ResultChart result={result} need={needMonthly(context.expenses)} />
     </IntlProvider>,
   );
   return result;

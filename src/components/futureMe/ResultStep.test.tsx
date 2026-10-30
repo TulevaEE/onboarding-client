@@ -64,11 +64,11 @@ const fillInYou = (firstPillar: string) => {
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on III\ssambas praegu/ }), '5000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }), '50');
   userEvent.selectOptions(
-    screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ }),
+    screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(II\ssammas\)$/ }),
     '2',
   );
   userEvent.selectOptions(
-    screen.getByRole('combobox', { name: /tootlust eeldad III\ssambas/ }),
+    screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(III\ssammas\)$/ }),
     '2',
   );
 };
@@ -463,14 +463,14 @@ describe('Result step', () => {
       it('counts the pillar money taken as a lump sum, which waits on a deposit', () => {
         const dialog = openHelpFor(
           contextWith(
-            { secondPillarAmount: '100000', secondPillarReturnPercent: 2 },
+            { secondPillarAmount: '100000', secondPillarReturnPercent: 4 },
             { age65: { ...initialAge65(), secondPillar: 'lump' } },
           ),
         );
 
         expect(dialog).toHaveTextContent(/sammastes u 0\s€ pensionile minnes;/);
         expect(dialog).toHaveTextContent(
-          /hoiusel u 161\s690\s€ pensionile minnes \(välja makstud, kulutamata raha\);/,
+          /hoiusel u 160\s631\s€ pensionile minnes \(välja makstud, kulutamata raha\);/,
         );
       });
 
@@ -548,10 +548,10 @@ describe('Result step', () => {
 
       it('leaves the deposit out while nothing is paid out to it', () => {
         const dialog = openHelpFor(
-          contextWith({ secondPillarAmount: '100000', secondPillarReturnPercent: 2 }),
+          contextWith({ secondPillarAmount: '100000', secondPillarReturnPercent: 4 }),
         );
 
-        expect(dialog).toHaveTextContent(/sammastes u 179\s554\s€ pensionile minnes;/);
+        expect(dialog).toHaveTextContent(/sammastes u 178\s378\s€ pensionile minnes;/);
         expect(dialog).not.toHaveTextContent(/hoiusel/);
       });
     });

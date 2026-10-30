@@ -19,8 +19,8 @@ const contextWith = (
     firstPillarMonthly: '700',
     grossMonthly: '2000',
     secondPillarAmount: '10000',
-    secondPillarReturnPercent: 2,
-    thirdPillarReturnPercent: 2,
+    secondPillarReturnPercent: 4,
+    thirdPillarReturnPercent: 4,
     ...changes,
   };
   return {
@@ -133,21 +133,21 @@ describe('legacyOf', () => {
     });
   });
 
-  it('does not suggest keeping the second pillar growing when its return is no better than the deposit', () => {
+  it('does not suggest keeping the second pillar growing when the fund loses value after inflation', () => {
     const context = takenAsLumpSum();
-    const atDepositReturn = { ...context, you: { ...context.you, secondPillarReturnPercent: -1 } };
+    const belowInflation = { ...context, you: { ...context.you, secondPillarReturnPercent: 1 } };
 
-    expect(legacyFor(atDepositReturn)).toMatchObject({
+    expect(legacyFor(belowInflation)).toMatchObject({
       kind: 'shortfall',
       isGrowingSecondPillarSuggested: false,
     });
   });
 
-  it('suggests keeping the second pillar in the fund at the default 0%, as it beats the deposit', () => {
+  it('suggests keeping the second pillar in the fund at a 2% return, where it keeps its value', () => {
     const context = takenAsLumpSum();
-    const atZeroReturn = { ...context, you: { ...context.you, secondPillarReturnPercent: 0 } };
+    const atInflation = { ...context, you: { ...context.you, secondPillarReturnPercent: 2 } };
 
-    expect(legacyFor(atZeroReturn)).toMatchObject({
+    expect(legacyFor(atInflation)).toMatchObject({
       kind: 'shortfall',
       isGrowingSecondPillarSuggested: true,
       secondPillarReturn: 0,

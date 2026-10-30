@@ -6,7 +6,7 @@ import { strong } from './richText';
 const element = (Tag: keyof JSX.IntrinsicElements, className?: string) => (chunks: ReactNode) =>
   <Tag className={className}>{chunks}</Tag>;
 
-const externalLink = (href: string) => (chunks: ReactNode) =>
+export const externalLink = (href: string) => (chunks: ReactNode) =>
   (
     <a href={href} target="_blank" rel="noopener noreferrer">
       {chunks}
