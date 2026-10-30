@@ -124,6 +124,10 @@ describe('Step texts', () => {
     expect(keysWithText('en', /colour|defence forces|favourable (conditions|terms)/)).toEqual([]);
   });
 
+  it('put the euro sign after an amount, as the app formats amounts in English too', () => {
+    expect(keysWithText('en', /€\{/)).toEqual([]);
+  });
+
   it('write dates in English as day, month name and year', () => {
     expect(keysWithText('en', /\b\d{1,2}\.\d{1,2}\.\d{4}\b/)).toEqual([]);
   });
