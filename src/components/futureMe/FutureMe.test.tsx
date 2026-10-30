@@ -785,7 +785,7 @@ describe('FutureMe', () => {
       await waitFor(() => expect(screen.getByRole('heading', { level: 2 })).toHaveFocus());
     });
 
-    it('offers to show the result on the step before it, and has nowhere to go from the result', () => {
+    it('offers to show the result on the step before it, and has no next step after the result', () => {
       renderFutureMe();
 
       fillInRequiredAnswers();
@@ -796,7 +796,21 @@ describe('FutureMe', () => {
         screen.getByRole('heading', { level: 2, name: 'Kas raha jätkub elu lõpuni?' }),
       ).toBeInTheDocument();
       expect(stepCount()).toHaveTextContent('Samm 6 / 6');
-      expect(nextButton()).toBeDisabled();
+      expect(screen.queryByRole('button', { name: /^Edasi/ })).not.toBeInTheDocument();
+    });
+
+    it('sends the saver from the result to their account', () => {
+      renderFutureMe();
+
+      expect(screen.queryByRole('link', { name: 'Vaata oma kogumist' })).not.toBeInTheDocument();
+
+      fillInRequiredAnswers();
+      userEvent.click(within(trail()).getByRole('button', { name: 'Tulemus, vaatamata' }));
+
+      expect(screen.getByRole('link', { name: 'Vaata oma kogumist' })).toHaveAttribute(
+        'href',
+        '/account',
+      );
     });
   });
 

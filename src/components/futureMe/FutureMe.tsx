@@ -12,6 +12,7 @@ import {
 import { tulevaChildrenOf } from './kidsPrefill';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { usePageTitle } from '../common/usePageTitle';
+import { ACCOUNT_PATH } from '../paths';
 import { Age55Step } from './Age55Step';
 import { age55Of } from './age55';
 import { decisionOrdinal } from './age60Answers';
@@ -331,14 +332,19 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
             values={{ current: steps.indexOf(step) + 1, total: steps.length }}
           />
         </span>
-        <button
-          type="button"
-          className={classNames('btn btn-primary', { invisible: isLast })}
-          disabled={isLast}
-          onClick={() => goTo(neighbouringStep(steps, step, 1))}
-        >
-          <FormattedMessage id={nextLabelId} />
-        </button>
+        {isLast ? (
+          <a href={ACCOUNT_PATH}>
+            <FormattedMessage id="futureMe.nav.openAccount" />
+          </a>
+        ) : (
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => goTo(neighbouringStep(steps, step, 1))}
+          >
+            <FormattedMessage id={nextLabelId} />
+          </button>
+        )}
       </div>
     </div>
   );
