@@ -20,6 +20,7 @@ import {
   SimulationResult,
   SimulationRow,
   WAGE_GROWTH,
+  SCENARIOS,
 } from './pension';
 import { keepGrowingScenario, lifeTable, scenarioB, scenarioD, within } from './testUtils';
 
@@ -193,6 +194,19 @@ describe('pension rules', () => {
           expect.objectContaining({ age: 63, title: 'II sammas ja paindlik riiklik pension' }),
         ]),
       );
+    });
+
+    it('describes the yearly contract as lasting longer, not as money that never runs out', () => {
+      const yearlyTexts = [
+        ...decisionMap(base).map(({ text }) => text),
+        SCENARIOS.find(({ id }) => id === 'D')?.short,
+      ].filter((text) => text?.includes('lepingu') && text.includes('igal aastal'));
+
+      expect(yearlyTexts).toHaveLength(2);
+      yearlyTexts.forEach((text) => {
+        expect(text).not.toMatch(/saa otsa|kuumakse/i);
+        expect(text).toMatch(/kauemaks/);
+      });
     });
 
     it('puts the full state pension at the pension age the saver picked', () => {
