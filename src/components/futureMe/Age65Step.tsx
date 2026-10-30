@@ -106,6 +106,11 @@ export const Age65Step = ({
   const thirdPillarAt55 = age55Of(you, 1);
   const thirdFundFrom55 = thirdPillarAt55.plan === 'fund' ? thirdPillarAt55.age : undefined;
 
+  const isPillarChoiceLeft =
+    !isChosenAtAnotherStep &&
+    ((hasSecondPillar && age60.secondPillar === 'grow') ||
+      (hasThird && age60.thirdPillar === 'grow' && thirdFundFrom55 === undefined));
+
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-age65-heading">
       <ChapterHead step={FutureMeStep.AGE_65}>
@@ -116,7 +121,14 @@ export const Age65Step = ({
           />
         </p>
         <h2 id="future-me-age65-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
-          <FormattedMessage id="futureMe.age65.title" values={{ kind }} />
+          <FormattedMessage
+            id="futureMe.age65.title"
+            values={{
+              kind,
+              special: plan.hasSpecialPension ? 'yes' : 'no',
+              pillars: isPillarChoiceLeft ? 'asked' : 'done',
+            }}
+          />
         </h2>
       </ChapterHead>
       {kind !== 'regular' && (

@@ -71,7 +71,7 @@ describe('Special pension step', () => {
     openSpecialPensionStep();
 
     expect(screen.getByRole('heading', { level: 2, name: 'Eripension algab' })).toBeInTheDocument();
-    expect(screen.getByText('55-aastane · 2031 · Sinu tulevik')).toBeVisible();
+    expect(screen.getByText('55-aastane · 2031. a · Sinu tulevik')).toBeVisible();
     expect(screen.getByText(/55-aastaselt \(2031\) algab sinu eripension\./)).toBeVisible();
     expect(screen.queryByText('Selle sammu sisu lisandub hiljem.')).not.toBeInTheDocument();
   });

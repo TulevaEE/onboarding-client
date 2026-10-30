@@ -101,7 +101,7 @@ describe('ResultChart with the III pillar fund pension from 55', () => {
     showChart();
 
     expect(screen.getByRole('group', { name: '' })).toHaveTextContent(
-      'Enne pensioniiga on graafikul ainult III samba fondipension. Kulud ja palk on graafikul pensionieast alates, tabelis on enne seda nende kohal „–“.',
+      'Enne pensioniiga on graafikul ainult III samba igakuised väljamaksed. Kulud ja palk on graafikul pensionieast alates, tabelis on enne seda nende kohal „–“.',
     );
   });
 

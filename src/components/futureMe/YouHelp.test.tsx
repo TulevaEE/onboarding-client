@@ -374,7 +374,7 @@ describe('Sina step help buttons', () => {
       name: /^Ametnik enne 2013/,
     });
 
-    expect(civilRow).toHaveTextContent(/Elukaar lisab selle riiklikule pensionile ise/);
+    expect(civilRow).toHaveTextContent(/Tulevane Mina lisab selle riiklikule pensionile ise/);
     expect(civilRow).not.toHaveTextContent(/Sotsiaalkindlustusameti prognoosi/);
   });
 
@@ -449,7 +449,7 @@ describe('Sina step help buttons', () => {
     const dialog = screen.getByRole('dialog');
 
     const childrenStep = within(dialog).getByText(
-      /^Jäta „Pensionilisa“ alla lapsed lisamata: laste pensionilisa lisab Elukaar ise/,
+      /^Jäta „Pensionilisa“ alla lapsed lisamata: laste pensionilisa lisab Tulevane Mina ise/,
     );
     expect(within(dialog).getAllByRole('listitem')).toContain(childrenStep);
     expect(within(dialog).queryByText(/küsib laste juures üle/)).not.toBeInTheDocument();
@@ -463,7 +463,7 @@ describe('Sina step help buttons', () => {
     const dialog = screen.getByRole('dialog');
 
     const civilServantStep = within(dialog).getByText(
-      /^Jäta „Olen töötanud vähemalt 10\saastat avalikus teenistuses kuni 31\.03\.2018“ välja lülitatuks: ametniku staaži suurenduse lisab Elukaar ise/,
+      /^Jäta „Olen töötanud vähemalt 10\saastat avalikus teenistuses kuni 31\.03\.2018“ välja lülitatuks: ametniku staaži suurenduse lisab Tulevane Mina ise/,
     );
     expect(within(dialog).getAllByRole('listitem')).toContain(civilServantStep);
     expect(within(dialog).queryByText(/Kui olid ametnik enne 2013/)).not.toBeInTheDocument();
@@ -525,7 +525,7 @@ describe('Sina step help buttons', () => {
 
     const dialog = openHazardHelp();
 
-    expect(dialog).toHaveTextContent(/Elukaar kontrollib ainult nimekirja tööaastaid/);
+    expect(dialog).toHaveTextContent(/Tulevane Mina kontrollib ainult nimekirja tööaastaid/);
     expect(dialog).not.toHaveTextContent(/Elukaar tingimusi ei kontrolli/);
   });
 
@@ -568,7 +568,7 @@ describe('Sina step help buttons', () => {
     renderYouStep();
 
     expect(openRescueHelp()).toHaveTextContent(
-      /Elukaar arvestab suurendust, kui lähed pensionile hiljemalt 2042\.\saastal/,
+      /Tulevane Mina arvestab suurendust, kui lähed pensionile hiljemalt 2042\.\saastal/,
     );
   });
 

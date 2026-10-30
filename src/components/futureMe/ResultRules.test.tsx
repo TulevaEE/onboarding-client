@@ -59,7 +59,7 @@ const openResultStep = () => {
   userEvent.click(within(trail()).getByRole('button', { name: /^Tulemus, vaatamata$/ }));
 };
 
-const ruleList = () => screen.getByRole('list', { name: 'Reeglid ja maksud' });
+const ruleList = () => screen.getByRole('list', { name: 'Reeglid ja tulumaksud' });
 
 const itemTitled = (list: HTMLElement, heading: RegExp) => {
   const item = within(list)
@@ -78,7 +78,7 @@ describe('Result step: rules', () => {
     openResultStep();
 
     expect(
-      screen.getByRole('heading', { level: 3, name: 'Reeglid ja maksud' }),
+      screen.getByRole('heading', { level: 3, name: 'Reeglid ja tulumaksud' }),
     ).toBeInTheDocument();
   });
 
@@ -87,7 +87,10 @@ describe('Result step: rules', () => {
 
     const inheritance = itemTitled(ruleList(), /^Pärimine$/);
     expect(inheritance).toHaveTextContent('Elu lõpus');
-    expect(inheritance).toHaveTextContent(/II ja III samba fondis olev raha/);
+    expect(inheritance).toHaveTextContent(
+      /II ja III samba fondiosakud lähevad pärijatele, ka igakuiste väljamaksete ajal\. Pärija saab need tulumaksuvabalt oma pensionikontole\./,
+    );
+    expect(inheritance).not.toHaveTextContent('22%');
   });
 
   it('has no rule about the special pension when there is none', () => {
@@ -106,11 +109,13 @@ describe('Result step: rules', () => {
       .find((item) => within(item).queryByRole('heading', { name: /^II\ssammas 60-⁠aastaselt$/ }));
     userEvent.click(within(payoutAtSixty as HTMLElement).getByRole('button', { name: /^Muuda/ }));
     userEvent.click(
-      within(payoutAtSixty as HTMLElement).getByRole('radio', { name: 'Fondipension' }),
+      within(payoutAtSixty as HTMLElement).getByRole('radio', { name: 'Võtan igakuiselt' }),
     );
 
-    const contract = itemTitled(ruleList(), /^Fondipensioni leping/);
-    expect(contract).toHaveTextContent(/II samba fondipensioni leping: Uus leping igal aastal/);
+    const contract = itemTitled(ruleList(), /^Igakuiste väljamaksete leping/);
+    expect(contract).toHaveTextContent(
+      /II samba igakuiste väljamaksete leping: Uus leping igal aastal/,
+    );
   });
 });
 
@@ -129,7 +134,7 @@ describe('Result step: rules that follow from the answers', () => {
       choice: /\+20%/,
     },
     {
-      rule: /^Paindlik pension varem/,
+      rule: /^Paindlik pension: varem ja väiksem/,
       context: contextWith({ earlyYearsPicked: '3' }),
       choice: /3\sa varem, pension [\d,]+% väiksem/,
     },
@@ -144,7 +149,7 @@ describe('Result step: rules that follow from the answers', () => {
         { workAdded: true, hasSpecialPension: true, specialPensionStartAge: '55' },
         { specialPension: { ...initialSpecialPension(), monthly: '800' } },
       ),
-      choice: /800\s€\skuus enne maksu, alates 55-\u2060aastaselt/,
+      choice: /800\s€\skuus enne tulumaksu, alates 55-\u2060aastaselt/,
     },
   ])('shows what was chosen under $rule', ({ rule, context, choice }) => {
     renderRules(context);

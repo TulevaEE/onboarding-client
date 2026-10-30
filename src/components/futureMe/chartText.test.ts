@@ -67,7 +67,7 @@ describe('chartText', () => {
         layers,
         coverOfRow(rowWith({ surplus: 200 })),
       ),
-    ).toMatch(/II\ssammas \(maksuvaba\) 300\s€, kulud 800\s€, üle jääb 200\s€\.$/);
+    ).toMatch(/II\ssammas \(tulumaksuvaba\) 300\s€, kulud 800\s€, üle jääb 200\s€\.$/);
   });
 
   it('reads out how much is missing without a hidden layer and names the layer', () => {
@@ -86,7 +86,7 @@ describe('chartText', () => {
     };
 
     expect(announcementOf(intl, rowWith({}), [], layers, cover)).toMatch(
-      /puudu 300\s€, peidetud kihtideta: II\ssammas \(maksuvaba\) ja Hoiuselt\.$/,
+      /puudu 300\s€, peidetud kihtideta: II\ssammas \(tulumaksuvaba\) ja Hoiuselt\.$/,
     );
   });
 
@@ -119,7 +119,9 @@ describe('chartText', () => {
         years: 20,
         next: 'thirdContinues',
       }),
-    ).toMatch(/^II\ssamba fondipension lõpeb \(periood keskmise eluea järgi, 20\sa\), III jätkub$/);
+    ).toMatch(
+      /^II\ssamba väljamaksed lõpevad \(periood keskmise eluea järgi, 20\sa\), III jätkub$/,
+    );
   });
 });
 

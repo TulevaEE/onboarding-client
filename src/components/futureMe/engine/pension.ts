@@ -108,8 +108,6 @@ export interface PensionInput {
 
 export interface Scenario {
   id: string;
-  name?: string;
-  short?: string;
   deferral?: number;
   half?: number;
   contract?: 'once' | string;
@@ -1253,27 +1251,4 @@ export function bestDeferral(
   return null;
 }
 
-export const SCENARIOS: Scenario[] = [
-  {
-    id: 'A',
-    name: 'Kõik korraga',
-    short: 'II ja III sammas ühekordselt välja (10% maks), raha hoiusel, kasutad vajaduse järgi.',
-  },
-  {
-    id: 'B',
-    name: 'Üks fondipensioni leping',
-    short: 'Maksuvaba fondipension elada jäänud aastate peale. Leping lõpeb perioodi lõpus.',
-  },
-  {
-    id: 'C',
-    name: 'Sild ja riiklik pension hiljem',
-    short:
-      'Riiklik pension algab hiljem ja on eluks ajaks suurem. Seni elad sambast: maksuvaba fondipension (leping igal aastal uuesti), puudu jääv osa lisaväljamaksena.',
-  },
-  {
-    id: 'D',
-    name: 'Leping igal aastal uuesti',
-    short:
-      'Maksuvaba fondipension, mille lepingu sõlmid igal aastal uuesti. Väljamakseid jagub kauemaks, aga kuu väljamakse väheneb vanas eas.',
-  },
-];
+export const SCENARIOS: Scenario[] = [{ id: 'A' }, { id: 'B' }, { id: 'C' }, { id: 'D' }];

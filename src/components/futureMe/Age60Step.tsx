@@ -1,7 +1,7 @@
 import React, { RefObject } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { Age60Answers, DecisionOrdinal, PAYOUT_CHOICE_EMOJI, PAYOUT_CHOICES } from './age60Answers';
+import { Age60Answers, PAYOUT_CHOICE_EMOJI, PAYOUT_CHOICES, PillarsOpening } from './age60Answers';
 import { FundPensionFaq } from './FundPensionFaq';
 import { ChapterHead } from './ChapterHead';
 import { FutureMeStep } from './steps';
@@ -27,7 +27,7 @@ interface Props {
   sex: Sex;
   age: number;
   tense: Tense;
-  ordinal: DecisionOrdinal;
+  pillarsOpening: PillarsOpening;
   hasSecondPillar: boolean;
   hasThirdPillar: boolean;
   headingRef: RefObject<HTMLHeadingElement>;
@@ -142,7 +142,7 @@ export const Age60Step = ({
   sex,
   age,
   tense,
-  ordinal,
+  pillarsOpening,
   hasSecondPillar,
   hasThirdPillar,
   headingRef,
@@ -163,7 +163,7 @@ export const Age60Step = ({
           <FormattedMessage id="futureMe.age60.kicker" values={{ age, year, tense }} />
         </p>
         <h2 id="future-me-age60-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
-          <FormattedMessage id="futureMe.age60.title" values={{ age, ordinal }} />
+          <FormattedMessage id="futureMe.age60.title" values={{ pillars: pillarsOpening }} />
         </h2>
       </ChapterHead>
       <p>

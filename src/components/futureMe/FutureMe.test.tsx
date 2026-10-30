@@ -1798,7 +1798,7 @@ describe('FutureMe', () => {
         expect(
           screen.getByRole('combobox', { name: /Kes kasutab varem pensionile mineku õigust/ }),
         ).toHaveAccessibleDescription(
-          'Kirjaliku kokkuleppeta saab kumbki vanem poole ajast. Elukaar arvestab ainult täisaastaid.',
+          'Kirjaliku kokkuleppeta saab kumbki vanem poole ajast. Tulevane Mina arvestab ainult täisaastaid.',
         );
       });
 
@@ -1924,11 +1924,11 @@ describe('FutureMe', () => {
 
         expect(options).toEqual([
           'ei lähe varem (tavalises pensionieas)',
-          '1 a, paindlik pension −7,17%',
-          '2 a, paindlik pension −13,78%',
-          '3 a, paindlik pension −19,88%',
-          '4 a, paindlik pension −25,5%',
-          '5 a, paindlik pension −30,67%',
+          '1 a varem, pension 7,17% väiksem',
+          '2 a varem, pension 13,78% väiksem',
+          '3 a varem, pension 19,88% väiksem',
+          '4 a varem, pension 25,5% väiksem',
+          '5 a varem, pension 30,67% väiksem',
         ]);
       });
 
@@ -1953,7 +1953,7 @@ describe('FutureMe', () => {
         userEvent.selectOptions(earlyYearsField(), '2');
 
         expect(screen.getByRole('status')).toHaveTextContent(
-          /Lähed pensionile 2\sa varem, \d+-aastaselt \(\d{4}\)\. See on paindlik pension: riiklikku pensioni vähendatakse eluks ajaks 13,78%\./,
+          /Lähed pensionile 2\sa varem, \d+-aastaselt \(\d{4}\)\. See on paindlik pension: kui võtad riikliku pensioni varem, on see elu lõpuni 13,78% väiksem\./,
         );
       });
 
@@ -1965,7 +1965,7 @@ describe('FutureMe', () => {
         userEvent.click(screen.getByRole('button', { name: 'Eemalda laps 5' }));
         userEvent.click(screen.getByRole('button', { name: 'Eemalda laps 4' }));
 
-        expect(earlyYearsField()).toHaveDisplayValue(withNbsp('4 a, paindlik pension −25,5%'));
+        expect(earlyYearsField()).toHaveDisplayValue(withNbsp('4 a varem, pension 25,5% väiksem'));
       });
 
       it('tells the two steps apart when the saver retires exactly five years early', () => {
@@ -2261,7 +2261,7 @@ describe('FutureMe', () => {
 
         userEvent.click(specialCase(/Muu erijuht/));
 
-        expect(screen.getByText(/Neid erijuhte Elukaar ei arvuta/)).toBeVisible();
+        expect(screen.getByText(/Neid erijuhte Tulevane Mina ei arvuta/)).toBeVisible();
       });
 
       it('open the Social Insurance Board in the same tab for the other case', () => {
@@ -2339,10 +2339,10 @@ describe('FutureMe', () => {
 
   describe('age 55 step', () => {
     const age55Heading = () =>
-      screen.getByRole('heading', { level: 2, name: '55-aastaselt: esimene otsustuskoht' });
+      screen.getByRole('heading', { level: 2, name: /^III\ssammas avaneb$/ });
     const planGroup = () => screen.getByRole('group', { name: /Mida III\ssamba rahaga teed/ });
-    const keepPlan = () => within(planGroup()).getByRole('radio', { name: /Jätan kasvama/ });
-    const fundPlan = () => within(planGroup()).getByRole('radio', { name: /Fondipension/ });
+    const keepPlan = () => within(planGroup()).getByRole('radio', { name: /Kasvatan edasi/ });
+    const fundPlan = () => within(planGroup()).getByRole('radio', { name: /Võtan igakuiselt/ });
     const lumpPlan = () => within(planGroup()).getByRole('radio', { name: /Võtan korraga välja/ });
     const amountText = (amount: number) =>
       new RegExp(
@@ -2392,13 +2392,11 @@ describe('FutureMe', () => {
 
       openAge55();
 
-      expect(fundPlan()).toHaveAccessibleName('Fondipension');
+      expect(fundPlan()).toHaveAccessibleName('Võtan igakuiselt');
       expect(fundPlan()).toHaveAccessibleDescription(
-        /^Maksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud raha kasvab fondis edasi\.$/,
+        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara kasvab fondis edasi\.$/,
       );
-      expect(keepPlan()).toHaveAccessibleDescription(
-        /^Raha jääb fondi kasvama\. Pensionieas võtad vajadusel osa välja, 10%\stulumaks\.$/,
-      );
+      expect(keepPlan()).toHaveAccessibleDescription(/^Vara jääb fondi ja kasvab edasi\.$/);
     });
 
     it('says the money taken out at once is used up before the pension age, as the calculation leaves none of it for retirement', () => {
@@ -2407,7 +2405,7 @@ describe('FutureMe', () => {
       openAge55();
 
       expect(lumpPlan()).toHaveAccessibleDescription(
-        /^Kogu raha korraga välja, 10%\stulumaks\. Raha läheb hoiusele ja kasutad seda pensionieas\.$/,
+        /^Kogu vara korraga välja, 10%\stulumaks\. Raha läheb hoiusele ja kasutad seda pensionieas\.$/,
       );
     });
 
@@ -2472,12 +2470,14 @@ describe('FutureMe', () => {
 
       userEvent.click(fundPlan());
 
-      expect(screen.getByRole('status')).toHaveTextContent(/Fondipension III\ssambast alates 55/);
+      expect(screen.getByRole('status')).toHaveTextContent(
+        /Igakuised väljamaksed III\ssambast alates 55/,
+      );
       expect(screen.getByRole('status')).toHaveTextContent(/esimene väljamakse on u/);
     });
 
     const contractGroup = () =>
-      screen.queryByRole('group', { name: /^III\ssamba fondipensioni leping$/ });
+      screen.queryByRole('group', { name: /^III\ssamba igakuiste väljamaksete leping$/ });
     const contract = (name: RegExp) =>
       within(contractGroup() as HTMLElement).getByRole('radio', { name });
 
@@ -2505,7 +2505,7 @@ describe('FutureMe', () => {
         expect(fundPlan()).toBeChecked();
         expect(
           screen.getByText(
-            /Oled selle valiku juba teinud: III\ssamba fondipension algas 2024\. aastal, kui olid 57-aastane\./,
+            /Oled selle valiku juba teinud: III\ssamba igakuised väljamaksed algasid 2024\. aastal, kui olid 57-aastane\./,
           ),
         ).toBeInTheDocument();
       });
@@ -2581,7 +2581,7 @@ describe('FutureMe', () => {
       const untilAverage = (screen.getByRole('status').textContent ?? '').replace(/\s+/g, ' ');
 
       userEvent.selectOptions(
-        screen.getByRole('combobox', { name: 'Mis vanuseni maksed kestavad?' }),
+        screen.getByRole('combobox', { name: 'Mis vanuseni väljamaksed kestavad?' }),
         '95',
       );
 
@@ -2594,7 +2594,7 @@ describe('FutureMe', () => {
       userEvent.click(fundPlan());
       userEvent.click(within(trail()).getByRole('button', { name: /^66\sa/ }));
 
-      expect(screen.getByText(/valik 55-aastaselt: fondipension\./)).toBeInTheDocument();
+      expect(screen.getByText(/valik 55-aastaselt: igakuised väljamaksed\./)).toBeInTheDocument();
 
       userEvent.click(
         screen.getByRole('button', { name: /Muuda III\ssamba valikut 55-aastaselt/ }),
@@ -2628,13 +2628,13 @@ describe('FutureMe', () => {
       userEvent.click(
         within(screen.getByRole('group', { name: /^II\ssamba väljamakse viis$/ })).getByRole(
           'radio',
-          { name: /Fondipension/ },
+          { name: /Võtan igakuiselt/ },
         ),
       );
       userEvent.click(within(trail()).getByRole('button', { name: /^\d+\+\sa/ }));
 
       expect(
-        screen.queryByText(/raha kasvab fondis ja võtad vajadusel välja/),
+        screen.queryByText(/vara kasvab fondis ja võtad välja nii palju/),
       ).not.toBeInTheDocument();
     });
 
@@ -2694,7 +2694,7 @@ describe('FutureMe', () => {
       renderFutureMe();
       openAge55();
 
-      userEvent.click(screen.getByText('Mis on fondipension?'));
+      userEvent.click(screen.getByText('Mis on igakuised väljamaksed?'));
 
       expect(screen.getByText(/tulumaksuvabad/)).toBeVisible();
       expect(screen.getByRole('link', { name: /pensioni väljamaksete kohta/ })).toHaveAttribute(

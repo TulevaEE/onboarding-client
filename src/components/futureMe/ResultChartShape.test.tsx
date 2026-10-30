@@ -70,7 +70,7 @@ const pointsOf = (set: { data: Point[] }, age: number) =>
   set.data.flatMap((point, index) => (point.x === age ? [index] : []));
 const rowPointOf = (set: { data: Point[] }, age: number) => pointsOf(set, age).pop() as number;
 const STATE_PENSION = /^Riiklik\spension$/;
-const SECOND_PILLAR_TAXED = /^II\ssammas \(10% maksuga\)$/;
+const SECOND_PILLAR_TAXED = /^II\ssammas \(10% tulumaksuga\)$/;
 
 describe('ResultChart drawing', () => {
   beforeEach(() => jest.clearAllMocks());
@@ -188,7 +188,7 @@ describe('ResultChart drawing', () => {
 
       const tip = within(screen.getByTestId('chart-tip'));
       expect(tip.getByText('Puudu 91 €')).toBeInTheDocument();
-      expect(tip.getByText('peidetud kihita: II sammas (10% maksuga)')).toBeInTheDocument();
+      expect(tip.getByText('peidetud kihita: II sammas (10% tulumaksuga)')).toBeInTheDocument();
     });
   });
 

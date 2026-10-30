@@ -196,13 +196,19 @@ describe('pension rules', () => {
       );
     });
 
-    it('describes the yearly contract as lasting longer, not as money that never runs out', () => {
-      const yearlyTexts = [
-        ...decisionMap(base).map(({ text }) => text),
-        SCENARIOS.find(({ id }) => id === 'D')?.short,
-      ].filter((text) => text?.includes('lepingu') && text.includes('igal aastal'));
+    it('keeps no prototype names or descriptions on the payout scenarios', () => {
+      SCENARIOS.forEach((scenario) => {
+        expect(scenario).not.toHaveProperty('name');
+        expect(scenario).not.toHaveProperty('short');
+      });
+    });
 
-      expect(yearlyTexts).toHaveLength(2);
+    it('describes the yearly contract as lasting longer, not as money that never runs out', () => {
+      const yearlyTexts = decisionMap(base)
+        .map(({ text }) => text)
+        .filter((text) => text?.includes('lepingu') && text.includes('igal aastal'));
+
+      expect(yearlyTexts).toHaveLength(1);
       yearlyTexts.forEach((text) => {
         expect(text).not.toMatch(/saa otsa|kuumakse/i);
         expect(text).toMatch(/kauemaks/);
