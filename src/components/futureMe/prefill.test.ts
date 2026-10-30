@@ -189,13 +189,18 @@ describe('III pillar join from the user', () => {
 });
 
 describe('gross salary from the II pillar contributions', () => {
-  it('is the social tax part of the latest month divided by 4%', () => {
+  it('takes the typical month, so a bonus month does not raise the salary', () => {
     const contributions = [
+      secondPillarPayment('2026-07-10T08:00:00Z', 80),
       secondPillarPayment('2026-08-10T08:00:00Z', 80),
-      secondPillarPayment('2026-09-10T08:00:00Z', 100),
+      secondPillarPayment('2026-09-10T08:00:00Z', 200),
     ];
 
-    expect(deriveGrossMonthly(contributions, TODAY)).toBe('2500');
+    expect(deriveGrossMonthly(contributions, TODAY)).toBe('2000');
+  });
+
+  it('rounds down to a thousand, so the salary is never above the real one', () => {
+    expect(deriveGrossMonthly([secondPillarPayment('2026-09-10', 116)], TODAY)).toBe('2000');
   });
 
   it('adds up the payments of several employers in the same month', () => {

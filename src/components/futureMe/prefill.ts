@@ -1,5 +1,6 @@
 import { Contribution, SecondPillarContribution, SourceFund, User } from '../common/apiModels';
 import { FundPensionStatus } from '../common/apiModels/withdrawals';
+import { deriveGrossSalary } from '../common/grossSalary';
 import { CURRENT_YEAR, Sex } from './engine/pension';
 import { deriveKidsPrefill } from './kidsPrefill';
 import {
@@ -23,7 +24,6 @@ const ISO_YEAR = /^(\d{4})-/;
 const DEFAULT_SECOND_PILLAR_RATE_PERCENT = 2;
 const NO_SECOND_PILLAR_RATE = '0';
 const THIRD_PILLAR_RULES_CHANGE_YEAR = 2021;
-const SOCIAL_TAX_SHARE_OF_GROSS = 0.04;
 const SALARY_PAYMENT_MAX_MONTHS_AGO = 3;
 const THIRD_PILLAR_AVERAGE_MONTHS = 12;
 const MONTHS_IN_YEAR = 12;
@@ -109,10 +109,8 @@ export const deriveGrossMonthly = (
   if (latestMonthAgo > SALARY_PAYMENT_MAX_MONTHS_AGO) {
     return null;
   }
-  const socialTax = payments
-    .filter(({ time }) => monthIndex(time) === latestMonth)
-    .reduce((sum, { socialTaxPortion }) => sum + socialTaxPortion, 0);
-  return roundedEuros(socialTax / SOCIAL_TAX_SHARE_OF_GROSS);
+  const gross = deriveGrossSalary(payments, today);
+  return gross === null ? null : String(gross);
 };
 
 export const deriveThirdPillarMonthly = (
