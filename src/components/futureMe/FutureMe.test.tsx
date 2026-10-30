@@ -182,7 +182,7 @@ const birthYearField = () => screen.getByRole('spinbutton', { name: /Mis aastal 
 const sexField = () => screen.getByRole('combobox', { name: /Mis on sinu sugu/ });
 const nextButton = () => screen.getByRole('button', { name: /^Edasi/ });
 const backButton = () => screen.getByRole('button', { name: /Tagasi/ });
-const trail = () => screen.getByRole('navigation', { name: 'Loo etapid' });
+const trail = () => screen.getByRole('navigation', { name: 'Tulevase Mina sammud' });
 const trailNames = () =>
   within(trail())
     .getAllByRole('button')
@@ -2228,7 +2228,7 @@ describe('FutureMe', () => {
         typeInto(rescueYearsField(), '12');
         typeInto(civilYearsField(), '20');
 
-        expect(screen.getByText(/arvestame päästeteenistuse suurendust/)).toBeVisible();
+        expect(screen.getByText(/kasutab arvutus päästeteenistuse suurendust/)).toBeVisible();
       });
 
       it('say that the state pension does not rise when the rescue service years are too few for the rescue increase', () => {
@@ -2242,7 +2242,9 @@ describe('FutureMe', () => {
         typeInto(civilYearsField(), '20');
 
         expect(screen.getByText(/seega riiklik pension ei suurene/)).toBeVisible();
-        expect(screen.queryByText(/arvestame päästeteenistuse suurendust/)).not.toBeInTheDocument();
+        expect(
+          screen.queryByText(/kasutab arvutus päästeteenistuse suurendust/),
+        ).not.toBeInTheDocument();
       });
 
       it('say that the state pension does not rise when the rescue increase has ended by the pension year', () => {
@@ -2256,7 +2258,9 @@ describe('FutureMe', () => {
         typeInto(civilYearsField(), '20');
 
         expect(screen.getByText(/seega riiklik pension ei suurene/)).toBeVisible();
-        expect(screen.queryByText(/arvestame päästeteenistuse suurendust/)).not.toBeInTheDocument();
+        expect(
+          screen.queryByText(/kasutab arvutus päästeteenistuse suurendust/),
+        ).not.toBeInTheDocument();
       });
 
       it('keep the civil service increase while the rescue service years are none', () => {

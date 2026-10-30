@@ -12,7 +12,7 @@ export const YouFaq = () => (
     </h3>
     {FAQ_ITEMS.map((item) => (
       <details key={item} className="faq-item">
-        <summary>
+        <summary className="text-balance">
           <FormattedMessage id={`futureMe.you.faq.${item}.q` as TranslationKey} />
         </summary>
         <div className="faq-body">

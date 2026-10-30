@@ -49,7 +49,7 @@ const openResultStep = () => {
     '4',
   );
   userEvent.click(
-    within(screen.getByRole('navigation', { name: 'Loo etapid' })).getByRole('button', {
+    within(screen.getByRole('navigation', { name: 'Tulevase Mina sammud' })).getByRole('button', {
       name: /^Tulemus, vaatamata$/,
     }),
   );

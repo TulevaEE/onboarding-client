@@ -91,4 +91,30 @@ describe('You step FAQ', () => {
 
     expect(screen.getByText('What is Future Me and who is it for?')).toBeInTheDocument();
   });
+
+  it('balances its questions over their lines, so no word is left alone on the last one', () => {
+    renderYouStep();
+
+    within(faq())
+      .getAllByText(/\?$/)
+      .forEach((question) => expect(question).toHaveClass('text-balance'));
+  });
+});
+
+describe('You step block headings', () => {
+  it('balance over their lines, so no word is left alone on the last one', () => {
+    renderYouStep();
+
+    [
+      'Riiklik pension',
+      /^Töö ja II\ssammas$/,
+      /^III\ssammas$/,
+      'Lapsed',
+      'Tööga seotud erijuhud',
+    ].forEach((name) => {
+      const heading = screen.getByRole('heading', { level: 3, name });
+      // eslint-disable-next-line testing-library/no-node-access
+      expect(heading.parentElement).toHaveClass('text-balance');
+    });
+  });
 });
