@@ -3,6 +3,13 @@ const MAX_AGE = 100;
 const HORIZON_SURVIVAL = 0.1;
 const MONTHS_IN_YEAR = 12;
 
+export function valueIn(byYear: Record<number, number>, year: number): number {
+  const years = Object.keys(byYear)
+    .map(Number)
+    .sort((a, b) => a - b);
+  return byYear[years.filter((y) => y <= year).pop() ?? years[0]];
+}
+
 export type Sex = 'M' | 'N' | 'X';
 
 type LifeTableColumns = { M: number[]; N: number[]; K?: number[] };
@@ -230,7 +237,8 @@ export const EARLY_DECREASE: Record<number, number> = {
 // Päästeteenistuse seadus § 18 applies until 28.02.2043
 export const RESCUE_LAST_YEAR = 2042;
 // Average old-age pension with 44 years of service from 1.04.2026 (Vabariigi Valitsus)
-export const AVG_OLD_AGE_PENSION = 860.23;
+const AVG_OLD_AGE_PENSION_BY_YEAR: Record<number, number> = { 2026: 860.23 };
+export const AVG_OLD_AGE_PENSION = valueIn(AVG_OLD_AGE_PENSION_BY_YEAR, CURRENT_YEAR);
 
 // Avaliku teenistuse seadus § 113 uses the same increase table as Päästeteenistuse seadus § 18 lg 2
 export function civilIncrease(years?: number): number {
@@ -276,16 +284,47 @@ export function serviceIncreaseOf(
 
 export const TAX_SHORT = 0.1;
 // EMTA 2026: 22% income tax, pensioner tax-free income 776 € a month
-export const INCOME_TAX = 0.22;
-export const PENSIONER_ALLOWANCE = 776 * 12;
+const INCOME_TAX_BY_YEAR: Record<number, number> = { 2026: 0.22 };
+export const INCOME_TAX = valueIn(INCOME_TAX_BY_YEAR, CURRENT_YEAR);
+const PENSIONER_ALLOWANCE_BY_YEAR: Record<number, number> = { 2026: 776 * 12 };
+export const PENSIONER_ALLOWANCE = valueIn(PENSIONER_ALLOWANCE_BY_YEAR, CURRENT_YEAR);
 // EMTA 2026: general tax-free income 700 € a month
-export const GENERAL_ALLOWANCE = 700 * 12;
+const GENERAL_ALLOWANCE_BY_YEAR: Record<number, number> = { 2026: 700 * 12 };
+export const GENERAL_ALLOWANCE = valueIn(GENERAL_ALLOWANCE_BY_YEAR, CURRENT_YEAR);
 // SKA, from 1.04.2026
-export const AASTAHINNE = 10.477;
+const AASTAHINNE_BY_YEAR: Record<number, number> = { 2026: 10.477 };
+export const AASTAHINNE = valueIn(AASTAHINNE_BY_YEAR, CURRENT_YEAR);
 // Statistikaamet PA103, average gross monthly wage 2025
 const AVG_WAGE = 2092;
 // Minimum wage from 1.04.2026
-const MIN_WAGE = 946;
+const MIN_WAGE_BY_YEAR: Record<number, number> = { 2026: 946 };
+const MIN_WAGE = valueIn(MIN_WAGE_BY_YEAR, CURRENT_YEAR);
+
+const JANUARY = 1;
+const APRIL = 4;
+const YEARLY_VALUES: { name: string; byYear: Record<number, number>; newFromMonth: number }[] = [
+  { name: 'INCOME_TAX', byYear: INCOME_TAX_BY_YEAR, newFromMonth: JANUARY },
+  { name: 'GENERAL_ALLOWANCE', byYear: GENERAL_ALLOWANCE_BY_YEAR, newFromMonth: JANUARY },
+  { name: 'PENSIONER_ALLOWANCE', byYear: PENSIONER_ALLOWANCE_BY_YEAR, newFromMonth: JANUARY },
+  { name: 'AASTAHINNE', byYear: AASTAHINNE_BY_YEAR, newFromMonth: APRIL },
+  { name: 'AVG_OLD_AGE_PENSION', byYear: AVG_OLD_AGE_PENSION_BY_YEAR, newFromMonth: APRIL },
+  { name: 'MIN_WAGE', byYear: MIN_WAGE_BY_YEAR, newFromMonth: APRIL },
+];
+
+export const missingYearlyValues = (today: Date): string[] =>
+  YEARLY_VALUES.filter(
+    ({ byYear, newFromMonth }) =>
+      today.getMonth() + 1 >= newFromMonth && byYear[today.getFullYear()] === undefined,
+  ).map(({ name }) => name);
+
+if (process.env.NODE_ENV === 'development' && missingYearlyValues(new Date()).length > 0) {
+  // eslint-disable-next-line no-console
+  console.warn(
+    `Tulevane Mina: no ${new Date().getFullYear()} row yet for ${missingYearlyValues(
+      new Date(),
+    ).join(', ')} in engine/pension.ts; the latest known year is used`,
+  );
+}
 export const WAGE_GROWTH = 0.03;
 export const INFLATION = 0.02;
 export const DEPOSIT_REAL_RETURN = -0.01;
@@ -576,10 +615,7 @@ export function hazardSupplement(input: PensionInput): number {
 export const CHILD_II_MONTHLY: Record<number, number> = { 2026: 76.12, 2027: 80.76 };
 
 function childIIMonthly(year: number): number {
-  const years = Object.keys(CHILD_II_MONTHLY)
-    .map(Number)
-    .sort((a, b) => a - b);
-  return CHILD_II_MONTHLY[years.filter((y) => y <= year).pop() || years[0]];
+  return valueIn(CHILD_II_MONTHLY, year);
 }
 
 const DEFAULT_MONTHS_UNTIL_CHILD_IS_3 = 18;
