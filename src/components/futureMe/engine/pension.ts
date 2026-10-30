@@ -209,14 +209,6 @@ export interface PensionAge {
   months: number;
   year: number;
   known: boolean;
-  label: string;
-}
-
-export interface Decision {
-  age: number;
-  year: number;
-  title: string;
-  text: string;
 }
 
 export interface OptionState {
@@ -413,7 +405,6 @@ export function pensionAge(birthYear: number, birthMonth = 1): PensionAge {
     months: mm,
     year,
     known,
-    label: `${(known ? '' : 'u ') + years} a${mm ? ` ${mm} k` : ''}`,
   };
 }
 
@@ -668,55 +659,6 @@ export function specialStart(
   input: Pick<PensionInput, 'spStartAge' | 'pensionAgeYears' | 'birthYear'>,
 ): number {
   return input.spStartAge !== undefined ? input.spStartAge : retirementYears(input);
-}
-
-export function decisionMap(input: PensionInput): Decision[] {
-  const pa = { ...pensionAge(input.birthYear, input.birthMonth) };
-  if (input.pensionAgeYears) {
-    pa.years = input.pensionAgeYears;
-    pa.label = `${input.pensionAgeYears} a`;
-  }
-  const at = (age: number) => input.birthYear + age;
-  const payoutAge = pa.years - 5;
-  const p3Age = input.p3Before2021 ? 55 : payoutAge;
-  return [
-    {
-      age: p3Age,
-      year: at(p3Age),
-      title: 'III sammas soodusmaksuga',
-      text: `Väljamaksed 10% tulumaksuga (regulaarne pikk väljamakse 0%), kui kogumist on vähemalt 5 aastat.${
-        input.p3Before2021
-          ? ' Alates 55, sest alustasid enne 2021.'
-          : ` Alates ${payoutAge}, 5 aastat enne pensioniiga, sest alustasid 2021 või hiljem.`
-      }`,
-    },
-    {
-      age: payoutAge,
-      year: at(payoutAge),
-      title: 'II sammas ja paindlik riiklik pension',
-      text: 'II sammas: ühekordne või lühike fondipension 10%, pikk fondipension 0%. Väljamaksete alustamisel lõpevad II samba sissemaksed igaveseks. Riiklikku pensioni saab võtta kuni 5 aastat varem, vähendatult.',
-    },
-    {
-      age: pa.years,
-      year: at(pa.years),
-      title: `Riiklik pension täissummas (${pa.label})`,
-      text: pa.known
-        ? 'Pensioniiga on kehtestatud.'
-        : 'Pensioniiga arvutatakse igal aastal uuesti Statistikaameti eluea järgi, seega see on ligikaudne.',
-    },
-    {
-      age: pa.years + 1,
-      year: at(pa.years + 1),
-      title: 'Riikliku pensioni edasilükkamine',
-      text: 'Iga edasilükatud aasta tõstab riiklikku pensioni eluks ajaks: +7,93% (1 a) kuni +51,57% (5 a), 2026 keskmised.',
-    },
-    {
-      age: pa.years,
-      year: at(pa.years),
-      title: 'Fondipensioni leping: üks kord või igal aastal uuesti',
-      text: 'Ühe lepinguga lõpeb väljamakse perioodi lõpus. Kui sõlmid lepingu igal aastal uuesti vähemalt maksuvaba perioodiga, jääb see maksuvabaks ja väljamakseid jagub kauemaks, aga väga kõrges eas on kuu väljamakse väiksem.',
-    },
-  ].sort((a, b) => a.age - b.age);
 }
 
 export function simulate(

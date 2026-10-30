@@ -91,9 +91,9 @@ describe('pension engine', () => {
   });
 
   it('uses the pension ages set for 2027 to 2029', () => {
-    expect(pensionAge(1962).label).toBe('65 a 1 k');
-    expect(pensionAge(1963).label).toBe('65 a 3 k');
-    expect(pensionAge(1964).label).toBe('65 a 4 k');
+    expect(pensionAge(1962)).toMatchObject({ years: 65, months: 1 });
+    expect(pensionAge(1963)).toMatchObject({ years: 65, months: 3 });
+    expect(pensionAge(1964)).toMatchObject({ years: 65, months: 4 });
   });
 
   describe('special pension', () => {
