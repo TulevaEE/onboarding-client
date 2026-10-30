@@ -647,7 +647,7 @@ export function decisionMap(input: PensionInput): Decision[] {
       age: pa.years,
       year: at(pa.years),
       title: 'Fondipensioni leping: üks kord või igal aastal uuesti',
-      text: 'Ühe lepinguga lõpeb väljamakse perioodi lõpus. Kui sõlmid lepingu igal aastal uuesti vähemalt maksuvaba perioodiga, jääb see maksuvabaks ega saa otsa, aga väga kõrges eas on kuumakse väiksem.',
+      text: 'Ühe lepinguga lõpeb väljamakse perioodi lõpus. Kui sõlmid lepingu igal aastal uuesti vähemalt maksuvaba perioodiga, jääb see maksuvabaks ja väljamakseid jagub kauemaks, aga väga kõrges eas on kuu väljamakse väiksem.',
     },
   ].sort((a, b) => a.age - b.age);
 }
@@ -1194,6 +1194,6 @@ export const SCENARIOS: Scenario[] = [
     id: 'D',
     name: 'Leping igal aastal uuesti',
     short:
-      'Maksuvaba fondipension, mille lepingu sõlmid igal aastal uuesti. Ei saa otsa, aga väheneb vanas eas.',
+      'Maksuvaba fondipension, mille lepingu sõlmid igal aastal uuesti. Väljamakseid jagub kauemaks, aga kuu väljamakse väheneb vanas eas.',
   },
 ];

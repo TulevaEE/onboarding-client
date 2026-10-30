@@ -369,6 +369,23 @@ describe('Sina step help buttons', () => {
     expect(within(dialog).queryByText(/veel ei arvesta/)).not.toBeInTheDocument();
   });
 
+  it('tells that a child without a birth year is not counted, as the child block does', () => {
+    renderYouStep();
+    const dialog = openKidsHelp();
+
+    expect(within(dialog).getByText(/Ilma sünniaastata last ei arvesta\./)).toBeInTheDocument();
+    expect(within(dialog).queryByText(/loeme last alati kasvatatuna/)).not.toBeInTheDocument();
+  });
+
+  it('does not call the state pension an SKA forecast in the salary explanation, as the state pension is the average', () => {
+    renderYouStep();
+    const salaryField = screen.getByRole('spinbutton', { name: /Kui suur on sinu brutopalk/ });
+
+    userEvent.click(helpButtonBeside(salaryField, '.col-12', /Kuidas palk arvutuses muutub$/));
+
+    expect(within(screen.getByRole('dialog')).queryByText(/prognoos/)).not.toBeInTheDocument();
+  });
+
   it('says the prefilled state pension is the average, not a forecast, and where to check it', () => {
     renderYouStep();
     const stateField = screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ });

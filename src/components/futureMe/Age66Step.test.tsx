@@ -145,6 +145,19 @@ describe('Age 66+ step', () => {
       expect(queryContractGroup('III')).not.toBeInTheDocument();
     });
 
+    it('describes the yearly contract as a payout that lasts longer and shrinks, not one that never runs out', () => {
+      openAge66Step();
+
+      userEvent.selectOptions(startField('II'), '70');
+
+      const yearly = within(contractGroup('II')).getByRole('radio', {
+        name: /^Uus leping igal aastal/,
+      });
+      expect(yearly).toHaveAccessibleDescription(/jagub väljamakseid kauemaks/);
+      expect(yearly).toHaveAccessibleDescription(/kuu väljamakse/);
+      expect(yearly).not.toHaveAccessibleDescription(/kunagi otsa|kuumakse/);
+    });
+
     it('asks for the contract of each pillar separately', () => {
       openAge66Step();
 
