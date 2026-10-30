@@ -22,7 +22,12 @@ const youWith = (changes: Partial<ReturnType<typeof initialAnswers>>) => ({
 const planOf = (changes: Partial<ReturnType<typeof initialAnswers>> = {}) =>
   toStepPlanInput(youWith(changes));
 
-const FIVE_CHILDREN = { kidsAdded: true, kidsCount: '5', kidsEarlyUser: 'me' as const };
+const FIVE_CHILDREN = {
+  kidsAdded: true,
+  kidsCount: '5',
+  kidsBirthYears: ['1990', '1992', '1994', '1996', '1998'],
+  kidsEarlyUser: 'me' as const,
+};
 
 describe('age65Answers', () => {
   it('starts with taking the full state pension, not working, and growing both pillars', () => {

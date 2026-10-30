@@ -361,17 +361,17 @@ describe('FutureMe', () => {
     beforeAll(installDialogPolyfill);
 
     const addKidsButton = () => screen.queryByRole('button', { name: 'Lisa lapsed' });
-    const kidsCountField = () => screen.getByRole('spinbutton', { name: /Mitu last\?/ });
+    const addChildButton = () => screen.getByRole('button', { name: 'Lisa laps' });
+    const childCount = () => screen.getAllByRole('group', { name: /^Laps \d+$/ }).length;
+    const child = (number: number) => within(screen.getByRole('group', { name: `Laps ${number}` }));
     const kidBirthYearField = (number: number) =>
-      screen.getByRole('textbox', { name: new RegExp(`${number}\\. lapse sünniaasta`) });
+      child(number).getByRole('textbox', { name: 'Sünniaasta' });
+    const kidBirthMonthField = (number: number) =>
+      child(number).getByRole('combobox', { name: 'Sünnikuu' });
     const kidMonthsField = (number: number) =>
-      screen.getByRole('spinbutton', {
-        name: new RegExp(`${number}\\. lapse riigi lisamakse II\\ssambasse`),
-      });
+      child(number).getByRole('spinbutton', { name: /^Riigi lisamakse II\ssambasse/ });
     const queryKidMonthsField = (number: number) =>
-      screen.queryByRole('spinbutton', {
-        name: new RegExp(`${number}\\. lapse riigi lisamakse II\\ssambasse`),
-      });
+      child(number).queryByRole('spinbutton', { name: /^Riigi lisamakse II\ssambasse/ });
     it('never asks the population register', () => {
       withChildren([BOY_BORN_JUNE_2015]);
 
@@ -386,7 +386,7 @@ describe('FutureMe', () => {
 
       renderFutureMe();
 
-      expect(kidsCountField()).toHaveValue(1);
+      expect(childCount()).toBe(1);
       expect(kidBirthYearField(1)).toHaveValue('2023');
     });
 
@@ -395,7 +395,7 @@ describe('FutureMe', () => {
 
       renderFutureMe();
 
-      expect(kidsCountField()).toHaveValue(1);
+      expect(childCount()).toBe(1);
     });
 
     it('says in the „?“ that only children with a Tuleva account are prefilled', () => {
@@ -417,7 +417,7 @@ describe('FutureMe', () => {
       renderFutureMe();
 
       expect(addKidsButton()).not.toBeInTheDocument();
-      expect(kidsCountField()).toHaveValue(2);
+      expect(childCount()).toBe(2);
       expect(kidBirthYearField(1)).toHaveValue('2015');
       expect(kidBirthYearField(2)).toHaveValue('2023');
     });
@@ -427,7 +427,7 @@ describe('FutureMe', () => {
 
       renderFutureMe();
 
-      expect(screen.getByRole('combobox', { name: /1\. lapse sünnikuu/ })).toHaveValue('2');
+      expect(kidBirthMonthField(1)).toHaveValue('2');
     });
 
     it('asks for the state payment months only of a child born from September 2021 who is over three', () => {
@@ -474,7 +474,6 @@ describe('FutureMe', () => {
 
       renderFutureMe();
 
-      expect(kidsCountField()).toHaveAccessibleDescription(/Eeltäidetud väli/);
       expect(kidBirthYearField(1)).toHaveAccessibleDescription(/Eeltäidetud väli/);
       expect(kidMonthsField(1)).toHaveAccessibleDescription(/Eeltäidetud väli/);
       typeInto(kidMonthsField(1), '12');
@@ -486,7 +485,7 @@ describe('FutureMe', () => {
       withChildren([BOY_BORN_JUNE_2015]);
 
       renderFutureMe();
-      typeInto(kidsCountField(), '2');
+      userEvent.click(addChildButton());
       typeInto(kidBirthYearField(2), '2022');
 
       expect(kidBirthYearField(2)).toHaveValue('2022');
@@ -498,7 +497,7 @@ describe('FutureMe', () => {
       withPensionData({ contributions: monthsOfParentalBenefit(24) });
 
       renderFutureMe();
-      typeInto(kidsCountField(), '2');
+      userEvent.click(addChildButton());
       typeInto(kidBirthYearField(2), '2022');
 
       expect(kidMonthsField(1)).toHaveValue(null);
@@ -510,7 +509,7 @@ describe('FutureMe', () => {
       withPensionData({ contributions: monthsOfParentalBenefit(24) });
 
       renderFutureMe();
-      typeInto(kidsCountField(), '2');
+      userEvent.click(addChildButton());
       typeInto(kidBirthYearField(2), '2015');
 
       expect(kidMonthsField(1)).toHaveValue(24);
@@ -521,7 +520,7 @@ describe('FutureMe', () => {
       withChildren([GIRL_BORN_FEB_2023]);
 
       renderFutureMe();
-      typeInto(kidsCountField(), '2');
+      userEvent.click(addChildButton());
 
       expect(kidBirthYearField(2)).not.toHaveAccessibleDescription(/Eeltäidetud väli/);
     });
@@ -549,7 +548,7 @@ describe('FutureMe', () => {
       userEvent.click(addKidsButton() as HTMLElement);
       typeInto(kidBirthYearField(1), '2023');
 
-      expect(kidsCountField()).toHaveValue(1);
+      expect(childCount()).toBe(1);
       expect(kidMonthsField(1)).toHaveValue(null);
     });
 
@@ -559,7 +558,7 @@ describe('FutureMe', () => {
       renderFutureMe();
       userEvent.click(addKidsButton() as HTMLElement);
       typeInto(kidBirthYearField(1), '2021');
-      const birthMonth = screen.getByRole('combobox', { name: /1\. lapse sünnikuu/ });
+      const birthMonth = kidBirthMonthField(1);
 
       userEvent.selectOptions(birthMonth, '8');
       expect(queryKidMonthsField(1)).not.toBeInTheDocument();
@@ -1303,9 +1302,11 @@ describe('FutureMe', () => {
   describe('optional blocks', () => {
     const addKidsButton = () => screen.getByRole('button', { name: 'Lisa lapsed' });
     const addSpecialCasesButton = () => screen.getByRole('button', { name: 'Lisa erijuht' });
-    const kidsCountField = () => screen.getByRole('spinbutton', { name: /Mitu last\?/ });
+    const addChildButton = () => screen.getByRole('button', { name: 'Lisa laps' });
+    const childCount = () => screen.getAllByRole('group', { name: /^Laps \d+$/ }).length;
+    const child = (number: number) => within(screen.getByRole('group', { name: `Laps ${number}` }));
     const kidBirthYearField = (number: number) =>
-      screen.getByRole('textbox', { name: new RegExp(`${number}\\. lapse sünniaasta`) });
+      child(number).getByRole('textbox', { name: 'Sünniaasta' });
     const earlyYearsField = () =>
       screen.getByRole('combobox', { name: /Mitu aastat varem plaanid pensionile minna/ });
     const specialCase = (name: RegExp) => screen.getByRole('checkbox', { name });
@@ -1320,7 +1321,7 @@ describe('FutureMe', () => {
 
     const addKids = (birthYears: string[]) => {
       userEvent.click(addKidsButton());
-      typeInto(kidsCountField(), String(birthYears.length));
+      birthYears.slice(1).forEach(() => userEvent.click(addChildButton()));
       birthYears.forEach((year, index) => typeInto(kidBirthYearField(index + 1), year));
     };
 
@@ -1363,23 +1364,43 @@ describe('FutureMe', () => {
 
         userEvent.click(addKidsButton());
 
-        expect(kidsCountField()).toHaveValue(1);
+        expect(childCount()).toBe(1);
         expect(kidBirthYearField(1)).toBeVisible();
+        expect(screen.queryByRole('spinbutton', { name: /Mitu last/ })).not.toBeInTheDocument();
         const toggle = screen.getByRole('button', { name: 'Sulge laste andmed' });
         expect(toggle).toHaveAttribute('aria-expanded', 'true');
         expect(toggle).toHaveFocus();
       });
 
-      it('give a row per child', () => {
+      it('add one child at a time and move the focus to the new birth year', () => {
         renderFutureMe();
         userEvent.click(addKidsButton());
 
-        typeInto(kidsCountField(), '3');
+        userEvent.click(addChildButton());
+        userEvent.click(addChildButton());
 
-        expect(kidBirthYearField(3)).toBeVisible();
-        expect(
-          screen.queryByRole('textbox', { name: /4\. lapse sünniaasta/ }),
-        ).not.toBeInTheDocument();
+        expect(childCount()).toBe(3);
+        expect(kidBirthYearField(3)).toHaveFocus();
+      });
+
+      it('remove one child and keep the others in their order', () => {
+        renderFutureMe();
+        addKids(['1990', '1992', '1994']);
+
+        userEvent.click(screen.getByRole('button', { name: 'Eemalda laps 2' }));
+
+        expect(childCount()).toBe(2);
+        expect(kidBirthYearField(1)).toHaveValue('1990');
+        expect(kidBirthYearField(2)).toHaveValue('1994');
+        expect(addChildButton()).toHaveFocus();
+      });
+
+      it('offer no removing of a single child, only of the whole block', () => {
+        renderFutureMe();
+        userEvent.click(addKidsButton());
+
+        expect(screen.queryByRole('button', { name: /^Eemalda laps \d/ })).not.toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Eemalda lapsed' })).toBeVisible();
       });
 
       it('summarise the number of children when closed', () => {
@@ -1390,22 +1411,10 @@ describe('FutureMe', () => {
         expect(screen.getByText('1 laps')).toBeVisible();
 
         userEvent.click(screen.getByRole('button', { name: 'Muuda laste andmeid' }));
-        typeInto(kidsCountField(), '2');
+        userEvent.click(addChildButton());
         userEvent.click(screen.getByRole('button', { name: 'Sulge laste andmed' }));
 
         expect(screen.getByText('2 last')).toBeVisible();
-      });
-
-      it('lock the later steps while the number of children is empty', async () => {
-        renderFutureMe();
-        fillInRequiredAnswers();
-        userEvent.click(addKidsButton());
-        userEvent.clear(kidsCountField());
-
-        userEvent.click(nextButton());
-
-        expect(await screen.findByText(/Laste arvu väli on kohustuslik/)).toBeVisible();
-        await waitFor(() => expect(kidsCountField()).toHaveFocus());
       });
 
       it('name the field when a birth year is out of range, once the saver leaves it', () => {
@@ -1421,31 +1430,29 @@ describe('FutureMe', () => {
         ).toBeVisible();
       });
 
-      it('say a child without a birth year is counted as raised', () => {
+      it('say under a child without a birth year that the child is not counted', () => {
         renderFutureMe();
-        userEvent.click(addKidsButton());
+        addKids(['1990', '1992', '']);
 
-        expect(screen.getByText(/Mõne lapse sünniaasta on puudu/)).toBeVisible();
+        expect(
+          child(3).getByText('Sisesta sünniaasta, ilma selleta last ei arvesta.'),
+        ).toBeVisible();
+        expect(earlyYearsField()).toHaveDisplayValue(
+          withNbsp('ei lähe varem (tavalises pensionieas)'),
+        );
 
-        typeInto(kidBirthYearField(1), '1990');
+        typeInto(kidBirthYearField(3), '1994');
 
-        expect(screen.queryByText(/Mõne lapse sünniaasta on puudu/)).not.toBeInTheDocument();
+        expect(child(3).queryByText(/ilma selleta last ei arvesta/)).not.toBeInTheDocument();
       });
 
-      it('describe the children count only by what it has to say', () => {
-        renderFutureMe();
-        userEvent.click(addKidsButton());
-
-        expect(kidsCountField()).not.toHaveAttribute('aria-describedby');
-      });
-
-      it('say which children were not raised for eight years by retirement', () => {
+      it('say under a child not raised for eight years by retirement when the child turns eight', () => {
         renderFutureMe();
         addKids(['2050']);
 
         expect(
-          screen.getByText(
-            /1 laps ei ole pensionile minekuks \(\d{4}\) vähemalt 8 aastat kasvatatud/,
+          child(1).getByText(
+            /^Ei arvesta: saab 8-aastaseks 2058, pärast sinu pensionile minekut \(\d{4}\)\.$/,
           ),
         ).toBeVisible();
       });
@@ -1482,26 +1489,23 @@ describe('FutureMe', () => {
         ).toBeVisible();
       });
 
-      it('ask which child is disabled once there are several children', () => {
+      it('ask of each child whether the child is disabled, instead of one question for all', () => {
         renderFutureMe();
         addKids(['1990', '1992']);
 
-        const disabledChild = screen.getByRole('combobox', { name: /Kas mõni laps on puudega/ });
+        [1, 2].forEach((number) =>
+          expect(child(number).getByRole('checkbox', { name: 'Lapsel on puue' })).not.toBeChecked(),
+        );
         expect(
-          within(disabledChild)
-            .getAllByRole('option')
-            .map((option) => option.textContent),
-        ).toEqual(['ei', 'jah: 1. laps (1990)', 'jah: 2. laps (1992)']);
+          screen.queryByRole('combobox', { name: /Kas mõni laps on puudega/ }),
+        ).not.toBeInTheDocument();
       });
 
       it('give five years for a disabled child', () => {
         renderFutureMe();
         addKids(['1990']);
 
-        userEvent.selectOptions(
-          screen.getByRole('combobox', { name: /Kas mõni laps on puudega/ }),
-          'jah (keskmine, raske või sügav puue)',
-        );
+        userEvent.click(child(1).getByRole('checkbox', { name: 'Lapsel on puue' }));
 
         expect(earlyYearsField()).toHaveDisplayValue(withNbsp('5 a, vähendamata (kõige varem)'));
       });
@@ -1518,15 +1522,24 @@ describe('FutureMe', () => {
         ).not.toBeInTheDocument();
       });
 
-      it('ask the birth month only of a child born in 2021 or in the last three years', () => {
+      it('let the other parent get the supplement', () => {
+        renderFutureMe();
+        addKids(['1990']);
+        const supplementUser = screen.getByRole('combobox', { name: /Kes saab pensionilisa/ });
+
+        userEvent.selectOptions(supplementUser, 'teine vanem');
+
+        expect(supplementUser).toHaveDisplayValue('teine vanem');
+      });
+
+      it('ask the birth month of every child, not known at first', () => {
         renderFutureMe();
         addKids(['1990', '2025']);
 
-        expect(
-          screen.queryByRole('combobox', { name: /1\. lapse sünnikuu/ }),
-        ).not.toBeInTheDocument();
-        expect(screen.getByRole('combobox', { name: /2\. lapse sünnikuu/ })).toHaveDisplayValue(
-          'ei tea',
+        [1, 2].forEach((number) =>
+          expect(child(number).getByRole('combobox', { name: 'Sünnikuu' })).toHaveDisplayValue(
+            'ei tea',
+          ),
         );
       });
 
@@ -1595,7 +1608,7 @@ describe('FutureMe', () => {
 
         userEvent.click(addKidsButton());
 
-        expect(kidsCountField()).toHaveValue(1);
+        expect(childCount()).toBe(1);
         expect(kidBirthYearField(1)).toHaveValue('');
       });
     });
@@ -1648,7 +1661,8 @@ describe('FutureMe', () => {
         addKids(['1990', '1992', '1994', '1996', '1998']);
 
         userEvent.selectOptions(earlyYearsField(), '4');
-        typeInto(kidsCountField(), '3');
+        userEvent.click(screen.getByRole('button', { name: 'Eemalda laps 5' }));
+        userEvent.click(screen.getByRole('button', { name: 'Eemalda laps 4' }));
 
         expect(earlyYearsField()).toHaveDisplayValue(withNbsp('4 a, paindlik pension −25,5%'));
       });

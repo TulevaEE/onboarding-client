@@ -1,4 +1,4 @@
-import { kidsInputOf, isChildMonthAsked } from './kidsInput';
+import { kidsInputOf } from './kidsInput';
 import { initialAnswers, YouAnswers } from './youAnswers';
 
 const october2026 = new Date(2026, 9, 28);
@@ -20,25 +20,25 @@ describe('kidsInputOf', () => {
   it('sorts the children into the supplement groups by birth year', () => {
     const kids = kidsInputOf(withKids(['1985', '2005', '2015', '2022']), october2026);
 
-    expect(kids).toMatchObject({ b1991: 1, b2012: 1, b2013: 1, b2021: 1, bUnknown: 0 });
+    expect(kids).toMatchObject({ b1991: 1, b2012: 1, b2013: 1, b2021: 1 });
   });
 
-  it('counts a child with a missing birth year as unknown', () => {
+  it('leaves out a child without a birth year', () => {
     const kids = kidsInputOf(withKids(['', '']), october2026);
 
-    expect(kids).toMatchObject({ bUnknown: 2, b1991: 0 });
+    expect(kids).toMatchObject({ b1991: 0, b2012: 0, b2013: 0, b2021: 0 });
   });
 
   it('leaves out a child whose birth year is invalid, as the early right from the children does', () => {
     const kids = kidsInputOf(withKids(['1995', '1998', '19', '2050']), october2026);
 
-    expect(kids).toMatchObject({ b2012: 2, bUnknown: 0 });
+    expect(kids).toMatchObject({ b2012: 2 });
   });
 
   it('leaves out a child who has not been raised for 8 years by the retirement', () => {
     const kids = kidsInputOf(withKids(['1990', '2040']), october2026);
 
-    expect(kids).toMatchObject({ b1991: 1, b2012: 0, b2021: 0, bUnknown: 0 });
+    expect(kids).toMatchObject({ b1991: 1, b2012: 0, b2021: 0 });
   });
 
   it('counts a child raised 8 years by the retirement the saver plans, not the earliest one the children allow', () => {
@@ -150,16 +150,5 @@ describe('kidsInputOf', () => {
       supUser: 'other',
       monthNow: 9,
     });
-  });
-});
-
-describe('isChildMonthAsked', () => {
-  it.each([
-    ['2021', true],
-    ['2023', true],
-    ['2015', false],
-    ['', false],
-  ])('for a child born %s is %s', (year, expected) => {
-    expect(isChildMonthAsked(year, october2026)).toBe(expected);
   });
 });

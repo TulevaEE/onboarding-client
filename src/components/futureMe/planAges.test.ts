@@ -10,7 +10,12 @@ const youWith = (changes: Partial<ReturnType<typeof initialAnswers>>) => ({
 const planAt65 = (changes: Partial<ReturnType<typeof initialAnswers>> = {}) =>
   toStepPlanInput(youWith({ pensionAgeYears: '65', ...changes }));
 
-const FIVE_CHILDREN = { kidsAdded: true, kidsCount: '5', kidsEarlyUser: 'me' as const };
+const FIVE_CHILDREN = {
+  kidsAdded: true,
+  kidsCount: '5',
+  kidsBirthYears: ['1990', '1992', '1994', '1996', '1998'],
+  kidsEarlyUser: 'me' as const,
+};
 
 describe('planAges', () => {
   describe('payout age', () => {

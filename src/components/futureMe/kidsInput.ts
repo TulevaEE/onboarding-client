@@ -18,9 +18,8 @@ const LAST_MONTH_BEFORE_II_PILLAR_PAYMENTS = 8;
 const FIRST_YEAR_OF_II_PILLAR_PAYMENTS = 2021;
 const LAST_YEAR_OF_1991_GROUP = 1990;
 const LAST_YEAR_OF_2012_GROUP = 2012;
-const YEARS_THE_BIRTH_MONTH_IS_ASKED = 3;
 
-type Group = 'b1991' | 'b2012' | 'b2013' | 'b2021' | 'bUnknown';
+type Group = 'b1991' | 'b2012' | 'b2013' | 'b2021';
 
 interface Under3 {
   left: number | undefined;
@@ -37,15 +36,6 @@ interface Child {
 const iiMonthsOf = (typed: string): number | undefined => {
   const months = /^\d+$/.test(typed.trim()) ? Number(typed) : NaN;
   return months <= STATE_PAYS_II_PILLAR_MONTHS ? months : undefined;
-};
-
-export const isChildMonthAsked = (typedYear: string, now: Date = new Date()): boolean => {
-  const year = validChildBirthYear(typedYear, Number.POSITIVE_INFINITY);
-  return (
-    year !== null &&
-    (year === FIRST_YEAR_OF_II_PILLAR_PAYMENTS ||
-      year >= now.getFullYear() - YEARS_THE_BIRTH_MONTH_IS_ASKED)
-  );
 };
 
 const under3Of = (year: number, month: number, now: Date): Under3 | undefined => {
@@ -83,9 +73,6 @@ const childAt = (
   now: Date,
 ): Child | null => {
   const typed = (answers.kidsBirthYears[index] ?? '').trim();
-  if (typed === '') {
-    return { group: 'bUnknown' };
-  }
   const year = validChildBirthYear(typed, maxChildBirthYear(answers));
   const month = parseInt(answers.kidsBirthMonths[index] ?? '', 10) || 0;
   if (year === null || year + YEARS_RAISING_A_CHILD > retirementYear) {
@@ -127,7 +114,6 @@ export const kidsInputOf = (answers: YouAnswers, now: Date = new Date()): KidsIn
     b2012: countOf('b2012'),
     b2013: countOf('b2013'),
     b2021: countOf('b2021'),
-    bUnknown: countOf('bUnknown'),
     u3: under3.length,
     u3Left: under3.map(({ left }) => left),
     u3Start: under3.map(({ start = 0 }) => start),

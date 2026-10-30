@@ -296,9 +296,6 @@ const typedChildBirthYears = (answers: YouAnswers): string[] =>
     (answers.kidsBirthYears[index] ?? '').trim(),
   );
 
-export const hasChildWithoutBirthYear = (answers: YouAnswers): boolean =>
-  typedChildBirthYears(answers).some((typed) => typed === '');
-
 const kidsEarlyInput = (earlyUser: KidsUser, hasDisabled: boolean, counted: number): KidsInput => ({
   b1991: counted,
   earlyUser,
@@ -308,16 +305,15 @@ const kidsEarlyInput = (earlyUser: KidsUser, hasDisabled: boolean, counted: numb
 const kidsRetirement = (answers: YouAnswers, earlyUser: KidsUser) => {
   const maxYear = maxChildBirthYear(answers);
   const typed = typedChildBirthYears(answers);
-  const unknown = typed.filter((year) => year === '').length;
   const known = typed
     .map((year) => validChildBirthYear(year, maxYear))
     .filter((year): year is number => year !== null);
   const pensionYear = birthYearOrFallback(answers) + effectivePensionAge(answers);
   const countedBy = (retirementYear: number) =>
-    known.filter((year) => year + YEARS_RAISING_A_CHILD <= retirementYear).length + unknown;
+    known.filter((year) => year + YEARS_RAISING_A_CHILD <= retirementYear).length;
   const isRaisedBy = (typedYear: string, retirementYear: number) => {
     const year = validChildBirthYear(typedYear, maxYear);
-    return typedYear === '' || (year !== null && year + YEARS_RAISING_A_CHILD <= retirementYear);
+    return year !== null && year + YEARS_RAISING_A_CHILD <= retirementYear;
   };
   const hasDisabledBy = (retirementYear: number) =>
     typed.some((year, index) => answers.kidsDisabled[index] && isRaisedBy(year, retirementYear));
@@ -335,7 +331,7 @@ const kidsRetirement = (answers: YouAnswers, earlyUser: KidsUser) => {
   return {
     counted,
     hasDisabled: hasDisabledBy(retirementYear),
-    late: known.length - (counted - unknown),
+    late: known.length - counted,
     retirementYear,
     yearsEarly: pensionYear - retirementYear,
   };
@@ -349,6 +345,23 @@ export const countedKids = (
     answers.kidsEarlyUser,
   );
   return { counted, hasDisabled, late, lateYear: retirementYear };
+};
+
+export type ChildNote =
+  | { kind: 'noBirthYear' }
+  | { kind: 'late'; turnsEight: number; retirementYear: number }
+  | null;
+
+export const childNoteOf = (answers: YouAnswers, index: number): ChildNote => {
+  const typed = (answers.kidsBirthYears[index] ?? '').trim();
+  if (typed === '') {
+    return { kind: 'noBirthYear' };
+  }
+  const year = validChildBirthYear(typed, maxChildBirthYear(answers));
+  const { retirementYear } = kidsRetirement(answers, answers.kidsEarlyUser);
+  return year !== null && year + YEARS_RAISING_A_CHILD > retirementYear
+    ? { kind: 'late', turnsEight: year + YEARS_RAISING_A_CHILD, retirementYear }
+    : null;
 };
 
 const kidsRightFor = (answers: YouAnswers, earlyUser: YouAnswers['kidsEarlyUser']): number =>

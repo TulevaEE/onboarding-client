@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import {
   childRows,
   chosenSpecialCases,
-  countedKids,
-  hasChildWithoutBirthYear,
+  childNoteOf,
   HazardList,
   isChildBirthYearInvalid,
   isChildIIMonthsAsked,
@@ -17,8 +17,12 @@ import {
   serviceIncreaseAtPension,
   YouAnswers,
 } from './youAnswers';
-import { isChildMonthAsked } from './kidsInput';
-import { attributableIIMonths, isPrefilledChild, KidsPrefill } from './kidsPrefill';
+import {
+  attributableIIMonths,
+  isPrefilledChild,
+  isPrefilledIIMonths,
+  KidsPrefill,
+} from './kidsPrefill';
 import { AmountField, BlockProps, FieldLabel, PREFILLED_HINT_ID, SelectField } from './YouFields';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';
@@ -69,25 +73,22 @@ const civilIncreaseOf = (answers: YouAnswers) => {
 };
 
 const KIDS_USERS: KidsUser[] = ['me', 'other'];
-const NO_DISABLED_CHILD = 'no';
 const MONTHS = Array.from({ length: 12 }, (_, month) => new Date(2000, month, 1));
 
 const ChildBirthMonth = ({
   id,
-  number,
   value,
   onChange,
 }: {
   id: string;
-  number: number;
   value: string;
   onChange: (month: string) => void;
 }) => {
   const intl = useIntl();
   return (
-    <div className="mt-2">
-      <label className="form-label text-balance" htmlFor={id}>
-        <FormattedMessage id="futureMe.you.kidBirthMonth.label" values={{ number }} />
+    <>
+      <label className="form-label" htmlFor={id}>
+        <FormattedMessage id="futureMe.you.kidBirthMonth.label" />
       </label>
       <select
         id={id}
@@ -102,26 +103,24 @@ const ChildBirthMonth = ({
           </option>
         ))}
       </select>
-    </div>
+    </>
   );
 };
 
 export const KidsSection = ({
   answers,
-  touched,
   isOpen,
   isComplete,
   optional,
   prefilledKids,
   onToggle,
   onChange,
-  onBlur,
 }: KidsBlockProps) => {
   const intl = useIntl();
   const [leftRows, setLeftRows] = useState<ReadonlySet<number>>(new Set());
+  const addChildRef = useRef<HTMLButtonElement>(null);
   const rows = childRows(answers);
   const maxYear = maxChildBirthYear(answers);
-  const { late, lateYear } = countedKids(answers);
   const birthYearValues = { min: MIN_CHILD_BIRTH_YEAR, max: maxYear };
 
   const changeBirthYear = (index: number, typed: string) => {
@@ -133,22 +132,29 @@ export const KidsSection = ({
     });
   };
 
-  const disabledChild = Array.from({ length: rows }, (_, row) => row).find(
-    (row) => answers.kidsDisabled[row],
-  );
-  const disabledChildOptions = [
-    { value: NO_DISABLED_CHILD, label: intl.formatMessage({ id: 'futureMe.you.kidsDisabled.no' }) },
-    ...Array.from({ length: rows }, (_, row) => ({
-      value: String(row),
-      label:
-        rows === 1
-          ? intl.formatMessage({ id: 'futureMe.you.kidsDisabled.yes' })
-          : intl.formatMessage(
-              { id: 'futureMe.you.kidsDisabled.child' },
-              { number: row + 1, year: answers.kidsBirthYears[row]?.trim() || 'none' },
-            ),
-    })),
-  ];
+  const addChild = () => {
+    flushSync(() => onChange({ kidsCount: String(rows + 1) }));
+    document.getElementById(`future-me-kid-birth-year-${rows + 1}`)?.focus();
+  };
+
+  const removeChild = (index: number) => {
+    const withoutChild = <T,>(values: T[]) => values.filter((_, row) => row !== index);
+    onChange({
+      kidsCount: String(rows - 1),
+      kidsBirthYears: withoutChild(answers.kidsBirthYears),
+      kidsBirthMonths: withoutChild(answers.kidsBirthMonths),
+      kidsIIMonths: withoutChild(answers.kidsIIMonths),
+      kidsDisabled: withoutChild(answers.kidsDisabled),
+    });
+    setLeftRows(new Set());
+    addChildRef.current?.focus();
+  };
+
+  const changeDisabled = (index: number, isDisabled: boolean) => {
+    const disabled = Array.from({ length: rows }, (_, row) => answers.kidsDisabled[row] ?? false);
+    disabled[index] = isDisabled;
+    onChange({ kidsDisabled: disabled });
+  };
 
   const changeIIMonths = (index: number, typed: string) => {
     const months = Array.from({ length: rows }, (_, row) => answers.kidsIIMonths[row] ?? '');
@@ -174,183 +180,179 @@ export const KidsSection = ({
       onToggle={onToggle}
       optional={optional}
     >
-      <div className="row g-3">
-        <AmountField
-          field="kidsCount"
-          answers={answers}
-          isPrefilled={
-            prefilledKids !== null && answers.kidsCount === String(prefilledKids.birthYears.length)
-          }
-          touched={touched}
-          label="futureMe.you.kidsCount.label"
-          help="kidsWho"
-          name="futureMe.you.kidsCount.name"
-          step={1}
-          inputMode="numeric"
-          onChange={onChange}
-          onBlur={onBlur}
-        />
-        {rows > 0 && (
-          <>
-            <div className="col-12">
-              <p className="form-text mt-0 mb-0" id="future-me-kid-birth-year-hint">
-                <FormattedMessage id="futureMe.you.kidBirthYear.hint" />
-              </p>
+      {Array.from({ length: rows }, (_, index) => {
+        const number = index + 1;
+        const typed = answers.kidsBirthYears[index] ?? '';
+        const id = `future-me-kid-birth-year-${number}`;
+        const headingId = `future-me-kid-${number}`;
+        const showError =
+          isChildBirthYearInvalid(answers, index) &&
+          (typed.trim().length === CHILD_BIRTH_YEAR_DIGITS || leftRows.has(index));
+        const monthsId = `future-me-kid-ii-months-${number}`;
+        const isMonthsAsked = isChildIIMonthsAsked(answers, index);
+        const isMonthsInvalid = isMonthsAsked && isChildIIMonthsInvalid(answers, index);
+        const note = childNoteOf(answers, index);
+        return (
+          <div className="future-me-kid" role="group" aria-labelledby={headingId} key={id}>
+            <div className="future-me-kid-head">
+              <h4 id={headingId}>
+                <FormattedMessage id="futureMe.you.kid.title" values={{ number }} />
+              </h4>
+              {rows > 1 && (
+                <button
+                  type="button"
+                  className="btn btn-link btn-sm px-0"
+                  aria-label={intl.formatMessage(
+                    { id: 'futureMe.you.kid.removeLabel' },
+                    { number },
+                  )}
+                  onClick={() => removeChild(index)}
+                >
+                  <FormattedMessage id="futureMe.you.kid.remove" />
+                </button>
+              )}
             </div>
-            <div
-              className="col-12"
-              role="group"
-              aria-label={intl.formatMessage({ id: 'futureMe.you.kidBirthYear.group' })}
-            >
-              <div className="row g-3">
-                {Array.from({ length: rows }, (_, index) => {
-                  const typed = answers.kidsBirthYears[index] ?? '';
-                  const id = `future-me-kid-birth-year-${index + 1}`;
-                  const showError =
-                    isChildBirthYearInvalid(answers, index) &&
-                    (typed.trim().length === CHILD_BIRTH_YEAR_DIGITS || leftRows.has(index));
-                  const monthsId = `future-me-kid-ii-months-${index + 1}`;
-                  const isMonthsAsked = isChildIIMonthsAsked(answers, index);
-                  const isMonthsInvalid = isMonthsAsked && isChildIIMonthsInvalid(answers, index);
-                  return (
-                    <div className="col-12 col-sm-6 col-lg-4" key={id}>
-                      <label className="form-label text-balance" htmlFor={id}>
-                        <FormattedMessage
-                          id="futureMe.you.kidBirthYear.label"
-                          values={{ number: index + 1 }}
-                        />
-                      </label>
-                      <input
-                        id={id}
-                        className={showError ? 'form-control is-invalid' : 'form-control'}
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]{4}"
-                        maxLength={CHILD_BIRTH_YEAR_DIGITS}
-                        autoComplete="off"
-                        value={typed}
-                        aria-invalid={showError}
-                        aria-describedby={classNames('future-me-kid-birth-year-hint', {
-                          [PREFILLED_HINT_ID]:
-                            prefilledKids !== null &&
-                            isPrefilledChild(prefilledKids, answers.kidsBirthYears, index),
-                          [`${id}-error`]: showError,
-                        })}
-                        onChange={(event) => changeBirthYear(index, event.target.value)}
-                        onBlur={() => setLeftRows((previous) => new Set(previous).add(index))}
-                      />
-                      {showError && (
-                        <div className="invalid-feedback" id={`${id}-error`}>
-                          <FormattedMessage
-                            id="futureMe.you.kidBirthYear.error"
-                            values={{ number: index + 1, ...birthYearValues }}
-                          />
-                        </div>
-                      )}
-                      {isChildMonthAsked(typed) && (
-                        <ChildBirthMonth
-                          id={`future-me-kid-birth-month-${index + 1}`}
-                          number={index + 1}
-                          value={answers.kidsBirthMonths[index] ?? ''}
-                          onChange={(month) => changeBirthMonth(index, month)}
-                        />
-                      )}
-                      {isMonthsAsked && (
-                        <div className="mt-3">
-                          <FieldLabel htmlFor={monthsId} help="kidIIMonths">
-                            <FormattedMessage
-                              id="futureMe.you.kidIIMonths.label"
-                              values={{ number: index + 1 }}
-                            />
-                          </FieldLabel>
-                          <input
-                            id={monthsId}
-                            className={isMonthsInvalid ? 'form-control is-invalid' : 'form-control'}
-                            type="number"
-                            inputMode="numeric"
-                            min="0"
-                            max="36"
-                            step="1"
-                            value={answers.kidsIIMonths[index] ?? ''}
-                            aria-invalid={isMonthsInvalid}
-                            aria-describedby={classNames(`${monthsId}-hint`, {
-                              [PREFILLED_HINT_ID]:
-                                Boolean(prefilledKids?.iiMonths[index]) &&
-                                answers.kidsIIMonths[index] === prefilledKids?.iiMonths[index],
-                              [`${monthsId}-error`]: isMonthsInvalid,
-                            })}
-                            onChange={(event) => changeIIMonths(index, event.target.value)}
-                          />
-                          <div className="form-text" id={`${monthsId}-hint`}>
-                            <FormattedMessage id="futureMe.you.kidIIMonths.hint" />
-                          </div>
-                          {isMonthsInvalid && (
-                            <div className="invalid-feedback" id={`${monthsId}-error`}>
-                              <FormattedMessage
-                                id="futureMe.you.kidIIMonths.error"
-                                values={{ number: index + 1 }}
-                              />
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+            <div className="row g-3">
+              <div className="col-6 col-sm-4">
+                <label className="form-label" htmlFor={id}>
+                  <FormattedMessage id="futureMe.you.kidBirthYear.label" />
+                </label>
+                <input
+                  id={id}
+                  className={showError ? 'form-control is-invalid' : 'form-control'}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]{4}"
+                  maxLength={CHILD_BIRTH_YEAR_DIGITS}
+                  autoComplete="off"
+                  value={typed}
+                  aria-invalid={showError}
+                  aria-describedby={
+                    classNames({
+                      [PREFILLED_HINT_ID]:
+                        prefilledKids !== null &&
+                        isPrefilledChild(prefilledKids, answers.kidsBirthYears, index),
+                      [`${id}-error`]: showError,
+                    }) || undefined
+                  }
+                  onChange={(event) => changeBirthYear(index, event.target.value)}
+                  onBlur={() => setLeftRows((previous) => new Set(previous).add(index))}
+                />
+                {showError && (
+                  <div className="invalid-feedback" id={`${id}-error`}>
+                    <FormattedMessage
+                      id="futureMe.you.kidBirthYear.error"
+                      values={{ number, ...birthYearValues }}
+                    />
+                  </div>
+                )}
               </div>
-            </div>
-            {hasChildWithoutBirthYear(answers) && (
-              <div className="col-12">
-                <div className="form-text mt-0">
-                  <FormattedMessage id="futureMe.you.kids.missingBirthYear" />
-                </div>
+              <div className="col-6 col-sm-4">
+                <ChildBirthMonth
+                  id={`future-me-kid-birth-month-${number}`}
+                  value={answers.kidsBirthMonths[index] ?? ''}
+                  onChange={(month) => changeBirthMonth(index, month)}
+                />
               </div>
-            )}
-            {late > 0 && (
-              <div className="col-12">
-                <div className="form-text mt-0">
-                  <FormattedMessage
-                    id="futureMe.you.kids.late"
-                    values={{ count: late, year: lateYear }}
+              {isMonthsAsked && (
+                <div className="col-12 col-sm-8">
+                  <FieldLabel htmlFor={monthsId} help="kidIIMonths">
+                    <FormattedMessage id="futureMe.you.kidIIMonths.label" />
+                  </FieldLabel>
+                  <input
+                    id={monthsId}
+                    className={isMonthsInvalid ? 'form-control is-invalid' : 'form-control'}
+                    type="number"
+                    inputMode="numeric"
+                    min="0"
+                    max="36"
+                    step="1"
+                    value={answers.kidsIIMonths[index] ?? ''}
+                    aria-invalid={isMonthsInvalid}
+                    aria-describedby={classNames(`${monthsId}-hint`, {
+                      [PREFILLED_HINT_ID]: isPrefilledIIMonths(
+                        prefilledKids,
+                        answers.kidsBirthYears,
+                        answers.kidsIIMonths,
+                        index,
+                      ),
+                      [`${monthsId}-error`]: isMonthsInvalid,
+                    })}
+                    onChange={(event) => changeIIMonths(index, event.target.value)}
                   />
+                  <div className="form-text" id={`${monthsId}-hint`}>
+                    <FormattedMessage id="futureMe.you.kidIIMonths.hint" />
+                  </div>
+                  {isMonthsInvalid && (
+                    <div className="invalid-feedback" id={`${monthsId}-error`}>
+                      <FormattedMessage id="futureMe.you.kidIIMonths.error" values={{ number }} />
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="col-12">
+                <div className="form-check">
+                  <input
+                    id={`future-me-kid-disabled-${number}`}
+                    className="form-check-input"
+                    type="checkbox"
+                    checked={answers.kidsDisabled[index] ?? false}
+                    onChange={(event) => changeDisabled(index, event.target.checked)}
+                  />
+                  <label className="form-check-label" htmlFor={`future-me-kid-disabled-${number}`}>
+                    <FormattedMessage id="futureMe.you.kidDisabled.label" />
+                  </label>
                 </div>
               </div>
+            </div>
+            {note && (
+              <div className="form-text">
+                {note.kind === 'noBirthYear' ? (
+                  <FormattedMessage id="futureMe.you.kid.noBirthYear" />
+                ) : (
+                  <FormattedMessage
+                    id="futureMe.you.kid.late"
+                    values={{ turnsEight: note.turnsEight, year: note.retirementYear }}
+                  />
+                )}
+              </div>
             )}
-            <SelectField
-              id="future-me-kids-disabled"
-              label="futureMe.you.kidsDisabled.label"
-              value={disabledChild === undefined ? NO_DISABLED_CHILD : String(disabledChild)}
-              options={disabledChildOptions}
-              onChange={(value) =>
-                onChange({
-                  kidsDisabled: Array.from({ length: rows }, (_, row) => String(row) === value),
-                })
-              }
-            />
-            {isKidsRightAvailableToSelf(answers) && (
-              <SelectField
-                id="future-me-kids-early-user"
-                label="futureMe.you.kidsEarlyUser.label"
-                value={answers.kidsEarlyUser}
-                options={(['me', 'other'] as const).map((value) => ({
-                  value,
-                  label: intl.formatMessage({ id: `futureMe.you.kidsEarlyUser.${value}` }),
-                }))}
-                onChange={(value) => onChange({ kidsEarlyUser: value as KidsUser })}
-              />
-            )}
-            <SelectField
-              id="future-me-kids-sup-user"
-              label="futureMe.you.kidsSupUser.label"
-              value={answers.kidsSupUser}
-              options={KIDS_USERS.map((value) => ({
-                value,
-                label: intl.formatMessage({ id: `futureMe.you.kidsEarlyUser.${value}` }),
-              }))}
-              onChange={(value) => onChange({ kidsSupUser: value as KidsUser })}
-            />
-          </>
+          </div>
+        );
+      })}
+      <button
+        ref={addChildRef}
+        type="button"
+        className="btn btn-sm btn-outline-primary"
+        onClick={addChild}
+      >
+        <span aria-hidden="true">+ </span>
+        <FormattedMessage id="futureMe.you.kid.add" />
+      </button>
+      <div className="row g-3 mt-0">
+        {isKidsRightAvailableToSelf(answers) && (
+          <SelectField
+            id="future-me-kids-early-user"
+            label="futureMe.you.kidsEarlyUser.label"
+            value={answers.kidsEarlyUser}
+            options={(['me', 'other'] as const).map((value) => ({
+              value,
+              label: intl.formatMessage({ id: `futureMe.you.kidsEarlyUser.${value}` }),
+            }))}
+            onChange={(value) => onChange({ kidsEarlyUser: value as KidsUser })}
+          />
         )}
+        <SelectField
+          id="future-me-kids-sup-user"
+          label="futureMe.you.kidsSupUser.label"
+          help="kidsWho"
+          value={answers.kidsSupUser}
+          options={KIDS_USERS.map((value) => ({
+            value,
+            label: intl.formatMessage({ id: `futureMe.you.kidsEarlyUser.${value}` }),
+          }))}
+          onChange={(value) => onChange({ kidsSupUser: value as KidsUser })}
+        />
       </div>
     </YouSection>
   );

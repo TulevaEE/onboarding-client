@@ -559,6 +559,32 @@
     margin-top: 0.5rem;
   }
 
+  .future-me-kid {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--gray-border-2);
+
+    &:first-child {
+      padding-top: 0;
+    }
+
+    + .btn {
+      margin-top: 1rem;
+    }
+  }
+
+  .future-me-kid-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 2.75rem;
+    margin-bottom: 0.25rem;
+
+    h4 {
+      margin: 0;
+      font-size: 1rem;
+    }
+  }
+
   .you-note {
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
