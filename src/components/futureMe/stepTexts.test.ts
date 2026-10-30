@@ -41,9 +41,13 @@ const isOnYouStep = (key: string) =>
 const isOnExpensesStep = (key: string) =>
   key.startsWith('futureMe.expenses.') || helpTopicKeys(['household', 'careHome'])(key);
 
+const isOnAge55And60Steps = (key: string) =>
+  /^futureMe\.(age55|age60|fundPensionFaq|payoutChoice|choiceMade)\./.test(key);
+
 const steps: [string, (key: string) => boolean][] = [
   ['Sina', isOnYouStep],
   ['Kulud', isOnExpensesStep],
+  ['55 ja 60', isOnAge55And60Steps],
 ];
 
 const stepKeys = Object.keys(texts.et).filter((key) => steps.some(([, isOnStep]) => isOnStep(key)));
