@@ -45,7 +45,7 @@ export interface StepPlanInput {
   hasSpecialPension: boolean;
   specialPensionStartAge?: number;
   savesInSecondPillar: boolean;
-  thirdPillarJoined: 'before' | 'after' | 'none';
+  thirdPillarJoined: 'before' | 'after' | 'plan' | 'never';
 }
 
 export const isStepSkipped = (

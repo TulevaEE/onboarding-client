@@ -432,55 +432,13 @@ export const WorkSection = ({
     }
   };
 
-  return (
-    <YouSection
-      id="future-me-work"
-      title={<FormattedMessage id="futureMe.you.work.title" />}
-      help="special"
-      summary={
-        <FormattedMessage
-          id="futureMe.you.work.summary"
-          values={{ count: chosenSpecialCases(answers) }}
-        />
-      }
-      labels={sectionLabels('work')}
-      isOpen={isOpen}
-      isComplete={isComplete}
-      onToggle={onToggle}
-      optional={optional}
-    >
-      <p className="form-text mt-0 mb-2" id="future-me-work-intro">
-        <FormattedMessage id="futureMe.you.work.intro" />
-      </p>
-      <div className="mb-3" role="group" aria-labelledby="future-me-work-intro">
-        {SPECIAL_CASE_CHECKBOXES.map(({ id, label }) => (
-          <div className="form-check" key={id}>
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id={id}
-              checked={isChecked[id]}
-              onChange={(event) => onChange(toggleCase(id, event.target.checked))}
-            />
-            <label className="form-check-label" htmlFor={id}>
-              <FormattedMessage id={label} />
-            </label>
-            {SPECIAL_CASE_HELP[id] && <HelpButton topic={SPECIAL_CASE_HELP[id] as HelpTopic} />}
-          </div>
-        ))}
-      </div>
-      {answers.hasOtherSpecialCase && (
-        <p className="you-note">
-          <FormattedMessage
-            id="futureMe.you.work.otherNote"
-            values={{
-              link: (chunks: React.ReactNode) => <a href={SOCIAL_INSURANCE_BOARD_URL}>{chunks}</a>,
-            }}
-          />
-        </p>
-      )}
-      <div className="row g-3">
-        {hasHazard && (
+  const caseFields = (id: SpecialCaseId): React.ReactNode => {
+    switch (id) {
+      case 'future-me-case-hazard':
+        if (hazardList === 'no') {
+          return null;
+        }
+        return (
           <>
             <SelectField
               id="future-me-hazard-list"
@@ -531,38 +489,9 @@ export const WorkSection = ({
               />
             )}
           </>
-        )}
-        {answers.hasRescue && (
-          <AmountField
-            field="rescueYears"
-            answers={answers}
-            touched={touched}
-            label="futureMe.you.rescueYears.label"
-            help="rescue"
-            unit="futureMe.you.rescueYears.hint"
-            name="futureMe.you.rescueYears.name"
-            step={1}
-            inputMode="numeric"
-            onChange={onChange}
-            onBlur={onBlur}
-          />
-        )}
-        {answers.isCivilServant && (
-          <AmountField
-            field="civilYears"
-            answers={answers}
-            touched={touched}
-            label="futureMe.you.civilYears.label"
-            unit="futureMe.you.civilYears.hint"
-            unitValues={civilIncreaseText}
-            name="futureMe.you.civilYears.name"
-            step={1}
-            inputMode="numeric"
-            onChange={onChange}
-            onBlur={onBlur}
-          />
-        )}
-        {answers.hasSpecialPension && (
+        );
+      case 'future-me-case-special-pension':
+        return (
           <AmountField
             field="specialPensionStartAge"
             answers={answers}
@@ -577,7 +506,97 @@ export const WorkSection = ({
             onChange={onChange}
             onBlur={onBlur}
           />
-        )}
+        );
+      case 'future-me-case-rescue':
+        return (
+          <AmountField
+            field="rescueYears"
+            answers={answers}
+            touched={touched}
+            label="futureMe.you.rescueYears.label"
+            help="rescue"
+            unit="futureMe.you.rescueYears.hint"
+            name="futureMe.you.rescueYears.name"
+            step={1}
+            inputMode="numeric"
+            onChange={onChange}
+            onBlur={onBlur}
+          />
+        );
+      case 'future-me-case-civil':
+        return (
+          <AmountField
+            field="civilYears"
+            answers={answers}
+            touched={touched}
+            label="futureMe.you.civilYears.label"
+            unit="futureMe.you.civilYears.hint"
+            unitValues={civilIncreaseText}
+            name="futureMe.you.civilYears.name"
+            step={1}
+            inputMode="numeric"
+            onChange={onChange}
+            onBlur={onBlur}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <YouSection
+      id="future-me-work"
+      title={<FormattedMessage id="futureMe.you.work.title" />}
+      help="special"
+      summary={
+        <FormattedMessage
+          id="futureMe.you.work.summary"
+          values={{ count: chosenSpecialCases(answers) }}
+        />
+      }
+      labels={sectionLabels('work')}
+      isOpen={isOpen}
+      isComplete={isComplete}
+      onToggle={onToggle}
+      optional={optional}
+    >
+      <p className="form-text mt-0 mb-2" id="future-me-work-intro">
+        <FormattedMessage id="futureMe.you.work.intro" />
+      </p>
+      <div className="mb-3" role="group" aria-labelledby="future-me-work-intro">
+        {SPECIAL_CASE_CHECKBOXES.map(({ id, label }) => (
+          <React.Fragment key={id}>
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id={id}
+                checked={isChecked[id]}
+                onChange={(event) => onChange(toggleCase(id, event.target.checked))}
+              />
+              <label className="form-check-label" htmlFor={id}>
+                <FormattedMessage id={label} />
+              </label>
+              {SPECIAL_CASE_HELP[id] && <HelpButton topic={SPECIAL_CASE_HELP[id] as HelpTopic} />}
+            </div>
+            {isChecked[id] && id === 'future-me-case-other' && (
+              <p className="you-note">
+                <FormattedMessage
+                  id="futureMe.you.work.otherNote"
+                  values={{
+                    link: (chunks: React.ReactNode) => (
+                      <a href={SOCIAL_INSURANCE_BOARD_URL}>{chunks}</a>
+                    ),
+                  }}
+                />
+              </p>
+            )}
+            {isChecked[id] && id !== 'future-me-case-other' && (
+              <div className="row g-3 mt-0 mb-3">{caseFields(id)}</div>
+            )}
+          </React.Fragment>
+        ))}
       </div>
     </YouSection>
   );

@@ -17,6 +17,7 @@ import { Age55Step } from './Age55Step';
 import { age55Of } from './age55';
 import { decisionOrdinal } from './age60Answers';
 import { Age60Step } from './Age60Step';
+import { isThirdPillarAfterMissing } from './age65Answers';
 import { Age65Step } from './Age65Step';
 import {
   contractEndAgeOf,
@@ -36,7 +37,12 @@ import { derivePrefill, YouPrefill } from './prefill';
 import { ResultStep } from './ResultStep';
 import { startedFundPensionAnswers, startedFundPensionsAt } from './startedFundPensions';
 import { PotBar } from './PotBar';
-import { initialSpecialPension } from './specialPensionAnswers';
+import { ErrorSummary, MissingField } from './ErrorSummary';
+import {
+  initialSpecialPension,
+  isSpecialPensionStarted,
+  missingSpecialPensionFields,
+} from './specialPensionAnswers';
 import { SpecialPensionStep } from './SpecialPensionStep';
 import { StepTrail } from './StepTrail';
 import { FutureMeStep, neighbouringStep, shownSteps, StepId } from './steps';
@@ -48,26 +54,17 @@ import {
   FIELDS_BY_SECTION,
   firstInvalidChildIIMonths,
   initialAnswers,
+  initialOpenSections,
   OptionalSectionId,
   removeOptionalSection,
   SECTION_IDS,
   toStepPlanInput,
   YouField,
-  YouSectionId,
 } from './youAnswers';
-import { FIELD_DOM_IDS } from './YouFields';
+import { FIELD_DOM_IDS, FieldLabelText } from './YouFields';
 import { YouStep } from './YouStep';
 import './FutureMe.scss';
 import { ageTense, hasThirdPillarAt, payoutAge } from './planAges';
-
-const ALL_SECTIONS_OPEN: Record<YouSectionId, boolean> = {
-  me: true,
-  state: true,
-  secondPillar: true,
-  thirdPillar: true,
-  kids: true,
-  work: true,
-};
 
 const MONTHS_IN_YEAR = 12;
 
@@ -86,24 +83,71 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   const [specialPension, setSpecialPension] = useState(initialSpecialPension);
   const [step, setStep] = useState<StepId>(FutureMeStep.YOU);
   const [visited, setVisited] = useState<ReadonlySet<StepId>>(new Set([FutureMeStep.YOU]));
-  const [openSections, setOpenSections] = useState(ALL_SECTIONS_OPEN);
+  const [openSections, setOpenSections] = useState(() => initialOpenSections(started.you));
   const [touched, setTouched] = useState<ReadonlySet<YouField>>(new Set());
   const [blockedAttempts, setBlockedAttempts] = useState(0);
+  const [attemptedStep, setAttemptedStep] = useState<StepId | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const firstBlocked = useRef<YouField | undefined>(undefined);
-  const invalidChildMonths = useRef<number | undefined>(undefined);
+  const summaryRef = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
 
   const blocked = blockedFields(answers);
-  [firstBlocked.current] = blocked;
-  invalidChildMonths.current = firstInvalidChildIIMonths(answers);
+  const invalidChildMonths = firstInvalidChildIIMonths(answers);
   const plan = toStepPlanInput(answers);
   const steps = shownSteps(
     plan,
     isAge66StepNeeded(age66, { age60, age65, you: answers, plan }, specialPension),
   );
+
+  const missingFieldsOf = (target: StepId): MissingField[] => {
+    switch (target) {
+      case FutureMeStep.YOU:
+        return [
+          ...blocked.map((field) => ({
+            id: FIELD_DOM_IDS[field],
+            label: <FieldLabelText field={field} answers={answers} />,
+          })),
+          ...(invalidChildMonths === undefined
+            ? []
+            : [
+                {
+                  id: `future-me-kid-ii-months-${invalidChildMonths + 1}`,
+                  label: (
+                    <FormattedMessage
+                      id="futureMe.errorSummary.kidIIMonths"
+                      values={{ number: invalidChildMonths + 1 }}
+                    />
+                  ),
+                },
+              ]),
+        ];
+      case FutureMeStep.SPECIAL_PENSION:
+        return missingSpecialPensionFields(specialPension, plan).map((field) => ({
+          id: `future-me-special-pension-${field}`,
+          label: (
+            <FormattedMessage
+              id={`futureMe.specialPension.${field}.label`}
+              values={{ isStarted: isSpecialPensionStarted(plan) }}
+            />
+          ),
+        }));
+      case FutureMeStep.AGE_65:
+        return isThirdPillarAfterMissing(age65, answers, plan)
+          ? [
+              {
+                id: 'future-me-third-pillar-after-amount',
+                label: <FormattedMessage id="futureMe.age65.thirdPillarAfter.amount.label" />,
+              },
+            ]
+          : [];
+      default:
+        return [];
+    }
+  };
+  const blockedStep = steps.find((candidate) => missingFieldsOf(candidate).length > 0);
   const isLocked = (target: StepId) =>
-    target !== FutureMeStep.YOU && (blocked.length > 0 || invalidChildMonths.current !== undefined);
+    blockedStep !== undefined && steps.indexOf(target) > steps.indexOf(blockedStep);
+  const shownMissingFields = attemptedStep === step ? missingFieldsOf(step) : [];
   const isFirst = step === steps[0];
   const isLast = step === steps[steps.length - 1];
   const resultContext = { you: answers, plan, age60, age65, age66, specialPension, expenses };
@@ -120,18 +164,13 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   }, [step]);
 
   useEffect(() => {
-    if (blockedAttempts === 0) {
-      return;
-    }
-    if (firstBlocked.current) {
-      document.getElementById(FIELD_DOM_IDS[firstBlocked.current])?.focus();
-    } else if (invalidChildMonths.current !== undefined) {
-      document.getElementById(`future-me-kid-ii-months-${invalidChildMonths.current + 1}`)?.focus();
+    if (blockedAttempts > 0) {
+      summaryRef.current?.focus();
     }
   }, [blockedAttempts]);
 
   const goTo = (target: StepId) => {
-    if (isLocked(target)) {
+    if (blockedStep !== undefined && isLocked(target)) {
       setTouched((previous) => new Set([...Array.from(previous), ...blocked]));
       setOpenSections((previous) => {
         const next = { ...previous };
@@ -140,11 +179,14 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
             next[section] = true;
           },
         );
-        if (invalidChildMonths.current !== undefined) {
+        if (invalidChildMonths !== undefined) {
           next.kids = true;
         }
         return next;
       });
+      setAttemptedStep(blockedStep);
+      setStep(blockedStep);
+      setVisited((previous) => new Set(previous).add(blockedStep));
       setBlockedAttempts((attempts) => attempts + 1);
       return;
     }
@@ -285,6 +327,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           specialPension={specialPension}
           headingRef={headingRef}
           startedFundPensions={startedAt(FutureMeStep.AGE_65)}
+          showErrors={attemptedStep === FutureMeStep.AGE_65}
           onChange={setAge65}
           onEditYou={() => goTo(FutureMeStep.YOU)}
           onEditAge60={() => goTo(FutureMeStep.AGE_60)}
@@ -319,6 +362,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           age65={age65}
           age66={age66}
           headingRef={headingRef}
+          showErrors={attemptedStep === FutureMeStep.SPECIAL_PENSION}
           onChange={setSpecialPension}
           onEditYou={() => goTo(FutureMeStep.YOU)}
         />
@@ -347,6 +391,9 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
         isLocked={isLocked}
         onSelect={goTo}
       />
+      {shownMissingFields.length > 0 && (
+        <ErrorSummary fields={shownMissingFields} summaryRef={summaryRef} />
+      )}
       {renderStep()}
       {step !== FutureMeStep.RESULT && <PotBar context={resultContext} />}
       <div className="step-nav">

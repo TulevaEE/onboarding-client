@@ -89,7 +89,7 @@ export const deriveSecondPillarRate = (user: User): string =>
 export const deriveThirdPillarJoined = (user: User): ThirdPillarJoined => {
   const joinedYear = ISO_YEAR.exec(user.thirdPillarInitDate ?? '')?.[1];
   if (joinedYear === undefined) {
-    return 'none';
+    return 'never';
   }
   return Number(joinedYear) < THIRD_PILLAR_RULES_CHANGE_YEAR ? 'before' : 'after';
 };
@@ -160,7 +160,7 @@ export const derivePrefill = (
 ): YouPrefill => {
   const thirdPillarAmount = derivePillarAmount(sourceFunds, 3);
   const thirdPillarJoined = deriveThirdPillarJoined(user);
-  const hasThirdPillarMoneyWithoutJoinDate = thirdPillarJoined === 'none' && thirdPillarAmount;
+  const hasThirdPillarMoneyWithoutJoinDate = thirdPillarJoined === 'never' && thirdPillarAmount;
   const birthYear = deriveBirthYear(user.dateOfBirth);
   return {
     birthYear,

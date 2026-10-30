@@ -29,7 +29,7 @@ import {
 } from './engine/pension';
 import { pensionInputOf, SpecialPensionAnswers } from './specialPensionAnswers';
 import { StepPlanInput } from './steps';
-import { amountOf, realReturnOf, YouAnswers } from './youAnswers';
+import { amountOf, realReturnOf, thirdPillarMonthlyOf, YouAnswers } from './youAnswers';
 import { hasThirdPillarAt, payoutAge, plannedThirdPillarOpenAge, retirementAge } from './planAges';
 
 const lifeTable: LifeTable = lifeTableData;
@@ -94,7 +94,7 @@ const contributionsBefore = (context: ResultContext, untilAge: number): number =
   const { you, plan } = context;
   const currentAge = CURRENT_YEAR - plan.birthYear;
   const growth = 1 + realReturnOf(you.thirdPillarReturnPercent);
-  const yearly = amountOf(you.thirdPillarMonthly) * MONTHS_IN_YEAR;
+  const yearly = thirdPillarMonthlyOf(you) * MONTHS_IN_YEAR;
   const indexing = { p3Indexed: false, inflation: INFLATION, birthYear: plan.birthYear };
   return Array.from({ length: Math.max(0, untilAge - currentAge) }, (_, offset) => {
     const age = currentAge + offset;
@@ -176,7 +176,7 @@ const thirdPillarOf = (context: ResultContext): PensionInput['p3Sep'] => {
   const start = fundStartOf('thirdPillar', age66, context);
   const withdrawn = thirdPillarWithdrawnAtOf(context);
   const savings =
-    you.thirdPillarJoined === 'none'
+    you.thirdPillarJoined === 'plan'
       ? -contributionsBefore(context, plannedThirdPillarOpenAge(you, plan))
       : amountOf(you.thirdPillarAmount);
   return {
@@ -230,7 +230,7 @@ export const resultInputOf = (context: ResultContext): PensionInput => {
     p3Sep: thirdPillarOf(context),
     extraDeposit: thirdPillarDepositOf(context),
     p3PayoutFrom: thirdPillarPayoutFromOf(context),
-    p3Monthly: amountOf(you.thirdPillarMonthly),
+    p3Monthly: thirdPillarMonthlyOf(you),
     p3Before2021: you.thirdPillarJoined === 'before',
     p3Indexed: false,
     needMonthly: needMonthly(expenses),

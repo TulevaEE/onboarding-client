@@ -42,7 +42,7 @@ describe('shown steps', () => {
     it('is shown only to those who joined the III pillar before 2021', () => {
       expect(isStepSkipped(AGE_55, planFor({ thirdPillarJoined: 'before' }))).toBe(false);
       expect(isStepSkipped(AGE_55, planFor({ thirdPillarJoined: 'after' }))).toBe(true);
-      expect(isStepSkipped(AGE_55, planFor({ thirdPillarJoined: 'none' }))).toBe(true);
+      expect(isStepSkipped(AGE_55, planFor({ thirdPillarJoined: 'plan' }))).toBe(true);
     });
   });
 

@@ -46,7 +46,10 @@ export const hasThirdPillarAt = (
   plan: StepPlanInput,
   age: number,
 ): boolean => {
-  if (answers.thirdPillarJoined === 'none') {
+  if (answers.thirdPillarJoined === 'never') {
+    return false;
+  }
+  if (answers.thirdPillarJoined === 'plan') {
     return (
       amountOf(answers.thirdPillarMonthly) > 0 && plannedThirdPillarOpenAge(answers, plan) < age
     );

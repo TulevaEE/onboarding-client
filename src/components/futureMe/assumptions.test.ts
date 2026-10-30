@@ -41,7 +41,7 @@ describe('assumptions', () => {
 
   it('gives nothing saved in a III pillar that is only planned, whatever was typed before', () => {
     const context = contextWith({
-      thirdPillarJoined: 'none',
+      thirdPillarJoined: 'plan',
       thirdPillarAmount: '5000',
       thirdPillarMonthly: '50',
     });

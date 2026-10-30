@@ -116,3 +116,15 @@ export const chosenFirstPillar = (
   choice: FirstPillarChoice | null,
   comparison: { larger: FirstPillarChoice },
 ): FirstPillarChoice => choice ?? comparison.larger;
+
+export type SpecialPensionField = 'monthly' | 'gross';
+
+export const missingSpecialPensionFields = (
+  answers: SpecialPensionAnswers,
+  plan: StepPlanInput,
+): SpecialPensionField[] => [
+  ...(amountOf(answers.monthly) > 0 ? [] : (['monthly'] as const)),
+  ...(isPayAsked(answers, plan) && answers.pay === 'change' && answers.gross.trim() === ''
+    ? (['gross'] as const)
+    : []),
+];

@@ -506,3 +506,29 @@ describe('Age 65 step', () => {
     });
   });
 });
+
+describe('Age 65 step with a changed III pillar payment', () => {
+  beforeEach(() => loggedInAs({ dateOfBirth: '1970-01-01', retirementAge: 66 }));
+
+  it('keeps the saver on the step until the new III pillar payment is filled in', () => {
+    openAge65Step({ withFiveChildren: true, trailName: /^61\sa pension, vaatamata$/ });
+    userEvent.click(
+      within(screen.getByRole('group', { name: /Kas III\ssamba sissemakse muutub/ })).getByRole(
+        'radio',
+        { name: /Muutub/ },
+      ),
+    );
+
+    userEvent.click(screen.getByRole('button', { name: /^Edasi/ }));
+
+    expect(
+      within(screen.getByRole('alert'))
+        .getAllByRole('link')
+        .map((link) => link.textContent),
+    ).toEqual(['Uus III\u00A0samba sissemakse']);
+    expect(screen.getByRole('spinbutton', { name: /Uus III\ssamba sissemakse/ })).toHaveAttribute(
+      'aria-invalid',
+      'true',
+    );
+  });
+});

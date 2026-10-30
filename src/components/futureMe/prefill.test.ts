@@ -189,7 +189,7 @@ describe('III pillar join from the user', () => {
     ['2019-01-01', 'before'],
     ['2020-12-31', 'before'],
     ['2021-01-01', 'after'],
-    [null, 'none'],
+    [null, 'never'],
   ] as const)('reads %p as %p', (thirdPillarInitDate, joined) => {
     expect(deriveThirdPillarJoined({ ...mockUser, thirdPillarInitDate })).toBe(joined);
   });
