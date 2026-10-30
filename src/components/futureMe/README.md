@@ -4,7 +4,7 @@ A step-by-step life path planner: the saver answers questions about themselves a
 pension age, at the pension age and after it, picks a cost level, and the result step shows year by year whether their
 income covers their costs until 100.
 
-It is a port of the Tulevane Mina prototype's life path (`mirxz/tulevane-mina` at `b1adbcf`, `public/elukaar/`). The
+It is a port of the life path in the Tulevane Mina prototype. The
 engine started as the prototype's logic unchanged; the changes since then are in the pull requests titled
 "Tulevane Mina".
 
