@@ -216,6 +216,7 @@ describe('Result advice', () => {
     deferStatePensionFiveYears();
     openResult();
     expect(warning()).toHaveTextContent(/Ükski väljamakse viis ei kanna neid kulusid/);
+    expect(warning()).toHaveTextContent(/vajad eraldi sissetulekut/);
 
     userEvent.click(
       within(warning() as HTMLElement).getByRole('button', { name: 'Muuda kulusid' }),
