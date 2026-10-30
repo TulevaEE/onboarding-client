@@ -37,6 +37,7 @@ import { derivePrefill, YouPrefill } from './prefill';
 import { ResultStep } from './ResultStep';
 import { startedFundPensionAnswers, startedFundPensionsAt } from './startedFundPensions';
 import { PotBar } from './PotBar';
+import { thirdPillarDepositAtMoneyUseOf } from './resultAnswers';
 import { ErrorSummary, MissingField } from './ErrorSummary';
 import {
   initialSpecialPension,
@@ -278,6 +279,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           contract={age66.thirdPillarContract}
           endAge={age66.thirdPillarEndAge}
           startedFundPension={startedAt(FutureMeStep.AGE_55).thirdPillar}
+          depositAtPension={thirdPillarDepositAtMoneyUseOf(resultContext)}
           onChange={(changes) => setAnswers((previous) => ({ ...previous, ...changes }))}
           onContractChange={(thirdPillarContract) =>
             setAge66((previous) => ({ ...previous, thirdPillarContract }))

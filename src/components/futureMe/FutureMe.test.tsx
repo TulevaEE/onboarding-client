@@ -2406,6 +2406,42 @@ describe('FutureMe', () => {
       await waitFor(() => expect(age55Heading()).toHaveFocus());
     });
 
+    const barDeposit = () => {
+      const bar = screen.getByRole('complementary', { name: 'Jooksev kokkuvõte' });
+      const depositItem = within(bar)
+        .getAllByRole('listitem')
+        .find((item) => /Hoius/.test(item.textContent ?? '')) as HTMLElement;
+      return (depositItem.textContent ?? '').match(/^[\d\s]+€/)?.[0] as string;
+    };
+    const depositNote = () => screen.getByText(/aastaselt on (see|need) tänastes eurodes u/);
+
+    it('says what the III pillar taken at once is worth on the deposit at the pension age, as the bar shows', () => {
+      renderFutureMe();
+      openAge55();
+
+      userEvent.click(lumpPlan());
+
+      expect(barDeposit()).toMatch(/\d/);
+      expect(depositNote()).toHaveTextContent(
+        new RegExp(
+          `\\d+.aastaselt on see tänastes eurodes u ${barDeposit().replace(/\s/g, '\\s')}`,
+        ),
+      );
+    });
+
+    it('says what the monthly III pillar payouts are worth on the deposit at the pension age, as the bar shows', () => {
+      renderFutureMe();
+      openAge55();
+
+      userEvent.click(fundPlan());
+
+      expect(depositNote()).toHaveTextContent(
+        new RegExp(
+          `\\d+.aastaselt on need tänastes eurodes u ${barDeposit().replace(/\s/g, '\\s')}`,
+        ),
+      );
+    });
+
     it('tells the saver when the favorable tax starts', () => {
       renderFutureMe();
 

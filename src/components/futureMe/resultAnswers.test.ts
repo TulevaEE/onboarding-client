@@ -8,10 +8,12 @@ import { DEPOSIT_REAL_RETURN } from './engine/pension';
 import {
   coverageKind,
   incomeAtStart,
+  potAtPensionOf,
   resultInputOf,
   resultOf,
   ResultContext,
   resultScenarioOf,
+  thirdPillarDepositAtMoneyUseOf,
 } from './resultAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
 
@@ -184,6 +186,30 @@ describe('resultAnswers', () => {
     };
     const separateOf = (changes: Parameters<typeof contextWith>[0], rest = {}) =>
       resultInputOf(contextWith({ ...saver, ...changes }, rest)).p3Sep;
+
+    describe('the III pillar on the deposit when the saver starts living off the money', () => {
+      const lumpSaver = { ...saver, thirdPillarPlan: 'lump' as const, thirdPillarMonthly: '0' };
+      const workingTo74 = { age65: { ...initialAge65(), work: 'yes' as const, workUntil: '74' } };
+
+      it('is what the bar shows on the deposit when nothing else goes there', () => {
+        const context = contextWith(lumpSaver);
+        const { age, deposit } = potAtPensionOf(context);
+
+        expect(thirdPillarDepositAtMoneyUseOf(context)).toEqual({
+          age,
+          amount: expect.closeTo(deposit, 6),
+        });
+      });
+
+      it('is valued at the age the work ends, like the bar, and is worth less by then', () => {
+        const atPensionAge = thirdPillarDepositAtMoneyUseOf(contextWith(lumpSaver));
+        const atWorkEnd = thirdPillarDepositAtMoneyUseOf(contextWith(lumpSaver, workingTo74));
+
+        expect(atWorkEnd.age).toBe(74);
+        expect(potAtPensionOf(contextWith(lumpSaver, workingTo74)).age).toBe(74);
+        expect(atWorkEnd.amount).toBeLessThan(atPensionAge.amount);
+      });
+    });
 
     it('keeps the savings growing while the plan is to keep them', () => {
       expect(separateOf({ thirdPillarPlan: 'keep' })).toMatchObject({ amount: 8000 });

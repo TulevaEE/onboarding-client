@@ -39,6 +39,12 @@ interface Props {
   onContractChange: (contract: Contract) => void;
   onEndAgeChange: (endAge: string) => void;
   onEditThirdPillar: () => void;
+  depositAtPension: DepositAtPension;
+}
+
+interface DepositAtPension {
+  age: number;
+  amount: number;
 }
 
 const PlanText = ({ plan }: { plan: ThirdPillarPlan }) =>
@@ -52,10 +58,12 @@ const PlanOutcome = ({
   plan,
   age,
   payout,
+  depositAtPension,
 }: {
   plan: ThirdPillarPlan;
   age: number;
   payout: ThirdPillarPayout;
+  depositAtPension: DepositAtPension;
 }) =>
   plan === 'lump' ? (
     <FormattedMessage
@@ -65,6 +73,8 @@ const PlanOutcome = ({
         gross: euro(payout.gross),
         tax: euro(payout.tax),
         net: euro(payout.net),
+        pensionAge: depositAtPension.age,
+        atPension: euro(depositAtPension.amount),
         strong,
       }}
     />
@@ -76,6 +86,8 @@ const PlanOutcome = ({
         monthly: euro(payout.firstMonthly),
         total: euro(payout.net),
         left: euro(payout.leftAtPension),
+        pensionAge: depositAtPension.age,
+        atPension: euro(depositAtPension.amount),
         strong,
       }}
     />
@@ -93,6 +105,7 @@ export const Age55Step = ({
   onContractChange,
   onEndAgeChange,
   onEditThirdPillar,
+  depositAtPension,
 }: Props) => {
   const intl = useIntl();
   const birthYear = birthYearOrFallback(answers);
@@ -175,7 +188,14 @@ export const Age55Step = ({
         />
       )}
       <p className={age55.payout ? 'you-note text-pretty' : undefined} role="status">
-        {age55.payout && <PlanOutcome plan={age55.plan} age={age55.age} payout={age55.payout} />}
+        {age55.payout && (
+          <PlanOutcome
+            plan={age55.plan}
+            age={age55.age}
+            payout={age55.payout}
+            depositAtPension={depositAtPension}
+          />
+        )}
       </p>
       <FundPensionFaq>
         {hasSecondPillar && (
