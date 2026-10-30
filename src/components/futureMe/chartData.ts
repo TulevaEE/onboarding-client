@@ -7,6 +7,7 @@ export type ChartSourceId =
   | 'firstPillar'
   | 'specialPension'
   | 'secondPillar'
+  | 'secondPillarTaxed'
   | 'thirdPillar'
   | 'deposit';
 
@@ -17,6 +18,7 @@ export interface ChartRow {
   firstPillar: number;
   specialPension: number;
   secondPillar: number;
+  secondPillarTaxed: number;
   thirdPillar: number;
   deposit: number;
   costs: number;
@@ -30,6 +32,7 @@ export const SOURCE_IDS: ChartSourceId[] = [
   'firstPillar',
   'specialPension',
   'secondPillar',
+  'secondPillarTaxed',
   'thirdPillar',
   'deposit',
 ];
@@ -48,6 +51,7 @@ const earlyRowOf = ({ age, year, amount }: EarlyPayment): ChartRow => ({
   firstPillar: 0,
   specialPension: 0,
   secondPillar: 0,
+  secondPillarTaxed: 0,
   thirdPillar: Math.round(amount),
   deposit: 0,
   costs: 0,
@@ -72,7 +76,8 @@ export const chartRowsOf = (result: Result, need: number, isNominal = false): Ch
           salary: row.work ? Math.round(row.spend) : 0,
           firstPillar: row.work ? 0 : Math.round(row.i1),
           specialPension: row.work ? 0 : Math.round(row.isp),
-          secondPillar: Math.round(row.i2),
+          secondPillar: Math.round(row.i2 - row.extra2),
+          secondPillarTaxed: Math.round(row.extra2),
           thirdPillar: Math.round(row.i3 + fundPensionFrom55At(row.age)),
           deposit: Math.round(row.dep),
           costs: Math.round(costs),

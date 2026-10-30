@@ -112,7 +112,7 @@ describe('ResultChart summary notes', () => {
 
     expect(
       screen.getByText(
-        /Riiklik pension algab alles 68-⁠aastaselt\. Seni tuleb kuus keskmiselt \d+ € II sambast\./,
+        /Riiklik pension algab alles 68-⁠aastaselt\. Seni tuleb kuus keskmiselt \d+ € II sambast (ja|and) \d+ € II sambast \(10% tulumaksuga\)\./,
       ),
     ).toBeInTheDocument();
   });

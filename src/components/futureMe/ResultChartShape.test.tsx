@@ -75,7 +75,7 @@ const pointsOf = (set: { data: Point[] }, age: number) =>
   set.data.flatMap((point, index) => (point.x === age ? [index] : []));
 const rowPointOf = (set: { data: Point[] }, age: number) => pointsOf(set, age).pop() as number;
 const STATE_PENSION = /^Riiklik\spension$/;
-const SECOND_PILLAR = /^II\ssammas$/;
+const SECOND_PILLAR_TAXED = /^II\ssammas \(10% maksuga\)$/;
 
 describe('ResultChart drawing', () => {
   beforeEach(() => jest.clearAllMocks());
@@ -102,8 +102,8 @@ describe('ResultChart drawing', () => {
     renderChart();
 
     expect(layer(STATE_PENSION).data[0].y).toBe(700);
-    expect(layer(SECOND_PILLAR).data[0].y).toBe(791);
-    expect(layer(SECOND_PILLAR).stack).toBeUndefined();
+    expect(layer(SECOND_PILLAR_TAXED).data[0].y).toBe(791);
+    expect(layer(SECOND_PILLAR_TAXED).stack).toBeUndefined();
     expect(lastProps().options.scales.y.stacked).toBeFalsy();
   });
 
@@ -131,7 +131,7 @@ describe('ResultChart drawing', () => {
   describe('where the layers add up to the costs', () => {
     it('leaves out the dots and the edge of the top layer, but keeps the dot of an event', () => {
       renderChart();
-      const second = layer(SECOND_PILLAR);
+      const second = layer(SECOND_PILLAR_TAXED);
       const state = layer(STATE_PENSION);
 
       expect(second.pointRadius[rowPointOf(second, 68)]).toBe(0);
@@ -144,7 +144,7 @@ describe('ResultChart drawing', () => {
 
     it('leaves out the edge of the top layer next to an event too', () => {
       renderChart();
-      const second = layer(SECOND_PILLAR);
+      const second = layer(SECOND_PILLAR_TAXED);
       const lastAge = second.data[second.data.length - 1].x;
       const edgeFrom = (age: number) => {
         const from = rowPointOf(second, age);
@@ -187,13 +187,13 @@ describe('ResultChart drawing', () => {
   describe('with a layer hidden', () => {
     it('counts the cover from the layers that are shown and names the hidden one', () => {
       renderChart();
-      userEvent.click(screen.getByRole('button', { name: SECOND_PILLAR }));
+      userEvent.click(screen.getByRole('button', { name: SECOND_PILLAR_TAXED }));
 
       act(() => lastProps().options.onHover({ x: 0 }, [{ index: 0 }]));
 
       const tip = within(screen.getByTestId('chart-tip'));
       expect(tip.getByText('Puudu 91 €')).toBeInTheDocument();
-      expect(tip.getByText('peidetud kihita: II sammas')).toBeInTheDocument();
+      expect(tip.getByText('peidetud kihita: II sammas (10% maksuga)')).toBeInTheDocument();
     });
   });
 
@@ -213,7 +213,7 @@ describe('ResultChart drawing', () => {
     it('leaves out the dots of the top layer where it adds up to that year’s costs', () => {
       renderChart();
       turnOnFuturePrices();
-      const second = layer(SECOND_PILLAR);
+      const second = layer(SECOND_PILLAR_TAXED);
 
       expect(second.pointRadius[rowPointOf(second, 68)]).toBe(0);
       expect(layer(STATE_PENSION).pointRadius[rowPointOf(layer(STATE_PENSION), 68)]).toBe(3);
@@ -225,7 +225,7 @@ describe('ResultChart drawing', () => {
       const [{ amount: costs }] = lastProps().options.plugins.costs.points;
       const missingAmount = costs - layer(STATE_PENSION).data[0].y;
 
-      userEvent.click(screen.getByRole('button', { name: SECOND_PILLAR }));
+      userEvent.click(screen.getByRole('button', { name: SECOND_PILLAR_TAXED }));
       act(() => lastProps().options.onHover({ x: 0 }, [{ index: 0 }]));
 
       const missing = within(screen.getByTestId('chart-tip')).getByText(/^Puudu/);

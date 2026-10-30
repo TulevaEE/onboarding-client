@@ -14,6 +14,7 @@ const rowWith = (changes: Partial<ChartRow>): ChartRow => ({
   firstPillar: 700,
   specialPension: 0,
   secondPillar: 0,
+  secondPillarTaxed: 0,
   thirdPillar: 0,
   deposit: 0,
   costs: 800,
@@ -66,7 +67,7 @@ describe('chartText', () => {
         layers,
         coverOfRow(rowWith({ surplus: 200 })),
       ),
-    ).toMatch(/II\ssammas 300\s€, kulud 800\s€, üle jääb 200\s€\.$/);
+    ).toMatch(/II\ssammas \(maksuvaba\) 300\s€, kulud 800\s€, üle jääb 200\s€\.$/);
   });
 
   it('reads out how much is missing without a hidden layer and names the layer', () => {
@@ -85,7 +86,7 @@ describe('chartText', () => {
     };
 
     expect(announcementOf(intl, rowWith({}), [], layers, cover)).toMatch(
-      /puudu 300\s€, peidetud kihtideta: II\ssammas ja Hoiuselt\.$/,
+      /puudu 300\s€, peidetud kihtideta: II\ssammas \(maksuvaba\) ja Hoiuselt\.$/,
     );
   });
 

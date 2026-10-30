@@ -9,6 +9,7 @@ const PAID_FROM = 0.5;
 const BRIDGE_SOURCES: ChartSourceId[] = [
   'specialPension',
   'secondPillar',
+  'secondPillarTaxed',
   'thirdPillar',
   'deposit',
 ];

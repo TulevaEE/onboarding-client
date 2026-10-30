@@ -123,6 +123,7 @@ export interface SimulationRow {
   i3: number;
   fp: number;
   extra: number;
+  extra2: number;
   dep: number;
   spend: number;
   work: boolean;
@@ -1026,6 +1027,7 @@ export function simulate(
       i3: (sched3 + extra3) / 12,
       fp: (sched + sched3) / 12,
       extra: (extraNet + extra3) / 12,
+      extra2: extraNet / 12,
       dep: fromDeposit / 12,
       spend: spend / 12,
       work,

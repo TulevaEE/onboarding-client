@@ -8,6 +8,7 @@ const rowWith = (changes: Partial<ChartRow>): ChartRow => ({
   firstPillar: 0,
   specialPension: 0,
   secondPillar: 0,
+  secondPillarTaxed: 0,
   thirdPillar: 0,
   deposit: 0,
   costs: 1000,

@@ -194,7 +194,10 @@ describe('summaryNotesOf', () => {
       );
 
       expect(note).toMatchObject({ statePensionAge: 68 });
-      expect(note).toHaveProperty('sources', [{ id: 'secondPillar', amount: expect.any(Number) }]);
+      expect(note).toHaveProperty('sources', [
+        { id: 'secondPillar', amount: expect.any(Number) },
+        { id: 'secondPillarTaxed', amount: expect.any(Number) },
+      ]);
     });
 
     it('averages only the years after work, when the salary no longer pays', () => {
@@ -208,13 +211,11 @@ describe('summaryNotesOf', () => {
       const note = summaryNotesOf(result, rows).find(({ kind }) => kind === 'bridge');
 
       expect(afterWork.length).toBeLessThan(bridge.length);
+      const averageAfterWork = (id: 'secondPillar' | 'secondPillarTaxed') =>
+        Math.round(afterWork.reduce((sum, row) => sum + row[id], 0) / afterWork.length);
       expect(note).toHaveProperty('sources', [
-        {
-          id: 'secondPillar',
-          amount: Math.round(
-            afterWork.reduce((sum, { secondPillar }) => sum + secondPillar, 0) / afterWork.length,
-          ),
-        },
+        { id: 'secondPillar', amount: averageAfterWork('secondPillar') },
+        { id: 'secondPillarTaxed', amount: averageAfterWork('secondPillarTaxed') },
       ]);
     });
   });
