@@ -86,7 +86,7 @@ export const pensionInputOf = (
     rescueBasis: rescueBasisOf(you),
     hazard: isHazardous ? you.hazardList : 'no',
     hazardYears: isHazardous ? parseFloat(you.hazardYears) || 0 : 0,
-    undergroundYears: isHazardous ? parseInt(you.undergroundYears, 10) || 0 : 0,
+    undergroundYears: isHazardous ? parseFloat(you.undergroundYears) || 0 : 0,
     ...serviceYearsOf(you),
     spHas: true,
     spMonthly: amountOf(answers.monthly),

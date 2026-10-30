@@ -529,12 +529,15 @@ describe('Sina step help buttons', () => {
     expect(dialog).not.toHaveTextContent(/Elukaar tingimusi ei kontrolli/);
   });
 
-  it('tells in the hazardous work explanation that the underground work supplement is not in the calculation', () => {
+  it('tells in the hazardous work explanation that underground work adds a supplement but no earlier pension', () => {
     renderYouStep();
 
     const dialog = openHazardHelp();
 
-    expect(dialog).toHaveTextContent(/allmaatöö[^.]*arvutus veel ei arvesta/i);
+    expect(dialog).not.toHaveTextContent(/arvutus veel ei arvesta/);
+    expect(dialog).toHaveTextContent(/Allmaatöö aasta lisab pensionile veel 21,9% aastahindest/);
+    expect(dialog).toHaveTextContent(/varem pensionile allmaatöö ei vii/);
+    expect(dialog).toHaveTextContent(/Alates 2015\.\sa on tingimused naistel ja meestel samad/);
   });
 
   const socialInsuranceBoardPages: [string, () => HTMLElement, RegExp, string][] = [

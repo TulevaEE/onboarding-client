@@ -957,14 +957,10 @@ describe('FutureMe', () => {
       ).toHaveAttribute('href', expect.stringContaining('sotsiaalkindlustusamet.ee'));
     });
 
-    it('tells a civil servant to leave the civil service out of the calculator forecast, as Elukaar asks it with the special cases', () => {
+    it('leaves the civil servant out of the calculator note, as the state pension „?“ says it', () => {
       renderFutureMe();
 
-      expect(
-        screen.getByText(
-          /Kui olid ametnik enne 2013\. a, jäta seal avaliku teenistuse staaž lisamata: Elukaar küsib selle erijuhtude juures/,
-        ),
-      ).toBeVisible();
+      expect(screen.queryByText(/Kui olid ametnik enne 2013/)).not.toBeInTheDocument();
     });
 
     it('opens the calculator in the same tab, as most savers are on a phone', () => {
@@ -1372,6 +1368,8 @@ describe('FutureMe', () => {
     const specialCase = (name: RegExp) => screen.getByRole('checkbox', { name });
     const hazardYearsField = () =>
       screen.getByRole('spinbutton', { name: /Mitu aastat töötasid nimekirja nr \d tööl/ });
+    const undergroundYearsField = () =>
+      screen.queryByRole('spinbutton', { name: /Mitu aastat sellest töötasid allmaal/ });
     const rescueYearsField = () =>
       screen.getByRole('spinbutton', { name: /Mitu aastat töötasid päästeteenistuses/ });
     const specialPensionStartField = () =>
@@ -1891,6 +1889,44 @@ describe('FutureMe', () => {
         expect(earlyYearsField()).toHaveDisplayValue(
           withNbsp('ei lähe varem (tavalises pensionieas)'),
         );
+      });
+
+      it('ask the underground years of list 1 work, starting from none, and say they add a supplement only', () => {
+        renderFutureMe();
+        addSpecialCases();
+        userEvent.click(specialCase(/Töötasin tervist kahjustaval tööl/));
+
+        expect(undergroundYearsField()).toHaveValue(0);
+        expect(undergroundYearsField()).toHaveAccessibleDescription(
+          /Iga allmaatöö aasta lisab pensionile veel 21,9% aastahindest\. Pensionile varem see ei vii\./,
+        );
+      });
+
+      it('do not ask underground years for list 2 work', () => {
+        renderFutureMe();
+        addSpecialCases();
+        userEvent.click(specialCase(/Töötasin tervist kahjustaval tööl/));
+
+        userEvent.selectOptions(
+          screen.getByRole('combobox', { name: /Millise nimekirja tööl töötasid/ }),
+          'nimekiri nr 2',
+        );
+
+        expect(undergroundYearsField()).not.toBeInTheDocument();
+      });
+
+      it('allow no more underground years than list 1 years', () => {
+        renderFutureMe();
+        addSpecialCases();
+        userEvent.click(specialCase(/Töötasin tervist kahjustaval tööl/));
+
+        typeInto(hazardYearsField(), '12');
+        typeInto(undergroundYearsField() as HTMLElement, '13');
+        userEvent.tab();
+
+        expect(
+          screen.getByText('Allmaatöö aastate väljale sisesta number vahemikus 0–12.'),
+        ).toBeVisible();
       });
 
       it('count list 1 work of less than ten years for nothing', () => {

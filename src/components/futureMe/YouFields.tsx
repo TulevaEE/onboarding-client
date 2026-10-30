@@ -26,6 +26,7 @@ export const FIELD_DOM_IDS: Record<YouField, string> = {
   thirdPillarMonthly: 'future-me-third-pillar-monthly',
   kidsCount: 'future-me-kids-count',
   hazardYears: 'future-me-hazard-years',
+  undergroundYears: 'future-me-underground-years',
   rescueYears: 'future-me-rescue-years',
   civilYears: 'future-me-civil-years',
   specialPensionStartAge: 'future-me-special-pension-start-age',
@@ -127,7 +128,7 @@ export const AmountField = ({
     [PREFILLED_HINT_ID]: showsPrefilled,
     [errorId]: problem,
   });
-  const limits = limitsOf(field);
+  const limits = limitsOf(answers, field);
   const min = limits?.min ?? MIN_AMOUNT;
   const errorMessage = (() => {
     if (problem === 'empty') {

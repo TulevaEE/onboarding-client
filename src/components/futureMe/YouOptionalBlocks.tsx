@@ -516,6 +516,20 @@ export const WorkSection = ({
               onChange={onChange}
               onBlur={onBlur}
             />
+            {hazardList === 'list1' && (
+              <AmountField
+                field="undergroundYears"
+                answers={answers}
+                touched={touched}
+                label="futureMe.you.undergroundYears.label"
+                unit="futureMe.you.undergroundYears.hint"
+                name="futureMe.you.undergroundYears.name"
+                step={0.5}
+                inputMode="decimal"
+                onChange={onChange}
+                onBlur={onBlur}
+              />
+            )}
           </>
         )}
         {answers.hasRescue && (
