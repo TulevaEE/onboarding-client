@@ -29,7 +29,7 @@ import {
 } from './chartData';
 import { ageButtonsOf } from './chartAges';
 import { ChartEvent, chartEventsOf } from './chartEvents';
-import { assumptionOf, SummaryNote, summaryNotesOf } from './chartNotes';
+import { assumptionOf, coverStepsOf, SummaryNote, summaryNotesOf } from './chartNotes';
 import { ChartMark, costsLine, lastPointAtAge, marksLine } from './chartPlugins';
 import {
   ChartPoint,
@@ -773,7 +773,7 @@ export const ResultChart = ({ result, need, nominalReturns }: ResultChartProps) 
       <ChartGuide
         events={events}
         startsBeforePension={rows[0].isBeforePension}
-        hasWithdrawals={rows.some(({ secondPillarTaxed }) => secondPillarTaxed > 0)}
+        cover={coverStepsOf(shown, rows)}
       />
       <button
         type="button"

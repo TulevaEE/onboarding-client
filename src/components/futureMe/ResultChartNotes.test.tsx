@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { initialAge60 } from './age60Answers';
 import { Age65Answers, initialAge65 } from './age65Answers';
@@ -199,21 +199,75 @@ describe('ResultChart reading guide', () => {
     expect(guide()).not.toHaveTextContent('Fondipensioni periood');
   });
 
-  it('explains the hatched layer as yearly withdrawals of what the costs miss, with 10% tax', () => {
-    renderChart();
+  describe('the order the costs are covered in', () => {
+    const steps = () =>
+      within(screen.getByRole('list', { name: 'Kulud kaetakse igal aastal selles järjekorras:' }))
+        .getAllByRole('listitem')
+        .map(({ textContent }) => textContent);
+    const fundPensionWithSurplus: Changes = {
+      you: { firstPillarMonthly: '700', secondPillarAmount: '400000' },
+      age65: { secondPillar: 'fund' },
+    };
 
-    expect(guide()).toHaveTextContent(
-      /Viirutatud kiht „II\ssammas \(10% maksuga\)“ on raha, mille Elukaar eeldab, et võtad pensionieast alates igal aastal fondist välja/,
-    );
-    expect(guide()).toHaveTextContent(
-      'Kui sa raha välja ei võta, jääb see fondi kasvama ja kulud jäävad selle võrra katmata.',
-    );
-  });
+    it('names only the steps this chart has: the state pension, then the II pillar taken out when needed', () => {
+      renderChart();
 
-  it('leaves the withdrawals out when the chart has no hatched layer', () => {
-    renderChart({ you: { firstPillarMonthly: '1500' } });
+      expect(steps()).toEqual([
+        'Riiklik pension.',
+        expect.stringMatching(
+          /^II\ssammas \(viirutatud kiht\): Elukaar eeldab, et võtad pensionieast alates igal aastal fondist välja nii palju, kui eelmistest puudu jääb\. Sellelt läheb 10% tulumaksu\.$/,
+        ),
+      ]);
+      expect(guide()).toHaveTextContent(
+        'Kui sa raha välja ei võta, jääb see fondi kasvama ja kulud jäävad selle võrra katmata.',
+      );
+    });
 
-    expect(guide()).not.toHaveTextContent('Viirutatud kiht');
+    it('puts the fund pension with the state pension and the surplus on the deposit when they pay more than the costs', () => {
+      renderChart(fundPensionWithSurplus);
+
+      expect(steps()[0]).toBe(
+        'Riiklik pension ja fondipensioni väljamaksed. Fondipensioni makse tuleb lepingu järgi, mitte kulude järgi, ja selle suurus kõigub koos fondi väärtusega.',
+      );
+      expect(guide()).toHaveTextContent(
+        /Hoius \(kiht „Hoiuselt“\): raha, mis on välja makstud, aga kuludeks veel vaja ei olnud\. Seal kaotab see väärtust 1%\saastas pärast inflatsiooni\./,
+      );
+    });
+
+    it('takes the III pillar after the II pillar runs out, in the III pillar layer', () => {
+      renderChart({
+        you: { thirdPillarJoined: 'before', thirdPillarAmount: '10000', thirdPillarMonthly: '0' },
+      });
+
+      expect(steps()).toContainEqual(
+        expect.stringMatching(/^III\ssammas, kui II\ssambast enam ei jätku: Elukaar eeldab/),
+      );
+    });
+
+    it('takes the III pillar on its own when there is no II pillar, in the III pillar layer', () => {
+      renderChart({
+        you: {
+          secondPillarAmount: '0',
+          secondPillarRate: '0',
+          thirdPillarJoined: 'before',
+          thirdPillarAmount: '10000',
+          thirdPillarMonthly: '0',
+        },
+      });
+
+      expect(steps()).toContainEqual(
+        expect.stringMatching(
+          /^III\ssammas: Elukaar eeldab, et võtad igal aastal fondist välja nii palju, kui eelmistest puudu jääb\. Sellelt läheb 10% tulumaksu\. See on III\ssamba kihis\.$/,
+        ),
+      );
+    });
+
+    it('leaves the order out when the state pension alone covers the costs', () => {
+      renderChart({ you: { firstPillarMonthly: '1500' } });
+
+      expect(guide()).not.toHaveTextContent('järjekorras');
+      expect(guide()).not.toHaveTextContent('viirutatud kiht');
+    });
   });
 
   it('leaves the years before the pension age out when the chart starts at the pension age', () => {
