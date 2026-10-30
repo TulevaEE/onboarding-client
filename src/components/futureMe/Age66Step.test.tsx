@@ -92,6 +92,12 @@ const setPayoutAtPensionAge = (pillar: 'II' | 'III', choice: string) => {
 describe('Age 66+ step', () => {
   beforeEach(() => loggedInAs({ dateOfBirth: '1962-01-01' }));
 
+  it('starts at the pension age before a fund pension start is picked', () => {
+    openAge66Step();
+
+    expect(screen.getByText(/^65\+\saastat\s·\s2027–…/)).toBeInTheDocument();
+  });
+
   it('replaces the placeholder with the fund pension start choices', () => {
     openAge66Step();
 
