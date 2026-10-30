@@ -536,7 +536,9 @@ describe('ResultChart interaction', () => {
     it('labels the II pillar fund pension as tax-free', () => {
       renderChart(contextWith({ secondPillar: 'fund' }));
 
-      expect(screen.getByRole('button', { name: /^II\ssammas \(maksuvaba\)$/ })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /^II\ssammas \(maksuvaba\)$/ }),
+      ).toBeInTheDocument();
     });
 
     it('leaves the tax layer out when the fund pension and the state pension cover the costs', () => {
