@@ -43,6 +43,7 @@ import { announcementOf, axisAmountOf } from './chartText';
 import { ResultChartAges } from './ResultChartAges';
 import { ResultChartTip } from './ResultChartTip';
 import { useTouchView } from './useTouchView';
+import { useHighContrast } from './useHighContrast';
 import { ChartAssumption, ChartGuide, SummaryNotes } from './ResultChartNotes';
 import { NominalChoice, NominalNote } from './ResultNominalChoice';
 import { nominalResultOf } from './nominal';
@@ -291,6 +292,7 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
   const isPressedWithMouse = useRef(false);
   const hasHighlight = useRef(false);
   const isTouchView = useTouchView();
+  const isHighContrast = useHighContrast();
   const [chartWidth, setChartWidth] = useState(0);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const activeIndexRef = useRef(activeIndex);
@@ -402,7 +404,7 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
           min: rows[0].age,
           max: rows[rows.length - 1].age,
           grid: { display: false },
-          border: { color: AXIS_BORDER_COLOR },
+          border: { color: isHighContrast ? TICK_COLOR : AXIS_BORDER_COLOR },
           afterSetDimensions: ({ width }) => {
             if (isTouchView) {
               tickStep = fittingTickStep(width, rows.length);
@@ -444,7 +446,7 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
       },
     };
     return { data: chartData, options: chartOptions };
-  }, [intl, rows, points, events, layers, hidden, eventAges, isTouchView]);
+  }, [intl, rows, points, events, layers, hidden, eventAges, isTouchView, isHighContrast]);
 
   useLayoutEffect(() => {
     const chart = chartRef.current;
