@@ -1,4 +1,5 @@
 import { Chart, ChartType, Interaction, InteractionModeFunction, Plugin } from 'chart.js';
+import { isHighContrast } from './useHighContrast';
 
 export interface CostsPoint {
   age: number;
@@ -40,7 +41,9 @@ export const lastPointAtAge: InteractionModeFunction = (chart, event, options, u
 export const COSTS_COLOR = '#db2200';
 const LABEL_TEXT_COLOR = '#fff';
 const MARK_LINE_COLOR = 'rgba(33, 37, 41, 0.3)';
+const HIGH_CONTRAST_MARK_LINE_COLOR = '#6b7074';
 const MARK_PILL = { background: '#edf7fd', text: '#002f63', border: '#c9e0ee' };
+const HIGH_CONTRAST_MARK_PILL = { ...MARK_PILL, border: HIGH_CONTRAST_MARK_LINE_COLOR };
 const PILL_FONT = '700 12px Roboto, sans-serif';
 const PILL_HEIGHT = 20;
 const PILL_PADDING = 8;
@@ -170,7 +173,7 @@ export const marksLine: Plugin<'line', ChartMark[]> = {
       }
       const x = scales.x.getPixelForValue(age);
       ctx.save();
-      ctx.strokeStyle = MARK_LINE_COLOR;
+      ctx.strokeStyle = isHighContrast() ? HIGH_CONTRAST_MARK_LINE_COLOR : MARK_LINE_COLOR;
       ctx.setLineDash([4, 4]);
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -183,7 +186,7 @@ export const marksLine: Plugin<'line', ChartMark[]> = {
       const limit = chartArea.bottom - MARK_PILL_ROW_HEIGHT;
       const top = freeTop(taken, left, left + width, chartArea.top + 2, limit);
       taken.push({ left, right: left + width, top });
-      drawPill(ctx, left, top, text, MARK_PILL);
+      drawPill(ctx, left, top, text, isHighContrast() ? HIGH_CONTRAST_MARK_PILL : MARK_PILL);
     });
   },
 };

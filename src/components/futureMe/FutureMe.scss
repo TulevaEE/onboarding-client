@@ -1717,6 +1717,40 @@ html.scroll-locked {
   }
 }
 
+.high-contrast {
+  .future-me,
+  .future-me-help {
+    @each $n in (1, 2, 3) {
+      --gray-border-#{$n}: var(--input-border-color-hc);
+      --blue-border-#{$n}: var(--input-border-color-hc);
+    }
+  }
+
+  .future-me {
+    .trail .is-current .trail-dot {
+      box-shadow: none;
+    }
+
+    .trail .is-visited .trail-dot,
+    .is-prefilled:not(.is-invalid) {
+      border-color: $blue;
+    }
+
+    .help-btn:focus-visible {
+      outline: 3px solid $text-navy;
+      outline-offset: 2px;
+    }
+
+    .result-chart-tip {
+      border: 1px solid var(--input-border-color-hc);
+    }
+  }
+
+  .future-me-help {
+    border: 1px solid var(--input-border-color-hc);
+  }
+}
+
 @media print {
   .container:has(.future-me) {
     max-width: none;
