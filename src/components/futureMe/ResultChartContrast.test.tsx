@@ -7,7 +7,6 @@ import { initialAge66 } from './age66Answers';
 import { initialExpenses, needMonthly } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { ResultChart } from './ResultChart';
-import { nominalReturnsOf } from './nominal';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
 import translations from '../translations';
@@ -66,11 +65,7 @@ describe('ResultChart in high contrast', () => {
   it('draws the age axis line in a darker colour once the footer switch is on', async () => {
     render(
       <IntlProvider locale="et" messages={translations.et}>
-        <ResultChart
-          result={resultOf(context())}
-          need={needMonthly(context().expenses)}
-          nominalReturns={nominalReturnsOf(context())}
-        />
+        <ResultChart result={resultOf(context())} need={needMonthly(context().expenses)} />
       </IntlProvider>,
     );
     const normal = ageAxisLineColour();
