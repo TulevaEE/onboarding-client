@@ -47,11 +47,14 @@ const isOnAge55And60Steps = (key: string) =>
 const isOnAge65AndSpecialPensionSteps = (key: string) =>
   /^futureMe\.(age65|specialPension|firstPillarChoice)\./.test(key);
 
+const isOnAge66Step = (key: string) => key.startsWith('futureMe.age66.');
+
 const steps: [string, (key: string) => boolean][] = [
   ['Sina', isOnYouStep],
   ['Kulud', isOnExpensesStep],
   ['55 ja 60', isOnAge55And60Steps],
   ['65 ja eripension', isOnAge65AndSpecialPensionSteps],
+  ['66+', isOnAge66Step],
 ];
 
 const stepKeys = Object.keys(texts.et).filter((key) => steps.some(([, isOnStep]) => isOnStep(key)));
