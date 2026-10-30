@@ -1,4 +1,4 @@
-export const CURRENT_YEAR = 2026;
+export const CURRENT_YEAR = new Date().getFullYear();
 const MAX_AGE = 100;
 const HORIZON_SURVIVAL = 0.1;
 const MONTHS_IN_YEAR = 12;
