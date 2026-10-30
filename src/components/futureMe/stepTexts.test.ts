@@ -29,15 +29,29 @@ const helpTopicsOnYouStep = [
   'kidIIMonths',
 ];
 
+const helpTopicKeys = (topics: string[]) => (key: string) =>
+  topics.some((topic) => key.startsWith(`futureMe.help.${topic}.`));
+
 const isOnYouStep = (key: string) =>
   /^futureMe\.(you|trail|nav|potBar|errorSummary)\./.test(key) ||
   ['futureMe.required', 'futureMe.fundPensionFaq.title'].includes(key) ||
   /^futureMe\.help\.(open|close|newWindow)$/.test(key) ||
-  helpTopicsOnYouStep.some((topic) => key.startsWith(`futureMe.help.${topic}.`));
+  helpTopicKeys(helpTopicsOnYouStep)(key);
 
-const stepKeys = Object.keys(texts.et).filter(isOnYouStep);
+const isOnExpensesStep = (key: string) =>
+  key.startsWith('futureMe.expenses.') || helpTopicKeys(['household', 'careHome'])(key);
 
-const spelledTheSameInBothLanguages = ['futureMe.trail.sub.pension'];
+const steps: [string, (key: string) => boolean][] = [
+  ['Sina', isOnYouStep],
+  ['Kulud', isOnExpensesStep],
+];
+
+const stepKeys = Object.keys(texts.et).filter((key) => steps.some(([, isOnStep]) => isOnStep(key)));
+
+const spelledTheSameInBothLanguages = [
+  'futureMe.trail.sub.pension',
+  'futureMe.expenses.category.transport',
+];
 
 const keysWithText = (language: 'et' | 'en', pattern: RegExp) =>
   stepKeys.filter((key) => pattern.test(texts[language][key]));
@@ -52,11 +66,11 @@ const placeholders = (text: string) =>
     .filter(({ index }) => !selectBranchKey.test(text.slice(0, index)))
     .map(([placeholder]) => placeholder);
 
-describe('Sina step texts', () => {
+describe('Step texts', () => {
   it('speak to the saver, not as "we"', () => {
     expect(
-      keysWithText('et', /\b(me|meie|arvutame|näitame|arvestame)\b/i).filter((key) =>
-        key.startsWith('futureMe.you.'),
+      keysWithText('et', /\b(me|meie|arvutame|näitame|arvestame)\b/i).filter(
+        (key) => !key.startsWith('futureMe.help.'),
       ),
     ).toEqual([]);
   });
