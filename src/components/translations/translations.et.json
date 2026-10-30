@@ -2889,7 +2889,7 @@
   "futureMe.age65.mode.half.text": "{amount} kuus. Teine pool kasvab nagu edasilükkamisel",
   "futureMe.age65.mode.defer.title": "Lükkan edasi",
   "futureMe.age65.mode.defer.text": "{hasWorkEnd, select, true {Töö lõpuni ({workEnd}-aastaseni): {workAmount} kuus. } other {}}Kõige kauem {latest}-aastaseni: {amount} kuus",
-  "futureMe.age65.years.legend": "{mode, select, half {Mitu aastat võtad poole?} other {Mitu aastat lükkad edasi?}}",
+  "futureMe.age65.years.legend": "{mode, select, half {Mitu aastat võtad poole?} other {Kui vanalt alustad?}}",
   "futureMe.age65.years.title": "{mode, select, half {{years} a, täis {age}-aastaselt} other {{age}-aastaselt}}",
   "futureMe.age65.years.text": "{mode, select, half {Siis } other {}}{amount} kuus enne maksu (+{percent}%)",
   "futureMe.age65.pillars.title": "Kuidas hakkad samba raha kasutama?",

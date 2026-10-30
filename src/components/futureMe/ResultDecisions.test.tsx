@@ -247,7 +247,7 @@ describe('Result step: your decisions', () => {
         userEvent.click(changeButton(statePensionRow()));
       };
       const yearsField = () =>
-        within(statePensionRow()).queryByRole('combobox', { name: 'Mitu aastat lükkad edasi?' });
+        within(statePensionRow()).queryByRole('combobox', { name: 'Kui vanalt alustad?' });
 
       it('says how half the pension works', () => {
         openStatePension();
