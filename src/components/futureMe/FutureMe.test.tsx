@@ -1776,6 +1776,18 @@ describe('FutureMe', () => {
         ).toEqual(['mina', 'teine vanem']);
       });
 
+      it('let the other parent get the state II pillar payment', () => {
+        renderFutureMe();
+        addKids(['2025']);
+        const iiPaymentUser = screen.getByRole('combobox', {
+          name: /^Kes saab riigi lisamakse II\ssambasse\?/,
+        });
+
+        userEvent.selectOptions(iiPaymentUser, 'teine vanem');
+
+        expect(iiPaymentUser).toHaveDisplayValue('teine vanem');
+      });
+
       it('set the years early back to the regular age when the other parent takes the right', () => {
         renderFutureMe();
         addKids(['1990', '1992', '1994', '1996', '1998']);
@@ -2694,13 +2706,30 @@ describe('FutureMe', () => {
       renderFutureMe();
       openAge55();
 
-      userEvent.click(screen.getByText('Mis on igakuised väljamaksed?'));
+      const question = screen.getByText('Mis on igakuised väljamaksed?');
+      userEvent.click(question);
+      // eslint-disable-next-line testing-library/no-node-access
+      const answer = question.closest('details') as HTMLElement;
 
-      expect(screen.getByText(/tulumaksuvabad/)).toBeVisible();
-      expect(screen.getByRole('link', { name: /pensioni väljamaksete kohta/ })).toHaveAttribute(
-        'href',
-        'https://tuleva.ee/pensioni-valjamaksed/',
-      );
+      expect(within(answer).getByText(/tulumaksuvabad/)).toBeVisible();
+      expect(
+        within(answer).getByRole('link', { name: /pensioni väljamaksete kohta/ }),
+      ).toHaveAttribute('href', 'https://tuleva.ee/pensioni-valjamaksed/');
+    });
+
+    it('asks the same fund pension questions as the 60 step, each once', () => {
+      renderFutureMe();
+      openAge55();
+
+      expect(screen.getAllByText('Mis on igakuised väljamaksed?')).toHaveLength(1);
+      [
+        'Kuidas valida igakuiste väljamaksete lepingut?',
+        'Millal valida igakuised väljamaksed?',
+        'Mis saab, kui väljamaksed on suuremad, kui vajan?',
+        'Mida teada igakuiste väljamaksete kohta?',
+        'Kas igakuisi väljamakseid saab alustada juba 5 a enne pensioniiga?',
+      ].forEach((question) => expect(screen.getByText(question)).toBeInTheDocument());
+      expect(screen.queryByText('Kumba sammast enne kasutada?')).not.toBeInTheDocument();
     });
 
     it('sends no amount to the measuring', async () => {
