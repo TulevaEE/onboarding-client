@@ -176,9 +176,7 @@ describe('Sina step help buttons', () => {
       name: /^Eeldatav tootlus aastas \(II\ssammas\)$/,
     });
 
-    userEvent.click(
-      helpButtonBeside(returnField, '.col-12', /Mida tähendab eeldatav tootlus$/),
-    );
+    userEvent.click(helpButtonBeside(returnField, '.col-12', /Mida tähendab eeldatav tootlus$/));
 
     const dialog = screen.getByRole('dialog');
     expect(dialog).toHaveTextContent(/0%:.*Alla 2%:.*Üle 2%:/);

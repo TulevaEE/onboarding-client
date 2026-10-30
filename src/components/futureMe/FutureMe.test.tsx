@@ -2245,7 +2245,9 @@ describe('FutureMe', () => {
         /Võtad III\ssamba 55\u2011aastaselt korraga välja/,
       );
       expect(screen.getByRole('status')).toHaveTextContent(amountText(5000 * (1.04 / 1.02) ** 18));
-      expect(screen.getByRole('status')).toHaveTextContent(amountText(5000 * (1.04 / 1.02) ** 18 * 0.9));
+      expect(screen.getByRole('status')).toHaveTextContent(
+        amountText(5000 * (1.04 / 1.02) ** 18 * 0.9),
+      );
     });
 
     it('says that the money taken at once goes to the deposit for later', () => {

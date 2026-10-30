@@ -138,9 +138,7 @@ describe('Result step: the return the answer rests on', () => {
   it('states the return in bold right under the answer', () => {
     openResultStep();
 
-    expect(returnLine()).toHaveTextContent(
-      /^Arvutatud 0% aastase tootluse juures\.$/,
-    );
+    expect(returnLine()).toHaveTextContent(/^Arvutatud 0% aastase tootluse juures\.$/);
     expect(within(returnLine()).getByText('0%').tagName).toBe('STRONG');
   });
 
