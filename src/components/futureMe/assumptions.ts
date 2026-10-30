@@ -2,7 +2,7 @@ import { hasPillar } from './age66Answers';
 import { CostLevel } from './engine/expenses';
 import { isLevelEdited, levelNeed } from './expensesAnswers';
 import { ResultContext } from './resultAnswers';
-import { amountOf } from './youAnswers';
+import { amountOf, hasJoinedThirdPillar } from './youAnswers';
 
 export type FundAssumptionId = 'secondPillarFund' | 'thirdPillarFund';
 
@@ -25,7 +25,7 @@ export const assumptionsOf = (context: ResultContext): Assumption[] => {
   const hasSecondPillar = hasPillar('secondPillar', context);
   const hasThirdPillar = hasPillar('thirdPillar', context);
   const specialMonthly = amountOf(specialPension.monthly);
-  const thirdPillarSaved = you.thirdPillarJoined === 'none' ? 0 : amountOf(you.thirdPillarAmount);
+  const thirdPillarSaved = hasJoinedThirdPillar(you) ? amountOf(you.thirdPillarAmount) : 0;
   const assumptions: (Assumption | false)[] = [
     {
       id: 'you',

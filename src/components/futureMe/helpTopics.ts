@@ -6,6 +6,7 @@ export const HELP_TOPICS = [
   'p2Rate',
   'p3Monthly',
   'p3Joined',
+  'p3OpenAge',
   'fundCur',
   'pillars',
   'special',

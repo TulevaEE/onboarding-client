@@ -67,6 +67,24 @@ describe('HelpButton', () => {
     expect(openerOf(/Miks küsime sugu/)).toHaveFocus();
   });
 
+  it('marks only the button whose explanation is open as active', () => {
+    render(
+      <IntlProvider locale="et" messages={translations.et}>
+        <HelpButton topic="sex" />
+        <HelpButton topic="pensionAge" />
+      </IntlProvider>,
+    );
+    const [first, second] = screen.getAllByRole('button', { name: /^Selgitus:/ });
+
+    userEvent.click(first);
+    expect(first).toHaveAttribute('aria-expanded', 'true');
+    userEvent.click(screen.getByRole('button', { name: 'Sulge selgitus' }));
+    userEvent.click(second);
+
+    expect(first).toHaveAttribute('aria-expanded', 'false');
+    expect(second).toHaveAttribute('aria-expanded', 'true');
+  });
+
   it('closes when the browser closes the dialog, as it does on Esc', () => {
     renderHelp();
     userEvent.click(openerOf(/Miks küsime sugu/));

@@ -97,7 +97,7 @@ describe('Sina step prefilled fields', () => {
 
     userEvent.selectOptions(
       screen.getByRole('combobox', { name: /Kas oled III\ssambaga liitunud/ }),
-      'none',
+      'never',
     );
 
     expect(thirdPillarAmountField()).toBeDisabled();

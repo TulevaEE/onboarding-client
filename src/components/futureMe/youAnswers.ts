@@ -1,5 +1,6 @@
 import {
   AVG_OLD_AGE_PENSION,
+  CURRENT_YEAR,
   earlyYears,
   INFLATION,
   KidsInput,
@@ -38,7 +39,7 @@ export const RETURN_PERCENT_OPTIONS = Array.from(
   (_, index) => RETURN_PERCENT_LIMITS.min + index,
 );
 
-export type ThirdPillarJoined = 'before' | 'after' | 'none';
+export type ThirdPillarJoined = 'before' | 'after' | 'plan' | 'never';
 export type ThirdPillarPlan = 'keep' | 'fund' | 'lump';
 export type HazardList = 'no' | 'list1' | 'list2';
 export type FieldProblem = 'empty' | 'min' | 'range';
@@ -50,6 +51,7 @@ export type YouField =
   | 'secondPillarAmount'
   | 'thirdPillarAmount'
   | 'thirdPillarMonthly'
+  | 'thirdPillarOpenAge'
   | 'kidsCount'
   | 'hazardYears'
   | 'undergroundYears'
@@ -123,10 +125,15 @@ const FIELD_LIMITS: Partial<Record<YouField, FieldLimits>> = {
   specialPensionStartAge: SPECIAL_PENSION_START_AGE_LIMITS,
 };
 
-export const limitsOf = (answers: YouAnswers, field: YouField): FieldLimits | undefined =>
-  field === 'undergroundYears'
-    ? { min: 0, max: Math.max(0, parseFloat(answers.hazardYears) || 0) }
-    : FIELD_LIMITS[field];
+export const limitsOf = (field: YouField, answers: YouAnswers): FieldLimits | undefined => {
+  if (field === 'undergroundYears') {
+    return { min: 0, max: Math.max(0, parseFloat(answers.hazardYears) || 0) };
+  }
+  if (field === 'thirdPillarOpenAge') {
+    return { min: CURRENT_YEAR - birthYearOrFallback(answers), max: effectivePensionAge(answers) };
+  }
+  return FIELD_LIMITS[field];
+};
 
 const OPTIONAL_DEFAULTS: { kids: KidsAnswers; work: WorkAnswers } = {
   kids: {
@@ -159,7 +166,7 @@ export const FIELDS_BY_SECTION: Record<YouSectionId, YouField[]> = {
   me: ['birthYear'],
   state: ['firstPillarMonthly'],
   secondPillar: ['grossMonthly', 'secondPillarAmount'],
-  thirdPillar: ['thirdPillarAmount', 'thirdPillarMonthly'],
+  thirdPillar: ['thirdPillarAmount', 'thirdPillarMonthly', 'thirdPillarOpenAge'],
   kids: ['kidsCount'],
   work: ['hazardYears', 'undergroundYears', 'rescueYears', 'civilYears', 'specialPensionStartAge'],
 };
@@ -246,8 +253,11 @@ export const realReturnOf = (percent: number): number => (1 + percent / 100) / (
 
 export const amountOf = (typed: string): number => Math.max(0, parseFloat(typed) || 0);
 
-const isThirdPillarBalanceAsked = (answers: YouAnswers): boolean =>
-  answers.thirdPillarJoined !== 'none';
+export const hasJoinedThirdPillar = (answers: YouAnswers): boolean =>
+  answers.thirdPillarJoined === 'before' || answers.thirdPillarJoined === 'after';
+
+export const thirdPillarMonthlyOf = (answers: YouAnswers): number =>
+  answers.thirdPillarJoined === 'never' ? 0 : amountOf(answers.thirdPillarMonthly);
 
 export const isSpecialPensionOn = (answers: YouAnswers): boolean =>
   answers.workAdded && answers.hasSpecialPension;
@@ -499,7 +509,7 @@ export const fieldProblem = (answers: YouAnswers, field: YouField): FieldProblem
   if (typed === '') {
     return 'empty';
   }
-  const limits = limitsOf(answers, field) ?? { min: 0 };
+  const limits = limitsOf(field, answers) ?? { min: 0 };
   const typedNumber = Number(typed);
   if (Number.isNaN(typedNumber) || typedNumber < limits.min) {
     return limits.max === undefined ? 'min' : 'range';
@@ -510,7 +520,11 @@ export const fieldProblem = (answers: YouAnswers, field: YouField): FieldProblem
 const isFieldAsked = (answers: YouAnswers, field: YouField): boolean => {
   switch (field) {
     case 'thirdPillarAmount':
-      return isThirdPillarBalanceAsked(answers);
+      return hasJoinedThirdPillar(answers);
+    case 'thirdPillarMonthly':
+      return answers.thirdPillarJoined !== 'never';
+    case 'thirdPillarOpenAge':
+      return answers.thirdPillarJoined === 'plan';
     case 'kidsCount':
       return answers.kidsAdded;
     case 'hazardYears':
@@ -535,6 +549,18 @@ export const blockedFieldsOf = (answers: YouAnswers, section: YouSectionId): You
 
 export const blockedFields = (answers: YouAnswers): YouField[] =>
   SECTION_IDS.flatMap((section) => blockedFieldsOf(answers, section));
+
+const hasThirdPillarData = (answers: YouAnswers): boolean =>
+  amountOf(answers.thirdPillarAmount) > 0 || amountOf(answers.thirdPillarMonthly) > 0;
+
+export const initialOpenSections = (answers: YouAnswers): Record<YouSectionId, boolean> => ({
+  me: true,
+  state: true,
+  secondPillar: true,
+  thirdPillar: hasThirdPillarData(answers) || blockedFieldsOf(answers, 'thirdPillar').length > 0,
+  kids: false,
+  work: true,
+});
 
 export const toStepPlanInput = (answers: YouAnswers): StepPlanInput => ({
   birthYear: birthYearOrFallback(answers),

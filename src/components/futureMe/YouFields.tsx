@@ -24,12 +24,41 @@ export const FIELD_DOM_IDS: Record<YouField, string> = {
   secondPillarAmount: 'future-me-second-pillar-amount',
   thirdPillarAmount: 'future-me-third-pillar-amount',
   thirdPillarMonthly: 'future-me-third-pillar-monthly',
+  thirdPillarOpenAge: 'future-me-third-pillar-open-age',
   kidsCount: 'future-me-kids-count',
   hazardYears: 'future-me-hazard-years',
   undergroundYears: 'future-me-underground-years',
   rescueYears: 'future-me-rescue-years',
   civilYears: 'future-me-civil-years',
   specialPensionStartAge: 'future-me-special-pension-start-age',
+};
+
+const FIELD_LABELS: Record<YouField, TranslationKey> = {
+  birthYear: 'futureMe.you.birthYear.label',
+  firstPillarMonthly: 'futureMe.you.firstPillarMonthly.label',
+  grossMonthly: 'futureMe.you.grossMonthly.label',
+  secondPillarAmount: 'futureMe.you.secondPillarAmount.label',
+  thirdPillarAmount: 'futureMe.you.thirdPillarAmount.label',
+  thirdPillarMonthly: 'futureMe.you.thirdPillarMonthly.label',
+  thirdPillarOpenAge: 'futureMe.you.thirdPillarOpenAge.label',
+  kidsCount: 'futureMe.you.kids.title',
+  hazardYears: 'futureMe.you.hazardYears.label',
+  undergroundYears: 'futureMe.you.undergroundYears.label',
+  rescueYears: 'futureMe.you.rescueYears.label',
+  civilYears: 'futureMe.you.civilYears.label',
+  specialPensionStartAge: 'futureMe.you.specialPensionStart.label',
+};
+
+export const FieldLabelText = ({ field, answers }: { field: YouField; answers: YouAnswers }) => {
+  if (field === 'thirdPillarMonthly' && answers.thirdPillarJoined === 'plan') {
+    return <FormattedMessage id="futureMe.you.thirdPillarMonthly.planLabel" />;
+  }
+  return (
+    <FormattedMessage
+      id={FIELD_LABELS[field]}
+      values={{ list: answers.hazardList === 'list1' ? 1 : 2 }}
+    />
+  );
 };
 
 const MIN_AMOUNT = 0;
@@ -128,7 +157,7 @@ export const AmountField = ({
     [PREFILLED_HINT_ID]: showsPrefilled,
     [errorId]: problem,
   });
-  const limits = limitsOf(answers, field);
+  const limits = limitsOf(field, answers);
   const min = limits?.min ?? MIN_AMOUNT;
   const errorMessage = (() => {
     if (problem === 'empty') {

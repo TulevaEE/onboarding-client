@@ -187,6 +187,8 @@ const trailNames = () =>
   within(trail())
     .getAllByRole('button')
     .map((button) => button.getAttribute('aria-label'));
+const errorSummary = () => screen.getByRole('alert');
+const summaryLink = (name: RegExp) => within(errorSummary()).getByRole('link', { name });
 const stepCount = () => screen.getByText(/^Samm\s\d+\s\/\s\d+$/);
 
 const pensionAgeField = () => screen.getByRole('combobox', { name: /Millal on sinu pensioniiga/ });
@@ -207,7 +209,9 @@ const thirdPillarAmountField = () =>
 const thirdPillarMonthlyField = () =>
   screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ });
 const thirdPillarOpenAgeField = () =>
-  screen.getByRole('textbox', { name: /Mis vanuses avad III\ssamba/ });
+  screen.getByRole('spinbutton', { name: /Mis vanuses hakkad III\ssambasse maksma/ });
+const thirdPillarPlannedMonthlyField = () =>
+  screen.getByRole('spinbutton', { name: /Kui palju plaanid III\ssambasse kuus maksta/ });
 const thirdPillarReturnField = () =>
   screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(III\ssammas\)$/ });
 const returnHintOf = (field: HTMLElement) =>
@@ -375,6 +379,14 @@ describe('FutureMe', () => {
       child(number).getByRole('spinbutton', { name: /^Riigi lisamakse II\ssambasse/ });
     const queryKidMonthsField = (number: number) =>
       child(number).queryByRole('spinbutton', { name: /^Riigi lisamakse II\ssambasse/ });
+    const openKids = () => {
+      const opener = screen.queryByRole('button', {
+        name: /^(Muuda laste andmeid|Täida laste andmed)$/,
+      });
+      if (opener) {
+        userEvent.click(opener);
+      }
+    };
     it('never asks the population register', () => {
       withChildren([BOY_BORN_JUNE_2015]);
 
@@ -388,6 +400,7 @@ describe('FutureMe', () => {
       withPendingChild(GIRL_BORN_FEB_2023);
 
       renderFutureMe();
+      openKids();
 
       expect(childCount()).toBe(1);
       expect(kidBirthYearField(1)).toHaveValue('2023');
@@ -397,6 +410,7 @@ describe('FutureMe', () => {
       withChildren([BOY_BORN_JUNE_2015]);
 
       renderFutureMe();
+      openKids();
 
       expect(childCount()).toBe(1);
     });
@@ -405,6 +419,7 @@ describe('FutureMe', () => {
       withChildren([BOY_BORN_JUNE_2015]);
 
       renderFutureMe();
+      openKids();
       userEvent.click(
         screen.getByRole('button', { name: /^Selgitus: Kuidas lapsed pensioni mõjutavad/ }),
       );
@@ -414,10 +429,12 @@ describe('FutureMe', () => {
       expect(within(dialog).getByText(/Rahvastikuregistrist me lapsi ei päri/)).toBeInTheDocument();
     });
 
-    it('opens the children block with the children who have a Tuleva account', () => {
+    it('starts with the children block closed, and opens it with the children who have a Tuleva account', () => {
       withChildren([BOY_BORN_JUNE_2015, GIRL_BORN_FEB_2023]);
 
       renderFutureMe();
+      expect(screen.queryByRole('group', { name: /^Laps \d+$/ })).not.toBeInTheDocument();
+      openKids();
 
       expect(addKidsButton()).not.toBeInTheDocument();
       expect(childCount()).toBe(2);
@@ -429,6 +446,7 @@ describe('FutureMe', () => {
       withChildren([GIRL_BORN_FEB_2023]);
 
       renderFutureMe();
+      openKids();
 
       expect(kidBirthMonthField(1)).toHaveValue('2');
     });
@@ -437,6 +455,7 @@ describe('FutureMe', () => {
       withChildren([BOY_BORN_JUNE_2015, GIRL_BORN_FEB_2023]);
 
       renderFutureMe();
+      openKids();
 
       expect(queryKidMonthsField(1)).not.toBeInTheDocument();
       expect(kidMonthsField(2)).toBeInTheDocument();
@@ -447,6 +466,7 @@ describe('FutureMe', () => {
       withPensionData({ contributions: monthsOfParentalBenefit(30) });
 
       renderFutureMe();
+      openKids();
 
       expect(kidMonthsField(2)).toHaveValue(30);
     });
@@ -455,6 +475,7 @@ describe('FutureMe', () => {
       withChildren([GIRL_BORN_FEB_2023]);
 
       renderFutureMe();
+      openKids();
 
       expect(kidMonthsField(1)).toHaveValue(null);
     });
@@ -462,13 +483,16 @@ describe('FutureMe', () => {
     it('keeps the saver on the step and points at a month count over 36', async () => {
       withChildren([GIRL_BORN_FEB_2023]);
       renderFutureMe();
+      openKids();
       fillInRequiredAnswers();
       typeInto(kidMonthsField(1), '40');
 
       userEvent.click(nextButton());
 
       expect(stepCount()).toHaveTextContent(/^Samm 1 /);
-      await waitFor(() => expect(kidMonthsField(1)).toHaveFocus());
+      await waitFor(() => expect(errorSummary()).toHaveFocus());
+      userEvent.click(summaryLink(/^1\.\slapse riigi lisamakse II\ssambasse$/));
+      expect(kidMonthsField(1)).toHaveFocus();
     });
 
     it('marks the prefilled children for screen readers until the saver changes them', () => {
@@ -476,6 +500,7 @@ describe('FutureMe', () => {
       withPensionData({ contributions: monthsOfParentalBenefit(30) });
 
       renderFutureMe();
+      openKids();
 
       expect(kidBirthYearField(1)).toHaveAccessibleDescription(/Eeltäidetud väli/);
       expect(kidMonthsField(1)).toHaveAccessibleDescription(/Eeltäidetud väli/);
@@ -488,6 +513,7 @@ describe('FutureMe', () => {
       withChildren([BOY_BORN_JUNE_2015]);
 
       renderFutureMe();
+      openKids();
       userEvent.click(addChildButton());
       typeInto(kidBirthYearField(2), '2022');
 
@@ -500,6 +526,7 @@ describe('FutureMe', () => {
       withPensionData({ contributions: monthsOfParentalBenefit(24) });
 
       renderFutureMe();
+      openKids();
       userEvent.click(addChildButton());
       typeInto(kidBirthYearField(2), '2022');
 
@@ -512,6 +539,7 @@ describe('FutureMe', () => {
       withPensionData({ contributions: monthsOfParentalBenefit(24) });
 
       renderFutureMe();
+      openKids();
       userEvent.click(addChildButton());
       typeInto(kidBirthYearField(2), '2015');
 
@@ -523,6 +551,7 @@ describe('FutureMe', () => {
       withChildren([GIRL_BORN_FEB_2023]);
 
       renderFutureMe();
+      openKids();
       userEvent.click(addChildButton());
 
       expect(kidBirthYearField(2)).not.toHaveAccessibleDescription(/Eeltäidetud väli/);
@@ -533,6 +562,7 @@ describe('FutureMe', () => {
       withPensionData({ contributions: monthsOfParentalBenefit(30) });
 
       renderFutureMe();
+      openKids();
       typeInto(kidBirthYearField(1), '2010');
 
       expect(queryKidMonthsField(1)).not.toBeInTheDocument();
@@ -548,6 +578,7 @@ describe('FutureMe', () => {
       withChildren(children);
 
       renderFutureMe();
+      openKids();
       userEvent.click(addKidsButton() as HTMLElement);
       typeInto(kidBirthYearField(1), '2023');
 
@@ -559,6 +590,7 @@ describe('FutureMe', () => {
       withChildren([]);
 
       renderFutureMe();
+      openKids();
       userEvent.click(addKidsButton() as HTMLElement);
       typeInto(kidBirthYearField(1), '2021');
       const birthMonth = kidBirthMonthField(1);
@@ -573,6 +605,7 @@ describe('FutureMe', () => {
       withChildren([GIRL_BORN_FEB_2023]);
 
       renderFutureMe();
+      openKids();
       typeInto(kidMonthsField(1), '40');
 
       expect(kidMonthsField(1)).toBeInvalid();
@@ -585,6 +618,7 @@ describe('FutureMe', () => {
       withChildren([GIRL_BORN_FEB_2023]);
 
       renderFutureMe();
+      openKids();
       userEvent.click(screen.getByRole('button', { name: /^Selgitus: Mitu kuud maksis riik/ }));
 
       const dialog = screen.getByRole('dialog');
@@ -603,6 +637,7 @@ describe('FutureMe', () => {
       withChildren([GIRL_BORN_FEB_2023]);
 
       renderFutureMe();
+      openKids();
       userEvent.click(screen.getByRole('button', { name: /^Selgitus: Mitu kuud maksis riik/ }));
 
       const dialog = screen.getByRole('dialog');
@@ -616,6 +651,7 @@ describe('FutureMe', () => {
       withChildren(undefined, true);
 
       renderFutureMe();
+      openKids();
 
       expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
     });
@@ -874,7 +910,9 @@ describe('FutureMe', () => {
       userEvent.click(nextButton());
 
       expect(stepCount()).toHaveTextContent('Samm 1 / 6');
-      await waitFor(() => expect(birthYearField()).toHaveFocus());
+      await waitFor(() => expect(errorSummary()).toHaveFocus());
+      userEvent.click(summaryLink(/^Mis aastal oled sündinud\?$/));
+      expect(birthYearField()).toHaveFocus();
       expect(birthYearField()).toBeInvalid();
       expect(screen.getByText('Sünniaasta peab olema vahemikus 1930–2008.')).toBeInTheDocument();
     });
@@ -895,7 +933,7 @@ describe('FutureMe', () => {
       userEvent.click(within(trail()).getByRole('button', { name: /^Kulud, lukus/ }));
 
       expect(stepCount()).toHaveTextContent('Samm 1 / 6');
-      await waitFor(() => expect(birthYearField()).toHaveFocus());
+      await waitFor(() => expect(errorSummary()).toHaveFocus());
     });
 
     it('lets the saver on once the birth year is filled in', () => {
@@ -1140,14 +1178,19 @@ describe('FutureMe', () => {
   });
 
   describe('III pillar block', () => {
-    it('offers the three join times, assuming 2021 or later', () => {
+    it('offers four join times, assuming 2021 or later', () => {
       renderFutureMe();
 
       expect(
         within(thirdPillarJoinedField())
           .getAllByRole('option')
           .map((option) => option.textContent),
-      ).toEqual(['jah, 2021. a või hiljem', 'jah, enne 2021. a', 'ei ole liitunud']);
+      ).toEqual([
+        'jah, 2021. a või hiljem',
+        'jah, enne 2021. a',
+        'ei ole liitunud, plaanin liituda',
+        'ei ole liitunud, ei plaani liituda',
+      ]);
       expect(thirdPillarJoinedField()).toHaveDisplayValue(withNbsp('jah, 2021. a või hiljem'));
     });
 
@@ -1155,58 +1198,107 @@ describe('FutureMe', () => {
       renderFutureMe();
 
       expect(
-        screen.queryByRole('textbox', { name: /Mis vanuses avad III\ssamba/ }),
+        screen.queryByRole('spinbutton', { name: /Mis vanuses hakkad III\ssambasse maksma/ }),
       ).not.toBeInTheDocument();
     });
 
-    describe('for a saver who has not joined', () => {
-      const renderAsSaverWhoHasNotJoined = () => {
+    describe('for a saver who does not plan to join', () => {
+      const renderAsSaverWhoWillNotJoin = () => {
         renderFutureMe();
         typeInto(thirdPillarAmountField(), '5000');
-        userEvent.selectOptions(thirdPillarJoinedField(), 'ei ole liitunud');
+        typeInto(thirdPillarMonthlyField(), '50');
+        userEvent.selectOptions(thirdPillarJoinedField(), 'ei ole liitunud, ei plaani liituda');
       };
 
-      it('shows a balance of zero that cannot be edited', () => {
-        renderAsSaverWhoHasNotJoined();
-        expect(thirdPillarAmountField()).toBeDisabled();
-        expect(thirdPillarAmountField()).toHaveValue(0);
+      it('shows both amounts as zero that cannot be edited and are not required', () => {
+        renderAsSaverWhoWillNotJoin();
+
+        [thirdPillarAmountField(), thirdPillarMonthlyField()].forEach((field) => {
+          expect(field).toBeDisabled();
+          expect(field).toHaveValue(0);
+          expect(field).not.toBeRequired();
+          expect(field).not.toHaveAccessibleName(/kohustuslik/);
+        });
       });
 
-      it('asks at which age the saver opens the III pillar', () => {
-        renderAsSaverWhoHasNotJoined();
-        expect(thirdPillarOpenAgeField()).toBeVisible();
+      it('asks neither the opening age nor the return', () => {
+        renderAsSaverWhoWillNotJoin();
+
+        expect(
+          screen.queryByRole('spinbutton', { name: /Mis vanuses hakkad III\ssambasse maksma/ }),
+        ).not.toBeInTheDocument();
+        expect(
+          screen.queryByRole('combobox', { name: /tootlust eeldad III\ssambas/ }),
+        ).not.toBeInTheDocument();
       });
 
-      it('keeps only the digits typed into the opening age', () => {
-        renderAsSaverWhoHasNotJoined();
-        typeInto(thirdPillarOpenAgeField(), 'a4b');
+      it('summarises that the saver will not join', () => {
+        renderAsSaverWhoWillNotJoin();
+        userEvent.click(blockButton(/^Sulge III\ssammas$/));
 
-        expect(thirdPillarOpenAgeField()).toHaveValue('4');
+        expect(screen.getByText('Ei ole liitunud, ei plaani liituda')).toBeVisible();
       });
 
-      it('does not mark the balance it cannot ask for as required', () => {
-        renderAsSaverWhoHasNotJoined();
-
-        expect(thirdPillarAmountField()).not.toBeRequired();
-        expect(thirdPillarAmountField()).not.toHaveAccessibleName(/kohustuslik/);
-      });
-
-      it('brings back the balance typed before when the saver says they have joined after all', () => {
-        renderAsSaverWhoHasNotJoined();
+      it('brings back the amounts typed before when the saver says they have joined after all', () => {
+        renderAsSaverWhoWillNotJoin();
         userEvent.selectOptions(thirdPillarJoinedField(), 'jah, enne 2021. a');
 
-        expect(thirdPillarAmountField()).toBeEnabled();
         expect(thirdPillarAmountField()).toHaveValue(5000);
+        expect(thirdPillarMonthlyField()).toHaveValue(50);
+      });
+    });
+
+    describe('for a saver who plans to join', () => {
+      beforeAll(installDialogPolyfill);
+
+      const renderAsSaverWhoPlansToJoin = () => {
+        renderFutureMe();
+        typeInto(thirdPillarAmountField(), '5000');
+        userEvent.selectOptions(thirdPillarJoinedField(), 'ei ole liitunud, plaanin liituda');
+      };
+
+      it('shows a balance of zero that cannot be edited and is not required', () => {
+        renderAsSaverWhoPlansToJoin();
+
+        expect(thirdPillarAmountField()).toBeDisabled();
+        expect(thirdPillarAmountField()).toHaveValue(0);
+        expect(thirdPillarAmountField()).not.toBeRequired();
+      });
+
+      it('asks the planned monthly payment and the age it starts at', () => {
+        renderAsSaverWhoPlansToJoin();
+
+        expect(thirdPillarPlannedMonthlyField()).toBeRequired();
+        expect(thirdPillarOpenAgeField()).toBeRequired();
+        expect(thirdPillarOpenAgeField()).toHaveAccessibleDescription(/^Vahemikus\s37–65\.$/);
+      });
+
+      it('scolds an opening age outside the allowed range once the saver leaves it', () => {
+        renderAsSaverWhoPlansToJoin();
+        typeInto(thirdPillarOpenAgeField(), '30');
+        userEvent.tab();
+
+        expect(thirdPillarOpenAgeField()).toBeInvalid();
+        expect(thirdPillarOpenAgeField()).toHaveAccessibleDescription(
+          /sisesta number vahemikus\s37–65/,
+        );
+      });
+
+      it('explains in the help why the age runs only to the pension age', () => {
+        renderAsSaverWhoPlansToJoin();
+        userEvent.click(screen.getByRole('button', { name: /^Selgitus: Miks kuni pensioniiani/ }));
+
+        expect(screen.getByRole('dialog')).toHaveTextContent(/pensioniea/);
       });
 
       it('summarises the planned opening and monthly payment', () => {
-        renderAsSaverWhoHasNotJoined();
-        typeInto(thirdPillarMonthlyField(), '50');
-        typeInto(thirdPillarOpenAgeField(), '40');
+        renderAsSaverWhoPlansToJoin();
+        typeInto(thirdPillarPlannedMonthlyField(), '50');
+        typeInto(thirdPillarOpenAgeField(), '50');
         userEvent.click(blockButton(/^Sulge III\ssammas$/));
 
         expect(
-          screen.getByText('Ei ole liitunud · avad 40-aastaselt, 50 € kuus · tootlus 0%'),
+          screen.getByText('Plaanid liituda · alustad 50-aastaselt, 50 € kuus · tootlus 0%'),
         ).toBeVisible();
       });
     });
@@ -1221,13 +1313,6 @@ describe('FutureMe', () => {
 
       expect(screen.getByText('5 000 € · 50 € kuus · tootlus −2%')).toBeVisible();
       expect(blockButton(/^Muuda III\ssammast$/)).toBeInTheDocument();
-    });
-
-    it('limits the opening age to two digits', () => {
-      renderFutureMe();
-      userEvent.selectOptions(thirdPillarJoinedField(), 'ei ole liitunud');
-
-      expect(thirdPillarOpenAgeField()).toHaveAttribute('maxlength', '2');
     });
   });
 
@@ -1255,13 +1340,24 @@ describe('FutureMe', () => {
   });
 
   describe('required answers', () => {
-    it('keeps the saver on the first step and points at the first empty field', async () => {
+    it('keeps the saver on the first step and lists the empty fields at its top', async () => {
       renderFutureMe();
 
       userEvent.click(nextButton());
 
       expect(stepCount()).toHaveTextContent('Samm 1 / 6');
-      await waitFor(() => expect(grossSalaryField()).toHaveFocus());
+      await waitFor(() => expect(errorSummary()).toHaveFocus());
+      expect(errorSummary()).toHaveTextContent(/^Enne edasi minekut täida:/);
+      expect(
+        within(errorSummary())
+          .getAllByRole('link')
+          .map((link) => link.textContent),
+      ).toEqual([
+        'Kui suur on sinu brutopalk?',
+        'Kui palju on II\u00A0sambas praegu?',
+        'Kui palju on III\u00A0sambas praegu?',
+        'Kui palju maksad III\u00A0sambasse kuus?',
+      ]);
       expect(grossSalaryField()).toBeInvalid();
       expect(firstPillarField()).toBeValid();
       expect(screen.getByText('Brutopalga väli on kohustuslik.')).toBeInTheDocument();
@@ -1277,7 +1373,21 @@ describe('FutureMe', () => {
 
       userEvent.click(nextButton());
 
-      await waitFor(() => expect(grossSalaryField()).toHaveFocus());
+      await waitFor(() => expect(errorSummary()).toHaveFocus());
+      userEvent.click(summaryLink(/brutopalk/));
+      expect(grossSalaryField()).toHaveFocus();
+    });
+
+    it('opens a block closed after the list appeared before pointing at its empty field', async () => {
+      renderFutureMe();
+      typeInto(firstPillarField(), '700');
+      userEvent.click(nextButton());
+      await waitFor(() => expect(errorSummary()).toHaveFocus());
+      userEvent.click(blockButton(/^Sulge töö ja II\ssammas$/));
+
+      userEvent.click(summaryLink(/brutopalk/));
+
+      expect(grossSalaryField()).toHaveFocus();
     });
 
     it('locks the later steps on the trail while an amount is missing', () => {
@@ -1298,13 +1408,12 @@ describe('FutureMe', () => {
       expect(within(trail()).getByRole('button', { name: 'Kulud, vaatamata' })).toBeEnabled();
     });
 
-    it('does not ask for the III pillar balance of a saver who has not joined', () => {
+    it('does not ask for the III pillar of a saver who does not plan to join', () => {
       renderFutureMe();
       typeInto(firstPillarField(), '700');
       typeInto(grossSalaryField(), '2000');
       typeInto(secondPillarAmountField(), '10000');
-      typeInto(thirdPillarMonthlyField(), '0');
-      userEvent.selectOptions(thirdPillarJoinedField(), 'ei ole liitunud');
+      userEvent.selectOptions(thirdPillarJoinedField(), 'ei ole liitunud, ei plaani liituda');
 
       userEvent.click(nextButton());
 
@@ -1384,6 +1493,21 @@ describe('FutureMe', () => {
     };
 
     const addSpecialCases = () => userEvent.click(addSpecialCasesButton());
+
+    it("shows each special case's questions right after its own checkbox", () => {
+      const isBefore = (earlier: HTMLElement, later: HTMLElement) =>
+        earlier.compareDocumentPosition(later) === Node.DOCUMENT_POSITION_FOLLOWING;
+      renderFutureMe();
+      addSpecialCases();
+
+      userEvent.click(specialCase(/eripensioni/));
+      userEvent.click(specialCase(/päästeteenistuses/));
+
+      expect(isBefore(specialCase(/eripensioni/), specialPensionStartField())).toBe(true);
+      expect(isBefore(specialPensionStartField(), specialCase(/päästeteenistuses/))).toBe(true);
+      expect(isBefore(specialCase(/päästeteenistuses/), rescueYearsField())).toBe(true);
+      expect(isBefore(rescueYearsField(), specialCase(/ametnik/))).toBe(true);
+    });
 
     describe('before they are added', () => {
       it('offer to add the children with the reason for them, and show no fields', () => {
@@ -2130,7 +2254,9 @@ describe('FutureMe', () => {
         userEvent.click(nextButton());
 
         expect(await screen.findByText(/Sisesta vanus, millest eripension algab/)).toBeVisible();
-        await waitFor(() => expect(specialPensionStartField()).toHaveFocus());
+        await waitFor(() => expect(errorSummary()).toHaveFocus());
+        userEvent.click(summaryLink(/Mis vanusest eripension algab/));
+        expect(specialPensionStartField()).toHaveFocus();
       });
 
       it('add the special pension step to the trail once the start age is known', () => {

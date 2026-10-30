@@ -502,9 +502,17 @@
     }
   }
 
-  .prefill-note {
-    color: $text-secondary;
-    font-size: 0.875rem;
+  .prefill-note,
+  .you-list .form-text,
+  .you-section-summary {
+    color: $text-primary;
+    font-size: 1rem;
+  }
+
+  .btn,
+  .form-control,
+  .form-select {
+    min-height: 44px;
   }
 
   .you-list {
@@ -533,7 +541,6 @@
   .you-section-summary {
     display: block;
     text-wrap: pretty;
-    color: $text-secondary;
 
     &.is-empty {
       color: $red;
@@ -746,7 +753,7 @@
     background: $white;
 
     summary {
-      padding: 0.5rem 0;
+      padding: 0.625rem 0;
       font-weight: 500;
     }
 
@@ -1472,7 +1479,7 @@
     }
 
     &:hover,
-    &:focus {
+    &[aria-expanded='true'] {
       .help-ring {
         fill: $blue;
       }

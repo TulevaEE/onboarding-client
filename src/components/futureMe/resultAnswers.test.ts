@@ -154,11 +154,24 @@ describe('resultAnswers', () => {
     it('counts III pillar contributions only from the age the saver plans to open it', () => {
       const openingAt = (thirdPillarOpenAge: string) =>
         resultInputOf(
-          contextWith({ thirdPillarJoined: 'none', thirdPillarMonthly: '100', thirdPillarOpenAge }),
+          contextWith({ thirdPillarJoined: 'plan', thirdPillarMonthly: '100', thirdPillarOpenAge }),
         ).p3Sep?.amount as number;
 
       expect(openingAt('50')).toBeLessThan(0);
       expect(openingAt('60')).toBeLessThan(openingAt('50'));
+    });
+
+    it('leaves the III pillar out for a saver who does not plan to join, even with a payment typed before', () => {
+      const input = resultInputOf(
+        contextWith({
+          thirdPillarJoined: 'never',
+          thirdPillarMonthly: '100',
+          thirdPillarOpenAge: '50',
+        }),
+      );
+
+      expect(input.p3Monthly).toBe(0);
+      expect(input.p3Sep).toBeNull();
     });
   });
 

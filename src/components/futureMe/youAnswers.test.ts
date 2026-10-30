@@ -13,13 +13,16 @@ import {
   firstInvalidChildIIMonths,
   childNoteOf,
   initialAnswers,
+  initialOpenSections,
   isChildBirthYearInvalid,
   isChildIIMonthsAsked,
   isChildIIMonthsInvalid,
   isSpecialPensionOnly,
+  limitsOf,
   pensionAgeValue,
   prefilledFields,
   removeOptionalSection,
+  thirdPillarMonthlyOf,
   toStepPlanInput,
   YouAnswers,
 } from './youAnswers';
@@ -33,6 +36,39 @@ const filledIn = (overrides: Partial<YouAnswers> = {}): YouAnswers => ({
   thirdPillarAmount: '5000',
   thirdPillarMonthly: '50',
   ...overrides,
+});
+
+describe('the Sina blocks open at the start', () => {
+  it('opens the saver, the state pension and the II pillar, and closes the children', () => {
+    expect(initialOpenSections(filledIn())).toMatchObject({
+      me: true,
+      state: true,
+      secondPillar: true,
+      kids: false,
+    });
+  });
+
+  it('opens the III pillar when there is III pillar money or a payment', () => {
+    expect(initialOpenSections(filledIn()).thirdPillar).toBe(true);
+    expect(
+      initialOpenSections(filledIn({ thirdPillarAmount: '0', thirdPillarMonthly: '20' }))
+        .thirdPillar,
+    ).toBe(true);
+  });
+
+  it('closes the III pillar of a saver without one', () => {
+    expect(
+      initialOpenSections(
+        filledIn({ thirdPillarJoined: 'never', thirdPillarAmount: '', thirdPillarMonthly: '' }),
+      ).thirdPillar,
+    ).toBe(false);
+  });
+
+  it('keeps the III pillar open while one of its required answers is empty', () => {
+    expect(
+      initialOpenSections(filledIn({ thirdPillarAmount: '', thirdPillarMonthly: '' })).thirdPillar,
+    ).toBe(true);
+  });
 });
 
 describe('birth month', () => {
@@ -230,9 +266,54 @@ describe('required fields', () => {
   });
 
   it('does not ask for the III pillar balance of a saver who has not joined', () => {
-    expect(blockedFields(filledIn({ thirdPillarJoined: 'none', thirdPillarAmount: '' }))).toEqual(
+    expect(blockedFields(filledIn({ thirdPillarJoined: 'never', thirdPillarAmount: '' }))).toEqual(
       [],
     );
+  });
+
+  it('asks nothing about the III pillar of a saver who does not plan to join', () => {
+    expect(
+      blockedFields(
+        filledIn({ thirdPillarJoined: 'never', thirdPillarAmount: '', thirdPillarMonthly: '' }),
+      ),
+    ).toEqual([]);
+  });
+
+  describe('the opening age of a saver who plans to join the III pillar', () => {
+    const planning = (thirdPillarOpenAge: string) =>
+      filledIn({ thirdPillarJoined: 'plan', thirdPillarAmount: '', thirdPillarOpenAge });
+    const currentAge = 2026 - 1980;
+    const pensionAge = effectivePensionAge(filledIn());
+
+    it('is required', () => {
+      expect(blockedFields(planning(''))).toEqual(['thirdPillarOpenAge']);
+    });
+
+    it('runs from the current age to the pension age', () => {
+      expect(limitsOf('thirdPillarOpenAge', planning(''))).toEqual({
+        min: currentAge,
+        max: pensionAge,
+      });
+      expect(fieldProblem(planning(String(currentAge - 1)), 'thirdPillarOpenAge')).toBe('range');
+      expect(fieldProblem(planning(String(pensionAge + 1)), 'thirdPillarOpenAge')).toBe('range');
+      expect(fieldProblem(planning(String(currentAge)), 'thirdPillarOpenAge')).toBeNull();
+      expect(fieldProblem(planning(String(pensionAge)), 'thirdPillarOpenAge')).toBeNull();
+    });
+
+    it('is not asked once the saver has joined', () => {
+      expect(
+        blockedFields(filledIn({ thirdPillarJoined: 'after', thirdPillarOpenAge: '' })),
+      ).toEqual([]);
+    });
+  });
+
+  it('counts no III pillar payment for a saver who does not plan to join, even one typed before', () => {
+    expect(
+      thirdPillarMonthlyOf(filledIn({ thirdPillarJoined: 'never', thirdPillarMonthly: '50' })),
+    ).toBe(0);
+    expect(
+      thirdPillarMonthlyOf(filledIn({ thirdPillarJoined: 'plan', thirdPillarMonthly: '50' })),
+    ).toBe(50);
   });
 
   it('counts a negative amount as unfinished', () => {
@@ -288,11 +369,14 @@ describe('step plan', () => {
     expect(shownSteps(plan)).toContain(FutureMeStep.AGE_55);
   });
 
-  it.each(['after', 'none'] as const)('skips the age 55 step when the join time is %s', (when) => {
-    const plan = toStepPlanInput(filledIn({ thirdPillarJoined: when }));
+  it.each(['after', 'plan', 'never'] as const)(
+    'skips the age 55 step when the join time is %s',
+    (when) => {
+      const plan = toStepPlanInput(filledIn({ thirdPillarJoined: when }));
 
-    expect(shownSteps(plan)).not.toContain(FutureMeStep.AGE_55);
-  });
+      expect(shownSteps(plan)).not.toContain(FutureMeStep.AGE_55);
+    },
+  );
 });
 
 const withKids = (birthYears: string[], overrides: Partial<YouAnswers> = {}) =>

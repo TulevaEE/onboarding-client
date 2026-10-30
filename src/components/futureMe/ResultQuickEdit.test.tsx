@@ -65,6 +65,8 @@ const openResultStep = ({ withSpecialPension = false } = {}) => {
   fillInYou();
   if (withSpecialPension) {
     addSpecialPension();
+    userEvent.click(within(trail()).getByRole('button', { name: /^Tulemus,/ }));
+    typeInto(screen.getByRole('spinbutton', { name: /Eripensioni suurus/ }), '800');
   }
   userEvent.click(within(trail()).getByRole('button', { name: /^Tulemus, vaatamata$/ }));
 };
@@ -323,7 +325,7 @@ describe('Result step: quick edit of the other decisions', () => {
       const row = decisionRow(/^Eripension$/);
 
       expect(row).toHaveTextContent(/60\sa/);
-      expect(row).toHaveTextContent('Sinu valik: Summa pole sisestatud');
+      expect(row).toHaveTextContent(/Sinu valik: 800\s€ kuus enne maksu/);
     });
 
     it('changes the amount under the row', () => {

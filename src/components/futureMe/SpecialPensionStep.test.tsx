@@ -181,6 +181,54 @@ describe('Special pension step', () => {
     expect(gross).toHaveAccessibleDescription(/Sisesta uus brutopalk/);
   });
 
+  describe('with a required amount missing', () => {
+    const errorSummary = () => screen.getByRole('alert');
+    const summaryLinks = () =>
+      within(errorSummary())
+        .getAllByRole('link')
+        .map((link) => link.textContent);
+    const next = () => userEvent.click(screen.getByRole('button', { name: /^Edasi/ }));
+
+    it('keeps the saver on the step until the special pension amount is filled in', () => {
+      openSpecialPensionStep();
+
+      next();
+
+      expect(screen.getByRole('heading', { level: 2, name: 'Eripension algab' })).toBeVisible();
+      expect(summaryLinks()).toEqual(['Eripensioni suurus']);
+      expect(amountField()).toHaveAttribute('aria-invalid', 'true');
+      expect(within(trail()).getByRole('button', { name: /^Kulud, lukus/ })).toHaveAttribute(
+        'aria-disabled',
+        'true',
+      );
+    });
+
+    it('asks for the new gross salary once the saver says it changes', () => {
+      openSpecialPensionStep();
+      typeInto(amountField(), '900');
+      userEvent.click(screen.getByRole('radio', { name: /Brutopalk muutub/ }));
+
+      next();
+
+      expect(summaryLinks()).toEqual(['Uus brutopalk']);
+      expect(screen.getByRole('spinbutton', { name: /Uus brutopalk/ })).toHaveAttribute(
+        'aria-invalid',
+        'true',
+      );
+    });
+
+    it('lets the saver on once the amounts are filled in', () => {
+      openSpecialPensionStep();
+      typeInto(amountField(), '900');
+
+      next();
+
+      expect(
+        screen.queryByRole('heading', { level: 2, name: 'Eripension algab' }),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   it('does not say the special pension continues at the pension age when it starts only later', () => {
     openSpecialPensionStep('68');
 

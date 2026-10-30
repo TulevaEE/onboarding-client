@@ -12,6 +12,7 @@ import {
   earlyRetirementRight,
   earlyRetirementYears,
   isSpecialPensionOn,
+  thirdPillarMonthlyOf,
   YouAnswers,
 } from './youAnswers';
 import { payoutAge, retirementAge } from './planAges';
@@ -117,7 +118,7 @@ export const thirdPillarAfterAsked = (
   plan: StepPlanInput,
 ): boolean =>
   answers.work !== 'yes' &&
-  amountOf(you.thirdPillarMonthly) > 0 &&
+  thirdPillarMonthlyOf(you) > 0 &&
   retirementAge(plan) < retirementYears(plan);
 
 export const deferralYearsWhileWorking = (answers: Age65Answers, plan: StepPlanInput): number => {
@@ -126,3 +127,12 @@ export const deferralYearsWhileWorking = (answers: Age65Answers, plan: StepPlanI
     ? 0
     : Math.min(Math.max(...DEFERRAL_YEARS), until - retirementYears(plan));
 };
+
+export const isThirdPillarAfterMissing = (
+  answers: Age65Answers,
+  you: YouAnswers,
+  plan: StepPlanInput,
+): boolean =>
+  thirdPillarAfterAsked(answers, you, plan) &&
+  answers.thirdPillarAfterMode === 'change' &&
+  answers.thirdPillarAfter.trim() === '';

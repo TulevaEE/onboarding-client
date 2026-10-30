@@ -137,7 +137,7 @@ describe('age66Answers', () => {
       expect(
         hasPillar(
           'thirdPillar',
-          earlyContext({ thirdPillarJoined: 'none', thirdPillarOpenAge: '58' }),
+          earlyContext({ thirdPillarJoined: 'plan', thirdPillarOpenAge: '58' }),
         ),
       ).toBe(true);
     });

@@ -31,6 +31,7 @@ interface Props {
   age66: Age66Answers;
   headingRef?: RefObject<HTMLHeadingElement>;
   isEmbedded?: boolean;
+  showErrors?: boolean;
   onChange: (answers: SpecialPensionAnswers) => void;
   onEditYou: () => void;
 }
@@ -61,6 +62,7 @@ export const SpecialPensionStep = ({
   age66,
   headingRef,
   isEmbedded,
+  showErrors = false,
   onChange,
   onEditYou,
 }: Props) => {
@@ -71,8 +73,8 @@ export const SpecialPensionStep = ({
   const isStarted = isSpecialPensionStarted(plan);
   const oldAgeAge = retirementAge(plan);
   const comparison = firstPillarComparison(answers, you, plan, age65, age66);
-  const isMonthlyMissing = isMonthlyTouched && !(amountOf(answers.monthly) > 0);
-  const isGrossMissing = isGrossTouched && answers.gross.trim() === '';
+  const isMonthlyMissing = (isMonthlyTouched || showErrors) && !(amountOf(answers.monthly) > 0);
+  const isGrossMissing = (isGrossTouched || showErrors) && answers.gross.trim() === '';
   const gross = amountOf(you.grossMonthly);
   const rate = Number(you.secondPillarRate) || 0;
   const secondPillarValues = {

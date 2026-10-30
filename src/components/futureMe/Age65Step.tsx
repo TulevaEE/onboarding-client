@@ -41,6 +41,7 @@ interface Props {
   specialPension: SpecialPensionAnswers;
   headingRef: RefObject<HTMLHeadingElement>;
   startedFundPensions?: Partial<Record<'secondPillar' | 'thirdPillar', FundPensionChoice>>;
+  showErrors?: boolean;
   onChange: (answers: Age65Answers) => void;
   onEditYou: () => void;
   onEditAge60: () => void;
@@ -67,6 +68,7 @@ export const Age65Step = ({
   specialPension,
   headingRef,
   startedFundPensions = {},
+  showErrors = false,
   onChange,
   onEditYou,
   onEditAge60,
@@ -145,6 +147,7 @@ export const Age65Step = ({
         you={you}
         plan={plan}
         isThirdPillarAfterAsked={thirdPillarAfterAsked(answers, you, plan)}
+        showErrors={showErrors}
         onChange={onChange}
       />
       {comparison && (

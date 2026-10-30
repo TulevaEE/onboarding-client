@@ -76,16 +76,26 @@ describe('planAges', () => {
     });
 
     it('counts only the monthly payment when not joined yet, because the balance is ignored', () => {
-      expect(hasThirdPillarFor({ thirdPillarJoined: 'none', thirdPillarAmount: '500' })).toBe(
+      expect(hasThirdPillarFor({ thirdPillarJoined: 'plan', thirdPillarAmount: '500' })).toBe(
         false,
       );
-      expect(hasThirdPillarFor({ thirdPillarJoined: 'none', thirdPillarMonthly: '30' })).toBe(true);
+      expect(hasThirdPillarFor({ thirdPillarJoined: 'plan', thirdPillarMonthly: '30' })).toBe(true);
+    });
+
+    it('is false for a saver who does not plan to join, even with a payment typed before', () => {
+      expect(
+        hasThirdPillarFor({
+          thirdPillarJoined: 'never',
+          thirdPillarMonthly: '30',
+          thirdPillarAmount: '500',
+        }),
+      ).toBe(false);
     });
 
     it('is false when the saver opens the III pillar only after the payout age', () => {
       expect(
         hasThirdPillarFor({
-          thirdPillarJoined: 'none',
+          thirdPillarJoined: 'plan',
           thirdPillarMonthly: '30',
           thirdPillarOpenAge: '65',
         }),
@@ -94,7 +104,7 @@ describe('planAges', () => {
 
     it('counts a pillar opened after the payout age when asked at the pension age', () => {
       const you = youWith({
-        thirdPillarJoined: 'none',
+        thirdPillarJoined: 'plan',
         thirdPillarMonthly: '30',
         thirdPillarOpenAge: '63',
       });
@@ -107,7 +117,7 @@ describe('planAges', () => {
     it('is true when the saver opens the III pillar before the payout age', () => {
       expect(
         hasThirdPillarFor({
-          thirdPillarJoined: 'none',
+          thirdPillarJoined: 'plan',
           thirdPillarMonthly: '30',
           thirdPillarOpenAge: '50',
         }),

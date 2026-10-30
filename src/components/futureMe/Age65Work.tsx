@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { amountOf, YouAnswers } from './youAnswers';
+import { amountOf, thirdPillarMonthlyOf, YouAnswers } from './youAnswers';
 import { Age65Answers, workAccrualMonthly, workUntilOf, workUntilOptions } from './age65Answers';
 import { decimalText, euro } from './amountFormat';
 import { retirementYears } from './engine/pension';
@@ -14,6 +14,7 @@ interface Props {
   you: YouAnswers;
   plan: StepPlanInput;
   isThirdPillarAfterAsked: boolean;
+  showErrors?: boolean;
   onChange: (answers: Age65Answers) => void;
 }
 
@@ -24,13 +25,20 @@ const WORK_CHOICES = [
 
 const THIRD_PILLAR_AFTER_CHOICES = ['same', 'change'] as const;
 
-export const Age65Work = ({ answers, you, plan, isThirdPillarAfterAsked, onChange }: Props) => {
+export const Age65Work = ({
+  answers,
+  you,
+  plan,
+  isThirdPillarAfterAsked,
+  showErrors = false,
+  onChange,
+}: Props) => {
   const intl = useIntl();
   const [isAmountTouched, setAmountTouched] = useState(false);
   const pensionAge = retirementYears(plan);
   const { birthYear } = plan;
   const gross = amountOf(you.grossMonthly);
-  const isAmountMissing = answers.thirdPillarAfter.trim() === '';
+  const isAmountMissing = (isAmountTouched || showErrors) && answers.thirdPillarAfter.trim() === '';
 
   return (
     <>
@@ -115,7 +123,7 @@ export const Age65Work = ({ answers, you, plan, isThirdPillarAfterAsked, onChang
                 text={
                   <FormattedMessage
                     id={`futureMe.age65.thirdPillarAfter.${value}.text`}
-                    values={{ amount: euro(amountOf(you.thirdPillarMonthly)) }}
+                    values={{ amount: euro(thirdPillarMonthlyOf(you)) }}
                   />
                 }
                 onChange={() => onChange({ ...answers, thirdPillarAfterMode: value })}
@@ -132,14 +140,14 @@ export const Age65Work = ({ answers, you, plan, isThirdPillarAfterAsked, onChang
                 id="future-me-third-pillar-after-amount"
                 type="number"
                 className={classNames('form-control', {
-                  'is-invalid': isAmountTouched && isAmountMissing,
+                  'is-invalid': isAmountMissing,
                 })}
                 min={0}
                 step={10}
                 required
-                aria-invalid={isAmountTouched && isAmountMissing}
+                aria-invalid={isAmountMissing}
                 aria-describedby={classNames('future-me-third-pillar-after-unit', {
-                  'future-me-third-pillar-after-error': isAmountTouched && isAmountMissing,
+                  'future-me-third-pillar-after-error': isAmountMissing,
                 })}
                 value={answers.thirdPillarAfter}
                 onChange={(event) => onChange({ ...answers, thirdPillarAfter: event.target.value })}
