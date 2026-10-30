@@ -2694,13 +2694,30 @@ describe('FutureMe', () => {
       renderFutureMe();
       openAge55();
 
-      userEvent.click(screen.getByText('Mis on igakuised väljamaksed?'));
+      const question = screen.getByText('Mis on igakuised väljamaksed?');
+      userEvent.click(question);
+      // eslint-disable-next-line testing-library/no-node-access
+      const answer = question.closest('details') as HTMLElement;
 
-      expect(screen.getByText(/tulumaksuvabad/)).toBeVisible();
-      expect(screen.getByRole('link', { name: /pensioni väljamaksete kohta/ })).toHaveAttribute(
-        'href',
-        'https://tuleva.ee/pensioni-valjamaksed/',
-      );
+      expect(within(answer).getByText(/tulumaksuvabad/)).toBeVisible();
+      expect(
+        within(answer).getByRole('link', { name: /pensioni väljamaksete kohta/ }),
+      ).toHaveAttribute('href', 'https://tuleva.ee/pensioni-valjamaksed/');
+    });
+
+    it('asks the same fund pension questions as the 60 step, each once', () => {
+      renderFutureMe();
+      openAge55();
+
+      expect(screen.getAllByText('Mis on igakuised väljamaksed?')).toHaveLength(1);
+      [
+        'Kuidas valida igakuiste väljamaksete lepingut?',
+        'Millal valida igakuised väljamaksed?',
+        'Mis saab, kui väljamaksed on suuremad, kui vajan?',
+        'Mida teada igakuiste väljamaksete kohta?',
+        'Kas igakuisi väljamakseid saab alustada juba 5 a enne pensioniiga?',
+      ].forEach((question) => expect(screen.getByText(question)).toBeInTheDocument());
+      expect(screen.queryByText('Kumba sammast enne kasutada?')).not.toBeInTheDocument();
     });
 
     it('sends no amount to the measuring', async () => {

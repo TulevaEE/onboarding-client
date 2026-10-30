@@ -17,6 +17,7 @@ import { ContractChoices } from './ContractChoices';
 import { ChoiceMadeNote } from './ChoiceMadeNote';
 import { FundPensionChoice } from './prefill';
 import { ageTense } from './planAges';
+import { FundPensionFaq } from './FundPensionFaq';
 
 const PLANS: ThirdPillarPlan[] = ['keep', 'fund', 'lump'];
 const PLAN_PAYOUT_CHOICE: Record<ThirdPillarPlan, PayoutChoice> = {
@@ -24,7 +25,6 @@ const PLAN_PAYOUT_CHOICE: Record<ThirdPillarPlan, PayoutChoice> = {
   fund: 'fund',
   lump: 'lump',
 };
-const PAYOUTS_URL = 'https://tuleva.ee/pensioni-valjamaksed/';
 const SAVINGS_ORDER = ['deposit', 'investments', 'thirdPillar', 'secondPillar'] as const;
 
 interface Props {
@@ -177,49 +177,30 @@ export const Age55Step = ({
       <p className={age55.payout ? 'you-note text-pretty' : undefined} role="status">
         {age55.payout && <PlanOutcome plan={age55.plan} age={age55.age} payout={age55.payout} />}
       </p>
-      <details className="mt-3">
-        <summary className="fw-medium">
-          <FormattedMessage id="futureMe.age55.faq.fundPension.question" />
-        </summary>
-        <p className="mt-2">
-          <FormattedMessage id="futureMe.age55.faq.fundPension.intro" />
-        </p>
-        <ul>
-          {(['taxFree', 'longer', 'heirs'] as const).map((point) => (
-            <li key={point}>
-              <FormattedMessage
-                id={`futureMe.age55.faq.fundPension.${point}`}
-                values={{ strong }}
-              />
-            </li>
-          ))}
-        </ul>
-        <p className="mb-0">
-          <a href={PAYOUTS_URL}>
-            <FormattedMessage id="futureMe.age55.faq.fundPension.link" />
-          </a>
-        </p>
-      </details>
-      {hasSecondPillar && (
-        <details className="mt-3">
-          <summary className="fw-medium">
-            <FormattedMessage id="futureMe.age55.faq.order.question" />
-          </summary>
-          <p className="mt-2">
-            <FormattedMessage id="futureMe.age55.faq.order.intro" />
-          </p>
-          <ol aria-label={intl.formatMessage({ id: 'futureMe.age55.faq.order.listLabel' })}>
-            {SAVINGS_ORDER.map((savings) => (
-              <li key={savings}>
-                <FormattedMessage id={`futureMe.age55.faq.order.${savings}`} />
-              </li>
-            ))}
-          </ol>
-          <p className="mb-0">
-            <FormattedMessage id="futureMe.age55.faq.order.why" />
-          </p>
-        </details>
-      )}
+      <FundPensionFaq>
+        {hasSecondPillar && (
+          <details className="faq-item">
+            <summary>
+              <FormattedMessage id="futureMe.age55.faq.order.question" />
+            </summary>
+            <div className="faq-body">
+              <p>
+                <FormattedMessage id="futureMe.age55.faq.order.intro" />
+              </p>
+              <ol aria-label={intl.formatMessage({ id: 'futureMe.age55.faq.order.listLabel' })}>
+                {SAVINGS_ORDER.map((savings) => (
+                  <li key={savings}>
+                    <FormattedMessage id={`futureMe.age55.faq.order.${savings}`} />
+                  </li>
+                ))}
+              </ol>
+              <p className="mb-0">
+                <FormattedMessage id="futureMe.age55.faq.order.why" />
+              </p>
+            </div>
+          </details>
+        )}
+      </FundPensionFaq>
     </section>
   );
 };
