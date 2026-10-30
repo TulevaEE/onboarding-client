@@ -3329,6 +3329,7 @@
   "futureMe.result.feedback.thanks.title": "Aitäh!",
   "futureMe.result.feedback.thanks.body": "Loeme kõik vastused läbi.",
   "futureMe.result.returnAssumption": "{pillars, select, both {Arvutatud II samba <strong>{second}%</strong> ja III samba <strong>{third}%</strong> aastase tootluse juures.} other {Arvutatud <strong>{percent}%</strong> aastase tootluse juures.}}",
+  "futureMe.result.taxNote": "Maksustamine oleneb isikuga seotud asjaoludest, sh residentsusest. Maksuseadused muutuvad ajas.",
   "futureMe.choiceMade.fundPension": "Oled selle valiku juba teinud: {pillar, select, SECOND {II samba} other {III samba}} igakuised väljamaksed algasid {startYear}. aastal, kui olid {startAge}-aastane.",
   "futureMe.payoutChoice.grow": "Vara jääb fondi ja kasvab edasi.",
   "futureMe.payoutChoice.fund": "Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale. Ülejäänud vara kasvab fondis edasi.{endsSecondPillarContributions, select, yes { Sinu ja riigi II samba sissemaksed lõpevad.} other {}}",

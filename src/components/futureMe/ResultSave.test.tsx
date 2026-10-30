@@ -121,6 +121,20 @@ describe('Result step: save the result', () => {
     expect(file).toContain('### Reeglid ja tulumaksud');
   });
 
+  it('ends the file with the provider, the illustration warning and the tax sentence', async () => {
+    jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    openResultStep();
+
+    userEvent.click(markdownButton());
+
+    const file = await downloadedFile();
+    expect(file).toContain('Finantsteenust pakub Tuleva Fondid AS.');
+    expect(file).toContain('Tegemist on sinu valitud eeldustel põhineva näitliku arvutusega.');
+    expect(file).toContain(
+      'Maksustamine oleneb isikuga seotud asjaoludest, sh residentsusest. Maksuseadused muutuvad ajas.',
+    );
+  });
+
   it('puts the income table into the file even when it is closed, and no payout comparison', async () => {
     jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
     openResultStep();

@@ -302,6 +302,9 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       <ResultFeedback />
       <div className="mt-4">
         <ProviderDisclaimer />
+        <p className="form-text mb-2">
+          <FormattedMessage id="futureMe.result.taxNote" />
+        </p>
       </div>
     </section>
   );
