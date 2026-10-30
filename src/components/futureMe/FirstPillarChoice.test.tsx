@@ -192,7 +192,7 @@ describe('Choosing between the special pension and the old-age pension', () => {
       enterSpecialPensionAmount('500');
       goTo(pensionAgeStep);
       userEvent.click(choice(choiceGroup(AGE_65_GROUP), /^Jätkan eripensioniga/));
-      goTo(/^66\+/);
+      goTo(/^\d+\+\sa/);
       goTo(pensionAgeStep);
 
       expect(choice(choiceGroup(AGE_65_GROUP), /^Jätkan eripensioniga/)).toBeChecked();
@@ -217,13 +217,13 @@ describe('Choosing between the special pension and the old-age pension', () => {
       enterSpecialPensionAmount('900');
       goTo(earlyRetirementStep);
       userEvent.click(screen.getByRole('radio', { name: /^Töötan edasi/ }));
-      goTo(/^66\+/);
+      goTo(/^\d+\+\sa/);
     };
 
     it('is not asked when the special pension was not kept', () => {
       openFutureMe({ withEarlyRetirement: true });
       enterSpecialPensionAmount('500');
-      goTo(/^66\+/);
+      goTo(/^\d+\+\sa/);
 
       expect(queryChoiceGroup(AGE_66_GROUP)).not.toBeInTheDocument();
     });
@@ -240,7 +240,7 @@ describe('Choosing between the special pension and the old-age pension', () => {
       openAfterWorkingOn();
       goTo(earlyRetirementStep);
       userEvent.click(choice(choiceGroup(AGE_65_GROUP), /^Lähen üle vanaduspensionile/));
-      goTo(/^66\+/);
+      goTo(/^\d+\+\sa/);
 
       expect(queryChoiceGroup(AGE_66_GROUP)).not.toBeInTheDocument();
     });

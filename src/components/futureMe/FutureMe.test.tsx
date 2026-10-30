@@ -668,10 +668,19 @@ describe('FutureMe', () => {
         'Sina, praegune samm',
         '61\u00A0a, vaatamata',
         '66\u00A0a, vaatamata',
-        '66+, vaatamata',
+        '66+\u00A0a, vaatamata',
         'Kulud, vaatamata',
         'Tulemus, vaatamata',
       ]);
+    });
+
+    it('names the step from the pension age on after the pension age the saver picked', () => {
+      renderFutureMe();
+      fillInRequiredAnswers();
+
+      userEvent.selectOptions(pensionAgeField(), '68');
+
+      expect(trailNames()).toContain('68+\u00A0a, vaatamata');
     });
 
     it('shows an icon for each step instead of its number', () => {
@@ -716,7 +725,7 @@ describe('FutureMe', () => {
         'Sina',
         '60\u00A0a',
         '65\u00A0a',
-        '66+',
+        '65+\u00A0a',
         'Kulud',
         'Tulemus',
       ]);
@@ -2211,7 +2220,7 @@ describe('FutureMe', () => {
       openAge55();
       userEvent.click(fundPlan());
       userEvent.click(contract(/^Üks leping/));
-      userEvent.click(within(trail()).getByRole('button', { name: /^66\+/ }));
+      userEvent.click(within(trail()).getByRole('button', { name: /^\d+\+\sa/ }));
 
       expect(contractGroup()).not.toBeInTheDocument();
       expect(screen.getByText(/III\ssamba lepingu valisid 55-aastaselt/)).toHaveTextContent(
@@ -2234,7 +2243,7 @@ describe('FutureMe', () => {
           { name: /Fondipension/ },
         ),
       );
-      userEvent.click(within(trail()).getByRole('button', { name: /^66\+/ }));
+      userEvent.click(within(trail()).getByRole('button', { name: /^\d+\+\sa/ }));
 
       expect(
         screen.queryByText(/raha kasvab fondis ja võtad vajadusel välja/),

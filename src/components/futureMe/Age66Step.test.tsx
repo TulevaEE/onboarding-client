@@ -65,7 +65,7 @@ const openAge66Step = (answers: Parameters<typeof fillInYou>[0] = {}) => {
     </IntlProvider>,
   );
   fillInYou(answers);
-  goTo(/^66\+, vaatamata$/);
+  goTo(/^\d+\+\sa, vaatamata$/);
 };
 
 const startField = (pillar: 'II' | 'III') =>
@@ -86,11 +86,17 @@ const setPayoutAtPensionAge = (pillar: 'II' | 'III', choice: string) => {
       }),
     ).getByRole('radio', { name: new RegExp(choice) }),
   );
-  goTo(/^66\+/);
+  goTo(/^\d+\+\sa/);
 };
 
 describe('Age 66+ step', () => {
   beforeEach(() => loggedInAs({ dateOfBirth: '1962-01-01' }));
+
+  it('starts at the pension age before a fund pension start is picked', () => {
+    openAge66Step();
+
+    expect(screen.getByText(/^65\+\saastat\s·\s2027–…/)).toBeInTheDocument();
+  });
 
   it('replaces the placeholder with the fund pension start choices', () => {
     openAge66Step();

@@ -77,7 +77,7 @@ export const Age66Step = ({
     fundStartOf('secondPillar', answers, context),
     fundStartOf('thirdPillar', answers, context),
   ].filter((age): age is number => age !== undefined);
-  const firstAge = startAges.length > 0 ? Math.min(...startAges) : retirementAge(plan) + 1;
+  const firstAge = startAges.length > 0 ? Math.min(...startAges) : retirementAge(plan);
   const isAnyContractAsked =
     isContractAsked('secondPillar', answers, context) ||
     isContractAsked('thirdPillar', answers, context);
