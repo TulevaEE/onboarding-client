@@ -133,3 +133,21 @@ describe('Step texts', () => {
     expect(changed).toEqual([]);
   });
 });
+
+describe('Every Tulevane Mina text', () => {
+  const futureMeKeys = Object.keys(texts.et).filter((key) => key.startsWith('futureMe.'));
+
+  it('belongs to one of the steps above', () => {
+    expect(futureMeKeys.filter((key) => !stepKeys.includes(key))).toEqual([]);
+  });
+
+  it('has English that is not the Estonian text', () => {
+    expect(
+      futureMeKeys.filter(
+        (key) =>
+          !spelledTheSameInBothLanguages.includes(key) &&
+          (texts.en[key] === undefined || texts.en[key] === texts.et[key]),
+      ),
+    ).toEqual([]);
+  });
+});
