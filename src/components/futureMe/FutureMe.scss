@@ -1000,6 +1000,10 @@
     }
   }
 
+  .result-chart-toggle.is-hatched[aria-pressed='true'] .result-chart-toggle-dot {
+    background: repeating-linear-gradient(135deg, var(--layer-color) 0 2px, transparent 2px 4px);
+  }
+
   .result-chart-crosshair {
     position: absolute;
     width: 1px;

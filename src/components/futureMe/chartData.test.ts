@@ -152,7 +152,8 @@ describe('chartData', () => {
 
     expect(first).toMatchObject({
       firstPillar: Math.round(source.i1),
-      secondPillar: Math.round(source.i2),
+      secondPillar: Math.round(source.i2 - source.extra2),
+      secondPillarTaxed: Math.round(source.extra2),
       costs: Math.round(source.spend),
     });
   });
@@ -164,7 +165,7 @@ describe('chartData', () => {
       deposit: 0,
     }));
 
-    expect(chartSeriesOf(rows).map(({ id }) => id)).toEqual(['firstPillar', 'secondPillar']);
+    expect(chartSeriesOf(rows).map(({ id }) => id)).toEqual(['firstPillar', 'secondPillarTaxed']);
   });
 
   it('shows the special pension, which is paid instead of the old-age pension when larger', () => {
@@ -219,6 +220,7 @@ describe('chartData', () => {
       firstPillar: 0,
       specialPension: 0,
       secondPillar: 0,
+      secondPillarTaxed: 0,
       thirdPillar: 0,
       deposit: 0,
     };
@@ -247,5 +249,27 @@ describe('chartData', () => {
     expect(rows.filter(({ salary }) => salary > 0).map(({ surplus }) => surplus)).toEqual([
       0, 0, 0,
     ]);
+  });
+});
+
+describe('chartData with the II pillar taken when needed', () => {
+  const result = resultOf(contextWith('', { secondPillar: 'grow' }));
+  const rows = chartRowsOf(result, 1500);
+
+  it('keeps what is taken when needed apart from the tax-free fund pension', () => {
+    const taxedFrom = rows.find(({ secondPillarTaxed }) => secondPillarTaxed > 0);
+
+    expect(taxedFrom).toMatchObject({ secondPillar: 0 });
+  });
+
+  it('adds up to what the engine pays from the II pillar', () => {
+    rows.forEach((row) => {
+      const paid = result.rows.find(({ age }) => age === row.age)?.i2 ?? 0;
+      expect(Math.abs(row.secondPillar + row.secondPillarTaxed - paid)).toBeLessThanOrEqual(1);
+    });
+  });
+
+  it('lists the taxed layer as its own series', () => {
+    expect(chartSeriesOf(rows).map(({ id }) => id)).toContain('secondPillarTaxed');
   });
 });

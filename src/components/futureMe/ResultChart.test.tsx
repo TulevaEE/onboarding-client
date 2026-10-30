@@ -306,6 +306,7 @@ describe('ResultChart interaction', () => {
               firstPillar: 700,
               specialPension: 0,
               secondPillar: 300,
+              secondPillarTaxed: 0,
               thirdPillar: 0,
               deposit: 0,
               costs: 800,
@@ -482,7 +483,7 @@ describe('ResultChart interaction', () => {
       expect(datasets.map(labelOf)).toEqual([
         'Palk',
         'Riiklik pension',
-        'II\u00A0sammas',
+        'II\u00A0sammas (10% maksuga)',
         'Hoiuselt',
       ]);
       expect(datasets[1].fill).toBe('origin');
@@ -520,6 +521,43 @@ describe('ResultChart interaction', () => {
       userEvent.click(toggle('Palk'));
 
       expect(readout()).toHaveTextContent('Palk peidetud.');
+    });
+  });
+
+  describe('II pillar tax in the legend', () => {
+    const taxedToggle = () => screen.queryByRole('button', { name: /II\ssammas \(10% maksuga\)/ });
+
+    it('shows the II pillar money taken when needed as its own layer with the 10% tax', () => {
+      renderChart(contextWith({ secondPillar: 'grow' }));
+
+      expect(taxedToggle()).toHaveAttribute('aria-pressed', 'true');
+    });
+
+    it('labels the II pillar fund pension as tax-free', () => {
+      renderChart(contextWith({ secondPillar: 'fund' }));
+
+      expect(
+        screen.getByRole('button', { name: /^II\ssammas \(maksuvaba\)$/ }),
+      ).toBeInTheDocument();
+    });
+
+    it('leaves the tax layer out when the fund pension and the state pension cover the costs', () => {
+      const context = contextWith({ secondPillar: 'fund' });
+      const you = { ...context.you, firstPillarMonthly: '1500' };
+      renderChart({ ...context, you, plan: toStepPlanInput(you) });
+
+      expect(taxedToggle()).not.toBeInTheDocument();
+    });
+
+    it('hides the tax layer on its own, without the fund pension layer', () => {
+      renderChart(contextWith({ secondPillar: 'grow' }));
+
+      userEvent.click(taxedToggle() as HTMLElement);
+
+      const hiddenLabels = lastChartProps()
+        .data.datasets.filter(({ hidden }: { hidden: boolean }) => hidden)
+        .map(({ label }: { label: string }) => label);
+      expect(hiddenLabels).toEqual(['II\u00A0sammas (10% maksuga)']);
     });
   });
 

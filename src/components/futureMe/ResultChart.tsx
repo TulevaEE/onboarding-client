@@ -89,6 +89,32 @@ const fadingFill = (color: string) => (context: ScriptableContext<'line'>) => {
   return gradient;
 };
 
+const HATCH_TILE = 8;
+const HATCH_LINE = 1.5;
+const HATCHED_SOURCES: ChartSourceId[] = ['secondPillarTaxed'];
+
+const hatchedFill = (color: string) => (context: ScriptableContext<'line'>) => {
+  const tile = document.createElement('canvas');
+  tile.width = HATCH_TILE;
+  tile.height = HATCH_TILE;
+  const pen = tile.getContext('2d');
+  if (!pen) {
+    return transparent(color, 0.3);
+  }
+  pen.fillStyle = transparent(color, 0.12);
+  pen.fillRect(0, 0, HATCH_TILE, HATCH_TILE);
+  pen.strokeStyle = transparent(color, 0.6);
+  pen.lineWidth = HATCH_LINE;
+  pen.beginPath();
+  pen.moveTo(-1, HATCH_TILE + 1);
+  pen.lineTo(HATCH_TILE + 1, -1);
+  pen.stroke();
+  return context.chart.ctx.createPattern(tile, 'repeat') ?? transparent(color, 0.3);
+};
+
+const fillOf = (id: ChartSourceId) =>
+  HATCHED_SOURCES.includes(id) ? hatchedFill(SOURCE_COLORS[id]) : fadingFill(SOURCE_COLORS[id]);
+
 const isAgeLabelled = (age: number, step: number, pensionAge: number) => {
   const isNextToPensionAge = Math.abs(age - pensionAge) < step / 2;
   return age === pensionAge || (age % step === 0 && !isNextToPensionAge);
@@ -231,7 +257,7 @@ const datasetsOf = (
       fill,
       borderColor: SOURCE_COLORS[id],
       borderWidth: 1.5,
-      backgroundColor: fadingFill(SOURCE_COLORS[id]),
+      backgroundColor: fillOf(id),
       pointRadius: points.map((point, at) =>
         hasDotAt(at) ? dotRadiusOf(point.age, isEventAt(at), dotEvery) : 0,
       ),
@@ -610,7 +636,9 @@ const Legend = ({ rows, hidden, onToggle }: LegendProps) => {
           <li key={id}>
             <button
               type="button"
-              className="btn btn-sm rounded-pill result-chart-toggle"
+              className={`btn btn-sm rounded-pill result-chart-toggle${
+                HATCHED_SOURCES.includes(id) ? ' is-hatched' : ''
+              }`}
               style={{ '--layer-color': SOURCE_COLORS[id] } as React.CSSProperties}
               aria-pressed={!hidden.has(id)}
               aria-describedby="future-me-chart-legend-hint"

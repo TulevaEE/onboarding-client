@@ -22,6 +22,7 @@ const AMOUNT_FIELDS: Amount[] = [
   'i3',
   'fp',
   'extra',
+  'extra2',
   'dep',
   'spend',
   'shortfall',
