@@ -138,12 +138,22 @@ export interface SimulationRow {
   shortfall: number;
   moneyLeft: number;
   pot: number;
+  pot2: number;
+  pot3: number;
   deposit: number;
   alive: number;
 }
 
+export interface PotAtPension {
+  age: number;
+  p2: number;
+  p3: number;
+  deposit: number;
+}
+
 export interface SimulationSummary {
   rows: SimulationRow[];
+  potAtPension: PotAtPension;
   pensionStartAge: number;
   p1StartAge: number;
   horizonAge: number;
@@ -967,7 +977,9 @@ export function simulate(
       deposit += lumpOut(fund3);
       fund3 = 0;
     }
-    const fundStart = fund + fund3;
+    const secondPillarStart = fund;
+    const thirdPillarStart = fund3;
+    const fundStart = secondPillarStart + thirdPillarStart;
     const depositStart = deposit;
     const i1gross =
       age >= p1Start
@@ -1078,6 +1090,8 @@ export function simulate(
       shortfall: age >= ret ? Math.max(0, needYear - spend) / 12 : 0,
       moneyLeft: fundStart + depositStart,
       pot: fundStart,
+      pot2: secondPillarStart,
+      pot3: thirdPillarStart,
       deposit: depositStart,
       alive: survival(table, input.sex, currentAge, age),
     });
@@ -1182,6 +1196,12 @@ function summarize(
   const horizon = horizonAge(table, input.sex, currentAge);
   return {
     rows,
+    potAtPension: {
+      age: startRow.age,
+      p2: startRow.pot2,
+      p3: startRow.pot3,
+      deposit: startRow.deposit,
+    },
     pensionStartAge: pa,
     p1StartAge: p1Start,
     horizonAge: horizon,

@@ -17,6 +17,7 @@ import {
   LifeTable,
   p3Factor,
   PensionInput,
+  PotAtPension,
   Scenario,
   SCENARIOS,
   SeparateThirdPillar,
@@ -287,6 +288,9 @@ export const coverageKind = (result: Result): 'all' | 'gap' | 'none' | 'until' =
   }
   return result.coversNeedUntil <= result.pensionStartAge ? 'none' : 'until';
 };
+
+export const potAtPensionOf = (context: ResultContext): PotAtPension =>
+  simulate(resultInputOf(context), lifeTable, resultScenarioOf(context)).potAtPension;
 
 export const resultOf = (context: ResultContext): Result => {
   const input = resultInputOf(context);
