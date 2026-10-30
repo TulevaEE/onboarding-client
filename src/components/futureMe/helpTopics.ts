@@ -19,6 +19,7 @@ export const HELP_TOPICS = [
   'kids',
   'kidsWho',
   'household',
+  'careHome',
   'legacyLeft',
   'nominal',
   'kidIIMonths',

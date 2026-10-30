@@ -1,9 +1,10 @@
 import React, { RefObject } from 'react';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
-import { formatAmountForCount, formatAmountForCurrency } from '../common/utils';
+import { formatAmountForCount } from '../common/utils';
 import { TranslationKey } from '../translations';
 import {
-  CARE_HOME_SHARE,
+  CARE_HOME_OWN_SHARES,
+  careHomeCoverage,
   COST_LEVELS,
   CostFacts,
   CostLevel,
@@ -26,6 +27,7 @@ import { FutureMeStep } from './steps';
 import { EmojiIcon } from './FutureMeIcon';
 import { strong } from './richText';
 import { euro } from './amountFormat';
+import { HelpButton } from './HelpButton';
 
 interface Props {
   answers: ExpensesAnswers;
@@ -36,13 +38,12 @@ interface Props {
 
 const LEVEL_EMOJI: Record<CostLevel, string> = {
   frugal: '🥔',
-  optimal: '✈️',
+  optimal: '⚖️',
   comfortable: '🛋️',
 };
 
 const HOUSEHOLD_EMOJI: Record<Household, string> = { alone: '🧍', couple: '👫' };
 
-const LEVEL_WITH_CARE_HOME_ALTERNATIVE: CostLevel = 'comfortable';
 const DECIMAL_FRACTION_DIGITS = 1;
 const TRAILING_ZERO_DECIMAL = /,0$/;
 
@@ -57,25 +58,25 @@ const factItems = (
   intl: IntlShape,
   facts: CostFacts,
 ): { emoji: string; text: string; key: string }[] => {
-  const fuelShown = decimalText(facts.fuelTanks);
+  const isByBus = facts.fuelTanks < 1;
   const items = [
     {
-      key: 'beef',
+      key: 'food',
       emoji: '🥩',
-      text: facts.beefOnHolidaysOnly
-        ? intl.formatMessage({ id: 'futureMe.expenses.fact.beefOnHolidays' })
-        : intl.formatMessage(
-            { id: 'futureMe.expenses.fact.beef' },
-            { kg: decimalText(facts.beefKg) },
-          ),
+      text: intl.formatMessage(
+        { id: 'futureMe.expenses.fact.food' },
+        { amount: euro(facts.foodPerDay) },
+      ),
     },
     {
       key: 'fuel',
-      emoji: '⛽',
-      text: intl.formatMessage(
-        { id: 'futureMe.expenses.fact.fuel' },
-        { count: facts.fuelTanks, shown: fuelShown, isLow: facts.fuelTanks < 1 ? 'yes' : 'no' },
-      ),
+      emoji: isByBus ? '🚌' : '⛽',
+      text: isByBus
+        ? intl.formatMessage({ id: 'futureMe.expenses.fact.bus' })
+        : intl.formatMessage(
+            { id: 'futureMe.expenses.fact.fuel' },
+            { count: facts.fuelTanks, shown: decimalText(facts.fuelTanks) },
+          ),
     },
     {
       key: 'cafe',
@@ -84,7 +85,7 @@ const factItems = (
     },
     {
       key: 'trips',
-      emoji: '✈️',
+      emoji: facts.tripsPerYear === 0 ? '🚗' : '✈️',
       text:
         facts.tripsPerYear === 0
           ? intl.formatMessage({ id: 'futureMe.expenses.fact.trips.none' })
@@ -122,6 +123,7 @@ const LevelCard = ({ answers, level, widestTotal, onChange }: LevelCardProps) =>
   const intl = useIntl();
   const { household } = answers;
   const total = levelTotal(household, level);
+  const care = careHomeCoverage(levelNeed(answers, level));
   const average = levelTotal(household, 'frugal');
   const extra = Math.max(0, total - average);
   const nameId = `future-me-level-${level}-name`;
@@ -150,22 +152,22 @@ const LevelCard = ({ answers, level, widestTotal, onChange }: LevelCardProps) =>
           <span className="cost-level-price" id={priceId}>
             <FormattedMessage
               id="futureMe.expenses.level.price"
-              values={{ amount: euro(total), muted }}
+              values={{ amount: euro(levelNeed(answers, level)), muted }}
             />
+            {isLevelEdited(answers, level) && (
+              <small className="cost-level-edited">
+                <FormattedMessage
+                  id="futureMe.expenses.level.edited"
+                  values={{ amount: euro(total) }}
+                />
+              </small>
+            )}
           </span>
         </span>
         <span id={detailsId} className="cost-level-details">
-          <small>
+          <small className="cost-level-tagline">
             <FormattedMessage id={`futureMe.expenses.level.${level}.tagline` as TranslationKey} />
           </small>
-          {isLevelEdited(answers, level) && (
-            <small className="cost-level-edited">
-              <FormattedMessage
-                id="futureMe.expenses.level.edited"
-                values={{ amount: euro(levelNeed(answers, level)), strong }}
-              />
-            </small>
-          )}
           <span className="cost-level-bar" aria-hidden="true">
             <span className="segment average" style={{ width: barShare(average, widestTotal) }} />
             {extra > 0 && (
@@ -192,32 +194,31 @@ const LevelCard = ({ answers, level, widestTotal, onChange }: LevelCardProps) =>
               </li>
             ))}
           </ul>
-          {level === LEVEL_WITH_CARE_HOME_ALTERNATIVE && (
-            <>
-              <span className="cost-level-or" aria-hidden="true">
-                <span>
-                  <FormattedMessage id="futureMe.expenses.level.alt.or" />
-                </span>
+          <span className="cost-level-or" aria-hidden="true">
+            <span>
+              <FormattedMessage id="futureMe.expenses.level.alt.or" />
+            </span>
+          </span>
+          <span className="cost-level-alt">
+            <span className="cost-fact-icon" aria-hidden="true">
+              <EmojiIcon emoji="🏡" />
+            </span>
+            <span>
+              <span className="visually-hidden">
+                <FormattedMessage id="futureMe.expenses.level.alt.srPrefix" />{' '}
               </span>
-              <span className="cost-level-alt">
-                <span className="cost-fact-icon" aria-hidden="true">
-                  <EmojiIcon emoji="🏡" />
-                </span>
-                <span>
-                  <span className="visually-hidden">
-                    <FormattedMessage id="futureMe.expenses.level.alt.srPrefix" />{' '}
-                  </span>
-                  <FormattedMessage
-                    id="futureMe.expenses.level.alt.careHome"
-                    values={{
-                      total: euro(total),
-                      care: formatAmountForCurrency(CARE_HOME_SHARE, 0),
-                    }}
-                  />
-                </span>
-              </span>
-            </>
-          )}
+              <FormattedMessage
+                id="futureMe.expenses.level.care"
+                values={{
+                  covers: care.covers,
+                  missing: euro(care.missing),
+                  cheaper: euro(CARE_HOME_OWN_SHARES.cheaper),
+                  average: euro(CARE_HOME_OWN_SHARES.average),
+                  dearer: euro(CARE_HOME_OWN_SHARES.dearer),
+                }}
+              />
+            </span>
+          </span>
         </span>
       </span>
     </label>
@@ -278,6 +279,9 @@ export const ExpensesStep = ({ answers, headingRef, isEmbedded, onChange }: Prop
         </legend>
         <div className="cost-levels">
           <p className="cost-legend form-text mb-0" aria-hidden="true">
+            <span>
+              <FormattedMessage id="futureMe.expenses.legend.lead" />
+            </span>
             <span className="legend-item">
               <span className="legend-dot average" />
               <FormattedMessage id="futureMe.expenses.legend.average" />
@@ -302,6 +306,10 @@ export const ExpensesStep = ({ answers, headingRef, isEmbedded, onChange }: Prop
           ))}
         </div>
       </fieldset>
+      <p className="form-text text-pretty mt-3">
+        <FormattedMessage id="futureMe.expenses.careHome.note" />
+        <HelpButton topic="careHome" />
+      </p>
       <ExpensesBreakdown answers={answers} onChange={onChange} />
     </StepSection>
   );

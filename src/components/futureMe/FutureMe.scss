@@ -258,12 +258,14 @@
 
   .legend-item {
     display: inline-flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.4rem;
   }
 
   .legend-dot {
     display: inline-block;
+    flex-shrink: 0;
+    margin-top: 0.3em;
     width: 0.75rem;
     height: 0.75rem;
     border-radius: 50%;
@@ -358,6 +360,13 @@
       color: $text-secondary;
       font-weight: 400;
     }
+
+    .cost-level-edited {
+      display: block;
+      color: $blue;
+      font-weight: 500;
+      white-space: normal;
+    }
   }
 
   .cost-level-details {
@@ -370,16 +379,17 @@
       text-wrap: pretty;
     }
 
-    .cost-level-edited {
-      color: $blue;
-    }
+  }
+
+  .cost-level-tagline {
+    min-height: 3em;
   }
 
   .cost-level-bar {
     display: flex;
     gap: 2px;
     height: 0.75rem;
-    margin: 0.5rem 0 0.25rem;
+    margin: 0.75rem 0 0.5rem;
     border: 1px solid $text-navy-tertiary;
     border-radius: 1rem;
     background: $white;
