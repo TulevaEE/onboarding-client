@@ -530,12 +530,13 @@ export function rescueUntil(input: PensionInput): number | null {
 export function childSupplement(input: PensionInput): number {
   const kids = input.kids || {};
   const supUser = kids.supUser || kids.user;
+  const noII = !((input.p2 || 0) > 0 || (input.p2Rate || 0) > 0);
   const shareOfSupplement = { me: 1, split: 0.5 }[supUser as 'me' | 'split'] ?? 0;
-  const shareOfUnpaidMonths = (kids.iiUser || supUser) === 'me' ? 1 : 0;
+  const iiPaymentShare = (kids.iiUser || supUser) === 'me' ? 1 : 0;
+  const shareOfUnpaidMonths = noII ? shareOfSupplement : iiPaymentShare;
   if (shareOfSupplement === 0 && shareOfUnpaidMonths === 0) {
     return 0;
   }
-  const noII = !((input.p2 || 0) > 0 || (input.p2Rate || 0) > 0);
   const under3Count = Math.min(kids.u3 || 0, kids.b2021 || 0);
   const older2021 = Math.max(0, (kids.b2021 || 0) - under3Count);
   let part2021 = 0;
