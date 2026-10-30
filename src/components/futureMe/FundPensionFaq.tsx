@@ -23,7 +23,6 @@ const richText = {
   ul: (chunks: React.ReactNode) => <ul>{chunks}</ul>,
   li: (chunks: React.ReactNode) => <li>{chunks}</li>,
   strong,
-  small: (chunks: React.ReactNode) => <small className="text-secondary">{chunks}</small>,
   link: externalLink(PAYOUTS_PAGE),
   pensionikeskusTerm: externalLink(PENSIONIKESKUS_TERM_PAGE),
   pensionikeskusPayouts: externalLink(PENSIONIKESKUS_PAYOUTS_PAGE),
