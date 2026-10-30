@@ -71,6 +71,7 @@ export const pensionInputOf = (
   const isHazardous = you.workAdded && you.hazardList !== 'no';
   return {
     birthYear: plan.birthYear,
+    birthMonth: plan.birthMonth,
     sex: you.sex,
     p1Monthly: amountOf(you.firstPillarMonthly),
     p2: amountOf(you.secondPillarAmount),

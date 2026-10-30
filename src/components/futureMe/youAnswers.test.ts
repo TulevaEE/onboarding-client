@@ -34,6 +34,17 @@ const filledIn = (overrides: Partial<YouAnswers> = {}): YouAnswers => ({
   ...overrides,
 });
 
+describe('birth month', () => {
+  it('starts from the prefill and goes to the plan, unknown when there is no prefill', () => {
+    const base = { birthYear: 1966, sex: 'N' as const, secondPillarRate: '0.02' };
+
+    expect(initialAnswers({ ...base, birthMonth: 6 }).birthMonth).toBe(6);
+    expect(initialAnswers(base).birthMonth).toBeNull();
+    expect(toStepPlanInput(filledIn({ birthMonth: 6 })).birthMonth).toBe(6);
+    expect(toStepPlanInput(filledIn({ birthMonth: null })).birthMonth).toBeUndefined();
+  });
+});
+
 describe('initial answers', () => {
   it('starts from the prefill, the average old-age pension and empty savings amounts', () => {
     expect(initialAnswers({ birthYear: 1985, sex: 'M', secondPillarRate: '0.04' })).toMatchObject({

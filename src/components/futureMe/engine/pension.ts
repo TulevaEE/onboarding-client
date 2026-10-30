@@ -51,6 +51,7 @@ export type FirstPillarChoice = 'special' | 'oldAge';
 
 export interface PensionInput {
   birthYear: number;
+  birthMonth?: number;
   sex: Sex;
   p1Monthly: number;
   p2: number;
@@ -341,12 +342,13 @@ export function pensionAgeMonthsIn(year: number): number {
 }
 
 // RPKS § 7 lg 10: the pension age of the year the person reaches it applies
-export function pensionAge(birthYear: number): PensionAge {
+export function pensionAge(birthYear: number, birthMonth = 1): PensionAge {
+  const monthsIntoBirthYear = birthMonth - 1;
   let year = birthYear + 65;
   let months = 0;
   for (let y = birthYear + 65; y <= birthYear + 72; y += 1) {
     const m = pensionAgeMonthsIn(y);
-    if (birthYear + 65 + Math.floor(m / 12) === y) {
+    if (birthYear + 65 + Math.floor((monthsIntoBirthYear + m) / 12) === y) {
       year = y;
       months = m;
       break;
@@ -422,9 +424,9 @@ export function yearlyContractTerm(table: LifeTable, sex: Sex, age: number): num
 }
 
 export function retirementYears(
-  input: Pick<PensionInput, 'pensionAgeYears' | 'birthYear'>,
+  input: Pick<PensionInput, 'pensionAgeYears' | 'birthYear' | 'birthMonth'>,
 ): number {
-  return input.pensionAgeYears || pensionAge(input.birthYear).years;
+  return input.pensionAgeYears || pensionAge(input.birthYear, input.birthMonth).years;
 }
 
 function yearsFromNow(input: Pick<PensionInput, 'birthYear'>, age: number): number {
@@ -604,7 +606,7 @@ export function specialStart(
 }
 
 export function decisionMap(input: PensionInput): Decision[] {
-  const pa = { ...pensionAge(input.birthYear) };
+  const pa = { ...pensionAge(input.birthYear, input.birthMonth) };
   if (input.pensionAgeYears) {
     pa.years = input.pensionAgeYears;
     pa.label = `${input.pensionAgeYears} a`;

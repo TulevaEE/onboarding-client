@@ -62,6 +62,7 @@ export const OPTIONAL_SECTION_IDS: OptionalSectionId[] = ['kids', 'work'];
 export interface YouAnswers extends KidsAnswers, WorkAnswers {
   birthYear: string;
   sex: Sex;
+  birthMonth: number | null;
   pensionAgeYears: string;
   registerPensionAge: number | null;
   firstPillarMonthly: string;
@@ -160,6 +161,7 @@ export const initialAnswers = (prefill: YouPrefill): YouAnswers =>
   ({
     birthYear: prefill.birthYear?.toString() ?? '',
     sex: prefill.sex ?? UNKNOWN_SEX,
+    birthMonth: prefill.birthMonth ?? null,
     pensionAgeYears: '',
     registerPensionAge: prefill.registerPensionAge ?? null,
     firstPillarMonthly: PREFILLED_FIRST_PILLAR_MONTHLY,
@@ -521,6 +523,7 @@ export const blockedFields = (answers: YouAnswers): YouField[] =>
 
 export const toStepPlanInput = (answers: YouAnswers): StepPlanInput => ({
   birthYear: birthYearOrFallback(answers),
+  birthMonth: answers.birthMonth ?? undefined,
   pensionAgeYears: effectivePensionAge(answers),
   earlyRetirementYears: earlyRetirementYears(answers),
   hasSpecialPension: isSpecialPensionOn(answers),
