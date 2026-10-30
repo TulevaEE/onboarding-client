@@ -1041,7 +1041,7 @@ export function simulate(
   }
   const showAtPa = spPaid && ret < pa && (p1AtPa > p1AtSpStart + 0.5 * 12 || p1AtPa > spYear);
   return {
-    ...summarize(rows, input, table, ret, p1Start, currentAge),
+    ...summarize(rows, input, table, ret, p1Start, currentAge, workEnd),
     ordinaryPensionAge: pa,
     p1FullAge: p1Start + half,
     fundPensionContracts: {
@@ -1120,6 +1120,7 @@ function summarize(
   pa: number,
   p1Start: number,
   currentAge: number,
+  moneyUseAge: number,
 ): SimulationSummary {
   const fromPa = rows.filter((x) => x.age >= pa);
   const short = fromPa.find((x) => x.shortfall > 0.5);
@@ -1136,14 +1137,15 @@ function summarize(
   const empty = fromPa.find((x) => x.moneyLeft < 1 && x.age >= p1Start);
   const at = (age: number) => rows.find((x) => x.age === age);
   const startRow = at(pa) || rows[0];
+  const moneyUseRow = at(moneyUseAge) || startRow;
   const horizon = horizonAge(table, input.sex, currentAge);
   return {
     rows,
     potAtPension: {
-      age: startRow.age,
-      p2: startRow.pot2,
-      p3: startRow.pot3,
-      deposit: startRow.deposit,
+      age: moneyUseRow.age,
+      p2: moneyUseRow.pot2,
+      p3: moneyUseRow.pot3,
+      deposit: moneyUseRow.deposit,
     },
     pensionStartAge: pa,
     p1StartAge: p1Start,

@@ -292,6 +292,18 @@ export const coverageKind = (result: Result): 'all' | 'gap' | 'none' | 'until' =
 export const potAtPensionOf = (context: ResultContext): PotAtPension =>
   simulate(resultInputOf(context), lifeTable, resultScenarioOf(context)).potAtPension;
 
+export const thirdPillarDepositAtMoneyUseOf = (
+  context: ResultContext,
+): { age: number; amount: number } => {
+  const { age } = potAtPensionOf(context);
+  const yearsOnDepositAfterRetiring = age - retirementAge(context.plan);
+  return {
+    age,
+    amount:
+      thirdPillarDepositOf(context) * (1 + DEPOSIT_REAL_RETURN) ** yearsOnDepositAfterRetiring,
+  };
+};
+
 export const resultOf = (context: ResultContext): Result => {
   const input = resultInputOf(context);
   const scenario = resultScenarioOf(context);

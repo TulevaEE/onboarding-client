@@ -44,3 +44,33 @@ describe('pot at the pension age', () => {
     expect(potAtPension.deposit).toBeGreaterThan(40000);
   });
 });
+
+describe('pot when the saver starts living off the money', () => {
+  it('is taken at the age the work ends, when the saver works past the pension age', () => {
+    const result = simulate(
+      { ...input, workOn: true, workUntil: 74 },
+      lifeTable,
+      keepGrowingScenario,
+    );
+
+    expect(result.potAtPension.age).toBe(74);
+    expect(result.potAtPension.p2 + result.potAtPension.p3).toBeCloseTo(rowAt(result, 74).pot, 6);
+    expect(result.potAtPension.deposit).toBeCloseTo(rowAt(result, 74).deposit, 6);
+  });
+
+  it('holds the state pension saved on the deposit while working', () => {
+    const { potAtPension } = simulate(
+      { ...input, workOn: true, workUntil: 74 },
+      lifeTable,
+      keepGrowingScenario,
+    );
+
+    expect(potAtPension.deposit).toBeGreaterThan(0);
+  });
+
+  it('stays at the pension age when the saver does not work on', () => {
+    const result = simulate(input, lifeTable, keepGrowingScenario);
+
+    expect(result.potAtPension.age).toBe(result.pensionStartAge);
+  });
+});
