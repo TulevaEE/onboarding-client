@@ -1776,6 +1776,18 @@ describe('FutureMe', () => {
         ).toEqual(['mina', 'teine vanem']);
       });
 
+      it('let the other parent get the state II pillar payment', () => {
+        renderFutureMe();
+        addKids(['2025']);
+        const iiPaymentUser = screen.getByRole('combobox', {
+          name: /^Kes saab riigi lisamakse II\ssambasse\?/,
+        });
+
+        userEvent.selectOptions(iiPaymentUser, 'teine vanem');
+
+        expect(iiPaymentUser).toHaveDisplayValue('teine vanem');
+      });
+
       it('set the years early back to the regular age when the other parent takes the right', () => {
         renderFutureMe();
         addKids(['1990', '1992', '1994', '1996', '1998']);
