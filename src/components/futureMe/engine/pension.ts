@@ -1,6 +1,7 @@
 export const CURRENT_YEAR = 2026;
 const MAX_AGE = 100;
 const HORIZON_SURVIVAL = 0.1;
+const MONTHS_IN_YEAR = 12;
 
 export type Sex = 'M' | 'N' | 'X';
 
@@ -404,11 +405,19 @@ export function horizonAge(table: LifeTable, sex: Sex, fromAge: number): number 
   return MAX_AGE;
 }
 
-export function fundPensionTerm(table: LifeTable, sex: Sex, age: number): number {
+const remainingLifeYears = (table: LifeTable, sex: Sex, age: number): number => {
   const total = table.elada_jaanud && table.elada_jaanud.K;
+  return (total || column(table, 'elada_jaanud', sex))[Math.min(age, MAX_AGE)];
+};
+
+export function fundPensionTerm(table: LifeTable, sex: Sex, age: number): number {
+  return Math.max(1, Math.round(remainingLifeYears(table, sex, age)));
+}
+
+export function yearlyContractTerm(table: LifeTable, sex: Sex, age: number): number {
   return Math.max(
     1,
-    Math.round((total || column(table, 'elada_jaanud', sex))[Math.min(age, MAX_AGE)]),
+    Math.round(MONTHS_IN_YEAR * remainingLifeYears(table, sex, age)) / MONTHS_IN_YEAR,
   );
 }
 
@@ -784,7 +793,7 @@ export function simulate(
     contractStart !== null ? fundPensionTerm(table, input.sex, contractStart) : 0;
   const scheduledPayout = (pot: number, age: number) => {
     if (scenario.id === 'D' || (scenario.id === 'C' && !onceC)) {
-      return pot / fundPensionTerm(table, input.sex, age);
+      return pot / yearlyContractTerm(table, input.sex, age);
     }
     if (contractStart !== null && age >= contractStart) {
       // KoPS § 52³ lg 8, § 60¹ lg 5: units are divided by the number of payments still due
@@ -812,7 +821,7 @@ export function simulate(
   const term3 = start3 !== null ? fundPensionTerm(table, input.sex, start3) : 0;
   const scheduledThirdPayout = (pot: number, age: number) => {
     if (start3 === null) {
-      return pot / fundPensionTerm(table, input.sex, age);
+      return pot / yearlyContractTerm(table, input.sex, age);
     }
     const left3 = term3 - (age - start3);
     return left3 > 0 ? pot / left3 : 0;
