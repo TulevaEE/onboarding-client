@@ -289,6 +289,17 @@ export const coverageKind = (result: Result): 'all' | 'gap' | 'none' | 'until' =
   return result.coversNeedUntil <= result.pensionStartAge ? 'none' : 'until';
 };
 
+export const earlyPayoutsOf = (
+  context: ResultContext,
+): SimulationResult['earlyPayouts'] & { moneyUseAge: number } => {
+  const { earlyPayouts, potAtPension } = simulate(
+    resultInputOf(context),
+    lifeTable,
+    resultScenarioOf(context),
+  );
+  return { ...earlyPayouts, moneyUseAge: potAtPension.age };
+};
+
 export const potAtPensionOf = (context: ResultContext): PotAtPension =>
   simulate(resultInputOf(context), lifeTable, resultScenarioOf(context)).potAtPension;
 

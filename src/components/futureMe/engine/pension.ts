@@ -188,7 +188,17 @@ export interface FundPensionContract {
   end: number;
 }
 
+export interface EarlyPayout {
+  from: number;
+  gross: number;
+  tax: number;
+  net: number;
+  firstMonthly: number;
+  atMoneyUse: number;
+}
+
 export interface SimulationResult extends SimulationSummary {
+  earlyPayouts: Record<'secondPillar' | 'thirdPillar', EarlyPayout | null>;
   ordinaryPensionAge: number;
   p1FullAge: number;
   fundPensionContracts: Record<'second' | 'third', FundPensionContract | null>;
@@ -841,6 +851,33 @@ export function simulate(
   const addLumpWhileWorking = (age: number, net: number) =>
     lumpsWhileWorking.set(age, (lumpsWhileWorking.get(age) ?? 0) + net);
   let paidBeforeRetirement = 0;
+  const earlyPayouts: SimulationResult['earlyPayouts'] = { secondPillar: null, thirdPillar: null };
+  const recordEarlyPayout = (
+    pillar: keyof SimulationResult['earlyPayouts'],
+    age: number,
+    gross: number,
+    net: number,
+    isLump: boolean,
+  ) => {
+    const previous = earlyPayouts[pillar];
+    const atMoneyUse = net * (1 + rd) ** (workEnd - age);
+    earlyPayouts[pillar] = previous
+      ? {
+          ...previous,
+          gross: previous.gross + gross,
+          tax: previous.tax + gross - net,
+          net: previous.net + net,
+          atMoneyUse: previous.atMoneyUse + atMoneyUse,
+        }
+      : {
+          from: age,
+          gross,
+          tax: gross - net,
+          net,
+          firstMonthly: isLump ? 0 : net / 12,
+          atMoneyUse,
+        };
+  };
   let early: EarlyWithdrawalResult | null = null;
   for (let a = currentAge; a < workEnd; a += 1) {
     if (pe && a === peAge) {
@@ -851,7 +888,9 @@ export function simulate(
     const isPayingAt = isPayingWhileWorking && a >= payoutWhileWorkingFrom;
     if (isPayingAt) {
       const isLump = scenario.id === 'A';
-      const paid = isLump ? fund * (1 - TAX_SHORT) : Math.min(fund, scheduledPayout(fund, a));
+      const gross = isLump ? fund : Math.min(fund, scheduledPayout(fund, a));
+      const paid = isLump ? gross * (1 - TAX_SHORT) : gross;
+      recordEarlyPayout('secondPillar', a, gross, paid, isLump);
       fund = isLump ? 0 : fund - paid;
       if (a < ret) {
         paidBeforeRetirement += paid * (1 + rd) ** (ret - a);
@@ -863,11 +902,15 @@ export function simulate(
     }
     if (sep && isPayingThirdWhileWorking && a >= thirdPayoutWhileWorkingFrom) {
       let paid3 = 0;
-      if (sep.mode === 'lump' && a === thirdPayoutWhileWorkingFrom) {
-        paid3 = Math.max(0, fund3) * (1 - TAX_SHORT);
+      const isLump3 = sep.mode === 'lump';
+      if (isLump3 && a === thirdPayoutWhileWorkingFrom) {
+        const gross3 = Math.max(0, fund3);
+        paid3 = gross3 * (1 - TAX_SHORT);
+        recordEarlyPayout('thirdPillar', a, gross3, paid3, true);
         fund3 = 0;
       } else if (sep.mode === 'fund') {
         paid3 = Math.max(0, Math.min(fund3, scheduledThirdPayout(fund3, a)));
+        recordEarlyPayout('thirdPillar', a, paid3, paid3, false);
         fund3 -= paid3;
       }
       if (a < ret) {
@@ -1042,6 +1085,7 @@ export function simulate(
   const showAtPa = spPaid && ret < pa && (p1AtPa > p1AtSpStart + 0.5 * 12 || p1AtPa > spYear);
   return {
     ...summarize(rows, input, table, ret, p1Start, currentAge, workEnd),
+    earlyPayouts,
     ordinaryPensionAge: pa,
     p1FullAge: p1Start + half,
     fundPensionContracts: {

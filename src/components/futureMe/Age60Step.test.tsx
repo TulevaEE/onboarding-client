@@ -103,6 +103,68 @@ describe('Age 60 step', () => {
     ).toBeInTheDocument();
   });
 
+  describe('what a payout before the pension age is worth on the deposit', () => {
+    const barDeposit = () => {
+      const bar = screen.getByRole('complementary', { name: 'Jooksev kokkuvõte' });
+      const depositItem = within(bar)
+        .getAllByRole('listitem')
+        .find((item) => /Hoius/.test(item.textContent ?? '')) as HTMLElement;
+      return (depositItem.textContent ?? '').match(/^[\d\s]+€/)?.[0] as string;
+    };
+    const asPattern = (amount: string) => amount.replace(/\s/g, '\\s');
+
+    it('says what the II pillar taken at once gives and is worth when the bar uses it', () => {
+      openAge60Step();
+
+      userEvent.click(choice(secondPillarGroup(), 'Võtan korraga välja'));
+
+      expect(
+        screen.getByText(
+          new RegExp(
+            `^Võtad II\\ssamba \\d+.aastaselt korraga välja: sambas on u.*\\d+.aastaselt on see tänastes eurodes u\\s${asPattern(
+              barDeposit(),
+            )}`,
+          ),
+        ),
+      ).toBeVisible();
+    });
+
+    it('says what the monthly II pillar payouts give and are worth when the bar uses them', () => {
+      openAge60Step();
+
+      userEvent.click(choice(secondPillarGroup(), 'Võtan igakuiselt'));
+
+      expect(
+        screen.getByText(
+          new RegExp(
+            `^Igakuised väljamaksed II\\ssambast alates \\d+.aastaselt: esimene väljamakse on u.*on need tänastes eurodes u\\s${asPattern(
+              barDeposit(),
+            )}`,
+          ),
+        ),
+      ).toBeVisible();
+    });
+
+    it('says what the III pillar taken at once gives and is worth when the money is used', () => {
+      loggedInAs({ dateOfBirth: '1975-01-01' });
+      openAge60Step();
+
+      userEvent.click(choice(thirdPillarGroup(), 'Võtan korraga välja'));
+
+      expect(
+        screen.getByText(
+          /^Võtad III\ssamba 60.aastaselt korraga välja: sambas on u.*65.aastaselt on see tänastes eurodes u\s[\d\s]+€/,
+        ),
+      ).toBeVisible();
+    });
+
+    it('has no note while the pillars keep growing', () => {
+      openAge60Step();
+
+      expect(screen.queryByText(/tänastes eurodes u/)).not.toBeInTheDocument();
+    });
+  });
+
   it('offers growing, a fund pension and everything at once for both pillars, growing preselected', () => {
     openAge60Step();
 
@@ -300,7 +362,7 @@ describe('Age 60 step', () => {
       expect(secondPillarGroup()).toBeDisabled();
       expect(thirdPillarGroup()).toBeEnabled();
       expect(screen.queryByText(/Kui töötad veel/)).not.toBeInTheDocument();
-      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      screen.queryAllByRole('status').forEach((status) => expect(status).toBeEmptyDOMElement());
     });
 
     it('takes the saver back to the first step to change the amount', () => {
