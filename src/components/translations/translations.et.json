@@ -3156,7 +3156,7 @@
   "futureMe.result.surplus.change": "Muuda",
   "futureMe.result.surplus.change.what": "samba väljamakse viisi",
   "futureMe.result.decisions.title": "Sinu otsused",
-  "futureMe.result.decisions.intro": "Kui muudad valikut, arvutame tulemuse kohe uuesti.",
+  "futureMe.result.decisions.intro": "Kui muudad valikut, arvutab Tulevane Mina tulemuse kohe uuesti.",
   "futureMe.result.decisions.age": "{age} a",
   "futureMe.result.decisions.year": "{year}{isOpened, select, true {, avanenud} other {}}",
   "futureMe.result.decisions.current": "Sinu valik: {choice}",

@@ -49,12 +49,17 @@ const isOnAge65AndSpecialPensionSteps = (key: string) =>
 
 const isOnAge66Step = (key: string) => key.startsWith('futureMe.age66.');
 
+const isOnResultStep = (key: string) =>
+  key.startsWith('futureMe.result.') ||
+  helpTopicKeys(['nominal', 'sustainable', 'legacyLeft'])(key);
+
 const steps: [string, (key: string) => boolean][] = [
   ['Sina', isOnYouStep],
   ['Kulud', isOnExpensesStep],
   ['55 ja 60', isOnAge55And60Steps],
   ['65 ja eripension', isOnAge65AndSpecialPensionSteps],
   ['66+', isOnAge66Step],
+  ['Tulemus', isOnResultStep],
 ];
 
 const stepKeys = Object.keys(texts.et).filter((key) => steps.some(([, isOnStep]) => isOnStep(key)));
@@ -62,6 +67,7 @@ const stepKeys = Object.keys(texts.et).filter((key) => steps.some(([, isOnStep])
 const spelledTheSameInBothLanguages = [
   'futureMe.trail.sub.pension',
   'futureMe.expenses.category.transport',
+  'futureMe.result.rules.civilServiceIncrease.choice',
 ];
 
 const keysWithText = (language: 'et' | 'en', pattern: RegExp) =>
@@ -70,7 +76,7 @@ const keysWithText = (language: 'et' | 'en', pattern: RegExp) =>
 const tags = (text: string) =>
   (text.replace(/En>/g, '>').match(/<\/?[a-zA-Z]+>/g) ?? []).sort().join();
 
-const selectBranchKey = /(?:N|M|other|yes|no|true|false|one|none|=\d+|\d) $/;
+const selectBranchKey = /(?:(?:select|plural), |\} )(?:\w+|=\d+) $/;
 
 const placeholders = (text: string) =>
   Array.from(text.matchAll(/\{[a-zA-Z]+[,}]/g))

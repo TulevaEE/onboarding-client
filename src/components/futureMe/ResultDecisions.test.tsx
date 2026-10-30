@@ -86,7 +86,9 @@ describe('Result step: your decisions', () => {
     openResultStep();
 
     expect(screen.getByRole('heading', { level: 3, name: 'Sinu otsused' })).toBeInTheDocument();
-    expect(screen.getByText('Kui muudad valikut, arvutame tulemuse kohe uuesti.')).toBeVisible();
+    expect(
+      screen.getByText('Kui muudad valikut, arvutab Tulevane Mina tulemuse kohe uuesti.'),
+    ).toBeVisible();
   });
 
   it('lists every decision in the order it opens', () => {
