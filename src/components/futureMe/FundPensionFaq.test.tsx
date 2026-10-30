@@ -14,15 +14,15 @@ const renderFaq = (props: React.ComponentProps<typeof FundPensionFaq> = {}) =>
 const orderQuestion = () => screen.queryByText('Kumba sammast enne kasutada?');
 
 describe('fund pension FAQ', () => {
-  it('asks which pillar to use first, second, when the saver has both pillars', () => {
+  it('asks which pillar to use first, second, preferring the III pillar only while still working', () => {
     renderFaq({ hasBothPillars: true });
     const [, second] = screen.getAllByRole('group');
 
     expect(second).toHaveTextContent(/^Kumba sammast enne kasutada\?/);
-    expect(second).toHaveTextContent(/III\ssammas\./);
+    expect(second).toHaveTextContent(/Kui töötad samal ajal edasi, siis III\ssammast\./);
     expect(second).toHaveTextContent(/lõpevad II\ssamba sissemaksed igaveseks, ka riigi 4%/);
     expect(second).toHaveTextContent(/III\ssambasse võid sissemakseid jätkata/);
-    expect(second).toHaveTextContent(/Millal vahet pole/);
+    expect(second).toHaveTextContent(/Kui sa enam tööd ei tee.*on sambad üsna võrdsed/);
   });
 
   it('does not ask which pillar to use first with only one pillar', () => {
