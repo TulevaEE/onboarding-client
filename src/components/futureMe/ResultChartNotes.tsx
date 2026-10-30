@@ -74,9 +74,10 @@ export const ChartAssumption = ({ assumption }: { assumption: Assumption }) => (
 interface GuideProps {
   events: ChartEvent[];
   startsBeforePension: boolean;
+  hasWithdrawals: boolean;
 }
 
-export const ChartGuide = ({ events, startsBeforePension }: GuideProps) => {
+export const ChartGuide = ({ events, startsBeforePension, hasWithdrawals }: GuideProps) => {
   const intl = useIntl();
   const isTouchView = useTouchView();
   const horizon = events.find(({ kind }) => kind === 'horizon');
@@ -115,6 +116,11 @@ export const ChartGuide = ({ events, startsBeforePension }: GuideProps) => {
               id="futureMe.result.chart.guide.horizon"
               values={{ age: horizon.age }}
             />
+          </li>
+        )}
+        {hasWithdrawals && (
+          <li>
+            <FormattedMessage id="futureMe.result.chart.guide.withdrawals" />
           </li>
         )}
         {fundPeriods.length > 0 && (

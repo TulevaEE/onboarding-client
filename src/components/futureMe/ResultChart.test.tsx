@@ -490,6 +490,58 @@ describe('ResultChart interaction', () => {
       expect(datasets[2].fill).toBe(1);
     });
 
+    describe('the II pillar money taken when needed', () => {
+      const taxedLayer = () => {
+        renderChart(contextWith({ work: 'yes', workUntil: '68' }));
+        return lastChartProps().data.datasets.find(
+          ({ label }: { label: string }) => label === 'II\u00A0sammas (10% maksuga)',
+        );
+      };
+      const chartContextWith = (pattern: string | null) => ({
+        chart: { ctx: { createPattern: jest.fn(() => pattern) } },
+      });
+      const lightFill = 'rgba(0, 136, 194, 0.3)';
+
+      it('is filled with a hatch drawn in its own colour', () => {
+        const pen = {
+          fillRect: jest.fn(),
+          beginPath: jest.fn(),
+          moveTo: jest.fn(),
+          lineTo: jest.fn(),
+          stroke: jest.fn(),
+        };
+        const getContext = jest
+          .spyOn(HTMLCanvasElement.prototype, 'getContext')
+          .mockReturnValue(pen as unknown as CanvasRenderingContext2D);
+
+        expect(taxedLayer().backgroundColor(chartContextWith('hatch'))).toBe('hatch');
+        expect(pen.stroke).toHaveBeenCalled();
+        getContext.mockRestore();
+      });
+
+      it('falls back to a light fill of its colour where the canvas cannot draw the hatch', () => {
+        const getContext = jest
+          .spyOn(HTMLCanvasElement.prototype, 'getContext')
+          .mockReturnValue(null);
+
+        expect(taxedLayer().backgroundColor(chartContextWith('hatch'))).toBe(lightFill);
+        getContext.mockRestore();
+      });
+
+      it('falls back to a light fill of its colour where the chart cannot repeat the hatch', () => {
+        const getContext = jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({
+          fillRect: jest.fn(),
+          beginPath: jest.fn(),
+          moveTo: jest.fn(),
+          lineTo: jest.fn(),
+          stroke: jest.fn(),
+        } as unknown as CanvasRenderingContext2D);
+
+        expect(taxedLayer().backgroundColor(chartContextWith(null))).toBe(lightFill);
+        getContext.mockRestore();
+      });
+    });
+
     it('shows the layer again with a second click', () => {
       renderChart(contextWith({ work: 'yes', workUntil: '68' }));
 
