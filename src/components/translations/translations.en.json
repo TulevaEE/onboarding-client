@@ -3028,7 +3028,7 @@
   "futureMe.result.warn.shorterDeferral": "Riikliku pensioni {deferral} a edasilükkamisega ei jätku sammaste raha sillaks. {isNow, select, yes {Kui võtad riikliku pensioni kohe ({pensionAge}-⁠aastaselt), on kulud kaetud elu lõpuni.} other {{shorter} a edasilükkamisega on kulud kaetud elu lõpuni ja riiklik pension on ikka suurem.}}",
   "futureMe.result.warn.better": "Parem oleks <strong>{name}</strong>: see kannab elu lõpuni {best} kuus (sinu valik {mine}).",
   "futureMe.result.warn.how": "Selleks vali {kind, select, lump {{payoutAge}-⁠aastaselt II sambale „Kõik korraga“} grow {{payoutAge}-⁠aastaselt „Jätkan kasvatamist“ ja pensionieas „Kasvatan edasi“} contract {pensionipõlves {contract, select, once {„Üks leping“} other {„Uus leping igal aastal“}}} bridge {{atPayoutAge, select, yes {{payoutAge}-⁠aastaselt} other {pensionieas}} fondipension ja lükka riiklik pension {deferral, plural, one {# aasta} other {# aastat}} edasi} other {{atPayoutAge, select, yes {{payoutAge}-⁠aastaselt} other {pensionieas}} fondipension, võta riiklik pension kohe ja pensionipõlves {contract, select, once {„Üks leping“} other {„Uus leping igal aastal“}}}}.",
-  "futureMe.result.warn.none": "Ükski väljamakse viis ei kanna neid kulusid elu lõpuni: kõige rohkem kannab {most} kuus. Vali väiksem kulupakett või muuda kulusid.",
+  "futureMe.result.warn.none": "Ükski väljamakse viis ei kanna neid kulusid elu lõpuni: kõige rohkem kannab {most} kuus. Ülejäänu katteks vajad eraldi sissetulekut, näiteks palka või muid sääste, või väiksemaid kulusid.",
   "futureMe.result.warn.scenario.A": "Kõik korraga",
   "futureMe.result.warn.scenario.B": "Üks fondipensioni leping",
   "futureMe.result.warn.scenario.C": "Sild ja riiklik pension hiljem",
