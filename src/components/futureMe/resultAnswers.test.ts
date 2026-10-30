@@ -48,12 +48,16 @@ describe('resultAnswers', () => {
         contextWith({ secondPillarAmount: '25000', secondPillarReturnPercent: 4 }),
       );
 
-      expect(input).toMatchObject({
-        p2: 25000,
-        realReturn: 0.04,
-        needMonthly: 791,
-        p1Monthly: 700,
-      });
+      expect(input).toMatchObject({ p2: 25000, needMonthly: 791, p1Monthly: 700 });
+      expect(input.realReturn).toBeCloseTo(1.04 / 1.02 - 1, 12);
+    });
+
+    it('reads the chosen return as before inflation and takes the 2% price growth off it', () => {
+      expect(resultInputOf(contextWith({ secondPillarReturnPercent: 2 })).realReturn).toBeCloseTo(
+        0,
+        12,
+      );
+      expect(resultInputOf(contextWith()).realReturn).toBeCloseTo(1 / 1.02 - 1, 12);
     });
 
     it('has no separate III pillar without savings or contributions there', () => {
@@ -69,7 +73,7 @@ describe('resultAnswers', () => {
       const input = resultInputOf(context);
 
       expect(input.p3Sep).toMatchObject({ amount: 8000, mode: 'lump' });
-      expect(input.realReturn3).toBe(-0.03);
+      expect(input.realReturn3).toBeCloseTo(0.97 / 1.02 - 1, 12);
     });
 
     it('has no special pension unless an amount was typed for it', () => {
@@ -163,7 +167,7 @@ describe('resultAnswers', () => {
       thirdPillarJoined: 'before' as const,
       thirdPillarAmount: '8000',
       thirdPillarMonthly: '100',
-      thirdPillarReturnPercent: 0,
+      thirdPillarReturnPercent: 2,
     };
     const separateOf = (changes: Parameters<typeof contextWith>[0], rest = {}) =>
       resultInputOf(contextWith({ ...saver, ...changes }, rest)).p3Sep;

@@ -107,12 +107,12 @@ describe('Result step: assumptions', () => {
     );
   });
 
-  it('tells the return each pillar grows at after inflation', () => {
+  it('tells the return each pillar grows at before inflation', () => {
     openResultStep();
+    const row = itemTitled(assumptionList(), /^II\ssamba tootlus$/);
 
-    expect(itemTitled(assumptionList(), /^II\ssamba tootlus$/)).toHaveTextContent(
-      /0%\saastas pärast inflatsiooni/,
-    );
+    expect(row).toHaveTextContent(/0%\saastas/);
+    expect(row).not.toHaveTextContent('pärast inflatsiooni');
   });
 
   it('tells what the costs come to each month', () => {
@@ -127,7 +127,7 @@ describe('Result step: assumptions', () => {
 describe('Result step: the return the answer rests on', () => {
   beforeEach(() => loggedInAs({ dateOfBirth: '1962-01-01' }));
 
-  const returnLine = () => screen.getByText(/aastase tootluse juures pärast inflatsiooni/);
+  const returnLine = () => screen.getByText(/aastase tootluse juures\.$/);
 
   const chooseReturnOnRow = (heading: RegExp, percent: number) => {
     const row = itemTitled(assumptionList(), heading);
@@ -139,7 +139,7 @@ describe('Result step: the return the answer rests on', () => {
     openResultStep();
 
     expect(returnLine()).toHaveTextContent(
-      /^Arvutatud 0% aastase tootluse juures pärast inflatsiooni\.$/,
+      /^Arvutatud 0% aastase tootluse juures\.$/,
     );
     expect(within(returnLine()).getByText('0%').tagName).toBe('STRONG');
   });
@@ -150,7 +150,7 @@ describe('Result step: the return the answer rests on', () => {
     chooseReturnOnRow(/^II\ssamba tootlus$/, -2);
 
     expect(returnLine()).toHaveTextContent(
-      /^Arvutatud II\ssamba −2% ja III\ssamba 0% aastase tootluse juures pärast inflatsiooni\.$/,
+      /^Arvutatud II\ssamba −2% ja III\ssamba 0% aastase tootluse juures\.$/,
     );
   });
 

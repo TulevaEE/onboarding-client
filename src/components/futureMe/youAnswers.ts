@@ -1,6 +1,7 @@
 import {
   AVG_OLD_AGE_PENSION,
   earlyYears,
+  INFLATION,
   KidsInput,
   PensionInput,
   ServiceIncrease,
@@ -30,6 +31,7 @@ const FLEXIBLE_PENSION_MAX_YEARS_EARLY = 5;
 const SPECIAL_PENSION_START_AGE_LIMITS = { min: 35, max: 70 };
 const WORK_YEARS_LIMITS = { min: 0, max: 50 };
 const RETURN_PERCENT_LIMITS = { min: -10, max: 10 };
+export const HISTORICAL_RETURN_PERCENT = 7;
 
 export const RETURN_PERCENT_OPTIONS = Array.from(
   { length: RETURN_PERCENT_LIMITS.max - RETURN_PERCENT_LIMITS.min + 1 },
@@ -236,7 +238,7 @@ export const effectivePensionAge = (answers: YouAnswers): number =>
     startingRetirementAge(answers.registerPensionAge ?? undefined, birthYearOrFallback(answers)),
   );
 
-export const rateOf = (percent: number): number => percent / 100;
+export const realReturnOf = (percent: number): number => (1 + percent / 100) / (1 + INFLATION) - 1;
 
 export const amountOf = (typed: string): number => Math.max(0, parseFloat(typed) || 0);
 

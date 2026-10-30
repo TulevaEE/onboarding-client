@@ -27,8 +27,8 @@ const contextWith = (
     firstPillarMonthly: '700',
     grossMonthly: '2000',
     secondPillarAmount: '10000',
-    secondPillarReturnPercent: 2,
-    thirdPillarReturnPercent: 2,
+    secondPillarReturnPercent: 4,
+    thirdPillarReturnPercent: 4,
     ...changes,
   };
   return {
@@ -302,8 +302,8 @@ describe('payoutAdvice', () => {
 
       expect(tipFor(context)).toMatchObject({
         from: 65,
-        grow: 1660,
-        mine: 1610,
+        grow: 1650,
+        mine: 1600,
         decision: 'secondPillarAtPensionAge',
       });
       expect(tipFor(context)?.average).toBeGreaterThan(1000);

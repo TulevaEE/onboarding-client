@@ -8,7 +8,7 @@ import {
   SECOND_PILLAR_RATE_OPTIONS,
   ThirdPillarJoined,
 } from './youAnswers';
-import { AmountField, BlockProps, returnOptions, SelectField } from './YouFields';
+import { AmountField, BlockProps, ReturnField, SelectField } from './YouFields';
 import { YouSection, YouSectionLabels } from './YouSection';
 import { euro, signedNumber } from './amountFormat';
 
@@ -183,13 +183,13 @@ export const SecondPillarSection = ({
           onChange={onChange}
           onBlur={onBlur}
         />
-        <SelectField
+        <ReturnField
           id="future-me-second-pillar-return"
           label="futureMe.you.secondPillarFund.label"
           help="fundCur"
-          value={String(answers.secondPillarReturnPercent)}
-          options={returnOptions(intl)}
-          onChange={(percent) => onChange({ secondPillarReturnPercent: Number(percent) })}
+          value={answers.secondPillarReturnPercent}
+          fundReturnsLink="pensionikeskusStatsII"
+          onChange={(secondPillarReturnPercent) => onChange({ secondPillarReturnPercent })}
         />
       </div>
     </YouSection>
@@ -301,13 +301,13 @@ export const ThirdPillarSection = ({
             </div>
           </div>
         )}
-        <SelectField
+        <ReturnField
           id="future-me-third-pillar-return"
           label="futureMe.you.thirdPillarFund.label"
           help="fundCur"
-          value={String(answers.thirdPillarReturnPercent)}
-          options={returnOptions(intl)}
-          onChange={(percent) => onChange({ thirdPillarReturnPercent: Number(percent) })}
+          value={answers.thirdPillarReturnPercent}
+          fundReturnsLink="pensionikeskusStatsIII"
+          onChange={(thirdPillarReturnPercent) => onChange({ thirdPillarReturnPercent })}
         />
       </div>
     </YouSection>

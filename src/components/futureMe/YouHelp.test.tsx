@@ -121,8 +121,8 @@ describe('Sina step help buttons', () => {
     ],
     [
       'second pillar return',
-      () => screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ }),
-      /Mida tähendab „tootlus pärast inflatsiooni“$/,
+      () => screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(II\ssammas\)$/ }),
+      /Mida tähendab eeldatav tootlus$/,
     ],
     [
       'third pillar joined',
@@ -131,8 +131,8 @@ describe('Sina step help buttons', () => {
     ],
     [
       'third pillar return',
-      () => screen.getByRole('combobox', { name: /tootlust eeldad III\ssambas/ }),
-      /Mida tähendab „tootlus pärast inflatsiooni“$/,
+      () => screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(III\ssammas\)$/ }),
+      /Mida tähendab eeldatav tootlus$/,
     ],
     [
       'third pillar monthly',
@@ -172,14 +172,16 @@ describe('Sina step help buttons', () => {
 
   it('explains a zero, a negative and a high return, and that the past promises nothing', () => {
     renderYouStep();
-    const returnField = screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ });
+    const returnField = screen.getByRole('combobox', {
+      name: /^Eeldatav tootlus aastas \(II\ssammas\)$/,
+    });
 
     userEvent.click(
-      helpButtonBeside(returnField, '.col-12', /Mida tähendab „tootlus pärast inflatsiooni“$/),
+      helpButtonBeside(returnField, '.col-12', /Mida tähendab eeldatav tootlus$/),
     );
 
     const dialog = screen.getByRole('dialog');
-    expect(dialog).toHaveTextContent(/0%:.*Alla 0%:.*Üle 0%:/);
+    expect(dialog).toHaveTextContent(/0%:.*Alla 2%:.*Üle 2%:/);
     expect(dialog).toHaveTextContent('Varasem tootlus ei taga tulevast tootlust.');
     expect(dialog).not.toHaveTextContent(/Miks kõige rohkem 4%/);
   });
@@ -188,9 +190,11 @@ describe('Sina step help buttons', () => {
     renderYouStep();
     userEvent.click(
       helpButtonBeside(
-        screen.getByRole('combobox', { name: new RegExp(`tootlust eeldad ${pillar}\\ssambas`) }),
+        screen.getByRole('combobox', {
+          name: new RegExp(`^Eeldatav tootlus aastas \\(${pillar}\\ssammas\\)$`),
+        }),
         '.col-12',
-        /Mida tähendab „tootlus pärast inflatsiooni“$/,
+        /Mida tähendab eeldatav tootlus$/,
       ),
     );
     return screen.getByRole('dialog');
@@ -225,6 +229,12 @@ describe('Sina step help buttons', () => {
     ).toHaveAttribute('href', href);
   });
 
+  it('links the sources without a checked date', () => {
+    const dialog = openReturnHelp('II');
+
+    expect(dialog).not.toHaveTextContent(/kontrollitud/);
+  });
+
   it('names the filters as the Estonian Pensionikeskus page shows them', () => {
     const dialog = openReturnHelp('III');
 
@@ -238,14 +248,15 @@ describe('Sina step help buttons', () => {
   it('explains the fund types and links Pensionikeskus in English too', () => {
     renderYouStep('en');
     userEvent.click(
-      screen.getAllByRole('button', { name: /What does “return after inflation” mean/ })[1],
+      screen.getAllByRole('button', { name: /What does the expected return mean/ })[1],
     );
     const dialog = screen.getByRole('dialog');
 
     expect(within(dialog).getByText('Index fund')).toBeInTheDocument();
     expect(within(dialog).getByText('Actively managed fund')).toBeInTheDocument();
+    expect(dialog).not.toHaveTextContent(/checked/);
     expect(
-      within(dialog).getByText(/Pensionikeskus returns are before inflation/),
+      within(dialog).getByText(/Pensionikeskus returns are also before inflation/),
     ).toBeInTheDocument();
     expect(
       within(dialog).getByText(
@@ -270,13 +281,14 @@ describe('Sina step help buttons', () => {
     );
   });
 
-  it('tells how to turn a Pensionikeskus return into the return after inflation', () => {
+  it('says a Pensionikeskus return can be chosen as it is, as the calculation takes the inflation off', () => {
     const dialog = openReturnHelp('III');
 
     expect(
-      within(dialog).getByText(/Pensionikeskuse tootlused on enne inflatsiooni/),
+      within(dialog).getByText(/Pensionikeskuse tootlused on samuti enne inflatsiooni/),
     ).toBeInTheDocument();
-    expect(within(dialog).getByText(/lahuta umbes 2%/)).toBeInTheDocument();
+    expect(within(dialog).getByText(/Arvutus lahutab sellest ise 2%/)).toBeInTheDocument();
+    expect(within(dialog).queryByText(/lahuta umbes 2%/)).not.toBeInTheDocument();
   });
 
   it('says the III pillar money already saved follows the chosen return, without quoting a default', () => {
@@ -290,7 +302,7 @@ describe('Sina step help buttons', () => {
     );
 
     expect(screen.getByRole('dialog')).toHaveTextContent(
-      'See puudutab ainult uut sissemakset: sambas oleva raha ostujõud muutub valitud tootluse võrra.',
+      'See puudutab ainult uut sissemakset: sambas olev raha kasvab valitud tootluse võrra.',
     );
   });
 

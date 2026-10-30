@@ -6,7 +6,7 @@ import { initialAge60 } from './age60Answers';
 import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses, needMonthly } from './expensesAnswers';
-import { nominalFactorAt, nominalReturnsOf } from './nominal';
+import { nominalFactorAt } from './nominal';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { ResultChart } from './ResultChart';
 import { resultOf, ResultContext } from './resultAnswers';
@@ -44,6 +44,8 @@ const contextWith = (
     grossMonthly: '2000',
     secondPillarAmount: '10000',
     thirdPillarMonthly,
+    secondPillarReturnPercent: 2,
+    thirdPillarReturnPercent: 2,
     ...funds,
   };
   return {
@@ -72,11 +74,7 @@ const withOneFundContract = (): ResultContext => {
 const renderChart = (context: ResultContext = contextWith()) =>
   render(
     <IntlProvider locale="et" messages={translations.et}>
-      <ResultChart
-        result={resultOf(context)}
-        need={needMonthly(context.expenses)}
-        nominalReturns={nominalReturnsOf(context)}
-      />
+      <ResultChart result={resultOf(context)} need={needMonthly(context.expenses)} />
     </IntlProvider>,
   );
 
@@ -129,43 +127,13 @@ describe('today’s or future prices', () => {
     expect(screen.getByText('Summad on tänastes eurodes.')).toHaveAttribute('aria-live', 'polite');
   });
 
-  it('names the fund’s return plus the price growth when there is one fund', () => {
-    renderChart(contextWith({ secondPillarReturnPercent: 2 }));
+  it('names only how fast prices rise, as the chosen return already includes it', () => {
+    renderChart(contextWith({ secondPillarReturnPercent: 7, thirdPillarReturnPercent: 4 }, '100'));
 
     userEvent.click(futurePrices());
 
     expect(screen.getByText(NOTE_TEXT)).toHaveTextContent(
-      /hinnad tõusevad 2%\saastas\).*Fondide tootlus on siis umbes 4%\saastas: sinu valitud tootlus pluss hinnatõus\. Ülejäänud summad on tänastes eurodes\./,
-    );
-  });
-
-  it('names both pillars’ returns when the funds differ', () => {
-    renderChart(contextWith({ secondPillarReturnPercent: 0, thirdPillarReturnPercent: 4 }, '100'));
-
-    userEvent.click(futurePrices());
-
-    expect(screen.getByText(NOTE_TEXT)).toHaveTextContent(
-      /umbes 2%\s\(II\ssammas\) ja 6,1%\s\(III\ssammas\) aastas/,
-    );
-  });
-
-  it('calls the fund’s yearly change a return, not growth, when prices rise faster than the fund', () => {
-    renderChart(contextWith({ secondPillarReturnPercent: -5 }));
-
-    userEvent.click(futurePrices());
-
-    expect(screen.getByText(NOTE_TEXT)).toHaveTextContent(
-      /Fondide tootlus on siis umbes −3,1%\saastas: sinu valitud tootlus pluss hinnatõus\./,
-    );
-  });
-
-  it('says zero without a minus sign when prices rise as fast as the fund falls', () => {
-    renderChart(contextWith({ secondPillarReturnPercent: -2 }));
-
-    userEvent.click(futurePrices());
-
-    expect(screen.getByText(NOTE_TEXT)).toHaveTextContent(
-      /Fondide tootlus on siis umbes 0%\saastas:/,
+      /^Graafik, tabel ja kokkuvõte on tuleviku eurodes \(hinnad tõusevad 2%\saastas\)\. Ülejäänud summad on tänastes eurodes\.$/,
     );
   });
 

@@ -41,12 +41,12 @@ const openResultStep = () => {
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on III\ssambas praegu/ }), '5000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }), '50');
   userEvent.selectOptions(
-    screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ }),
-    '2',
+    screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(II\ssammas\)$/ }),
+    '4',
   );
   userEvent.selectOptions(
-    screen.getByRole('combobox', { name: /tootlust eeldad III\ssambas/ }),
-    '2',
+    screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(III\ssammas\)$/ }),
+    '4',
   );
   userEvent.click(
     within(screen.getByRole('navigation', { name: 'Loo etapid' })).getByRole('button', {

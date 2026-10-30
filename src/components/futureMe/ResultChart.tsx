@@ -45,7 +45,7 @@ import { ResultChartTip } from './ResultChartTip';
 import { useTouchView } from './useTouchView';
 import { ChartAssumption, ChartGuide, SummaryNotes } from './ResultChartNotes';
 import { NominalChoice, NominalNote } from './ResultNominalChoice';
-import { NominalReturns, nominalResultOf } from './nominal';
+import { nominalResultOf } from './nominal';
 
 const HALO_COLOR = '#fff';
 const TICK_COLOR = '#6b7074';
@@ -720,10 +720,9 @@ const IncomeTable = ({ rows, isNominal }: { rows: ChartRow[]; isNominal: boolean
 interface ResultChartProps {
   result: Result;
   need: number;
-  nominalReturns: NominalReturns;
 }
 
-export const ResultChart = ({ result, need, nominalReturns }: ResultChartProps) => {
+export const ResultChart = ({ result, need }: ResultChartProps) => {
   const intl = useIntl();
   const [isTableShown, setTableShown] = useState(false);
   const [hidden, setHidden] = useState<ReadonlySet<ChartSourceId>>(new Set());
@@ -767,7 +766,7 @@ export const ResultChart = ({ result, need, nominalReturns }: ResultChartProps) 
         </h3>
         <NominalChoice isOn={isNominal} onChange={setNominal} />
       </div>
-      <NominalNote isOn={isNominal} returns={nominalReturns} />
+      <NominalNote isOn={isNominal} />
       <Summary result={shown} rows={rows} notes={notes} need={need} isNominal={isNominal} />
       {assumption && <ChartAssumption assumption={assumption} />}
       <ChartGuide

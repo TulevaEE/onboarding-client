@@ -3,7 +3,6 @@ import { needMonthly } from './expensesAnswers';
 import lifeTableData from './engine/lifeTable.json';
 import {
   CURRENT_YEAR,
-  DEPOSIT_REAL_RETURN,
   LifeTable,
   PensionInput,
   survival,
@@ -53,7 +52,7 @@ export const legacyOf = (context: ResultContext, result: Result): Legacy => {
     return {
       kind: 'shortfall',
       isGrowingSecondPillarSuggested:
-        resultScenarioOf(context).id === 'A' && input.realReturn > DEPOSIT_REAL_RETURN,
+        resultScenarioOf(context).id === 'A' && input.realReturn >= 0,
       secondPillarReturn: input.realReturn,
     };
   }

@@ -49,6 +49,10 @@ const fillInYou = (firstPillar: string, secondPillar: string) => {
   );
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on III\ssambas praegu/ }), '0');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }), '0');
+  userEvent.selectOptions(
+    screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(II\ssammas\)$/ }),
+    '2',
+  );
 };
 
 const startWith = (firstPillar: string, secondPillar = '10000') => {

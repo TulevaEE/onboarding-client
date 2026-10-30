@@ -156,6 +156,7 @@ const ShortfallCard = ({
               <FormattedMessage
                 id="futureMe.result.legacy.tip.secondPillar.body"
                 values={{
+                  chosen: `${context.you.secondPillarReturnPercent}%`,
                   rate: exactPercent(legacy.secondPillarReturn),
                   isGrowing: legacy.secondPillarReturn > 0 ? 'yes' : 'no',
                   depositRate: signedPercent(DEPOSIT_REAL_RETURN),

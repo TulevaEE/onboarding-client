@@ -1,10 +1,11 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, ReactNode } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { signedNumber } from './amountFormat';
 import {
   fieldProblem,
+  HISTORICAL_RETURN_PERCENT,
   limitsOf,
   PrefilledField,
   RETURN_PERCENT_OPTIONS,
@@ -13,6 +14,10 @@ import {
 } from './youAnswers';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';
+import { HELP_LINKS } from './helpLinks';
+import { externalLink } from './helpRichText';
+import { LinkButton } from './LinkButton';
+import { hidden } from './richText';
 
 export const FIELD_DOM_IDS: Record<YouField, string> = {
   birthYear: 'future-me-birth-year',
@@ -200,6 +205,7 @@ interface SelectFieldProps {
   help?: HelpTopic;
   isPrefilled?: boolean;
   onChange: (value: string) => void;
+  children?: ReactNode;
 }
 
 export const SelectField = ({
@@ -211,10 +217,11 @@ export const SelectField = ({
   help,
   isPrefilled = false,
   onChange,
+  children,
 }: SelectFieldProps) => (
   <div className="col-12 col-sm-6">
     <FieldLabel htmlFor={id} help={help}>
-      <FormattedMessage id={label} />
+      <FormattedMessage id={label} values={{ hidden }} />
     </FieldLabel>
     <select
       id={id}
@@ -236,5 +243,52 @@ export const SelectField = ({
         <FormattedMessage id={hint} />
       </div>
     )}
+    {children}
   </div>
 );
+
+interface ReturnFieldProps {
+  id: string;
+  label: TranslationKey;
+  help?: HelpTopic;
+  value: number;
+  fundReturnsLink: 'pensionikeskusStatsII' | 'pensionikeskusStatsIII';
+  onChange: (percent: number) => void;
+}
+
+export const ReturnField = ({
+  id,
+  label,
+  help,
+  value,
+  fundReturnsLink,
+  onChange,
+}: ReturnFieldProps) => {
+  const intl = useIntl();
+  return (
+    <SelectField
+      id={id}
+      label={label}
+      help={help}
+      value={String(value)}
+      options={returnOptions(intl)}
+      onChange={(percent) => onChange(Number(percent))}
+    >
+      <div className="form-text">
+        <FormattedMessage
+          id="millionaire.input.return.hint"
+          values={{
+            a: (chunks: ReactNode) => (
+              <LinkButton onClick={() => onChange(HISTORICAL_RETURN_PERCENT)}>{chunks}</LinkButton>
+            ),
+          }}
+        />
+        {'. '}
+        <FormattedMessage
+          id="futureMe.you.returnRate.check"
+          values={{ link: externalLink(HELP_LINKS[fundReturnsLink]) }}
+        />
+      </div>
+    </SelectField>
+  );
+};

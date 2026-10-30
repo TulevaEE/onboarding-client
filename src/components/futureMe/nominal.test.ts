@@ -3,7 +3,7 @@ import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses } from './expensesAnswers';
 import { CURRENT_YEAR } from './engine/pension';
-import { nominalFactorAt, nominalResultOf, nominalReturnsOf } from './nominal';
+import { nominalFactorAt, nominalResultOf } from './nominal';
 import { ResultContext, resultOf } from './resultAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { initialAnswers, toStepPlanInput, YouAnswers } from './youAnswers';
@@ -152,36 +152,5 @@ describe('nominalResultOf, special pension against the old-age pension earned by
     );
     expect(nominal.firstPillar?.atPa?.oldAge).toBeCloseTo((atPa?.oldAge ?? 0) * factorAtPensionAge);
     expect(nominal.firstPillar?.atPa?.paid).toBe(atPa?.paid);
-  });
-});
-
-describe('nominalReturnsOf', () => {
-  it('adds the price growth to the second pillar fund’s return when only that pillar exists', () => {
-    expect(nominalReturnsOf(contextWith({ secondPillarReturnPercent: 2 }))).toEqual({
-      second: 4.0,
-      third: null,
-    });
-  });
-
-  it('keeps the two pillars apart when both exist', () => {
-    expect(
-      nominalReturnsOf(
-        contextWith({ secondPillarReturnPercent: 0, thirdPillarReturnPercent: 4 }, '50'),
-      ),
-    ).toEqual({ second: 2.0, third: 6.1 });
-  });
-
-  it('rounds a return that the price growth just cancels to a zero without a minus sign', () => {
-    expect(nominalReturnsOf(contextWith({ secondPillarReturnPercent: -2 }))).toEqual({
-      second: 0,
-      third: null,
-    });
-  });
-
-  it('stays negative when the return falls further below the price growth', () => {
-    expect(nominalReturnsOf(contextWith({ secondPillarReturnPercent: -5 }))).toEqual({
-      second: -3.1,
-      third: null,
-    });
   });
 });

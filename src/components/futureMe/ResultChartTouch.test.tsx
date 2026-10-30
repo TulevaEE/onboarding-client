@@ -8,7 +8,6 @@ import { initialAge66 } from './age66Answers';
 import { initialExpenses, needMonthly } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { ResultChart } from './ResultChart';
-import { nominalReturnsOf } from './nominal';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
 import translations from '../translations';
@@ -58,11 +57,7 @@ const contextWith = (age65: Partial<Age65Answers> = {}, pensionAge = '65'): Resu
 const renderChart = (context: ResultContext = contextWith()) =>
   render(
     <IntlProvider locale="et" messages={translations.et}>
-      <ResultChart
-        result={resultOf(context)}
-        need={needMonthly(context.expenses)}
-        nominalReturns={nominalReturnsOf(context)}
-      />
+      <ResultChart result={resultOf(context)} need={needMonthly(context.expenses)} />
     </IntlProvider>,
   );
 
