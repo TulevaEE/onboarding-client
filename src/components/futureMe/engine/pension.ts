@@ -23,6 +23,7 @@ export interface KidsInput {
   user?: string;
   earlyUser?: string;
   supUser?: string;
+  iiUser?: string;
   disabled?: boolean;
   yearsEarly?: number;
   u3?: number;
@@ -528,10 +529,14 @@ export function rescueUntil(input: PensionInput): number | null {
 // RPKS § 24 lg 1¹ and lg 6, § 28 lg 2 p 12
 export function childSupplement(input: PensionInput): number {
   const kids = input.kids || {};
-  if ((kids.supUser || kids.user) !== 'me') {
+  const supUser = kids.supUser || kids.user;
+  const noII = !((input.p2 || 0) > 0 || (input.p2Rate || 0) > 0);
+  const shareOfSupplement = { me: 1, split: 0.5 }[supUser as 'me' | 'split'] ?? 0;
+  const iiPaymentShare = (kids.iiUser || supUser) === 'me' ? 1 : 0;
+  const shareOfUnpaidMonths = noII ? shareOfSupplement : iiPaymentShare;
+  if (shareOfSupplement === 0 && shareOfUnpaidMonths === 0) {
     return 0;
   }
-  const noII = !((input.p2 || 0) > 0 || (input.p2Rate || 0) > 0);
   const under3Count = Math.min(kids.u3 || 0, kids.b2021 || 0);
   const older2021 = Math.max(0, (kids.b2021 || 0) - under3Count);
   let part2021 = 0;
@@ -550,8 +555,11 @@ export function childSupplement(input: PensionInput): number {
       born2013 = kids.b2013 || 0;
     }
   }
-  const after2013 = born2013 + (noII ? under3Count : 0) + part2021;
-  return AASTAHINNE * 3.5 * ((kids.b1991 || 0) + (kids.b2012 || 0) + after2013);
+  const supplementChildren =
+    (kids.b1991 || 0) + (kids.b2012 || 0) + born2013 + (noII ? under3Count : 0);
+  return (
+    AASTAHINNE * 3.5 * (shareOfSupplement * supplementChildren + shareOfUnpaidMonths * part2021)
+  );
 }
 
 // SVPS § 3
@@ -578,7 +586,7 @@ const DEFAULT_MONTHS_UNTIL_CHILD_IS_3 = 18;
 
 export function childPillar2(input: PensionInput, untilAge?: number): number {
   const kids = input.kids || {};
-  if ((kids.supUser || kids.user) !== 'me' || !((input.p2Rate || 0) > 0)) {
+  if ((kids.iiUser || kids.supUser || kids.user) !== 'me' || !((input.p2Rate || 0) > 0)) {
     return 0;
   }
   const count = Math.min(kids.u3 || 0, kids.b2021 || 0);

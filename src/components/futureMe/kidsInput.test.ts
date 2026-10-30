@@ -23,6 +23,24 @@ describe('kidsInputOf', () => {
     expect(kids).toMatchObject({ b1991: 1, b2012: 1, b2013: 1, b2021: 1 });
   });
 
+  it('passes who gets the state II pillar contribution apart from who gets the supplement', () => {
+    const kids = kidsInputOf(
+      withKids(['2025'], { kidsSupUser: 'split', kidsIIUser: 'other' }),
+      october2026,
+    );
+
+    expect(kids).toMatchObject({ supUser: 'split', iiUser: 'other' });
+  });
+
+  it('keeps the unpaid months with the saver once the saver has no II pillar to pay into', () => {
+    const kids = kidsInputOf(
+      withKids(['2022'], { kidsIIUser: 'other', secondPillarRate: '0', secondPillarAmount: '0' }),
+      october2026,
+    );
+
+    expect(kids).toMatchObject({ iiUser: 'me' });
+  });
+
   it('leaves out a child without a birth year', () => {
     const kids = kidsInputOf(withKids(['', '']), october2026);
 

@@ -13,6 +13,7 @@ import {
   firstInvalidChildIIMonths,
   childNoteOf,
   initialAnswers,
+  isChildBirthYearInvalid,
   isChildIIMonthsAsked,
   isChildIIMonthsInvalid,
   isSpecialPensionOnly,
@@ -414,6 +415,11 @@ describe('retiring early', () => {
     expect(
       earlyRetirementYears(withKids(['1990', '1992', '2050'], { pensionAgeYears: '65' })),
     ).toBe(0);
+  });
+
+  it('does not take a child born before the saver', () => {
+    expect(isChildBirthYearInvalid(withKids(['1979']), 0)).toBe(true);
+    expect(isChildBirthYearInvalid(withKids(['1980']), 0)).toBe(false);
   });
 
   it('does not count a child without a birth year', () => {

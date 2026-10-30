@@ -12,8 +12,10 @@ import {
   isChildIIMonthsAsked,
   isChildIIMonthsInvalid,
   isKidsRightAvailableToSelf,
+  KidsSupplementUser,
   KidsUser,
   maxChildBirthYear,
+  minChildBirthYear,
   serviceIncreaseAtPension,
   YouAnswers,
 } from './youAnswers';
@@ -23,6 +25,7 @@ import {
   isPrefilledIIMonths,
   KidsPrefill,
 } from './kidsPrefill';
+import { isIIPaymentUserAsked } from './kidsInput';
 import { AmountField, BlockProps, FieldLabel, PREFILLED_HINT_ID, SelectField } from './YouFields';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';
@@ -30,7 +33,6 @@ import { sectionLabels } from './YouBlocks';
 import { YouOptionalSection, YouSection } from './YouSection';
 
 const CHILD_BIRTH_YEAR_DIGITS = 4;
-const MIN_CHILD_BIRTH_YEAR = 1930;
 const SOCIAL_INSURANCE_BOARD_URL = 'https://sotsiaalkindlustusamet.ee';
 const HAZARD_LISTS: Exclude<HazardList, 'no'>[] = ['list1', 'list2'];
 const HAZARD_YEARS_NEEDED = { list1: 10, list2: 12.5 };
@@ -73,6 +75,7 @@ const civilIncreaseOf = (answers: YouAnswers) => {
 };
 
 const KIDS_USERS: KidsUser[] = ['me', 'other'];
+const SUPPLEMENT_USERS: KidsSupplementUser[] = ['me', 'other', 'split'];
 const MONTHS = Array.from({ length: 12 }, (_, month) => new Date(2000, month, 1));
 
 const ChildBirthMonth = ({
@@ -121,7 +124,7 @@ export const KidsSection = ({
   const addChildRef = useRef<HTMLButtonElement>(null);
   const rows = childRows(answers);
   const maxYear = maxChildBirthYear(answers);
-  const birthYearValues = { min: MIN_CHILD_BIRTH_YEAR, max: maxYear };
+  const birthYearValues = { min: minChildBirthYear(answers), max: maxYear };
 
   const changeBirthYear = (index: number, typed: string) => {
     const years = Array.from({ length: rows }, (_, row) => answers.kidsBirthYears[row] ?? '');
@@ -302,6 +305,7 @@ export const KidsSection = ({
                   <label className="form-check-label" htmlFor={`future-me-kid-disabled-${number}`}>
                     <FormattedMessage id="futureMe.you.kidDisabled.label" />
                   </label>
+                  <HelpButton topic="kidDisabled" />
                 </div>
               </div>
             </div>
@@ -334,25 +338,42 @@ export const KidsSection = ({
           <SelectField
             id="future-me-kids-early-user"
             label="futureMe.you.kidsEarlyUser.label"
+            hint="futureMe.you.kidsEarlyUser.hint"
+            help="kidsEarlyUser"
             value={answers.kidsEarlyUser}
             options={(['me', 'other'] as const).map((value) => ({
               value,
               label: intl.formatMessage({ id: `futureMe.you.kidsEarlyUser.${value}` }),
             }))}
-            onChange={(value) => onChange({ kidsEarlyUser: value as KidsUser })}
+            onChange={(value) =>
+              onChange({ kidsEarlyUser: value as KidsUser, earlyYearsPicked: '' })
+            }
           />
         )}
         <SelectField
           id="future-me-kids-sup-user"
           label="futureMe.you.kidsSupUser.label"
-          help="kidsWho"
+          help="kidsSupUser"
           value={answers.kidsSupUser}
-          options={KIDS_USERS.map((value) => ({
+          options={SUPPLEMENT_USERS.map((value) => ({
             value,
-            label: intl.formatMessage({ id: `futureMe.you.kidsEarlyUser.${value}` }),
+            label: intl.formatMessage({ id: `futureMe.you.kidsSupUser.${value}` }),
           }))}
-          onChange={(value) => onChange({ kidsSupUser: value as KidsUser })}
+          onChange={(value) => onChange({ kidsSupUser: value as KidsSupplementUser })}
         />
+        {isIIPaymentUserAsked(answers) && (
+          <SelectField
+            id="future-me-kids-ii-user"
+            label="futureMe.you.kidsIIUser.label"
+            help="kidsIIUser"
+            value={answers.kidsIIUser}
+            options={KIDS_USERS.map((value) => ({
+              value,
+              label: intl.formatMessage({ id: `futureMe.you.kidsEarlyUser.${value}` }),
+            }))}
+            onChange={(value) => onChange({ kidsIIUser: value as KidsUser })}
+          />
+        )}
       </div>
     </YouSection>
   );

@@ -338,6 +338,33 @@ describe('children', () => {
     it('adds no supplement when the other parent uses it', () => {
       expect(childSupplement(supplementForOther)).toBe(0);
     });
+
+    it('adds half the supplement when the parents share it equally', () => {
+      expect(childSupplement(withChildren({ b2012: 4, supUser: 'split' }))).toBeCloseTo(
+        7 * AASTAHINNE,
+        6,
+      );
+    });
+
+    it('gives the supplement for the months the state did not pay to the parent who got the II pillar contribution', () => {
+      const overThree = { b2021: 1, iiMonths: [24] };
+
+      expect(
+        childSupplement(withChildren({ ...overThree, supUser: 'other', iiUser: 'me' })),
+      ).toBeCloseTo((12 / 36) * 3.5 * AASTAHINNE, 6);
+      expect(childSupplement(withChildren({ ...overThree, supUser: 'me', iiUser: 'other' }))).toBe(
+        0,
+      );
+    });
+
+    it('pays the state II pillar contribution to the parent named for it, whoever gets the supplement', () => {
+      const underThree = { b2021: 2, u3: 1 };
+
+      expect(
+        childPillar2(withChildren({ ...underThree, supUser: 'other', iiUser: 'me' })),
+      ).toBeCloseTo(12 * stateContribution2026 + 6 * stateContribution2027, 6);
+      expect(childPillar2(withChildren({ ...underThree, supUser: 'me', iiUser: 'other' }))).toBe(0);
+    });
   });
 });
 

@@ -81,6 +81,7 @@ export interface YouAnswers extends KidsAnswers, WorkAnswers {
 }
 
 export type KidsUser = 'me' | 'other';
+export type KidsSupplementUser = KidsUser | 'split';
 export type RescueBasis = 'mix' | 'pension' | 'toetus';
 
 interface KidsAnswers {
@@ -91,7 +92,8 @@ interface KidsAnswers {
   kidsIIMonths: string[];
   kidsDisabled: boolean[];
   kidsEarlyUser: KidsUser;
-  kidsSupUser: KidsUser;
+  kidsSupUser: KidsSupplementUser;
+  kidsIIUser: KidsUser;
 }
 
 interface WorkAnswers {
@@ -130,6 +132,7 @@ const OPTIONAL_DEFAULTS: { kids: KidsAnswers; work: WorkAnswers } = {
     kidsDisabled: [],
     kidsEarlyUser: 'me',
     kidsSupUser: 'me',
+    kidsIIUser: 'me',
   },
   work: {
     workAdded: false,
@@ -286,16 +289,21 @@ export const firstInvalidChildIIMonths = (
 export const maxChildBirthYear = (answers: YouAnswers): number =>
   birthYearOrFallback(answers) + effectivePensionAge(answers);
 
-export const validChildBirthYear = (typed: string, maxYear: number): number | null => {
+export const minChildBirthYear = (answers: YouAnswers): number =>
+  parseBirthYear(answers.birthYear) ?? MIN_CHILD_BIRTH_YEAR;
+
+export const validChildBirthYear = (typed: string, answers: YouAnswers): number | null => {
   const year = Number(typed.trim());
-  return CHILD_BIRTH_YEAR_TEXT.test(typed.trim()) && year >= MIN_CHILD_BIRTH_YEAR && year <= maxYear
+  return CHILD_BIRTH_YEAR_TEXT.test(typed.trim()) &&
+    year >= minChildBirthYear(answers) &&
+    year <= maxChildBirthYear(answers)
     ? year
     : null;
 };
 
 export const isChildBirthYearInvalid = (answers: YouAnswers, index: number): boolean => {
   const typed = (answers.kidsBirthYears[index] ?? '').trim();
-  return typed !== '' && validChildBirthYear(typed, maxChildBirthYear(answers)) === null;
+  return typed !== '' && validChildBirthYear(typed, answers) === null;
 };
 
 const typedChildBirthYears = (answers: YouAnswers): string[] =>
@@ -310,16 +318,15 @@ const kidsEarlyInput = (earlyUser: KidsUser, hasDisabled: boolean, counted: numb
 });
 
 const kidsRetirement = (answers: YouAnswers, earlyUser: KidsUser) => {
-  const maxYear = maxChildBirthYear(answers);
   const typed = typedChildBirthYears(answers);
   const known = typed
-    .map((year) => validChildBirthYear(year, maxYear))
+    .map((year) => validChildBirthYear(year, answers))
     .filter((year): year is number => year !== null);
   const pensionYear = birthYearOrFallback(answers) + effectivePensionAge(answers);
   const countedBy = (retirementYear: number) =>
     known.filter((year) => year + YEARS_RAISING_A_CHILD <= retirementYear).length;
   const isRaisedBy = (typedYear: string, retirementYear: number) => {
-    const year = validChildBirthYear(typedYear, maxYear);
+    const year = validChildBirthYear(typedYear, answers);
     return year !== null && year + YEARS_RAISING_A_CHILD <= retirementYear;
   };
   const hasDisabledBy = (retirementYear: number) =>
@@ -364,7 +371,7 @@ export const childNoteOf = (answers: YouAnswers, index: number): ChildNote => {
   if (typed === '') {
     return { kind: 'noBirthYear' };
   }
-  const year = validChildBirthYear(typed, maxChildBirthYear(answers));
+  const year = validChildBirthYear(typed, answers);
   const { retirementYear } = kidsRetirement(answers, answers.kidsEarlyUser);
   return year !== null && year + YEARS_RAISING_A_CHILD > retirementYear
     ? { kind: 'late', turnsEight: year + YEARS_RAISING_A_CHILD, retirementYear }
