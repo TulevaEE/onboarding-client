@@ -392,10 +392,13 @@ describe('hazardous work', () => {
   });
 
   describe('pension supplement', () => {
-    it('adds a supplement for each year of list 1 work, also under 10 years', () => {
+    it('adds nothing under 10 years of list 1 work, as they give no right to the favourable-terms pension', () => {
       expect(
-        hazardSupplement({ ...base, hazard: 'list1', hazardYears: 5, undergroundYears: 0 }),
-      ).toBeCloseTo(AASTAHINNE * 0.031 * 5, 6);
+        hazardSupplement({ ...base, hazard: 'list1', hazardYears: 9.5, undergroundYears: 5 }),
+      ).toBe(0);
+      expect(
+        hazardSupplement({ ...base, hazard: 'list1', hazardYears: 10, undergroundYears: 0 }),
+      ).toBeCloseTo(AASTAHINNE * 0.031 * 10, 6);
     });
 
     it('adds 3.1% of the year value per list 1 year and 21.9% more per underground year', () => {

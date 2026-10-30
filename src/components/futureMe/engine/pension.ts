@@ -611,12 +611,15 @@ export function childSupplement(input: PensionInput): number {
   );
 }
 
+// SVPS § 1 p 1: the right needs at least 10 years of list 1 work
+const LIST1_YEARS_NEEDED = 10;
+
 // SVPS § 3
 export function hazardSupplement(input: PensionInput): number {
-  if (input.hazard !== 'list1') {
+  const listYears = Math.max(0, input.hazardYears || 0);
+  if (input.hazard !== 'list1' || listYears < LIST1_YEARS_NEEDED) {
     return 0;
   }
-  const listYears = Math.max(0, input.hazardYears || 0);
   const undergroundYears = Math.min(listYears, Math.max(0, input.undergroundYears || 0));
   return AASTAHINNE * (0.031 * listYears + 0.219 * undergroundYears);
 }

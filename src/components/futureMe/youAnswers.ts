@@ -52,6 +52,7 @@ export type YouField =
   | 'thirdPillarMonthly'
   | 'kidsCount'
   | 'hazardYears'
+  | 'undergroundYears'
   | 'rescueYears'
   | 'civilYears'
   | 'specialPensionStartAge';
@@ -122,7 +123,10 @@ const FIELD_LIMITS: Partial<Record<YouField, FieldLimits>> = {
   specialPensionStartAge: SPECIAL_PENSION_START_AGE_LIMITS,
 };
 
-export const limitsOf = (field: YouField): FieldLimits | undefined => FIELD_LIMITS[field];
+export const limitsOf = (answers: YouAnswers, field: YouField): FieldLimits | undefined =>
+  field === 'undergroundYears'
+    ? { min: 0, max: Math.max(0, parseFloat(answers.hazardYears) || 0) }
+    : FIELD_LIMITS[field];
 
 const OPTIONAL_DEFAULTS: { kids: KidsAnswers; work: WorkAnswers } = {
   kids: {
@@ -157,7 +161,7 @@ export const FIELDS_BY_SECTION: Record<YouSectionId, YouField[]> = {
   secondPillar: ['grossMonthly', 'secondPillarAmount'],
   thirdPillar: ['thirdPillarAmount', 'thirdPillarMonthly'],
   kids: ['kidsCount'],
-  work: ['hazardYears', 'rescueYears', 'civilYears', 'specialPensionStartAge'],
+  work: ['hazardYears', 'undergroundYears', 'rescueYears', 'civilYears', 'specialPensionStartAge'],
 };
 
 export const SECTION_IDS = Object.keys(FIELDS_BY_SECTION) as YouSectionId[];
@@ -495,7 +499,7 @@ export const fieldProblem = (answers: YouAnswers, field: YouField): FieldProblem
   if (typed === '') {
     return 'empty';
   }
-  const limits = FIELD_LIMITS[field] ?? { min: 0 };
+  const limits = limitsOf(answers, field) ?? { min: 0 };
   const typedNumber = Number(typed);
   if (Number.isNaN(typedNumber) || typedNumber < limits.min) {
     return limits.max === undefined ? 'min' : 'range';
@@ -511,6 +515,8 @@ const isFieldAsked = (answers: YouAnswers, field: YouField): boolean => {
       return answers.kidsAdded;
     case 'hazardYears':
       return answers.workAdded && answers.hazardList !== 'no';
+    case 'undergroundYears':
+      return answers.workAdded && answers.hazardList === 'list1';
     case 'rescueYears':
       return answers.workAdded && answers.hasRescue;
     case 'civilYears':
