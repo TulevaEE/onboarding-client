@@ -185,8 +185,12 @@ export const contractStartAgeOf = (
   pillar: Pillar,
   answers: Age66Answers,
   context: Age66Context,
-): number | undefined =>
-  contractChosenAt(pillar, context)?.age ?? fundPensionStartOf(pillar, answers, context);
+): number | undefined => {
+  const chosen = contractChosenAt(pillar, context);
+  return chosen?.step === FutureMeStep.AGE_55
+    ? chosen.age
+    : fundPensionStartOf(pillar, answers, context);
+};
 
 export const contractEndAgeOf = (
   pillar: Pillar,

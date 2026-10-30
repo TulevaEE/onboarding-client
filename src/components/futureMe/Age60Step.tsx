@@ -32,6 +32,7 @@ interface Props {
   hasThirdPillar: boolean;
   headingRef: RefObject<HTMLHeadingElement>;
   contracts: Contracts;
+  contractStartAges: Record<Pillar, number>;
   startedFundPensions?: Partial<Record<Pillar, FundPensionChoice>>;
   onChange: (answers: Age60Answers) => void;
   onContractChange: (pillar: Pillar, contract: Contract) => void;
@@ -44,9 +45,9 @@ interface PillarProps {
   answers: Age60Answers;
   birthYear: number;
   sex: Sex;
-  age: number;
   hasPillar: boolean;
   contracts: Contracts;
+  contractStartAge: number;
   startedFundPension?: FundPensionChoice;
   onChange: (answers: Age60Answers) => void;
   onContractChange: (pillar: Pillar, contract: Contract) => void;
@@ -60,7 +61,7 @@ const PillarChoices = ({
   answers,
   birthYear,
   sex,
-  age,
+  contractStartAge,
   hasPillar,
   contracts,
   startedFundPension,
@@ -122,7 +123,7 @@ const PillarChoices = ({
           pillar={pillar}
           idPrefix="future-me-60"
           contract={contracts[contractField(pillar)]}
-          startAge={age}
+          startAge={contractStartAge}
           birthYear={birthYear}
           sex={sex}
           endAge={contracts[endAgeField(pillar)]}
@@ -146,6 +147,7 @@ export const Age60Step = ({
   hasThirdPillar,
   headingRef,
   contracts,
+  contractStartAges,
   startedFundPensions = {},
   onChange,
   onContractChange,
@@ -172,7 +174,7 @@ export const Age60Step = ({
         answers={answers}
         birthYear={birthYear}
         sex={sex}
-        age={age}
+        contractStartAge={contractStartAges.secondPillar}
         hasPillar={hasSecondPillar}
         contracts={contracts}
         startedFundPension={startedFundPensions.secondPillar}
@@ -192,7 +194,7 @@ export const Age60Step = ({
         answers={answers}
         birthYear={birthYear}
         sex={sex}
-        age={age}
+        contractStartAge={contractStartAges.thirdPillar}
         hasPillar={hasThirdPillar}
         contracts={contracts}
         startedFundPension={startedFundPensions.thirdPillar}

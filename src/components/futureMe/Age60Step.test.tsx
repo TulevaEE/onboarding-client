@@ -7,6 +7,10 @@ import { useMe } from '../common/apiHooks';
 import { User } from '../common/apiModels';
 import translations from '../translations';
 import { mockUser } from '../../test/backend-responses';
+import { fundPensionTerm, LifeTable } from './engine/pension';
+import lifeTableData from './engine/lifeTable.json';
+
+const lifeTable: LifeTable = lifeTableData;
 
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
@@ -162,6 +166,21 @@ describe('Age 60 step', () => {
       userEvent.selectOptions(endAgeField() as HTMLElement, '95');
 
       expect(endAgeField()).toHaveValue('95');
+    });
+
+    it("counts the end ages from the saver's own age when the payout age is already past", () => {
+      openAge60Step();
+      userEvent.click(choice(secondPillarGroup(), 'Fondipension'));
+      const group = contractGroup('II') as HTMLElement;
+      userEvent.click(choice(group, 'Üks leping'));
+      const endAgeField = within(group).getByRole('combobox', {
+        name: 'Mis vanuseni maksed kestavad?',
+      });
+
+      expect(within(endAgeField).getAllByRole('option')[0]).toHaveTextContent(
+        new RegExp(`^${64 + fundPensionTerm(lifeTable, 'M', 64)}-aastaseni`),
+      );
+      expect(endAgeField).toHaveAccessibleDescription(/Iga kümnes 64-aastane mees/);
     });
 
     it('says one contract pays tax-free until the chosen age, at least the average life expectancy', () => {

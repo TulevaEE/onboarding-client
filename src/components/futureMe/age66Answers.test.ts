@@ -2,6 +2,7 @@ import { initialAge60 } from './age60Answers';
 import { initialAge65 } from './age65Answers';
 import {
   contractChosenAt,
+  contractStartAgeOf,
   contractLock,
   endAgeOf,
   endAges,
@@ -115,6 +116,21 @@ describe('age66Answers', () => {
         age: 60,
         step: FutureMeStep.AGE_60,
       });
+    });
+
+    it("starts one contract chosen on the payout age step at the saver's age once that age is past", () => {
+      const older = {
+        ...initialAnswers({ birthYear: 1962, sex: null, secondPillarRate: '0.02' }),
+        pensionAgeYears: '65',
+      };
+      const olderContext = {
+        ...growing,
+        age60: { ...initialAge60(), secondPillar: 'fund' as const },
+        you: older,
+        plan: toStepPlanInput(older),
+      };
+
+      expect(contractStartAgeOf('secondPillar', initialAge66(), olderContext)).toBe(64);
     });
 
     it('counts a III pillar that opens after the early retirement', () => {
