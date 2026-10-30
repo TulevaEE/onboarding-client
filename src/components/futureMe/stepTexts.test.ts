@@ -44,10 +44,14 @@ const isOnExpensesStep = (key: string) =>
 const isOnAge55And60Steps = (key: string) =>
   /^futureMe\.(age55|age60|fundPensionFaq|payoutChoice|choiceMade)\./.test(key);
 
+const isOnAge65AndSpecialPensionSteps = (key: string) =>
+  /^futureMe\.(age65|specialPension|firstPillarChoice)\./.test(key);
+
 const steps: [string, (key: string) => boolean][] = [
   ['Sina', isOnYouStep],
   ['Kulud', isOnExpensesStep],
   ['55 ja 60', isOnAge55And60Steps],
+  ['65 ja eripension', isOnAge65AndSpecialPensionSteps],
 ];
 
 const stepKeys = Object.keys(texts.et).filter((key) => steps.some(([, isOnStep]) => isOnStep(key)));
@@ -63,7 +67,7 @@ const keysWithText = (language: 'et' | 'en', pattern: RegExp) =>
 const tags = (text: string) =>
   (text.replace(/En>/g, '>').match(/<\/?[a-zA-Z]+>/g) ?? []).sort().join();
 
-const selectBranchKey = /(?:N|M|other|yes|no|one|none|=\d+|\d) $/;
+const selectBranchKey = /(?:N|M|other|yes|no|true|false|one|none|=\d+|\d) $/;
 
 const placeholders = (text: string) =>
   Array.from(text.matchAll(/\{[a-zA-Z]+[,}]/g))
@@ -73,7 +77,7 @@ const placeholders = (text: string) =>
 describe('Step texts', () => {
   it('speak to the saver, not as "we"', () => {
     expect(
-      keysWithText('et', /\b(me|meie|arvutame|näitame|arvestame)\b/i).filter(
+      keysWithText('et', /\b(me|meie|arvutame|näitame|arvestame|küsime|eeldame)\b/i).filter(
         (key) => !key.startsWith('futureMe.help.'),
       ),
     ).toEqual([]);
