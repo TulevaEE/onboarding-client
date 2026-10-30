@@ -120,6 +120,10 @@ describe('Step texts', () => {
     ).toEqual([]);
   });
 
+  it('use US spelling in English', () => {
+    expect(keysWithText('en', /colour|defence forces|favourable (conditions|terms)/)).toEqual([]);
+  });
+
   it('write dates in English as day, month name and year', () => {
     expect(keysWithText('en', /\b\d{1,2}\.\d{1,2}\.\d{4}\b/)).toEqual([]);
   });
