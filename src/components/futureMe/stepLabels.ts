@@ -32,8 +32,21 @@ const stepAge = (step: StepId, plan: StepPlanInput): number => {
   }
 };
 
-export const stepLabel = (intl: IntlShape, step: StepId, plan: StepPlanInput): string =>
-  intl.formatMessage({ id: STEP_LABEL_KEYS[step] }, { age: stepAge(step, plan) });
+export const stepLabel = (
+  intl: IntlShape,
+  step: StepId,
+  plan: StepPlanInput,
+  isAge66Shown = true,
+): string =>
+  intl.formatMessage(
+    {
+      id:
+        step === FutureMeStep.AGE_65 && !isAge66Shown
+          ? 'futureMe.trail.step.age65Open'
+          : STEP_LABEL_KEYS[step],
+    },
+    { age: stepAge(step, plan) },
+  );
 
 export const stepSublabel = (intl: IntlShape, step: StepId, plan: StepPlanInput): string => {
   const key = SUB_LABEL_KEYS[step];

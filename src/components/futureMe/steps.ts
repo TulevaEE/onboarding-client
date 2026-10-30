@@ -48,8 +48,14 @@ export interface StepPlanInput {
   thirdPillarJoined: 'before' | 'after' | 'none';
 }
 
-export const isStepSkipped = (step: StepId, input: StepPlanInput): boolean => {
+export const isStepSkipped = (
+  step: StepId,
+  input: StepPlanInput,
+  isAge66Needed = true,
+): boolean => {
   switch (step) {
+    case AGE_66_PLUS:
+      return !isAge66Needed;
     case AGE_55:
       return input.thirdPillarJoined !== 'before';
     case SPECIAL_PENSION:
@@ -82,8 +88,8 @@ export const stepOrder = (step: StepId, input: StepPlanInput): number => {
   return step === SPECIAL_PENSION ? specialPensionOrder(input) : step;
 };
 
-export const shownSteps = (input: StepPlanInput): StepId[] =>
-  ALL_STEPS.filter((step) => !isStepSkipped(step, input)).sort(
+export const shownSteps = (input: StepPlanInput, isAge66Needed = true): StepId[] =>
+  ALL_STEPS.filter((step) => !isStepSkipped(step, input, isAge66Needed)).sort(
     (a, b) => stepOrder(a, input) - stepOrder(b, input),
   );
 

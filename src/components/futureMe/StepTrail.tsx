@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { LineIcon, StepIcon } from './FutureMeIcon';
-import { StepId, StepPlanInput } from './steps';
+import { FutureMeStep, StepId, StepPlanInput } from './steps';
 import { stepLabel, stepSublabel } from './stepLabels';
 
 type TrailState = 'current' | 'locked' | 'visited' | 'unvisited';
@@ -27,6 +27,7 @@ interface Props {
 export const StepTrail = ({ steps, current, visited, plan, isLocked, onSelect }: Props) => {
   const intl = useIntl();
   const progress = ((steps.indexOf(current) + 1) / steps.length) * 100;
+  const isAge66Shown = steps.includes(FutureMeStep.AGE_66_PLUS);
 
   const stateOf = (step: StepId): TrailState => {
     if (step === current) {
@@ -44,7 +45,9 @@ export const StepTrail = ({ steps, current, visited, plan, isLocked, onSelect }:
         {steps.map((step) => {
           const state = stateOf(step);
           const sublabel = stepSublabel(intl, step, plan);
-          const label = [stepLabel(intl, step, plan), sublabel].filter(Boolean).join(' ');
+          const label = [stepLabel(intl, step, plan, isAge66Shown), sublabel]
+            .filter(Boolean)
+            .join(' ');
           return (
             <li key={step} className={classNames('trail-item', `is-${state}`)}>
               <button
@@ -63,7 +66,7 @@ export const StepTrail = ({ steps, current, visited, plan, isLocked, onSelect }:
                   </span>
                 )}
                 <span className="trail-label">
-                  {stepLabel(intl, step, plan)}
+                  {stepLabel(intl, step, plan, isAge66Shown)}
                   {sublabel && <small className="trail-sublabel">{sublabel}</small>}
                 </span>
               </button>

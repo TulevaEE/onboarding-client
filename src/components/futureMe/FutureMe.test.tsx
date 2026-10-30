@@ -2368,6 +2368,21 @@ describe('FutureMe', () => {
       expect(screen.getByRole('status')).not.toHaveTextContent(untilAverage);
     });
 
+    it('names the fund pension chosen at 55 on the pension age step, with a link back to change it', () => {
+      renderFutureMe();
+      openAge55();
+      userEvent.click(fundPlan());
+      userEvent.click(within(trail()).getByRole('button', { name: /^66\sa/ }));
+
+      expect(screen.getByText(/valik 55-aastaselt: fondipension\./)).toBeInTheDocument();
+
+      userEvent.click(
+        screen.getByRole('button', { name: /Muuda III\ssamba valikut 55-aastaselt/ }),
+      );
+
+      expect(age55Heading()).toBeInTheDocument();
+    });
+
     it('shows the contract chosen at 55 on the 66+ step, with a link back to change it', () => {
       renderFutureMe();
       openAge55();

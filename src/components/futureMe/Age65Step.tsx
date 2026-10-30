@@ -8,6 +8,7 @@ import {
   pensionKind,
   thirdPillarAfterAsked,
 } from './age65Answers';
+import { age55Of } from './age55';
 import { Age65Deferral } from './Age65Deferral';
 import { Age65Pillars } from './Age65Pillars';
 import { Age65Work } from './Age65Work';
@@ -43,6 +44,7 @@ interface Props {
   onChange: (answers: Age65Answers) => void;
   onEditYou: () => void;
   onEditAge60: () => void;
+  onEditAge55: () => void;
 }
 
 const SOURCE_PAGE = 'https://www.riigiteataja.ee/akt/RPKS';
@@ -68,6 +70,7 @@ export const Age65Step = ({
   onChange,
   onEditYou,
   onEditAge60,
+  onEditAge55,
 }: Props) => {
   const age = retirementAge(plan);
   const pensionAge = retirementYears(plan);
@@ -96,7 +99,10 @@ export const Age65Step = ({
     onChange,
     onEditYou,
     onEditAge60,
+    onEditAge55,
   };
+  const thirdPillarAt55 = age55Of(you, 1);
+  const thirdFundFrom55 = thirdPillarAt55.plan === 'fund' ? thirdPillarAt55.age : undefined;
 
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-age65-heading">
@@ -182,6 +188,7 @@ export const Age65Step = ({
       <Age65Pillars
         pillar="thirdPillar"
         hasPillar={hasThird}
+        fundFrom55={thirdFundFrom55}
         startedFundPension={startedFundPensions.thirdPillar}
         {...pillarProps}
       />

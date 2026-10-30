@@ -22,6 +22,8 @@ interface Props {
   onChange: (answers: Age65Answers) => void;
   onEditYou: () => void;
   onEditAge60: () => void;
+  fundFrom55?: number;
+  onEditAge55: () => void;
   startedFundPension?: FundPensionChoice;
 }
 
@@ -35,6 +37,8 @@ export const Age65Pillars = ({
   onChange,
   onEditYou,
   onEditAge60,
+  fundFrom55,
+  onEditAge55,
   startedFundPension,
 }: Props) => {
   const isAsked = !isChosenAtAnotherStep && (!hasPillar || age60[pillar] === 'grow');
@@ -72,6 +76,20 @@ export const Age65Pillars = ({
             <FormattedMessage id="futureMe.age65.madeChange" values={{ pillar: pillarKind }} />
             <span className="visually-hidden">
               <FormattedMessage id="futureMe.age65.madeChangeAge" values={{ age }} />
+            </span>
+          </LinkButton>
+        </p>
+      )}
+      {fundFrom55 !== undefined && (
+        <p className="payout-note">
+          <FormattedMessage
+            id="futureMe.age65.made"
+            values={{ pillar: pillarKind, age: fundFrom55, choice: 'fund', strong }}
+          />{' '}
+          <LinkButton onClick={onEditAge55}>
+            <FormattedMessage id="futureMe.age65.madeChange" values={{ pillar: pillarKind }} />
+            <span className="visually-hidden">
+              <FormattedMessage id="futureMe.age65.madeChangeAge" values={{ age: fundFrom55 }} />
             </span>
           </LinkButton>
         </p>

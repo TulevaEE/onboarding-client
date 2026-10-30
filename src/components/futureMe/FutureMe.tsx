@@ -26,6 +26,7 @@ import {
   initialAge66,
   Pillar,
 } from './age66Answers';
+import { isAge66StepNeeded } from './age66Needed';
 import { Age66Step } from './Age66Step';
 import { DecisionActionsProvider } from './decisionActions';
 import { DecisionChanges } from './decisions';
@@ -96,7 +97,10 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   [firstBlocked.current] = blocked;
   invalidChildMonths.current = firstInvalidChildIIMonths(answers);
   const plan = toStepPlanInput(answers);
-  const steps = shownSteps(plan);
+  const steps = shownSteps(
+    plan,
+    isAge66StepNeeded(age66, { age60, age65, you: answers, plan }, specialPension),
+  );
   const isLocked = (target: StepId) =>
     target !== FutureMeStep.YOU && (blocked.length > 0 || invalidChildMonths.current !== undefined);
   const isFirst = step === steps[0];
@@ -281,6 +285,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           onChange={setAge65}
           onEditYou={() => goTo(FutureMeStep.YOU)}
           onEditAge60={() => goTo(FutureMeStep.AGE_60)}
+          onEditAge55={() => goTo(FutureMeStep.AGE_55)}
         />
       );
     }

@@ -1,6 +1,12 @@
 import { payoutAge } from './planAges';
 import { isPayoutChoiceMadeAtAnotherStep, withMode } from './age65Answers';
-import { Contract, contractEndAgeOf, hasPillar, payoutAtPensionAge } from './age66Answers';
+import {
+  Contract,
+  contractChosenAt,
+  contractEndAgeOf,
+  hasPillar,
+  payoutAtPensionAge,
+} from './age66Answers';
 import { DecisionChanges, DecisionId } from './decisions';
 import lifeTableData from './engine/lifeTable.json';
 import {
@@ -93,7 +99,7 @@ export const howToChoose = (scenario: Scenario, context: ResultContext): HowTo =
 
 export const stepToChoose = ({ kind, atPayoutAge }: HowTo, context: ResultContext): StepId => {
   if (kind === 'contract') {
-    return FutureMeStep.AGE_66_PLUS;
+    return contractChosenAt('secondPillar', context)?.step ?? FutureMeStep.AGE_66_PLUS;
   }
   const isOnlyDeferralLeft = kind === 'bridge' && isFundPensionChosen(context);
   return atPayoutAge && !isOnlyDeferralLeft ? FutureMeStep.AGE_60 : FutureMeStep.AGE_65;
