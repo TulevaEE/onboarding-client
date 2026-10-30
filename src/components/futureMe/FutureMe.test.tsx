@@ -1086,16 +1086,17 @@ describe('FutureMe', () => {
     });
 
     it.each([
-      ['II', secondPillarReturnField, 'https://www.pensionikeskus.ee/statistika/ii-sammas/'],
-      ['III', thirdPillarReturnField, 'https://www.pensionikeskus.ee/statistika/iii-sammas/'],
+      ['II', secondPillarReturnField],
+      ['III', thirdPillarReturnField],
     ])(
-      'links the %s pillar funds’ returns at Pensionikeskus to check against',
-      (_, field, href) => {
+      'leaves only the historical return under the %s pillar choice, with no Pensionikeskus link',
+      (_, field) => {
         renderFutureMe();
 
-        expect(
-          returnHintOf(field()).getByRole('link', { name: /Pensionikeskusest/ }),
-        ).toHaveAttribute('href', href);
+        expect(returnHintOf(field()).queryByRole('link')).not.toBeInTheDocument();
+        expect(returnHintOf(field()).getByText(/Aktsiate ajalooline/)).toHaveTextContent(
+          /^Aktsiate ajalooline tootlus 7%\.$/,
+        );
       },
     );
 

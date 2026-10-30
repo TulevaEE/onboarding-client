@@ -14,8 +14,6 @@ import {
 } from './youAnswers';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';
-import { HELP_LINKS } from './helpLinks';
-import { externalLink } from './helpRichText';
 import { LinkButton } from './LinkButton';
 import { hidden } from './richText';
 
@@ -252,18 +250,10 @@ interface ReturnFieldProps {
   label: TranslationKey;
   help?: HelpTopic;
   value: number;
-  fundReturnsLink: 'pensionikeskusStatsII' | 'pensionikeskusStatsIII';
   onChange: (percent: number) => void;
 }
 
-export const ReturnField = ({
-  id,
-  label,
-  help,
-  value,
-  fundReturnsLink,
-  onChange,
-}: ReturnFieldProps) => {
+export const ReturnField = ({ id, label, help, value, onChange }: ReturnFieldProps) => {
   const intl = useIntl();
   return (
     <SelectField
@@ -283,11 +273,7 @@ export const ReturnField = ({
             ),
           }}
         />
-        {'. '}
-        <FormattedMessage
-          id="futureMe.you.returnRate.check"
-          values={{ link: externalLink(HELP_LINKS[fundReturnsLink]) }}
-        />
+        .
       </div>
     </SelectField>
   );
