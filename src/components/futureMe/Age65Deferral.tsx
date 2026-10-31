@@ -2,7 +2,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { DEFERRAL_INCREASE, retirementYears } from './engine/pension';
 import { StepPlanInput } from './steps';
-import { amountOf, YouAnswers } from './youAnswers';
+import { amountOf, serviceIncreaseOfAnswers, YouAnswers } from './youAnswers';
 import {
   Age65Answers,
   deferralLock,
@@ -32,7 +32,8 @@ const LONGEST_DEFERRAL = Math.max(...DEFERRAL_YEARS);
 
 export const Age65Deferral = ({ answers, you, plan, onChange, onEditYou }: Props) => {
   const pensionAge = retirementYears(plan);
-  const firstPillar = amountOf(you.firstPillarMonthly);
+  const firstPillar =
+    amountOf(you.firstPillarMonthly) * (1 + serviceIncreaseOfAnswers(you).increase);
   const lock = deferralLock(you);
   const { mode, years } = answers;
   const whileWorking = deferralYearsWhileWorking(answers, plan);

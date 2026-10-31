@@ -29,7 +29,7 @@ import { FundPensionFaq } from './FundPensionFaq';
 import { RescueCompareFaq, SpecialCompareFaq } from './KidsCompareFaq';
 import { RescueNotes } from './RescueNotes';
 import { FutureMeStep, StepPlanInput } from './steps';
-import { YouAnswers } from './youAnswers';
+import { isRescueAllowanceOnly, YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
 import { ageTense, hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 import { strong } from './richText';
@@ -78,6 +78,7 @@ export const Age65Step = ({
   const pensionAge = retirementYears(plan);
   const year = plan.birthYear + age;
   const kind = pensionKind(you);
+  const allowance = isRescueAllowanceOnly(you) ? 'yes' : 'no';
   const comparison = plan.hasSpecialPension
     ? firstPillarComparison(specialPension, you, plan, answers, age66)
     : null;
@@ -125,6 +126,7 @@ export const Age65Step = ({
             id="futureMe.age65.title"
             values={{
               kind,
+              allowance,
               special: plan.hasSpecialPension ? 'yes' : 'no',
               pillars: isPillarChoiceLeft ? 'asked' : 'done',
             }}
@@ -137,6 +139,7 @@ export const Age65Step = ({
             id="futureMe.age65.early.note"
             values={{
               kind,
+              allowance,
               age,
               year,
               years: plan.earlyRetirementYears,

@@ -503,6 +503,26 @@ describe('Age 65 step', () => {
       expect(screen.queryByText(/Lähed pensionile soodustingimustel/)).not.toBeInTheDocument();
     });
 
+    it('calls the step and the note a waiting allowance, not a pension on favourable terms', () => {
+      expect(
+        screen.getByRole('heading', { level: 2, name: 'Ootetoetus enne pensioniiga' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/^61-aastaselt \(2031\) lõpetad päästeteenistuse ja saad ootetoetust/),
+      ).toBeInTheDocument();
+    });
+
+    it('shows the old-age pension with the rescue increase in each way of taking it', () => {
+      const group = pensionModeGroup();
+
+      expect(
+        within(group).getByRole('radio', { name: /^Kohe täissumma/ }),
+      ).toHaveAccessibleDescription(/^840\s€ kuus enne tulumaksu/);
+      expect(within(group).getByRole('radio', { name: /^Pool/ })).toHaveAccessibleDescription(
+        /^420\s€ kuus/,
+      );
+    });
+
     it('says the allowance and the increase are paid only while not working as a rescuer', () => {
       expect(noteItem('Töö:')).toHaveTextContent(
         /makstakse ainult siis, kui sa ei tööta päästjana\. Muul erialal võid edasi töötada\./,
