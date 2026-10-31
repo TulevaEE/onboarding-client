@@ -564,12 +564,15 @@ describe('Sina step help buttons', () => {
     },
   );
 
-  it('tells a rescuer the increase stays for service completed by February 2043, whenever the pension starts', () => {
+  it('tells a rescuer the increase is certain for service complete by February 2043 and that later service is not added', () => {
     renderYouStep();
 
-    expect(openRescueHelp()).toHaveTextContent(
-      /Kui staaž on 28\.02\.2043 täis, säilib suurendus ka hilisema pensionile minekuga/,
+    const help = openRescueHelp();
+
+    expect(help).toHaveTextContent(
+      /Suurendus on kindel, kui sul on päästeteenistuse staaž 28\.02\.2043 täis/,
     );
+    expect(help).toHaveTextContent(/hilisemat juurdetulevat staaži ta ei lisa/);
   });
 
   const threeChildrenExample: [string, () => HTMLElement][] = [
