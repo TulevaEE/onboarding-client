@@ -25,6 +25,43 @@ describe('fund pension FAQ', () => {
     expect(third).toHaveTextContent(/Kui sa enam tööd ei tee.*on sambad üsna võrdsed/);
   });
 
+  it('says a smaller payout cannot be chosen, but a longer contract end or a new longer contract each year can lower it', () => {
+    renderFaq();
+    const surplus = screen
+      .getAllByRole('group')
+      .find((group) => /^Mis saab, kui väljamaksed on suuremad/.test(group.textContent || ''));
+
+    expect(surplus).toHaveTextContent(/Väiksemat summat valida ei saa\./);
+    expect(surplus).toHaveTextContent(
+      /Saad aga valida pikema lepingu lõpu või sõlmida igal aastal uue lepingu uuele pikemale perioodile, mis võib väljamakse suurust vähendada\./,
+    );
+  });
+
+  it('says the surplus can partly go back to the III pillar and that investing it is the saver’s own decision', () => {
+    renderFaq();
+    const surplus = screen
+      .getAllByRole('group')
+      .find((group) => /^Mis saab, kui väljamaksed on suuremad/.test(group.textContent || ''));
+
+    expect(surplus).toHaveTextContent(
+      /Ülejäägi saad võimalusel suunata osaliselt tagasi ka III\ssambasse, olenevalt tulumaksusoodustuse olukorrast\./,
+    );
+    expect(surplus).toHaveTextContent(
+      /otsustad ise: igaüks teeb endale sobivaid investeerimisotsuseid ja Tulevane Mina ei anna selleks soovitust\./,
+    );
+  });
+
+  it('says the period can be the saver’s own, not the statistical years, but not a shorter one', () => {
+    renderFaq();
+    const know = screen
+      .getAllByRole('group')
+      .find((group) => /^Mida teada igakuiste väljamaksete kohta/.test(group.textContent || ''));
+
+    expect(know).toHaveTextContent(
+      /Perioodiks võib seada ka sinu valitud perioodi, mitte statistiliselt elada jäänud aastad\. Statistiliselt lühemat perioodi siin määrata ei saa\./,
+    );
+  });
+
   it('answers without a source line under the answers', () => {
     renderFaq({ hasBothPillars: true });
 

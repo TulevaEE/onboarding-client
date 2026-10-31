@@ -23,13 +23,13 @@ import {
   SpecialPensionAnswers,
   specialPensionStartAge,
 } from './specialPensionAnswers';
-import { exactPercent } from './amountFormat';
+import { euro, exactPercent } from './amountFormat';
 import { retirementYears } from './engine/pension';
 import { FundPensionFaq } from './FundPensionFaq';
 import { RescueCompareFaq, SpecialCompareFaq } from './KidsCompareFaq';
 import { RescueNotes } from './RescueNotes';
 import { FutureMeStep, StepPlanInput } from './steps';
-import { isRescueAllowanceOnly, YouAnswers } from './youAnswers';
+import { amountOf, isRescueAllowanceOnly, YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
 import { ageTense, hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 import { strong } from './richText';
@@ -140,6 +140,7 @@ export const Age65Step = ({
             values={{
               kind,
               allowance,
+              amount: euro(amountOf(you.firstPillarMonthly)),
               age,
               year,
               years: plan.earlyRetirementYears,
