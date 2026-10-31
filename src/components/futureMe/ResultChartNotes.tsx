@@ -174,9 +174,11 @@ const ChartChanges = ({ changes }: { changes: ChartChange[] }) => {
   );
 };
 
+export type BeforePension = 'none' | 'special' | 'fund' | 'both';
+
 interface GuideProps {
   events: ChartEvent[];
-  startsBeforePension: boolean;
+  beforePension: BeforePension;
   cover: CoverSteps;
   changes: ChartChange[];
   hasWorkYears: boolean;
@@ -186,7 +188,7 @@ interface GuideProps {
 
 export const ChartGuide = ({
   events,
-  startsBeforePension,
+  beforePension,
   cover,
   changes,
   hasWorkYears,
@@ -211,9 +213,12 @@ export const ChartGuide = ({
         <li>
           <FormattedMessage id="futureMe.result.chart.guide.costs" />
         </li>
-        {startsBeforePension && (
+        {beforePension !== 'none' && (
           <li>
-            <FormattedMessage id="futureMe.result.chart.guide.beforePension" />
+            <FormattedMessage
+              id="futureMe.result.chart.guide.beforePension"
+              values={{ shown: beforePension }}
+            />
           </li>
         )}
         <li>

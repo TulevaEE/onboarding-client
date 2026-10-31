@@ -271,6 +271,17 @@ describe('ResultChart reading guide', () => {
     });
   });
 
+  it('says that before the pension age the chart shows only the special pension, without costs', () => {
+    renderChart({
+      you: { workAdded: true, hasSpecialPension: true, specialPensionStartAge: '55' },
+      specialPensionMonthly: '1500',
+    });
+
+    expect(guide()).toHaveTextContent(
+      /Enne pensioniiga on graafikul ainult eripension\. Kulud ja palk on graafikul pensionieast alates/,
+    );
+  });
+
   it('leaves the years before the pension age out when the chart starts at the pension age', () => {
     renderChart();
 

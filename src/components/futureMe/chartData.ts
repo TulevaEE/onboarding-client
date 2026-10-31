@@ -1,6 +1,6 @@
 import { SimulationRow } from './engine/pension';
 import { nominalFactorAt } from './nominal';
-import { EarlyPayment, Result } from './resultAnswers';
+import { Result } from './resultAnswers';
 
 export type ChartSourceId =
   | 'salary'
@@ -47,7 +47,11 @@ const surplusOf = ({ work, i1, isp, i2, i3, dep }: SimulationRow, need: number) 
   return !work && over > NOTICEABLE ? Math.round(over) : 0;
 };
 
-const earlyRowOf = ({ age, year, amount }: EarlyPayment): ChartRow => ({
+const beforePensionRowOf = (
+  age: number,
+  year: number,
+  amounts: Partial<Pick<ChartRow, 'specialPension' | 'thirdPillar'>>,
+): ChartRow => ({
   age,
   year,
   salary: 0,
@@ -55,27 +59,47 @@ const earlyRowOf = ({ age, year, amount }: EarlyPayment): ChartRow => ({
   specialPension: 0,
   secondPillar: 0,
   secondPillarTaxed: 0,
-  thirdPillar: Math.round(amount),
+  thirdPillar: 0,
   thirdPillarTaxed: 0,
   deposit: 0,
   costs: 0,
   shortfall: 0,
   surplus: 0,
   isBeforePension: true,
+  ...amounts,
 });
 
-export const chartStartAgeOf = ({ rows, pensionStartAge }: Result): number => {
-  const specialPensionAge = rows.find(({ isp }) => isp > NOTICEABLE)?.age;
-  return Math.min(pensionStartAge, specialPensionAge ?? pensionStartAge);
+const specialPensionStartAgeOf = ({ rows }: Result): number =>
+  rows.find(({ isp }) => isp > NOTICEABLE)?.age ?? Infinity;
+
+const beforePensionRowsOf = (result: Result): ChartRow[] => {
+  const specialPensionFrom = specialPensionStartAgeOf(result);
+  const isBeforePensionAge = ({ age }: { age: number }) => age < result.pensionStartAge;
+  const fundPensions = result.earlyThirdPillar.filter(isBeforePensionAge);
+  const ages = new Set([
+    ...fundPensions.map(({ age }) => age),
+    ...result.rows
+      .filter((row) => isBeforePensionAge(row) && row.age >= specialPensionFrom)
+      .map(({ age }) => age),
+  ]);
+  return Array.from(ages)
+    .sort((a, b) => a - b)
+    .map((age) => {
+      const resultRow = result.rows.find((row) => row.age === age);
+      const fundPension = fundPensions.find((payment) => payment.age === age);
+      return beforePensionRowOf(age, fundPension?.year ?? resultRow?.year ?? 0, {
+        specialPension: age >= specialPensionFrom ? Math.round(resultRow?.isp ?? 0) : 0,
+        thirdPillar: Math.round(fundPension?.amount ?? 0),
+      });
+    });
 };
 
 export const chartRowsOf = (result: Result, need: number, isNominal = false): ChartRow[] => {
-  const chartStartAge = chartStartAgeOf(result);
-  const isBeforePensionAge = ({ age }: { age: number }) => age < chartStartAge;
+  const isBeforePensionAge = ({ age }: { age: number }) => age < result.pensionStartAge;
   const fundPensionFrom55At = (age: number) =>
     result.earlyThirdPillar.find((payment) => payment.age === age)?.amount ?? 0;
   return [
-    ...result.earlyThirdPillar.filter(isBeforePensionAge).map(earlyRowOf),
+    ...beforePensionRowsOf(result),
     ...result.rows
       .filter((row) => !isBeforePensionAge(row))
       .map((row) => {

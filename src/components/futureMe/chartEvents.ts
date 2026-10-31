@@ -1,4 +1,3 @@
-import { chartStartAgeOf } from './chartData';
 import { Result } from './resultAnswers';
 
 export type ChartEventKind =
@@ -37,9 +36,8 @@ const CONTINUES: Record<FundPillar, AfterFundEnd> = {
 const isPaid = (monthly: number) => monthly > PAID_FROM;
 
 export const chartEventsOf = (result: Result): ChartEvent[] => {
-  const chartStartAge = chartStartAgeOf(result);
-  const rows = result.rows.filter(({ age }) => age >= chartStartAge);
-  const events: ChartEvent[] = [{ kind: 'pension', age: chartStartAge }];
+  const rows = result.rows.filter(({ age }) => age >= result.pensionStartAge);
+  const events: ChartEvent[] = [{ kind: 'pension', age: result.pensionStartAge }];
 
   const workEnd = rows.find((row, index) => index > 0 && rows[index - 1].work && !row.work);
   if (workEnd) {

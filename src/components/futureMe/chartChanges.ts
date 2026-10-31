@@ -1,4 +1,4 @@
-import { ChartRow, chartStartAgeOf } from './chartData';
+import { ChartRow } from './chartData';
 import { ChartEvent, FundPillars } from './chartEvents';
 import { SimulationRow } from './engine/pension';
 import { Result } from './resultAnswers';
@@ -136,10 +136,9 @@ export const chartChangesOf = (
   events: ChartEvent[],
 ): ChartChange[] => {
   const rows = chartRows.filter(({ isBeforePension }) => !isBeforePension);
-  const chartStartAge = chartStartAgeOf(result);
-  const resultRows = result.rows.filter(({ age }) => age >= chartStartAge);
+  const resultRows = result.rows.filter(({ age }) => age >= result.pensionStartAge);
   const resultRowAt = (age: number) => resultRows.find((row) => row.age === age);
-  const lastAge = rows[rows.length - 1]?.age ?? chartStartAge;
+  const lastAge = rows[rows.length - 1]?.age ?? result.pensionStartAge;
   const allowanceEnd = result.rescueAllowance?.until;
   const changes: ChartChange[] = [
     ...changesFromEvents(events),

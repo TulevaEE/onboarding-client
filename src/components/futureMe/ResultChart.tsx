@@ -45,7 +45,7 @@ import { ResultChartAges } from './ResultChartAges';
 import { ResultChartTip } from './ResultChartTip';
 import { useTouchView } from './useTouchView';
 import { useHighContrast } from './useHighContrast';
-import { ChartAssumption, ChartGuide, SummaryNotes } from './ResultChartNotes';
+import { BeforePension, ChartAssumption, ChartGuide, SummaryNotes } from './ResultChartNotes';
 import { NominalChoice, NominalNote } from './ResultNominalChoice';
 import { nominalResultOf } from './nominal';
 
@@ -68,6 +68,19 @@ const Y_AXIS_WIDTH = 76;
 const TOUCH_Y_AXIS_WIDTH = 52;
 const MIN_TICK_GAP = 32;
 const EVENT_DOT_ROOM = EVENT_DOT_RADIUS + EVENT_DOT_BORDER;
+const beforePensionOf = (rows: ChartRow[]): BeforePension => {
+  const before = rows.filter(({ isBeforePension }) => isBeforePension);
+  const hasSpecial = before.some(({ specialPension }) => specialPension > 0);
+  const hasFund = before.some(({ thirdPillar }) => thirdPillar > 0);
+  if (hasSpecial && hasFund) {
+    return 'both';
+  }
+  if (hasSpecial) {
+    return 'special';
+  }
+  return before.length > 0 ? 'fund' : 'none';
+};
+
 const NOT_COUNTED = '–';
 const COUNTED_FROM_PENSION_AGE: (ChartSourceId | 'costs')[] = ['salary', 'costs'];
 
@@ -154,7 +167,7 @@ const Summary = ({
       <li>
         <FormattedMessage
           id="futureMe.result.chart.summary.start"
-          values={{ age: start.age, sources: intl.formatList(sources) }}
+          values={{ age: result.pensionStartAge, sources: intl.formatList(sources) }}
         />
       </li>
       <SummaryNotes notes={notes} />
@@ -162,7 +175,7 @@ const Summary = ({
         {isNominal ? (
           <FormattedMessage
             id="futureMe.result.chart.summary.costsNominal"
-            values={{ today: euro(need), age: start.age, future: euro(start.costs) }}
+            values={{ today: euro(need), age: result.pensionStartAge, future: euro(start.costs) }}
           />
         ) : (
           <FormattedMessage
@@ -774,7 +787,7 @@ export const ResultChart = ({ result, need }: ResultChartProps) => {
       {assumption && <ChartAssumption assumption={assumption} />}
       <ChartGuide
         events={events}
-        startsBeforePension={rows[0].isBeforePension}
+        beforePension={beforePensionOf(rows)}
         cover={coverStepsOf(shown, rows)}
         changes={chartChangesOf(shown, rows, events)}
         hasWorkYears={rows.some(({ salary }) => salary > 0)}

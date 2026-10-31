@@ -3,7 +3,13 @@ import { Age65Answers, initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
-import { chartRowsOf, chartSeriesOf, startSourcesOf, tableRowsOf } from './chartData';
+import {
+  chartRowsOf,
+  chartSeriesOf,
+  pensionStartRowOf,
+  startSourcesOf,
+  tableRowsOf,
+} from './chartData';
 import { CURRENT_YEAR } from './engine/pension';
 import { nominalFactorAt, nominalResultOf } from './nominal';
 import { resultOf, ResultContext } from './resultAnswers';
@@ -175,11 +181,25 @@ describe('chartData', () => {
     expect(ids).toEqual(['specialPension']);
   });
 
-  it('starts at the age the special pension starts, which is before the pension age', () => {
-    const [first] = chartRowsOf(resultOf(contextWith('1500')), 791);
+  it('starts at the age the special pension starts, with only the special pension and no costs before the pension age', () => {
+    const rows = chartRowsOf(resultOf(contextWith('1500')), 791);
 
-    expect(first).toMatchObject({ age: 55, isBeforePension: false });
-    expect(first.specialPension).toBeGreaterThan(0);
+    expect(rows[0]).toMatchObject({
+      age: 55,
+      isBeforePension: true,
+      salary: 0,
+      costs: 0,
+      shortfall: 0,
+      surplus: 0,
+    });
+    expect(rows[0].specialPension).toBeGreaterThan(0);
+    expect(rows.find(({ age }) => age === 65)).toMatchObject({
+      isBeforePension: false,
+      costs: 791,
+    });
+    expect(
+      rows.filter(({ age }) => age >= 55 && age < 65).every((row) => row.isBeforePension),
+    ).toBe(true);
   });
 
   it('starts at the pension age when the special pension starts at or after it', () => {
@@ -252,7 +272,7 @@ describe('chartData', () => {
   });
 
   it('shows how much is left over when the income is above the costs', () => {
-    const [first] = chartRowsOf(resultOf(contextWith('1500')), 791);
+    const first = pensionStartRowOf(chartRowsOf(resultOf(contextWith('1500')), 791));
 
     expect(first.surplus).toBe(first.specialPension + first.firstPillar - first.costs);
     expect(first.surplus).toBeGreaterThan(0);
