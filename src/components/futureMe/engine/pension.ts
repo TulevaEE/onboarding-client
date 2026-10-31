@@ -778,7 +778,7 @@ export function simulate(
     if (age < spStart) {
       return 0;
     }
-    if (age < p1Start) {
+    if (age < firstIncomeAge) {
       return spYear;
     }
     return spPaidAt(age) ? spYear : 0;

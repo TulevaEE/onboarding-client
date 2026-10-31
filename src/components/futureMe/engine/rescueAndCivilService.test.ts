@@ -206,6 +206,22 @@ describe('rescue service allowance until the pension age, then the old-age pensi
     );
   });
 
+  it('pays the allowance instead of the special pension before the pension age when the old-age pension is chosen', () => {
+    const withSpecialPension: PensionInput = {
+      ...rescuer,
+      spMonthly: 700,
+      spStartAge: pensionAge - 5,
+      firstPillarChoice: 'oldAge',
+    };
+    const result = simulate(withSpecialPension, lifeTable, scenarioB);
+
+    expect(rowAt(result, pensionAge - 1).isp).toBe(0);
+    expect(statePensionAt(result, pensionAge - 1)).toBeCloseTo(
+      statePensionAt(takenAtPensionAge, pensionAge - 1),
+      6,
+    );
+  });
+
   it('does not let the saver defer once the pension for children starts before the pension age', () => {
     const kids: KidsInput = { b2012: 4, earlyUser: 'me', supUser: 'me' };
     expect(options({ ...rescuer, kids }).deferral.open).toBe(false);
