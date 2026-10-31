@@ -460,6 +460,15 @@ describe('Result step', () => {
         return screen.getByRole('dialog', { name: 'Kuidas see summa tekib?' });
       };
 
+      it('does not call the rescue allowance before the pension age half the pension', () => {
+        const dialog = openHelpFor(
+          contextWith({ workAdded: true, hasRescue: true, rescueYears: '20' }),
+        );
+
+        expect(dialog).toHaveTextContent(/riiklik pension/);
+        expect(dialog).not.toHaveTextContent(/pool pensionit/);
+      });
+
       it('counts the pillar money taken as a lump sum, which waits on a deposit', () => {
         const dialog = openHelpFor(
           contextWith(
