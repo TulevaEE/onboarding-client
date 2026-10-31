@@ -33,10 +33,10 @@ export const SOURCE_IDS: ChartSourceId[] = [
   'salary',
   'firstPillar',
   'specialPension',
-  'secondPillar',
-  'secondPillarTaxed',
   'thirdPillar',
   'thirdPillarTaxed',
+  'secondPillar',
+  'secondPillarTaxed',
   'deposit',
 ];
 const TABLE_AGE_STEP = 5;

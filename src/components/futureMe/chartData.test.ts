@@ -175,6 +175,32 @@ describe('chartData', () => {
     expect(chartSeriesOf(rows).map(({ id }) => id)).toEqual(['firstPillar', 'secondPillarTaxed']);
   });
 
+  it('stacks the III pillar layers below the II pillar layers, as the III pillar is taken out first', () => {
+    const [first] = chartRowsOf(resultOf(contextWith()), 791);
+    const everyLayer = {
+      ...first,
+      salary: 1,
+      firstPillar: 1,
+      specialPension: 1,
+      secondPillar: 1,
+      secondPillarTaxed: 1,
+      thirdPillar: 1,
+      thirdPillarTaxed: 1,
+      deposit: 1,
+    };
+
+    expect(chartSeriesOf([everyLayer]).map(({ id }) => id)).toEqual([
+      'salary',
+      'firstPillar',
+      'specialPension',
+      'thirdPillar',
+      'thirdPillarTaxed',
+      'secondPillar',
+      'secondPillarTaxed',
+      'deposit',
+    ]);
+  });
+
   it('shows the special pension, which is paid instead of the old-age pension when larger', () => {
     const ids = chartSeriesOf(chartRowsOf(resultOf(contextWith('1500')), 791)).map(({ id }) => id);
 
