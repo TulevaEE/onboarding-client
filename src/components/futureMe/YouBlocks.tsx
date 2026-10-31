@@ -73,10 +73,13 @@ export const StateSection = ({
         <FormattedMessage
           id="futureMe.you.state.socialInsuranceBoardCalculator"
           values={{
-            link: (chunks: React.ReactNode) => (
+            ska: (chunks: React.ReactNode) => (
               <a href="https://iseteenindus.sotsiaalkindlustusamet.ee/self-service/pension-calculator">
                 {chunks}
               </a>
+            ),
+            eesti: (chunks: React.ReactNode) => (
+              <a href="https://www.eesti.ee/et/artikkel/pension/pensionikalkulaator">{chunks}</a>
             ),
           }}
         />

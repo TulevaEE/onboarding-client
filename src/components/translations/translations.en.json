@@ -2527,7 +2527,7 @@
   "futureMe.you.state.editLabel": "Change the state pension",
   "futureMe.you.state.fill": "Fill in",
   "futureMe.you.state.fillLabel": "Fill in the state pension details",
-  "futureMe.you.state.socialInsuranceBoardCalculator": "You will find the details in the <link>Social Insurance Board calculator</link>.",
+  "futureMe.you.state.socialInsuranceBoardCalculator": "You will find the details in the <ska>Social Insurance Board calculator</ska> or the <eesti>Eesti.ee pension calculator</eesti>.",
   "futureMe.you.pensionAge.label": "When is your retirement age?",
   "futureMe.you.pensionAge.option": "{years} years",
   "futureMe.you.firstPillarMonthly.label": "How big is your state pension?",

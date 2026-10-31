@@ -997,6 +997,14 @@ describe('FutureMe', () => {
       ).toHaveAttribute('href', expect.stringContaining('sotsiaalkindlustusamet.ee'));
     });
 
+    it('points to the Eesti.ee pension calculator next to the Social Insurance Board one', () => {
+      renderFutureMe();
+
+      expect(
+        screen.getByRole('link', { name: /Eesti\.ee pensionikalkulaatorist/ }),
+      ).toHaveAttribute('href', 'https://www.eesti.ee/et/artikkel/pension/pensionikalkulaator');
+    });
+
     it('leaves the civil servant out of the calculator note, as the state pension „?“ says it', () => {
       renderFutureMe();
 
