@@ -21,6 +21,7 @@ import {
   isSpecialPensionOnly,
   isSpecialPensionPathAsked,
   SpecialPensionPath,
+  specialPensionTiming,
   pensionAgeValue,
   YouAnswers,
 } from './youAnswers';
@@ -247,7 +248,10 @@ export const EarlyRetirementFields = ({ answers, onChange }: Props) => {
         <p className="you-note">
           <FormattedMessage
             id="futureMe.you.earlyYears.specialPensionOnly"
-            values={{ startAge: startAge === '' ? NO_START_AGE : startAge }}
+            values={{
+              startAge: startAge === '' ? NO_START_AGE : startAge,
+              timing: specialPensionTiming(answers),
+            }}
           />
         </p>
       ) : (

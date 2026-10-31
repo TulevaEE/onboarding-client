@@ -244,8 +244,6 @@ export const EARLY_DECREASE: Record<number, number> = {
   4: 0.255,
   5: 0.3067,
 };
-// Päästeteenistuse seadus § 18 applies until 28.02.2043
-export const RESCUE_LAST_YEAR = 2042;
 // Average old-age pension with 44 years of service from 1.04.2026 (Vabariigi Valitsus)
 const AVG_OLD_AGE_PENSION_BY_YEAR: Record<number, number> = { 2026: 860.23 };
 export const AVG_OLD_AGE_PENSION = valueIn(AVG_OLD_AGE_PENSION_BY_YEAR, CURRENT_YEAR);
@@ -255,10 +253,8 @@ export function civilIncrease(years?: number): number {
   return rescueIncrease(years);
 }
 
-export function rescueIncrease(years?: number, pensionYear?: number): number {
-  if (pensionYear !== undefined && pensionYear > RESCUE_LAST_YEAR) {
-    return 0;
-  }
+// PäästeTS § 33 lg 2: the increase stays for service completed by 28.02.2043, whenever the pension starts
+export function rescueIncrease(years?: number): number {
   const y = Math.floor(years || 0);
   if (y > 30) {
     return 0.5;
@@ -285,10 +281,9 @@ export interface ServiceIncrease {
 
 export function serviceIncreaseOf(
   input: Pick<PensionInput, 'rescueYears' | 'civilYears'>,
-  pensionYear: number,
 ): ServiceIncrease {
   return (input.rescueYears || 0) > 0
-    ? { source: 'rescue', increase: rescueIncrease(input.rescueYears, pensionYear) }
+    ? { source: 'rescue', increase: rescueIncrease(input.rescueYears) }
     : { source: 'civil', increase: civilIncrease(input.civilYears) };
 }
 
@@ -570,8 +565,15 @@ function isRescueAllowanceOnly(input: PensionInput, soodus: number): boolean {
   return soodus <= rescueEarly && rescueUntil(input) === retirementYears(input);
 }
 
+const RESCUE_ALLOWANCE_MAX_YEARS = 5;
+
 export function rescueUntil(input: PensionInput): number | null {
-  if ((input.rescueYears || 0) < 15 || input.rescueBasis === 'pension') {
+  const isEarlierPensionGivenByHazardousWork = earlyYears(input) > RESCUE_ALLOWANCE_MAX_YEARS;
+  if (
+    (input.rescueYears || 0) < 15 ||
+    input.rescueBasis === 'pension' ||
+    isEarlierPensionGivenByHazardousWork
+  ) {
     return null;
   }
   const kidsYears = earlyYears({ kids: input.kids });
@@ -717,7 +719,7 @@ export function simulate(
   // RPKS § 11¹ lg 4: the increasing coefficient applies to the whole pension
   const flexEarly =
     soodus > 0 && !isFlexibleBarred ? Math.min(5, Math.max(0, input.flexEarly || 0)) : 0;
-  const serviceIncrease = serviceIncreaseOf(input, input.birthYear + ret);
+  const serviceIncrease = serviceIncreaseOf(input);
   const p1Factor =
     (1 + DEFERRAL_INCREASE[deferral] + DEFERRAL_INCREASE[half] / 2) *
     (1 - EARLY_DECREASE[flexEarly]) *

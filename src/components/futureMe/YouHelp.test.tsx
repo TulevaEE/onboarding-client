@@ -564,11 +564,11 @@ describe('Sina step help buttons', () => {
     },
   );
 
-  it('tells a rescuer until which year of retirement the calculation counts the service increase', () => {
+  it('tells a rescuer the increase stays for service completed by February 2043, whenever the pension starts', () => {
     renderYouStep();
 
     expect(openRescueHelp()).toHaveTextContent(
-      /Tulevane Mina arvestab suurendust, kui lähed pensionile hiljemalt 2042\.\saastal/,
+      /Kui staaž on 28\.02\.2043 täis, säilib suurendus ka hilisema pensionile minekuga/,
     );
   });
 

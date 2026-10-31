@@ -31,9 +31,7 @@ export const RescueNotes = ({ input, age, pensionAge }: Props) => {
   }
   const until = input.flexEarly ? null : rescueUntil(input);
   const isAllowancePaid = until !== null && until > age && (input.soodus || 0) > 0;
-  const retirementYear = input.birthYear + age;
-  const increase = rescueIncrease(rescueYears, retirementYear);
-  const increaseInLaw = rescueIncrease(rescueYears);
+  const increase = rescueIncrease(rescueYears);
   const hasKidsRight = earlyYears({ kids: input.kids }) > 0;
   const isKidsPension =
     hasKidsRight && input.kids?.earlyUser === 'me' && input.rescueBasis !== 'toetus';
@@ -60,14 +58,6 @@ export const RescueNotes = ({ input, age, pensionAge }: Props) => {
               age,
               pensionAge,
             }}
-          />
-        </li>
-      )}
-      {increase === 0 && increaseInLaw > 0 && (
-        <li>
-          <FormattedMessage
-            id="futureMe.age65.rescue.increaseEnded"
-            values={{ strong, percent: percentOf(increaseInLaw), year: retirementYear }}
           />
         </li>
       )}

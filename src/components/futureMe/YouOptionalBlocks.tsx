@@ -16,7 +16,7 @@ import {
   KidsUser,
   maxChildBirthYear,
   minChildBirthYear,
-  serviceIncreaseAtPension,
+  serviceIncreaseOfAnswers,
   YouAnswers,
 } from './youAnswers';
 import {
@@ -64,7 +64,7 @@ export const workOptional = (answers: YouAnswers, onAdd: () => void, onRemove: (
   optionalOf('work', answers.workAdded, onAdd, onRemove);
 
 const civilIncreaseOf = (answers: YouAnswers) => {
-  const { source, increase } = serviceIncreaseAtPension(answers);
+  const { source, increase } = serviceIncreaseOfAnswers(answers);
   if (source === 'rescue') {
     return { state: increase > 0 ? 'rescue' : 'rescueNone', percent: 0 };
   }

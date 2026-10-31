@@ -468,6 +468,17 @@ const specialPensionStartAgeOf = (answers: YouAnswers): number | undefined => {
   return Math.min(max, Math.max(min, parseInt(typed, 10) || 0));
 };
 
+export type SpecialPensionTiming = 'before' | 'atPensionAge' | 'after';
+
+export const specialPensionTiming = (answers: YouAnswers): SpecialPensionTiming => {
+  const startAge = specialPensionStartAgeOf(answers);
+  const pensionAge = effectivePensionAge(answers);
+  if (startAge === undefined || startAge < pensionAge) {
+    return 'before';
+  }
+  return startAge === pensionAge ? 'atPensionAge' : 'after';
+};
+
 export const isSpecialPensionPathAsked = (answers: YouAnswers): boolean => {
   const startAge = specialPensionStartAgeOf(answers);
   return startAge !== undefined && startAge > effectivePensionAge(answers);
@@ -516,11 +527,8 @@ export const serviceYearsOf = (
     answers.workAdded && answers.isCivilServant ? parseInt(answers.civilYears, 10) || 0 : 0,
 });
 
-export const serviceIncreaseAtPension = (answers: YouAnswers): ServiceIncrease =>
-  serviceIncreaseOf(
-    serviceYearsOf(answers),
-    birthYearOrFallback(answers) + pensionAgeValue(answers),
-  );
+export const serviceIncreaseOfAnswers = (answers: YouAnswers): ServiceIncrease =>
+  serviceIncreaseOf(serviceYearsOf(answers));
 
 export const fieldProblem = (answers: YouAnswers, field: YouField): FieldProblem | null => {
   const typed = answers[field].trim();

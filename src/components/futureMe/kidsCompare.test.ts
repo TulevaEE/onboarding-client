@@ -128,7 +128,7 @@ describe('rescue allowance or the pension for the children', () => {
   it('pays each way a month and in total before the pension age, and the pension at it', () => {
     expect(amountsOf(rescueComparisonOf(withRescue()).rows)).toEqual([
       { basis: 'mix', toetus: 791, pension: 923, total: 49033, atPensionAge: 923 },
-      { basis: 'pension', toetus: null, pension: 802, total: 9622, atPensionAge: 802 },
+      { basis: 'pension', toetus: null, pension: 962, total: 11546, atPensionAge: 962 },
       { basis: 'toetus', toetus: 791, pension: null, total: 47449, atPensionAge: 923 },
     ]);
   });
@@ -235,8 +235,8 @@ describe('special pension or the pension for the children', () => {
 
   it('starts both at the early retirement for the children, not at an earlier one from the rescue service or hazardous work', () => {
     expect(optionsOf(withSpecialPension({ hasRescue: true, rescueYears: '20' }))).toEqual([
-      { from: 64, monthly: 900, total: 10800, atPensionAge: 900 },
-      { from: 64, monthly: 802, total: 9622, atPensionAge: 802 },
+      { from: 64, monthly: 900, total: 10800, atPensionAge: 962 },
+      { from: 64, monthly: 962, total: 11546, atPensionAge: 962 },
     ]);
     expect(optionsOf(withSpecialPension({ hazardList: 'list1', hazardYears: '10' }))).toEqual([
       { from: 64, monthly: 900, total: 10800, atPensionAge: 900 },

@@ -1951,6 +1951,19 @@ describe('FutureMe', () => {
           );
         });
 
+        it('name a single allowance year by its age, not as a range from an age to the same age', () => {
+          renderFutureMe();
+          userEvent.selectOptions(pensionAgeField(), '66');
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          userEvent.selectOptions(earlyYearsField(), '2');
+
+          expect(rescueBasis('Mõlemad järjest')).toHaveAccessibleDescription(
+            /^Ootetoetus 1\sa \(64\sa\), siis 65-\u2060aastaselt laste eest pension koos laste lisaga\.$/,
+          );
+        });
+
         it.each([
           ['to look at it together with the partner', /vaadake koos üle, kumb on teile soodsam/],
           [
@@ -2335,7 +2348,7 @@ describe('FutureMe', () => {
         ).not.toBeInTheDocument();
       });
 
-      it('say that the state pension does not rise when the rescue increase has ended by the pension year', () => {
+      it('say that the rescue increase is used also when the pension year is after February 2043', () => {
         renderFutureMe();
         typeBirthYear('1980');
         addSpecialCases();
@@ -2345,10 +2358,7 @@ describe('FutureMe', () => {
         typeInto(rescueYearsField(), '12');
         typeInto(civilYearsField(), '20');
 
-        expect(screen.getByText(/seega riiklik pension ei suurene/)).toBeVisible();
-        expect(
-          screen.queryByText(/kasutab arvutus päästeteenistuse suurendust/),
-        ).not.toBeInTheDocument();
+        expect(screen.getByText(/kasutab arvutus päästeteenistuse suurendust/)).toBeVisible();
       });
 
       it('keep the civil service increase while the rescue service years are none', () => {
@@ -2436,6 +2446,34 @@ describe('FutureMe', () => {
             /Eripensioni saad enne pensioniiga, alates 50-aastaselt, seega vanaduspensioni varem võtta pole vaja/,
           ),
         ).toBeVisible();
+      });
+
+      it('say the special pension starts at the pension age, not before it, when it starts then', () => {
+        renderFutureMe();
+        userEvent.selectOptions(pensionAgeField(), '66');
+        addSpecialCases();
+        userEvent.click(specialCase(/Saan või hakkan saama eripensioni/));
+
+        typeInto(specialPensionStartField(), '66');
+
+        expect(screen.getByText(/Eripension algab pensionieas, 66-aastaselt/)).toBeVisible();
+        expect(screen.queryByText(/Eripensioni saad enne pensioniiga/)).not.toBeInTheDocument();
+      });
+
+      it('say the special pension starts after the pension age, with the old-age pension until then', () => {
+        renderFutureMe();
+        userEvent.selectOptions(pensionAgeField(), '66');
+        addSpecialCases();
+        userEvent.click(specialCase(/Saan või hakkan saama eripensioni/));
+
+        typeInto(specialPensionStartField(), '70');
+
+        expect(
+          screen.getByText(
+            /Eripension algab 70-aastaselt, pärast pensioniiga\. Kuni selleni saad vanaduspensioni/,
+          ),
+        ).toBeVisible();
+        expect(screen.queryByText(/Eripensioni saad enne pensioniiga/)).not.toBeInTheDocument();
       });
 
       it('reset on removing and move the focus to the add button', () => {
