@@ -1979,6 +1979,16 @@ describe('FutureMe', () => {
           expect(within(screen.getByRole('dialog')).getByText(content)).toBeInTheDocument();
         });
 
+        it('ask the saver to check which gives more both alone and with a partner', () => {
+          renderFutureMe();
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          expect(rescueBasisGroup()).toHaveAccessibleDescription(
+            /Vaata üle, kumb annab sulle rohkem, nii üksi kui ka partneriga lapsi kasvatades\.$/,
+          );
+        });
+
         it('not ask when the saver does not retire early', () => {
           renderFutureMe();
           addKids(['1990', '1992', '1994']);

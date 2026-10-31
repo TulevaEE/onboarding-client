@@ -126,6 +126,15 @@ describe('rescue allowance or the pension for the children question', () => {
     },
   );
 
+  it('asks a saver raising the children alone to check which gives more, not that one is better', () => {
+    renderEt(<RescueCompareFaq context={withRescue()} />);
+
+    expect(
+      screen.getByText(/Kui kasvatad lapsi üksi, vaata tabelist, kumb annab sulle rohkem/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/olla sulle kasulikum/)).not.toBeInTheDocument();
+  });
+
   it('says one year, not one years, in English', () => {
     render(
       <IntlProvider locale="en" messages={translations.en}>
