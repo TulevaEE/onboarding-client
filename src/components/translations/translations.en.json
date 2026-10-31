@@ -3175,7 +3175,7 @@
   "futureMe.result.rules.fundPensionContract.title": "Monthly payout agreement: once or a new one every year",
   "futureMe.result.rules.fundPensionContract.text": "{isBoth, select, yes {II and III pillar payouts are separate agreements. } other {}}With one agreement, the payout ends at the end of the period. If you sign a new agreement every year for at least the recommended period, it stays free of income tax and the payouts last longer, but at a very old age the monthly payout is smaller.",
   "futureMe.result.rules.inheritance.title": "Inheritance",
-  "futureMe.result.rules.inheritance.text": "{pillars, select, both {II and III pillar} secondPillar {II pillar} other {III pillar}} fund units pass to your heirs, also during monthly payouts. An heir can move them to their own pension account free of income tax. A lifelong insurance pension cannot be inherited (except for the guarantee period).",
+  "futureMe.result.rules.inheritance.text": "{pillars, select, both {II and III pillar} secondPillar {II pillar} other {III pillar}} fund units pass to your heirs, also during monthly payouts. An heir can move the fund units to their own pension account free of income tax.",
   "futureMe.result.rules.childSupplement.title": "Children’s pension supplement",
   "futureMe.result.rules.childSupplement.text": "For a child born 1991–2012, 3.5 yearly rates; for a child born before 1991, 1.5 yearly rates and 2 years of service; for a child born in 2013 or later, the state pays into the II pillar. The supplement is not added to a special pension. The Social Insurance Board grants it on application.",
   "futureMe.result.rules.childSupplement.choice": "+{monthly} a month",

@@ -3265,7 +3265,7 @@
   "futureMe.result.rules.fundPensionContract.title": "Igakuiste väljamaksete leping: üks kord või igal aastal uuesti",
   "futureMe.result.rules.fundPensionContract.text": "{isBoth, select, yes {II ja III samba väljamaksed on eraldi lepingud. } other {}}Ühe lepinguga lõpeb väljamakse perioodi lõpus. Kui sõlmid lepingu igal aastal uuesti vähemalt soovitusliku perioodiga, jääb see tulumaksuvabaks ja väljamakseid jagub kauemaks, aga väga kõrges eas on kuu väljamakse väiksem.",
   "futureMe.result.rules.inheritance.title": "Pärimine",
-  "futureMe.result.rules.inheritance.text": "{pillars, select, both {II ja III samba} secondPillar {II samba} other {III samba}} fondiosakud lähevad pärijatele, ka igakuiste väljamaksete ajal. Pärija saab need tulumaksuvabalt oma pensionikontole. Eluaegne kindlustuspension pärandada ei saa (v.a garantiiperiood).",
+  "futureMe.result.rules.inheritance.text": "{pillars, select, both {II ja III samba} secondPillar {II samba} other {III samba}} fondiosakud lähevad pärijatele, ka igakuiste väljamaksete ajal. Pärija saab fondiosakud tulumaksuvabalt oma pensionikontole.",
   "futureMe.result.rules.childSupplement.title": "Laste pensionilisa",
   "futureMe.result.rules.childSupplement.text": "1991.–2012. a sündinud lapse eest 3,5 aastahinnet, enne 1991. a sündinud lapse eest 1,5 aastahinnet ja 2 a staaži; 2013+ sündinud lapse eest maksab riik II sambasse. Eripensionile lisa ei lisata. SKA määrab lisa avalduse alusel.",
   "futureMe.result.rules.childSupplement.choice": "+{monthly} kuus",
