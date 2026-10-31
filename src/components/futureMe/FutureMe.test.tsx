@@ -278,10 +278,12 @@ describe('FutureMe', () => {
       expect(sexField()).toHaveDisplayValue('Naine');
     });
 
-    it('tells the user the answers came from their data', () => {
+    it('tells the user some answers are prefilled, without naming where from', () => {
       renderFutureMe();
 
-      expect(screen.getByText(/võetud sinu Tuleva andmetest/)).toBeInTheDocument();
+      expect(
+        screen.getByText('Osa andmeid on eeltäidetud. Kontrolli üle ja paranda, kui vaja.'),
+      ).toBeInTheDocument();
     });
 
     it('lets the user change both answers', () => {
@@ -300,7 +302,7 @@ describe('FutureMe', () => {
       renderFutureMe();
 
       expect(birthYearField()).toHaveValue(null);
-      expect(screen.queryByText(/võetud sinu Tuleva andmetest/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/on eeltäidetud/)).not.toBeInTheDocument();
     });
   });
 

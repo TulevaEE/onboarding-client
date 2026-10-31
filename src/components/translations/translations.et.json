@@ -2589,7 +2589,7 @@
   "futureMe.you.kicker": "Enne kui alustame",
   "futureMe.you.title": "Kes sa oled ja mis sul juba on?",
   "futureMe.you.intro": "Järgmised sammud lähtuvad allolevatest andmetest. Sammaste summad on tänased. Nende, sinu sissemaksete ja tootluse põhjal arvutab Tulevane Mina, kui palju sul pensionieaks koguneb. Kõik summad on <strong>tänastes eurodes</strong>: arvutus arvestab hinnatõusu (2% aastas), et saaksid summasid tänaste hindadega võrrelda.",
-  "futureMe.you.prefillNote": "Sünniaasta, sugu ja II samba makse on võetud sinu Tuleva andmetest. Kontrolli üle ja paranda, kui vaja.",
+  "futureMe.you.prefillNote": "Osa andmeid on eeltäidetud. Kontrolli üle ja paranda, kui vaja.",
   "futureMe.you.me.title": "Sina",
   "futureMe.you.me.summary": "Sündinud {birthYear} · {sex, select, N {naine} M {mees} other {muu}}",
   "futureMe.you.me.incomplete": "Täitmata",

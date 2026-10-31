@@ -2499,7 +2499,7 @@
   "futureMe.you.kicker": "Before we start",
   "futureMe.you.title": "Who are you and what do you already have?",
   "futureMe.you.intro": "The next steps start from the details below. The pillar amounts are today’s. From these, your contributions and the return, Future Me works out how much you will have by retirement age. All amounts are in <strong>today’s euros</strong>: the calculation allows for price rises (2% a year), so you can compare amounts with today’s prices.",
-  "futureMe.you.prefillNote": "Your birth year, sex and II pillar contribution come from your Tuleva details. Check them and correct them if needed.",
+  "futureMe.you.prefillNote": "Some details are prefilled. Check them and correct them if needed.",
   "futureMe.you.me.title": "You",
   "futureMe.you.me.summary": "Born {birthYear} · {sex, select, N {female} M {male} other {other}}",
   "futureMe.you.me.incomplete": "Not filled in",
