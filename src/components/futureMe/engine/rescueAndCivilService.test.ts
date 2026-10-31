@@ -1,6 +1,8 @@
 import {
   childSupplement,
+  DEFERRAL_INCREASE,
   earlyYears,
+  options,
   KidsInput,
   PensionInput,
   rescueIncrease,
@@ -140,6 +142,54 @@ describe('rescue service', () => {
         expect(otherParent.rescueAllowance?.until).toBe(ordinaryAge);
       });
     });
+  });
+});
+
+describe('rescue service allowance until the pension age, then the old-age pension', () => {
+  const rescuer: PensionInput = { ...base, birthYear: 1975, rescueYears: 20 };
+  const pensionAge = retirementYears(rescuer);
+  const deferredBy = (years: number) =>
+    simulate(rescuer, lifeTable, { ...scenarioB, deferral: years });
+  const takenAtPensionAge = deferredBy(0);
+  const deferredOneYear = deferredBy(1);
+
+  it('lets the saver defer the old-age pension, because the allowance is not a pension', () => {
+    expect(options(rescuer).deferral.open).toBe(true);
+  });
+
+  it('keeps paying the allowance until the pension age', () => {
+    expect(statePensionAt(deferredOneYear, pensionAge - 1)).toBeCloseTo(
+      statePensionAt(takenAtPensionAge, pensionAge - 1),
+      6,
+    );
+  });
+
+  it('pays no state pension in the deferred year after the allowance ends', () => {
+    expect(statePensionAt(deferredOneYear, pensionAge)).toBe(0);
+  });
+
+  it('raises the old-age pension for the deferred year', () => {
+    expect(statePensionAt(deferredOneYear, pensionAge + 1)).toBeCloseTo(
+      statePensionAt(takenAtPensionAge, pensionAge + 1) * (1 + DEFERRAL_INCREASE[1]),
+      6,
+    );
+  });
+
+  it('pays half the old-age pension from the pension age when half is taken', () => {
+    const half = simulate(rescuer, lifeTable, { ...scenarioB, half: 1 });
+    expect(statePensionAt(half, pensionAge - 1)).toBeCloseTo(
+      statePensionAt(takenAtPensionAge, pensionAge - 1),
+      6,
+    );
+    expect(statePensionAt(half, pensionAge)).toBeCloseTo(
+      statePensionAt(takenAtPensionAge, pensionAge) / 2,
+      6,
+    );
+  });
+
+  it('does not let the saver defer once the pension for children starts before the pension age', () => {
+    const kids: KidsInput = { b2012: 4, earlyUser: 'me', supUser: 'me' };
+    expect(options({ ...rescuer, kids }).deferral.open).toBe(false);
   });
 });
 

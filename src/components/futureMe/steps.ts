@@ -34,6 +34,7 @@ const ORDER_SPECIAL_PENSION_BEFORE_AGE_60 = 4.5;
 const ORDER_RETIRING_BEFORE_AGE_60 = 4.6;
 const ORDER_SPECIAL_PENSION_BEFORE_PENSION_AGE = 5.5;
 const ORDER_SPECIAL_PENSION_AT_PENSION_AGE = 5.9;
+const ORDER_SPECIAL_PENSION_AFTER_PENSION_AGE = 7.5;
 
 const MEASURED_RESULT_STEP = 9;
 
@@ -67,7 +68,10 @@ export const isStepSkipped = (
 
 const specialPensionOrder = (input: StepPlanInput): number => {
   const pensionAgeYears = retirementYears(input);
-  const startAge = Math.min(input.specialPensionStartAge ?? pensionAgeYears, pensionAgeYears);
+  const startAge = input.specialPensionStartAge ?? pensionAgeYears;
+  if (startAge > pensionAgeYears) {
+    return ORDER_SPECIAL_PENSION_AFTER_PENSION_AGE;
+  }
   if (startAge < THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021) {
     return ORDER_SPECIAL_PENSION_BEFORE_AGE_55;
   }

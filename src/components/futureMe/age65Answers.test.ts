@@ -70,6 +70,45 @@ describe('age65Answers', () => {
       );
     });
 
+    describe('with a special pension starting after the pension age', () => {
+      const laterSpecialPension = {
+        workAdded: true,
+        hasSpecialPension: true,
+        pensionAgeYears: '65',
+        specialPensionStartAge: '68',
+      };
+
+      it('keeps the old-age pension in full until the special pension starts', () => {
+        expect(deferralLock(youWith(laterSpecialPension))).toBe('specialPensionLater');
+      });
+
+      it('is open when the saver takes the flexible old-age pension instead', () => {
+        expect(
+          deferralLock(youWith({ ...laterSpecialPension, specialPensionPath: 'flexible' })),
+        ).toBeNull();
+      });
+    });
+
+    describe('for a rescuer waiting for the pension on the allowance', () => {
+      const rescuer = { workAdded: true, hasRescue: true, rescueYears: '20' };
+
+      it('is open, because the allowance is not a pension and ends at the pension age', () => {
+        expect(deferralLock(youWith(rescuer))).toBeNull();
+      });
+
+      it('is open when only the allowance is chosen beside the children right', () => {
+        expect(
+          deferralLock(youWith({ ...rescuer, ...FIVE_CHILDREN, rescueBasis: 'toetus' })),
+        ).toBeNull();
+      });
+
+      it('is locked once the pension for children starts before the pension age', () => {
+        expect(
+          deferralLock(youWith({ ...rescuer, ...FIVE_CHILDREN, rescueBasis: 'pension' })),
+        ).toBe('favourable');
+      });
+    });
+
     it('is locked for favourable terms and for a flexible pension', () => {
       expect(deferralLock(youWith(FIVE_CHILDREN))).toBe('favourable');
       expect(deferralLock(youWith({ earlyYearsPicked: '2' }))).toBe('flexible');

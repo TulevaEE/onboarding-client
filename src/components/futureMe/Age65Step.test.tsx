@@ -493,6 +493,16 @@ describe('Age 65 step', () => {
       );
     });
 
+    it('lets the saver defer the old-age pension that follows the allowance at the pension age', () => {
+      const group = pensionModeGroup();
+
+      expect(
+        within(group).getByRole('radio', { name: /^Kohe täissumma/ }),
+      ).toHaveAccessibleDescription(/kohe\s66-aastaselt$/);
+      expect(within(group).getByRole('radio', { name: /^Lükkan edasi/ })).toBeInTheDocument();
+      expect(screen.queryByText(/Lähed pensionile soodustingimustel/)).not.toBeInTheDocument();
+    });
+
     it('says the allowance and the increase are paid only while not working as a rescuer', () => {
       expect(noteItem('Töö:')).toHaveTextContent(
         /makstakse ainult siis, kui sa ei tööta päästjana\. Muul erialal võid edasi töötada\./,
@@ -525,6 +535,9 @@ describe('Age 65 step', () => {
         screen.queryByRole('group', { name: 'Kuidas võtad riikliku pensioni?' }),
       ).not.toBeInTheDocument();
       expect(screen.getByText(/Lähed pensionile soodustingimustel/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/saad pensioni maksmise peatada või võtta pool pensionist/),
+      ).toBeInTheDocument();
 
       userEvent.click(screen.getByRole('button', { name: /Muuda varem pensionile minekut/ }));
 

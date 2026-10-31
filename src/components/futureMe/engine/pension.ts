@@ -565,6 +565,11 @@ export function earlyYears(input: Partial<PensionInput>): number {
   return Math.max(kidsYears, hazardEarly, rescueEarly);
 }
 
+function isRescueAllowanceOnly(input: PensionInput, soodus: number): boolean {
+  const rescueEarly = (input.rescueYears || 0) >= 15 && input.rescueBasis !== 'pension' ? 5 : 0;
+  return soodus <= rescueEarly && rescueUntil(input) === retirementYears(input);
+}
+
 export function rescueUntil(input: PensionInput): number | null {
   if ((input.rescueYears || 0) < 15 || input.rescueBasis === 'pension') {
     return null;
@@ -696,12 +701,12 @@ export function simulate(
     (input.flexEarly || 0) > 0 && spYear > 0 && spStart <= pa - requestedSoodus;
   const soodus = isFlexibleBarred ? Math.min(requestedSoodus, earlyYears(input)) : requestedSoodus;
   const ret = pa - soodus;
-  const deferral = spYear > 0 || soodus > 0 ? 0 : scenario.deferral || 0;
-  const p1Start = ret + deferral;
-  const half =
-    deferral === 0 && spYear === 0 && soodus === 0
-      ? Math.min(5, Math.max(0, scenario.half || 0))
-      : 0;
+  const isAllowanceOnly = soodus > 0 && isRescueAllowanceOnly(input, soodus);
+  const isDeferrable = spYear === 0 && (soodus === 0 || isAllowanceOnly);
+  const oldAgeStart = isAllowanceOnly ? pa : ret;
+  const deferral = isDeferrable ? scenario.deferral || 0 : 0;
+  const p1Start = oldAgeStart + deferral;
+  const half = deferral === 0 && isDeferrable ? Math.min(5, Math.max(0, scenario.half || 0)) : 0;
   const kidsMonthly = childSupplement(input);
   const hazardMonthly = hazardSupplement(input);
   const earlyMissing = soodus > 0 && currentAge < ret ? soodus : 0;
@@ -719,7 +724,10 @@ export function simulate(
     (1 + serviceIncrease.increase);
   const p1Full = p1Base * p1Factor;
   const toetusEnd = flexEarly > 0 ? null : rescueUntil(input);
-  const toetusYear = Math.max(0, p1Full - kidsMonthly * 12 * p1Factor);
+  const toetusYear = Math.max(
+    0,
+    (p1Base - kidsMonthly * 12) * (1 - EARLY_DECREASE[flexEarly]) * (1 + serviceIncrease.increase),
+  );
   const workOn = input.workOn !== undefined ? !!input.workOn : soodus > 0 && !!input.soodusWork;
   let defaultWorkUntil = ret + 1;
   if (input.workUntil !== undefined) {
@@ -754,8 +762,13 @@ export function simulate(
     if (spPaidAt(age)) {
       return 0;
     }
-    return toetusEnd !== null && age < toetusEnd ? toetusYear : p1Full;
+    if (toetusEnd !== null && age < toetusEnd) {
+      return toetusYear;
+    }
+    return age < p1Start ? 0 : p1Full;
   };
+  const firstIncomeAge = isAllowanceOnly ? ret : p1Start;
+  const isDeferredYear = (age: number) => age >= oldAgeStart && age < p1Start;
   const taxOn = input.incomeTax !== false;
   const allowance = taxOn ? PENSIONER_ALLOWANCE : 0;
   const needYear = need * 12;
@@ -938,10 +951,11 @@ export function simulate(
   const firstRetAge = Math.max(open2, startAge);
   const lump3Age = Math.max(open3, startAge);
   const firstPillarAt = (age: number) => {
-    if (age < p1Start) {
+    if (age < firstIncomeAge) {
       return 0;
     }
-    return age < ret + half ? (p1Base / 2) * (1 + serviceIncrease.increase) : p1At(age);
+    const isHalfTaken = age >= oldAgeStart && age < oldAgeStart + half;
+    return isHalfTaken ? (p1Base / 2) * (1 + serviceIncrease.increase) : p1At(age);
   };
   let allowAtPa =
     firstRetAge >= pa ? Math.max(0, allowance - firstPillarAt(firstRetAge) - spAt(firstRetAge)) : 0;
@@ -968,9 +982,11 @@ export function simulate(
     const fundStart = secondPillarStart + thirdPillarStart;
     const depositStart = deposit;
     const i1gross =
-      age >= p1Start
+      age >= firstIncomeAge
         ? firstPillarAt(age) +
-          (spPaidAt(age) ? 0 : accrualYear * workedBefore(age) * (age < ret + half ? 1 : p1Factor))
+          (spPaidAt(age) || isDeferredYear(age)
+            ? 0
+            : accrualYear * workedBefore(age) * (age < oldAgeStart + half ? 1 : p1Factor))
         : 0;
     const work = age >= ret && age < workEnd;
     const ispg = spAt(age);
@@ -1084,7 +1100,7 @@ export function simulate(
   }
   const showAtPa = spPaid && ret < pa && (p1AtPa > p1AtSpStart + 0.5 * 12 || p1AtPa > spYear);
   return {
-    ...summarize(rows, input, table, ret, p1Start, currentAge, workEnd),
+    ...summarize(rows, input, table, ret, firstIncomeAge, currentAge, workEnd),
     earlyPayouts,
     ordinaryPensionAge: pa,
     p1FullAge: p1Start + half,
@@ -1127,7 +1143,8 @@ export function options(input: PensionInput): {
   p3: OptionState;
 } {
   const hasSpecialPension = !!input.spHas || (input.spMonthly || 0) > 0;
-  const soodus = (input.soodus !== undefined ? input.soodus : earlyYears(input)) > 0;
+  const soodusYears = input.soodus !== undefined ? input.soodus : earlyYears(input);
+  const soodus = soodusYears > 0 && !isRescueAllowanceOnly(input, soodusYears);
   let deferral: OptionState = { open: true, reason: '' };
   if (hasSpecialPension) {
     deferral = {

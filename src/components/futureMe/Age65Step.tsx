@@ -18,6 +18,7 @@ import { FirstPillarChoice } from './FirstPillarChoice';
 import {
   chosenFirstPillar,
   firstPillarComparison,
+  isSpecialPensionAfterPensionAge,
   pensionInputOf,
   SpecialPensionAnswers,
   specialPensionStartAge,
@@ -166,7 +167,7 @@ export const Age65Step = ({
         showErrors={showErrors}
         onChange={onChange}
       />
-      {comparison && (
+      {comparison && !isSpecialPensionAfterPensionAge(plan) && (
         <FirstPillarChoice
           idPrefix="future-me-first-pillar"
           title={<FormattedMessage id="futureMe.firstPillarChoice.title" />}

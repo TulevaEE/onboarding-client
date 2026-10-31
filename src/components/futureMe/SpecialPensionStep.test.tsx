@@ -58,6 +58,17 @@ const openSpecialPensionStep = (startAge = '55') => {
   );
 };
 
+const fillInYouWithSpecialPensionFrom = (startAge: string) => {
+  render(
+    <IntlProvider locale="et" messages={translations.et}>
+      <FutureMe />
+    </IntlProvider>,
+  );
+  fillInYou(startAge);
+};
+
+const trailButton = (name: RegExp) => within(trail()).queryByRole('button', { name });
+
 const amountField = (name = /Eripensioni suurus/) => screen.getByRole('spinbutton', { name });
 const workGroup = () => screen.getByRole('group', { name: 'Kas töötad eripensioni ajal edasi?' });
 const queryWorkGroup = () =>
@@ -249,7 +260,33 @@ describe('Special pension step', () => {
     typeInto(amountField(), '900');
 
     expect(screen.queryByText(/jätkub see samas mahus/)).not.toBeInTheDocument();
-    expect(screen.getByText(/Eripension algab 68-aastaselt/)).toBeVisible();
+    expect(screen.getByText(/68-aastaselt ka eripensionile/)).toBeVisible();
+  });
+
+  it('asks which pension stays instead of what happens at the pension age when the special pension starts only later', () => {
+    openSpecialPensionStep('68');
+
+    expect(screen.getByRole('heading', { name: 'Eripension või vanaduspension?' })).toBeVisible();
+    expect(
+      screen.queryByRole('heading', { name: 'Mis saab pensionieas?' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('compares the pensions at the special pension start before its amount is filled in when it starts only later', () => {
+    openSpecialPensionStep('68');
+
+    expect(screen.getByText(/kumb on 68-aastaselt suurem/)).toBeVisible();
+  });
+
+  it('places a special pension starting after the pension age after the pension age steps in the trail', () => {
+    openSpecialPensionStep('70');
+
+    const stepNames = within(trail())
+      .getAllByRole('button')
+      .map((button) => button.textContent);
+    const specialIndex = stepNames.findIndex((name) => name?.startsWith('70'));
+
+    expect(stepNames[specialIndex + 1]).toMatch(/^Kulud/);
   });
 
   it('does not ask about working when the special pension starts at the pension age', () => {
@@ -269,5 +306,50 @@ describe('Special pension step', () => {
     expect(queryWorkGroup()).not.toBeInTheDocument();
     expect(screen.queryByText(/Samas ametis töötamise ajal/)).not.toBeInTheDocument();
     expect(screen.queryByText(/kaitseväel ja politseil/)).not.toBeInTheDocument();
+  });
+
+  describe('starting after the pension age', () => {
+    const pathGroup = () =>
+      screen.getByRole('group', { name: 'Eripension või paindlik vanaduspension?' });
+
+    it('asks in Sina whether the saver takes the special pension or the flexible old-age pension', () => {
+      fillInYouWithSpecialPensionFrom('70');
+
+      expect(
+        within(pathGroup()).getByRole('radio', { name: /^Võtan 70-aastaselt eripensioni/ }),
+      ).toBeChecked();
+      expect(
+        within(pathGroup()).getByRole('radio', { name: /^Vanaduspension paindlikult/ }),
+      ).not.toBeChecked();
+    });
+
+    it('drops the special pension step when the saver takes the flexible old-age pension', () => {
+      fillInYouWithSpecialPensionFrom('70');
+
+      userEvent.click(
+        within(pathGroup()).getByRole('radio', { name: /^Vanaduspension paindlikult/ }),
+      );
+
+      expect(trailButton(/^70\sa/)).not.toBeInTheDocument();
+    });
+
+    it('does not ask in Sina when the special pension starts by the pension age', () => {
+      fillInYouWithSpecialPensionFrom('65');
+
+      expect(
+        screen.queryByRole('group', { name: 'Eripension või paindlik vanaduspension?' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('keeps the old-age pension in full at the pension age until the special pension starts', () => {
+      fillInYouWithSpecialPensionFrom('70');
+
+      userEvent.click(trailButton(/^65\sa, vaatamata$/) as HTMLElement);
+
+      expect(
+        screen.getByText(/saad vanaduspensioni täies summas, kuni 70-aastaselt algab eripension/),
+      ).toBeVisible();
+      expect(screen.queryByRole('radio', { name: /Lükkan edasi/ })).not.toBeInTheDocument();
+    });
   });
 });

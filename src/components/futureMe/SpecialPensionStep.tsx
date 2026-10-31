@@ -3,11 +3,14 @@ import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
 import { HelpButton } from './HelpButton';
 import { Age65Answers, pensionKind } from './age65Answers';
+import { FirstPillarChoice } from './FirstPillarChoice';
 import { Age66Answers } from './age66Answers';
 import { euro, exactPercent } from './amountFormat';
 import { ChoiceCard } from './ChoiceCard';
 import {
+  chosenFirstPillar,
   firstPillarComparison,
+  isSpecialPensionAfterPensionAge,
   isPayAsked,
   isSpecialPensionStarted,
   isWorkAsked,
@@ -34,6 +37,7 @@ interface Props {
   isEmbedded?: boolean;
   showErrors?: boolean;
   onChange: (answers: SpecialPensionAnswers) => void;
+  onAge65Change: (answers: Age65Answers) => void;
   onEditYou: () => void;
 }
 
@@ -65,6 +69,7 @@ export const SpecialPensionStep = ({
   isEmbedded,
   showErrors = false,
   onChange,
+  onAge65Change,
   onEditYou,
 }: Props) => {
   const [isMonthlyTouched, setMonthlyTouched] = useState(false);
@@ -73,6 +78,7 @@ export const SpecialPensionStep = ({
   const year = plan.birthYear + age;
   const isStarted = isSpecialPensionStarted(plan);
   const oldAgeAge = retirementAge(plan);
+  const startsLater = age > oldAgeAge;
   const comparison = firstPillarComparison(answers, you, plan, age65, age66);
   const isMonthlyMissing = (isMonthlyTouched || showErrors) && !(amountOf(answers.monthly) > 0);
   const isGrossMissing = (isGrossTouched || showErrors) && answers.gross.trim() === '';
@@ -102,28 +108,59 @@ export const SpecialPensionStep = ({
         <FormattedMessage id="futureMe.specialPension.intro" values={{ age, year, isStarted }} />{' '}
         <EditYouButton labelId="futureMe.specialPension.changeStart" onClick={onEditYou} />
       </p>
-      <SectionTitle className="h5 section-title">
-        <FormattedMessage id="futureMe.specialPension.pensionAge.title" />
-      </SectionTitle>
-      <p className="text-pretty">
-        {comparison ? (
-          <FormattedMessage
-            id="futureMe.specialPension.pensionAge.compare"
-            values={{
-              age: oldAgeAge,
-              year: plan.birthYear + oldAgeAge,
-              years: plan.earlyRetirementYears,
-              kind: pensionKind(you),
-              specialAge: age,
-              startsLater: age > oldAgeAge ? 'yes' : 'no',
-              oldAge: euro(comparison.oldAge),
-              larger: comparison.larger,
-            }}
-          />
-        ) : (
-          <FormattedMessage id="futureMe.specialPension.pensionAge.empty" />
-        )}
-      </p>
+      {comparison && isSpecialPensionAfterPensionAge(plan) ? (
+        <FirstPillarChoice
+          idPrefix="future-me-special-pension-choice"
+          title={<FormattedMessage id="futureMe.firstPillarChoice.title" />}
+          intro={
+            <FormattedMessage
+              id="futureMe.firstPillarChoice.introSpecialLater"
+              values={{
+                age: oldAgeAge,
+                specialAge: age,
+                isFavourable: pensionKind(you) === 'favourable',
+              }}
+            />
+          }
+          special={comparison.special}
+          oldAge={comparison.oldAge}
+          larger={comparison.larger}
+          chosen={chosenFirstPillar(age65.firstPillarChoice, comparison)}
+          laterSpecialStartAge={age}
+          onChange={(firstPillarChoice) => onAge65Change({ ...age65, firstPillarChoice })}
+        />
+      ) : (
+        <>
+          <SectionTitle className="h5 section-title">
+            <FormattedMessage
+              id="futureMe.specialPension.pensionAge.title"
+              values={{ startsLater: startsLater ? 'yes' : 'no' }}
+            />
+          </SectionTitle>
+          <p className="text-pretty">
+            {comparison ? (
+              <FormattedMessage
+                id="futureMe.specialPension.pensionAge.compare"
+                values={{
+                  age: oldAgeAge,
+                  year: plan.birthYear + oldAgeAge,
+                  years: plan.earlyRetirementYears,
+                  kind: pensionKind(you),
+                  specialAge: age,
+                  startsLater: startsLater ? 'yes' : 'no',
+                  oldAge: euro(comparison.oldAge),
+                  larger: comparison.larger,
+                }}
+              />
+            ) : (
+              <FormattedMessage
+                id="futureMe.specialPension.pensionAge.empty"
+                values={{ startsLater: startsLater ? 'yes' : 'no', specialAge: age }}
+              />
+            )}
+          </p>
+        </>
+      )}
       <div className="mb-4">
         <label className="form-label fw-medium" htmlFor="future-me-special-pension-monthly">
           <FormattedMessage id="futureMe.specialPension.monthly.label" values={{ isStarted }} />{' '}

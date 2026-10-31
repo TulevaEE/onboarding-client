@@ -18,6 +18,7 @@ import {
   isChildIIMonthsAsked,
   isChildIIMonthsInvalid,
   isSpecialPensionOnly,
+  isSpecialPensionPathAsked,
   limitsOf,
   pensionAgeValue,
   prefilledFields,
@@ -678,6 +679,49 @@ describe('a special pension', () => {
   it('is left out of the plan when the work block is removed', () => {
     expect(toStepPlanInput(specialPension({ workAdded: false }))).toMatchObject({
       hasSpecialPension: false,
+    });
+  });
+
+  describe('starting after the pension age', () => {
+    const laterSpecialPension = (overrides: Partial<YouAnswers> = {}) =>
+      specialPension({ pensionAgeYears: '65', specialPensionStartAge: '68', ...overrides });
+
+    it('asks whether the saver takes the special pension or the flexible old-age pension', () => {
+      expect(isSpecialPensionPathAsked(laterSpecialPension())).toBe(true);
+    });
+
+    it('does not ask when the special pension starts by the pension age', () => {
+      expect(isSpecialPensionPathAsked(laterSpecialPension({ specialPensionStartAge: '65' }))).toBe(
+        false,
+      );
+      expect(isSpecialPensionPathAsked(specialPension())).toBe(false);
+    });
+
+    it('keeps the special pension in the plan by default', () => {
+      expect(toStepPlanInput(laterSpecialPension())).toMatchObject({
+        hasSpecialPension: true,
+        specialPensionStartAge: 68,
+      });
+    });
+
+    it('leaves the special pension out of the plan when the saver takes the flexible old-age pension', () => {
+      const answers = laterSpecialPension({ specialPensionPath: 'flexible' });
+
+      expect(toStepPlanInput(answers)).toMatchObject({
+        hasSpecialPension: false,
+        specialPensionStartAge: undefined,
+      });
+      expect(isSpecialPensionOnly(answers)).toBe(false);
+      expect(earlyRetirementYears({ ...answers, earlyYearsPicked: '3' })).toBe(3);
+    });
+
+    it('keeps the special pension when the flexible path is left over from a later start age', () => {
+      const answers = laterSpecialPension({
+        specialPensionPath: 'flexible',
+        specialPensionStartAge: '55',
+      });
+
+      expect(toStepPlanInput(answers).hasSpecialPension).toBe(true);
     });
   });
 });

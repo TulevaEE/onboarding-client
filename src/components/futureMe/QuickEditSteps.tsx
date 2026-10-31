@@ -34,6 +34,7 @@ const QuickEditSpecialPension = ({ context }: Props) => {
       age65={age65}
       age66={age66}
       onChange={(changed) => change({ specialPension: changed })}
+      onAge65Change={(changed) => change({ age65: changed })}
       onEditYou={() => goTo(FutureMeStep.YOU)}
     />
   );

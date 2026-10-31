@@ -11,7 +11,9 @@ import {
   amountOf,
   earlyRetirementRight,
   earlyRetirementYears,
-  isSpecialPensionOn,
+  isRescueAllowanceOnly,
+  isSpecialPensionPathAsked,
+  isSpecialPensionUsed,
   thirdPillarMonthlyOf,
   YouAnswers,
 } from './youAnswers';
@@ -19,7 +21,7 @@ import { payoutAge, retirementAge } from './planAges';
 
 export type PensionMode = 'full' | 'half' | 'defer';
 export type PensionKind = 'regular' | 'favourable' | 'flexible';
-export type DeferralLock = 'specialPension' | PensionKind;
+export type DeferralLock = 'specialPension' | 'specialPensionLater' | PensionKind;
 
 export const PENSION_MODES: PensionMode[] = ['full', 'half', 'defer'];
 export const DEFERRAL_YEARS = [1, 2, 3, 4, 5];
@@ -68,8 +70,11 @@ export const pensionKind = (you: YouAnswers): PensionKind => {
 };
 
 export const deferralLock = (you: YouAnswers): DeferralLock | null => {
-  if (isSpecialPensionOn(you)) {
-    return 'specialPension';
+  if (isSpecialPensionUsed(you)) {
+    return isSpecialPensionPathAsked(you) ? 'specialPensionLater' : 'specialPension';
+  }
+  if (isRescueAllowanceOnly(you)) {
+    return null;
   }
   const kind = pensionKind(you);
   return kind === 'regular' ? null : kind;

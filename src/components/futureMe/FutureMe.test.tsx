@@ -1903,14 +1903,90 @@ describe('FutureMe', () => {
           );
         });
 
-        it('take the early right from the children when their pension is picked', () => {
+        const rescueBasisGroup = () =>
+          screen.queryByRole('group', { name: /Ootetoetus või laste eest pension/ });
+        const rescueBasisNames = () =>
+          ['Mõlemad järjest', 'Laste eest pension', 'Ainult ootetoetus'].filter((name) =>
+            within(rescueBasisGroup() as HTMLElement).queryByRole('radio', { name }),
+          );
+
+        it('ask the early years first and the rescue allowance or the pension for the children after them', () => {
           renderFutureMe();
           addKids(['1990', '1992', '1994']);
           addRescueService();
 
-          userEvent.click(rescueBasis('Laste eest pension'));
+          expect(earlyYearsField().compareDocumentPosition(rescueBasisGroup() as HTMLElement)).toBe(
+            Node.DOCUMENT_POSITION_FOLLOWING,
+          );
+        });
 
-          expect(earlyYearsField()).toHaveDisplayValue(withNbsp('1 a, vähendamata (kõige varem)'));
+        it('offer the pension for the children or only the allowance when the early years fit the children right', () => {
+          renderFutureMe();
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          userEvent.selectOptions(earlyYearsField(), '1');
+
+          expect(rescueBasisNames()).toEqual(['Laste eest pension', 'Ainult ootetoetus']);
+          expect(rescueBasis('Laste eest pension')).toBeChecked();
+          expect(earlyYearsField()).toHaveDisplayValue(withNbsp('1 a, vähendamata'));
+        });
+
+        it('offer both one after the other or only the allowance when the early years go past the children right', () => {
+          renderFutureMe();
+          userEvent.selectOptions(pensionAgeField(), '66');
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          userEvent.selectOptions(earlyYearsField(), '3');
+
+          expect(rescueBasisNames()).toEqual(['Mõlemad järjest', 'Ainult ootetoetus']);
+          expect(rescueBasis('Mõlemad järjest')).toHaveAccessibleDescription(
+            /^Ootetoetus 2\sa \(63–64\sa\), siis 65-\u2060aastaselt laste eest pension koos laste lisaga\.$/,
+          );
+          expect(rescueBasis('Ainult ootetoetus')).toHaveAccessibleDescription(
+            /^3\sa varem \(63\sa\) kuni pensionieani\./,
+          );
+        });
+
+        it.each([
+          ['to look at it together with the partner', /vaadake koos üle, kumb on teile soodsam/],
+          [
+            'to look at what gives more when raising the children alone',
+            /Vaata üle, kumb annab sulle rohkem/,
+          ],
+          [
+            'that the allowance ends at the pension age and the pension can then be deferred',
+            /Ootetoetus lõpeb pensionieas/,
+          ],
+          [
+            'that the pension for the children cannot be deferred but can be suspended later',
+            /saab hiljem peatada või pooleks võtta/,
+          ],
+          [
+            'the assumption on the rescue increase of a deferred pension',
+            /Eeldame, et päästja suurendus lisandub ka edasi lükatud pensionile/,
+          ],
+        ])('advise behind the „?“ of the rescue allowance choice %s', (_, content) => {
+          renderFutureMe();
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          userEvent.click(
+            screen.getByRole('button', { name: /^Selgitus: Ootetoetus või laste eest pension/ }),
+          );
+
+          expect(within(screen.getByRole('dialog')).getByText(content)).toBeInTheDocument();
+        });
+
+        it('not ask when the saver does not retire early', () => {
+          renderFutureMe();
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          userEvent.selectOptions(earlyYearsField(), '0');
+
+          expect(rescueBasisGroup()).not.toBeInTheDocument();
         });
 
         it('not ask without the right from the children', () => {

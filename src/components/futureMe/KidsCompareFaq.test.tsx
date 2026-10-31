@@ -108,6 +108,34 @@ describe('rescue allowance or the pension for the children question', () => {
     expect(screen.queryByText('kõige rohkem')).not.toBeInTheDocument();
   });
 
+  it.each(['et', 'en'] as const)(
+    'names the You step questions where the parents choose who uses each right, in %s',
+    (locale) => {
+      render(
+        <IntlProvider locale={locale} messages={translations[locale]}>
+          <RescueCompareFaq context={withRescue()} />
+        </IntlProvider>,
+      );
+
+      const messages = translations[locale] as Record<string, string>;
+      const [open, close] = locale === 'et' ? ['„', '“'] : ['“', '”'];
+      const quoted = (key: string) => `${open}${messages[key]}${close}`;
+      const faqText = document.body.textContent;
+      expect(faqText).toContain(quoted('futureMe.you.kidsEarlyUser.label'));
+      expect(faqText).toContain(quoted('futureMe.you.kidsSupUser.label'));
+    },
+  );
+
+  it('says one year, not one years, in English', () => {
+    render(
+      <IntlProvider locale="en" messages={translations.en}>
+        <RescueCompareFaq context={withRescue()} />
+      </IntlProvider>,
+    );
+
+    expect(screen.getByText(/they retire 1\syear earlier for the children/)).toBeInTheDocument();
+  });
+
   it('is not asked without both rights', () => {
     renderEt(<RescueCompareFaq context={contextWith(threeChildren)} />);
 

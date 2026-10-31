@@ -372,6 +372,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           headingRef={headingRef}
           showErrors={attemptedStep === FutureMeStep.SPECIAL_PENSION}
           onChange={setSpecialPension}
+          onAge65Change={setAge65}
           onEditYou={() => goTo(FutureMeStep.YOU)}
         />
       );
