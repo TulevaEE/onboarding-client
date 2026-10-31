@@ -37,17 +37,17 @@ export const RescueNotes = ({ input, age, pensionAge }: Props) => {
     hasKidsRight && input.kids?.earlyUser === 'me' && input.rescueBasis !== 'toetus';
 
   return (
-    <ul className="payout-note">
+    <div className="payout-note d-flex flex-column gap-2">
       {isAllowancePaid && (
-        <li>
+        <p className="mb-0">
           <FormattedMessage
             id="futureMe.age65.rescue.payer"
             values={{ strong, until, hasKidsSupplement: childSupplement(input) > 0 }}
           />
-        </li>
+        </p>
       )}
       {increase > 0 && (
-        <li>
+        <p className="mb-0">
           <FormattedMessage
             id="futureMe.age65.rescue.increase"
             values={{
@@ -59,14 +59,14 @@ export const RescueNotes = ({ input, age, pensionAge }: Props) => {
               pensionAge,
             }}
           />
-        </li>
+        </p>
       )}
-      <li>
+      <p className="mb-0">
         <FormattedMessage
           id="futureMe.age65.rescue.work"
           values={{ strong, hasSecondPillar: (input.p2 || 0) > 0, isKidsPension }}
         />
-      </li>
-    </ul>
+      </p>
+    </div>
   );
 };

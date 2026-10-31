@@ -473,7 +473,7 @@ describe('Age 65 step', () => {
   describe('with rescue service', () => {
     const noteItem = (start: string) =>
       screen.getByText(
-        (_, element) => element?.tagName === 'LI' && !!element.textContent?.startsWith(start),
+        (_, element) => element?.tagName === 'P' && !!element.textContent?.startsWith(start),
       );
 
     beforeEach(openWithRescueService);
