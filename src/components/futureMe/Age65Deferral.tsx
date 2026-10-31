@@ -4,6 +4,7 @@ import { DEFERRAL_INCREASE, retirementYears } from './engine/pension';
 import { StepPlanInput } from './steps';
 import {
   amountOf,
+  earlyRetirementYears,
   isRescueAllowanceOnly,
   serviceIncreaseOfAnswers,
   YouAnswers,
@@ -37,8 +38,13 @@ const LONGEST_DEFERRAL = Math.max(...DEFERRAL_YEARS);
 
 export const Age65Deferral = ({ answers, you, plan, onChange, onEditYou }: Props) => {
   const pensionAge = retirementYears(plan);
+  const yearsNotWorkedBeforeAllowance = isRescueAllowanceOnly(you) ? earlyRetirementYears(you) : 0;
   const firstPillar =
-    amountOf(you.firstPillarMonthly) * (1 + serviceIncreaseOfAnswers(you).increase);
+    Math.max(
+      0,
+      amountOf(you.firstPillarMonthly) - yearsNotWorkedBeforeAllowance * workAccrualMonthly(you),
+    ) *
+    (1 + serviceIncreaseOfAnswers(you).increase);
   const lock = deferralLock(you);
   const headingValues = {
     allowance: isRescueAllowanceOnly(you) ? 'yes' : 'no',

@@ -3,6 +3,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { FutureMe } from './FutureMe';
+import { workAccrual } from './engine/pension';
 import { useMe } from '../common/apiHooks';
 import { User } from '../common/apiModels';
 import { FundPension } from '../common/apiModels/withdrawals';
@@ -537,14 +538,19 @@ describe('Age 65 step', () => {
       ).toBeInTheDocument();
     });
 
-    it('shows the old-age pension with the rescue increase in each way of taking it', () => {
+    it('shows the old-age pension with the rescue increase and without the five years not worked in each way of taking it', () => {
       const group = pensionModeGroup();
+      const yearsNotWorked = 5;
+      const rescueIncrease = 1.2;
+      const fullPension = (700 - yearsNotWorked * workAccrual(2000, true, true)) * rescueIncrease;
 
       expect(
         within(group).getByRole('radio', { name: /^Kohe täissumma/ }),
-      ).toHaveAccessibleDescription(/^840\s€ kuus enne tulumaksu/);
+      ).toHaveAccessibleDescription(
+        new RegExp(`^${Math.round(fullPension)}\\s€ kuus enne tulumaksu`),
+      );
       expect(within(group).getByRole('radio', { name: /^Pool/ })).toHaveAccessibleDescription(
-        /^420\s€ kuus/,
+        new RegExp(`^${Math.round(fullPension / 2)}\\s€ kuus`),
       );
     });
 
