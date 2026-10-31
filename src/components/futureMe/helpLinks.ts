@@ -1,6 +1,7 @@
 export const HELP_LINKS = {
   statLifeTable: 'https://andmed.stat.ee/et/stat/rahvastik__rahvastikusundmused__surmad/RV045',
   skaCalculator: 'https://iseteenindus.sotsiaalkindlustusamet.ee/self-service/pension-calculator',
+  eestiCalculator: 'https://www.eesti.ee/et/artikkel/pension/pensionikalkulaator',
   rpks: 'https://www.riigiteataja.ee/akt/RPKS',
   rpksCurrent: 'https://www.riigiteataja.ee/akt/RPKS?leiaKehtiv',
   skaPensionAge:

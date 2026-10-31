@@ -439,6 +439,9 @@ describe('Sina step help buttons', () => {
     expect(
       within(dialog).getByRole('link', { name: /^Sotsiaalkindlustusameti pensionikalkulaatoris/ }),
     ).toHaveAttribute('href', expect.stringContaining('pension-calculator'));
+    expect(
+      within(dialog).getByRole('link', { name: /^Eesti\.ee pensionikalkulaatoris/ }),
+    ).toHaveAttribute('href', 'https://www.eesti.ee/et/artikkel/pension/pensionikalkulaator');
   });
 
   it('tells every saver, in a step of its own, to check the state pension without the children, since Elukaar adds their supplement', () => {
