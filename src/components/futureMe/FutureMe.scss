@@ -4,6 +4,10 @@
   max-width: 880px;
   margin: 0 auto;
 
+  legend {
+    text-wrap: balance;
+  }
+
   .trail {
     display: flex;
     gap: 0.25rem;
@@ -709,6 +713,7 @@
 
       strong {
         color: $text-navy;
+        text-wrap: balance;
       }
     }
 
@@ -760,6 +765,7 @@
     summary {
       padding: 0.625rem 0;
       font-weight: 500;
+      text-wrap: balance;
     }
 
     &[open] {
