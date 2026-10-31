@@ -1,6 +1,7 @@
 import { ChartRow } from './chartData';
 import { ChartEvent, FundPillars } from './chartEvents';
 import { SimulationRow } from './engine/pension';
+import { nominalFactorAt } from './nominal';
 import { Result } from './resultAnswers';
 
 type Pillar = 'second' | 'third';
@@ -139,10 +140,16 @@ export const changeKeyOf = (change: ChartChange): string =>
     'pillars' in change ? change.pillars : '',
   ].join('-');
 
+const inFuturePrices = (change: ChartChange, yearAt: (age: number) => number): ChartChange =>
+  change.kind === 'statePensionRise'
+    ? { ...change, amount: change.amount * nominalFactorAt(yearAt(change.age)) }
+    : change;
+
 export const chartChangesOf = (
   result: Result,
   chartRows: ChartRow[],
   events: ChartEvent[],
+  isNominal = false,
 ): ChartChange[] => {
   const rows = chartRows.filter(({ isBeforePension }) => !isBeforePension);
   const resultRows = result.rows.filter(({ age }) => age >= result.pensionStartAge);
@@ -168,7 +175,9 @@ export const chartChangesOf = (
   ];
   const isFirstOfItsKey = (change: ChartChange, index: number) =>
     changes.findIndex((other) => changeKeyOf(other) === changeKeyOf(change)) === index;
+  const yearAt = (age: number) => resultRowAt(age)?.year ?? result.rows[0].year;
   return changes
     .filter(isFirstOfItsKey)
+    .map((change) => (isNominal ? inFuturePrices(change, yearAt) : change))
     .sort((a, b) => a.age - b.age || KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));
 };

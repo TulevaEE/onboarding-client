@@ -789,7 +789,7 @@ export const ResultChart = ({ result, need }: ResultChartProps) => {
         events={events}
         beforePension={beforePensionOf(rows)}
         cover={coverStepsOf(shown, rows)}
-        changes={chartChangesOf(shown, rows, events)}
+        changes={chartChangesOf(result, rows, events, isNominal)}
         hasWorkYears={rows.some(({ salary }) => salary > 0)}
         hasRescueAllowance={shown.rescueAllowance !== null}
         paysIntoThirdPillar={shown.thirdPillarMonthly > 0}
