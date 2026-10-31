@@ -154,7 +154,7 @@ const Summary = ({
       <li>
         <FormattedMessage
           id="futureMe.result.chart.summary.start"
-          values={{ age: result.pensionStartAge, sources: intl.formatList(sources) }}
+          values={{ age: start.age, sources: intl.formatList(sources) }}
         />
       </li>
       <SummaryNotes notes={notes} />
@@ -162,7 +162,7 @@ const Summary = ({
         {isNominal ? (
           <FormattedMessage
             id="futureMe.result.chart.summary.costsNominal"
-            values={{ today: euro(need), age: result.pensionStartAge, future: euro(start.costs) }}
+            values={{ today: euro(need), age: start.age, future: euro(start.costs) }}
           />
         ) : (
           <FormattedMessage

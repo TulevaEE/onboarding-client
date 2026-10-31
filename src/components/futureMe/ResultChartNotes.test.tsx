@@ -4,7 +4,7 @@ import { IntlProvider } from 'react-intl';
 import { initialAge60 } from './age60Answers';
 import { Age65Answers, initialAge65 } from './age65Answers';
 import { Age66Answers, initialAge66 } from './age66Answers';
-import { initialExpenses, needMonthly } from './expensesAnswers';
+import { ExpensesAnswers, initialExpenses, needMonthly } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { ResultChart } from './ResultChart';
 import { resultOf, ResultContext } from './resultAnswers';
@@ -22,6 +22,7 @@ interface Changes {
   age65?: Partial<Age65Answers>;
   age66?: Partial<Age66Answers>;
   specialPensionMonthly?: string;
+  expenses?: Partial<ExpensesAnswers>;
 }
 
 const contextWith = ({
@@ -29,6 +30,7 @@ const contextWith = ({
   age65 = {},
   age66 = {},
   specialPensionMonthly = '',
+  expenses = {},
 }: Changes = {}): ResultContext => {
   const you = {
     ...initialAnswers({ birthYear: 1976, sex: null, secondPillarRate: null }),
@@ -47,7 +49,7 @@ const contextWith = ({
     age65: { ...initialAge65(), ...age65 },
     age66: { ...initialAge66(), ...age66 },
     specialPension: { ...initialSpecialPension(), monthly: specialPensionMonthly },
-    expenses: initialExpenses(),
+    expenses: { ...initialExpenses(), ...expenses },
   };
 };
 
@@ -299,7 +301,7 @@ describe('ResultChart reading guide: what happens on the chart', () => {
 
     expect(changes()).toContainEqual(
       expect.stringMatching(
-        /^60-⁠aastaselt: pensionist ja väljamaksetest ei jätku kuludeks\. Arvutus eeldab, et võtad puudu jääva osa kasvama jäetud II\ssambast välja 10% tulumaksuga \(viirutatud kiht\)\.$/,
+        /^60-⁠aastaselt: pensionist ja väljamaksetest ei jätku kuludeks\. Arvutus eeldab, et puuduva summa võtad välja II\ssambast, mille jätsid kasvama\. Sellelt maksad 10% tulumaksu \(viirutatud kiht\)\.$/,
       ),
     );
   });
@@ -336,6 +338,37 @@ describe('ResultChart reading guide: what happens on the chart', () => {
     renderChart(rescuer(''));
 
     expect(guide()).not.toHaveTextContent('III samba sissemaksed lõpevad');
+  });
+
+  describe('for a rescuer who works until the pension age and then lives off the deposit and the II pillar', () => {
+    const worksUntilPensionAge: Changes = {
+      you: {
+        birthYear: '1964',
+        firstPillarMonthly: '860',
+        secondPillarAmount: '30000',
+        workAdded: true,
+        hasRescue: true,
+        rescueYears: '15',
+        earlyYearsPicked: '5',
+      },
+      age65: { work: 'yes', workUntil: '65' },
+      expenses: { level: 'comfortable' },
+    };
+
+    it('explains the salary years, the deposit and the taxed II pillar withdrawal', () => {
+      renderChart({ ...worksUntilPensionAge });
+
+      expect(guide()).toHaveTextContent('Tööaastatel katab kulud palk.');
+      expect(changes()).toContainEqual(expect.stringMatching(/^65-⁠aastaselt: lõpetad töö\./));
+      expect(changes()).toContainEqual(
+        expect.stringMatching(/^65-⁠aastaselt: hakkad kasutama hoiust/),
+      );
+      expect(changes()).toContainEqual(
+        expect.stringMatching(
+          /^71-⁠aastaselt: .*II\ssambast, mille jätsid kasvama\. Sellelt maksad 10% tulumaksu/,
+        ),
+      );
+    });
   });
 
   it('says why the fund pension layer ends abruptly', () => {

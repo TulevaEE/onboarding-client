@@ -64,8 +64,14 @@ const earlyRowOf = ({ age, year, amount }: EarlyPayment): ChartRow => ({
   isBeforePension: true,
 });
 
+export const chartStartAgeOf = ({ rows, pensionStartAge }: Result): number => {
+  const specialPensionAge = rows.find(({ isp }) => isp > NOTICEABLE)?.age;
+  return Math.min(pensionStartAge, specialPensionAge ?? pensionStartAge);
+};
+
 export const chartRowsOf = (result: Result, need: number, isNominal = false): ChartRow[] => {
-  const isBeforePensionAge = ({ age }: { age: number }) => age < result.pensionStartAge;
+  const chartStartAge = chartStartAgeOf(result);
+  const isBeforePensionAge = ({ age }: { age: number }) => age < chartStartAge;
   const fundPensionFrom55At = (age: number) =>
     result.earlyThirdPillar.find((payment) => payment.age === age)?.amount ?? 0;
   return [

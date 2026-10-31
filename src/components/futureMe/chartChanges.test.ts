@@ -1,5 +1,6 @@
 import { initialAge60 } from './age60Answers';
 import { initialAge65 } from './age65Answers';
+import { initialSpecialPension } from './specialPensionAnswers';
 import { initialAge66 } from './age66Answers';
 import { chartChangesOf } from './chartChanges';
 import { chartRowsOf } from './chartData';
@@ -46,6 +47,33 @@ describe('chartChangesOf', () => {
     it('lists the changes in the order of age', () => {
       const ages = changes.map(({ age }) => age);
       expect(ages).toEqual([...ages].sort((a, b) => a - b));
+    });
+  });
+
+  it('says when the state pension starts after the waiting allowance, when the saver deferred it', () => {
+    const context = contextWith(
+      { workAdded: true, hasRescue: true, rescueYears: '20', earlyYearsPicked: '5' },
+      { age65: { ...initialAge65(), mode: 'defer', years: 2 } },
+    );
+
+    expect(changesOf(context)).toContainEqual({ kind: 'statePensionStart', age: 67 });
+  });
+
+  describe('special pension', () => {
+    const specialFrom = (startAge: string) =>
+      contextWith(
+        { workAdded: true, hasSpecialPension: true, specialPensionStartAge: startAge },
+        { specialPension: { ...initialSpecialPension(), monthly: '1500' } },
+      );
+
+    it('says when it starts after the pension age and takes the place of the old-age pension', () => {
+      expect(changesOf(specialFrom('67'))).toContainEqual({ kind: 'specialPensionStart', age: 67 });
+    });
+
+    it('does not say it starts when the chart itself starts there', () => {
+      expect(changesOf(specialFrom('58')).map(({ kind }) => kind)).not.toContain(
+        'specialPensionStart',
+      );
     });
   });
 

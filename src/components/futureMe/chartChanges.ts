@@ -1,4 +1,4 @@
-import { ChartRow } from './chartData';
+import { ChartRow, chartStartAgeOf } from './chartData';
 import { ChartEvent, FundPillars } from './chartEvents';
 import { SimulationRow } from './engine/pension';
 import { Result } from './resultAnswers';
@@ -12,6 +12,7 @@ export type ChartChange =
   | { kind: 'workEnd'; age: number }
   | { kind: 'statePensionStart'; age: number }
   | { kind: 'rescueAllowanceEnd'; age: number }
+  | { kind: 'specialPensionStart'; age: number }
   | { kind: 'statePensionRise'; age: number; reason: StatePensionRiseReason; amount: number }
   | { kind: 'fundStart'; age: number }
   | { kind: 'fundEnd'; age: number; pillars: FundPillars; years: number }
@@ -23,6 +24,7 @@ export type ChartChange =
 const NOTICEABLE_RISE = 1;
 const HAS_MONEY = 1;
 const SAME_GROSS = 0.5;
+const SPECIAL_PAID = 0.5;
 
 const TAXED_LAYER: Record<Pillar, 'secondPillarTaxed' | 'thirdPillarTaxed'> = {
   second: 'secondPillarTaxed',
@@ -35,6 +37,7 @@ const KIND_ORDER: ChartChange['kind'][] = [
   'statePensionStart',
   'rescueAllowanceEnd',
   'statePensionRise',
+  'specialPensionStart',
   'fundStart',
   'fundEnd',
   'withdrawalEnd',
@@ -70,7 +73,13 @@ const statePensionRises = (rows: SimulationRow[]): ChartChange[] => {
   const hasWorked = rows.some(({ work }) => work);
   return pairsOf(retired).flatMap(([before, row]): ChartChange[] => {
     const rise = row.i1 - before.i1;
-    if (before.i1 <= 0 || rise < NOTICEABLE_RISE || row.age !== before.age + 1) {
+    if (row.age !== before.age + 1) {
+      return [];
+    }
+    if (before.i1 <= 0 && row.i1 >= NOTICEABLE_RISE) {
+      return [{ kind: 'statePensionStart', age: row.age }];
+    }
+    if (before.i1 <= 0 || rise < NOTICEABLE_RISE) {
       return [];
     }
     let reason: StatePensionRiseReason = 'recalculated';
@@ -82,6 +91,13 @@ const statePensionRises = (rows: SimulationRow[]): ChartChange[] => {
     return [{ kind: 'statePensionRise', age: row.age, reason, amount: rise }];
   });
 };
+
+const specialPensionStarts = (rows: SimulationRow[]): ChartChange[] =>
+  pairsOf(rows).flatMap(([before, row]): ChartChange[] =>
+    before.isp < SPECIAL_PAID && row.isp >= SPECIAL_PAID
+      ? [{ kind: 'specialPensionStart', age: row.age }]
+      : [],
+  );
 
 const withdrawalChanges = (
   rows: ChartRow[],
@@ -120,9 +136,10 @@ export const chartChangesOf = (
   events: ChartEvent[],
 ): ChartChange[] => {
   const rows = chartRows.filter(({ isBeforePension }) => !isBeforePension);
-  const resultRows = result.rows.filter(({ age }) => age >= result.pensionStartAge);
+  const chartStartAge = chartStartAgeOf(result);
+  const resultRows = result.rows.filter(({ age }) => age >= chartStartAge);
   const resultRowAt = (age: number) => resultRows.find((row) => row.age === age);
-  const lastAge = rows[rows.length - 1]?.age ?? result.pensionStartAge;
+  const lastAge = rows[rows.length - 1]?.age ?? chartStartAge;
   const allowanceEnd = result.rescueAllowance?.until;
   const changes: ChartChange[] = [
     ...changesFromEvents(events),
@@ -130,11 +147,15 @@ export const chartChangesOf = (
       ? [{ kind: 'rescueAllowanceEnd' as const, age: allowanceEnd }]
       : []),
     ...statePensionRises(resultRows),
+    ...specialPensionStarts(resultRows),
     ...firstWithdrawalAt(rows),
     ...withdrawalChanges(rows, resultRowAt, 'second'),
     ...withdrawalChanges(rows, resultRowAt, 'third'),
   ];
-  return changes.sort(
-    (a, b) => a.age - b.age || KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind),
-  );
+  const isFirstOfKindAtAge = (change: ChartChange, index: number) =>
+    changes.findIndex(({ kind, age }) => kind === change.kind && age === change.age) === index ||
+    'pillar' in change;
+  return changes
+    .filter(isFirstOfKindAtAge)
+    .sort((a, b) => a.age - b.age || KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));
 };

@@ -175,6 +175,20 @@ describe('chartData', () => {
     expect(ids).toEqual(['specialPension']);
   });
 
+  it('starts at the age the special pension starts, which is before the pension age', () => {
+    const [first] = chartRowsOf(resultOf(contextWith('1500')), 791);
+
+    expect(first).toMatchObject({ age: 55, isBeforePension: false });
+    expect(first.specialPension).toBeGreaterThan(0);
+  });
+
+  it('starts at the pension age when the special pension starts at or after it', () => {
+    const you = { ...contextWith('1500').you, specialPensionStartAge: '65' };
+    const context = { ...contextWith('1500'), you, plan: toStepPlanInput(you) };
+
+    expect(chartRowsOf(resultOf(context), 791)[0].age).toBe(65);
+  });
+
   it('counts the salary as the income while still working, not the state pension', () => {
     const rows = chartRowsOf(resultOf(contextWith('', { work: 'yes', workUntil: '68' })), 791);
     const working = rows.filter((row) => row.age < 68);
