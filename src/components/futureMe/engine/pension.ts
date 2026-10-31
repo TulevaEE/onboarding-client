@@ -507,22 +507,30 @@ export function p3Factor(
   return 1 / (1 + (input.inflation || 0)) ** (yearsFromNow(input, age) + 0.5);
 }
 
+const isDuringSpecialPension = (input: PensionInput, age?: number): boolean =>
+  age !== undefined && (input.spMonthly || 0) > 0 && age >= specialStart(input);
+
+const stopsWorkForSpecialPension = (input: PensionInput, age?: number): boolean =>
+  isDuringSpecialPension(input, age) && input.spWork === false;
+
+export function yearlyThirdPillarContribution(input: PensionInput, age?: number): number {
+  const a = age !== undefined ? age : CURRENT_YEAR - input.birthYear;
+  const p3Monthly = stopsWorkForSpecialPension(input, age) ? 0 : input.p3Monthly || 0;
+  return p3Monthly * 12 * p3Factor(input, a);
+}
+
 export function yearlyContribution(input: PensionInput, age?: number): number {
   const rate = input.p2Rate || 0;
-  const isDuringSpecialPension =
-    age !== undefined && (input.spMonthly || 0) > 0 && age >= specialStart(input);
-  const stopsWork = isDuringSpecialPension && input.spWork === false;
   let gross = input.grossMonthly || 0;
-  if (stopsWork) {
+  if (stopsWorkForSpecialPension(input, age)) {
     gross = 0;
-  } else if (isDuringSpecialPension && input.spGross !== undefined) {
+  } else if (isDuringSpecialPension(input, age) && input.spGross !== undefined) {
     gross = input.spGross;
   }
   const a = age !== undefined ? age : CURRENT_YEAR - input.birthYear;
-  const p3Monthly = stopsWork ? 0 : input.p3Monthly || 0;
   return (
     gross * 12 * (rate > 0 ? rate + 0.04 : 0) * wageFactor(input, a) +
-    p3Monthly * 12 * p3Factor(input, a)
+    yearlyThirdPillarContribution(input, age)
   );
 }
 
@@ -797,7 +805,6 @@ export function simulate(
   const open3 = Math.max(workEnd, thirdPillarOpenAge);
 
   const sep = input.p3Sep || null;
-  const c3 = sep ? (input.p3Monthly || 0) * 12 : 0;
   const pe = input.p2Early || null;
   const isEarlyAgeValid = (age: number) => age >= currentAge && age < Math.min(workEnd, pa - 5);
   const peCut = pe && isEarlyAgeValid(pe.age) ? pe.age : ret;
@@ -933,12 +940,10 @@ export function simulate(
         thirdPaidWhileWorking.set(a, paid3);
       }
     }
-    const c3a = c3 * p3Factor(input, a) * share(a);
+    const c3a = sep ? yearlyThirdPillarContribution(input, a) * share(a) : 0;
     const stopII =
       isPayingAt || (pe !== null && peAge !== null && a >= peAge && !(pe.rejoin && a >= peAge + 5));
-    const contrib = stopII
-      ? (input.p3Monthly || 0) * 12 * p3Factor(input, a)
-      : yearlyContribution(input, a);
+    const contrib = stopII ? yearlyThirdPillarContribution(input, a) : yearlyContribution(input, a);
     fund = fund * (1 + r) + contrib * share(a) - c3a;
     fund3 = fund3 * (1 + r3) + c3a;
   }

@@ -1,4 +1,5 @@
 import {
+  CURRENT_YEAR,
   FirstPillarChoice,
   GENERAL_ALLOWANCE,
   INCOME_TAX,
@@ -168,6 +169,21 @@ describe('special pension', () => {
         6,
       );
       expect(yearlyContribution({ ...job, spWork: false }, 58)).toBe(0);
+    });
+
+    it('moves no III pillar contribution out of the II pillar once work stops, with a separate III pillar', () => {
+      const separate = simulateKeepGrowing({
+        ...job,
+        p2: 1000,
+        p3Monthly: 500,
+        p3Sep: { amount: 5000, mode: 'grow' },
+        spWork: false,
+      });
+      const yearsContributing = 58 - (CURRENT_YEAR - job.birthYear);
+      const [firstRow] = separate.rows;
+
+      expect(firstRow.pot2).toBeCloseTo(1000 + 2000 * 12 * 0.08 * yearsContributing, 6);
+      expect(firstRow.pot3).toBeCloseTo(5000 + 500 * 12 * yearsContributing, 6);
     });
 
     it('contributes as before when no age is given', () => {
