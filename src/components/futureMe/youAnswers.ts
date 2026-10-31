@@ -432,6 +432,7 @@ export const isRescueAllowanceOnly = (answers: YouAnswers): boolean => {
     years > 0 &&
     years <= rescueRightOf(answers) &&
     years <= earlyRetirementRight(answers) &&
+    earlyRetirementRight(answers) <= rescueRightOf(answers) &&
     isAllowanceUntilPensionAge
   );
 };

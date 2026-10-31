@@ -102,6 +102,19 @@ describe('age65Answers', () => {
         ).toBeNull();
       });
 
+      it('is locked when list 1 hazardous work gives an earlier pension than the allowance covers', () => {
+        expect(
+          deferralLock(
+            youWith({
+              ...rescuer,
+              hazardList: 'list1',
+              hazardYears: '10',
+              earlyYearsPicked: '5',
+            }),
+          ),
+        ).toBe('favourable');
+      });
+
       it('is locked once the pension for children starts before the pension age', () => {
         expect(
           deferralLock(youWith({ ...rescuer, ...FIVE_CHILDREN, rescueBasis: 'pension' })),
