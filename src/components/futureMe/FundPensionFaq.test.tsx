@@ -37,7 +37,7 @@ describe('fund pension FAQ', () => {
     );
   });
 
-  it('says the surplus can partly go back to the III pillar and that investing it is the saver’s own decision', () => {
+  it('says the surplus can partly go back to the III pillar and that what to do with it is the saver’s own decision', () => {
     renderFaq();
     const surplus = screen
       .getAllByRole('group')
@@ -47,7 +47,7 @@ describe('fund pension FAQ', () => {
       /Ülejäägi saad võimalusel suunata osaliselt tagasi ka III\ssambasse, olenevalt tulumaksusoodustuse olukorrast\./,
     );
     expect(surplus).toHaveTextContent(
-      /otsustad ise: igaüks teeb endale sobivaid investeerimisotsuseid ja Tulevane Mina ei anna selleks soovitust\./,
+      /Väljavõetud summa ülejääk on sinu otsustada: kas investeerid selle \(nt hoiusele\) või kasutad muul viisil\./,
     );
   });
 
