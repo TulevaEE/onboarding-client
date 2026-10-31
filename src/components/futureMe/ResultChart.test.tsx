@@ -288,7 +288,12 @@ describe('ResultChart interaction', () => {
 
   describe('tooltip content', () => {
     const tipFor = (
-      changes: { shortfall?: number; surplus?: number; isBeforePension?: boolean },
+      changes: {
+        shortfall?: number;
+        surplus?: number;
+        isBeforePension?: boolean;
+        costs?: number;
+      },
       without: ChartSourceId[] = [],
     ) =>
       render(
@@ -303,6 +308,7 @@ describe('ResultChart interaction', () => {
               secondPillar: 300,
               secondPillarTaxed: 0,
               thirdPillar: 0,
+              thirdPillarTaxed: 0,
               deposit: 0,
               costs: 800,
               isBeforePension: false,

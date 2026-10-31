@@ -1,6 +1,6 @@
 import { age55Of, thirdPillarPayout, thirdPillarPayoutInputOf } from './age55';
 import { Age60Answers } from './age60Answers';
-import { Age65Answers, deferralLock, thirdPillarAfterAsked, workUntilOf } from './age65Answers';
+import { Age65Answers, deferralLock, workUntilOf } from './age65Answers';
 import {
   Age66Answers,
   contractEndAgeOf,
@@ -56,6 +56,7 @@ export interface EarlyPayment {
 export interface Result extends SimulationResult {
   sustainable: number;
   earlyThirdPillar: EarlyPayment[];
+  thirdPillarMonthly: number;
 }
 
 export type IncomeSource =
@@ -188,13 +189,6 @@ const thirdPillarOf = (context: ResultContext): PensionInput['p3Sep'] => {
   };
 };
 
-const thirdPillarAfterOf = ({ you, plan, age65 }: ResultContext): number | undefined =>
-  thirdPillarAfterAsked(age65, you, plan) &&
-  age65.thirdPillarAfterMode === 'change' &&
-  age65.thirdPillarAfter.trim() !== ''
-    ? amountOf(age65.thirdPillarAfter)
-    : undefined;
-
 const withChoiceAtPensionAgeWhileAsked = (input: PensionInput): PensionInput => {
   const withoutChoice = { ...input, firstPillarChoicePa: undefined };
   const isAsked =
@@ -236,7 +230,6 @@ export const resultInputOf = (context: ResultContext): PensionInput => {
     needMonthly: needMonthly(expenses),
     realReturn: realReturnOf(you.secondPillarReturnPercent),
     realReturn3: realReturnOf(you.thirdPillarReturnPercent),
-    p3After: thirdPillarAfterOf(context),
     wageGrowth: WAGE_GROWTH,
     inflation: INFLATION,
     firstYearShare: firstYearShareNow(),
@@ -322,5 +315,6 @@ export const resultOf = (context: ResultContext): Result => {
     ...simulate(input, lifeTable, scenario),
     sustainable: sustainableNeed(input, lifeTable, scenario),
     earlyThirdPillar: earlyThirdPillarOf(context),
+    thirdPillarMonthly: input.p3Monthly ?? 0,
   };
 };

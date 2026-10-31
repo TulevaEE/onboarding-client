@@ -28,6 +28,7 @@ import {
   tableRowsOf,
 } from './chartData';
 import { ageButtonsOf } from './chartAges';
+import { chartChangesOf } from './chartChanges';
 import { ChartEvent, chartEventsOf } from './chartEvents';
 import { assumptionOf, coverStepsOf, SummaryNote, summaryNotesOf } from './chartNotes';
 import { ChartMark, costsLine, lastPointAtAge, marksLine } from './chartPlugins';
@@ -92,7 +93,7 @@ const fadingFill = (color: string) => (context: ScriptableContext<'line'>) => {
 
 const HATCH_TILE = 8;
 const HATCH_LINE = 1.5;
-const HATCHED_SOURCES: ChartSourceId[] = ['secondPillarTaxed'];
+const HATCHED_SOURCES: ChartSourceId[] = ['secondPillarTaxed', 'thirdPillarTaxed'];
 
 const hatchedFill = (color: string) => (context: ScriptableContext<'line'>) => {
   const tile = document.createElement('canvas');
@@ -775,6 +776,10 @@ export const ResultChart = ({ result, need }: ResultChartProps) => {
         events={events}
         startsBeforePension={rows[0].isBeforePension}
         cover={coverStepsOf(shown, rows)}
+        changes={chartChangesOf(shown, rows, events)}
+        hasWorkYears={rows.some(({ salary }) => salary > 0)}
+        hasRescueAllowance={shown.rescueAllowance !== null}
+        paysIntoThirdPillar={shown.thirdPillarMonthly > 0}
       />
       <button
         type="button"

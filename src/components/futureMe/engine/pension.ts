@@ -76,7 +76,6 @@ export interface PensionInput {
   p3Monthly?: number;
   p3Before2021?: boolean;
   p3Indexed?: boolean;
-  p3After?: number;
   p3Sep?: SeparateThirdPillar | null;
   wageGrowth?: number;
   inflation?: number;
@@ -512,18 +511,18 @@ export function yearlyContribution(input: PensionInput, age?: number): number {
   const rate = input.p2Rate || 0;
   const isDuringSpecialPension =
     age !== undefined && (input.spMonthly || 0) > 0 && age >= specialStart(input);
+  const stopsWork = isDuringSpecialPension && input.spWork === false;
   let gross = input.grossMonthly || 0;
-  if (isDuringSpecialPension) {
-    if (input.spWork === false) {
-      gross = 0;
-    } else if (input.spGross !== undefined) {
-      gross = input.spGross;
-    }
+  if (stopsWork) {
+    gross = 0;
+  } else if (isDuringSpecialPension && input.spGross !== undefined) {
+    gross = input.spGross;
   }
   const a = age !== undefined ? age : CURRENT_YEAR - input.birthYear;
+  const p3Monthly = stopsWork ? 0 : input.p3Monthly || 0;
   return (
     gross * 12 * (rate > 0 ? rate + 0.04 : 0) * wageFactor(input, a) +
-    (input.p3Monthly || 0) * 12 * p3Factor(input, a)
+    p3Monthly * 12 * p3Factor(input, a)
   );
 }
 
@@ -742,8 +741,6 @@ export function simulate(
   const accrualYear = 12 * workAccrual(input.grossMonthly || 0, iiJoined, iiJoined);
   const workedBefore = (age: number) =>
     Math.max(0, Math.min(age, workEnd) - Math.max(ret, currentAge));
-  const c3After =
-    soodus > 0 ? (input.p3After !== undefined ? input.p3After : input.p3Monthly || 0) * 12 : 0;
   const choice = input.firstPillarChoice;
   const prefersSpecial = (choiceMade: FirstPillarChoice | undefined, oldAgeYear: number) => {
     if (choiceMade === 'special') {
@@ -1026,15 +1023,7 @@ export function simulate(
         sched3 = scheduledThirdPayout(fund3, age);
         fund3 -= sched3;
       }
-      const c3a = age < pa ? c3After : 0;
-      if (c3a > 0) {
-        if (sep) {
-          fund3 += c3a;
-        } else {
-          fund += c3a;
-        }
-      }
-      let gap = needYear + c3a - i1 - isp - sched - sched3;
+      let gap = needYear - i1 - isp - sched - sched3;
       if (gap > 0) {
         fromDeposit = Math.min(deposit, gap);
         deposit -= fromDeposit;
@@ -1066,12 +1055,11 @@ export function simulate(
       deposit *= 1 + rd;
     }
     const income = i1 + isp + sched + extraNet + sched3 + extra3;
-    const c3paid = !work && age >= ret && age < pa ? c3After : 0;
     let spend = isp;
     if (work) {
       spend = needYear;
     } else if (age >= ret) {
-      spend = income + fromDeposit - saved - c3paid;
+      spend = income + fromDeposit - saved;
     }
     rows.push({
       age,

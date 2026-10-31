@@ -8,6 +8,7 @@ import { CURRENT_YEAR } from './engine/pension';
 import { nominalFactorAt, nominalResultOf } from './nominal';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
+import { contextWith as fixtureContextWith } from './resultContextFixture';
 
 const contextWith = (
   specialMonthly = '',
@@ -271,5 +272,47 @@ describe('chartData with the II pillar taken when needed', () => {
 
   it('lists the taxed layer as its own series', () => {
     expect(chartSeriesOf(rows).map(({ id }) => id)).toContain('secondPillarTaxed');
+  });
+});
+
+describe('chartData with the III pillar taken when needed', () => {
+  const context = contextWith('', { secondPillar: 'grow' });
+  const you = { ...context.you, thirdPillarJoined: 'after' as const, thirdPillarAmount: '30000' };
+  const result = resultOf({ ...context, you, plan: toStepPlanInput(you) });
+  const rows = chartRowsOf(result, 1500);
+
+  it('keeps what is taken when needed apart from the tax-free fund pension', () => {
+    const taxedFrom = rows.find(({ thirdPillarTaxed }) => thirdPillarTaxed > 0);
+
+    expect(taxedFrom).toMatchObject({ thirdPillar: 0 });
+  });
+
+  it('adds up to what the engine pays from the III pillar', () => {
+    rows.forEach((row) => {
+      const paid = result.rows.find(({ age }) => age === row.age)?.i3 ?? 0;
+      expect(Math.abs(row.thirdPillar + row.thirdPillarTaxed - paid)).toBeLessThanOrEqual(1);
+    });
+  });
+
+  it('lists the taxed layer as its own series', () => {
+    expect(chartSeriesOf(rows).map(({ id }) => id)).toContain('thirdPillarTaxed');
+  });
+});
+
+describe('chartData for a rescuer who pays into the III pillar', () => {
+  const rescuer = fixtureContextWith({
+    workAdded: true,
+    hasRescue: true,
+    rescueYears: '20',
+    earlyYearsPicked: '5',
+    thirdPillarJoined: 'after',
+    thirdPillarAmount: '5000',
+    thirdPillarMonthly: '500',
+  });
+
+  it('keeps the costs at the costs of living in every year', () => {
+    chartRowsOf(resultOf(rescuer), 791).forEach((row) => {
+      expect(row.costs).toBe(791);
+    });
   });
 });

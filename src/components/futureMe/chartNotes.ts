@@ -11,6 +11,7 @@ const BRIDGE_SOURCES: ChartSourceId[] = [
   'secondPillar',
   'secondPillarTaxed',
   'thirdPillar',
+  'thirdPillarTaxed',
   'deposit',
 ];
 

@@ -152,22 +152,22 @@ describe('special pension', () => {
     const working = simulateKeepGrowing({ ...job, spWork: true });
     const notWorking = simulateKeepGrowing({ ...job, spWork: false });
 
-    it('stops II pillar contributions from the start age when not working', () => {
+    it('stops II and III pillar contributions from the start age when not working', () => {
       expect(
         rowAt(working, retirementAge).moneyLeft - rowAt(notWorking, retirementAge).moneyLeft,
-      ).toBeCloseTo(2000 * 12 * 0.08 * (retirementAge - 58), 6);
+      ).toBeCloseTo((2000 * 12 * 0.08 + 600) * (retirementAge - 58), 6);
     });
 
     it('assumes work continues by default', () => {
       expect(simulateKeepGrowing({ ...job }).rows).toEqual(working.rows);
     });
 
-    it('keeps the own III pillar contribution when II pillar contributions stop', () => {
+    it('stops the own III pillar contribution together with the II pillar contributions', () => {
       expect(yearlyContribution({ ...job, spWork: false }, 57)).toBeCloseTo(
         2000 * 12 * 0.08 + 600,
         6,
       );
-      expect(yearlyContribution({ ...job, spWork: false }, 58)).toBeCloseTo(600, 6);
+      expect(yearlyContribution({ ...job, spWork: false }, 58)).toBe(0);
     });
 
     it('contributes as before when no age is given', () => {

@@ -5,7 +5,6 @@ import {
   initialAge65,
   isPayoutChoiceMadeAtAnotherStep,
   pensionKind,
-  thirdPillarAfterAsked,
   withMode,
   workAccrualMonthly,
   workUntilOf,
@@ -34,8 +33,6 @@ describe('age65Answers', () => {
     expect(initialAge65()).toEqual({
       work: 'no',
       workUntil: '',
-      thirdPillarAfterMode: 'same',
-      thirdPillarAfter: '',
       mode: 'full',
       years: 1,
       secondPillar: 'grow',
@@ -187,23 +184,6 @@ describe('age65Answers', () => {
       expect(
         deferralYearsWhileWorking({ ...initialAge65(), work: 'yes' }, planOf(FIVE_CHILDREN)),
       ).toBe(0);
-    });
-  });
-
-  describe('third pillar contribution after retiring', () => {
-    const paying = { thirdPillarMonthly: '50', ...FIVE_CHILDREN };
-
-    it('is asked only when retiring before the pension age without working and paying in', () => {
-      expect(thirdPillarAfterAsked(initialAge65(), youWith(paying), planOf(paying))).toBe(true);
-      expect(
-        thirdPillarAfterAsked({ ...initialAge65(), work: 'yes' }, youWith(paying), planOf(paying)),
-      ).toBe(false);
-      expect(
-        thirdPillarAfterAsked(initialAge65(), youWith({ thirdPillarMonthly: '50' }), planOf()),
-      ).toBe(false);
-      expect(
-        thirdPillarAfterAsked(initialAge65(), youWith(FIVE_CHILDREN), planOf(FIVE_CHILDREN)),
-      ).toBe(false);
     });
   });
 

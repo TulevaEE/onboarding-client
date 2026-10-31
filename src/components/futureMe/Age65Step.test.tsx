@@ -603,43 +603,10 @@ describe('Age 65 step', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('asks whether the third pillar contribution changes while not working', () => {
-      const group = screen.getByRole('group', { name: /^Kas III\ssamba sissemakse muutub\?$/ });
-
-      expect(within(group).getByRole('radio', { name: /^Jääb samaks/ })).toBeChecked();
-      expect(within(group).getByText('50 € kuus, nagu praegu')).toBeInTheDocument();
-
-      userEvent.click(within(group).getByRole('radio', { name: /^Muutub/ }));
-
-      expect(screen.getByRole('spinbutton', { name: /Uus III\ssamba sissemakse/ })).toBeRequired();
-    });
-
-    it('tells a screen reader that the new third pillar contribution is missing', () => {
-      const group = screen.getByRole('group', { name: /^Kas III\ssamba sissemakse muutub\?$/ });
-      userEvent.click(within(group).getByRole('radio', { name: /^Muutub/ }));
-      const amount = screen.getByRole('spinbutton', { name: /Uus III\ssamba sissemakse/ });
-
-      userEvent.click(amount);
-      userEvent.tab();
-
-      expect(amount).toHaveAttribute('aria-invalid', 'true');
-      expect(amount).toHaveAccessibleDescription(/Sisesta summa/);
-    });
-
-    it('asks for the new third pillar amount once the field is left empty, and keeps a typed one', () => {
-      const group = screen.getByRole('group', { name: /^Kas III\ssamba sissemakse muutub\?$/ });
-      userEvent.click(within(group).getByRole('radio', { name: /^Muutub/ }));
-      const amount = screen.getByRole('spinbutton', { name: /Uus III\ssamba sissemakse/ });
-
-      userEvent.click(amount);
-      userEvent.tab();
-
-      expect(amount).toBeInvalid();
-      expect(screen.getByText('Sisesta summa (0 = lõpetan).')).toBeInTheDocument();
-
-      userEvent.type(amount, '20');
-
-      expect(amount).toHaveValue(20);
+    it('does not ask about the III pillar contribution, as it stops with the work', () => {
+      expect(
+        screen.queryByRole('group', { name: /III\ssamba sissemakse/ }),
+      ).not.toBeInTheDocument();
     });
 
     it('marks the regular pension age among the end ages and defaults to it', () => {
@@ -653,45 +620,11 @@ describe('Age 65 step', () => {
       ).not.toBeInTheDocument();
     });
 
-    it('stops asking about the third pillar contribution once the saver works on', () => {
-      userEvent.click(within(workGroup()).getByRole('radio', { name: /^Töötan edasi/ }));
-
-      expect(
-        screen.queryByRole('group', { name: /^Kas III\ssamba sissemakse muutub\?$/ }),
-      ).not.toBeInTheDocument();
-    });
-
     it('does not ask the pillar choices again but shows the earlier choices', () => {
       expect(
         screen.queryByRole('group', { name: /väljamakse viis pensionieas/ }),
       ).not.toBeInTheDocument();
       expect(screen.getAllByText(/valik 61-aastaselt: kasvatan edasi\./)).toHaveLength(2);
     });
-  });
-});
-
-describe('Age 65 step with a changed III pillar payment', () => {
-  beforeEach(() => loggedInAs({ dateOfBirth: '1970-01-01', retirementAge: 66 }));
-
-  it('keeps the saver on the step until the new III pillar payment is filled in', () => {
-    openAge65Step({ withFiveChildren: true, trailName: /^61\sa pension, vaatamata$/ });
-    userEvent.click(
-      within(screen.getByRole('group', { name: /Kas III\ssamba sissemakse muutub/ })).getByRole(
-        'radio',
-        { name: /Muutub/ },
-      ),
-    );
-
-    userEvent.click(screen.getByRole('button', { name: /^Edasi/ }));
-
-    expect(
-      within(screen.getByRole('alert'))
-        .getAllByRole('link')
-        .map((link) => link.textContent),
-    ).toEqual(['Uus III\u00A0samba sissemakse']);
-    expect(screen.getByRole('spinbutton', { name: /Uus III\ssamba sissemakse/ })).toHaveAttribute(
-      'aria-invalid',
-      'true',
-    );
   });
 });

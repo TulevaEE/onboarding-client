@@ -9,6 +9,7 @@ export type ChartSourceId =
   | 'secondPillar'
   | 'secondPillarTaxed'
   | 'thirdPillar'
+  | 'thirdPillarTaxed'
   | 'deposit';
 
 export interface ChartRow {
@@ -20,6 +21,7 @@ export interface ChartRow {
   secondPillar: number;
   secondPillarTaxed: number;
   thirdPillar: number;
+  thirdPillarTaxed: number;
   deposit: number;
   costs: number;
   shortfall: number;
@@ -34,6 +36,7 @@ export const SOURCE_IDS: ChartSourceId[] = [
   'secondPillar',
   'secondPillarTaxed',
   'thirdPillar',
+  'thirdPillarTaxed',
   'deposit',
 ];
 const TABLE_AGE_STEP = 5;
@@ -53,6 +56,7 @@ const earlyRowOf = ({ age, year, amount }: EarlyPayment): ChartRow => ({
   secondPillar: 0,
   secondPillarTaxed: 0,
   thirdPillar: Math.round(amount),
+  thirdPillarTaxed: 0,
   deposit: 0,
   costs: 0,
   shortfall: 0,
@@ -70,6 +74,7 @@ export const chartRowsOf = (result: Result, need: number, isNominal = false): Ch
       .filter((row) => !isBeforePensionAge(row))
       .map((row) => {
         const costs = isNominal ? need * nominalFactorAt(row.year) : need;
+        const thirdPillarTaken = row.extra - row.extra2;
         return {
           age: row.age,
           year: row.year,
@@ -78,7 +83,10 @@ export const chartRowsOf = (result: Result, need: number, isNominal = false): Ch
           specialPension: row.work ? 0 : Math.round(row.isp),
           secondPillar: Math.round(row.i2 - row.extra2),
           secondPillarTaxed: Math.round(row.extra2),
-          thirdPillar: Math.round(row.i3 + fundPensionFrom55At(row.age)),
+          thirdPillar: Math.round(
+            Math.max(0, row.i3 - thirdPillarTaken) + fundPensionFrom55At(row.age),
+          ),
+          thirdPillarTaxed: Math.round(thirdPillarTaken),
           deposit: Math.round(row.dep),
           costs: Math.round(costs),
           shortfall: row.shortfall > NOTICEABLE ? Math.round(row.shortfall) : 0,

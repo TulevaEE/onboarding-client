@@ -212,7 +212,7 @@ describe('ResultChart reading guide', () => {
       expect(steps()).toEqual([
         'Riiklik pension.',
         expect.stringMatching(
-          /^II\ssammas \(viirutatud kiht\): Arvutus eeldab, et võtad pensionieast alates igal aastal fondist välja nii palju, kui eelmistest puudu jääb\. Sellelt läheb 10% tulumaksu\.$/,
+          /^II\ssammas \(viirutatud kiht\): Arvutus eeldab, et võtad pensionile jäädes igal aastal fondist välja nii palju, kui eelmistest puudu jääb\. Sellelt läheb 10% tulumaksu\.$/,
         ),
       ]);
       expect(guide()).toHaveTextContent(
@@ -237,7 +237,9 @@ describe('ResultChart reading guide', () => {
       });
 
       expect(steps()).toContainEqual(
-        expect.stringMatching(/^III\ssammas, kui II\ssambast enam ei jätku: Arvutus eeldab/),
+        expect.stringMatching(
+          /^III\ssammas \(viirutatud kiht\), kui II\ssambast enam ei jätku: Arvutus eeldab/,
+        ),
       );
     });
 
@@ -254,7 +256,7 @@ describe('ResultChart reading guide', () => {
 
       expect(steps()).toContainEqual(
         expect.stringMatching(
-          /^III\ssammas: Arvutus eeldab, et võtad igal aastal fondist välja nii palju, kui eelmistest puudu jääb\. Sellelt läheb 10% tulumaksu\. See on III\ssamba kihis\.$/,
+          /^III\ssammas \(viirutatud kiht\): Arvutus eeldab, et võtad igal aastal fondist välja nii palju, kui eelmistest puudu jääb\. Sellelt läheb 10% tulumaksu\.$/,
         ),
       );
     });
@@ -271,5 +273,91 @@ describe('ResultChart reading guide', () => {
     renderChart();
 
     expect(guide()).not.toHaveTextContent('Enne pensioniiga');
+  });
+});
+
+describe('ResultChart reading guide: what happens on the chart', () => {
+  const changes = () =>
+    within(screen.getByRole('list', { name: 'Mis graafikul juhtub:' }))
+      .getAllByRole('listitem')
+      .map(({ textContent }) => textContent);
+  const guide = () => screen.getByRole('group', { name: '' });
+  const rescuer = (thirdPillarMonthly: string): Changes => ({
+    you: {
+      workAdded: true,
+      hasRescue: true,
+      rescueYears: '20',
+      earlyYearsPicked: '5',
+      thirdPillarJoined: 'after',
+      thirdPillarAmount: '5000',
+      thirdPillarMonthly,
+    },
+  });
+
+  it('says why the II pillar is taken out when the pension does not cover the costs', () => {
+    renderChart(rescuer('500'));
+
+    expect(changes()).toContainEqual(
+      expect.stringMatching(
+        /^60-⁠aastaselt: pensionist ja väljamaksetest ei jätku kuludeks\. Arvutus eeldab, et võtad puudu jääva osa kasvama jäetud II\ssambast välja 10% tulumaksuga \(viirutatud kiht\)\.$/,
+      ),
+    );
+  });
+
+  it('says the rescue allowance is in the state pension layer until the old-age pension starts', () => {
+    renderChart(rescuer('500'));
+
+    expect(changes()).toContainEqual(
+      expect.stringMatching(
+        /^65-⁠aastaselt: päästeteenistuja toetus lõpeb ja algab vanaduspension\. Seni on toetus kihis „Riiklik pension“\.$/,
+      ),
+    );
+  });
+
+  it('says the state pension rises at the pension age because the tax-free income grows', () => {
+    renderChart(rescuer('500'));
+
+    expect(changes()).toContainEqual(
+      expect.stringMatching(
+        /^65-⁠aastaselt: riiklik pension tõuseb \d+\s€ kuus, sest pensionieast on tulumaksuvaba tulu 776\s€ kuus, enne seda 700\s€\. Summa enne tulumaksu jääb samaks\.$/,
+      ),
+    );
+  });
+
+  it('says the assumption that the III pillar contributions end when the work ends', () => {
+    renderChart(rescuer('500'));
+
+    expect(guide()).toHaveTextContent(
+      'Arvutus eeldab, et III samba sissemaksed lõpevad, kui töötamine lõpeb. Kui maksad edasi, lisa see oma kuludele.',
+    );
+  });
+
+  it('leaves the contribution assumption out without a III pillar contribution', () => {
+    renderChart(rescuer(''));
+
+    expect(guide()).not.toHaveTextContent('III samba sissemaksed lõpevad');
+  });
+
+  it('says why the fund pension layer ends abruptly', () => {
+    renderChart(oneFundContract);
+
+    expect(changes()).toContainEqual(
+      expect.stringMatching(
+        /^\d+-⁠aastaselt: II\sja\sIII\ssamba igakuiste väljamaksete lepingud lõpevad\. Nende periood \(\d+\sa\) arvutati väljamaksete alguses keskmise eluea järgi ja selleks ajaks on raha välja makstud, seepärast langeb kiht järsult\.$/,
+      ),
+    );
+  });
+
+  it('says the salary covers the costs while working and the pensions go to the deposit', () => {
+    renderChart({ age65: { work: 'yes', workUntil: '68' } });
+
+    expect(guide()).toHaveTextContent(
+      'Tööaastatel katab kulud palk. Riiklik pension ja samba väljamaksed lähevad nendel aastatel hoiusele ja on hiljem kihis „Hoiuselt“.',
+    );
+    expect(changes()).toContainEqual(
+      expect.stringMatching(
+        /^68-⁠aastaselt: lõpetad töö\. Edasi katavad kulud pension ja väljamaksed\.$/,
+      ),
+    );
   });
 });

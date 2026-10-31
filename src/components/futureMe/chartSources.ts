@@ -8,6 +8,7 @@ export const SOURCE_LABELS: Record<ChartSourceId, TranslationKey> = {
   secondPillar: 'futureMe.result.chart.source.secondPillar',
   secondPillarTaxed: 'futureMe.result.chart.source.secondPillarTaxed',
   thirdPillar: 'futureMe.result.chart.source.thirdPillar',
+  thirdPillarTaxed: 'futureMe.result.chart.source.thirdPillarTaxed',
   deposit: 'futureMe.result.chart.source.deposit',
 };
 
@@ -18,6 +19,7 @@ export const SUMMARY_LABELS: Record<ChartSourceId, TranslationKey> = {
   secondPillar: 'futureMe.result.chart.summary.secondPillar',
   secondPillarTaxed: 'futureMe.result.chart.summary.secondPillarTaxed',
   thirdPillar: 'futureMe.result.chart.summary.thirdPillar',
+  thirdPillarTaxed: 'futureMe.result.chart.summary.thirdPillarTaxed',
   deposit: 'futureMe.result.chart.summary.deposit',
 };
 
@@ -28,5 +30,6 @@ export const SOURCE_COLORS: Record<ChartSourceId, string> = {
   secondPillar: '#0088c2',
   secondPillarTaxed: '#0088c2',
   thirdPillar: '#c26f00',
+  thirdPillarTaxed: '#c26f00',
   deposit: '#b8457a',
 };
