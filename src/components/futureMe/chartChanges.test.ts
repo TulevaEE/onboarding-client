@@ -30,8 +30,8 @@ describe('chartChangesOf', () => {
   describe('for a rescuer', () => {
     const changes = changesOf(rescuer('500'));
 
-    it('says the II pillar is taken out because the pension does not cover the costs', () => {
-      expect(changes).toContainEqual({ kind: 'withdrawalStart', age: 60, pillar: 'second' });
+    it('says the III pillar is taken out first because the pension does not cover the costs', () => {
+      expect(changes).toContainEqual({ kind: 'withdrawalStart', age: 60, pillar: 'third' });
     });
 
     it('says the rescue allowance is followed by the old-age pension at the pension age', () => {

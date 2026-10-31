@@ -233,16 +233,21 @@ describe('ResultChart reading guide', () => {
       );
     });
 
-    it('takes the III pillar after the II pillar runs out, in the III pillar layer', () => {
+    it('takes the III pillar first and the II pillar once the III pillar no longer covers it', () => {
       renderChart({
         you: { thirdPillarJoined: 'before', thirdPillarAmount: '10000', thirdPillarMonthly: '0' },
       });
 
-      expect(steps()).toContainEqual(
-        expect.stringMatching(
-          /^III\ssammas \(viirutatud kiht\), kui II\ssambast enam ei jätku: Arvutus eeldab/,
-        ),
+      const order = steps();
+      const third = order.findIndex((step) =>
+        /^III\ssammas \(viirutatud kiht\): Arvutus/.test(step ?? ''),
       );
+      const second = order.findIndex((step) =>
+        /^II\ssammas \(viirutatud kiht\), kui III\ssambast enam ei jätku: Arvutus/.test(step ?? ''),
+      );
+
+      expect(third).toBeGreaterThan(-1);
+      expect(second).toBeGreaterThan(third);
     });
 
     it('takes the III pillar on its own when there is no II pillar, in the III pillar layer', () => {
@@ -307,12 +312,12 @@ describe('ResultChart reading guide: what happens on the chart', () => {
     },
   });
 
-  it('says why the II pillar is taken out when the pension does not cover the costs', () => {
+  it('says why the III pillar is taken out first when the pension does not cover the costs', () => {
     renderChart(rescuer('500'));
 
     expect(changes()).toContainEqual(
       expect.stringMatching(
-        /^60-⁠aastaselt: pensionist ja väljamaksetest ei jätku kuludeks\. Arvutus eeldab, et puuduva summa võtad välja II\ssambast, mille jätsid kasvama\. Sellelt maksad 10% tulumaksu \(viirutatud kiht\)\.$/,
+        /^60-⁠aastaselt: pensionist ja väljamaksetest ei jätku kuludeks\. Arvutus eeldab, et puuduva summa võtad välja III\ssambast, mille jätsid kasvama\. Sellelt maksad 10% tulumaksu \(viirutatud kiht\)\.$/,
       ),
     );
   });
