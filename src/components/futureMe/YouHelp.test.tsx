@@ -603,6 +603,19 @@ describe('Sina step help buttons', () => {
     ).toHaveAttribute('href', expect.stringContaining('pension-calculator'));
   });
 
+  it('says Tulevane Mina does not ask the pension service, which limits the flexible years, and where to find it', () => {
+    renderYouStep();
+
+    const dialog = openEarlyRetirementHelp();
+
+    expect(dialog).toHaveTextContent(/20\sa staaži korral 1 aasta/);
+    expect(dialog).toHaveTextContent(/Tulevane Mina staaži ei küsi/);
+    expect(within(dialog).getByRole('link', { name: /^SKA iseteeninduses/ })).toHaveAttribute(
+      'href',
+      expect.stringContaining('iseteenindus.sotsiaalkindlustusamet.ee'),
+    );
+  });
+
   it('leaves the field labels as they were for screen readers', () => {
     renderYouStep();
 
