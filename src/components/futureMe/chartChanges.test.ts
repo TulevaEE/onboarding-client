@@ -4,7 +4,7 @@ import { initialSpecialPension } from './specialPensionAnswers';
 import { initialAge66 } from './age66Answers';
 import { chartChangesOf } from './chartChanges';
 import { chartRowsOf } from './chartData';
-import { chartEventsOf } from './chartEvents';
+import { ChartEvent, chartEventsOf } from './chartEvents';
 import { resultOf, ResultContext } from './resultAnswers';
 import { contextWith } from './resultContextFixture';
 
@@ -35,7 +35,7 @@ describe('chartChangesOf', () => {
     });
 
     it('says the rescue allowance is followed by the old-age pension at the pension age', () => {
-      expect(changes).toContainEqual({ kind: 'rescueAllowanceEnd', age: 65 });
+      expect(changes).toContainEqual({ kind: 'rescueAllowanceEnd', age: 65, pensionStarts: true });
     });
 
     it('says the state pension rises at the pension age because the tax-free income grows', () => {
@@ -96,6 +96,36 @@ describe('chartChangesOf', () => {
       pillars: 'second',
       years: (contract?.end ?? 0) - (contract?.start ?? 0),
     });
+  });
+
+  it('says the rescue allowance ends without the old-age pension starting when the saver deferred it', () => {
+    const context = contextWith(
+      { workAdded: true, hasRescue: true, rescueYears: '20', earlyYearsPicked: '5' },
+      { age65: { ...initialAge65(), mode: 'defer', years: 2 } },
+    );
+
+    expect(changesOf(context)).toContainEqual({
+      kind: 'rescueAllowanceEnd',
+      age: 65,
+      pensionStarts: false,
+    });
+  });
+
+  it('keeps both contracts that end at the same age', () => {
+    const result = resultOf(contextWith());
+    const endings: ChartEvent[] = [
+      { kind: 'fundEnd', age: 95, pillars: 'second', years: 30 },
+      { kind: 'fundEnd', age: 95, pillars: 'third', years: 25 },
+    ];
+
+    expect(
+      chartChangesOf(result, chartRowsOf(result, NEED), endings).filter(
+        ({ kind }) => kind === 'fundEnd',
+      ),
+    ).toEqual([
+      { kind: 'fundEnd', age: 95, pillars: 'second', years: 30 },
+      { kind: 'fundEnd', age: 95, pillars: 'third', years: 25 },
+    ]);
   });
 
   it('says when the work ends', () => {

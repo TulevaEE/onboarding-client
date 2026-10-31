@@ -11,7 +11,7 @@ export type WithdrawalEndReason = 'empty' | 'covered';
 export type ChartChange =
   | { kind: 'workEnd'; age: number }
   | { kind: 'statePensionStart'; age: number }
-  | { kind: 'rescueAllowanceEnd'; age: number }
+  | { kind: 'rescueAllowanceEnd'; age: number; pensionStarts: boolean }
   | { kind: 'specialPensionStart'; age: number }
   | { kind: 'statePensionRise'; age: number; reason: StatePensionRiseReason; amount: number }
   | { kind: 'fundStart'; age: number }
@@ -25,6 +25,7 @@ const NOTICEABLE_RISE = 1;
 const HAS_MONEY = 1;
 const SAME_GROSS = 0.5;
 const SPECIAL_PAID = 0.5;
+const STATE_PENSION_PAID = 0.5;
 
 const TAXED_LAYER: Record<Pillar, 'secondPillarTaxed' | 'thirdPillarTaxed'> = {
   second: 'secondPillarTaxed',
@@ -130,6 +131,14 @@ const firstWithdrawalAt = (rows: ChartRow[]): ChartChange[] => {
     .map((pillar) => ({ kind: 'withdrawalStart', age: first.age, pillar }));
 };
 
+export const changeKeyOf = (change: ChartChange): string =>
+  [
+    change.age,
+    change.kind,
+    'pillar' in change ? change.pillar : '',
+    'pillars' in change ? change.pillars : '',
+  ].join('-');
+
 export const chartChangesOf = (
   result: Result,
   chartRows: ChartRow[],
@@ -143,7 +152,13 @@ export const chartChangesOf = (
   const changes: ChartChange[] = [
     ...changesFromEvents(events),
     ...(allowanceEnd !== undefined && allowanceEnd <= lastAge
-      ? [{ kind: 'rescueAllowanceEnd' as const, age: allowanceEnd }]
+      ? [
+          {
+            kind: 'rescueAllowanceEnd' as const,
+            age: allowanceEnd,
+            pensionStarts: (resultRowAt(allowanceEnd)?.i1g ?? 0) > STATE_PENSION_PAID,
+          },
+        ]
       : []),
     ...statePensionRises(resultRows),
     ...specialPensionStarts(resultRows),
@@ -151,10 +166,9 @@ export const chartChangesOf = (
     ...withdrawalChanges(rows, resultRowAt, 'second'),
     ...withdrawalChanges(rows, resultRowAt, 'third'),
   ];
-  const isFirstOfKindAtAge = (change: ChartChange, index: number) =>
-    changes.findIndex(({ kind, age }) => kind === change.kind && age === change.age) === index ||
-    'pillar' in change;
+  const isFirstOfItsKey = (change: ChartChange, index: number) =>
+    changes.findIndex((other) => changeKeyOf(other) === changeKeyOf(change)) === index;
   return changes
-    .filter(isFirstOfKindAtAge)
+    .filter(isFirstOfItsKey)
     .sort((a, b) => a.age - b.age || KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));
 };

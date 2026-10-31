@@ -2,7 +2,7 @@ import React from 'react';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { euro, exactPercent } from './amountFormat';
 import { Assumption, CoverSteps, SummaryNote } from './chartNotes';
-import { ChartChange } from './chartChanges';
+import { ChartChange, changeKeyOf } from './chartChanges';
 import { ChartEvent } from './chartEvents';
 import { DEPOSIT_REAL_RETURN, GENERAL_ALLOWANCE, PENSIONER_ALLOWANCE } from './engine/pension';
 import { SUMMARY_LABELS } from './chartSources';
@@ -148,6 +148,11 @@ const changeTextOf = (intl: IntlShape, change: ChartChange) => {
         { id },
         { age: change.age, pillars: change.pillars, years: change.years },
       );
+    case 'rescueAllowanceEnd':
+      return intl.formatMessage(
+        { id },
+        { age: change.age, pensionStarts: change.pensionStarts ? 'yes' : 'no' },
+      );
     default:
       return intl.formatMessage({ id }, { age: change.age });
   }
@@ -165,9 +170,7 @@ const ChartChanges = ({ changes }: { changes: ChartChange[] }) => {
       </span>
       <ul aria-labelledby={CHANGES_ID}>
         {changes.map((change) => (
-          <li key={`${change.age}-${change.kind}-${'pillar' in change ? change.pillar : ''}`}>
-            {changeTextOf(intl, change)}
-          </li>
+          <li key={changeKeyOf(change)}>{changeTextOf(intl, change)}</li>
         ))}
       </ul>
     </li>
