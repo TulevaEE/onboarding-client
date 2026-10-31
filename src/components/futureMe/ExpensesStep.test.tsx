@@ -83,6 +83,35 @@ describe('Costs step', () => {
       ).toBeInTheDocument();
     });
 
+    it('tells a saver with a III pillar to add a contribution after work to the costs', () => {
+      renderCostsStep();
+
+      expect(
+        screen.getByText(
+          /Kui plaanid ka pärast töö lõppu III\ssambasse maksta, lisa sissemakse kuludele\./,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('leaves the contribution hint out without a III pillar', () => {
+      loggedInAs({
+        dateOfBirth: '1989-01-01',
+        personalCode: '39001011234',
+        thirdPillarInitDate: null,
+      });
+      render(
+        <IntlProvider locale="et" messages={translations.et}>
+          <FutureMe />
+        </IntlProvider>,
+      );
+      typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ }), '700');
+      typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu brutopalk/ }), '2000');
+      typeInto(screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }), '10000');
+      userEvent.click(within(trail()).getByRole('button', { name: 'Kulud, vaatamata' }));
+
+      expect(screen.queryByText(/lisa sissemakse kuludele/)).not.toBeInTheDocument();
+    });
+
     it('offers the three levels with the frugal one chosen', () => {
       renderCostsStep();
 

@@ -6,7 +6,6 @@ import {
   earlyDecrease,
   isPayoutChoiceMadeAtAnotherStep,
   pensionKind,
-  thirdPillarAfterAsked,
 } from './age65Answers';
 import { age55Of } from './age55';
 import { Age65Deferral } from './Age65Deferral';
@@ -45,7 +44,6 @@ interface Props {
   specialPension: SpecialPensionAnswers;
   headingRef: RefObject<HTMLHeadingElement>;
   startedFundPensions?: Partial<Record<'secondPillar' | 'thirdPillar', FundPensionChoice>>;
-  showErrors?: boolean;
   onChange: (answers: Age65Answers) => void;
   onEditYou: () => void;
   onEditAge60: () => void;
@@ -68,7 +66,6 @@ export const Age65Step = ({
   specialPension,
   headingRef,
   startedFundPensions = {},
-  showErrors = false,
   onChange,
   onEditYou,
   onEditAge60,
@@ -163,14 +160,7 @@ export const Age65Step = ({
         age={age}
         pensionAge={pensionAge}
       />
-      <Age65Work
-        answers={answers}
-        you={you}
-        plan={plan}
-        isThirdPillarAfterAsked={thirdPillarAfterAsked(answers, you, plan)}
-        showErrors={showErrors}
-        onChange={onChange}
-      />
+      <Age65Work answers={answers} you={you} plan={plan} onChange={onChange} />
       {comparison && !isSpecialPensionAfterPensionAge(plan) && (
         <FirstPillarChoice
           idPrefix="future-me-first-pillar"

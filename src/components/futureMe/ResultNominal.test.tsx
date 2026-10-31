@@ -89,6 +89,19 @@ const NOTE_TEXT = /^Graafik, tabel ja kokkuvõte on tuleviku eurodes/;
 describe('today’s or future prices', () => {
   beforeEach(() => jest.clearAllMocks());
 
+  it('lists the same chart changes in future prices, as prices rising alone change nothing', () => {
+    renderChart();
+    const changes = () =>
+      within(screen.getByRole('list', { name: 'Mis graafikul juhtub:', hidden: true }))
+        .getAllByRole('listitem', { hidden: true })
+        .map((item) => item.textContent?.replace(/\d[\d\s]*\s€/g, '€'));
+    const inTodayPrices = changes();
+
+    userEvent.click(futurePrices());
+
+    expect(changes()).toEqual(inTodayPrices);
+  });
+
   it('starts on today’s prices, named in words on both buttons', () => {
     renderChart();
 

@@ -335,67 +335,27 @@ describe('pension on favorable terms', () => {
     });
   });
 
-  describe('contributing to the III pillar after the early retirement', () => {
+  describe('the III pillar contribution at the early retirement', () => {
     const contributing: PensionInput = {
       ...withJob,
       soodus: 3,
       p3Monthly: 100,
       needMonthly: 500,
     };
-    const continued = simulate(contributing, lifeTable, keepGrowingScenario);
-    const stopped = simulate({ ...contributing, p3After: 0 }, lifeTable, keepGrowingScenario);
-    const earlyAges = agesFrom(pensionAge - 3, pensionAge);
+    const retired = simulate(contributing, lifeTable, keepGrowingScenario);
+    const earlyAges = agesFrom(pensionAge - 3, pensionAge + 1);
 
-    it('covers spending from the state pension whether contributing or not', () => {
-      expect(
-        valuesByAge(earlyAges, (age) => ({
-          continued: rowAt(continued, age).spend,
-          stopped: rowAt(stopped, age).spend,
-        })),
-      ).toEqual(
-        valuesByAge(earlyAges, () => ({
-          continued: expect.closeTo(500, 6),
-          stopped: expect.closeTo(500, 6),
-        })),
+    it('covers spending from the state pension', () => {
+      expect(valuesByAge(earlyAges, (age) => rowAt(retired, age).spend)).toEqual(
+        valuesByAge(earlyAges, () => expect.closeTo(500, 6)),
       );
     });
 
-    it('moves the contribution from the deposit to the III pillar at zero returns', () => {
-      expect(rowAt(continued, pensionAge).moneyLeft).toBeCloseTo(
-        rowAt(stopped, pensionAge).moneyLeft,
-        6,
-      );
-    });
+    it('stops, so nothing more goes into the pillars at zero returns', () => {
+      const pillarsAt = (age: number) => rowAt(retired, age).pot2 + rowAt(retired, age).pot3;
 
-    it('leaves more money than the deposit at a positive return', () => {
-      const atPositiveReturn = { realReturn: 0.02, depositReturn: -0.01 };
-
-      expect(
-        rowAt(
-          simulate({ ...contributing, ...atPositiveReturn }, lifeTable, keepGrowingScenario),
-          pensionAge,
-        ).moneyLeft,
-      ).toBeGreaterThan(
-        rowAt(
-          simulate(
-            { ...contributing, ...atPositiveReturn, p3After: 0 },
-            lifeTable,
-            keepGrowingScenario,
-          ),
-          pensionAge,
-        ).moneyLeft,
-      );
-    });
-
-    it('contributes nothing without a monthly III pillar contribution', () => {
-      expect(
-        simulate({ ...withJob, soodus: 3, p3Monthly: 0 }, lifeTable, keepGrowingScenario).rows,
-      ).toEqual(
-        simulate(
-          { ...withJob, soodus: 3, p3Monthly: 0, p3After: 0 },
-          lifeTable,
-          keepGrowingScenario,
-        ).rows,
+      expect(valuesByAge(earlyAges, pillarsAt)).toEqual(
+        valuesByAge(earlyAges, () => expect.closeTo(pillarsAt(pensionAge - 3), 6)),
       );
     });
   });

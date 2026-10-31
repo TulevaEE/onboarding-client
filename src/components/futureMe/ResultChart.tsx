@@ -28,6 +28,7 @@ import {
   tableRowsOf,
 } from './chartData';
 import { ageButtonsOf } from './chartAges';
+import { chartChangesOf } from './chartChanges';
 import { ChartEvent, chartEventsOf } from './chartEvents';
 import { assumptionOf, coverStepsOf, SummaryNote, summaryNotesOf } from './chartNotes';
 import { ChartMark, costsLine, lastPointAtAge, marksLine } from './chartPlugins';
@@ -44,7 +45,7 @@ import { ResultChartAges } from './ResultChartAges';
 import { ResultChartTip } from './ResultChartTip';
 import { useTouchView } from './useTouchView';
 import { useHighContrast } from './useHighContrast';
-import { ChartAssumption, ChartGuide, SummaryNotes } from './ResultChartNotes';
+import { BeforePension, ChartAssumption, ChartGuide, SummaryNotes } from './ResultChartNotes';
 import { NominalChoice, NominalNote } from './ResultNominalChoice';
 import { nominalResultOf } from './nominal';
 
@@ -67,6 +68,19 @@ const Y_AXIS_WIDTH = 76;
 const TOUCH_Y_AXIS_WIDTH = 52;
 const MIN_TICK_GAP = 32;
 const EVENT_DOT_ROOM = EVENT_DOT_RADIUS + EVENT_DOT_BORDER;
+const beforePensionOf = (rows: ChartRow[]): BeforePension => {
+  const before = rows.filter(({ isBeforePension }) => isBeforePension);
+  const hasSpecial = before.some(({ specialPension }) => specialPension > 0);
+  const hasFund = before.some(({ thirdPillar }) => thirdPillar > 0);
+  if (hasSpecial && hasFund) {
+    return 'both';
+  }
+  if (hasSpecial) {
+    return 'special';
+  }
+  return before.length > 0 ? 'fund' : 'none';
+};
+
 const NOT_COUNTED = '–';
 const COUNTED_FROM_PENSION_AGE: (ChartSourceId | 'costs')[] = ['salary', 'costs'];
 
@@ -92,7 +106,7 @@ const fadingFill = (color: string) => (context: ScriptableContext<'line'>) => {
 
 const HATCH_TILE = 8;
 const HATCH_LINE = 1.5;
-const HATCHED_SOURCES: ChartSourceId[] = ['secondPillarTaxed'];
+const HATCHED_SOURCES: ChartSourceId[] = ['secondPillarTaxed', 'thirdPillarTaxed'];
 
 const hatchedFill = (color: string) => (context: ScriptableContext<'line'>) => {
   const tile = document.createElement('canvas');
@@ -773,8 +787,12 @@ export const ResultChart = ({ result, need }: ResultChartProps) => {
       {assumption && <ChartAssumption assumption={assumption} />}
       <ChartGuide
         events={events}
-        startsBeforePension={rows[0].isBeforePension}
+        beforePension={beforePensionOf(rows)}
         cover={coverStepsOf(shown, rows)}
+        changes={chartChangesOf(result, rows, events, isNominal)}
+        hasWorkYears={rows.some(({ salary }) => salary > 0)}
+        hasRescueAllowance={shown.rescueAllowance !== null}
+        paysIntoThirdPillar={shown.thirdPillarMonthly > 0}
       />
       <button
         type="button"

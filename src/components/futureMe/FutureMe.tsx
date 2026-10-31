@@ -17,7 +17,6 @@ import { Age55Step } from './Age55Step';
 import { age55Of } from './age55';
 import { pillarsOpeningAt60 } from './age60Answers';
 import { Age60Step } from './Age60Step';
-import { isThirdPillarAfterMissing } from './age65Answers';
 import { Age65Step } from './Age65Step';
 import {
   contractEndAgeOf,
@@ -54,6 +53,7 @@ import {
   blockedFieldsOf,
   FIELDS_BY_SECTION,
   firstInvalidChildIIMonths,
+  hasJoinedThirdPillar,
   initialAnswers,
   initialOpenSections,
   OptionalSectionId,
@@ -134,15 +134,6 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
             />
           ),
         }));
-      case FutureMeStep.AGE_65:
-        return isThirdPillarAfterMissing(age65, answers, plan)
-          ? [
-              {
-                id: 'future-me-third-pillar-after-amount',
-                label: <FormattedMessage id="futureMe.age65.thirdPillarAfter.amount.label" />,
-              },
-            ]
-          : [];
       default:
         return [];
     }
@@ -335,7 +326,6 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           specialPension={specialPension}
           headingRef={headingRef}
           startedFundPensions={startedAt(FutureMeStep.AGE_65)}
-          showErrors={attemptedStep === FutureMeStep.AGE_65}
           onChange={setAge65}
           onEditYou={() => goTo(FutureMeStep.YOU)}
           onEditAge60={() => goTo(FutureMeStep.AGE_60)}
@@ -378,7 +368,14 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
       );
     }
     if (step === FutureMeStep.COSTS) {
-      return <ExpensesStep answers={expenses} headingRef={headingRef} onChange={setExpenses} />;
+      return (
+        <ExpensesStep
+          answers={expenses}
+          headingRef={headingRef}
+          hasThirdPillar={hasJoinedThirdPillar(answers)}
+          onChange={setExpenses}
+        />
+      );
     }
     return (
       <DecisionActionsProvider value={{ change: changeDecisions, goTo }}>

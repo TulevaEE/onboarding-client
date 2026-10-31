@@ -10,6 +10,7 @@ const rowWith = (changes: Partial<ChartRow>): ChartRow => ({
   secondPillar: 0,
   secondPillarTaxed: 0,
   thirdPillar: 0,
+  thirdPillarTaxed: 0,
   deposit: 0,
   costs: 1000,
   shortfall: 0,
@@ -144,7 +145,7 @@ describe('chartPoints', () => {
       });
     });
 
-    it('adds exactly what the hidden layer paid to what the engine found missing, with the III pillar contribution still being paid in it', () => {
+    it('adds exactly what the hidden layer paid to what the engine found missing', () => {
       const layers: ChartSourceId[] = ['firstPillar', 'thirdPillar'];
       const row = rowWith({ firstPillar: 464, thirdPillar: 90, costs: 1261, shortfall: 807 });
 

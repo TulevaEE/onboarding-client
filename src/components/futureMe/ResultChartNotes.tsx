@@ -2,8 +2,9 @@ import React from 'react';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { euro, exactPercent } from './amountFormat';
 import { Assumption, CoverSteps, SummaryNote } from './chartNotes';
+import { ChartChange, changeKeyOf } from './chartChanges';
 import { ChartEvent } from './chartEvents';
-import { DEPOSIT_REAL_RETURN } from './engine/pension';
+import { DEPOSIT_REAL_RETURN, GENERAL_ALLOWANCE, PENSIONER_ALLOWANCE } from './engine/pension';
 import { SUMMARY_LABELS } from './chartSources';
 import { strong } from './richText';
 import { useTouchView } from './useTouchView';
@@ -118,13 +119,85 @@ const CoverOrder = ({ cover }: { cover: CoverSteps }) => {
   );
 };
 
+const CHANGES_ID = 'future-me-chart-changes';
+const MONTHS_IN_YEAR = 12;
+
+const changeTextOf = (intl: IntlShape, change: ChartChange) => {
+  const id = `futureMe.result.chart.guide.changes.${change.kind}` as const;
+  switch (change.kind) {
+    case 'statePensionRise':
+      return intl.formatMessage(
+        { id },
+        {
+          age: change.age,
+          reason: change.reason,
+          amount: euro(change.amount),
+          allowance: euro(PENSIONER_ALLOWANCE / MONTHS_IN_YEAR),
+          general: euro(GENERAL_ALLOWANCE / MONTHS_IN_YEAR),
+        },
+      );
+    case 'withdrawalStart':
+      return intl.formatMessage({ id }, { age: change.age, pillar: change.pillar });
+    case 'withdrawalEnd':
+      return intl.formatMessage(
+        { id },
+        { age: change.age, pillar: change.pillar, reason: change.reason },
+      );
+    case 'fundEnd':
+      return intl.formatMessage(
+        { id },
+        { age: change.age, pillars: change.pillars, years: change.years },
+      );
+    case 'rescueAllowanceEnd':
+      return intl.formatMessage(
+        { id },
+        { age: change.age, pensionStarts: change.pensionStarts ? 'yes' : 'no' },
+      );
+    default:
+      return intl.formatMessage({ id }, { age: change.age });
+  }
+};
+
+const ChartChanges = ({ changes }: { changes: ChartChange[] }) => {
+  const intl = useIntl();
+  if (changes.length === 0) {
+    return null;
+  }
+  return (
+    <li>
+      <span id={CHANGES_ID}>
+        <FormattedMessage id="futureMe.result.chart.guide.changes.title" />
+      </span>
+      <ul aria-labelledby={CHANGES_ID}>
+        {changes.map((change) => (
+          <li key={changeKeyOf(change)}>{changeTextOf(intl, change)}</li>
+        ))}
+      </ul>
+    </li>
+  );
+};
+
+export type BeforePension = 'none' | 'special' | 'fund' | 'both';
+
 interface GuideProps {
   events: ChartEvent[];
-  startsBeforePension: boolean;
+  beforePension: BeforePension;
   cover: CoverSteps;
+  changes: ChartChange[];
+  hasWorkYears: boolean;
+  hasRescueAllowance: boolean;
+  paysIntoThirdPillar: boolean;
 }
 
-export const ChartGuide = ({ events, startsBeforePension, cover }: GuideProps) => {
+export const ChartGuide = ({
+  events,
+  beforePension,
+  cover,
+  changes,
+  hasWorkYears,
+  hasRescueAllowance,
+  paysIntoThirdPillar,
+}: GuideProps) => {
   const intl = useIntl();
   const isTouchView = useTouchView();
   const horizon = events.find(({ kind }) => kind === 'horizon');
@@ -143,9 +216,12 @@ export const ChartGuide = ({ events, startsBeforePension, cover }: GuideProps) =
         <li>
           <FormattedMessage id="futureMe.result.chart.guide.costs" />
         </li>
-        {startsBeforePension && (
+        {beforePension !== 'none' && (
           <li>
-            <FormattedMessage id="futureMe.result.chart.guide.beforePension" />
+            <FormattedMessage
+              id="futureMe.result.chart.guide.beforePension"
+              values={{ shown: beforePension }}
+            />
           </li>
         )}
         <li>
@@ -165,6 +241,20 @@ export const ChartGuide = ({ events, startsBeforePension, cover }: GuideProps) =
             />
           </li>
         )}
+        {hasWorkYears && (
+          <li>
+            <FormattedMessage
+              id="futureMe.result.chart.guide.workYears"
+              values={{ hasAllowance: hasRescueAllowance ? 'yes' : 'no' }}
+            />
+          </li>
+        )}
+        {paysIntoThirdPillar && (
+          <li>
+            <FormattedMessage id="futureMe.result.chart.guide.contribution" />
+          </li>
+        )}
+        <ChartChanges changes={changes} />
         <CoverOrder cover={cover} />
         {fundPeriods.length > 0 && (
           <li>

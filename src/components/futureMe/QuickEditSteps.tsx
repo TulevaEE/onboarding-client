@@ -4,6 +4,7 @@ import { useDecisionActions } from './decisionActions';
 import { StepDecisionId } from './decisions';
 import { ExpensesStep } from './ExpensesStep';
 import { ResultContext } from './resultAnswers';
+import { hasJoinedThirdPillar } from './youAnswers';
 import { SpecialPensionStep } from './SpecialPensionStep';
 import { FutureMeStep } from './steps';
 
@@ -17,6 +18,7 @@ export const QuickEditExpenses = ({ context }: Props) => {
     <ExpensesStep
       isEmbedded
       answers={context.expenses}
+      hasThirdPillar={hasJoinedThirdPillar(context.you)}
       onChange={(expenses) => change({ expenses })}
     />
   );

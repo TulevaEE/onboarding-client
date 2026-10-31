@@ -578,6 +578,16 @@ describe('Sina step help buttons', () => {
     expect(help).toHaveTextContent(/hilisemat juurdetulevat staaži ta ei lisa/);
   });
 
+  it('tells a rescuer how the increase combines with the children’s supplement and the deferral, and that the allowance does not rise with work', () => {
+    renderYouStep();
+
+    const help = openRescueHelp();
+
+    expect(help).toHaveTextContent(/suurendus korrutub pensioniga, nagu laste pensionilisa/);
+    expect(help).toHaveTextContent(/korrutub päästja suurendus ka edasilükkamise suurendusega/);
+    expect(help).toHaveTextContent(/Toetus ei tõuse töö tõttu, tööaastad lisanduvad pensionile/);
+  });
+
   const threeChildrenExample: [string, () => HTMLElement][] = [
     ['kids', openKidsHelp],
     ['early retirement', openEarlyRetirementHelp],

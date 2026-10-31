@@ -135,24 +135,6 @@ describe('resultAnswers', () => {
       });
     });
 
-    it('carries a changed III pillar contribution after an early retirement into the engine', () => {
-      const early = {
-        workAdded: true,
-        hazardList: 'list1' as const,
-        hazardYears: '10',
-        thirdPillarJoined: 'after' as const,
-        thirdPillarMonthly: '50',
-      };
-      const stopping = {
-        ...initialAge65(),
-        thirdPillarAfterMode: 'change' as const,
-        thirdPillarAfter: '0',
-      };
-
-      expect(resultInputOf(contextWith(early, { age65: stopping })).p3After).toBe(0);
-      expect(resultInputOf(contextWith(early)).p3After).toBeUndefined();
-    });
-
     it('counts III pillar contributions only from the age the saver plans to open it', () => {
       const openingAt = (thirdPillarOpenAge: string) =>
         resultInputOf(

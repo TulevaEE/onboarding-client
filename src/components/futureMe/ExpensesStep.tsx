@@ -33,6 +33,7 @@ interface Props {
   answers: ExpensesAnswers;
   headingRef?: RefObject<HTMLHeadingElement>;
   isEmbedded?: boolean;
+  hasThirdPillar?: boolean;
   onChange: (answers: ExpensesAnswers) => void;
 }
 
@@ -225,7 +226,13 @@ const LevelCard = ({ answers, level, widestTotal, onChange }: LevelCardProps) =>
   );
 };
 
-export const ExpensesStep = ({ answers, headingRef, isEmbedded, onChange }: Props) => {
+export const ExpensesStep = ({
+  answers,
+  headingRef,
+  isEmbedded,
+  hasThirdPillar = false,
+  onChange,
+}: Props) => {
   const intl = useIntl();
   const widestTotal = Math.max(...COST_LEVELS.map((level) => levelTotal(answers.household, level)));
 
@@ -310,6 +317,11 @@ export const ExpensesStep = ({ answers, headingRef, isEmbedded, onChange }: Prop
         <FormattedMessage id="futureMe.expenses.careHome.note" />
         <HelpButton topic="careHome" />
       </p>
+      {hasThirdPillar && (
+        <p className="form-text text-pretty">
+          <FormattedMessage id="futureMe.expenses.thirdPillarContribution.note" />
+        </p>
+      )}
       <ExpensesBreakdown answers={answers} onChange={onChange} />
     </StepSection>
   );

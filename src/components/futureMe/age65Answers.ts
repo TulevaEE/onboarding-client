@@ -14,7 +14,6 @@ import {
   isRescueAllowanceOnly,
   isSpecialPensionPathAsked,
   isSpecialPensionUsed,
-  thirdPillarMonthlyOf,
   YouAnswers,
 } from './youAnswers';
 import { payoutAge, retirementAge } from './planAges';
@@ -32,8 +31,6 @@ const YEARS_WORKED_PAST_PENSION_AGE = 5;
 export interface Age65Answers {
   work: 'no' | 'yes';
   workUntil: string;
-  thirdPillarAfterMode: 'same' | 'change';
-  thirdPillarAfter: string;
   mode: PensionMode;
   years: number;
   secondPillar: PayoutChoice;
@@ -44,8 +41,6 @@ export interface Age65Answers {
 export const initialAge65 = (): Age65Answers => ({
   work: 'no',
   workUntil: '',
-  thirdPillarAfterMode: 'same',
-  thirdPillarAfter: '',
   mode: 'full',
   years: 1,
   secondPillar: 'grow',
@@ -117,27 +112,9 @@ export const workAccrualMonthly = (you: YouAnswers): number => {
   return workAccrual(amountOf(you.grossMonthly), isContributing, isContributing);
 };
 
-export const thirdPillarAfterAsked = (
-  answers: Age65Answers,
-  you: YouAnswers,
-  plan: StepPlanInput,
-): boolean =>
-  answers.work !== 'yes' &&
-  thirdPillarMonthlyOf(you) > 0 &&
-  retirementAge(plan) < retirementYears(plan);
-
 export const deferralYearsWhileWorking = (answers: Age65Answers, plan: StepPlanInput): number => {
   const until = workUntilOf(answers, plan);
   return until === undefined
     ? 0
     : Math.min(Math.max(...DEFERRAL_YEARS), until - retirementYears(plan));
 };
-
-export const isThirdPillarAfterMissing = (
-  answers: Age65Answers,
-  you: YouAnswers,
-  plan: StepPlanInput,
-): boolean =>
-  thirdPillarAfterAsked(answers, you, plan) &&
-  answers.thirdPillarAfterMode === 'change' &&
-  answers.thirdPillarAfter.trim() === '';
