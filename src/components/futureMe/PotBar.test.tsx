@@ -6,10 +6,10 @@ import { contextWith } from './resultContextFixture';
 import { resultOf } from './resultAnswers';
 import translations from '../translations';
 
-const renderBar = (context = contextWith({ thirdPillarAmount: '5000' })) =>
+const renderBar = (context = contextWith({ thirdPillarAmount: '5000' }), isCostsChosen = false) =>
   render(
     <IntlProvider locale="et" messages={translations.et}>
-      <PotBar context={context} />
+      <PotBar context={context} isCostsChosen={isCostsChosen} />
     </IntlProvider>,
   );
 
@@ -56,5 +56,37 @@ describe('PotBar', () => {
 
     expect(within(bar()).getByText(/^Hoius \d+.aastaselt$/)).toBeVisible();
     expect(within(bar()).queryByText(/III\ssammas/)).not.toBeInTheDocument();
+  });
+
+  it('says the costs are not chosen yet before the costs step', () => {
+    renderBar();
+
+    const costs = within(bar()).getAllByRole('listitem').pop();
+    expect(costs).toHaveTextContent(/^valimataKulud$/);
+  });
+
+  it('shows the monthly costs and the chosen level once the costs step is seen', () => {
+    renderBar(contextWith({ thirdPillarAmount: '5000' }), true);
+
+    const costs = within(bar()).getAllByRole('listitem').pop();
+    expect(costs).toHaveTextContent(/^\d[\d\s]* €\s\/kuusKulud \(Kokkuhoidlik\)$/);
+  });
+
+  it('marks edited costs', () => {
+    const context = contextWith(
+      { thirdPillarAmount: '5000' },
+      { expenses: { household: 'alone', level: 'frugal', edits: { frugal: { food: '500' } } } },
+    );
+    renderBar(context, true);
+
+    expect(within(bar()).getByText('Kulud (Kokkuhoidlik, muudetud)')).toBeVisible();
+  });
+
+  it('draws a line icon before every amount', () => {
+    renderBar();
+
+    within(bar())
+      .getAllByRole('listitem')
+      .forEach((item) => expect(within(item).getByTestId(/^icon-/)).toBeInTheDocument());
   });
 });

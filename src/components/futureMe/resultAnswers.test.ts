@@ -629,9 +629,9 @@ describe('civil service years in the result', () => {
       );
     });
 
-    it('leave the state pension unraised when the rescue increase has ended by the pension year', () => {
+    it('raise the state pension by the rescue increase also when the pension year is after February 2043', () => {
       expect(statePensionAtStart(alsoRescuer('12'))).toBeCloseTo(
-        statePensionAtStart(civilServant('0')),
+        statePensionAtStart(civilServant('0')) * 1.1,
         6,
       );
     });

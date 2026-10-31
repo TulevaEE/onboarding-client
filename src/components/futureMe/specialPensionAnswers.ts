@@ -38,6 +38,9 @@ export const specialPensionStartAge = (plan: StepPlanInput): number =>
 export const isSpecialPensionStarted = (plan: StepPlanInput, today: Date = new Date()): boolean =>
   hasReachedAge(plan, specialPensionStartAge(plan), today);
 
+export const isSpecialPensionAfterPensionAge = (plan: StepPlanInput): boolean =>
+  specialPensionStartAge(plan) > retirementYears(plan);
+
 export const isWorkAsked = (plan: StepPlanInput): boolean =>
   specialPensionStartAge(plan) < retirementAge(plan) && !isSpecialPensionStarted(plan);
 

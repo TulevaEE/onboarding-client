@@ -439,6 +439,9 @@ describe('Sina step help buttons', () => {
     expect(
       within(dialog).getByRole('link', { name: /^Sotsiaalkindlustusameti pensionikalkulaatoris/ }),
     ).toHaveAttribute('href', expect.stringContaining('pension-calculator'));
+    expect(
+      within(dialog).getByRole('link', { name: /^Eesti\.ee pensionikalkulaatoris/ }),
+    ).toHaveAttribute('href', 'https://www.eesti.ee/et/artikkel/pension/pensionikalkulaator');
   });
 
   it('tells every saver, in a step of its own, to check the state pension without the children, since Elukaar adds their supplement', () => {
@@ -564,12 +567,15 @@ describe('Sina step help buttons', () => {
     },
   );
 
-  it('tells a rescuer until which year of retirement the calculation counts the service increase', () => {
+  it('tells a rescuer the increase is certain for service complete by February 2043 and that later service is not added', () => {
     renderYouStep();
 
-    expect(openRescueHelp()).toHaveTextContent(
-      /Tulevane Mina arvestab suurendust, kui lähed pensionile hiljemalt 2042\.\saastal/,
+    const help = openRescueHelp();
+
+    expect(help).toHaveTextContent(
+      /Suurendus on kindel, kui sul on päästeteenistuse staaž 28\.02\.2043 täis/,
     );
+    expect(help).toHaveTextContent(/hilisemat juurdetulevat staaži ta ei lisa/);
   });
 
   const threeChildrenExample: [string, () => HTMLElement][] = [
@@ -598,6 +604,19 @@ describe('Sina step help buttons', () => {
     expect(
       within(dialog).getByRole('link', { name: /^Sotsiaalkindlustusameti pensionikalkulaator/ }),
     ).toHaveAttribute('href', expect.stringContaining('pension-calculator'));
+  });
+
+  it('says Tulevane Mina does not ask the pension service, which limits the flexible years, and where to find it', () => {
+    renderYouStep();
+
+    const dialog = openEarlyRetirementHelp();
+
+    expect(dialog).toHaveTextContent(/20\sa staaži korral 1 aasta/);
+    expect(dialog).toHaveTextContent(/Tulevane Mina staaži ei küsi/);
+    expect(within(dialog).getByRole('link', { name: /^SKA iseteeninduses/ })).toHaveAttribute(
+      'href',
+      expect.stringContaining('iseteenindus.sotsiaalkindlustusamet.ee'),
+    );
   });
 
   it('leaves the field labels as they were for screen readers', () => {

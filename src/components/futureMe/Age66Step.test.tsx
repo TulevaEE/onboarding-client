@@ -245,6 +245,6 @@ describe('Age 66+ step', () => {
   it('explains the fund pension in collapsed questions', () => {
     openAge66Step();
 
-    expect(screen.getByText('Mis on igakuised väljamaksed?')).toBeInTheDocument();
+    expect(screen.getByText('Mis on igakuised väljamaksed ehk fondipension?')).toBeInTheDocument();
   });
 });

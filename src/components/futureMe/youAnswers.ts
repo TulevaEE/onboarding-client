@@ -88,6 +88,7 @@ export interface YouAnswers extends KidsAnswers, WorkAnswers {
 export type KidsUser = 'me' | 'other';
 export type KidsSupplementUser = KidsUser | 'split';
 export type RescueBasis = 'mix' | 'pension' | 'toetus';
+export type SpecialPensionPath = 'special' | 'flexible';
 
 interface KidsAnswers {
   kidsAdded: boolean;
@@ -110,6 +111,7 @@ interface WorkAnswers {
   rescueYears: string;
   hasSpecialPension: boolean;
   specialPensionStartAge: string;
+  specialPensionPath: SpecialPensionPath;
   isCivilServant: boolean;
   civilYears: string;
   hasOtherSpecialCase: boolean;
@@ -156,6 +158,7 @@ const OPTIONAL_DEFAULTS: { kids: KidsAnswers; work: WorkAnswers } = {
     rescueYears: '',
     hasSpecialPension: false,
     specialPensionStartAge: '',
+    specialPensionPath: 'special',
     isCivilServant: false,
     civilYears: '',
     hasOtherSpecialCase: false,
@@ -421,6 +424,19 @@ export const rescueBasisOf = (answers: YouAnswers): RescueBasis | undefined => {
     : answers.rescueBasis;
 };
 
+export const isRescueAllowanceOnly = (answers: YouAnswers): boolean => {
+  const years = earlyRetirementYears(answers);
+  const isAllowanceUntilPensionAge =
+    !isRescueBasisAsked(answers) || rescueBasisOf(answers) === 'toetus';
+  return (
+    years > 0 &&
+    years <= rescueRightOf(answers) &&
+    years <= earlyRetirementRight(answers) &&
+    earlyRetirementRight(answers) <= rescueRightOf(answers) &&
+    isAllowanceUntilPensionAge
+  );
+};
+
 export const earlyRightSources = (
   answers: YouAnswers,
 ): { kids: number; hazard: number; rescue: number } => ({
@@ -439,7 +455,7 @@ export const earlyRetirementRight = (answers: YouAnswers): number =>
   Math.max(...Object.values(earlyRightSources(answers)));
 
 export const isSpecialPensionOnly = (answers: YouAnswers): boolean =>
-  isSpecialPensionOn(answers) && earlyRetirementRight(answers) === 0;
+  isSpecialPensionUsed(answers) && earlyRetirementRight(answers) === 0;
 
 export const maxEarlyYearsOption = (answers: YouAnswers): number =>
   Math.max(FLEXIBLE_PENSION_MAX_YEARS_EARLY, earlyRetirementRight(answers));
@@ -452,6 +468,26 @@ const specialPensionStartAgeOf = (answers: YouAnswers): number | undefined => {
   const { min, max } = SPECIAL_PENSION_START_AGE_LIMITS;
   return Math.min(max, Math.max(min, parseInt(typed, 10) || 0));
 };
+
+export type SpecialPensionTiming = 'before' | 'atPensionAge' | 'after';
+
+export const specialPensionTiming = (answers: YouAnswers): SpecialPensionTiming => {
+  const startAge = specialPensionStartAgeOf(answers);
+  const pensionAge = effectivePensionAge(answers);
+  if (startAge === undefined || startAge < pensionAge) {
+    return 'before';
+  }
+  return startAge === pensionAge ? 'atPensionAge' : 'after';
+};
+
+export const isSpecialPensionPathAsked = (answers: YouAnswers): boolean => {
+  const startAge = specialPensionStartAgeOf(answers);
+  return startAge !== undefined && startAge > effectivePensionAge(answers);
+};
+
+export const isSpecialPensionUsed = (answers: YouAnswers): boolean =>
+  isSpecialPensionOn(answers) &&
+  !(isSpecialPensionPathAsked(answers) && answers.specialPensionPath === 'flexible');
 
 // RPKS § 9 lg 5: no flexible old-age pension for someone already granted a special pension
 const isFlexibleBarredBySpecialPension = (answers: YouAnswers, years: number): boolean => {
@@ -470,7 +506,7 @@ export const isAnyFlexibleYearBarredBySpecialPension = (answers: YouAnswers): bo
 
 export const earlyRetirementYears = (answers: YouAnswers): number => {
   const right = earlyRetirementRight(answers);
-  if (isSpecialPensionOn(answers) && right === 0) {
+  if (isSpecialPensionUsed(answers) && right === 0) {
     return 0;
   }
   const picked = answers.earlyYearsPicked;
@@ -492,11 +528,8 @@ export const serviceYearsOf = (
     answers.workAdded && answers.isCivilServant ? parseInt(answers.civilYears, 10) || 0 : 0,
 });
 
-export const serviceIncreaseAtPension = (answers: YouAnswers): ServiceIncrease =>
-  serviceIncreaseOf(
-    serviceYearsOf(answers),
-    birthYearOrFallback(answers) + pensionAgeValue(answers),
-  );
+export const serviceIncreaseOfAnswers = (answers: YouAnswers): ServiceIncrease =>
+  serviceIncreaseOf(serviceYearsOf(answers));
 
 export const fieldProblem = (answers: YouAnswers, field: YouField): FieldProblem | null => {
   const typed = answers[field].trim();
@@ -567,8 +600,10 @@ export const toStepPlanInput = (answers: YouAnswers): StepPlanInput => ({
   birthMonth: answers.birthMonth ?? undefined,
   pensionAgeYears: effectivePensionAge(answers),
   earlyRetirementYears: earlyRetirementYears(answers),
-  hasSpecialPension: isSpecialPensionOn(answers),
-  specialPensionStartAge: specialPensionStartAgeOf(answers),
+  hasSpecialPension: isSpecialPensionUsed(answers),
+  specialPensionStartAge: isSpecialPensionUsed(answers)
+    ? specialPensionStartAgeOf(answers)
+    : undefined,
   savesInSecondPillar:
     amountOf(answers.secondPillarAmount) > 0 || Number(answers.secondPillarRate) > 0,
   thirdPillarJoined: answers.thirdPillarJoined,

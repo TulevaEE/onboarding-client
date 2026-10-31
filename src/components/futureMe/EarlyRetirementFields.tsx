@@ -15,11 +15,13 @@ import {
   isAnyFlexibleYearBarredBySpecialPension,
   isKidsRightAvailableToSelf,
   isRescueBasisAsked,
-  isRescueMixOffered,
   rescueBasisOf,
   rescueRightOf,
   RescueBasis,
   isSpecialPensionOnly,
+  isSpecialPensionPathAsked,
+  SpecialPensionPath,
+  specialPensionTiming,
   pensionAgeValue,
   YouAnswers,
 } from './youAnswers';
@@ -112,27 +114,38 @@ const summaryOf = (intl: IntlShape, answers: YouAnswers): React.ReactNode => {
   ) : null;
 };
 
-const RESCUE_BASES: RescueBasis[] = ['mix', 'pension', 'toetus'];
+type RescueCard = 'mix' | 'pension' | 'toetus';
 
-const rescueBasisText = (basis: RescueBasis, answers: YouAnswers) => {
+const childrenCardOf = (answers: YouAnswers): RescueCard =>
+  earlyRetirementYears(answers) > earlyRightSources(answers).kids ? 'mix' : 'pension';
+
+const rescueCardText = (card: RescueCard, answers: YouAnswers) => {
   const pensionAge = effectivePensionAge(answers);
   const kidsYears = earlyRightSources(answers).kids;
-  const rescueYears = rescueRightOf(answers);
+  const years = earlyRetirementYears(answers);
   const values = {
     mix: {
-      toetusYears: rescueYears - kidsYears,
-      toetusFrom: pensionAge - rescueYears,
+      toetusYears: years - kidsYears,
+      toetusFrom: pensionAge - years,
       toetusTo: pensionAge - kidsYears - 1,
       pensionFrom: pensionAge - kidsYears,
     },
-    pension: { years: kidsYears, age: pensionAge - kidsYears },
-    toetus: { years: rescueYears, age: pensionAge - rescueYears, pensionAge },
+    pension: { years, age: pensionAge - years },
+    toetus: { years, age: pensionAge - years, pensionAge },
   };
-  return <FormattedMessage id={`futureMe.you.rescueBasis.${basis}.text`} values={values[basis]} />;
+  return <FormattedMessage id={`futureMe.you.rescueBasis.${card}.text`} values={values[card]} />;
+};
+
+const isRescueBasisShown = (answers: YouAnswers): boolean => {
+  const years = earlyRetirementYears(answers);
+  return isRescueBasisAsked(answers) && years > 0 && years <= rescueRightOf(answers);
 };
 
 const RescueBasisChoice = ({ answers, onChange }: Props) => {
-  const offered = RESCUE_BASES.filter((basis) => basis !== 'mix' || isRescueMixOffered(answers));
+  const choices: { card: RescueCard; basis: RescueBasis }[] = [
+    { card: childrenCardOf(answers), basis: 'mix' },
+    { card: 'toetus', basis: 'toetus' },
+  ];
   return (
     <div className="mb-3">
       <h3 className="h5 section-title" id="future-me-rescue-basis-title">
@@ -148,16 +161,65 @@ const RescueBasisChoice = ({ answers, onChange }: Props) => {
         aria-describedby="future-me-rescue-basis-hint"
       >
         <div className="payout-choices">
-          {offered.map((basis) => (
+          {choices.map(({ card, basis }) => (
             <ChoiceCard
               key={basis}
               idPrefix="future-me-rescue-basis"
               name="future-me-rescue-basis"
               value={basis}
-              checked={rescueBasisOf(answers) === basis}
-              title={<FormattedMessage id={`futureMe.you.rescueBasis.${basis}.title`} />}
-              text={rescueBasisText(basis, answers)}
+              checked={(rescueBasisOf(answers) === 'toetus') === (basis === 'toetus')}
+              title={<FormattedMessage id={`futureMe.you.rescueBasis.${card}.title`} />}
+              text={rescueCardText(card, answers)}
               onChange={() => onChange({ rescueBasis: basis })}
+            />
+          ))}
+        </div>
+      </fieldset>
+    </div>
+  );
+};
+
+const SPECIAL_PENSION_PATHS: SpecialPensionPath[] = ['special', 'flexible'];
+
+const SpecialPensionPathChoice = ({ answers, onChange }: Props) => {
+  const values = {
+    startAge: answers.specialPensionStartAge.trim(),
+    pensionAge: effectivePensionAge(answers),
+  };
+  return (
+    <div className="mb-3">
+      <h3 className="h5 section-title" id="future-me-special-pension-path-title">
+        <FormattedMessage id="futureMe.you.specialPensionPath.title" />
+      </h3>
+      <p className="you-note" id="future-me-special-pension-path-hint">
+        <FormattedMessage id="futureMe.you.specialPensionPath.hint" />
+      </p>
+      <fieldset
+        className="payout-fieldset"
+        aria-labelledby="future-me-special-pension-path-title"
+        aria-describedby="future-me-special-pension-path-hint"
+      >
+        <div className="payout-choices">
+          {SPECIAL_PENSION_PATHS.map((path) => (
+            <ChoiceCard
+              key={path}
+              idPrefix="future-me-special-pension-path"
+              name="future-me-special-pension-path"
+              value={path}
+              checked={answers.specialPensionPath === path}
+              title={
+                <FormattedMessage
+                  id={`futureMe.you.specialPensionPath.${path}.title`}
+                  values={values}
+                />
+              }
+              text={
+                <FormattedMessage
+                  id={`futureMe.you.specialPensionPath.${path}.text`}
+                  values={values}
+                />
+              }
+              onChange={() => onChange({ specialPensionPath: path })}
             />
           ))}
         </div>
@@ -179,12 +241,17 @@ export const EarlyRetirementFields = ({ answers, onChange }: Props) => {
 
   return (
     <>
-      {isRescueBasisAsked(answers) && <RescueBasisChoice answers={answers} onChange={onChange} />}
+      {isSpecialPensionPathAsked(answers) && (
+        <SpecialPensionPathChoice answers={answers} onChange={onChange} />
+      )}
       {isSpecialPensionOnly(answers) ? (
         <p className="you-note">
           <FormattedMessage
             id="futureMe.you.earlyYears.specialPensionOnly"
-            values={{ startAge: startAge === '' ? NO_START_AGE : startAge }}
+            values={{
+              startAge: startAge === '' ? NO_START_AGE : startAge,
+              timing: specialPensionTiming(answers),
+            }}
           />
         </p>
       ) : (
@@ -207,6 +274,7 @@ export const EarlyRetirementFields = ({ answers, onChange }: Props) => {
           />
         </div>
       )}
+      {isRescueBasisShown(answers) && <RescueBasisChoice answers={answers} onChange={onChange} />}
       <div role="status" className={summary ? 'you-note' : undefined}>
         {summary}
       </div>

@@ -537,6 +537,24 @@
     gap: 1rem;
   }
 
+  .you-section-icon {
+    display: inline-flex;
+    flex: 0 0 1.25rem;
+    margin-top: 0.125rem;
+    margin-right: -0.25rem;
+    color: $blue;
+
+    .line-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+
+  .you-section-text {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
   .you-section-title {
     margin: 0;
     font-size: 1.125rem;
@@ -1416,21 +1434,6 @@
     }
   }
 
-  .kids-compare-table {
-    font-size: 0.875rem;
-    font-variant-numeric: tabular-nums;
-
-    th,
-    td {
-      text-align: left;
-    }
-
-    th[scope='row'] {
-      min-width: 8rem;
-      text-wrap: balance;
-    }
-  }
-
   .label-line {
     margin-bottom: 0.5rem;
     white-space: nowrap;
@@ -1637,6 +1640,18 @@
       list-style: none;
     }
 
+    li {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+
+    .line-icon {
+      flex-shrink: 0;
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
     strong,
     small {
       display: block;
@@ -1670,6 +1685,10 @@
         margin-top: 0.125rem;
         line-height: 1.2;
         overflow-wrap: anywhere;
+      }
+
+      .line-icon {
+        display: none;
       }
     }
 

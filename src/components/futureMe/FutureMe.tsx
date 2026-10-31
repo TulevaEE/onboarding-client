@@ -372,6 +372,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           headingRef={headingRef}
           showErrors={attemptedStep === FutureMeStep.SPECIAL_PENSION}
           onChange={setSpecialPension}
+          onAge65Change={setAge65}
           onEditYou={() => goTo(FutureMeStep.YOU)}
         />
       );
@@ -409,7 +410,9 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
         />
       )}
       {renderStep()}
-      {step !== FutureMeStep.RESULT && <PotBar context={resultContext} />}
+      {step !== FutureMeStep.RESULT && (
+        <PotBar context={resultContext} isCostsChosen={visited.has(FutureMeStep.COSTS)} />
+      )}
       <div className="step-nav">
         <button
           type="button"

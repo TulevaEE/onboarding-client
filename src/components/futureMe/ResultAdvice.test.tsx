@@ -106,7 +106,7 @@ const openResult = () => goTo(/^Tulemus/);
 
 const warning = () =>
   screen.queryByRole('status', {
-    name: 'Hoiatus: sinu valitud plaan ei kanna kulusid elu lõpuni',
+    name: 'Hoiatus: sinu pensionivara ei kanna kulusid elu lõpuni',
   });
 
 describe('Result advice', () => {
@@ -131,6 +131,26 @@ describe('Result advice', () => {
       /Parem oleks .+: see kannab elu lõpuni [\d\s]+€ kuus \(sinu valik [\d\s]+€\)\./,
     );
     expect(warning()).toHaveTextContent(/Selleks vali .+\./);
+  });
+
+  it('says "näiteks" when the pillars were left to grow, as taking them out at 0% is possible too', () => {
+    startWith('700', '30000');
+    chooseComfortableCosts();
+    chooseSecondPillarFundPension();
+    openResult();
+
+    expect(warning()).toHaveTextContent(
+      /Selleks vali näiteks pensionieas igakuised väljamaksed ja lükka riiklik pension/,
+    );
+  });
+
+  it('names the payout age without "näiteks" when the fund pension is chosen there', () => {
+    startWith('700', '30000');
+    chooseComfortableCosts();
+    chooseSecondPillarFundPensionAtPayoutAge();
+    openResult();
+
+    expect(warning()).not.toHaveTextContent(/näiteks/);
   });
 
   it('tells how much the fund pension pays over the costs, which then waits on a deposit', () => {

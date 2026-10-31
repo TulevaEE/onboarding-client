@@ -88,8 +88,9 @@ describe('Result step: rules', () => {
     const inheritance = itemTitled(ruleList(), /^Pärimine$/);
     expect(inheritance).toHaveTextContent('Elu lõpus');
     expect(inheritance).toHaveTextContent(
-      /II ja III samba fondiosakud lähevad pärijatele, ka igakuiste väljamaksete ajal\. Pärija saab need tulumaksuvabalt oma pensionikontole\./,
+      /II ja III samba fondiosakud lähevad pärijatele, ka igakuiste väljamaksete ajal\. Pärija saab fondiosakud tulumaksuvabalt oma pensionikontole\.$/,
     );
+    expect(inheritance).not.toHaveTextContent('kindlustuspension');
     expect(inheritance).not.toHaveTextContent('22%');
   });
 

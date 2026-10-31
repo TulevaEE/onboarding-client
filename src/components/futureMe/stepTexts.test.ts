@@ -45,7 +45,8 @@ const isOnAge55And60Steps = (key: string) =>
   /^futureMe\.(age55|age60|fundPensionFaq|payoutChoice|choiceMade)\./.test(key);
 
 const isOnAge65AndSpecialPensionSteps = (key: string) =>
-  /^futureMe\.(age65|specialPension|firstPillarChoice)\./.test(key);
+  /^futureMe\.(age65|specialPension|firstPillarChoice)\./.test(key) ||
+  helpTopicKeys(['spMonthly'])(key);
 
 const isOnAge66Step = (key: string) => key.startsWith('futureMe.age66.');
 

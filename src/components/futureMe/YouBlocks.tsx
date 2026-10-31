@@ -53,6 +53,7 @@ export const StateSection = ({
   return (
     <YouSection
       id="future-me-state"
+      icon="landmark"
       title={<FormattedMessage id="futureMe.you.state.title" />}
       summary={
         <FormattedMessage
@@ -72,10 +73,13 @@ export const StateSection = ({
         <FormattedMessage
           id="futureMe.you.state.socialInsuranceBoardCalculator"
           values={{
-            link: (chunks: React.ReactNode) => (
+            ska: (chunks: React.ReactNode) => (
               <a href="https://iseteenindus.sotsiaalkindlustusamet.ee/self-service/pension-calculator">
                 {chunks}
               </a>
+            ),
+            eesti: (chunks: React.ReactNode) => (
+              <a href="https://www.eesti.ee/et/artikkel/pension/pensionikalkulaator">{chunks}</a>
             ),
           }}
         />
@@ -125,6 +129,7 @@ export const SecondPillarSection = ({
   return (
     <YouSection
       id="future-me-second-pillar"
+      icon="briefcase"
       title={<FormattedMessage id="futureMe.you.secondPillar.title" />}
       help="pillars"
       summary={
@@ -215,6 +220,7 @@ export const ThirdPillarSection = ({
   return (
     <YouSection
       id="future-me-third-pillar"
+      icon="tree"
       title={<FormattedMessage id="futureMe.you.thirdPillar.title" />}
       summary={
         <FormattedMessage

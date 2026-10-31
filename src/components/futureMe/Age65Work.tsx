@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { amountOf, thirdPillarMonthlyOf, YouAnswers } from './youAnswers';
+import { amountOf, isRescueAllowanceOnly, thirdPillarMonthlyOf, YouAnswers } from './youAnswers';
 import { Age65Answers, workAccrualMonthly, workUntilOf, workUntilOptions } from './age65Answers';
 import { decimalText, euro } from './amountFormat';
 import { retirementYears } from './engine/pension';
@@ -44,7 +44,10 @@ export const Age65Work = ({
     <>
       <fieldset className="payout-fieldset">
         <legend className="h5 section-title">
-          <FormattedMessage id="futureMe.age65.work.legend" />
+          <FormattedMessage
+            id="futureMe.age65.work.legend"
+            values={{ allowance: isRescueAllowanceOnly(you) ? 'yes' : 'no' }}
+          />
         </legend>
         <div className="payout-choices">
           {WORK_CHOICES.map(({ value, emoji }) => (

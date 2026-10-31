@@ -18,15 +18,18 @@ import { FirstPillarChoice } from './FirstPillarChoice';
 import {
   chosenFirstPillar,
   firstPillarComparison,
+  isSpecialPensionAfterPensionAge,
+  pensionInputOf,
   SpecialPensionAnswers,
   specialPensionStartAge,
 } from './specialPensionAnswers';
-import { exactPercent } from './amountFormat';
+import { euro, exactPercent } from './amountFormat';
 import { retirementYears } from './engine/pension';
 import { FundPensionFaq } from './FundPensionFaq';
 import { RescueCompareFaq, SpecialCompareFaq } from './KidsCompareFaq';
+import { RescueNotes } from './RescueNotes';
 import { FutureMeStep, StepPlanInput } from './steps';
-import { YouAnswers } from './youAnswers';
+import { amountOf, isRescueAllowanceOnly, YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
 import { ageTense, hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 import { strong } from './richText';
@@ -75,6 +78,7 @@ export const Age65Step = ({
   const pensionAge = retirementYears(plan);
   const year = plan.birthYear + age;
   const kind = pensionKind(you);
+  const allowance = isRescueAllowanceOnly(you) ? 'yes' : 'no';
   const comparison = plan.hasSpecialPension
     ? firstPillarComparison(specialPension, you, plan, answers, age66)
     : null;
@@ -122,6 +126,7 @@ export const Age65Step = ({
             id="futureMe.age65.title"
             values={{
               kind,
+              allowance,
               special: plan.hasSpecialPension ? 'yes' : 'no',
               pillars: isPillarChoiceLeft ? 'asked' : 'done',
             }}
@@ -134,6 +139,8 @@ export const Age65Step = ({
             id="futureMe.age65.early.note"
             values={{
               kind,
+              allowance,
+              amount: euro(amountOf(you.firstPillarMonthly)),
               age,
               year,
               years: plan.earlyRetirementYears,
@@ -151,6 +158,11 @@ export const Age65Step = ({
           </LinkButton>
         </p>
       )}
+      <RescueNotes
+        input={pensionInputOf(specialPension, you, plan, answers, age66)}
+        age={age}
+        pensionAge={pensionAge}
+      />
       <Age65Work
         answers={answers}
         you={you}
@@ -159,7 +171,7 @@ export const Age65Step = ({
         showErrors={showErrors}
         onChange={onChange}
       />
-      {comparison && (
+      {comparison && !isSpecialPensionAfterPensionAge(plan) && (
         <FirstPillarChoice
           idPrefix="future-me-first-pillar"
           title={<FormattedMessage id="futureMe.firstPillarChoice.title" />}

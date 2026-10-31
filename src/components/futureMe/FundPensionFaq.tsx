@@ -3,9 +3,10 @@ import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { strong } from './richText';
 
-const FAQ_ITEMS = ['what', 'when', 'surplus', 'know', 'at60'];
+const FAQ_ITEMS = ['when', 'surplus', 'know', 'at60'];
 
 const faqItems = (hasBothPillars: boolean) => [
+  'what',
   'choose',
   ...(hasBothPillars ? ['order'] : []),
   ...FAQ_ITEMS,

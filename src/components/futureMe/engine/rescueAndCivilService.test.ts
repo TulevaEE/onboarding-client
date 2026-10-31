@@ -1,6 +1,8 @@
 import {
   childSupplement,
+  DEFERRAL_INCREASE,
   earlyYears,
+  options,
   KidsInput,
   PensionInput,
   rescueIncrease,
@@ -42,12 +44,11 @@ describe('rescue service', () => {
       ).toBeCloseTo(1.2, 9);
     });
 
-    it('is not paid when retiring after February 2043', () => {
+    it('is still paid when retiring after February 2043, because the service years are complete by then', () => {
       expect(
-        Math.abs(
-          statePensionAtStart(simulateOneContract({ ...base, soodus: 0, rescueYears: 20 })) - 865,
-        ),
-      ).toBeLessThanOrEqual(1);
+        statePensionAtStart(simulateOneContract({ ...base, soodus: 0, rescueYears: 20 })) /
+          statePensionAtStart(simulateOneContract({ ...base, soodus: 0 })),
+      ).toBeCloseTo(1.2, 9);
     });
 
     it.each([
@@ -140,6 +141,90 @@ describe('rescue service', () => {
         expect(otherParent.rescueAllowance?.until).toBe(ordinaryAge);
       });
     });
+  });
+});
+
+describe('rescue service together with hazardous work', () => {
+  const rescuerOnHazardousWork: PensionInput = {
+    ...base,
+    birthYear: 1975,
+    rescueYears: 20,
+    hazard: 'list1',
+    hazardYears: 10,
+  };
+
+  it('pays no allowance for the 10 years the hazardous work gives, because the allowance covers 5 and a pension is paid instead', () => {
+    expect(simulateOneContract(rescuerOnHazardousWork).rescueAllowance).toBeNull();
+  });
+
+  it('pays the pension from the hazardous work start with the rescue increase', () => {
+    const result = simulateOneContract(rescuerOnHazardousWork);
+    const withoutRescue = simulateOneContract({ ...rescuerOnHazardousWork, rescueYears: 0 });
+    expect(statePensionAtStart(result)).toBeCloseTo(statePensionAtStart(withoutRescue) * 1.2, 6);
+  });
+});
+
+describe('rescue service allowance until the pension age, then the old-age pension', () => {
+  const rescuer: PensionInput = { ...base, birthYear: 1975, rescueYears: 20 };
+  const pensionAge = retirementYears(rescuer);
+  const deferredBy = (years: number) =>
+    simulate(rescuer, lifeTable, { ...scenarioB, deferral: years });
+  const takenAtPensionAge = deferredBy(0);
+  const deferredOneYear = deferredBy(1);
+
+  it('lets the saver defer the old-age pension, because the allowance is not a pension', () => {
+    expect(options(rescuer).deferral.open).toBe(true);
+  });
+
+  it('keeps paying the allowance until the pension age', () => {
+    expect(statePensionAt(deferredOneYear, pensionAge - 1)).toBeCloseTo(
+      statePensionAt(takenAtPensionAge, pensionAge - 1),
+      6,
+    );
+  });
+
+  it('pays no state pension in the deferred year after the allowance ends', () => {
+    expect(statePensionAt(deferredOneYear, pensionAge)).toBe(0);
+  });
+
+  it('raises the old-age pension for the deferred year', () => {
+    expect(statePensionAt(deferredOneYear, pensionAge + 1)).toBeCloseTo(
+      statePensionAt(takenAtPensionAge, pensionAge + 1) * (1 + DEFERRAL_INCREASE[1]),
+      6,
+    );
+  });
+
+  it('pays half the old-age pension from the pension age when half is taken', () => {
+    const half = simulate(rescuer, lifeTable, { ...scenarioB, half: 1 });
+    expect(statePensionAt(half, pensionAge - 1)).toBeCloseTo(
+      statePensionAt(takenAtPensionAge, pensionAge - 1),
+      6,
+    );
+    expect(statePensionAt(half, pensionAge)).toBeCloseTo(
+      statePensionAt(takenAtPensionAge, pensionAge) / 2,
+      6,
+    );
+  });
+
+  it('pays the allowance instead of the special pension before the pension age when the old-age pension is chosen', () => {
+    const withSpecialPension: PensionInput = {
+      ...rescuer,
+      spMonthly: 700,
+      spStartAge: pensionAge - 5,
+      firstPillarChoice: 'oldAge',
+    };
+    const result = simulate(withSpecialPension, lifeTable, scenarioB);
+
+    expect(rowAt(result, pensionAge - 1).isp).toBe(0);
+    expect(statePensionAt(result, pensionAge - 1)).toBeCloseTo(
+      statePensionAt(takenAtPensionAge, pensionAge - 1),
+      6,
+    );
+  });
+
+  it('does not let the saver defer once the pension for children starts before the pension age', () => {
+    const kids: KidsInput = { b2012: 4, earlyUser: 'me', supUser: 'me' };
+    expect(options({ ...rescuer, kids }).deferral.open).toBe(false);
   });
 });
 

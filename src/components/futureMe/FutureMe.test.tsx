@@ -278,10 +278,12 @@ describe('FutureMe', () => {
       expect(sexField()).toHaveDisplayValue('Naine');
     });
 
-    it('tells the user the answers came from their data', () => {
+    it('tells the user some answers are prefilled, without naming where from', () => {
       renderFutureMe();
 
-      expect(screen.getByText(/võetud sinu Tuleva andmetest/)).toBeInTheDocument();
+      expect(
+        screen.getByText('Osa andmeid on eeltäidetud. Kontrolli üle ja paranda, kui vaja.'),
+      ).toBeInTheDocument();
     });
 
     it('lets the user change both answers', () => {
@@ -300,7 +302,7 @@ describe('FutureMe', () => {
       renderFutureMe();
 
       expect(birthYearField()).toHaveValue(null);
-      expect(screen.queryByText(/võetud sinu Tuleva andmetest/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/on eeltäidetud/)).not.toBeInTheDocument();
     });
   });
 
@@ -993,6 +995,14 @@ describe('FutureMe', () => {
       expect(
         screen.getByRole('link', { name: /Sotsiaalkindlustusameti kalkulaatorist/ }),
       ).toHaveAttribute('href', expect.stringContaining('sotsiaalkindlustusamet.ee'));
+    });
+
+    it('points to the Eesti.ee pension calculator next to the Social Insurance Board one', () => {
+      renderFutureMe();
+
+      expect(
+        screen.getByRole('link', { name: /Eesti\.ee pensionikalkulaatorist/ }),
+      ).toHaveAttribute('href', 'https://www.eesti.ee/et/artikkel/pension/pensionikalkulaator');
     });
 
     it('leaves the civil servant out of the calculator note, as the state pension „?“ says it', () => {
@@ -1903,14 +1913,113 @@ describe('FutureMe', () => {
           );
         });
 
-        it('take the early right from the children when their pension is picked', () => {
+        const rescueBasisGroup = () =>
+          screen.queryByRole('group', { name: /Ootetoetus või laste eest pension/ });
+        const rescueBasisNames = () =>
+          ['Mõlemad järjest', 'Laste eest pension', 'Ainult ootetoetus'].filter((name) =>
+            within(rescueBasisGroup() as HTMLElement).queryByRole('radio', { name }),
+          );
+
+        it('ask the early years first and the rescue allowance or the pension for the children after them', () => {
           renderFutureMe();
           addKids(['1990', '1992', '1994']);
           addRescueService();
 
-          userEvent.click(rescueBasis('Laste eest pension'));
+          expect(earlyYearsField().compareDocumentPosition(rescueBasisGroup() as HTMLElement)).toBe(
+            Node.DOCUMENT_POSITION_FOLLOWING,
+          );
+        });
 
-          expect(earlyYearsField()).toHaveDisplayValue(withNbsp('1 a, vähendamata (kõige varem)'));
+        it('offer the pension for the children or only the allowance when the early years fit the children right', () => {
+          renderFutureMe();
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          userEvent.selectOptions(earlyYearsField(), '1');
+
+          expect(rescueBasisNames()).toEqual(['Laste eest pension', 'Ainult ootetoetus']);
+          expect(rescueBasis('Laste eest pension')).toBeChecked();
+          expect(earlyYearsField()).toHaveDisplayValue(withNbsp('1 a, vähendamata'));
+        });
+
+        it('offer both one after the other or only the allowance when the early years go past the children right', () => {
+          renderFutureMe();
+          userEvent.selectOptions(pensionAgeField(), '66');
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          userEvent.selectOptions(earlyYearsField(), '3');
+
+          expect(rescueBasisNames()).toEqual(['Mõlemad järjest', 'Ainult ootetoetus']);
+          expect(rescueBasis('Mõlemad järjest')).toHaveAccessibleDescription(
+            /^Ootetoetus 2\sa \(63–64\sa\), siis 65-\u2060aastaselt laste eest pension koos laste lisaga\.$/,
+          );
+          expect(rescueBasis('Ainult ootetoetus')).toHaveAccessibleDescription(
+            /^3\sa varem \(63\sa\) kuni pensionieani\./,
+          );
+        });
+
+        it('name a single allowance year by its age, not as a range from an age to the same age', () => {
+          renderFutureMe();
+          userEvent.selectOptions(pensionAgeField(), '66');
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          userEvent.selectOptions(earlyYearsField(), '2');
+
+          expect(rescueBasis('Mõlemad järjest')).toHaveAccessibleDescription(
+            /^Ootetoetus 1\sa \(64\sa\), siis 65-\u2060aastaselt laste eest pension koos laste lisaga\.$/,
+          );
+        });
+
+        it.each([
+          ['to look at it together with the partner', /vaadake koos üle, kumb on teile soodsam/],
+          [
+            'to look at what gives more when raising the children alone',
+            /Vaata üle, kumb annab sulle rohkem/,
+          ],
+          [
+            'that the allowance ends at the pension age and the pension can then be deferred',
+            /Ootetoetus lõpeb pensionieas/,
+          ],
+          [
+            'that the pension for the children cannot be deferred but can be suspended later',
+            /saab hiljem peatada või pooleks võtta/,
+          ],
+          [
+            'the assumption on the rescue increase of a deferred pension',
+            /Eeldame, et päästja suurendus lisandub ka edasi lükatud pensionile/,
+          ],
+        ])('advise behind the „?“ of the rescue allowance choice %s', (_, content) => {
+          renderFutureMe();
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          userEvent.click(
+            screen.getByRole('button', { name: /^Selgitus: Ootetoetus või laste eest pension/ }),
+          );
+
+          expect(within(screen.getByRole('dialog')).getByText(content)).toBeInTheDocument();
+        });
+
+        it('ask the saver to check which gives more both alone and with a partner', () => {
+          renderFutureMe();
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          expect(rescueBasisGroup()).toHaveAccessibleDescription(
+            /Vaata üle, kumb annab sulle rohkem, nii üksi kui ka partneriga lapsi kasvatades\.$/,
+          );
+        });
+
+        it('not ask when the saver does not retire early', () => {
+          renderFutureMe();
+          addKids(['1990', '1992', '1994']);
+          addRescueService();
+
+          userEvent.selectOptions(earlyYearsField(), '0');
+
+          expect(rescueBasisGroup()).not.toBeInTheDocument();
         });
 
         it('not ask without the right from the children', () => {
@@ -2112,7 +2221,7 @@ describe('FutureMe', () => {
         ).toBeVisible();
       });
 
-      it('count list 1 work of less than ten years for nothing', () => {
+      it('count list 1 work of less than ten years for nothing, without a note saying so', () => {
         renderFutureMe();
         addSpecialCases();
         userEvent.click(specialCase(/Töötasin tervist kahjustaval tööl/));
@@ -2122,7 +2231,7 @@ describe('FutureMe', () => {
         expect(earlyYearsField()).toHaveDisplayValue(
           withNbsp('ei lähe varem (tavalises pensionieas)'),
         );
-        expect(screen.getByText(/9 aastast ei piisa/)).toBeVisible();
+        expect(screen.queryByText(/aastast ei piisa/)).not.toBeInTheDocument();
       });
 
       it('switch to list 2, which needs twelve and a half years and gives five', () => {
@@ -2247,7 +2356,7 @@ describe('FutureMe', () => {
         ).not.toBeInTheDocument();
       });
 
-      it('say that the state pension does not rise when the rescue increase has ended by the pension year', () => {
+      it('say that the rescue increase is used also when the pension year is after February 2043', () => {
         renderFutureMe();
         typeBirthYear('1980');
         addSpecialCases();
@@ -2257,10 +2366,7 @@ describe('FutureMe', () => {
         typeInto(rescueYearsField(), '12');
         typeInto(civilYearsField(), '20');
 
-        expect(screen.getByText(/seega riiklik pension ei suurene/)).toBeVisible();
-        expect(
-          screen.queryByText(/kasutab arvutus päästeteenistuse suurendust/),
-        ).not.toBeInTheDocument();
+        expect(screen.getByText(/kasutab arvutus päästeteenistuse suurendust/)).toBeVisible();
       });
 
       it('keep the civil service increase while the rescue service years are none', () => {
@@ -2348,6 +2454,34 @@ describe('FutureMe', () => {
             /Eripensioni saad enne pensioniiga, alates 50-aastaselt, seega vanaduspensioni varem võtta pole vaja/,
           ),
         ).toBeVisible();
+      });
+
+      it('say the special pension starts at the pension age, not before it, when it starts then', () => {
+        renderFutureMe();
+        userEvent.selectOptions(pensionAgeField(), '66');
+        addSpecialCases();
+        userEvent.click(specialCase(/Saan või hakkan saama eripensioni/));
+
+        typeInto(specialPensionStartField(), '66');
+
+        expect(screen.getByText(/Eripension algab pensionieas, 66-aastaselt/)).toBeVisible();
+        expect(screen.queryByText(/Eripensioni saad enne pensioniiga/)).not.toBeInTheDocument();
+      });
+
+      it('say the special pension starts after the pension age, with the old-age pension until then', () => {
+        renderFutureMe();
+        userEvent.selectOptions(pensionAgeField(), '66');
+        addSpecialCases();
+        userEvent.click(specialCase(/Saan või hakkan saama eripensioni/));
+
+        typeInto(specialPensionStartField(), '70');
+
+        expect(
+          screen.getByText(
+            /Eripension algab 70-aastaselt, pärast pensioniiga\. Kuni selleni saad vanaduspensioni/,
+          ),
+        ).toBeVisible();
+        expect(screen.queryByText(/Eripensioni saad enne pensioniiga/)).not.toBeInTheDocument();
       });
 
       it('reset on removing and move the focus to the add button', () => {
@@ -2763,7 +2897,7 @@ describe('FutureMe', () => {
       renderFutureMe();
       openAge55();
 
-      const question = screen.getByText('Mis on igakuised väljamaksed?');
+      const question = screen.getByText('Mis on igakuised väljamaksed ehk fondipension?');
       userEvent.click(question);
       // eslint-disable-next-line testing-library/no-node-access
       const answer = question.closest('details') as HTMLElement;
@@ -2778,7 +2912,7 @@ describe('FutureMe', () => {
       renderFutureMe();
       openAge55();
 
-      expect(screen.getAllByText('Mis on igakuised väljamaksed?')).toHaveLength(1);
+      expect(screen.getAllByText('Mis on igakuised väljamaksed ehk fondipension?')).toHaveLength(1);
       [
         'Kuidas valida igakuiste väljamaksete lepingut?',
         'Millal valida igakuised väljamaksed?',

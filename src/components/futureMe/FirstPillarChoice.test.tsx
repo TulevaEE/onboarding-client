@@ -91,6 +91,39 @@ const AGE_66_GROUP = /^Pensionieas uuesti/;
 describe('Choosing between the special pension and the old-age pension', () => {
   beforeEach(() => loggedInAs({ dateOfBirth: '1976-01-01' }));
 
+  describe('for a special pension starting after the pension age', () => {
+    const laterSpecialPensionStep = /^70\sa/;
+
+    it('is not asked on the pension age step', () => {
+      openFutureMe({ specialPensionStartAge: '70' });
+      enterSpecialPensionAmount('900', laterSpecialPensionStep);
+      goTo(pensionAgeStep);
+
+      expect(queryChoiceGroup(AGE_65_GROUP)).not.toBeInTheDocument();
+    });
+
+    it('is asked on the special pension step with both amounts, the larger preselected', () => {
+      openFutureMe({ specialPensionStartAge: '70' });
+      enterSpecialPensionAmount('2000', laterSpecialPensionStep);
+
+      const group = choiceGroup(AGE_65_GROUP);
+      expect(choice(group, /^Võtan 70-aastaselt eripensioni/)).toBeChecked();
+      expect(choice(group, /^Võtan 70-aastaselt eripensioni/)).toHaveAccessibleDescription(
+        /^2\s000\s€ kuus enne tulumaksu$/,
+      );
+      expect(choice(group, /^Jään vanaduspensionile/)).not.toBeChecked();
+    });
+
+    it('keeps the old-age pension when the saver chooses it on the special pension step', () => {
+      openFutureMe({ specialPensionStartAge: '70' });
+      enterSpecialPensionAmount('2000', laterSpecialPensionStep);
+
+      userEvent.click(choice(choiceGroup(AGE_65_GROUP), /^Jään vanaduspensionile/));
+
+      expect(choice(choiceGroup(AGE_65_GROUP), /^Jään vanaduspensionile/)).toBeChecked();
+    });
+  });
+
   describe('at the pension age step', () => {
     it('is not asked without a special pension amount', () => {
       openFutureMe();

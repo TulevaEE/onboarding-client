@@ -3,6 +3,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { FutureMe } from './FutureMe';
+import { workAccrual } from './engine/pension';
 import { useMe } from '../common/apiHooks';
 import { User } from '../common/apiModels';
 import { FundPension } from '../common/apiModels/withdrawals';
@@ -89,8 +90,27 @@ const openAge65Step = ({
   userEvent.click(within(trail()).getByRole('button', { name: trailName }));
 };
 
+const openWithRescueService = () => {
+  loggedInAs({ dateOfBirth: '1970-01-01', retirementAge: 66 });
+  render(
+    <IntlProvider locale="et" messages={translations.et}>
+      <FutureMe />
+    </IntlProvider>,
+  );
+  fillInYou();
+  userEvent.click(screen.getByRole('button', { name: 'Lisa erijuht' }));
+  userEvent.click(screen.getByRole('checkbox', { name: /Töötasin päästeteenistuses/ }));
+  typeInto(
+    screen.getByRole('spinbutton', { name: /Mitu aastat töötasid päästeteenistuses/ }),
+    '20',
+  );
+  userEvent.click(within(trail()).getByRole('button', { name: /pension, vaatamata$/ }));
+};
+
 const pensionModeGroup = () =>
-  screen.getByRole('group', { name: 'Kuidas võtad riikliku pensioni?' });
+  screen.getByRole('group', {
+    name: /^Kuidas võtad riikliku pensioni(\salates \d+\. eluaastast \(\d+\))?\?$/,
+  });
 const mode = (name: RegExp) => within(pensionModeGroup()).getByRole('radio', { name });
 const yearsGroup = (name: string) => screen.getByRole('group', { name });
 const workGroup = () => screen.getByRole('group', { name: 'Kas töötad pensioni ajal edasi?' });
@@ -428,7 +448,7 @@ describe('Age 65 step', () => {
     openAge65Step();
 
     expect(screen.getByText('Mis on aastahinne ja staažiaasta?')).toBeInTheDocument();
-    expect(screen.getByText('Mis on igakuised väljamaksed?')).toBeInTheDocument();
+    expect(screen.getByText('Mis on igakuised väljamaksed ehk fondipension?')).toBeInTheDocument();
   });
 
   it('compares the rescue allowance with the pension for the children when both rights are the saver’s', () => {
@@ -453,6 +473,97 @@ describe('Age 65 step', () => {
     ).toBeInTheDocument();
   });
 
+  describe('with rescue service', () => {
+    const noteItem = (start: string) =>
+      screen.getByText(
+        (_, element) => element?.tagName === 'P' && !!element.textContent?.startsWith(start),
+      );
+
+    beforeEach(openWithRescueService);
+
+    it('says who pays the waiting allowance until the pension age', () => {
+      expect(noteItem('Kes maksab:')).toHaveTextContent(
+        /kuni 66-aastaseks saamiseni maksab sulle päästeasutus vanaduspensioni ootel oleva päästeteenistuja toetust/,
+      );
+      expect(noteItem('Kes maksab:')).toHaveTextContent(
+        /Alates 66\. eluaastast maksab vanaduspensioni Sotsiaalkindlustusamet/,
+      );
+    });
+
+    it('says the rescue increase starts right away on the waiting allowance', () => {
+      expect(noteItem('Päästja suurendus:')).toHaveTextContent(
+        /staaž 20\sa, \+20% kohe ootetoetusele 61-aastaselt ja hiljem ka vanaduspensionile\./,
+      );
+    });
+
+    it('lets the saver defer the old-age pension that follows the allowance at the pension age', () => {
+      const group = pensionModeGroup();
+
+      expect(
+        within(group).getByRole('radio', { name: /^Kohe täissumma/ }),
+      ).toHaveAccessibleDescription(/kohe\s66-aastaselt$/);
+      expect(within(group).getByRole('radio', { name: /^Lükkan edasi/ })).toBeInTheDocument();
+      expect(screen.queryByText(/Lähed pensionile soodustingimustel/)).not.toBeInTheDocument();
+    });
+
+    it('calls the step and the note a waiting allowance, not a pension on favourable terms', () => {
+      expect(
+        screen.getByRole('heading', { level: 2, name: 'Ootetoetus enne pensioniiga' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/^61-aastaselt \(2031\) lõpetad päästeteenistuse ja saad ootetoetust/),
+      ).toBeInTheDocument();
+    });
+
+    it('says what the allowance equals, with the state pension amount of the You step', () => {
+      expect(
+        screen.getByText(
+          /Ootetoetust ei vähendata, see on sama suur kui vanaduspension \(riiklik pension\) 700\s€ kuus\./,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('asks only whether the saver keeps working, as the allowance comes first', () => {
+      expect(screen.getByRole('group', { name: 'Kas töötad edasi?' })).toBeInTheDocument();
+      expect(
+        screen.queryByRole('group', { name: 'Kas töötad pensioni ajal edasi?' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('says the state pension is taken from the pension age, with its year', () => {
+      expect(
+        screen.getByRole('group', {
+          name: 'Kuidas võtad riikliku pensioni alates 66. eluaastast (2036)?',
+        }),
+      ).toBeInTheDocument();
+    });
+
+    it('shows the old-age pension with the rescue increase and without the five years not worked in each way of taking it', () => {
+      const group = pensionModeGroup();
+      const yearsNotWorked = 5;
+      const rescueIncrease = 1.2;
+      const fullPension = (700 - yearsNotWorked * workAccrual(2000, true, true)) * rescueIncrease;
+
+      expect(
+        within(group).getByRole('radio', { name: /^Kohe täissumma/ }),
+      ).toHaveAccessibleDescription(
+        new RegExp(`^${Math.round(fullPension)}\\s€ kuus enne tulumaksu`),
+      );
+      expect(within(group).getByRole('radio', { name: /^Pool/ })).toHaveAccessibleDescription(
+        new RegExp(`^${Math.round(fullPension / 2)}\\s€ kuus`),
+      );
+    });
+
+    it('says the allowance and the increase are paid only while not working as a rescuer', () => {
+      expect(noteItem('Töö:')).toHaveTextContent(
+        /makstakse ainult siis, kui sa ei tööta päästjana\. Muul erialal võid edasi töötada\./,
+      );
+      expect(noteItem('Töö:')).toHaveTextContent(
+        /ära alusta II\ssamba väljamakseid enne töö lõppu/,
+      );
+    });
+  });
+
   describe('retiring early on favourable terms', () => {
     beforeEach(() => {
       loggedInAs({ dateOfBirth: '1970-01-01', retirementAge: 66 });
@@ -475,6 +586,9 @@ describe('Age 65 step', () => {
         screen.queryByRole('group', { name: 'Kuidas võtad riikliku pensioni?' }),
       ).not.toBeInTheDocument();
       expect(screen.getByText(/Lähed pensionile soodustingimustel/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/saad pensioni maksmise peatada või võtta pool pensionist/),
+      ).toBeInTheDocument();
 
       userEvent.click(screen.getByRole('button', { name: /Muuda varem pensionile minekut/ }));
 
