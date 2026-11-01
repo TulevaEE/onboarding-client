@@ -49,7 +49,9 @@ const openResultStep = () => {
     '4',
   );
   userEvent.click(
-    within(screen.getByRole('navigation', { name: 'Tulevase Mina sammud' })).getByRole('button', {
+    within(
+      screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' }),
+    ).getByRole('button', {
       name: /^Tulemus, vaatamata$/,
     }),
   );

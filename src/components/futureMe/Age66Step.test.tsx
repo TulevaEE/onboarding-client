@@ -32,7 +32,8 @@ const typeInto = (field: HTMLElement, text: string) => {
   userEvent.type(field, text);
 };
 
-const trail = () => screen.getByRole('navigation', { name: 'Tulevase Mina sammud' });
+const trail = () =>
+  screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' });
 
 const rateField = () => screen.getByRole('combobox', { name: /Kui palju maksad II\ssambasse/ });
 

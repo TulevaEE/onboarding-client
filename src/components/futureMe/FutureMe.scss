@@ -167,6 +167,12 @@
     }
   }
 
+  .chapter-head-text:focus {
+    outline: 3px solid $navy-blue;
+    outline-offset: 0.25rem;
+    border-radius: 0.25rem;
+  }
+
   .chapter-art {
     display: grid;
     flex: 0 0 4.5rem;
@@ -1815,6 +1821,20 @@ html.scroll-locked {
 
     table {
       font-size: 0.95rem;
+    }
+
+    .help-table {
+      max-width: 100%;
+      margin-bottom: 1rem;
+      overflow-x: auto;
+
+      table {
+        margin-bottom: 0;
+      }
+
+      &:focus-visible {
+        outline: 3px solid $navy-blue;
+      }
     }
 
     .help-note {

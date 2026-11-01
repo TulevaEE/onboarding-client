@@ -35,7 +35,7 @@ const helpTopicKeys = (topics: string[]) => (key: string) =>
 const isOnYouStep = (key: string) =>
   /^futureMe\.(you|trail|nav|potBar|errorSummary)\./.test(key) ||
   ['futureMe.required', 'futureMe.fundPensionFaq.title'].includes(key) ||
-  /^futureMe\.help\.(open|close|newWindow)$/.test(key) ||
+  /^futureMe\.help\.(open|close|newWindow|table\.ariaLabel)$/.test(key) ||
   helpTopicKeys(helpTopicsOnYouStep)(key);
 
 const isOnExpensesStep = (key: string) =>

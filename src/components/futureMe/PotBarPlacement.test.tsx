@@ -36,7 +36,8 @@ const renderFutureMe = () =>
     </IntlProvider>,
   );
 
-const trail = () => within(screen.getByRole('navigation', { name: 'Tulevase Mina sammud' }));
+const trail = () =>
+  within(screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' }));
 const potBar = () => screen.queryByRole('complementary', { name: 'Jooksev kokkuvõte' });
 
 describe('the running summary bar', () => {
