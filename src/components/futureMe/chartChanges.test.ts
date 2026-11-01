@@ -69,6 +69,22 @@ describe('chartChangesOf', () => {
     });
   });
 
+  it('lists the III pillar before the II pillar when both are first taken out at the same age, as the III pillar is taken first', () => {
+    const context = contextWith({
+      workAdded: true,
+      hasRescue: true,
+      rescueYears: '20',
+      earlyYearsPicked: '5',
+      thirdPillarJoined: 'after',
+      thirdPillarAmount: '100',
+    });
+
+    expect(changesOf(context).filter(({ kind }) => kind === 'withdrawalStart')).toEqual([
+      { kind: 'withdrawalStart', age: 60, pillar: 'third' },
+      { kind: 'withdrawalStart', age: 60, pillar: 'second' },
+    ]);
+  });
+
   it('says when the state pension starts after the waiting allowance, when the saver deferred it', () => {
     const context = contextWith(
       { workAdded: true, hasRescue: true, rescueYears: '20', earlyYearsPicked: '5' },

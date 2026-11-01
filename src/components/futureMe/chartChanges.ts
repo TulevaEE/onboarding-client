@@ -122,7 +122,7 @@ const firstWithdrawalAt = (rows: ChartRow[]): ChartChange[] =>
   rows
     .slice(0, 1)
     .flatMap((first) =>
-      (['second', 'third'] as const)
+      (['third', 'second'] as const)
         .filter((pillar) => first[TAXED_LAYER[pillar]] > 0)
         .map((pillar) => ({ kind: 'withdrawalStart' as const, age: first.age, pillar })),
     );
@@ -160,8 +160,8 @@ export const chartChangesOf = (
     ...statePensionRises(resultRows, isNominal),
     ...specialPensionStarts(resultRows),
     ...firstWithdrawalAt(rows),
-    ...withdrawalChanges(rows, resultRowAt, 'second'),
     ...withdrawalChanges(rows, resultRowAt, 'third'),
+    ...withdrawalChanges(rows, resultRowAt, 'second'),
   ];
   const isFirstOfItsKey = (change: ChartChange, index: number) =>
     changes.findIndex((other) => changeKeyOf(other) === changeKeyOf(change)) === index;
