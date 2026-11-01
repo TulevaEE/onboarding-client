@@ -152,7 +152,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
 
   useEffect(() => {
     if (!isFirstRender.current) {
-      headingRef.current?.focus();
+      headingRef.current?.parentElement?.focus();
     }
     isFirstRender.current = false;
   }, [step]);

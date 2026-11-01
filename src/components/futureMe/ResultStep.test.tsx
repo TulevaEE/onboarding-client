@@ -1,5 +1,5 @@
 import React, { createRef } from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { FutureMe } from './FutureMe';
@@ -52,7 +52,11 @@ const typeInto = (field: HTMLElement, text: string) => {
   userEvent.type(field, text);
 };
 
-const trail = () => screen.getByRole('navigation', { name: 'Tulevase Mina sammud' });
+// eslint-disable-next-line testing-library/no-node-access
+const focusedElement = () => document.activeElement;
+
+const trail = () =>
+  screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' });
 
 const fillInYou = (firstPillar: string) => {
   typeInto(
@@ -91,6 +95,14 @@ const tile = (index: number) =>
 
 describe('Result step', () => {
   beforeEach(() => loggedInAs({ dateOfBirth: '1962-01-01' }));
+
+  it('moves focus to the start of the step, named "Tulemus" above the question', async () => {
+    openResultStep();
+
+    await waitFor(() =>
+      expect(focusedElement()).toHaveTextContent(/^Tulemus\s*Kas raha jätkub elu lõpuni\?/),
+    );
+  });
 
   it('has no table comparing every payout route, as it is too much at once', () => {
     openResultStep();

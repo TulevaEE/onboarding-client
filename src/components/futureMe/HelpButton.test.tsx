@@ -57,6 +57,16 @@ describe('HelpButton', () => {
     );
   });
 
+  it('puts a table in its own horizontally scrollable region that the keyboard can reach', () => {
+    renderHelp();
+
+    userEvent.click(openerOf(/Miks küsime sugu/));
+
+    const region = within(dialog()).getByRole('region', { name: 'Tabel' });
+    expect(region).toHaveAttribute('tabindex', '0');
+    expect(within(region).getByRole('table')).toBeInTheDocument();
+  });
+
   it('closes with the close button and returns focus to the button that opened it', () => {
     renderHelp();
     userEvent.click(openerOf(/Miks küsime sugu/));

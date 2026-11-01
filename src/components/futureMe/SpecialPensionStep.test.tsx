@@ -33,7 +33,8 @@ const typeInto = (field: HTMLElement, text: string) => {
   userEvent.type(field, text);
 };
 
-const trail = () => screen.getByRole('navigation', { name: 'Tulevase Mina sammud' });
+const trail = () =>
+  screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' });
 
 const fillInYou = (startAge: string) => {
   typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ }), '700');

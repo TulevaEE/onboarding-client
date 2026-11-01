@@ -182,7 +182,11 @@ const birthYearField = () => screen.getByRole('spinbutton', { name: /Mis aastal 
 const sexField = () => screen.getByRole('combobox', { name: /Mis on sinu sugu/ });
 const nextButton = () => screen.getByRole('button', { name: /^Edasi/ });
 const backButton = () => screen.getByRole('button', { name: /Tagasi/ });
-const trail = () => screen.getByRole('navigation', { name: 'Tulevase Mina sammud' });
+// eslint-disable-next-line testing-library/no-node-access
+const focusedElement = () => document.activeElement;
+
+const trail = () =>
+  screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' });
 const trailNames = () =>
   within(trail())
     .getAllByRole('button')
@@ -817,13 +821,16 @@ describe('FutureMe', () => {
       ).toBeInTheDocument();
     });
 
-    it('moves focus to the heading of the new step', async () => {
+    it('moves focus to the start of the new step, so the kicker is read before the heading', async () => {
       renderFutureMe();
 
       fillInRequiredAnswers();
       userEvent.click(nextButton());
 
-      await waitFor(() => expect(screen.getByRole('heading', { level: 2 })).toHaveFocus());
+      const heading = await screen.findByRole('heading', { level: 2 });
+      await waitFor(() => expect(focusedElement()).toContainElement(heading));
+      expect(heading).not.toHaveFocus();
+      expect(focusedElement()).toHaveTextContent(/^61-aastane/);
     });
 
     it('offers to show the result on the step before it, and has no next step after the result', () => {
@@ -2541,7 +2548,7 @@ describe('FutureMe', () => {
 
       openAge55();
 
-      await waitFor(() => expect(age55Heading()).toHaveFocus());
+      await waitFor(() => expect(focusedElement()).toContainElement(age55Heading()));
     });
 
     const barDeposit = () => {
@@ -2876,9 +2883,9 @@ describe('FutureMe', () => {
       userEvent.click(screen.getByRole('button', { name: /Muuda III\ssammast sinu andmetes/ }));
 
       await waitFor(() =>
-        expect(
+        expect(focusedElement()).toContainElement(
           screen.getByRole('heading', { level: 2, name: 'Kes sa oled ja mis sul juba on?' }),
-        ).toHaveFocus(),
+        ),
       );
     });
 

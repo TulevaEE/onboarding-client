@@ -34,7 +34,8 @@ const typeInto = (field: HTMLElement, text: string) => {
   userEvent.type(field, text);
 };
 
-const trail = () => screen.getByRole('navigation', { name: 'Tulevase Mina sammud' });
+const trail = () =>
+  screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' });
 const goTo = (name: RegExp) => userEvent.click(within(trail()).getByRole('button', { name }));
 
 const startWith = (firstPillar: string, secondPillar: string) => {

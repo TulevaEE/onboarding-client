@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { FutureMe } from './FutureMe';
@@ -35,7 +35,11 @@ const typeInto = (field: HTMLElement, text: string) => {
   userEvent.type(field, text);
 };
 
-const trail = () => screen.getByRole('navigation', { name: 'Tulevase Mina sammud' });
+// eslint-disable-next-line testing-library/no-node-access
+const focusedElement = () => document.activeElement;
+
+const trail = () =>
+  screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' });
 
 const openCostsStep = () => {
   typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ }), '700');
@@ -75,6 +79,12 @@ describe('Costs step', () => {
   });
 
   describe('when it opens', () => {
+    it('moves focus to the start of the step, named "Kulude lisamine" above the heading', async () => {
+      renderCostsStep();
+
+      await waitFor(() => expect(focusedElement()).toHaveTextContent(/^Kulude lisamine/));
+    });
+
     it('asks what life the saver wants in retirement', () => {
       renderCostsStep();
 
