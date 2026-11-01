@@ -2,9 +2,10 @@ import { initialAge60 } from './age60Answers';
 import { initialAge65 } from './age65Answers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { initialAge66 } from './age66Answers';
-import { chartChangesOf } from './chartChanges';
+import { ChartChange, chartChangesOf } from './chartChanges';
 import { chartRowsOf } from './chartData';
 import { ChartEvent, chartEventsOf } from './chartEvents';
+import { nominalFactorAt } from './nominal';
 import { resultOf, ResultContext } from './resultAnswers';
 import { contextWith } from './resultContextFixture';
 
@@ -30,8 +31,8 @@ describe('chartChangesOf', () => {
   describe('for a rescuer', () => {
     const changes = changesOf(rescuer('500'));
 
-    it('says the II pillar is taken out because the pension does not cover the costs', () => {
-      expect(changes).toContainEqual({ kind: 'withdrawalStart', age: 60, pillar: 'second' });
+    it('says the III pillar is taken out first because the pension does not cover the costs', () => {
+      expect(changes).toContainEqual({ kind: 'withdrawalStart', age: 60, pillar: 'third' });
     });
 
     it('says the rescue allowance is followed by the old-age pension at the pension age', () => {
@@ -48,6 +49,40 @@ describe('chartChangesOf', () => {
       const ages = changes.map(({ age }) => age);
       expect(ages).toEqual([...ages].sort((a, b) => a - b));
     });
+
+    it('gives the rise in the prices of its year when the chart shows future prices', () => {
+      const result = resultOf(rescuer('500'));
+      const riseOf = (found: ChartChange[]) =>
+        found.find((change) => change.kind === 'statePensionRise');
+      const inFuturePrices = riseOf(
+        chartChangesOf(result, chartRowsOf(result, NEED), chartEventsOf(result), true),
+      );
+      const inTodayPrices = riseOf(changes);
+      const year = result.rows.find(({ age }) => age === 65)?.year ?? 0;
+
+      expect(inFuturePrices).toEqual({
+        ...inTodayPrices,
+        amount:
+          (inTodayPrices?.kind === 'statePensionRise' ? inTodayPrices.amount : 0) *
+          nominalFactorAt(year),
+      });
+    });
+  });
+
+  it('lists the III pillar before the II pillar when both are first taken out at the same age, as the III pillar is taken first', () => {
+    const context = contextWith({
+      workAdded: true,
+      hasRescue: true,
+      rescueYears: '20',
+      earlyYearsPicked: '5',
+      thirdPillarJoined: 'after',
+      thirdPillarAmount: '100',
+    });
+
+    expect(changesOf(context).filter(({ kind }) => kind === 'withdrawalStart')).toEqual([
+      { kind: 'withdrawalStart', age: 60, pillar: 'third' },
+      { kind: 'withdrawalStart', age: 60, pillar: 'second' },
+    ]);
   });
 
   it('says when the state pension starts after the waiting allowance, when the saver deferred it', () => {
@@ -126,6 +161,17 @@ describe('chartChangesOf', () => {
       { kind: 'fundEnd', age: 95, pillars: 'second', years: 30 },
       { kind: 'fundEnd', age: 95, pillars: 'third', years: 25 },
     ]);
+  });
+
+  it('marks the higher pension after working past the pension age as the end of the work, not as a rise', () => {
+    const context = contextWith(
+      { grossMonthly: '3000' },
+      { age65: { ...initialAge65(), work: 'yes', workUntil: '68' } },
+    );
+    const kinds = changesOf(context).map(({ kind }) => kind);
+
+    expect(kinds).toContain('workEnd');
+    expect(kinds).not.toContain('statePensionRise');
   });
 
   it('says when the work ends', () => {

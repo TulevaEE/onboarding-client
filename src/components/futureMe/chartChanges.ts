@@ -6,7 +6,7 @@ import { Result } from './resultAnswers';
 
 type Pillar = 'second' | 'third';
 
-export type StatePensionRiseReason = 'allowance' | 'work' | 'recalculated';
+export type StatePensionRiseReason = 'allowance' | 'recalculated';
 export type WithdrawalEndReason = 'empty' | 'covered';
 
 export type ChartChange =
@@ -70,9 +70,8 @@ const changesFromEvents = (events: ChartEvent[]): ChartChange[] =>
 const pairsOf = <T>(items: T[]): [T, T][] =>
   items.slice(1).map((item, index) => [items[index], item]);
 
-const statePensionRises = (rows: SimulationRow[]): ChartChange[] => {
+const statePensionRises = (rows: SimulationRow[], isNominal: boolean): ChartChange[] => {
   const retired = rows.filter(({ work }) => !work);
-  const hasWorked = rows.some(({ work }) => work);
   return pairsOf(retired).flatMap(([before, row]): ChartChange[] => {
     const rise = row.i1 - before.i1;
     if (row.age !== before.age + 1) {
@@ -84,13 +83,10 @@ const statePensionRises = (rows: SimulationRow[]): ChartChange[] => {
     if (before.i1 <= 0 || rise < NOTICEABLE_RISE) {
       return [];
     }
-    let reason: StatePensionRiseReason = 'recalculated';
-    if (Math.abs(row.i1g - before.i1g) < SAME_GROSS) {
-      reason = 'allowance';
-    } else if (hasWorked) {
-      reason = 'work';
-    }
-    return [{ kind: 'statePensionRise', age: row.age, reason, amount: rise }];
+    const reason: StatePensionRiseReason =
+      Math.abs(row.i1g - before.i1g) < SAME_GROSS ? 'allowance' : 'recalculated';
+    const amount = isNominal ? rise * nominalFactorAt(row.year) : rise;
+    return [{ kind: 'statePensionRise', age: row.age, reason, amount }];
   });
 };
 
@@ -122,15 +118,14 @@ const withdrawalChanges = (
   });
 };
 
-const firstWithdrawalAt = (rows: ChartRow[]): ChartChange[] => {
-  const [first] = rows;
-  if (!first) {
-    return [];
-  }
-  return (['second', 'third'] as const)
-    .filter((pillar) => first[TAXED_LAYER[pillar]] > 0)
-    .map((pillar) => ({ kind: 'withdrawalStart', age: first.age, pillar }));
-};
+const firstWithdrawalAt = (rows: ChartRow[]): ChartChange[] =>
+  rows
+    .slice(0, 1)
+    .flatMap((first) =>
+      (['third', 'second'] as const)
+        .filter((pillar) => first[TAXED_LAYER[pillar]] > 0)
+        .map((pillar) => ({ kind: 'withdrawalStart' as const, age: first.age, pillar })),
+    );
 
 export const changeKeyOf = (change: ChartChange): string =>
   [
@@ -139,11 +134,6 @@ export const changeKeyOf = (change: ChartChange): string =>
     'pillar' in change ? change.pillar : '',
     'pillars' in change ? change.pillars : '',
   ].join('-');
-
-const inFuturePrices = (change: ChartChange, yearAt: (age: number) => number): ChartChange =>
-  change.kind === 'statePensionRise'
-    ? { ...change, amount: change.amount * nominalFactorAt(yearAt(change.age)) }
-    : change;
 
 export const chartChangesOf = (
   result: Result,
@@ -167,17 +157,15 @@ export const chartChangesOf = (
           },
         ]
       : []),
-    ...statePensionRises(resultRows),
+    ...statePensionRises(resultRows, isNominal),
     ...specialPensionStarts(resultRows),
     ...firstWithdrawalAt(rows),
-    ...withdrawalChanges(rows, resultRowAt, 'second'),
     ...withdrawalChanges(rows, resultRowAt, 'third'),
+    ...withdrawalChanges(rows, resultRowAt, 'second'),
   ];
   const isFirstOfItsKey = (change: ChartChange, index: number) =>
     changes.findIndex((other) => changeKeyOf(other) === changeKeyOf(change)) === index;
-  const yearAt = (age: number) => resultRowAt(age)?.year ?? result.rows[0].year;
   return changes
     .filter(isFirstOfItsKey)
-    .map((change) => (isNominal ? inFuturePrices(change, yearAt) : change))
     .sort((a, b) => a.age - b.age || KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind));
 };

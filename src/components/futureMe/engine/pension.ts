@@ -1033,19 +1033,19 @@ export function simulate(
         fromDeposit = Math.min(deposit, gap);
         deposit -= fromDeposit;
         gap -= fromDeposit;
-        if (gap > 0 && fund > 0 && age >= open2) {
-          const gross = Math.min(fund, grossForNet(gap, allowLeft));
-          extraNet = netTenPercent(gross, allowLeft);
-          fund -= gross;
-          gap -= extraNet;
-          allowLeft = Math.max(0, allowLeft - gross);
-        }
         if (gap > 0 && fund3 > 0 && age >= open3) {
           const gross3 = Math.min(fund3, grossForNet(gap, allowLeft));
           extra3 = netTenPercent(gross3, allowLeft);
           fund3 -= gross3;
           gap -= extra3;
           allowLeft = Math.max(0, allowLeft - gross3);
+        }
+        if (gap > 0 && fund > 0 && age >= open2) {
+          const gross = Math.min(fund, grossForNet(gap, allowLeft));
+          extraNet = netTenPercent(gross, allowLeft);
+          fund -= gross;
+          gap -= extraNet;
+          allowLeft = Math.max(0, allowLeft - gross);
         }
       } else {
         saved = -gap;

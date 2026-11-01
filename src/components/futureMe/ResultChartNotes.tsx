@@ -100,16 +100,16 @@ const CoverOrder = ({ cover }: { cover: CoverSteps }) => {
             />
           </li>
         )}
-        {cover.hasSecondPillarWithdrawal && (
-          <li>
-            <FormattedMessage id="futureMe.result.chart.guide.order.secondPillar" />
-          </li>
-        )}
         {cover.hasThirdPillarWithdrawal && (
           <li>
+            <FormattedMessage id="futureMe.result.chart.guide.order.thirdPillar" />
+          </li>
+        )}
+        {cover.hasSecondPillarWithdrawal && (
+          <li>
             <FormattedMessage
-              id="futureMe.result.chart.guide.order.thirdPillar"
-              values={{ afterSecond: cover.hasSecondPillarWithdrawal ? 'yes' : 'no' }}
+              id="futureMe.result.chart.guide.order.secondPillar"
+              values={{ afterThird: cover.hasThirdPillarWithdrawal ? 'yes' : 'no' }}
             />
           </li>
         )}
