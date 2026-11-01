@@ -2,9 +2,10 @@ import { initialAge60 } from './age60Answers';
 import { initialAge65 } from './age65Answers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { initialAge66 } from './age66Answers';
-import { chartChangesOf } from './chartChanges';
+import { ChartChange, chartChangesOf } from './chartChanges';
 import { chartRowsOf } from './chartData';
 import { ChartEvent, chartEventsOf } from './chartEvents';
+import { nominalFactorAt } from './nominal';
 import { resultOf, ResultContext } from './resultAnswers';
 import { contextWith } from './resultContextFixture';
 
@@ -47,6 +48,24 @@ describe('chartChangesOf', () => {
     it('lists the changes in the order of age', () => {
       const ages = changes.map(({ age }) => age);
       expect(ages).toEqual([...ages].sort((a, b) => a - b));
+    });
+
+    it('gives the rise in the prices of its year when the chart shows future prices', () => {
+      const result = resultOf(rescuer('500'));
+      const riseOf = (found: ChartChange[]) =>
+        found.find((change) => change.kind === 'statePensionRise');
+      const inFuturePrices = riseOf(
+        chartChangesOf(result, chartRowsOf(result, NEED), chartEventsOf(result), true),
+      );
+      const inTodayPrices = riseOf(changes);
+      const year = result.rows.find(({ age }) => age === 65)?.year ?? 0;
+
+      expect(inFuturePrices).toEqual({
+        ...inTodayPrices,
+        amount:
+          (inTodayPrices?.kind === 'statePensionRise' ? inTodayPrices.amount : 0) *
+          nominalFactorAt(year),
+      });
     });
   });
 
@@ -126,6 +145,17 @@ describe('chartChangesOf', () => {
       { kind: 'fundEnd', age: 95, pillars: 'second', years: 30 },
       { kind: 'fundEnd', age: 95, pillars: 'third', years: 25 },
     ]);
+  });
+
+  it('marks the higher pension after working past the pension age as the end of the work, not as a rise', () => {
+    const context = contextWith(
+      { grossMonthly: '3000' },
+      { age65: { ...initialAge65(), work: 'yes', workUntil: '68' } },
+    );
+    const kinds = changesOf(context).map(({ kind }) => kind);
+
+    expect(kinds).toContain('workEnd');
+    expect(kinds).not.toContain('statePensionRise');
   });
 
   it('says when the work ends', () => {
