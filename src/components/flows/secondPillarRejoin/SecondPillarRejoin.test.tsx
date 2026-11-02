@@ -850,7 +850,7 @@ describe('When an eligible person rejoins the II pillar', () => {
   test('tells a person whose contributions ended without an application why they cannot rejoin', async () => {
     rejoinPermissionBackend(server, {
       permitted: false,
-      contributionsEndedWithoutApplication: true,
+      decision: 'CONTRIBUTIONS_ENDED_WITHOUT_APPLICATION',
     });
     render('/2nd-pillar-rejoin');
 
@@ -861,7 +861,7 @@ describe('When an eligible person rejoins the II pillar', () => {
       'href',
       'mailto:tuleva@tuleva.ee',
     );
-    expect(within(reason).getByRole('link', { name: '644 5100' })).toHaveAttribute(
+    expect(within(reason).getByRole('link', { name: /^644\s5100$/ })).toHaveAttribute(
       'href',
       'tel:+3726445100',
     );

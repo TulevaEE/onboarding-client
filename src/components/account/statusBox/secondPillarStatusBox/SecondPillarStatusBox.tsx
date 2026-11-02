@@ -15,6 +15,7 @@ import {
   Conversion,
   Fund,
   MandateDeadlines,
+  RejoinDecision,
   SecondPillarContributions,
   SourceFund,
 } from '../../../common/apiModels';
@@ -579,9 +580,7 @@ const WayBackIn = ({
           <span className="text-body-secondary">
             <WayBackInExplanation
               mayRejoin={mayRejoin}
-              contributionsEndedWithoutApplication={
-                rejoinPermission?.contributionsEndedWithoutApplication ?? false
-              }
+              rejoinDecision={rejoinPermission?.decision}
               rejoinPossibleFrom={rejoinPossibleFrom}
               hasFundChoiceOnRecord={hasFundChoiceOnRecord}
             />
@@ -598,12 +597,12 @@ const WayBackIn = ({
 
 const WayBackInExplanation = ({
   mayRejoin,
-  contributionsEndedWithoutApplication,
+  rejoinDecision,
   rejoinPossibleFrom,
   hasFundChoiceOnRecord,
 }: {
   mayRejoin: boolean;
-  contributionsEndedWithoutApplication: boolean;
+  rejoinDecision: RejoinDecision | undefined;
   rejoinPossibleFrom: string | null | undefined;
   hasFundChoiceOnRecord: boolean;
 }) => {
@@ -618,12 +617,7 @@ const WayBackInExplanation = ({
       />
     );
   }
-  return (
-    <RejoinRefusalReason
-      contributionsEndedWithoutApplication={contributionsEndedWithoutApplication}
-      rejoinPossibleFrom={rejoinPossibleFrom}
-    />
-  );
+  return <RejoinRefusalReason decision={rejoinDecision} rejoinPossibleFrom={rejoinPossibleFrom} />;
 };
 
 const SecondPillarMissing = ({ loading, nudgeKey }: RowProps) => (

@@ -33,7 +33,7 @@ describe('ErrorMessage', () => {
       'href',
       'mailto:tuleva@tuleva.ee',
     );
-    expect(screen.getByRole('link', { name: '644 5100' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: /^644\s5100$/ })).toHaveAttribute(
       'href',
       'tel:+3726445100',
     );

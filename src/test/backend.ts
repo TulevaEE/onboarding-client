@@ -24,6 +24,7 @@ import {
   CapitalType,
   SecondPillarAssets,
   MandateDeadlines,
+  RejoinDecision,
 } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { parseJwt } from '../components/common/jwt';
@@ -159,15 +160,15 @@ export function rejoinPermissionBackend(
   server: SetupServerApi,
   {
     permitted,
-    contributionsEndedWithoutApplication = false,
-  }: { permitted: boolean; contributionsEndedWithoutApplication?: boolean },
+    decision = permitted ? 'PERMITTED' : 'REFUSED_BY_PENSIONIKESKUS',
+  }: { permitted: boolean; decision?: RejoinDecision },
 ): void {
   server.use(
     rest.get('http://localhost/v1/rejoin-permission', (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
         return res(ctx.status(401), ctx.json(authErrorResponse));
       }
-      return res(ctx.status(200), ctx.json({ permitted, contributionsEndedWithoutApplication }));
+      return res(ctx.status(200), ctx.json({ permitted, decision }));
     }),
   );
 }

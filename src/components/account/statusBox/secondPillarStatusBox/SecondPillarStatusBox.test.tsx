@@ -32,11 +32,11 @@ type RejoinPermissionQuery = {
   isError?: boolean;
 };
 const mockRejoinPermitted: RejoinPermissionQuery = {
-  data: { permitted: true, contributionsEndedWithoutApplication: false },
+  data: { permitted: true, decision: 'PERMITTED' },
   isInitialLoading: false,
 };
 const mockRejoinNotPermitted: RejoinPermissionQuery = {
-  data: { permitted: false, contributionsEndedWithoutApplication: false },
+  data: { permitted: false, decision: 'REFUSED_BY_PENSIONIKESKUS' },
   isInitialLoading: false,
 };
 let mockRejoinPermission = mockRejoinPermitted;
@@ -688,7 +688,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
 
   it('explains to a leaver whose contributions ended without an application why they cannot rejoin, even with a date on record', () => {
     mockRejoinPermission = {
-      data: { permitted: false, contributionsEndedWithoutApplication: true },
+      data: { permitted: false, decision: 'CONTRIBUTIONS_ENDED_WITHOUT_APPLICATION' },
       isInitialLoading: false,
     };
 

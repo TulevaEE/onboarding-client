@@ -1,7 +1,10 @@
 import { RejoinPermission } from '../../apiModels';
 
 export const rejoinPermissionProfiles: Record<string, RejoinPermission> = {
-  PERMITTED: { permitted: true, contributionsEndedWithoutApplication: false },
-  NOT_PERMITTED: { permitted: false, contributionsEndedWithoutApplication: false },
-  ENDED_WITHOUT_APPLICATION: { permitted: false, contributionsEndedWithoutApplication: true },
+  PERMITTED: { permitted: true, decision: 'PERMITTED' },
+  NOT_PERMITTED: { permitted: false, decision: 'REFUSED_BY_PENSIONIKESKUS' },
+  ENDED_WITHOUT_APPLICATION: {
+    permitted: false,
+    decision: 'CONTRIBUTIONS_ENDED_WITHOUT_APPLICATION',
+  },
 };

@@ -247,7 +247,7 @@
   "mandate.processing.error.epis.already.active.contributions.fund": "Selected contributions fund is already active",
   "mandate.processing.error.epis.unknown": "Unknown Estonian Pension Information system error",
   "mandate.processing.error.epis.technical.error": "Unknown Estonian Pension Information system technical error",
-  "mandate.processing.error.epis.contributions.not.stopped.by.application": "You can apply to rejoin if your contributions ended because you applied for that. According to Pensionikeskus, you have no such application. If you have questions, write to <mail>tuleva@tuleva.ee</mail> or call <tel>644 5100</tel>.",
+  "mandate.processing.error.epis.contributions.not.stopped.by.application": "You can apply to rejoin if your contributions ended because you applied for that. According to Pensionikeskus, you have no such application. If you have questions, write to <mail>tuleva@tuleva.ee</mail> or call <tel>644 5100</tel>.",
   "newUserFlow.newUser.i.wish.to.join": "I wish to join Tuleva",
   "newUserFlow.newUser.i.want.just.to.transfer.my.pension": "I just want to transfer my pension",
   "new.user.flow.intro": "See for yourself, why Tuleva is a good choice and become a member.",
@@ -2277,7 +2277,7 @@
   "secondPillarRejoin.restriction.summary": "You can use the money from age 60. After rejoining, you can't stop contributions again or withdraw the money a second time.",
   "secondPillarRejoin.firstPillarNote": "Social tax paid into the II pillar slightly reduces your I pillar.",
   "secondPillarRejoin.notPermitted": "Pensionikeskus does not let you rejoin the II pillar at the moment.",
-  "secondPillarRejoin.alreadyContributing": "You are already saving in the II pillar, so you don't need to apply to rejoin."
+  "secondPillarRejoin.alreadyContributing": "You are already saving in the II pillar, so you don't need to apply to rejoin.",
   "secondPillarRejoin.notPermitted.backToAccountPage": "Back to account page",
   "secondPillarRejoin.permissionUnknown": "We could not ask Pensionikeskus whether you can rejoin. Please sign again.",
   "secondPillarRejoin.next": "Next",

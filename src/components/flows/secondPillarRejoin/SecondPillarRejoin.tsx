@@ -238,9 +238,7 @@ const RejoinApplication = ({
     return (
       <RejoinRefused>
         <RejoinRefusalReason
-          contributionsEndedWithoutApplication={
-            rejoinPermission.contributionsEndedWithoutApplication
-          }
+          decision={rejoinPermission.decision}
           rejoinPossibleFrom={rejoinPossibleFrom}
         />
       </RejoinRefused>

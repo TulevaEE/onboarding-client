@@ -1,17 +1,18 @@
 import { FormattedMessage } from 'react-intl';
+import { RejoinDecision } from '../../common/apiModels';
 import { formatDateFromWithYear, todayInTallinn } from '../../common/dateFormatter';
 import { NoStopApplicationMessage } from '../../common/errorMessage/NoStopApplicationMessage';
 
 const isAfterToday = (day: string) => day > todayInTallinn();
 
 export const RejoinRefusalReason = ({
-  contributionsEndedWithoutApplication,
+  decision,
   rejoinPossibleFrom,
 }: {
-  contributionsEndedWithoutApplication: boolean;
+  decision: RejoinDecision | undefined;
   rejoinPossibleFrom: string | null | undefined;
 }) => {
-  if (contributionsEndedWithoutApplication) {
+  if (decision === 'CONTRIBUTIONS_ENDED_WITHOUT_APPLICATION') {
     return <NoStopApplicationMessage />;
   }
   if (rejoinPossibleFrom && isAfterToday(rejoinPossibleFrom)) {
