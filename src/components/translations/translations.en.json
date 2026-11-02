@@ -2277,7 +2277,7 @@
   "secondPillarRejoin.restriction.summary": "You can use the money from age 60. After rejoining, you can't stop contributions again or withdraw the money a second time.",
   "secondPillarRejoin.firstPillarNote": "Social tax paid into the II pillar slightly reduces your I pillar.",
   "secondPillarRejoin.notPermitted": "Pensionikeskus does not let you rejoin the II pillar at the moment.",
-  "secondPillarRejoin.alreadyContributing": "You are already saving in the II pillar, so you don't need to apply to rejoin.",
+  "secondPillarRejoin.alreadyContributing": "You are already saving in the II pillar, so you don't need to apply to rejoin."
   "secondPillarRejoin.notPermitted.backToAccountPage": "Back to account page",
   "secondPillarRejoin.permissionUnknown": "We could not ask Pensionikeskus whether you can rejoin. Please sign again.",
   "secondPillarRejoin.next": "Next",
