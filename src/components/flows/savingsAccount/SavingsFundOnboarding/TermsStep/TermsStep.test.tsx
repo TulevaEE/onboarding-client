@@ -528,13 +528,26 @@ describe('TermsStep', () => {
       expectOneFallbackReported('missing:terms_file');
     });
 
-    test('reports every field when the fund page has no document fields', async () => {
-      tkfDocumentsBackend(server, false);
+    test('reports every field when the fund page leaves all three documents empty', async () => {
+      tkfDocumentsBackend(server, {
+        terms_file: false,
+        prospectus_file: false,
+        key_investor_info_file: false,
+      });
 
       renderWrapped(<TermsStepWrapper />);
 
       expect(await fundDocumentsPageLink()).toBeInTheDocument();
       expectOneFallbackReported('missing:terms_file,prospectus_file,key_investor_info_file');
+    });
+
+    test('reports no fields when the fund page answers without its document fields', async () => {
+      tkfDocumentsBackend(server, false);
+
+      renderWrapped(<TermsStepWrapper />);
+
+      expect(await fundDocumentsPageLink()).toBeInTheDocument();
+      expectOneFallbackReported('no-fields');
     });
 
     test('reports the status when the fund page answers with an error', async () => {
@@ -562,6 +575,34 @@ describe('TermsStep', () => {
 
       expect(await fundDocumentsPageLink()).toBeInTheDocument();
       expectOneFallbackReported('unreadable-answer');
+    });
+
+    test('reports nothing for a read the person left before it finished, and reads again on return', async () => {
+      const fundPageReads = watchFundPageReads();
+      const answerTheLeftRead = heldTkfDocumentsBackend(server, {});
+      const queryClient = new QueryClient();
+      const history = createMemoryHistory();
+      const { unmount } = renderWrapped(
+        <TermsStepWrapper />,
+        history,
+        createDefaultStore(history),
+        queryClient,
+      );
+
+      unmount();
+      answerTheLeftRead();
+      await act(() => fundPageReads.mock.results[0].value.then(ignoreTheOutcome, ignoreTheOutcome));
+      await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+
+      expect(captureException).not.toHaveBeenCalled();
+
+      tkfDocumentsBackend(server);
+      renderWrapped(<TermsStepWrapper />, history, createDefaultStore(history), queryClient);
+
+      expect(await screen.findByRole('link', { name: /^Terms/ })).toHaveAttribute(
+        'href',
+        TKF_DOCUMENT_FIELDS.terms_file,
+      );
     });
 
     test('reports nothing for a read that a reload replaced', async () => {

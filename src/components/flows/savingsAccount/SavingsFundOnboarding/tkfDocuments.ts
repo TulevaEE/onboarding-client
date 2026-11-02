@@ -45,18 +45,27 @@ const toTkfDocumentLinks = (
   return lacksADocument || lastReadFailed ? [...links, fundDocumentsPageLink] : links;
 };
 
+type FallbackReason =
+  | 'timeout'
+  | 'network'
+  | 'unreadable-answer'
+  | 'no-page'
+  | 'no-fields'
+  | `http-${number}`
+  | `missing:${string}`;
+
 class FundPageReadFailure extends Error {
-  constructor(readonly reason: string) {
+  constructor(readonly reason: FallbackReason) {
     super(`Fund page fields could not be read: ${reason}`);
   }
 }
 
-const reportFallback = (reason: string) => {
+const reportFallback = (reason: FallbackReason) => {
   const message = `TKF100 document links fell back to the documents page: reason=${reason}`;
   captureException(new Error(message), { fingerprint: [message] });
 };
 
-const reasonTheReadFailed = (error: unknown, timedOut: boolean): string => {
+const reasonTheReadFailed = (error: unknown, timedOut: boolean): FallbackReason => {
   if (timedOut) {
     return 'timeout';
   }
@@ -74,10 +83,16 @@ const fieldsOfTheFundPage = (pages: unknown): FundPageFields => {
     throw new FundPageReadFailure('no-page');
   }
   const fields = pages[0]?.acf;
-  return fields && typeof fields === 'object' ? (fields as FundPageFields) : {};
+  if (!fields || typeof fields !== 'object' || Array.isArray(fields)) {
+    throw new FundPageReadFailure('no-fields');
+  }
+  return fields as FundPageFields;
 };
 
-const getFundPageFields = async (cancelled?: AbortSignal): Promise<FundPageFields> => {
+const readFundPageFields = async (
+  cancelled: AbortSignal | undefined,
+  reportUnlessCancelled: (reason: FallbackReason) => void,
+): Promise<FundPageFields> => {
   const reading = new AbortController();
   const stopReading = () => reading.abort();
   const timer = setTimeout(stopReading, FUND_PAGE_TIMEOUT_MS);
@@ -92,9 +107,7 @@ const getFundPageFields = async (cancelled?: AbortSignal): Promise<FundPageField
     }
     return fieldsOfTheFundPage(await response.json());
   } catch (error) {
-    if (!cancelled?.aborted) {
-      reportFallback(reasonTheReadFailed(error, reading.signal.aborted));
-    }
+    reportUnlessCancelled(reasonTheReadFailed(error, reading.signal.aborted));
     throw error;
   } finally {
     clearTimeout(timer);
@@ -102,13 +115,16 @@ const getFundPageFields = async (cancelled?: AbortSignal): Promise<FundPageField
   }
 };
 
-const getFundPageFieldsReportingMissingDocuments = async ({
-  signal,
-}: QueryFunctionContext): Promise<FundPageFields> => {
-  const fields = await getFundPageFields(signal);
+const getFundPageFields = async ({ signal }: QueryFunctionContext): Promise<FundPageFields> => {
+  const reportUnlessCancelled = (reason: FallbackReason) => {
+    if (!signal?.aborted) {
+      reportFallback(reason);
+    }
+  };
+  const fields = await readFundPageFields(signal, reportUnlessCancelled);
   const missingFields = missingDocumentFields(fields);
-  if (missingFields.length > 0 && !signal?.aborted) {
-    reportFallback(`missing:${missingFields.join(',')}`);
+  if (missingFields.length > 0) {
+    reportUnlessCancelled(`missing:${missingFields.join(',')}`);
   }
   return fields;
 };
@@ -117,7 +133,7 @@ export const useTkfDocuments = (): TkfDocumentLink[] | undefined => {
   const { formatMessage } = useIntl();
   const { data, isError, errorUpdateCount } = useQuery({
     queryKey: ['tkfDocuments'],
-    queryFn: getFundPageFieldsReportingMissingDocuments,
+    queryFn: getFundPageFields,
     retry: false,
     networkMode: 'always',
     staleTime: Infinity,
