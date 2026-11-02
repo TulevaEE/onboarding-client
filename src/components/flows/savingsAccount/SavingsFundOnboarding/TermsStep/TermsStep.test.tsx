@@ -541,14 +541,21 @@ describe('TermsStep', () => {
       expectOneFallbackReported('missing:terms_file,prospectus_file,key_investor_info_file');
     });
 
-    test('reports no fields when the fund page answers without its document fields', async () => {
-      tkfDocumentsBackend(server, false);
+    test.each([
+      ['false', false],
+      ['an empty list', []],
+      ['text', 'none'],
+    ] as const)(
+      'reports no fields when the fund page answers %s for its document fields',
+      async (_, fields) => {
+        tkfDocumentsBackend(server, fields);
 
-      renderWrapped(<TermsStepWrapper />);
+        renderWrapped(<TermsStepWrapper />);
 
-      expect(await fundDocumentsPageLink()).toBeInTheDocument();
-      expectOneFallbackReported('no-fields');
-    });
+        expect(await fundDocumentsPageLink()).toBeInTheDocument();
+        expectOneFallbackReported('no-fields');
+      },
+    );
 
     test('reports the status when the fund page answers with an error', async () => {
       failingTkfDocumentsBackend(server);
@@ -579,7 +586,7 @@ describe('TermsStep', () => {
 
     test('reports nothing for a read the person left before it finished, and reads again on return', async () => {
       const fundPageReads = watchFundPageReads();
-      const answerTheLeftRead = heldTkfDocumentsBackend(server, {});
+      const leftRead = heldTkfDocumentsBackend(server, {});
       const queryClient = new QueryClient();
       const history = createMemoryHistory();
       const { unmount } = renderWrapped(
@@ -588,9 +595,10 @@ describe('TermsStep', () => {
         createDefaultStore(history),
         queryClient,
       );
+      await act(() => leftRead.arrived);
 
       unmount();
-      answerTheLeftRead();
+      leftRead.answer();
       await act(() => fundPageReads.mock.results[0].value.then(ignoreTheOutcome, ignoreTheOutcome));
       await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
 
@@ -607,10 +615,11 @@ describe('TermsStep', () => {
 
     test('reports nothing for a read that a reload replaced', async () => {
       const fundPageReads = watchFundPageReads();
-      const answerTheReplacedRead = heldTkfDocumentsBackend(server, {});
+      const replacedRead = heldTkfDocumentsBackend(server, {});
       const queryClient = new QueryClient();
       const history = createMemoryHistory();
       renderWrapped(<TermsStepWrapper />, history, createDefaultStore(history), queryClient);
+      await act(() => replacedRead.arrived);
 
       tkfDocumentsBackend(server);
       act(() => {
@@ -618,7 +627,7 @@ describe('TermsStep', () => {
       });
       expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
 
-      answerTheReplacedRead();
+      replacedRead.answer();
       await act(() => fundPageReads.mock.results[0].value.then(ignoreTheOutcome, ignoreTheOutcome));
       await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
 

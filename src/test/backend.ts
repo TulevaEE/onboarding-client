@@ -1518,7 +1518,7 @@ export const TKF_DOCUMENT_FIELDS: TkfDocumentFields = {
 
 export function tkfDocumentsBackend(
   server: SetupServerApi,
-  fields: TkfDocumentFields | false = TKF_DOCUMENT_FIELDS,
+  fields: TkfDocumentFields | false | readonly [] | string = TKF_DOCUMENT_FIELDS,
 ): void {
   server.use(
     rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res, ctx) => {
@@ -1554,17 +1554,22 @@ export function unreachableTkfDocumentsBackend(server: SetupServerApi): void {
 export function heldTkfDocumentsBackend(
   server: SetupServerApi,
   fields: TkfDocumentFields,
-): () => void {
+): { arrived: Promise<void>; answer: () => void } {
+  let readArrived = () => {};
+  const arrived = new Promise<void>((resolve) => {
+    readArrived = resolve;
+  });
   let answerTheHeldRead = () => {};
   server.use(
     rest.get('https://tuleva.ee/wp-json/wp/v2/pages', async (req, res, ctx) => {
       await new Promise<void>((resolve) => {
         answerTheHeldRead = resolve;
+        readArrived();
       });
       return res(ctx.json([{ acf: fields }]));
     }),
   );
-  return () => answerTheHeldRead();
+  return { arrived, answer: () => answerTheHeldRead() };
 }
 
 export function missingTkfDocumentsPageBackend(server: SetupServerApi): void {
