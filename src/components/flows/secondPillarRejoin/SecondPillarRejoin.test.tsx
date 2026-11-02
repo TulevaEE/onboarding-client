@@ -855,7 +855,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     render('/2nd-pillar-rejoin');
 
     const reason = await screen.findByText(
-      /After a fund pension, a pension contract or a lump sum, contributions cannot be restarted/,
+      /You can only rejoin if you ended your contributions by applying to withdraw your money or to stop payments\. After a fund pension, a pension contract or a lump sum, contributions cannot be restarted\./,
     );
     expect(within(reason).getByRole('link', { name: 'tuleva@tuleva.ee' })).toHaveAttribute(
       'href',
