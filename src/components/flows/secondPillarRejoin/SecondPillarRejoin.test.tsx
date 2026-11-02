@@ -847,15 +847,15 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(mandateBatches.created).toEqual([]);
   });
 
-  test('tells a person whose contributions ended without an application why they cannot rejoin', async () => {
+  test('tells a person whose contributions cannot restart why they cannot rejoin', async () => {
     rejoinPermissionBackend(server, {
       permitted: false,
-      decision: 'CONTRIBUTIONS_ENDED_WITHOUT_APPLICATION',
+      decision: 'CONTRIBUTIONS_CANNOT_RESTART',
     });
     render('/2nd-pillar-rejoin');
 
     const reason = await screen.findByText(
-      /According to Pensionikeskus, you have no such application/,
+      /You can only rejoin if you ended your contributions by applying to withdraw your money or to stop payments\. After a fund pension, a pension contract or a lump sum, contributions cannot be restarted\./,
     );
     expect(within(reason).getByRole('link', { name: 'tuleva@tuleva.ee' })).toHaveAttribute(
       'href',

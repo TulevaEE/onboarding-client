@@ -244,12 +244,12 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     pendingApplications: 'NONE',
     rejoinPermission: 'NOT_PERMITTED',
   },
-  // A leaver whose contributions ended without a withdrawal or stop application on record:
-  // Pensionikeskus would refuse the application, so the row and the rejoin page say why.
-  SECOND_PILLAR_REJOIN_ENDED_WITHOUT_APPLICATION: {
+  // A leaver whose contributions cannot restart: no withdrawal or stop application on record, or a
+  // fund pension, pension contract or lump sum. The row and the rejoin page say why.
+  SECOND_PILLAR_REJOIN_CANNOT_RESTART: {
     ...rejoinRefused,
     user: 'LEFT_SECOND_PILLAR_FUND_ON_RECORD',
-    rejoinPermission: 'ENDED_WITHOUT_APPLICATION',
+    rejoinPermission: 'CANNOT_RESTART',
   },
   // A leaver within five years: the rejoin page says the day they can rejoin from.
   SECOND_PILLAR_REJOIN_NOT_YET_PERMITTED: {

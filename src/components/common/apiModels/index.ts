@@ -574,7 +574,7 @@ export type Contribution = SecondPillarContribution | ThirdPillarContribution;
 export type RejoinDecision =
   | 'PERMITTED'
   | 'REFUSED_BY_PENSIONIKESKUS'
-  | 'CONTRIBUTIONS_ENDED_WITHOUT_APPLICATION';
+  | 'CONTRIBUTIONS_CANNOT_RESTART';
 
 export interface RejoinPermission {
   permitted: boolean;

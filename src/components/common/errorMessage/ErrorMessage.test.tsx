@@ -26,7 +26,9 @@ describe('ErrorMessage', () => {
     );
 
     expect(
-      screen.getByText(/According to Pensionikeskus, you have no such application/),
+      screen.getByText(
+        /You can only rejoin if you ended your contributions by applying to withdraw your money or to stop payments\. After a fund pension, a pension contract or a lump sum, contributions cannot be restarted\./,
+      ),
     ).toBeInTheDocument();
     expect(screen.queryByText(/Contributions were not stopped/)).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'tuleva@tuleva.ee' })).toHaveAttribute(

@@ -257,7 +257,7 @@
   "mandate.processing.error.epis.already.active.contributions.fund": "Valitud fond on juba aktiivne",
   "mandate.processing.error.epis.unknown": "Tundmatu Eesti Pensioni Infosüsteemi viga",
   "mandate.processing.error.epis.technical.error": "Tundmatu Eesti Pensioni Infosüsteemi tehniline viga",
-  "mandate.processing.error.epis.contributions.not.stopped.by.application": "Taasliitumise avalduse saab esitada siis, kui sissemaksed lõppesid sinu enda avalduse alusel. Pensionikeskuse andmetel ei ole sul sellist avaldust. Kui sul on küsimusi, kirjuta <mail>tuleva@tuleva.ee</mail> või helista <tel>644 5100</tel>.",
+  "mandate.processing.error.epis.contributions.not.stopped.by.application": "Taasliituda saab vaid siis, kui lõpetasid sissemaksed raha väljavõtmise või maksete peatamise avaldusega. Pärast fondipensioni, pensionilepingut või ühekordset väljamakset ei saa sissemakseid enam taastada. Kui sul on küsimusi, kirjuta <mail>tuleva@tuleva.ee</mail> või helista <tel>644 5100</tel>.",
   "newUserFlow.newUser.i.wish.to.join": "Tahan liikmeks astuda",
   "newUserFlow.newUser.i.want.just.to.transfer.my.pension": "Valin netipangas Tuleva",
   "new.user.flow.intro": "Veendu ise Tuleva kasulikkuses ja astu liikmeks.",
@@ -367,7 +367,7 @@
   "account.status.choice.pillar.second.notContributing.line2.fundChoiceOnRecord": "Sinu fondivalik jääb registrisse, aga sissemaksed algavad uuesti alles siis, kui esitad taasliitumise avalduse.",
   "account.status.choice.pillar.second.notContributing.line2.noFundChoice": "Sissemaksed algavad uuesti alles siis, kui esitad taasliitumise avalduse.",
   "account.status.choice.pillar.second.notContributing.line2.rejoinPossibleFrom": "Taasliituda saad alates {date}.",
-  "account.status.choice.pillar.second.notContributing.line2.contributionsEndedWithoutApplication": "Taasliituda saab vaid siis, kui sissemaksed lõppesid sinu enda avalduse alusel.",
+  "account.status.choice.pillar.second.notContributing.line2.contributionsCannotRestart": "Taasliituda saab vaid siis, kui lõpetasid sissemaksed raha väljavõtmise või maksete peatamise avaldusega. Pärast fondipensioni, pensionilepingut või ühekordset väljamakset ei saa sissemakseid enam taastada.",
   "account.status.choice.pillar.second.notContributing.action": "Liitun uuesti",
 
   "account.status.choice.pillar.third": "III sammas",
