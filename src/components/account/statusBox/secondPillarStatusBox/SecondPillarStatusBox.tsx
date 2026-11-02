@@ -617,9 +617,9 @@ const WayBackInExplanation = ({
       />
     );
   }
-  if (rejoinDecision === 'CONTRIBUTIONS_ENDED_WITHOUT_APPLICATION') {
+  if (rejoinDecision === 'CONTRIBUTIONS_CANNOT_RESTART') {
     return (
-      <FormattedMessage id="account.status.choice.pillar.second.notContributing.line2.contributionsEndedWithoutApplication" />
+      <FormattedMessage id="account.status.choice.pillar.second.notContributing.line2.contributionsCannotRestart" />
     );
   }
   return <RejoinRefusalReason decision={rejoinDecision} rejoinPossibleFrom={rejoinPossibleFrom} />;

@@ -12,7 +12,7 @@ export const RejoinRefusalReason = ({
   decision: RejoinDecision | undefined;
   rejoinPossibleFrom: string | null | undefined;
 }) => {
-  if (decision === 'CONTRIBUTIONS_ENDED_WITHOUT_APPLICATION') {
+  if (decision === 'CONTRIBUTIONS_CANNOT_RESTART') {
     return <NoStopApplicationMessage />;
   }
   if (rejoinPossibleFrom && isAfterToday(rejoinPossibleFrom)) {

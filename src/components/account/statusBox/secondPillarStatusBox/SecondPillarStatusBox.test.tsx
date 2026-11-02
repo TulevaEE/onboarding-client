@@ -686,9 +686,9 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     },
   );
 
-  it('explains to a leaver whose contributions ended without an application why they cannot rejoin, even with a date on record', () => {
+  it('explains to a leaver whose contributions cannot restart why they cannot rejoin, even with a date on record', () => {
     mockRejoinPermission = {
-      data: { permitted: false, decision: 'CONTRIBUTIONS_ENDED_WITHOUT_APPLICATION' },
+      data: { permitted: false, decision: 'CONTRIBUTIONS_CANNOT_RESTART' },
       isInitialLoading: false,
     };
 
@@ -701,7 +701,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
 
     expect(
       screen.getByText(
-        'You can only rejoin if your contributions ended because you applied for that.',
+        /You can only rejoin if you ended your contributions by applying to withdraw your money or to stop payments\. After a fund pension, a pension contract or a lump sum, contributions cannot be restarted\./,
       ),
     ).toBeInTheDocument();
     expect(screen.queryByText(/You can rejoin from/)).not.toBeInTheDocument();
