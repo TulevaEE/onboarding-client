@@ -10,7 +10,7 @@ const contributionsEndedIn2021: SecondPillarContributions = {
 const contributionsEndedIn2023: SecondPillarContributions = {
   contributing: false,
   restartDate: null,
-  rejoinPossibleFrom: '2028-09-01',
+  rejoinPossibleFrom: '2027-12-01',
 };
 
 export const userMockProfiles: Record<string, User> = {
