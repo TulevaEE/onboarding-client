@@ -519,6 +519,15 @@ describe(SavingsFundPayment, () => {
       expect(getAccountOwnerLine('Test Company OÜ')).toBeInTheDocument();
     });
 
+    it('names the company on the submit button, not the board member paying', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+
+      expect(
+        screen.getByRole('button', { name: /^Deposit\s\(\s?Test Company OÜ\s?\)$/ }),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: submitButtonName })).not.toBeInTheDocument();
+    });
+
     it('pre-fills the deposit amount with 250 for a company', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
       expect(getAmountInput()).toHaveValue('250');
@@ -613,6 +622,15 @@ describe(SavingsFundPayment, () => {
 
       initApp();
       history.push('/savings-fund/payment');
+    });
+
+    it('names the child on the submit button, not the parent paying', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+
+      expect(
+        screen.getByRole('button', { name: /^Deposit\s\(\s?Junior Doe\s?\)$/ }),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: submitButtonName })).not.toBeInTheDocument();
     });
 
     it('pre-fills the deposit amount with 80 for a child', async () => {
