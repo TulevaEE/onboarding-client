@@ -1551,6 +1551,34 @@ export function unreachableTkfDocumentsBackend(server: SetupServerApi): void {
   );
 }
 
+export function heldTkfDocumentsBackend(
+  server: SetupServerApi,
+  fields: TkfDocumentFields,
+): () => void {
+  let answerTheHeldRead = () => {};
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', async (req, res, ctx) => {
+      await new Promise<void>((resolve) => {
+        answerTheHeldRead = resolve;
+      });
+      return res(ctx.json([{ acf: fields }]));
+    }),
+  );
+  return () => answerTheHeldRead();
+}
+
+export function missingTkfDocumentsPageBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res, ctx) => res(ctx.json([]))),
+  );
+}
+
+export function nonListTkfDocumentsBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res, ctx) => res(ctx.json({}))),
+  );
+}
+
 export function unreadableTkfDocumentsBackend(server: SetupServerApi): void {
   server.use(
     rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res, ctx) =>

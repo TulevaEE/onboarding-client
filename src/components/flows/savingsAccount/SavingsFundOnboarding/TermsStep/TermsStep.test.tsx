@@ -9,6 +9,9 @@ import { IntlProvider } from 'react-intl';
 import { createDefaultStore, renderWrapped } from '../../../../../test/utils';
 import {
   failingTkfDocumentsBackend,
+  heldTkfDocumentsBackend,
+  missingTkfDocumentsPageBackend,
+  nonListTkfDocumentsBackend,
   TKF_DOCUMENT_FIELDS,
   tkfDocumentsBackend,
   unreachableTkfDocumentsBackend,
@@ -30,6 +33,7 @@ afterEach(() => {
   onlineManager.setOnline(undefined);
   focusManager.setFocused(undefined);
   jest.useRealTimers();
+  jest.restoreAllMocks();
 });
 afterAll(() => server.close());
 
@@ -42,13 +46,9 @@ const comeBackToTheWindow = () =>
     focusManager.setFocused(true);
   });
 
-const letAnyFundPageRequestFinish = () =>
-  act(
-    () =>
-      new Promise<void>((resolve) => {
-        setTimeout(resolve, 100);
-      }),
-  );
+const watchFundPageReads = () => jest.spyOn(window, 'fetch');
+
+const ignoreTheOutcome = () => undefined;
 
 const TermsStepWrapper = ({
   showError = false,
@@ -253,13 +253,12 @@ describe('TermsStep', () => {
   test('keeps the links without reading the fund page again when the person comes back from a document', async () => {
     renderWrapped(<TermsStepWrapper />);
     expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+    const fundPageReads = watchFundPageReads();
 
-    failingTkfDocumentsBackend(server);
     comeBackToTheWindow();
-    await letAnyFundPageRequestFinish();
 
-    expect(screen.queryByRole('link', { name: /^All fund documents/ })).not.toBeInTheDocument();
-    expect(captureException).not.toHaveBeenCalled();
+    expect(fundPageReads).not.toHaveBeenCalled();
+    expect(screen.getByRole('link', { name: /^Terms/ })).toBeInTheDocument();
   });
 
   test('keeps the links without reading the fund page again when the step opens again', async () => {
@@ -274,13 +273,11 @@ describe('TermsStep', () => {
     expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
 
     unmount();
-    failingTkfDocumentsBackend(server);
+    const fundPageReads = watchFundPageReads();
     renderWrapped(<TermsStepWrapper />, history, createDefaultStore(history), queryClient);
-    await letAnyFundPageRequestFinish();
 
+    expect(fundPageReads).not.toHaveBeenCalled();
     expect(screen.getByRole('link', { name: /^Terms/ })).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: /^All fund documents/ })).not.toBeInTheDocument();
-    expect(captureException).not.toHaveBeenCalled();
   });
 
   test('reads the fund page again when the person comes back after it could not be read', async () => {
@@ -547,6 +544,44 @@ describe('TermsStep', () => {
 
       expect(await fundDocumentsPageLink()).toBeInTheDocument();
       expectOneFallbackReported('http-500');
+    });
+
+    test('reports a missing page when no page has the fund page address', async () => {
+      missingTkfDocumentsPageBackend(server);
+
+      renderWrapped(<TermsStepWrapper />);
+
+      expect(await fundDocumentsPageLink()).toBeInTheDocument();
+      expectOneFallbackReported('no-page');
+    });
+
+    test('reports an unreadable answer when the fund page does not answer a list of pages', async () => {
+      nonListTkfDocumentsBackend(server);
+
+      renderWrapped(<TermsStepWrapper />);
+
+      expect(await fundDocumentsPageLink()).toBeInTheDocument();
+      expectOneFallbackReported('unreadable-answer');
+    });
+
+    test('reports nothing for a read that a reload replaced', async () => {
+      const fundPageReads = watchFundPageReads();
+      const answerTheReplacedRead = heldTkfDocumentsBackend(server, {});
+      const queryClient = new QueryClient();
+      const history = createMemoryHistory();
+      renderWrapped(<TermsStepWrapper />, history, createDefaultStore(history), queryClient);
+
+      tkfDocumentsBackend(server);
+      act(() => {
+        queryClient.resetQueries();
+      });
+      expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+
+      answerTheReplacedRead();
+      await act(() => fundPageReads.mock.results[0].value.then(ignoreTheOutcome, ignoreTheOutcome));
+      await act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+
+      expect(captureException).not.toHaveBeenCalled();
     });
 
     test('reports an unreadable answer when the fund page does not answer JSON', async () => {

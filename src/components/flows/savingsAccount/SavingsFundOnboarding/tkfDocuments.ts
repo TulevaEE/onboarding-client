@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/browser';
-import { useQuery } from '@tanstack/react-query';
+import { QueryFunctionContext, useQuery } from '@tanstack/react-query';
 import { useIntl } from 'react-intl';
 import { TranslationKey } from '../../../translations';
 
@@ -28,6 +28,9 @@ export const TKF_DOCUMENTS_IN_FORCE_COUNT = DOCUMENTS_IN_FORCE.length;
 const documentUrl = (value: unknown): string | null =>
   typeof value === 'string' && value.startsWith('https://tuleva.ee/') ? value : null;
 
+const missingDocumentFields = (fields: FundPageFields): string[] =>
+  DOCUMENTS_IN_FORCE.map(({ field }) => field).filter((field) => !documentUrl(fields[field]));
+
 const toTkfDocumentLinks = (
   fields: FundPageFields,
   lastReadFailed: boolean,
@@ -37,14 +40,14 @@ const toTkfDocumentLinks = (
     const href = documentUrl(fields[field]);
     return href ? [{ href, labelId }] : [];
   });
-  const lacksADocument = links.length < DOCUMENTS_IN_FORCE.length;
+  const lacksADocument = missingDocumentFields(fields).length > 0;
 
   return lacksADocument || lastReadFailed ? [...links, fundDocumentsPageLink] : links;
 };
 
-class FundPageRefusal extends Error {
-  constructor(readonly status: number) {
-    super(`Fund page fields request failed with status ${status}`);
+class FundPageReadFailure extends Error {
+  constructor(readonly reason: string) {
+    super(`Fund page fields could not be read: ${reason}`);
   }
 }
 
@@ -57,40 +60,54 @@ const reasonTheReadFailed = (error: unknown, timedOut: boolean): string => {
   if (timedOut) {
     return 'timeout';
   }
-  if (error instanceof FundPageRefusal) {
-    return `http-${error.status}`;
+  if (error instanceof FundPageReadFailure) {
+    return error.reason;
   }
   return error instanceof SyntaxError ? 'unreadable-answer' : 'network';
 };
 
-const getFundPageFields = async (): Promise<FundPageFields> => {
-  const timeout = new AbortController();
-  const timer = setTimeout(() => timeout.abort(), FUND_PAGE_TIMEOUT_MS);
+const fieldsOfTheFundPage = (pages: unknown): FundPageFields => {
+  if (!Array.isArray(pages)) {
+    throw new FundPageReadFailure('unreadable-answer');
+  }
+  if (pages.length === 0) {
+    throw new FundPageReadFailure('no-page');
+  }
+  const fields = pages[0]?.acf;
+  return fields && typeof fields === 'object' ? (fields as FundPageFields) : {};
+};
+
+const getFundPageFields = async (cancelled?: AbortSignal): Promise<FundPageFields> => {
+  const reading = new AbortController();
+  const stopReading = () => reading.abort();
+  const timer = setTimeout(stopReading, FUND_PAGE_TIMEOUT_MS);
+  cancelled?.addEventListener('abort', stopReading);
   try {
     const response = await fetch(FUND_PAGE_FIELDS_URL, {
       credentials: 'omit',
-      signal: timeout.signal,
+      signal: reading.signal,
     });
     if (!response.ok) {
-      throw new FundPageRefusal(response.status);
+      throw new FundPageReadFailure(`http-${response.status}`);
     }
-    const pages: { acf?: unknown }[] = await response.json();
-    const fields = pages[0]?.acf;
-    return fields && typeof fields === 'object' ? (fields as FundPageFields) : {};
+    return fieldsOfTheFundPage(await response.json());
   } catch (error) {
-    reportFallback(reasonTheReadFailed(error, timeout.signal.aborted));
+    if (!cancelled?.aborted) {
+      reportFallback(reasonTheReadFailed(error, reading.signal.aborted));
+    }
     throw error;
   } finally {
     clearTimeout(timer);
+    cancelled?.removeEventListener('abort', stopReading);
   }
 };
 
-const getFundPageFieldsReportingMissingDocuments = async (): Promise<FundPageFields> => {
-  const fields = await getFundPageFields();
-  const missingFields = DOCUMENTS_IN_FORCE.map(({ field }) => field).filter(
-    (field) => !documentUrl(fields[field]),
-  );
-  if (missingFields.length > 0) {
+const getFundPageFieldsReportingMissingDocuments = async ({
+  signal,
+}: QueryFunctionContext): Promise<FundPageFields> => {
+  const fields = await getFundPageFields(signal);
+  const missingFields = missingDocumentFields(fields);
+  if (missingFields.length > 0 && !signal?.aborted) {
     reportFallback(`missing:${missingFields.join(',')}`);
   }
   return fields;
