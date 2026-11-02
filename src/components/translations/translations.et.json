@@ -2367,7 +2367,7 @@
   "secondPillarRejoin.restriction.summary": "Raha saad kasutada alates 60. eluaastast. Pärast taasliitumist ei saa sa makseid uuesti lõpetada ega raha teist korda välja võtta.",
   "secondPillarRejoin.firstPillarNote": "II sambasse makstud sotsiaalmaks vähendab veidi I sammast.",
   "secondPillarRejoin.notPermitted": "Pensionikeskuse andmetel ei saa sa praegu II sambaga uuesti liituda.",
-  "secondPillarRejoin.alreadyContributing": "Sa juba kogud II sambas, seega pole sul taasliitumise avaldust vaja esitada.",
+  "secondPillarRejoin.alreadyContributing": "Sa juba kogud II sambas, seega pole sul taasliitumise avaldust vaja esitada."
   "secondPillarRejoin.notPermitted.backToAccountPage": "Tagasi kontolehele",
   "secondPillarRejoin.permissionUnknown": "Me ei saanud Pensionikeskuselt küsida, kas saad uuesti liituda. Palun allkirjasta uuesti.",
   "secondPillarRejoin.next": "Edasi",
