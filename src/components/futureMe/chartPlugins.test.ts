@@ -66,6 +66,25 @@ describe('chartPlugins', () => {
       expect(pillAt(ctx, 0)).toEqual({ x: 54, y: CHART_TOP + 2 });
     });
 
+    it('draws the line and the pill edge in a darker colour in high contrast', () => {
+      const strokeColors: string[] = [];
+      const { ctx, chart } = fakeChart();
+      Object.defineProperty(ctx, 'strokeStyle', { set: (color) => strokeColors.push(color) });
+      const strokesOfMark = () => {
+        strokeColors.length = 0;
+        marksLine.afterDatasetsDraw?.(chart, {} as never, [{ age: 70, text: 'Töö lõpp' }], false);
+        return [...strokeColors];
+      };
+      const normal = strokesOfMark();
+
+      document.documentElement.classList.add('high-contrast');
+      const highContrast = strokesOfMark();
+      document.documentElement.classList.remove('high-contrast');
+
+      expect(normal).toHaveLength(2);
+      expect(highContrast).toEqual(['#6b7074', '#6b7074']);
+    });
+
     it('draws the pill with square corners in a browser that cannot round them', () => {
       const { ctx, chart } = fakeChart({ roundRect: undefined });
 

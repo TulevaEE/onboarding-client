@@ -27,19 +27,15 @@ describe('children in the result', () => {
     expect(childSupplement(input)).toBe(0);
   });
 
-  it('add the supplement to the state pension when the forecast does not include it', () => {
-    const supplement = childSupplement(resultInputOf(contextWith(twoGrownChildren)));
+  it('add the supplement to a state pension the saver typed in, since that amount never includes it', () => {
+    const typedStatePension = { firstPillarMonthly: '700' };
+    const supplement = childSupplement(
+      resultInputOf(contextWith({ ...twoGrownChildren, ...typedStatePension })),
+    );
 
     expect(supplement).toBeGreaterThan(0);
-    expect(statePensionAtStart({ kidsInForecast: 'no' })).toBeCloseTo(
-      statePensionAtStart({ kidsInForecast: 'unknown' }) + supplement,
-      0,
-    );
-  });
-
-  it('leave the state pension as it is when the forecast already includes the supplement', () => {
-    expect(statePensionAtStart({ kidsInForecast: 'yes' })).toBeCloseTo(
-      statePensionAtStart({ kidsInForecast: 'unknown' }),
+    expect(statePensionAtStart(typedStatePension)).toBeCloseTo(
+      statePensionAtStart({ ...typedStatePension, kidsSupUser: 'other' }) + supplement,
       0,
     );
   });
@@ -58,5 +54,26 @@ describe('children in the result', () => {
       );
 
     expect(supplementWith('0')).toBeGreaterThan(supplementWith('36'));
+  });
+
+  describe('for a saver outside the II pillar, with a child born from September 2021 who is over 3', () => {
+    const outsideSecondPillar = {
+      secondPillarRate: '0',
+      secondPillarAmount: '0',
+      kidsAdded: true,
+      kidsCount: '1',
+      kidsBirthYears: ['2022'],
+    };
+    const supplementWhen = (kidsSupUser: 'me' | 'other' | 'split') =>
+      childSupplement(resultInputOf(contextWith({ ...outsideSecondPillar, kidsSupUser })));
+
+    it('brings no supplement when the other parent gets it', () => {
+      expect(supplementWhen('me')).toBeGreaterThan(0);
+      expect(supplementWhen('other')).toBe(0);
+    });
+
+    it('brings half the supplement when the parents share it', () => {
+      expect(supplementWhen('split')).toBeCloseTo(supplementWhen('me') / 2);
+    });
   });
 });

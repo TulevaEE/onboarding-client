@@ -1,4 +1,6 @@
 import { Contribution, SecondPillarContribution, SourceFund, User } from '../common/apiModels';
+import { FundPensionStatus } from '../common/apiModels/withdrawals';
+import { deriveGrossSalary } from '../common/grossSalary';
 import { CURRENT_YEAR, Sex } from './engine/pension';
 import { deriveKidsPrefill } from './kidsPrefill';
 import {
@@ -18,11 +20,11 @@ const BIRTH_YEAR_TEXT = /^\d{4}$/;
 const MALE_FIRST_DIGITS = ['1', '3', '5', '7'];
 const FEMALE_FIRST_DIGITS = ['2', '4', '6', '8'];
 const ISO_YEAR = /^(\d{4})-/;
+const ISO_MONTH = /^\d{4}-(\d{2})-/;
 
 const DEFAULT_SECOND_PILLAR_RATE_PERCENT = 2;
 const NO_SECOND_PILLAR_RATE = '0';
 const THIRD_PILLAR_RULES_CHANGE_YEAR = 2021;
-const SOCIAL_TAX_SHARE_OF_GROSS = 0.04;
 const SALARY_PAYMENT_MAX_MONTHS_AGO = 3;
 const THIRD_PILLAR_AVERAGE_MONTHS = 12;
 const MONTHS_IN_YEAR = 12;
@@ -30,6 +32,8 @@ const MONTHS_IN_YEAR = 12;
 export interface YouPrefill {
   birthYear: number | null;
   sex: Sex | null;
+  birthMonth?: number | null;
+  registerPensionAge?: number | null;
   secondPillarRate: string | null;
   grossMonthly?: string | null;
   secondPillarAmount?: string | null;
@@ -37,12 +41,20 @@ export interface YouPrefill {
   thirdPillarMonthly?: string | null;
   thirdPillarJoined?: ThirdPillarJoined | null;
   kids?: KidsPrefill | null;
+  fundPensions?: FundPensionChoice[];
+}
+
+export interface FundPensionChoice {
+  pillar: 'SECOND' | 'THIRD';
+  startYear: number;
+  startAge: number;
 }
 
 export interface PensionData {
   contributions?: Contribution[];
   sourceFunds?: SourceFund[];
   children?: TulevaChild[];
+  fundPensionStatus?: FundPensionStatus;
 }
 
 export const parseBirthYear = (typed: string): number | null => {
@@ -53,6 +65,11 @@ export const parseBirthYear = (typed: string): number | null => {
 
 export const deriveBirthYear = (dateOfBirth: string): number | null =>
   parseBirthYear(ISO_YEAR.exec(dateOfBirth)?.[1] ?? '');
+
+export const deriveBirthMonth = (dateOfBirth: string): number | null => {
+  const month = Number(ISO_MONTH.exec(dateOfBirth)?.[1]);
+  return month >= 1 && month <= 12 ? month : null;
+};
 
 export const deriveSex = (personalCode: string): Sex | null => {
   if (!PERSONAL_CODE.test(personalCode)) {
@@ -72,7 +89,7 @@ export const deriveSecondPillarRate = (user: User): string =>
 export const deriveThirdPillarJoined = (user: User): ThirdPillarJoined => {
   const joinedYear = ISO_YEAR.exec(user.thirdPillarInitDate ?? '')?.[1];
   if (joinedYear === undefined) {
-    return 'none';
+    return 'never';
   }
   return Number(joinedYear) < THIRD_PILLAR_RULES_CHANGE_YEAR ? 'before' : 'after';
 };
@@ -99,10 +116,8 @@ export const deriveGrossMonthly = (
   if (latestMonthAgo > SALARY_PAYMENT_MAX_MONTHS_AGO) {
     return null;
   }
-  const socialTax = payments
-    .filter(({ time }) => monthIndex(time) === latestMonth)
-    .reduce((sum, { socialTaxPortion }) => sum + socialTaxPortion, 0);
-  return roundedEuros(socialTax / SOCIAL_TAX_SHARE_OF_GROSS);
+  const gross = deriveGrossSalary(payments, today);
+  return gross === null ? null : String(gross);
 };
 
 export const deriveThirdPillarMonthly = (
@@ -127,17 +142,31 @@ export const derivePillarAmount = (sourceFunds: SourceFund[], pillar: 2 | 3): st
       .reduce((sum, { price, unavailablePrice }) => sum + price + unavailablePrice, 0),
   );
 
+export const deriveFundPensionChoices = (
+  status: FundPensionStatus,
+  birthYear: number | null,
+): FundPensionChoice[] =>
+  status.fundPensions.flatMap(({ pillar, startDate }) => {
+    const startYear = parseInt(startDate.slice(0, 4), 10);
+    return birthYear === null || Number.isNaN(startYear)
+      ? []
+      : [{ pillar, startYear, startAge: startYear - birthYear }];
+  });
+
 export const derivePrefill = (
   user: User,
-  { contributions = [], sourceFunds = [], children }: PensionData = {},
+  { contributions = [], sourceFunds = [], children, fundPensionStatus }: PensionData = {},
   today: Date = new Date(),
 ): YouPrefill => {
   const thirdPillarAmount = derivePillarAmount(sourceFunds, 3);
   const thirdPillarJoined = deriveThirdPillarJoined(user);
-  const hasThirdPillarMoneyWithoutJoinDate = thirdPillarJoined === 'none' && thirdPillarAmount;
+  const hasThirdPillarMoneyWithoutJoinDate = thirdPillarJoined === 'never' && thirdPillarAmount;
+  const birthYear = deriveBirthYear(user.dateOfBirth);
   return {
-    birthYear: deriveBirthYear(user.dateOfBirth),
+    birthYear,
     sex: deriveSex(user.personalCode),
+    birthMonth: deriveBirthMonth(user.dateOfBirth),
+    registerPensionAge: user.retirementAge ?? null,
     secondPillarRate: deriveSecondPillarRate(user),
     grossMonthly: deriveGrossMonthly(contributions, today),
     secondPillarAmount: derivePillarAmount(sourceFunds, 2),
@@ -145,5 +174,6 @@ export const derivePrefill = (
     thirdPillarMonthly: deriveThirdPillarMonthly(contributions, today),
     thirdPillarJoined: hasThirdPillarMoneyWithoutJoinDate ? null : thirdPillarJoined,
     kids: deriveKidsPrefill(children, contributions, today),
+    fundPensions: fundPensionStatus ? deriveFundPensionChoices(fundPensionStatus, birthYear) : [],
   };
 };

@@ -31,6 +31,23 @@ export function projectedRetirementAge(birthYear: number): number {
   return Math.round(65 + (linkedYears * RETIREMENT_AGE_LINK_MONTHS_PER_YEAR) / 12);
 }
 
+// Paindlik pension: the state pension can start up to five years before the
+// statutory age or be deferred past it, so the slider runs statutory ±5.
+export const PAINDLIK_PENSION_YEARS = 5;
+
+// The register's retirement age is the statutory floor, established only two
+// years ahead. For young savers the life-expectancy link will have raised it
+// well past 65 by the time they get there, so start from the higher of the
+// register's age and our projection for their birth year, kept inside the
+// paindlik pension window.
+export function startingRetirementAge(registerAge: number | undefined, birthYear: number): number {
+  const statutoryAge = registerAge || RETIREMENT_AGE_DEFAULT;
+  const projectedAge = Number.isFinite(birthYear)
+    ? projectedRetirementAge(birthYear)
+    : statutoryAge;
+  return Math.min(Math.max(statutoryAge, projectedAge), statutoryAge + PAINDLIK_PENSION_YEARS);
+}
+
 // ONE life-expectancy model, used for the payout default, the tax-free bar and the
 // renewal strategies alike, so the page never quotes two different "remaining
 // lifetime" numbers.

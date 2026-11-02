@@ -1,5 +1,5 @@
 import { retirementYears } from './engine/pension';
-import { ageTense, hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
+import { ageTense, hasReachedAge, hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
 
 const noPrefill = { birthYear: 1980, sex: null, secondPillarRate: null };
@@ -10,7 +10,12 @@ const youWith = (changes: Partial<ReturnType<typeof initialAnswers>>) => ({
 const planAt65 = (changes: Partial<ReturnType<typeof initialAnswers>> = {}) =>
   toStepPlanInput(youWith({ pensionAgeYears: '65', ...changes }));
 
-const FIVE_CHILDREN = { kidsAdded: true, kidsCount: '5', kidsEarlyUser: 'me' as const };
+const FIVE_CHILDREN = {
+  kidsAdded: true,
+  kidsCount: '5',
+  kidsBirthYears: ['1990', '1992', '1994', '1996', '1998'],
+  kidsEarlyUser: 'me' as const,
+};
 
 describe('planAges', () => {
   describe('payout age', () => {
@@ -71,16 +76,26 @@ describe('planAges', () => {
     });
 
     it('counts only the monthly payment when not joined yet, because the balance is ignored', () => {
-      expect(hasThirdPillarFor({ thirdPillarJoined: 'none', thirdPillarAmount: '500' })).toBe(
+      expect(hasThirdPillarFor({ thirdPillarJoined: 'plan', thirdPillarAmount: '500' })).toBe(
         false,
       );
-      expect(hasThirdPillarFor({ thirdPillarJoined: 'none', thirdPillarMonthly: '30' })).toBe(true);
+      expect(hasThirdPillarFor({ thirdPillarJoined: 'plan', thirdPillarMonthly: '30' })).toBe(true);
+    });
+
+    it('is false for a saver who does not plan to join, even with a payment typed before', () => {
+      expect(
+        hasThirdPillarFor({
+          thirdPillarJoined: 'never',
+          thirdPillarMonthly: '30',
+          thirdPillarAmount: '500',
+        }),
+      ).toBe(false);
     });
 
     it('is false when the saver opens the III pillar only after the payout age', () => {
       expect(
         hasThirdPillarFor({
-          thirdPillarJoined: 'none',
+          thirdPillarJoined: 'plan',
           thirdPillarMonthly: '30',
           thirdPillarOpenAge: '65',
         }),
@@ -89,7 +104,7 @@ describe('planAges', () => {
 
     it('counts a pillar opened after the payout age when asked at the pension age', () => {
       const you = youWith({
-        thirdPillarJoined: 'none',
+        thirdPillarJoined: 'plan',
         thirdPillarMonthly: '30',
         thirdPillarOpenAge: '63',
       });
@@ -102,11 +117,26 @@ describe('planAges', () => {
     it('is true when the saver opens the III pillar before the payout age', () => {
       expect(
         hasThirdPillarFor({
-          thirdPillarJoined: 'none',
+          thirdPillarJoined: 'plan',
           thirdPillarMonthly: '30',
           thirdPillarOpenAge: '50',
         }),
       ).toBe(true);
     });
+  });
+});
+
+describe('whether the saver has reached an age by a date', () => {
+  const midOctober2026 = new Date(2026, 9, 15);
+
+  it('counts the birth month', () => {
+    expect(hasReachedAge({ birthYear: 1961, birthMonth: 12 }, 65, midOctober2026)).toBe(false);
+    expect(hasReachedAge({ birthYear: 1961, birthMonth: 10 }, 65, midOctober2026)).toBe(true);
+    expect(hasReachedAge({ birthYear: 1961, birthMonth: 1 }, 65, midOctober2026)).toBe(true);
+  });
+
+  it('takes January when the birth month is not known', () => {
+    expect(hasReachedAge({ birthYear: 1961 }, 65, midOctober2026)).toBe(true);
+    expect(hasReachedAge({ birthYear: 1962 }, 65, midOctober2026)).toBe(false);
   });
 });

@@ -4,7 +4,6 @@ import {
   CHILD_II_MONTHLY,
   childSupplement,
   civilIncrease,
-  decisionMap,
   DEFERRAL_INCREASE,
   EARLY_DECREASE,
   GENERAL_ALLOWANCE,
@@ -19,6 +18,7 @@ import {
   SimulationResult,
   SimulationRow,
   WAGE_GROWTH,
+  SCENARIOS,
 } from './pension';
 import { keepGrowingScenario, lifeTable, scenarioB, scenarioD, within } from './testUtils';
 
@@ -160,32 +160,11 @@ describe('pension rules', () => {
       expect(firstStatePensionRow(result).i1g).toBeCloseTo(1200 * (1 + 0.0793), within(1e-6));
     });
 
-    it('opens third pillar preferential withdrawals at 55 for savers who joined before 2021', () => {
-      const texts = decisionMap({ ...base, p3: 10000, p3Before2021: true }).map(({ text }) => text);
-
-      expect(texts).toEqual(expect.arrayContaining([expect.stringContaining('Alates 55')]));
-    });
-
-    it('opens third pillar preferential withdrawals at 60 for savers who joined in 2021 or later', () => {
-      const texts = decisionMap({ ...base, p3: 10000, p3Before2021: false }).map(
-        ({ text }) => text,
-      );
-
-      expect(texts).toEqual(expect.arrayContaining([expect.stringContaining('Alates 60')]));
-    });
-
-    it('puts the full state pension at the pension age the saver picked', () => {
-      const decisions = decisionMap({ ...base, pensionAgeYears: 67 });
-
-      expect(decisions).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            age: 67,
-            year: base.birthYear + 67,
-            title: 'Riiklik pension täissummas (67 a)',
-          }),
-        ]),
-      );
+    it('keeps no prototype names or descriptions on the payout scenarios', () => {
+      SCENARIOS.forEach((scenario) => {
+        expect(scenario).not.toHaveProperty('name');
+        expect(scenario).not.toHaveProperty('short');
+      });
     });
   });
 

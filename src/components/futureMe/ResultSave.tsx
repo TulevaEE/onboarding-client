@@ -1,19 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Chart } from 'chart.js';
-import { flushSync } from 'react-dom';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { euro } from './amountFormat';
 import { chartRowsOf, chartSeriesOf, tableRowsOf } from './chartData';
 import { SOURCE_LABELS } from './chartSources';
 import { needMonthly } from './expensesAnswers';
-import { ComparisonTable } from './ResultComparison';
 import { ResultContext, resultOf } from './resultAnswers';
 import { markdownOf, markdownTable } from './resultMarkdown';
 
 type SaveFormat = 'markdown' | 'pdf';
 
 const LEFT_OUT_OF_FILE =
-  '.d-print-none, .result-tiles, .result-save, .result-compare, #future-me-chart-table, .result-chart-legend-hint, .result-chart-legend';
+  '.d-print-none, .result-tiles, .result-save, #future-me-chart-table, .result-chart-legend-hint, .result-chart-legend';
 const OBJECT_URL_LIFETIME_MS = 1000;
 const PRINT_CHART_WIDTH = 1000;
 const PRINT_CHART_HEIGHT = 352;
@@ -35,7 +33,7 @@ const incomeTableOf = (intl: IntlShape, context: ResultContext): string => {
   return `**${caption}**\n\n${markdownTable(head, body)}`;
 };
 
-const fileOf = (intl: IntlShape, context: ResultContext, page: Element, printOnly: Element) =>
+const fileOf = (intl: IntlShape, context: ResultContext, page: Element) =>
   `${[
     `# ${intl.formatMessage({ id: 'futureMe.result.save.file.title' })}`,
     `_${intl.formatMessage(
@@ -44,7 +42,6 @@ const fileOf = (intl: IntlShape, context: ResultContext, page: Element, printOnl
     )}_`,
     markdownOf(page, LEFT_OUT_OF_FILE),
     incomeTableOf(intl, context),
-    markdownOf(printOnly, 'h3'),
     '---',
     intl.formatMessage({ id: 'futureMe.result.save.file.footer' }),
   ].join('\n\n')}\n`;
@@ -76,9 +73,7 @@ const openForPrint = (page: Element): (() => void) => {
 
 export const ResultSave = ({ context }: { context: ResultContext }) => {
   const intl = useIntl();
-  const [isSaving, setSaving] = useState(false);
   const ownRef = useRef<HTMLDivElement>(null);
-  const printOnlyRef = useRef<HTMLDivElement>(null);
 
   const restoreAfterPrint = useRef<(() => void) | null>(null);
 
@@ -86,24 +81,21 @@ export const ResultSave = ({ context }: { context: ResultContext }) => {
     const afterPrint = () => {
       restoreAfterPrint.current?.();
       restoreAfterPrint.current = null;
-      setSaving(false);
     };
     window.addEventListener('afterprint', afterPrint);
     return () => window.removeEventListener('afterprint', afterPrint);
   }, []);
 
   const save = (format: SaveFormat) => {
-    flushSync(() => setSaving(true));
     const page = ownRef.current?.closest('section');
     if (format === 'pdf') {
       restoreAfterPrint.current = page ? openForPrint(page) : null;
       window.print();
       return;
     }
-    if (page && printOnlyRef.current) {
-      download(fileOf(intl, context, page, printOnlyRef.current));
+    if (page) {
+      download(fileOf(intl, context, page));
     }
-    setSaving(false);
   };
 
   return (
@@ -131,14 +123,6 @@ export const ResultSave = ({ context }: { context: ResultContext }) => {
           <FormattedMessage id="futureMe.result.save.pdfHint" />
         </span>
       </div>
-      {isSaving && (
-        <div className="result-save-print" ref={printOnlyRef}>
-          <h3 className="h5 section-title mt-4">
-            <FormattedMessage id="futureMe.result.compare.caption" />
-          </h3>
-          <ComparisonTable context={context} captionId="future-me-save-compare-caption" />
-        </div>
-      )}
     </div>
   );
 };

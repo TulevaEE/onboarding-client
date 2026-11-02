@@ -1,9 +1,11 @@
 import { mockUser } from '../../test/backend-responses';
 import { Contribution, SourceFund } from '../common/apiModels';
+import { FundPension } from '../common/apiModels/withdrawals';
 import {
   BIRTH_YEAR_MAX,
   BIRTH_YEAR_MIN,
   deriveBirthYear,
+  deriveFundPensionChoices,
   deriveGrossMonthly,
   derivePillarAmount,
   derivePrefill,
@@ -14,6 +16,15 @@ import {
 } from './prefill';
 
 const TODAY = new Date('2026-10-28T12:00:00Z');
+
+const fundPension = (overrides: Partial<FundPension>): FundPension => ({
+  pillar: 'THIRD',
+  active: true,
+  startDate: '2021-03-01',
+  endDate: null,
+  durationYears: 20,
+  ...overrides,
+});
 
 const secondPillarPayment = (time: string, socialTaxPortion: number): Contribution => ({
   time,
@@ -57,7 +68,7 @@ const fund = (pillar: 2 | 3, price: number, unavailablePrice = 0): SourceFund =>
   price,
   unavailablePrice,
   currency: 'EUR',
-  ongoingChargesFigure: 0.004,
+  ongoingChargesFigure: 0.0028,
   contributions: price,
   subtractions: 0,
   profit: 0,
@@ -114,6 +125,14 @@ describe('sex from the personal code', () => {
 describe('prefill for the You step', () => {
   it('takes the birth year and sex from the user', () => {
     expect(derivePrefill(mockUser)).toMatchObject({ birthYear: 1989, sex: 'M' });
+    expect(derivePrefill({ ...mockUser, retirementAge: 66 }).registerPensionAge).toBe(66);
+  });
+
+  it('takes the birth month from the date of birth, and nothing when there is none', () => {
+    expect(derivePrefill({ ...mockUser, dateOfBirth: '1989-11-05' }).birthMonth).toBe(11);
+    expect(derivePrefill({ ...mockUser, dateOfBirth: '1989-01-01T00:00:00Z' }).birthMonth).toBe(1);
+    expect(derivePrefill({ ...mockUser, dateOfBirth: '' }).birthMonth).toBeNull();
+    expect(derivePrefill({ ...mockUser, dateOfBirth: '1989-13-05' }).birthMonth).toBeNull();
   });
 
   it('leaves out what the user does not tell', () => {
@@ -136,25 +155,59 @@ describe('prefill for the You step', () => {
   });
 });
 
+describe('fund pensions the user has already started', () => {
+  it('names the pillar, the year and the age at the start', () => {
+    const choices = deriveFundPensionChoices({ fundPensions: [fundPension({})] }, 1966);
+
+    expect(choices).toEqual([{ pillar: 'THIRD', startYear: 2021, startAge: 55 }]);
+  });
+
+  it('keeps a fund pension that has already ended', () => {
+    const ended = fundPension({ pillar: 'SECOND', active: false, endDate: '2030-03-01' });
+
+    expect(deriveFundPensionChoices({ fundPensions: [ended] }, 1960)).toEqual([
+      { pillar: 'SECOND', startYear: 2021, startAge: 61 },
+    ]);
+  });
+
+  it('gives nothing without fund pensions or without a birth year', () => {
+    expect(deriveFundPensionChoices({ fundPensions: [] }, 1966)).toEqual([]);
+    expect(deriveFundPensionChoices({ fundPensions: [fundPension({})] }, null)).toEqual([]);
+  });
+
+  it('are part of the prefill', () => {
+    const user = { ...mockUser, dateOfBirth: '1966-05-01' };
+
+    expect(
+      derivePrefill(user, { fundPensionStatus: { fundPensions: [fundPension({})] } }).fundPensions,
+    ).toEqual([{ pillar: 'THIRD', startYear: 2021, startAge: 55 }]);
+  });
+});
+
 describe('III pillar join from the user', () => {
   it.each([
     ['2019-01-01', 'before'],
     ['2020-12-31', 'before'],
     ['2021-01-01', 'after'],
-    [null, 'none'],
+    [null, 'never'],
   ] as const)('reads %p as %p', (thirdPillarInitDate, joined) => {
     expect(deriveThirdPillarJoined({ ...mockUser, thirdPillarInitDate })).toBe(joined);
   });
 });
 
 describe('gross salary from the II pillar contributions', () => {
-  it('is the social tax part of the latest month divided by 4%', () => {
+  it('takes the typical month, so a bonus month does not raise the salary', () => {
     const contributions = [
+      secondPillarPayment('2026-07-10T08:00:00Z', 80),
       secondPillarPayment('2026-08-10T08:00:00Z', 80),
-      secondPillarPayment('2026-09-10T08:00:00Z', 100),
+      secondPillarPayment('2026-09-10T08:00:00Z', 200),
     ];
 
-    expect(deriveGrossMonthly(contributions, TODAY)).toBe('2500');
+    expect(deriveGrossMonthly(contributions, TODAY)).toBe('2000');
+  });
+
+  it('rounds down to a thousand, so the salary is never above the real one', () => {
+    expect(deriveGrossMonthly([secondPillarPayment('2026-09-10', 116)], TODAY)).toBe('2000');
   });
 
   it('adds up the payments of several employers in the same month', () => {

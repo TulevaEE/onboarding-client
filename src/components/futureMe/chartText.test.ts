@@ -2,9 +2,10 @@ import { createIntl } from 'react-intl';
 import translations from '../translations';
 import { ChartRow } from './chartData';
 import { Cover } from './chartPoints';
-import { announcementOf, eventTextOf } from './chartText';
+import { announcementOf, axisAmountOf, eventTextOf } from './chartText';
 
 const intl = createIntl({ locale: 'et', messages: translations.et });
+const englishIntl = createIntl({ locale: 'en', messages: translations.en });
 
 const rowWith = (changes: Partial<ChartRow>): ChartRow => ({
   age: 70,
@@ -13,7 +14,9 @@ const rowWith = (changes: Partial<ChartRow>): ChartRow => ({
   firstPillar: 700,
   specialPension: 0,
   secondPillar: 0,
+  secondPillarTaxed: 0,
   thirdPillar: 0,
+  thirdPillarTaxed: 0,
   deposit: 0,
   costs: 800,
   shortfall: 0,
@@ -65,7 +68,7 @@ describe('chartText', () => {
         layers,
         coverOfRow(rowWith({ surplus: 200 })),
       ),
-    ).toMatch(/II\ssammas 300\s€, kulud 800\s€, üle jääb 200\s€\.$/);
+    ).toMatch(/II\ssammas \(tulumaksuvaba\) 300\s€, kulud 800\s€, üle jääb 200\s€\.$/);
   });
 
   it('reads out how much is missing without a hidden layer and names the layer', () => {
@@ -84,7 +87,7 @@ describe('chartText', () => {
     };
 
     expect(announcementOf(intl, rowWith({}), [], layers, cover)).toMatch(
-      /puudu 300\s€, peidetud kihtideta: II\ssammas ja Hoiuselt\.$/,
+      /puudu 300\s€, peidetud kihtideta: II\ssammas \(tulumaksuvaba\) ja Hoiuselt\.$/,
     );
   });
 
@@ -117,6 +120,30 @@ describe('chartText', () => {
         years: 20,
         next: 'thirdContinues',
       }),
-    ).toMatch(/^II\ssamba fondipension lõpeb \(periood keskmise eluea järgi, 20\sa\), III jätkub$/);
+    ).toMatch(
+      /^II\ssamba väljamaksed lõpevad \(periood keskmise eluea järgi, 20\sa\), III jätkub$/,
+    );
+  });
+});
+
+describe('axisAmountOf', () => {
+  it('keeps amounts under a thousand as they are', () => {
+    expect(axisAmountOf(intl, 950)).toBe('950');
+  });
+
+  it('shortens thousands in Estonian', () => {
+    expect(axisAmountOf(intl, 12500)).toMatch(/^12,5\stuh$/);
+  });
+
+  it('shortens thousands in English', () => {
+    expect(axisAmountOf(englishIntl, 12500)).toBe('12.5K');
+  });
+
+  it('shortens millions instead of counting thousands', () => {
+    expect(axisAmountOf(intl, 1_000_000)).toMatch(/^1\smln$/);
+  });
+
+  it('reads the amounts Chart.js gives as strings', () => {
+    expect(axisAmountOf(intl, '145000')).toMatch(/^145\stuh$/);
   });
 });

@@ -149,7 +149,7 @@ describe('Person account page', () => {
 
   it('renders savings fund section', () => {
     mockSavingsFundBalance = {
-      isin: 'EE0000000000',
+      isin: 'EE0000003283',
       price: 12,
       unavailablePrice: 0,
       activeFund: false,
@@ -158,7 +158,7 @@ describe('Person account page', () => {
       fundManager: { name: 'Tuleva' },
       managementFeePercent: 0.2,
       pillar: null,
-      ongoingChargesFigure: 0.0045,
+      ongoingChargesFigure: 0.0026,
       contributions: 10,
       subtractions: 0,
       profit: 2,
@@ -215,7 +215,7 @@ describe('Person account page', () => {
               price: 0,
               unavailablePrice: 0,
               currency: 'EUR',
-              ongoingChargesFigure: 0.0049,
+              ongoingChargesFigure: 0.0029,
               contributions: 500,
               subtractions: 0,
               profit: 500,
@@ -252,7 +252,7 @@ describe('Person account page', () => {
               price: 0,
               unavailablePrice: 0,
               currency: 'EUR',
-              ongoingChargesFigure: 0.0049,
+              ongoingChargesFigure: 0.0029,
               contributions: 500,
               subtractions: 0,
               profit: 500,

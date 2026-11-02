@@ -11,18 +11,20 @@ import { mockUser } from '../../test/backend-responses';
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: () => ({ data: [], isLoading: false }),
+  useFundPensionStatus: () => ({ data: { fundPensions: [] }, isLoading: false }),
   useSourceFunds: () => ({ data: [], isLoading: false }),
   useRoles: () => ({ data: [], isLoading: false }),
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
 }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
+jest.mock('react-intl', () => jest.requireActual('react-intl'));
 
 const mockUseMe = useMe as jest.MockedFunction<typeof useMe>;
 
-const renderYouStep = () => {
+const renderYouStep = (locale: 'et' | 'en' = 'et') => {
   mockUseMe.mockReturnValue({ data: mockUser, isLoading: false } as ReturnType<typeof useMe>);
   render(
-    <IntlProvider locale="et" messages={translations.et}>
+    <IntlProvider locale={locale} messages={translations[locale]}>
       <FutureMe />
     </IntlProvider>,
   );
@@ -118,9 +120,9 @@ describe('Sina step help buttons', () => {
       /Mida tähendab II\ssamba sissemakse$/,
     ],
     [
-      'second pillar fund',
-      () => screen.getByRole('combobox', { name: /tootlust eeldad II\ssambas/ }),
-      /Mida tähendab „tootlus pärast inflatsiooni“$/,
+      'second pillar return',
+      () => screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(II\ssammas\)$/ }),
+      /Mida tähendab eeldatav tootlus$/,
     ],
     [
       'third pillar joined',
@@ -128,14 +130,19 @@ describe('Sina step help buttons', () => {
       /Miks on oluline, millal III\ssambaga liitusid$/,
     ],
     [
+      'third pillar return',
+      () => screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(III\ssammas\)$/ }),
+      /Mida tähendab eeldatav tootlus$/,
+    ],
+    [
       'third pillar monthly',
       () => screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }),
       /Kuidas III\ssamba sissemakse arvutuses muutub$/,
     ],
     [
-      'number of kids',
-      () => screen.getByRole('spinbutton', { name: /Mitu last/ }),
-      /Keda loetakse lapse kasvatajaks$/,
+      'kids supplement',
+      () => screen.getByRole('combobox', { name: /Kes saab pensionilisa/ }),
+      /Mis on pensionilisa ja kuidas seda jagada$/,
     ],
     [
       'hazard list',
@@ -163,6 +170,140 @@ describe('Sina step help buttons', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 
+  it('explains a zero, a negative and a high return, and that the past promises nothing', () => {
+    renderYouStep();
+    const returnField = screen.getByRole('combobox', {
+      name: /^Eeldatav tootlus aastas \(II\ssammas\)$/,
+    });
+
+    userEvent.click(helpButtonBeside(returnField, '.col-12', /Mida tähendab eeldatav tootlus$/));
+
+    const dialog = screen.getByRole('dialog');
+    expect(dialog).toHaveTextContent(/0%:.*Alla 2%:.*Üle 2%:/);
+    expect(dialog).toHaveTextContent('Varasem tootlus ei taga tulevast tootlust.');
+    expect(dialog).not.toHaveTextContent(/Miks kõige rohkem 4%/);
+  });
+
+  const openReturnHelp = (pillar: 'II' | 'III') => {
+    renderYouStep();
+    userEvent.click(
+      helpButtonBeside(
+        screen.getByRole('combobox', {
+          name: new RegExp(`^Eeldatav tootlus aastas \\(${pillar}\\ssammas\\)$`),
+        }),
+        '.col-12',
+        /Mida tähendab eeldatav tootlus$/,
+      ),
+    );
+    return screen.getByRole('dialog');
+  };
+
+  it.each(['II', 'III'] as const)(
+    'describes the fund types by what they hold and cost beside the %s pillar return, promising none of them',
+    (pillar) => {
+      const dialog = openReturnHelp(pillar);
+
+      expect(within(dialog).getByText('Indeksfond')).toBeInTheDocument();
+      expect(within(dialog).getByText('Aktiivse juhtimisega fond')).toBeInTheDocument();
+      expect(within(dialog).getByText('Aktsiafond')).toBeInTheDocument();
+      expect(within(dialog).getByText('Võlakirjafond')).toBeInTheDocument();
+      expect(within(dialog).getByText('Segafond')).toBeInTheDocument();
+      expect(within(dialog).getByText(/jälgib turuindeksit/)).toBeInTheDocument();
+      expect(within(dialog).queryByText(/parim|alati/i)).not.toBeInTheDocument();
+      expect(within(dialog).queryByText(/pank/i)).not.toBeInTheDocument();
+    },
+  );
+
+  it.each([
+    ['II', 'https://www.pensionikeskus.ee/statistika/ii-sammas/'],
+    ['III', 'https://www.pensionikeskus.ee/statistika/iii-sammas/'],
+  ] as const)('links the %s pillar fund returns and fees on Pensionikeskus', (pillar, href) => {
+    const dialog = openReturnHelp(pillar);
+
+    expect(
+      within(dialog).getByRole('link', {
+        name: new RegExp(`^Pensionikeskus: ${pillar}\\ssamba fondide tootlused ja tasud`),
+      }),
+    ).toHaveAttribute('href', href);
+  });
+
+  it('links the sources without a checked date', () => {
+    const dialog = openReturnHelp('II');
+
+    expect(dialog).not.toHaveTextContent(/kontrollitud/);
+  });
+
+  it('names the filters as the Estonian Pensionikeskus page shows them', () => {
+    const dialog = openReturnHelp('III');
+
+    expect(
+      within(dialog).getByText(
+        /„Indeksfondid“, „Aktiivse juhtimisega fondid“ ja „Riskitase“ \(Madal, Keskmine, Kõrge\)/,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('explains the fund types and links Pensionikeskus in English too', () => {
+    renderYouStep('en');
+    userEvent.click(
+      screen.getAllByRole('button', { name: /What does the expected return mean/ })[1],
+    );
+    const dialog = screen.getByRole('dialog');
+
+    expect(within(dialog).getByText('Index fund')).toBeInTheDocument();
+    expect(within(dialog).getByText('Actively managed fund')).toBeInTheDocument();
+    expect(dialog).not.toHaveTextContent(/checked/);
+    expect(
+      within(dialog).getByText(/Pensionikeskus returns are also before inflation/),
+    ).toBeInTheDocument();
+    expect(
+      within(dialog).getByText(
+        /“Index funds”, “Actively managed funds” and “Risk level” \(Low, Medium, High\)/,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      within(dialog).getByRole('link', {
+        name: /^Pensionikeskus: II\spillar fund returns and fees/,
+      }),
+    ).toHaveAttribute(
+      'href',
+      'https://www.pensionikeskus.ee/en/statistics/ii-pillar/funded-pension-daily-statistics/',
+    );
+    expect(
+      within(dialog).getByRole('link', {
+        name: /^Pensionikeskus: III\spillar fund returns and fees/,
+      }),
+    ).toHaveAttribute(
+      'href',
+      'https://www.pensionikeskus.ee/en/statistics/iii-pillar/suppl-funded-pension-daily-statistics/',
+    );
+  });
+
+  it('says a Pensionikeskus return can be chosen as it is, as the calculation takes the inflation off', () => {
+    const dialog = openReturnHelp('III');
+
+    expect(
+      within(dialog).getByText(/Pensionikeskuse tootlused on samuti enne inflatsiooni/),
+    ).toBeInTheDocument();
+    expect(within(dialog).getByText(/Arvutus lahutab sellest ise 2%/)).toBeInTheDocument();
+    expect(within(dialog).queryByText(/lahuta umbes 2%/)).not.toBeInTheDocument();
+  });
+
+  it('says the III pillar money already saved follows the chosen return, without quoting a default', () => {
+    renderYouStep();
+    const monthlyField = screen.getByRole('spinbutton', {
+      name: /Kui palju maksad III\ssambasse kuus/,
+    });
+
+    userEvent.click(
+      helpButtonBeside(monthlyField, '.col-12', /Kuidas III\ssamba sissemakse arvutuses muutub$/),
+    );
+
+    expect(screen.getByRole('dialog')).toHaveTextContent(
+      'See puudutab ainult uut sissemakset: sambas olev raha kasvab valitud tootluse võrra.',
+    );
+  });
+
   it('puts the pillars explanation beside the second pillar and work title', () => {
     renderYouStep();
     const heading = screen.getByRole('heading', { name: /^Töö ja II\ssammas$/ });
@@ -188,6 +329,17 @@ describe('Sina step help buttons', () => {
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 
+  it('offers the civil servant explanation once, beside its checkbox and not again beside the years', () => {
+    renderYouStep();
+    addEverything();
+
+    expect(
+      screen.getAllByRole('button', {
+        name: /Kes saab ametniku teenistusstaaži eest pensioni suurendust$/,
+      }),
+    ).toHaveLength(1);
+  });
+
   const optionalSectionHelp: [string, string, RegExp][] = [
     ['kids', 'Lapsed', /Kuidas lapsed pensioni mõjutavad$/],
     [
@@ -209,6 +361,22 @@ describe('Sina step help buttons', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     },
   );
+
+  it('says in the special cases table that Elukaar adds the civil servant increase itself', () => {
+    renderYouStep();
+    addEverything();
+    const heading = screen.getByRole('heading', { name: 'Tööga seotud erijuhud' });
+
+    userEvent.click(
+      helpButtonBeside(heading, '.you-section-head', /Millised tööga seotud erijuhud/),
+    );
+    const civilRow = within(screen.getByRole('dialog')).getByRole('row', {
+      name: /^Ametnik enne 2013/,
+    });
+
+    expect(civilRow).toHaveTextContent(/Tulevane Mina lisab selle riiklikule pensionile ise/);
+    expect(civilRow).not.toHaveTextContent(/Sotsiaalkindlustusameti prognoosi/);
+  });
 
   it('puts the early retirement explanation beside its field', () => {
     renderYouStep();
@@ -237,7 +405,24 @@ describe('Sina step help buttons', () => {
     expect(within(dialog).queryByText(/veel ei arvesta/)).not.toBeInTheDocument();
   });
 
-  it('tells what the prefilled state pension is and where to check it', () => {
+  it('tells that a child without a birth year is not counted, as the child block does', () => {
+    renderYouStep();
+    const dialog = openKidsHelp();
+
+    expect(within(dialog).getByText(/Ilma sünniaastata last ei arvesta\./)).toBeInTheDocument();
+    expect(within(dialog).queryByText(/loeme last alati kasvatatuna/)).not.toBeInTheDocument();
+  });
+
+  it('does not call the state pension an SKA forecast in the salary explanation, as the state pension is the average', () => {
+    renderYouStep();
+    const salaryField = screen.getByRole('spinbutton', { name: /Kui suur on sinu brutopalk/ });
+
+    userEvent.click(helpButtonBeside(salaryField, '.col-12', /Kuidas palk arvutuses muutub$/));
+
+    expect(within(screen.getByRole('dialog')).queryByText(/prognoos/)).not.toBeInTheDocument();
+  });
+
+  it('says the prefilled state pension is the average, not a forecast, and where to check it', () => {
     renderYouStep();
     const stateField = screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ });
 
@@ -245,12 +430,66 @@ describe('Sina step help buttons', () => {
     const dialog = screen.getByRole('dialog');
 
     expect(
-      within(dialog).getByText(/riikliku pensioni arvutuslikku prognoosi/),
+      within(dialog).getByText(/See on keskmine vanaduspension 2026\.\saastal/),
     ).toBeInTheDocument();
-    expect(within(dialog).getByText(/keskmist vanaduspensioni 2026\.\saastal/)).toBeInTheDocument();
+    expect(
+      within(dialog).getByText(/See ei ole sinu riikliku pensioni prognoos/),
+    ).toBeInTheDocument();
+    expect(within(dialog).queryByText(/arvutuslikku prognoosi/)).not.toBeInTheDocument();
     expect(
       within(dialog).getByRole('link', { name: /^Sotsiaalkindlustusameti pensionikalkulaatoris/ }),
     ).toHaveAttribute('href', expect.stringContaining('pension-calculator'));
+    expect(
+      within(dialog).getByRole('link', { name: /^Eesti\.ee pensionikalkulaatoris/ }),
+    ).toHaveAttribute('href', 'https://www.eesti.ee/et/artikkel/pension/pensionikalkulaator');
+  });
+
+  it('tells every saver, in a step of its own, to check the state pension without the children, since Elukaar adds their supplement', () => {
+    renderYouStep();
+    const stateField = screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ });
+
+    userEvent.click(helpButtonBeside(stateField, '.col-12', /Mis on riiklik pension$/));
+    const dialog = screen.getByRole('dialog');
+
+    const childrenStep = within(dialog).getByText(
+      /^Jäta „Pensionilisa“ alla lapsed lisamata: laste pensionilisa lisab Tulevane Mina ise/,
+    );
+    expect(within(dialog).getAllByRole('listitem')).toContain(childrenStep);
+    expect(within(dialog).queryByText(/küsib laste juures üle/)).not.toBeInTheDocument();
+  });
+
+  it('tells, in a step of its own, to check the state pension without the civil servant option, since Elukaar adds the increase', () => {
+    renderYouStep();
+    const stateField = screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ });
+
+    userEvent.click(helpButtonBeside(stateField, '.col-12', /Mis on riiklik pension$/));
+    const dialog = screen.getByRole('dialog');
+
+    const civilServantStep = within(dialog).getByText(
+      /^Jäta „Olen töötanud vähemalt 10\saastat avalikus teenistuses kuni 31\.03\.2018“ välja lülitatuks: ametniku staaži suurenduse lisab Tulevane Mina ise/,
+    );
+    expect(within(dialog).getAllByRole('listitem')).toContain(civilServantStep);
+    expect(within(dialog).queryByText(/Kui olid ametnik enne 2013/)).not.toBeInTheDocument();
+  });
+
+  it('tells that the pension age is projected from Tuleva’s data, not taken from the Social Insurance Board calculator', () => {
+    renderYouStep();
+    const ageField = screen.getByRole('combobox', { name: /Millal on sinu pensioniiga/ });
+
+    userEvent.click(helpButtonBeside(ageField, '.col-12', /Kuidas pensioniiga määratakse$/));
+    const dialog = within(screen.getByRole('dialog'));
+
+    expect(
+      dialog.getByText(
+        /Pensioniiga on prognoositud Tuleva andmete järgi, mitte Sotsiaalkindlustusameti kalkulaatori järgi/,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      dialog.queryByText(/Arvutame nagu Sotsiaalkindlustusameti kalkulaator/),
+    ).not.toBeInTheDocument();
+    expect(
+      dialog.queryByText(/kui Sotsiaalkindlustusameti kalkulaator näitab/),
+    ).not.toBeInTheDocument();
   });
 
   it('writes out the Social Insurance Board self-service in the pension age explanation', () => {
@@ -271,7 +510,7 @@ describe('Sina step help buttons', () => {
 
     const dialog = openKidsHelp();
 
-    expect(dialog).toHaveTextContent(/5\saastat varem pensionile minnes „60\sa sambad“/);
+    expect(dialog).toHaveTextContent(/5\saastat varem pensionile minnes samm „sambad“/);
   });
 
   it('dates the child supplement from children born in 1991, as the Social Insurance Board does', () => {
@@ -289,16 +528,19 @@ describe('Sina step help buttons', () => {
 
     const dialog = openHazardHelp();
 
-    expect(dialog).toHaveTextContent(/Elukaar kontrollib ainult nimekirja tööaastaid/);
+    expect(dialog).toHaveTextContent(/Tulevane Mina kontrollib ainult nimekirja tööaastaid/);
     expect(dialog).not.toHaveTextContent(/Elukaar tingimusi ei kontrolli/);
   });
 
-  it('tells in the hazardous work explanation that the underground work supplement is not in the calculation', () => {
+  it('tells in the hazardous work explanation that underground work adds a supplement but no earlier pension', () => {
     renderYouStep();
 
     const dialog = openHazardHelp();
 
-    expect(dialog).toHaveTextContent(/allmaatöö[^.]*arvutus veel ei arvesta/i);
+    expect(dialog).not.toHaveTextContent(/arvutus veel ei arvesta/);
+    expect(dialog).toHaveTextContent(/Allmaatöö aasta lisab pensionile veel 21,9% aastahindest/);
+    expect(dialog).toHaveTextContent(/varem pensionile allmaatöö ei vii/);
+    expect(dialog).toHaveTextContent(/Alates 2015\.\sa on tingimused naistel ja meestel samad/);
   });
 
   const socialInsuranceBoardPages: [string, () => HTMLElement, RegExp, string][] = [
@@ -325,12 +567,25 @@ describe('Sina step help buttons', () => {
     },
   );
 
-  it('tells a rescuer until which year of retirement the calculation counts the service increase', () => {
+  it('tells a rescuer the increase is certain for service complete by February 2043 and that later service is not added', () => {
     renderYouStep();
 
-    expect(openRescueHelp()).toHaveTextContent(
-      /Elukaar arvestab suurendust, kui lähed pensionile hiljemalt 2042\.\saastal/,
+    const help = openRescueHelp();
+
+    expect(help).toHaveTextContent(
+      /Suurendus on kindel, kui sul on päästeteenistuse staaž 28\.02\.2043 täis/,
     );
+    expect(help).toHaveTextContent(/hilisemat juurdetulevat staaži ta ei lisa/);
+  });
+
+  it('tells a rescuer how the increase combines with the children’s supplement and the deferral, and that the allowance does not rise with work', () => {
+    renderYouStep();
+
+    const help = openRescueHelp();
+
+    expect(help).toHaveTextContent(/suurendus korrutub pensioniga, nagu laste pensionilisa/);
+    expect(help).toHaveTextContent(/korrutub päästja suurendus ka edasilükkamise suurendusega/);
+    expect(help).toHaveTextContent(/Toetus ei tõuse töö tõttu, tööaastad lisanduvad pensionile/);
   });
 
   const threeChildrenExample: [string, () => HTMLElement][] = [
@@ -359,6 +614,19 @@ describe('Sina step help buttons', () => {
     expect(
       within(dialog).getByRole('link', { name: /^Sotsiaalkindlustusameti pensionikalkulaator/ }),
     ).toHaveAttribute('href', expect.stringContaining('pension-calculator'));
+  });
+
+  it('says Tulevane Mina does not ask the pension service, which limits the flexible years, and where to find it', () => {
+    renderYouStep();
+
+    const dialog = openEarlyRetirementHelp();
+
+    expect(dialog).toHaveTextContent(/20\sa staaži korral 1 aasta/);
+    expect(dialog).toHaveTextContent(/Tulevane Mina staaži ei küsi/);
+    expect(within(dialog).getByRole('link', { name: /^SKA iseteeninduses/ })).toHaveAttribute(
+      'href',
+      expect.stringContaining('iseteenindus.sotsiaalkindlustusamet.ee'),
+    );
   });
 
   it('leaves the field labels as they were for screen readers', () => {

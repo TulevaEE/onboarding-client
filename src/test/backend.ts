@@ -704,7 +704,7 @@ export function pensionAccountStatementBackend(
             name: 'Tuleva World Stocks Pension Fund',
             managementFeeRate: 0.0034,
             pillar: 2,
-            ongoingChargesFigure: 0.0039,
+            ongoingChargesFigure: 0.0028,
             status: 'ACTIVE',
             inceptionDate: '2017-01-01',
             nav: 0.87831,
@@ -746,7 +746,7 @@ export function pensionAccountStatementBackend(
             name: 'Tuleva III Samba Pensionifond',
             managementFeeRate: 0.003,
             pillar: 3,
-            ongoingChargesFigure: 0.0043,
+            ongoingChargesFigure: 0.0029,
             status: 'ACTIVE',
             inceptionDate: '2017-01-01',
             nav: 0.7813, // cross-referenced from fund backend, those values are actually used

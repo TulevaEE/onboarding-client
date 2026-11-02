@@ -18,11 +18,11 @@ const mockSavingsFundBalance: SourceFund = {
   name: 'Tuleva Additional Investment Fund',
   pillar: null,
   managementFeePercent: 0.34,
-  isin: 'EE3600001707',
+  isin: 'EE0000003283',
   price: 1000.5,
   unavailablePrice: 0,
   currency: 'EUR',
-  ongoingChargesFigure: 0.0043,
+  ongoingChargesFigure: 0.0026,
   contributions: 900,
   subtractions: 0,
   profit: 100.5,
@@ -58,7 +58,7 @@ describe(SavingsFundWithdraw, () => {
           ctx.json({
             fund: {
               fundManager: { name: 'Tuleva' },
-              isin: 'EE3600001707',
+              isin: 'EE0000003283',
               name: 'Tuleva Additional Investment Fund',
               managementFeeRate: 0.0034,
               pillar: null,

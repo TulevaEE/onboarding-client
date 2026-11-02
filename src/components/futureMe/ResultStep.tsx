@@ -1,7 +1,9 @@
 import React, { RefObject, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { euro } from './amountFormat';
+import { ProviderDisclaimer } from '../pensionCalculator/ProviderDisclaimer';
+import { euro, signedNumber } from './amountFormat';
+import { assumptionsOf } from './assumptions';
 import { ChapterHead } from './ChapterHead';
 import { DecisionId } from './decisions';
 import { SimulationRow } from './engine/pension';
@@ -10,7 +12,6 @@ import { HelpButton } from './HelpButton';
 import { ResultAdvice } from './ResultAdvice';
 import { ResultAssumptions } from './ResultAssumptions';
 import { ResultChart } from './ResultChart';
-import { nominalReturnsOf } from './nominal';
 import { ResultDecisions } from './ResultDecisions';
 import { ResultFeedback } from './ResultFeedback';
 import { ResultLegacy } from './ResultLegacy';
@@ -24,6 +25,7 @@ import {
   Result,
   ResultContext,
   resultOf,
+  resultScenarioOf,
 } from './resultAnswers';
 import { FutureMeStep } from './steps';
 import { strong } from './richText';
@@ -91,9 +93,10 @@ const savingsAtPensionStartOrToday = ({ rows, pensionStartAge }: Result): Simula
 const paidFromAge = ({ rows }: Result, firstPaid: SimulationRow, startAge: number): number =>
   firstPaid === rows[0] ? startAge : firstPaid.age;
 
-const fullAfterHalfValues = (result: Result, firstPaid: SimulationRow) => {
+const fullAfterHalfValues = (context: ResultContext, result: Result, firstPaid: SimulationRow) => {
   const fullPaid = result.rows.find((row) => row.age === result.p1FullAge);
-  return fullPaid && fullPaid.age > firstPaid.age
+  const isHalfTaken = (resultScenarioOf(context).half ?? 0) > 0;
+  return isHalfTaken && fullPaid && fullPaid.age > firstPaid.age
     ? {
         isHalfFirst: 'yes',
         statePensionFull: euro(fullPaid.i1g),
@@ -102,14 +105,14 @@ const fullAfterHalfValues = (result: Result, firstPaid: SimulationRow) => {
     : { isHalfFirst: 'no' };
 };
 
-const statePensionValues = (result: Result) => {
+const statePensionValues = (context: ResultContext, result: Result) => {
   const firstPaid = result.rows.find((row) => row.i1g > 0.5);
   return firstPaid
     ? {
         hasStatePension: 'yes',
         statePension: euro(firstPaid.i1g),
         statePensionAge: paidFromAge(result, firstPaid, result.p1StartAge),
-        ...fullAfterHalfValues(result, firstPaid),
+        ...fullAfterHalfValues(context, result, firstPaid),
       }
     : { hasStatePension: 'no' };
 };
@@ -135,7 +138,7 @@ const sustainableHelpValues = (context: ResultContext, result: Result) => {
     sustainable: euro(result.sustainable),
     horizonAge: result.horizonAge,
     ...specialPensionValues(context, result),
-    ...statePensionValues(result),
+    ...statePensionValues(context, result),
     isPastPensionAge: isPastPensionAge(result) ? 'yes' : 'no',
     pot: euro(savings.pot),
     hasDeposit: savings.deposit > 0.5 ? 'yes' : 'no',
@@ -234,6 +237,30 @@ const IncomeAtPensionAge = ({ result, need }: { result: Result; need: number }) 
   );
 };
 
+const ReturnAssumption = ({ context }: { context: ResultContext }) => {
+  const percents = assumptionsOf(context).flatMap((assumption) =>
+    'returnPercent' in assumption ? [assumption.returnPercent] : [],
+  );
+  if (percents.length === 0) {
+    return null;
+  }
+  const [second, third] = percents.map(signedNumber);
+  return (
+    <p className="text-pretty">
+      <FormattedMessage
+        id="futureMe.result.returnAssumption"
+        values={{
+          pillars: third === undefined || second === third ? 'one' : 'both',
+          percent: second,
+          second,
+          third,
+          strong,
+        }}
+      />
+    </p>
+  );
+};
+
 export const ResultStep = ({ context, headingRef }: Props) => {
   const result = resultOf(context);
   const [openDecision, setOpenDecision] = useState<DecisionId | null>(null);
@@ -259,14 +286,11 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       >
         <AnswerText result={result} need={needMonthly(context.expenses)} />
       </p>
+      <ReturnAssumption context={context} />
       <ResultAdvice context={context} result={result} onOpenDecision={openAndFocusDecision} />
       <Tiles context={context} result={result} />
       <IncomeAtPensionAge result={result} need={needMonthly(context.expenses)} />
-      <ResultChart
-        result={result}
-        need={needMonthly(context.expenses)}
-        nominalReturns={nominalReturnsOf(context)}
-      />
+      <ResultChart result={result} need={needMonthly(context.expenses)} />
       <ResultLegacy context={context} result={result} />
       <ResultDecisions
         context={context}
@@ -278,6 +302,12 @@ export const ResultStep = ({ context, headingRef }: Props) => {
       <ResultRules context={context} />
       <ResultSave context={context} />
       <ResultFeedback />
+      <div className="mt-4">
+        <ProviderDisclaimer />
+        <p className="form-text mb-2">
+          <FormattedMessage id="futureMe.result.taxNote" />
+        </p>
+      </div>
     </section>
   );
 };

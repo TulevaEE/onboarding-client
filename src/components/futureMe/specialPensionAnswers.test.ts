@@ -35,6 +35,15 @@ describe('specialPensionAnswers', () => {
     expect(specialPensionStartAge(planOf({ specialPensionStartAge: '' }))).toBe(65);
   });
 
+  it('knows a special pension started once the saver reached its start age, counting the birth month', () => {
+    const midOctober2026 = new Date(2026, 9, 15);
+    const startingAt55 = (birthMonth: number) =>
+      planOf({ birthYear: '1971', birthMonth, specialPensionStartAge: '55' });
+
+    expect(isSpecialPensionStarted(startingAt55(3), midOctober2026)).toBe(true);
+    expect(isSpecialPensionStarted(startingAt55(12), midOctober2026)).toBe(false);
+  });
+
   it('knows a special pension that started before the current age', () => {
     expect(isSpecialPensionStarted(planOf({ specialPensionStartAge: '40' }))).toBe(true);
     expect(isSpecialPensionStarted(planOf())).toBe(false);
@@ -92,7 +101,6 @@ describe('specialPensionAnswers', () => {
       kidsAdded: true,
       kidsCount: '1',
       kidsBirthYears: ['2022'],
-      kidsInForecast: 'no' as const,
     };
 
     expect(
@@ -113,11 +121,12 @@ describe('specialPensionAnswers', () => {
       expect(oldAgeFor({ hazardList: 'list1', hazardYears: '10' })).toBeLessThan(700);
     });
 
-    it('lowers the old-age pension further when retiring early with a flexible pension', () => {
+    it('lowers the old-age pension further with a flexible pension that starts before the special pension', () => {
       const threeChildren = {
         kidsAdded: true,
         kidsCount: '3',
         kidsBirthYears: ['2000', '2002', '2004'],
+        specialPensionStartAge: '62',
       };
 
       expect(oldAgeFor({ ...threeChildren, earlyYearsPicked: '5' })).toBeLessThan(

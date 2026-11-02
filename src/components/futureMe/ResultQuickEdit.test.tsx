@@ -8,9 +8,13 @@ import { User } from '../common/apiModels';
 import translations from '../translations';
 import { mockUser } from '../../test/backend-responses';
 
+const chooseReturn = (field: HTMLElement, percent: number) =>
+  userEvent.selectOptions(field, String(percent));
+
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: () => ({ data: [], isLoading: false }),
+  useFundPensionStatus: () => ({ data: { fundPensions: [] }, isLoading: false }),
   useSourceFunds: () => ({ data: [], isLoading: false }),
   useRoles: () => ({ data: [], isLoading: false }),
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
@@ -36,7 +40,8 @@ const typeInto = (field: HTMLElement, text: string) => {
   userEvent.type(field, text);
 };
 
-const trail = () => screen.getByRole('navigation', { name: 'Loo etapid' });
+const trail = () =>
+  screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' });
 
 const fillInYou = () => {
   typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ }), '700');
@@ -61,6 +66,8 @@ const openResultStep = ({ withSpecialPension = false } = {}) => {
   fillInYou();
   if (withSpecialPension) {
     addSpecialPension();
+    userEvent.click(within(trail()).getByRole('button', { name: /^Tulemus,/ }));
+    typeInto(screen.getByRole('spinbutton', { name: /Eripensioni suurus/ }), '800');
   }
   userEvent.click(within(trail()).getByRole('button', { name: /^Tulemus, vaatamata$/ }));
 };
@@ -99,7 +106,7 @@ describe('Result step: quick edit of the assumptions', () => {
   });
 
   describe('the return on the second pillar', () => {
-    it('keeps the fund choices closed until asked for', () => {
+    it('keeps the return choice closed until asked for', () => {
       openResultStep();
 
       expect(toggleIn(assumptionRow(/^II\ssamba tootlus$/))).toHaveAttribute(
@@ -107,7 +114,7 @@ describe('Result step: quick edit of the assumptions', () => {
         'false',
       );
       expect(
-        screen.queryByRole('radio', { name: /konservatiivne võlakirjafond/ }),
+        screen.queryByRole('combobox', { name: /^II\ssamba tootlus$/ }),
       ).not.toBeInTheDocument();
     });
 
@@ -121,27 +128,26 @@ describe('Result step: quick edit of the assumptions', () => {
       ).toBeVisible();
     });
 
-    it('opens the fund choices under the row with the current one checked', () => {
+    it('opens the return choice under the row at the current return', () => {
       openResultStep();
       const row = assumptionRow(/^II\ssamba tootlus$/);
       userEvent.click(toggleIn(row));
 
-      const group = within(row).getByRole('group', { name: /^II\ssamba tootlus$/ });
-      expect(within(group).getAllByRole('radio')).toHaveLength(3);
-      expect(within(group).getAllByRole('radio', { checked: true })).toHaveLength(1);
+      expect(within(row).getByRole('combobox', { name: /^II\ssamba tootlus$/ })).toHaveValue('0');
       expect(toggleIn(row)).toHaveAttribute('aria-expanded', 'true');
     });
 
-    it('recalculates the answer at once when another fund is picked', () => {
+    it('recalculates the answer at once when the return changes', () => {
       openResultStep();
       const tiles = () => screen.getByRole('list', { name: 'Kokkuvõte' }).textContent;
       const before = tiles();
       const row = assumptionRow(/^II\ssamba tootlus$/);
       userEvent.click(toggleIn(row));
 
-      userEvent.click(within(row).getByRole('radio', { name: /konservatiivne võlakirjafond/ }));
+      chooseReturn(within(row).getByRole('combobox'), 5);
 
-      expect(row).toHaveTextContent('Konservatiivne võlakirjafond, 0% aastas pärast inflatsiooni');
+      expect(row).toHaveTextContent('5% aastas');
+      expect(row).not.toHaveTextContent('pärast inflatsiooni');
       expect(tiles()).not.toBe(before);
     });
 
@@ -151,16 +157,17 @@ describe('Result step: quick edit of the assumptions', () => {
       userEvent.click(toggleIn(row));
       userEvent.click(toggleIn(row));
 
-      expect(within(row).queryByRole('radio')).not.toBeInTheDocument();
+      expect(within(row).queryByRole('combobox')).not.toBeInTheDocument();
     });
 
     it('changes the third pillar return on its own row', () => {
       openResultStep();
       const row = assumptionRow(/^III\ssamba tootlus$/);
       userEvent.click(toggleIn(row));
-      userEvent.click(within(row).getByRole('radio', { name: /madala tasuga indeksfond/ }));
+      chooseReturn(within(row).getByRole('combobox'), -1);
 
-      expect(row).toHaveTextContent('Madala tasuga indeksfond, 4% aastas pärast inflatsiooni');
+      expect(row).toHaveTextContent('−1% aastas');
+      expect(row).not.toHaveTextContent('pärast inflatsiooni');
     });
   });
 
@@ -208,18 +215,20 @@ describe('Result step: quick edit of the other decisions', () => {
       const titles = within(screen.getByRole('list', { name: 'Sinu otsused' }))
         .getAllByRole('heading', { level: 4 })
         .map((heading) => heading.textContent);
-      expect(titles[titles.length - 1]).toBe('Fondipension');
+      expect(titles[titles.length - 1]).toBe('Igakuised väljamaksed');
     });
 
     it('says the saver keeps growing the money while no fund pension is started', () => {
       openResultStep();
 
-      expect(decisionRow(/^Fondipension$/)).toHaveTextContent('Sinu valik: Kasvatan edasi');
+      expect(decisionRow(/^Igakuised väljamaksed$/)).toHaveTextContent(
+        'Sinu valik: Kasvatan edasi',
+      );
     });
 
     it('opens the start age and contract under the row without the step heading', () => {
       openResultStep();
-      const row = decisionRow(/^Fondipension$/);
+      const row = decisionRow(/^Igakuised väljamaksed$/);
       userEvent.click(toggleIn(row));
 
       expect(
@@ -232,7 +241,7 @@ describe('Result step: quick edit of the other decisions', () => {
 
     it('shows the chosen start age on the row', () => {
       openResultStep();
-      const row = decisionRow(/^Fondipension$/);
+      const row = decisionRow(/^Igakuised väljamaksed$/);
       userEvent.click(toggleIn(row));
 
       userEvent.selectOptions(
@@ -248,7 +257,7 @@ describe('Result step: quick edit of the other decisions', () => {
 
     it('shows the contract picked under the row', () => {
       openResultStep();
-      const row = decisionRow(/^Fondipension$/);
+      const row = decisionRow(/^Igakuised väljamaksed$/);
       userEvent.click(toggleIn(row));
       userEvent.selectOptions(
         within(row).getByRole('combobox', { name: /Mis vanusest hakkad II\ssambast/ }),
@@ -257,15 +266,26 @@ describe('Result step: quick edit of the other decisions', () => {
 
       userEvent.click(within(row).getByRole('radio', { name: /^Üks leping/ }));
 
-      expect(row).toHaveTextContent('Sinu valik: II sambast alates 70-⁠aastaselt, üks leping');
+      expect(row).toHaveTextContent(
+        /Sinu valik: II sambast alates 70-⁠aastaselt, üks leping kuni \d+-⁠aastaseni/,
+      );
+
+      userEvent.selectOptions(
+        within(row).getByRole('combobox', { name: 'Mis vanuseni väljamaksed kestavad?' }),
+        '97',
+      );
+
+      expect(row).toHaveTextContent(
+        'Sinu valik: II sambast alates 70-⁠aastaselt, üks leping kuni 97-⁠aastaseni',
+      );
     });
 
     it('names the pillar whose fund pension was chosen at the pension age next to the one picked here', () => {
       openResultStep();
       const atPensionAge = decisionRow(/^II\ssammas pensionieas$/);
       userEvent.click(toggleIn(atPensionAge));
-      userEvent.click(within(atPensionAge).getByRole('radio', { name: /^Fondipension/ }));
-      const row = decisionRow(/^Fondipension$/);
+      userEvent.click(within(atPensionAge).getByRole('radio', { name: /^Võtan igakuiselt/ }));
+      const row = decisionRow(/^Igakuised väljamaksed$/);
       userEvent.click(toggleIn(row));
 
       userEvent.selectOptions(
@@ -283,8 +303,8 @@ describe('Result step: quick edit of the other decisions', () => {
       openResultStep();
 
       expect(
-        within(decisionRow(/^Fondipension$/)).getByRole('button', {
-          name: 'Muuda Fondipension',
+        within(decisionRow(/^Igakuised väljamaksed$/)).getByRole('button', {
+          name: 'Muuda Igakuised väljamaksed',
         }),
       ).toBeVisible();
     });
@@ -308,7 +328,7 @@ describe('Result step: quick edit of the other decisions', () => {
       const row = decisionRow(/^Eripension$/);
 
       expect(row).toHaveTextContent(/60\sa/);
-      expect(row).toHaveTextContent('Sinu valik: Summa pole sisestatud');
+      expect(row).toHaveTextContent(/Sinu valik: 800\s€ kuus enne tulumaksu/);
     });
 
     it('changes the amount under the row', () => {
@@ -318,7 +338,7 @@ describe('Result step: quick edit of the other decisions', () => {
 
       typeInto(within(row).getByRole('spinbutton', { name: /Eripensioni suurus/ }), '900');
 
-      expect(row).toHaveTextContent(/Sinu valik: 900\s€ kuus enne maksu/);
+      expect(row).toHaveTextContent(/Sinu valik: 900\s€ kuus enne tulumaksu/);
     });
 
     it('opens without the step heading', () => {

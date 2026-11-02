@@ -1,7 +1,7 @@
 import { initialAge60 } from './age60Answers';
 import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
-import { coversAgeOf, decisionsOf, withDecision } from './decisions';
+import { decisionsOf, withDecision } from './decisions';
 import { initialExpenses } from './expensesAnswers';
 import { ResultContext, resultOf } from './resultAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
@@ -149,14 +149,26 @@ describe('decisions', () => {
       });
     });
 
-    it('starts a fund pension chosen at the payout age at the pension age, as the calculation pays it', () => {
+    it('starts a fund pension chosen at the payout age then, as the calculation pays it', () => {
       const fundAt60 = contextWith({}, { age60: { ...initialAge60(), secondPillar: 'fund' } });
 
       expect(fundPensionOf(fundAt60)).toMatchObject({
-        age: 65,
-        year: 2045,
-        summary: { starts: 'second', secondPillarAge: 65 },
+        age: 60,
+        year: 2040,
+        summary: { starts: 'second', secondPillarAge: 60 },
       });
+    });
+
+    it('starts a fund pension chosen at the payout age while working on after the pension age at the payout age', () => {
+      const fundAt60WorkingUntil67 = contextWith(
+        {},
+        {
+          age60: { ...initialAge60(), secondPillar: 'fund' },
+          age65: { ...initialAge65(), work: 'yes', workUntil: '67' },
+        },
+      );
+
+      expect(fundPensionOf(fundAt60WorkingUntil67)?.age).toBe(60);
     });
 
     it('counts a fund pension chosen at the pension age while the III pillar is left to grow', () => {
@@ -194,6 +206,18 @@ describe('decisions', () => {
       });
     });
 
+    it('names the age until which one contract pays, the average life expectancy by default', () => {
+      const once = (secondPillarEndAge: string) =>
+        contextWith(withThirdPillar, {
+          age65: { ...initialAge65(), secondPillar: 'fund' },
+          age66: { ...initialAge66(), secondPillarContract: 'once', secondPillarEndAge },
+        });
+      const averageEnd = resultOf(once('')).fundPensionContracts.second?.end;
+
+      expect(fundPensionOf(once(''))?.summary).toMatchObject({ secondPillarEndAge: averageEnd });
+      expect(fundPensionOf(once('97'))?.summary).toMatchObject({ secondPillarEndAge: 97 });
+    });
+
     it('starts the fund pension once the work kept on after the pension age ends', () => {
       const workingUntil68 = contextWith(
         {},
@@ -207,12 +231,24 @@ describe('decisions', () => {
     });
 
     it.each([
-      ['a II pillar fund pension chosen at the payout age', {}, { age60: fundAt('secondPillar') }],
-      [
-        'a III pillar fund pension chosen at the payout age',
-        withThirdPillar,
-        { age60: fundAt('thirdPillar') },
-      ],
+      ['II', 'secondPillarContract', 'second', {}, fundAt('secondPillar')],
+      ['III', 'thirdPillarContract', 'third', withThirdPillar, fundAt('thirdPillar')],
+      ['II', 'secondPillarContract', 'second', { birthYear: '1964' }, fundAt('secondPillar')],
+    ] as const)(
+      'lists a %s pillar fund pension chosen at the payout age at the start of its contract in the calculation',
+      (_, contract, pillar, you, age60) => {
+        const context = contextWith(you, {
+          age60,
+          age66: { ...initialAge66(), [contract]: 'once' },
+        });
+
+        expect(fundPensionOf(context)?.age).toBe(
+          resultOf(context).fundPensionContracts[pillar]?.start,
+        );
+      },
+    );
+
+    it.each([
       [
         'a II pillar fund pension chosen at the pension age',
         withThirdPillar,
@@ -258,20 +294,6 @@ describe('decisions', () => {
       const changes = withDecision(contextWith(), 'statePension', 'defer');
 
       expect(changes.age65).toMatchObject({ mode: 'defer', years: 1 });
-    });
-  });
-
-  describe('how long the money lasts', () => {
-    it('is the age the costs stop being covered at', () => {
-      const result = { ...resultOf(contextWith()), coversNeedUntil: 83 };
-
-      expect(coversAgeOf(result)).toBe(83);
-    });
-
-    it('is 100 when the costs are covered for life', () => {
-      const result = { ...resultOf(contextWith()), coversNeedUntil: null };
-
-      expect(coversAgeOf(result)).toBe(100);
     });
   });
 });

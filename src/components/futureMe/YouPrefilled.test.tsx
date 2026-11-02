@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { FutureMe } from './FutureMe';
@@ -13,6 +13,7 @@ jest.mock('../common/apiHooks', () => ({
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
   useMe: jest.fn(),
   useContributions: jest.fn(),
+  useFundPensionStatus: () => ({ data: { fundPensions: [] }, isLoading: false }),
   useSourceFunds: jest.fn(),
 }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
@@ -27,7 +28,7 @@ const secondPillarFund: SourceFund = {
   price: 24586,
   unavailablePrice: 0,
   currency: 'EUR',
-  ongoingChargesFigure: 0.004,
+  ongoingChargesFigure: 0.0028,
   contributions: 24586,
   subtractions: 0,
   profit: 0,
@@ -74,6 +75,26 @@ const prefilledFieldsOnScreen = () => [
 ];
 
 describe('Sina step prefilled fields', () => {
+  it('draws every block of the You step with its line icon, as in the prototype', () => {
+    renderYouStep();
+
+    const blockOf = (title: RegExp) =>
+      screen
+        .getAllByRole('listitem')
+        .find((item) => within(item).queryByRole('heading', { level: 3, name: title }));
+    const iconOf = (title: RegExp) =>
+      within(blockOf(title) as HTMLElement)
+        .getAllByTestId(/^icon-/)[0]
+        .getAttribute('data-testid');
+
+    expect(iconOf(/^Sina$/)).toBe('icon-user');
+    expect(iconOf(/^Riiklik pension$/)).toBe('icon-landmark');
+    expect(iconOf(/^Töö ja II\ssammas$/)).toBe('icon-briefcase');
+    expect(iconOf(/^III\ssammas$/)).toBe('icon-tree');
+    expect(iconOf(/^Lapsed$/)).toBe('icon-users');
+    expect(iconOf(/^Tööga seotud erijuhud$/)).toBe('icon-shield');
+  });
+
   it('marks every field filled from the saver’s data, to the eye and to screen readers', () => {
     renderYouStep();
 
@@ -96,7 +117,7 @@ describe('Sina step prefilled fields', () => {
 
     userEvent.selectOptions(
       screen.getByRole('combobox', { name: /Kas oled III\ssambaga liitunud/ }),
-      'none',
+      'never',
     );
 
     expect(thirdPillarAmountField()).toBeDisabled();

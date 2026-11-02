@@ -11,6 +11,7 @@ import { mockUser } from '../../test/backend-responses';
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: () => ({ data: [], isLoading: false }),
+  useFundPensionStatus: () => ({ data: { fundPensions: [] }, isLoading: false }),
   useSourceFunds: () => ({ data: [], isLoading: false }),
   useRoles: () => ({ data: [], isLoading: false }),
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
@@ -31,7 +32,8 @@ const typeInto = (field: HTMLElement, text: string) => {
   userEvent.type(field, text);
 };
 
-const trail = () => screen.getByRole('navigation', { name: 'Loo etapid' });
+const trail = () =>
+  screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' });
 
 const rateField = () => screen.getByRole('combobox', { name: /Kui palju maksad II\ssambasse/ });
 
@@ -64,17 +66,21 @@ const openAge66Step = (answers: Parameters<typeof fillInYou>[0] = {}) => {
     </IntlProvider>,
   );
   fillInYou(answers);
-  goTo(/^66\+, vaatamata$/);
+  goTo(/^\d+\+\sa, vaatamata$/);
 };
 
 const startField = (pillar: 'II' | 'III') =>
   screen.getByRole('combobox', {
-    name: new RegExp(`Mis vanusest hakkad ${pillar}\\ssambast fondipensioni võtma\\?`),
+    name: new RegExp(`Mis vanusest hakkad ${pillar}\\ssambast igakuiseid väljamakseid saama\\?`),
   });
 const contractGroup = (pillar: 'II' | 'III') =>
-  screen.getByRole('group', { name: new RegExp(`^${pillar}\\ssamba fondipensioni leping$`) });
+  screen.getByRole('group', {
+    name: new RegExp(`^${pillar}\\ssamba igakuiste väljamaksete leping$`),
+  });
 const queryContractGroup = (pillar: 'II' | 'III') =>
-  screen.queryByRole('group', { name: new RegExp(`^${pillar}\\ssamba fondipensioni leping$`) });
+  screen.queryByRole('group', {
+    name: new RegExp(`^${pillar}\\ssamba igakuiste väljamaksete leping$`),
+  });
 
 const setPayoutAtPensionAge = (pillar: 'II' | 'III', choice: string) => {
   goTo(/^65\sa, vaatamata$/);
@@ -85,17 +91,35 @@ const setPayoutAtPensionAge = (pillar: 'II' | 'III', choice: string) => {
       }),
     ).getByRole('radio', { name: new RegExp(choice) }),
   );
-  goTo(/^66\+/);
+  goTo(/^\d+\+\sa/);
 };
 
 describe('Age 66+ step', () => {
+  it('explains why the monthly payout of a new contract every year falls in very old age', () => {
+    openAge66Step();
+    const question = screen
+      .getAllByRole('group')
+      .find((group) =>
+        /^Miks uue lepinguga kuu väljamakse kõrges eas väheneb\?/.test(group.textContent ?? ''),
+      );
+
+    expect(question).toHaveTextContent(/elada jäänud aeg/);
+    expect(question).not.toHaveTextContent(/raha|kuumakse/);
+  });
+
   beforeEach(() => loggedInAs({ dateOfBirth: '1962-01-01' }));
+
+  it('starts at the pension age before a fund pension start is picked', () => {
+    openAge66Step();
+
+    expect(screen.getByText(/^65\+\saastat\s·\salates\s2027\.\sa\s·/)).toBeInTheDocument();
+  });
 
   it('replaces the placeholder with the fund pension start choices', () => {
     openAge66Step();
 
     expect(
-      screen.getByRole('heading', { level: 2, name: 'Pensionipõlv: kuidas raha kestab?' }),
+      screen.getByRole('heading', { level: 2, name: 'Kas kogutud vara kestab?' }),
     ).toBeInTheDocument();
     expect(screen.queryByText('Selle sammu sisu lisandub hiljem.')).not.toBeInTheDocument();
   });
@@ -115,7 +139,9 @@ describe('Age 66+ step', () => {
       openAge66Step();
 
       expect(queryContractGroup('II')).not.toBeInTheDocument();
-      expect(screen.getByText(/Kasvatad edasi, nii et fondipensioni lepingut pole/)).toBeVisible();
+      expect(
+        screen.getByText(/Kasvatad edasi, nii et igakuiste väljamaksete lepingut pole/),
+      ).toBeVisible();
 
       userEvent.click(screen.getByRole('button', { name: /Muuda pensionieas/ }));
 
@@ -128,7 +154,10 @@ describe('Age 66+ step', () => {
       userEvent.selectOptions(startField('II'), '70');
 
       expect(
-        screen.getByRole('heading', { level: 2, name: 'Fondipension algab: mis lepinguga?' }),
+        screen.getByRole('heading', {
+          level: 2,
+          name: 'Igakuised väljamaksed algavad: mis lepinguga?',
+        }),
       ).toBeInTheDocument();
       const contracts = within(contractGroup('II')).getAllByRole('radio');
       expect(contracts).toHaveLength(2);
@@ -136,6 +165,19 @@ describe('Age 66+ step', () => {
         within(contractGroup('II')).getByRole('radio', { name: /^Uus leping igal aastal/ }),
       ).toBeChecked();
       expect(queryContractGroup('III')).not.toBeInTheDocument();
+    });
+
+    it('describes the yearly contract as a payout that lasts longer and shrinks, not one that never runs out', () => {
+      openAge66Step();
+
+      userEvent.selectOptions(startField('II'), '70');
+
+      const yearly = within(contractGroup('II')).getByRole('radio', {
+        name: /^Uus leping igal aastal/,
+      });
+      expect(yearly).toHaveAccessibleDescription(/jagub väljamakseid kauemaks/);
+      expect(yearly).toHaveAccessibleDescription(/kuu väljamakse/);
+      expect(yearly).not.toHaveAccessibleDescription(/kunagi otsa|kuumakse/);
     });
 
     it('asks for the contract of each pillar separately', () => {
@@ -167,7 +209,7 @@ describe('Age 66+ step', () => {
   describe('when a fund pension starts at the pension age', () => {
     it('asks for the contract without asking when it starts', () => {
       openAge66Step();
-      setPayoutAtPensionAge('II', 'Fondipension');
+      setPayoutAtPensionAge('II', 'Võtan igakuiselt');
 
       expect(contractGroup('II')).toBeEnabled();
       expect(
@@ -179,9 +221,9 @@ describe('Age 66+ step', () => {
 
   it('says there is no contract when the pillar was taken out at once', () => {
     openAge66Step();
-    setPayoutAtPensionAge('II', 'Kõik korraga');
+    setPayoutAtPensionAge('II', 'Võtan korraga välja');
 
-    expect(screen.getByText(/Võtsid samba raha korraga välja/)).toBeInTheDocument();
+    expect(screen.getByText(/Võtsid samba vara korraga välja/)).toBeInTheDocument();
     expect(queryContractGroup('II')).not.toBeInTheDocument();
   });
 
@@ -189,7 +231,9 @@ describe('Age 66+ step', () => {
     openAge66Step({ secondPillar: false });
 
     expect(
-      screen.getByText(/II sambas ei ole kogutud midagi, fondipensioni lepingu valik puudub/),
+      screen.getByText(
+        /II sambas ei ole kogutud midagi, igakuiste väljamaksete lepingut valida ei saa/,
+      ),
     ).toBeInTheDocument();
 
     userEvent.click(screen.getByRole('button', { name: /Muuda II\ssamba summat/ }));
@@ -202,6 +246,6 @@ describe('Age 66+ step', () => {
   it('explains the fund pension in collapsed questions', () => {
     openAge66Step();
 
-    expect(screen.getByText('Mis on fondipension?')).toBeInTheDocument();
+    expect(screen.getByText('Mis on igakuised väljamaksed ehk fondipension?')).toBeInTheDocument();
   });
 });

@@ -15,6 +15,7 @@ import { initialSpecialPension } from './specialPensionAnswers';
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: () => ({ data: [], isLoading: false }),
+  useFundPensionStatus: () => ({ data: { fundPensions: [] }, isLoading: false }),
   useSourceFunds: () => ({ data: [], isLoading: false }),
   useRoles: () => ({ data: [], isLoading: false }),
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
@@ -38,7 +39,8 @@ const typeInto = (field: HTMLElement, text: string) => {
   userEvent.type(field, text);
 };
 
-const trail = () => screen.getByRole('navigation', { name: 'Loo etapid' });
+const trail = () =>
+  screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' });
 
 const fillInYou = () => {
   typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ }), '700');
@@ -58,7 +60,7 @@ const openResultStep = () => {
   userEvent.click(within(trail()).getByRole('button', { name: /^Tulemus, vaatamata$/ }));
 };
 
-const ruleList = () => screen.getByRole('list', { name: 'Reeglid ja maksud' });
+const ruleList = () => screen.getByRole('list', { name: 'Reeglid ja tulumaksud' });
 
 const itemTitled = (list: HTMLElement, heading: RegExp) => {
   const item = within(list)
@@ -77,7 +79,7 @@ describe('Result step: rules', () => {
     openResultStep();
 
     expect(
-      screen.getByRole('heading', { level: 3, name: 'Reeglid ja maksud' }),
+      screen.getByRole('heading', { level: 3, name: 'Reeglid ja tulumaksud' }),
     ).toBeInTheDocument();
   });
 
@@ -86,7 +88,11 @@ describe('Result step: rules', () => {
 
     const inheritance = itemTitled(ruleList(), /^Pärimine$/);
     expect(inheritance).toHaveTextContent('Elu lõpus');
-    expect(inheritance).toHaveTextContent(/II ja III samba fondis olev raha/);
+    expect(inheritance).toHaveTextContent(
+      /II ja III samba fondiosakud lähevad pärijatele, ka igakuiste väljamaksete ajal\. Pärija saab fondiosakud tulumaksuvabalt oma pensionikontole\.$/,
+    );
+    expect(inheritance).not.toHaveTextContent('kindlustuspension');
+    expect(inheritance).not.toHaveTextContent('22%');
   });
 
   it('has no rule about the special pension when there is none', () => {
@@ -105,11 +111,13 @@ describe('Result step: rules', () => {
       .find((item) => within(item).queryByRole('heading', { name: /^II\ssammas 60-⁠aastaselt$/ }));
     userEvent.click(within(payoutAtSixty as HTMLElement).getByRole('button', { name: /^Muuda/ }));
     userEvent.click(
-      within(payoutAtSixty as HTMLElement).getByRole('radio', { name: 'Fondipension' }),
+      within(payoutAtSixty as HTMLElement).getByRole('radio', { name: 'Võtan igakuiselt' }),
     );
 
-    const contract = itemTitled(ruleList(), /^Fondipensioni leping/);
-    expect(contract).toHaveTextContent(/II samba fondipensioni leping: Uus leping igal aastal/);
+    const contract = itemTitled(ruleList(), /^Igakuiste väljamaksete leping/);
+    expect(contract).toHaveTextContent(
+      /II samba igakuiste väljamaksete leping: Uus leping igal aastal/,
+    );
   });
 });
 
@@ -123,7 +131,12 @@ describe('Result step: rules that follow from the answers', () => {
 
   it.each([
     {
-      rule: /^Paindlik pension varem/,
+      rule: /^Ametniku staaži suurendus/,
+      context: contextWith({ workAdded: true, isCivilServant: true, civilYears: '20' }),
+      choice: /\+20%/,
+    },
+    {
+      rule: /^Paindlik pension: varem ja väiksem/,
       context: contextWith({ earlyYearsPicked: '3' }),
       choice: /3\sa varem, pension [\d,]+% väiksem/,
     },
@@ -138,7 +151,7 @@ describe('Result step: rules that follow from the answers', () => {
         { workAdded: true, hasSpecialPension: true, specialPensionStartAge: '55' },
         { specialPension: { ...initialSpecialPension(), monthly: '800' } },
       ),
-      choice: /800\s€\skuus enne maksu, alates 55-\u2060aastaselt/,
+      choice: /800\s€\skuus enne tulumaksu, alates 55-\u2060aastaselt/,
     },
   ])('shows what was chosen under $rule', ({ rule, context, choice }) => {
     renderRules(context);
@@ -149,18 +162,11 @@ describe('Result step: rules that follow from the answers', () => {
   describe('child supplement', () => {
     const grownChildren = { kidsAdded: true, kidsCount: '2', kidsBirthYears: ['1990', '1992'] };
 
-    it.each([
-      { inForecast: 'no', choice: /^Sinu valik: \+\d+\s€\skuus$/ },
-      { inForecast: 'yes', choice: /^Sinu valik: \+\d+\s€\skuus \(prognoosis juba sees\)$/ },
-      {
-        inForecast: 'unknown',
-        choice: /^Sinu valik: \+\d+\s€\skuus \(ei arvestatud: ei tea, kas prognoosis on\)$/,
-      },
-    ])('says whether it is counted when the forecast is $inForecast', ({ inForecast, choice }) => {
-      renderRules(contextWith({ ...grownChildren, kidsInForecast: inForecast as 'no' }));
+    it('shows the supplement as counted, with no note about the state pension forecast', () => {
+      renderRules(contextWith(grownChildren));
 
       const rule = itemTitled(ruleList(), /^Laste pensionilisa$/);
-      expect(within(rule).getByText(choice)).toBeInTheDocument();
+      expect(within(rule).getByText(/^Sinu valik: \+\d+\s€\skuus$/)).toBeInTheDocument();
       expect(rule).toHaveTextContent(/Eripensionile lisa ei lisata/);
     });
 

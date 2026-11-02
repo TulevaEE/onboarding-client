@@ -16,7 +16,7 @@ const MIN_LEFT_OVER = 1000;
 const NOTICEABLE_SHORTFALL = 0.5;
 
 export type Legacy =
-  | { kind: 'shortfall'; isSecondPillarLumpSum: boolean; secondPillarReturn: number }
+  | { kind: 'shortfall'; isGrowingSecondPillarSuggested: boolean; secondPillarReturn: number }
   | {
       kind: 'surplus';
       medianAge: number;
@@ -46,7 +46,7 @@ export const legacyOf = (context: ResultContext, result: Result): Legacy => {
   if (left < MIN_LEFT_OVER || isCoverageOverByMedianAge) {
     return {
       kind: 'shortfall',
-      isSecondPillarLumpSum: resultScenarioOf(context).id === 'A',
+      isGrowingSecondPillarSuggested: resultScenarioOf(context).id === 'A' && input.realReturn >= 0,
       secondPillarReturn: input.realReturn,
     };
   }

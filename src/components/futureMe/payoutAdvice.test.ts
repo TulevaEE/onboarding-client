@@ -27,6 +27,8 @@ const contextWith = (
     firstPillarMonthly: '700',
     grossMonthly: '2000',
     secondPillarAmount: '10000',
+    secondPillarReturnPercent: 4,
+    thirdPillarReturnPercent: 4,
     ...changes,
   };
   return {
@@ -94,6 +96,17 @@ describe('payoutAdvice', () => {
         context: contextWith(
           {},
           { ...comfortable, age65: { ...initialAge65(), secondPillar: 'lump' } },
+        ),
+      },
+      {
+        chosen: 'one fund pension contract until 95',
+        context: contextWith(
+          { secondPillarAmount: '40000' },
+          {
+            ...comfortable,
+            age65: fundPension,
+            age66: { ...initialAge66(), secondPillarContract: 'once', secondPillarEndAge: '95' },
+          },
         ),
       },
       {
@@ -239,6 +252,14 @@ describe('payoutAdvice', () => {
       );
     });
 
+    it('is the payout age step when the contract was chosen there, as the 66+ step is left out', () => {
+      const context = contextWith({}, { age60: { ...initialAge60(), secondPillar: 'fund' } });
+
+      expect(stepToChoose(how({ kind: 'contract', atPayoutAge: true }), context)).toBe(
+        FutureMeStep.AGE_60,
+      );
+    });
+
     it('is the pension age step when the fund pension is chosen at the payout age and only the deferral is left', () => {
       const context = contextWith(
         { secondPillarAmount: '30000' },
@@ -289,8 +310,8 @@ describe('payoutAdvice', () => {
 
       expect(tipFor(context)).toMatchObject({
         from: 65,
-        grow: 1660,
-        mine: 1610,
+        grow: 1650,
+        mine: 1600,
         decision: 'secondPillarAtPensionAge',
       });
       expect(tipFor(context)?.average).toBeGreaterThan(1000);

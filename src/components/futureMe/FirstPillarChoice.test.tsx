@@ -11,6 +11,7 @@ import { mockUser } from '../../test/backend-responses';
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: () => ({ data: [], isLoading: false }),
+  useFundPensionStatus: () => ({ data: { fundPensions: [] }, isLoading: false }),
   useSourceFunds: () => ({ data: [], isLoading: false }),
   useRoles: () => ({ data: [], isLoading: false }),
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
@@ -31,10 +32,15 @@ const typeInto = (field: HTMLElement, text: string) => {
   userEvent.type(field, text);
 };
 
-const trail = () => screen.getByRole('navigation', { name: 'Loo etapid' });
+const trail = () =>
+  screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' });
 const goTo = (name: RegExp) => userEvent.click(within(trail()).getByRole('button', { name }));
 
-const fillInYou = ({ withEarlyRetirement = false } = {}) => {
+const fillInYou = ({ withEarlyRetirement = false, specialPensionStartAge = '55' } = {}) => {
+  userEvent.selectOptions(
+    screen.getByRole('combobox', { name: /Millal on sinu pensioniiga/ }),
+    '66',
+  );
   typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ }), '700');
   typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu brutopalk/ }), '2000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }), '10000');
@@ -42,21 +48,26 @@ const fillInYou = ({ withEarlyRetirement = false } = {}) => {
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }), '50');
   userEvent.click(screen.getByRole('button', { name: 'Lisa erijuht' }));
   userEvent.click(screen.getByRole('checkbox', { name: /Saan või hakkan saama eripensioni/ }));
-  typeInto(screen.getByRole('spinbutton', { name: /Mis vanusest eripension algab/ }), '55');
+  typeInto(
+    screen.getByRole('spinbutton', { name: /Mis vanusest eripension algab/ }),
+    specialPensionStartAge,
+  );
   if (withEarlyRetirement) {
     userEvent.click(screen.getByRole('button', { name: 'Lisa lapsed' }));
-    typeInto(screen.getByRole('spinbutton', { name: /Mitu last\?/ }), '5');
+    [2, 3, 4, 5].forEach(() => userEvent.click(screen.getByRole('button', { name: 'Lisa laps' })));
     ['2004', '2006', '2008', '2010', '2012'].forEach((year, index) =>
       typeInto(
-        screen.getByRole('textbox', { name: new RegExp(`${index + 1}\\. lapse sünniaasta`) }),
+        within(screen.getByRole('group', { name: `Laps ${index + 1}` })).getByRole('textbox', {
+          name: 'Sünniaasta',
+        }),
         year,
       ),
     );
   }
 };
 
-const enterSpecialPensionAmount = (amount: string) => {
-  goTo(/^55\sa/);
+const enterSpecialPensionAmount = (amount: string, specialPensionStep = /^55\sa/) => {
+  goTo(specialPensionStep);
   typeInto(screen.getByRole('spinbutton', { name: /Eripensioni suurus/ }), amount);
 };
 
@@ -81,12 +92,53 @@ const AGE_66_GROUP = /^Pensionieas uuesti/;
 describe('Choosing between the special pension and the old-age pension', () => {
   beforeEach(() => loggedInAs({ dateOfBirth: '1976-01-01' }));
 
+  describe('for a special pension starting after the pension age', () => {
+    const laterSpecialPensionStep = /^70\sa/;
+
+    it('is not asked on the pension age step', () => {
+      openFutureMe({ specialPensionStartAge: '70' });
+      enterSpecialPensionAmount('900', laterSpecialPensionStep);
+      goTo(pensionAgeStep);
+
+      expect(queryChoiceGroup(AGE_65_GROUP)).not.toBeInTheDocument();
+    });
+
+    it('is asked on the special pension step with both amounts, the larger preselected', () => {
+      openFutureMe({ specialPensionStartAge: '70' });
+      enterSpecialPensionAmount('2000', laterSpecialPensionStep);
+
+      const group = choiceGroup(AGE_65_GROUP);
+      expect(choice(group, /^Võtan 70-aastaselt eripensioni/)).toBeChecked();
+      expect(choice(group, /^Võtan 70-aastaselt eripensioni/)).toHaveAccessibleDescription(
+        /^2\s000\s€ kuus enne tulumaksu$/,
+      );
+      expect(choice(group, /^Jään vanaduspensionile/)).not.toBeChecked();
+    });
+
+    it('keeps the old-age pension when the saver chooses it on the special pension step', () => {
+      openFutureMe({ specialPensionStartAge: '70' });
+      enterSpecialPensionAmount('2000', laterSpecialPensionStep);
+
+      userEvent.click(choice(choiceGroup(AGE_65_GROUP), /^Jään vanaduspensionile/));
+
+      expect(choice(choiceGroup(AGE_65_GROUP), /^Jään vanaduspensionile/)).toBeChecked();
+    });
+  });
+
   describe('at the pension age step', () => {
     it('is not asked without a special pension amount', () => {
       openFutureMe();
       goTo(pensionAgeStep);
 
       expect(queryChoiceGroup(AGE_65_GROUP)).not.toBeInTheDocument();
+    });
+
+    it('titles the step only by the pension age when the special pension is compared there', () => {
+      openFutureMe();
+      enterSpecialPensionAmount('900');
+      goTo(pensionAgeStep);
+
+      expect(screen.getByRole('heading', { level: 2, name: 'Pensioniiga' })).toBeInTheDocument();
     });
 
     it('asks which pension to take and preselects the larger special pension', () => {
@@ -101,12 +153,67 @@ describe('Choosing between the special pension and the old-age pension', () => {
       const group = choiceGroup(AGE_65_GROUP);
       expect(choice(group, /^Jätkan eripensioniga/)).toBeChecked();
       expect(choice(group, /^Jätkan eripensioniga/)).toHaveAccessibleDescription(
-        /^900\s€ kuus enne maksu\. Ei muutu, avaldust pole vaja$/,
+        /^900\s€ kuus enne tulumaksu\. Ei muutu, avaldust pole vaja$/,
       );
       expect(choice(group, /^Lähen üle vanaduspensionile/)).toHaveAccessibleDescription(
-        /^700\s€ kuus enne maksu$/,
+        /^700\s€ kuus enne tulumaksu$/,
       );
       expect(within(group).getByText('suurem')).toBeInTheDocument();
+    });
+
+    it('says the special pension starts later when it begins after retiring', () => {
+      openFutureMe({ withEarlyRetirement: true, specialPensionStartAge: '63' });
+      enterSpecialPensionAmount('900', /^63\sa/);
+      goTo(earlyRetirementStep);
+
+      expect(
+        screen.getByText(
+          /^61-aastaselt \(soodustingimustel\) on sul õigus vanaduspensionile, 63-aastaselt ka eripensionile\./,
+        ),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByText(/õigus nii eripensionile kui ka vanaduspensionile/),
+      ).not.toBeInTheDocument();
+    });
+
+    it('offers taking the special pension later instead of continuing with it', () => {
+      openFutureMe({ withEarlyRetirement: true, specialPensionStartAge: '63' });
+      enterSpecialPensionAmount('900', /^63\sa/);
+      goTo(earlyRetirementStep);
+
+      const group = choiceGroup(AGE_65_GROUP);
+      expect(choice(group, /^Võtan 63-aastaselt eripensioni/)).toBeChecked();
+      expect(choice(group, /^Jään vanaduspensionile/)).not.toBeChecked();
+      expect(within(group).queryByText(/avaldust pole vaja/)).not.toBeInTheDocument();
+    });
+
+    it('compares a later special pension with the old-age pension raised by the years worked until it starts', () => {
+      openFutureMe({ withEarlyRetirement: true, specialPensionStartAge: '63' });
+      enterSpecialPensionAmount('854', /^63\sa/);
+      goTo(earlyRetirementStep);
+
+      userEvent.click(screen.getByRole('radio', { name: /^Töötan edasi/ }));
+
+      const group = choiceGroup(AGE_65_GROUP);
+      expect(choice(group, /^Jään vanaduspensionile/)).toBeChecked();
+      expect(choice(group, /^Jään vanaduspensionile/)).toHaveAccessibleDescription(
+        /^859\s€ kuus enne tulumaksu$/,
+      );
+    });
+
+    it('names the old-age pension at the start of a later special pension on its step', () => {
+      openFutureMe({ withEarlyRetirement: true, specialPensionStartAge: '63' });
+      enterSpecialPensionAmount('854', /^63\sa/);
+      goTo(earlyRetirementStep);
+      userEvent.click(screen.getByRole('radio', { name: /^Töötan edasi/ }));
+
+      goTo(/^63\sa/);
+
+      expect(
+        screen.getByText(
+          /on sul õigus vanaduspensionile\. .* Eripension algab 63-aastaselt, vanaduspension on siis 859\s€ kuus\. Vanaduspension on suurem/,
+        ),
+      ).toBeInTheDocument();
     });
 
     it('preselects the old-age pension when it is larger and lets the saver switch back', () => {
@@ -127,7 +234,7 @@ describe('Choosing between the special pension and the old-age pension', () => {
       enterSpecialPensionAmount('500');
       goTo(pensionAgeStep);
       userEvent.click(choice(choiceGroup(AGE_65_GROUP), /^Jätkan eripensioniga/));
-      goTo(/^66\+/);
+      goTo(/^\d+\+\sa/);
       goTo(pensionAgeStep);
 
       expect(choice(choiceGroup(AGE_65_GROUP), /^Jätkan eripensioniga/)).toBeChecked();
@@ -152,13 +259,13 @@ describe('Choosing between the special pension and the old-age pension', () => {
       enterSpecialPensionAmount('900');
       goTo(earlyRetirementStep);
       userEvent.click(screen.getByRole('radio', { name: /^Töötan edasi/ }));
-      goTo(/^66\+/);
+      goTo(/^\d+\+\sa/);
     };
 
     it('is not asked when the special pension was not kept', () => {
       openFutureMe({ withEarlyRetirement: true });
       enterSpecialPensionAmount('500');
-      goTo(/^66\+/);
+      goTo(/^\d+\+\sa/);
 
       expect(queryChoiceGroup(AGE_66_GROUP)).not.toBeInTheDocument();
     });
@@ -175,7 +282,7 @@ describe('Choosing between the special pension and the old-age pension', () => {
       openAfterWorkingOn();
       goTo(earlyRetirementStep);
       userEvent.click(choice(choiceGroup(AGE_65_GROUP), /^Lähen üle vanaduspensionile/));
-      goTo(/^66\+/);
+      goTo(/^\d+\+\sa/);
 
       expect(queryChoiceGroup(AGE_66_GROUP)).not.toBeInTheDocument();
     });

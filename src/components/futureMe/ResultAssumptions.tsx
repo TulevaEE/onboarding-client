@@ -2,19 +2,17 @@ import React, { useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { Assumption, assumptionsOf, FundAssumptionId } from './assumptions';
-import { euro } from './amountFormat';
+import { euro, signedNumber } from './amountFormat';
 import { useDecisionActions } from './decisionActions';
 import { EmojiIcon, StepIcon } from './FutureMeIcon';
 import { QuickEditExpenses } from './QuickEditSteps';
 import { ResultContext } from './resultAnswers';
 import { FutureMeStep } from './steps';
-import { FUND_RETURNS, FundKey } from './youAnswers';
+import { returnOptions } from './YouFields';
 
-const PERCENT = 100;
-const FUND_KEYS = Object.keys(FUND_RETURNS) as FundKey[];
-const FUND_FIELDS = {
-  secondPillarFund: 'secondPillarFund',
-  thirdPillarFund: 'thirdPillarFund',
+const RETURN_FIELDS = {
+  secondPillarFund: 'secondPillarReturnPercent',
+  thirdPillarFund: 'thirdPillarReturnPercent',
 } as const;
 
 const AssumptionIcon = ({ assumption }: { assumption: Assumption }) => {
@@ -62,15 +60,15 @@ const AssumptionText = ({ assumption }: { assumption: Assumption }) => {
   }
   return (
     <FormattedMessage
-      id={`futureMe.result.assumptions.fund.${assumption.fund}` as TranslationKey}
-      values={{ percent: Math.round(assumption.realReturn * PERCENT) }}
+      id="futureMe.you.returnRate.value"
+      values={{ percent: signedNumber(assumption.returnPercent) }}
     />
   );
 };
 
 type EditableId = FundAssumptionId | 'expenses';
 
-const FundChoices = ({
+const ReturnChoice = ({
   id,
   titleId,
   context,
@@ -79,28 +77,25 @@ const FundChoices = ({
   titleId: string;
   context: ResultContext;
 }) => {
+  const intl = useIntl();
   const { change } = useDecisionActions();
-  const field = FUND_FIELDS[id];
+  const field = RETURN_FIELDS[id];
   return (
-    <div role="group" aria-labelledby={titleId} className="decision-panel">
-      {FUND_KEYS.map((fund) => (
-        <div className="form-check" key={fund}>
-          <input
-            id={`future-me-assumption-${id}-${fund}`}
-            className="form-check-input"
-            type="radio"
-            name={`future-me-assumption-${id}`}
-            checked={context.you[field] === fund}
-            onChange={() => change({ you: { ...context.you, [field]: fund } })}
-          />
-          <label className="form-check-label" htmlFor={`future-me-assumption-${id}-${fund}`}>
-            <FormattedMessage
-              id={`futureMe.you.fund.${fund}` as TranslationKey}
-              values={{ percent: Math.round(FUND_RETURNS[fund] * PERCENT) }}
-            />
-          </label>
-        </div>
-      ))}
+    <div className="decision-panel">
+      <select
+        className="form-select"
+        aria-labelledby={titleId}
+        value={String(context.you[field])}
+        onChange={(event) =>
+          change({ you: { ...context.you, [field]: Number(event.target.value) } })
+        }
+      >
+        {returnOptions(intl).map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
     </div>
   );
 };
@@ -146,7 +141,7 @@ const EditPanel = ({ id, context }: { id: EditableId; context: ResultContext }) 
     {id === 'expenses' ? (
       <QuickEditExpenses context={context} />
     ) : (
-      <FundChoices id={id} titleId={`future-me-assumption-${id}-title`} context={context} />
+      <ReturnChoice id={id} titleId={`future-me-assumption-${id}-title`} context={context} />
     )}
   </div>
 );

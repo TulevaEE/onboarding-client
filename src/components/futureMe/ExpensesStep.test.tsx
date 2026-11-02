@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { FutureMe } from './FutureMe';
@@ -13,6 +13,7 @@ import { installDialogPolyfill } from './dialogPolyfill';
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: () => ({ data: [], isLoading: false }),
+  useFundPensionStatus: () => ({ data: { fundPensions: [] }, isLoading: false }),
   useSourceFunds: () => ({ data: [], isLoading: false }),
   useRoles: () => ({ data: [], isLoading: false }),
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
@@ -34,7 +35,11 @@ const typeInto = (field: HTMLElement, text: string) => {
   userEvent.type(field, text);
 };
 
-const trail = () => screen.getByRole('navigation', { name: 'Loo etapid' });
+// eslint-disable-next-line testing-library/no-node-access
+const focusedElement = () => document.activeElement;
+
+const trail = () =>
+  screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' });
 
 const openCostsStep = () => {
   typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ }), '700');
@@ -74,12 +79,47 @@ describe('Costs step', () => {
   });
 
   describe('when it opens', () => {
+    it('moves focus to the start of the step, named "Kulude lisamine" above the heading', async () => {
+      renderCostsStep();
+
+      await waitFor(() => expect(focusedElement()).toHaveTextContent(/^Kulude lisamine/));
+    });
+
     it('asks what life the saver wants in retirement', () => {
       renderCostsStep();
 
       expect(
         screen.getByRole('heading', { level: 2, name: 'Mis elu sa pensionil elada tahad?' }),
       ).toBeInTheDocument();
+    });
+
+    it('tells a saver with a III pillar to add a contribution after work to the costs', () => {
+      renderCostsStep();
+
+      expect(
+        screen.getByText(
+          /Kui plaanid ka pärast töö lõppu III\ssambasse maksta, lisa sissemakse kuludele\./,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('leaves the contribution hint out without a III pillar', () => {
+      loggedInAs({
+        dateOfBirth: '1989-01-01',
+        personalCode: '39001011234',
+        thirdPillarInitDate: null,
+      });
+      render(
+        <IntlProvider locale="et" messages={translations.et}>
+          <FutureMe />
+        </IntlProvider>,
+      );
+      typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ }), '700');
+      typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu brutopalk/ }), '2000');
+      typeInto(screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }), '10000');
+      userEvent.click(within(trail()).getByRole('button', { name: 'Kulud, vaatamata' }));
+
+      expect(screen.queryByText(/lisa sissemakse kuludele/)).not.toBeInTheDocument();
     });
 
     it('offers the three levels with the frugal one chosen', () => {
@@ -113,38 +153,58 @@ describe('Costs step', () => {
   });
 
   describe('what a level buys', () => {
-    it('says that the frugal level means beef only on holidays and half a tank', () => {
+    it('says what the frugal level spends on food a day, and that trips stay in Estonia', () => {
       renderCostsStep();
 
       const card = within(levelCardOf('Kokkuhoidlik'));
 
-      expect(card.getByText(/veisehakkliha pühadeks, argipäeval kana ja kartul/)).toBeVisible();
-      expect(card.getByText(/0,5\spaaki kütust kuus, pigem bussikaart/)).toBeVisible();
+      expect(card.getByText(/toidule u\s7\s€ päevas/)).toBeVisible();
+      expect(card.getByText('pigem bussiga liiklemine')).toBeVisible();
+      expect(card.getByTestId('icon-bus')).toBeInTheDocument();
+      expect(card.queryByText(/paaki/)).not.toBeInTheDocument();
       expect(card.getByText(/1\skohvikulõuna kuus/)).toBeVisible();
-      expect(card.getByText(/reisid pigem maale sugulaste juurde/)).toBeVisible();
-      expect(card.getByText(/20\s€\skuus kingitusteks/)).toBeVisible();
+      expect(card.getByText('reisid pigem Eestis')).toBeVisible();
+      expect(card.getByText(/^20\s€\skuus kingitusteks ja annetusteks$/)).toBeVisible();
+      expect(card.queryByText(/veisehakkliha|sugulaste|lastelastele/)).not.toBeInTheDocument();
     });
 
-    it('counts beef, tanks, lunches and trips for the comfortable level', () => {
+    it('counts food, tanks, lunches and a package trip for the comfortable level', () => {
       renderCostsStep();
 
       const card = within(levelCardOf('Mugav'));
 
-      expect(card.getByText(/4,4\skg veisehakkliha kuus/)).toBeVisible();
+      expect(card.getByText(/toidule u\s10\s€ päevas/)).toBeVisible();
       expect(card.getByText(/1\spaak kütust kuus/)).toBeVisible();
       expect(card.getByText(/3\skohvikulõunat kuus/)).toBeVisible();
-      expect(card.getByText(/1\sreis aastas soojale maale/)).toBeVisible();
+      expect(card.getByText(/1\spakettreis aastas soojale maale/)).toBeVisible();
     });
 
-    it('offers the comfortable money for a care home share instead', () => {
+    it('affords a package trip on the comfortable level for a couple too', () => {
       renderCostsStep();
 
+      userEvent.selectOptions(householdField(), 'paaris');
+
       expect(
-        within(levelCardOf('Mugav')).getByText(
-          /sama raha \(1\s261\s€ kuus\) katab hooldekodu omaosaluse \(keskmiselt u\s1\s000\s€ kuus\)/,
-        ),
-      ).toBeInTheDocument();
-      expect(within(levelCardOf('Kokkuhoidlik')).queryByText(/hooldekodu/)).not.toBeInTheDocument();
+        within(levelCardOf('Mugav')).getByText(/1\spakettreis aastas soojale maale/),
+      ).toBeVisible();
+    });
+
+    it('draws balance scales for the optimal level, not a plane', () => {
+      renderCostsStep();
+
+      const card = within(levelCardOf('Optimaalne'));
+
+      expect(card.getByTestId('icon-scale')).toBeInTheDocument();
+      expect(card.queryByTestId('icon-plane')).not.toBeInTheDocument();
+    });
+
+    it('draws a car for trips to relatives in the countryside', () => {
+      renderCostsStep();
+
+      const card = within(levelCardOf('Kokkuhoidlik'));
+
+      expect(card.getByTestId('icon-car')).toBeInTheDocument();
+      expect(card.queryByTestId('icon-plane')).not.toBeInTheDocument();
     });
 
     it('describes each level bar in words for a screen reader', () => {
@@ -158,6 +218,80 @@ describe('Costs step', () => {
           'Pensionäride keskmine 791 €, jõukamate leibkondade lisakulu 100 €.',
         ),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe('care home', () => {
+    const careLine = (level: string) => within(levelCardOf(level)).getByText(/^Kui vajad hooldust/);
+
+    it('says on every level whether its sum covers a cheaper, an average or a dearer place', () => {
+      renderCostsStep();
+
+      expect(careLine('Kokkuhoidlik')).toHaveTextContent(
+        /katab odavama hooldekodu koha \(omaosalus u\s750\s€ kuus\)\. Keskmise koha jaoks jääb puudu u\s160\s€ kuus\./,
+      );
+      expect(careLine('Optimaalne')).toHaveTextContent(
+        /Keskmise koha jaoks jääb puudu u\s60\s€ kuus/,
+      );
+      expect(careLine('Mugav')).toHaveTextContent(
+        /katab ka kallima hooldekodu koha \(omaosalus u\s1\s050\s€ kuus\)/,
+      );
+    });
+
+    it('says who pays what is missing', () => {
+      renderCostsStep();
+
+      expect(careLine('Kokkuhoidlik')).toHaveTextContent(
+        /Puudu jääva osa maksavad lapsed või omavalitsus\./,
+      );
+      expect(careLine('Mugav')).not.toHaveTextContent(/Lapsed/);
+    });
+
+    it('says when a sum does not cover even a cheaper place', () => {
+      renderCostsStep();
+
+      userEvent.selectOptions(householdField(), 'paaris');
+
+      expect(careLine('Kokkuhoidlik')).toHaveTextContent(
+        /ei kata ka odavamat hooldekodu kohta \(omaosalus u\s750\s€ kuus\)\. Puudu jääb u\s80\s€ kuus\./,
+      );
+    });
+
+    it('measures the sum the saver edited', () => {
+      renderCostsStep();
+      openBreakdown();
+
+      typeInto(lineField('Muud oma kulud'), '100');
+
+      expect(careLine('Kokkuhoidlik')).toHaveTextContent(/jääb puudu u\s60\s€ kuus/);
+    });
+
+    it('explains how a care home place is paid behind a help button below the levels', () => {
+      renderCostsStep();
+
+      userEvent.click(
+        screen.getByRole('button', { name: 'Selgitus: Kuidas hooldekodu kulu jaguneb' }),
+      );
+
+      const help = screen.getByRole('dialog', { name: 'Kuidas hooldekodu kulu jaguneb?' });
+      expect(within(help).getByText(/maksab omavalitsus kõigile/)).toBeInTheDocument();
+      expect(within(help).getByText(/100–150\s€ kuus/)).toBeInTheDocument();
+      expect(within(help).getByText(/maksavad täiskasvanud lapsed/)).toBeInTheDocument();
+    });
+  });
+
+  describe('the level bars', () => {
+    it('explain their colours in words', () => {
+      renderCostsStep();
+
+      expect(screen.getByText('Tulp näitab taseme summat:')).toBeInTheDocument();
+      expect(
+        screen.getByText('tumesinine: tänaste pensionäride keskmine kulu'),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('helesinine: mida jõukamad leibkonnad kulutavad lisaks'),
+      ).toBeInTheDocument();
+      expect(screen.getByText('tühi osa: vahe kalleima tasemeni')).toBeInTheDocument();
     });
   });
 
@@ -264,11 +398,10 @@ describe('Costs step', () => {
 
       typeInto(lineField('Toit ja joogid'), '300');
 
-      expect(within(levelCardOf('Kokkuhoidlik')).getByText('Sinu muudetud summa:')).toBeVisible();
-      expect(within(levelCardOf('Kokkuhoidlik')).getByText('870 €')).toBeVisible();
-      expect(
-        within(levelCardOf('Optimaalne')).queryByText(/Sinu muudetud summa/),
-      ).not.toBeInTheDocument();
+      expect(levelCard('Kokkuhoidlik')).toHaveAccessibleName(
+        /^Kokkuhoidlik 870\s€ \/kuus muudetud, algne 791\s€$/,
+      );
+      expect(within(levelCardOf('Optimaalne')).queryByText(/muudetud/)).not.toBeInTheDocument();
     });
 
     it('keeps the edits of a level while another level is chosen', () => {
@@ -334,7 +467,7 @@ describe('Costs step', () => {
 
       expect(levelCard('Mugav')).toBeChecked();
       expect(householdField()).toHaveDisplayValue('paaris');
-      expect(within(levelCardOf('Mugav')).getByText('Sinu muudetud summa:')).toBeVisible();
+      expect(within(levelCardOf('Mugav')).getByText(/muudetud, algne/)).toBeVisible();
     });
   });
 

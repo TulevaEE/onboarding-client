@@ -13,6 +13,12 @@ describe('FutureMeIcon', () => {
     expect(screen.queryByText('🌿')).not.toBeInTheDocument();
   });
 
+  it('draws a car in the line icon style', () => {
+    render(<EmojiIcon emoji="🚗" />);
+
+    expect(screen.getByTestId('icon-car')).toHaveAttribute('stroke-width', '2');
+  });
+
   it('keeps an emoji without a line icon as it is', () => {
     render(<EmojiIcon emoji="🦄" />);
 

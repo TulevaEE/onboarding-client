@@ -3,6 +3,13 @@ import { FutureMeStep, StepId } from './steps';
 
 // Line icons from the Tulevane Mina prototype (Lucide, ISC)
 const ICONS = {
+  piggyBank: (
+    <>
+      <path d="M11 17h3v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a3.16 3.16 0 0 0 2-2h1a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1a5 5 0 0 0-2-4V3a4 4 0 0 0-3.2 1.6l-.3.4H11a6 6 0 0 0-6 6v1a5 5 0 0 0 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1z" />
+      <path d="M16 10h.01" />
+      <path d="M2 8v1a2 2 0 0 0 2 2h1" />
+    </>
+  ),
   user: (
     <>
       <circle cx="12" cy="8" r="5" />
@@ -133,6 +140,34 @@ const ICONS = {
       <path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 4 0V9.83a2 2 0 0 0-.59-1.42L18 5" />
     </>
   ),
+  car: (
+    <>
+      <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
+      <circle cx="7" cy="17" r="2" />
+      <path d="M9 17h6" />
+      <circle cx="17" cy="17" r="2" />
+    </>
+  ),
+  bus: (
+    <>
+      <path d="M8 6v6" />
+      <path d="M15 6v6" />
+      <path d="M2 12h19.6" />
+      <path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3" />
+      <circle cx="7" cy="18" r="2" />
+      <path d="M9 18h5" />
+      <circle cx="16" cy="18" r="2" />
+    </>
+  ),
+  scale: (
+    <>
+      <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+      <path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z" />
+      <path d="M7 21h10" />
+      <path d="M12 3v18" />
+      <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" />
+    </>
+  ),
   plane: (
     <>
       <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
@@ -191,7 +226,7 @@ const ICONS = {
   ),
 };
 
-type IconName = keyof typeof ICONS;
+export type IconName = keyof typeof ICONS;
 
 const ICON_BY_EMOJI: Record<string, IconName> = {
   '🧍': 'user',
@@ -212,6 +247,9 @@ const ICON_BY_EMOJI: Record<string, IconName> = {
   '☕': 'coffee',
   '⛽': 'fuel',
   '✈️': 'plane',
+  '🚗': 'car',
+  '⚖️': 'scale',
+  '🚌': 'bus',
   '🎁': 'gift',
   '🏡': 'home',
   '🥔': 'home',

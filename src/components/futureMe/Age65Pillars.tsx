@@ -1,9 +1,12 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { Age60Answers, PAYOUT_CHOICES, PayoutChoice } from './age60Answers';
+import { Age60Answers, PAYOUT_CHOICE_EMOJI, PAYOUT_CHOICES } from './age60Answers';
 import { Age65Answers } from './age65Answers';
 import { ChoiceCard } from './ChoiceCard';
+import { ChoiceMadeNote } from './ChoiceMadeNote';
+import { FundPensionChoice } from './prefill';
+import { PayoutChoiceText } from './PayoutChoiceText';
 import { strong } from './richText';
 import { LinkButton } from './LinkButton';
 
@@ -19,9 +22,10 @@ interface Props {
   onChange: (answers: Age65Answers) => void;
   onEditYou: () => void;
   onEditAge60: () => void;
+  fundFrom55?: number;
+  onEditAge55: () => void;
+  startedFundPension?: FundPensionChoice;
 }
-
-const CHOICE_EMOJI: Record<PayoutChoice, string> = { grow: '🌱', fund: '🗓️', lump: '💰' };
 
 export const Age65Pillars = ({
   pillar,
@@ -33,6 +37,9 @@ export const Age65Pillars = ({
   onChange,
   onEditYou,
   onEditAge60,
+  fundFrom55,
+  onEditAge55,
+  startedFundPension,
 }: Props) => {
   const isAsked = !isChosenAtAnotherStep && (!hasPillar || age60[pillar] === 'grow');
   const isChosenEarlier = hasPillar && !isAsked;
@@ -73,6 +80,20 @@ export const Age65Pillars = ({
           </LinkButton>
         </p>
       )}
+      {fundFrom55 !== undefined && (
+        <p className="payout-note">
+          <FormattedMessage
+            id="futureMe.age65.made"
+            values={{ pillar: pillarKind, age: fundFrom55, choice: 'fund', strong }}
+          />{' '}
+          <LinkButton onClick={onEditAge55}>
+            <FormattedMessage id="futureMe.age65.madeChange" values={{ pillar: pillarKind }} />
+            <span className="visually-hidden">
+              <FormattedMessage id="futureMe.age65.madeChangeAge" values={{ age: fundFrom55 }} />
+            </span>
+          </LinkButton>
+        </p>
+      )}
       {isAsked && (
         <fieldset disabled={!hasPillar} className="payout-fieldset">
           <legend className="visually-hidden">
@@ -83,6 +104,7 @@ export const Age65Pillars = ({
               <FormattedMessage id={`futureMe.age65.${pillar}.intro` as TranslationKey} />
             </p>
           )}
+          {startedFundPension && <ChoiceMadeNote choice={startedFundPension} />}
           <div className="payout-choices">
             {PAYOUT_CHOICES.map((choice) => (
               <ChoiceCard
@@ -90,16 +112,14 @@ export const Age65Pillars = ({
                 idPrefix={`future-me-65-${pillar}`}
                 name={`future-me-65-${pillar}-payout`}
                 value={choice}
-                emoji={CHOICE_EMOJI[choice]}
+                emoji={PAYOUT_CHOICE_EMOJI[choice]}
                 checked={answers[pillar] === choice}
                 title={
                   <FormattedMessage
                     id={`futureMe.age65.payout.${choice}.title` as TranslationKey}
                   />
                 }
-                text={
-                  <FormattedMessage id={`futureMe.age65.payout.${choice}.text` as TranslationKey} />
-                }
+                text={<PayoutChoiceText choice={choice} />}
                 onChange={() => onChange({ ...answers, [pillar]: choice })}
               />
             ))}

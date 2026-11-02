@@ -9,7 +9,9 @@ const PAID_FROM = 0.5;
 const BRIDGE_SOURCES: ChartSourceId[] = [
   'specialPension',
   'secondPillar',
+  'secondPillarTaxed',
   'thirdPillar',
+  'thirdPillarTaxed',
   'deposit',
 ];
 
@@ -53,6 +55,20 @@ const bridgeNoteOf = (result: Result, rows: ChartRow[]): SummaryNote[] => {
     ? [{ kind: 'bridge', statePensionAge: result.p1StartAge, sources }]
     : [];
 };
+
+export interface CoverSteps {
+  hasFundPension: boolean;
+  hasDeposit: boolean;
+  hasSecondPillarWithdrawal: boolean;
+  hasThirdPillarWithdrawal: boolean;
+}
+
+export const coverStepsOf = (result: Result, rows: ChartRow[]): CoverSteps => ({
+  hasFundPension: result.rows.some(({ fp }) => fp > PAID_FROM),
+  hasDeposit: rows.some(({ deposit }) => deposit > 0),
+  hasSecondPillarWithdrawal: rows.some(({ secondPillarTaxed }) => secondPillarTaxed > 0),
+  hasThirdPillarWithdrawal: result.rows.some(({ extra, extra2 }) => extra - extra2 > PAID_FROM),
+});
 
 export const summaryNotesOf = (
   result: Result,

@@ -1,23 +1,25 @@
 import lifeTableData from './engine/lifeTable.json';
 import {
   CURRENT_YEAR,
-  fundPensionTerm,
   INCOME_TAX,
   INFLATION,
   LifeTable,
+  oneContractTerm,
   p3Factor,
   SeparateThirdPillar,
   Sex,
   TAX_SHORT,
+  yearlyContractTerm,
 } from './engine/pension';
 import {
   amountOf,
   birthYearOrFallback,
-  FUND_RETURNS,
   pensionAgeValue,
+  realReturnOf,
   ThirdPillarPlan,
   YouAnswers,
 } from './youAnswers';
+import { hasReachedAge } from './planAges';
 import { THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021 } from './thirdPillarPayoutAges';
 
 const lifeTable: LifeTable = lifeTableData;
@@ -36,6 +38,7 @@ export interface ThirdPillarPayoutInput {
   returnRate: number;
   firstYearShare: number;
   contract?: SeparateThirdPillar['contract'];
+  endAge?: number;
 }
 
 export interface ThirdPillarPayout {
@@ -62,13 +65,11 @@ export const withdrawalAge = (currentAge: number): number =>
 
 export const isWithdrawalAllowed = ({
   hasThirdPillar,
-  age,
-  pensionAge,
+  hasReachedPensionAge,
 }: {
   hasThirdPillar: boolean;
-  age: number;
-  pensionAge: number;
-}): boolean => hasThirdPillar && age < pensionAge;
+  hasReachedPensionAge: boolean;
+}): boolean => hasThirdPillar && !hasReachedPensionAge;
 
 export const isFundPensionAvailable = (age: number): boolean =>
   age >= THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021;
@@ -117,9 +118,9 @@ export const thirdPillarPayout = (
     };
   }
 
-  const firstTerm = fundPensionTerm(lifeTable, sex, age);
+  const firstTerm = oneContractTerm(lifeTable, sex, age, input.endAge);
   const yearsLeftAt = (at: number): number =>
-    input.contract === 'once' ? firstTerm - (at - age) : fundPensionTerm(lifeTable, sex, at);
+    input.contract === 'once' ? firstTerm - (at - age) : yearlyContractTerm(lifeTable, sex, at);
 
   let gross = 0;
   const monthly: ThirdPillarPayout['monthly'] = [];
@@ -143,6 +144,7 @@ export const thirdPillarPayoutInputOf = (
   answers: YouAnswers,
   firstYearShare: number,
   contract?: ThirdPillarPayoutInput['contract'],
+  endAge?: number,
 ): ThirdPillarPayoutInput => {
   const birthYear = birthYearOrFallback(answers);
   return {
@@ -152,9 +154,10 @@ export const thirdPillarPayoutInputOf = (
     age: withdrawalAge(CURRENT_YEAR - birthYear),
     balance: amountOf(answers.thirdPillarAmount),
     monthlyContribution: amountOf(answers.thirdPillarMonthly),
-    returnRate: FUND_RETURNS[answers.thirdPillarFund],
+    returnRate: realReturnOf(answers.thirdPillarReturnPercent),
     firstYearShare,
     contract,
+    endAge,
   };
 };
 
@@ -162,21 +165,26 @@ export const age55Of = (
   answers: YouAnswers,
   firstYearShare: number,
   contract?: ThirdPillarPayoutInput['contract'],
+  endAge?: number,
 ): Age55 => {
   const birthYear = birthYearOrFallback(answers);
   const age = withdrawalAge(CURRENT_YEAR - birthYear);
   const pensionAge = pensionAgeValue(answers);
   const hasThirdPillar =
     amountOf(answers.thirdPillarAmount) > 0 || amountOf(answers.thirdPillarMonthly) > 0;
+  const hasReachedPensionAge = hasReachedAge(
+    { birthYear, birthMonth: answers.birthMonth ?? undefined },
+    pensionAge,
+  );
   const isAllowed =
     answers.thirdPillarJoined === 'before' &&
-    isWithdrawalAllowed({ hasThirdPillar, age, pensionAge });
+    isWithdrawalAllowed({ hasThirdPillar, hasReachedPensionAge });
   const isFundAvailable = isFundPensionAvailable(age);
   const plan = effectivePlan(answers.thirdPillarPlan, { isAllowed, isFundAvailable });
   let lock: Age55Lock | null = null;
   if (!hasThirdPillar) {
     lock = 'noThirdPillar';
-  } else if (age >= pensionAge) {
+  } else if (hasReachedPensionAge) {
     lock = 'pensionAge';
   }
   return {
@@ -186,6 +194,9 @@ export const age55Of = (
     lock,
     isFundAvailable,
     plan,
-    payout: thirdPillarPayout(plan, thirdPillarPayoutInputOf(answers, firstYearShare, contract)),
+    payout: thirdPillarPayout(
+      plan,
+      thirdPillarPayoutInputOf(answers, firstYearShare, contract, endAge),
+    ),
   };
 };

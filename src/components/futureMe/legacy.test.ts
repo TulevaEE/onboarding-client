@@ -19,6 +19,8 @@ const contextWith = (
     firstPillarMonthly: '700',
     grossMonthly: '2000',
     secondPillarAmount: '10000',
+    secondPillarReturnPercent: 4,
+    thirdPillarReturnPercent: 4,
     ...changes,
   };
   return {
@@ -123,11 +125,32 @@ describe('legacyOf', () => {
   it('suggests keeping the second pillar growing only when it was taken out as a lump sum', () => {
     expect(legacyFor(takenAsLumpSum())).toMatchObject({
       kind: 'shortfall',
-      isSecondPillarLumpSum: true,
+      isGrowingSecondPillarSuggested: true,
     });
     expect(legacyFor(costsTooHigh())).toMatchObject({
       kind: 'shortfall',
-      isSecondPillarLumpSum: false,
+      isGrowingSecondPillarSuggested: false,
+    });
+  });
+
+  it('does not suggest keeping the second pillar growing when the fund loses value after inflation', () => {
+    const context = takenAsLumpSum();
+    const belowInflation = { ...context, you: { ...context.you, secondPillarReturnPercent: 1 } };
+
+    expect(legacyFor(belowInflation)).toMatchObject({
+      kind: 'shortfall',
+      isGrowingSecondPillarSuggested: false,
+    });
+  });
+
+  it('suggests keeping the second pillar in the fund at a 2% return, where it keeps its value', () => {
+    const context = takenAsLumpSum();
+    const atInflation = { ...context, you: { ...context.you, secondPillarReturnPercent: 2 } };
+
+    expect(legacyFor(atInflation)).toMatchObject({
+      kind: 'shortfall',
+      isGrowingSecondPillarSuggested: true,
+      secondPillarReturn: 0,
     });
   });
 });

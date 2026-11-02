@@ -52,7 +52,10 @@ const choiceOf = (rule: Rule, intl: IntlShape): string | null => {
     case 'childSupplement':
       return format('futureMe.result.rules.childSupplement.choice', {
         monthly: euro(rule.monthly),
-        inForecast: rule.inForecast,
+      });
+    case 'civilServiceIncrease':
+      return format('futureMe.result.rules.civilServiceIncrease.choice', {
+        increase: exactPercent(rule.increase),
       });
     case 'specialPension':
       return format('futureMe.result.rules.specialPension.choice', {

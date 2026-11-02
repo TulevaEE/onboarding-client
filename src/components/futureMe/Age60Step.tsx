@@ -1,50 +1,114 @@
 import React, { RefObject } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { Age60Answers, DecisionOrdinal, PAYOUT_CHOICES, PayoutChoice } from './age60Answers';
+import { Age60Answers, PAYOUT_CHOICE_EMOJI, PAYOUT_CHOICES, PillarsOpening } from './age60Answers';
 import { FundPensionFaq } from './FundPensionFaq';
 import { ChapterHead } from './ChapterHead';
 import { FutureMeStep } from './steps';
-import { EmojiIcon } from './FutureMeIcon';
+import { ChoiceCard } from './ChoiceCard';
+import { PayoutChoiceText } from './PayoutChoiceText';
 import { Tense } from './planAges';
 import { strong } from './richText';
 import { LinkButton } from './LinkButton';
+import { Age66Answers, Contract, contractField, endAgeField, Pillar } from './age66Answers';
+import { EarlyPayout, Sex } from './engine/pension';
+import { euro } from './amountFormat';
+import { ContractChoices } from './ContractChoices';
+import { ChoiceMadeNote } from './ChoiceMadeNote';
+import { FundPensionChoice } from './prefill';
 
-type Pillar = 'secondPillar' | 'thirdPillar';
+type Contracts = Pick<
+  Age66Answers,
+  'secondPillarContract' | 'thirdPillarContract' | 'secondPillarEndAge' | 'thirdPillarEndAge'
+>;
 
 interface Props {
   answers: Age60Answers;
   birthYear: number;
+  sex: Sex;
   age: number;
   tense: Tense;
-  ordinal: DecisionOrdinal;
+  pillarsOpening: PillarsOpening;
   hasSecondPillar: boolean;
   hasThirdPillar: boolean;
   headingRef: RefObject<HTMLHeadingElement>;
+  contracts: Contracts;
+  contractStartAges: Record<Pillar, number>;
+  startedFundPensions?: Partial<Record<Pillar, FundPensionChoice>>;
   onChange: (answers: Age60Answers) => void;
+  onContractChange: (pillar: Pillar, contract: Contract) => void;
+  onEndAgeChange: (pillar: Pillar, endAge: string) => void;
   onEditYou: () => void;
+  earlyPayouts: EarlyPayouts;
 }
 
-const CHOICE_EMOJI: Record<PayoutChoice, string> = { grow: '🌱', fund: '🗓️', lump: '💰' };
+export type EarlyPayouts = Record<Pillar, EarlyPayout | null> & { moneyUseAge: number };
 
 interface PillarProps {
   pillar: Pillar;
   answers: Age60Answers;
+  birthYear: number;
+  sex: Sex;
   hasPillar: boolean;
+  contracts: Contracts;
+  contractStartAge: number;
+  startedFundPension?: FundPensionChoice;
   onChange: (answers: Age60Answers) => void;
+  onContractChange: (pillar: Pillar, contract: Contract) => void;
+  onEndAgeChange: (pillar: Pillar, endAge: string) => void;
   onEditYou: () => void;
+  earlyPayout: EarlyPayout | null;
+  moneyUseAge: number;
   children?: React.ReactNode;
 }
+
+const EarlyPayoutNote = ({
+  pillar,
+  isLump,
+  payout,
+  moneyUseAge,
+}: {
+  pillar: Pillar;
+  isLump: boolean;
+  payout: EarlyPayout;
+  moneyUseAge: number;
+}) => (
+  <FormattedMessage
+    id={isLump ? 'futureMe.age60.outcome.lump' : 'futureMe.age60.outcome.fund'}
+    values={{
+      pillar,
+      age: payout.from,
+      gross: euro(payout.gross),
+      tax: euro(payout.tax),
+      net: euro(payout.net),
+      monthly: euro(payout.firstMonthly),
+      useAge: moneyUseAge,
+      atUse: euro(payout.atMoneyUse),
+      strong,
+    }}
+  />
+);
 
 const PillarChoices = ({
   pillar,
   answers,
+  birthYear,
+  sex,
+  contractStartAge,
   hasPillar,
+  contracts,
+  startedFundPension,
   onChange,
+  onContractChange,
+  onEndAgeChange,
   onEditYou,
+  earlyPayout,
+  moneyUseAge,
   children,
 }: PillarProps) => {
   const legendId = `future-me-${pillar}-legend`;
+  const chosen = answers[pillar];
+  const isPaidOut = hasPillar && !startedFundPension && chosen !== 'grow' && earlyPayout;
 
   return (
     <>
@@ -69,34 +133,51 @@ const PillarChoices = ({
         <legend className="visually-hidden" id={legendId}>
           <FormattedMessage id={`futureMe.age60.${pillar}.legend` as TranslationKey} />
         </legend>
+        {startedFundPension && <ChoiceMadeNote choice={startedFundPension} />}
         <div className="payout-choices">
           {PAYOUT_CHOICES.map((choice) => (
-            <label key={choice} className="payout-choice" htmlFor={`future-me-${pillar}-${choice}`}>
-              <input
-                type="radio"
-                id={`future-me-${pillar}-${choice}`}
-                aria-labelledby={`future-me-${pillar}-${choice}-name`}
-                aria-describedby={`future-me-${pillar}-${choice}-text`}
-                name={`future-me-${pillar}-payout`}
-                value={choice}
-                checked={answers[pillar] === choice}
-                onChange={() => onChange({ ...answers, [pillar]: choice })}
-              />
-              <span className="payout-choice-body">
-                <span className="payout-choice-emoji" aria-hidden="true">
-                  <EmojiIcon emoji={CHOICE_EMOJI[choice]} />
-                </span>
-                <strong id={`future-me-${pillar}-${choice}-name`}>
-                  <FormattedMessage id={`futureMe.age60.choice.${choice}` as TranslationKey} />
-                </strong>
-                <small id={`future-me-${pillar}-${choice}-text`}>
-                  <FormattedMessage id={`futureMe.age60.${pillar}.${choice}` as TranslationKey} />
-                </small>
-              </span>
-            </label>
+            <ChoiceCard
+              key={choice}
+              idPrefix={`future-me-${pillar}`}
+              name={`future-me-${pillar}-payout`}
+              value={choice}
+              emoji={PAYOUT_CHOICE_EMOJI[choice]}
+              checked={answers[pillar] === choice}
+              title={<FormattedMessage id={`futureMe.age60.choice.${choice}` as TranslationKey} />}
+              text={
+                <PayoutChoiceText
+                  choice={choice}
+                  endsSecondPillarContributions={pillar === 'secondPillar'}
+                />
+              }
+              onChange={() => onChange({ ...answers, [pillar]: choice })}
+            />
           ))}
         </div>
       </fieldset>
+      {hasPillar && answers[pillar] === 'fund' && (
+        <ContractChoices
+          pillar={pillar}
+          idPrefix="future-me-60"
+          contract={contracts[contractField(pillar)]}
+          startAge={contractStartAge}
+          birthYear={birthYear}
+          sex={sex}
+          endAge={contracts[endAgeField(pillar)]}
+          onChange={(contract) => onContractChange(pillar, contract)}
+          onEndAgeChange={(endAge) => onEndAgeChange(pillar, endAge)}
+        />
+      )}
+      <p className={isPaidOut ? 'you-note text-pretty' : undefined} role="status">
+        {isPaidOut && (
+          <EarlyPayoutNote
+            pillar={pillar}
+            isLump={chosen === 'lump'}
+            payout={earlyPayout}
+            moneyUseAge={moneyUseAge}
+          />
+        )}
+      </p>
       {children}
     </>
   );
@@ -105,14 +186,21 @@ const PillarChoices = ({
 export const Age60Step = ({
   answers,
   birthYear,
+  sex,
   age,
   tense,
-  ordinal,
+  pillarsOpening,
   hasSecondPillar,
   hasThirdPillar,
   headingRef,
+  contracts,
+  contractStartAges,
+  startedFundPensions = {},
   onChange,
+  onContractChange,
+  onEndAgeChange,
   onEditYou,
+  earlyPayouts,
 }: Props) => {
   const year = birthYear + age;
 
@@ -123,7 +211,7 @@ export const Age60Step = ({
           <FormattedMessage id="futureMe.age60.kicker" values={{ age, year, tense }} />
         </p>
         <h2 id="future-me-age60-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
-          <FormattedMessage id="futureMe.age60.title" values={{ age, ordinal }} />
+          <FormattedMessage id="futureMe.age60.title" values={{ pillars: pillarsOpening }} />
         </h2>
       </ChapterHead>
       <p>
@@ -132,8 +220,17 @@ export const Age60Step = ({
       <PillarChoices
         pillar="secondPillar"
         answers={answers}
+        birthYear={birthYear}
+        sex={sex}
+        contractStartAge={contractStartAges.secondPillar}
         hasPillar={hasSecondPillar}
+        contracts={contracts}
+        startedFundPension={startedFundPensions.secondPillar}
+        earlyPayout={earlyPayouts.secondPillar}
+        moneyUseAge={earlyPayouts.moneyUseAge}
         onChange={onChange}
+        onContractChange={onContractChange}
+        onEndAgeChange={onEndAgeChange}
         onEditYou={onEditYou}
       >
         {hasSecondPillar && (
@@ -145,11 +242,20 @@ export const Age60Step = ({
       <PillarChoices
         pillar="thirdPillar"
         answers={answers}
+        birthYear={birthYear}
+        sex={sex}
+        contractStartAge={contractStartAges.thirdPillar}
         hasPillar={hasThirdPillar}
+        contracts={contracts}
+        startedFundPension={startedFundPensions.thirdPillar}
+        earlyPayout={earlyPayouts.thirdPillar}
+        moneyUseAge={earlyPayouts.moneyUseAge}
         onChange={onChange}
+        onContractChange={onContractChange}
+        onEndAgeChange={onEndAgeChange}
         onEditYou={onEditYou}
       />
-      <FundPensionFaq />
+      <FundPensionFaq hasBothPillars={hasSecondPillar && hasThirdPillar} />
     </section>
   );
 };

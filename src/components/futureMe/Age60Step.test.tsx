@@ -7,10 +7,15 @@ import { useMe } from '../common/apiHooks';
 import { User } from '../common/apiModels';
 import translations from '../translations';
 import { mockUser } from '../../test/backend-responses';
+import { fundPensionTerm, LifeTable } from './engine/pension';
+import lifeTableData from './engine/lifeTable.json';
+
+const lifeTable: LifeTable = lifeTableData;
 
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: () => ({ data: [], isLoading: false }),
+  useFundPensionStatus: () => ({ data: { fundPensions: [] }, isLoading: false }),
   useSourceFunds: () => ({ data: [], isLoading: false }),
   useRoles: () => ({ data: [], isLoading: false }),
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
@@ -31,7 +36,8 @@ const typeInto = (field: HTMLElement, text: string) => {
   userEvent.type(field, text);
 };
 
-const trail = () => screen.getByRole('navigation', { name: 'Loo etapid' });
+const trail = () =>
+  screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' });
 
 const rateField = () => screen.getByRole('combobox', { name: /Kui palju maksad II\ssambasse/ });
 
@@ -77,7 +83,7 @@ describe('Age 60 step', () => {
     openAge60Step();
 
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(
-      /^\d+-aastaselt: esimene otsustuskoht$/,
+      /^II(\sja\sIII)?\ssammas avane(b|vad)$/,
     );
     expect(screen.queryByText('Selle sammu sisu lisandub hiljem.')).not.toBeInTheDocument();
   });
@@ -90,28 +96,242 @@ describe('Age 60 step', () => {
     ).toBeInTheDocument();
   });
 
+  it('says that a payout taken while still working goes to the deposit', () => {
+    openAge60Step();
+
+    expect(
+      screen.getByText(/Kui töötad samal ajal edasi, läheb väljamakse hoiusele/),
+    ).toBeInTheDocument();
+  });
+
+  describe('what a payout before the pension age is worth on the deposit', () => {
+    const barDeposit = () => {
+      const bar = screen.getByRole('complementary', { name: 'Jooksev kokkuvõte' });
+      const depositItem = within(bar)
+        .getAllByRole('listitem')
+        .find((item) => /Hoius/.test(item.textContent ?? '')) as HTMLElement;
+      return (depositItem.textContent ?? '').match(/^[\d\s]+€/)?.[0] as string;
+    };
+    const asPattern = (amount: string) => amount.replace(/\s/g, '\\s');
+
+    it('says what the II pillar taken at once gives and is worth when the bar uses it', () => {
+      openAge60Step();
+
+      userEvent.click(choice(secondPillarGroup(), 'Võtan korraga välja'));
+
+      expect(
+        screen.getByText(
+          new RegExp(
+            `^Võtad II\\ssamba \\d+.aastaselt korraga välja: sambas on u.*\\d+.aastaselt on see tänastes eurodes u\\s${asPattern(
+              barDeposit(),
+            )}`,
+          ),
+        ),
+      ).toBeVisible();
+    });
+
+    it('says what the monthly II pillar payouts give and are worth when the bar uses them', () => {
+      openAge60Step();
+
+      userEvent.click(choice(secondPillarGroup(), 'Võtan igakuiselt'));
+
+      expect(
+        screen.getByText(
+          new RegExp(
+            `^Igakuised väljamaksed II\\ssambast alates \\d+.aastaselt: esimene väljamakse on u.*on need tänastes eurodes u\\s${asPattern(
+              barDeposit(),
+            )}`,
+          ),
+        ),
+      ).toBeVisible();
+    });
+
+    it('says what the III pillar taken at once gives and is worth when the money is used', () => {
+      loggedInAs({ dateOfBirth: '1975-01-01' });
+      openAge60Step();
+
+      userEvent.click(choice(thirdPillarGroup(), 'Võtan korraga välja'));
+
+      expect(
+        screen.getByText(
+          /^Võtad III\ssamba 60.aastaselt korraga välja: sambas on u.*65.aastaselt on see tänastes eurodes u\s[\d\s]+€/,
+        ),
+      ).toBeVisible();
+    });
+
+    it('has no note while the pillars keep growing', () => {
+      openAge60Step();
+
+      expect(screen.queryByText(/tänastes eurodes u/)).not.toBeInTheDocument();
+    });
+  });
+
   it('offers growing, a fund pension and everything at once for both pillars, growing preselected', () => {
     openAge60Step();
 
     [secondPillarGroup(), thirdPillarGroup()].forEach((group) => {
       expect(within(group).getAllByRole('radio')).toHaveLength(3);
-      expect(choice(group, 'Jätkan kasvatamist')).toBeChecked();
-      expect(choice(group, 'Fondipension')).not.toBeChecked();
-      expect(choice(group, 'Kõik korraga')).not.toBeChecked();
+      expect(choice(group, 'Kasvatan edasi')).toBeChecked();
+      expect(choice(group, 'Võtan igakuiselt')).not.toBeChecked();
+      expect(choice(group, 'Võtan korraga välja')).not.toBeChecked();
     });
   });
 
   it('picks each pillar choice independently and keeps it after leaving the step', () => {
     openAge60Step();
 
-    userEvent.click(choice(secondPillarGroup(), 'Fondipension'));
-    userEvent.click(choice(thirdPillarGroup(), 'Kõik korraga'));
+    userEvent.click(choice(secondPillarGroup(), 'Võtan igakuiselt'));
+    userEvent.click(choice(thirdPillarGroup(), 'Võtan korraga välja'));
     userEvent.click(screen.getByRole('button', { name: /Edasi/ }));
     userEvent.click(screen.getByRole('button', { name: /Tagasi/ }));
 
-    expect(choice(secondPillarGroup(), 'Fondipension')).toBeChecked();
-    expect(choice(thirdPillarGroup(), 'Kõik korraga')).toBeChecked();
-    expect(choice(secondPillarGroup(), 'Jätkan kasvatamist')).not.toBeChecked();
+    expect(choice(secondPillarGroup(), 'Võtan igakuiselt')).toBeChecked();
+    expect(choice(thirdPillarGroup(), 'Võtan korraga välja')).toBeChecked();
+    expect(choice(secondPillarGroup(), 'Kasvatan edasi')).not.toBeChecked();
+  });
+
+  describe('fund pension contract', () => {
+    const contractGroup = (pillar: 'II' | 'III') =>
+      screen.queryByRole('group', {
+        name: new RegExp(`^${pillar}\\ssamba igakuiste väljamaksete leping$`),
+      });
+
+    it('is asked right under the fund pension choice, a new contract every year preselected', () => {
+      openAge60Step();
+
+      expect(contractGroup('II')).not.toBeInTheDocument();
+
+      userEvent.click(choice(secondPillarGroup(), 'Võtan igakuiselt'));
+      userEvent.click(choice(thirdPillarGroup(), 'Võtan igakuiselt'));
+
+      expect(choice(contractGroup('II') as HTMLElement, 'Uus leping igal aastal')).toBeChecked();
+      expect(choice(contractGroup('III') as HTMLElement, 'Uus leping igal aastal')).toBeChecked();
+    });
+
+    it('asks for one contract until which age the payouts last, from the average life expectancy up to 100', () => {
+      openAge60Step();
+      userEvent.click(choice(secondPillarGroup(), 'Võtan igakuiselt'));
+      const group = contractGroup('II') as HTMLElement;
+      const endAgeField = () =>
+        within(group).queryByRole('combobox', { name: 'Mis vanuseni väljamaksed kestavad?' });
+
+      expect(endAgeField()).not.toBeInTheDocument();
+
+      userEvent.click(choice(group, 'Üks leping'));
+      const options = within(endAgeField() as HTMLElement).getAllByRole('option');
+
+      expect(options[0]).toHaveTextContent(/^\d+-aastaseni \(\d{4}\) · keskmine eluiga$/);
+      expect(options[options.length - 1]).toHaveTextContent(/^100-aastaseni \(2062\)$/);
+      expect(endAgeField()).toHaveAccessibleDescription(
+        /elueast lühem periood ei ole tulumaksuvaba.*väiksemat kuu väljamakset.*Iga kümnes \d+-aastane mees elab \d+-aastaseks/,
+      );
+
+      userEvent.selectOptions(endAgeField() as HTMLElement, '95');
+
+      expect(endAgeField()).toHaveValue('95');
+    });
+
+    it("counts the end ages from the saver's own age when the payout age is already past", () => {
+      openAge60Step();
+      userEvent.click(choice(secondPillarGroup(), 'Võtan igakuiselt'));
+      const group = contractGroup('II') as HTMLElement;
+      userEvent.click(choice(group, 'Üks leping'));
+      const endAgeField = within(group).getByRole('combobox', {
+        name: 'Mis vanuseni väljamaksed kestavad?',
+      });
+
+      expect(within(endAgeField).getAllByRole('option')[0]).toHaveTextContent(
+        new RegExp(`^${64 + fundPensionTerm(lifeTable, 'M', 64)}-aastaseni`),
+      );
+      expect(endAgeField).toHaveAccessibleDescription(/Iga kümnes 64-aastane mees/);
+    });
+
+    it('says one contract pays tax-free until the chosen age, at least the average life expectancy', () => {
+      openAge60Step();
+      userEvent.click(choice(secondPillarGroup(), 'Võtan igakuiselt'));
+
+      expect(choice(contractGroup('II') as HTMLElement, 'Üks leping')).toHaveAccessibleDescription(
+        'Maksuvaba väljamakse kuni valitud vanuseni, vähemalt keskmise elueani. Siis leping ja väljamaksed lõpevad.',
+      );
+    });
+
+    it('shows the contract chosen here on the 66+ step, with a link back to change it', () => {
+      openAge60Step();
+      userEvent.click(choice(secondPillarGroup(), 'Võtan igakuiselt'));
+      userEvent.click(choice(contractGroup('II') as HTMLElement, 'Üks leping'));
+      userEvent.click(within(trail()).getByRole('button', { name: /^\d+\+\sa/ }));
+
+      expect(contractGroup('II')).not.toBeInTheDocument();
+      expect(screen.getByText(/II\ssamba lepingu valisid \d+-aastaselt/)).toHaveTextContent(
+        /Üks leping/,
+      );
+
+      userEvent.click(screen.getByRole('button', { name: /Muuda II\ssamba lepingut/ }));
+
+      expect(choice(contractGroup('II') as HTMLElement, 'Üks leping')).toBeChecked();
+    });
+  });
+
+  describe('when nothing is left to decide after the pension age', () => {
+    const trailButtons = () => within(trail()).getAllByRole('button');
+    const trailLabels = () =>
+      trailButtons().map(({ textContent }) => textContent?.replace(/\s/g, ' '));
+
+    it('drops the 66+ step and calls the pension age step "65+"', () => {
+      openAge60Step({ thirdPillar: false });
+      const stepsBefore = trailButtons().length;
+
+      expect(trailLabels()).toContain('65 a');
+
+      userEvent.click(choice(secondPillarGroup(), 'Võtan igakuiselt'));
+
+      expect(trailButtons()).toHaveLength(stepsBefore - 1);
+      expect(trailLabels()).toEqual(['Sina', '60 a', '65+ a', 'Kulud', 'Tulemus']);
+    });
+
+    it('keeps the 66+ step while the III pillar still grows', () => {
+      openAge60Step();
+      const stepsBefore = trailButtons().length;
+
+      userEvent.click(choice(secondPillarGroup(), 'Võtan igakuiselt'));
+
+      expect(trailButtons()).toHaveLength(stepsBefore);
+    });
+  });
+
+  it('describes each payout choice with the same text for both pillars', () => {
+    openAge60Step();
+
+    [secondPillarGroup(), thirdPillarGroup()].forEach((group) => {
+      expect(choice(group, 'Kasvatan edasi')).toHaveAccessibleDescription(
+        /^Vara jääb fondi ja kasvab edasi\.$/,
+      );
+      expect(choice(group, 'Võtan igakuiselt')).toHaveAccessibleDescription(
+        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara kasvab fondis edasi\./,
+      );
+      expect(choice(group, 'Võtan korraga välja')).toHaveAccessibleDescription(
+        /^Kogu vara korraga välja, 10%\stulumaks\. Raha on hoiusel\./,
+      );
+    });
+  });
+
+  it('says on the second pillar payout cards, not in the intro, that the contributions end', () => {
+    openAge60Step();
+
+    const contributionsEnd = /Sinu ja riigi II\ssamba sissemaksed lõpevad\.$/;
+    expect(choice(secondPillarGroup(), 'Võtan igakuiselt')).toHaveAccessibleDescription(
+      contributionsEnd,
+    );
+    expect(choice(secondPillarGroup(), 'Võtan korraga välja')).toHaveAccessibleDescription(
+      contributionsEnd,
+    );
+    expect(choice(secondPillarGroup(), 'Kasvatan edasi')).not.toHaveAccessibleDescription(
+      /sissemaksed/,
+    );
+    expect(choice(thirdPillarGroup(), 'Võtan igakuiselt')).not.toHaveAccessibleDescription(
+      /sissemaksed/,
+    );
+    expect(screen.getByText(/aastal oled \d+-aastane/)).not.toHaveTextContent(/sissemaksed/);
   });
 
   it('warns that working on after a second pillar payout request ends the contributions', () => {
@@ -123,8 +343,8 @@ describe('Age 60 step', () => {
   it('explains what a fund pension is in a collapsed question', () => {
     openAge60Step();
 
-    expect(screen.getByText('Mis on fondipension?')).toBeInTheDocument();
-    expect(screen.getByText('Millal valida fondipension?')).toBeInTheDocument();
+    expect(screen.getByText('Mis on igakuised väljamaksed ehk fondipension?')).toBeInTheDocument();
+    expect(screen.getByText('Millal valida igakuised väljamaksed?')).toBeInTheDocument();
   });
 
   it('opens the payout pages in the same tab, as most savers are on a phone', () => {
@@ -143,7 +363,7 @@ describe('Age 60 step', () => {
       expect(secondPillarGroup()).toBeDisabled();
       expect(thirdPillarGroup()).toBeEnabled();
       expect(screen.queryByText(/Kui töötad veel/)).not.toBeInTheDocument();
-      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+      screen.queryAllByRole('status').forEach((status) => expect(status).toBeEmptyDOMElement());
     });
 
     it('takes the saver back to the first step to change the amount', () => {

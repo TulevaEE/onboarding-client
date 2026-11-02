@@ -8,7 +8,7 @@ import {
   ThirdPillarPayoutInput,
   withdrawalAge,
 } from './age55';
-import { fundPensionTerm } from './engine/pension';
+import { fundPensionTerm, yearlyContractTerm } from './engine/pension';
 import { lifeTable } from './engine/testUtils';
 import { initialAnswers, ThirdPillarPlan, YouAnswers } from './youAnswers';
 
@@ -44,15 +44,15 @@ describe('withdrawal age', () => {
 
 describe('withdrawal allowed', () => {
   it('needs a III pillar', () => {
-    expect(isWithdrawalAllowed({ hasThirdPillar: false, age: 55, pensionAge: 65 })).toBe(false);
+    expect(isWithdrawalAllowed({ hasThirdPillar: false, hasReachedPensionAge: false })).toBe(false);
   });
 
   it('is open before the pension age', () => {
-    expect(isWithdrawalAllowed({ hasThirdPillar: true, age: 64, pensionAge: 65 })).toBe(true);
+    expect(isWithdrawalAllowed({ hasThirdPillar: true, hasReachedPensionAge: false })).toBe(true);
   });
 
   it('is closed from the pension age on', () => {
-    expect(isWithdrawalAllowed({ hasThirdPillar: true, age: 65, pensionAge: 65 })).toBe(false);
+    expect(isWithdrawalAllowed({ hasThirdPillar: true, hasReachedPensionAge: true })).toBe(false);
   });
 });
 
@@ -118,10 +118,13 @@ describe('payout', () => {
   });
 
   describe('fund pension', () => {
-    it('pays tax-free monthly amounts over the years left by the life table', () => {
+    it('pays tax-free monthly amounts over the months left by the life table', () => {
       const payout = payoutOf('fund', payoutInput());
 
-      expect(payout.firstMonthly).toBeCloseTo(12000 / fundPensionTerm(lifeTable, 'N', 56) / 12, 6);
+      expect(payout.firstMonthly).toBeCloseTo(
+        12000 / yearlyContractTerm(lifeTable, 'N', 56) / 12,
+        6,
+      );
       expect(payout.tax).toBe(0);
       expect(payout.net).toBe(payout.gross);
     });
@@ -166,7 +169,7 @@ const filledIn = (overrides: Partial<YouAnswers> = {}): YouAnswers => ({
   thirdPillarJoined: 'before',
   thirdPillarAmount: '12000',
   thirdPillarMonthly: '0',
-  thirdPillarFund: 'cons',
+  thirdPillarReturnPercent: 0,
   pensionAgeYears: '65',
   ...overrides,
 });
@@ -206,6 +209,17 @@ describe('age 55 from the answers', () => {
     expect(view).toMatchObject({ lock: 'pensionAge', plan: 'keep', payout: null });
   });
 
+  it('stays open in the year of the pension age until the birth month, keeping a fund pension', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(2026, 9, 15));
+    const bornIn1961 = (birthMonth: number) =>
+      age55Of(filledIn({ birthYear: '1961', birthMonth, thirdPillarPlan: 'fund' }), 1);
+
+    expect(bornIn1961(12)).toMatchObject({ lock: null, plan: 'fund' });
+    expect(bornIn1961(1)).toMatchObject({ lock: 'pensionAge', plan: 'keep' });
+    jest.useRealTimers();
+  });
+
   it('retires earlier with the early retirement years the user picked', () => {
     const view = age55Of(filledIn({ birthYear: '1966', earlyYearsPicked: '5' }), 1);
 
@@ -218,16 +232,47 @@ describe('age 55 from the answers', () => {
     );
   });
 
-  it('uses the fund return of the III pillar', () => {
+  it('uses the chosen return of the III pillar', () => {
     const cons = age55Of(
-      filledIn({ birthYear: '1975', thirdPillarFund: 'cons', thirdPillarPlan: 'lump' }),
+      filledIn({ birthYear: '1975', thirdPillarReturnPercent: 0, thirdPillarPlan: 'lump' }),
       1,
     );
     const index = age55Of(
-      filledIn({ birthYear: '1975', thirdPillarFund: 'index', thirdPillarPlan: 'lump' }),
+      filledIn({ birthYear: '1975', thirdPillarReturnPercent: 4, thirdPillarPlan: 'lump' }),
       1,
     );
 
     expect(index.payout?.gross).toBeCloseTo((cons.payout?.gross ?? 0) * 1.04 ** 4, 6);
+  });
+});
+
+describe('fund pension from 55 compared with keeping the money growing', () => {
+  const saver = payoutInput({
+    birthYear: 1991,
+    age: 55,
+    pensionAge: 69,
+    balance: 60000,
+    monthlyContribution: 200,
+    returnRate: 0.04,
+  });
+
+  it('loses nothing: the payouts grown at the fund return plus what is left equal keeping it', () => {
+    const fund = payoutOf('fund', saver);
+    const kept = payoutOf('lump', { ...saver, age: saver.pensionAge }).gross;
+    const paidGrown = fund.monthly.reduce(
+      (sum, { age, amount }) =>
+        sum + amount * 12 * (1 + saver.returnRate) ** (saver.pensionAge - age),
+      0,
+    );
+
+    expect(fund.leftAtPension + paidGrown).toBeCloseTo(kept, 6);
+  });
+
+  it('leaves less in the pillar at the pension age than keeping it, by the money paid out', () => {
+    const fund = payoutOf('fund', saver);
+    const kept = payoutOf('lump', { ...saver, age: saver.pensionAge }).gross;
+
+    expect(fund.leftAtPension).toBeLessThan(kept);
+    expect(fund.gross).toBeGreaterThan(0);
   });
 });

@@ -3,11 +3,18 @@ import { Age65Answers, initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
-import { chartRowsOf, chartSeriesOf, startSourcesOf, tableRowsOf } from './chartData';
+import {
+  chartRowsOf,
+  chartSeriesOf,
+  pensionStartRowOf,
+  startSourcesOf,
+  tableRowsOf,
+} from './chartData';
 import { CURRENT_YEAR } from './engine/pension';
 import { nominalFactorAt, nominalResultOf } from './nominal';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
+import { contextWith as fixtureContextWith } from './resultContextFixture';
 
 const contextWith = (
   specialMonthly = '',
@@ -152,7 +159,8 @@ describe('chartData', () => {
 
     expect(first).toMatchObject({
       firstPillar: Math.round(source.i1),
-      secondPillar: Math.round(source.i2),
+      secondPillar: Math.round(source.i2 - source.extra2),
+      secondPillarTaxed: Math.round(source.extra2),
       costs: Math.round(source.spend),
     });
   });
@@ -164,13 +172,67 @@ describe('chartData', () => {
       deposit: 0,
     }));
 
-    expect(chartSeriesOf(rows).map(({ id }) => id)).toEqual(['firstPillar', 'secondPillar']);
+    expect(chartSeriesOf(rows).map(({ id }) => id)).toEqual(['firstPillar', 'secondPillarTaxed']);
+  });
+
+  it('stacks the III pillar layers below the II pillar layers, as the III pillar is taken out first', () => {
+    const [first] = chartRowsOf(resultOf(contextWith()), 791);
+    const everyLayer = {
+      ...first,
+      salary: 1,
+      firstPillar: 1,
+      specialPension: 1,
+      secondPillar: 1,
+      secondPillarTaxed: 1,
+      thirdPillar: 1,
+      thirdPillarTaxed: 1,
+      deposit: 1,
+    };
+
+    expect(chartSeriesOf([everyLayer]).map(({ id }) => id)).toEqual([
+      'salary',
+      'firstPillar',
+      'specialPension',
+      'thirdPillar',
+      'thirdPillarTaxed',
+      'secondPillar',
+      'secondPillarTaxed',
+      'deposit',
+    ]);
   });
 
   it('shows the special pension, which is paid instead of the old-age pension when larger', () => {
     const ids = chartSeriesOf(chartRowsOf(resultOf(contextWith('1500')), 791)).map(({ id }) => id);
 
     expect(ids).toEqual(['specialPension']);
+  });
+
+  it('starts at the age the special pension starts, with only the special pension and no costs before the pension age', () => {
+    const rows = chartRowsOf(resultOf(contextWith('1500')), 791);
+
+    expect(rows[0]).toMatchObject({
+      age: 55,
+      isBeforePension: true,
+      salary: 0,
+      costs: 0,
+      shortfall: 0,
+      surplus: 0,
+    });
+    expect(rows[0].specialPension).toBeGreaterThan(0);
+    expect(rows.find(({ age }) => age === 65)).toMatchObject({
+      isBeforePension: false,
+      costs: 791,
+    });
+    expect(
+      rows.filter(({ age }) => age >= 55 && age < 65).every((row) => row.isBeforePension),
+    ).toBe(true);
+  });
+
+  it('starts at the pension age when the special pension starts at or after it', () => {
+    const you = { ...contextWith('1500').you, specialPensionStartAge: '65' };
+    const context = { ...contextWith('1500'), you, plan: toStepPlanInput(you) };
+
+    expect(chartRowsOf(resultOf(context), 791)[0].age).toBe(65);
   });
 
   it('counts the salary as the income while still working, not the state pension', () => {
@@ -219,6 +281,7 @@ describe('chartData', () => {
       firstPillar: 0,
       specialPension: 0,
       secondPillar: 0,
+      secondPillarTaxed: 0,
       thirdPillar: 0,
       deposit: 0,
     };
@@ -235,7 +298,7 @@ describe('chartData', () => {
   });
 
   it('shows how much is left over when the income is above the costs', () => {
-    const [first] = chartRowsOf(resultOf(contextWith('1500')), 791);
+    const first = pensionStartRowOf(chartRowsOf(resultOf(contextWith('1500')), 791));
 
     expect(first.surplus).toBe(first.specialPension + first.firstPillar - first.costs);
     expect(first.surplus).toBeGreaterThan(0);
@@ -247,5 +310,69 @@ describe('chartData', () => {
     expect(rows.filter(({ salary }) => salary > 0).map(({ surplus }) => surplus)).toEqual([
       0, 0, 0,
     ]);
+  });
+});
+
+describe('chartData with the II pillar taken when needed', () => {
+  const result = resultOf(contextWith('', { secondPillar: 'grow' }));
+  const rows = chartRowsOf(result, 1500);
+
+  it('keeps what is taken when needed apart from the tax-free fund pension', () => {
+    const taxedFrom = rows.find(({ secondPillarTaxed }) => secondPillarTaxed > 0);
+
+    expect(taxedFrom).toMatchObject({ secondPillar: 0 });
+  });
+
+  it('adds up to what the engine pays from the II pillar', () => {
+    rows.forEach((row) => {
+      const paid = result.rows.find(({ age }) => age === row.age)?.i2 ?? 0;
+      expect(Math.abs(row.secondPillar + row.secondPillarTaxed - paid)).toBeLessThanOrEqual(1);
+    });
+  });
+
+  it('lists the taxed layer as its own series', () => {
+    expect(chartSeriesOf(rows).map(({ id }) => id)).toContain('secondPillarTaxed');
+  });
+});
+
+describe('chartData with the III pillar taken when needed', () => {
+  const context = contextWith('', { secondPillar: 'grow' });
+  const you = { ...context.you, thirdPillarJoined: 'after' as const, thirdPillarAmount: '30000' };
+  const result = resultOf({ ...context, you, plan: toStepPlanInput(you) });
+  const rows = chartRowsOf(result, 1500);
+
+  it('keeps what is taken when needed apart from the tax-free fund pension', () => {
+    const taxedFrom = rows.find(({ thirdPillarTaxed }) => thirdPillarTaxed > 0);
+
+    expect(taxedFrom).toMatchObject({ thirdPillar: 0 });
+  });
+
+  it('adds up to what the engine pays from the III pillar', () => {
+    rows.forEach((row) => {
+      const paid = result.rows.find(({ age }) => age === row.age)?.i3 ?? 0;
+      expect(Math.abs(row.thirdPillar + row.thirdPillarTaxed - paid)).toBeLessThanOrEqual(1);
+    });
+  });
+
+  it('lists the taxed layer as its own series', () => {
+    expect(chartSeriesOf(rows).map(({ id }) => id)).toContain('thirdPillarTaxed');
+  });
+});
+
+describe('chartData for a rescuer who pays into the III pillar', () => {
+  const rescuer = fixtureContextWith({
+    workAdded: true,
+    hasRescue: true,
+    rescueYears: '20',
+    earlyYearsPicked: '5',
+    thirdPillarJoined: 'after',
+    thirdPillarAmount: '5000',
+    thirdPillarMonthly: '500',
+  });
+
+  it('keeps the costs at the costs of living in every year', () => {
+    chartRowsOf(resultOf(rescuer), 791).forEach((row) => {
+      expect(row.costs).toBe(791);
+    });
   });
 });

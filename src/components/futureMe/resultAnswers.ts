@@ -1,15 +1,23 @@
 import { age55Of, thirdPillarPayout, thirdPillarPayoutInputOf } from './age55';
 import { Age60Answers } from './age60Answers';
-import { Age65Answers, deferralLock, thirdPillarAfterAsked, workUntilOf } from './age65Answers';
-import { Age66Answers, fundStartOf, hasPillar, payoutAtPensionAge } from './age66Answers';
+import { Age65Answers, deferralLock, workUntilOf } from './age65Answers';
+import {
+  Age66Answers,
+  contractEndAgeOf,
+  fundStartOf,
+  hasPillar,
+  payoutAtPensionAge,
+} from './age66Answers';
 import { ExpensesAnswers, needMonthly } from './expensesAnswers';
 import lifeTableData from './engine/lifeTable.json';
 import {
   CURRENT_YEAR,
+  DEPOSIT_REAL_RETURN,
   INFLATION,
   LifeTable,
   p3Factor,
   PensionInput,
+  PotAtPension,
   Scenario,
   SCENARIOS,
   SeparateThirdPillar,
@@ -21,13 +29,13 @@ import {
 } from './engine/pension';
 import { pensionInputOf, SpecialPensionAnswers } from './specialPensionAnswers';
 import { StepPlanInput } from './steps';
-import { amountOf, FUND_RETURNS, YouAnswers } from './youAnswers';
-import { plannedThirdPillarOpenAge } from './planAges';
+import { amountOf, realReturnOf, thirdPillarMonthlyOf, YouAnswers } from './youAnswers';
+import { hasThirdPillarAt, payoutAge, plannedThirdPillarOpenAge, retirementAge } from './planAges';
 
 const lifeTable: LifeTable = lifeTableData;
 const MONTHS_IN_YEAR = 12;
 export const MAX_AGE_SHOWN = 100;
-export const keepGrowing: Scenario = { id: 'E', name: 'Jätkan kasvatamist' };
+export const keepGrowing: Scenario = { id: 'E' };
 
 export interface ResultContext {
   you: YouAnswers;
@@ -48,6 +56,7 @@ export interface EarlyPayment {
 export interface Result extends SimulationResult {
   sustainable: number;
   earlyThirdPillar: EarlyPayment[];
+  thirdPillarMonthly: number;
 }
 
 export type IncomeSource =
@@ -85,8 +94,8 @@ const firstYearShareNow = (): number => (MONTHS_IN_YEAR - new Date().getMonth())
 const contributionsBefore = (context: ResultContext, untilAge: number): number => {
   const { you, plan } = context;
   const currentAge = CURRENT_YEAR - plan.birthYear;
-  const growth = 1 + FUND_RETURNS[you.thirdPillarFund];
-  const yearly = amountOf(you.thirdPillarMonthly) * MONTHS_IN_YEAR;
+  const growth = 1 + realReturnOf(you.thirdPillarReturnPercent);
+  const yearly = thirdPillarMonthlyOf(you) * MONTHS_IN_YEAR;
   const indexing = { p3Indexed: false, inflation: INFLATION, birthYear: plan.birthYear };
   return Array.from({ length: Math.max(0, untilAge - currentAge) }, (_, offset) => {
     const age = currentAge + offset;
@@ -100,7 +109,12 @@ const fundPensionFrom55Of = (context: ResultContext) => {
   const { pensionAge } = age55Of(you, firstYearShareNow());
   const paidUntil = Math.max(pensionAge, workUntilOf(age65, plan) ?? pensionAge);
   const payout = thirdPillarPayout('fund', {
-    ...thirdPillarPayoutInputOf(you, firstYearShareNow(), age66.thirdPillarContract),
+    ...thirdPillarPayoutInputOf(
+      you,
+      firstYearShareNow(),
+      age66.thirdPillarContract,
+      contractEndAgeOf('thirdPillar', age66, context),
+    ),
     pensionAge: paidUntil,
   });
   return { paidUntil, payout };
@@ -120,12 +134,31 @@ const thirdPillarWithdrawnAtOf = (
   const { paidUntil, payout } = fundPensionFrom55Of(context);
   const yearsUntilPaid = paidUntil - (CURRENT_YEAR - plan.birthYear);
   const leftToday =
-    (payout?.leftAtPension ?? 0) / (1 + FUND_RETURNS[you.thirdPillarFund]) ** yearsUntilPaid;
+    (payout?.leftAtPension ?? 0) /
+    (1 + realReturnOf(you.thirdPillarReturnPercent)) ** yearsUntilPaid;
   return {
     amount: leftToday - contributionsBefore(context, paidUntil),
     mode: payoutAtPensionAge('thirdPillar', context) === 'lump' ? 'lump' : 'fund',
     start: age,
   };
+};
+
+const thirdPillarDepositOf = (context: ResultContext): number => {
+  const { you, plan } = context;
+  const { plan: chosen, age } = age55Of(you, firstYearShareNow());
+  const atRetirement = (amount: number, paidAt: number) =>
+    amount * (1 + DEPOSIT_REAL_RETURN) ** (retirementAge(plan) - paidAt);
+  if (!hasPillar('thirdPillar', context) || chosen === 'keep') {
+    return 0;
+  }
+  if (chosen === 'lump') {
+    const taken = thirdPillarPayout('lump', thirdPillarPayoutInputOf(you, firstYearShareNow()));
+    return atRetirement(taken?.net ?? 0, age);
+  }
+  return (fundPensionFrom55Of(context).payout?.monthly ?? []).reduce(
+    (sum, { age: paidAt, amount }) => sum + atRetirement(amount * MONTHS_IN_YEAR, paidAt),
+    0,
+  );
 };
 
 export const earlyThirdPillarOf = (context: ResultContext): EarlyPayment[] => {
@@ -144,7 +177,7 @@ const thirdPillarOf = (context: ResultContext): PensionInput['p3Sep'] => {
   const start = fundStartOf('thirdPillar', age66, context);
   const withdrawn = thirdPillarWithdrawnAtOf(context);
   const savings =
-    you.thirdPillarJoined === 'none'
+    you.thirdPillarJoined === 'plan'
       ? -contributionsBefore(context, plannedThirdPillarOpenAge(you, plan))
       : amountOf(you.thirdPillarAmount);
   return {
@@ -152,15 +185,9 @@ const thirdPillarOf = (context: ResultContext): PensionInput['p3Sep'] => {
     mode: withdrawn.mode ?? (start === undefined ? payout : 'fund'),
     contract: age66.thirdPillarContract,
     start: withdrawn.start ?? start,
+    endAge: contractEndAgeOf('thirdPillar', age66, context),
   };
 };
-
-const thirdPillarAfterOf = ({ you, plan, age65 }: ResultContext): number | undefined =>
-  thirdPillarAfterAsked(age65, you, plan) &&
-  age65.thirdPillarAfterMode === 'change' &&
-  age65.thirdPillarAfter.trim() !== ''
-    ? amountOf(age65.thirdPillarAfter)
-    : undefined;
 
 const withChoiceAtPensionAgeWhileAsked = (input: PensionInput): PensionInput => {
   const withoutChoice = { ...input, firstPillarChoicePa: undefined };
@@ -170,6 +197,21 @@ const withChoiceAtPensionAgeWhileAsked = (input: PensionInput): PensionInput => 
   return isAsked ? input : withoutChoice;
 };
 
+const secondPillarPayoutFromOf = (context: ResultContext): number | undefined =>
+  hasPillar('secondPillar', context) && context.age60.secondPillar !== 'grow'
+    ? payoutAge(context.plan)
+    : undefined;
+
+const thirdPillarPayoutFromOf = (context: ResultContext): number | undefined => {
+  const { you, plan, age60 } = context;
+  const isPaidFrom55 = age55Of(you, firstYearShareNow()).plan === 'fund';
+  return hasThirdPillarAt(you, plan, payoutAge(plan)) &&
+    age60.thirdPillar !== 'grow' &&
+    !isPaidFrom55
+    ? payoutAge(plan)
+    : undefined;
+};
+
 export const resultInputOf = (context: ResultContext): PensionInput => {
   const { you, plan, age65, age66, specialPension, expenses } = context;
   const hasSpecialPension = plan.hasSpecialPension && amountOf(specialPension.monthly) > 0;
@@ -177,15 +219,17 @@ export const resultInputOf = (context: ResultContext): PensionInput => {
     ...pensionInputOf(specialPension, you, plan, age65, age66),
     spHas: hasSpecialPension,
     spMonthly: hasSpecialPension ? amountOf(specialPension.monthly) : 0,
+    p2PayoutFrom: secondPillarPayoutFromOf(context),
     p3: 0,
     p3Sep: thirdPillarOf(context),
-    p3Monthly: amountOf(you.thirdPillarMonthly),
+    extraDeposit: thirdPillarDepositOf(context),
+    p3PayoutFrom: thirdPillarPayoutFromOf(context),
+    p3Monthly: thirdPillarMonthlyOf(you),
     p3Before2021: you.thirdPillarJoined === 'before',
     p3Indexed: false,
     needMonthly: needMonthly(expenses),
-    realReturn: FUND_RETURNS[you.secondPillarFund],
-    realReturn3: FUND_RETURNS[you.thirdPillarFund],
-    p3After: thirdPillarAfterOf(context),
+    realReturn: realReturnOf(you.secondPillarReturnPercent),
+    realReturn3: realReturnOf(you.thirdPillarReturnPercent),
     wageGrowth: WAGE_GROWTH,
     inflation: INFLATION,
     firstYearShare: firstYearShareNow(),
@@ -205,7 +249,10 @@ export const resultScenarioOf = (context: ResultContext): Scenario => {
     deferral: mode === 'defer' ? age65.years : 0,
     half: mode === 'half' ? age65.years : 0,
   };
-  const contractScenario = scenarioById(age66.secondPillarContract === 'yearly' ? 'D' : 'B');
+  const contractScenario = {
+    ...scenarioById(age66.secondPillarContract === 'yearly' ? 'D' : 'B'),
+    endAge: contractEndAgeOf('secondPillar', age66, context),
+  };
   if (payout === 'lump') {
     return { ...scenarioById('A'), ...timing };
   }
@@ -216,7 +263,12 @@ export const resultScenarioOf = (context: ResultContext): Scenario => {
       : { ...contractScenario, ...timing, fundFrom };
   }
   return timing.deferral > 0
-    ? { ...scenarioById('C'), ...timing, contract: age66.secondPillarContract }
+    ? {
+        ...scenarioById('C'),
+        ...timing,
+        contract: age66.secondPillarContract,
+        endAge: contractScenario.endAge,
+      }
     : { ...contractScenario, ...timing };
 };
 
@@ -230,6 +282,32 @@ export const coverageKind = (result: Result): 'all' | 'gap' | 'none' | 'until' =
   return result.coversNeedUntil <= result.pensionStartAge ? 'none' : 'until';
 };
 
+export const earlyPayoutsOf = (
+  context: ResultContext,
+): SimulationResult['earlyPayouts'] & { moneyUseAge: number } => {
+  const { earlyPayouts, potAtPension } = simulate(
+    resultInputOf(context),
+    lifeTable,
+    resultScenarioOf(context),
+  );
+  return { ...earlyPayouts, moneyUseAge: potAtPension.age };
+};
+
+export const potAtPensionOf = (context: ResultContext): PotAtPension =>
+  simulate(resultInputOf(context), lifeTable, resultScenarioOf(context)).potAtPension;
+
+export const thirdPillarDepositAtMoneyUseOf = (
+  context: ResultContext,
+): { age: number; amount: number } => {
+  const { age } = potAtPensionOf(context);
+  const yearsOnDepositAfterRetiring = age - retirementAge(context.plan);
+  return {
+    age,
+    amount:
+      thirdPillarDepositOf(context) * (1 + DEPOSIT_REAL_RETURN) ** yearsOnDepositAfterRetiring,
+  };
+};
+
 export const resultOf = (context: ResultContext): Result => {
   const input = resultInputOf(context);
   const scenario = resultScenarioOf(context);
@@ -237,5 +315,6 @@ export const resultOf = (context: ResultContext): Result => {
     ...simulate(input, lifeTable, scenario),
     sustainable: sustainableNeed(input, lifeTable, scenario),
     earlyThirdPillar: earlyThirdPillarOf(context),
+    thirdPillarMonthly: input.p3Monthly ?? 0,
   };
 };

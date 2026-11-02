@@ -4,15 +4,15 @@ import { TranslationKey } from '../translations';
 import {
   amountOf,
   effectivePensionAge,
-  FUND_RETURNS,
-  FundKey,
+  hasJoinedThirdPillar,
+  limitsOf,
   PENSION_AGE_OPTIONS,
   SECOND_PILLAR_RATE_OPTIONS,
   ThirdPillarJoined,
 } from './youAnswers';
-import { AmountField, BlockProps, SelectField } from './YouFields';
+import { AmountField, BlockProps, ReturnField, SelectField } from './YouFields';
 import { YouSection, YouSectionLabels } from './YouSection';
-import { euro } from './amountFormat';
+import { euro, signedNumber } from './amountFormat';
 
 export const sectionLabels = (
   block: 'state' | 'secondPillar' | 'thirdPillar' | 'kids' | 'work',
@@ -26,10 +26,7 @@ export const sectionLabels = (
   incomplete: 'futureMe.you.me.incomplete',
 });
 
-const FUND_KEYS = Object.keys(FUND_RETURNS) as FundKey[];
-const THIRD_PILLAR_JOIN_TIMES: ThirdPillarJoined[] = ['after', 'before', 'none'];
-const MAX_OPEN_AGE_DIGITS = 2;
-const NON_DIGITS = /\D/g;
+const THIRD_PILLAR_JOIN_TIMES: ThirdPillarJoined[] = ['after', 'before', 'plan', 'never'];
 
 const percentOf = (rate: number): number => Math.round(rate * 100);
 
@@ -40,15 +37,6 @@ const rateLabel = (intl: IntlShape, rate: string): string =>
         { percent: percentOf(Number(rate)) },
       )
     : intl.formatMessage({ id: 'futureMe.you.secondPillarRate.none' });
-
-const fundOptions = (intl: IntlShape) =>
-  FUND_KEYS.map((fund) => ({
-    value: fund,
-    label: intl.formatMessage(
-      { id: `futureMe.you.fund.${fund}` as TranslationKey },
-      { percent: percentOf(FUND_RETURNS[fund]) },
-    ),
-  }));
 
 export const StateSection = ({
   answers,
@@ -65,6 +53,7 @@ export const StateSection = ({
   return (
     <YouSection
       id="future-me-state"
+      icon="landmark"
       title={<FormattedMessage id="futureMe.you.state.title" />}
       summary={
         <FormattedMessage
@@ -84,10 +73,13 @@ export const StateSection = ({
         <FormattedMessage
           id="futureMe.you.state.socialInsuranceBoardCalculator"
           values={{
-            link: (chunks: React.ReactNode) => (
+            ska: (chunks: React.ReactNode) => (
               <a href="https://iseteenindus.sotsiaalkindlustusamet.ee/self-service/pension-calculator">
                 {chunks}
               </a>
+            ),
+            eesti: (chunks: React.ReactNode) => (
+              <a href="https://www.eesti.ee/et/artikkel/pension/pensionikalkulaator">{chunks}</a>
             ),
           }}
         />
@@ -137,6 +129,7 @@ export const SecondPillarSection = ({
   return (
     <YouSection
       id="future-me-second-pillar"
+      icon="briefcase"
       title={<FormattedMessage id="futureMe.you.secondPillar.title" />}
       help="pillars"
       summary={
@@ -147,7 +140,7 @@ export const SecondPillarSection = ({
             amount: euro(amountOf(answers.secondPillarAmount)),
             paysIn: Number(answers.secondPillarRate) > 0 ? 'yes' : 'no',
             rate: rateLabel(intl, answers.secondPillarRate),
-            returnRate: percentOf(FUND_RETURNS[answers.secondPillarFund]),
+            returnRate: signedNumber(answers.secondPillarReturnPercent),
             nowrap: (chunks: React.ReactNode) => <span className="text-nowrap">{chunks}</span>,
           }}
         />
@@ -195,15 +188,12 @@ export const SecondPillarSection = ({
           onChange={onChange}
           onBlur={onBlur}
         />
-        <SelectField
-          id="future-me-second-pillar-fund"
+        <ReturnField
+          id="future-me-second-pillar-return"
           label="futureMe.you.secondPillarFund.label"
           help="fundCur"
-          value={answers.secondPillarFund}
-          options={fundOptions(intl)}
-          onChange={(secondPillarFund) =>
-            onChange({ secondPillarFund: secondPillarFund as FundKey })
-          }
+          value={answers.secondPillarReturnPercent}
+          onChange={(secondPillarReturnPercent) => onChange({ secondPillarReturnPercent })}
         />
       </div>
     </YouSection>
@@ -221,13 +211,16 @@ export const ThirdPillarSection = ({
   onBlur,
 }: BlockProps) => {
   const intl = useIntl();
-  const hasNotJoined = answers.thirdPillarJoined === 'none';
+  const hasNotJoined = !hasJoinedThirdPillar(answers);
+  const isPlanning = answers.thirdPillarJoined === 'plan';
+  const willNotJoin = answers.thirdPillarJoined === 'never';
   const isOpeningPlanned =
-    hasNotJoined && amountOf(answers.thirdPillarMonthly) > 0 && !!answers.thirdPillarOpenAge;
+    isPlanning && amountOf(answers.thirdPillarMonthly) > 0 && !!answers.thirdPillarOpenAge;
 
   return (
     <YouSection
       id="future-me-third-pillar"
+      icon="tree"
       title={<FormattedMessage id="futureMe.you.thirdPillar.title" />}
       summary={
         <FormattedMessage
@@ -238,7 +231,7 @@ export const ThirdPillarSection = ({
             openAge: answers.thirdPillarOpenAge,
             amount: euro(amountOf(answers.thirdPillarAmount)),
             monthly: euro(amountOf(answers.thirdPillarMonthly)),
-            returnRate: percentOf(FUND_RETURNS[answers.thirdPillarFund]),
+            returnRate: signedNumber(answers.thirdPillarReturnPercent),
           }}
         />
       }
@@ -283,45 +276,45 @@ export const ThirdPillarSection = ({
           isPrefilled={prefilled.has('thirdPillarMonthly')}
           answers={answers}
           touched={touched}
-          label="futureMe.you.thirdPillarMonthly.label"
+          label={
+            isPlanning
+              ? 'futureMe.you.thirdPillarMonthly.planLabel'
+              : 'futureMe.you.thirdPillarMonthly.label'
+          }
           help="p3Monthly"
           unit="futureMe.you.thirdPillarMonthly.unit"
           name="futureMe.you.thirdPillarMonthly.name"
           step={10}
+          disabled={willNotJoin}
+          shownValue={willNotJoin ? '0' : undefined}
           onChange={onChange}
           onBlur={onBlur}
         />
-        {hasNotJoined && (
-          <div className="col-12 col-sm-6">
-            <label className="form-label text-balance" htmlFor="future-me-third-pillar-open-age">
-              <FormattedMessage id="futureMe.you.thirdPillarOpenAge.label" />
-            </label>
-            <input
-              id="future-me-third-pillar-open-age"
-              className="form-control"
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              maxLength={MAX_OPEN_AGE_DIGITS}
-              autoComplete="off"
-              value={answers.thirdPillarOpenAge}
-              aria-describedby="future-me-third-pillar-open-age-hint"
-              onChange={(event) =>
-                onChange({ thirdPillarOpenAge: event.target.value.replace(NON_DIGITS, '') })
-              }
-            />
-            <div className="form-text" id="future-me-third-pillar-open-age-hint">
-              <FormattedMessage id="futureMe.you.thirdPillarOpenAge.hint" />
-            </div>
-          </div>
+        {isPlanning && (
+          <AmountField
+            field="thirdPillarOpenAge"
+            answers={answers}
+            touched={touched}
+            label="futureMe.you.thirdPillarOpenAge.label"
+            help="p3OpenAge"
+            unit="futureMe.you.thirdPillarOpenAge.hint"
+            unitValues={limitsOf('thirdPillarOpenAge', answers)}
+            name="futureMe.you.thirdPillarOpenAge.name"
+            step={1}
+            inputMode="numeric"
+            onChange={onChange}
+            onBlur={onBlur}
+          />
         )}
-        <SelectField
-          id="future-me-third-pillar-fund"
-          label="futureMe.you.thirdPillarFund.label"
-          value={answers.thirdPillarFund}
-          options={fundOptions(intl)}
-          onChange={(thirdPillarFund) => onChange({ thirdPillarFund: thirdPillarFund as FundKey })}
-        />
+        {!willNotJoin && (
+          <ReturnField
+            id="future-me-third-pillar-return"
+            label="futureMe.you.thirdPillarFund.label"
+            help="fundCur"
+            value={answers.thirdPillarReturnPercent}
+            onChange={(thirdPillarReturnPercent) => onChange({ thirdPillarReturnPercent })}
+          />
+        )}
       </div>
     </YouSection>
   );

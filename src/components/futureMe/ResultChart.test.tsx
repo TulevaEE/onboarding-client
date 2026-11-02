@@ -9,7 +9,6 @@ import { initialExpenses, needMonthly } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { ChartSourceId } from './chartData';
 import { ResultChart } from './ResultChart';
-import { nominalReturnsOf } from './nominal';
 import { ResultChartTip } from './ResultChartTip';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
@@ -61,11 +60,7 @@ const contextWith = (age65: Partial<Age65Answers> = {}, gross = '2000'): ResultC
 const renderChart = (context: ResultContext = contextWith()) =>
   render(
     <IntlProvider locale="et" messages={translations.et}>
-      <ResultChart
-        result={resultOf(context)}
-        need={needMonthly(context.expenses)}
-        nominalReturns={nominalReturnsOf(context)}
-      />
+      <ResultChart result={resultOf(context)} need={needMonthly(context.expenses)} />
     </IntlProvider>,
   );
 
@@ -98,7 +93,7 @@ describe('ResultChart interaction', () => {
 
       expect(lastChartProps().options.plugins.marks).toContainEqual({
         age: 65,
-        text: 'Pension\u00A065',
+        text: 'Pension\u00A065\u00A0a',
       });
     });
 
@@ -293,7 +288,12 @@ describe('ResultChart interaction', () => {
 
   describe('tooltip content', () => {
     const tipFor = (
-      changes: { shortfall?: number; surplus?: number; isBeforePension?: boolean },
+      changes: {
+        shortfall?: number;
+        surplus?: number;
+        isBeforePension?: boolean;
+        costs?: number;
+      },
       without: ChartSourceId[] = [],
     ) =>
       render(
@@ -306,7 +306,9 @@ describe('ResultChart interaction', () => {
               firstPillar: 700,
               specialPension: 0,
               secondPillar: 300,
+              secondPillarTaxed: 0,
               thirdPillar: 0,
+              thirdPillarTaxed: 0,
               deposit: 0,
               costs: 800,
               isBeforePension: false,
@@ -482,11 +484,94 @@ describe('ResultChart interaction', () => {
       expect(datasets.map(labelOf)).toEqual([
         'Palk',
         'Riiklik pension',
-        'II\u00A0sammas',
+        'II\u00A0sammas (10% tulumaksuga)',
         'Hoiuselt',
       ]);
       expect(datasets[1].fill).toBe('origin');
       expect(datasets[2].fill).toBe(1);
+    });
+
+    describe('the other layers', () => {
+      const stateLayer = () => {
+        renderChart();
+        return lastChartProps().data.datasets.find(
+          ({ label }: { label: string }) => label === 'Riiklik pension',
+        );
+      };
+
+      it('fade from their colour at the top of the chart to almost clear at the bottom', () => {
+        const gradient = { addColorStop: jest.fn() };
+        const createLinearGradient = jest.fn(() => gradient);
+
+        const fill = stateLayer().backgroundColor({
+          chart: { chartArea: { top: 10, bottom: 210 }, ctx: { createLinearGradient } },
+        });
+
+        expect(fill).toBe(gradient);
+        expect(createLinearGradient).toHaveBeenCalledWith(0, 10, 0, 210);
+        expect(gradient.addColorStop.mock.calls).toEqual([
+          [0, 'rgba(106, 79, 196, 0.5)'],
+          [1, 'rgba(106, 79, 196, 0.08)'],
+        ]);
+      });
+
+      it('take a light fill of their colour before the chart has an area', () => {
+        expect(stateLayer().backgroundColor({ chart: { ctx: {} } })).toBe(
+          'rgba(106, 79, 196, 0.3)',
+        );
+      });
+    });
+
+    describe('the II pillar money taken when needed', () => {
+      const taxedLayer = () => {
+        renderChart(contextWith({ work: 'yes', workUntil: '68' }));
+        return lastChartProps().data.datasets.find(
+          ({ label }: { label: string }) => label === 'II\u00A0sammas (10% tulumaksuga)',
+        );
+      };
+      const chartContextWith = (pattern: string | null) => ({
+        chart: { ctx: { createPattern: jest.fn(() => pattern) } },
+      });
+      const lightFill = 'rgba(0, 136, 194, 0.3)';
+
+      it('is filled with a hatch drawn in its own colour', () => {
+        const pen = {
+          fillRect: jest.fn(),
+          beginPath: jest.fn(),
+          moveTo: jest.fn(),
+          lineTo: jest.fn(),
+          stroke: jest.fn(),
+        };
+        const getContext = jest
+          .spyOn(HTMLCanvasElement.prototype, 'getContext')
+          .mockReturnValue(pen as unknown as CanvasRenderingContext2D);
+
+        expect(taxedLayer().backgroundColor(chartContextWith('hatch'))).toBe('hatch');
+        expect(pen.stroke).toHaveBeenCalled();
+        getContext.mockRestore();
+      });
+
+      it('falls back to a light fill of its colour where the canvas cannot draw the hatch', () => {
+        const getContext = jest
+          .spyOn(HTMLCanvasElement.prototype, 'getContext')
+          .mockReturnValue(null);
+
+        expect(taxedLayer().backgroundColor(chartContextWith('hatch'))).toBe(lightFill);
+        getContext.mockRestore();
+      });
+
+      it('falls back to a light fill of its colour where the chart cannot repeat the hatch', () => {
+        const getContext = jest.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({
+          fillRect: jest.fn(),
+          beginPath: jest.fn(),
+          moveTo: jest.fn(),
+          lineTo: jest.fn(),
+          stroke: jest.fn(),
+        } as unknown as CanvasRenderingContext2D);
+
+        expect(taxedLayer().backgroundColor(chartContextWith(null))).toBe(lightFill);
+        getContext.mockRestore();
+      });
     });
 
     it('shows the layer again with a second click', () => {
@@ -520,6 +605,44 @@ describe('ResultChart interaction', () => {
       userEvent.click(toggle('Palk'));
 
       expect(readout()).toHaveTextContent('Palk peidetud.');
+    });
+  });
+
+  describe('II pillar tax in the legend', () => {
+    const taxedToggle = () =>
+      screen.queryByRole('button', { name: /II\ssammas \(10% tulumaksuga\)/ });
+
+    it('shows the II pillar money taken when needed as its own layer with the 10% tax', () => {
+      renderChart(contextWith({ secondPillar: 'grow' }));
+
+      expect(taxedToggle()).toHaveAttribute('aria-pressed', 'true');
+    });
+
+    it('labels the II pillar fund pension as tax-free', () => {
+      renderChart(contextWith({ secondPillar: 'fund' }));
+
+      expect(
+        screen.getByRole('button', { name: /^II\ssammas \(tulumaksuvaba\)$/ }),
+      ).toBeInTheDocument();
+    });
+
+    it('leaves the tax layer out when the fund pension and the state pension cover the costs', () => {
+      const context = contextWith({ secondPillar: 'fund' });
+      const you = { ...context.you, firstPillarMonthly: '1500' };
+      renderChart({ ...context, you, plan: toStepPlanInput(you) });
+
+      expect(taxedToggle()).not.toBeInTheDocument();
+    });
+
+    it('hides the tax layer on its own, without the fund pension layer', () => {
+      renderChart(contextWith({ secondPillar: 'grow' }));
+
+      userEvent.click(taxedToggle() as HTMLElement);
+
+      const hiddenLabels = lastChartProps()
+        .data.datasets.filter(({ hidden }: { hidden: boolean }) => hidden)
+        .map(({ label }: { label: string }) => label);
+      expect(hiddenLabels).toEqual(['II\u00A0sammas (10% tulumaksuga)']);
     });
   });
 

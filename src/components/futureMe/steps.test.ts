@@ -34,11 +34,15 @@ describe('shown steps', () => {
     expect(shownSteps(planFor({}))).toEqual([YOU, AGE_60, AGE_65, AGE_66_PLUS, COSTS, RESULT]);
   });
 
+  it('leaves out the 66+ step when nothing is asked there', () => {
+    expect(shownSteps(planFor({}), false)).toEqual([YOU, AGE_60, AGE_65, COSTS, RESULT]);
+  });
+
   describe('age 55 step', () => {
     it('is shown only to those who joined the III pillar before 2021', () => {
       expect(isStepSkipped(AGE_55, planFor({ thirdPillarJoined: 'before' }))).toBe(false);
       expect(isStepSkipped(AGE_55, planFor({ thirdPillarJoined: 'after' }))).toBe(true);
-      expect(isStepSkipped(AGE_55, planFor({ thirdPillarJoined: 'none' }))).toBe(true);
+      expect(isStepSkipped(AGE_55, planFor({ thirdPillarJoined: 'plan' }))).toBe(true);
     });
   });
 
@@ -85,9 +89,27 @@ describe('step order', () => {
     expect(shownSteps(special(64)).slice(2, 5)).toEqual([AGE_60, SPECIAL_PENSION, AGE_65]);
   });
 
-  it('puts a special pension starting at or after pension age before the 65 step, after the 60 step', () => {
+  it('puts a special pension starting at pension age before the 65 step, after the 60 step', () => {
     expect(shownSteps(special(65)).slice(2, 5)).toEqual([AGE_60, SPECIAL_PENSION, AGE_65]);
-    expect(shownSteps(special(70)).slice(2, 5)).toEqual([AGE_60, SPECIAL_PENSION, AGE_65]);
+  });
+
+  it('puts a special pension starting after pension age after the 66+ step, before the costs', () => {
+    expect(shownSteps(special(66)).slice(3, 7)).toEqual([
+      AGE_65,
+      AGE_66_PLUS,
+      SPECIAL_PENSION,
+      COSTS,
+    ]);
+    expect(shownSteps(special(70)).slice(3, 7)).toEqual([
+      AGE_65,
+      AGE_66_PLUS,
+      SPECIAL_PENSION,
+      COSTS,
+    ]);
+  });
+
+  it('keeps a special pension starting after pension age before the costs when the 66+ step is left out', () => {
+    expect(shownSteps(special(70), false).slice(3, 6)).toEqual([AGE_65, SPECIAL_PENSION, COSTS]);
   });
 
   it('treats a special pension without a start age as starting at pension age', () => {

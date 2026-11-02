@@ -11,14 +11,16 @@ import {
   amountOf,
   earlyRetirementRight,
   earlyRetirementYears,
-  isSpecialPensionOn,
+  isRescueAllowanceOnly,
+  isSpecialPensionPathAsked,
+  isSpecialPensionUsed,
   YouAnswers,
 } from './youAnswers';
 import { payoutAge, retirementAge } from './planAges';
 
 export type PensionMode = 'full' | 'half' | 'defer';
 export type PensionKind = 'regular' | 'favourable' | 'flexible';
-export type DeferralLock = 'specialPension' | PensionKind;
+export type DeferralLock = 'specialPension' | 'specialPensionLater' | PensionKind;
 
 export const PENSION_MODES: PensionMode[] = ['full', 'half', 'defer'];
 export const DEFERRAL_YEARS = [1, 2, 3, 4, 5];
@@ -29,8 +31,6 @@ const YEARS_WORKED_PAST_PENSION_AGE = 5;
 export interface Age65Answers {
   work: 'no' | 'yes';
   workUntil: string;
-  thirdPillarAfterMode: 'same' | 'change';
-  thirdPillarAfter: string;
   mode: PensionMode;
   years: number;
   secondPillar: PayoutChoice;
@@ -41,8 +41,6 @@ export interface Age65Answers {
 export const initialAge65 = (): Age65Answers => ({
   work: 'no',
   workUntil: '',
-  thirdPillarAfterMode: 'same',
-  thirdPillarAfter: '',
   mode: 'full',
   years: 1,
   secondPillar: 'grow',
@@ -67,8 +65,11 @@ export const pensionKind = (you: YouAnswers): PensionKind => {
 };
 
 export const deferralLock = (you: YouAnswers): DeferralLock | null => {
-  if (isSpecialPensionOn(you)) {
-    return 'specialPension';
+  if (isSpecialPensionUsed(you)) {
+    return isSpecialPensionPathAsked(you) ? 'specialPensionLater' : 'specialPension';
+  }
+  if (isRescueAllowanceOnly(you)) {
+    return null;
   }
   const kind = pensionKind(you);
   return kind === 'regular' ? null : kind;
@@ -110,15 +111,6 @@ export const workAccrualMonthly = (you: YouAnswers): number => {
   const isContributing = Number(you.secondPillarRate) > 0;
   return workAccrual(amountOf(you.grossMonthly), isContributing, isContributing);
 };
-
-export const thirdPillarAfterAsked = (
-  answers: Age65Answers,
-  you: YouAnswers,
-  plan: StepPlanInput,
-): boolean =>
-  answers.work !== 'yes' &&
-  amountOf(you.thirdPillarMonthly) > 0 &&
-  retirementAge(plan) < retirementYears(plan);
 
 export const deferralYearsWhileWorking = (answers: Age65Answers, plan: StepPlanInput): number => {
   const until = workUntilOf(answers, plan);

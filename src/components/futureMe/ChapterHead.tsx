@@ -7,6 +7,8 @@ export const ChapterHead = ({ step, children }: { step: StepId; children: ReactN
     <span className="chapter-art" aria-hidden="true">
       <StepIcon step={step} />
     </span>
-    <div>{children}</div>
+    <div className="chapter-head-text" tabIndex={-1}>
+      {children}
+    </div>
   </div>
 );

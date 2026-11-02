@@ -103,12 +103,43 @@ const iiMonthsOf = (
   return months > 0 ? String(months) : '';
 };
 
+const prefillIndexOf = (
+  prefill: KidsPrefill,
+  birthYears: string[],
+  index: number,
+): number | undefined => {
+  const typed = birthYears[index];
+  const earlierTwins = birthYears.slice(0, index).filter((year) => year === typed).length;
+  const prefilledAt = prefill.birthYears.flatMap((year, at) =>
+    String(year) === typed ? [at] : [],
+  );
+  return prefilledAt[earlierTwins];
+};
+
 export const isPrefilledChild = (
   prefill: KidsPrefill,
   birthYears: string[],
   index: number,
-): boolean =>
-  index < prefill.birthYears.length && birthYears[index] === String(prefill.birthYears[index]);
+): boolean => prefillIndexOf(prefill, birthYears, index) !== undefined;
+
+const prefilledIIMonthsOf = (
+  prefill: KidsPrefill,
+  birthYears: string[],
+  index: number,
+): string | undefined => {
+  const prefilledAt = prefillIndexOf(prefill, birthYears, index);
+  return prefilledAt === undefined ? undefined : prefill.iiMonths[prefilledAt];
+};
+
+export const isPrefilledIIMonths = (
+  prefill: KidsPrefill | null,
+  birthYears: string[],
+  iiMonths: string[],
+  index: number,
+): boolean => {
+  const prefilled = prefill === null ? undefined : prefilledIIMonthsOf(prefill, birthYears, index);
+  return Boolean(prefilled) && iiMonths[index] === prefilled;
+};
 
 const sharesPaymentYearsWithAddedChild = (
   prefill: KidsPrefill,
@@ -119,7 +150,7 @@ const sharesPaymentYearsWithAddedChild = (
     (typed, other) =>
       other !== index &&
       !isPrefilledChild(prefill, birthYears, other) &&
-      Math.abs(Number(typed) - prefill.birthYears[index]) <= YEARS_OF_PARENTAL_PAYMENT,
+      Math.abs(Number(typed) - Number(birthYears[index])) <= YEARS_OF_PARENTAL_PAYMENT,
   );
 
 export const attributableIIMonths = (
@@ -129,8 +160,7 @@ export const attributableIIMonths = (
 ): string[] =>
   iiMonths.map((months, index) =>
     prefill !== null &&
-    isPrefilledChild(prefill, birthYears, index) &&
-    months === prefill.iiMonths[index] &&
+    isPrefilledIIMonths(prefill, birthYears, iiMonths, index) &&
     sharesPaymentYearsWithAddedChild(prefill, birthYears, index)
       ? ''
       : months,

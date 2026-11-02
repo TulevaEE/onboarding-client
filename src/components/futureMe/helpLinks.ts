@@ -1,6 +1,7 @@
 export const HELP_LINKS = {
   statLifeTable: 'https://andmed.stat.ee/et/stat/rahvastik__rahvastikusundmused__surmad/RV045',
   skaCalculator: 'https://iseteenindus.sotsiaalkindlustusamet.ee/self-service/pension-calculator',
+  eestiCalculator: 'https://www.eesti.ee/et/artikkel/pension/pensionikalkulaator',
   rpks: 'https://www.riigiteataja.ee/akt/RPKS',
   rpksCurrent: 'https://www.riigiteataja.ee/akt/RPKS?leiaKehtiv',
   skaPensionAge:
@@ -12,9 +13,17 @@ export const HELP_LINKS = {
   kops: 'https://www.riigiteataja.ee/akt/KoPS',
   emta: 'https://www.emta.ee/',
   pensionikeskus: 'https://www.pensionikeskus.ee/',
+  pensionikeskusStatsII: 'https://www.pensionikeskus.ee/statistika/ii-sammas/',
+  pensionikeskusStatsIII: 'https://www.pensionikeskus.ee/statistika/iii-sammas/',
+  pensionikeskusStatsIIEn:
+    'https://www.pensionikeskus.ee/en/statistics/ii-pillar/funded-pension-daily-statistics/',
+  pensionikeskusStatsIIIEn:
+    'https://www.pensionikeskus.ee/en/statistics/iii-pillar/suppl-funded-pension-daily-statistics/',
   tuleva: 'https://tuleva.ee/',
   ska: 'https://sotsiaalkindlustusamet.ee/et',
   skaSelfService: 'https://iseteenindus.sotsiaalkindlustusamet.ee/',
+  skaFlexiblePension:
+    'https://sotsiaalkindlustusamet.ee/pension-ja-seotud-huvitised/pensioni-liigid/paindlik-pension',
   skaSpecialPensions:
     'https://sotsiaalkindlustusamet.ee/pension-ja-seotud-huvitised/pensioni-liigid/eripensionid',
   hazardLists: 'https://www.riigiteataja.ee/akt/24317',

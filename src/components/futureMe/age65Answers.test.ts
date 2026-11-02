@@ -5,7 +5,6 @@ import {
   initialAge65,
   isPayoutChoiceMadeAtAnotherStep,
   pensionKind,
-  thirdPillarAfterAsked,
   withMode,
   workAccrualMonthly,
   workUntilOf,
@@ -22,15 +21,18 @@ const youWith = (changes: Partial<ReturnType<typeof initialAnswers>>) => ({
 const planOf = (changes: Partial<ReturnType<typeof initialAnswers>> = {}) =>
   toStepPlanInput(youWith(changes));
 
-const FIVE_CHILDREN = { kidsAdded: true, kidsCount: '5', kidsEarlyUser: 'me' as const };
+const FIVE_CHILDREN = {
+  kidsAdded: true,
+  kidsCount: '5',
+  kidsBirthYears: ['1990', '1992', '1994', '1996', '1998'],
+  kidsEarlyUser: 'me' as const,
+};
 
 describe('age65Answers', () => {
   it('starts with taking the full state pension, not working, and growing both pillars', () => {
     expect(initialAge65()).toEqual({
       work: 'no',
       workUntil: '',
-      thirdPillarAfterMode: 'same',
-      thirdPillarAfter: '',
       mode: 'full',
       years: 1,
       secondPillar: 'grow',
@@ -63,6 +65,58 @@ describe('age65Answers', () => {
       expect(deferralLock(youWith({ workAdded: true, hasSpecialPension: true }))).toBe(
         'specialPension',
       );
+    });
+
+    describe('with a special pension starting after the pension age', () => {
+      const laterSpecialPension = {
+        workAdded: true,
+        hasSpecialPension: true,
+        pensionAgeYears: '65',
+        specialPensionStartAge: '68',
+      };
+
+      it('keeps the old-age pension in full until the special pension starts', () => {
+        expect(deferralLock(youWith(laterSpecialPension))).toBe('specialPensionLater');
+      });
+
+      it('is open when the saver takes the flexible old-age pension instead', () => {
+        expect(
+          deferralLock(youWith({ ...laterSpecialPension, specialPensionPath: 'flexible' })),
+        ).toBeNull();
+      });
+    });
+
+    describe('for a rescuer waiting for the pension on the allowance', () => {
+      const rescuer = { workAdded: true, hasRescue: true, rescueYears: '20' };
+
+      it('is open, because the allowance is not a pension and ends at the pension age', () => {
+        expect(deferralLock(youWith(rescuer))).toBeNull();
+      });
+
+      it('is open when only the allowance is chosen beside the children right', () => {
+        expect(
+          deferralLock(youWith({ ...rescuer, ...FIVE_CHILDREN, rescueBasis: 'toetus' })),
+        ).toBeNull();
+      });
+
+      it('is locked when list 1 hazardous work gives an earlier pension than the allowance covers', () => {
+        expect(
+          deferralLock(
+            youWith({
+              ...rescuer,
+              hazardList: 'list1',
+              hazardYears: '10',
+              earlyYearsPicked: '5',
+            }),
+          ),
+        ).toBe('favourable');
+      });
+
+      it('is locked once the pension for children starts before the pension age', () => {
+        expect(
+          deferralLock(youWith({ ...rescuer, ...FIVE_CHILDREN, rescueBasis: 'pension' })),
+        ).toBe('favourable');
+      });
     });
 
     it('is locked for favourable terms and for a flexible pension', () => {
@@ -130,23 +184,6 @@ describe('age65Answers', () => {
       expect(
         deferralYearsWhileWorking({ ...initialAge65(), work: 'yes' }, planOf(FIVE_CHILDREN)),
       ).toBe(0);
-    });
-  });
-
-  describe('third pillar contribution after retiring', () => {
-    const paying = { thirdPillarMonthly: '50', ...FIVE_CHILDREN };
-
-    it('is asked only when retiring before the pension age without working and paying in', () => {
-      expect(thirdPillarAfterAsked(initialAge65(), youWith(paying), planOf(paying))).toBe(true);
-      expect(
-        thirdPillarAfterAsked({ ...initialAge65(), work: 'yes' }, youWith(paying), planOf(paying)),
-      ).toBe(false);
-      expect(
-        thirdPillarAfterAsked(initialAge65(), youWith({ thirdPillarMonthly: '50' }), planOf()),
-      ).toBe(false);
-      expect(
-        thirdPillarAfterAsked(initialAge65(), youWith(FIVE_CHILDREN), planOf(FIVE_CHILDREN)),
-      ).toBe(false);
     });
   });
 

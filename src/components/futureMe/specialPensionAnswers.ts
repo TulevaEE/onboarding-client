@@ -2,7 +2,6 @@ import { Age65Answers, initialAge65, pensionKind, workUntilOf } from './age65Ans
 import { Age66Answers, initialAge66 } from './age66Answers';
 import lifeTableData from './engine/lifeTable.json';
 import {
-  CURRENT_YEAR,
   FirstPillarChoice,
   LifeTable,
   PensionInput,
@@ -13,8 +12,8 @@ import {
 } from './engine/pension';
 import { kidsInputOf } from './kidsInput';
 import { StepPlanInput } from './steps';
-import { amountOf, rescueBasisOf, YouAnswers } from './youAnswers';
-import { retirementAge } from './planAges';
+import { amountOf, rescueBasisOf, serviceYearsOf, YouAnswers } from './youAnswers';
+import { hasReachedAge, retirementAge } from './planAges';
 
 const STATE_SECOND_PILLAR_RATE = 0.04;
 const lifeTable: LifeTable = lifeTableData;
@@ -36,8 +35,11 @@ export const initialSpecialPension = (): SpecialPensionAnswers => ({
 export const specialPensionStartAge = (plan: StepPlanInput): number =>
   plan.specialPensionStartAge ?? retirementYears(plan);
 
-export const isSpecialPensionStarted = (plan: StepPlanInput): boolean =>
-  specialPensionStartAge(plan) < CURRENT_YEAR - plan.birthYear;
+export const isSpecialPensionStarted = (plan: StepPlanInput, today: Date = new Date()): boolean =>
+  hasReachedAge(plan, specialPensionStartAge(plan), today);
+
+export const isSpecialPensionAfterPensionAge = (plan: StepPlanInput): boolean =>
+  specialPensionStartAge(plan) > retirementYears(plan);
 
 export const isWorkAsked = (plan: StepPlanInput): boolean =>
   specialPensionStartAge(plan) < retirementAge(plan) && !isSpecialPensionStarted(plan);
@@ -71,6 +73,7 @@ export const pensionInputOf = (
   const isHazardous = you.workAdded && you.hazardList !== 'no';
   return {
     birthYear: plan.birthYear,
+    birthMonth: plan.birthMonth,
     sex: you.sex,
     p1Monthly: amountOf(you.firstPillarMonthly),
     p2: amountOf(you.secondPillarAmount),
@@ -86,8 +89,8 @@ export const pensionInputOf = (
     rescueBasis: rescueBasisOf(you),
     hazard: isHazardous ? you.hazardList : 'no',
     hazardYears: isHazardous ? parseFloat(you.hazardYears) || 0 : 0,
-    undergroundYears: isHazardous ? parseInt(you.undergroundYears, 10) || 0 : 0,
-    rescueYears: you.workAdded && you.hasRescue ? parseInt(you.rescueYears, 10) || 0 : 0,
+    undergroundYears: isHazardous ? parseFloat(you.undergroundYears) || 0 : 0,
+    ...serviceYearsOf(you),
     spHas: true,
     spMonthly: amountOf(answers.monthly),
     spStartAge: plan.specialPensionStartAge,
@@ -116,3 +119,15 @@ export const chosenFirstPillar = (
   choice: FirstPillarChoice | null,
   comparison: { larger: FirstPillarChoice },
 ): FirstPillarChoice => choice ?? comparison.larger;
+
+export type SpecialPensionField = 'monthly' | 'gross';
+
+export const missingSpecialPensionFields = (
+  answers: SpecialPensionAnswers,
+  plan: StepPlanInput,
+): SpecialPensionField[] => [
+  ...(amountOf(answers.monthly) > 0 ? [] : (['monthly'] as const)),
+  ...(isPayAsked(answers, plan) && answers.pay === 'change' && answers.gross.trim() === ''
+    ? (['gross'] as const)
+    : []),
+];

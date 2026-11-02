@@ -361,6 +361,19 @@ describe('pending withdrawal transactions', () => {
     });
   });
 
+  test('the III pillar shows no pending withdrawal when only the II pillar has one', async () => {
+    initializeApplicationsAndComponent([secondPillarPartialWithdrawalApplication]);
+
+    const secondPillarRow = await getStatusBoxRow('SECOND');
+    expect(
+      await within(secondPillarRow).findByText('You have a pending partial withdrawal application'),
+    ).toBeInTheDocument();
+    const thirdPillarRow = await getStatusBoxRow('THIRD');
+    expect(
+      within(thirdPillarRow).queryByText('You have a pending partial withdrawal application'),
+    ).not.toBeInTheDocument();
+  });
+
   test('fund pension opening info is shown', async () => {
     initializeApplicationsAndComponent([
       secondPillarFundPensionOpeningApplication,

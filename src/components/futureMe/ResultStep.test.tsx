@@ -1,5 +1,5 @@
 import React, { createRef } from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { FutureMe } from './FutureMe';
@@ -18,11 +18,13 @@ import { ResultStep } from './ResultStep';
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: () => ({ data: [], isLoading: false }),
+  useFundPensionStatus: () => ({ data: { fundPensions: [] }, isLoading: false }),
   useSourceFunds: () => ({ data: [], isLoading: false }),
   useRoles: () => ({ data: [], isLoading: false }),
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
 }));
 jest.mock('../tracking/actions', () => ({ trackCustomEvent: jest.fn() }));
+jest.unmock('react-intl');
 
 const mockChart = jest.fn();
 jest.mock('react-chartjs-2', () => {
@@ -50,7 +52,11 @@ const typeInto = (field: HTMLElement, text: string) => {
   userEvent.type(field, text);
 };
 
-const trail = () => screen.getByRole('navigation', { name: 'Loo etapid' });
+// eslint-disable-next-line testing-library/no-node-access
+const focusedElement = () => document.activeElement;
+
+const trail = () =>
+  screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' });
 
 const fillInYou = (firstPillar: string) => {
   typeInto(
@@ -61,6 +67,14 @@ const fillInYou = (firstPillar: string) => {
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }), '10000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on III\ssambas praegu/ }), '5000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }), '50');
+  userEvent.selectOptions(
+    screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(II\ssammas\)$/ }),
+    '2',
+  );
+  userEvent.selectOptions(
+    screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(III\ssammas\)$/ }),
+    '2',
+  );
 };
 
 const goTo = (name: RegExp) => userEvent.click(within(trail()).getByRole('button', { name }));
@@ -81,6 +95,23 @@ const tile = (index: number) =>
 
 describe('Result step', () => {
   beforeEach(() => loggedInAs({ dateOfBirth: '1962-01-01' }));
+
+  it('moves focus to the start of the step, named "Tulemus" above the question', async () => {
+    openResultStep();
+
+    await waitFor(() =>
+      expect(focusedElement()).toHaveTextContent(/^Tulemus\s*Kas raha jätkub elu lõpuni\?/),
+    );
+  });
+
+  it('has no table comparing every payout route, as it is too much at once', () => {
+    openResultStep();
+
+    expect(screen.queryByText('Võrdle kõiki väljamakse teid')).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('table', { name: 'Väljamakse teede võrdlus' }),
+    ).not.toBeInTheDocument();
+  });
 
   it('replaces the placeholder with the question the result answers', () => {
     openResultStep();
@@ -299,11 +330,15 @@ describe('Result step', () => {
       expect(lastChartProps().options.plugins.tooltip).toEqual({ enabled: false });
     });
 
-    it('shortens the amounts on the side axis to thousands', () => {
+    it("shortens the amounts on the side axis to thousands in the page's language", () => {
       openResultStep();
       const tick = lastChartProps().options.scales.y.ticks.callback;
 
-      expect([tick(500), tick(1000), tick(1500)]).toEqual(['500', '1 tuh', '1,5 tuh']);
+      expect([tick(500), tick(1000), tick(1500)]).toEqual([
+        '500',
+        expect.stringMatching(/^1\stuh$/),
+        expect.stringMatching(/^1,5\stuh$/),
+      ]);
     });
 
     it('keeps the side axis the same width whatever its amounts', () => {
@@ -437,17 +472,26 @@ describe('Result step', () => {
         return screen.getByRole('dialog', { name: 'Kuidas see summa tekib?' });
       };
 
+      it('does not call the rescue allowance before the pension age half the pension', () => {
+        const dialog = openHelpFor(
+          contextWith({ workAdded: true, hasRescue: true, rescueYears: '20' }),
+        );
+
+        expect(dialog).toHaveTextContent(/riiklik pension/);
+        expect(dialog).not.toHaveTextContent(/pool pensionit/);
+      });
+
       it('counts the pillar money taken as a lump sum, which waits on a deposit', () => {
         const dialog = openHelpFor(
           contextWith(
-            { secondPillarAmount: '100000' },
+            { secondPillarAmount: '100000', secondPillarReturnPercent: 4 },
             { age65: { ...initialAge65(), secondPillar: 'lump' } },
           ),
         );
 
         expect(dialog).toHaveTextContent(/sammastes u 0\s€ pensionile minnes;/);
         expect(dialog).toHaveTextContent(
-          /hoiusel u 161\s690\s€ pensionile minnes \(välja makstud, kulutamata raha\);/,
+          /hoiusel u 160\s631\s€ pensionile minnes \(välja makstud, kulutamata raha\);/,
         );
       });
 
@@ -524,9 +568,11 @@ describe('Result step', () => {
       });
 
       it('leaves the deposit out while nothing is paid out to it', () => {
-        const dialog = openHelpFor(contextWith({ secondPillarAmount: '100000' }));
+        const dialog = openHelpFor(
+          contextWith({ secondPillarAmount: '100000', secondPillarReturnPercent: 4 }),
+        );
 
-        expect(dialog).toHaveTextContent(/sammastes u 179\s554\s€ pensionile minnes;/);
+        expect(dialog).toHaveTextContent(/sammastes u 178\s378\s€ pensionile minnes;/);
         expect(dialog).not.toHaveTextContent(/hoiusel/);
       });
     });

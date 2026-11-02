@@ -10,6 +10,7 @@ import { mockUser } from '../../test/backend-responses';
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: () => ({ data: [], isLoading: false }),
+  useFundPensionStatus: () => ({ data: { fundPensions: [] }, isLoading: false }),
   useSourceFunds: () => ({ data: [], isLoading: false }),
   useRoles: () => ({ data: [], isLoading: false }),
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
@@ -39,8 +40,18 @@ const openResultStep = () => {
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }), '10000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju on III\ssambas praegu/ }), '5000');
   typeInto(screen.getByRole('spinbutton', { name: /Kui palju maksad III\ssambasse kuus/ }), '50');
+  userEvent.selectOptions(
+    screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(II\ssammas\)$/ }),
+    '4',
+  );
+  userEvent.selectOptions(
+    screen.getByRole('combobox', { name: /^Eeldatav tootlus aastas \(III\ssammas\)$/ }),
+    '4',
+  );
   userEvent.click(
-    within(screen.getByRole('navigation', { name: 'Loo etapid' })).getByRole('button', {
+    within(
+      screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' }),
+    ).getByRole('button', {
       name: /^Tulemus, vaatamata$/,
     }),
   );
@@ -106,13 +117,27 @@ describe('Result step: save the result', () => {
     expect(file).toContain('## Kas raha jätkub elu lõpuni?');
     expect(file).toContain('### Sinu otsused');
     expect(file).toContain(
-      '- 60 a · 2022, avanenud · II sammas 60-aastaselt · Sinu valik: Jätkan kasvatamist',
+      '- 60 a · 2022, avanenud · II sammas 60-aastaselt · Sinu valik: Kasvatan edasi',
     );
     expect(file).toContain('### Eeldused');
-    expect(file).toContain('### Reeglid ja maksud');
+    expect(file).toContain('### Reeglid ja tulumaksud');
   });
 
-  it('puts the income table and the comparison into the file even when they are closed', async () => {
+  it('ends the file with the provider, the illustration warning and the tax sentence', async () => {
+    jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    openResultStep();
+
+    userEvent.click(markdownButton());
+
+    const file = await downloadedFile();
+    expect(file).toContain('Finantsteenust pakub Tuleva Fondid AS.');
+    expect(file).toContain('Tegemist on sinu valitud eeldustel põhineva näitliku arvutusega.');
+    expect(file).toContain(
+      'Maksustamine oleneb isikuga seotud asjaoludest, sh residentsusest. Maksuseadused muutuvad ajas.',
+    );
+  });
+
+  it('puts the income table into the file even when it is closed, and no payout comparison', async () => {
     jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
     openResultStep();
 
@@ -121,10 +146,7 @@ describe('Result step: save the result', () => {
     const file = await downloadedFile();
     expect(file).toContain('**Sissetulek ja kulud kuus vanuse järgi');
     expect(file).toMatch(/\n\| Vanus \| .+ \| Kulud \|\n\| --- \|/);
-    expect(file).toContain('**Väljamakse teede võrdlus**');
-    expect(
-      screen.queryByRole('table', { name: 'Väljamakse teede võrdlus' }),
-    ).not.toBeInTheDocument();
+    expect(file).not.toContain('Väljamakse teede võrdlus');
   });
 
   it('leaves the buttons out of the file', async () => {
@@ -170,8 +192,8 @@ describe('Result step: save the result', () => {
       window.dispatchEvent(new Event('afterprint'));
     });
 
-  it('opens the print window with the comparison shown', () => {
-    let isComparisonPrinted = false;
+  it('prints without a payout comparison', () => {
+    let isComparisonPrinted = true;
     window.print = jest.fn(() => {
       isComparisonPrinted = comparisonTable() !== null;
     });
@@ -180,23 +202,7 @@ describe('Result step: save the result', () => {
     userEvent.click(pdfButton());
 
     expect(window.print).toHaveBeenCalledTimes(1);
-    expect(isComparisonPrinted).toBe(true);
-  });
-
-  it('gives the printed comparison a caption of its own while the page shows the comparison too', () => {
-    let captionIds: string[] = [];
-    window.print = jest.fn(() => {
-      captionIds = screen
-        .getAllByText('Väljamakse teede võrdlus', { selector: 'caption' })
-        .map(({ id }) => id);
-    });
-    openResultStep();
-    userEvent.click(screen.getByText('Võrdle kõiki väljamakse teid'));
-
-    userEvent.click(pdfButton());
-
-    expect(captionIds).toHaveLength(2);
-    expect(new Set(captionIds).size).toBe(2);
+    expect(isComparisonPrinted).toBe(false);
   });
 
   it('opens every accordion for the print', () => {
@@ -213,11 +219,10 @@ describe('Result step: save the result', () => {
     window.print = jest.fn();
     openResultStep();
     userEvent.click(pdfButton());
-    expect(comparisonTable()).toBeInTheDocument();
+    expect(chartGuide()).toBeVisible();
 
     closePrintWindow();
 
-    expect(comparisonTable()).not.toBeInTheDocument();
     expect(chartGuide()).not.toBeVisible();
   });
 });

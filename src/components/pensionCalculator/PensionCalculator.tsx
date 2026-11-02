@@ -33,9 +33,9 @@ import {
   useTransactions,
 } from '../common/apiHooks';
 import { pillarBalance } from '../common/balances';
+import { deriveGrossSalary } from '../common/grossSalary';
 import {
   deriveFeeBounds,
-  deriveGrossSalary,
   deriveSavingsFundMonthly,
   deriveThirdPillarMonthly,
   deriveTulevaFees,
@@ -43,6 +43,7 @@ import {
   selectSavingsFundPayments,
 } from '../millionaire/prefill';
 import './PensionCalculator.scss';
+import { ProviderDisclaimer } from './ProviderDisclaimer';
 import {
   buildHistory,
   CalculatorInputs,
@@ -50,14 +51,15 @@ import {
   DEFAULT_RETURN_PERCENT,
   MAX_SALARY,
   MEMBERSHIP_BONUS_RATE,
+  PAINDLIK_PENSION_YEARS,
   PAYOUT_STRATEGIES,
   PayoutStrategy,
   project,
   projectedRemainingYears,
-  projectedRetirementAge,
   RETIREMENT_AGE_DEFAULT,
   SMART_PAYOUT_HORIZON_AGE,
   SECOND_PILLAR_RATES,
+  startingRetirementAge,
   thirdPillarTaxCapMonthly,
 } from './calculation';
 
@@ -107,9 +109,6 @@ const RETURN_STEP = 1;
 const HISTORICAL_RETURN = 7; // long-run historical stock return, marked on the slider
 const HISTORICAL_RETURN_LEFT = ((HISTORICAL_RETURN - RETURN_MIN) / (RETURN_MAX - RETURN_MIN)) * 100;
 const FEE_STEP = 0.01;
-// Paindlik pension: the state pension can start up to five years before the
-// statutory age or be deferred past it, so the slider runs statutory ±5.
-const PAINDLIK_PENSION_YEARS = 5;
 // No statutory minimum exists: shorter periods are legal and simply taxed at 10%
 // below the recommended duration, so the floor is only what a slider needs.
 const WITHDRAWAL_YEARS_MIN = 1;
@@ -389,20 +388,8 @@ export const PensionCalculator: React.FC = () => {
       capitalRowsSettled
     ) {
       const now = new Date();
-      // The register's retirement age is the statutory floor, established only two
-      // years ahead. For young savers the life-expectancy link will have raised it
-      // well past 65 by the time they get there, so start the slider from the
-      // higher of the register's age and our projection for their birth year —
-      // kept inside the slider's paindlik pension window.
-      const statutoryAge = user.retirementAge || RETIREMENT_AGE_DEFAULT;
       const birthYear = new Date(user.dateOfBirth).getFullYear();
-      const retirementAge = Math.min(
-        Math.max(
-          statutoryAge,
-          Number.isFinite(birthYear) ? projectedRetirementAge(birthYear) : statutoryAge,
-        ),
-        statutoryAge + PAINDLIK_PENSION_YEARS,
-      );
+      const retirementAge = startingRetirementAge(user.retirementAge, birthYear);
       setInputs({
         currentAge: user.age,
         retirementAge,
@@ -1263,42 +1250,7 @@ export const PensionCalculator: React.FC = () => {
         )}
       </div>
 
-      {/* Mandatory for a fund communication: who provides the service, where the
-          prospectus and key information are, the invitation to read the terms and
-          take advice, and the tax-changes-over-time clause. ReklS para 3 lg 2 and
-          para 29 lg 2, IFS para 80 lg 4, and the Tuleva teavitustegevuste eeskiri
-          p 7 and p 8. */}
-      <div className="form-text" data-testid="disclaimer">
-        <FormattedMessage
-          id="pensionCalculator.provider"
-          values={{
-            p: (chunks: React.ReactNode) => <p className="mb-2">{chunks}</p>,
-            // Dark like the page footer's links, so the muted block stays muted.
-            a: (chunks: React.ReactNode) => (
-              <a className="text-body-secondary" href="https://tuleva.ee">
-                {chunks}
-              </a>
-            ),
-            mail: (chunks: React.ReactNode) => (
-              <a className="text-body-secondary" href="mailto:tuleva@tuleva.ee">
-                {chunks}
-              </a>
-            ),
-            tel: (chunks: React.ReactNode) => (
-              <a className="text-body-secondary" href="tel:+3726445100">
-                {chunks}
-              </a>
-            ),
-          }}
-        />
-        <FormattedMessage
-          id="pensionCalculator.disclaimer"
-          values={{
-            recommended: result.recommendedYears,
-            p: (chunks: React.ReactNode) => <p className="mb-2">{chunks}</p>,
-          }}
-        />
-      </div>
+      <ProviderDisclaimer />
     </div>
   );
 };

@@ -131,10 +131,10 @@ describe('Social Insurance Board pension calculator', () => {
       { children: 4, calculator: 829 },
       { children: 5, calculator: 805 },
     ])(
-      'matches the state pension when retiring early for $children children within 1.5 €, one working year less for each year early',
+      'matches the state pension when retiring early for $children children, with the supplement left to the other parent, within 1.5 €, one working year less for each year early',
       ({ children, calculator }) => {
         const result = simulate(
-          { ...earlierCalculatorInputs, kids: { b2012: children, user: 'me', inForecast: 'yes' } },
+          { ...earlierCalculatorInputs, kids: { b2012: children, user: 'me', supUser: 'other' } },
           lifeTable,
           scenarioB,
         );
@@ -144,7 +144,7 @@ describe('Social Insurance Board pension calculator', () => {
 
     it('matches the state pension with the supplement for 2 children within 1 €', () => {
       const result = simulate(
-        { ...earlierCalculatorInputs, kids: { b2012: 2, user: 'me', inForecast: 'no' } },
+        { ...earlierCalculatorInputs, kids: { b2012: 2, user: 'me' } },
         lifeTable,
         scenarioB,
       );

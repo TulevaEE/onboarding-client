@@ -3,27 +3,30 @@ import {
   countedKids,
   earlyRetirementYears,
   earlyRightSources,
+  earlyYearsOptions,
   effectivePensionAge,
   isKidsRightAvailableToSelf,
   isRescueBasisAsked,
-  kidsInForecastOf,
   isRescueMixOffered,
   rescueBasisOf,
   fieldProblem,
   firstInvalidChildIIMonths,
-  hasChildWithoutBirthYear,
+  childNoteOf,
   initialAnswers,
+  initialOpenSections,
+  isChildBirthYearInvalid,
   isChildIIMonthsAsked,
   isChildIIMonthsInvalid,
   isSpecialPensionOnly,
+  isSpecialPensionPathAsked,
+  limitsOf,
   pensionAgeValue,
   prefilledFields,
   removeOptionalSection,
+  thirdPillarMonthlyOf,
   toStepPlanInput,
-  PREFILLED_FIRST_PILLAR_MONTHLY,
   YouAnswers,
 } from './youAnswers';
-import { pensionAge } from './engine/pension';
 import { FutureMeStep, shownSteps } from './steps';
 
 const filledIn = (overrides: Partial<YouAnswers> = {}): YouAnswers => ({
@@ -34,6 +37,50 @@ const filledIn = (overrides: Partial<YouAnswers> = {}): YouAnswers => ({
   thirdPillarAmount: '5000',
   thirdPillarMonthly: '50',
   ...overrides,
+});
+
+describe('the Sina blocks open at the start', () => {
+  it('opens the saver, the state pension and the II pillar, and closes the children', () => {
+    expect(initialOpenSections(filledIn())).toMatchObject({
+      me: true,
+      state: true,
+      secondPillar: true,
+      kids: false,
+    });
+  });
+
+  it('opens the III pillar when there is III pillar money or a payment', () => {
+    expect(initialOpenSections(filledIn()).thirdPillar).toBe(true);
+    expect(
+      initialOpenSections(filledIn({ thirdPillarAmount: '0', thirdPillarMonthly: '20' }))
+        .thirdPillar,
+    ).toBe(true);
+  });
+
+  it('closes the III pillar of a saver without one', () => {
+    expect(
+      initialOpenSections(
+        filledIn({ thirdPillarJoined: 'never', thirdPillarAmount: '', thirdPillarMonthly: '' }),
+      ).thirdPillar,
+    ).toBe(false);
+  });
+
+  it('keeps the III pillar open while one of its required answers is empty', () => {
+    expect(
+      initialOpenSections(filledIn({ thirdPillarAmount: '', thirdPillarMonthly: '' })).thirdPillar,
+    ).toBe(true);
+  });
+});
+
+describe('birth month', () => {
+  it('starts from the prefill and goes to the plan, unknown when there is no prefill', () => {
+    const base = { birthYear: 1966, sex: 'N' as const, secondPillarRate: '0.02' };
+
+    expect(initialAnswers({ ...base, birthMonth: 6 }).birthMonth).toBe(6);
+    expect(initialAnswers(base).birthMonth).toBeNull();
+    expect(toStepPlanInput(filledIn({ birthMonth: 6 })).birthMonth).toBe(6);
+    expect(toStepPlanInput(filledIn({ birthMonth: null })).birthMonth).toBeUndefined();
+  });
 });
 
 describe('initial answers', () => {
@@ -77,8 +124,8 @@ describe('initial answers', () => {
       sex: 'X',
       secondPillarRate: '0.02',
       thirdPillarJoined: 'after',
-      secondPillarFund: 'mix',
-      thirdPillarFund: 'mix',
+      secondPillarReturnPercent: 0,
+      thirdPillarReturnPercent: 0,
     });
   });
 });
@@ -164,13 +211,25 @@ describe('the months the state paid into the II pillar for a child', () => {
 
 describe('pension age', () => {
   it('follows the pension age rule of the birth year until the saver picks one', () => {
-    expect(effectivePensionAge(filledIn({ birthYear: '1960' }))).toBe(pensionAge(1960).years);
+    expect(effectivePensionAge(filledIn({ birthYear: '1960' }))).toBe(65);
   });
 
   it('keeps a picked age when the birth year changes', () => {
     const answers = filledIn({ pensionAgeYears: '68', birthYear: '1960' });
 
     expect(effectivePensionAge(answers)).toBe(68);
+  });
+
+  it('follows the retirement age of the pension calculator for a young saver', () => {
+    expect(effectivePensionAge(filledIn({ birthYear: '1991' }))).toBe(69);
+  });
+
+  it('starts from the register pension age when it is higher than the projection', () => {
+    expect(effectivePensionAge(filledIn({ birthYear: '1962', registerPensionAge: 66 }))).toBe(66);
+  });
+
+  it('stays within the pension age options', () => {
+    expect(effectivePensionAge(filledIn({ birthYear: '2008', registerPensionAge: 66 }))).toBe(70);
   });
 
   it('uses 1980 for the rule while the birth year is not valid', () => {
@@ -208,9 +267,54 @@ describe('required fields', () => {
   });
 
   it('does not ask for the III pillar balance of a saver who has not joined', () => {
-    expect(blockedFields(filledIn({ thirdPillarJoined: 'none', thirdPillarAmount: '' }))).toEqual(
+    expect(blockedFields(filledIn({ thirdPillarJoined: 'never', thirdPillarAmount: '' }))).toEqual(
       [],
     );
+  });
+
+  it('asks nothing about the III pillar of a saver who does not plan to join', () => {
+    expect(
+      blockedFields(
+        filledIn({ thirdPillarJoined: 'never', thirdPillarAmount: '', thirdPillarMonthly: '' }),
+      ),
+    ).toEqual([]);
+  });
+
+  describe('the opening age of a saver who plans to join the III pillar', () => {
+    const planning = (thirdPillarOpenAge: string) =>
+      filledIn({ thirdPillarJoined: 'plan', thirdPillarAmount: '', thirdPillarOpenAge });
+    const currentAge = 2026 - 1980;
+    const pensionAge = effectivePensionAge(filledIn());
+
+    it('is required', () => {
+      expect(blockedFields(planning(''))).toEqual(['thirdPillarOpenAge']);
+    });
+
+    it('runs from the current age to the pension age', () => {
+      expect(limitsOf('thirdPillarOpenAge', planning(''))).toEqual({
+        min: currentAge,
+        max: pensionAge,
+      });
+      expect(fieldProblem(planning(String(currentAge - 1)), 'thirdPillarOpenAge')).toBe('range');
+      expect(fieldProblem(planning(String(pensionAge + 1)), 'thirdPillarOpenAge')).toBe('range');
+      expect(fieldProblem(planning(String(currentAge)), 'thirdPillarOpenAge')).toBeNull();
+      expect(fieldProblem(planning(String(pensionAge)), 'thirdPillarOpenAge')).toBeNull();
+    });
+
+    it('is not asked once the saver has joined', () => {
+      expect(
+        blockedFields(filledIn({ thirdPillarJoined: 'after', thirdPillarOpenAge: '' })),
+      ).toEqual([]);
+    });
+  });
+
+  it('counts no III pillar payment for a saver who does not plan to join, even one typed before', () => {
+    expect(
+      thirdPillarMonthlyOf(filledIn({ thirdPillarJoined: 'never', thirdPillarMonthly: '50' })),
+    ).toBe(0);
+    expect(
+      thirdPillarMonthlyOf(filledIn({ thirdPillarJoined: 'plan', thirdPillarMonthly: '50' })),
+    ).toBe(50);
   });
 
   it('counts a negative amount as unfinished', () => {
@@ -266,11 +370,14 @@ describe('step plan', () => {
     expect(shownSteps(plan)).toContain(FutureMeStep.AGE_55);
   });
 
-  it.each(['after', 'none'] as const)('skips the age 55 step when the join time is %s', (when) => {
-    const plan = toStepPlanInput(filledIn({ thirdPillarJoined: when }));
+  it.each(['after', 'plan', 'never'] as const)(
+    'skips the age 55 step when the join time is %s',
+    (when) => {
+      const plan = toStepPlanInput(filledIn({ thirdPillarJoined: when }));
 
-    expect(shownSteps(plan)).not.toContain(FutureMeStep.AGE_55);
-  });
+      expect(shownSteps(plan)).not.toContain(FutureMeStep.AGE_55);
+    },
+  );
 });
 
 const withKids = (birthYears: string[], overrides: Partial<YouAnswers> = {}) =>
@@ -395,13 +502,33 @@ describe('retiring early', () => {
     ).toBe(0);
   });
 
-  it('notes as counted raised only the children with no birth year at all', () => {
-    expect(hasChildWithoutBirthYear(withKids(['1990', '2050']))).toBe(false);
-    expect(hasChildWithoutBirthYear(withKids(['1990', '']))).toBe(true);
+  it('does not take a child born before the saver', () => {
+    expect(isChildBirthYearInvalid(withKids(['1979']), 0)).toBe(true);
+    expect(isChildBirthYearInvalid(withKids(['1980']), 0)).toBe(false);
   });
 
-  it('counts a child without a valid birth year as raised', () => {
-    expect(earlyRetirementYears(withKids(['1990', '1992', '']))).toBe(1);
+  it('does not count a child without a birth year', () => {
+    expect(earlyRetirementYears(withKids(['1990', '1992', '']))).toBe(0);
+    expect(countedKids(withKids(['1990', '']))).toMatchObject({ counted: 1, late: 0 });
+  });
+
+  it('notes under a child without a birth year that the child is not counted', () => {
+    expect(childNoteOf(withKids(['1990', '']), 1)).toEqual({ kind: 'noBirthYear' });
+  });
+
+  it('notes under a child raised for less than eight years when the child turns eight', () => {
+    expect(childNoteOf(withKids(['1990', '2040'], { pensionAgeYears: '65' }), 1)).toEqual({
+      kind: 'late',
+      turnsEight: 2048,
+      retirementYear: 2045,
+    });
+  });
+
+  it('has no note for a counted child or a birth year the field rejects', () => {
+    const answers = withKids(['1990', '19'], { pensionAgeYears: '65' });
+
+    expect(childNoteOf(answers, 0)).toBeNull();
+    expect(childNoteOf(answers, 1)).toBeNull();
   });
 
   it('counts only children raised for eight years by the retirement year', () => {
@@ -499,6 +626,31 @@ describe('a special pension', () => {
     expect(earlyRetirementYears(answers)).toBe(10);
   });
 
+  describe('with three children, which give one unreduced year', () => {
+    const withThreeKidsAndSpecialPensionFrom = (specialPensionStartAge: string) =>
+      specialPension({
+        kidsAdded: true,
+        kidsCount: '3',
+        kidsBirthYears: ['1990', '1992', '1994'],
+        pensionAgeYears: '66',
+        specialPensionStartAge,
+      });
+
+    it('offers no flexible years when the special pension is already paid by then', () => {
+      const answers = withThreeKidsAndSpecialPensionFrom('60');
+
+      expect(earlyYearsOptions(answers)).toEqual([0, 1]);
+      expect(earlyRetirementYears({ ...answers, earlyYearsPicked: '4' })).toBe(1);
+    });
+
+    it('offers the flexible years that start before the special pension', () => {
+      const answers = withThreeKidsAndSpecialPensionFrom('64');
+
+      expect(earlyYearsOptions(answers)).toEqual([0, 1, 3, 4, 5]);
+      expect(earlyRetirementYears({ ...answers, earlyYearsPicked: '4' })).toBe(4);
+    });
+  });
+
   it('adds its step to the trail, placed by the start age', () => {
     const plan = toStepPlanInput(specialPension());
 
@@ -527,6 +679,49 @@ describe('a special pension', () => {
   it('is left out of the plan when the work block is removed', () => {
     expect(toStepPlanInput(specialPension({ workAdded: false }))).toMatchObject({
       hasSpecialPension: false,
+    });
+  });
+
+  describe('starting after the pension age', () => {
+    const laterSpecialPension = (overrides: Partial<YouAnswers> = {}) =>
+      specialPension({ pensionAgeYears: '65', specialPensionStartAge: '68', ...overrides });
+
+    it('asks whether the saver takes the special pension or the flexible old-age pension', () => {
+      expect(isSpecialPensionPathAsked(laterSpecialPension())).toBe(true);
+    });
+
+    it('does not ask when the special pension starts by the pension age', () => {
+      expect(isSpecialPensionPathAsked(laterSpecialPension({ specialPensionStartAge: '65' }))).toBe(
+        false,
+      );
+      expect(isSpecialPensionPathAsked(specialPension())).toBe(false);
+    });
+
+    it('keeps the special pension in the plan by default', () => {
+      expect(toStepPlanInput(laterSpecialPension())).toMatchObject({
+        hasSpecialPension: true,
+        specialPensionStartAge: 68,
+      });
+    });
+
+    it('leaves the special pension out of the plan when the saver takes the flexible old-age pension', () => {
+      const answers = laterSpecialPension({ specialPensionPath: 'flexible' });
+
+      expect(toStepPlanInput(answers)).toMatchObject({
+        hasSpecialPension: false,
+        specialPensionStartAge: undefined,
+      });
+      expect(isSpecialPensionOnly(answers)).toBe(false);
+      expect(earlyRetirementYears({ ...answers, earlyYearsPicked: '3' })).toBe(3);
+    });
+
+    it('keeps the special pension when the flexible path is left over from a later start age', () => {
+      const answers = laterSpecialPension({
+        specialPensionPath: 'flexible',
+        specialPensionStartAge: '55',
+      });
+
+      expect(toStepPlanInput(answers).hasSpecialPension).toBe(true);
     });
   });
 });
@@ -658,26 +853,5 @@ describe('rescue allowance or the pension for the children', () => {
       rescue: 0,
     });
     expect(earlyRetirementYears(threeKidsAndRescue({ rescueBasis: 'toetus' }))).toBe(5);
-  });
-});
-
-describe('whether the state pension forecast has the child supplement', () => {
-  it('is no while the state pension is still the prefilled average, which has no supplement', () => {
-    const answers = initialAnswers({ birthYear: 1980, sex: 'N', secondPillarRate: '0.02' });
-
-    expect(kidsInForecastOf(answers)).toBe('no');
-  });
-
-  it('is unknown once the saver types their own forecast', () => {
-    expect(kidsInForecastOf(filledIn({ firstPillarMonthly: '700' }))).toBe('unknown');
-  });
-
-  it('is what the saver picked', () => {
-    expect(kidsInForecastOf(filledIn({ kidsInForecast: 'yes' }))).toBe('yes');
-    expect(
-      kidsInForecastOf(
-        filledIn({ firstPillarMonthly: PREFILLED_FIRST_PILLAR_MONTHLY, kidsInForecast: 'unknown' }),
-      ),
-    ).toBe('unknown');
   });
 });

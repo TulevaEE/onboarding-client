@@ -11,6 +11,7 @@ import { mockUser } from '../../test/backend-responses';
 jest.mock('../common/apiHooks', () => ({
   useMe: jest.fn(),
   useContributions: () => ({ data: [], isLoading: false }),
+  useFundPensionStatus: () => ({ data: { fundPensions: [] }, isLoading: false }),
   useSourceFunds: () => ({ data: [], isLoading: false }),
   useRoles: () => ({ data: [], isLoading: false }),
   usePendingOnboardings: () => ({ data: [], isLoading: false }),
@@ -34,7 +35,8 @@ const typeInto = (field: HTMLElement, text: string) => {
   userEvent.type(field, text);
 };
 
-const trail = () => screen.getByRole('navigation', { name: 'Loo etapid' });
+const trail = () =>
+  screen.getByRole('navigation', { name: 'Tulevase Mina eluetappide sammud aastates' });
 
 const fillInYou = () => {
   typeInto(screen.getByRole('spinbutton', { name: /Kui suur on sinu riiklik pension/ }), '700');
@@ -106,12 +108,12 @@ describe('Result step: assumptions', () => {
     );
   });
 
-  it('tells the return each pillar grows at after inflation', () => {
+  it('tells the return each pillar grows at before inflation', () => {
     openResultStep();
+    const row = itemTitled(assumptionList(), /^II\ssamba tootlus$/);
 
-    expect(itemTitled(assumptionList(), /^II\ssamba tootlus$/)).toHaveTextContent(
-      /Keskmine pangafond, 2%\saastas pärast inflatsiooni/,
-    );
+    expect(row).toHaveTextContent(/0%\saastas/);
+    expect(row).not.toHaveTextContent('pärast inflatsiooni');
   });
 
   it('tells what the costs come to each month', () => {
@@ -120,5 +122,57 @@ describe('Result step: assumptions', () => {
     expect(itemTitled(assumptionList(), /^Kulud pensionil$/)).toHaveTextContent(
       /Kokkuhoidlik: \d[\d\s]*\s€\skuus/,
     );
+  });
+});
+
+describe('Result step: the return the answer rests on', () => {
+  beforeEach(() => loggedInAs({ dateOfBirth: '1962-01-01' }));
+
+  const returnLine = () => screen.getByText(/aastase tootluse juures\.$/);
+
+  const chooseReturnOnRow = (heading: RegExp, percent: number) => {
+    const row = itemTitled(assumptionList(), heading);
+    userEvent.click(within(row).getByRole('button', { name: /^Muuda/ }));
+    userEvent.selectOptions(within(row).getByRole('combobox'), String(percent));
+  };
+
+  it('states the return in bold right under the answer', () => {
+    openResultStep();
+
+    expect(returnLine()).toHaveTextContent(/^Arvutatud 0% aastase tootluse juures\.$/);
+    expect(within(returnLine()).getByText('0%').tagName).toBe('STRONG');
+  });
+
+  it('names each pillar’s return when they differ, with a real minus sign', () => {
+    openResultStep();
+
+    chooseReturnOnRow(/^II\ssamba tootlus$/, -2);
+
+    expect(returnLine()).toHaveTextContent(
+      /^Arvutatud II\ssamba −2% ja III\ssamba 0% aastase tootluse juures\.$/,
+    );
+  });
+
+  it('ends with who provides the service, that the result is no promise and that taxes depend on the person', () => {
+    openResultStep();
+
+    expect(screen.getByText(/^Finantsteenust pakub Tuleva Fondid AS\./)).toBeInTheDocument();
+    expect(
+      screen.getByText(/^Tegemist on sinu valitud eeldustel põhineva näitliku arvutusega\./),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Maksustamine oleneb isikuga seotud asjaoludest, sh residentsusest. Maksuseadused muutuvad ajas.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('keeps the provider’s links muted like the rest of the footer, as on the calculator', () => {
+    openResultStep();
+
+    const provider = screen.getByText(/^Finantsteenust pakub Tuleva Fondid AS\./);
+    const links = within(provider).getAllByRole('link');
+    expect(links).toHaveLength(3);
+    links.forEach((link) => expect(link).toHaveClass('text-body-secondary'));
   });
 });

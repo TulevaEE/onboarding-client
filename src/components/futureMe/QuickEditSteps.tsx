@@ -4,6 +4,7 @@ import { useDecisionActions } from './decisionActions';
 import { StepDecisionId } from './decisions';
 import { ExpensesStep } from './ExpensesStep';
 import { ResultContext } from './resultAnswers';
+import { hasJoinedThirdPillar } from './youAnswers';
 import { SpecialPensionStep } from './SpecialPensionStep';
 import { FutureMeStep } from './steps';
 
@@ -17,6 +18,7 @@ export const QuickEditExpenses = ({ context }: Props) => {
     <ExpensesStep
       isEmbedded
       answers={context.expenses}
+      hasThirdPillar={hasJoinedThirdPillar(context.you)}
       onChange={(expenses) => change({ expenses })}
     />
   );
@@ -34,6 +36,7 @@ const QuickEditSpecialPension = ({ context }: Props) => {
       age65={age65}
       age66={age66}
       onChange={(changed) => change({ specialPension: changed })}
+      onAge65Change={(changed) => change({ age65: changed })}
       onEditYou={() => goTo(FutureMeStep.YOU)}
     />
   );
@@ -55,6 +58,7 @@ const QuickEditFundPension = ({ context }: Props) => {
       onEditYou={() => goTo(FutureMeStep.YOU)}
       onEditAge60={() => goTo(FutureMeStep.AGE_60)}
       onEditAge65={() => goTo(FutureMeStep.AGE_65)}
+      onEditStep={goTo}
     />
   );
 };

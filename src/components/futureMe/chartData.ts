@@ -1,13 +1,15 @@
 import { SimulationRow } from './engine/pension';
 import { nominalFactorAt } from './nominal';
-import { EarlyPayment, Result } from './resultAnswers';
+import { Result } from './resultAnswers';
 
 export type ChartSourceId =
   | 'salary'
   | 'firstPillar'
   | 'specialPension'
   | 'secondPillar'
+  | 'secondPillarTaxed'
   | 'thirdPillar'
+  | 'thirdPillarTaxed'
   | 'deposit';
 
 export interface ChartRow {
@@ -17,7 +19,9 @@ export interface ChartRow {
   firstPillar: number;
   specialPension: number;
   secondPillar: number;
+  secondPillarTaxed: number;
   thirdPillar: number;
+  thirdPillarTaxed: number;
   deposit: number;
   costs: number;
   shortfall: number;
@@ -29,8 +33,10 @@ export const SOURCE_IDS: ChartSourceId[] = [
   'salary',
   'firstPillar',
   'specialPension',
-  'secondPillar',
   'thirdPillar',
+  'thirdPillarTaxed',
+  'secondPillar',
+  'secondPillarTaxed',
   'deposit',
 ];
 const TABLE_AGE_STEP = 5;
@@ -41,39 +47,76 @@ const surplusOf = ({ work, i1, isp, i2, i3, dep }: SimulationRow, need: number) 
   return !work && over > NOTICEABLE ? Math.round(over) : 0;
 };
 
-const earlyRowOf = ({ age, year, amount }: EarlyPayment): ChartRow => ({
+const beforePensionRowOf = (
+  age: number,
+  year: number,
+  amounts: Partial<Pick<ChartRow, 'specialPension' | 'thirdPillar'>>,
+): ChartRow => ({
   age,
   year,
   salary: 0,
   firstPillar: 0,
   specialPension: 0,
   secondPillar: 0,
-  thirdPillar: Math.round(amount),
+  secondPillarTaxed: 0,
+  thirdPillar: 0,
+  thirdPillarTaxed: 0,
   deposit: 0,
   costs: 0,
   shortfall: 0,
   surplus: 0,
   isBeforePension: true,
+  ...amounts,
 });
+
+const specialPensionStartAgeOf = ({ rows }: Result): number =>
+  rows.find(({ isp }) => isp > NOTICEABLE)?.age ?? Infinity;
+
+const beforePensionRowsOf = (result: Result): ChartRow[] => {
+  const specialPensionFrom = specialPensionStartAgeOf(result);
+  const isBeforePensionAge = ({ age }: { age: number }) => age < result.pensionStartAge;
+  const fundPensions = result.earlyThirdPillar.filter(isBeforePensionAge);
+  const ages = new Set([
+    ...fundPensions.map(({ age }) => age),
+    ...result.rows
+      .filter((row) => isBeforePensionAge(row) && row.age >= specialPensionFrom)
+      .map(({ age }) => age),
+  ]);
+  return Array.from(ages)
+    .sort((a, b) => a - b)
+    .map((age) => {
+      const resultRow = result.rows.find((row) => row.age === age);
+      const fundPension = fundPensions.find((payment) => payment.age === age);
+      return beforePensionRowOf(age, fundPension?.year ?? resultRow?.year ?? 0, {
+        specialPension: age >= specialPensionFrom ? Math.round(resultRow?.isp ?? 0) : 0,
+        thirdPillar: Math.round(fundPension?.amount ?? 0),
+      });
+    });
+};
 
 export const chartRowsOf = (result: Result, need: number, isNominal = false): ChartRow[] => {
   const isBeforePensionAge = ({ age }: { age: number }) => age < result.pensionStartAge;
   const fundPensionFrom55At = (age: number) =>
     result.earlyThirdPillar.find((payment) => payment.age === age)?.amount ?? 0;
   return [
-    ...result.earlyThirdPillar.filter(isBeforePensionAge).map(earlyRowOf),
+    ...beforePensionRowsOf(result),
     ...result.rows
       .filter((row) => !isBeforePensionAge(row))
       .map((row) => {
         const costs = isNominal ? need * nominalFactorAt(row.year) : need;
+        const thirdPillarTaken = row.extra - row.extra2;
         return {
           age: row.age,
           year: row.year,
           salary: row.work ? Math.round(row.spend) : 0,
           firstPillar: row.work ? 0 : Math.round(row.i1),
           specialPension: row.work ? 0 : Math.round(row.isp),
-          secondPillar: Math.round(row.i2),
-          thirdPillar: Math.round(row.i3 + fundPensionFrom55At(row.age)),
+          secondPillar: Math.round(row.i2 - row.extra2),
+          secondPillarTaxed: Math.round(row.extra2),
+          thirdPillar: Math.round(
+            Math.max(0, row.i3 - thirdPillarTaken) + fundPensionFrom55At(row.age),
+          ),
+          thirdPillarTaxed: Math.round(thirdPillarTaken),
           deposit: Math.round(row.dep),
           costs: Math.round(costs),
           shortfall: row.shortfall > NOTICEABLE ? Math.round(row.shortfall) : 0,

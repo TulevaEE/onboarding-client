@@ -1,9 +1,10 @@
 import React, { RefObject } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
-import Radio from '../common/radio';
 import { Age55, ThirdPillarPayout } from './age55';
-import { TAX_SHORT } from './engine/pension';
+import { PAYOUT_CHOICE_EMOJI, PayoutChoice } from './age60Answers';
+import { ChoiceCard } from './ChoiceCard';
+import { PayoutChoiceText } from './PayoutChoiceText';
 import { birthYearOrFallback, ThirdPillarPlan, YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
 import { FutureMeStep } from './steps';
@@ -11,28 +12,58 @@ import { THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021 } from './thirdPillarPayoutA
 import { strong } from './richText';
 import { euro } from './amountFormat';
 import { LinkButton } from './LinkButton';
+import { Contract } from './age66Answers';
+import { ContractChoices } from './ContractChoices';
+import { ChoiceMadeNote } from './ChoiceMadeNote';
+import { FundPensionChoice } from './prefill';
+import { ageTense } from './planAges';
+import { FundPensionFaq } from './FundPensionFaq';
 
 const PLANS: ThirdPillarPlan[] = ['keep', 'fund', 'lump'];
-const PAYOUTS_URL = 'https://tuleva.ee/pensioni-valjamaksed/';
-
-const percent = (rate: number) => Math.round(rate * 100);
+const PLAN_PAYOUT_CHOICE: Record<ThirdPillarPlan, PayoutChoice> = {
+  keep: 'grow',
+  fund: 'fund',
+  lump: 'lump',
+};
+const SAVINGS_ORDER = ['deposit', 'investments', 'thirdPillar', 'secondPillar'] as const;
 
 interface Props {
   answers: YouAnswers;
   age55: Age55;
+  hasSecondPillar: boolean;
   headingRef: RefObject<HTMLHeadingElement>;
+  contract: Contract;
+  endAge: string;
+  startedFundPension?: FundPensionChoice;
   onChange: (changes: Partial<YouAnswers>) => void;
+  onContractChange: (contract: Contract) => void;
+  onEndAgeChange: (endAge: string) => void;
   onEditThirdPillar: () => void;
+  depositAtPension: DepositAtPension;
 }
+
+interface DepositAtPension {
+  age: number;
+  amount: number;
+}
+
+const PlanText = ({ plan }: { plan: ThirdPillarPlan }) =>
+  plan === 'lump' ? (
+    <FormattedMessage id="futureMe.age55.plan.lump.text" />
+  ) : (
+    <PayoutChoiceText choice={PLAN_PAYOUT_CHOICE[plan]} />
+  );
 
 const PlanOutcome = ({
   plan,
   age,
   payout,
+  depositAtPension,
 }: {
   plan: ThirdPillarPlan;
   age: number;
   payout: ThirdPillarPayout;
+  depositAtPension: DepositAtPension;
 }) =>
   plan === 'lump' ? (
     <FormattedMessage
@@ -42,6 +73,8 @@ const PlanOutcome = ({
         gross: euro(payout.gross),
         tax: euro(payout.tax),
         net: euro(payout.net),
+        pensionAge: depositAtPension.age,
+        atPension: euro(depositAtPension.amount),
         strong,
       }}
     />
@@ -53,48 +86,59 @@ const PlanOutcome = ({
         monthly: euro(payout.firstMonthly),
         total: euro(payout.net),
         left: euro(payout.leftAtPension),
+        pensionAge: depositAtPension.age,
+        atPension: euro(depositAtPension.amount),
         strong,
       }}
     />
   );
 
-export const Age55Step = ({ answers, age55, headingRef, onChange, onEditThirdPillar }: Props) => {
+export const Age55Step = ({
+  answers,
+  age55,
+  hasSecondPillar,
+  headingRef,
+  contract,
+  endAge,
+  startedFundPension,
+  onChange,
+  onContractChange,
+  onEndAgeChange,
+  onEditThirdPillar,
+  depositAtPension,
+}: Props) => {
   const intl = useIntl();
+  const birthYear = birthYearOrFallback(answers);
   const lockMessage: TranslationKey | null = age55.lock && `futureMe.age55.lock.${age55.lock}`;
-  const planTexts = (plan: ThirdPillarPlan) => ({
-    title: `futureMe.age55.plan.${plan}.title` as TranslationKey,
-    hint: `futureMe.age55.plan.${plan}.hint` as TranslationKey,
-  });
 
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-age-55-heading">
       <ChapterHead step={FutureMeStep.AGE_55}>
+        <p className="chapter-kicker">
+          <FormattedMessage
+            id="futureMe.age55.kicker"
+            values={{
+              age: THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021,
+              year: birthYear + THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021,
+              tense: ageTense(birthYear, THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021),
+            }}
+          />
+        </p>
         <h2 id="future-me-age-55-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
           <FormattedMessage id="futureMe.age55.title" />
         </h2>
       </ChapterHead>
       {age55.hasThirdPillar && (
-        <>
-          <p className="text-pretty">
-            <FormattedMessage
-              id="futureMe.age55.intro"
-              values={{
-                age: THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021,
-                year: String(
-                  birthYearOrFallback(answers) + THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021,
-                ),
-                strong,
-              }}
-            />
-          </p>
-          <ul className="small">
-            {(['lump', 'fund', 'keep'] as const).map((plan) => (
-              <li key={plan}>
-                <FormattedMessage id={`futureMe.age55.rule.${plan}`} values={{ strong }} />
-              </li>
-            ))}
-          </ul>
-        </>
+        <p className="text-pretty">
+          <FormattedMessage
+            id="futureMe.age55.intro"
+            values={{
+              age: THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021,
+              year: String(birthYear + THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021),
+              strong,
+            }}
+          />
+        </p>
       )}
       {lockMessage && (
         <p className="you-note">
@@ -107,58 +151,76 @@ export const Age55Step = ({ answers, age55, headingRef, onChange, onEditThirdPil
           </LinkButton>
         </p>
       )}
-      <fieldset disabled={!!age55.lock} className="mb-3">
+      <fieldset disabled={!!age55.lock} className="payout-fieldset mb-3">
         <legend className="form-label fs-6 fw-medium">
           <FormattedMessage id="futureMe.age55.plan.legend" />
         </legend>
-        {PLANS.map((plan) => {
-          const { title, hint } = planTexts(plan);
-          return (
-            <Radio
+        {startedFundPension && <ChoiceMadeNote choice={startedFundPension} />}
+        <div className="payout-choices">
+          {PLANS.map((plan) => (
+            <ChoiceCard
               key={plan}
-              id={`future-me-age-55-plan-${plan}`}
+              idPrefix="future-me-age-55-plan"
               name="future-me-age-55-plan"
-              className="mb-2"
-              selected={age55.plan === plan}
-              disabled={!!age55.lock}
-              onSelect={() => onChange({ thirdPillarPlan: plan })}
-            >
-              <strong className="d-block">
-                <FormattedMessage id={title} />
-              </strong>
-              <span className="d-block text-secondary text-pretty">
-                <FormattedMessage id={hint} values={{ tax: percent(TAX_SHORT) }} />
-              </span>
-            </Radio>
-          );
-        })}
-      </fieldset>
-      <p className={age55.payout ? 'you-note text-pretty' : undefined} role="status">
-        {age55.payout && <PlanOutcome plan={age55.plan} age={age55.age} payout={age55.payout} />}
-      </p>
-      <details className="mt-3">
-        <summary className="fw-medium">
-          <FormattedMessage id="futureMe.age55.faq.fundPension.question" />
-        </summary>
-        <p className="mt-2">
-          <FormattedMessage id="futureMe.age55.faq.fundPension.intro" />
-        </p>
-        <ul>
-          {(['taxFree', 'longer', 'heirs'] as const).map((point) => (
-            <li key={point}>
-              <FormattedMessage
-                id={`futureMe.age55.faq.fundPension.${point}`}
-                values={{ strong }}
-              />
-            </li>
+              value={plan}
+              emoji={PAYOUT_CHOICE_EMOJI[PLAN_PAYOUT_CHOICE[plan]]}
+              checked={age55.plan === plan}
+              title={
+                <FormattedMessage id={`futureMe.age55.plan.${plan}.title` as TranslationKey} />
+              }
+              text={<PlanText plan={plan} />}
+              onChange={() => onChange({ thirdPillarPlan: plan })}
+            />
           ))}
-        </ul>
-        <p className="mb-0">
-          <a href={PAYOUTS_URL}>
-            <FormattedMessage id="futureMe.age55.faq.fundPension.link" />
-          </a>
-        </p>
-      </details>
+        </div>
+      </fieldset>
+      {age55.plan === 'fund' && (
+        <ContractChoices
+          pillar="thirdPillar"
+          idPrefix="future-me-55"
+          contract={contract}
+          startAge={age55.age}
+          birthYear={birthYear}
+          sex={answers.sex}
+          endAge={endAge}
+          onChange={onContractChange}
+          onEndAgeChange={onEndAgeChange}
+        />
+      )}
+      <p className={age55.payout ? 'you-note text-pretty' : undefined} role="status">
+        {age55.payout && (
+          <PlanOutcome
+            plan={age55.plan}
+            age={age55.age}
+            payout={age55.payout}
+            depositAtPension={depositAtPension}
+          />
+        )}
+      </p>
+      <FundPensionFaq>
+        {hasSecondPillar && (
+          <details className="faq-item">
+            <summary>
+              <FormattedMessage id="futureMe.age55.faq.order.question" />
+            </summary>
+            <div className="faq-body">
+              <p>
+                <FormattedMessage id="futureMe.age55.faq.order.intro" />
+              </p>
+              <ol aria-label={intl.formatMessage({ id: 'futureMe.age55.faq.order.listLabel' })}>
+                {SAVINGS_ORDER.map((savings) => (
+                  <li key={savings}>
+                    <FormattedMessage id={`futureMe.age55.faq.order.${savings}`} />
+                  </li>
+                ))}
+              </ol>
+              <p className="mb-0">
+                <FormattedMessage id="futureMe.age55.faq.order.why" />
+              </p>
+            </div>
+          </details>
+        )}
+      </FundPensionFaq>
     </section>
   );
 };

@@ -122,7 +122,7 @@ const fundBalance = (pillar: number | null, value: number, unavailableValue: num
     fundManager: { name: 'Tuleva' },
     managementFeeRate: 0.0034,
     pillar,
-    ongoingChargesFigure: 0.0039,
+    ongoingChargesFigure: 0.0028,
   },
   value,
   unavailableValue,
@@ -222,12 +222,12 @@ const registerRefusingTheSavingsBalance = (funds: unknown[]) =>
   );
 
 const savingsFund = {
-  isin: 'EE0000000001',
+  isin: 'EE0000003283',
   name: 'Tuleva Täiendav Kogumisfond',
   fundManager: { name: 'Tuleva' },
   managementFeeRate: 0.0025,
   pillar: null,
-  ongoingChargesFigure: 0.0025,
+  ongoingChargesFigure: 0.0026,
 };
 
 const pillarFund = {
@@ -236,7 +236,7 @@ const pillarFund = {
   fundManager: { name: 'Tuleva' },
   managementFeeRate: 0.0034,
   pillar: 2,
-  ongoingChargesFigure: 0.0039,
+  ongoingChargesFigure: 0.0028,
 };
 
 const savingsTransaction = (

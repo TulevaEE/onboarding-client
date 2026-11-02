@@ -6,9 +6,10 @@ import {
   earlyDecrease,
   isPayoutChoiceMadeAtAnotherStep,
   pensionKind,
-  thirdPillarAfterAsked,
 } from './age65Answers';
+import { age55Of } from './age55';
 import { Age65Deferral } from './Age65Deferral';
+import { Age65DeferralFaq } from './Age65DeferralFaq';
 import { Age65Pillars } from './Age65Pillars';
 import { Age65Work } from './Age65Work';
 import { Age66Answers } from './age66Answers';
@@ -16,17 +17,22 @@ import { FirstPillarChoice } from './FirstPillarChoice';
 import {
   chosenFirstPillar,
   firstPillarComparison,
+  isSpecialPensionAfterPensionAge,
+  pensionInputOf,
   SpecialPensionAnswers,
+  specialPensionStartAge,
 } from './specialPensionAnswers';
-import { exactPercent } from './amountFormat';
+import { euro, exactPercent } from './amountFormat';
 import { retirementYears } from './engine/pension';
 import { FundPensionFaq } from './FundPensionFaq';
 import { RescueCompareFaq, SpecialCompareFaq } from './KidsCompareFaq';
+import { RescueNotes } from './RescueNotes';
 import { FutureMeStep, StepPlanInput } from './steps';
-import { YouAnswers } from './youAnswers';
+import { amountOf, isRescueAllowanceOnly, YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
 import { ageTense, hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 import { strong } from './richText';
+import { FundPensionChoice } from './prefill';
 import { LinkButton } from './LinkButton';
 
 interface Props {
@@ -37,20 +43,18 @@ interface Props {
   age66: Age66Answers;
   specialPension: SpecialPensionAnswers;
   headingRef: RefObject<HTMLHeadingElement>;
+  startedFundPensions?: Partial<Record<'secondPillar' | 'thirdPillar', FundPensionChoice>>;
   onChange: (answers: Age65Answers) => void;
   onEditYou: () => void;
   onEditAge60: () => void;
+  onEditAge55: () => void;
 }
-
-const SOURCE_PAGE = 'https://www.riigiteataja.ee/akt/RPKS';
 
 const richText = {
   p: (chunks: React.ReactNode) => <p>{chunks}</p>,
   ul: (chunks: React.ReactNode) => <ul>{chunks}</ul>,
   li: (chunks: React.ReactNode) => <li>{chunks}</li>,
   strong,
-  small: (chunks: React.ReactNode) => <small className="text-secondary">{chunks}</small>,
-  link: (chunks: React.ReactNode) => <a href={SOURCE_PAGE}>{chunks}</a>,
 };
 
 export const Age65Step = ({
@@ -61,17 +65,22 @@ export const Age65Step = ({
   age66,
   specialPension,
   headingRef,
+  startedFundPensions = {},
   onChange,
   onEditYou,
   onEditAge60,
+  onEditAge55,
 }: Props) => {
   const age = retirementAge(plan);
   const pensionAge = retirementYears(plan);
   const year = plan.birthYear + age;
   const kind = pensionKind(you);
+  const allowance = isRescueAllowanceOnly(you) ? 'yes' : 'no';
   const comparison = plan.hasSpecialPension
     ? firstPillarComparison(specialPension, you, plan, answers, age66)
     : null;
+  const specialAge = specialPensionStartAge(plan);
+  const isSpecialPensionLater = specialAge > age;
   const isChosenAtAnotherStep = isPayoutChoiceMadeAtAnotherStep(plan);
   const hasSecondPillar = plan.savesInSecondPillar;
   const hasThird = hasThirdPillarAt(you, plan, age);
@@ -90,7 +99,15 @@ export const Age65Step = ({
     onChange,
     onEditYou,
     onEditAge60,
+    onEditAge55,
   };
+  const thirdPillarAt55 = age55Of(you, 1);
+  const thirdFundFrom55 = thirdPillarAt55.plan === 'fund' ? thirdPillarAt55.age : undefined;
+
+  const isPillarChoiceLeft =
+    !isChosenAtAnotherStep &&
+    ((hasSecondPillar && age60.secondPillar === 'grow') ||
+      (hasThird && age60.thirdPillar === 'grow' && thirdFundFrom55 === undefined));
 
   return (
     <section className="chapter card p-4" aria-labelledby="future-me-age65-heading">
@@ -102,7 +119,15 @@ export const Age65Step = ({
           />
         </p>
         <h2 id="future-me-age65-heading" className="text-balance" tabIndex={-1} ref={headingRef}>
-          <FormattedMessage id="futureMe.age65.title" values={{ kind }} />
+          <FormattedMessage
+            id="futureMe.age65.title"
+            values={{
+              kind,
+              allowance,
+              special: plan.hasSpecialPension ? 'yes' : 'no',
+              pillars: isPillarChoiceLeft ? 'asked' : 'done',
+            }}
+          />
         </h2>
       </ChapterHead>
       {kind !== 'regular' && (
@@ -111,6 +136,8 @@ export const Age65Step = ({
             id="futureMe.age65.early.note"
             values={{
               kind,
+              allowance,
+              amount: euro(amountOf(you.firstPillarMonthly)),
               age,
               year,
               years: plan.earlyRetirementYears,
@@ -128,27 +155,31 @@ export const Age65Step = ({
           </LinkButton>
         </p>
       )}
-      <Age65Work
-        answers={answers}
-        you={you}
-        plan={plan}
-        isThirdPillarAfterAsked={thirdPillarAfterAsked(answers, you, plan)}
-        onChange={onChange}
+      <RescueNotes
+        input={pensionInputOf(specialPension, you, plan, answers, age66)}
+        age={age}
+        pensionAge={pensionAge}
       />
-      {comparison && (
+      <Age65Work answers={answers} you={you} plan={plan} onChange={onChange} />
+      {comparison && !isSpecialPensionAfterPensionAge(plan) && (
         <FirstPillarChoice
           idPrefix="future-me-first-pillar"
           title={<FormattedMessage id="futureMe.firstPillarChoice.title" />}
           intro={
             <FormattedMessage
-              id="futureMe.firstPillarChoice.intro"
-              values={{ age, isFavourable: kind === 'favourable' }}
+              id={
+                isSpecialPensionLater
+                  ? 'futureMe.firstPillarChoice.introSpecialLater'
+                  : 'futureMe.firstPillarChoice.intro'
+              }
+              values={{ age, specialAge, isFavourable: kind === 'favourable' }}
             />
           }
           special={comparison.special}
           oldAge={comparison.oldAge}
           larger={comparison.larger}
           chosen={chosenFirstPillar(answers.firstPillarChoice, comparison)}
+          laterSpecialStartAge={isSpecialPensionLater ? specialAge : undefined}
           onChange={(firstPillarChoice) => onChange({ ...answers, firstPillarChoice })}
         />
       )}
@@ -162,11 +193,26 @@ export const Age65Step = ({
       <h3 className="h5 section-title mt-4">
         <FormattedMessage id="futureMe.age65.pillars.title" />
       </h3>
-      <Age65Pillars pillar="secondPillar" hasPillar={hasSecondPillar} {...pillarProps} />
-      <Age65Pillars pillar="thirdPillar" hasPillar={hasThird} {...pillarProps} />
-      <FundPensionFaq withFundQuestions={isAnyPayoutAsked}>
+      <Age65Pillars
+        pillar="secondPillar"
+        hasPillar={hasSecondPillar}
+        startedFundPension={startedFundPensions.secondPillar}
+        {...pillarProps}
+      />
+      <Age65Pillars
+        pillar="thirdPillar"
+        hasPillar={hasThird}
+        fundFrom55={thirdFundFrom55}
+        startedFundPension={startedFundPensions.thirdPillar}
+        {...pillarProps}
+      />
+      <FundPensionFaq
+        withFundQuestions={isAnyPayoutAsked}
+        hasBothPillars={hasSecondPillar && hasThird}
+      >
         <RescueCompareFaq context={compareContext} />
         <SpecialCompareFaq context={compareContext} />
+        <Age65DeferralFaq you={you} />
         <details className="faq-item">
           <summary>
             <FormattedMessage id="futureMe.age65.faq.yearScore.q" />

@@ -34,21 +34,29 @@ const ORDER_SPECIAL_PENSION_BEFORE_AGE_60 = 4.5;
 const ORDER_RETIRING_BEFORE_AGE_60 = 4.6;
 const ORDER_SPECIAL_PENSION_BEFORE_PENSION_AGE = 5.5;
 const ORDER_SPECIAL_PENSION_AT_PENSION_AGE = 5.9;
+const ORDER_SPECIAL_PENSION_AFTER_PENSION_AGE = 7.5;
 
 const MEASURED_RESULT_STEP = 9;
 
 export interface StepPlanInput {
   birthYear: number;
+  birthMonth?: number;
   pensionAgeYears?: number;
   earlyRetirementYears: number;
   hasSpecialPension: boolean;
   specialPensionStartAge?: number;
   savesInSecondPillar: boolean;
-  thirdPillarJoined: 'before' | 'after' | 'none';
+  thirdPillarJoined: 'before' | 'after' | 'plan' | 'never';
 }
 
-export const isStepSkipped = (step: StepId, input: StepPlanInput): boolean => {
+export const isStepSkipped = (
+  step: StepId,
+  input: StepPlanInput,
+  isAge66Needed = true,
+): boolean => {
   switch (step) {
+    case AGE_66_PLUS:
+      return !isAge66Needed;
     case AGE_55:
       return input.thirdPillarJoined !== 'before';
     case SPECIAL_PENSION:
@@ -60,7 +68,10 @@ export const isStepSkipped = (step: StepId, input: StepPlanInput): boolean => {
 
 const specialPensionOrder = (input: StepPlanInput): number => {
   const pensionAgeYears = retirementYears(input);
-  const startAge = Math.min(input.specialPensionStartAge ?? pensionAgeYears, pensionAgeYears);
+  const startAge = input.specialPensionStartAge ?? pensionAgeYears;
+  if (startAge > pensionAgeYears) {
+    return ORDER_SPECIAL_PENSION_AFTER_PENSION_AGE;
+  }
   if (startAge < THIRD_PILLAR_PAYOUT_AGE_JOINED_BEFORE_2021) {
     return ORDER_SPECIAL_PENSION_BEFORE_AGE_55;
   }
@@ -81,8 +92,8 @@ export const stepOrder = (step: StepId, input: StepPlanInput): number => {
   return step === SPECIAL_PENSION ? specialPensionOrder(input) : step;
 };
 
-export const shownSteps = (input: StepPlanInput): StepId[] =>
-  ALL_STEPS.filter((step) => !isStepSkipped(step, input)).sort(
+export const shownSteps = (input: StepPlanInput, isAge66Needed = true): StepId[] =>
+  ALL_STEPS.filter((step) => !isStepSkipped(step, input, isAge66Needed)).sort(
     (a, b) => stepOrder(a, input) - stepOrder(b, input),
   );
 

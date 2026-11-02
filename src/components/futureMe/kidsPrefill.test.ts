@@ -1,5 +1,10 @@
 import { Contribution } from '../common/apiModels';
-import { attributableIIMonths, childBirthOf, deriveKidsPrefill } from './kidsPrefill';
+import {
+  attributableIIMonths,
+  childBirthOf,
+  deriveKidsPrefill,
+  isPrefilledIIMonths,
+} from './kidsPrefill';
 
 const A_GIRL_BORN_FEB_2023 = '62302200000';
 const A_BOY_BORN_JUNE_2015 = '51506150000';
@@ -209,5 +214,21 @@ describe('prefilled months once the saver enters more children', () => {
 
   it('keeps the months when nothing was prefilled', () => {
     expect(attributableIIMonths(null, ['2023', '2022'], ['12', ''])).toEqual(['12', '']);
+  });
+
+  it('clears them when a child is added within three years after an earlier prefilled child was removed', () => {
+    expect(attributableIIMonths(prefill, ['2023', '2022'], ['24', ''])).toEqual(['', '']);
+  });
+
+  it('marks the months as prefilled for the child they were prefilled for after an earlier child was removed', () => {
+    expect(isPrefilledIIMonths(prefill, ['2023'], ['24'], 0)).toBe(true);
+  });
+
+  it('does not mark months the saver typed for a child that was not prefilled', () => {
+    expect(isPrefilledIIMonths(prefill, ['2022', '2023'], ['24', '24'], 0)).toBe(false);
+  });
+
+  it('does not mark months when nothing was prefilled', () => {
+    expect(isPrefilledIIMonths(null, ['2023'], ['24'], 0)).toBe(false);
   });
 });

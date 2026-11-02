@@ -5,10 +5,13 @@ import { isPayoutChoiceMadeAtAnotherStep, Age65Answers } from './age65Answers';
 import {
   Age66Answers,
   Age66Context,
+  contractChosenAt,
   contractLock,
   fundStartOf,
+  hasPillar,
   isContractAsked,
   isGrowing,
+  Pillar,
 } from './age66Answers';
 import { Age66Pillar } from './Age66Pillar';
 import { euro } from './amountFormat';
@@ -19,7 +22,7 @@ import {
   firstPillarComparison,
   SpecialPensionAnswers,
 } from './specialPensionAnswers';
-import { FutureMeStep, StepPlanInput } from './steps';
+import { FutureMeStep, StepId, StepPlanInput } from './steps';
 import { YouAnswers } from './youAnswers';
 import { StepSection } from './StepSection';
 import { ageTense, payoutAge, retirementAge } from './planAges';
@@ -37,6 +40,7 @@ interface Props {
   onChange: (answers: Age66Answers) => void;
   onEditYou: () => void;
   onEditAge60: () => void;
+  onEditStep: (step: StepId) => void;
   onEditAge65: () => void;
 }
 
@@ -48,6 +52,8 @@ const titleStateOf = (isStarting: boolean, isAsked: boolean) => {
 };
 
 const MIN_NOTICEABLE_RISE = 0.5;
+
+const paragraph = (chunks: React.ReactNode) => <p>{chunks}</p>;
 
 export const Age66Step = ({
   answers,
@@ -61,6 +67,7 @@ export const Age66Step = ({
   onChange,
   onEditYou,
   onEditAge60,
+  onEditStep,
   onEditAge65,
 }: Props) => {
   const context: Age66Context = { age60, age65, you, plan };
@@ -73,12 +80,14 @@ export const Age66Step = ({
     fundStartOf('secondPillar', answers, context),
     fundStartOf('thirdPillar', answers, context),
   ].filter((age): age is number => age !== undefined);
-  const firstAge = startAges.length > 0 ? Math.min(...startAges) : retirementAge(plan) + 1;
+  const firstAge = startAges.length > 0 ? Math.min(...startAges) : retirementAge(plan);
   const isAnyContractAsked =
     isContractAsked('secondPillar', answers, context) ||
     isContractAsked('thirdPillar', answers, context);
   const titleState = titleStateOf(startAges.length > 0, isAnyContractAsked);
-  const isAnyGrowing = isGrowing('secondPillar', context) || isGrowing('thirdPillar', context);
+  const isStartAsked = (pillar: Pillar) =>
+    isGrowing(pillar, context) && contractChosenAt(pillar, context) === null;
+  const isAnyGrowing = isStartAsked('secondPillar') || isStartAsked('thirdPillar');
   const secondLock = contractLock('secondPillar', answers, context);
   const isSecondChosenAt60 = age60.secondPillar !== 'grow' || isPayoutChoiceMadeAtAnotherStep(plan);
   const isThirdContractAsked = isContractAsked('thirdPillar', answers, context);
@@ -129,6 +138,7 @@ export const Age66Step = ({
         context={context}
         isLegendShown={isThirdContractAsked}
         onChange={onChange}
+        onEditContract={onEditStep}
       />
       <Age66Pillar
         pillar="thirdPillar"
@@ -136,6 +146,7 @@ export const Age66Step = ({
         context={context}
         isLegendShown
         onChange={onChange}
+        onEditContract={onEditStep}
       />
       {isAnyGrowing && (
         <p className="form-text mb-3" id="future-me-66-start-hint">
@@ -169,7 +180,20 @@ export const Age66Step = ({
           )}
         </p>
       )}
-      {!isEmbedded && <FundPensionFaq />}
+      {!isEmbedded && (
+        <FundPensionFaq
+          hasBothPillars={hasPillar('secondPillar', context) && hasPillar('thirdPillar', context)}
+        >
+          <details className="faq-item">
+            <summary>
+              <FormattedMessage id="futureMe.age66.faq.yearlyFalls.q" />
+            </summary>
+            <div className="faq-body">
+              <FormattedMessage id="futureMe.age66.faq.yearlyFalls.a" values={{ p: paragraph }} />
+            </div>
+          </details>
+        </FundPensionFaq>
+      )}
     </StepSection>
   );
 };

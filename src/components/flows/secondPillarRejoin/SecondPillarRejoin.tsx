@@ -20,7 +20,7 @@ import {
 import { isSigningWithIdCard } from '../../common/authenticationManager';
 import { TulevaSecondPillarStockFund } from '../../common/utils';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
-import { FundChoice, PaymentRateChoice } from './RejoinChoices';
+import { FundChoice, FundPick, PaymentRateChoice } from './RejoinChoices';
 import Checkbox from '../../common/checkbox/Checkbox';
 import { RejoinDisclaimers } from './RejoinDisclaimers';
 import { useMandateBatchSigning } from '../withdrawals/signing/useMandateBatchSigning';
@@ -152,26 +152,26 @@ const RejoinApplication = ({
     challengeCode,
   } = useMandateBatchSigning();
   const [paymentRate, setPaymentRate] = useState<PaymentRate>(DEFAULT_PAYMENT_RATE);
-  const [fundIsin, setFundIsin] = useState<string>(RECOMMENDED_FUND_ISIN);
-  const [isPaymentRateOpen, setPaymentRateOpen] = useState(false);
-  const [isFundOpen, setFundOpen] = useState(false);
+  const [fundPick, setFundPick] = useState<FundPick>({
+    isin: RECOMMENDED_FUND_ISIN,
+    isFromList: false,
+  });
   const [batchCreationError, setBatchCreationError] = useState<ErrorResponse | null>(null);
   const [isCreatingBatch, setCreatingBatch] = useState(false);
   const [refusal, setRefusal] = useState<RejoinRefusal | null>(null);
   const [hasAgreedToTerms, setAgreedToTerms] = useState(false);
   const [hasFilledApplication, setFilledApplication] = useState(false);
 
-  const chooseFund = (isin: string) => {
-    setFundIsin(isin);
+  const chooseFund = (pick: FundPick) => {
+    setFundPick(pick);
     setAgreedToTerms(false);
   };
 
+  const fundIsin = fundPick.isin;
   const chosenFund = funds.find((fund) => fund.isin === fundIsin) ?? null;
-  const isAlreadyAtDefaultPaymentRate = paymentRateOnFile === DEFAULT_PAYMENT_RATE;
   const isChangingPaymentRate = paymentRate !== paymentRateOnFile;
-  const isAlreadyInRecommendedFund = activeFundIsin === RECOMMENDED_FUND_ISIN;
-  const isChangingFund = fundIsin !== activeFundIsin;
-  const hasChoices = !isAlreadyAtDefaultPaymentRate || !isAlreadyInRecommendedFund;
+  const isFundChosen = fundIsin !== null;
+  const isChangingFund = isFundChosen && fundIsin !== activeFundIsin;
   const isAwaitingFundTerms = isChangingFund && !hasAgreedToTerms;
   const paymentRateChange: CreateMandateDto[] = isChangingPaymentRate
     ? [
@@ -342,33 +342,25 @@ const RejoinApplication = ({
       ) : (
         <>
           <RejoinHeader contributionStartDate={contributionStartDate} />
-          {hasChoices && (
-            <div className="border-top mb-5">
-              {!isAlreadyAtDefaultPaymentRate && (
-                <PaymentRateChoice
-                  paymentRate={paymentRate}
-                  onChange={setPaymentRate}
-                  open={isPaymentRateOpen}
-                  onToggle={() => setPaymentRateOpen(!isPaymentRateOpen)}
-                />
-              )}
-              {!isAlreadyInRecommendedFund && (
-                <FundChoice
-                  funds={funds}
-                  recommendedFundIsin={RECOMMENDED_FUND_ISIN}
-                  fundIsin={fundIsin}
-                  onChange={chooseFund}
-                  open={isFundOpen}
-                  onToggle={() => setFundOpen(!isFundOpen)}
-                />
-              )}
-            </div>
-          )}
+          <div className="d-flex flex-column gap-4 mb-5">
+            <PaymentRateChoice paymentRate={paymentRate} onChange={setPaymentRate} />
+            <FundChoice
+              funds={funds}
+              recommendedFundIsin={RECOMMENDED_FUND_ISIN}
+              pick={fundPick}
+              onChange={chooseFund}
+            />
+          </div>
           <div className="d-flex flex-column-reverse flex-md-row justify-content-between">
             <Link className="btn btn-light mt-2" to="/account">
               <FormattedMessage id="secondPillarPaymentRate.cancel" />
             </Link>
-            <button type="button" className="btn btn-primary mt-2" onClick={review}>
+            <button
+              type="button"
+              className="btn btn-primary mt-2"
+              disabled={!isFundChosen}
+              onClick={review}
+            >
               <FormattedMessage id="secondPillarRejoin.next" />
             </button>
           </div>

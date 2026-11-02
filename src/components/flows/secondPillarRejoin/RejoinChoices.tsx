@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Radio } from '../../common';
 import { Recommended } from '../../common/Recommended';
@@ -7,39 +7,20 @@ import { Fund } from '../../common/apiModels';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
 import styles from './RejoinChoices.module.scss';
 
-type ChoiceRowProps = {
+const ChoiceSection = ({
+  id,
+  label,
+  children,
+}: {
   id: string;
   label: ReactNode;
-  value: ReactNode;
-  open: boolean;
-  onToggle: () => void;
   children: ReactNode;
-};
-
-const ChoiceRow = ({ id, label, value, open, onToggle, children }: ChoiceRowProps) => (
-  <div role="group" aria-labelledby={`${id}-label`} className="py-3 border-bottom">
-    <div className="d-flex justify-content-between align-items-start gap-3">
-      <div>
-        <div id={`${id}-label`} className="text-body-secondary">
-          {label}
-        </div>
-        <div className="fw-medium">{value}</div>
-      </div>
-      <button
-        type="button"
-        className="btn btn-link link-body-emphasis p-0 text-end"
-        style={{ minWidth: '4.5rem' }}
-        aria-expanded={open}
-        onClick={onToggle}
-      >
-        <FormattedMessage id={open ? 'secondPillarRejoin.done' : 'secondPillarRejoin.change'} />
-      </button>
+}) => (
+  <div role="group" aria-labelledby={`${id}-label`}>
+    <div id={`${id}-label`} className="fw-semibold mb-2">
+      {label}
     </div>
-    {open && (
-      <div className={`${styles.choices} mt-3`}>
-        <div className={`${styles.choicesContent} d-flex flex-column gap-2`}>{children}</div>
-      </div>
-    )}
+    <div className="d-flex flex-column gap-2">{children}</div>
   </div>
 );
 
@@ -49,32 +30,13 @@ const RECOMMENDED_PAYMENT_RATE: PaymentRate = 6;
 export const PaymentRateChoice = ({
   paymentRate,
   onChange,
-  open,
-  onToggle,
 }: {
   paymentRate: PaymentRate;
   onChange: (paymentRate: PaymentRate) => void;
-  open: boolean;
-  onToggle: () => void;
 }) => (
-  <ChoiceRow
+  <ChoiceSection
     id="rejoin-payment-rate"
     label={<FormattedMessage id="secondPillarRejoin.paymentRate.label" />}
-    value={
-      <>
-        <FormattedMessage
-          id="secondPillarRejoin.paymentRate.value"
-          values={{ rate: paymentRate }}
-        />
-        {!open && paymentRate === RECOMMENDED_PAYMENT_RATE && (
-          <span className="d-block fw-normal">
-            <FormattedMessage id="secondPillarPaymentRate.maximumBenefit" />
-          </span>
-        )}
-      </>
-    }
-    open={open}
-    onToggle={onToggle}
   >
     {PAYMENT_RATES.map((rate) => (
       <Radio
@@ -103,8 +65,46 @@ export const PaymentRateChoice = ({
         )}
       </Radio>
     ))}
-  </ChoiceRow>
+  </ChoiceSection>
 );
+
+const Unfolding = ({
+  open,
+  quick = false,
+  children,
+}: {
+  open: boolean;
+  quick?: boolean;
+  children: ReactNode;
+}) => {
+  const [wasOpen, setWasOpen] = useState(open);
+  const [isFolding, setFolding] = useState(false);
+  const childrenWhileOpen = useRef(children);
+  if (open !== wasOpen) {
+    setWasOpen(open);
+    setFolding(!open);
+  }
+  if (open) {
+    childrenWhileOpen.current = children;
+  }
+
+  if (!open && !isFolding) {
+    return null;
+  }
+  return (
+    <div
+      className={`${isFolding ? styles.fold : styles.unfold} ${quick ? styles.quick : ''}`}
+      aria-hidden={isFolding || undefined}
+      onAnimationEnd={(event) => {
+        if (event.target === event.currentTarget) {
+          setFolding(false);
+        }
+      }}
+    >
+      <div className={styles.unfoldContent}>{childrenWhileOpen.current}</div>
+    </div>
+  );
+};
 
 const byName = (first: Fund, second: Fund) =>
   first.name.localeCompare(second.name, 'et', { sensitivity: 'base' });
@@ -119,103 +119,73 @@ const FundOptions = ({ funds }: { funds: Fund[] }) => (
   </>
 );
 
+const FundFees = ({ fund }: { fund: Fund }) => (
+  <p className="m-0 text-body-secondary">
+    <FormattedMessage id="target.funds.fees" />{' '}
+    <Fees value={fund.ongoingChargesFigure} showPerYear />
+  </p>
+);
+
+export type FundPick = { isin: string | null; isFromList: boolean };
+
 type FundChoiceProps = {
   funds: Fund[];
   recommendedFundIsin: string;
-  fundIsin: string;
-  onChange: (fundIsin: string) => void;
-  open: boolean;
-  onToggle: () => void;
+  pick: FundPick;
+  onChange: (pick: FundPick) => void;
 };
 
-export const FundChoice = ({
-  funds,
-  recommendedFundIsin,
-  fundIsin,
-  onChange,
-  open,
-  onToggle,
-}: FundChoiceProps) => {
+export const FundChoice = ({ funds, recommendedFundIsin, pick, onChange }: FundChoiceProps) => {
   const { formatMessage } = useIntl();
-  const [isPickingAnotherFund, setPickingAnotherFund] = useState(false);
   const recommendedFund = funds.find((fund) => fund.isin === recommendedFundIsin);
-  const chosenFund = funds.find((fund) => fund.isin === fundIsin);
-  const isAnotherFundChosen = fundIsin !== recommendedFundIsin;
-  const isAnotherFundSelected = isPickingAnotherFund || isAnotherFundChosen;
-
-  const choose = (isin: string) => {
-    setPickingAnotherFund(false);
-    onChange(isin);
-  };
+  const listedFund = pick.isFromList ? funds.find((fund) => fund.isin === pick.isin) : undefined;
 
   return (
-    <ChoiceRow
-      id="rejoin-fund"
-      label={<FormattedMessage id="secondPillarRejoin.fund.label" />}
-      value={
-        chosenFund && (
-          <>
-            {chosenFund.name}
-            {!open && !isAnotherFundChosen && (
-              <span className="d-block fw-normal">
-                <FormattedMessage id="secondPillarRejoin.fund.recommended.description" />
-              </span>
-            )}
-            <span className="d-block fw-normal">
-              <FormattedMessage id="target.funds.fees" />{' '}
-              <Fees value={chosenFund.ongoingChargesFigure} showPerYear />
-            </span>
-          </>
-        )
-      }
-      open={open}
-      onToggle={() => {
-        setPickingAnotherFund(false);
-        onToggle();
-      }}
-    >
+    <ChoiceSection id="rejoin-fund" label={<FormattedMessage id="secondPillarRejoin.fund.label" />}>
       {recommendedFund && (
         <Radio
           name="rejoin-fund"
           id={`rejoin-fund-${recommendedFund.isin}`}
-          selected={!isAnotherFundSelected}
-          onSelect={() => choose(recommendedFund.isin)}
+          selected={!pick.isFromList}
+          onSelect={() => onChange({ isin: recommendedFund.isin, isFromList: false })}
         >
           <p className="mb-1 fw-medium">{recommendedFund.name}</p>
           <p className="m-0 text-body-secondary">
             <FormattedMessage id="secondPillarRejoin.fund.recommended.description" />
           </p>
-          <p className="m-0 text-body-secondary">
-            <FormattedMessage id="target.funds.fees" />{' '}
-            <Fees value={recommendedFund.ongoingChargesFigure} showPerYear />
-          </p>
+          <FundFees fund={recommendedFund} />
         </Radio>
       )}
       <Radio
         name="rejoin-fund"
         id="rejoin-fund-another"
-        selected={isAnotherFundSelected}
-        onSelect={() => setPickingAnotherFund(true)}
+        selected={pick.isFromList}
+        onSelect={() => onChange({ isin: null, isFromList: true })}
       >
-        <FormattedMessage id="secondPillarRejoin.fund.other" />
+        <p className="m-0 fw-medium">
+          <FormattedMessage id="secondPillarRejoin.fund.other" />
+        </p>
+        <Unfolding open={pick.isFromList}>
+          <select
+            aria-label={formatMessage({ id: 'transfer.future.capital.other.fund' })}
+            className="form-select my-2"
+            value={listedFund?.isin ?? ''}
+            onChange={(event) => onChange({ isin: event.target.value, isFromList: true })}
+          >
+            <FormattedMessage id="transfer.future.capital.other.fund">
+              {(message) => (
+                <option value="" hidden>
+                  {message}
+                </option>
+              )}
+            </FormattedMessage>
+            <FundOptions funds={funds} />
+          </select>
+        </Unfolding>
+        <Unfolding open={listedFund !== undefined} quick>
+          {listedFund && <FundFees fund={listedFund} />}
+        </Unfolding>
       </Radio>
-      {isAnotherFundSelected && (
-        <select
-          aria-label={formatMessage({ id: 'transfer.future.capital.other.fund' })}
-          className="form-select"
-          value={isAnotherFundChosen ? fundIsin : ''}
-          onChange={(event) => choose(event.target.value)}
-        >
-          <FormattedMessage id="transfer.future.capital.other.fund">
-            {(message) => (
-              <option value="" hidden>
-                {message}
-              </option>
-            )}
-          </FormattedMessage>
-          <FundOptions funds={funds} />
-        </select>
-      )}
-    </ChoiceRow>
+    </ChoiceSection>
   );
 };

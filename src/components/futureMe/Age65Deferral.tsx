@@ -2,7 +2,13 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { DEFERRAL_INCREASE, retirementYears } from './engine/pension';
 import { StepPlanInput } from './steps';
-import { amountOf, YouAnswers } from './youAnswers';
+import {
+  amountOf,
+  earlyRetirementYears,
+  isRescueAllowanceOnly,
+  serviceIncreaseOfAnswers,
+  YouAnswers,
+} from './youAnswers';
 import {
   Age65Answers,
   deferralLock,
@@ -16,6 +22,7 @@ import {
 } from './age65Answers';
 import { decimalText, euro } from './amountFormat';
 import { ChoiceCard } from './ChoiceCard';
+import { specialPensionStartAge } from './specialPensionAnswers';
 import { LinkButton } from './LinkButton';
 
 interface Props {
@@ -31,8 +38,19 @@ const LONGEST_DEFERRAL = Math.max(...DEFERRAL_YEARS);
 
 export const Age65Deferral = ({ answers, you, plan, onChange, onEditYou }: Props) => {
   const pensionAge = retirementYears(plan);
-  const firstPillar = amountOf(you.firstPillarMonthly);
+  const yearsNotWorkedBeforeAllowance = isRescueAllowanceOnly(you) ? earlyRetirementYears(you) : 0;
+  const firstPillar =
+    Math.max(
+      0,
+      amountOf(you.firstPillarMonthly) - yearsNotWorkedBeforeAllowance * workAccrualMonthly(you),
+    ) *
+    (1 + serviceIncreaseOfAnswers(you).increase);
   const lock = deferralLock(you);
+  const headingValues = {
+    allowance: isRescueAllowanceOnly(you) ? 'yes' : 'no',
+    pensionAge,
+    year: plan.birthYear + pensionAge,
+  };
   const { mode, years } = answers;
   const whileWorking = deferralYearsWhileWorking(answers, plan);
   const workEnd = workUntilOf(answers, plan);
@@ -63,12 +81,15 @@ export const Age65Deferral = ({ answers, you, plan, onChange, onEditYou }: Props
   return (
     <>
       <h3 className="h5 section-title mt-4">
-        <FormattedMessage id="futureMe.age65.defer.title" />
+        <FormattedMessage id="futureMe.age65.defer.title" values={headingValues} />
       </h3>
       {lock ? (
         <p className="payout-note">
-          <FormattedMessage id="futureMe.age65.defer.locked" values={{ lock }} />{' '}
-          {lock === 'specialPension' && (
+          <FormattedMessage
+            id="futureMe.age65.defer.locked"
+            values={{ lock, specialAge: specialPensionStartAge(plan) }}
+          />{' '}
+          {(lock === 'specialPension' || lock === 'specialPensionLater') && (
             <LinkButton onClick={onEditYou}>
               <FormattedMessage id="futureMe.age65.defer.lockedChange" />
               <span className="visually-hidden">
@@ -84,7 +105,7 @@ export const Age65Deferral = ({ answers, you, plan, onChange, onEditYou }: Props
           </p>
           <fieldset className="payout-fieldset">
             <legend className="visually-hidden">
-              <FormattedMessage id="futureMe.age65.defer.legend" />
+              <FormattedMessage id="futureMe.age65.defer.legend" values={headingValues} />
             </legend>
             <div className="payout-choices">
               {PENSION_MODES.map((value) => (

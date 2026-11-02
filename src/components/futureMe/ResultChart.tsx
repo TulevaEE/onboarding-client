@@ -28,8 +28,9 @@ import {
   tableRowsOf,
 } from './chartData';
 import { ageButtonsOf } from './chartAges';
+import { chartChangesOf } from './chartChanges';
 import { ChartEvent, chartEventsOf } from './chartEvents';
-import { assumptionOf, SummaryNote, summaryNotesOf } from './chartNotes';
+import { assumptionOf, coverStepsOf, SummaryNote, summaryNotesOf } from './chartNotes';
 import { ChartMark, costsLine, lastPointAtAge, marksLine } from './chartPlugins';
 import {
   ChartPoint,
@@ -39,13 +40,14 @@ import {
   stackedValueOf,
 } from './chartPoints';
 import { SOURCE_COLORS, SOURCE_LABELS, SUMMARY_LABELS } from './chartSources';
-import { announcementOf } from './chartText';
+import { announcementOf, axisAmountOf } from './chartText';
 import { ResultChartAges } from './ResultChartAges';
 import { ResultChartTip } from './ResultChartTip';
 import { useTouchView } from './useTouchView';
-import { ChartAssumption, ChartGuide, SummaryNotes } from './ResultChartNotes';
+import { useHighContrast } from './useHighContrast';
+import { BeforePension, ChartAssumption, ChartGuide, SummaryNotes } from './ResultChartNotes';
 import { NominalChoice, NominalNote } from './ResultNominalChoice';
-import { NominalReturns, nominalResultOf } from './nominal';
+import { nominalResultOf } from './nominal';
 
 const HALO_COLOR = '#fff';
 const TICK_COLOR = '#6b7074';
@@ -66,7 +68,19 @@ const Y_AXIS_WIDTH = 76;
 const TOUCH_Y_AXIS_WIDTH = 52;
 const MIN_TICK_GAP = 32;
 const EVENT_DOT_ROOM = EVENT_DOT_RADIUS + EVENT_DOT_BORDER;
-const THOUSAND = 1000;
+const beforePensionOf = (rows: ChartRow[]): BeforePension => {
+  const before = rows.filter(({ isBeforePension }) => isBeforePension);
+  const hasSpecial = before.some(({ specialPension }) => specialPension > 0);
+  const hasFund = before.some(({ thirdPillar }) => thirdPillar > 0);
+  if (hasSpecial && hasFund) {
+    return 'both';
+  }
+  if (hasSpecial) {
+    return 'special';
+  }
+  return before.length > 0 ? 'fund' : 'none';
+};
+
 const NOT_COUNTED = '–';
 const COUNTED_FROM_PENSION_AGE: (ChartSourceId | 'costs')[] = ['salary', 'costs'];
 
@@ -90,6 +104,32 @@ const fadingFill = (color: string) => (context: ScriptableContext<'line'>) => {
   return gradient;
 };
 
+const HATCH_TILE = 8;
+const HATCH_LINE = 1.5;
+const HATCHED_SOURCES: ChartSourceId[] = ['secondPillarTaxed', 'thirdPillarTaxed'];
+
+const hatchedFill = (color: string) => (context: ScriptableContext<'line'>) => {
+  const tile = document.createElement('canvas');
+  tile.width = HATCH_TILE;
+  tile.height = HATCH_TILE;
+  const pen = tile.getContext('2d');
+  if (!pen) {
+    return transparent(color, 0.3);
+  }
+  pen.fillStyle = transparent(color, 0.12);
+  pen.fillRect(0, 0, HATCH_TILE, HATCH_TILE);
+  pen.strokeStyle = transparent(color, 0.6);
+  pen.lineWidth = HATCH_LINE;
+  pen.beginPath();
+  pen.moveTo(-1, HATCH_TILE + 1);
+  pen.lineTo(HATCH_TILE + 1, -1);
+  pen.stroke();
+  return context.chart.ctx.createPattern(tile, 'repeat') ?? transparent(color, 0.3);
+};
+
+const fillOf = (id: ChartSourceId) =>
+  HATCHED_SOURCES.includes(id) ? hatchedFill(SOURCE_COLORS[id]) : fadingFill(SOURCE_COLORS[id]);
+
 const isAgeLabelled = (age: number, step: number, pensionAge: number) => {
   const isNextToPensionAge = Math.abs(age - pensionAge) < step / 2;
   return age === pensionAge || (age % step === 0 && !isNextToPensionAge);
@@ -97,13 +137,6 @@ const isAgeLabelled = (age: number, step: number, pensionAge: number) => {
 
 const fittingTickStep = (width: number, years: number) =>
   (width / years) * WIDE_TICK_STEP >= MIN_TICK_GAP ? WIDE_TICK_STEP : NARROW_TICK_STEP;
-
-const shortAmount = (value: number | string) => {
-  const amount = Number(value);
-  return amount >= THOUSAND
-    ? `${(amount / THOUSAND).toLocaleString('et-EE', { maximumFractionDigits: 1 })} tuh`
-    : String(amount);
-};
 
 const Summary = ({
   result,
@@ -239,7 +272,7 @@ const datasetsOf = (
       fill,
       borderColor: SOURCE_COLORS[id],
       borderWidth: 1.5,
-      backgroundColor: fadingFill(SOURCE_COLORS[id]),
+      backgroundColor: fillOf(id),
       pointRadius: points.map((point, at) =>
         hasDotAt(at) ? dotRadiusOf(point.age, isEventAt(at), dotEvery) : 0,
       ),
@@ -273,6 +306,7 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
   const isPressedWithMouse = useRef(false);
   const hasHighlight = useRef(false);
   const isTouchView = useTouchView();
+  const isHighContrast = useHighContrast();
   const [chartWidth, setChartWidth] = useState(0);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const activeIndexRef = useRef(activeIndex);
@@ -384,7 +418,7 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
           min: rows[0].age,
           max: rows[rows.length - 1].age,
           grid: { display: false },
-          border: { color: AXIS_BORDER_COLOR },
+          border: { color: isHighContrast ? TICK_COLOR : AXIS_BORDER_COLOR },
           afterSetDimensions: ({ width }) => {
             if (isTouchView) {
               tickStep = fittingTickStep(width, rows.length);
@@ -416,12 +450,17 @@ const IncomeChart = ({ rows, events, hidden, announce }: IncomeChartProps) => {
             // eslint-disable-next-line no-param-reassign
             scale.width = isTouchView ? TOUCH_Y_AXIS_WIDTH : Y_AXIS_WIDTH;
           },
-          ticks: { maxTicksLimit: 5, color: TICK_COLOR, font: FONT, callback: shortAmount },
+          ticks: {
+            maxTicksLimit: 5,
+            color: TICK_COLOR,
+            font: FONT,
+            callback: (value) => axisAmountOf(intl, value),
+          },
         },
       },
     };
     return { data: chartData, options: chartOptions };
-  }, [intl, rows, points, events, layers, hidden, eventAges, isTouchView]);
+  }, [intl, rows, points, events, layers, hidden, eventAges, isTouchView, isHighContrast]);
 
   useLayoutEffect(() => {
     const chart = chartRef.current;
@@ -613,7 +652,9 @@ const Legend = ({ rows, hidden, onToggle }: LegendProps) => {
           <li key={id}>
             <button
               type="button"
-              className="btn btn-sm rounded-pill result-chart-toggle"
+              className={`btn btn-sm rounded-pill result-chart-toggle${
+                HATCHED_SOURCES.includes(id) ? ' is-hatched' : ''
+              }`}
               style={{ '--layer-color': SOURCE_COLORS[id] } as React.CSSProperties}
               aria-pressed={!hidden.has(id)}
               aria-describedby="future-me-chart-legend-hint"
@@ -695,10 +736,9 @@ const IncomeTable = ({ rows, isNominal }: { rows: ChartRow[]; isNominal: boolean
 interface ResultChartProps {
   result: Result;
   need: number;
-  nominalReturns: NominalReturns;
 }
 
-export const ResultChart = ({ result, need, nominalReturns }: ResultChartProps) => {
+export const ResultChart = ({ result, need }: ResultChartProps) => {
   const intl = useIntl();
   const [isTableShown, setTableShown] = useState(false);
   const [hidden, setHidden] = useState<ReadonlySet<ChartSourceId>>(new Set());
@@ -742,10 +782,18 @@ export const ResultChart = ({ result, need, nominalReturns }: ResultChartProps) 
         </h3>
         <NominalChoice isOn={isNominal} onChange={setNominal} />
       </div>
-      <NominalNote isOn={isNominal} returns={nominalReturns} />
+      <NominalNote isOn={isNominal} />
       <Summary result={shown} rows={rows} notes={notes} need={need} isNominal={isNominal} />
       {assumption && <ChartAssumption assumption={assumption} />}
-      <ChartGuide events={events} startsBeforePension={rows[0].isBeforePension} />
+      <ChartGuide
+        events={events}
+        beforePension={beforePensionOf(rows)}
+        cover={coverStepsOf(shown, rows)}
+        changes={chartChangesOf(result, rows, events, isNominal)}
+        hasWorkYears={rows.some(({ salary }) => salary > 0)}
+        hasRescueAllowance={shown.rescueAllowance !== null}
+        paysIntoThirdPillar={shown.thirdPillarMonthly > 0}
+      />
       <button
         type="button"
         className="btn btn-outline-primary btn-sm result-chart-table-toggle"

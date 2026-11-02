@@ -106,7 +106,7 @@ const savingsFund = {
   fundManager: { name: 'Tuleva' },
   managementFeeRate: 0.0025,
   pillar: null,
-  ongoingChargesFigure: 0.0025,
+  ongoingChargesFigure: 0.0026,
 };
 
 const pillarFund = {
@@ -115,7 +115,7 @@ const pillarFund = {
   fundManager: { name: 'Tuleva' },
   managementFeeRate: 0.0034,
   pillar: 2,
-  ongoingChargesFigure: 0.0039,
+  ongoingChargesFigure: 0.0028,
 };
 
 const registerSavingsBalance = (value: number, unavailableValue: number) => ({
@@ -125,7 +125,7 @@ const registerSavingsBalance = (value: number, unavailableValue: number) => ({
     fundManager: { name: 'Tuleva' },
     managementFeeRate: 0.0025,
     pillar: null,
-    ongoingChargesFigure: 0.0025,
+    ongoingChargesFigure: 0.0026,
   },
   value,
   unavailableValue,

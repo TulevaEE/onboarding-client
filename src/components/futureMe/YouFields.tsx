@@ -1,10 +1,21 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, ReactNode } from 'react';
 import classNames from 'classnames';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { fieldProblem, limitsOf, PrefilledField, YouAnswers, YouField } from './youAnswers';
+import { signedNumber } from './amountFormat';
+import {
+  fieldProblem,
+  HISTORICAL_RETURN_PERCENT,
+  limitsOf,
+  PrefilledField,
+  RETURN_PERCENT_OPTIONS,
+  YouAnswers,
+  YouField,
+} from './youAnswers';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';
+import { LinkButton } from './LinkButton';
+import { hidden } from './richText';
 
 export const FIELD_DOM_IDS: Record<YouField, string> = {
   birthYear: 'future-me-birth-year',
@@ -13,10 +24,41 @@ export const FIELD_DOM_IDS: Record<YouField, string> = {
   secondPillarAmount: 'future-me-second-pillar-amount',
   thirdPillarAmount: 'future-me-third-pillar-amount',
   thirdPillarMonthly: 'future-me-third-pillar-monthly',
+  thirdPillarOpenAge: 'future-me-third-pillar-open-age',
   kidsCount: 'future-me-kids-count',
   hazardYears: 'future-me-hazard-years',
+  undergroundYears: 'future-me-underground-years',
   rescueYears: 'future-me-rescue-years',
+  civilYears: 'future-me-civil-years',
   specialPensionStartAge: 'future-me-special-pension-start-age',
+};
+
+const FIELD_LABELS: Record<YouField, TranslationKey> = {
+  birthYear: 'futureMe.you.birthYear.label',
+  firstPillarMonthly: 'futureMe.you.firstPillarMonthly.label',
+  grossMonthly: 'futureMe.you.grossMonthly.label',
+  secondPillarAmount: 'futureMe.you.secondPillarAmount.label',
+  thirdPillarAmount: 'futureMe.you.thirdPillarAmount.label',
+  thirdPillarMonthly: 'futureMe.you.thirdPillarMonthly.label',
+  thirdPillarOpenAge: 'futureMe.you.thirdPillarOpenAge.label',
+  kidsCount: 'futureMe.you.kids.title',
+  hazardYears: 'futureMe.you.hazardYears.label',
+  undergroundYears: 'futureMe.you.undergroundYears.label',
+  rescueYears: 'futureMe.you.rescueYears.label',
+  civilYears: 'futureMe.you.civilYears.label',
+  specialPensionStartAge: 'futureMe.you.specialPensionStart.label',
+};
+
+export const FieldLabelText = ({ field, answers }: { field: YouField; answers: YouAnswers }) => {
+  if (field === 'thirdPillarMonthly' && answers.thirdPillarJoined === 'plan') {
+    return <FormattedMessage id="futureMe.you.thirdPillarMonthly.planLabel" />;
+  }
+  return (
+    <FormattedMessage
+      id={FIELD_LABELS[field]}
+      values={{ list: answers.hazardList === 'list1' ? 1 : 2 }}
+    />
+  );
 };
 
 const MIN_AMOUNT = 0;
@@ -115,7 +157,7 @@ export const AmountField = ({
     [PREFILLED_HINT_ID]: showsPrefilled,
     [errorId]: problem,
   });
-  const limits = limitsOf(field);
+  const limits = limitsOf(field, answers);
   const min = limits?.min ?? MIN_AMOUNT;
   const errorMessage = (() => {
     if (problem === 'empty') {
@@ -173,6 +215,15 @@ export const AmountField = ({
   );
 };
 
+export const returnOptions = (intl: IntlShape) =>
+  RETURN_PERCENT_OPTIONS.map((percent) => ({
+    value: String(percent),
+    label: intl.formatMessage(
+      { id: 'futureMe.you.returnRate.option' },
+      { percent: signedNumber(percent) },
+    ),
+  }));
+
 interface SelectFieldProps {
   id: string;
   label: TranslationKey;
@@ -182,6 +233,7 @@ interface SelectFieldProps {
   help?: HelpTopic;
   isPrefilled?: boolean;
   onChange: (value: string) => void;
+  children?: ReactNode;
 }
 
 export const SelectField = ({
@@ -193,10 +245,11 @@ export const SelectField = ({
   help,
   isPrefilled = false,
   onChange,
+  children,
 }: SelectFieldProps) => (
   <div className="col-12 col-sm-6">
     <FieldLabel htmlFor={id} help={help}>
-      <FormattedMessage id={label} />
+      <FormattedMessage id={label} values={{ hidden }} />
     </FieldLabel>
     <select
       id={id}
@@ -218,5 +271,40 @@ export const SelectField = ({
         <FormattedMessage id={hint} />
       </div>
     )}
+    {children}
   </div>
 );
+
+interface ReturnFieldProps {
+  id: string;
+  label: TranslationKey;
+  help?: HelpTopic;
+  value: number;
+  onChange: (percent: number) => void;
+}
+
+export const ReturnField = ({ id, label, help, value, onChange }: ReturnFieldProps) => {
+  const intl = useIntl();
+  return (
+    <SelectField
+      id={id}
+      label={label}
+      help={help}
+      value={String(value)}
+      options={returnOptions(intl)}
+      onChange={(percent) => onChange(Number(percent))}
+    >
+      <div className="form-text">
+        <FormattedMessage
+          id="millionaire.input.return.hint"
+          values={{
+            a: (chunks: ReactNode) => (
+              <LinkButton onClick={() => onChange(HISTORICAL_RETURN_PERCENT)}>{chunks}</LinkButton>
+            ),
+          }}
+        />
+        .
+      </div>
+    </SelectField>
+  );
+};

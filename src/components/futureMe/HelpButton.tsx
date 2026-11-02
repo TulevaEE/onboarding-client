@@ -89,6 +89,7 @@ export const HelpButton = ({ topic, values }: { topic: HelpTopic; values?: HelpV
         type="button"
         className="help-btn"
         aria-haspopup="dialog"
+        aria-expanded={isOpen}
         onClick={() => setIsOpen(true)}
       >
         <HelpIcon />
