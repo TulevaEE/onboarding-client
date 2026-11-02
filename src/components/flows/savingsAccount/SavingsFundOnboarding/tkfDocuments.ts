@@ -1,5 +1,6 @@
 import { captureException } from '@sentry/browser';
 import { useQuery } from '@tanstack/react-query';
+import { useIntl } from 'react-intl';
 import { TranslationKey } from '../../../translations';
 
 type TkfDocumentLink = { href: string; labelId: TranslationKey };
@@ -7,7 +8,6 @@ type TkfDocumentLink = { href: string; labelId: TranslationKey };
 type FundPageFields = Record<string, unknown>;
 
 const FUND_DOCUMENTS_PAGE_SLUG = 'tuleva-taiendav-kogumisfond-dokumendid';
-const FUND_DOCUMENTS_PAGE_URL = `https://tuleva.ee/${FUND_DOCUMENTS_PAGE_SLUG}/`;
 const FUND_PAGE_TIMEOUT_MS = 5000;
 const FUND_PAGE_FIELDS_URL = `https://tuleva.ee/wp-json/wp/v2/pages?slug=${FUND_DOCUMENTS_PAGE_SLUG}&_fields=acf&acf_format=standard`;
 
@@ -25,22 +25,21 @@ const DOCUMENTS_IN_FORCE: { field: string; labelId: TranslationKey }[] = [
 
 export const TKF_DOCUMENTS_IN_FORCE_COUNT = DOCUMENTS_IN_FORCE.length;
 
-const FUND_DOCUMENTS_PAGE_LINK: TkfDocumentLink = {
-  href: FUND_DOCUMENTS_PAGE_URL,
-  labelId: 'flows.savingsFundOnboarding.termsStep.linkText.allDocuments',
-};
-
 const documentUrl = (value: unknown): string | null =>
   typeof value === 'string' && value.startsWith('https://tuleva.ee/') ? value : null;
 
-const toTkfDocumentLinks = (fields: FundPageFields, lastReadFailed: boolean): TkfDocumentLink[] => {
+const toTkfDocumentLinks = (
+  fields: FundPageFields,
+  lastReadFailed: boolean,
+  fundDocumentsPageLink: TkfDocumentLink,
+): TkfDocumentLink[] => {
   const links = DOCUMENTS_IN_FORCE.flatMap(({ field, labelId }) => {
     const href = documentUrl(fields[field]);
     return href ? [{ href, labelId }] : [];
   });
   const lacksADocument = links.length < DOCUMENTS_IN_FORCE.length;
 
-  return lacksADocument || lastReadFailed ? [...links, FUND_DOCUMENTS_PAGE_LINK] : links;
+  return lacksADocument || lastReadFailed ? [...links, fundDocumentsPageLink] : links;
 };
 
 class FundPageRefusal extends Error {
@@ -98,11 +97,13 @@ const getFundPageFieldsReportingMissingDocuments = async (): Promise<FundPageFie
 };
 
 export const useTkfDocuments = (): TkfDocumentLink[] | undefined => {
+  const { formatMessage } = useIntl();
   const { data, isError, errorUpdateCount } = useQuery({
     queryKey: ['tkfDocuments'],
     queryFn: getFundPageFieldsReportingMissingDocuments,
     retry: false,
     networkMode: 'always',
+    staleTime: Infinity,
     cacheTime: Infinity,
   });
 
@@ -110,5 +111,9 @@ export const useTkfDocuments = (): TkfDocumentLink[] | undefined => {
   if (hasNeverAnswered) {
     return undefined;
   }
-  return toTkfDocumentLinks(data ?? {}, isError);
+  const fundDocumentsPageLink: TkfDocumentLink = {
+    href: formatMessage({ id: 'flows.savingsFundOnboarding.termsStep.linkHref.allDocuments' }),
+    labelId: 'flows.savingsFundOnboarding.termsStep.linkText.allDocuments',
+  };
+  return toTkfDocumentLinks(data ?? {}, isError, fundDocumentsPageLink);
 };

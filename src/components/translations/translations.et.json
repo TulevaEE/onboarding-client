@@ -1712,6 +1712,7 @@
   "flows.savingsFundOnboarding.termsStep.summary.fee": "Fondi tasu 0,28% aastas",
   "flows.savingsFundOnboarding.termsStep.summary.strategy": "Globaalselt hajutatud aktsiate indeksfond",
   "flows.savingsFundOnboarding.termsStep.summary.withdrawals": "Paindlikud väljamaksed kolme tööpäeva jooksul",
+  "flows.savingsFundOnboarding.termsStep.linkHref.allDocuments": "https://tuleva.ee/tuleva-taiendav-kogumisfond-dokumendid/",
 
   "flows.savingsFundOnboarding.investmentIntentStep.title": "Kuidas soovid investeerida?",
   "flows.savingsFundOnboarding.investmentIntentStep.description": "See määrab, milliseid küsimusi järgmisena küsime.",

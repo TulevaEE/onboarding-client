@@ -1,5 +1,5 @@
 import { captureException } from '@sentry/browser';
-import { onlineManager, QueryClient } from '@tanstack/react-query';
+import { focusManager, onlineManager, QueryClient } from '@tanstack/react-query';
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
@@ -28,13 +28,35 @@ beforeEach(() => tkfDocumentsBackend(server));
 afterEach(() => {
   server.resetHandlers();
   onlineManager.setOnline(undefined);
+  focusManager.setFocused(undefined);
   jest.useRealTimers();
 });
 afterAll(() => server.close());
 
-const FUND_DOCUMENTS_PAGE = 'https://tuleva.ee/tuleva-taiendav-kogumisfond-dokumendid/';
+const FUND_DOCUMENTS_PAGE = 'https://tuleva.ee/en/additional-investment-fund-documents/';
+const ESTONIAN_FUND_DOCUMENTS_PAGE = 'https://tuleva.ee/tuleva-taiendav-kogumisfond-dokumendid/';
 
-const TermsStepWrapper = ({ showError = false }: { showError?: boolean }) => {
+const comeBackToTheWindow = () =>
+  act(() => {
+    focusManager.setFocused(false);
+    focusManager.setFocused(true);
+  });
+
+const letAnyFundPageRequestFinish = () =>
+  act(
+    () =>
+      new Promise<void>((resolve) => {
+        setTimeout(resolve, 100);
+      }),
+  );
+
+const TermsStepWrapper = ({
+  showError = false,
+  language = 'en',
+}: {
+  showError?: boolean;
+  language?: 'en' | 'et';
+}) => {
   const { control, trigger } = useForm<OnboardingFormData>({
     mode: 'onBlur',
     defaultValues: {
@@ -53,7 +75,7 @@ const TermsStepWrapper = ({ showError = false }: { showError?: boolean }) => {
   });
 
   return (
-    <IntlProvider locale="en" messages={translations.en}>
+    <IntlProvider locale={language} messages={translations[language]}>
       <form>
         <TermsStep control={control} showError={showError} />
         <button type="button" onClick={() => trigger('termsAccepted')}>
@@ -215,6 +237,65 @@ describe('TermsStep', () => {
       FUND_DOCUMENTS_PAGE,
     );
     expect(screen.getAllByRole('link')).toHaveLength(1);
+  });
+
+  test('links the Estonian fund documents page in Estonian', async () => {
+    failingTkfDocumentsBackend(server);
+
+    renderWrapped(<TermsStepWrapper language="et" />);
+
+    expect(await screen.findByRole('link', { name: /^Kõik fondi dokumendid/ })).toHaveAttribute(
+      'href',
+      ESTONIAN_FUND_DOCUMENTS_PAGE,
+    );
+  });
+
+  test('keeps the links without reading the fund page again when the person comes back from a document', async () => {
+    renderWrapped(<TermsStepWrapper />);
+    expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+
+    failingTkfDocumentsBackend(server);
+    comeBackToTheWindow();
+    await letAnyFundPageRequestFinish();
+
+    expect(screen.queryByRole('link', { name: /^All fund documents/ })).not.toBeInTheDocument();
+    expect(captureException).not.toHaveBeenCalled();
+  });
+
+  test('keeps the links without reading the fund page again when the step opens again', async () => {
+    const queryClient = new QueryClient();
+    const history = createMemoryHistory();
+    const { unmount } = renderWrapped(
+      <TermsStepWrapper />,
+      history,
+      createDefaultStore(history),
+      queryClient,
+    );
+    expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+
+    unmount();
+    failingTkfDocumentsBackend(server);
+    renderWrapped(<TermsStepWrapper />, history, createDefaultStore(history), queryClient);
+    await letAnyFundPageRequestFinish();
+
+    expect(screen.getByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /^All fund documents/ })).not.toBeInTheDocument();
+    expect(captureException).not.toHaveBeenCalled();
+  });
+
+  test('reads the fund page again when the person comes back after it could not be read', async () => {
+    failingTkfDocumentsBackend(server);
+    renderWrapped(<TermsStepWrapper />);
+    expect(await screen.findByRole('link', { name: /^All fund documents/ })).toBeInTheDocument();
+
+    tkfDocumentsBackend(server);
+    comeBackToTheWindow();
+
+    expect(await screen.findByRole('link', { name: /^Terms/ })).toHaveAttribute(
+      'href',
+      TKF_DOCUMENT_FIELDS.terms_file,
+    );
+    expect(screen.queryByRole('link', { name: /^All fund documents/ })).not.toBeInTheDocument();
   });
 
   test('adds the fund documents page when a later reload of the fund page fails', async () => {

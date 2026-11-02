@@ -1622,6 +1622,7 @@
   "flows.savingsFundOnboarding.termsStep.summary.fee": "Fund fee 0.28% per year",
   "flows.savingsFundOnboarding.termsStep.summary.strategy": "A globally diversified stock index fund",
   "flows.savingsFundOnboarding.termsStep.summary.withdrawals": "Flexible withdrawals within three business days",
+  "flows.savingsFundOnboarding.termsStep.linkHref.allDocuments": "https://tuleva.ee/en/additional-investment-fund-documents/",
 
   "flows.savingsFundOnboarding.investmentIntentStep.title": "How do you want to invest?",
   "flows.savingsFundOnboarding.investmentIntentStep.description": "This determines which questions we ask next.",
