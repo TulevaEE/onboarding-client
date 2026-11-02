@@ -8,6 +8,13 @@ const leaverAccountPage: Partial<MockModeConfiguration> = {
   savingsFundBalance: 'NO_ACCOUNT',
 };
 
+const rejoinRefused: Partial<MockModeConfiguration> = {
+  ...leaverAccountPage,
+  funds: 'WITHOUT_SAVINGS_FUND',
+  mandateDeadlines: 'NOVEMBER_2026_BEFORE_DEADLINE',
+  pendingApplications: 'NONE',
+};
+
 export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
   // One saver climbing the conversion ladder, one rung at a time: II pillar to Tuleva,
   // II rate to 6%, III pillar to Tuleva, savings fund on top. Only the rung being
@@ -236,6 +243,25 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     user: 'LEFT_SECOND_PILLAR_FUND_ON_RECORD_IN_2023',
     pendingApplications: 'NONE',
     rejoinPermission: 'NOT_PERMITTED',
+  },
+  // A leaver whose contributions ended without a withdrawal or stop application on record:
+  // Pensionikeskus would refuse the application, so the row and the rejoin page say why.
+  SECOND_PILLAR_REJOIN_ENDED_WITHOUT_APPLICATION: {
+    ...rejoinRefused,
+    user: 'LEFT_SECOND_PILLAR_FUND_ON_RECORD',
+    rejoinPermission: 'ENDED_WITHOUT_APPLICATION',
+  },
+  // A leaver within five years: the rejoin page says the day they can rejoin from.
+  SECOND_PILLAR_REJOIN_NOT_YET_PERMITTED: {
+    ...rejoinRefused,
+    user: 'LEFT_SECOND_PILLAR_FUND_ON_RECORD_IN_2023',
+    rejoinPermission: 'NOT_PERMITTED',
+  },
+  // Someone still contributing who opens the rejoin page, as from the landing page.
+  SECOND_PILLAR_REJOIN_ALREADY_CONTRIBUTING: {
+    ...rejoinRefused,
+    user: 'SECOND_PILLAR_CONTRIBUTING',
+    rejoinPermission: 'PERMITTED',
   },
   // The account page (/account) of a leaver who has filed to rejoin: the II pillar row says
   // when contributions start, and the pending application can still be cancelled. The rejoin

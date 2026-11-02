@@ -10,9 +10,17 @@ import {
   useMandateDeadlines,
   useMe,
   usePendingApplications,
+  useRejoinPermission,
   useSourceFunds,
 } from '../../common/apiHooks';
-import { Application, ErrorResponse, Fund, SourceFund, User } from '../../common/apiModels';
+import {
+  Application,
+  ErrorResponse,
+  Fund,
+  RejoinPermission,
+  SourceFund,
+  User,
+} from '../../common/apiModels';
 import {
   CreateMandateDto,
   PaymentRateChangeMandateDetails,
@@ -28,6 +36,9 @@ import { TranslationKey } from '../../translations';
 import { flowPath, reviewPath, successPath } from './secondPillarRejoinPaths';
 import { RejoinSummary } from './SecondPillarRejoinSuccess';
 import { PendingRejoinApplication } from './PendingRejoinApplication';
+import { RejoinRefusalReason } from './RejoinRefusalReason';
+import { AlreadyContributing } from './AlreadyContributing';
+import { RejoinRefused } from './RejoinRefused';
 import { isRejoinApplication } from '../../account/ApplicationSection/ApplicationFunctions';
 import { usePageTitle } from '../../common/usePageTitle';
 
@@ -76,13 +87,16 @@ export const SecondPillarRejoin = () => {
   const { data: user, isLoading: isLoadingUser } = useMe();
   const { data: pendingApplications, isFetchedAfterMount: hasCheckedPendingApplications } =
     usePendingApplications();
+  const { data: rejoinPermission, isInitialLoading: isAskingPensionikeskus } =
+    useRejoinPermission();
 
   if (
     !funds ||
     !mandateDeadlines ||
     isLoadingSourceFunds ||
     isLoadingUser ||
-    !hasCheckedPendingApplications
+    !hasCheckedPendingApplications ||
+    isAskingPensionikeskus
   ) {
     return <Loader className="align-middle my-4" />;
   }
@@ -96,6 +110,9 @@ export const SecondPillarRejoin = () => {
         contributionStartDate={mandateDeadlines.secondPillarRejoinContributionStartDate}
         cancellationDeadline={mandateDeadlines.secondPillarRejoinDeadline}
         pendingApplications={pendingApplications}
+        rejoinPermission={rejoinPermission}
+        isContributing={user?.secondPillarContributions?.contributing === true}
+        rejoinPossibleFrom={user?.secondPillarContributions?.rejoinPossibleFrom}
         isReviewing={isReviewing}
         onReview={() => history.push({ pathname: reviewPath, search })}
         onBack={() => history.goBack()}
@@ -127,6 +144,9 @@ const RejoinApplication = ({
   contributionStartDate,
   cancellationDeadline,
   pendingApplications,
+  rejoinPermission,
+  isContributing,
+  rejoinPossibleFrom,
   isReviewing,
   onReview,
   onBack,
@@ -137,6 +157,9 @@ const RejoinApplication = ({
   contributionStartDate: string;
   cancellationDeadline: string;
   pendingApplications: Application[] | undefined;
+  rejoinPermission: RejoinPermission | undefined;
+  isContributing: boolean;
+  rejoinPossibleFrom: string | null | undefined;
   isReviewing: boolean;
   onReview: () => void;
   onBack: () => void;
@@ -205,6 +228,21 @@ const RejoinApplication = ({
 
   if (pendingRejoin && !isSubmitting) {
     return <PendingRejoinApplication application={pendingRejoin} />;
+  }
+
+  if (isContributing && !isSubmitting) {
+    return <AlreadyContributing paymentRate={paymentRateOnFile} />;
+  }
+
+  if (rejoinPermission?.permitted === false && !isSubmitting) {
+    return (
+      <RejoinRefused>
+        <RejoinRefusalReason
+          decision={rejoinPermission.decision}
+          rejoinPossibleFrom={rejoinPossibleFrom}
+        />
+      </RejoinRefused>
+    );
   }
 
   const review = () => {

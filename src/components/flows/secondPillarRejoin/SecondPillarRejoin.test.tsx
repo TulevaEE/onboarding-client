@@ -14,6 +14,7 @@ import {
   mandateDeadlinesBackend,
   pensionAccountStatementBackend,
   userBackend,
+  userConversionBackend,
   rejoinPermissionBackend,
   smartIdMandateBatchSigningBackend,
   useTestBackends,
@@ -23,6 +24,7 @@ import { CreateMandateBatchDto } from '../../common/apiModels/withdrawals';
 import { FundBalance, MandateDeadlines } from '../../common/apiModels';
 import LoggedInApp from '../../LoggedInApp';
 import { rejoin } from '../../account/ApplicationSection/fixtures';
+import { PaymentRate } from '../secondPillarPaymentRate/types';
 
 describe('When an eligible person rejoins the II pillar', () => {
   const server = setupServer();
@@ -828,11 +830,113 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(mandateBatches.created).toEqual([]);
   });
 
-  test('shows the application to everyone, and checks with Pensionikeskus only on Sign', async () => {
+  test('tells a person Pensionikeskus refuses before they fill in or sign anything', async () => {
     rejoinPermissionBackend(server, { permitted: false });
-    await renderAt('/2nd-pillar-rejoin');
+    render('/2nd-pillar-rejoin');
 
-    expectChosenRate(6);
+    expect(
+      await screen.findByText(
+        'Pensionikeskus does not let you rejoin the II pillar at the moment.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /sign/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Back to account page' })).toHaveAttribute(
+      'href',
+      '/account',
+    );
+    expect(mandateBatches.created).toEqual([]);
+  });
+
+  test('tells a person whose contributions ended without an application why they cannot rejoin', async () => {
+    rejoinPermissionBackend(server, {
+      permitted: false,
+      decision: 'CONTRIBUTIONS_ENDED_WITHOUT_APPLICATION',
+    });
+    render('/2nd-pillar-rejoin');
+
+    const reason = await screen.findByText(
+      /According to Pensionikeskus, you have no such application/,
+    );
+    expect(within(reason).getByRole('link', { name: 'tuleva@tuleva.ee' })).toHaveAttribute(
+      'href',
+      'mailto:tuleva@tuleva.ee',
+    );
+    expect(within(reason).getByRole('link', { name: /^644\s5100$/ })).toHaveAttribute(
+      'href',
+      'tel:+3726445100',
+    );
+    expect(screen.queryByRole('button', { name: /sign/i })).not.toBeInTheDocument();
+  });
+
+  describe('for a person who is still contributing', () => {
+    const stillContributing = (current: PaymentRate, pending: PaymentRate | null = null) =>
+      userBackend(server, {
+        secondPillarContributions: {
+          contributing: true,
+          restartDate: null,
+          rejoinPossibleFrom: null,
+        },
+        secondPillarPaymentRates: { current, pending },
+      });
+
+    const alreadySaving =
+      "You are already saving in the II pillar, so you don't need to apply to rejoin.";
+
+    test('says no application is needed and offers to bring the II pillar to Tuleva', async () => {
+      stillContributing(2);
+      userConversionBackend(server, { selectionComplete: false, transfersComplete: false });
+      render('/2nd-pillar-rejoin');
+
+      expect(await screen.findByText(alreadySaving)).toBeInTheDocument();
+      expect(await screen.findByRole('link', { name: 'Choose Tuleva' })).toHaveAttribute(
+        'href',
+        '/2nd-pillar-flow',
+      );
+      expect(screen.queryByRole('button', { name: /sign/i })).not.toBeInTheDocument();
+      expect(mandateBatches.created).toEqual([]);
+    });
+
+    test('offers to raise the contribution once the II pillar is in Tuleva', async () => {
+      stillContributing(2);
+      userConversionBackend(server, { selectionComplete: true, transfersComplete: true });
+      render('/2nd-pillar-rejoin');
+
+      expect(await screen.findByRole('link', { name: 'Increase contribution' })).toHaveAttribute(
+        'href',
+        '/2nd-pillar-payment-rate',
+      );
+    });
+
+    test('counts a pending raise to 6% and sends them back to the account', async () => {
+      stillContributing(2, 6);
+      userConversionBackend(server, { selectionComplete: true, transfersComplete: true });
+      render('/2nd-pillar-rejoin');
+
+      expect(await screen.findByRole('link', { name: 'Back to account page' })).toHaveAttribute(
+        'href',
+        '/account',
+      );
+      expect(screen.queryByRole('link', { name: 'Increase contribution' })).not.toBeInTheDocument();
+    });
+  });
+
+  test('tells a person who must wait from which day they can rejoin', async () => {
+    rejoinPermissionBackend(server, { permitted: false });
+    userBackend(server, {
+      secondPillarContributions: {
+        contributing: false,
+        restartDate: null,
+        rejoinPossibleFrom: '2099-12-01',
+      },
+    });
+    render('/2nd-pillar-rejoin');
+
+    expect(await screen.findByText('You can rejoin from December 1, 2099.')).toBeInTheDocument();
+  });
+
+  test('stops at Sign when Pensionikeskus refuses after the application was opened', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+    rejoinPermissionBackend(server, { permitted: false });
 
     signApplications();
 

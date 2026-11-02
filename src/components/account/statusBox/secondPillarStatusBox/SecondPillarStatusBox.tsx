@@ -15,6 +15,7 @@ import {
   Conversion,
   Fund,
   MandateDeadlines,
+  RejoinDecision,
   SecondPillarContributions,
   SourceFund,
 } from '../../../common/apiModels';
@@ -27,10 +28,8 @@ import { Shimmer } from '../../../common/shimmer/Shimmer';
 import {
   formatDate,
   formatDateFrom,
-  formatDateFromWithYear,
   formatDateOnWithYear,
   formatDateUntil,
-  todayInTallinn,
 } from '../../../common/dateFormatter';
 import {
   isDateSameOrBeforeCancellationDeadline,
@@ -40,6 +39,7 @@ import {
   SecondPillarPaymentRateTaxWin,
   useSecondPillarTaxWin,
 } from '../../../flows/secondPillarPaymentRate/SecondPillarPaymentRateTaxWin';
+import { RejoinRefusalReason } from '../../../flows/secondPillarRejoin/RejoinRefusalReason';
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 import { FundPension } from '../../../common/apiModels/withdrawals';
 import { PaymentRateSubRow } from './PaymentRateSubRow';
@@ -580,6 +580,7 @@ const WayBackIn = ({
           <span className="text-body-secondary">
             <WayBackInExplanation
               mayRejoin={mayRejoin}
+              rejoinDecision={rejoinPermission?.decision}
               rejoinPossibleFrom={rejoinPossibleFrom}
               hasFundChoiceOnRecord={hasFundChoiceOnRecord}
             />
@@ -596,10 +597,12 @@ const WayBackIn = ({
 
 const WayBackInExplanation = ({
   mayRejoin,
+  rejoinDecision,
   rejoinPossibleFrom,
   hasFundChoiceOnRecord,
 }: {
   mayRejoin: boolean;
+  rejoinDecision: RejoinDecision | undefined;
   rejoinPossibleFrom: string | null | undefined;
   hasFundChoiceOnRecord: boolean;
 }) => {
@@ -614,20 +617,13 @@ const WayBackInExplanation = ({
       />
     );
   }
-  if (rejoinPossibleFrom && isAfterToday(rejoinPossibleFrom)) {
+  if (rejoinDecision === 'CONTRIBUTIONS_ENDED_WITHOUT_APPLICATION') {
     return (
-      <FormattedMessage
-        id="account.status.choice.pillar.second.notContributing.line2.rejoinPossibleFrom"
-        values={{ date: formatDateFromWithYear(rejoinPossibleFrom) }}
-      />
+      <FormattedMessage id="account.status.choice.pillar.second.notContributing.line2.contributionsEndedWithoutApplication" />
     );
   }
-  return (
-    <FormattedMessage id="account.status.choice.pillar.second.notContributing.line2.rejoinNotYetPermitted" />
-  );
+  return <RejoinRefusalReason decision={rejoinDecision} rejoinPossibleFrom={rejoinPossibleFrom} />;
 };
-
-const isAfterToday = (day: string) => day > todayInTallinn();
 
 const SecondPillarMissing = ({ loading, nudgeKey }: RowProps) => (
   <StatusBoxRow
