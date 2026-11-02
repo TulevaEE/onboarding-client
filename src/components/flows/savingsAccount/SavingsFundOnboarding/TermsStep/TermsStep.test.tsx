@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/browser';
 import { onlineManager, QueryClient } from '@tanstack/react-query';
 import { act, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -10,11 +11,15 @@ import {
   failingTkfDocumentsBackend,
   TKF_DOCUMENT_FIELDS,
   tkfDocumentsBackend,
+  unreachableTkfDocumentsBackend,
+  unreadableTkfDocumentsBackend,
   unresponsiveTkfDocumentsBackend,
 } from '../../../../../test/backend';
 import { TermsStep } from './TermsStep';
 import { OnboardingFormData, CompanyOnboardingFormData } from '../types';
 import translations from '../../../../translations';
+
+jest.mock('@sentry/browser', () => ({ captureException: jest.fn() }));
 
 const server = setupServer();
 
@@ -405,6 +410,107 @@ describe('TermsStep', () => {
 
     await waitFor(() => {
       expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('reporting a fallback to the fund documents page', () => {
+    const expectOneFallbackReported = (reason: string) => {
+      const message = `TKF100 document links fell back to the documents page: reason=${reason}`;
+      expect(captureException).toHaveBeenCalledTimes(1);
+      expect(captureException).toHaveBeenCalledWith(new Error(message), { fingerprint: [message] });
+    };
+
+    const fundDocumentsPageLink = () => screen.findByRole('link', { name: /^All fund documents/ });
+
+    test('reports nothing when the fund page links every document in force', async () => {
+      renderWrapped(<TermsStepWrapper />);
+
+      expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+      expect(captureException).not.toHaveBeenCalled();
+    });
+
+    test('reports the field when the fund page lacks a document in force', async () => {
+      tkfDocumentsBackend(server, { ...TKF_DOCUMENT_FIELDS, key_investor_info_file: false });
+
+      renderWrapped(<TermsStepWrapper />);
+
+      expect(await fundDocumentsPageLink()).toBeInTheDocument();
+      expectOneFallbackReported('missing:key_investor_info_file');
+    });
+
+    test('reports a document hosted outside tuleva.ee as missing', async () => {
+      tkfDocumentsBackend(server, {
+        ...TKF_DOCUMENT_FIELDS,
+        terms_file: 'https://example.com/TKF100-Tingimused.pdf',
+      });
+
+      renderWrapped(<TermsStepWrapper />);
+
+      expect(await fundDocumentsPageLink()).toBeInTheDocument();
+      expectOneFallbackReported('missing:terms_file');
+    });
+
+    test('reports every field when the fund page has no document fields', async () => {
+      tkfDocumentsBackend(server, false);
+
+      renderWrapped(<TermsStepWrapper />);
+
+      expect(await fundDocumentsPageLink()).toBeInTheDocument();
+      expectOneFallbackReported('missing:terms_file,prospectus_file,key_investor_info_file');
+    });
+
+    test('reports the status when the fund page answers with an error', async () => {
+      failingTkfDocumentsBackend(server);
+
+      renderWrapped(<TermsStepWrapper />);
+
+      expect(await fundDocumentsPageLink()).toBeInTheDocument();
+      expectOneFallbackReported('http-500');
+    });
+
+    test('reports an unreadable answer when the fund page does not answer JSON', async () => {
+      unreadableTkfDocumentsBackend(server);
+
+      renderWrapped(<TermsStepWrapper />);
+
+      expect(await fundDocumentsPageLink()).toBeInTheDocument();
+      expectOneFallbackReported('unreadable-answer');
+    });
+
+    test('reports a network failure when the fund page cannot be reached', async () => {
+      unreachableTkfDocumentsBackend(server);
+
+      renderWrapped(<TermsStepWrapper />);
+
+      expect(await fundDocumentsPageLink()).toBeInTheDocument();
+      expectOneFallbackReported('network');
+    });
+
+    test('reports a timeout when the fund page does not answer within 5 seconds', async () => {
+      jest.useFakeTimers();
+      unresponsiveTkfDocumentsBackend(server);
+
+      renderWrapped(<TermsStepWrapper />);
+      act(() => {
+        jest.advanceTimersByTime(5000);
+      });
+
+      expect(await fundDocumentsPageLink()).toBeInTheDocument();
+      expectOneFallbackReported('timeout');
+    });
+
+    test('reports a failed reload while the earlier links stay shown', async () => {
+      const queryClient = new QueryClient();
+      const history = createMemoryHistory();
+      renderWrapped(<TermsStepWrapper />, history, createDefaultStore(history), queryClient);
+      expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+
+      failingTkfDocumentsBackend(server);
+      await act(() => queryClient.refetchQueries());
+
+      expect(await fundDocumentsPageLink()).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+      expectOneFallbackReported('http-500');
     });
   });
 });

@@ -1543,6 +1543,22 @@ export function unresponsiveTkfDocumentsBackend(server: SetupServerApi): void {
   server.use(rest.get('https://tuleva.ee/wp-json/wp/v2/pages', () => new Promise<never>(() => {})));
 }
 
+export function unreachableTkfDocumentsBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res) =>
+      res.networkError('Failed to connect'),
+    ),
+  );
+}
+
+export function unreadableTkfDocumentsBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res, ctx) =>
+      res(ctx.text('<html></html>')),
+    ),
+  );
+}
+
 const TEST_BACKENDS = {
   cancellation: cancellationBackend,
   trackedEvents: trackedEventsBackend,

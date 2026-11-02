@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/browser';
 import { useQuery } from '@tanstack/react-query';
 import { TranslationKey } from '../../../translations';
 
@@ -42,6 +43,27 @@ const toTkfDocumentLinks = (fields: FundPageFields, lastReadFailed: boolean): Tk
   return lacksADocument || lastReadFailed ? [...links, FUND_DOCUMENTS_PAGE_LINK] : links;
 };
 
+class FundPageRefusal extends Error {
+  constructor(readonly status: number) {
+    super(`Fund page fields request failed with status ${status}`);
+  }
+}
+
+const reportFallback = (reason: string) => {
+  const message = `TKF100 document links fell back to the documents page: reason=${reason}`;
+  captureException(new Error(message), { fingerprint: [message] });
+};
+
+const reasonTheReadFailed = (error: unknown, timedOut: boolean): string => {
+  if (timedOut) {
+    return 'timeout';
+  }
+  if (error instanceof FundPageRefusal) {
+    return `http-${error.status}`;
+  }
+  return error instanceof SyntaxError ? 'unreadable-answer' : 'network';
+};
+
 const getFundPageFields = async (): Promise<FundPageFields> => {
   const timeout = new AbortController();
   const timer = setTimeout(() => timeout.abort(), FUND_PAGE_TIMEOUT_MS);
@@ -51,20 +73,34 @@ const getFundPageFields = async (): Promise<FundPageFields> => {
       signal: timeout.signal,
     });
     if (!response.ok) {
-      throw new Error(`Fund page fields request failed with status ${response.status}`);
+      throw new FundPageRefusal(response.status);
     }
     const pages: { acf?: unknown }[] = await response.json();
     const fields = pages[0]?.acf;
     return fields && typeof fields === 'object' ? (fields as FundPageFields) : {};
+  } catch (error) {
+    reportFallback(reasonTheReadFailed(error, timeout.signal.aborted));
+    throw error;
   } finally {
     clearTimeout(timer);
   }
 };
 
+const getFundPageFieldsReportingMissingDocuments = async (): Promise<FundPageFields> => {
+  const fields = await getFundPageFields();
+  const missingFields = DOCUMENTS_IN_FORCE.map(({ field }) => field).filter(
+    (field) => !documentUrl(fields[field]),
+  );
+  if (missingFields.length > 0) {
+    reportFallback(`missing:${missingFields.join(',')}`);
+  }
+  return fields;
+};
+
 export const useTkfDocuments = (): TkfDocumentLink[] | undefined => {
   const { data, isError, errorUpdateCount } = useQuery({
     queryKey: ['tkfDocuments'],
-    queryFn: getFundPageFields,
+    queryFn: getFundPageFieldsReportingMissingDocuments,
     retry: false,
     networkMode: 'always',
     cacheTime: Infinity,
