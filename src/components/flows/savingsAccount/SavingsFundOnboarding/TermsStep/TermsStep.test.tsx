@@ -50,6 +50,20 @@ const watchFundPageReads = () => jest.spyOn(window, 'fetch');
 
 const ignoreTheOutcome = () => undefined;
 
+const fundPageReadFinishingAfterItsCancel = (fields: Record<string, unknown>) => {
+  let finish = () => {};
+  const finished = new Promise<void>((resolve) => {
+    finish = resolve;
+  });
+  const read = jest.spyOn(window, 'fetch').mockImplementationOnce(async () => {
+    await finished;
+    return { ok: true, json: async () => [{ acf: fields }] } as Response;
+  });
+  return { finish, done: () => read.mock.results[0].value };
+};
+
+const letTheReadFinish = () => act(() => new Promise((resolve) => setTimeout(resolve, 0)));
+
 const TermsStepWrapper = ({
   showError = false,
   language = 'en',
@@ -611,6 +625,35 @@ describe('TermsStep', () => {
         'href',
         TKF_DOCUMENT_FIELDS.terms_file,
       );
+    });
+
+    test('reports nothing for a read that finished after the person left the step', async () => {
+      const lateRead = fundPageReadFinishingAfterItsCancel({});
+      const { unmount } = renderWrapped(<TermsStepWrapper />);
+
+      unmount();
+      lateRead.finish();
+      await act(() => lateRead.done());
+      await letTheReadFinish();
+
+      expect(captureException).not.toHaveBeenCalled();
+    });
+
+    test('reports nothing for a read that finished after a reload replaced it', async () => {
+      const lateRead = fundPageReadFinishingAfterItsCancel({});
+      const queryClient = new QueryClient();
+      const history = createMemoryHistory();
+      renderWrapped(<TermsStepWrapper />, history, createDefaultStore(history), queryClient);
+
+      act(() => {
+        queryClient.resetQueries();
+      });
+      expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+      lateRead.finish();
+      await act(() => lateRead.done());
+      await letTheReadFinish();
+
+      expect(captureException).not.toHaveBeenCalled();
     });
 
     test('reports nothing for a read that a reload replaced', async () => {
