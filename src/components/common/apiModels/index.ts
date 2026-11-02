@@ -573,6 +573,7 @@ export type Contribution = SecondPillarContribution | ThirdPillarContribution;
 
 export interface RejoinPermission {
   permitted: boolean;
+  contributionsEndedWithoutApplication: boolean;
 }
 
 export interface SecondPillarAssets {

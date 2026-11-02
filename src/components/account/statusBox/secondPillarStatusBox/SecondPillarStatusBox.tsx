@@ -27,10 +27,8 @@ import { Shimmer } from '../../../common/shimmer/Shimmer';
 import {
   formatDate,
   formatDateFrom,
-  formatDateFromWithYear,
   formatDateOnWithYear,
   formatDateUntil,
-  todayInTallinn,
 } from '../../../common/dateFormatter';
 import {
   isDateSameOrBeforeCancellationDeadline,
@@ -40,6 +38,7 @@ import {
   SecondPillarPaymentRateTaxWin,
   useSecondPillarTaxWin,
 } from '../../../flows/secondPillarPaymentRate/SecondPillarPaymentRateTaxWin';
+import { RejoinRefusalReason } from '../../../flows/secondPillarRejoin/RejoinRefusalReason';
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 import { FundPension } from '../../../common/apiModels/withdrawals';
 import { PaymentRateSubRow } from './PaymentRateSubRow';
@@ -580,6 +579,9 @@ const WayBackIn = ({
           <span className="text-body-secondary">
             <WayBackInExplanation
               mayRejoin={mayRejoin}
+              contributionsEndedWithoutApplication={
+                rejoinPermission?.contributionsEndedWithoutApplication ?? false
+              }
               rejoinPossibleFrom={rejoinPossibleFrom}
               hasFundChoiceOnRecord={hasFundChoiceOnRecord}
             />
@@ -596,10 +598,12 @@ const WayBackIn = ({
 
 const WayBackInExplanation = ({
   mayRejoin,
+  contributionsEndedWithoutApplication,
   rejoinPossibleFrom,
   hasFundChoiceOnRecord,
 }: {
   mayRejoin: boolean;
+  contributionsEndedWithoutApplication: boolean;
   rejoinPossibleFrom: string | null | undefined;
   hasFundChoiceOnRecord: boolean;
 }) => {
@@ -614,20 +618,13 @@ const WayBackInExplanation = ({
       />
     );
   }
-  if (rejoinPossibleFrom && isAfterToday(rejoinPossibleFrom)) {
-    return (
-      <FormattedMessage
-        id="account.status.choice.pillar.second.notContributing.line2.rejoinPossibleFrom"
-        values={{ date: formatDateFromWithYear(rejoinPossibleFrom) }}
-      />
-    );
-  }
   return (
-    <FormattedMessage id="account.status.choice.pillar.second.notContributing.line2.rejoinNotYetPermitted" />
+    <RejoinRefusalReason
+      contributionsEndedWithoutApplication={contributionsEndedWithoutApplication}
+      rejoinPossibleFrom={rejoinPossibleFrom}
+    />
   );
 };
-
-const isAfterToday = (day: string) => day > todayInTallinn();
 
 const SecondPillarMissing = ({ loading, nudgeKey }: RowProps) => (
   <StatusBoxRow

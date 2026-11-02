@@ -32,11 +32,11 @@ type RejoinPermissionQuery = {
   isError?: boolean;
 };
 const mockRejoinPermitted: RejoinPermissionQuery = {
-  data: { permitted: true },
+  data: { permitted: true, contributionsEndedWithoutApplication: false },
   isInitialLoading: false,
 };
 const mockRejoinNotPermitted: RejoinPermissionQuery = {
-  data: { permitted: false },
+  data: { permitted: false, contributionsEndedWithoutApplication: false },
   isInitialLoading: false,
 };
 let mockRejoinPermission = mockRejoinPermitted;
@@ -679,12 +679,35 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
         screen.getByText('You are not saving in the II pillar and no contributions are made.'),
       ).toBeInTheDocument();
       expect(
-        screen.getByText('You can rejoin five years after your contributions ended.'),
+        screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment.'),
       ).toBeInTheDocument();
       expect(screen.queryByText(/start again/)).not.toBeInTheDocument();
       expect(screen.queryByRole('link')).not.toBeInTheDocument();
     },
   );
+
+  it('explains to a leaver whose contributions ended without an application why they cannot rejoin, even with a date on record', () => {
+    mockRejoinPermission = {
+      data: { permitted: false, contributionsEndedWithoutApplication: true },
+      isInitialLoading: false,
+    };
+
+    renderWithIntl(
+      <SecondPillarStatusBox
+        {...saver}
+        secondPillarContributions={rejoinPossibleFrom('2099-12-01')}
+      />,
+    );
+
+    expect(
+      screen.getByText(/According to Pensionikeskus, you have no such application/),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/You can rejoin from/)).not.toBeInTheDocument();
+    expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([
+      'mailto:tuleva@tuleva.ee',
+      'tel:+3726445100',
+    ]);
+  });
 
   it('tells a leaver whose contributions ended less than five years ago the day they can rejoin from', () => {
     mockRejoinPermission = mockRejoinNotPermitted;
@@ -731,7 +754,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       );
 
       expect(
-        screen.getByText('You can rejoin five years after your contributions ended.'),
+        screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment.'),
       ).toBeInTheDocument();
       expect(screen.queryByText(/You can rejoin from/)).not.toBeInTheDocument();
     },
@@ -749,7 +772,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(
-      screen.getByText('You can rejoin five years after your contributions ended.'),
+      screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment.'),
     ).toBeInTheDocument();
     expect(screen.queryByText(/You can rejoin from/)).not.toBeInTheDocument();
   });

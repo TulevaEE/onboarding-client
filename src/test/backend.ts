@@ -157,14 +157,17 @@ export const mandateBatchBackend = (
 
 export function rejoinPermissionBackend(
   server: SetupServerApi,
-  { permitted }: { permitted: boolean },
+  {
+    permitted,
+    contributionsEndedWithoutApplication = false,
+  }: { permitted: boolean; contributionsEndedWithoutApplication?: boolean },
 ): void {
   server.use(
     rest.get('http://localhost/v1/rejoin-permission', (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
         return res(ctx.status(401), ctx.json(authErrorResponse));
       }
-      return res(ctx.status(200), ctx.json({ permitted }));
+      return res(ctx.status(200), ctx.json({ permitted, contributionsEndedWithoutApplication }));
     }),
   );
 }
