@@ -700,13 +700,12 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(
-      screen.getByText(/According to Pensionikeskus, you have no such application/),
+      screen.getByText(
+        'You can only rejoin if your contributions ended because you applied for that.',
+      ),
     ).toBeInTheDocument();
     expect(screen.queryByText(/You can rejoin from/)).not.toBeInTheDocument();
-    expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([
-      'mailto:tuleva@tuleva.ee',
-      'tel:+3726445100',
-    ]);
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
   it('tells a leaver whose contributions ended less than five years ago the day they can rejoin from', () => {

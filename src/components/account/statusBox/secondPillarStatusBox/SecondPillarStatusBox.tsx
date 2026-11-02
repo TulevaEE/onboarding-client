@@ -617,6 +617,11 @@ const WayBackInExplanation = ({
       />
     );
   }
+  if (rejoinDecision === 'CONTRIBUTIONS_ENDED_WITHOUT_APPLICATION') {
+    return (
+      <FormattedMessage id="account.status.choice.pillar.second.notContributing.line2.contributionsEndedWithoutApplication" />
+    );
+  }
   return <RejoinRefusalReason decision={rejoinDecision} rejoinPossibleFrom={rejoinPossibleFrom} />;
 };
 
