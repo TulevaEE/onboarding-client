@@ -367,7 +367,7 @@
   "account.status.choice.pillar.second.notContributing.line2.fundChoiceOnRecord": "Sinu fondivalik jääb registrisse, aga sissemaksed algavad uuesti alles siis, kui esitad taasliitumise avalduse.",
   "account.status.choice.pillar.second.notContributing.line2.noFundChoice": "Sissemaksed algavad uuesti alles siis, kui esitad taasliitumise avalduse.",
   "account.status.choice.pillar.second.notContributing.line2.rejoinPossibleFrom": "Taasliituda saad alates {date}.",
-  "account.status.choice.pillar.second.notContributing.line2.contributionsCannotRestart": "Taasliituda saab vaid siis, kui lõpetasid sissemaksed raha väljavõtmise või maksete peatamise avaldusega. Pärast fondipensioni, pensionilepingut või ühekordset väljamakset ei saa sissemakseid enam taastada.",
+  "account.status.choice.pillar.second.notContributing.line2.contributionsCannotRestart": "Taasliituda saab vaid siis, kui lõpetasid sissemaksed raha väljavõtmise või maksete peatamise avaldusega. Pärast fondipensioni, pensionilepingut või ühekordset väljamakset ei saa sissemakseid enam taastada.",
   "account.status.choice.pillar.second.notContributing.action": "Liitun uuesti",
 
   "account.status.choice.pillar.third": "III sammas",
