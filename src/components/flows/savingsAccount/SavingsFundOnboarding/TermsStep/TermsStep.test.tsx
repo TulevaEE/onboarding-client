@@ -338,6 +338,61 @@ describe('TermsStep', () => {
     expect(screen.getByRole('checkbox', { name: /^I confirm that I have reviewed/ })).toBeChecked();
   });
 
+  test('asks for the confirmation again when the links changed while the person was away from the step', async () => {
+    failingTkfDocumentsBackend(server);
+    const queryClient = new QueryClient();
+    const history = createMemoryHistory();
+    const { rerender } = renderWrapped(
+      <TermsStepWrapper />,
+      history,
+      createDefaultStore(history),
+      queryClient,
+    );
+    expect(await screen.findByRole('link', { name: /^All fund documents/ })).toBeInTheDocument();
+    userEvent.click(screen.getByRole('checkbox', { name: /^I confirm that I have reviewed/ }));
+
+    rerender(<TermsStepWrapper onTermsStep={false} />);
+    act(() => {
+      queryClient.setQueryData(['tkfDocuments'], TKF_DOCUMENT_FIELDS);
+    });
+    rerender(<TermsStepWrapper />);
+
+    expect(screen.getByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole('checkbox', { name: /^I confirm that I have reviewed/ }),
+    ).not.toBeChecked();
+  });
+
+  test('asks for the confirmation again when the links reload while the person was away from the step', async () => {
+    const queryClient = new QueryClient();
+    const history = createMemoryHistory();
+    const { rerender } = renderWrapped(
+      <TermsStepWrapper />,
+      history,
+      createDefaultStore(history),
+      queryClient,
+    );
+    expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+    userEvent.click(screen.getByRole('checkbox', { name: /^I confirm that I have reviewed/ }));
+
+    rerender(<TermsStepWrapper onTermsStep={false} />);
+    jest.useFakeTimers();
+    unresponsiveTkfDocumentsBackend(server);
+    await act(async () => {
+      queryClient.resetQueries();
+      await Promise.resolve();
+    });
+    rerender(<TermsStepWrapper />);
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(
+      screen.getByRole('checkbox', { name: /^I confirm that I have reviewed/ }),
+    ).not.toBeChecked();
+    act(() => {
+      jest.advanceTimersByTime(5000);
+    });
+  });
+
   test('adds the fund documents page when a later reload of the fund page fails', async () => {
     const queryClient = new QueryClient();
     const history = createMemoryHistory();

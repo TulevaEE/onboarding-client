@@ -421,9 +421,11 @@ describe('SavingsFundChildOnboarding', () => {
   });
 
   it('keeps the documents and the confirmation on screen while the application is sent', async () => {
+    let applicationArrived = false;
     let answerTheApplication = () => {};
     server.use(
       rest.post('http://localhost/v1/kyc/surveys', async (req, res, ctx) => {
+        applicationArrived = true;
         await new Promise<void>((resolve) => {
           answerTheApplication = resolve;
         });
@@ -431,20 +433,24 @@ describe('SavingsFundChildOnboarding', () => {
       }),
     );
     const switchBackend = switchRoleBackend(server);
-    renderWrapped(<SavingsFundChildOnboarding />);
+    const history = createMemoryHistory();
+    renderWrapped(<SavingsFundChildOnboarding />, history);
 
     await verifyChild();
     await advanceToTerms();
     userEvent.click(screen.getByRole('checkbox', { name: /legal representative/i }));
     userEvent.click(continueButton());
-    await waitFor(() => {
-      expect(switchBackend.switchedRole).toEqual({ type: 'PERSON', code: CHILD_CODE });
-    });
+    await waitFor(() => expect(applicationArrived).toBe(true));
 
+    expect(switchBackend.switchedRole).toEqual({ type: 'PERSON', code: CHILD_CODE });
     expect(screen.getByRole('link', { name: /^Terms/ })).toBeInTheDocument();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
     expect(screen.getByRole('checkbox', { name: /legal representative/i })).toBeChecked();
+
     answerTheApplication();
+    await waitFor(() => {
+      expect(history.location.pathname).toBe('/savings-fund/onboarding/success/child');
+    });
   });
 
   it('keeps the confirmation after a failed submit, so the parent can send it again', async () => {

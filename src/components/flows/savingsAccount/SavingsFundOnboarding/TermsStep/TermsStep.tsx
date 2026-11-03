@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef } from 'react';
+import { ChangeEvent, ReactNode, useEffect } from 'react';
 import { Control, Path, useController } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SharedOnboardingFields } from '../types';
@@ -75,20 +75,24 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
         value === true || intl.formatMessage({ id: 'flows.savingsFundOnboarding.termsStep.error' }),
     },
   });
+  const {
+    field: { value: termsAcceptedForLinks, onChange: setTermsAcceptedForLinks },
+  } = useController({ control, name: 'termsAcceptedForLinks' as Path<T> });
   const documentsShown = documents !== undefined;
   const { value: termsAccepted, onChange: setTermsAccepted } = field;
   const shownLinks = documents?.map(({ href }) => href).join(' ');
-  const linksShownBefore = useRef(shownLinks);
+  const acceptedForOtherLinks = termsAccepted && termsAcceptedForLinks !== shownLinks;
 
   useEffect(() => {
-    if (shownLinks === linksShownBefore.current) {
-      return;
-    }
-    linksShownBefore.current = shownLinks;
-    if (termsAccepted) {
+    if (acceptedForOtherLinks) {
       setTermsAccepted(false);
     }
-  }, [shownLinks, termsAccepted, setTermsAccepted]);
+  }, [acceptedForOtherLinks, setTermsAccepted]);
+
+  const acceptForShownLinks = (event: ChangeEvent<HTMLInputElement>) => {
+    setTermsAcceptedForLinks(shownLinks);
+    setTermsAccepted(event);
+  };
 
   return (
     <section className="d-flex flex-column gap-4" key="conditions">
@@ -126,7 +130,7 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
             id="terms-accepted"
             disabled={!documentsShown}
             checked={termsAccepted as boolean}
-            onChange={setTermsAccepted}
+            onChange={acceptForShownLinks}
           />
           <label className="form-check-label w-100" htmlFor="terms-accepted">
             <FormattedMessage id={confirmTextId} />

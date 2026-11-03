@@ -2,6 +2,7 @@ import { captureException } from '@sentry/browser';
 import { QueryFunctionContext, useQuery } from '@tanstack/react-query';
 import { useIntl } from 'react-intl';
 import { TranslationKey } from '../../../translations';
+import { SAME_FOR_EVERY_ROLE } from '../../../common/apiHooks';
 
 type TkfDocumentLink = { href: string; labelId: TranslationKey };
 
@@ -138,7 +139,7 @@ export const useTkfDocuments = (): TkfDocumentLink[] | undefined => {
     networkMode: 'always',
     staleTime: Infinity,
     cacheTime: Infinity,
-    meta: { sameForEveryRole: true },
+    meta: SAME_FOR_EVERY_ROLE,
   });
 
   const hasNeverAnswered = !data && errorUpdateCount === 0;

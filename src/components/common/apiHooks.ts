@@ -493,6 +493,8 @@ export function usePendingOnboardings({
   });
 }
 
+export const SAME_FOR_EVERY_ROLE = { sameForEveryRole: true };
+
 export function useSwitchRole(): UseMutationResult<
   Token,
   ErrorResponse,
