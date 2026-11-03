@@ -229,7 +229,7 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
   },
   // The account page (/account) of a leaver who has not filed to rejoin, as the register reports
   // most of them: the fund choice is on record, so the II pillar still reads as active. The row
-  // says no contributions are made and offers the way back in, instead of fees and the rate.
+  // says they are not saving and offers the way back in, instead of fees and the rate.
   SECOND_PILLAR_NOT_CONTRIBUTING: {
     ...leaverAccountPage,
     user: 'LEFT_SECOND_PILLAR_FUND_ON_RECORD',
