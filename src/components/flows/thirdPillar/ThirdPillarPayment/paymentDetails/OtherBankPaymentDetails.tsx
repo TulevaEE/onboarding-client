@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { TranslationKey } from '../../../../translations';
 import { PaymentStep } from '../../../common/PaymentStep/PaymentStep';
 import { AccountNameRow } from './row/AccountNameRow';
 import { AccountNumberRow } from './row/AccountNumberRow';
@@ -10,10 +11,11 @@ export const OtherBankPaymentDetails: React.FunctionComponent<{
   amount: string;
   personalCode: string;
   paymentType: 'SINGLE' | 'RECURRING';
-}> = ({ amount, personalCode, paymentType }) => (
+  titleId?: TranslationKey;
+}> = ({ amount, personalCode, paymentType, titleId }) => (
   <div className="mt-4 payment-details p-4">
     <h3>
-      <FormattedMessage id={`thirdPillarPayment.${paymentType}.other`} />
+      <FormattedMessage id={titleId ?? `thirdPillarPayment.${paymentType}.other`} />
     </h3>
     <PaymentStep number={1}>
       <FormattedMessage id={`thirdPillarPayment.${paymentType}.other.login`} />

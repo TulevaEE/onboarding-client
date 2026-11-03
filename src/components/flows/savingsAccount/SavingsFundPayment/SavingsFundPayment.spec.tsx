@@ -170,6 +170,25 @@ describe(SavingsFundPayment, () => {
     expect(windowLocation).toHaveBeenCalledTimes(1);
   });
 
+  it.each([
+    ['Wise', 'WISE'],
+    ['Citadele', 'CITADELE'],
+    ['Revolut', 'REVOLUT'],
+    ['Bigbank', 'BIGBANK'],
+    ['N26', 'N26'],
+  ])('lets user pay from %s', async (bankName, paymentChannel) => {
+    expect(await findPageHeading()).toBeInTheDocument();
+    replaceAmount('123.45');
+    userEvent.click(screen.getByRole('radio', { name: bankName }));
+    userEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+    await waitFor(() =>
+      expect(windowLocation).toHaveBeenCalledWith(
+        `https://sandbox-payments.montonio.com?payment_token=example.jwt.token.with.123.45.EUR.${paymentChannel}`,
+      ),
+    );
+  });
+
   it('shows "Other bank" option and displays payment details when selected', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
 
@@ -380,6 +399,52 @@ describe(SavingsFundPayment, () => {
 
       expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
       expect(screen.queryByRole('link', { name: 'Continue' })).not.toBeInTheDocument();
+    });
+
+    it('shows the copy-card for a bank with no standing order link', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      replaceAmount('50');
+      selectRecurring();
+      userEvent.click(screen.getByRole('radio', { name: 'Revolut' }));
+
+      expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+      expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'Continue' })).not.toBeInTheDocument();
+    });
+
+    it.each([
+      ['Citadele', 'https://online.citadele.lv/'],
+      ['Bigbank', 'https://auth.bigbank.eu/'],
+    ])('shows a link to the %s internet bank and the copy-card', async (bank, bankUrl) => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      replaceAmount('50');
+      selectRecurring();
+      userEvent.click(screen.getByRole('radio', { name: bank }));
+
+      expect(
+        await screen.findByRole('heading', { name: `Set up the recurring payment in ${bank}` }),
+      ).toBeInTheDocument();
+      expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
+      expect(screen.getByRole('link', { name: 'Continue' })).toHaveAttribute(
+        'href',
+        expect.stringContaining(bankUrl),
+      );
+    });
+
+    it('shows how to schedule the payment in Wise, with a link to Wise', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+      replaceAmount('50');
+      selectRecurring();
+      userEvent.click(screen.getByRole('radio', { name: 'Wise' }));
+
+      expect(
+        await screen.findByRole('heading', { name: 'Set up the recurring payment in Wise' }),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/log into Wise and add a new recipient/)).toBeInTheDocument();
+      expect(screen.getByText(/the description goes into the/)).toBeInTheDocument();
+      expect(screen.getByText('EE711010220306707220')).toBeInTheDocument();
+      const openWise = screen.getByRole('link', { name: 'Continue' });
+      expect(openWise).toHaveAttribute('href', expect.stringContaining('https://wise.com/'));
     });
 
     it('renders the verify and confirm steps for panel A banks', async () => {
