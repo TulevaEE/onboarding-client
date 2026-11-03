@@ -80,8 +80,9 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
   } = useController({ control, name: 'termsAcceptedForLinks' as Path<T> });
   const documentsShown = documents !== undefined;
   const { value: termsAccepted, onChange: setTermsAccepted } = field;
-  const shownLinks = documents?.map(({ href }) => href).join(' ');
-  const acceptedForOtherLinks = termsAccepted && termsAcceptedForLinks !== shownLinks;
+  const shownLinks = documents && JSON.stringify(documents);
+  const acceptedForOtherLinks =
+    termsAccepted && (shownLinks === undefined || termsAcceptedForLinks !== shownLinks);
 
   useEffect(() => {
     if (acceptedForOtherLinks) {

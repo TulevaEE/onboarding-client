@@ -68,10 +68,12 @@ const TermsStepWrapper = ({
   showError = false,
   language = 'en',
   onTermsStep = true,
+  accepted = false,
 }: {
   showError?: boolean;
   language?: 'en' | 'et';
   onTermsStep?: boolean;
+  accepted?: boolean;
 }) => {
   const { control, trigger } = useForm<OnboardingFormData>({
     mode: 'onBlur',
@@ -86,7 +88,7 @@ const TermsStepWrapper = ({
       email: '',
       phoneNumber: '',
       pepSelfDeclaration: null,
-      termsAccepted: false,
+      termsAccepted: accepted,
     },
   });
 
@@ -336,6 +338,39 @@ describe('TermsStep', () => {
 
     expect(screen.getByRole('link', { name: /^Terms/ })).toBeInTheDocument();
     expect(screen.getByRole('checkbox', { name: /^I confirm that I have reviewed/ })).toBeChecked();
+  });
+
+  test('asks for the confirmation again when the same address moves to another document', async () => {
+    const documentAddress = TKF_DOCUMENT_FIELDS.terms_file;
+    tkfDocumentsBackend(server, { terms_file: documentAddress });
+    const queryClient = new QueryClient();
+    const history = createMemoryHistory();
+    renderWrapped(<TermsStepWrapper />, history, createDefaultStore(history), queryClient);
+    expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+    userEvent.click(screen.getByRole('checkbox', { name: /^I confirm that I have reviewed/ }));
+
+    tkfDocumentsBackend(server, { prospectus_file: documentAddress });
+    await act(() => queryClient.refetchQueries());
+
+    expect(await screen.findByRole('link', { name: /^Prospectus/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole('checkbox', { name: /^I confirm that I have reviewed/ }),
+    ).not.toBeChecked();
+  });
+
+  test('shows no confirmation while the links load, even one the form already holds', () => {
+    jest.useFakeTimers();
+    unresponsiveTkfDocumentsBackend(server);
+
+    renderWrapped(<TermsStepWrapper accepted />);
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
+    expect(
+      screen.getByRole('checkbox', { name: /^I confirm that I have reviewed/ }),
+    ).not.toBeChecked();
+    act(() => {
+      jest.advanceTimersByTime(5000);
+    });
   });
 
   test('asks for the confirmation again when the links changed while the person was away from the step', async () => {
