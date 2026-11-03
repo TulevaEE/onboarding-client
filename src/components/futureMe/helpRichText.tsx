@@ -3,19 +3,19 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { HELP_LINKS } from './helpLinks';
 import { strong } from './richText';
 
-const element = (Tag: keyof JSX.IntrinsicElements, className?: string) => (chunks: ReactNode) =>
-  <Tag className={className}>{chunks}</Tag>;
+const element = (Tag: keyof JSX.IntrinsicElements, className?: string) => (chunks: ReactNode) => (
+  <Tag className={className}>{chunks}</Tag>
+);
 
-const externalLink = (href: string) => (chunks: ReactNode) =>
-  (
-    <a href={href} target="_blank" rel="noopener noreferrer">
-      {chunks}
-      <span className="visually-hidden">
-        {' '}
-        <FormattedMessage id="futureMe.help.newWindow" />
-      </span>
-    </a>
-  );
+const externalLink = (href: string) => (chunks: ReactNode) => (
+  <a href={href} target="_blank" rel="noopener noreferrer">
+    {chunks}
+    <span className="visually-hidden">
+      {' '}
+      <FormattedMessage id="futureMe.help.newWindow" />
+    </span>
+  </a>
+);
 
 const HelpTable = ({ children }: { children: ReactNode }) => {
   const intl = useIntl();

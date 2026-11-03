@@ -555,9 +555,7 @@ export interface ThirdPillarContribution extends BaseContribution {
 export type Contribution = SecondPillarContribution | ThirdPillarContribution;
 
 export type RejoinDecision =
-  | 'PERMITTED'
-  | 'REFUSED_BY_PENSIONIKESKUS'
-  | 'CONTRIBUTIONS_CANNOT_RESTART';
+  'PERMITTED' | 'REFUSED_BY_PENSIONIKESKUS' | 'CONTRIBUTIONS_CANNOT_RESTART';
 
 export interface RejoinPermission {
   permitted: boolean;
