@@ -67,9 +67,11 @@ const letTheReadFinish = () => act(() => new Promise((resolve) => setTimeout(res
 const TermsStepWrapper = ({
   showError = false,
   language = 'en',
+  onTermsStep = true,
 }: {
   showError?: boolean;
   language?: 'en' | 'et';
+  onTermsStep?: boolean;
 }) => {
   const { control, trigger } = useForm<OnboardingFormData>({
     mode: 'onBlur',
@@ -91,7 +93,7 @@ const TermsStepWrapper = ({
   return (
     <IntlProvider locale={language} messages={translations[language]}>
       <form>
-        <TermsStep control={control} showError={showError} />
+        {onTermsStep && <TermsStep control={control} showError={showError} />}
         <button type="button" onClick={() => trigger('termsAccepted')}>
           Validate
         </button>
@@ -307,6 +309,33 @@ describe('TermsStep', () => {
       TKF_DOCUMENT_FIELDS.terms_file,
     );
     expect(screen.queryByRole('link', { name: /^All fund documents/ })).not.toBeInTheDocument();
+  });
+
+  test('asks for the confirmation again when the links change after it was given', async () => {
+    failingTkfDocumentsBackend(server);
+    renderWrapped(<TermsStepWrapper />);
+    expect(await screen.findByRole('link', { name: /^All fund documents/ })).toBeInTheDocument();
+    const termsCheckbox = screen.getByRole('checkbox', { name: /^I confirm that I have reviewed/ });
+    userEvent.click(termsCheckbox);
+    expect(termsCheckbox).toBeChecked();
+
+    tkfDocumentsBackend(server);
+    comeBackToTheWindow();
+
+    expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+    expect(termsCheckbox).not.toBeChecked();
+  });
+
+  test('keeps the confirmation when the person goes back and returns to the same links', async () => {
+    const { rerender } = renderWrapped(<TermsStepWrapper />);
+    expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+    userEvent.click(screen.getByRole('checkbox', { name: /^I confirm that I have reviewed/ }));
+
+    rerender(<TermsStepWrapper onTermsStep={false} />);
+    rerender(<TermsStepWrapper />);
+
+    expect(screen.getByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: /^I confirm that I have reviewed/ })).toBeChecked();
   });
 
   test('adds the fund documents page when a later reload of the fund page fails', async () => {

@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 import { Control, Path, useController } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { SharedOnboardingFields } from '../types';
@@ -77,12 +77,18 @@ export const TermsStep = <T extends SharedOnboardingFields = SharedOnboardingFie
   });
   const documentsShown = documents !== undefined;
   const { value: termsAccepted, onChange: setTermsAccepted } = field;
+  const shownLinks = documents?.map(({ href }) => href).join(' ');
+  const linksShownBefore = useRef(shownLinks);
 
   useEffect(() => {
-    if (!documentsShown && termsAccepted) {
+    if (shownLinks === linksShownBefore.current) {
+      return;
+    }
+    linksShownBefore.current = shownLinks;
+    if (termsAccepted) {
       setTermsAccepted(false);
     }
-  }, [documentsShown, termsAccepted, setTermsAccepted]);
+  }, [shownLinks, termsAccepted, setTermsAccepted]);
 
   return (
     <section className="d-flex flex-column gap-4" key="conditions">
