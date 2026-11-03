@@ -138,6 +138,7 @@ export const useTkfDocuments = (): TkfDocumentLink[] | undefined => {
     networkMode: 'always',
     staleTime: Infinity,
     cacheTime: Infinity,
+    meta: { sameForEveryRole: true },
   });
 
   const hasNeverAnswered = !data && errorUpdateCount === 0;

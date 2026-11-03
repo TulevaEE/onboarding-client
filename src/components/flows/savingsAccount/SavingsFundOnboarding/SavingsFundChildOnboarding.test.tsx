@@ -420,7 +420,34 @@ describe('SavingsFundChildOnboarding', () => {
     expect(switchBackend.switchedRole).toEqual({ type: 'PERSON', code: mockUser.personalCode });
   });
 
-  it('asks for the terms again when a failed submit reloads the fund documents', async () => {
+  it('keeps the documents and the confirmation on screen while the application is sent', async () => {
+    let answerTheApplication = () => {};
+    server.use(
+      rest.post('http://localhost/v1/kyc/surveys', async (req, res, ctx) => {
+        await new Promise<void>((resolve) => {
+          answerTheApplication = resolve;
+        });
+        return res(ctx.json({}));
+      }),
+    );
+    const switchBackend = switchRoleBackend(server);
+    renderWrapped(<SavingsFundChildOnboarding />);
+
+    await verifyChild();
+    await advanceToTerms();
+    userEvent.click(screen.getByRole('checkbox', { name: /legal representative/i }));
+    userEvent.click(continueButton());
+    await waitFor(() => {
+      expect(switchBackend.switchedRole).toEqual({ type: 'PERSON', code: CHILD_CODE });
+    });
+
+    expect(screen.getByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: /legal representative/i })).toBeChecked();
+    answerTheApplication();
+  });
+
+  it('keeps the confirmation after a failed submit, so the parent can send it again', async () => {
     server.use(
       rest.post('http://localhost/v1/kyc/surveys', (req, res, ctx) => res(ctx.status(500))),
     );
@@ -432,9 +459,9 @@ describe('SavingsFundChildOnboarding', () => {
     userEvent.click(continueButton());
 
     expect(await screen.findByRole('alert')).toBeInTheDocument();
-    expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
-    expect(screen.getByRole('checkbox', { name: /legal representative/i })).not.toBeChecked();
-    expect(continueButton()).toBeDisabled();
+    expect(screen.getByRole('link', { name: /^Terms/ })).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: /legal representative/i })).toBeChecked();
+    await waitFor(() => expect(continueButton()).toBeEnabled());
   });
 
   it('submits the child KYC without citizenship or PEP items', async () => {

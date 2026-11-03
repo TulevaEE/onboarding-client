@@ -507,7 +507,7 @@ export function useSwitchRole(): UseMutationResult<
       // role's data. Invalidate keeps the stale cache visible while refetching,
       // so the account page would flash the old role's values. Reset clears it,
       // flipping queries to a loading state until the new role's data arrives.
-      queryClient.resetQueries();
+      queryClient.resetQueries({ predicate: (query) => !query.meta?.sameForEveryRole });
     },
   });
 }
