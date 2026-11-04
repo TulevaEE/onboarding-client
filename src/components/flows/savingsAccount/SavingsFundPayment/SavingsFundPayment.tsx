@@ -7,6 +7,7 @@ import { redirectToPayment } from '../../../common/api';
 import { useMe } from '../../../common/apiHooks';
 import { PaymentChannel, User } from '../../../common/apiModels';
 import { usePageTitle } from '../../../common/usePageTitle';
+import { Pii } from '../../../common/Pii';
 import { PaymentBankButtons } from '../../thirdPillar/ThirdPillarPayment/PaymentBankButtons';
 import { BankKey } from '../../thirdPillar/ThirdPillarPayment/types';
 import {
@@ -62,6 +63,7 @@ const SavingsFundPaymentForm: FC<{ user: User }> = ({ user }) => {
   const intl = useIntl();
 
   const accountHolder = accountHolderFor(user);
+  const accountOwner = <Pii>{accountHolderName(user)}</Pii>;
 
   const {
     handleSubmit,
@@ -107,10 +109,7 @@ const SavingsFundPaymentForm: FC<{ user: User }> = ({ user }) => {
           <FormattedMessage id="savingsFund.payment.title" />
         </h1>
         <p className="m-0 text-center fs-3 fw-medium">
-          <FormattedMessage
-            id="savingsFund.payment.accountOwner"
-            values={{ accountOwner: accountHolderName(user) }}
-          />
+          <FormattedMessage id="savingsFund.payment.accountOwner" values={{ accountOwner }} />
         </p>
       </div>
 
@@ -218,17 +217,21 @@ const SavingsFundPaymentForm: FC<{ user: User }> = ({ user }) => {
               <p className="text-body-secondary m-0">
                 <FormattedMessage id="savingsFund.payment.transferLimit" />
               </p>
-              <div className="d-flex justify-content-between">
+              <div className="d-flex justify-content-between align-items-start gap-3">
                 <Link to="/account" className="btn btn-outline-primary">
                   <FormattedMessage id="savingsFund.payment.form.cancel.label" />
                 </Link>
 
                 <button
+                  id="savings-fund-payment-submit"
                   type="submit"
-                  className="btn btn-primary btn-loading"
+                  className="btn btn-primary btn-loading text-wrap text-balance"
                   disabled={!user.personalCode || isSubmitting}
                 >
-                  <FormattedMessage id="savingsFund.payment.form.submit.label" />
+                  <FormattedMessage
+                    id="savingsFund.payment.form.submit.toAccountOwner"
+                    values={{ accountOwner }}
+                  />
                 </button>
               </div>
             </div>

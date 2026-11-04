@@ -364,7 +364,11 @@ describe('a payment deep link that names the account', () => {
 
     history.push(`/savings-fund/payment/child/${secondChildRole.id}?${emailQuery}`);
 
-    expect(await screen.findByText('Account: Second Child')).toBeInTheDocument();
+    expect(
+      await screen.findByText(
+        (_, element) => element?.tagName === 'P' && element.textContent === 'Account: Second Child',
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByRole('radio', { name: /^Recurring\spayment/ })).toBeChecked();
     expect(history.location.pathname).toBe('/savings-fund/payment');
     expect(history.location.search).toBe(`?${emailQuery}`);
