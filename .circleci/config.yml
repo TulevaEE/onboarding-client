@@ -1,8 +1,8 @@
 version: 2.1
 orbs:
-  aws-cli: circleci/aws-cli@5.4.0
-  node: circleci/node@7.1.0
-  codecov: codecov/codecov@6.0.0
+  aws-cli: circleci/aws-cli@5.4.2
+  node: circleci/node@7.2.1
+  codecov: codecov/codecov@6.1.0
 
 references:
   workspace_root: &workspace_root /tmp/workspace
@@ -14,7 +14,7 @@ jobs:
   build-staging:
     executor:
       name: node/default
-      tag: '22.17.0'
+      tag: '24.22.1'
     steps:
       - *attach_workspace
       - checkout
@@ -34,7 +34,7 @@ jobs:
   test-staging:
     executor:
       name: node/default
-      tag: '22.17.0'
+      tag: '24.22.1'
     steps:
       - checkout
       - node/install-packages
@@ -65,7 +65,7 @@ jobs:
   build:
     executor:
       name: node/default
-      tag: '22.17.0'
+      tag: '24.22.1'
     steps:
       - *attach_workspace
       - checkout
@@ -85,7 +85,7 @@ jobs:
   test:
     executor:
       name: node/default
-      tag: '22.17.0'
+      tag: '24.22.1'
     steps:
       - checkout
       - node/install-packages

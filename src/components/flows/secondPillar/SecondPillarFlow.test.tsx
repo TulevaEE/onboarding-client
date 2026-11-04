@@ -27,15 +27,13 @@ beforeEach(async () => {
   initializeConfiguration();
 
   useTestBackendsExcept(server, ['mandates', 'user']);
-
-  initializeComponent();
-
-  history.push('/2nd-pillar-flow');
 });
 
 describe('2nd pillar flow', () => {
   beforeEach(() => {
     userBackend(server);
+    initializeComponent();
+    history.push('/2nd-pillar-flow');
   });
 
   test('allows moving all external pension to stock Tuleva pension fund', async () => {

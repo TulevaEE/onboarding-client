@@ -20,7 +20,7 @@ export const RequirementsCheckStep: FC<RequirementsCheckStepProps> = ({ control 
   const registryCode = useWatch({ control, name: 'registryLookup.registryNumber' });
   const registryName = useWatch({ control, name: 'registryLookup.registryName' });
   const { data, isSuccess, isLoading, isError, error, refetch, isFetching } =
-    useCompanyBusinessRegistryValidation(registryCode);
+    useCompanyBusinessRegistryValidation(registryCode ?? '');
   const isNotBoardMember =
     isError && (error as { body?: { error?: string } })?.body?.error === 'NOT_BOARD_MEMBER';
   const isUnexpectedError =

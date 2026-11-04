@@ -1,4 +1,5 @@
 import config from 'react-global-configuration';
+import { getIsolationScope } from '@sentry/browser';
 
 import {
   CHANGE_PHONE_NUMBER,
@@ -30,10 +31,6 @@ jest.mock('../common/http', () => mockHttp);
 
 const mockApi = jest.genMockFromModule('../common/api');
 jest.mock('../common/api', () => mockApi);
-
-jest.mock('@sentry/browser', () => ({ configureScope: jest.fn() }));
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const Sentry = require('@sentry/browser');
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const actions = require('./actions'); // need to use require because of jest mocks being weird
@@ -1439,6 +1436,19 @@ describe('Login actions', () => {
     });
   });
 
+  it('reports errors in production for the user who logged in', async () => {
+    const nodeEnvironment = process.env.NODE_ENV;
+    mockApi.getUserWithToken = jest.fn(() => Promise.resolve({ id: 'a-user-id' }));
+    process.env.NODE_ENV = 'production';
+    try {
+      await createBoundAction(actions.getUser)();
+    } finally {
+      process.env.NODE_ENV = nodeEnvironment;
+    }
+
+    expect(getIsolationScope().getUser()).toStrictEqual({ id: 'a-user-id' });
+  });
+
   it('can handle errors when getting a user', () => {
     const error = new Error('oh no!');
     mockApi.getUserWithToken = jest.fn(() => Promise.reject(error));
@@ -1473,10 +1483,10 @@ describe('Login actions', () => {
     return logout().then(() => expect(dispatch).toHaveBeenCalledWith({ type: LOG_OUT }));
   });
 
-  it('forgets the user errors are reported for when you log out', async () => {
+  it('forgets who errors are reported for and what they did when you log out', async () => {
     const nodeEnvironment = process.env.NODE_ENV;
-    const scope = { clear: jest.fn() };
-    Sentry.configureScope.mockImplementation((clearIt) => clearIt(scope));
+    getIsolationScope().setUser({ id: 'a-user-id' });
+    getIsolationScope().addBreadcrumb({ category: 'navigation', data: { to: '/account' } });
     mockApi.logout = jest.fn(() => Promise.resolve());
     process.env.NODE_ENV = 'production';
     try {
@@ -1485,7 +1495,8 @@ describe('Login actions', () => {
       process.env.NODE_ENV = nodeEnvironment;
     }
 
-    expect(scope.clear).toHaveBeenCalled();
+    expect(getIsolationScope().getUser()).toEqual({});
+    expect(getIsolationScope().getScopeData().breadcrumbs).toStrictEqual([]);
     expect(dispatch).toHaveBeenCalledWith({ type: LOG_OUT });
   });
 

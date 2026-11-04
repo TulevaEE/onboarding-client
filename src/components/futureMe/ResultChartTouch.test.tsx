@@ -316,11 +316,11 @@ describe('ResultChart on a touch screen', () => {
   describe('room for the buttons', () => {
     const BUTTON_WIDTH = 44;
     const giveRoom = (boxWidth: number) =>
-      jest
-        .spyOn(HTMLElement.prototype, 'offsetWidth', 'get')
-        .mockImplementation(function width(this: HTMLElement) {
-          return this.classList.contains('result-chart-ages') ? boxWidth : BUTTON_WIDTH;
-        });
+      jest.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function width(
+        this: HTMLElement,
+      ) {
+        return this.classList.contains('result-chart-ages') ? boxWidth : BUTTON_WIDTH;
+      });
 
     afterEach(() => jest.restoreAllMocks());
 

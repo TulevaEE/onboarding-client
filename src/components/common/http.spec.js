@@ -1,8 +1,6 @@
 import config from 'react-global-configuration';
 import axios from 'axios';
 
-const mockUuid = jest.genMockFromModule('uuid/v4');
-jest.mock('uuid/v4', () => mockUuid);
 jest.mock('axios');
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { get, post, postForm } = require('./http');
@@ -16,7 +14,6 @@ describe('http', () => {
   beforeEach(() => {
     originalFetch = global.window.fetch;
     fetch = jest.fn();
-    mockUuid.mockImplementation(() => 'fake uuid');
     global.window.fetch = fetch;
     global.window.sessionStorage = new (class {
       constructor() {

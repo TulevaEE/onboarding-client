@@ -12,8 +12,7 @@ import type {
 import { BusinessRegistryValidatedData } from '../../../common/apiModels/company-onboarding';
 
 export type InvestmentGoalsValue =
-  | { type: 'OPTION'; value: InvestmentGoalOption }
-  | { type: 'TEXT'; value: string };
+  { type: 'OPTION'; value: InvestmentGoalOption } | { type: 'TEXT'; value: string };
 
 // The child flow lets a parent pick several goals at once (education and a first
 // home, say); the person and company flows stay single-select.

@@ -60,11 +60,7 @@ export interface Result extends SimulationResult {
 }
 
 export type IncomeSource =
-  | 'firstPillar'
-  | 'specialPension'
-  | 'secondPillar'
-  | 'thirdPillar'
-  | 'deposit';
+  'firstPillar' | 'specialPension' | 'secondPillar' | 'thirdPillar' | 'deposit';
 
 export interface IncomeLine {
   id: IncomeSource;
@@ -164,7 +160,7 @@ const thirdPillarDepositOf = (context: ResultContext): number => {
 export const earlyThirdPillarOf = (context: ResultContext): EarlyPayment[] => {
   const isPaidFrom55 =
     hasPillar('thirdPillar', context) && age55Of(context.you, firstYearShareNow()).plan === 'fund';
-  const monthly = isPaidFrom55 ? fundPensionFrom55Of(context).payout?.monthly ?? [] : [];
+  const monthly = isPaidFrom55 ? (fundPensionFrom55Of(context).payout?.monthly ?? []) : [];
   return monthly.map(({ age, amount }) => ({ age, year: context.plan.birthYear + age, amount }));
 };
 

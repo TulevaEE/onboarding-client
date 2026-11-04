@@ -45,7 +45,7 @@ const thirdPillarContribution = (amount: number, time: string): ThirdPillarContr
 });
 
 const sourceFund = (pillar: 2 | 3, price: number, unavailablePrice = 0): SourceFund =>
-  ({ pillar, price, unavailablePrice } as SourceFund);
+  ({ pillar, price, unavailablePrice }) as SourceFund;
 
 describe('deriveThirdPillarMonthly', () => {
   const now = new Date('2026-07-01T00:00:00Z');
@@ -366,7 +366,7 @@ describe('selectSavingsFundPayments', () => {
   const savingsFund = { isin: 'EE0000003283', pillar: null } as Fund;
   const pensionFund = { isin: 'EE3600109435', pillar: 2 } as Fund;
   const transaction = (isin: string, amount: number, type = 'CONTRIBUTION_CASH'): Transaction =>
-    ({ isin, amount, time: '2026-06-01T00:00:00Z', type } as Transaction);
+    ({ isin, amount, time: '2026-06-01T00:00:00Z', type }) as Transaction;
 
   it('keeps only inflows into the fund with no pillar', () => {
     const payments = selectSavingsFundPayments(
@@ -436,7 +436,7 @@ describe('deriveTulevaFees', () => {
       ongoingChargesFigure: 0.0028,
       pillar: 2,
       ...overrides,
-    } as Fund);
+    }) as Fund;
 
   it('reads each side from its own funds, so the two fees can differ', () => {
     const fees = deriveTulevaFees([

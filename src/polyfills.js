@@ -1,9 +1,6 @@
-import { shim as shimFind } from 'array.prototype.find';
 import { enable as enableRejectionTracking } from 'promise/lib/rejection-tracking';
 import * as Sentry from '@sentry/browser';
 import { beforeBreadcrumb, isFirstPartyEvent, withoutPersonalData } from './sentryEventFilter';
-
-shimFind();
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -12,6 +9,9 @@ if (isProduction) {
     dsn: 'https://cfcb0c4bb8cb4264942f80ca1eb78c49@sentry.io/146907',
     environment: process.env.NODE_ENV,
     sampleRate: 1.0,
+    attachStacktrace: false,
+    integrations: (defaultIntegrations) =>
+      defaultIntegrations.filter(({ name }) => name !== 'CultureContext'),
     denyUrls: [/^iabjs:\/\//, /extensions\//, /^chrome(-extension)?:\/\//, /^moz-extension:\/\//],
     beforeSend: (event) => (isFirstPartyEvent(event) ? withoutPersonalData(event) : null),
     beforeBreadcrumb,

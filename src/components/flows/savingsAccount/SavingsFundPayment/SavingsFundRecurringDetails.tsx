@@ -10,6 +10,7 @@ import { CopyButton } from '../../../common/CopyButton';
 import { formatAmountForCount, formatAmountForCurrency } from '../../../common/utils';
 import { AccountHolder } from '../accountHolder';
 import { PII_CLASS } from '../../../tracking/piiMarkup';
+import { TranslationKey } from '../../../translations';
 
 export type BankKey = 'LHV' | 'COOP' | 'SWEDBANK' | 'SEB' | 'LUMINOR' | 'OTHER';
 
@@ -237,8 +238,6 @@ const CopyTable: FC<{ link: PrefilledLink }> = ({ link }) => {
     </div>
   );
 };
-
-type TranslationKey = Parameters<typeof FormattedMessage>[0]['id'];
 
 const CopyRow: FC<{ labelId: TranslationKey; value: string; copyValue?: string }> = ({
   labelId,

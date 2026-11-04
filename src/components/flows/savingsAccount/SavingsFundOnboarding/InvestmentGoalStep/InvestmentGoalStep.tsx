@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Control, Controller, FieldPath, FieldValues, useController } from 'react-hook-form';
+import { Control, FieldPath, FieldValues, useController } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { InvestmentGoalsValue } from '../types';
 import { InvestmentGoalOption } from '../types.api';
@@ -53,9 +53,28 @@ export const InvestmentGoalStep = <T extends FieldValues>({
   descriptionId,
 }: InvestmentGoalStepProps<T>) => {
   const intl = useIntl();
-  const { field: investmentGoalsField } = useController({
+  const {
+    field: investmentGoalsField,
+    fieldState: { error },
+  } = useController({
     control,
     name,
+    rules: {
+      validate: (raw) => {
+        const value = raw as InvestmentGoalsValue | null | undefined;
+        if (!value) {
+          return intl.formatMessage({
+            id: 'flows.savingsFundOnboarding.investmentGoalStep.required',
+          });
+        }
+        if (value.type === 'TEXT' && value.value.length === 0) {
+          return intl.formatMessage({
+            id: 'flows.savingsFundOnboarding.investmentGoalStep.other.required',
+          });
+        }
+        return true;
+      },
+    },
   });
   const fieldValue = investmentGoalsField.value as InvestmentGoalsValue | null | undefined;
   const [isOtherSelected, setIsOtherSelected] = useState(fieldValue?.type === 'TEXT');
@@ -84,74 +103,48 @@ export const InvestmentGoalStep = <T extends FieldValues>({
         ) : null}
       </div>
       <div className="section-content d-flex flex-column gap-4">
-        <Controller
-          control={control}
-          name={name}
-          rules={{
-            validate: (raw) => {
-              const value = raw as InvestmentGoalsValue | null | undefined;
-              if (!value) {
-                return intl.formatMessage({
-                  id: 'flows.savingsFundOnboarding.investmentGoalStep.required',
-                });
+        <div className="selection-group d-flex flex-column gap-2">
+          {generateRadioOptions(
+            investmentGoalsField.name,
+            fieldValue,
+            investmentGoalsField.onChange,
+            setIsOtherSelected,
+            options,
+          )}
+          <Radio
+            name={investmentGoalsField.name}
+            id="investment-goal-other"
+            selected={isOtherSelected}
+            onSelect={() => {
+              setIsOtherSelected(true);
+            }}
+            className="p-3"
+          >
+            <label className="form-check-label fs-3 lh-sm me-2" htmlFor="investment-goal-other">
+              <FormattedMessage id="flows.savingsFundOnboarding.investmentGoalStep.other" />
+            </label>
+          </Radio>
+          {isOtherSelected ? (
+            <input
+              ref={inputRef}
+              type="text"
+              className="form-control form-control-lg mt-2"
+              aria-labelledby="investment-goal-other"
+              placeholder={intl.formatMessage({
+                id: 'flows.savingsFundOnboarding.investmentGoalStep.otherPlaceholder',
+              })}
+              value={fieldValue?.type === 'TEXT' ? fieldValue.value : ''}
+              onChange={(e) =>
+                investmentGoalsField.onChange({ type: 'TEXT', value: e.target.value })
               }
-              if (value.type === 'TEXT' && value.value.length === 0) {
-                return intl.formatMessage({
-                  id: 'flows.savingsFundOnboarding.investmentGoalStep.other.required',
-                });
-              }
-              return true;
-            },
-          }}
-          render={({ field, fieldState: { error } }) => {
-            const value = field.value as InvestmentGoalsValue | null | undefined;
-            return (
-              <div className="selection-group d-flex flex-column gap-2">
-                {generateRadioOptions(
-                  field.name,
-                  value,
-                  field.onChange,
-                  setIsOtherSelected,
-                  options,
-                )}
-                <Radio
-                  name={field.name}
-                  id="investment-goal-other"
-                  selected={isOtherSelected}
-                  onSelect={() => {
-                    setIsOtherSelected(true);
-                  }}
-                  className="p-3"
-                >
-                  <label
-                    className="form-check-label fs-3 lh-sm me-2"
-                    htmlFor="investment-goal-other"
-                  >
-                    <FormattedMessage id="flows.savingsFundOnboarding.investmentGoalStep.other" />
-                  </label>
-                </Radio>
-                {isOtherSelected ? (
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    className="form-control form-control-lg mt-2"
-                    aria-labelledby="investment-goal-other"
-                    placeholder={intl.formatMessage({
-                      id: 'flows.savingsFundOnboarding.investmentGoalStep.otherPlaceholder',
-                    })}
-                    value={value?.type === 'TEXT' ? value.value : ''}
-                    onChange={(e) => field.onChange({ type: 'TEXT', value: e.target.value })}
-                  />
-                ) : null}
-                {error && error.message ? (
-                  <p className="m-0 text-danger fs-base" role="alert">
-                    {error.message}
-                  </p>
-                ) : null}
-              </div>
-            );
-          }}
-        />
+            />
+          ) : null}
+          {error && error.message ? (
+            <p className="m-0 text-danger fs-base" role="alert">
+              {error.message}
+            </p>
+          ) : null}
+        </div>
       </div>
     </section>
   );

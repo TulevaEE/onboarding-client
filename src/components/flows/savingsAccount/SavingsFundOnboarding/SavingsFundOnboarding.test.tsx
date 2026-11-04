@@ -234,6 +234,20 @@ describe('SavingsFundOnboarding', () => {
     });
   });
 
+  it('keeps the saver on the investment goal step until they choose a goal', async () => {
+    savingsFundPersonOnboardingStatusBackend(server);
+    kycIdentityBackend(server, mockCompleteKycIdentity);
+    openOnboardingFlow();
+
+    expect(
+      await screen.findByRole('heading', { name: 'What is your investment goal?', level: 2 }),
+    ).toBeInTheDocument();
+    clickContinue();
+
+    expect(await screen.findByText('Select an option to continue.')).toBeInTheDocument();
+    expect(screen.getByText('1/4')).toBeInTheDocument();
+  });
+
   it('prefills contact details from the identity on file', async () => {
     savingsFundPersonOnboardingStatusBackend(server);
     kycIdentityBackend(server, mockContactOnlyKycIdentity);

@@ -22,6 +22,11 @@ function initializeComponent() {
   renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
 }
 
+function openTheWithdrawalsPage() {
+  initializeComponent();
+  history.push('/withdrawals');
+}
+
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
@@ -31,9 +36,6 @@ describe('redirect gatekeep to prevent duplicate applications', () => {
     initializeConfiguration();
 
     useTestBackendsExcept(server, ['fundPensionStatus', 'userConversion']);
-    initializeComponent();
-
-    history.push('/withdrawals');
   });
   describe('pending withdrawal', () => {
     test('redirects to account page when a second pillar withdrawal is pending', async () => {
@@ -45,6 +47,7 @@ describe('redirect gatekeep to prevent duplicate applications', () => {
         { pendingWithdrawal: false },
       );
       fundPensionStatusBackend(server);
+      openTheWithdrawalsPage();
       await waitFor(() => {
         expect(history.location.pathname).toBe('/account');
       });
@@ -59,6 +62,7 @@ describe('redirect gatekeep to prevent duplicate applications', () => {
         { pendingWithdrawal: true },
       );
       fundPensionStatusBackend(server);
+      openTheWithdrawalsPage();
       await waitFor(() => {
         expect(history.location.pathname).toBe('/account');
       });
@@ -79,6 +83,7 @@ describe('redirect gatekeep to prevent duplicate applications', () => {
           },
         ],
       });
+      openTheWithdrawalsPage();
       await waitFor(() => {
         expect(history.location.pathname).toBe('/account');
       });
@@ -97,6 +102,7 @@ describe('redirect gatekeep to prevent duplicate applications', () => {
           },
         ],
       });
+      openTheWithdrawalsPage();
       await waitFor(() => {
         expect(history.location.pathname).toBe('/account');
       });

@@ -309,11 +309,11 @@ describe('sendBeacon', () => {
 
   it('sends the original body when the Blob cannot be read', async () => {
     const body = new Blob(['en=click']);
-    jest
-      .spyOn(FileReader.prototype, 'readAsText')
-      .mockImplementation(function failToRead(this: FileReader) {
-        this.onerror?.(new ProgressEvent('error') as ProgressEvent<FileReader>);
-      });
+    jest.spyOn(FileReader.prototype, 'readAsText').mockImplementation(function failToRead(
+      this: FileReader,
+    ) {
+      this.onerror?.(new ProgressEvent('error') as ProgressEvent<FileReader>);
+    });
 
     navigator.sendBeacon(GA4_COLLECT, body);
 

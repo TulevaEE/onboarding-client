@@ -40,19 +40,12 @@ export type InvestmentGoalOption =
 // How much the parent plans to contribute for the child (a range, not a total).
 // Child-flow only; proposed contract for backend PR5.
 export type PlannedContributionOption =
-  | 'UP_TO_200'
-  | 'FROM_200_TO_600'
-  | 'FROM_600_TO_1000'
-  | 'OVER_1000';
+  'UP_TO_200' | 'FROM_200_TO_600' | 'FROM_600_TO_1000' | 'OVER_1000';
 // Where the money reaching the child's account comes from. "Other" is a
 // free-text TEXT item (as with SOURCE_OF_INCOME), not an enum value.
 // Child-flow only; proposed contract for backend PR5.
 export type FundingSourceOption =
-  | 'PARENT_INCOME_AND_SAVINGS'
-  | 'GIFTS'
-  | 'INHERITANCE'
-  | 'CHILD_OWN'
-  | 'CHILD_BENEFIT';
+  'PARENT_INCOME_AND_SAVINGS' | 'GIFTS' | 'INHERITANCE' | 'CHILD_OWN' | 'CHILD_BENEFIT';
 export type InvestableAssetsOption =
   | 'LESS_THAN_20K'
   | 'RANGE_20K_40K'

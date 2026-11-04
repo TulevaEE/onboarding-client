@@ -35,7 +35,9 @@ $input-focus-box-shadow: 0 0 0 0.25rem rgba($blue, 0.25);
     border: 1px solid $input-border-color !important;
     border-radius: $border-radius-lg !important;
     outline: none !important;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition:
+      border-color 0.15s ease-in-out,
+      box-shadow 0.15s ease-in-out;
 
     &::placeholder {
       color: $text-tertiary;
@@ -86,7 +88,9 @@ $input-focus-box-shadow: 0 0 0 0.25rem rgba($blue, 0.25);
     background-size: 16px 12px !important;
     border: 1px solid $input-border-color !important;
     border-radius: $border-radius-lg !important;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition:
+      border-color 0.15s ease-in-out,
+      box-shadow 0.15s ease-in-out;
 
     &:focus {
       border-color: $input-focus-border-color !important;

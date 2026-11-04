@@ -205,7 +205,7 @@ export const initialAnswers = (prefill: YouPrefill): YouAnswers =>
     ...OPTIONAL_DEFAULTS.work,
     earlyYearsPicked: '',
     rescueBasis: 'mix',
-  } as YouAnswers);
+  }) as YouAnswers;
 
 const PREFILLABLE_FIELDS = [
   'birthYear',
@@ -381,9 +381,7 @@ export const countedKids = (
 };
 
 export type ChildNote =
-  | { kind: 'noBirthYear' }
-  | { kind: 'late'; turnsEight: number; retirementYear: number }
-  | null;
+  { kind: 'noBirthYear' } | { kind: 'late'; turnsEight: number; retirementYear: number } | null;
 
 export const childNoteOf = (answers: YouAnswers, index: number): ChildNote => {
   const typed = (answers.kidsBirthYears[index] ?? '').trim();
