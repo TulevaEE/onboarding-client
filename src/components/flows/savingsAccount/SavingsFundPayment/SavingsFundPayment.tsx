@@ -217,22 +217,31 @@ const SavingsFundPaymentForm: FC<{ user: User }> = ({ user }) => {
               <p className="text-body-secondary m-0">
                 <FormattedMessage id="savingsFund.payment.transferLimit" />
               </p>
-              <div className="d-flex justify-content-between align-items-start gap-3">
-                <Link to="/account" className="btn btn-outline-primary">
-                  <FormattedMessage id="savingsFund.payment.form.cancel.label" />
-                </Link>
+              <div className="d-flex flex-column gap-2">
+                <div className="d-flex justify-content-between">
+                  <Link to="/account" className="btn btn-outline-primary">
+                    <FormattedMessage id="savingsFund.payment.form.cancel.label" />
+                  </Link>
 
-                <button
-                  id="savings-fund-payment-submit"
-                  type="submit"
-                  className="btn btn-primary btn-loading text-wrap text-balance"
-                  disabled={!user.personalCode || isSubmitting}
+                  <button
+                    id="savings-fund-payment-submit"
+                    type="submit"
+                    className="btn btn-primary btn-loading"
+                    aria-describedby="savings-fund-payment-account"
+                    disabled={!user.personalCode || isSubmitting}
+                  >
+                    <FormattedMessage id="savingsFund.payment.form.submit.label" />
+                  </button>
+                </div>
+                <p
+                  id="savings-fund-payment-account"
+                  className="text-body-secondary m-0 text-end text-pretty"
                 >
                   <FormattedMessage
-                    id="savingsFund.payment.form.submit.toAccountOwner"
+                    id="savingsFund.payment.accountOwner"
                     values={{ accountOwner }}
                   />
-                </button>
+                </p>
               </div>
             </div>
           )}
