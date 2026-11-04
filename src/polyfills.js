@@ -1,9 +1,6 @@
-import { shim as shimFind } from 'array.prototype.find';
 import { enable as enableRejectionTracking } from 'promise/lib/rejection-tracking';
 import * as Sentry from '@sentry/browser';
 import { beforeBreadcrumb, isFirstPartyEvent, withoutPersonalData } from './sentryEventFilter';
-
-shimFind();
 
 const isProduction = process.env.NODE_ENV === 'production';
 
