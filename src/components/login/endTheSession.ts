@@ -18,9 +18,12 @@ const reportFurtherErrorsOnANewTrace = () =>
   getCurrentScope().setPropagationContext({ traceId: aNewTraceId(), sampleRand: Math.random() });
 
 export function endTheSession(dispatch: Dispatch): void {
-  if (process.env.NODE_ENV === 'production') {
-    forgetWhoErrorsAreReportedForAndWhatTheyDid();
-    reportFurtherErrorsOnANewTrace();
+  try {
+    if (process.env.NODE_ENV === 'production') {
+      forgetWhoErrorsAreReportedForAndWhatTheyDid();
+      reportFurtherErrorsOnANewTrace();
+    }
+  } finally {
+    dispatch({ type: LOG_OUT });
   }
-  dispatch({ type: LOG_OUT });
 }
