@@ -28,7 +28,7 @@ import {
 import { isSigningWithIdCard } from '../../common/authenticationManager';
 import { TulevaSecondPillarStockFund } from '../../common/utils';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
-import { FundChoice, FundPick, PaymentRateChoice } from './RejoinChoices';
+import { FundChoice, FundPick, PaymentRateChoice, TaxWinExplanation } from './RejoinChoices';
 import Checkbox from '../../common/checkbox/Checkbox';
 import { RejoinDisclaimers } from './RejoinDisclaimers';
 import { useMandateBatchSigning } from '../withdrawals/signing/useMandateBatchSigning';
@@ -59,6 +59,9 @@ const activeSecondPillarFundIsin = (sourceFunds: SourceFund[] | undefined) =>
 
 const paymentRateThatApplies = (user: User | undefined) =>
   user?.secondPillarPaymentRates?.pending ?? user?.secondPillarPaymentRates?.current;
+
+const taxWinExplanationFor = (user: User | undefined): TaxWinExplanation =>
+  user && user.id % 2 === 1 ? 'comparedWithLowestRate' : 'greatestOnRecommendedRate';
 
 const monthOf = (date: string) => moment(date).month() + 1;
 
@@ -107,6 +110,7 @@ export const SecondPillarRejoin = () => {
         funds={funds.filter(isOpenForContributions)}
         activeFundIsin={activeSecondPillarFundIsin(sourceFunds)}
         paymentRateOnFile={paymentRateThatApplies(user)}
+        taxWinExplanation={taxWinExplanationFor(user)}
         contributionStartDate={mandateDeadlines.secondPillarRejoinContributionStartDate}
         cancellationDeadline={mandateDeadlines.secondPillarRejoinDeadline}
         pendingApplications={pendingApplications}
@@ -141,6 +145,7 @@ const RejoinApplication = ({
   funds,
   activeFundIsin,
   paymentRateOnFile,
+  taxWinExplanation,
   contributionStartDate,
   cancellationDeadline,
   pendingApplications,
@@ -154,6 +159,7 @@ const RejoinApplication = ({
   funds: Fund[];
   activeFundIsin: string | undefined;
   paymentRateOnFile: number | undefined;
+  taxWinExplanation: TaxWinExplanation;
   contributionStartDate: string;
   cancellationDeadline: string;
   pendingApplications: Application[] | undefined;
@@ -381,7 +387,11 @@ const RejoinApplication = ({
         <>
           <RejoinHeader contributionStartDate={contributionStartDate} />
           <div className="d-flex flex-column gap-4 mb-5">
-            <PaymentRateChoice paymentRate={paymentRate} onChange={setPaymentRate} />
+            <PaymentRateChoice
+              paymentRate={paymentRate}
+              taxWinExplanation={taxWinExplanation}
+              onChange={setPaymentRate}
+            />
             <FundChoice
               funds={funds}
               recommendedFundIsin={RECOMMENDED_FUND_ISIN}

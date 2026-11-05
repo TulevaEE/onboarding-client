@@ -116,7 +116,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     await renderAt('/2nd-pillar-rejoin');
 
     expect(within(paymentRateRow()).getAllByRole('radio')).toEqual(
-      radiosNamed([/^2% of gross salary/i, /^4% of gross salary/i, /^6% of gross salary/i]),
+      radiosNamed([/^6% of gross salary/i, /^4% of gross salary/i, /^2% of gross salary/i]),
     );
     expectChosenRate(6);
     expect(paymentRateRow()).not.toHaveTextContent('salary:');
@@ -129,6 +129,54 @@ describe('When an eligible person rejoins the II pillar', () => {
     );
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Change' })).not.toBeInTheDocument();
+  });
+
+  test('says the contribution size can be changed later, every year', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(paymentRateRow()).toHaveTextContent(
+      'You can change your contribution size later, every year.',
+    );
+  });
+
+  test('compares the income tax win across the options for people with an odd user id', async () => {
+    userBackend(server, { id: 7 });
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(within(paymentRateRow()).getAllByRole('radio')).toEqual(
+      radiosNamed([
+        /^6% of gross salary.*3×\slarger income tax win$/i,
+        /^4% of gross salary.*2×\slarger income tax win$/i,
+        /^2% of gross salary.*Smallest income tax win$/i,
+      ]),
+    );
+    expect(paymentRateRow()).not.toHaveTextContent('greatest tax benefit');
+  });
+
+  test('keeps the greatest tax benefit line on 6% alone for people with an even user id', async () => {
+    userBackend(server, { id: 8 });
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(within(paymentRateRow()).getByRole('radio', { checked: true })).toHaveAccessibleName(
+      /greatest tax benefit/,
+    );
+    expect(paymentRateRow()).not.toHaveTextContent('income tax win');
+  });
+
+  test('words the income tax comparison and the yearly change in Estonian without the word rate', async () => {
+    userBackend(server, { id: 7 });
+    render('/2nd-pillar-rejoin', new QueryClient(), 'et');
+    const contribution = await screen.findByRole('group', { name: 'Sinu panus' });
+
+    expect(contribution).toHaveTextContent(/3×\ssuurem tulumaksuvõit/);
+    expect(contribution).toHaveTextContent(/2×\ssuurem tulumaksuvõit/);
+    expect(contribution).toHaveTextContent('Väikseim tulumaksuvõit');
+    expect(contribution).toHaveTextContent(
+      /Riik lisab sotsiaalmaksu arvelt\s4%, kokku\skogud\s10%/,
+    );
+    expect(contribution).not.toHaveTextContent('Sina panustad');
+    expect(contribution).toHaveTextContent('Sissemakse suurust saad hiljem igal aastal muuta.');
+    expect(contribution).not.toHaveTextContent(/määr/i);
   });
 
   test('names the page in the browser tab', async () => {
@@ -230,14 +278,15 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(screen.getByRole('link', { name: 'Cancel' })).toHaveAttribute('href', '/account');
   });
 
-  test('explains what each payment rate means, in the words of the payment rate page', async () => {
+  test('explains what each contribution size adds up to, with the state adding 4% on top', async () => {
+    userBackend(server, { id: 8 });
     await renderAt('/2nd-pillar-rejoin');
 
     expect(screen.getByRole('radio', { name: /^2% of gross salary/i })).toHaveAccessibleName(
-      /^2% of gross salary\s*You contribute 2% and the state\s4%, totaling\s6%$/i,
+      /^2% of gross salary\s*The state adds\s4% from social tax, totaling\s6%$/i,
     );
     expect(screen.getByRole('radio', { name: /^6% of gross salary/i })).toHaveAccessibleName(
-      /^6% of gross salary\s*Recommended\s*You contribute 6% and the state\s4%, totaling\s10%.*greatest tax benefit/i,
+      /^6% of gross salary\s*Recommended\s*The state adds\s4% from social tax, totaling\s10%.*greatest tax benefit/i,
     );
     expect(within(paymentRateRow()).queryByLabelText('Gross salary')).not.toBeInTheDocument();
   });
