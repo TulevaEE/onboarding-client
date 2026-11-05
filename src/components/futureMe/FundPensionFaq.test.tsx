@@ -20,7 +20,9 @@ describe('fund pension FAQ', () => {
 
     expect(third).toHaveTextContent(/^Kumba sammast enne kasutada\?/);
     expect(third).toHaveTextContent(/Kui töötad samal ajal edasi, siis III\ssammast\./);
-    expect(third).toHaveTextContent(/lõpevad II\ssamba sissemaksed igaveseks, ka riigi 4%/);
+    expect(third).toHaveTextContent(
+      /lõpevad II\ssamba sissemaksed igaveseks, ka 4%\ssotsiaalmaksust/,
+    );
     expect(third).toHaveTextContent(/III\ssambasse võid sissemakseid jätkata/);
     expect(third).toHaveTextContent(/Kui sa enam tööd ei tee.*on sambad üsna võrdsed/);
   });

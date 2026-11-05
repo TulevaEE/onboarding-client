@@ -170,7 +170,7 @@ describe('Result step: your decisions', () => {
       userEvent.click(changeButton(secondPillarAt60()));
 
       expect(screen.getByRole('radio', { name: 'Võtan igakuiselt' })).toHaveAccessibleDescription(
-        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara kasvab fondis edasi\. Sinu ja riigi II\ssamba sissemaksed lõpevad\./,
+        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara jääb fondi\. Sinu II\ssamba sissemaksed ja 4%\ssotsiaalmaksust lõpevad\./,
       );
     });
 

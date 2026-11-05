@@ -129,7 +129,7 @@ describe('Result advice', () => {
 
     expect(warning()).toHaveTextContent(/\(kaetud kuni \d+\. eluaastani\)\./);
     expect(warning()).toHaveTextContent(
-      /Parem oleks .+: see kannab elu lõpuni [\d\s]+€ kuus \(sinu valik [\d\s]+€\)\./,
+      /Rohkem kannab .+: elu lõpuni [\d\s]+€ kuus \(sinu valik [\d\s]+€\)\./,
     );
     expect(warning()).toHaveTextContent(/Selleks vali .+\./);
   });

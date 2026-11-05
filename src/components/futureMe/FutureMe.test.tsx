@@ -2604,9 +2604,9 @@ describe('FutureMe', () => {
 
       expect(fundPlan()).toHaveAccessibleName('Võtan igakuiselt');
       expect(fundPlan()).toHaveAccessibleDescription(
-        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara kasvab fondis edasi\.$/,
+        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara jääb fondi\.$/,
       );
-      expect(keepPlan()).toHaveAccessibleDescription(/^Vara jääb fondi ja kasvab edasi\.$/);
+      expect(keepPlan()).toHaveAccessibleDescription(/^Vara jääb fondi\.$/);
     });
 
     it('says the money taken out at once is used up before the pension age, as the calculation leaves none of it for retirement', () => {
@@ -2844,7 +2844,7 @@ describe('FutureMe', () => {
       userEvent.click(within(trail()).getByRole('button', { name: /^\d+\+\sa/ }));
 
       expect(
-        screen.queryByText(/vara kasvab fondis ja võtad välja nii palju/),
+        screen.queryByText(/vara jääb fondi ja võtad välja nii palju/),
       ).not.toBeInTheDocument();
     });
 

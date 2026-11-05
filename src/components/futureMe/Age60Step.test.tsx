@@ -303,11 +303,9 @@ describe('Age 60 step', () => {
     openAge60Step();
 
     [secondPillarGroup(), thirdPillarGroup()].forEach((group) => {
-      expect(choice(group, 'Kasvatan edasi')).toHaveAccessibleDescription(
-        /^Vara jääb fondi ja kasvab edasi\.$/,
-      );
+      expect(choice(group, 'Kasvatan edasi')).toHaveAccessibleDescription(/^Vara jääb fondi\.$/);
       expect(choice(group, 'Võtan igakuiselt')).toHaveAccessibleDescription(
-        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara kasvab fondis edasi\./,
+        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara jääb fondi\./,
       );
       expect(choice(group, 'Võtan korraga välja')).toHaveAccessibleDescription(
         /^Kogu vara korraga välja, 10%\stulumaks\. Raha on hoiusel\./,
@@ -318,7 +316,7 @@ describe('Age 60 step', () => {
   it('says on the second pillar payout cards, not in the intro, that the contributions end', () => {
     openAge60Step();
 
-    const contributionsEnd = /Sinu ja riigi II\ssamba sissemaksed lõpevad\.$/;
+    const contributionsEnd = /Sinu II\ssamba sissemaksed ja 4%\ssotsiaalmaksust lõpevad\.$/;
     expect(choice(secondPillarGroup(), 'Võtan igakuiselt')).toHaveAccessibleDescription(
       contributionsEnd,
     );

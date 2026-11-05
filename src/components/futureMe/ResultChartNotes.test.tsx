@@ -218,7 +218,7 @@ describe('ResultChart reading guide', () => {
         ),
       ]);
       expect(guide()).toHaveTextContent(
-        'Kui sa raha välja ei võta, jääb see fondi kasvama ja kulud jäävad selle võrra katmata.',
+        'Kui sa raha välja ei võta, jääb see fondi ja kulud jäävad selle võrra katmata.',
       );
     });
 
