@@ -210,11 +210,14 @@ export function useFundPensionStatus(): UseQueryResult<FundPensionStatus> {
   return useQuery({ queryKey: ['fundPensionStatus'], queryFn: () => getFundPensionStatus() });
 }
 
-export function useRejoinPermission(): UseQueryResult<RejoinPermission> {
+export function useRejoinPermission(
+  options: { enabled?: boolean } = {},
+): UseQueryResult<RejoinPermission> {
   return useQuery({
     queryKey: ['rejoinPermission'],
     queryFn: () => getRejoinPermission(),
     retry: false,
+    enabled: options.enabled ?? true,
   });
 }
 

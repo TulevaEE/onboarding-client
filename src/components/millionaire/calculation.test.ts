@@ -381,6 +381,22 @@ describe('buildComparison', () => {
     savingsFundFee: TULEVA_FEE,
   };
 
+  it('gives the recipe the II pillar rate it is told to, when the saver cannot use the default', () => {
+    const comparison = buildComparison(inputs, 0);
+
+    const laura = project({
+      currentAge: 35,
+      retirementAge: 67,
+      grossSalaryMonthly: 2000,
+      initialBalance: 15000,
+      secondPillarRate: 0,
+      thirdPillar: { mode: 'fixedAnnual', annual: thirdPillarTaxCapMonthly(2000) * 12 },
+      annualReturnPercent: 7,
+      fee: TULEVA_FEE,
+    });
+    expect(comparison.laura).toEqual(laura);
+  });
+
   it('composes today vs Laura vs high-fee scenarios consistently with project()', () => {
     const comparison = buildComparison(inputs);
 

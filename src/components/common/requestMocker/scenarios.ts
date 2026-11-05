@@ -85,10 +85,10 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     savingsFundOnboardingStatus: 'NOT_STARTED',
     savingsFundBalance: 'NO_ACCOUNT',
   },
-  // Left the funded II pillar: both II steps are advice they cannot act on, so they see
-  // the III pillar and then the savings fund instead.
+  // Left the funded II pillar: the way back in replaces both II steps.
   LEFT_SECOND_PILLAR: {
     user: 'LEFT_SECOND_PILLAR',
+    rejoinPermission: 'PERMITTED',
     conversion: 'COMPLETE_ONLY_THIRD_PILLAR',
     contributions: 'THIRD_PILLAR_MONTHLY_MAXED',
     sourceFunds: 'ONLY_THIRD_PILLAR',

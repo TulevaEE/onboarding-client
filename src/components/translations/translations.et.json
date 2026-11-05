@@ -2052,7 +2052,7 @@
   "millionaire.gap.onTrack.withAge": "Hästi! Praeguse tempoga jõuaksid miljonini {age}‑aastaselt.",
   "millionaire.cta.title": "Sinu järgmised sammud",
   "millionaire.cta.item.secondPillarToTuleva.heading": "Vali madala tasuga indeksfond",
-  "millionaire.cta.item.secondPillarToTuleva.todo": "II samba vahetuse tähtaeg on <b>31. juulil kell 23:59</b>",
+  "millionaire.cta.item.secondPillarToTuleva.todo": "II samba vahetuse tähtaeg on <b>{deadline}</b>",
   "millionaire.cta.item.secondPillarToTuleva.done": "Sa kogud Tuleva <b>madala tasuga indeksfondis</b>",
   "millionaire.cta.item.secondPillarToTuleva.button": "Toon Tulevasse",
   "millionaire.cta.item.raiseSecondPillar.heading": "Kogu II sambasse maksimaalse maksuvõiduga",
@@ -2069,6 +2069,7 @@
   "millionaire.cta.item.savingsFund.todo": "Järgmisena investeeri madala tasuga kogumisfondi",
   "millionaire.cta.item.savingsFund.done": "Sa oled alustanud kogumisfondis investeerimist",
   "millionaire.cta.item.savingsFund.buttonRecurring": "Teen püsimakse",
+  "millionaire.cta.item.rejoinSecondPillar.heading": "Liitu uuesti II sambaga",
   "millionaire.disclaimer": "<p>Eeldame, et sinu palk ja sissemaksed kasvavad 3% aastas. Tulemus on illustratiivne. Tootlus pole lubadus ega prognoos ja investeeringu väärtus võib nii kasvada kui kahaneda.</p><p>II ja III samba maksed on tulumaksuvabad. Optimaalne ja ühtlasi maksimaalne summa, mida võiks III sambasse paigutada, on 15% sinu aasta bruto sissetulekust, aga mitte üle 6000 euro. See annab suurima maksuvõidu. Sinu II samba maksetele lisab riik veel 4% brutopalgast, mis tuleb sinu sotsiaalmaksust. See mõjutab vähesel määral ka <a>I sammast</a>.</p>",
   "millionaire.alreadyRetired": "Oled juba pensionieas. See kalkulaator on mõeldud kogumisaja planeerimiseks.",
 

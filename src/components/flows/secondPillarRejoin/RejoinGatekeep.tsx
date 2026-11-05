@@ -3,16 +3,15 @@ import { useSelector } from 'react-redux';
 import { Redirect, useLocation } from 'react-router-dom';
 import { Loader } from '../../common';
 import { usePendingApplications, useRejoinPermission } from '../../common/apiHooks';
+import { hasStoppedContributing } from '../../common/secondPillarContributions';
 import { isRejoinApplication } from '../../account/ApplicationSection/ApplicationFunctions';
 import { State } from '../../../types';
 import { flowPath } from './secondPillarRejoinPaths';
 
 export const RejoinGatekeep = ({ children }: PropsWithChildren<unknown>) => {
   const contributions = useSelector((state: State) => state.login.user?.secondPillarContributions);
-  const hasStoppedContributing =
-    contributions?.contributing === false && contributions.restartDate === null;
 
-  if (hasStoppedContributing) {
+  if (hasStoppedContributing(contributions)) {
     return <SendToRejoinWhenPermitted>{children}</SendToRejoinWhenPermitted>;
   }
   return <>{children}</>;
