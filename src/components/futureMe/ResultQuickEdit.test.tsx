@@ -250,7 +250,7 @@ describe('Result step: quick edit of the other decisions', () => {
       );
 
       expect(row).toHaveTextContent(
-        'Sinu valik: II sambast alates 70-⁠aastaselt, uus leping igal aastal',
+        'Sinu valik: II sambast alates 70-⁠aastaselt, uus avaldus igal aastal',
       );
       expect(row).toHaveTextContent(/70\sa/);
     });
@@ -264,10 +264,10 @@ describe('Result step: quick edit of the other decisions', () => {
         '70',
       );
 
-      userEvent.click(within(row).getByRole('radio', { name: /^Üks leping/ }));
+      userEvent.click(within(row).getByRole('radio', { name: /^Üks avaldus/ }));
 
       expect(row).toHaveTextContent(
-        /Sinu valik: II sambast alates 70-⁠aastaselt, üks leping kuni \d+-⁠aastaseni/,
+        /Sinu valik: II sambast alates 70-⁠aastaselt, üks avaldus kuni \d+-⁠aastaseni/,
       );
 
       userEvent.selectOptions(
@@ -276,7 +276,7 @@ describe('Result step: quick edit of the other decisions', () => {
       );
 
       expect(row).toHaveTextContent(
-        'Sinu valik: II sambast alates 70-⁠aastaselt, üks leping kuni 97-⁠aastaseni',
+        'Sinu valik: II sambast alates 70-⁠aastaselt, üks avaldus kuni 97-⁠aastaseni',
       );
     });
 
@@ -294,7 +294,7 @@ describe('Result step: quick edit of the other decisions', () => {
       );
 
       expect(row).toHaveTextContent(
-        'Sinu valik: II sambast alates 65-⁠aastaselt, uus leping igal aastal; III sambast alates 70-⁠aastaselt, uus leping igal aastal',
+        'Sinu valik: II sambast alates 65-⁠aastaselt, uus avaldus igal aastal; III sambast alates 70-⁠aastaselt, uus avaldus igal aastal',
       );
       expect(row).toHaveTextContent(/65\sa/);
     });

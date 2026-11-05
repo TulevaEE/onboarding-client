@@ -33,7 +33,7 @@ describe('fund pension FAQ', () => {
 
     expect(surplus).toHaveTextContent(/Väiksemat summat valida ei saa\./);
     expect(surplus).toHaveTextContent(
-      /Saad aga valida pikema lepingu lõpu või sõlmida igal aastal uue lepingu uuele pikemale perioodile, mis võib väljamakse suurust vähendada\./,
+      /Saad aga valida väljamaksetele hilisema lõpu või esitada igal aastal uue avalduse uuele pikemale perioodile, mis võib väljamakse suurust vähendada\./,
     );
   });
 
@@ -79,14 +79,14 @@ describe('fund pension FAQ', () => {
     const [first] = screen.getAllByRole('group');
 
     expect(first).toHaveTextContent(/^Mis on igakuised väljamaksed ehk fondipension\?/);
-    expect(first).toHaveTextContent(/määra pikem eeldatav eluiga ühe lepingu sõlmimisel/);
+    expect(first).toHaveTextContent(/määra pikem eeldatav eluiga ühe avalduse esitamisel/);
   });
 
   it('then tells how to choose the contract, until which age one contract pays and how to end it', () => {
     renderFaq();
     const [, second] = screen.getAllByRole('group');
 
-    expect(second).toHaveTextContent(/^Kuidas valida igakuiste väljamaksete lepingut\?/);
+    expect(second).toHaveTextContent(/^Kuidas valida igakuiste väljamaksete avaldust\?/);
     expect(second).toHaveTextContent(/keskmise elueani.*maksuvaba/);
     expect(second).toHaveTextContent(/väiksem.*kauem/);
     expect(second).toHaveTextContent(/lühem.*ei ole tulumaksuvaba/i);
