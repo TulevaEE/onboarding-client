@@ -1509,6 +1509,93 @@ export function trackedEventsBackend(server: SetupServerApi): void {
   server.use(rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))));
 }
 
+type TkfDocumentFields = Record<string, string | false>;
+
+export const TKF_DOCUMENT_FIELDS: TkfDocumentFields = {
+  terms_file:
+    'https://tuleva.ee/wp-content/uploads/2026/08/TKF100-Tingimused-kehtivad-alates-18.09.2026.pdf',
+  prospectus_file:
+    'https://tuleva.ee/wp-content/uploads/2026/09/TKF100-Prospekt-alates-29.10.2026.pdf',
+  key_investor_info_file:
+    'https://tuleva.ee/wp-content/uploads/2026/10/TKF100-Pohiteave-kehtib-alates-29.10.2026.pdf',
+};
+
+export function tkfDocumentsBackend(
+  server: SetupServerApi,
+  fields: TkfDocumentFields | false | readonly [] | string = TKF_DOCUMENT_FIELDS,
+): void {
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res, ctx) => {
+      const asksForTheFundPageAsUrls =
+        req.url.searchParams.get('slug') === 'tuleva-taiendav-kogumisfond-dokumendid' &&
+        req.url.searchParams.get('acf_format') === 'standard';
+      if (!asksForTheFundPageAsUrls || req.headers.has('authorization')) {
+        return res(ctx.status(400));
+      }
+      return res(ctx.json([{ acf: fields }]));
+    }),
+  );
+}
+
+export function failingTkfDocumentsBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res, ctx) => res(ctx.status(500))),
+  );
+}
+
+export function unresponsiveTkfDocumentsBackend(server: SetupServerApi): void {
+  server.use(rest.get('https://tuleva.ee/wp-json/wp/v2/pages', () => new Promise<never>(() => {})));
+}
+
+export function unreachableTkfDocumentsBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res) =>
+      res.networkError('Failed to connect'),
+    ),
+  );
+}
+
+export function heldTkfDocumentsBackend(
+  server: SetupServerApi,
+  fields: TkfDocumentFields,
+): { arrived: Promise<void>; answer: () => void } {
+  let readArrived = () => {};
+  const arrived = new Promise<void>((resolve) => {
+    readArrived = resolve;
+  });
+  let answerTheHeldRead = () => {};
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', async (req, res, ctx) => {
+      await new Promise<void>((resolve) => {
+        answerTheHeldRead = resolve;
+        readArrived();
+      });
+      return res(ctx.json([{ acf: fields }]));
+    }),
+  );
+  return { arrived, answer: () => answerTheHeldRead() };
+}
+
+export function missingTkfDocumentsPageBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res, ctx) => res(ctx.json([]))),
+  );
+}
+
+export function nonListTkfDocumentsBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res, ctx) => res(ctx.json({}))),
+  );
+}
+
+export function unreadableTkfDocumentsBackend(server: SetupServerApi): void {
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res, ctx) =>
+      res(ctx.text('<html></html>')),
+    ),
+  );
+}
+
 const TEST_BACKENDS = {
   cancellation: cancellationBackend,
   trackedEvents: trackedEventsBackend,
@@ -1555,6 +1642,7 @@ const TEST_BACKENDS = {
   nudge: nudgeBackend,
   paymentRateRedirect: paymentRateRedirectBackend,
   recurringPaymentConfirmation: recurringPaymentConfirmationBackend,
+  tkfDocuments: tkfDocumentsBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;
