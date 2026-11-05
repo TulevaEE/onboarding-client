@@ -1198,7 +1198,7 @@
   "pageTitle.secondPillarTaxWin": "II pillar tax win",
   "pageTitle.secondPillarGrowth": "II pillar growth",
   "secondPillarGrowth.title": "Who pays into your II pillar?",
-  "secondPillarGrowth.lead": "Your II pillar balance is <b>{balance}</b>, of which <b>{ownPercentage}%</b> is your own contribution. See how much <b>tax win</b> and <b>investment return</b> add to your assets.",
+  "secondPillarGrowth.lead": "Your II pillar balance is <b>{balance}</b>, of which <b>{ownPercentage}%</b> is your own contribution. See how much <b>taxes</b> and <b>investment return</b> add to your assets.",
   "secondPillarGrowth.chart.label": "Your II pillar",
   "secondPillarGrowth.chart.yourContributions": "From your net salary",
   "secondPillarGrowth.tooltip.netContribution": "From your net salary",

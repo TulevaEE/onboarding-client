@@ -76,6 +76,16 @@ describe('SecondPillarGrowth', () => {
     expect(screen.queryByTestId('mock-chart')).not.toBeInTheDocument();
   });
 
+  it('calls the tax part of the balance taxes in the lead, as only part of it is a tax win', async () => {
+    mockAssets({ balance: 15698.36, employeeWithheldPortion: 5531.39, socialTaxPortion: 8782.61 });
+
+    renderWithProviders();
+
+    expect(await screen.findByText(/See how much/)).toHaveTextContent(
+      /See how much taxes and investment return add to your assets/,
+    );
+  });
+
   describe('chart segments (Kaisa personas)', () => {
     it('case 1 — normal, positive growth, no withdrawals', async () => {
       mockAssets({

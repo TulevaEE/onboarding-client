@@ -130,6 +130,10 @@ describe('Person account page', () => {
     expect(accountStatement().exists()).toBe(false);
   });
 
+  it('does not link to who pays into the II pillar when there are no II pillar funds', () => {
+    expect(component.find('[to="/2nd-pillar-growth"]').exists()).toBe(false);
+  });
+
   it('does not render any account summary table when there are no source funds', () => {
     component.setProps({
       secondPillarSourceFunds: null,

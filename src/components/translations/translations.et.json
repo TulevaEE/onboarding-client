@@ -1278,7 +1278,7 @@
 
   "pageTitle.secondPillarGrowth": "II samba kasv",
   "secondPillarGrowth.title": "Kes maksab sinu II sambasse?",
-  "secondPillarGrowth.lead": "Sinu II sambas on <b>{balance}</b>, millest <b>~{ownPercentage}%</b> on sinu enda sissemaksed. Vaata järele, kui palju lisavad <b>maksuvõit</b> ja <b>tootlus</b> sinu varale.",
+  "secondPillarGrowth.lead": "Sinu II sambas on <b>{balance}</b>, millest <b>~{ownPercentage}%</b> on sinu enda sissemaksed. Vaata järele, kui palju lisavad <b>maksud</b> ja <b>tootlus</b> sinu varale.",
   "secondPillarGrowth.chart.label": "Sinu II sammas",
   "secondPillarGrowth.chart.yourContributions": "Sinu panus netopalgast",
   "secondPillarGrowth.tooltip.netContribution": "Sinu panus netopalgast",
