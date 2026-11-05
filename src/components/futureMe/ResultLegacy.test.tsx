@@ -130,7 +130,7 @@ describe('Result legacy card', () => {
       userEvent.click(screen.getByRole('radio', { name: 'Pärandan lähedastele' }));
 
       expect(
-        screen.getByText(/^Lähedastele jääb umbes [\d\s]+ €\. Pärandamiseks tee testament/),
+        screen.getByText(/^Lähedastele jääb umbes [\d\s]+ €\. See läheb sinu pärijatele/),
       ).toBeInTheDocument();
       expect(screen.queryByText('Vali üks variant.')).not.toBeInTheDocument();
     });

@@ -3119,7 +3119,7 @@
   "futureMe.result.legacy.choice.spend": "I spend more myself",
   "futureMe.result.legacy.choice.care": "I keep it as a buffer for care",
   "futureMe.result.legacy.note.none": "Choose one option.",
-  "futureMe.result.legacy.note.heirs": "About {left} is left for your family. To pass it on, make a will or add a beneficiary to your monthly payout agreement.",
+  "futureMe.result.legacy.note.heirs": "About {left} is left for your family. It goes to your heirs. To choose who gets it yourself, make a will.",
   "futureMe.result.legacy.note.donate": "{left} could support a cause that matters to you. You can set out a donation in your will.",
   "futureMe.result.legacy.note.spend": "The plan supports {sustainable} a month for life. That is {extra} more than now.",
   "futureMe.result.legacy.note.care": "The buffer covers unexpected costs and a care home, so your children do not have to pay.",

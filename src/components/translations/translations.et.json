@@ -3209,7 +3209,7 @@
   "futureMe.result.legacy.choice.spend": "Kulutan ise rohkem",
   "futureMe.result.legacy.choice.care": "Jätan puhvriks hoolduseks",
   "futureMe.result.legacy.note.none": "Vali üks variant.",
-  "futureMe.result.legacy.note.heirs": "Lähedastele jääb umbes {left}. Pärandamiseks tee testament või lisa igakuiste väljamaksete lepingusse soodustatud isik.",
+  "futureMe.result.legacy.note.heirs": "Lähedastele jääb umbes {left}. See läheb sinu pärijatele. Kui tahad ise määrata, kes selle saab, tee testament.",
   "futureMe.result.legacy.note.donate": "{left} võiks toetada sulle olulist eesmärki. Annetuse saad testamendis määrata.",
   "futureMe.result.legacy.note.spend": "Elu lõpuni kannab plaan {sustainable} kuus. See on {extra} rohkem kui praegu.",
   "futureMe.result.legacy.note.care": "Puhver katab ootamatud kulud ja hooldekodu, nii ei pea lapsed maksma.",
