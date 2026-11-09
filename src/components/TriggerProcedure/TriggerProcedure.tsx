@@ -7,7 +7,7 @@ import { Loader } from '../common/loader/Loader';
 import { exchangeHandoverTokenForAccessToken } from './exchangeHandoverToken';
 import { getQueryParams } from '../../utils';
 import { MOBILE_AUTHENTICATION_SUCCESS } from '../login/constants';
-import { finish, init } from './utils';
+import { finish, init, rememberPartner } from './utils';
 import { parseJwt } from '../common/jwt';
 import { forgetHandoverToken, storedHandoverToken } from './handoverTokenStorage';
 
@@ -36,6 +36,7 @@ export const TriggerProcedure: React.FC = () => {
           if (!token) {
             throw new Error('Failed to receive accessToken');
           }
+          rememberPartner(provider);
 
           dispatch({
             type: MOBILE_AUTHENTICATION_SUCCESS,

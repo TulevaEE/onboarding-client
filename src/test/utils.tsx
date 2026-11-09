@@ -75,6 +75,11 @@ export function login(store: Store, method = 'SMART_ID'): void {
   });
 }
 
+export function loginThroughPartner(store: Store): void {
+  login(store);
+  getAuthentication().update({ ...anAuthenticationManager(), loginMethod: 'PARTNER' });
+}
+
 export const selectCountryOptionInTomSelect = (select: HTMLSelectElement, countryCode: string) => {
   // Get the TomSelect instance from the select element
   const tomSelectInstance = (select as any).tomselect;

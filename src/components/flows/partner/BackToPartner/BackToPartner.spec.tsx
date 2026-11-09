@@ -5,11 +5,12 @@ import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
-import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
+import { createDefaultStore, loginThroughPartner, renderWrapped } from '../../../../test/utils';
 import { initializeConfiguration } from '../../../config/config';
-import { nudgeBackend, useTestBackendsExcept } from '../../../../test/backend';
+import { useTestBackendsExcept } from '../../../../test/backend';
 import LoggedInApp from '../../../LoggedInApp';
 import { EXTERNAL_AUTHENTICATOR_PROVIDER } from '../../../TriggerProcedure/utils';
+import { addDataFromQueryParams } from '../../../thirdPillar/actions';
 
 describe('When is at the partner flow success screen', () => {
   const server = setupServer();
@@ -20,12 +21,14 @@ describe('When is at the partner flow success screen', () => {
     value: {
       replace: windowLocation,
     },
+    writable: true,
   });
 
-  function initializeComponent() {
+  function initializeComponent(linkParameters: Record<string, string>) {
     history = createMemoryHistory();
     const store = createDefaultStore(history as any);
-    login(store);
+    store.dispatch(addDataFromQueryParams(linkParameters));
+    loginThroughPartner(store);
 
     renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
   }
@@ -42,17 +45,17 @@ describe('When is at the partner flow success screen', () => {
     initializeConfiguration();
     sessionStorage.setItem(EXTERNAL_AUTHENTICATOR_PROVIDER, 'COOP_PANK');
     useTestBackendsExcept(server, ['nudge']);
+    window.location.href = '';
   });
 
   const main = () => within(screen.getByRole('main'));
 
-  const openSuccessScreen = () => {
-    initializeComponent();
+  const openSuccessScreen = (linkParameters: Record<string, string> = {}) => {
+    initializeComponent(linkParameters);
     history.push('/partner/3rd-pillar-flow/success');
   };
 
   test('third pillar opened message is shown', async () => {
-    nudgeBackend(server);
     openSuccessScreen();
 
     expect(
@@ -61,7 +64,6 @@ describe('When is at the partner flow success screen', () => {
   });
 
   test('account button is shown', async () => {
-    nudgeBackend(server);
     openSuccessScreen();
 
     expect(await main().findByRole('link', { name: 'View your account balance' })).toHaveAttribute(
@@ -71,7 +73,6 @@ describe('When is at the partner flow success screen', () => {
   });
 
   test('single payment button is shown', async () => {
-    nudgeBackend(server);
     openSuccessScreen();
 
     const button = await singlePaymentButton();
@@ -79,7 +80,6 @@ describe('When is at the partner flow success screen', () => {
   });
 
   test('single payment button posts the payment link to the partner app', async () => {
-    nudgeBackend(server);
     const postMessage = jest.fn();
     (window as unknown as { ReactNativeWebView: unknown }).ReactNativeWebView = { postMessage };
     server.use(
@@ -114,7 +114,6 @@ describe('When is at the partner flow success screen', () => {
   });
 
   test('shows an error when the payment link cannot be fetched', async () => {
-    nudgeBackend(server);
     server.use(
       rest.get('http://localhost/v1/payments/link', (req, res, ctx) =>
         res(ctx.status(400), ctx.json({ errors: [{ code: 'payment.amount.required' }] })),
@@ -132,35 +131,58 @@ describe('When is at the partner flow success screen', () => {
     await waitFor(() => expect(button).toBeEnabled());
   });
 
-  test('shows the nudge the server decided on', async () => {
-    nudgeBackend(server, {
-      key: 'THIRD_PILLAR_RECURRING',
-      tag: 'nudge_third_pillar_recurring',
-    });
+  test('links back to the Coop internet bank by name', async () => {
+    openSuccessScreen();
+
+    expect(await main().findByRole('link', { name: /^Back to Coop\sPank$/ })).toHaveAttribute(
+      'href',
+      'https://i.cooppank.ee/i/deposits?lang=en',
+    );
+  });
+
+  test('offers a monthly standing order when the partner reports none', async () => {
     openSuccessScreen();
 
     expect(
-      await main().findByRole('heading', { name: 'Make saving automatic' }),
+      await main().findByRole('heading', { name: 'Make contributions automatic' }),
     ).toBeInTheDocument();
-    expect(await recurringPaymentButton()).toBeInTheDocument();
+    await waitFor(async () => expect(await recurringPaymentButton()).toBeEnabled());
+  });
+
+  test('offers its own standing order without asking the server for a nudge', async () => {
+    const nudgeRequests: string[] = [];
+    server.use(
+      rest.get('http://localhost/v1/me/nudge', (req, res, ctx) => {
+        nudgeRequests.push(req.url.searchParams.get('context') ?? '');
+        return res(
+          ctx.json({ key: 'SAVINGS_FUND_RECURRING', tag: 'nudge_savings_fund_recurring' }),
+        );
+      }),
+    );
+    openSuccessScreen();
+
+    await waitFor(async () => expect(await recurringPaymentButton()).toBeEnabled());
+    expect(nudgeRequests).toEqual([]);
+  });
+
+  test('acknowledges the standing order the partner reports and offers a single payment only', async () => {
+    openSuccessScreen({ recurringPaymentCount: '1' });
+
     expect(
-      main().queryByRole('link', { name: 'Set up a recurring payment' }),
+      await main().findByRole('heading', {
+        name: 'Good, you have already set up a recurring payment',
+      }),
+    ).toBeInTheDocument();
+    expect(await singlePaymentButton()).toBeInTheDocument();
+    expect(
+      main().queryByRole('button', { name: 'Set up a recurring payment' }),
     ).not.toBeInTheDocument();
   });
 
-  test('recurring payment nudge posts the payment link back to the partner app', async () => {
-    nudgeBackend(server, {
-      key: 'THIRD_PILLAR_RECURRING',
-      tag: 'nudge_third_pillar_recurring',
-    });
-    const trackedEvents: unknown[] = [];
+  test('standing order button posts the standing order link to the partner app', async () => {
     const postMessage = jest.fn();
     (window as unknown as { ReactNativeWebView: unknown }).ReactNativeWebView = { postMessage };
     server.use(
-      rest.post('http://localhost/v1/t', (req, res, ctx) => {
-        trackedEvents.push(req.body);
-        return res(ctx.json({}));
-      }),
       rest.get('http://localhost/v1/payments/link', (req, res, ctx) => {
         if (
           req.url.searchParams.get('paymentChannel') !== 'PARTNER' ||
@@ -178,8 +200,9 @@ describe('When is at the partner flow success screen', () => {
     );
     openSuccessScreen();
 
-    await waitFor(async () => expect(await singlePaymentButton()).toBeEnabled());
-    userEvent.click(await recurringPaymentButton());
+    const button = await recurringPaymentButton();
+    await waitFor(() => expect(button).toBeEnabled());
+    userEvent.click(button);
 
     await waitFor(() => expect(postMessage).toHaveBeenCalledTimes(1));
     expect(JSON.parse(postMessage.mock.calls[0][0])).toEqual({
@@ -188,30 +211,29 @@ describe('When is at the partner flow success screen', () => {
       data: { accountNumber: 'EE362200221067235244', interval: 'MONTHLY' },
       time: expect.any(String),
     });
-    await waitFor(() =>
-      expect(trackedEvents).toContainEqual({
-        type: 'NUDGE_CLICK',
-        data: {
-          context: 'THIRD_PILLAR_MANDATE',
-          key: 'THIRD_PILLAR_RECURRING',
-          tag: 'nudge_third_pillar_recurring',
-          path: '/partner/3rd-pillar-flow/success',
-          channel: 'SCREEN',
-        },
-      }),
-    );
   });
 
-  test('shows no nudge when the server decides on none', async () => {
-    nudgeBackend(server);
+  test('standing order button opens the standing order form in the internet bank', async () => {
+    server.use(
+      rest.get('http://localhost/v1/payments/link', (req, res, ctx) => {
+        if (
+          req.url.searchParams.get('paymentChannel') !== 'COOP_WEB' ||
+          req.url.searchParams.get('type') !== 'RECURRING'
+        ) {
+          return res(ctx.status(400), ctx.json({ errors: [{ code: 'payment.amount.required' }] }));
+        }
+        return res(ctx.json({ type: 'PREFILLED', url: 'i/standing-orders/new?lang=en' }));
+      }),
+    );
     openSuccessScreen();
 
-    expect(
-      await screen.findByRole('heading', { name: /Your III\spillar is opened/ }),
-    ).toBeInTheDocument();
-    expect(
-      main().queryByRole('heading', { name: 'Make saving automatic' }),
-    ).not.toBeInTheDocument();
+    const button = await recurringPaymentButton();
+    await waitFor(() => expect(button).toBeEnabled());
+    userEvent.click(button);
+
+    await waitFor(() =>
+      expect(window.location.href).toBe('https://i.cooppank.ee/i/standing-orders/new?lang=en'),
+    );
   });
 
   const singlePaymentButton = async () => screen.findByRole('button', { name: 'Make a payment' });

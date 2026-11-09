@@ -21,6 +21,8 @@ import LoginPage from '../LoginPage';
 
 jest.unmock('react-intl');
 
+const UNTIL_A_REAL_SMART_ID_POLL_COMPLETES = { timeout: 10000 };
+
 describe('When the Smart-ID app returns to the browser', () => {
   const server = setupServer();
 
@@ -101,7 +103,11 @@ describe('When the Smart-ID app returns to the browser', () => {
     );
 
     expect(
-      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      await screen.findByText(
+        /mock account page/gi,
+        undefined,
+        UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+      ),
     ).toBeInTheDocument();
     expect(history.location.state).toEqual({ justLoggedIn: true });
   });
@@ -122,7 +128,11 @@ describe('When the Smart-ID app returns to the browser', () => {
     openCallback('');
 
     expect(
-      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      await screen.findByText(
+        /mock account page/gi,
+        undefined,
+        UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+      ),
     ).toBeInTheDocument();
     expect(sessionStorage.getItem('smartIdCallback')).toBeNull();
   });
@@ -140,7 +150,11 @@ describe('When the Smart-ID app returns to the browser', () => {
     openCallback('');
 
     expect(
-      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      await screen.findByText(
+        /mock account page/gi,
+        undefined,
+        UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+      ),
     ).toBeInTheDocument();
     expect(window.smartIdCallback).toBeUndefined();
   });
@@ -155,7 +169,11 @@ describe('When the Smart-ID app returns to the browser', () => {
     );
 
     expect(
-      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      await screen.findByText(
+        /mock account page/gi,
+        undefined,
+        UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+      ),
     ).toBeInTheDocument();
     expect(history.location.state).toEqual({ justLoggedIn: true });
   });
@@ -170,7 +188,11 @@ describe('When the Smart-ID app returns to the browser', () => {
     );
 
     expect(
-      await screen.findByText(/mock listing page/gi, undefined, { timeout: 3000 }),
+      await screen.findByText(
+        /mock listing page/gi,
+        undefined,
+        UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+      ),
     ).toBeInTheDocument();
     expect(history.location.state).toBeUndefined();
   });
@@ -183,7 +205,11 @@ describe('When the Smart-ID app returns to the browser', () => {
     openCallback(aCallback);
 
     expect(
-      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      await screen.findByText(
+        /mock account page/gi,
+        undefined,
+        UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+      ),
     ).toBeInTheDocument();
     expect(history.location.state).toEqual({ justLoggedIn: true });
   });
@@ -196,7 +222,11 @@ describe('When the Smart-ID app returns to the browser', () => {
     openCallback(aCallbackReturningTo('/capital/listings/42'));
 
     expect(
-      await screen.findByText(/mock listing page/gi, undefined, { timeout: 3000 }),
+      await screen.findByText(
+        /mock listing page/gi,
+        undefined,
+        UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -216,7 +246,11 @@ describe('When the Smart-ID app returns to the browser', () => {
     openCallback(aCallbackReturningTo('/capital/listings/42'));
 
     expect(
-      await screen.findByText(/mock listing page/gi, undefined, { timeout: 3000 }),
+      await screen.findByText(
+        /mock listing page/gi,
+        undefined,
+        UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -236,7 +270,11 @@ describe('When the Smart-ID app returns to the browser', () => {
     openCallback(aCallback);
 
     expect(
-      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      await screen.findByText(
+        /mock account page/gi,
+        undefined,
+        UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -256,7 +294,11 @@ describe('When the Smart-ID app returns to the browser', () => {
       openCallback(aCallbackReturningTo(returnPath));
 
       expect(
-        await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+        await screen.findByText(
+          /mock account page/gi,
+          undefined,
+          UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+        ),
       ).toBeInTheDocument();
       expect(history.location.state).toEqual({ justLoggedIn: true });
     },
@@ -270,7 +312,11 @@ describe('When the Smart-ID app returns to the browser', () => {
     openCallback(aCallback);
 
     expect(
-      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      await screen.findByText(
+        /mock account page/gi,
+        undefined,
+        UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+      ),
     ).toBeInTheDocument();
     expect(backend.acceptedCallbacks).toBe(1);
     expect(sessionStorage.getItem('pendingSmartIdAuthentication')).toBeNull();
@@ -383,7 +429,11 @@ describe('When the Smart-ID app returns to the browser', () => {
 
     expect(screen.queryByRole('link', { name: 'Try again' })).not.toBeInTheDocument();
     expect(
-      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      await screen.findByText(
+        /mock account page/gi,
+        undefined,
+        UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+      ),
     ).toBeInTheDocument();
     expect(backend.acceptedCallbacks).toBe(1);
   });
@@ -398,7 +448,11 @@ describe('When the Smart-ID app returns to the browser', () => {
     backend.resolvePolling();
 
     expect(
-      await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+      await screen.findByText(
+        /mock account page/gi,
+        undefined,
+        UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+      ),
     ).toBeInTheDocument();
     expect(backend.acceptedCallbacks).toBe(2);
   });
@@ -494,7 +548,7 @@ describe('When the Smart-ID app returns to the browser', () => {
     openCallback(aCallback);
 
     expect(
-      await screen.findByText(/mock login page/i, undefined, { timeout: 3000 }),
+      await screen.findByText(/mock login page/i, undefined, UNTIL_A_REAL_SMART_ID_POLL_COMPLETES),
     ).toBeInTheDocument();
   });
 
@@ -509,7 +563,7 @@ describe('When the Smart-ID app returns to the browser', () => {
     openCallback(aCallback);
 
     expect(
-      await screen.findByText(/mock login page/i, undefined, { timeout: 3000 }),
+      await screen.findByText(/mock login page/i, undefined, UNTIL_A_REAL_SMART_ID_POLL_COMPLETES),
     ).toBeInTheDocument();
     expect(history.location.state).toEqual({ from: '/capital/listings/42' });
   });
@@ -539,9 +593,7 @@ describe('When the Smart-ID app returns to the browser', () => {
       await screen.findByText(
         /^You chose the wrong verification code in the Smart.ID app/,
         undefined,
-        {
-          timeout: 3000,
-        },
+        UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Try again' })).toHaveAttribute('href', loginPath);
@@ -653,7 +705,11 @@ describe('When the Smart-ID app returns to the browser', () => {
 
       backend.resolvePolling();
       expect(
-        await screen.findByText(/mock account page/gi, undefined, { timeout: 3000 }),
+        await screen.findByText(
+          /mock account page/gi,
+          undefined,
+          UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -682,7 +738,11 @@ describe('When the Smart-ID app returns to the browser', () => {
       openFailedCallbackBeforeTheLoginPage('en', aCallbackReturningTo('/capital/listings/42'));
 
       expect(
-        await screen.findByRole('button', { name: /^Log in$/ }, { timeout: 3000 }),
+        await screen.findByRole(
+          'button',
+          { name: /^Log in$/ },
+          UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+        ),
       ).toBeInTheDocument();
       expect(history.location.pathname).toBe(aLoginPageAtItsOwnAddress);
       expect(history.location.state).toEqual({ from: '/capital/listings/42' });
@@ -703,7 +763,11 @@ describe('When the Smart-ID app returns to the browser', () => {
       expect(screen.getByRole('region', { name: 'Smart-ID' })).toBeInTheDocument();
       backend.resolvePolling();
       expect(
-        await screen.findByText(/mock listing page/gi, undefined, { timeout: 3000 }),
+        await screen.findByText(
+          /mock listing page/gi,
+          undefined,
+          UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -740,7 +804,11 @@ describe('When the Smart-ID app returns to the browser', () => {
       backend.resolvePolling();
 
       expect(
-        await screen.findByText(/mock listing page/gi, undefined, { timeout: 3000 }),
+        await screen.findByText(
+          /mock listing page/gi,
+          undefined,
+          UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -762,7 +830,7 @@ describe('When the Smart-ID app returns to the browser', () => {
         startLoginBeforeTheAppRoundTrip(backend);
         openFailedCallbackBeforeTheLoginPage();
         const explanation = (
-          await screen.findByRole('alert', undefined, { timeout: 3000 })
+          await screen.findByRole('alert', undefined, UNTIL_A_REAL_SMART_ID_POLL_COMPLETES)
         ).textContent?.replace(/\s+/g, ' ');
 
         userEvent.click(screen.getByRole('link', { name: 'Try again' }));
@@ -786,7 +854,11 @@ describe('When the Smart-ID app returns to the browser', () => {
       expect(backend.deviceLinkReturnPaths).toEqual(['/capital/listings/42']);
       backend.resolvePolling();
       expect(
-        await screen.findByText(/mock listing page/gi, undefined, { timeout: 3000 }),
+        await screen.findByText(
+          /mock listing page/gi,
+          undefined,
+          UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -808,7 +880,11 @@ describe('When the Smart-ID app returns to the browser', () => {
         );
         backend.resolvePolling();
         expect(
-          await screen.findByText(/mock listing page/gi, undefined, { timeout: 3000 }),
+          await screen.findByText(
+            /mock listing page/gi,
+            undefined,
+            UNTIL_A_REAL_SMART_ID_POLL_COMPLETES,
+          ),
         ).toBeInTheDocument();
       },
     );

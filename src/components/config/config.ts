@@ -4,6 +4,7 @@ import { restoreAuthenticationFromSession } from '../common/authenticationManage
 const BASE_CONFIG = {
   clientCredentialsAccessToken: undefined,
   language: 'et',
+  coopInternetBankUrl: 'https://i.cooppank.ee/',
 } as const;
 
 const ENV_CONFIGS = {

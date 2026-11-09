@@ -11,6 +11,7 @@ export default {
   funds: null,
   selectedFutureContributionsFundIsin: TULEVA_3RD_PILLAR_FUND_ISIN,
   exchangeExistingUnits: true,
+  recurringPaymentCount: 0,
   agreedToTerms: false,
   signedMandateId: null,
   error: null,

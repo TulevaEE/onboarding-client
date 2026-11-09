@@ -19,6 +19,21 @@ import {
 import { LOG_OUT } from '../login/constants';
 
 describe('Third pillar reducer', () => {
+  it("saves the partner's count of the person's III pillar standing orders from the link", () => {
+    const state = reducer(undefined, {
+      type: QUERY_PARAMETERS,
+      query: { recurringPaymentCount: '2' },
+    });
+
+    expect(state).toEqual({ ...initialState, recurringPaymentCount: 2 });
+  });
+
+  it('counts no standing orders when the link carries no count', () => {
+    const state = reducer(undefined, { type: QUERY_PARAMETERS, query: {} });
+
+    expect(state.recurringPaymentCount).toBe(0);
+  });
+
   it('saves monthly contribution as a number when monthlyContribution is in query params and parsable as a number', () => {
     const state = reducer(undefined, {
       type: QUERY_PARAMETERS,

@@ -1,13 +1,17 @@
+import config from 'react-global-configuration';
 import { getPaymentLink } from '../common/api';
-import { getAuthentication } from '../common/authenticationManager';
+import { getAuthentication, isLoggedInThroughPartner } from '../common/authenticationManager';
 import { withSessionStorage } from '../common/siteStorage';
 
 export const EXTERNAL_AUTHENTICATOR_PROVIDER = 'EXTERNAL_AUTHENTICATOR_PROVIDER';
-export const EXTERNAL_AUTHENTICATOR_REDIRECT_URI = 'EXTERNAL_AUTHENTICATOR_REDIRECT_URI';
 
 enum ExternalProvider {
   COOP_PANK = 'COOP_PANK',
 }
+
+const INTERNET_BANK_CONFIG_KEY: Record<ExternalProvider, string> = {
+  [ExternalProvider.COOP_PANK]: 'coopInternetBankUrl',
+};
 
 enum Procedure {
   PARTNER_2ND_PILLAR_FLOW = 'partner-2nd-pillar-flow',
@@ -23,27 +27,22 @@ const procedureToPath = new Map<Procedure, string>([
   [Procedure.SECOND_PILLAR_PAYMENT_RATE, '/2nd-pillar-payment-rate'],
 ]);
 
-const stringToProvider: Record<string, ExternalProvider> = Object.fromEntries(
-  Object.entries(ExternalProvider).map(([key, value]) => [
-    value as string,
-    key as ExternalProvider,
-  ]),
-);
+const isExternalProvider = (value: unknown): value is ExternalProvider =>
+  (Object.values(ExternalProvider) as unknown[]).includes(value);
 
-const stringToProcedure: Record<string, Procedure> = Object.fromEntries(
-  Object.entries(Procedure).map(([key, value]) => [value as string, key as Procedure]),
-);
+const isProcedure = (value: unknown): value is Procedure =>
+  (Object.values(Procedure) as unknown[]).includes(value);
 
 const validateProvider = (value?: unknown): ExternalProvider => {
-  if (value && typeof value === 'string' && stringToProvider[value]) {
-    return value as ExternalProvider;
+  if (isExternalProvider(value)) {
+    return value;
   }
   throw new Error(`Invalid provider: ${value}`);
 };
 
 const validateProcedure = (value?: unknown): Procedure => {
-  if (value && typeof value === 'string' && stringToProcedure[value]) {
-    return value as Procedure;
+  if (isProcedure(value)) {
+    return value;
   }
   throw new Error(`Invalid procedure: ${value}`);
 };
@@ -63,79 +62,115 @@ const getPath = (provider: ExternalProvider, procedure: Procedure): string => {
   throw new Error(`Invalid procedure for provider(${provider}): ${procedure}`);
 };
 
-export const finish = async (
-  result?: string,
-  error?: string,
-  personalCode?: string,
-): Promise<void> => {
+export const rememberPartner = (provider: ExternalProvider): void =>
+  withSessionStorage(
+    (storage) => storage.setItem(EXTERNAL_AUTHENTICATOR_PROVIDER, provider),
+    undefined,
+  );
+
+const rememberedPartner = (): ExternalProvider | null => {
   const provider = withSessionStorage(
     (storage) => storage.getItem(EXTERNAL_AUTHENTICATOR_PROVIDER),
     null,
   );
-  const redirectUri = withSessionStorage(
-    (storage) => storage.getItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI),
-    null,
-  );
+  return isExternalProvider(provider) ? provider : null;
+};
+
+export const partnerInternetBank = (): string | null => {
+  const provider = rememberedPartner();
+  return provider && isLoggedInThroughPartner()
+    ? config.get(INTERNET_BANK_CONFIG_KEY[provider])
+    : null;
+};
+
+export const isInPartnerApp = (): boolean =>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const webView = (window as any).ReactNativeWebView;
+  Boolean((window as any).ReactNativeWebView);
 
-  if (webView && error) {
-    sendMessage({ errorMessage: error, time: new Date().toISOString() });
+const internetBankAddress = (internetBank: string, paymentLinkUrl: string): string => {
+  const destination = new URL(paymentLinkUrl, internetBank);
+  if (destination.origin !== new URL(internetBank).origin) {
+    throw new Error(
+      `Payment link for COOP_WEB leads away from the internet bank: ${destination.origin}`,
+    );
   }
-  if (!result) {
-    return;
-  }
+  return destination.href;
+};
 
-  if (!provider) {
-    throw new Error('unexpected state: no provider');
+export const isInPartnerSession = (): boolean => partnerInternetBank() !== null;
+
+type PartnerPaymentType = 'SINGLE' | 'RECURRING';
+
+const PARTNER_APP_MESSAGE_TYPE: Record<PartnerPaymentType, string> = {
+  SINGLE: 'newPayment',
+  RECURRING: 'newRecurringPayment',
+};
+
+export const handOverPaymentToPartner = async (
+  paymentType: PartnerPaymentType,
+  personalCode: string,
+  amount?: number,
+): Promise<void> => {
+  const internetBank = partnerInternetBank();
+  if (!internetBank) {
+    throw new Error('unexpected state: no partner session');
   }
-  if (!getAuthentication().isAuthenticated() || !personalCode) {
+  if (!getAuthentication().isAuthenticated()) {
     throw new Error('unexpected state: no token/personal code');
   }
+  const amountInEuros = amount === undefined ? {} : { amount, currency: 'EUR' as const };
 
-  const paymentType = result === 'newRecurringPayment' ? 'RECURRING' : 'SINGLE';
-
-  if (webView) {
+  if (isInPartnerApp()) {
     const paymentLink = await getPaymentLink({
       type: paymentType,
       paymentChannel: 'PARTNER',
       recipientPersonalCode: personalCode,
+      ...amountInEuros,
     });
     if (!paymentLink.url) {
       throw new Error(`Payment link for partner flow (${paymentType}) is missing url`);
     }
-    const message = {
-      type: result,
+    sendMessage({
+      type: PARTNER_APP_MESSAGE_TYPE[paymentType],
       version: '1',
       data: JSON.parse(paymentLink.url),
       time: new Date().toISOString(),
-    };
-
-    // eslint-disable-next-line no-console -- WIP
-    console.log('finishing', provider, result, error, 'and posting message', message);
-
-    sendMessage(message);
+    });
   } else {
     const paymentLink = await getPaymentLink({
       type: paymentType,
       paymentChannel: 'COOP_WEB',
       recipientPersonalCode: personalCode,
+      ...amountInEuros,
     });
     if (!paymentLink.url) {
       throw new Error(`Payment link for COOP_WEB (${paymentType}) is missing url`);
     }
-    // eslint-disable-next-line no-console -- WIP
-    console.log(
-      'finishing',
-      provider,
-      result,
-      error,
-      'and redirecting to',
-      (redirectUri ?? '') + paymentLink.url,
-    );
-
-    window.location.href = (redirectUri ?? '') + paymentLink.url;
+    window.location.href = internetBankAddress(internetBank, paymentLink.url);
   }
+};
+
+export const finish = async (
+  result?: string,
+  error?: string,
+  personalCode?: string,
+): Promise<void> => {
+  if (isInPartnerApp() && error) {
+    sendMessage({ errorMessage: error, time: new Date().toISOString() });
+  }
+  if (!result) {
+    return;
+  }
+  if (!isInPartnerSession()) {
+    throw new Error('unexpected state: no partner session');
+  }
+  if (!personalCode) {
+    throw new Error('unexpected state: no token/personal code');
+  }
+  await handOverPaymentToPartner(
+    result === 'newRecurringPayment' ? 'RECURRING' : 'SINGLE',
+    personalCode,
+  );
 };
 
 const sendMessage = (message: {
@@ -152,11 +187,9 @@ const sendMessage = (message: {
 
 export const init = (query: {
   provider?: unknown;
-  redirectUri?: string;
   handoverToken?: unknown;
   procedure?: unknown;
 }): {
-  redirectUri: string | undefined;
   handoverToken: string;
   path: string;
   provider: ExternalProvider;
@@ -166,14 +199,8 @@ export const init = (query: {
   const procedure = validateProcedure(query.procedure);
   const handoverToken = validateHandoverToken(query.handoverToken);
 
-  withSessionStorage((storage) => {
-    storage.setItem(EXTERNAL_AUTHENTICATOR_PROVIDER, provider);
-    storage.setItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI, query.redirectUri || '');
-  }, undefined);
-
   return {
     provider,
-    redirectUri: query.redirectUri,
     procedure,
     handoverToken,
     path: getPath(provider, procedure),
