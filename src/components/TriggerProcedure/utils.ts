@@ -97,60 +97,80 @@ const internetBankAddress = (internetBank: string, paymentLinkUrl: string): stri
   return destination.href;
 };
 
-export const finish = async (
-  result?: string,
-  error?: string,
-  personalCode?: string,
+export const isInPartnerSession = (): boolean => partnerInternetBank() !== null;
+
+type PartnerPaymentType = 'SINGLE' | 'RECURRING';
+
+const PARTNER_APP_MESSAGE_TYPE: Record<PartnerPaymentType, string> = {
+  SINGLE: 'newPayment',
+  RECURRING: 'newRecurringPayment',
+};
+
+export const handOverPaymentToPartner = async (
+  paymentType: PartnerPaymentType,
+  personalCode: string,
+  amount?: number,
 ): Promise<void> => {
   const internetBank = partnerInternetBank();
-  const inPartnerApp = isInPartnerApp();
-
-  if (inPartnerApp && error) {
-    sendMessage({ errorMessage: error, time: new Date().toISOString() });
-  }
-  if (!result) {
-    return;
-  }
-
   if (!internetBank) {
     throw new Error('unexpected state: no partner session');
   }
-  if (!getAuthentication().isAuthenticated() || !personalCode) {
+  if (!getAuthentication().isAuthenticated()) {
     throw new Error('unexpected state: no token/personal code');
   }
+  const amountInEuros = amount === undefined ? {} : { amount, currency: 'EUR' as const };
 
-  const paymentType = result === 'newRecurringPayment' ? 'RECURRING' : 'SINGLE';
-
-  if (inPartnerApp) {
+  if (isInPartnerApp()) {
     const paymentLink = await getPaymentLink({
       type: paymentType,
       paymentChannel: 'PARTNER',
       recipientPersonalCode: personalCode,
+      ...amountInEuros,
     });
     if (!paymentLink.url) {
       throw new Error(`Payment link for partner flow (${paymentType}) is missing url`);
     }
-    const message = {
-      type: result,
+    sendMessage({
+      type: PARTNER_APP_MESSAGE_TYPE[paymentType],
       version: '1',
       data: JSON.parse(paymentLink.url),
       time: new Date().toISOString(),
-    };
-
-    sendMessage(message);
+    });
   } else {
     const paymentLink = await getPaymentLink({
       type: paymentType,
       paymentChannel: 'COOP_WEB',
       recipientPersonalCode: personalCode,
+      ...amountInEuros,
     });
     if (!paymentLink.url) {
       throw new Error(`Payment link for COOP_WEB (${paymentType}) is missing url`);
     }
-    const destination = internetBankAddress(internetBank, paymentLink.url);
-
-    window.location.href = destination;
+    window.location.href = internetBankAddress(internetBank, paymentLink.url);
   }
+};
+
+export const finish = async (
+  result?: string,
+  error?: string,
+  personalCode?: string,
+): Promise<void> => {
+  if (isInPartnerApp() && error) {
+    sendMessage({ errorMessage: error, time: new Date().toISOString() });
+  }
+  if (!result) {
+    return;
+  }
+  if (!isInPartnerSession()) {
+    throw new Error('unexpected state: no partner session');
+  }
+  if (!personalCode) {
+    throw new Error('unexpected state: no token/personal code');
+  }
+  await handOverPaymentToPartner(
+    result === 'newRecurringPayment' ? 'RECURRING' : 'SINGLE',
+    personalCode,
+  );
 };
 
 const sendMessage = (message: {

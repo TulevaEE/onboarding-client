@@ -38,6 +38,13 @@ describe('2nd pillar flow', () => {
     userBackend(server);
   });
 
+  test('does not ask someone with nothing left to transfer to transfer the rest', async () => {
+    expect(
+      await screen.findByText('Transfer your pension to Tuleva', undefined, { timeout: 10_000 }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/^Transfer the rest of your II\spillar/)).not.toBeInTheDocument();
+  });
+
   test('allows moving all external pension to stock Tuleva pension fund', async () => {
     expect(
       await screen.findByText(/Your pension account overview/i, undefined, { timeout: 10_000 }),

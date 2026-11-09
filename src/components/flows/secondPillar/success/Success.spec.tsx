@@ -71,7 +71,7 @@ describe('When is at the partner 2nd pillar flow success screen', () => {
     initializeComponent(loginThroughPartner);
     history.push('/partner/2nd-pillar-flow-success');
 
-    expect(await main().findByRole('link', { name: 'Back to internet bank' })).toHaveAttribute(
+    expect(await main().findByRole('link', { name: /^Back to Coop\sPank$/ })).toHaveAttribute(
       'href',
       'https://i.cooppank.ee/i/deposits?lang=en',
     );
@@ -84,7 +84,7 @@ describe('When is at the partner 2nd pillar flow success screen', () => {
     history.push('/partner/2nd-pillar-flow-success');
 
     expect(await screen.findByText('Application finished')).toBeInTheDocument();
-    expect(main().queryByRole('link', { name: 'Back to internet bank' })).not.toBeInTheDocument();
+    expect(main().queryByRole('link', { name: /^Back to Coop\sPank$/ })).not.toBeInTheDocument();
   });
 
   test('shows no back to internet bank link to someone who did not come from the bank', async () => {
@@ -94,7 +94,7 @@ describe('When is at the partner 2nd pillar flow success screen', () => {
     history.push('/partner/2nd-pillar-flow-success');
 
     expect(await screen.findByText('Application finished')).toBeInTheDocument();
-    expect(main().queryByRole('link', { name: 'Back to internet bank' })).not.toBeInTheDocument();
+    expect(main().queryByRole('link', { name: /^Back to Coop\sPank$/ })).not.toBeInTheDocument();
   });
 
   test('shows the nudge the server decided on', async () => {

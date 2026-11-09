@@ -13,26 +13,19 @@ import { NudgeEventType, trackNudgeEvent } from './tracking';
 
 type NudgeProps = {
   context: NudgeContext;
-  onRecurringPayment?: () => void;
 };
 
-export const Nudge: FC<NudgeProps> = ({ context, onRecurringPayment }) => {
+export const Nudge: FC<NudgeProps> = ({ context }) => {
   const { data: decision } = useNudge(context);
 
   if (!decision) {
     return null;
   }
 
-  return (
-    <NudgeView decision={decision} context={context} onRecurringPayment={onRecurringPayment} />
-  );
+  return <NudgeView decision={decision} context={context} />;
 };
 
-export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({
-  decision,
-  context,
-  onRecurringPayment,
-}) => {
+export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({ decision, context }) => {
   const { pathname } = useLocation();
   const { data: user } = useMe();
   const trackedView = useRef<string | null>(null);
@@ -167,7 +160,6 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({
           description="thirdPillarSuccess.suggestion.recurring.description"
           button="thirdPillarSuccess.suggestion.recurring.button"
           to="/3rd-pillar-payment"
-          onAction={onRecurringPayment}
           onCallToAction={onCallToAction}
         />
       );
@@ -253,7 +245,6 @@ const NudgeNotice = ({
   descriptionValues,
   button,
   to,
-  onAction,
   onCallToAction,
   children,
 }: {
@@ -262,7 +253,6 @@ const NudgeNotice = ({
   descriptionValues?: Record<string, number | string>;
   button: TranslationKey;
   to: string;
-  onAction?: () => void;
   onCallToAction: () => void;
   children?: ReactNode;
 }) => (
@@ -274,22 +264,9 @@ const NudgeNotice = ({
     <p className="mt-5">
       <FormattedMessage id={description} values={descriptionValues} />
     </p>
-    {onAction ? (
-      <button
-        type="button"
-        className="btn btn-primary mt-4"
-        onClick={() => {
-          onCallToAction();
-          onAction();
-        }}
-      >
-        <FormattedMessage id={button} />
-      </button>
-    ) : (
-      <a className="btn btn-primary mt-4 profile-link" href={to} onClick={onCallToAction}>
-        <FormattedMessage id={button} />
-      </a>
-    )}
+    <a className="btn btn-primary mt-4 profile-link" href={to} onClick={onCallToAction}>
+      <FormattedMessage id={button} />
+    </a>
   </Notice>
 );
 

@@ -14,6 +14,8 @@ import { PaymentTypeSelection } from './PaymentTypeSelection';
 import { PaymentBankButtons } from './PaymentBankButtons';
 import { RecurringPaymentDetails } from './RecurringPaymentDetails';
 import { PaymentSubmitSection } from './PaymentSubmitSection';
+import { PartnerPaymentSubmitSection } from './PartnerPaymentSubmitSection';
+import { handOverPaymentToPartner, isInPartnerSession } from '../../../TriggerProcedure/utils';
 
 const DEFAULT_PAYMENT_AMOUNTS: Record<AvailablePaymentType, string> = {
   SINGLE: '1000',
@@ -30,7 +32,10 @@ export const Payment: React.FunctionComponent = () => {
     DEFAULT_PAYMENT_AMOUNTS[initialPaymentType],
   );
   const [amountEdited, setAmountEdited] = useState<boolean>(false);
-  const [paymentBank, setPaymentBank] = useState<BankKey | 'other' | null>(null);
+  const [inPartnerSession] = useState(isInPartnerSession);
+  const [paymentBank, setPaymentBank] = useState<BankKey | 'other' | null>(
+    inPartnerSession ? 'coop' : null,
+  );
   const [error, setError] = useState<boolean>(false);
   const history = useHistory();
 
@@ -61,10 +66,16 @@ export const Payment: React.FunctionComponent = () => {
       return;
     }
 
+    const amount = Number(paymentAmount.replace(',', '.'));
+
     try {
+      if (inPartnerSession) {
+        await handOverPaymentToPartner(paymentType, user.personalCode, amount);
+        return;
+      }
       const { openedInNewTab } = await redirectToPayment({
         recipientPersonalCode: user.personalCode,
-        amount: Number(paymentAmount.replace(',', '.')),
+        amount,
         currency: 'EUR',
         type: paymentType,
         paymentChannel: paymentBank?.toUpperCase() as PaymentChannel,
@@ -121,39 +132,49 @@ export const Payment: React.FunctionComponent = () => {
           </div>
         </div>
 
-        <p className="mt-5 mb-2 fw-bold">
-          {paymentType === 'SINGLE' && (
-            <FormattedMessage id="thirdPillarPayment.singlePaymentBank" />
-          )}
-          {paymentType === 'RECURRING' && (
-            <FormattedMessage id="thirdPillarPayment.recurringPaymentBank" />
-          )}
-        </p>
-
-        <PaymentBankButtons paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
-
-        <div className="payment-details-container mt-5">
-          {paymentType === 'RECURRING' && paymentBank && (
-            <RecurringPaymentDetails
-              paymentBank={paymentBank}
-              paymentAmount={paymentAmount}
-              personalCode={user.personalCode}
-            />
-          )}
-          {paymentType === 'SINGLE' && paymentBank === 'other' && (
-            <OtherBankPaymentDetails
-              personalCode={user.personalCode}
-              amount={paymentAmount}
-              paymentType="SINGLE"
-            />
-          )}
-          <PaymentSubmitSection
-            paymentBank={paymentBank}
+        {inPartnerSession ? (
+          <PartnerPaymentSubmitSection
             paymentType={paymentType}
             handleSubmit={handleSubmit}
             disabled={isSubmitDisabled()}
           />
-        </div>
+        ) : (
+          <>
+            <p className="mt-5 mb-2 fw-bold">
+              {paymentType === 'SINGLE' && (
+                <FormattedMessage id="thirdPillarPayment.singlePaymentBank" />
+              )}
+              {paymentType === 'RECURRING' && (
+                <FormattedMessage id="thirdPillarPayment.recurringPaymentBank" />
+              )}
+            </p>
+
+            <PaymentBankButtons paymentBank={paymentBank} setPaymentBank={setPaymentBank} />
+
+            <div className="payment-details-container mt-5">
+              {paymentType === 'RECURRING' && paymentBank && (
+                <RecurringPaymentDetails
+                  paymentBank={paymentBank}
+                  paymentAmount={paymentAmount}
+                  personalCode={user.personalCode}
+                />
+              )}
+              {paymentType === 'SINGLE' && paymentBank === 'other' && (
+                <OtherBankPaymentDetails
+                  personalCode={user.personalCode}
+                  amount={paymentAmount}
+                  paymentType="SINGLE"
+                />
+              )}
+              <PaymentSubmitSection
+                paymentBank={paymentBank}
+                paymentType={paymentType}
+                handleSubmit={handleSubmit}
+                disabled={isSubmitDisabled()}
+              />
+            </div>
+          </>
+        )}
       </>
     </div>
   );
