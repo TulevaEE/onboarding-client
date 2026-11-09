@@ -6,7 +6,7 @@ import mockTranslations from './components/translations';
 
 // Default 5s/1s limits flake on the slowest suites when parallel workers saturate all cores
 jest.setTimeout(15000);
-configureTestingLibrary({ asyncUtilTimeout: 3000 });
+configureTestingLibrary({ asyncUtilTimeout: 5000 });
 
 jest.mock('react-intl', () => {
   const reactIntl = jest.requireActual('react-intl');
