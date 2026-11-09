@@ -77,6 +77,9 @@ export function getAuthentication(): AuthenticationManager {
 
 export const isSigningWithIdCard = (): boolean => getAuthentication().signingMethod === 'ID_CARD';
 
+export const isLoggedInThroughPartner = (): boolean =>
+  getAuthentication().loginMethod === 'PARTNER';
+
 export function loginTimeOf(accessToken: string | undefined): number | null {
   if (!accessToken) {
     return null;

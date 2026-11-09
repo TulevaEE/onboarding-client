@@ -10,6 +10,7 @@ import { createDefaultStore, renderWrapped } from '../../test/utils';
 import { getAuthentication } from '../common/authenticationManager';
 import { anAuthenticationManager } from '../common/authenticationManagerFixture';
 import { HANDOVER_TOKEN_STORAGE_KEY } from './handoverTokenStorage';
+import { EXTERNAL_AUTHENTICATOR_PROVIDER } from './utils';
 
 const aHandoverToken =
   'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzaWduaW5nTWV0aG9kIjoic21hcnRJZCJ9.V-eWT1WG1CKKAsUkPOOU8zL9SbGNdv9RIO5viE9V_vORSu48UqnYKk5wHUQxOK2EvG1O64RRnc1aBTrkr0zxpHgUxshPtAYOY7SThLWLjxBbQ7T4EnZp1wJjGkpsucOmdSw7YSDdGpEn7uIrqPAaxrKzO9YKkvXYNfbS1fYAcc9mckHxf0_IyYBnrg1vxBzlSdwwmNUvhJELaKSdhrrmqZRU8zg0IHrHf0RQTZrpK8q5Pz29IgjoZNHFkuI6RW0AmypCSneoXUdPGIPxLJkyw2j1xVDHBVa37rCnZ3GNiMOAiGREld80ZXyYR4cfOT5Z4LYghWB5Pkgjxi1KcHhxoA';
@@ -72,6 +73,14 @@ describe('When an external provider process is triggered', () => {
       initializeComponent('?provider=_404_');
       expect(await screen.findByText('unexpected error', { exact: false })).toBeInTheDocument();
       expectConsoledError(/invalid provider.*_404_/i);
+    });
+
+    test('provider named after a built-in object property', async () => {
+      sessionStorage.setItem(HANDOVER_TOKEN_STORAGE_KEY, aHandoverToken);
+      initializeComponent('?provider=constructor&procedure=account');
+
+      expect(await screen.findByText('unexpected error', { exact: false })).toBeInTheDocument();
+      expectConsoledError(/invalid provider.*constructor/i);
     });
 
     test('missing procedure', async () => {
@@ -137,6 +146,32 @@ describe('When an external provider process is triggered', () => {
 
       expect(await screen.findByText('unexpected error', { exact: false })).toBeInTheDocument();
       expect(sessionStorage.getItem(HANDOVER_TOKEN_STORAGE_KEY)).toBeNull();
+    });
+  });
+
+  describe('... and the page link carries a redirect address', () => {
+    test('remembers the partner for the session once the handover token is exchanged', async () => {
+      sessionStorage.setItem(HANDOVER_TOKEN_STORAGE_KEY, aHandoverToken);
+      initializeComponent(
+        '?provider=COOP_PANK&procedure=account&redirectUri=https%3A%2F%2Fphishing.example%2F',
+      );
+
+      expect(await screen.findByText('redirecting to', { exact: false })).toBeInTheDocument();
+      expect(sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_PROVIDER)).toBe('COOP_PANK');
+      expect(Object.values({ ...sessionStorage })).not.toContain('https://phishing.example/');
+    });
+
+    test('remembers nothing when the handover token exchange fails', async () => {
+      server.use(
+        rest.post('http://localhost/oauth/token', (req, res, ctx) => res(ctx.status(401))),
+      );
+      sessionStorage.setItem(HANDOVER_TOKEN_STORAGE_KEY, aHandoverToken);
+      initializeComponent(
+        '?provider=COOP_PANK&procedure=account&redirectUri=https%3A%2F%2Fphishing.example%2F',
+      );
+
+      expect(await screen.findByText('unexpected error', { exact: false })).toBeInTheDocument();
+      expect(sessionStorage.length).toBe(0);
     });
   });
 

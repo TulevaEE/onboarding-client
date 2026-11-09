@@ -5,7 +5,7 @@ import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
-import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
+import { createDefaultStore, loginThroughPartner, renderWrapped } from '../../../../test/utils';
 import { initializeConfiguration } from '../../../config/config';
 import { nudgeBackend, useTestBackendsExcept } from '../../../../test/backend';
 import LoggedInApp from '../../../LoggedInApp';
@@ -25,7 +25,7 @@ describe('When is at the partner flow success screen', () => {
   function initializeComponent() {
     history = createMemoryHistory();
     const store = createDefaultStore(history as any);
-    login(store);
+    loginThroughPartner(store);
 
     renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
   }

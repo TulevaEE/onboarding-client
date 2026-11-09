@@ -67,7 +67,7 @@ import {
   postWithAuthentication,
   putWithAuthentication,
 } from './http';
-import { getAuthentication } from './authenticationManager';
+import { getAuthentication, isLoggedInThroughPartner } from './authenticationManager';
 import {
   CreateMandateBatchDto,
   FundPensionStatus,
@@ -778,7 +778,7 @@ export async function confirmThirdPillarRecurringPayment(): Promise<void> {
 }
 
 function getWindow(paymentType: PaymentType): Window {
-  if (paymentType !== 'RECURRING' || getAuthentication().loginMethod === 'PARTNER') {
+  if (paymentType !== 'RECURRING' || isLoggedInThroughPartner()) {
     return window;
   }
   const newWindow = window.open('', '_blank'); // this might be blocked by popup blockers
