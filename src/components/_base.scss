@@ -286,6 +286,12 @@ small {
   text-wrap: pretty;
 }
 
+@media (max-width: 374.98px) {
+  .hidden-below-375px {
+    display: none !important;
+  }
+}
+
 .scroll-margin-bottom {
   scroll-margin-bottom: $spacer * 1.5;
 }
