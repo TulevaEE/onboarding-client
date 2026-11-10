@@ -57,7 +57,7 @@
     "develop-production": "PROXY_TARGET=https://onboarding-service.tuleva.ee HTTPS=true HOST=local.tuleva.ee DANGEROUSLY_DISABLE_HOST_CHECK=true npm run develop",
     "develop-production-win": "set PROXY_TARGET=https://onboarding-service.tuleva.ee&&set HTTPS=true&&set HOST=local.tuleva.ee&&npm run develop",
     "lint": "eslint --ext .js,.ts,.jsx,.tsx src/ --max-warnings=0",
-    "test": "TZ=UTC react-scripts test --coverage --json --outputFile=test-results.json --reporters=default --reporters=tdd-guard-jest",
+    "test": "react-scripts test --coverage --json --outputFile=test-results.json --reporters=default --reporters=tdd-guard-jest",
     "lint:e2e": "eslint --ext .ts,.js e2e --max-warnings=0",
     "test:e2e": "playwright test --config e2e/playwright.config.ts",
     "test:e2e:android": "e2e/android/run.sh",
@@ -124,7 +124,8 @@
     ],
     "transformIgnorePatterns": [
       "/node_modules/(?!(@web-eid|axios)).+\\.js$"
-    ]
+    ],
+    "globalSetup": "<rootDir>/src/test/globalSetup.js"
   },
   "lint-staged": {
     "src/**/*.{json,css,scss,md}": [
