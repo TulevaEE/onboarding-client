@@ -1506,6 +1506,20 @@ export function recurringPaymentConfirmationBackend(
   return () => confirmations;
 }
 
+export function thirdPillarPaymentReminderBackend(server: SetupServerApi): () => number {
+  let cancellations = 0;
+  server.use(
+    rest.post(
+      'http://localhost/v1/third-pillar-payment-reminders/cancellations',
+      (req, res, ctx) => {
+        cancellations += 1;
+        return res(ctx.json({ cancelledCount: 1 }));
+      },
+    ),
+  );
+  return () => cancellations;
+}
+
 export function myGiftsBackend(server: SetupServerApi, gifts: ReceivedGift[] = []): void {
   server.use(
     rest.get('http://localhost/v1/savings-fund/gifts', (req, res, ctx) => res(ctx.json(gifts))),
@@ -1562,6 +1576,7 @@ const TEST_BACKENDS = {
   nudge: nudgeBackend,
   paymentRateRedirect: paymentRateRedirectBackend,
   recurringPaymentConfirmation: recurringPaymentConfirmationBackend,
+  thirdPillarPaymentReminder: thirdPillarPaymentReminderBackend,
   myGifts: myGiftsBackend,
 } as const;
 

@@ -38,8 +38,9 @@ import { MembershipSuccess } from '../newUserFlow/MembershipSuccess';
 import { TransactionPageThirdPillar } from '../account/TransactionSection/TransactionPageThirdPillar';
 import { ContributionPageThirdPillar } from '../contribution/ContributionPageThirdPillar';
 import Gift from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarGift';
-import ThirdPillarSuccess, {
+import {
   ThirdPillarGiftSuccess,
+  ThirdPillarPaymentSuccess,
 } from '../flows/thirdPillar/ThirdPillarSuccess';
 import { EmployerPaymentDetails } from '../flows/thirdPillar/ThirdPillarPayment/paymentDetails/EmployerPaymentDetails';
 import { PensionAccountNumberPage } from '../pensionAccountNumber/PensionAccountNumberPage';
@@ -273,13 +274,15 @@ export class LoggedInApp extends PureComponent {
             />
             <Route exact path="/savings-fund/onboarding" component={SavingsFundOnboardingChooser} />
             <Route path="/partner/3rd-pillar-flow-success" component={BackToPartner} />
+            {/* Coop Pank hardcodes this address (?confirmed=true) as its return after a standing order: never change it */}
             <Route
               path="/3rd-pillar-payment/recurring-confirmation"
               component={RecurringPaymentConfirmation}
             />
             <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />
             <Route path="/3rd-pillar-recurring-payment" component={ThirdPillarStandingOrderPage} />
-            <Route path="/3rd-pillar-success" component={ThirdPillarSuccess} />
+            {/* Coop Pank hardcodes this address as its return after a payment, and Montonio returns here: never change it */}
+            <Route path="/3rd-pillar-success" component={ThirdPillarPaymentSuccess} />
             <Route path="/3rd-pillar-gift-success" component={ThirdPillarGiftSuccess} />
             <Route path="/3rd-pillar-gift" component={Gift} />
             <Route path="/3rd-pillar-employer" component={EmployerPaymentDetails} />

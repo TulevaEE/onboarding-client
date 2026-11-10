@@ -8,12 +8,9 @@ import {
   confirmThirdPillarRecurringPayment,
 } from '../../../common/api';
 import { Nudge } from '../../../common/nudge/Nudge';
-import { PaymentDoneMessage } from '../ThirdPillarSuccess/PaymentDoneMessage';
-import { AvailablePaymentType } from './types';
 
 export const RecurringPaymentConfirmation = () => {
   const query = new URLSearchParams(useLocation().search);
-  const paymentType: AvailablePaymentType = query.get('type') === 'SINGLE' ? 'SINGLE' : 'RECURRING';
   const [confirmed, setConfirmed] = useState(query.get('confirmed') === 'true');
   const history = useHistory();
 
@@ -22,22 +19,14 @@ export const RecurringPaymentConfirmation = () => {
       return;
     }
     cancelThirdPillarPaymentReminder().catch(captureException);
-    if (paymentType === 'RECURRING') {
-      confirmThirdPillarRecurringPayment().catch(captureException);
-    }
-  }, [confirmed, paymentType]);
+    confirmThirdPillarRecurringPayment().catch(captureException);
+  }, [confirmed]);
 
   if (!confirmed) {
     return (
       <div className="col-12 col-md-11 col-lg-8 mx-auto text-center py-5">
         <h1 className="mb-4">
-          <FormattedMessage
-            id={
-              paymentType === 'SINGLE'
-                ? 'thirdPillarPayment.confirmation.title.single'
-                : 'thirdPillarPayment.confirmation.title.recurring'
-            }
-          />
+          <FormattedMessage id="thirdPillarPayment.confirmation.title.recurring" />
         </h1>
         <div className="d-flex gap-2 justify-content-center">
           <button type="button" className="btn btn-primary" onClick={() => setConfirmed(true)}>
@@ -55,41 +44,25 @@ export const RecurringPaymentConfirmation = () => {
     );
   }
 
-  return <ConfirmedSupportWithNudge paymentType={paymentType} />;
+  return <ConfirmedSupportWithNudge />;
 };
 
-const ConfirmedSupportWithNudge = ({ paymentType }: { paymentType: AvailablePaymentType }) => (
+const ConfirmedSupportWithNudge = () => (
   <>
     <SuccessNotice>
       <h2 className="text-center mt-3">
-        <FormattedMessage
-          id={
-            paymentType === 'RECURRING'
-              ? 'thirdPillarPayment.confirmation.done.title.recurring'
-              : 'thirdPillarSuccess.done'
-          }
-        />
+        <FormattedMessage id="thirdPillarPayment.confirmation.done.title.recurring" />
       </h2>
-      {paymentType === 'RECURRING' ? (
-        <>
-          <p className="mt-5">
-            <FormattedMessage id="thirdPillarPayment.confirmation.done.message.recurring" />
-          </p>
-          <p>
-            <FormattedMessage id="thirdPillarPayment.confirmation.done.message.recurring.firstPayment" />
-          </p>
-        </>
-      ) : (
-        <PaymentDoneMessage />
-      )}
+      <p className="mt-5">
+        <FormattedMessage id="thirdPillarPayment.confirmation.done.message.recurring" />
+      </p>
+      <p>
+        <FormattedMessage id="thirdPillarPayment.confirmation.done.message.recurring.firstPayment" />
+      </p>
       <a className="btn btn-primary mt-4 profile-link" href="/account">
         <FormattedMessage id="thirdPillarSuccess.button.account" />
       </a>
     </SuccessNotice>
-    <Nudge
-      context={
-        paymentType === 'RECURRING' ? 'THIRD_PILLAR_RECURRING_CONFIRMATION' : 'THIRD_PILLAR_PAYMENT'
-      }
-    />
+    <Nudge context="THIRD_PILLAR_RECURRING_CONFIRMATION" />
   </>
 );
