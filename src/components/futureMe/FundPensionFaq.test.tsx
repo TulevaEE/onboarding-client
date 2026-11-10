@@ -20,7 +20,9 @@ describe('fund pension FAQ', () => {
 
     expect(third).toHaveTextContent(/^Kumba sammast enne kasutada\?/);
     expect(third).toHaveTextContent(/Kui töötad samal ajal edasi, siis III\ssammast\./);
-    expect(third).toHaveTextContent(/lõpevad II\ssamba sissemaksed igaveseks, ka riigi 4%/);
+    expect(third).toHaveTextContent(
+      /lõpevad II\ssamba sissemaksed igaveseks, ka 4%\ssotsiaalmaksust/,
+    );
     expect(third).toHaveTextContent(/III\ssambasse võid sissemakseid jätkata/);
     expect(third).toHaveTextContent(/Kui sa enam tööd ei tee.*on sambad üsna võrdsed/);
   });
@@ -33,7 +35,7 @@ describe('fund pension FAQ', () => {
 
     expect(surplus).toHaveTextContent(/Väiksemat summat valida ei saa\./);
     expect(surplus).toHaveTextContent(
-      /Saad aga valida pikema lepingu lõpu või sõlmida igal aastal uue lepingu uuele pikemale perioodile, mis võib väljamakse suurust vähendada\./,
+      /Saad aga valida väljamaksetele hilisema lõpu või esitada igal aastal uue avalduse uuele pikemale perioodile, mis võib väljamakse suurust vähendada\./,
     );
   });
 
@@ -79,14 +81,14 @@ describe('fund pension FAQ', () => {
     const [first] = screen.getAllByRole('group');
 
     expect(first).toHaveTextContent(/^Mis on igakuised väljamaksed ehk fondipension\?/);
-    expect(first).toHaveTextContent(/määra pikem eeldatav eluiga ühe lepingu sõlmimisel/);
+    expect(first).toHaveTextContent(/määra pikem eeldatav eluiga ühe avalduse esitamisel/);
   });
 
   it('then tells how to choose the contract, until which age one contract pays and how to end it', () => {
     renderFaq();
     const [, second] = screen.getAllByRole('group');
 
-    expect(second).toHaveTextContent(/^Kuidas valida igakuiste väljamaksete lepingut\?/);
+    expect(second).toHaveTextContent(/^Kuidas valida igakuiste väljamaksete avaldust\?/);
     expect(second).toHaveTextContent(/keskmise elueani.*maksuvaba/);
     expect(second).toHaveTextContent(/väiksem.*kauem/);
     expect(second).toHaveTextContent(/lühem.*ei ole tulumaksuvaba/i);

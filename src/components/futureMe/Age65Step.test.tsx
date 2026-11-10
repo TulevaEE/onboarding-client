@@ -361,10 +361,10 @@ describe('Age 65 step', () => {
       openAge65Step();
 
       expect(choice(thirdPillarGroup(), 'Kasvatan edasi')).toHaveAccessibleDescription(
-        /^Vara jääb fondi ja kasvab edasi\.$/,
+        /^Vara jääb fondi\.$/,
       );
       expect(choice(thirdPillarGroup(), 'Võtan igakuiselt')).toHaveAccessibleDescription(
-        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara kasvab fondis edasi\.$/,
+        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara jääb fondi\.$/,
       );
       expect(choice(thirdPillarGroup(), 'Võtan korraga välja')).toHaveAccessibleDescription(
         /^Kogu vara korraga välja, 10%\stulumaks\. Raha on hoiusel\.$/,

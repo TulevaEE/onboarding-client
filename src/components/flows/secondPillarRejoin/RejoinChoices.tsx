@@ -5,6 +5,7 @@ import { Recommended } from '../../common/Recommended';
 import { Fees } from '../../common/Percentage/Fees';
 import { Fund } from '../../common/apiModels';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
+import { TranslationKey } from '../../translations';
 import styles from './RejoinChoices.module.scss';
 
 const ChoiceSection = ({
@@ -24,14 +25,39 @@ const ChoiceSection = ({
   </div>
 );
 
-export const PAYMENT_RATES: PaymentRate[] = [2, 4, 6];
+export const PAYMENT_RATES: PaymentRate[] = [6, 4, 2];
 const RECOMMENDED_PAYMENT_RATE: PaymentRate = 6;
+
+export type TaxWinExplanation = 'greatestOnRecommendedRate' | 'comparedWithLowestRate';
+
+const MutedLine = ({ id }: { id: TranslationKey }) => (
+  <p className="m-0 text-body-secondary">
+    <FormattedMessage id={id} />
+  </p>
+);
+
+const TaxWinNote = ({
+  rate,
+  explanation,
+}: {
+  rate: PaymentRate;
+  explanation: TaxWinExplanation;
+}) => {
+  if (explanation === 'comparedWithLowestRate') {
+    return <MutedLine id={`secondPillarRejoin.paymentRate.taxWinComparison.${rate}Percent`} />;
+  }
+  return rate === RECOMMENDED_PAYMENT_RATE ? (
+    <MutedLine id="secondPillarPaymentRate.maximumBenefit" />
+  ) : null;
+};
 
 export const PaymentRateChoice = ({
   paymentRate,
+  taxWinExplanation,
   onChange,
 }: {
   paymentRate: PaymentRate;
+  taxWinExplanation: TaxWinExplanation;
   onChange: (paymentRate: PaymentRate) => void;
 }) => (
   <ChoiceSection
@@ -54,17 +80,14 @@ export const PaymentRateChoice = ({
         </p>
         <p className="m-0 text-body-secondary">
           <FormattedMessage
-            id={`secondPillarPaymentRate.calculation.${rate}Percent`}
+            id={`secondPillarRejoin.paymentRate.stateAddsTotal.${rate}Percent`}
             values={{ b: (chunks: string) => <b>{chunks}</b> }}
           />
         </p>
-        {rate === RECOMMENDED_PAYMENT_RATE && (
-          <p className="m-0 text-body-secondary">
-            <FormattedMessage id="secondPillarPaymentRate.maximumBenefit" />
-          </p>
-        )}
+        <TaxWinNote rate={rate} explanation={taxWinExplanation} />
       </Radio>
     ))}
+    <MutedLine id="secondPillarRejoin.paymentRate.changeEveryYear" />
   </ChoiceSection>
 );
 

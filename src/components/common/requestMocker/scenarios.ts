@@ -8,6 +8,13 @@ const leaverAccountPage: Partial<MockModeConfiguration> = {
   savingsFundBalance: 'NO_ACCOUNT',
 };
 
+const rejoinRefused: Partial<MockModeConfiguration> = {
+  ...leaverAccountPage,
+  funds: 'WITHOUT_SAVINGS_FUND',
+  mandateDeadlines: 'NOVEMBER_2026_BEFORE_DEADLINE',
+  pendingApplications: 'NONE',
+};
+
 export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
   // One saver climbing the conversion ladder, one rung at a time: II pillar to Tuleva,
   // II rate to 6%, III pillar to Tuleva, savings fund on top. Only the rung being
@@ -78,10 +85,10 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     savingsFundOnboardingStatus: 'NOT_STARTED',
     savingsFundBalance: 'NO_ACCOUNT',
   },
-  // Left the funded II pillar: both II steps are advice they cannot act on, so they see
-  // the III pillar and then the savings fund instead.
+  // Left the funded II pillar: the way back in replaces both II steps.
   LEFT_SECOND_PILLAR: {
     user: 'LEFT_SECOND_PILLAR',
+    rejoinPermission: 'PERMITTED',
     conversion: 'COMPLETE_ONLY_THIRD_PILLAR',
     contributions: 'THIRD_PILLAR_MONTHLY_MAXED',
     sourceFunds: 'ONLY_THIRD_PILLAR',
@@ -237,6 +244,25 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     pendingApplications: 'NONE',
     rejoinPermission: 'NOT_PERMITTED',
   },
+  // A leaver whose contributions cannot restart: no withdrawal or stop application on record, or a
+  // fund pension, pension contract or lump sum. The row and the rejoin page say why.
+  SECOND_PILLAR_REJOIN_CANNOT_RESTART: {
+    ...rejoinRefused,
+    user: 'LEFT_SECOND_PILLAR_FUND_ON_RECORD',
+    rejoinPermission: 'CANNOT_RESTART',
+  },
+  // A leaver within five years: the rejoin page says the day they can rejoin from.
+  SECOND_PILLAR_REJOIN_NOT_YET_PERMITTED: {
+    ...rejoinRefused,
+    user: 'LEFT_SECOND_PILLAR_FUND_ON_RECORD_IN_2023',
+    rejoinPermission: 'NOT_PERMITTED',
+  },
+  // Someone still contributing who opens the rejoin page, as from the landing page.
+  SECOND_PILLAR_REJOIN_ALREADY_CONTRIBUTING: {
+    ...rejoinRefused,
+    user: 'SECOND_PILLAR_CONTRIBUTING',
+    rejoinPermission: 'PERMITTED',
+  },
   // The account page (/account) of a leaver who has filed to rejoin: the II pillar row says
   // when contributions start, and the pending application can still be cancelled. The rejoin
   // page (/2nd-pillar-rejoin) shows that application instead of a new one to sign.
@@ -244,6 +270,15 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     ...leaverAccountPage,
     user: 'LEFT_SECOND_PILLAR_PAYMENT_RATE_2',
     pendingApplications: 'SECOND_PILLAR_REJOIN',
+  },
+  MINOR_SELF_VIEW: {
+    user: 'MINOR',
+    roles: 'MINOR_ONLY',
+    funds: 'WITH_SAVINGS_FUND',
+    savingsFundBalance: 'MINOR',
+    sourceFunds: 'MINOR_THIRD_PILLAR',
+    transactions: 'MINOR_SAVINGS_FUND',
+    myGifts: 'MINOR',
   },
 
   WITHDRAWALS_PENSIONER_60_ALL_PILLARS: {

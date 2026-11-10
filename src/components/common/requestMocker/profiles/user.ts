@@ -1,4 +1,5 @@
-import { mockUser } from '../../../../test/backend-responses';
+import moment from 'moment';
+import { mockMinor, mockUser } from '../../../../test/backend-responses';
 import { SecondPillarContributions, User } from '../../apiModels';
 
 const contributionsEndedIn2021: SecondPillarContributions = {
@@ -10,8 +11,11 @@ const contributionsEndedIn2021: SecondPillarContributions = {
 const contributionsEndedIn2023: SecondPillarContributions = {
   contributing: false,
   restartDate: null,
-  rejoinPossibleFrom: '2028-09-01',
+  rejoinPossibleFrom: '2027-12-01',
 };
+
+const MINORS_AGE = 12;
+const MONTHS_SINCE_MINORS_BIRTHDAY = 5;
 
 export const userMockProfiles: Record<string, User> = {
   NO_SECOND_NO_THIRD_PILLAR: {
@@ -131,6 +135,11 @@ export const userMockProfiles: Record<string, User> = {
     secondPillarContributions: contributionsEndedIn2021,
     secondPillarPaymentRates: { current: 2, pending: null },
   },
+  SECOND_PILLAR_CONTRIBUTING: {
+    ...mockUser,
+    secondPillarActive: true,
+    secondPillarContributions: { contributing: true, restartDate: null, rejoinPossibleFrom: null },
+  },
   LEFT_SECOND_PILLAR_FUND_ON_RECORD_IN_2023: {
     ...mockUser,
     secondPillarActive: true,
@@ -151,5 +160,13 @@ export const userMockProfiles: Record<string, User> = {
     thirdPillarInitDate: null,
     memberNumber: null,
     memberJoinDate: null,
+  },
+  MINOR: {
+    ...mockMinor,
+    age: MINORS_AGE,
+    dateOfBirth: moment()
+      .subtract(MINORS_AGE, 'years')
+      .subtract(MONTHS_SINCE_MINORS_BIRTHDAY, 'months')
+      .format('YYYY-MM-DD'),
   },
 } as const;

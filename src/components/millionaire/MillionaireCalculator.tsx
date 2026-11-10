@@ -18,13 +18,17 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { usePageTitle } from '../common/usePageTitle';
 import { createTrackedEvent } from '../common/api';
+import { isRejoinApplication } from '../account/ApplicationSection/ApplicationFunctions';
 import { getCurrentPath } from '../account/ComparisonCalculator/utility';
 import './MillionaireCalculator.scss';
 import {
   useContributions,
   useConversion,
   useFunds,
+  useMandateDeadlines,
   useMe,
+  usePendingApplications,
+  useRejoinPermission,
   useSavingsFundBalance,
   useSavingsFundOnboardingStatus,
   useSourceFunds,
@@ -32,17 +36,30 @@ import {
 } from '../common/apiHooks';
 import { CurrencyInput } from '../common/input/CurrencyInput';
 import { EditableEuro } from '../common/input/EditableEuro';
+import {
+  formatDateFromWithYear,
+  formatDateOnWithYear,
+  formatDateTime,
+  todayInTallinn,
+} from '../common/dateFormatter';
+import { hasStoppedContributing } from '../common/secondPillarContributions';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { formatAmountForCurrency } from '../common/utils';
-import { Conversion } from '../common/apiModels';
+import { Conversion, RejoinPermission } from '../common/apiModels';
 import { TranslationKey } from '../translations';
-import { buildComparison, CalculatorInputs, thirdPillarTaxCapMonthly } from './calculation';
+import {
+  buildComparison,
+  CalculatorInputs,
+  LAURA_SECOND_PILLAR_RATE,
+  thirdPillarTaxCapMonthly,
+} from './calculation';
 import {
   contributesMonthlyToThirdPillar,
   deriveFeeBounds,
   derivePrefill,
   deriveSavingsFundMonthly,
   deriveTulevaFees,
+  filedSecondPillarRate,
   latestThirdPillarMonthlyAmount,
   selectSavingsFundPayments,
 } from './prefill';
@@ -190,7 +207,7 @@ type CtaItem = {
   done: boolean;
   // The step's bold title, and the state-dependent body line beneath it.
   headingKey: TranslationKey;
-  bodyKey: TranslationKey;
+  bodyKey?: TranslationKey;
   // Interpolated into the body line (tax benefits, standing-order amounts).
   values?: Record<string, string>;
   showButton: boolean;
@@ -199,11 +216,18 @@ type CtaItem = {
   primary?: boolean;
 };
 
-// This is a July-only campaign, so we deliberately nag: a saver counts as done
-// only when fully converted to Tuleva — fund selected AND every unit transferred.
-// Anyone with money still sitting in another fund (even a cheap one) gets nudged.
 const fullyConverted = (pillar: Conversion): boolean =>
   pillar.selectionComplete && pillar.transfersComplete;
+
+const dateToWaitForRejoining = (
+  rejoinPossibleFrom: string | null | undefined,
+  permission: RejoinPermission | undefined,
+): string | null =>
+  permission?.decision === 'REFUSED_BY_PENSIONIKESKUS' &&
+  rejoinPossibleFrom &&
+  rejoinPossibleFrom > todayInTallinn()
+    ? rejoinPossibleFrom
+    : null;
 
 // Fire-and-forget, like ComparisonCalculator: tracking must never break a click.
 // Note we do NOT preventDefault the way ComparisonCalculator does — these are
@@ -231,6 +255,24 @@ export function MillionaireCalculator() {
   const { data: savingsFundOnboarding } = useSavingsFundOnboardingStatus();
   const { data: savingsFundBalance, isLoading: savingsFundBalanceLoading } =
     useSavingsFundBalance();
+  const { data: mandateDeadlines } = useMandateDeadlines();
+  const { data: pendingApplications, isLoading: applicationsLoading } = usePendingApplications();
+  const contributionStatus = user?.secondPillarContributions;
+  const stoppedContributing = hasStoppedContributing(contributionStatus);
+  const waitingForApplications = stoppedContributing && applicationsLoading;
+  const contributionsRestartOn =
+    pendingApplications?.find(isRejoinApplication)?.details.fulfillmentDate ??
+    contributionStatus?.restartDate;
+  const outOfSecondPillar = stoppedContributing && !contributionsRestartOn;
+  const { data: rejoinPermission, isInitialLoading: askingWhetherPermitted } = useRejoinPermission({
+    enabled: outOfSecondPillar && !applicationsLoading,
+  });
+  const rejoinDateAhead = dateToWaitForRejoining(
+    contributionStatus?.rejoinPossibleFrom,
+    rejoinPermission,
+  );
+  const secondPillarOutOfReach =
+    outOfSecondPillar && rejoinPermission?.permitted === false && !rejoinDateAhead;
 
   const [inputs, setInputs] = useState<CalculatorInputs | null>(null);
 
@@ -266,10 +308,12 @@ export function MillionaireCalculator() {
       !transactionsLoading &&
       // A failed balance request settles with the data still undefined, so gate on
       // loading, not on the data: the page must not shimmer forever over it.
-      !savingsFundBalanceLoading
+      !savingsFundBalanceLoading &&
+      !waitingForApplications &&
+      !askingWhetherPermitted
     ) {
       const now = new Date();
-      const prefill = derivePrefill(user, sourceFunds, contributions, now);
+      const prefill = derivePrefill(user, sourceFunds, contributions, now, pendingApplications);
       // Pre-fill the fee slider with the saver's current weighted-average fund fee
       // (stored as a fraction) so the current-course line reflects what they pay today.
       const currentFundFeePercent = Math.min(
@@ -302,20 +346,26 @@ export function MillionaireCalculator() {
     savingsFundBalanceLoading,
     savingsFundValue,
     savingsFundPayments,
+    waitingForApplications,
+    askingWhetherPermitted,
+    pendingApplications,
   ]);
 
   const comparison = useMemo(
     () =>
       inputs
-        ? buildComparison({
-            ...inputs,
-            currentThirdPillarMonthly: Math.min(
-              inputs.currentThirdPillarMonthly,
-              thirdPillarTaxCapMonthly(inputs.grossSalaryMonthly),
-            ),
-          })
+        ? buildComparison(
+            {
+              ...inputs,
+              currentThirdPillarMonthly: Math.min(
+                inputs.currentThirdPillarMonthly,
+                thirdPillarTaxCapMonthly(inputs.grossSalaryMonthly),
+              ),
+            },
+            secondPillarOutOfReach ? 0 : LAURA_SECOND_PILLAR_RATE,
+          )
         : null,
-    [inputs],
+    [inputs, secondPillarOutOfReach],
   );
 
   if (!inputs || !comparison) {
@@ -348,19 +398,7 @@ export function MillionaireCalculator() {
 
   // Concrete next steps toward Laura's recipe, checked off against the saver's
   // real pension state (not the calculator's editable inputs).
-  //
-  // Two different people have no active II pillar, and only one of them is stuck.
-  // Someone who LEFT it cannot rejoin for ten years and has no II money to move, so both
-  // II steps are advice they are unable to take: drop them, as the account page does, and
-  // let the savings fund be their next step instead. Someone who NEVER JOINED can open a
-  // II pillar right now with a fund choice, which is exactly where the first step sends
-  // them. The pension register tells them apart: leaving clears the active date but the
-  // account keeps the date it was opened on, so an open date means they have been in it.
-  const inSecondPillar = user?.secondPillarActive ?? false;
-  const everJoinedSecondPillar = Boolean(user?.secondPillarOpenDate);
-  const leftSecondPillar = !inSecondPillar && everJoinedSecondPillar;
-  const secondPillarRate =
-    user?.secondPillarPaymentRates?.pending ?? user?.secondPillarPaymentRates?.current ?? 2;
+  const secondPillarRate = filedSecondPillarRate(user);
   const secondAtTuleva = conversion ? fullyConverted(conversion.secondPillar) : false;
   const secondMaxed = secondPillarRate >= 6;
   const thirdAtTuleva = conversion ? fullyConverted(conversion.thirdPillar) : false;
@@ -385,40 +423,88 @@ export function MillionaireCalculator() {
       : 'millionaire.cta.item.thirdPillarToTuleva.done';
   };
 
-  const secondPillarItems: CtaItem[] = leftSecondPillar
-    ? []
-    : [
+  const secondPillarToTulevaBodyKey = (): TranslationKey | undefined => {
+    if (secondAtTuleva) {
+      return 'millionaire.cta.item.secondPillarToTuleva.done';
+    }
+    return mandateDeadlines ? 'millionaire.cta.item.secondPillarToTuleva.todo' : undefined;
+  };
+
+  const rejoinStep = {
+    id: 'rejoinSecondPillar',
+    done: false,
+    headingKey: 'millionaire.cta.item.rejoinSecondPillar.heading',
+    link: '/2nd-pillar-rejoin',
+    buttonKey: 'account.status.choice.pillar.second.notContributing.action',
+    primary: true,
+  } as const;
+
+  const secondPillarItems = (): CtaItem[] => {
+    if (contributionsRestartOn) {
+      return [
         {
-          id: 'secondPillarToTuleva',
-          done: secondAtTuleva,
-          headingKey: 'millionaire.cta.item.secondPillarToTuleva.heading',
-          bodyKey: secondAtTuleva
-            ? 'millionaire.cta.item.secondPillarToTuleva.done'
-            : 'millionaire.cta.item.secondPillarToTuleva.todo',
-          showButton: !secondAtTuleva,
-          link: '/2nd-pillar-flow',
-          buttonKey: 'millionaire.cta.item.secondPillarToTuleva.button',
-          // The whole calculator exists to move II pillars to Tuleva — the primary
-          // conversion goal, so it gets the filled button.
-          primary: true,
-        },
-        {
-          id: 'raiseSecondPillar',
-          done: secondMaxed,
-          headingKey: 'millionaire.cta.item.raiseSecondPillar.heading',
-          bodyKey: secondMaxed
-            ? 'millionaire.cta.item.raiseSecondPillar.done'
-            : 'millionaire.cta.item.raiseSecondPillar.todo',
-          values: { amount: secondPillarMaxTaxWin },
-          showButton: !secondMaxed,
-          link: '/2nd-pillar-payment-rate',
-          buttonKey: 'millionaire.cta.item.raiseSecondPillar.button',
+          ...rejoinStep,
+          done: true,
+          bodyKey: 'account.status.choice.pillar.second.rejoinPending',
+          values: { date: formatDateOnWithYear(contributionsRestartOn) },
+          showButton: false,
         },
       ];
+    }
+    if (secondPillarOutOfReach) {
+      return [];
+    }
+    if (rejoinDateAhead) {
+      return [
+        {
+          ...rejoinStep,
+          bodyKey: 'account.status.choice.pillar.second.notContributing.line2.rejoinPossibleFrom',
+          values: { date: formatDateFromWithYear(rejoinDateAhead) },
+          showButton: false,
+        },
+      ];
+    }
+    if (outOfSecondPillar) {
+      return [
+        {
+          ...rejoinStep,
+          bodyKey: 'account.status.choice.pillar.second.notContributing.line2.noFundChoice',
+          showButton: true,
+        },
+      ];
+    }
+    return [
+      {
+        id: 'secondPillarToTuleva',
+        done: secondAtTuleva,
+        headingKey: 'millionaire.cta.item.secondPillarToTuleva.heading',
+        bodyKey: secondPillarToTulevaBodyKey(),
+        values: { deadline: formatDateTime(mandateDeadlines?.periodEnding) },
+        showButton: !secondAtTuleva,
+        link: '/2nd-pillar-flow',
+        buttonKey: 'millionaire.cta.item.secondPillarToTuleva.button',
+        // The whole calculator exists to move II pillars to Tuleva — the primary
+        // conversion goal, so it gets the filled button.
+        primary: true,
+      },
+      {
+        id: 'raiseSecondPillar',
+        done: secondMaxed,
+        headingKey: 'millionaire.cta.item.raiseSecondPillar.heading',
+        bodyKey: secondMaxed
+          ? 'millionaire.cta.item.raiseSecondPillar.done'
+          : 'millionaire.cta.item.raiseSecondPillar.todo',
+        values: { amount: secondPillarMaxTaxWin },
+        showButton: !secondMaxed,
+        link: '/2nd-pillar-payment-rate',
+        buttonKey: 'millionaire.cta.item.raiseSecondPillar.button',
+      },
+    ];
+  };
 
   const pillarItems: CtaItem[] = conversion
     ? [
-        ...secondPillarItems,
+        ...secondPillarItems(),
         {
           id: 'thirdPillarToTuleva',
           done: thirdAtTuleva && thirdContributing,
@@ -438,9 +524,10 @@ export function MillionaireCalculator() {
     : [];
 
   // The savings fund is what comes after the pension, not instead of it: the
-  // pillars carry a tax benefit it doesn't, so it only earns a row once every
-  // pillar step is done and it can't compete with the II/III pillar CTAs.
-  const pillarsOptimized = pillarItems.length > 0 && pillarItems.every((item) => item.done);
+  // pillars carry a tax benefit it doesn't, so it only earns a row once no pillar
+  // step is waiting on the saver and it can't compete with the II/III pillar CTAs.
+  const nothingLeftToDoInPillars =
+    pillarItems.length > 0 && pillarItems.every((item) => item.done || !item.showButton);
   const savingsFundOnboarded = savingsFundOnboarding?.status === 'COMPLETED';
   const savingsFundInvested =
     savingsFundBalance !== null &&
@@ -469,7 +556,7 @@ export function MillionaireCalculator() {
         };
   };
   const ctaItems: CtaItem[] =
-    pillarsOptimized && savingsFundOnboarding
+    nothingLeftToDoInPillars && savingsFundOnboarding
       ? [
           ...pillarItems,
           {
@@ -580,15 +667,17 @@ export function MillionaireCalculator() {
                   <span className="fw-medium">
                     <FormattedMessage id={item.headingKey} />
                   </span>
-                  <span className="text-secondary">
-                    <FormattedMessage
-                      id={item.bodyKey}
-                      values={{
-                        ...item.values,
-                        b: (chunks: React.ReactNode) => <b>{chunks}</b>,
-                      }}
-                    />
-                  </span>
+                  {item.bodyKey && (
+                    <span className="text-secondary">
+                      <FormattedMessage
+                        id={item.bodyKey}
+                        values={{
+                          ...item.values,
+                          b: (chunks: React.ReactNode) => <b>{chunks}</b>,
+                        }}
+                      />
+                    </span>
+                  )}
                 </div>
               </div>
               {item.showButton && (
@@ -653,40 +742,42 @@ export function MillionaireCalculator() {
                 />
               </div>
 
-              <div>
-                <span id="millionaire-rate-label" className="form-label fw-medium d-block">
-                  <FormattedMessage id="millionaire.input.secondPillarRate" />
-                </span>
-                <div
-                  className="btn-group w-100"
-                  role="group"
-                  aria-labelledby="millionaire-rate-label"
-                >
-                  {SECOND_PILLAR_RATES.map((rate) => {
-                    const active = inputs.currentSecondPillarRate === rate;
-                    return (
-                      <button
-                        key={rate}
-                        type="button"
-                        className={classNames(
-                          'btn',
-                          active ? 'btn-primary' : 'btn-outline-primary',
-                        )}
-                        aria-pressed={active}
-                        onClick={() => {
-                          const newRate = active ? 0 : rate;
-                          trackClick('millionaireCalculator.setSecondPillarRate', {
-                            value: newRate,
-                          });
-                          update({ currentSecondPillarRate: newRate });
-                        }}
-                      >
-                        {rate}%
-                      </button>
-                    );
-                  })}
+              {!secondPillarOutOfReach && (
+                <div>
+                  <span id="millionaire-rate-label" className="form-label fw-medium d-block">
+                    <FormattedMessage id="millionaire.input.secondPillarRate" />
+                  </span>
+                  <div
+                    className="btn-group w-100"
+                    role="group"
+                    aria-labelledby="millionaire-rate-label"
+                  >
+                    {SECOND_PILLAR_RATES.map((rate) => {
+                      const active = inputs.currentSecondPillarRate === rate;
+                      return (
+                        <button
+                          key={rate}
+                          type="button"
+                          className={classNames(
+                            'btn',
+                            active ? 'btn-primary' : 'btn-outline-primary',
+                          )}
+                          aria-pressed={active}
+                          onClick={() => {
+                            const newRate = active ? 0 : rate;
+                            trackClick('millionaireCalculator.setSecondPillarRate', {
+                              value: newRate,
+                            });
+                            update({ currentSecondPillarRate: newRate });
+                          }}
+                        >
+                          {rate}%
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div>
                 <div className="d-flex justify-content-between align-items-baseline gap-2">

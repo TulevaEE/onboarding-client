@@ -72,10 +72,14 @@ import * as authenticationManager from './authenticationManager';
 import Mock = jest.Mock;
 
 jest.mock('./http');
-jest.mock('./authenticationManager', () => ({
-  getAuthentication: jest.fn(),
-  remove: jest.fn(),
-}));
+jest.mock('./authenticationManager', () => {
+  const getAuthentication = jest.fn();
+  return {
+    getAuthentication,
+    remove: jest.fn(),
+    isLoggedInThroughPartner: () => getAuthentication()?.loginMethod === 'PARTNER',
+  };
+});
 
 const mockWebEidAuthenticate = jest.fn();
 jest.mock('@web-eid/web-eid-library', () => ({

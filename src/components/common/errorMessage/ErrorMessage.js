@@ -6,6 +6,7 @@ import {
   isIdEeInstructionsMessage,
   IdEeInstructionsMessage,
 } from '../idEeInstructionsMessage/IdEeInstructionsMessage';
+import { isNoStopApplicationError, NoStopApplicationMessage } from './NoStopApplicationMessage';
 import './ErrorMessage.scss';
 
 const noop = () => null;
@@ -24,12 +25,18 @@ const ErrorMessage = ({ errors, onCancel, overlayed }) => {
             className="error-message__detail mx-auto text-body-secondary small text-pretty"
             key={index}
           >
-            {isIdEeInstructionsMessage(error.code) ? (
-              <IdEeInstructionsMessage id={error.code} />
+            {isNoStopApplicationError(error.code) ? (
+              <NoStopApplicationMessage />
             ) : (
-              <FormattedMessage id={error.code} />
-            )}{' '}
-            {error.message}
+              <>
+                {isIdEeInstructionsMessage(error.code) ? (
+                  <IdEeInstructionsMessage id={error.code} />
+                ) : (
+                  <FormattedMessage id={error.code} />
+                )}{' '}
+                {error.message}
+              </>
+            )}
           </p>
         ))}
       {onCancel !== noop ? (

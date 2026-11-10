@@ -2604,9 +2604,9 @@ describe('FutureMe', () => {
 
       expect(fundPlan()).toHaveAccessibleName('Võtan igakuiselt');
       expect(fundPlan()).toHaveAccessibleDescription(
-        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara kasvab fondis edasi\.$/,
+        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara jääb fondi\.$/,
       );
-      expect(keepPlan()).toHaveAccessibleDescription(/^Vara jääb fondi ja kasvab edasi\.$/);
+      expect(keepPlan()).toHaveAccessibleDescription(/^Vara jääb fondi\.$/);
     });
 
     it('says the money taken out at once is used up before the pension age, as the calculation leaves none of it for retirement', () => {
@@ -2687,7 +2687,7 @@ describe('FutureMe', () => {
     });
 
     const contractGroup = () =>
-      screen.queryByRole('group', { name: /^III\ssamba igakuiste väljamaksete leping$/ });
+      screen.queryByRole('group', { name: /^III\ssamba igakuiste väljamaksete avaldus$/ });
     const contract = (name: RegExp) =>
       within(contractGroup() as HTMLElement).getByRole('radio', { name });
 
@@ -2766,7 +2766,7 @@ describe('FutureMe', () => {
 
       userEvent.click(fundPlan());
 
-      expect(contract(/^Uus leping igal aastal/)).toBeChecked();
+      expect(contract(/^Uus avaldus igal aastal/)).toBeChecked();
     });
 
     it('shows the fund pension figures of the contract chosen for the III pillar', () => {
@@ -2778,7 +2778,7 @@ describe('FutureMe', () => {
         ' ',
       );
 
-      userEvent.click(contract(/^Üks leping/));
+      userEvent.click(contract(/^Üks avaldus/));
 
       expect(screen.getByRole('status')).not.toHaveTextContent(withYearlyContract);
     });
@@ -2787,7 +2787,7 @@ describe('FutureMe', () => {
       renderFutureMe();
       openAge55();
       userEvent.click(fundPlan());
-      userEvent.click(contract(/^Üks leping/));
+      userEvent.click(contract(/^Üks avaldus/));
       const untilAverage = (screen.getByRole('status').textContent ?? '').replace(/\s+/g, ' ');
 
       userEvent.selectOptions(
@@ -2817,15 +2817,15 @@ describe('FutureMe', () => {
       renderFutureMe();
       openAge55();
       userEvent.click(fundPlan());
-      userEvent.click(contract(/^Üks leping/));
+      userEvent.click(contract(/^Üks avaldus/));
       userEvent.click(within(trail()).getByRole('button', { name: /^\d+\+\sa/ }));
 
       expect(contractGroup()).not.toBeInTheDocument();
-      expect(screen.getByText(/III\ssamba lepingu valisid 55-aastaselt/)).toHaveTextContent(
-        /Üks leping/,
+      expect(screen.getByText(/III\ssamba avalduse valisid 55-aastaselt/)).toHaveTextContent(
+        /Üks avaldus/,
       );
 
-      userEvent.click(screen.getByRole('button', { name: /Muuda III\ssamba lepingut/ }));
+      userEvent.click(screen.getByRole('button', { name: /Muuda III\ssamba avaldust/ }));
 
       expect(age55Heading()).toBeInTheDocument();
     });
@@ -2844,7 +2844,7 @@ describe('FutureMe', () => {
       userEvent.click(within(trail()).getByRole('button', { name: /^\d+\+\sa/ }));
 
       expect(
-        screen.queryByText(/vara kasvab fondis ja võtad välja nii palju/),
+        screen.queryByText(/vara jääb fondi ja võtad välja nii palju/),
       ).not.toBeInTheDocument();
     });
 
@@ -2921,7 +2921,7 @@ describe('FutureMe', () => {
 
       expect(screen.getAllByText('Mis on igakuised väljamaksed ehk fondipension?')).toHaveLength(1);
       [
-        'Kuidas valida igakuiste väljamaksete lepingut?',
+        'Kuidas valida igakuiste väljamaksete avaldust?',
         'Millal valida igakuised väljamaksed?',
         'Mis saab, kui väljamaksed on suuremad, kui vajan?',
         'Mida teada igakuiste väljamaksete kohta?',

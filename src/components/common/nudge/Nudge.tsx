@@ -13,26 +13,19 @@ import { NudgeEventType, trackNudgeEvent } from './tracking';
 
 type NudgeProps = {
   context: NudgeContext;
-  onRecurringPayment?: () => void;
 };
 
-export const Nudge: FC<NudgeProps> = ({ context, onRecurringPayment }) => {
+export const Nudge: FC<NudgeProps> = ({ context }) => {
   const { data: decision } = useNudge(context);
 
   if (!decision) {
     return null;
   }
 
-  return (
-    <NudgeView decision={decision} context={context} onRecurringPayment={onRecurringPayment} />
-  );
+  return <NudgeView decision={decision} context={context} />;
 };
 
-export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({
-  decision,
-  context,
-  onRecurringPayment,
-}) => {
+export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({ decision, context }) => {
   const { pathname } = useLocation();
   const { data: user } = useMe();
   const trackedView = useRef<string | null>(null);
@@ -127,10 +120,9 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({
       );
     case 'SECOND_PILLAR_TRANSFER':
       return decision.feeComparison ? (
-        <FeeComparisonNudge
-          feeComparison={decision.feeComparison}
-          onCallToAction={onCallToAction}
-        />
+        <Notice>
+          <FeeComparison feeComparison={decision.feeComparison} onCallToAction={onCallToAction} />
+        </Notice>
       ) : (
         <NudgeNotice
           header="thirdPillarSuccess.suggestion.lowFee.header"
@@ -167,7 +159,6 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({
           description="thirdPillarSuccess.suggestion.recurring.description"
           button="thirdPillarSuccess.suggestion.recurring.button"
           to="/3rd-pillar-payment"
-          onAction={onRecurringPayment}
           onCallToAction={onCallToAction}
         />
       );
@@ -247,26 +238,32 @@ const RecurringPaymentNudge = ({
   />
 );
 
-const NudgeNotice = ({
-  header,
-  description,
-  descriptionValues,
-  button,
-  to,
-  onAction,
-  onCallToAction,
-  children,
-}: {
+type NudgeContentProps = {
   header: TranslationKey;
   description: TranslationKey;
   descriptionValues?: Record<string, number | string>;
   button: TranslationKey;
   to: string;
-  onAction?: () => void;
-  onCallToAction: () => void;
+  onCallToAction?: () => void;
   children?: ReactNode;
-}) => (
+};
+
+const NudgeNotice = (props: NudgeContentProps) => (
   <Notice>
+    <NudgeContent {...props} />
+  </Notice>
+);
+
+export const NudgeContent = ({
+  header,
+  description,
+  descriptionValues,
+  button,
+  to,
+  onCallToAction,
+  children,
+}: NudgeContentProps) => (
+  <>
     <h2 className="text-center mt-3">
       <FormattedMessage id={header} />
     </h2>
@@ -274,23 +271,10 @@ const NudgeNotice = ({
     <p className="mt-5">
       <FormattedMessage id={description} values={descriptionValues} />
     </p>
-    {onAction ? (
-      <button
-        type="button"
-        className="btn btn-primary mt-4"
-        onClick={() => {
-          onCallToAction();
-          onAction();
-        }}
-      >
-        <FormattedMessage id={button} />
-      </button>
-    ) : (
-      <a className="btn btn-primary mt-4 profile-link" href={to} onClick={onCallToAction}>
-        <FormattedMessage id={button} />
-      </a>
-    )}
-  </Notice>
+    <a className="btn btn-primary mt-4 profile-link" href={to} onClick={onCallToAction}>
+      <FormattedMessage id={button} />
+    </a>
+  </>
 );
 
 type Segment = { amount: number; tone?: 'gain' | 'positive' | 'negative'; label?: ReactNode };
@@ -360,12 +344,12 @@ const cost = (amount: number) => (amount > 0 ? <>&minus;{amount}&nbsp;€</> : <
 
 const REJOIN_EXAMPLE = { grossSalary: 2000, fromNetSalary: 94, taxWin: 106 };
 
-const FeeComparisonNudge = ({
+export const FeeComparison = ({
   feeComparison,
   onCallToAction,
 }: {
   feeComparison: NudgeFeeComparison;
-  onCallToAction: () => void;
+  onCallToAction?: () => void;
 }) => {
   const { currentFeePercent, currentFeeAmount, tulevaFeeAmount, savingsAmount } = feeComparison;
   const { data: sourceFunds } = useSourceFunds();
@@ -373,7 +357,7 @@ const FeeComparisonNudge = ({
     (fund) => fund.pillar === 2 && !isTulevaIsin(fund.isin) && fund.price > 0,
   ).length;
   return (
-    <NudgeNotice
+    <NudgeContent
       header="thirdPillarSuccess.notice.header"
       description="thirdPillarSuccess.notice.description"
       descriptionValues={{
@@ -404,6 +388,6 @@ const FeeComparisonNudge = ({
           ),
         }}
       />
-    </NudgeNotice>
+    </NudgeContent>
   );
 };

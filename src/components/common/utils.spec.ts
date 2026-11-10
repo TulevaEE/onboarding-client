@@ -7,6 +7,7 @@ import {
   isSecondPillar,
   isActive,
   isActingAsSelf,
+  isMinorActingAsSelf,
   isChildRole,
   isTuleva,
   formatAmountForCount,
@@ -271,6 +272,47 @@ describe('Utils', () => {
     // acting as self. A partner handover session and PATCH /v1/me both carry no role.
     it('is true when the user has no role', () => {
       expect(isActingAsSelf({ ...mockUser, role: undefined })).toBe(true);
+    });
+  });
+
+  describe('isMinorActingAsSelf', () => {
+    it('is true for someone under 18 acting as themselves', () => {
+      expect(isMinorActingAsSelf({ ...mockUser, age: 17 })).toBe(true);
+    });
+
+    it('is true for someone under 18 without a role', () => {
+      expect(isMinorActingAsSelf({ ...mockUser, age: 12, role: undefined })).toBe(true);
+    });
+
+    it('is false from the 18th birthday on', () => {
+      expect(isMinorActingAsSelf({ ...mockUser, age: 18 })).toBe(false);
+    });
+
+    it('is false for an adult representing a child', () => {
+      expect(
+        isMinorActingAsSelf({
+          ...mockUser,
+          role: { type: 'PERSON', code: '61506150006', name: 'Child Name' },
+        }),
+      ).toBe(false);
+    });
+
+    it('is false for someone under 18 representing a company', () => {
+      expect(
+        isMinorActingAsSelf({
+          ...mockUser,
+          age: 17,
+          role: { type: 'LEGAL_ENTITY', code: '12345678', name: 'Acme OÜ' },
+        }),
+      ).toBe(false);
+    });
+
+    it('is false when there is no user', () => {
+      expect(isMinorActingAsSelf(undefined)).toBe(false);
+    });
+
+    it('is false when the age is not known', () => {
+      expect(isMinorActingAsSelf({ ...mockUser, age: null as unknown as number })).toBe(false);
     });
   });
 

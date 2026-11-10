@@ -173,7 +173,14 @@ export function PersonAccountPage(
           </SectionHeading>
 
           {secondPillarSourceFunds && secondPillarSourceFunds.length > 0 && (
-            <AccountStatement funds={secondPillarSourceFunds} />
+            <>
+              <AccountStatement funds={secondPillarSourceFunds} />
+              <p className="m-0 mt-3 text-body-secondary text-center small">
+                <Link to="/2nd-pillar-growth">
+                  <FormattedMessage id="secondPillarGrowth.title" />
+                </Link>
+              </p>
+            </>
           )}
         </>
       )}

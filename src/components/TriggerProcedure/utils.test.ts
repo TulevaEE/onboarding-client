@@ -1,24 +1,29 @@
-import {
-  finish,
-  init,
-  EXTERNAL_AUTHENTICATOR_PROVIDER,
-  EXTERNAL_AUTHENTICATOR_REDIRECT_URI,
-} from './utils';
+import { finish, init, EXTERNAL_AUTHENTICATOR_PROVIDER } from './utils';
 import { getPaymentLink } from '../common/api';
-import { getAuthentication } from '../common/authenticationManager';
+import { getAuthentication, isLoggedInThroughPartner } from '../common/authenticationManager';
 import { isSessionStorageBlocked } from '../common/siteStorage';
 import { blockSiteStorage } from '../../test/siteStorage';
+import { initializeConfiguration } from '../config/config';
 
 jest.mock('../common/api');
 jest.mock('../common/authenticationManager');
 
 describe('finish', () => {
   beforeEach(() => {
+    initializeConfiguration();
     sessionStorage.clear();
     sessionStorage.setItem(EXTERNAL_AUTHENTICATOR_PROVIDER, 'COOP_PANK');
-    sessionStorage.setItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI, 'https://partner.example/');
     (getAuthentication as jest.Mock).mockReturnValue({ isAuthenticated: () => true });
+    (isLoggedInThroughPartner as jest.Mock).mockReturnValue(true);
     delete (window as unknown as { ReactNativeWebView?: unknown }).ReactNativeWebView;
+  });
+
+  it('refuses to finish for someone who has since logged in another way', async () => {
+    (isLoggedInThroughPartner as jest.Mock).mockReturnValue(false);
+    (getPaymentLink as jest.Mock).mockClear();
+
+    await expect(finish('newPayment', undefined, '38812121215')).rejects.toThrow();
+    expect(getPaymentLink).not.toHaveBeenCalled();
   });
 
   it('throws when partner-flow payment link is missing url', async () => {
@@ -83,7 +88,62 @@ describe('finish', () => {
     };
 
     await expect(finish('newRecurringPayment', undefined, '38812121215')).rejects.toThrow(
-      /provider/,
+      /partner session/,
+    );
+  });
+
+  describe('when the person came from the internet bank', () => {
+    const originalLocation = window.location;
+    const pageLocation = { href: 'http://localhost/partner/3rd-pillar-flow/success' };
+
+    beforeEach(() => {
+      pageLocation.href = 'http://localhost/partner/3rd-pillar-flow/success';
+      Object.defineProperty(window, 'location', {
+        value: pageLocation,
+        writable: true,
+        configurable: true,
+      });
+    });
+
+    afterEach(() => {
+      Object.defineProperty(window, 'location', {
+        value: originalLocation,
+        writable: true,
+        configurable: true,
+      });
+    });
+
+    it("opens the payment form at Coop's own internet bank address", async () => {
+      (getPaymentLink as jest.Mock).mockResolvedValue({
+        type: 'PREFILLED',
+        url: 'i/payments/new?bname=Tuleva',
+      });
+
+      await finish('newPayment', undefined, '38812121215');
+
+      expect(pageLocation.href).toBe('https://i.cooppank.ee/i/payments/new?bname=Tuleva');
+    });
+
+    it('ignores a redirect address a page link left in the session', async () => {
+      sessionStorage.setItem('EXTERNAL_AUTHENTICATOR_REDIRECT_URI', 'https://phishing.example/');
+      (getPaymentLink as jest.Mock).mockResolvedValue({
+        type: 'PREFILLED',
+        url: 'i/standing-orders/new?bname=Tuleva',
+      });
+
+      await finish('newRecurringPayment', undefined, '38812121215');
+
+      expect(pageLocation.href).toBe('https://i.cooppank.ee/i/standing-orders/new?bname=Tuleva');
+    });
+
+    it.each(['https://phishing.example/i/payments/new', '//phishing.example/i/payments/new'])(
+      "refuses a payment link that leads away from Coop's internet bank: %s",
+      async (url) => {
+        (getPaymentLink as jest.Mock).mockResolvedValue({ type: 'PREFILLED', url });
+
+        await expect(finish('newPayment', undefined, '38812121215')).rejects.toThrow();
+        expect(pageLocation.href).toBe('http://localhost/partner/3rd-pillar-flow/success');
+      },
     );
   });
 
@@ -112,20 +172,17 @@ describe('finish', () => {
 });
 
 describe('init', () => {
+  beforeEach(() => sessionStorage.clear());
   afterEach(() => sessionStorage.clear());
 
-  it('keeps the provider and the redirect address for the session', () => {
+  it('keeps nothing for the session before the handover token is exchanged', () => {
     init({
       provider: 'COOP_PANK',
       procedure: 'account',
       handoverToken: 'aHandoverToken',
-      redirectUri: 'https://partner.example/',
     });
 
-    expect(sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_PROVIDER)).toBe('COOP_PANK');
-    expect(sessionStorage.getItem(EXTERNAL_AUTHENTICATOR_REDIRECT_URI)).toBe(
-      'https://partner.example/',
-    );
+    expect(sessionStorage.length).toBe(0);
   });
 
   describe('when the browser blocks session storage', () => {
@@ -144,13 +201,11 @@ describe('init', () => {
           provider: 'COOP_PANK',
           procedure: 'account',
           handoverToken: 'aHandoverToken',
-          redirectUri: 'https://partner.example/',
         }),
       ).toEqual({
         provider: 'COOP_PANK',
         procedure: 'account',
         handoverToken: 'aHandoverToken',
-        redirectUri: 'https://partner.example/',
         path: '/account',
       });
     });

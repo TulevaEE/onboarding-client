@@ -193,7 +193,7 @@ describe('Age 60 step', () => {
   describe('fund pension contract', () => {
     const contractGroup = (pillar: 'II' | 'III') =>
       screen.queryByRole('group', {
-        name: new RegExp(`^${pillar}\\ssamba igakuiste väljamaksete leping$`),
+        name: new RegExp(`^${pillar}\\ssamba igakuiste väljamaksete avaldus$`),
       });
 
     it('is asked right under the fund pension choice, a new contract every year preselected', () => {
@@ -204,8 +204,8 @@ describe('Age 60 step', () => {
       userEvent.click(choice(secondPillarGroup(), 'Võtan igakuiselt'));
       userEvent.click(choice(thirdPillarGroup(), 'Võtan igakuiselt'));
 
-      expect(choice(contractGroup('II') as HTMLElement, 'Uus leping igal aastal')).toBeChecked();
-      expect(choice(contractGroup('III') as HTMLElement, 'Uus leping igal aastal')).toBeChecked();
+      expect(choice(contractGroup('II') as HTMLElement, 'Uus avaldus igal aastal')).toBeChecked();
+      expect(choice(contractGroup('III') as HTMLElement, 'Uus avaldus igal aastal')).toBeChecked();
     });
 
     it('asks for one contract until which age the payouts last, from the average life expectancy up to 100', () => {
@@ -217,7 +217,7 @@ describe('Age 60 step', () => {
 
       expect(endAgeField()).not.toBeInTheDocument();
 
-      userEvent.click(choice(group, 'Üks leping'));
+      userEvent.click(choice(group, 'Üks avaldus'));
       const options = within(endAgeField() as HTMLElement).getAllByRole('option');
 
       expect(options[0]).toHaveTextContent(/^\d+-aastaseni \(\d{4}\) · keskmine eluiga$/);
@@ -235,7 +235,7 @@ describe('Age 60 step', () => {
       openAge60Step();
       userEvent.click(choice(secondPillarGroup(), 'Võtan igakuiselt'));
       const group = contractGroup('II') as HTMLElement;
-      userEvent.click(choice(group, 'Üks leping'));
+      userEvent.click(choice(group, 'Üks avaldus'));
       const endAgeField = within(group).getByRole('combobox', {
         name: 'Mis vanuseni väljamaksed kestavad?',
       });
@@ -250,25 +250,25 @@ describe('Age 60 step', () => {
       openAge60Step();
       userEvent.click(choice(secondPillarGroup(), 'Võtan igakuiselt'));
 
-      expect(choice(contractGroup('II') as HTMLElement, 'Üks leping')).toHaveAccessibleDescription(
-        'Maksuvaba väljamakse kuni valitud vanuseni, vähemalt keskmise elueani. Siis leping ja väljamaksed lõpevad.',
+      expect(choice(contractGroup('II') as HTMLElement, 'Üks avaldus')).toHaveAccessibleDescription(
+        'Maksuvaba väljamakse kuni valitud vanuseni, vähemalt keskmise elueani. Siis väljamaksed lõpevad.',
       );
     });
 
     it('shows the contract chosen here on the 66+ step, with a link back to change it', () => {
       openAge60Step();
       userEvent.click(choice(secondPillarGroup(), 'Võtan igakuiselt'));
-      userEvent.click(choice(contractGroup('II') as HTMLElement, 'Üks leping'));
+      userEvent.click(choice(contractGroup('II') as HTMLElement, 'Üks avaldus'));
       userEvent.click(within(trail()).getByRole('button', { name: /^\d+\+\sa/ }));
 
       expect(contractGroup('II')).not.toBeInTheDocument();
-      expect(screen.getByText(/II\ssamba lepingu valisid \d+-aastaselt/)).toHaveTextContent(
-        /Üks leping/,
+      expect(screen.getByText(/II\ssamba avalduse valisid \d+-aastaselt/)).toHaveTextContent(
+        /Üks avaldus/,
       );
 
-      userEvent.click(screen.getByRole('button', { name: /Muuda II\ssamba lepingut/ }));
+      userEvent.click(screen.getByRole('button', { name: /Muuda II\ssamba avaldust/ }));
 
-      expect(choice(contractGroup('II') as HTMLElement, 'Üks leping')).toBeChecked();
+      expect(choice(contractGroup('II') as HTMLElement, 'Üks avaldus')).toBeChecked();
     });
   });
 
@@ -303,11 +303,9 @@ describe('Age 60 step', () => {
     openAge60Step();
 
     [secondPillarGroup(), thirdPillarGroup()].forEach((group) => {
-      expect(choice(group, 'Kasvatan edasi')).toHaveAccessibleDescription(
-        /^Vara jääb fondi ja kasvab edasi\.$/,
-      );
+      expect(choice(group, 'Kasvatan edasi')).toHaveAccessibleDescription(/^Vara jääb fondi\.$/);
       expect(choice(group, 'Võtan igakuiselt')).toHaveAccessibleDescription(
-        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara kasvab fondis edasi\./,
+        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara jääb fondi\./,
       );
       expect(choice(group, 'Võtan korraga välja')).toHaveAccessibleDescription(
         /^Kogu vara korraga välja, 10%\stulumaks\. Raha on hoiusel\./,
@@ -318,7 +316,7 @@ describe('Age 60 step', () => {
   it('says on the second pillar payout cards, not in the intro, that the contributions end', () => {
     openAge60Step();
 
-    const contributionsEnd = /Sinu ja riigi II\ssamba sissemaksed lõpevad\.$/;
+    const contributionsEnd = /Sinu II\ssamba sissemaksed ja 4%\ssotsiaalmaksust lõpevad\.$/;
     expect(choice(secondPillarGroup(), 'Võtan igakuiselt')).toHaveAccessibleDescription(
       contributionsEnd,
     );

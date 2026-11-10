@@ -168,9 +168,7 @@
   }
 
   .chapter-head-text:focus {
-    outline: 3px solid $navy-blue;
-    outline-offset: 0.25rem;
-    border-radius: 0.25rem;
+    outline: none;
   }
 
   .chapter-art {

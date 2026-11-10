@@ -10,9 +10,17 @@ import {
   useMandateDeadlines,
   useMe,
   usePendingApplications,
+  useRejoinPermission,
   useSourceFunds,
 } from '../../common/apiHooks';
-import { Application, ErrorResponse, Fund, SourceFund, User } from '../../common/apiModels';
+import {
+  Application,
+  ErrorResponse,
+  Fund,
+  RejoinPermission,
+  SourceFund,
+  User,
+} from '../../common/apiModels';
 import {
   CreateMandateDto,
   PaymentRateChangeMandateDetails,
@@ -20,7 +28,7 @@ import {
 import { isSigningWithIdCard } from '../../common/authenticationManager';
 import { TulevaSecondPillarStockFund } from '../../common/utils';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
-import { FundChoice, FundPick, PaymentRateChoice } from './RejoinChoices';
+import { FundChoice, FundPick, PaymentRateChoice, TaxWinExplanation } from './RejoinChoices';
 import Checkbox from '../../common/checkbox/Checkbox';
 import { RejoinDisclaimers } from './RejoinDisclaimers';
 import { useMandateBatchSigning } from '../withdrawals/signing/useMandateBatchSigning';
@@ -28,6 +36,9 @@ import { TranslationKey } from '../../translations';
 import { flowPath, reviewPath, successPath } from './secondPillarRejoinPaths';
 import { RejoinSummary } from './SecondPillarRejoinSuccess';
 import { PendingRejoinApplication } from './PendingRejoinApplication';
+import { RejoinRefusalReason } from './RejoinRefusalReason';
+import { AlreadyContributing } from './AlreadyContributing';
+import { RejoinRefused } from './RejoinRefused';
 import { isRejoinApplication } from '../../account/ApplicationSection/ApplicationFunctions';
 import { usePageTitle } from '../../common/usePageTitle';
 
@@ -48,6 +59,9 @@ const activeSecondPillarFundIsin = (sourceFunds: SourceFund[] | undefined) =>
 
 const paymentRateThatApplies = (user: User | undefined) =>
   user?.secondPillarPaymentRates?.pending ?? user?.secondPillarPaymentRates?.current;
+
+const taxWinExplanationFor = (user: User | undefined): TaxWinExplanation =>
+  user && user.id % 2 === 1 ? 'comparedWithLowestRate' : 'greatestOnRecommendedRate';
 
 const monthOf = (date: string) => moment(date).month() + 1;
 
@@ -76,13 +90,16 @@ export const SecondPillarRejoin = () => {
   const { data: user, isLoading: isLoadingUser } = useMe();
   const { data: pendingApplications, isFetchedAfterMount: hasCheckedPendingApplications } =
     usePendingApplications();
+  const { data: rejoinPermission, isInitialLoading: isAskingPensionikeskus } =
+    useRejoinPermission();
 
   if (
     !funds ||
     !mandateDeadlines ||
     isLoadingSourceFunds ||
     isLoadingUser ||
-    !hasCheckedPendingApplications
+    !hasCheckedPendingApplications ||
+    isAskingPensionikeskus
   ) {
     return <Loader className="align-middle my-4" />;
   }
@@ -93,9 +110,13 @@ export const SecondPillarRejoin = () => {
         funds={funds.filter(isOpenForContributions)}
         activeFundIsin={activeSecondPillarFundIsin(sourceFunds)}
         paymentRateOnFile={paymentRateThatApplies(user)}
+        taxWinExplanation={taxWinExplanationFor(user)}
         contributionStartDate={mandateDeadlines.secondPillarRejoinContributionStartDate}
         cancellationDeadline={mandateDeadlines.secondPillarRejoinDeadline}
         pendingApplications={pendingApplications}
+        rejoinPermission={rejoinPermission}
+        isContributing={user?.secondPillarContributions?.contributing === true}
+        rejoinPossibleFrom={user?.secondPillarContributions?.rejoinPossibleFrom}
         isReviewing={isReviewing}
         onReview={() => history.push({ pathname: reviewPath, search })}
         onBack={() => history.goBack()}
@@ -124,9 +145,13 @@ const RejoinApplication = ({
   funds,
   activeFundIsin,
   paymentRateOnFile,
+  taxWinExplanation,
   contributionStartDate,
   cancellationDeadline,
   pendingApplications,
+  rejoinPermission,
+  isContributing,
+  rejoinPossibleFrom,
   isReviewing,
   onReview,
   onBack,
@@ -134,9 +159,13 @@ const RejoinApplication = ({
   funds: Fund[];
   activeFundIsin: string | undefined;
   paymentRateOnFile: number | undefined;
+  taxWinExplanation: TaxWinExplanation;
   contributionStartDate: string;
   cancellationDeadline: string;
   pendingApplications: Application[] | undefined;
+  rejoinPermission: RejoinPermission | undefined;
+  isContributing: boolean;
+  rejoinPossibleFrom: string | null | undefined;
   isReviewing: boolean;
   onReview: () => void;
   onBack: () => void;
@@ -205,6 +234,21 @@ const RejoinApplication = ({
 
   if (pendingRejoin && !isSubmitting) {
     return <PendingRejoinApplication application={pendingRejoin} />;
+  }
+
+  if (isContributing && !isSubmitting) {
+    return <AlreadyContributing paymentRate={paymentRateOnFile} />;
+  }
+
+  if (rejoinPermission?.permitted === false && !isSubmitting) {
+    return (
+      <RejoinRefused>
+        <RejoinRefusalReason
+          decision={rejoinPermission.decision}
+          rejoinPossibleFrom={rejoinPossibleFrom}
+        />
+      </RejoinRefused>
+    );
   }
 
   const review = () => {
@@ -343,7 +387,11 @@ const RejoinApplication = ({
         <>
           <RejoinHeader contributionStartDate={contributionStartDate} />
           <div className="d-flex flex-column gap-4 mb-5">
-            <PaymentRateChoice paymentRate={paymentRate} onChange={setPaymentRate} />
+            <PaymentRateChoice
+              paymentRate={paymentRate}
+              taxWinExplanation={taxWinExplanation}
+              onChange={setPaymentRate}
+            />
             <FundChoice
               funds={funds}
               recommendedFundIsin={RECOMMENDED_FUND_ISIN}

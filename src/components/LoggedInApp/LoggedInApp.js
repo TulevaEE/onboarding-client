@@ -31,14 +31,16 @@ import {
 import { Footer } from './footer';
 import { ContactDetailsPage } from '../contact-details/ContactDetailsPage';
 import { ContactDetailsGatekeep } from '../contact-details/ContactDetailsGatekeep';
+import { MinorRouteGuard } from './MinorRouteGuard';
 import AmlPage, { actions as amlActions } from '../aml';
 import SignUpPage from '../newUserFlow';
 import { MembershipSuccess } from '../newUserFlow/MembershipSuccess';
 import { TransactionPageThirdPillar } from '../account/TransactionSection/TransactionPageThirdPillar';
 import { ContributionPageThirdPillar } from '../contribution/ContributionPageThirdPillar';
 import Gift from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarGift';
-import ThirdPillarSuccess, {
+import {
   ThirdPillarGiftSuccess,
+  ThirdPillarPaymentSuccess,
 } from '../flows/thirdPillar/ThirdPillarSuccess';
 import { EmployerPaymentDetails } from '../flows/thirdPillar/ThirdPillarPayment/paymentDetails/EmployerPaymentDetails';
 import { PensionAccountNumberPage } from '../pensionAccountNumber/PensionAccountNumberPage';
@@ -61,6 +63,7 @@ import { SecondPillarPaymentRateSuccess } from '../flows/secondPillarPaymentRate
 import BackToPartner from '../flows/partner/BackToPartner';
 import ThirdPillarPaymentPage from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarPaymentPage';
 import { RecurringPaymentConfirmation } from '../flows/thirdPillar/ThirdPillarPayment/RecurringPaymentConfirmation';
+import { RecurringPaymentSuccess } from '../flows/thirdPillar/ThirdPillarPayment/RecurringPaymentSuccess';
 import { ThirdPillarStandingOrderPage } from '../flows/thirdPillar/ThirdPillarStandingOrder/ThirdPillarStandingOrderPage';
 import { DevSidebar } from '../dev/DevSidebar';
 import Success from '../flows/secondPillar/success';
@@ -71,6 +74,7 @@ import { DEV_MODE_PARAM, isMockModeEnabled } from '../common/requestMocker';
 import { FirstVsSecondPillarComparison } from '../comparison/FirstVsSecondPillarComparison';
 import SecondPillarTaxWin from '../secondPillarTaxWin/SecondPillarTaxWin';
 import SecondPillarGrowth from '../secondPillarGrowth/SecondPillarGrowth';
+import { SecondPillarFees } from '../secondPillarFees/SecondPillarFees';
 import { MillionaireCalculator } from '../millionaire/MillionaireCalculator';
 import { PensionCalculator } from '../pensionCalculator/PensionCalculator';
 import { FutureMe } from '../futureMe/FutureMe';
@@ -155,6 +159,7 @@ export class LoggedInApp extends PureComponent {
         />
         {this.isDevelopmentMode() && <DevSidebar />}
         <main id="main" className="pb-5">
+          <MinorRouteGuard />
           <Switch>
             <Route
               path={`${ACCOUNT_PATH}/child`}
@@ -275,8 +280,11 @@ export class LoggedInApp extends PureComponent {
               component={RecurringPaymentConfirmation}
             />
             <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />
+            {/* Coop Pank hardcodes this address as its return after a standing order: never change it */}
+            <Route path="/3rd-pillar-recurring-success" component={RecurringPaymentSuccess} />
             <Route path="/3rd-pillar-recurring-payment" component={ThirdPillarStandingOrderPage} />
-            <Route path="/3rd-pillar-success" component={ThirdPillarSuccess} />
+            {/* Coop Pank hardcodes this address as its return after a payment, and Montonio returns here: never change it */}
+            <Route path="/3rd-pillar-success" component={ThirdPillarPaymentSuccess} />
             <Route path="/3rd-pillar-gift-success" component={ThirdPillarGiftSuccess} />
             <Route path="/3rd-pillar-gift" component={Gift} />
             <Route path="/3rd-pillar-employer" component={EmployerPaymentDetails} />
@@ -427,6 +435,7 @@ export class LoggedInApp extends PureComponent {
             />
             <Route path="/2nd-pillar-tax-win" component={SecondPillarTaxWin} />
             <Route path="/2nd-pillar-growth" component={SecondPillarGrowth} />
+            <Route path="/2nd-pillar-fees" component={SecondPillarFees} />
             <Route path="/1st-vs-2nd-pillar" render={() => <FirstVsSecondPillarComparison />} />
             <Route path="/millionaire" component={MillionaireCalculator} />
             <Route path="/calculator" component={PensionCalculator} />

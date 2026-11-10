@@ -281,6 +281,27 @@ describe('Select sources step', () => {
     expect(onSelectExchangeSources).toHaveBeenCalledWith(selection, true);
   });
 
+  it('offers every fund, other managers funds too, for transfers and future contributions, as KoPS § 15 lg 2 p 1 and § 25 lg 10 require', () => {
+    const otherManagersFund = { isin: 'other', fundManager: { name: 'Other' } };
+    const tulevaFund = { isin: 'tuleva', fundManager: { name: 'Tuleva' } };
+    const targetFunds = [otherManagersFund, tulevaFund];
+    component.setProps({
+      sourceFunds: [{ isin: 'source' }],
+      targetFunds,
+      onSelectExchangeSources: jest.fn(),
+      onSelectFutureContributionsFund: jest.fn(),
+    });
+    component.find(Radio).last().simulate('select');
+    component.find('#someExistingSwitch').simulate('change', { target: { checked: true } });
+    component.find('#someFutureSwitch').simulate('change', { target: { checked: true } });
+
+    expect(component.find(ExactFundSelector).prop('targetFunds')).toEqual(targetFunds);
+    expect(component.find('select option').map((option) => option.prop('value'))).toEqual([
+      'other',
+      'tuleva',
+    ]);
+  });
+
   it('passes only Tuleva funds to the target fund selector', () => {
     const tulevaFund = { isin: 'b', fundManager: { name: 'Tuleva' } };
     const targetFunds = [{ isin: 'a' }, tulevaFund];

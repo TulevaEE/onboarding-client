@@ -541,6 +541,17 @@ export interface Transaction {
   units: number;
   nav: number | null;
   acquisitionCost?: number;
+  remitterName?: string | null;
+  paidFromOwnAccount?: boolean | null;
+}
+
+export interface ReceivedGift {
+  receivedAt: string;
+  amount: number;
+  // A bank may take hours to send the payer's name, and some never send it.
+  giverName: string | null;
+  message: string | null;
+  confirmed: boolean;
 }
 
 export type TransactionType =
@@ -571,8 +582,14 @@ export interface ThirdPillarContribution extends BaseContribution {
 
 export type Contribution = SecondPillarContribution | ThirdPillarContribution;
 
+export type RejoinDecision =
+  | 'PERMITTED'
+  | 'REFUSED_BY_PENSIONIKESKUS'
+  | 'CONTRIBUTIONS_CANNOT_RESTART';
+
 export interface RejoinPermission {
   permitted: boolean;
+  decision: RejoinDecision;
 }
 
 export interface SecondPillarAssets {

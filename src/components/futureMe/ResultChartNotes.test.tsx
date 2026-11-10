@@ -144,7 +144,7 @@ describe('ResultChart assumption', () => {
 
     expect(
       screen.getByText(
-        /Teised võimalused: vali väljamaksetele keskmisest elueast pikem periood või uus leping igal aastal\./,
+        /Teised võimalused: vali väljamaksetele keskmisest elueast pikem periood või uus avaldus igal aastal\./,
       ),
     ).toBeInTheDocument();
   });
@@ -218,7 +218,7 @@ describe('ResultChart reading guide', () => {
         ),
       ]);
       expect(guide()).toHaveTextContent(
-        'Kui sa raha välja ei võta, jääb see fondi kasvama ja kulud jäävad selle võrra katmata.',
+        'Kui sa raha välja ei võta, jääb see fondi ja kulud jäävad selle võrra katmata.',
       );
     });
 
@@ -226,7 +226,7 @@ describe('ResultChart reading guide', () => {
       renderChart(fundPensionWithSurplus);
 
       expect(steps()[0]).toBe(
-        'Riiklik pension ja igakuised väljamaksed. Väljamakse tuleb lepingu järgi, mitte kulude järgi, ja selle suurus kõigub koos fondi väärtusega.',
+        'Riiklik pension ja igakuised väljamaksed. Väljamakse tuleb avalduse järgi, mitte kulude järgi, ja selle suurus kõigub koos fondi väärtusega.',
       );
       expect(guide()).toHaveTextContent(
         /Hoius \(kiht „Hoiuselt“\): raha, mis on välja makstud, aga kuludeks veel vaja ei olnud\. Seal kaotab see väärtust 1%\saastas pärast inflatsiooni\./,
@@ -392,7 +392,7 @@ describe('ResultChart reading guide: what happens on the chart', () => {
 
     expect(changes()).toContainEqual(
       expect.stringMatching(
-        /^\d+-⁠aastaselt: II\sja\sIII\ssamba igakuiste väljamaksete lepingud lõpevad\. Nende periood \(\d+\sa\) arvutati väljamaksete alguses keskmise eluea järgi ja selleks ajaks on raha välja makstud, seepärast langeb kiht järsult\.$/,
+        /^\d+-⁠aastaselt: II\sja\sIII\ssamba igakuised väljamaksed lõpevad\. Nende periood \(\d+\sa\) arvutati väljamaksete alguses keskmise eluea järgi ja selleks ajaks on raha välja makstud, seepärast langeb kiht järsult\.$/,
       ),
     );
   });

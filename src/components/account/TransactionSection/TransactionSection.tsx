@@ -3,26 +3,34 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import sumBy from 'lodash/sumBy';
-import { useFunds, useMe, useTransactions } from '../../common/apiHooks';
+import { useFunds, useMe, useSourceFunds, useTransactions } from '../../common/apiHooks';
 import Table from '../../common/table';
 import { Euro } from '../../common/Euro';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { formatDate } from '../../common/dateFormatter';
-import { isActingAsSelf } from '../../common/utils';
+import { isActingAsSelf, isMinorActingAsSelf } from '../../common/utils';
 import { Breakpoint, TableColumn } from '../../common/table/Table';
 import { getOtherTransactionPages } from './getOtherTransactionPages';
 import { signedUnits } from '../../common/transactions';
 import { Units, UnitsRoundingNote } from '../../common/Units';
+import { payerOf } from './payer';
+import { TranslationKey } from '../../translations';
 
 export const TransactionSection: React.FunctionComponent<{
   limit?: number;
   pillar?: number | null;
   children?: React.ReactNode;
   allTransactionsPath?: string;
-}> = ({ limit, pillar, children, allTransactionsPath }) => {
+  emptyMessageId?: TranslationKey;
+}> = ({ limit, pillar, children, allTransactionsPath, emptyMessageId }) => {
   const { data: transactions = [], isLoading: transactionsLoading } = useTransactions();
   const { data: funds = [], isLoading: fundsLoading } = useFunds();
   const { data: user, isLoading: userLoading } = useMe();
+  const isMinor = isMinorActingAsSelf(user);
+  const rendersOtherPages = pillar !== undefined && !allTransactionsPath;
+  const { data: heldFunds = [] } = useSourceFunds(undefined, undefined, {
+    enabled: isMinor && rendersOtherPages,
+  });
 
   if (
     transactionsLoading ||
@@ -55,7 +63,16 @@ export const TransactionSection: React.FunctionComponent<{
     fundTransactions = fundTransactions.filter((transaction) => transaction.pillar === pillar);
   }
 
-  const otherPages = getOtherTransactionPages(pillar, funds, isActingAsSelf(user));
+  const showsPayer = isMinor && pillar === null;
+  const minorsFundsWithPages = [
+    ...funds.filter((fund) => fund.pillar === null),
+    ...heldFunds.filter((fund) => fund.pillar === 3),
+  ];
+  const otherPages = getOtherTransactionPages(
+    pillar,
+    isMinor ? minorsFundsWithPages : funds,
+    isActingAsSelf(user),
+  );
 
   const amountSum = sumBy(fundTransactions, (transaction) => transaction.amount);
 
@@ -102,7 +119,17 @@ export const TransactionSection: React.FunctionComponent<{
       dataIndex: 'fund',
       width: 100,
       align: 'left',
+      ...(showsPayer && { hideOnBreakpoint: ['xs', 'sm'] as Breakpoint[] }),
     },
+    ...(showsPayer
+      ? [
+          {
+            title: <FormattedMessage id="transactions.columns.payer.title" />,
+            dataIndex: 'payer',
+            align: 'left' as const,
+          },
+        ]
+      : []),
     ...unitsColumn,
     {
       title: <FormattedMessage id="transactions.columns.amount.title" />,
@@ -118,6 +145,7 @@ export const TransactionSection: React.FunctionComponent<{
       const previousYear = new Date(previousTransaction?.time || '9999-12-31').getUTCFullYear();
       const currentYear = new Date(transaction.time).getUTCFullYear();
       const date = formatDate(transaction.time);
+      const payer = showsPayer && payerOf(transaction);
       return [
         ...(!limit && previousYear > currentYear
           ? [
@@ -143,6 +171,7 @@ export const TransactionSection: React.FunctionComponent<{
               <span className="text-nowrap">{date}</span>
             ),
           fund: <span>{transaction.fundName}</span>,
+          ...(payer && { payer: <span className="text-sm-nowrap">{payer}</span> }),
           ...(!limit &&
             transaction.units != null && {
               units: <Units units={signedUnits(transaction)} />,
@@ -158,12 +187,21 @@ export const TransactionSection: React.FunctionComponent<{
   }
 
   if (!dataSource.length && limit) {
-    return <></>;
+    return emptyMessageId ? (
+      <section className="mt-5">
+        <h2 className="mt-5 mb-4">{children || <FormattedMessage id="transactions.title" />}</h2>
+        <p className="text-body-secondary">
+          <FormattedMessage id={emptyMessageId} />
+        </p>
+      </section>
+    ) : (
+      <></>
+    );
   }
 
   return (
     <section className="mt-5">
-      {pillar === undefined ? (
+      {!rendersOtherPages ? (
         <div className="mt-5 mb-4 d-flex flex-wrap column-gap-3 row-gap-2 align-items-baseline justify-content-between">
           <h2 className="m-0">{children || <FormattedMessage id="transactions.title" />}</h2>
           <Link className="icon-link" to={allTransactionsPath ?? '/2nd-pillar-transactions'}>

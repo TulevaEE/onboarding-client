@@ -114,9 +114,9 @@ describe('Result step: rules', () => {
       within(payoutAtSixty as HTMLElement).getByRole('radio', { name: 'Võtan igakuiselt' }),
     );
 
-    const contract = itemTitled(ruleList(), /^Igakuiste väljamaksete leping/);
+    const contract = itemTitled(ruleList(), /^Igakuiste väljamaksete avaldus/);
     expect(contract).toHaveTextContent(
-      /II samba igakuiste väljamaksete leping: Uus leping igal aastal/,
+      /II samba igakuiste väljamaksete avaldus: Uus avaldus igal aastal/,
     );
   });
 });

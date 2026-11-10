@@ -1,24 +1,40 @@
 import React from 'react';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { IntlProvider } from 'react-intl';
 import { TransactionSection } from './TransactionSection';
-import { contribution, subtraction, transferIn, transferOut } from './fixtures';
-import { fundsBackend, userBackend } from '../../../test/backend';
+import {
+  contribution,
+  depositFromMinorsOwnAccount,
+  depositFromParent,
+  subtraction,
+  transferIn,
+  transferOut,
+} from './fixtures';
+import {
+  fundsBackend,
+  neverAnswer,
+  pensionAccountStatementBackend,
+  userBackend,
+} from '../../../test/backend';
+import { tulevaThirdPillarBalance } from '../statusBox/fixtures';
 import { initializeConfiguration } from '../../config/config';
 import { getAuthentication } from '../../common/authenticationManager';
 import { anAuthenticationManager } from '../../common/authenticationManagerFixture';
+import { mockMinor } from '../../../test/backend-responses';
 
 jest.mock('react-redux');
 
 describe('Transaction section', () => {
   const server = setupServer();
 
-  function initializeComponent(props: { limit?: number; pillar?: number | null } = {}) {
+  function initializeComponent(
+    props: { limit?: number; pillar?: number | null; allTransactionsPath?: string } = {},
+  ) {
     render(
       <IntlProvider
         locale="en"
@@ -239,6 +255,214 @@ describe('Transaction section', () => {
     expect(await screen.findByText('transactions.title')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'transactions.seeAll.2' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'transactions.seeAll.3' })).not.toBeInTheDocument();
+  });
+
+  describe('for someone under 18 looking at their own account', () => {
+    beforeEach(() => {
+      userBackend(server, mockMinor);
+      pensionAccountStatementBackend(server, []);
+    });
+
+    it('names the parent who paid a deposit', async () => {
+      mockTransactions([depositFromParent]);
+      initializeComponent({ pillar: null });
+      expect(
+        await screen.findByRole('columnheader', { name: 'transactions.columns.payer.title' }),
+      ).toBeInTheDocument();
+      expect(screen.getByText('Kati Kask')).toBeInTheDocument();
+    });
+
+    it('says a deposit came from their own bank account rather than naming them', async () => {
+      mockTransactions([depositFromMinorsOwnAccount]);
+      initializeComponent({ pillar: null });
+      expect(await screen.findByText('transactions.payer.ownAccount')).toBeInTheDocument();
+      expect(screen.queryByText('Mari Maasikas')).not.toBeInTheDocument();
+    });
+
+    it('leaves the payer empty when the bank did not say who paid', async () => {
+      mockTransactions([
+        { ...depositFromParent, remitterName: undefined, paidFromOwnAccount: undefined },
+      ]);
+      initializeComponent({ pillar: null });
+      const payerHeader = await screen.findByRole('columnheader', {
+        name: 'transactions.columns.payer.title',
+      });
+      const payerColumn = screen.getAllByRole('columnheader').indexOf(payerHeader);
+      const depositRow = screen.getByRole('row', { name: /Tuleva Täiendav Kogumisfond/ });
+      expect(within(depositRow).getAllByRole('cell')[payerColumn]).toBeEmptyDOMElement();
+    });
+
+    it.each(['SUBTRACTION', 'TRANSFER_OUT', 'TRANSFER_IN'])(
+      'names no payer on a %s, which is not a payment into the fund',
+      async (type) => {
+        mockTransactions([{ ...depositFromParent, type, amount: -20 }]);
+        initializeComponent({ pillar: null });
+        expect(
+          await screen.findByRole('columnheader', { name: 'transactions.columns.payer.title' }),
+        ).toBeInTheDocument();
+        expect(screen.queryByText('Kati Kask')).not.toBeInTheDocument();
+      },
+    );
+
+    it('keeps who paid on one line on screens wider than a phone', async () => {
+      mockTransactions([depositFromMinorsOwnAccount]);
+      initializeComponent({ pillar: null });
+      expect(await screen.findByText('transactions.payer.ownAccount')).toHaveClass(
+        'text-sm-nowrap',
+      );
+    });
+
+    it('names the payer in the latest transactions too', async () => {
+      mockTransactions([depositFromParent]);
+      initializeComponent({ limit: 3, pillar: null });
+      expect(await screen.findByText('Kati Kask')).toBeInTheDocument();
+    });
+
+    it('shows the date, who paid and the amount of every savings fund transaction on phones', async () => {
+      mockTransactions([depositFromParent, depositFromMinorsOwnAccount]);
+      initializeComponent({ pillar: null });
+      expect(await screen.findByText('Kati Kask')).toBeInTheDocument();
+      const columnsOnPhones = screen
+        .getAllByRole('columnheader')
+        .filter((header) => !header.classList.contains('d-none'))
+        .map((header) => header.textContent);
+      expect(columnsOnPhones).toEqual([
+        'transactions.columns.date.title',
+        'transactions.columns.payer.title',
+        'transactions.columns.amount.title',
+      ]);
+    });
+
+    it('hides the fund on phones, where every row is the same savings fund', async () => {
+      mockTransactions([depositFromParent]);
+      initializeComponent({ limit: 3, pillar: null });
+      expect(
+        await screen.findByRole('columnheader', { name: 'transactions.columns.fund.title' }),
+      ).toHaveClass('d-none', 'd-md-table-cell');
+    });
+
+    it('leaves their III pillar listing as it is for everyone else', async () => {
+      mockTransactions([subtraction]);
+      initializeComponent({ pillar: 3 });
+      expect(
+        await screen.findByRole('columnheader', { name: 'transactions.columns.fund.title' }),
+      ).not.toHaveClass('d-none');
+      expect(
+        screen.queryByRole('columnheader', { name: 'transactions.columns.payer.title' }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows their latest transactions without asking for their pension holdings', async () => {
+      let statementRequests = 0;
+      server.use(
+        rest.get('http://localhost/v1/pension-account-statement', () => {
+          statementRequests += 1;
+          return neverAnswer();
+        }),
+      );
+      mockTransactions([depositFromParent]);
+      initializeComponent({
+        limit: 3,
+        pillar: null,
+        allTransactionsPath: '/savings-fund-transactions',
+      });
+      expect(await screen.findByText('Kati Kask')).toBeInTheDocument();
+      expect(statementRequests).toBe(0);
+    });
+
+    it('shows the savings fund rows while their pension holdings are still loading', async () => {
+      server.use(rest.get('http://localhost/v1/pension-account-statement', neverAnswer));
+      mockTransactions([depositFromParent]);
+      initializeComponent({ pillar: null });
+      expect(await screen.findByText('Kati Kask')).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'transactions.seeAll.3' })).not.toBeInTheDocument();
+    });
+
+    it('shows the savings fund rows without a III pillar link when their pension holdings fail to load', async () => {
+      server.use(
+        rest.get('http://localhost/v1/pension-account-statement', (_req, res, ctx) =>
+          res(ctx.status(500), ctx.json({ errors: [] })),
+        ),
+      );
+      mockTransactions([depositFromParent]);
+      initializeComponent({ pillar: null });
+      expect(await screen.findByText('Kati Kask')).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'transactions.seeAll.3' })).not.toBeInTheDocument();
+    });
+
+    it('links the savings fund page to their III pillar transactions when they hold a III pillar fund', async () => {
+      pensionAccountStatementBackend(server, [tulevaThirdPillarBalance]);
+      mockTransactions([depositFromParent]);
+      initializeComponent({ pillar: null });
+      expect(await screen.findByRole('link', { name: 'transactions.seeAll.3' })).toHaveAttribute(
+        'href',
+        '/3rd-pillar-transactions',
+      );
+      expect(screen.queryByRole('link', { name: 'transactions.seeAll.2' })).not.toBeInTheDocument();
+    });
+
+    it('offers no II and III pillar links on the savings fund page', async () => {
+      mockTransactions([depositFromParent]);
+      initializeComponent({ pillar: null });
+      expect(await screen.findByText('Kati Kask')).toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'transactions.seeAll.2' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('link', { name: 'transactions.seeAll.3' })).not.toBeInTheDocument();
+    });
+  });
+
+  it("does not ask for an adult's pension holdings on the savings fund page", async () => {
+    let statementRequests = 0;
+    server.use(
+      rest.get('http://localhost/v1/pension-account-statement', (_req, res, ctx) => {
+        statementRequests += 1;
+        return res(ctx.json([]));
+      }),
+    );
+    mockTransactions([depositFromParent]);
+    initializeComponent({ pillar: null });
+    expect(await screen.findByRole('link', { name: 'transactions.seeAll.3' })).toBeInTheDocument();
+    expect(statementRequests).toBe(0);
+  });
+
+  it('does not name who paid to an adult', async () => {
+    mockTransactions([depositFromParent]);
+    initializeComponent({ pillar: null });
+    expect(await screen.findByText('transactions.title')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('columnheader', { name: 'transactions.columns.payer.title' }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Kati Kask')).not.toBeInTheDocument();
+  });
+
+  it("does not name who paid to a parent looking at their child's account", async () => {
+    userBackend(server, { role: { type: 'PERSON', code: mockMinor.personalCode, name: 'Mari' } });
+    mockTransactions([depositFromParent]);
+    initializeComponent({ pillar: null });
+    expect(await screen.findByText('transactions.title')).toBeInTheDocument();
+    expect(screen.queryByText('Kati Kask')).not.toBeInTheDocument();
+  });
+
+  it('keeps the fund on phones for an adult', async () => {
+    mockTransactions([depositFromParent]);
+    initializeComponent({ limit: 3 });
+    expect(
+      await screen.findByRole('columnheader', { name: 'transactions.columns.fund.title' }),
+    ).not.toHaveClass('d-none');
+  });
+
+  it("links a single pillar's latest transactions to the page with all of them", async () => {
+    mockTransactions([depositFromParent, contribution]);
+    initializeComponent({
+      limit: 3,
+      pillar: null,
+      allTransactionsPath: '/savings-fund-transactions',
+    });
+    expect(await screen.findByRole('link', { name: 'transactions.seeAll' })).toHaveAttribute(
+      'href',
+      '/savings-fund-transactions',
+    );
+    expect(screen.queryByRole('link', { name: 'transactions.seeAll.2' })).not.toBeInTheDocument();
+    expect(screen.getAllByRole('row')).toHaveLength(2);
   });
 
   function mockTransactions(transactions: any[]) {

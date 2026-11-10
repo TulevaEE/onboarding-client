@@ -5,6 +5,7 @@ import { usePageTitle } from '../../common/usePageTitle';
 import SelectSources from './selectSources';
 import ConfirmMandate from './confirmMandate';
 import Success from './success';
+import { SelectSourcesTitle } from './SelectSourcesTitle';
 import Flow from '../common/Flow'; // eslint-disable-line import/no-named-as-default
 import AddressStep from '../common/AddressStep';
 
@@ -13,7 +14,7 @@ const steps = [
   {
     path: 'select-sources',
     Component: () => <SelectSources nextPath={`${flowPath}/address`} />,
-    title: <FormattedMessage id="steps.select-sources" />,
+    title: <SelectSourcesTitle />,
   },
   {
     path: 'address',

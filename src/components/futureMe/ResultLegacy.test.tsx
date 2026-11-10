@@ -130,7 +130,7 @@ describe('Result legacy card', () => {
       userEvent.click(screen.getByRole('radio', { name: 'Pärandan lähedastele' }));
 
       expect(
-        screen.getByText(/^Lähedastele jääb umbes [\d\s]+ €\. Pärandamiseks tee testament/),
+        screen.getByText(/^Lähedastele jääb umbes [\d\s]+ €\. See läheb sinu pärijatele/),
       ).toBeInTheDocument();
       expect(screen.queryByText('Vali üks variant.')).not.toBeInTheDocument();
     });
@@ -238,7 +238,7 @@ describe('Result legacy card', () => {
         screen.getByText('Või proovi mõnda neist ja vaata, kuidas tulemus muutub.'),
       ).toBeInTheDocument();
 
-      userEvent.click(screen.getByRole('button', { name: /Jätka II\ssamba kasvatamist/ }));
+      userEvent.click(screen.getByRole('button', { name: /Jätka II\ssambas kogumist/ }));
 
       expect(screen.queryByText('Ära võta II sammast korraga välja.')).not.toBeInTheDocument();
     });
@@ -270,7 +270,7 @@ describe('Result legacy card', () => {
       openResult();
 
       expect(secondPillarTip()).toHaveTextContent(
-        /Fondis hoiab see väärtust \(sinu valitud tootlus 2%\saastas on pärast inflatsiooni 0%\)\./,
+        /Arvutuses hoiab see fondis väärtust \(sinu valitud tootlus 2%\saastas on pärast inflatsiooni 0%\)\./,
       );
     });
 
@@ -282,7 +282,7 @@ describe('Result legacy card', () => {
       openResult();
 
       expect(secondPillarTip()).toHaveTextContent(
-        /Fondis kasvab see edasi \(sinu valitud tootlus 4%\saastas on pärast inflatsiooni 1,96%\)\./,
+        /Arvutuses kasvab see fondis edasi \(sinu valitud tootlus 4%\saastas on pärast inflatsiooni 1,96%\)\./,
       );
     });
 
@@ -293,7 +293,7 @@ describe('Result legacy card', () => {
       takeSecondPillarAsLumpSum();
       openResult();
 
-      userEvent.click(screen.getByRole('button', { name: /Jätka II\ssamba kasvatamist/ }));
+      userEvent.click(screen.getByRole('button', { name: /Jätka II\ssambas kogumist/ }));
 
       expect(shortfallHeading()).toHaveFocus();
     });

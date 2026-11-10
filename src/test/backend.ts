@@ -24,6 +24,8 @@ import {
   CapitalType,
   SecondPillarAssets,
   MandateDeadlines,
+  RejoinDecision,
+  ReceivedGift,
 } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { parseJwt } from '../components/common/jwt';
@@ -157,14 +159,17 @@ export const mandateBatchBackend = (
 
 export function rejoinPermissionBackend(
   server: SetupServerApi,
-  { permitted }: { permitted: boolean },
+  {
+    permitted,
+    decision = permitted ? 'PERMITTED' : 'REFUSED_BY_PENSIONIKESKUS',
+  }: { permitted: boolean; decision?: RejoinDecision },
 ): void {
   server.use(
     rest.get('http://localhost/v1/rejoin-permission', (req, res, ctx) => {
       if (req.headers.get('Authorization') !== 'Bearer an access token') {
         return res(ctx.status(401), ctx.json(authErrorResponse));
       }
-      return res(ctx.status(200), ctx.json({ permitted }));
+      return res(ctx.status(200), ctx.json({ permitted, decision }));
     }),
   );
 }
@@ -1501,6 +1506,26 @@ export function recurringPaymentConfirmationBackend(
   return () => confirmations;
 }
 
+export function thirdPillarPaymentReminderBackend(server: SetupServerApi): () => number {
+  let cancellations = 0;
+  server.use(
+    rest.post(
+      'http://localhost/v1/third-pillar-payment-reminders/cancellations',
+      (req, res, ctx) => {
+        cancellations += 1;
+        return res(ctx.json({ cancelledCount: 1 }));
+      },
+    ),
+  );
+  return () => cancellations;
+}
+
+export function myGiftsBackend(server: SetupServerApi, gifts: ReceivedGift[] = []): void {
+  server.use(
+    rest.get('http://localhost/v1/savings-fund/gifts', (req, res, ctx) => res(ctx.json(gifts))),
+  );
+}
+
 export function trackedEventsBackend(server: SetupServerApi): void {
   server.use(rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))));
 }
@@ -1638,6 +1663,8 @@ const TEST_BACKENDS = {
   nudge: nudgeBackend,
   paymentRateRedirect: paymentRateRedirectBackend,
   recurringPaymentConfirmation: recurringPaymentConfirmationBackend,
+  thirdPillarPaymentReminder: thirdPillarPaymentReminderBackend,
+  myGifts: myGiftsBackend,
   tkfDocuments: tkfDocumentsBackend,
 } as const;
 

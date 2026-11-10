@@ -228,6 +228,7 @@ describe('When a user is making a third pillar payment', () => {
     expect(
       await screen.findByRole('heading', { name: 'Recurring payment set up' }),
     ).toBeInTheDocument();
+    expect(history.location.pathname).toBe('/3rd-pillar-recurring-success');
     expect(
       screen.getByText(
         'From now on you save into your third pillar automatically, without having to remember it.',
@@ -269,6 +270,7 @@ describe('When a user is making a third pillar payment', () => {
     userEvent.click(await confirmDoneLink());
 
     expect(await screen.findByRole('heading', { name: 'Payment done' })).toBeInTheDocument();
+    expect(history.location.pathname).toBe('/3rd-pillar-success');
     expect(
       screen.getByText(
         'Only 30% of people in Estonia save in the third pillar. You are one of them, and you are deliberately putting money aside for your future.',

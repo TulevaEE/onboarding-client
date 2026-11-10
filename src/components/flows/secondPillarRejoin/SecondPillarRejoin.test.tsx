@@ -14,6 +14,7 @@ import {
   mandateDeadlinesBackend,
   pensionAccountStatementBackend,
   userBackend,
+  userConversionBackend,
   rejoinPermissionBackend,
   smartIdMandateBatchSigningBackend,
   useTestBackends,
@@ -23,6 +24,7 @@ import { CreateMandateBatchDto } from '../../common/apiModels/withdrawals';
 import { FundBalance, MandateDeadlines } from '../../common/apiModels';
 import LoggedInApp from '../../LoggedInApp';
 import { rejoin } from '../../account/ApplicationSection/fixtures';
+import { PaymentRate } from '../secondPillarPaymentRate/types';
 
 describe('When an eligible person rejoins the II pillar', () => {
   const server = setupServer();
@@ -114,7 +116,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     await renderAt('/2nd-pillar-rejoin');
 
     expect(within(paymentRateRow()).getAllByRole('radio')).toEqual(
-      radiosNamed([/^2% of gross salary/i, /^4% of gross salary/i, /^6% of gross salary/i]),
+      radiosNamed([/^6% of gross salary/i, /^4% of gross salary/i, /^2% of gross salary/i]),
     );
     expectChosenRate(6);
     expect(paymentRateRow()).not.toHaveTextContent('salary:');
@@ -127,6 +129,54 @@ describe('When an eligible person rejoins the II pillar', () => {
     );
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Change' })).not.toBeInTheDocument();
+  });
+
+  test('says the contribution size can be changed later, every year', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(paymentRateRow()).toHaveTextContent(
+      'You can change your contribution size later, every year.',
+    );
+  });
+
+  test('compares the income tax win across the options for people with an odd user id', async () => {
+    userBackend(server, { id: 7 });
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(within(paymentRateRow()).getAllByRole('radio')).toEqual(
+      radiosNamed([
+        /^6% of gross salary.*3×\slarger income tax win$/i,
+        /^4% of gross salary.*2×\slarger income tax win$/i,
+        /^2% of gross salary.*Smallest income tax win$/i,
+      ]),
+    );
+    expect(paymentRateRow()).not.toHaveTextContent('greatest tax benefit');
+  });
+
+  test('keeps the greatest tax benefit line on 6% alone for people with an even user id', async () => {
+    userBackend(server, { id: 8 });
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(within(paymentRateRow()).getByRole('radio', { checked: true })).toHaveAccessibleName(
+      /greatest tax benefit/,
+    );
+    expect(paymentRateRow()).not.toHaveTextContent('income tax win');
+  });
+
+  test('words the income tax comparison and the yearly change in Estonian without the word rate', async () => {
+    userBackend(server, { id: 7 });
+    render('/2nd-pillar-rejoin', new QueryClient(), 'et');
+    const contribution = await screen.findByRole('group', { name: 'Sinu panus' });
+
+    expect(contribution).toHaveTextContent(/3×\ssuurem tulumaksuvõit/);
+    expect(contribution).toHaveTextContent(/2×\ssuurem tulumaksuvõit/);
+    expect(contribution).toHaveTextContent('Väikseim tulumaksuvõit');
+    expect(contribution).toHaveTextContent(
+      /Riik lisab sotsiaalmaksu arvelt\s4%, kokku\skogud\s10%/,
+    );
+    expect(contribution).not.toHaveTextContent('Sina panustad');
+    expect(contribution).toHaveTextContent('Sissemakse suurust saad hiljem igal aastal muuta.');
+    expect(contribution).not.toHaveTextContent(/määr/i);
   });
 
   test('names the page in the browser tab', async () => {
@@ -228,14 +278,15 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(screen.getByRole('link', { name: 'Cancel' })).toHaveAttribute('href', '/account');
   });
 
-  test('explains what each payment rate means, in the words of the payment rate page', async () => {
+  test('explains what each contribution size adds up to, with the state adding 4% on top', async () => {
+    userBackend(server, { id: 8 });
     await renderAt('/2nd-pillar-rejoin');
 
     expect(screen.getByRole('radio', { name: /^2% of gross salary/i })).toHaveAccessibleName(
-      /^2% of gross salary\s*You contribute 2% and the state\s4%, totaling\s6%$/i,
+      /^2% of gross salary\s*The state adds\s4% from social tax, totaling\s6%$/i,
     );
     expect(screen.getByRole('radio', { name: /^6% of gross salary/i })).toHaveAccessibleName(
-      /^6% of gross salary\s*Recommended\s*You contribute 6% and the state\s4%, totaling\s10%.*greatest tax benefit/i,
+      /^6% of gross salary\s*Recommended\s*The state adds\s4% from social tax, totaling\s10%.*greatest tax benefit/i,
     );
     expect(within(paymentRateRow()).queryByLabelText('Gross salary')).not.toBeInTheDocument();
   });
@@ -828,11 +879,113 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(mandateBatches.created).toEqual([]);
   });
 
-  test('shows the application to everyone, and checks with Pensionikeskus only on Sign', async () => {
+  test('tells a person Pensionikeskus refuses before they fill in or sign anything', async () => {
     rejoinPermissionBackend(server, { permitted: false });
-    await renderAt('/2nd-pillar-rejoin');
+    render('/2nd-pillar-rejoin');
 
-    expectChosenRate(6);
+    expect(
+      await screen.findByText(
+        'Pensionikeskus does not let you rejoin the II pillar at the moment.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /sign/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Back to account page' })).toHaveAttribute(
+      'href',
+      '/account',
+    );
+    expect(mandateBatches.created).toEqual([]);
+  });
+
+  test('tells a person whose contributions cannot restart why they cannot rejoin', async () => {
+    rejoinPermissionBackend(server, {
+      permitted: false,
+      decision: 'CONTRIBUTIONS_CANNOT_RESTART',
+    });
+    render('/2nd-pillar-rejoin');
+
+    const reason = await screen.findByText(
+      /You can only rejoin if you ended your contributions by applying to withdraw your money or to stop payments\. After a fund pension, a pension contract or a lump sum, contributions cannot be restarted\./,
+    );
+    expect(within(reason).getByRole('link', { name: 'tuleva@tuleva.ee' })).toHaveAttribute(
+      'href',
+      'mailto:tuleva@tuleva.ee',
+    );
+    expect(within(reason).getByRole('link', { name: /^644\s5100$/ })).toHaveAttribute(
+      'href',
+      'tel:+3726445100',
+    );
+    expect(screen.queryByRole('button', { name: /sign/i })).not.toBeInTheDocument();
+  });
+
+  describe('for a person who is still contributing', () => {
+    const stillContributing = (current: PaymentRate, pending: PaymentRate | null = null) =>
+      userBackend(server, {
+        secondPillarContributions: {
+          contributing: true,
+          restartDate: null,
+          rejoinPossibleFrom: null,
+        },
+        secondPillarPaymentRates: { current, pending },
+      });
+
+    const alreadySaving =
+      "You are already saving in the II pillar, so you don't need to apply to rejoin.";
+
+    test('says no application is needed and offers to bring the II pillar to Tuleva', async () => {
+      stillContributing(2);
+      userConversionBackend(server, { selectionComplete: false, transfersComplete: false });
+      render('/2nd-pillar-rejoin');
+
+      expect(await screen.findByText(alreadySaving)).toBeInTheDocument();
+      expect(await screen.findByRole('link', { name: 'Choose Tuleva' })).toHaveAttribute(
+        'href',
+        '/2nd-pillar-flow',
+      );
+      expect(screen.queryByRole('button', { name: /sign/i })).not.toBeInTheDocument();
+      expect(mandateBatches.created).toEqual([]);
+    });
+
+    test('offers to raise the contribution once the II pillar is in Tuleva', async () => {
+      stillContributing(2);
+      userConversionBackend(server, { selectionComplete: true, transfersComplete: true });
+      render('/2nd-pillar-rejoin');
+
+      expect(await screen.findByRole('link', { name: 'Increase contribution' })).toHaveAttribute(
+        'href',
+        '/2nd-pillar-payment-rate',
+      );
+    });
+
+    test('counts a pending raise to 6% and sends them back to the account', async () => {
+      stillContributing(2, 6);
+      userConversionBackend(server, { selectionComplete: true, transfersComplete: true });
+      render('/2nd-pillar-rejoin');
+
+      expect(await screen.findByRole('link', { name: 'Back to account page' })).toHaveAttribute(
+        'href',
+        '/account',
+      );
+      expect(screen.queryByRole('link', { name: 'Increase contribution' })).not.toBeInTheDocument();
+    });
+  });
+
+  test('tells a person who must wait from which day they can rejoin', async () => {
+    rejoinPermissionBackend(server, { permitted: false });
+    userBackend(server, {
+      secondPillarContributions: {
+        contributing: false,
+        restartDate: null,
+        rejoinPossibleFrom: '2099-12-01',
+      },
+    });
+    render('/2nd-pillar-rejoin');
+
+    expect(await screen.findByText('You can rejoin from December 1, 2099.')).toBeInTheDocument();
+  });
+
+  test('stops at Sign when Pensionikeskus refuses after the application was opened', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+    rejoinPermissionBackend(server, { permitted: false });
 
     signApplications();
 

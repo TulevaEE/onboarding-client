@@ -9,6 +9,38 @@ import ErrorMessage from './ErrorMessage';
 const MESSAGES = { en: translations, et: estonianTranslations };
 
 describe('ErrorMessage', () => {
+  it('explains a rejoin Pensionikeskus refused for want of a stop application, with ways to reach us and no raw detail', () => {
+    render(
+      <IntlProvider locale="en" messages={translations}>
+        <ErrorMessage
+          errors={{
+            errors: [
+              {
+                code: 'mandate.processing.error.epis.contributions.not.stopped.by.application',
+                message: 'Contributions were not stopped by an application',
+              },
+            ],
+          }}
+        />
+      </IntlProvider>,
+    );
+
+    expect(
+      screen.getByText(
+        /You can only rejoin if you ended your contributions by applying to withdraw your money or to stop payments\. After a fund pension, a pension contract or a lump sum, contributions cannot be restarted\./,
+      ),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Contributions were not stopped/)).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'tuleva@tuleva.ee' })).toHaveAttribute(
+      'href',
+      'mailto:tuleva@tuleva.ee',
+    );
+    expect(screen.getByRole('link', { name: /^644\s5100$/ })).toHaveAttribute(
+      'href',
+      'tel:+3726445100',
+    );
+  });
+
   it('links a missing ID software to its installation instructions', () => {
     render(
       <IntlProvider locale="en" messages={translations}>

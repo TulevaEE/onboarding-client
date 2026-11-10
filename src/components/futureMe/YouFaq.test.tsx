@@ -52,11 +52,23 @@ describe('You step FAQ', () => {
   it('keeps every answer closed until the question is opened', () => {
     renderYouStep();
 
-    expect(within(faq()).queryByText(/riigi tagatud igakuine summa/)).not.toBeVisible();
+    expect(within(faq()).queryByText(/riigi makstav igakuine summa/)).not.toBeVisible();
 
     userEvent.click(within(faq()).getByText(/Mis on riiklik pension ning II/));
 
-    expect(within(faq()).getByText(/riigi tagatud igakuine summa/)).toBeVisible();
+    expect(within(faq()).getByText(/riigi makstav igakuine summa/)).toBeVisible();
+  });
+
+  it('links the social tax effect on the I pillar pension to the explanation', () => {
+    renderYouStep();
+
+    userEvent.click(within(faq()).getByText(/Mis on riiklik pension ning II/));
+
+    expect(within(faq()).getByText(/Sotsiaalmaksu osa vähendab veidi sinu/)).toBeVisible();
+    expect(within(faq()).getByRole('link', { name: /I\ssamba pensioni/ })).toHaveAttribute(
+      'href',
+      'https://tuleva.ee/sotsmaks',
+    );
   });
 
   it('tells which pension is inherited and which is not', () => {
