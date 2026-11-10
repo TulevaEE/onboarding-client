@@ -36,7 +36,7 @@ export const TriggerProcedure: React.FC = () => {
           if (!token) {
             throw new Error('Failed to receive accessToken');
           }
-          rememberPartner(provider);
+          rememberPartner(provider, query.redirectUri);
 
           dispatch({
             type: MOBILE_AUTHENTICATION_SUCCESS,

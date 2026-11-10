@@ -4,6 +4,7 @@ import { getAuthentication, isLoggedInThroughPartner } from '../common/authentic
 import { withSessionStorage } from '../common/siteStorage';
 
 export const EXTERNAL_AUTHENTICATOR_PROVIDER = 'EXTERNAL_AUTHENTICATOR_PROVIDER';
+export const INTERNET_BANK_FROM_LINK = 'EXTERNAL_AUTHENTICATOR_INTERNET_BANK';
 
 enum ExternalProvider {
   COOP_PANK = 'COOP_PANK',
@@ -62,11 +63,33 @@ const getPath = (provider: ExternalProvider, procedure: Procedure): string => {
   throw new Error(`Invalid procedure for provider(${provider}): ${procedure}`);
 };
 
-export const rememberPartner = (provider: ExternalProvider): void =>
-  withSessionStorage(
-    (storage) => storage.setItem(EXTERNAL_AUTHENTICATOR_PROVIDER, provider),
-    undefined,
-  );
+const configuredInternetBank = (provider: ExternalProvider): string | null =>
+  config.get(INTERNET_BANK_CONFIG_KEY[provider]);
+
+const httpsAddress = (value: unknown): string | null => {
+  if (typeof value !== 'string') {
+    return null;
+  }
+  try {
+    const address = new URL(value);
+    return address.protocol === 'https:' ? address.href : null;
+  } catch {
+    return null;
+  }
+};
+
+export const rememberPartner = (provider: ExternalProvider, internetBankFromLink?: unknown): void =>
+  withSessionStorage((storage) => {
+    storage.setItem(EXTERNAL_AUTHENTICATOR_PROVIDER, provider);
+    const fallbackInternetBank = configuredInternetBank(provider)
+      ? null
+      : httpsAddress(internetBankFromLink);
+    if (fallbackInternetBank) {
+      storage.setItem(INTERNET_BANK_FROM_LINK, fallbackInternetBank);
+    } else {
+      storage.removeItem(INTERNET_BANK_FROM_LINK);
+    }
+  }, undefined);
 
 const rememberedPartner = (): ExternalProvider | null => {
   const provider = withSessionStorage(
@@ -76,16 +99,26 @@ const rememberedPartner = (): ExternalProvider | null => {
   return isExternalProvider(provider) ? provider : null;
 };
 
+const rememberedInternetBankFromLink = (): string | null =>
+  withSessionStorage((storage) => storage.getItem(INTERNET_BANK_FROM_LINK), null);
+
+const partnerInSession = (): ExternalProvider | null =>
+  isLoggedInThroughPartner() ? rememberedPartner() : null;
+
 export const partnerInternetBank = (): string | null => {
-  const provider = rememberedPartner();
-  return provider && isLoggedInThroughPartner()
-    ? config.get(INTERNET_BANK_CONFIG_KEY[provider])
-    : null;
+  const provider = partnerInSession();
+  if (!provider) {
+    return null;
+  }
+  return configuredInternetBank(provider) ?? rememberedInternetBankFromLink();
 };
 
 export const isInPartnerApp = (): boolean =>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Boolean((window as any).ReactNativeWebView);
+
+export const isInPartnerSession = (): boolean =>
+  partnerInSession() !== null && (isInPartnerApp() || partnerInternetBank() !== null);
 
 const internetBankAddress = (internetBank: string, paymentLinkUrl: string): string => {
   const destination = new URL(paymentLinkUrl, internetBank);
@@ -96,8 +129,6 @@ const internetBankAddress = (internetBank: string, paymentLinkUrl: string): stri
   }
   return destination.href;
 };
-
-export const isInPartnerSession = (): boolean => partnerInternetBank() !== null;
 
 type PartnerPaymentType = 'SINGLE' | 'RECURRING';
 
@@ -111,8 +142,7 @@ export const handOverPaymentToPartner = async (
   personalCode: string,
   amount?: number,
 ): Promise<void> => {
-  const internetBank = partnerInternetBank();
-  if (!internetBank) {
+  if (!isInPartnerSession()) {
     throw new Error('unexpected state: no partner session');
   }
   if (!getAuthentication().isAuthenticated()) {
@@ -137,6 +167,10 @@ export const handOverPaymentToPartner = async (
       time: new Date().toISOString(),
     });
   } else {
+    const internetBank = partnerInternetBank();
+    if (!internetBank) {
+      throw new Error('unexpected state: no internet bank address for the partner');
+    }
     const paymentLink = await getPaymentLink({
       type: paymentType,
       paymentChannel: 'COOP_WEB',

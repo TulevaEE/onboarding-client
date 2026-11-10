@@ -4,8 +4,9 @@ import { restoreAuthenticationFromSession } from '../common/authenticationManage
 const BASE_CONFIG = {
   clientCredentialsAccessToken: undefined,
   language: 'et',
-  coopInternetBankUrl: 'https://i.cooppank.ee/',
 } as const;
+
+const COOP_INTERNET_BANK = { coopInternetBankUrl: 'https://i.cooppank.ee/' } as const;
 
 const ENV_CONFIGS = {
   development: {
@@ -16,6 +17,7 @@ const ENV_CONFIGS = {
   },
   production: {
     ...BASE_CONFIG,
+    ...COOP_INTERNET_BANK,
     applicationUrl: 'https://pension.tuleva.ee',
     clientCredentialsAccessToken: '705e26c1-9316-47f2-94b8-a5c6b0dfb566',
     apiUrl: 'https://onboarding-service.tuleva.ee/v1',
@@ -28,6 +30,7 @@ const ENV_CONFIGS = {
   },
   test: {
     ...BASE_CONFIG,
+    ...COOP_INTERNET_BANK,
     applicationUrl: 'http://localhost',
     language: 'en',
     clientCredentialsAccessToken: undefined,

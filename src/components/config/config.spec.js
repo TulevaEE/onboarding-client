@@ -17,7 +17,6 @@ describe('Config', () => {
         applicationUrl: 'http://localhost:3000',
         clientCredentialsAccessToken: '6b338ba2-805c-4300-9341-b38bb4ad34a9',
         language: 'et',
-        coopInternetBankUrl: 'https://i.cooppank.ee/',
         apiUrl: 'http://localhost:9000/v1',
       });
     });
@@ -41,7 +40,6 @@ describe('Config', () => {
         applicationUrl: 'https://staging.tuleva.ee',
         clientCredentialsAccessToken: '6b338ba2-805c-4300-9341-b38bb4ad34a9',
         language: 'et',
-        coopInternetBankUrl: 'https://i.cooppank.ee/',
         apiUrl: 'https://onboarding-service-staging.tuleva.ee/v1',
       });
     });
@@ -54,7 +52,6 @@ describe('Config', () => {
         applicationUrl: 'https://staging.tuleva.ee',
         clientCredentialsAccessToken: '6b338ba2-805c-4300-9341-b38bb4ad34a9',
         language: 'et',
-        coopInternetBankUrl: 'https://i.cooppank.ee/',
         apiUrl: 'https://onboarding-service-staging.tuleva.ee/v1',
       });
     });

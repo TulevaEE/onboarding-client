@@ -4,13 +4,14 @@ import { setupServer } from 'msw/node';
 import { screen } from '@testing-library/react';
 import { createMemoryHistory, History } from 'history';
 
+import config from 'react-global-configuration';
 import { TriggerProcedure } from './TriggerProcedure';
 import { initializeConfiguration } from '../config/config';
 import { createDefaultStore, renderWrapped } from '../../test/utils';
 import { getAuthentication } from '../common/authenticationManager';
 import { anAuthenticationManager } from '../common/authenticationManagerFixture';
 import { HANDOVER_TOKEN_STORAGE_KEY } from './handoverTokenStorage';
-import { EXTERNAL_AUTHENTICATOR_PROVIDER } from './utils';
+import { EXTERNAL_AUTHENTICATOR_PROVIDER, isInPartnerSession, partnerInternetBank } from './utils';
 
 const aHandoverToken =
   'eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJzaWduaW5nTWV0aG9kIjoic21hcnRJZCJ9.V-eWT1WG1CKKAsUkPOOU8zL9SbGNdv9RIO5viE9V_vORSu48UqnYKk5wHUQxOK2EvG1O64RRnc1aBTrkr0zxpHgUxshPtAYOY7SThLWLjxBbQ7T4EnZp1wJjGkpsucOmdSw7YSDdGpEn7uIrqPAaxrKzO9YKkvXYNfbS1fYAcc9mckHxf0_IyYBnrg1vxBzlSdwwmNUvhJELaKSdhrrmqZRU8zg0IHrHf0RQTZrpK8q5Pz29IgjoZNHFkuI6RW0AmypCSneoXUdPGIPxLJkyw2j1xVDHBVa37rCnZ3GNiMOAiGREld80ZXyYR4cfOT5Z4LYghWB5Pkgjxi1KcHhxoA';
@@ -172,6 +173,33 @@ describe('When an external provider process is triggered', () => {
 
       expect(await screen.findByText('unexpected error', { exact: false })).toBeInTheDocument();
       expect(sessionStorage.length).toBe(0);
+    });
+  });
+
+  describe('... where no internet bank address is configured, as on staging', () => {
+    beforeEach(() => {
+      config.set({ coopInternetBankUrl: undefined }, { freeze: false, assign: true });
+    });
+
+    test('returns to the internet bank address from the link', async () => {
+      sessionStorage.setItem(HANDOVER_TOKEN_STORAGE_KEY, aHandoverToken);
+      initializeComponent(
+        '?provider=COOP_PANK&procedure=account&redirectUri=https%3A%2F%2Fprelive.example%2F',
+      );
+
+      expect(await screen.findByText('redirecting to', { exact: false })).toBeInTheDocument();
+      expect(partnerInternetBank()).toBe('https://prelive.example/');
+    });
+
+    test('ignores an address from the link that is not https, which leaves the internet bank without a Coop session', async () => {
+      sessionStorage.setItem(HANDOVER_TOKEN_STORAGE_KEY, aHandoverToken);
+      initializeComponent(
+        '?provider=COOP_PANK&procedure=account&redirectUri=javascript%3Aalert(1)',
+      );
+
+      expect(await screen.findByText('redirecting to', { exact: false })).toBeInTheDocument();
+      expect(partnerInternetBank()).toBeNull();
+      expect(isInPartnerSession()).toBe(false);
     });
   });
 

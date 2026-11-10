@@ -4,6 +4,7 @@ import { screen, waitFor } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import userEvent from '@testing-library/user-event';
+import config from 'react-global-configuration';
 import {
   createDefaultStore,
   login,
@@ -13,7 +14,10 @@ import {
 import { initializeConfiguration } from '../../../config/config';
 import { useTestBackends } from '../../../../test/backend';
 import LoggedInApp from '../../../LoggedInApp';
-import { EXTERNAL_AUTHENTICATOR_PROVIDER } from '../../../TriggerProcedure/utils';
+import {
+  EXTERNAL_AUTHENTICATOR_PROVIDER,
+  INTERNET_BANK_FROM_LINK,
+} from '../../../TriggerProcedure/utils';
 
 describe('When a person who came from Coop Pank makes a III pillar payment', () => {
   const server = setupServer();
@@ -162,6 +166,42 @@ describe('When a person who came from Coop Pank makes a III pillar payment', () 
     expect(paymentLinkRequests).toEqual([
       { type: 'RECURRING', paymentChannel: 'PARTNER', amount: '50', currency: 'EUR' },
     ]);
+  });
+
+  describe('where no internet bank address is configured, as on staging', () => {
+    beforeEach(() => {
+      config.set({ coopInternetBankUrl: undefined }, { freeze: false, assign: true });
+    });
+
+    test('opens the payment form at the internet bank address from the link', async () => {
+      sessionStorage.setItem(INTERNET_BANK_FROM_LINK, 'https://prelive.example/');
+      openPaymentPage();
+      await enterAmount('300');
+
+      userEvent.click(await screen.findByRole('button', { name: 'Start payment' }));
+
+      await waitFor(() =>
+        expect(window.location.href).toBe('https://prelive.example/i/payments/new?amt=300&lang=en'),
+      );
+    });
+
+    test('offers the banks in the internet bank when the link had no address', async () => {
+      openPaymentPage();
+
+      expect(await screen.findByLabelText('LHV')).toBeInTheDocument();
+    });
+
+    test('hands the payment over to the Coop app even without an internet bank address', async () => {
+      const postMessage = jest.fn();
+      (window as unknown as { ReactNativeWebView: unknown }).ReactNativeWebView = { postMessage };
+      openPaymentPage();
+      await enterAmount('300');
+
+      userEvent.click(await screen.findByRole('button', { name: 'Start payment' }));
+
+      await waitFor(() => expect(postMessage).toHaveBeenCalledTimes(1));
+      expect(screen.queryByLabelText('LHV')).not.toBeInTheDocument();
+    });
   });
 
   test('offers every bank again once the person has logged in another way', async () => {
