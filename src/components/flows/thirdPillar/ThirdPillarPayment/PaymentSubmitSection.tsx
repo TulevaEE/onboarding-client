@@ -12,7 +12,7 @@ type Props = {
 
 const PAID_IN_OWN_BANK_PATH: Record<AvailablePaymentType, string> = {
   SINGLE: '/3rd-pillar-success',
-  RECURRING: '/3rd-pillar-payment/recurring-confirmation?confirmed=true',
+  RECURRING: '/3rd-pillar-recurring-success',
 };
 
 export const PaymentSubmitSection = ({

@@ -8,7 +8,7 @@ import { useTestBackends } from '../../../test/backend';
 import LoggedInApp from '../../LoggedInApp';
 
 const SINGLE_PAYMENT_RETURN_ADDRESS = '/3rd-pillar-success';
-const STANDING_ORDER_RETURN_ADDRESS = '/3rd-pillar-payment/recurring-confirmation?confirmed=true';
+const STANDING_ORDER_RETURN_ADDRESS = '/3rd-pillar-recurring-success';
 
 describe('The return addresses Coop Pank hardcodes after a payment, which must never change', () => {
   const server = setupServer();

@@ -63,6 +63,7 @@ import { SecondPillarPaymentRateSuccess } from '../flows/secondPillarPaymentRate
 import BackToPartner from '../flows/partner/BackToPartner';
 import ThirdPillarPaymentPage from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarPaymentPage';
 import { RecurringPaymentConfirmation } from '../flows/thirdPillar/ThirdPillarPayment/RecurringPaymentConfirmation';
+import { RecurringPaymentSuccess } from '../flows/thirdPillar/ThirdPillarPayment/RecurringPaymentSuccess';
 import { ThirdPillarStandingOrderPage } from '../flows/thirdPillar/ThirdPillarStandingOrder/ThirdPillarStandingOrderPage';
 import { DevSidebar } from '../dev/DevSidebar';
 import Success from '../flows/secondPillar/success';
@@ -274,12 +275,13 @@ export class LoggedInApp extends PureComponent {
             />
             <Route exact path="/savings-fund/onboarding" component={SavingsFundOnboardingChooser} />
             <Route path="/partner/3rd-pillar-flow-success" component={BackToPartner} />
-            {/* Coop Pank hardcodes this address (?confirmed=true) as its return after a standing order: never change it */}
             <Route
               path="/3rd-pillar-payment/recurring-confirmation"
               component={RecurringPaymentConfirmation}
             />
             <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />
+            {/* Coop Pank hardcodes this address as its return after a standing order: never change it */}
+            <Route path="/3rd-pillar-recurring-success" component={RecurringPaymentSuccess} />
             <Route path="/3rd-pillar-recurring-payment" component={ThirdPillarStandingOrderPage} />
             {/* Coop Pank hardcodes this address as its return after a payment, and Montonio returns here: never change it */}
             <Route path="/3rd-pillar-success" component={ThirdPillarPaymentSuccess} />
