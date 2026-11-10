@@ -2102,6 +2102,7 @@
   "pageTitle.security": "Turvalisus",
   "pageTitle.secondPillarRejoin": "II sambaga taasliitumine",
   "pageTitle.futureMe": "Tulevane mina",
+  "pageTitle.secondPillarFees": "II samba tasud",
   "pensionCalculator.title": "Kas rahast jätkub elu lõpuni?",
   "pensionCalculator.intro": "Näed, kui palju saad pensionil iga kuu kasutada ja kas kogutu saab otsa või jääb lähedastele.",
   "pensionCalculator.years": "{years} a",
@@ -3361,5 +3362,6 @@
   "futureMe.potBar.costsNotChosen": "valimata",
   "futureMe.potBar.costs": "Kulud{isChosen, select, true { ({level}{isEdited, select, true {, muudetud} other {}})} other {}}",
   "futureMe.errorSummary.intro": "Enne edasi minekut täida:",
-  "futureMe.errorSummary.kidIIMonths": "{number}. lapse riigi lisamakse II sambasse"
+  "futureMe.errorSummary.kidIIMonths": "{number}. lapse riigi lisamakse II sambasse",
+  "secondPillarFees.lowFees.header": "Sinu II samba tasud on juba madalad"
 }

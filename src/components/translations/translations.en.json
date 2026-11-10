@@ -2012,6 +2012,7 @@
   "pageTitle.security": "Security",
   "pageTitle.secondPillarRejoin": "Rejoining the II pillar",
   "pageTitle.futureMe": "Tulevane mina",
+  "pageTitle.secondPillarFees": "II pillar fees",
   "pensionCalculator.title": "Will your money last for life?",
   "pensionCalculator.intro": "See how much you can spend each month in retirement, and whether your savings run out or pass on to your family.",
   "pensionCalculator.years": "{years} y",
@@ -3271,5 +3272,6 @@
   "futureMe.potBar.costsNotChosen": "not chosen",
   "futureMe.potBar.costs": "Costs{isChosen, select, true { ({level}{isEdited, select, true {, edited} other {}})} other {}}",
   "futureMe.errorSummary.intro": "Before you go on, fill in:",
-  "futureMe.errorSummary.kidIIMonths": "Child {number}, state’s additional contribution to the II pillar"
+  "futureMe.errorSummary.kidIIMonths": "Child {number}, state’s additional contribution to the II pillar",
+  "secondPillarFees.lowFees.header": "Your II pillar fees are already low"
 }

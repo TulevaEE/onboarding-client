@@ -72,6 +72,7 @@ import { DEV_MODE_PARAM, isMockModeEnabled } from '../common/requestMocker';
 import { FirstVsSecondPillarComparison } from '../comparison/FirstVsSecondPillarComparison';
 import SecondPillarTaxWin from '../secondPillarTaxWin/SecondPillarTaxWin';
 import SecondPillarGrowth from '../secondPillarGrowth/SecondPillarGrowth';
+import { SecondPillarFees } from '../secondPillarFees/SecondPillarFees';
 import { MillionaireCalculator } from '../millionaire/MillionaireCalculator';
 import { PensionCalculator } from '../pensionCalculator/PensionCalculator';
 import { FutureMe } from '../futureMe/FutureMe';
@@ -429,6 +430,7 @@ export class LoggedInApp extends PureComponent {
             />
             <Route path="/2nd-pillar-tax-win" component={SecondPillarTaxWin} />
             <Route path="/2nd-pillar-growth" component={SecondPillarGrowth} />
+            <Route path="/2nd-pillar-fees" component={SecondPillarFees} />
             <Route path="/1st-vs-2nd-pillar" render={() => <FirstVsSecondPillarComparison />} />
             <Route path="/millionaire" component={MillionaireCalculator} />
             <Route path="/calculator" component={PensionCalculator} />
