@@ -248,7 +248,7 @@ type NudgeContentProps = {
   children?: ReactNode;
 };
 
-const NudgeNotice = (props: NudgeContentProps) => (
+const NudgeNotice = (props: NudgeContentProps & { onCallToAction: () => void }) => (
   <Notice>
     <NudgeContent {...props} />
   </Notice>

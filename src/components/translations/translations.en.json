@@ -3271,5 +3271,6 @@
   "futureMe.potBar.costs": "Costs{isChosen, select, true { ({level}{isEdited, select, true {, edited} other {}})} other {}}",
   "futureMe.errorSummary.intro": "Before you go on, fill in:",
   "futureMe.errorSummary.kidIIMonths": "Child {number}, state’s additional contribution to the II pillar",
-  "secondPillarFees.lowFees.header": "Your II pillar fees are already low"
+  "secondPillarFees.lowFees.header": "Your II pillar fees are already low",
+  "secondPillarFees.noSavings.header": "There is no money in your II pillar to compare fees on"
 }

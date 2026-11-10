@@ -3361,5 +3361,6 @@
   "futureMe.potBar.costs": "Kulud{isChosen, select, true { ({level}{isEdited, select, true {, muudetud} other {}})} other {}}",
   "futureMe.errorSummary.intro": "Enne edasi minekut täida:",
   "futureMe.errorSummary.kidIIMonths": "{number}. lapse riigi lisamakse II sambasse",
-  "secondPillarFees.lowFees.header": "Sinu II samba tasud on juba madalad"
+  "secondPillarFees.lowFees.header": "Sinu II samba tasud on juba madalad",
+  "secondPillarFees.noSavings.header": "Sinu II sambas pole raha, mille tasusid võrrelda"
 }
