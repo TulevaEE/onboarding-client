@@ -120,10 +120,9 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({ decisi
       );
     case 'SECOND_PILLAR_TRANSFER':
       return decision.feeComparison ? (
-        <FeeComparisonNudge
-          feeComparison={decision.feeComparison}
-          onCallToAction={onCallToAction}
-        />
+        <Notice>
+          <FeeComparison feeComparison={decision.feeComparison} onCallToAction={onCallToAction} />
+        </Notice>
       ) : (
         <NudgeNotice
           header="thirdPillarSuccess.suggestion.lowFee.header"
@@ -239,7 +238,23 @@ const RecurringPaymentNudge = ({
   />
 );
 
-const NudgeNotice = ({
+type NudgeContentProps = {
+  header: TranslationKey;
+  description: TranslationKey;
+  descriptionValues?: Record<string, number | string>;
+  button: TranslationKey;
+  to: string;
+  onCallToAction?: () => void;
+  children?: ReactNode;
+};
+
+const NudgeNotice = (props: NudgeContentProps) => (
+  <Notice>
+    <NudgeContent {...props} />
+  </Notice>
+);
+
+export const NudgeContent = ({
   header,
   description,
   descriptionValues,
@@ -247,16 +262,8 @@ const NudgeNotice = ({
   to,
   onCallToAction,
   children,
-}: {
-  header: TranslationKey;
-  description: TranslationKey;
-  descriptionValues?: Record<string, number | string>;
-  button: TranslationKey;
-  to: string;
-  onCallToAction: () => void;
-  children?: ReactNode;
-}) => (
-  <Notice>
+}: NudgeContentProps) => (
+  <>
     <h2 className="text-center mt-3">
       <FormattedMessage id={header} />
     </h2>
@@ -267,7 +274,7 @@ const NudgeNotice = ({
     <a className="btn btn-primary mt-4 profile-link" href={to} onClick={onCallToAction}>
       <FormattedMessage id={button} />
     </a>
-  </Notice>
+  </>
 );
 
 type Segment = { amount: number; tone?: 'gain' | 'positive' | 'negative'; label?: ReactNode };
@@ -337,12 +344,12 @@ const cost = (amount: number) => (amount > 0 ? <>&minus;{amount}&nbsp;€</> : <
 
 const REJOIN_EXAMPLE = { grossSalary: 2000, fromNetSalary: 94, taxWin: 106 };
 
-const FeeComparisonNudge = ({
+export const FeeComparison = ({
   feeComparison,
   onCallToAction,
 }: {
   feeComparison: NudgeFeeComparison;
-  onCallToAction: () => void;
+  onCallToAction?: () => void;
 }) => {
   const { currentFeePercent, currentFeeAmount, tulevaFeeAmount, savingsAmount } = feeComparison;
   const { data: sourceFunds } = useSourceFunds();
@@ -350,7 +357,7 @@ const FeeComparisonNudge = ({
     (fund) => fund.pillar === 2 && !isTulevaIsin(fund.isin) && fund.price > 0,
   ).length;
   return (
-    <NudgeNotice
+    <NudgeContent
       header="thirdPillarSuccess.notice.header"
       description="thirdPillarSuccess.notice.description"
       descriptionValues={{
@@ -381,6 +388,6 @@ const FeeComparisonNudge = ({
           ),
         }}
       />
-    </NudgeNotice>
+    </NudgeContent>
   );
 };
