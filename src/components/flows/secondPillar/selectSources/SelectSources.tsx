@@ -211,6 +211,8 @@ export const SelectSources = ({
           ''
         )}
       </Radio>
+      {/* By law, both choices below must offer every mandatory pension fund, other managers' too:
+          KoPS § 15 lg 2 p 1 (future contributions) and § 25 lg 10 (transfers) */}
       <Radio
         name="tv-select-sources-type"
         id="tv-select-sources-type-some"
