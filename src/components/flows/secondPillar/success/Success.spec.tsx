@@ -73,7 +73,7 @@ describe('When is at the partner 2nd pillar flow success screen', () => {
 
     expect(await main().findByRole('link', { name: /^Back to Coop\sPank$/ })).toHaveAttribute(
       'href',
-      'https://i.cooppank.ee/i/deposits?lang=en',
+      'https://i.cooppank.ee/i/pension?lang=en',
     );
   });
 

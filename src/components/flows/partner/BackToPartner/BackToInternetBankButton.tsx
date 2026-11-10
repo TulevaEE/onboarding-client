@@ -10,7 +10,7 @@ export const BackToInternetBankButton: React.FC = () => {
   }
   return (
     <div className="d-flex justify-content-center mt-2">
-      <a href={new URL(`i/deposits?lang=${config.get('language')}`, internetBank).href}>
+      <a href={new URL(`i/pension?lang=${config.get('language')}`, internetBank).href}>
         <FormattedMessage id="success.backButton" />
       </a>
     </div>
