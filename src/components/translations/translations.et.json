@@ -3462,7 +3462,7 @@
   "secondPillarFunds.term.noBenchmark.tip": "Fondi tingimustes ja põhiteabedokumendis ei ole määratud võrdlusindeksit, mida fond kohustub järgima. Ilma selleta ei saa fondi tootlust ühegi indeksiga otseselt kõrvutada",
   "secondPillarFunds.term.mainlyDevelopedMarkets": "arenenud riigid",
   "secondPillarFunds.term.mainlyDevelopedMarkets.tip": "Fond investeerib peamiselt arenenud riikide aktsiaturgudele, näiteks USA, Jaapani ja Euroopa riikide ettevõtetesse",
-  "secondPillarFunds.term.activeCountryWeights": "aktiivsete riigikaaludega",
+  "secondPillarFunds.term.activeCountryWeights": "aktiivsed riigikaalud",
   "secondPillarFunds.term.activeCountryWeights.tip": "Erinevalt tavalisest indeksfondist ei jaota fond raha riikide vahel aktsiaturu suuruse järgi, vaid fondivalitseja otsustatud kaaludega. Seetõttu on Hiina ja India osakaal mitu korda suurem kui turukaaludega fondides. Riigikaalude valik on aktiivne panus, mille fond viib ellu passiivselt",
   "secondPillarFunds.lifecycleTip.EE3600109393": "Aktsiate osakaal on fondi tingimuste järgi 98% kuni 2041. aastani ja langeb seejärel 10%-ni aastaks 2059. Aktsiate osakaalu langedes väheneb ka oodatav pikaajaline tootlus",
   "secondPillarFunds.lifecycleTip.EE3600019741": "Aktsiate sihtosakaal langeb fondi tingimuste järgi 10%-ni aastaks 2030. Aktsiate osakaalu langedes väheneb ka oodatav pikaajaline tootlus",
