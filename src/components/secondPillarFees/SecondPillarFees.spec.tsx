@@ -64,6 +64,14 @@ const renderPage = () => {
   );
 };
 
+const expectFeeComparison = async (currentFee: number, tulevaFee: number, savings: number) => {
+  expect(
+    await screen.findByText(new RegExp(`you would save ${savings}\\s€ a year in fees\\.$`)),
+  ).toBeInTheDocument();
+  expect(screen.getByText(`−${currentFee} €`)).toBeInTheDocument();
+  expect(screen.getByText(`−${tulevaFee} €`)).toBeInTheDocument();
+};
+
 const feeComparisonHeading = () =>
   screen.queryByRole('heading', { name: 'Euros paid in fees earn no returns' });
 
@@ -89,15 +97,29 @@ test('shows a saver in high-fee funds what they pay in fees this year compared w
   expect(
     await screen.findByRole('heading', { name: 'Euros paid in fees earn no returns' }),
   ).toBeInTheDocument();
+  await expectFeeComparison(130, 56, 74);
   expect(
-    screen.getByText(
-      /\(0\.65% per year\)\. This year, you will pay 130\s€ for fees\. With Tuleva fund you would pay 56\s€\. Saving 74\s€ per year/,
-    ),
+    screen.getByText(/^Your II\spillar is in a high-fee fund\. In the Tuleva fund, you would save/),
   ).toBeInTheDocument();
+  expect(screen.getByText(/^Yearly fees on your current II\spillar savings$/)).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Learn more' })).toHaveAttribute(
     'href',
-    '/2nd-pillar-flow',
+    '/2nd-pillar-funds',
   );
+});
+
+test('speaks of high-fee funds in the plural when the saver holds several', async () => {
+  userConversionBackend(server, { weightedAverageFee: 0.0065 });
+  pensionAccountStatementBackend(server, [
+    highFeeFund(10000),
+    fundBalance('EE3600019766', 2, 0.0065, 10000),
+  ]);
+
+  renderPage();
+
+  expect(
+    await screen.findByText(/^Your II\spillar is in high-fee funds\. In the Tuleva fund/),
+  ).toBeInTheDocument();
 });
 
 test('counts units that cannot be sold yet into the II pillar fees', async () => {
@@ -106,11 +128,7 @@ test('counts units that cannot be sold yet into the II pillar fees', async () =>
 
   renderPage();
 
-  expect(
-    await screen.findByText(
-      /This year, you will pay 130\s€ for fees\. With Tuleva fund you would pay 56\s€/,
-    ),
-  ).toBeInTheDocument();
+  await expectFeeComparison(130, 56, 74);
 });
 
 test('compares the fees from a weighted fee of exactly 0.3%', async () => {
@@ -119,11 +137,7 @@ test('compares the fees from a weighted fee of exactly 0.3%', async () => {
 
   renderPage();
 
-  expect(
-    await screen.findByText(
-      /This year, you will pay 60\s€ for fees\. With Tuleva fund you would pay 56\s€\. Saving 4\s€ per year/,
-    ),
-  ).toBeInTheDocument();
+  await expectFeeComparison(60, 56, 4);
 });
 
 test('rounds half a euro up, as the fee comparison in the nudges does', async () => {
@@ -132,11 +146,7 @@ test('rounds half a euro up, as the fee comparison in the nudges does', async ()
 
   renderPage();
 
-  expect(
-    await screen.findByText(
-      /This year, you will pay 14\s€ for fees\. With Tuleva fund you would pay 8\s€\. Saving 6\s€ per year/,
-    ),
-  ).toBeInTheDocument();
+  await expectFeeComparison(14, 8, 6);
 });
 
 test('tells a saver whose II pillar is already in low-fee funds that their fees are low', async () => {

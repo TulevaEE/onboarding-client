@@ -1,0 +1,319 @@
+$blue: #006ce6;
+$navy: #002f63;
+$green: #008400;
+$red: #a02c26;
+$muted: #6a7c8d;
+$line: #e6edf4;
+$comparison-tint: #eef7fd;
+$mobile: 767.98px;
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: $blue;
+  background: #fff;
+  border: 1px solid $blue;
+  border-radius: 2rem;
+  padding: 0.4rem 0.95rem;
+  transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
+
+  &:hover {
+    background: #eaf4ff;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $blue;
+    outline-offset: 2px;
+  }
+
+  svg {
+    color: $blue;
+  }
+}
+
+.chipActive {
+  color: #fff;
+  background: $blue;
+
+  &:hover {
+    background: #0057b8;
+  }
+
+  svg {
+    color: #fff;
+  }
+}
+
+.inlineLink {
+  font-size: inherit;
+  line-height: inherit;
+  vertical-align: baseline;
+}
+
+.tableCard {
+  background: #fff;
+  border: 1px solid #e7edf3;
+  border-radius: 0.9rem;
+  box-shadow: 0 10px 30px rgba(0, 47, 99, 0.08);
+  padding: 0.5rem 0.5rem 0.9rem;
+  overflow-x: auto;
+}
+
+.fundTable,
+.periodsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0;
+
+  th {
+    font-weight: 600;
+    line-height: 1.3;
+    color: $muted;
+    text-align: left;
+    vertical-align: top;
+    white-space: nowrap;
+    border-bottom: 2px solid $line;
+  }
+
+  td {
+    vertical-align: top;
+    border-bottom: 1px solid $line;
+  }
+
+  td:not(:first-child) {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+}
+
+.fundTable {
+  font-size: 0.95rem;
+
+  th {
+    font-size: 0.85rem;
+    padding: 0.9rem 0.8rem 0.7rem;
+  }
+
+  td {
+    padding: 0.8rem;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.periodsTable {
+  font-size: 0.9rem;
+
+  th,
+  td {
+    padding: 0.45rem 0.6rem;
+  }
+}
+
+.highlighted {
+  background: $comparison-tint;
+}
+
+.market {
+  background: #eef7f2;
+}
+
+.sortButton {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  text-align: right;
+  cursor: pointer;
+
+  &:hover {
+    color: $blue;
+  }
+}
+
+.headerUnit {
+  font-weight: 400;
+}
+
+.arrow {
+  display: inline-block;
+  width: 0;
+  overflow: visible;
+  padding-left: 0.15em;
+  color: $blue;
+}
+
+.fundName {
+  font-weight: 600;
+  color: $navy;
+  margin-right: 0.5rem;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 0.8rem;
+  line-height: 1;
+  color: $blue;
+  background: #eaf4ff;
+  border: 1px solid #cfe4fb;
+  border-radius: 2rem;
+  padding: 0.3rem 0.6rem;
+  margin-right: 0.35rem;
+  vertical-align: 0.1em;
+}
+
+.ownFund {
+  color: #fff;
+  background: $navy;
+  border-color: $navy;
+}
+
+.fundSubtitle {
+  font-size: 0.9rem;
+  color: $muted;
+  margin-top: 0.15rem;
+  text-wrap: pretty;
+}
+
+.term {
+  text-decoration: underline dotted #bccddd;
+  text-underline-offset: 2px;
+}
+
+.hasTip {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-align: inherit;
+  cursor: help;
+
+  &:focus-visible {
+    outline: 2px solid $blue;
+    outline-offset: 2px;
+    border-radius: 0.2rem;
+  }
+}
+
+.tooltip :global(.tooltip-inner) {
+  max-width: 290px;
+  text-align: left;
+  white-space: pre-line;
+}
+
+.nearMarket,
+.lowFee,
+.highFee,
+.green {
+  font-weight: 600;
+}
+
+.nearMarket,
+.lowFee,
+.green {
+  color: $green;
+}
+
+.highFee {
+  color: $red;
+}
+
+.volume,
+.dash {
+  color: $muted;
+}
+
+.mobileUnit {
+  display: none;
+}
+
+.periodsTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.55;
+  color: $muted;
+}
+
+.footNote {
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: $muted;
+}
+
+.callToAction {
+  background: #f5f9fd;
+  border-radius: 0.9rem;
+}
+
+@media (max-width: $mobile) {
+  .tableCard {
+    padding: 0.25rem 0;
+  }
+
+  .fundTable {
+    display: block;
+
+    thead {
+      display: none;
+    }
+
+    tbody {
+      display: block;
+    }
+
+    tr {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: 0.6rem;
+      row-gap: 0.45rem;
+      padding: 1rem 0.95rem 1.05rem;
+      border-bottom: 1px solid $line;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    td {
+      display: block;
+      padding: 0;
+      border-bottom: none;
+    }
+
+    td:first-child,
+    td[colspan] {
+      flex: 1 1 100%;
+    }
+
+    td:first-child {
+      margin-bottom: 0.4rem;
+    }
+
+    td:not(:first-child) {
+      text-align: left !important;
+      font-size: 1rem;
+    }
+
+    td[data-label]::before {
+      content: attr(data-label);
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      line-height: 1.5;
+      color: $muted;
+      margin-bottom: 0.15rem;
+    }
+  }
+
+  .mobileUnit {
+    display: inline;
+  }
+}

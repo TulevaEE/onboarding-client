@@ -121,7 +121,11 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({ decisi
     case 'SECOND_PILLAR_TRANSFER':
       return decision.feeComparison ? (
         <Notice>
-          <FeeComparison feeComparison={decision.feeComparison} onCallToAction={onCallToAction} />
+          <FeeComparison
+            feeComparison={decision.feeComparison}
+            to="/2nd-pillar-flow"
+            onCallToAction={onCallToAction}
+          />
         </Notice>
       ) : (
         <NudgeNotice
@@ -238,6 +242,8 @@ const RecurringPaymentNudge = ({
   />
 );
 
+type ButtonSize = 'regular' | 'large';
+
 type NudgeContentProps = {
   header: TranslationKey;
   description: TranslationKey;
@@ -245,6 +251,7 @@ type NudgeContentProps = {
   button: TranslationKey;
   to: string;
   onCallToAction?: () => void;
+  buttonSize?: ButtonSize;
   children?: ReactNode;
 };
 
@@ -261,6 +268,7 @@ export const NudgeContent = ({
   button,
   to,
   onCallToAction,
+  buttonSize = 'regular',
   children,
 }: NudgeContentProps) => (
   <>
@@ -271,7 +279,11 @@ export const NudgeContent = ({
     <p className="mt-5">
       <FormattedMessage id={description} values={descriptionValues} />
     </p>
-    <a className="btn btn-primary mt-4 profile-link" href={to} onClick={onCallToAction}>
+    <a
+      className={`btn btn-primary mt-4 profile-link ${buttonSize === 'large' ? 'btn-lg' : ''}`}
+      href={to}
+      onClick={onCallToAction}
+    >
       <FormattedMessage id={button} />
     </a>
   </>
@@ -346,9 +358,13 @@ const REJOIN_EXAMPLE = { grossSalary: 2000, fromNetSalary: 94, taxWin: 106 };
 
 export const FeeComparison = ({
   feeComparison,
+  to,
+  buttonSize,
   onCallToAction,
 }: {
   feeComparison: NudgeFeeComparison;
+  to: string;
+  buttonSize?: ButtonSize;
   onCallToAction?: () => void;
 }) => {
   const { currentFeePercent, currentFeeAmount, tulevaFeeAmount, savingsAmount } = feeComparison;
@@ -365,13 +381,16 @@ export const FeeComparison = ({
         currentFundsFeeAmount: currentFeeAmount,
         ourFundFeeAmount: tulevaFeeAmount,
         savingsAmount,
+        count: currentFundCount,
       }}
       button="thirdPillarSuccess.button"
-      to="/2nd-pillar-flow"
+      to={to}
+      buttonSize={buttonSize}
       onCallToAction={onCallToAction}
     >
       <ComparisonFigure
         costs
+        caption={<FormattedMessage id="thirdPillarSuccess.notice.caption" />}
         left={{
           segments: [{ amount: tulevaFeeAmount, tone: 'positive' }],
           title: cost(tulevaFeeAmount),

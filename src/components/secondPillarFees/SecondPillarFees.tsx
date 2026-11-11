@@ -6,15 +6,12 @@ import { useConversion, useFunds, useSourceFunds } from '../common/apiHooks';
 import { Fund, SourceFund, UserConversion } from '../common/apiModels';
 import { NudgeFeeComparison } from '../common/apiModels/nudge';
 import { TUK75_ISIN } from '../common/fundPrecision';
+import { isLowFee, wholeEuros } from '../common/fees';
 import { getValueSum } from '../account/AccountStatement/fundSelector';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { FeeComparison } from '../common/nudge/Nudge';
 import { TranslationKey } from '../translations';
 import { ACCOUNT_PATH } from '../paths';
-
-const HIGH_FEE_FROM = 0.003;
-
-const wholeEuros = (amount: number) => Math.round(Number(amount.toPrecision(12)));
 
 const asPercent = (rate: number) => wholeEuros(rate * 10000) / 100;
 
@@ -23,7 +20,7 @@ const feeComparisonOf = (
   tulevaFee: number,
   value: number,
 ): NudgeFeeComparison | null => {
-  if (currentFee < HIGH_FEE_FROM) {
+  if (isLowFee(currentFee)) {
     return null;
   }
   const currentFeeAmount = wholeEuros(currentFee * value);
@@ -75,7 +72,7 @@ const Fees = ({
   if (!feeComparison) {
     return <Message header="secondPillarFees.lowFees.header" />;
   }
-  return <FeeComparison feeComparison={feeComparison} />;
+  return <FeeComparison feeComparison={feeComparison} to="/2nd-pillar-funds" buttonSize="large" />;
 };
 
 export const SecondPillarFees = () => {
