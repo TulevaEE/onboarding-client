@@ -14,14 +14,14 @@ $mobile: 767.98px;
   font-weight: 500;
   line-height: 1.25;
   color: $blue;
-  background: #fff;
+  background-color: #fff;
   border: 1px solid $blue;
   border-radius: 2rem;
   padding: 0.4rem 0.95rem;
   transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
 
   &:hover {
-    background: #eaf4ff;
+    background-color: #eaf4ff;
   }
 
   &:focus-visible {
@@ -36,14 +36,30 @@ $mobile: 767.98px;
 
 .chipActive {
   color: #fff;
-  background: $blue;
+  background-color: $blue;
 
   &:hover {
-    background: #0057b8;
+    background-color: #0057b8;
   }
 
   svg {
     color: #fff;
+  }
+}
+
+.chip.select {
+  width: auto;
+  font-size: inherit;
+  padding-right: 2.25rem;
+  background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='%23006ce6' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-size: 12px 12px;
+  background-position: right 0.85rem center;
+  cursor: pointer;
+
+  &:focus {
+    border-color: $blue;
+    box-shadow: none;
   }
 }
 

@@ -166,7 +166,7 @@ const PeriodPicker = ({
   const intl = useIntl();
   return (
     <select
-      className="form-select rounded-pill w-auto"
+      className={`form-select ${styles.chip} ${styles.select}`}
       aria-label={intl.formatMessage({ id: 'secondPillarFunds.period.label' })}
       value={years}
       onChange={(event) => onChange(Number(event.target.value))}
@@ -193,7 +193,7 @@ const MobileSort = ({
     <label className="d-inline-flex align-items-center gap-2">
       <FormattedMessage id="secondPillarFunds.sort.label" />
       <select
-        className="form-select rounded-pill w-auto"
+        className={`form-select ${styles.chip} ${styles.select}`}
         value={sort.key}
         onChange={(event) => {
           const key = event.target.value as SortKey;
