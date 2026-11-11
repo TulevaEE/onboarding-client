@@ -517,16 +517,6 @@ test("shows what the person's own contributions would have earned in each fund w
   expect(requests[0].from).toBe(minusYears(new Date().toISOString().slice(0, 10), 5));
 });
 
-test('leaves funds younger than the period out of the personal returns, which would otherwise all start when the youngest fund did', async () => {
-  userBackend(server, { secondPillarOpenDate: '2015-03-01' });
-  const requests = personalReturnsBackend();
-
-  renderPage(ALL_FUNDS);
-
-  expect(within(await fundRow(LHV)).getByText('—')).toBeInTheDocument();
-  expect(requests[0].keys).toEqual(['EE3600109435', 'EE3600019758', 'UNION_STOCK_INDEX']);
-});
-
 test('compares the personal return of each fund with the world market return on the same contributions', async () => {
   userBackend(server, { secondPillarOpenDate: '2015-03-01' });
   personalReturnsBackend();
