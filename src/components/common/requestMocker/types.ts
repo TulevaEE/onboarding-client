@@ -21,6 +21,10 @@ import { mandateDeadlinesProfiles } from './profiles/mandateDeadlines';
 import { paymentRateRedirectProfiles } from './profiles/paymentRateRedirect';
 import { rejoinPermissionProfiles } from './profiles/rejoinPermission';
 import { myGiftsProfiles } from './profiles/myGifts';
+import {
+  secondPillarNavHistoriesProfiles,
+  worldMarketReturnsProfiles,
+} from './profiles/secondPillarFunds';
 
 export type MockModeConfiguration = {
   withdrawalsEligibility: keyof typeof withdrawalsEligibilityProfiles | null;
@@ -46,6 +50,8 @@ export type MockModeConfiguration = {
   paymentRateRedirect: keyof typeof paymentRateRedirectProfiles | null;
   rejoinPermission: keyof typeof rejoinPermissionProfiles | null;
   myGifts: keyof typeof myGiftsProfiles | null;
+  secondPillarNavHistories: keyof typeof secondPillarNavHistoriesProfiles | null;
+  worldMarketReturns: keyof typeof worldMarketReturnsProfiles | null;
 };
 
 export type MockModeEndpoint = keyof MockModeConfiguration;

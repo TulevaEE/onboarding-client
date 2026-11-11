@@ -17,6 +17,15 @@ const secondPillarFund: SourceFund = {
   units: 24586.29 / 0.87831,
 };
 
+const highFeeSecondPillarFund: SourceFund = {
+  ...secondPillarFund,
+  isin: 'EE3600019766',
+  name: 'LHV Pensionifond Julge',
+  fundManager: { name: 'LHV' },
+  managementFeePercent: 1.21,
+  ongoingChargesFigure: 0.0121,
+};
+
 const thirdPillarFund: SourceFund = {
   isin: 'EE3600001707',
   name: 'Tuleva III Samba Pensionifond',
@@ -36,6 +45,7 @@ const thirdPillarFund: SourceFund = {
 
 export const sourceFundsProfiles: Record<string, SourceFund[]> = {
   BOTH_PILLARS: [secondPillarFund, thirdPillarFund],
+  BOTH_PILLARS_SECOND_IN_HIGH_FEE_FUND: [highFeeSecondPillarFund, thirdPillarFund],
   ONLY_SECOND_PILLAR: [secondPillarFund],
   ONLY_THIRD_PILLAR: [thirdPillarFund],
   NO_HOLDINGS: [],

@@ -1,5 +1,6 @@
 import moment from 'moment';
 import {
+  formatDateTimeOn,
   formatDateFrom,
   formatDateFromWithYear,
   formatDateOn,
@@ -74,6 +75,7 @@ describe('DateFormatter functions', () => {
 
       expect(formatDateFrom('2027-01-01')).toBe('1.\u00a0jaanuarist');
       expect(formatDateOn('2026-11-30')).toBe('30.\u00a0novembril');
+      expect(formatDateTimeOn('2026-11-30T21:59:59Z')).toBe('30.\u00a0novembril kell\u00a023:59');
       expect(formatDateUntil('2026-11-30')).toBe('30.\u00a0novembrini');
       expect(formatDateUntil('2026-05-31')).toBe('31.\u00a0maini');
     });
@@ -113,6 +115,7 @@ describe('DateFormatter functions', () => {
 
       expect(formatDateFrom('2027-01-01')).toBe('January\u00a01');
       expect(formatDateOn('2026-11-30')).toBe('November\u00a030');
+      expect(formatDateTimeOn('2026-11-30T21:59:59Z')).toBe('November\u00a030 at\u00a023:59');
       expect(formatDateUntil('2026-11-30')).toBe('November\u00a030');
     });
 

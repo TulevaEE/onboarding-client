@@ -22,6 +22,7 @@ import { mandateDeadlinesProfiles } from './mandateDeadlines';
 import { paymentRateRedirectProfiles } from './paymentRateRedirect';
 import { rejoinPermissionProfiles } from './rejoinPermission';
 import { myGiftsProfiles } from './myGifts';
+import { secondPillarNavHistoriesProfiles, worldMarketReturnsProfiles } from './secondPillarFunds';
 
 export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string, unknown>> = {
   withdrawalsEligibility: withdrawalsEligibilityProfiles,
@@ -47,6 +48,8 @@ export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string
   paymentRateRedirect: paymentRateRedirectProfiles,
   rejoinPermission: rejoinPermissionProfiles,
   myGifts: myGiftsProfiles,
+  secondPillarNavHistories: secondPillarNavHistoriesProfiles,
+  worldMarketReturns: worldMarketReturnsProfiles,
 } as const;
 
 export const getAllProfileNames = () =>

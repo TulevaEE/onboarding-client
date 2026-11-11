@@ -185,6 +185,29 @@ export interface Fund {
   fundManager: FundManager;
   status: FundStatus;
   inceptionDate: string;
+  volume?: number | null;
+}
+
+export interface NavValue {
+  date: string;
+  value: number;
+}
+
+export interface FundNavHistory {
+  isin: string;
+  nav: NavValue[];
+}
+
+export interface WorldMarketReturn {
+  years: number;
+  annualizedReturn: number;
+  fromDate: string;
+  toDate: string;
+  composite: boolean;
+}
+
+export interface WorldMarketReturns {
+  returns: WorldMarketReturn[];
 }
 
 export type Pillar = 2 | 3;

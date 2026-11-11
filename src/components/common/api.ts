@@ -13,6 +13,7 @@ import {
   Contribution,
   CreateMemberCapitalListingDto,
   Fund,
+  FundNavHistory,
   FundBalance,
   IdCardSignatureResponse,
   IdCardSignatureStatusResponse,
@@ -45,6 +46,7 @@ import {
   Transaction,
   User,
   UserConversion,
+  WorldMarketReturns,
 } from './apiModels/index';
 import {
   HackathonIdea,
@@ -634,6 +636,20 @@ export function getMissingAmlChecks(): Promise<AmlCheck[]> {
 
 export function getFunds(): Promise<Fund[]> {
   return mockRequestInMockMode(() => getWithAuthentication(getEndpoint('/v1/funds')), 'funds');
+}
+
+export function getSecondPillarNavHistories(startDate: string): Promise<FundNavHistory[]> {
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/funds/nav'), { pillar: 2, startDate }),
+    'secondPillarNavHistories',
+  );
+}
+
+export function getWorldMarketReturns(): Promise<WorldMarketReturns> {
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/benchmarks/world-market/returns')),
+    'worldMarketReturns',
+  );
 }
 
 export function getPendingApplications(): Promise<Application[]> {

@@ -14,8 +14,11 @@ import {
   CapitalEvent,
   CapitalRow,
   Conversion,
+  Fund,
   FundBalance,
+  FundNavHistory,
   Portfolio,
+  WorldMarketReturns,
   Transaction,
   MemberCapitalListing,
   User,
@@ -771,8 +774,36 @@ export function pensionAccountStatementBackend(
   );
 }
 
-export function fundsBackend(server: SetupServerApi): void {
-  server.use(rest.get('http://localhost/v1/funds', (req, res, ctx) => res(ctx.json(mockFunds))));
+export function fundsBackend(server: SetupServerApi, funds: Fund[] = mockFunds): void {
+  server.use(rest.get('http://localhost/v1/funds', (req, res, ctx) => res(ctx.json(funds))));
+}
+
+export function secondPillarNavHistoriesBackend(
+  server: SetupServerApi,
+  navHistories: FundNavHistory[] = [],
+): { requestedStartDates: string[] } {
+  const requestedStartDates: string[] = [];
+  server.use(
+    rest.get('http://localhost/v1/funds/nav', (req, res, ctx) => {
+      if (req.url.searchParams.get('pillar') !== '2') {
+        return res(ctx.status(400));
+      }
+      requestedStartDates.push(req.url.searchParams.get('startDate') ?? '');
+      return res(ctx.json(navHistories));
+    }),
+  );
+  return { requestedStartDates };
+}
+
+export function worldMarketReturnsBackend(
+  server: SetupServerApi,
+  worldMarketReturns: WorldMarketReturns = { returns: [] },
+): void {
+  server.use(
+    rest.get('http://localhost/v1/benchmarks/world-market/returns', (req, res, ctx) =>
+      res(ctx.json(worldMarketReturns)),
+    ),
+  );
 }
 
 export function secondPillarAssetsBackend(
@@ -1544,7 +1575,9 @@ const TEST_BACKENDS = {
   amlChecks: amlChecksBackend,
   pensionAccountStatement: pensionAccountStatementBackend,
   secondPillarAssets: secondPillarAssetsBackend,
-  funds: fundsBackend,
+  funds: (server: SetupServerApi) => fundsBackend(server),
+  secondPillarNavHistories: (server: SetupServerApi) => secondPillarNavHistoriesBackend(server),
+  worldMarketReturns: (server: SetupServerApi) => worldMarketReturnsBackend(server),
   returns: returnsBackend,
   userCapital: userCapitalBackend,
   applications: applicationsBackend,

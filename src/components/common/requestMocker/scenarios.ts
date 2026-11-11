@@ -16,6 +16,15 @@ const rejoinRefused: Partial<MockModeConfiguration> = {
 };
 
 export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
+  SECOND_PILLAR_FUNDS: {
+    user: 'PAYMENT_RATE_2',
+    conversion: 'INCOMPLETE',
+    sourceFunds: 'BOTH_PILLARS_SECOND_IN_HIGH_FEE_FUND',
+    funds: 'WITH_ALL_SECOND_PILLAR_FUNDS',
+    secondPillarNavHistories: 'YEARLY_TO_JULY_2026',
+    worldMarketReturns: 'JULY_2026',
+    mandateDeadlines: 'NOVEMBER_2026_BEFORE_DEADLINE',
+  },
   // One saver climbing the conversion ladder, one rung at a time: II pillar to Tuleva,
   // II rate to 6%, III pillar to Tuleva, savings fund on top. Only the rung being
   // climbed changes between scenarios, so the money and the chart stay comparable and

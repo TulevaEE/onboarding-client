@@ -39,6 +39,8 @@ import {
   getKycIdentity,
   getInsuranceTransferForm,
   getFunds,
+  getSecondPillarNavHistories,
+  getWorldMarketReturns,
   getMandateDeadlines,
   getMemberCapitalListingCount,
   getMemberCapitalListings,
@@ -77,6 +79,7 @@ import {
   CreateMemberCapitalListingDto,
   ErrorResponse,
   Fund,
+  FundNavHistory,
   MandateDeadlines,
   MemberCapitalListing,
   PendingOnboarding,
@@ -91,6 +94,7 @@ import {
   Transaction,
   User,
   UserConversion,
+  WorldMarketReturns,
 } from './apiModels';
 import {
   CreateMandateBatchDto,
@@ -158,6 +162,17 @@ export function useSecondPillarAssets(): UseQueryResult<SecondPillarAssets> {
 
 export function useFunds(): UseQueryResult<Fund[]> {
   return useQuery({ queryKey: ['funds'], queryFn: () => getFunds() });
+}
+
+export function useSecondPillarNavHistories(startDate: string): UseQueryResult<FundNavHistory[]> {
+  return useQuery({
+    queryKey: ['secondPillarNavHistories', startDate],
+    queryFn: () => getSecondPillarNavHistories(startDate),
+  });
+}
+
+export function useWorldMarketReturns(): UseQueryResult<WorldMarketReturns> {
+  return useQuery({ queryKey: ['worldMarketReturns'], queryFn: () => getWorldMarketReturns() });
 }
 
 export function useApplicationCancellation(): UseMutationResult<

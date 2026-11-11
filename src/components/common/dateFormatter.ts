@@ -28,6 +28,11 @@ function inflectedEstonianDate(date: string, suffix: string): string {
   return `${Number(day)}.\u00A0${ESTONIAN_MONTH_STEMS[Number(month) - 1]}${suffix}`;
 }
 
+export function formatDateTimeOn(date: string): string {
+  const connector = moment.locale() === 'et' ? 'kell' : 'at';
+  return `${formatDateOn(date)} ${connector}\u00A0${timeInTallinn(date)}`;
+}
+
 export function formatDateFrom(date: string): string {
   return moment.locale() === 'et' ? inflectedEstonianDate(date, 'st') : formatDate(date);
 }
