@@ -102,9 +102,13 @@ test('shows a saver in high-fee funds what they pay in fees this year compared w
     screen.getByText(/^Your II\spillar is in a high-fee fund\. In the Tuleva fund, you would save/),
   ).toBeInTheDocument();
   expect(screen.getByText(/^Yearly fees on your current II\spillar savings$/)).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'Learn more' })).toHaveAttribute(
+  expect(screen.getByRole('link', { name: 'See the fund comparison' })).toHaveAttribute(
     'href',
     '/2nd-pillar-funds',
+  );
+  const description = screen.getByText(/^Your II\spillar is in a high-fee fund/);
+  expect(description.compareDocumentPosition(screen.getByText('−130 €'))).toBe(
+    Node.DOCUMENT_POSITION_FOLLOWING,
   );
 });
 

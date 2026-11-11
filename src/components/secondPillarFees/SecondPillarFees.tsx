@@ -72,7 +72,14 @@ const Fees = ({
   if (!feeComparison) {
     return <Message header="secondPillarFees.lowFees.header" />;
   }
-  return <FeeComparison feeComparison={feeComparison} to="/2nd-pillar-funds" buttonSize="large" />;
+  return (
+    <FeeComparison
+      feeComparison={feeComparison}
+      to="/2nd-pillar-funds"
+      button="secondPillarFees.button"
+      buttonSize="large"
+    />
+  );
 };
 
 export const SecondPillarFees = () => {

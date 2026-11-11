@@ -126,6 +126,7 @@ export const NudgeView: FC<NudgeProps & { decision: NudgeDecision }> = ({ decisi
           <FeeComparison
             feeComparison={decision.feeComparison}
             to="/2nd-pillar-flow"
+            button="thirdPillarSuccess.button"
             deadline={deadlineDayWithinAMonth(mandateDeadlines?.periodEnding)}
             onCallToAction={onCallToAction}
           />
@@ -258,6 +259,7 @@ const RecurringPaymentNudge = ({
 );
 
 type ButtonSize = 'regular' | 'large';
+type ContentOrder = 'figureFirst' | 'descriptionFirst';
 
 type NudgeContentProps = {
   header: TranslationKey;
@@ -268,6 +270,7 @@ type NudgeContentProps = {
   to: string;
   onCallToAction?: () => void;
   buttonSize?: ButtonSize;
+  order?: ContentOrder;
   children?: ReactNode;
 };
 
@@ -286,16 +289,28 @@ export const NudgeContent = ({
   to,
   onCallToAction,
   buttonSize = 'regular',
+  order = 'figureFirst',
   children,
 }: NudgeContentProps) => (
   <>
     <h2 className="text-center mt-3">
       <FormattedMessage id={header} />
     </h2>
-    {children}
-    <p className="mt-5">
-      <FormattedMessage id={description} values={descriptionValues} />
-    </p>
+    {order === 'descriptionFirst' ? (
+      <>
+        <p className="mt-3">
+          <FormattedMessage id={description} values={descriptionValues} />
+        </p>
+        {children}
+      </>
+    ) : (
+      <>
+        {children}
+        <p className="mt-5">
+          <FormattedMessage id={description} values={descriptionValues} />
+        </p>
+      </>
+    )}
     {deadline && (
       <p>
         <strong>
@@ -383,12 +398,14 @@ const REJOIN_EXAMPLE = { grossSalary: 2000, fromNetSalary: 94, taxWin: 106 };
 export const FeeComparison = ({
   feeComparison,
   to,
+  button,
   deadline,
   buttonSize,
   onCallToAction,
 }: {
   feeComparison: NudgeFeeComparison;
   to: string;
+  button: TranslationKey;
   deadline?: string;
   buttonSize?: ButtonSize;
   onCallToAction?: () => void;
@@ -410,7 +427,8 @@ export const FeeComparison = ({
         count: currentFundCount,
       }}
       deadline={deadline}
-      button="thirdPillarSuccess.button"
+      button={button}
+      order="descriptionFirst"
       to={to}
       buttonSize={buttonSize}
       onCallToAction={onCallToAction}

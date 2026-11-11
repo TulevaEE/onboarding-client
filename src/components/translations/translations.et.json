@@ -3366,6 +3366,7 @@
   "futureMe.errorSummary.kidIIMonths": "{number}. lapse riigi lisamakse II sambasse",
   "secondPillarFees.lowFees.header": "Sinu II samba tasud on juba madalad",
   "secondPillarFees.noSavings.header": "Sinu II sambas pole raha, mille tasusid võrrelda",
+  "secondPillarFees.button": "Vaatan fondide võrdlust",
   "secondPillarFunds.title": "Kõik II samba fondid ühes tabelis",
   "secondPillarFunds.lead": "Fonde saab ausalt võrrelda ainult samal ja võimalikult pikal ajavahemikul. Tabelis on kõigi fondide tootlus arvutatud <b>samal perioodil ja aastapõhiselt</b>. Lisaks näed tasusid: tootlust ei tea keegi ette, aga tasu võetakse igal aastal.",
   "secondPillarFunds.lead.personal": "Tootlus ja tasud on arvutatud sinu enda II samba põhjal. Tootlus näitab, kui palju oleksid sinu sissemaksed igas fondis {years} aastaga aastas teeninud, tasud aga seda, kui palju maksaksid praeguse vara pealt aastas.",
