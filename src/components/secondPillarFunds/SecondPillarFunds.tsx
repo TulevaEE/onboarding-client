@@ -408,7 +408,7 @@ export const SecondPillarFunds = () => {
   const showsPersonalReturns = Boolean(
     user?.secondPillarOpenDate && user.secondPillarOpenDate <= periodStart,
   );
-  const fundIsins = rows.map((row) => row.isin);
+  const fundIsins = rows.filter((row) => row.returns[periodYears] !== null).map((row) => row.isin);
   const personalReturns = useQuery({
     queryKey: ['personalFundReturns', fundIsins.join(','), periodStart],
     queryFn: () => getReturns([...fundIsins, Key.UNION_STOCK_INDEX], periodStart),
