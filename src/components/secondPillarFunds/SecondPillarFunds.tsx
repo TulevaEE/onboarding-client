@@ -33,6 +33,7 @@ import {
   FundRow,
   fundRowsOf,
   MarketReference,
+  ReturnBasis,
   Sort,
   SortKey,
   sortRows,
@@ -218,12 +219,15 @@ const TableFootNotes = ({
   valuationDate,
   hasBenchmarks,
   feeBase,
+  returnBasis,
 }: {
   years: number;
   valuationDate: string;
   hasBenchmarks: boolean;
   feeBase: FeeBase;
+  returnBasis: ReturnBasis;
 }) => {
+  const personal = returnBasis === 'personal';
   const feeBasePhrase = useFeeBasePhrase(feeBase);
   return (
     <div className={`${styles.footNote} text-center mt-3`}>
@@ -234,10 +238,23 @@ const TableFootNotes = ({
         />
       </p>
       <p className="mb-0">
-        <FormattedMessage id="secondPillarFunds.footnote.pastReturns" />{' '}
+        <FormattedMessage
+          id={
+            personal
+              ? 'secondPillarFunds.footnote.pastReturns.personal'
+              : 'secondPillarFunds.footnote.pastReturns'
+          }
+        />{' '}
         {hasBenchmarks && (
           <>
-            <FormattedMessage id="secondPillarFunds.footnote.green" values={{ years }} />{' '}
+            <FormattedMessage
+              id={
+                personal
+                  ? 'secondPillarFunds.footnote.green.personal'
+                  : 'secondPillarFunds.footnote.green'
+              }
+              values={{ years }}
+            />{' '}
           </>
         )}
         <FormattedMessage
@@ -284,20 +301,27 @@ const Methodology = ({
   benchmarkDate,
   periodPickerShown,
   feeBase,
+  returnBasis,
 }: {
   years: number;
   benchmarks: Benchmarks;
   benchmarkDate: string | null;
   periodPickerShown: boolean;
   feeBase: FeeBase;
+  returnBasis: ReturnBasis;
 }) => {
+  const personal = returnBasis === 'personal';
   const feeBasePhrase = useFeeBasePhrase(feeBase);
   const benchmarkOf = (period: number) =>
     benchmarks[period] === undefined ? '…' : formatReturn(benchmarks[period]);
   const marketComparison = benchmarkDate && (
     <>
       <FormattedMessage
-        id="secondPillarFunds.methodology.green"
+        id={
+          personal
+            ? 'secondPillarFunds.methodology.green.personal'
+            : 'secondPillarFunds.methodology.green'
+        }
         values={{
           green,
           fiveYears: benchmarkOf(5),
@@ -312,12 +336,23 @@ const Methodology = ({
     <section className={`${styles.footNote} mt-5`}>
       <p className="mb-2">
         <FormattedMessage
-          id="secondPillarFunds.methodology.returns"
+          id={
+            personal
+              ? 'secondPillarFunds.methodology.returns.personal'
+              : 'secondPillarFunds.methodology.returns'
+          }
           values={{ b: bold, years, feeBase: feeBasePhrase }}
         />
       </p>
       <p className="mb-2">
-        <FormattedMessage id="secondPillarFunds.methodology.period" values={{ b: bold }} />
+        <FormattedMessage
+          id={
+            personal
+              ? 'secondPillarFunds.methodology.period.personal'
+              : 'secondPillarFunds.methodology.period'
+          }
+          values={{ b: bold, years }}
+        />
       </p>
       <p className="mb-2">
         {marketComparison}
@@ -392,6 +427,7 @@ export const SecondPillarFunds = () => {
   const personalBenchmarks: Benchmarks =
     personalMarketRate === null ? {} : { [periodYears]: personalMarketRate };
   const tableBenchmarks = showsPersonalReturns ? personalBenchmarks : benchmarks;
+  const returnBasis: ReturnBasis = showsPersonalReturns ? 'personal' : 'fund';
   const marketReference: MarketReference | null =
     showsPersonalReturns && personalMarketRate !== null
       ? { kind: 'market', rate: personalMarketRate }
@@ -466,6 +502,7 @@ export const SecondPillarFunds = () => {
           valuationDate={valuationDate}
           ownFundIsins={ownFundIsins}
           feeBase={feeBase}
+          returnBasis={returnBasis}
           sort={sort}
           onSort={onSort}
         />
@@ -474,6 +511,7 @@ export const SecondPillarFunds = () => {
           valuationDate={valuationDate}
           hasBenchmarks={benchmarkDate !== null}
           feeBase={feeBase}
+          returnBasis={returnBasis}
         />
       </>
     );
@@ -532,6 +570,7 @@ export const SecondPillarFunds = () => {
         benchmarkDate={benchmarkDate}
         periodPickerShown={periodPickerShown}
         feeBase={feeBase}
+        returnBasis={returnBasis}
       />
     </div>
   );

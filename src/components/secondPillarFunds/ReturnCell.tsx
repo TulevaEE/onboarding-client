@@ -1,22 +1,28 @@
 import React, { ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { formatAmountForCount } from '../common/utils';
-import { FundRow, isNearMarket } from './fundRows';
+import { TranslationKey } from '../translations';
+import { FundRow, isNearMarket, ReturnBasis } from './fundRows';
 import { strategyChangeBefore } from './fundDetails';
 import { minusYears } from './fundReturns';
 import { WithTip } from './WithTip';
 import styles from './SecondPillarFunds.module.scss';
 
-const MarketTip = ({ years, nearMarket }: { years: number; nearMarket: boolean }) => (
-  <FormattedMessage
-    id={
-      nearMarket
-        ? 'secondPillarFunds.table.nearMarket.tip'
-        : 'secondPillarFunds.table.behindMarket.tip'
-    }
-    values={{ years }}
-  />
-);
+const TIPS: Record<
+  ReturnBasis,
+  { nearMarket: TranslationKey; behindMarket: TranslationKey; missing: TranslationKey }
+> = {
+  fund: {
+    nearMarket: 'secondPillarFunds.table.nearMarket.tip',
+    behindMarket: 'secondPillarFunds.table.behindMarket.tip',
+    missing: 'secondPillarFunds.table.missingReturn.tip',
+  },
+  personal: {
+    nearMarket: 'secondPillarFunds.table.nearMarket.tip.personal',
+    behindMarket: 'secondPillarFunds.table.behindMarket.tip.personal',
+    missing: 'secondPillarFunds.table.missingReturn.tip.personal',
+  },
+};
 
 export const formatReturn = (value: number) => formatAmountForCount(value * 100, 1);
 
@@ -26,19 +32,22 @@ export const ReturnCell = ({
   benchmark,
   valuationDate,
   unit,
+  basis,
 }: {
   row: FundRow;
   years: number;
   benchmark: number | undefined;
   valuationDate: string;
   unit: ReactNode;
+  basis: ReturnBasis;
 }) => {
+  const tips = TIPS[basis];
   const value = row.returns[years] ?? null;
   if (value === null) {
     return (
       <WithTip
         className={styles.dash}
-        tip={<FormattedMessage id="secondPillarFunds.table.missingReturn.tip" values={{ years }} />}
+        tip={<FormattedMessage id={tips.missing} values={{ years }} />}
       >
         —
       </WithTip>
@@ -63,7 +72,12 @@ export const ReturnCell = ({
       className={`${styles.value} ${nearMarket ? styles.nearMarket : ''}`}
       tip={
         <>
-          {benchmark !== undefined && <MarketTip years={years} nearMarket={nearMarket} />}
+          {benchmark !== undefined && (
+            <FormattedMessage
+              id={nearMarket ? tips.nearMarket : tips.behindMarket}
+              values={{ years }}
+            />
+          )}
           {benchmark !== undefined && strategyNote && '.\n\n'}
           {strategyNote}
         </>

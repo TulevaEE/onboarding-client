@@ -15,6 +15,7 @@ export type FundRow = {
 };
 
 export type SortKey = 'return' | 'fees' | 'volume';
+export type ReturnBasis = 'personal' | 'fund';
 export type Sort = { key: SortKey; direction: 1 | -1 };
 
 export const defaultDirectionOf = (key: SortKey): 1 | -1 => (key === 'fees' ? 1 : -1);

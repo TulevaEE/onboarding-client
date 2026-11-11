@@ -64,6 +64,7 @@ export const ReturnsByPeriodTable = ({
                   benchmark={benchmarks[years]}
                   valuationDate={valuationDate}
                   unit="%"
+                  basis="fund"
                 />
               </td>
             ))}

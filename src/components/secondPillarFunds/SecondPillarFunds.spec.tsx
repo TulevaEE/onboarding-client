@@ -525,8 +525,14 @@ test('compares the personal return of each fund with the world market return on 
 
   userEvent.hover(within(await fundRow(TULEVA)).getByText('8.1'));
   expect(await screen.findByRole('tooltip')).toHaveTextContent(
-    /^Over the past 5 years, the fund's return has been close to the world stock market index/,
+    /^Over the past 5 years, your contributions would have earned close to the world stock market's return/,
   );
+  expect(
+    screen.getByText(/A return marked green = your contributions would have earned/),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText(/internal rate of return \(XIRR\) on your own money/),
+  ).toBeInTheDocument();
 });
 
 test("keeps the fund returns when the person's II pillar is younger than the period", async () => {

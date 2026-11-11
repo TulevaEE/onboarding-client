@@ -4,7 +4,15 @@ import { TUK75_ISIN } from '../common/fundPrecision';
 import { formatAmountForCount } from '../common/utils';
 import { isLowFee, wholeEuros } from '../common/fees';
 import { FeeBase, useFeeBasePhrase } from './feeBase';
-import { Benchmarks, FundRow, isMarketReference, Sort, SortKey, TableEntry } from './fundRows';
+import {
+  Benchmarks,
+  FundRow,
+  isMarketReference,
+  ReturnBasis,
+  Sort,
+  SortKey,
+  TableEntry,
+} from './fundRows';
 import { chargesPerformanceFee } from './fundDetails';
 import { FundSubtitle } from './FundSubtitle';
 import { formatReturn, ReturnCell } from './ReturnCell';
@@ -78,6 +86,7 @@ const FundTableRow = ({
   valuationDate,
   isOwnFund,
   feeBase,
+  returnBasis,
 }: {
   row: FundRow;
   years: number;
@@ -85,6 +94,7 @@ const FundTableRow = ({
   valuationDate: string;
   isOwnFund: boolean;
   feeBase: FeeBase;
+  returnBasis: ReturnBasis;
 }) => {
   const intl = useIntl();
   const returnLabel = intl.formatMessage({ id: 'secondPillarFunds.table.return' }, { years });
@@ -111,6 +121,7 @@ const FundTableRow = ({
           benchmark={benchmarks[years]}
           valuationDate={valuationDate}
           unit={<span className={styles.mobileUnit}>%</span>}
+          basis={returnBasis}
         />
       </td>
       <td
@@ -175,6 +186,7 @@ export const FundTable = ({
   valuationDate,
   ownFundIsins,
   feeBase,
+  returnBasis,
   sort,
   onSort,
 }: {
@@ -184,6 +196,7 @@ export const FundTable = ({
   valuationDate: string;
   ownFundIsins: string[];
   feeBase: FeeBase;
+  returnBasis: ReturnBasis;
   sort: Sort;
   onSort: (key: SortKey) => void;
 }) => (
@@ -240,6 +253,7 @@ export const FundTable = ({
                 valuationDate={valuationDate}
                 isOwnFund={ownFundIsins.includes(entry.isin)}
                 feeBase={feeBase}
+                returnBasis={returnBasis}
               />
             ),
           )
