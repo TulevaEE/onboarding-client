@@ -3370,7 +3370,7 @@
   "secondPillarFees.button": "Vaatan fondide võrdlust",
   "secondPillarFunds.title": "Kõik II samba fondid ühes tabelis",
   "secondPillarFunds.lead": "Fonde saab ausalt võrrelda ainult samal ja võimalikult pikal ajavahemikul. Tabelis on kõigi fondide tootlus arvutatud <b>samal perioodil ja aastapõhiselt</b>. Lisaks näed tasusid: tootlust ei tea keegi ette, aga tasu võetakse igal aastal.",
-  "secondPillarFunds.lead.personal": "Tootlus ja tasud on arvutatud sinu enda II samba põhjal. Tootlus näitab, kui palju oleksid sinu sissemaksed igas fondis {years} aastaga aastas teeninud, tasud aga seda, kui palju maksaksid praeguse vara pealt aastas.",
+  "secondPillarFunds.lead.personal": "Tootlus ja tasud on arvutatud sinu enda II samba põhjal. Tootlus näitab, kui palju oleksid sinu sissemaksed igas fondis {years} aastaga aastas teeninud, tasud aga seda, kui palju maksaksid aastas, kui kogu sinu praegune vara oleks selles fondis.",
   "secondPillarFunds.deadline": "Järgmine fondivahetuse tähtaeg on <b>{deadline}</b>.",
   "secondPillarFunds.deadline.switch": "Vaheta fondi",
   "secondPillarFunds.filters.label": "Filtreeri fonde",
@@ -3481,5 +3481,5 @@
   "secondPillarFunds.lifecycleTip.EE3600103248": "Aktsiate sihtosakaal on fondi tingimuste järgi 100% kuni 2031. aastani ja langeb seejärel 10%-ni aastaks 2050. Aktsiate osakaalu langedes väheneb ka oodatav pikaajaline tootlus",
   "secondPillarFunds.lifecycleTip.EE3600001848": "Aktsiate sihtosakaal on fondi tingimuste järgi 100% kuni 2051. aastani ja langeb seejärel 10%-ni aastaks 2070. Aktsiate osakaalu langedes väheneb ka oodatav pikaajaline tootlus",
   "secondPillarFunds.feeBase.standard": "iga fondis oleva 10 000 € kohta",
-  "secondPillarFunds.feeBase.savings": "sinu praeguse II samba vara pealt"
+  "secondPillarFunds.feeBase.savings": "kogu sinu praeguse II samba vara pealt"
 }

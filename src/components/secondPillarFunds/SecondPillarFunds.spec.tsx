@@ -193,7 +193,7 @@ test("explains under the table that the fees are on the person's II pillar savin
 
   expect(
     await screen.findByText(
-      /Fees in the table are in euros a year on your current II\spillar savings\./,
+      /Fees in the table are in euros a year on all your current II\spillar savings\./,
     ),
   ).toBeInTheDocument();
 });
@@ -368,7 +368,7 @@ test('describes a fee to screen readers with its explanation', async () => {
   expect(await screen.findByRole('tooltip')).toBeInTheDocument();
 
   expect(fee).toHaveAccessibleDescription(
-    /^This fund's ongoing charges are 0\.28% a year, or 56\s€ on your current II\spillar savings\./,
+    /^This fund's ongoing charges are 0\.28% a year, or 56\s€ on all your current II\spillar savings\./,
   );
 });
 
@@ -505,7 +505,9 @@ test("shows what the person's own contributions would have earned in each fund w
   expect(within(await fundRow(SWEDBANK)).getByText('3.5')).toBeInTheDocument();
   expect(
     screen.getByText(/^Returns and fees are based on your own II\spillar\./),
-  ).toBeInTheDocument();
+  ).toHaveTextContent(
+    /the fees what you would pay a year if all your current savings were in that fund\.$/,
+  );
   const marketReturn = within(await fundRow('World market index')).getByText('6.0');
   expect(marketReturn).toHaveClass('nearMarket');
   const rowNames = within(await fundTable())

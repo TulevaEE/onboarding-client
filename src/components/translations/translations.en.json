@@ -3280,7 +3280,7 @@
   "secondPillarFees.button": "See the fund comparison",
   "secondPillarFunds.title": "All II pillar funds in one table",
   "secondPillarFunds.lead": "Funds can only be compared fairly over the same period, and the longer the better. The table shows every fund's return over <b>the same period, per year</b>. You also see the fees: nobody knows future returns, but fees are charged every year.",
-  "secondPillarFunds.lead.personal": "Returns and fees are based on your own II pillar. The return shows what your contributions would have earned a year in each fund over {years} years, and the fees what you would pay a year on your current savings.",
+  "secondPillarFunds.lead.personal": "Returns and fees are based on your own II pillar. The return shows what your contributions would have earned a year in each fund over {years} years, and the fees what you would pay a year if all your current savings were in that fund.",
   "secondPillarFunds.deadline": "The next deadline to switch funds is <b>{deadline}</b>.",
   "secondPillarFunds.deadline.switch": "Switch funds",
   "secondPillarFunds.filters.label": "Filter funds",
@@ -3391,5 +3391,5 @@
   "secondPillarFunds.lifecycleTip.EE3600103248": "Under the fund's terms, the target share of stocks is 100% until 2031 and then falls to 10% by 2050. As the share of stocks falls, so does the expected long-term return",
   "secondPillarFunds.lifecycleTip.EE3600001848": "Under the fund's terms, the target share of stocks is 100% until 2051 and then falls to 10% by 2070. As the share of stocks falls, so does the expected long-term return",
   "secondPillarFunds.feeBase.standard": "for every 10 000 € in the fund",
-  "secondPillarFunds.feeBase.savings": "on your current II pillar savings"
+  "secondPillarFunds.feeBase.savings": "on all your current II pillar savings"
 }
