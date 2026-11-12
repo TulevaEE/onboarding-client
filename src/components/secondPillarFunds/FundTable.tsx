@@ -120,7 +120,7 @@ const FundTableRow = ({
           years={years}
           benchmark={benchmarks[years]}
           valuationDate={valuationDate}
-          unit={<span className={styles.mobileUnit}>%</span>}
+          unit="%"
           basis={returnBasis}
         />
       </td>
@@ -164,10 +164,7 @@ const MarketRow = ({ rate, years }: { rate: number; years: number }) => {
         className="text-end"
         data-label={intl.formatMessage({ id: 'secondPillarFunds.table.return' }, { years })}
       >
-        <span className={`${styles.value} ${styles.nearMarket}`}>
-          {formatReturn(rate)}
-          <span className={styles.mobileUnit}>%</span>
-        </span>
+        <span className={`${styles.value} ${styles.nearMarket}`}>{formatReturn(rate)}%</span>
       </td>
       <td aria-hidden="true" />
       <td aria-hidden="true" />

@@ -247,10 +247,6 @@ $mobile: 767.98px;
   color: $muted;
 }
 
-.mobileUnit {
-  display: none;
-}
-
 .periodsTitle {
   font-size: 0.85rem;
   font-weight: 600;
@@ -327,9 +323,5 @@ $mobile: 767.98px;
       color: $muted;
       margin-bottom: 0.15rem;
     }
-  }
-
-  .mobileUnit {
-    display: inline;
   }
 }

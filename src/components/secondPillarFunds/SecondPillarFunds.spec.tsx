@@ -169,11 +169,11 @@ test("lists every active II pillar fund with its 5-year return, yearly fee on th
 
   expect(await listedFunds()).toHaveLength(3);
   const tuleva = within(await fundRow(TULEVA));
-  expect(tuleva.getByText('14.9')).toBeInTheDocument();
+  expect(tuleva.getByText('14.9%')).toBeInTheDocument();
   expect(tuleva.getByText('−56 €')).toBeInTheDocument();
   expect(tuleva.getByText('2 500')).toBeInTheDocument();
   const swedbank = within(await fundRow(SWEDBANK));
-  expect(swedbank.getByText('5.4')).toBeInTheDocument();
+  expect(swedbank.getByText('5.4%')).toBeInTheDocument();
   expect(swedbank.getByText('−130 €')).toBeInTheDocument();
   expect(within(await fundRow(LHV)).getByText('—')).toBeInTheDocument();
   expect(await screen.findByText(/World market level/)).toBeInTheDocument();
@@ -184,7 +184,7 @@ test('writes numbers with a decimal point in Estonian too, as the rest of the ap
 
   const table = await screen.findByRole('table', { name: /^Eesti II\ssamba fondide võrdlus/ });
   const tuleva = within(within(table).getByRole('row', { name: new RegExp(TULEVA) }));
-  expect(tuleva.getByText('14.9')).toBeInTheDocument();
+  expect(tuleva.getByText('14.9%')).toBeInTheDocument();
   expect(tuleva.getByText('2 500')).toBeInTheDocument();
 });
 
@@ -244,7 +244,7 @@ test('highlights the Tuleva stock fund and the funds the person saves in for com
 test('explains that a return marked green is close to the world market', async () => {
   renderPage();
 
-  userEvent.hover(within(await fundRow(TULEVA)).getByText('14.9'));
+  userEvent.hover(within(await fundRow(TULEVA)).getByText('14.9%'));
 
   expect(await screen.findByRole('tooltip')).toHaveTextContent(
     /^Over the past 5 years, the fund's return has been close to the world stock market index/,
@@ -332,7 +332,7 @@ test('has no period picker unless the link asks for one', async () => {
 test('compares returns over the period a link asks for, with enough history fetched for it', async () => {
   renderPage('/2nd-pillar-funds?period=10');
 
-  expect(within(await fundRow(TULEVA)).getByText('9.6')).toBeInTheDocument();
+  expect(within(await fundRow(TULEVA)).getByText('9.6%')).toBeInTheDocument();
   expect(screen.getByRole('combobox', { name: 'Return period' })).toHaveValue('10');
   expect(requestedStartDates[0] <= minusYears(new Date().toISOString().slice(0, 10), 10)).toBe(
     true,
@@ -376,7 +376,7 @@ test('speaks of a single year in the market comparison over a one-year period', 
   userBackend(server, { secondPillarOpenDate: '2026-06-01' });
   renderPage('/2nd-pillar-funds?period=1');
 
-  userEvent.hover(within(await fundRow(TULEVA)).getByText('13.6'));
+  userEvent.hover(within(await fundRow(TULEVA)).getByText('13.6%'));
 
   expect(await screen.findByRole('tooltip')).toHaveTextContent(
     /^Over the past year, the fund's return has/,
@@ -501,14 +501,14 @@ test("shows what the person's own contributions would have earned in each fund w
 
   renderPage();
 
-  expect(within(await fundRow(TULEVA)).getByText('8.1')).toBeInTheDocument();
-  expect(within(await fundRow(SWEDBANK)).getByText('3.5')).toBeInTheDocument();
+  expect(within(await fundRow(TULEVA)).getByText('8.1%')).toBeInTheDocument();
+  expect(within(await fundRow(SWEDBANK)).getByText('3.5%')).toBeInTheDocument();
   expect(
     screen.getByText(/^Returns and fees are based on your own II\spillar\./),
   ).toHaveTextContent(
     /the fees what you would pay a year if all your current savings were in that fund\.$/,
   );
-  const marketReturn = within(await fundRow('World market index')).getByText('6.0');
+  const marketReturn = within(await fundRow('World market index')).getByText('6.0%');
   expect(marketReturn).toHaveClass('nearMarket');
   const rowNames = within(await fundTable())
     .getAllByRole('row')
@@ -561,7 +561,7 @@ test('compares the personal return of each fund with the world market return on 
 
   renderPage();
 
-  userEvent.hover(within(await fundRow(TULEVA)).getByText('8.1'));
+  userEvent.hover(within(await fundRow(TULEVA)).getByText('8.1%'));
   expect(await screen.findByRole('tooltip')).toHaveTextContent(
     /^Over the past 5 years, your contributions would have earned close to the world market index return/,
   );
@@ -609,7 +609,7 @@ test("keeps the fund returns when the person's II pillar is younger than the per
 
   renderPage();
 
-  expect(within(await fundRow(TULEVA)).getByText('14.9')).toBeInTheDocument();
+  expect(within(await fundRow(TULEVA)).getByText('14.9%')).toBeInTheDocument();
   expect(
     screen.queryByText(/^Returns and fees are based on your own II\spillar\./),
   ).not.toBeInTheDocument();
