@@ -169,12 +169,8 @@ const MarketRow = ({ rate, years }: { rate: number; years: number }) => {
           <span className={styles.mobileUnit}>%</span>
         </span>
       </td>
-      <td className="text-end">
-        <span className={styles.dash}>—</span>
-      </td>
-      <td className="text-end">
-        <span className={styles.dash}>—</span>
-      </td>
+      <td aria-hidden="true" />
+      <td aria-hidden="true" />
     </tr>
   );
 };

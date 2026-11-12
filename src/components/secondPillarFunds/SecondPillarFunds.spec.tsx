@@ -587,6 +587,20 @@ test("labels the world market row as measured with the person's contributions an
   ).toBeInTheDocument();
 });
 
+test('leaves the fee and size cells of the world market row empty instead of filling them with dashes', async () => {
+  userBackend(server, { secondPillarOpenDate: '2015-03-01' });
+  personalReturnsBackend();
+
+  renderPage();
+
+  const row = await fundRow('World market index');
+  expect(
+    within(row)
+      .getAllByRole('cell')
+      .map((cell) => cell.textContent),
+  ).toEqual(['World market indexwith your contributions', '6.0%']);
+});
+
 test("keeps the fund returns when the person's II pillar is younger than the period", async () => {
   userBackend(server, { secondPillarOpenDate: '2024-03-01' });
   personalReturnsBackend();
