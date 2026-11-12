@@ -9,7 +9,7 @@ export function useDefaultReturns(): UseQueryResult<ReturnComparison> {
       {
         personalKey: Key.SECOND_PILLAR,
         pensionFundKey: Key.EPI,
-        indexKey: Key.UNION_STOCK_INDEX,
+        indexKey: Key.MSCI_ACWI_ADJUSTED,
       },
       START_DATE,
     ),

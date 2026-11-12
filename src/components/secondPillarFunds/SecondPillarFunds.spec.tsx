@@ -481,7 +481,7 @@ const personalReturnsBackend = () => {
           returns: keys.map((key) => ({
             type: 'FUND',
             key,
-            rate: { EE3600109435: 0.0812, UNION_STOCK_INDEX: 0.06 }[key] ?? 0.0345,
+            rate: { EE3600109435: 0.0812, MSCI_ACWI_ADJUSTED: 0.06 }[key] ?? 0.0345,
             amount: 1000,
             paymentsSum: 900,
             currency: 'EUR',
@@ -518,7 +518,7 @@ test("shows what the person's own contributions would have earned in each fund w
     );
   expect(rowNames.slice(0, 2)).toEqual([TULEVA, 'World market index']);
   expect(requests[0].keys).toEqual(
-    expect.arrayContaining(['EE3600109435', 'EE3600019758', 'UNION_STOCK_INDEX']),
+    expect.arrayContaining(['EE3600109435', 'EE3600019758', 'MSCI_ACWI_ADJUSTED']),
   );
   expect(requests[0].from).toBe('2021-07-13');
   expect(requests[0].to).toBe('2026-07-13');
@@ -584,7 +584,7 @@ test("labels the world market row as measured with the person's contributions an
   ).toBeInTheDocument();
   expect(
     screen.getByText(
-      /world market index return \(Morningstar Global Markets; until the end of 2019/,
+      /world market index return \(MSCI ACWI in euros; until 2\sSeptember\s2019 as much in stocks as a II\spillar fund could hold within its limit: 45% until 13\sNovember\s2008, then 70%, the rest in euro bonds\)/,
     ),
   ).toBeInTheDocument();
 });

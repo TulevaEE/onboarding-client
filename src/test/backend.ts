@@ -833,7 +833,7 @@ export function returnsBackend(server: SetupServerApi): void {
         from: '2018-06-06',
         returns: [
           {
-            key: 'UNION_STOCK_INDEX',
+            key: 'MSCI_ACWI_ADJUSTED',
             rate: 0.09,
             amount: 16000.0,
             paymentsSum: 14000.0,
