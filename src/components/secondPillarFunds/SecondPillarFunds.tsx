@@ -430,7 +430,7 @@ export const SecondPillarFunds = () => {
   const fundIsins = rows.map((row) => row.isin);
   const personalReturns = useQuery({
     queryKey: ['personalFundReturns', fundIsins.join(','), personalPeriod],
-    queryFn: () => personalReturnsOf([...fundIsins, Key.UNION_STOCK_INDEX], personalPeriod),
+    queryFn: () => personalReturnsOf([...fundIsins, Key.MSCI_ACWI_ADJUSTED], personalPeriod),
     enabled: showsPersonalReturns && fundIsins.length > 0,
   });
   const personalRateOf = (isin: string) =>
@@ -442,7 +442,7 @@ export const SecondPillarFunds = () => {
         returns: { ...row.returns, [periodYears]: personalRateOf(row.isin) },
       }))
     : rows;
-  const personalMarketRate = personalRateOf(Key.UNION_STOCK_INDEX);
+  const personalMarketRate = personalRateOf(Key.MSCI_ACWI_ADJUSTED);
   const personalBenchmarks: Benchmarks =
     personalMarketRate === null ? {} : { [periodYears]: personalMarketRate };
   const tableBenchmarks = showsPersonalReturns ? personalBenchmarks : benchmarks;
