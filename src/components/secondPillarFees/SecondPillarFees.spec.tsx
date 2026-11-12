@@ -153,14 +153,18 @@ test('rounds half a euro up, as the fee comparison in the nudges does', async ()
   await expectFeeComparison(14, 8, 6);
 });
 
-test('tells a saver whose II pillar is already in low-fee funds that their fees are low', async () => {
+test('tells a saver whose II pillar is already in low-fee funds that their fees are low and leads on to the fund comparison', async () => {
   userConversionBackend(server, { weightedAverageFee: 0.0028 });
   pensionAccountStatementBackend(server, [fundBalance('EE3600109435', 2, 0.0028, 15000)]);
 
   renderPage();
 
   expect(await lowFeesHeading()).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: 'My Account' })).toHaveAttribute('href', '/account');
+  expect(screen.getByRole('link', { name: 'See the fund comparison' })).toHaveAttribute(
+    'href',
+    '/2nd-pillar-funds',
+  );
+  expect(screen.queryByRole('link', { name: 'My Account' })).not.toBeInTheDocument();
   expect(feeComparisonHeading()).not.toBeInTheDocument();
 });
 

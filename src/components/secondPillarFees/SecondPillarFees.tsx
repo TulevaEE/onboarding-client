@@ -13,6 +13,8 @@ import { FeeComparison } from '../common/nudge/Nudge';
 import { TranslationKey } from '../translations';
 import { ACCOUNT_PATH } from '../paths';
 
+const SECOND_PILLAR_FUNDS_PATH = '/2nd-pillar-funds';
+
 const asPercent = (rate: number) => wholeEuros(rate * 10000) / 100;
 
 const feeComparisonOf = (
@@ -47,6 +49,17 @@ const Message = ({ header }: { header: TranslationKey }) => (
   </>
 );
 
+const LowFees = () => (
+  <>
+    <h2 className="text-center mt-3">
+      <FormattedMessage id="secondPillarFees.lowFees.header" />
+    </h2>
+    <Link className="btn btn-primary btn-lg mt-4" to={SECOND_PILLAR_FUNDS_PATH}>
+      <FormattedMessage id="secondPillarFees.button" />
+    </Link>
+  </>
+);
+
 const Fees = ({
   conversion,
   sourceFunds,
@@ -70,12 +83,12 @@ const Fees = ({
     value,
   );
   if (!feeComparison) {
-    return <Message header="secondPillarFees.lowFees.header" />;
+    return <LowFees />;
   }
   return (
     <FeeComparison
       feeComparison={feeComparison}
-      to="/2nd-pillar-funds"
+      to={SECOND_PILLAR_FUNDS_PATH}
       button="secondPillarFees.button"
       buttonSize="large"
     />
