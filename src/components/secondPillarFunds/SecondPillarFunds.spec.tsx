@@ -584,7 +584,7 @@ test("labels the world market row as measured with the person's contributions an
   ).toBeInTheDocument();
   expect(
     screen.getByText(
-      /world market index return \(MSCI ACWI in euros; until 2\sSeptember 2019 only as much in stocks as II\spillar funds were allowed: 50% until 13\sNovember 2008, then 75%, the rest in euro bonds\)/,
+      /world market index return \(MSCI ACWI in euros; until 2\sSeptember 2019 as much in stocks as a II\spillar fund could hold within its limit: 45% until 13\sNovember 2008, then 70%, the rest in euro bonds\)/,
     ),
   ).toBeInTheDocument();
 });
