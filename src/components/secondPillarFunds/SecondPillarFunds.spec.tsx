@@ -535,6 +535,22 @@ test('compares the personal return of each fund with the world market return on 
   ).toBeInTheDocument();
 });
 
+test("labels the world market row as measured with the person's contributions and names its index in the methodology", async () => {
+  userBackend(server, { secondPillarOpenDate: '2015-03-01' });
+  personalReturnsBackend();
+
+  renderPage();
+
+  expect(
+    within(await fundRow('World stock market')).getByText('with your contributions'),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText(
+      /world stock market return \(Morningstar Global Markets index; until the end of 2019/,
+    ),
+  ).toBeInTheDocument();
+});
+
 test("keeps the fund returns when the person's II pillar is younger than the period", async () => {
   userBackend(server, { secondPillarOpenDate: '2024-03-01' });
   personalReturnsBackend();
