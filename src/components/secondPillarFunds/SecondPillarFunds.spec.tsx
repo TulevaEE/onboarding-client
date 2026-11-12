@@ -502,15 +502,15 @@ test("shows what the person's own contributions would have earned in each fund w
   expect(
     screen.getByText(/^Returns and fees are based on your own II\spillar\./),
   ).toBeInTheDocument();
-  const marketReturn = within(await fundRow('World stock market')).getByText('6.0');
+  const marketReturn = within(await fundRow('World market index')).getByText('6.0');
   expect(marketReturn).toHaveClass('nearMarket');
   const rowNames = within(await fundTable())
     .getAllByRole('row')
     .slice(1)
     .map((row) =>
-      [TULEVA, 'World stock market', SWEDBANK, LHV].find((name) => row.textContent?.includes(name)),
+      [TULEVA, 'World market index', SWEDBANK, LHV].find((name) => row.textContent?.includes(name)),
     );
-  expect(rowNames.slice(0, 2)).toEqual([TULEVA, 'World stock market']);
+  expect(rowNames.slice(0, 2)).toEqual([TULEVA, 'World market index']);
   expect(requests[0].keys).toEqual(
     expect.arrayContaining(['EE3600109435', 'EE3600019758', 'UNION_STOCK_INDEX']),
   );
@@ -525,7 +525,7 @@ test('compares the personal return of each fund with the world market return on 
 
   userEvent.hover(within(await fundRow(TULEVA)).getByText('8.1'));
   expect(await screen.findByRole('tooltip')).toHaveTextContent(
-    /^Over the past 5 years, your contributions would have earned close to the world stock market's return/,
+    /^Over the past 5 years, your contributions would have earned close to the world market index return/,
   );
   expect(
     screen.getByText(/A return marked green = your contributions would have earned/),
@@ -542,11 +542,11 @@ test("labels the world market row as measured with the person's contributions an
   renderPage();
 
   expect(
-    within(await fundRow('World stock market')).getByText('with your contributions'),
+    within(await fundRow('World market index')).getByText('with your contributions'),
   ).toBeInTheDocument();
   expect(
     screen.getByText(
-      /world stock market return \(Morningstar Global Markets index; until the end of 2019/,
+      /world market index return \(Morningstar Global Markets; until the end of 2019/,
     ),
   ).toBeInTheDocument();
 });
