@@ -9,6 +9,12 @@ describe('annualizedReturn', () => {
     expect(annualizedReturn(series, 5, '2026-07-13')).toBeCloseTo(2 ** (365.25 / 1826) - 1, 10);
   });
 
+  test('ends on the valuation date, leaving out NAVs the fund published after it', () => {
+    const series = [nav('2021-07-13', 1), nav('2026-07-13', 2), nav('2026-07-14', 3)];
+
+    expect(annualizedReturn(series, 5, '2026-07-13')).toBeCloseTo(2 ** (365.25 / 1826) - 1, 10);
+  });
+
   test('starts from the last NAV on or before the start of the period', () => {
     const series = [nav('2021-07-09', 1), nav('2021-07-14', 1.5), nav('2026-07-13', 2)];
 

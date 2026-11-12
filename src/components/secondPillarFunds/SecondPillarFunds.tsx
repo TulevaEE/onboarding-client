@@ -381,6 +381,27 @@ const TableShimmer = () => (
   </div>
 );
 
+type Period = { from: string; to: string };
+
+const personalPeriodOf = (
+  valuationDate: string | null,
+  years: number,
+  secondPillarOpenDate: string | null | undefined,
+): Period | null => {
+  if (!valuationDate || !secondPillarOpenDate) {
+    return null;
+  }
+  const from = minusYears(valuationDate, years);
+  return secondPillarOpenDate <= from ? { from, to: valuationDate } : null;
+};
+
+const personalReturnsOf = (keys: string[], period: Period | null) => {
+  if (!period) {
+    throw new Error('Personal returns asked for without a period');
+  }
+  return getReturns(keys, period.from, period.to);
+};
+
 export const SecondPillarFunds = () => {
   usePageTitle('pageTitle.secondPillarFunds');
   const { filters, periodPickerShown, periodYears, setFilters, setPeriodYears } = useUrlState();
@@ -404,14 +425,12 @@ export const SecondPillarFunds = () => {
   const benchmarks = valuationDate ? benchmarksOf(worldMarketReturns, valuationDate) : {};
   const benchmarkDate = valuationDate ? benchmarkDateOf(worldMarketReturns, valuationDate) : null;
   const ownFundIsins = (sourceFunds.data ?? []).filter(isOwnFund).map((fund) => fund.isin);
-  const periodStart = minusYears(todayInTallinn(), periodYears);
-  const showsPersonalReturns = Boolean(
-    user?.secondPillarOpenDate && user.secondPillarOpenDate <= periodStart,
-  );
+  const personalPeriod = personalPeriodOf(valuationDate, periodYears, user?.secondPillarOpenDate);
+  const showsPersonalReturns = personalPeriod !== null;
   const fundIsins = rows.map((row) => row.isin);
   const personalReturns = useQuery({
-    queryKey: ['personalFundReturns', fundIsins.join(','), periodStart],
-    queryFn: () => getReturns([...fundIsins, Key.UNION_STOCK_INDEX], periodStart),
+    queryKey: ['personalFundReturns', fundIsins.join(','), personalPeriod],
+    queryFn: () => personalReturnsOf([...fundIsins, Key.UNION_STOCK_INDEX], personalPeriod),
     enabled: showsPersonalReturns && fundIsins.length > 0,
   });
   const personalRateOf = (isin: string) =>

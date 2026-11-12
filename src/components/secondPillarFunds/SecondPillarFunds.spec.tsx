@@ -464,14 +464,18 @@ test('offers to switch funds right next to the deadline at the top', async () =>
 });
 
 const personalReturnsBackend = () => {
-  const requests: { keys: string[]; from: string | null }[] = [];
+  const requests: { keys: string[]; from: string | null; to: string | null }[] = [];
   server.use(
     rest.get('http://localhost/v1/returns', (req, res, ctx) => {
       const keys = [
         ...req.url.searchParams.getAll('keys'),
         ...req.url.searchParams.getAll('keys[]'),
       ];
-      requests.push({ keys, from: req.url.searchParams.get('from') });
+      requests.push({
+        keys,
+        from: req.url.searchParams.get('from'),
+        to: req.url.searchParams.get('to'),
+      });
       return res(
         ctx.json({
           returns: keys.map((key) => ({
@@ -514,7 +518,39 @@ test("shows what the person's own contributions would have earned in each fund w
   expect(requests[0].keys).toEqual(
     expect.arrayContaining(['EE3600109435', 'EE3600019758', 'UNION_STOCK_INDEX']),
   );
-  expect(requests[0].from).toBe(minusYears(new Date().toISOString().slice(0, 10), 5));
+  expect(requests[0].from).toBe('2021-07-13');
+  expect(requests[0].to).toBe('2026-07-13');
+});
+
+test('compares every fund on the newest date all of them have a NAV for, when some publish a day earlier than others', async () => {
+  userBackend(server, { secondPillarOpenDate: '2015-03-01' });
+  const requests = personalReturnsBackend();
+  secondPillarNavHistoriesBackend(
+    server,
+    navHistories.map((fundHistory) =>
+      fundHistory.isin === 'EE3600109435'
+        ? fundHistory
+        : { ...fundHistory, nav: [...fundHistory.nav, nav('2026-07-14', 9)] },
+    ),
+  );
+
+  renderPage();
+
+  const table = await screen.findByRole('table', { name: /^Average annual fund returns/ });
+  const rows = within(table)
+    .getAllByRole('row')
+    .slice(1)
+    .map((row) =>
+      within(row)
+        .getAllByRole('cell')
+        .map((cell) => cell.textContent),
+    );
+  expect(rows).toEqual([
+    [TULEVA, '17.8%', '16.0%', '14.9%'],
+    [SWEDBANK, '6.3%', '5.7%', '5.4%'],
+    [LHV, '12.8%', '11.9%', '—'],
+  ]);
+  expect(requests[0]).toEqual(expect.objectContaining({ from: '2021-07-13', to: '2026-07-13' }));
 });
 
 test('compares the personal return of each fund with the world market return on the same contributions', async () => {

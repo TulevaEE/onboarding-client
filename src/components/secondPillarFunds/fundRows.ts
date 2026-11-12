@@ -1,5 +1,5 @@
 import { Fund, FundNavHistory, WorldMarketReturn, WorldMarketReturns } from '../common/apiModels';
-import { annualizedReturn, daysBetween } from './fundReturns';
+import { annualizedReturn, daysBetween, newestCommonNavDate } from './fundReturns';
 import { FUND_DETAILS, FundDetails } from './fundDetails';
 
 export const NEAR_MARKET_TOLERANCE = 0.01;
@@ -20,15 +20,13 @@ export type Sort = { key: SortKey; direction: 1 | -1 };
 
 export const defaultDirectionOf = (key: SortKey): 1 | -1 => (key === 'fees' ? 1 : -1);
 
-const latestDateOf = (navHistories: FundNavHistory[]) =>
-  navHistories
-    .map((history) => history.nav[history.nav.length - 1].date)
-    .reduce((latest, date) => (date > latest ? date : latest));
+const valuationDateOf = (navHistories: FundNavHistory[]) =>
+  newestCommonNavDate(navHistories.map((history) => history.nav[history.nav.length - 1].date));
 
 export const fundRowsOf = (funds: Fund[], navHistories: FundNavHistory[], years: number[]) => {
   const withNavs = navHistories.filter((history) => history.nav.length > 0);
   const navsByIsin = new Map(withNavs.map((history) => [history.isin, history.nav]));
-  const valuationDate = withNavs.length > 0 ? latestDateOf(withNavs) : null;
+  const valuationDate = withNavs.length > 0 ? valuationDateOf(withNavs) : null;
   const rows: FundRow[] = funds
     .filter((fund) => fund.pillar === 2 && fund.status === 'ACTIVE')
     .map((fund) => {

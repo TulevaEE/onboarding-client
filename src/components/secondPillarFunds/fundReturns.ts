@@ -25,13 +25,23 @@ export const daysBetween = (from: string, to: string) =>
 const lastNavOnOrBefore = (series: NavValue[], date: string) =>
   [...series].reverse().find((nav) => nav.date <= date);
 
+const isStaleOn = (navDate: string, valuationDate: string) =>
+  navDate < addDays(valuationDate, -STALE_NAV_DAYS);
+
+export const newestCommonNavDate = (latestNavDates: string[]) => {
+  const newest = latestNavDates.reduce((latest, date) => (date > latest ? date : latest));
+  return latestNavDates
+    .filter((date) => !isStaleOn(date, newest))
+    .reduce((earliest, date) => (date < earliest ? date : earliest));
+};
+
 export const annualizedReturn = (
   series: NavValue[],
   years: number,
   valuationDate: string,
 ): number | null => {
-  const latest = series[series.length - 1];
-  if (!latest || latest.date < addDays(valuationDate, -STALE_NAV_DAYS)) {
+  const end = lastNavOnOrBefore(series, valuationDate);
+  if (!end || isStaleOn(end.date, valuationDate)) {
     return null;
   }
   const periodStart = minusYears(valuationDate, years);
@@ -39,9 +49,9 @@ export const annualizedReturn = (
   if (
     !start ||
     start.date < addDays(periodStart, -STARTING_NAV_TOLERANCE_DAYS) ||
-    start.date >= latest.date
+    start.date >= end.date
   ) {
     return null;
   }
-  return (latest.value / start.value) ** (DAYS_IN_YEAR / daysBetween(start.date, latest.date)) - 1;
+  return (end.value / start.value) ** (DAYS_IN_YEAR / daysBetween(start.date, end.date)) - 1;
 };
