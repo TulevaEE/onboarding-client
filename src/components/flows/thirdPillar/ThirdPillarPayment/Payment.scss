@@ -76,6 +76,76 @@
   color: white;
 }
 
+.btn.btn-wise,
+.btn.btn-wise:hover {
+  background-color: white;
+  border-color: #163300;
+  color: #163300;
+}
+
+.btn.btn-wise:not(:disabled):not(.disabled):active,
+.btn.btn-wise:not(:disabled):not(.disabled).active {
+  background-color: #9fe870;
+  border-color: #9fe870;
+  color: #163300;
+}
+
+.btn.btn-citadele,
+.btn.btn-citadele:hover {
+  background-color: white;
+  border-color: #251435;
+  color: #251435;
+}
+
+.btn.btn-citadele:not(:disabled):not(.disabled):active,
+.btn.btn-citadele:not(:disabled):not(.disabled).active {
+  background-color: #251435;
+  border-color: #251435;
+  color: white;
+}
+
+.btn.btn-revolut,
+.btn.btn-revolut:hover {
+  background-color: white;
+  border-color: #191c1f;
+  color: #191c1f;
+}
+
+.btn.btn-revolut:not(:disabled):not(.disabled):active,
+.btn.btn-revolut:not(:disabled):not(.disabled).active {
+  background-color: #191c1f;
+  border-color: #191c1f;
+  color: white;
+}
+
+.btn.btn-bigbank,
+.btn.btn-bigbank:hover {
+  background-color: white;
+  border-color: #005876;
+  color: #005876;
+}
+
+.btn.btn-bigbank:not(:disabled):not(.disabled):active,
+.btn.btn-bigbank:not(:disabled):not(.disabled).active {
+  background-color: #005876;
+  border-color: #005876;
+  color: white;
+}
+
+.btn.btn-n26,
+.btn.btn-n26:hover {
+  background-color: white;
+  border-color: #1b1b1b;
+  color: #1b1b1b;
+}
+
+.btn.btn-n26:not(:disabled):not(.disabled):active,
+.btn.btn-n26:not(:disabled):not(.disabled).active {
+  background-color: #1b1b1b;
+  border-color: #1b1b1b;
+  color: white;
+}
+
 .btn.btn-other:not(:disabled):not(.disabled):active,
 .btn.btn-other:not(:disabled):not(.disabled).active {
   background-color: $blue;

@@ -11,7 +11,7 @@ import {
   BankGuide,
   InternetBank,
   isStandingOrderBank,
-  STANDING_ORDER_CHANGE_GUIDES,
+  standingOrderChangeGuideFor,
   StandingOrderBank,
 } from './standingOrderChangeSteps';
 import { trackStandingOrderClick } from './tracking';
@@ -94,7 +94,7 @@ export const ThirdPillarStandingOrderPage = () => {
 
       {bank && (
         <BankChangeGuide
-          guide={STANDING_ORDER_CHANGE_GUIDES[bank]}
+          guide={standingOrderChangeGuideFor(bank)}
           onOpenBank={() => openBank(bank)}
         />
       )}

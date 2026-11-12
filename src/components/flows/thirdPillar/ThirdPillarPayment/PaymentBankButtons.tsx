@@ -1,5 +1,5 @@
 import { BankButton } from './BankButton';
-import { BankKey } from './types';
+import { BANK_KEYS, BankKey } from './types';
 import { TranslationKey } from '../../../translations';
 
 type Props = {
@@ -8,8 +8,6 @@ type Props = {
   showOther?: boolean;
   otherLabel?: TranslationKey;
 };
-
-const BANK_KEYS: readonly BankKey[] = ['swedbank', 'seb', 'lhv', 'luminor', 'coop'];
 
 export const PaymentBankButtons = ({
   paymentBank,

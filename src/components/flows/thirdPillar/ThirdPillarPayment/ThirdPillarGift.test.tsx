@@ -87,6 +87,25 @@ describe('When a user is making a third pillar gift', () => {
     expect(windowLocation).toHaveBeenCalledTimes(1);
   });
 
+  test.each([
+    ['Wise', 'WISE'],
+    ['Citadele', 'CITADELE'],
+    ['Revolut', 'REVOLUT'],
+    ['Bigbank', 'BIGBANK'],
+    ['N26', 'N26'],
+  ])('can give a payment from %s', async (bankName, paymentChannel) => {
+    userEvent.type(await personalCodeInput(), '49001011238');
+    userEvent.type(await amountInput(), '23');
+    userEvent.click(await screen.findByLabelText(bankName));
+    userEvent.click(await makePaymentButton());
+
+    await waitFor(() =>
+      expect(windowLocation).toHaveBeenCalledWith(
+        `https://sandbox-payments.montonio.com?payment_token=example.jwt.token.with.23.EUR.${paymentChannel}`,
+      ),
+    );
+  });
+
   test('can see Other bank payment details', async () => {
     const personalCode = await personalCodeInput();
     const amount = await amountInput();
