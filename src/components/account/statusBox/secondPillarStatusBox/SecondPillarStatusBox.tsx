@@ -90,7 +90,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   // TODO improve loading state handling here
   const { data: mandateDeadlines } = useMandateDeadlines();
   const { data: applications, isInitialLoading: loadingApplications } = usePendingApplications();
-  const { data: fundPensionStatus } = useFundPensionStatus();
+  const { data: fundPensionStatus, isInitialLoading: loadingFundPensions } = useFundPensionStatus();
 
   const leaveApplication: Application | undefined =
     applications &&
@@ -112,8 +112,12 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   };
 
   const contributing = secondPillarContributions?.contributing;
-  const mayHaveFiledToRejoin = !secondPillarActive || contributing !== true;
-  if (loadingApplications && mayHaveFiledToRejoin) {
+  const mayNotBeSaving = !secondPillarActive || contributing !== true;
+  const applicationsDecideTheRow = mayNotBeSaving || conversion.pendingWithdrawal;
+  if (
+    (loadingApplications && applicationsDecideTheRow) ||
+    (loadingFundPensions && mayNotBeSaving)
+  ) {
     return <SecondPillarLoading />;
   }
 
@@ -127,14 +131,9 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     <StoppedContributions
       restartDate={secondPillarContributions?.restartDate}
       rejoinPossibleFrom={secondPillarContributions?.rejoinPossibleFrom}
-      hasFundChoiceOnRecord={secondPillarActive}
       loading={loading}
     />
   );
-
-  if (!secondPillarActive) {
-    return hasStoppedContributing ? stoppedContributions : <SecondPillarMissing {...rowProps} />;
-  }
 
   if (conversion.pendingWithdrawal) {
     return <PendingPartialWithdrawalOrFundPension {...rowProps} />;
@@ -150,6 +149,10 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
 
   if (hasStoppedContributing) {
     return stoppedContributions;
+  }
+
+  if (!secondPillarActive) {
+    return <SecondPillarMissing {...rowProps} />;
   }
 
   const isFullyConvertedToTuleva = conversion.selectionComplete && conversion.transfersComplete;
@@ -536,31 +539,23 @@ const Rejoined = ({ contributionsStartDate }: { contributionsStartDate: string }
 const StoppedContributions = ({
   restartDate,
   rejoinPossibleFrom,
-  hasFundChoiceOnRecord,
   loading,
 }: {
   restartDate: string | null | undefined;
   rejoinPossibleFrom: string | null | undefined;
-  hasFundChoiceOnRecord: boolean;
   loading: boolean;
 }) =>
   restartDate ? (
     <Rejoined contributionsStartDate={restartDate} />
   ) : (
-    <WayBackIn
-      rejoinPossibleFrom={rejoinPossibleFrom}
-      hasFundChoiceOnRecord={hasFundChoiceOnRecord}
-      loading={loading}
-    />
+    <WayBackIn rejoinPossibleFrom={rejoinPossibleFrom} loading={loading} />
   );
 
 const WayBackIn = ({
   rejoinPossibleFrom,
-  hasFundChoiceOnRecord,
   loading,
 }: {
   rejoinPossibleFrom: string | null | undefined;
-  hasFundChoiceOnRecord: boolean;
   loading: boolean;
 }) => {
   const { data: rejoinPermission, isInitialLoading: askingWhetherPermitted } =
@@ -582,7 +577,6 @@ const WayBackIn = ({
               mayRejoin={mayRejoin}
               rejoinDecision={rejoinPermission?.decision}
               rejoinPossibleFrom={rejoinPossibleFrom}
-              hasFundChoiceOnRecord={hasFundChoiceOnRecord}
             />
           </span>
         ),
@@ -599,22 +593,14 @@ const WayBackInExplanation = ({
   mayRejoin,
   rejoinDecision,
   rejoinPossibleFrom,
-  hasFundChoiceOnRecord,
 }: {
   mayRejoin: boolean;
   rejoinDecision: RejoinDecision | undefined;
   rejoinPossibleFrom: string | null | undefined;
-  hasFundChoiceOnRecord: boolean;
 }) => {
   if (mayRejoin) {
     return (
-      <FormattedMessage
-        id={
-          hasFundChoiceOnRecord
-            ? 'account.status.choice.pillar.second.notContributing.line2.fundChoiceOnRecord'
-            : 'account.status.choice.pillar.second.notContributing.line2.noFundChoice'
-        }
-      />
+      <FormattedMessage id="account.status.choice.pillar.second.notContributing.line2.canRejoin" />
     );
   }
   if (rejoinDecision === 'CONTRIBUTIONS_CANNOT_RESTART') {
