@@ -25,7 +25,6 @@ import {
 } from '../../../common/apiHooks';
 import { getSavingsFundOnboardingStatus } from '../../../common/api';
 import { transformChildFormDataToSurveyCommand } from '../utils';
-import { TKF_DOCUMENTS } from './tkfDocuments';
 
 const asIdentityControl = (
   control: Control<ChildOnboardingFormData>,
@@ -220,7 +219,6 @@ export const SavingsFundChildOnboarding = () => {
           key="terms"
           control={control}
           confirmTextId="flows.savingsFundChildOnboarding.termsStep.confirmText"
-          documents={TKF_DOCUMENTS}
         />
       ),
       fields: ['termsAccepted'],
