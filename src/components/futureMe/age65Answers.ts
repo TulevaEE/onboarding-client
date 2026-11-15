@@ -43,8 +43,8 @@ export const initialAge65 = (): Age65Answers => ({
   workUntil: '',
   mode: 'full',
   years: 1,
-  secondPillar: 'grow',
-  thirdPillar: 'grow',
+  secondPillar: 'fund',
+  thirdPillar: 'fund',
   firstPillarChoice: null,
 });
 

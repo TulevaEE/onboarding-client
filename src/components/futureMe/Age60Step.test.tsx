@@ -104,6 +104,46 @@ describe('Age 60 step', () => {
     ).toBeInTheDocument();
   });
 
+  describe('working less in the last years before the pension age', () => {
+    const workloadGroup = () =>
+      screen.getByRole('group', { name: /^Kas vähendad 60-.aastaselt töökoormust\?$/ });
+    const barSecondPillar = () => {
+      const bar = screen.getByRole('complementary', { name: 'Jooksev kokkuvõte' });
+      const item = within(bar)
+        .getAllByRole('listitem')
+        .find((listItem) => /II\ssammas/.test(listItem.textContent ?? '')) as HTMLElement;
+      return Number((item.textContent ?? '').match(/^[\d\s]+€/)?.[0].replace(/\D/g, ''));
+    };
+
+    it('keeps the salary by default and asks the new salary and III pillar payment, filled in with today’s', () => {
+      openAge60Step();
+
+      expect(choice(workloadGroup(), 'Töötan samamoodi edasi')).toBeChecked();
+
+      userEvent.click(choice(workloadGroup(), 'Vähendan koormust'));
+
+      expect(screen.getByRole('spinbutton', { name: /^Uus brutopalk kuus/ })).toHaveValue(2000);
+      expect(screen.getByRole('spinbutton', { name: /^III\ssamba sissemakse kuus/ })).toHaveValue(
+        50,
+      );
+      expect(
+        screen.getByText(
+          /Pensionieas saad valida, kas töötad edasi või lähed pensionile\. Tulevane Mina eeldab, et ka väiksem palk katab sinu kulud, kuni töötad\./,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('collects less in the II pillar by the pension age with the lower salary', () => {
+      openAge60Step();
+      const withSameSalary = barSecondPillar();
+
+      userEvent.click(choice(workloadGroup(), 'Vähendan koormust'));
+      typeInto(screen.getByRole('spinbutton', { name: /^Uus brutopalk kuus/ }), '1000');
+
+      expect(barSecondPillar()).toBeLessThan(withSameSalary);
+    });
+  });
+
   describe('what a payout before the pension age is worth on the deposit', () => {
     const barDeposit = () => {
       const bar = screen.getByRole('complementary', { name: 'Jooksev kokkuvõte' });
@@ -286,7 +326,7 @@ describe('Age 60 step', () => {
       userEvent.click(choice(secondPillarGroup(), 'Võtan igakuiselt'));
 
       expect(trailButtons()).toHaveLength(stepsBefore - 1);
-      expect(trailLabels()).toEqual(['Sina', '60 a', '65+ a', 'Kulud', 'Tulemus']);
+      expect(trailLabels()).toEqual(['Mina', '60 a', '65+ a', 'Kulud', 'Tulemus']);
     });
 
     it('keeps the 66+ step while the III pillar still grows', () => {
@@ -345,10 +385,10 @@ describe('Age 60 step', () => {
     expect(screen.getByText('Millal valida igakuised väljamaksed?')).toBeInTheDocument();
   });
 
-  it('opens the payout pages in the same tab, as most savers are on a phone', () => {
+  it('opens the payout pages in a new tab', () => {
     openAge60Step();
 
-    screen.getAllByRole('link').forEach((link) => expect(link).not.toHaveAttribute('target'));
+    screen.getAllByRole('link').forEach((link) => expect(link).toHaveAttribute('target', '_blank'));
   });
 
   describe('without a second pillar', () => {

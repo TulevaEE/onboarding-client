@@ -46,7 +46,6 @@ import { ResultChartTip } from './ResultChartTip';
 import { useTouchView } from './useTouchView';
 import { useHighContrast } from './useHighContrast';
 import { BeforePension, ChartAssumption, ChartGuide, SummaryNotes } from './ResultChartNotes';
-import { NominalChoice, NominalNote } from './ResultNominalChoice';
 import { nominalResultOf } from './nominal';
 
 const HALO_COLOR = '#fff';
@@ -736,22 +735,19 @@ const IncomeTable = ({ rows, isNominal }: { rows: ChartRow[]; isNominal: boolean
 interface ResultChartProps {
   result: Result;
   need: number;
+  isNominal: boolean;
 }
 
-export const ResultChart = ({ result, need }: ResultChartProps) => {
+export const ResultChart = ({ result, need, isNominal }: ResultChartProps) => {
   const intl = useIntl();
   const [isTableShown, setTableShown] = useState(false);
   const [hidden, setHidden] = useState<ReadonlySet<ChartSourceId>>(new Set());
   const [announcement, setAnnouncement] = useState('');
-  const [isNominal, setNominal] = useState(false);
   const shown = useMemo(() => (isNominal ? nominalResultOf(result) : result), [result, isNominal]);
   const rows = useMemo(() => chartRowsOf(shown, need, isNominal), [shown, need, isNominal]);
   const events = useMemo(() => chartEventsOf(result), [result]);
   const notes = useMemo(() => summaryNotesOf(shown, rows, isNominal), [shown, rows, isNominal]);
-  const assumption = useMemo(
-    () => assumptionOf(result, chartRowsOf(result, need), events),
-    [result, need, events],
-  );
+  const assumption = useMemo(() => assumptionOf(shown, rows, events), [shown, rows, events]);
 
   const toggleLayer = (id: ChartSourceId) => {
     const isHidden = hidden.has(id);
@@ -776,13 +772,9 @@ export const ResultChart = ({ result, need }: ResultChartProps) => {
 
   return (
     <figure className="result-figure" aria-labelledby="future-me-chart-title">
-      <div className="result-figure-head">
-        <h3 id="future-me-chart-title" className="h5 section-title">
-          <FormattedMessage id="futureMe.result.chart.title" />
-        </h3>
-        <NominalChoice isOn={isNominal} onChange={setNominal} />
-      </div>
-      <NominalNote isOn={isNominal} />
+      <h3 id="future-me-chart-title" className="h5 section-title">
+        <FormattedMessage id="futureMe.result.chart.title" />
+      </h3>
       <Summary result={shown} rows={rows} notes={notes} need={need} isNominal={isNominal} />
       {assumption && <ChartAssumption assumption={assumption} />}
       <ChartGuide

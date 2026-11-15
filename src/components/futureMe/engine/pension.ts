@@ -103,6 +103,9 @@ export interface PensionInput {
   p2Early?: SecondPillarEarlyWithdrawal | null;
   p2PayoutFrom?: number;
   p3PayoutFrom?: number;
+  reducedFrom?: number;
+  reducedGross?: number;
+  reducedP3Monthly?: number;
 }
 
 export interface Scenario {
@@ -513,9 +516,17 @@ const isDuringSpecialPension = (input: PensionInput, age?: number): boolean =>
 const stopsWorkForSpecialPension = (input: PensionInput, age?: number): boolean =>
   isDuringSpecialPension(input, age) && input.spWork === false;
 
+const isWorkingLess = (input: PensionInput, age?: number): boolean =>
+  age !== undefined && input.reducedFrom !== undefined && age >= input.reducedFrom;
+
 export function yearlyThirdPillarContribution(input: PensionInput, age?: number): number {
   const a = age !== undefined ? age : CURRENT_YEAR - input.birthYear;
-  const p3Monthly = stopsWorkForSpecialPension(input, age) ? 0 : input.p3Monthly || 0;
+  let p3Monthly = input.p3Monthly || 0;
+  if (stopsWorkForSpecialPension(input, age)) {
+    p3Monthly = 0;
+  } else if (isWorkingLess(input, age) && input.reducedP3Monthly !== undefined) {
+    p3Monthly = input.reducedP3Monthly;
+  }
   return p3Monthly * 12 * p3Factor(input, a);
 }
 
@@ -526,6 +537,8 @@ export function yearlyContribution(input: PensionInput, age?: number): number {
     gross = 0;
   } else if (isDuringSpecialPension(input, age) && input.spGross !== undefined) {
     gross = input.spGross;
+  } else if (isWorkingLess(input, age) && input.reducedGross !== undefined) {
+    gross = input.reducedGross;
   }
   const a = age !== undefined ? age : CURRENT_YEAR - input.birthYear;
   return (
@@ -544,18 +557,20 @@ export function earlyYears(input: Partial<PensionInput>): number {
     (kids.b2021 || 0) +
     (kids.bUnknown || 0);
   const earlyUser = kids.earlyUser || kids.user;
-  let kidsYears = 0;
-  if (earlyUser === 'me') {
+  let kidsRight = 0;
+  if (earlyUser === 'me' || earlyUser === 'split') {
     if (kids.yearsEarly !== undefined) {
-      kidsYears = kids.yearsEarly;
+      kidsRight = kids.yearsEarly;
     } else if (kids.disabled || count >= 5) {
-      kidsYears = 5;
+      kidsRight = 5;
     } else if (count === 4) {
-      kidsYears = 3;
+      kidsRight = 3;
     } else if (count === 3) {
-      kidsYears = 1;
+      kidsRight = 1;
     }
   }
+  // RPKS § 10 lg 3: without the parents' agreement the years are split equally
+  const kidsYears = earlyUser === 'split' ? Math.floor(kidsRight / 2) : kidsRight;
   const { hazardYears } = input;
   let hazardEarly = 0;
   if (input.hazard === 'list1') {
@@ -722,7 +737,16 @@ export function simulate(
   const earlyCut =
     earlyMissing *
     workAccrual(input.grossMonthly || 0, (input.p2Rate || 0) > 0, (input.p2Rate || 0) > 0);
-  const p1Base = (Math.max(0, input.p1Monthly - earlyCut) + kidsMonthly + hazardMonthly) * 12;
+  const yearsWorkingLess =
+    input.reducedFrom !== undefined && input.reducedGross !== undefined
+      ? Math.max(0, ret - Math.max(input.reducedFrom, currentAge))
+      : 0;
+  const workingLessCut =
+    yearsWorkingLess *
+    (workAccrual(input.grossMonthly || 0, (input.p2Rate || 0) > 0, (input.p2Rate || 0) > 0) -
+      workAccrual(input.reducedGross || 0, (input.p2Rate || 0) > 0, (input.p2Rate || 0) > 0));
+  const p1Base =
+    (Math.max(0, input.p1Monthly - earlyCut - workingLessCut) + kidsMonthly + hazardMonthly) * 12;
   // RPKS § 11¹ lg 4: the increasing coefficient applies to the whole pension
   const flexEarly =
     soodus > 0 && !isFlexibleBarred ? Math.min(5, Math.max(0, input.flexEarly || 0)) : 0;
@@ -746,7 +770,11 @@ export function simulate(
   }
   const workEnd = workOn ? Math.max(ret, defaultWorkUntil) : ret;
   const iiJoined = (input.p2Rate || 0) > 0;
-  const accrualYear = 12 * workAccrual(input.grossMonthly || 0, iiJoined, iiJoined);
+  const grossWorkingOn =
+    input.reducedFrom !== undefined && input.reducedGross !== undefined
+      ? input.reducedGross
+      : input.grossMonthly || 0;
+  const accrualYear = 12 * workAccrual(grossWorkingOn, iiJoined, iiJoined);
   const workedBefore = (age: number) =>
     Math.max(0, Math.min(age, workEnd) - Math.max(ret, currentAge));
   const choice = input.firstPillarChoice;

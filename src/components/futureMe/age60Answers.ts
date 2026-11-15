@@ -4,6 +4,7 @@ export type PayoutChoice = 'grow' | 'fund' | 'lump';
 export type PillarsOpening = 'both' | 'second';
 
 export const PAYOUT_CHOICES: PayoutChoice[] = ['grow', 'fund', 'lump'];
+export const PENSION_AGE_PAYOUT_CHOICES: PayoutChoice[] = ['fund', 'grow', 'lump'];
 
 export const PAYOUT_CHOICE_EMOJI: Record<PayoutChoice, string> = {
   grow: '🌱',
@@ -11,9 +12,15 @@ export const PAYOUT_CHOICE_EMOJI: Record<PayoutChoice, string> = {
   lump: '💰',
 };
 
+export interface ReducedPay {
+  gross: string;
+  thirdPillarMonthly: string;
+}
+
 export interface Age60Answers {
   secondPillar: PayoutChoice;
   thirdPillar: PayoutChoice;
+  reducedPay?: ReducedPay;
 }
 
 export const initialAge60 = (): Age60Answers => ({ secondPillar: 'grow', thirdPillar: 'grow' });

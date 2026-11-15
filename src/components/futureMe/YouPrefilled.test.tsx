@@ -87,7 +87,7 @@ describe('Sina step prefilled fields', () => {
         .getAllByTestId(/^icon-/)[0]
         .getAttribute('data-testid');
 
-    expect(iconOf(/^Sina$/)).toBe('icon-user');
+    expect(iconOf(/^Mina$/)).toBe('icon-user');
     expect(iconOf(/^Riiklik pension$/)).toBe('icon-landmark');
     expect(iconOf(/^Töö ja II\ssammas$/)).toBe('icon-briefcase');
     expect(iconOf(/^III\ssammas$/)).toBe('icon-tree');

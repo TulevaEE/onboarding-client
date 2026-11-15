@@ -186,7 +186,7 @@ describe('Age 65 step', () => {
     expect(
       screen.getByRole('heading', { level: 2, name: /^Pensioniiga: riiklik pension ja sambad$/ }),
     ).toBeInTheDocument();
-    expect(screen.getByText('65-aastane · 2027. a · Sinu tulevik')).toBeInTheDocument();
+    expect(screen.getByText('65-aastane · 2027. a · Minu tulevik')).toBeInTheDocument();
     expect(screen.queryByText('Selle sammu sisu lisandub hiljem.')).not.toBeInTheDocument();
   });
 
@@ -251,6 +251,15 @@ describe('Age 65 step', () => {
   describe('the FAQ on deferring and half the pension', () => {
     const openDeferralAnswer = () =>
       userEvent.click(screen.getByText('Mida tähendab pensioni edasilükkamine või pool pensioni?'));
+
+    it('opens the Social Insurance Board page on the flexible pension in a new tab', () => {
+      openAge65Step();
+      openDeferralAnswer();
+
+      expect(
+        screen.getByRole('link', { name: /^Sotsiaalkindlustusamet: paindlik pension/ }),
+      ).toHaveAttribute('target', '_blank');
+    });
 
     it("shows what deferring by a year does to the saver's own pension, for life", () => {
       openAge65Step();
@@ -348,12 +357,23 @@ describe('Age 65 step', () => {
   });
 
   describe('the second and third pillar at the pension age', () => {
-    it('asks for both when growing them was chosen at the earlier step', () => {
+    it('asks for both with the monthly payouts preselected when growing them was chosen at the earlier step', () => {
       openAge65Step();
 
       [secondPillarGroup(), thirdPillarGroup()].forEach((group) => {
         expect(within(group).getAllByRole('radio')).toHaveLength(3);
-        expect(choice(group, 'Kasvatan edasi')).toBeChecked();
+        expect(choice(group, 'Võtan igakuiselt')).toBeChecked();
+      });
+    });
+
+    it('lists the monthly payouts first, growing on second and taking it all at once last', () => {
+      openAge65Step();
+
+      [secondPillarGroup(), thirdPillarGroup()].forEach((group) => {
+        const [first, second, third] = within(group).getAllByRole('radio');
+        expect(first).toHaveAccessibleName('Võtan igakuiselt');
+        expect(second).toHaveAccessibleName('Kasvatan edasi');
+        expect(third).toHaveAccessibleName('Võtan korraga välja');
       });
     });
 

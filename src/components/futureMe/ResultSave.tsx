@@ -5,19 +5,25 @@ import { euro } from './amountFormat';
 import { chartRowsOf, chartSeriesOf, tableRowsOf } from './chartData';
 import { SOURCE_LABELS } from './chartSources';
 import { needMonthly } from './expensesAnswers';
+import { nominalResultOf } from './nominal';
 import { ResultContext, resultOf } from './resultAnswers';
 import { markdownOf, markdownTable } from './resultMarkdown';
 
 type SaveFormat = 'markdown' | 'pdf';
 
 const LEFT_OUT_OF_FILE =
-  '.d-print-none, .result-tiles, .result-save, #future-me-chart-table, .result-chart-legend-hint, .result-chart-legend';
+  '.d-print-none, .result-nominal, .result-tiles, .result-save, #future-me-chart-table, .result-chart-legend-hint, .result-chart-legend';
 const OBJECT_URL_LIFETIME_MS = 1000;
 const PRINT_CHART_WIDTH = 1000;
 const PRINT_CHART_HEIGHT = 352;
 
-const incomeTableOf = (intl: IntlShape, context: ResultContext): string => {
-  const rows = chartRowsOf(resultOf(context), needMonthly(context.expenses));
+const incomeTableOf = (intl: IntlShape, context: ResultContext, isNominal: boolean): string => {
+  const result = resultOf(context);
+  const rows = chartRowsOf(
+    isNominal ? nominalResultOf(result) : result,
+    needMonthly(context.expenses),
+    isNominal,
+  );
   const sources = chartSeriesOf(rows).map(({ id }) => id);
   const head = [
     intl.formatMessage({ id: 'futureMe.result.chart.table.age' }),
@@ -29,19 +35,23 @@ const incomeTableOf = (intl: IntlShape, context: ResultContext): string => {
     ...sources.map((id) => euro(row[id])),
     euro(row.costs),
   ]);
-  const caption = intl.formatMessage({ id: 'futureMe.result.chart.table.caption' });
+  const caption = intl.formatMessage({
+    id: isNominal
+      ? 'futureMe.result.chart.table.captionNominal'
+      : 'futureMe.result.chart.table.caption',
+  });
   return `**${caption}**\n\n${markdownTable(head, body)}`;
 };
 
-const fileOf = (intl: IntlShape, context: ResultContext, page: Element) =>
+const fileOf = (intl: IntlShape, context: ResultContext, isNominal: boolean, page: Element) =>
   `${[
     `# ${intl.formatMessage({ id: 'futureMe.result.save.file.title' })}`,
     `_${intl.formatMessage(
       { id: 'futureMe.result.save.file.intro' },
-      { date: intl.formatDate(new Date()) },
+      { date: intl.formatDate(new Date()), prices: isNominal ? 'future' : 'today' },
     )}_`,
     markdownOf(page, LEFT_OUT_OF_FILE),
-    incomeTableOf(intl, context),
+    incomeTableOf(intl, context, isNominal),
     '---',
     intl.formatMessage({ id: 'futureMe.result.save.file.footer' }),
   ].join('\n\n')}\n`;
@@ -71,7 +81,13 @@ const openForPrint = (page: Element): (() => void) => {
   };
 };
 
-export const ResultSave = ({ context }: { context: ResultContext }) => {
+export const ResultSave = ({
+  context,
+  isNominal,
+}: {
+  context: ResultContext;
+  isNominal: boolean;
+}) => {
   const intl = useIntl();
   const ownRef = useRef<HTMLDivElement>(null);
 
@@ -94,7 +110,7 @@ export const ResultSave = ({ context }: { context: ResultContext }) => {
       return;
     }
     if (page) {
-      download(fileOf(intl, context, page));
+      download(fileOf(intl, context, isNominal, page));
     }
   };
 

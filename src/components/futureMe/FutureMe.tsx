@@ -304,6 +304,10 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           }}
           startedFundPensions={startedAt(FutureMeStep.AGE_60)}
           earlyPayouts={earlyPayoutsOf(resultContext)}
+          currentPay={{
+            gross: answers.grossMonthly,
+            thirdPillarMonthly: answers.thirdPillarMonthly,
+          }}
           onChange={setAge60}
           onContractChange={(pillar, contract) =>
             setAge66((previous) => ({ ...previous, [contractField(pillar)]: contract }))

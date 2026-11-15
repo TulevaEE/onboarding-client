@@ -82,7 +82,7 @@ describe('Result step: assumptions', () => {
     openResultStep();
 
     expect(
-      screen.getByText(/Tootlust ja kulupaketti saad muuta siin, oma andmeid sammus „Sina“/),
+      screen.getByText(/Tootlust ja kulupaketti saad muuta siin, oma andmeid sammus „Mina“/),
     ).toBeVisible();
   });
 
@@ -93,7 +93,7 @@ describe('Result step: assumptions', () => {
       .getAllByRole('heading', { level: 4 })
       .map((heading) => heading.textContent?.replace(/\s/g, ' '));
     expect(titles).toEqual([
-      'Sinu andmed',
+      'Minu andmed',
       'II samba tootlus',
       'III samba tootlus',
       'Kulud pensionil',
@@ -103,7 +103,7 @@ describe('Result step: assumptions', () => {
   it('repeats what was typed about the person and the pillars', () => {
     openResultStep();
 
-    expect(itemTitled(assumptionList(), /^Sinu andmed$/)).toHaveTextContent(
+    expect(itemTitled(assumptionList(), /^Minu andmed$/)).toHaveTextContent(
       /Sündinud 1962, II\ssammas 10\s000\s€, III\ssammas 5\s000\s€/,
     );
   });

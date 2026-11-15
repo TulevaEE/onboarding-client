@@ -29,6 +29,21 @@ const AMOUNT_FIELDS: Amount[] = [
 
 export const nominalFactorAt = (year: number): number => (1 + INFLATION) ** (year - CURRENT_YEAR);
 
+export const nominalFactorAtAge = ({ rows }: Result, age: number): number =>
+  nominalFactorAt(rows[0].year - rows[0].age + age);
+
+export interface Prices {
+  isNominal: boolean;
+  ageShown: number;
+  at: (age: number) => number;
+}
+
+export const pricesOf = (result: Result, isNominal: boolean): Prices => ({
+  isNominal,
+  ageShown: (result.rows.find(({ age }) => age === result.pensionStartAge) ?? result.rows[0]).age,
+  at: (age) => (isNominal ? nominalFactorAtAge(result, age) : 1),
+});
+
 const nominalRowOf = (row: SimulationRow): SimulationRow => {
   const factor = nominalFactorAt(row.year);
   return AMOUNT_FIELDS.reduce(
@@ -37,11 +52,12 @@ const nominalRowOf = (row: SimulationRow): SimulationRow => {
   );
 };
 
-const nominalFirstPillarOf = ({ firstPillar, rows, pensionStartAge, p1StartAge }: Result) => {
+const nominalFirstPillarOf = (result: Result) => {
+  const { firstPillar, rows, pensionStartAge, p1StartAge } = result;
   if (!firstPillar || rows.length === 0) {
     return firstPillar;
   }
-  const factorAt = (age: number) => nominalFactorAt(rows[0].year - rows[0].age + age);
+  const factorAt = (age: number) => nominalFactorAtAge(result, age);
   const { atPa } = firstPillar;
   return {
     ...firstPillar,

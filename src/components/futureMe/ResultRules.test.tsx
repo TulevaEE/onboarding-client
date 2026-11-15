@@ -105,7 +105,7 @@ describe('Result step: rules', () => {
 
   it('adds the fund pension contract rule once a pillar is chosen to be paid as a fund pension', () => {
     openResultStep();
-    const decisions = screen.getByRole('list', { name: 'Sinu otsused' });
+    const decisions = screen.getByRole('list', { name: 'Minu otsused' });
     const payoutAtSixty = within(decisions)
       .getAllByRole('listitem')
       .find((item) => within(item).queryByRole('heading', { name: /^II\ssammas 60-⁠aastaselt$/ }));
@@ -166,7 +166,7 @@ describe('Result step: rules that follow from the answers', () => {
       renderRules(contextWith(grownChildren));
 
       const rule = itemTitled(ruleList(), /^Laste pensionilisa$/);
-      expect(within(rule).getByText(/^Sinu valik: \+\d+\s€\skuus$/)).toBeInTheDocument();
+      expect(within(rule).getByText(/^Minu valik: \+\d+\s€\skuus$/)).toBeInTheDocument();
       expect(rule).toHaveTextContent(/Eripensionile lisa ei lisata/);
     });
 

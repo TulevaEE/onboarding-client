@@ -1,5 +1,4 @@
 import { initialAge60 } from './age60Answers';
-import { initialAge65 } from './age65Answers';
 import {
   contractChosenAt,
   contractStartAgeOf,
@@ -17,12 +16,13 @@ import { fundPensionTerm, LifeTable } from './engine/pension';
 import lifeTableData from './engine/lifeTable.json';
 import { FutureMeStep } from './steps';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
+import { age65Growing } from './resultContextFixture';
 
 const lifeTable: LifeTable = lifeTableData;
 const noPrefill = { birthYear: 1980, sex: null, secondPillarRate: null };
 const you = { ...initialAnswers(noPrefill), pensionAgeYears: '65', thirdPillarMonthly: '50' };
 const plan = toStepPlanInput(you);
-const growing = { age60: initialAge60(), age65: initialAge65() };
+const growing = { age60: initialAge60(), age65: age65Growing() };
 const context = (changes: Partial<typeof growing> = {}) => ({
   ...growing,
   ...changes,
@@ -145,14 +145,14 @@ describe('age66Answers', () => {
 
   describe('payoutAtPensionAge', () => {
     it('takes the choice made at the pension age when growing was chosen at 60', () => {
-      const age65 = { ...initialAge65(), secondPillar: 'fund' as const };
+      const age65 = { ...age65Growing(), secondPillar: 'fund' as const };
 
       expect(payoutAtPensionAge('secondPillar', context({ age65 }))).toBe('fund');
     });
 
     it('keeps the choice made at 60 when it was not growing', () => {
       const age60 = { ...initialAge60(), thirdPillar: 'lump' as const };
-      const age65 = { ...initialAge65(), thirdPillar: 'fund' as const };
+      const age65 = { ...age65Growing(), thirdPillar: 'fund' as const };
 
       expect(payoutAtPensionAge('thirdPillar', context({ age60, age65 }))).toBe('lump');
     });
@@ -170,7 +170,7 @@ describe('age66Answers', () => {
     });
 
     it('is undefined when the pillar is not growing', () => {
-      const age65 = { ...initialAge65(), secondPillar: 'lump' as const };
+      const age65 = { ...age65Growing(), secondPillar: 'lump' as const };
       const answers = { ...initialAge66(), secondPillarFrom: '70' };
 
       expect(fundStartOf('secondPillar', answers, context({ age65 }))).toBeUndefined();
@@ -191,13 +191,13 @@ describe('age66Answers', () => {
     });
 
     it('are asked for a fund pension from the pension age', () => {
-      const age65 = { ...initialAge65(), secondPillar: 'fund' as const };
+      const age65 = { ...age65Growing(), secondPillar: 'fund' as const };
 
       expect(isContractAsked('secondPillar', initialAge66(), context({ age65 }))).toBe(true);
     });
 
     it('are locked with the reason when everything was taken at once', () => {
-      const age65 = { ...initialAge65(), secondPillar: 'lump' as const };
+      const age65 = { ...age65Growing(), secondPillar: 'lump' as const };
 
       expect(contractLock('secondPillar', initialAge66(), context({ age65 }))).toBe('lump');
     });

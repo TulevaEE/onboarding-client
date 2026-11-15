@@ -14,6 +14,7 @@ import {
   effectivePensionAge,
   isAnyFlexibleYearBarredBySpecialPension,
   isKidsRightAvailableToSelf,
+  sharedKidsRightOf,
   isRescueBasisAsked,
   rescueBasisOf,
   rescueRightOf,
@@ -76,7 +77,7 @@ const reasonsText = (intl: IntlShape, answers: YouAnswers): string => {
   );
 };
 
-const summaryOf = (intl: IntlShape, answers: YouAnswers): React.ReactNode => {
+const mainSummaryOf = (intl: IntlShape, answers: YouAnswers): React.ReactNode => {
   const years = earlyRetirementYears(answers);
   const right = earlyRetirementRight(answers);
   const age = pensionAgeValue(answers);
@@ -112,6 +113,35 @@ const summaryOf = (intl: IntlShape, answers: YouAnswers): React.ReactNode => {
   return isRightLeftToOtherParent ? (
     <FormattedMessage id="futureMe.you.earlyYears.summaryOtherParent" />
   ) : null;
+};
+
+const splitNoteOf = (intl: IntlShape, answers: YouAnswers): React.ReactNode => {
+  const share = sharedKidsRightOf(answers);
+  if (share === 0) {
+    return null;
+  }
+  return (
+    <FormattedMessage
+      id="futureMe.you.earlyYears.splitNote"
+      values={{
+        share: share === 0.5 ? 'half' : intl.formatNumber(share),
+        years: earlyRetirementYears(answers),
+      }}
+    />
+  );
+};
+
+const summaryOf = (intl: IntlShape, answers: YouAnswers): React.ReactNode => {
+  const main = mainSummaryOf(intl, answers);
+  const splitNote = splitNoteOf(intl, answers);
+  if (main === null || splitNote === null) {
+    return main ?? splitNote;
+  }
+  return (
+    <>
+      {main} {splitNote}
+    </>
+  );
 };
 
 type RescueCard = 'mix' | 'pension' | 'toetus';

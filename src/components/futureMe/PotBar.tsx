@@ -85,6 +85,9 @@ export const PotBar = ({
           ))}
         <CostsItem context={context} isChosen={isCostsChosen} />
       </ul>
+      <p className="pot-bar-note">
+        <FormattedMessage id="futureMe.potBar.todaysPrices" />
+      </p>
     </aside>
   );
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { initialAge60 } from './age60Answers';
-import { Age65Answers, initialAge65 } from './age65Answers';
+import { Age65Answers } from './age65Answers';
 import { Age66Answers, initialAge66 } from './age66Answers';
 import { ExpensesAnswers, initialExpenses, needMonthly } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
@@ -10,6 +10,7 @@ import { ResultChart } from './ResultChart';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput, YouAnswers } from './youAnswers';
 import translations from '../translations';
+import { age65Growing } from './resultContextFixture';
 
 jest.mock('react-chartjs-2', () => {
   // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
@@ -46,7 +47,7 @@ const contextWith = ({
     you,
     plan: toStepPlanInput(you),
     age60: initialAge60(),
-    age65: { ...initialAge65(), ...age65 },
+    age65: { ...age65Growing(), ...age65 },
     age66: { ...initialAge66(), ...age66 },
     specialPension: { ...initialSpecialPension(), monthly: specialPensionMonthly },
     expenses: { ...initialExpenses(), ...expenses },
@@ -64,7 +65,7 @@ const renderChart = (changes?: Changes) => {
   const result = resultOf(context);
   render(
     <IntlProvider locale="et" messages={translations.et}>
-      <ResultChart result={result} need={needMonthly(context.expenses)} />
+      <ResultChart result={result} need={needMonthly(context.expenses)} isNominal={false} />
     </IntlProvider>,
   );
   return result;

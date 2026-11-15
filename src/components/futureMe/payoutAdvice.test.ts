@@ -1,5 +1,4 @@
 import { initialAge60 } from './age60Answers';
-import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses, withLevel } from './expensesAnswers';
 import {
@@ -14,6 +13,7 @@ import { FutureMeStep } from './steps';
 import { ResultContext, resultOf } from './resultAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
+import { age65Growing } from './resultContextFixture';
 
 const noPrefill = { birthYear: 1980, sex: null, secondPillarRate: null };
 
@@ -35,7 +35,7 @@ const contextWith = (
     you,
     plan: toStepPlanInput(you),
     age60: initialAge60(),
-    age65: initialAge65(),
+    age65: age65Growing(),
     age66: initialAge66(),
     specialPension: initialSpecialPension(),
     expenses: initialExpenses(),
@@ -44,7 +44,7 @@ const contextWith = (
 };
 
 const comfortable = { expenses: withLevel(initialExpenses(), 'comfortable') };
-const fundPension = { ...initialAge65(), secondPillar: 'fund' as const };
+const fundPension = { ...age65Growing(), secondPillar: 'fund' as const };
 const deferredFive = { ...fundPension, mode: 'defer' as const, years: 5 };
 
 const warningFor = (context: ResultContext) => payoutWarningOf(context, resultOf(context));
@@ -95,7 +95,7 @@ describe('payoutAdvice', () => {
         chosen: 'a lump sum at the pension age',
         context: contextWith(
           {},
-          { ...comfortable, age65: { ...initialAge65(), secondPillar: 'lump' } },
+          { ...comfortable, age65: { ...age65Growing(), secondPillar: 'lump' } },
         ),
       },
       {
@@ -145,7 +145,7 @@ describe('payoutAdvice', () => {
     it('offers the payout that carries the most when the chosen one runs short', () => {
       const context = contextWith(
         {},
-        { ...comfortable, age65: { ...initialAge65(), secondPillar: 'lump' } },
+        { ...comfortable, age65: { ...age65Growing(), secondPillar: 'lump' } },
       );
 
       expect(warningFor(context)).toEqual({
@@ -183,7 +183,7 @@ describe('payoutAdvice', () => {
         { hasSpecialPension: true, workAdded: true, specialPensionStartAge: '55' },
         {
           ...comfortable,
-          age65: { ...initialAge65(), secondPillar: 'lump' },
+          age65: { ...age65Growing(), secondPillar: 'lump' },
           specialPension: { ...initialSpecialPension(), monthly: '300' },
         },
       );
@@ -338,7 +338,7 @@ describe('payoutAdvice', () => {
         { thirdPillarJoined: 'after', thirdPillarAmount: '100000', thirdPillarMonthly: '0' },
         {
           age60: { ...initialAge60(), secondPillar: 'lump' },
-          age65: { ...initialAge65(), thirdPillar: 'fund' },
+          age65: { ...age65Growing(), thirdPillar: 'fund' },
         },
       );
 

@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { initialAge60 } from './age60Answers';
+import { euro } from './amountFormat';
 import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
-import { initialExpenses, needMonthly } from './expensesAnswers';
+import { initialExpenses } from './expensesAnswers';
 import { nominalFactorAt } from './nominal';
 import { initialSpecialPension } from './specialPensionAnswers';
-import { ResultChart } from './ResultChart';
+import { DecisionActionsProvider } from './decisionActions';
+import { ResultStep } from './ResultStep';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput, YouAnswers } from './youAnswers';
 import translations from '../translations';
@@ -71,26 +73,42 @@ const withOneFundContract = (): ResultContext => {
   };
 };
 
-const renderChart = (context: ResultContext = contextWith()) =>
+const renderResultPage = (context: ResultContext = contextWith()) =>
   render(
     <IntlProvider locale="et" messages={translations.et}>
-      <ResultChart result={resultOf(context)} need={needMonthly(context.expenses)} />
+      <DecisionActionsProvider value={{ change: jest.fn(), goTo: jest.fn() }}>
+        <ResultStep context={context} headingRef={createRef()} />
+      </DecisionActionsProvider>
     </IntlProvider>,
   );
 
-const pricesGroup = () => screen.getByRole('group', { name: 'Summad graafikul' });
+const pricesGroup = () => screen.getByRole('group', { name: 'Summad tulemuses' });
 const todayPrices = () => within(pricesGroup()).getByRole('button', { name: 'Tänased hinnad' });
 const futurePrices = () => within(pricesGroup()).getByRole('button', { name: 'Tuleviku hinnad' });
+const chartTable = () =>
+  screen.getByRole('region', { name: /^Sissetulek ja kulud kuus vanuse järgi/ });
 const lastChartProps = () => mockChart.mock.calls[mockChart.mock.calls.length - 1][0];
 const costsShown = (): number[] =>
   lastChartProps().options.plugins.costs.points.map(({ amount }: { amount: number }) => amount);
-const NOTE_TEXT = /^Graafik, tabel ja kokkuvõte on tuleviku eurodes/;
+const NOTE_START = /^Kõik summad on (tänastes|tuleviku) eurodes/;
+const PENSION_AGE = 65;
+const shownAmount = (amount: number) => euro(amount).replace(/\s/g, ' ');
+const inFutureEurosAt = (age: number, amount: number) => amount * nominalFactorAt(BIRTH_YEAR + age);
+const answer = () => screen.getByRole('status', { name: 'Kas raha jätkub elu lõpuni?' });
+const tiles = () =>
+  within(screen.getByRole('list', { name: 'Kokkuvõte' })).getAllByRole('listitem');
+const incomeAtPensionAge = () =>
+  within(
+    screen.getByRole('list', { name: `Kuu sissetulek ${PENSION_AGE}-aastaselt` }),
+  ).getAllByRole('listitem');
+const isBefore = (first: HTMLElement, second: HTMLElement) =>
+  first.compareDocumentPosition(second) === Node.DOCUMENT_POSITION_FOLLOWING;
 
 describe('today’s or future prices', () => {
   beforeEach(() => jest.clearAllMocks());
 
   it('lists the same chart changes in future prices, as prices rising alone change nothing', () => {
-    renderChart();
+    renderResultPage();
     const changes = () =>
       within(screen.getByRole('list', { name: 'Mis graafikul juhtub:', hidden: true }))
         .getAllByRole('listitem', { hidden: true })
@@ -103,55 +121,78 @@ describe('today’s or future prices', () => {
   });
 
   it('starts on today’s prices, named in words on both buttons', () => {
-    renderChart();
+    renderResultPage();
 
     expect(todayPrices()).toHaveAttribute('aria-pressed', 'true');
     expect(futurePrices()).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByText('Summad on tänastes eurodes.')).toBeInTheDocument();
   });
 
-  it('marks future prices as chosen once picked, and then explains what the amounts are', () => {
-    renderChart();
+  it('marks future prices as chosen once picked, with no note under the choice', () => {
+    renderResultPage();
 
     userEvent.click(futurePrices());
 
     expect(futurePrices()).toHaveAttribute('aria-pressed', 'true');
     expect(todayPrices()).toHaveAttribute('aria-pressed', 'false');
-    expect(screen.getByText(NOTE_TEXT)).toBeInTheDocument();
-    expect(screen.queryByText('Summad on tänastes eurodes.')).not.toBeInTheDocument();
+    expect(screen.queryByText(NOTE_START)).not.toBeInTheDocument();
+  });
+
+  it('offers the choice at the top of the page, before the answer', () => {
+    renderResultPage();
+
+    expect(isBefore(pricesGroup(), answer())).toBe(true);
   });
 
   it('puts the explanation before the choice', () => {
-    renderChart();
+    renderResultPage();
+    const explanation = screen.getByRole('button', {
+      name: /^Selgitus: Mida näitab „tuleviku hindades“$/,
+    });
 
-    userEvent.tab();
-    expect(
-      screen.getByRole('button', { name: /^Selgitus: Mida näitab „tuleviku hindades“$/ }),
-    ).toHaveFocus();
-    userEvent.tab();
-    expect(todayPrices()).toHaveFocus();
-    userEvent.tab();
-    expect(futurePrices()).toHaveFocus();
+    expect(isBefore(explanation, todayPrices())).toBe(true);
+    expect(isBefore(todayPrices(), futurePrices())).toBe(true);
   });
 
-  it('keeps the note in a polite live region so a screen reader hears the change', () => {
-    renderChart();
-
-    expect(screen.getByText('Summad on tänastes eurodes.')).toHaveAttribute('aria-live', 'polite');
-  });
-
-  it('names only how fast prices rise, as the chosen return already includes it', () => {
-    renderChart(contextWith({ secondPillarReturnPercent: 7, thirdPillarReturnPercent: 4 }, '100'));
+  it('states the costs in the answer in the euros of the pension age', () => {
+    renderResultPage();
 
     userEvent.click(futurePrices());
 
-    expect(screen.getByText(NOTE_TEXT)).toHaveTextContent(
-      /^Graafik, tabel ja kokkuvõte on tuleviku eurodes \(hinnad tõusevad 2%\saastas\)\. Ülejäänud summad on tänastes eurodes\.$/,
+    expect(answer()).toHaveTextContent(
+      new RegExp(`sinu kulud \\(1\\s065\\s€\\skuus ${PENSION_AGE}-\u2060aastaselt\\)`),
+    );
+  });
+
+  it('states the state pension left after the money runs out in the euros of that age', () => {
+    const result = resultOf(contextWith());
+    renderResultPage();
+
+    userEvent.click(futurePrices());
+
+    expect(answer()).toHaveTextContent(
+      `Sammaste vara ja hoius lõpevad ${
+        result.moneyEndAge
+      }-\u2060aastaselt, edasi jääb riiklik pension ${shownAmount(
+        inFutureEurosAt(result.moneyEndAge ?? 0, result.incomeAfterMoney ?? 0),
+      )} kuus.`,
+    );
+  });
+
+  it('states what the plan supports for life in the euros of the pension age', () => {
+    const result = resultOf(contextWith());
+    renderResultPage();
+
+    userEvent.click(futurePrices());
+
+    expect(answer()).toHaveTextContent(
+      `${shownAmount(
+        inFutureEurosAt(PENSION_AGE, result.sustainable),
+      )} kuus ${PENSION_AGE}-\u2060aastaselt.`,
     );
   });
 
   it('turns every amount of the chart into the euros of its year', () => {
-    renderChart();
+    renderResultPage();
     const [todayLayer] = lastChartProps().data.datasets;
 
     userEvent.click(futurePrices());
@@ -166,7 +207,7 @@ describe('today’s or future prices', () => {
   });
 
   it('draws the costs as a flat line in today’s prices and as a rising line in future prices', () => {
-    renderChart();
+    renderResultPage();
     expect(new Set(costsShown()).size).toBe(1);
 
     userEvent.click(futurePrices());
@@ -176,21 +217,21 @@ describe('today’s or future prices', () => {
   });
 
   it('goes back to today’s euros when today’s prices are picked again', () => {
-    renderChart();
+    renderResultPage();
     userEvent.click(futurePrices());
 
     userEvent.click(todayPrices());
 
     expect(todayPrices()).toHaveAttribute('aria-pressed', 'true');
     expect(new Set(costsShown()).size).toBe(1);
-    expect(screen.getByText('Summad on tänastes eurodes.')).toBeInTheDocument();
+    expect(answer()).toHaveTextContent(/sinu kulud \(791\s€\skuus\)/);
   });
 
   it('shows the table in future euros too', () => {
-    renderChart();
+    renderResultPage();
     userEvent.click(screen.getByRole('button', { name: 'Näita tabelina' }));
     const costsInFirstRow = () => {
-      const [, firstRow] = within(screen.getByRole('region')).getAllByRole('row');
+      const [, firstRow] = within(chartTable()).getAllByRole('row');
       return within(firstRow).getAllByRole('cell').pop()?.textContent;
     };
     const before = costsInFirstRow();
@@ -201,17 +242,17 @@ describe('today’s or future prices', () => {
   });
 
   it('names the euros of the table in its caption', () => {
-    renderChart();
+    renderResultPage();
     userEvent.click(screen.getByRole('button', { name: 'Näita tabelina' }));
-    expect(screen.getByRole('region')).toHaveAccessibleName(/tänastes eurodes/);
+    expect(chartTable()).toHaveAccessibleName(/tänastes eurodes/);
 
     userEvent.click(futurePrices());
 
-    expect(screen.getByRole('region')).toHaveAccessibleName(/tuleviku eurodes, pärast tulumaksu/);
+    expect(chartTable()).toHaveAccessibleName(/tuleviku eurodes, pärast tulumaksu/);
   });
 
   it('states the costs in today’s and in future euros in the summary', () => {
-    renderChart();
+    renderResultPage();
     expect(screen.getByRole('list', { name: 'Graafiku kokkuvõte' })).not.toHaveTextContent(
       'tuleviku hindades',
     );
@@ -223,21 +264,50 @@ describe('today’s or future prices', () => {
     );
   });
 
-  it('keeps the assumption in today’s euros, as the note says of the other amounts', () => {
-    renderChart(withOneFundContract());
+  it('states the assumption in future euros too', () => {
+    renderResultPage(withOneFundContract());
     const missing = /Kui ülejäägi kulutad, jääb siis puudu kuni 91\s€\skuus\./;
     expect(screen.getByText(missing)).toBeInTheDocument();
 
     userEvent.click(futurePrices());
 
-    expect(screen.getByText(missing)).toBeInTheDocument();
+    expect(screen.queryByText(missing)).not.toBeInTheDocument();
+    expect(screen.getByText(/Kui ülejäägi kulutad, jääb siis puudu kuni/)).toBeInTheDocument();
+  });
+
+  it('shows the tiles in the euros of the age they name', () => {
+    const result = resultOf(contextWith());
+    renderResultPage();
+
+    userEvent.click(futurePrices());
+
+    expect(tiles()[2]).toHaveTextContent(
+      `${shownAmount(inFutureEurosAt(90, result.spendAt90))} kuus 90-aastaselt`,
+    );
+    expect(tiles()[3]).toHaveTextContent(
+      `${shownAmount(
+        inFutureEurosAt(PENSION_AGE, result.sustainable),
+      )} kuus ${PENSION_AGE}-\u2060aastaselt kannab plaan elu lõpuni`,
+    );
+  });
+
+  it('shows the income at the pension age in the euros of that year', () => {
+    renderResultPage();
+    expect(incomeAtPensionAge().pop()).toHaveTextContent(/Kulud\s*791 €/);
+
+    userEvent.click(futurePrices());
+
+    expect(incomeAtPensionAge().pop()).toHaveTextContent(/Kulud\s*1 065 €/);
+    expect(
+      screen.getByText(`${PENSION_AGE}-\u2060aastaselt, pärast tulumaksu ja tuleviku eurodes.`),
+    ).toBeInTheDocument();
   });
 
   describe('explanation', () => {
     beforeAll(installDialogPolyfill);
 
     it('opens beside the choice', () => {
-      renderChart();
+      renderResultPage();
 
       userEvent.click(
         screen.getByRole('button', { name: /^Selgitus: Mida näitab „tuleviku hindades“$/ }),
@@ -246,6 +316,20 @@ describe('today’s or future prices', () => {
       expect(
         screen.getByRole('dialog', { name: 'Mida näitab „tuleviku hindades“?' }),
       ).toBeInTheDocument();
+    });
+
+    it('names only how fast prices rise, as the chosen return already includes it', () => {
+      renderResultPage(
+        contextWith({ secondPillarReturnPercent: 7, thirdPillarReturnPercent: 4 }, '100'),
+      );
+
+      userEvent.click(
+        screen.getByRole('button', { name: /^Selgitus: Mida näitab „tuleviku hindades“$/ }),
+      );
+
+      expect(screen.getByRole('dialog')).toHaveTextContent(
+        /hinnad tõusevad 2%\saastas \(Euroopa Keskpanga eesmärk\), nii et 1\s000\s€ tänast raha on 65-\u2060aastaselt umbes 1\s346\s€\./,
+      );
     });
   });
 });

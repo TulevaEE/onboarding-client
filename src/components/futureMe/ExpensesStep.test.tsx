@@ -462,7 +462,7 @@ describe('Costs step', () => {
       openBreakdown();
       typeInto(lineField('Muud oma kulud'), '40');
 
-      userEvent.click(within(trail()).getByRole('button', { name: 'Sina, vaadatud' }));
+      userEvent.click(within(trail()).getByRole('button', { name: 'Mina, vaadatud' }));
       userEvent.click(within(trail()).getByRole('button', { name: 'Kulud, vaadatud' }));
 
       expect(levelCard('Mugav')).toBeChecked();

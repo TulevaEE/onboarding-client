@@ -64,7 +64,7 @@ const openResultStep = () => {
   userEvent.click(within(trail()).getByRole('button', { name: /^Tulemus, vaatamata$/ }));
 };
 
-const decisionList = () => screen.getByRole('list', { name: 'Sinu otsused' });
+const decisionList = () => screen.getByRole('list', { name: 'Minu otsused' });
 
 const decisionRow = (heading: RegExp) => {
   const row = within(decisionList())
@@ -86,7 +86,7 @@ describe('Result step: your decisions', () => {
   it('has its own heading with an explanation of what each decision shows', () => {
     openResultStep();
 
-    expect(screen.getByRole('heading', { level: 3, name: 'Sinu otsused' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 3, name: 'Minu otsused' })).toBeInTheDocument();
     expect(
       screen.getByText('Kui muudad valikut, arvutab Tulevane Mina tulemuse kohe uuesti.'),
     ).toBeVisible();
@@ -131,8 +131,8 @@ describe('Result step: your decisions', () => {
   it('shows the choice the answers hold now', () => {
     openResultStep();
 
-    expect(secondPillarAt60()).toHaveTextContent('Sinu valik: Kasvatan edasi');
-    expect(decisionRow(/^Riiklik pension/)).toHaveTextContent('Sinu valik: Kohe täissumma');
+    expect(secondPillarAt60()).toHaveTextContent('Minu valik: Kasvatan edasi');
+    expect(decisionRow(/^Riiklik pension/)).toHaveTextContent('Minu valik: Kohe täissumma');
   });
 
   describe('changing a decision', () => {
@@ -220,7 +220,7 @@ describe('Result step: your decisions', () => {
       userEvent.click(screen.getByRole('radio', { name: 'Võtan korraga välja' }));
 
       expect(spendAt90()).not.toBe(before);
-      expect(secondPillarAt60()).toHaveTextContent('Sinu valik: Võtan korraga välja');
+      expect(secondPillarAt60()).toHaveTextContent('Minu valik: Võtan korraga välja');
     });
 
     it('stops asking about the pension age once the money is taken out earlier', () => {
@@ -238,7 +238,7 @@ describe('Result step: your decisions', () => {
       userEvent.click(changeButton(decisionRow(/^Riiklik pension/)));
       userEvent.click(screen.getByRole('radio', { name: 'Lükkan edasi' }));
 
-      expect(decisionRow(/^Riiklik pension/)).toHaveTextContent('Sinu valik: Lükkan edasi');
+      expect(decisionRow(/^Riiklik pension/)).toHaveTextContent('Minu valik: Lükkan edasi');
     });
 
     describe('deferring the state pension', () => {

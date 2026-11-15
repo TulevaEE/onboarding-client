@@ -2,6 +2,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { deferralLock, deferredMonthly } from './age65Answers';
 import { euro } from './amountFormat';
+import { externalLink } from './ExternalLink';
 import { HELP_LINKS } from './helpLinks';
 import { strong } from './richText';
 import { amountOf, YouAnswers } from './youAnswers';
@@ -14,7 +15,7 @@ const richText = {
   li: (chunks: React.ReactNode) => <li>{chunks}</li>,
   strong,
   small: (chunks: React.ReactNode) => <small className="text-secondary">{chunks}</small>,
-  link: (chunks: React.ReactNode) => <a href={HELP_LINKS.skaFlexiblePension}>{chunks}</a>,
+  link: externalLink(HELP_LINKS.skaFlexiblePension),
 };
 
 export const Age65DeferralFaq = ({ you }: { you: YouAnswers }) => {

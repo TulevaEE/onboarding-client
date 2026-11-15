@@ -29,14 +29,14 @@ const FIVE_CHILDREN = {
 };
 
 describe('age65Answers', () => {
-  it('starts with taking the full state pension, not working, and growing both pillars', () => {
+  it('starts with taking the full state pension, not working, and monthly payouts from both pillars', () => {
     expect(initialAge65()).toEqual({
       work: 'no',
       workUntil: '',
       mode: 'full',
       years: 1,
-      secondPillar: 'grow',
-      thirdPillar: 'grow',
+      secondPillar: 'fund',
+      thirdPillar: 'fund',
       firstPillarChoice: null,
     });
   });

@@ -1,14 +1,20 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { HelpButton } from './HelpButton';
+import { euro } from './amountFormat';
 import { INFLATION } from './engine/pension';
+import { nominalFactorAtAge, Prices } from './nominal';
+import { Result } from './resultAnswers';
 
 const PERCENT = 100;
+const TODAYS_MONEY_EXAMPLE = 1000;
 const GROUP_LABEL_ID = 'future-me-nominal-group';
 
 interface ChoiceProps {
   isOn: boolean;
   onChange: (isOn: boolean) => void;
+  result: Result;
+  prices: Prices;
 }
 
 const CHOICES = [
@@ -16,9 +22,16 @@ const CHOICES = [
   { isNominal: true, label: 'futureMe.result.nominal.future' },
 ] as const;
 
-export const NominalChoice = ({ isOn, onChange }: ChoiceProps) => (
+export const NominalChoice = ({ isOn, onChange, result, prices: { ageShown } }: ChoiceProps) => (
   <div className="result-nominal">
-    <HelpButton topic="nominal" />
+    <HelpButton
+      topic="nominal"
+      values={{
+        inflation: INFLATION * PERCENT,
+        age: ageShown,
+        amount: euro(TODAYS_MONEY_EXAMPLE * nominalFactorAtAge(result, ageShown)),
+      }}
+    />
     <span id={GROUP_LABEL_ID} className="visually-hidden">
       <FormattedMessage id="futureMe.result.nominal.group" />
     </span>
@@ -36,17 +49,4 @@ export const NominalChoice = ({ isOn, onChange }: ChoiceProps) => (
       ))}
     </div>
   </div>
-);
-
-export const NominalNote = ({ isOn }: { isOn: boolean }) => (
-  <p className="result-nominal-note text-secondary text-pretty" aria-live="polite">
-    {isOn ? (
-      <FormattedMessage
-        id="futureMe.result.nominal.note.future"
-        values={{ inflation: INFLATION * PERCENT }}
-      />
-    ) : (
-      <FormattedMessage id="futureMe.result.nominal.note.today" />
-    )}
-  </p>
 );

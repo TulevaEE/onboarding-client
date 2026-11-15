@@ -58,7 +58,7 @@ const showChart = (age65: Partial<Age65Answers> = {}) => {
   const result = resultOf(context);
   render(
     <IntlProvider locale="et" messages={translations.et}>
-      <ResultChart result={result} need={needMonthly(context.expenses)} />
+      <ResultChart result={result} need={needMonthly(context.expenses)} isNominal={false} />
     </IntlProvider>,
   );
   return result;

@@ -1,7 +1,14 @@
 import React, { RefObject } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { Age60Answers, PAYOUT_CHOICE_EMOJI, PAYOUT_CHOICES, PillarsOpening } from './age60Answers';
+import {
+  Age60Answers,
+  PAYOUT_CHOICE_EMOJI,
+  PAYOUT_CHOICES,
+  PillarsOpening,
+  ReducedPay,
+} from './age60Answers';
+import { Age60Workload } from './Age60Workload';
 import { FundPensionFaq } from './FundPensionFaq';
 import { ChapterHead } from './ChapterHead';
 import { FutureMeStep } from './steps';
@@ -40,6 +47,7 @@ interface Props {
   onEndAgeChange: (pillar: Pillar, endAge: string) => void;
   onEditYou: () => void;
   earlyPayouts: EarlyPayouts;
+  currentPay: ReducedPay;
 }
 
 export type EarlyPayouts = Record<Pillar, EarlyPayout | null> & { moneyUseAge: number };
@@ -201,6 +209,7 @@ export const Age60Step = ({
   onEndAgeChange,
   onEditYou,
   earlyPayouts,
+  currentPay,
 }: Props) => {
   const year = birthYear + age;
 
@@ -217,6 +226,7 @@ export const Age60Step = ({
       <p>
         <FormattedMessage id="futureMe.age60.intro" values={{ age, year }} />
       </p>
+      <Age60Workload answers={answers} age={age} currentPay={currentPay} onChange={onChange} />
       <PillarChoices
         pillar="secondPillar"
         answers={answers}

@@ -1,4 +1,4 @@
-import { PAYOUT_CHOICES } from './age60Answers';
+import { PAYOUT_CHOICES, PENSION_AGE_PAYOUT_CHOICES } from './age60Answers';
 import {
   deferralLock,
   isPayoutChoiceMadeAtAnotherStep,
@@ -62,7 +62,8 @@ const payoutDecision = (
   stage: 'age60' | 'age65',
 ): Decision => {
   const age = stage === 'age60' ? payoutAge(context.plan) : retirementAge(context.plan);
-  return decisionAt(context, id, age, context[stage][pillar], PAYOUT_CHOICES);
+  const choices = stage === 'age60' ? PAYOUT_CHOICES : PENSION_AGE_PAYOUT_CHOICES;
+  return decisionAt(context, id, age, context[stage][pillar], choices);
 };
 
 const isLeftGrowingAtPayoutAge = ({ age60, plan }: ResultContext, pillar: Pillar): boolean =>
