@@ -24,12 +24,10 @@ const monthRange = (first: moment.Moment, last: moment.Moment) => (
   </>
 );
 
-const WaitLead = ({ filingOpens }: { filingOpens: string }) => (
+const WaitLead = ({ filingOpens, today }: { filingOpens: string; today: string }) => (
   <FormattedMessage
     id="secondPillarRejoin.notYet.lead"
-    values={{
-      yearsAhead: Number(filingOpens.slice(0, 4)) - Number(todayInTallinn().slice(0, 4)),
-    }}
+    values={{ yearsAhead: Number(filingOpens.slice(0, 4)) - Number(today.slice(0, 4)) }}
   />
 );
 
@@ -51,6 +49,7 @@ const withdrawalFiledBetween = (
 
 export const RejoinNotYet = ({ filingOpens }: { filingOpens: string }) => {
   const { formatMessage } = useIntl();
+  const today = todayInTallinn();
   const { data: completedApplications, isLoading } = useCompletedApplications();
   const lastFilingMonth = moment(filingOpens).add(MONTHS_THE_WINDOW_STAYS_OPEN, 'months');
   const restart = moment(filingOpens).add(MONTHS_FROM_WINDOW_TO_CONTRIBUTIONS, 'months');
@@ -107,7 +106,13 @@ export const RejoinNotYet = ({ filingOpens }: { filingOpens: string }) => {
             </span>{' '}
             <span className={styles.date}>{formatMonth(ended.format(DAY))}</span>
           </li>
-          <li className={styles.now}>
+          <li className={styles.today} aria-current="date">
+            <span className={styles.caption}>
+              <FormattedMessage id="secondPillarRejoin.notYet.today" />
+            </span>{' '}
+            <span className={styles.date}>{formatMonth(today)}</span>
+          </li>
+          <li className={styles.next}>
             <span className={styles.caption}>
               <FormattedMessage id="secondPillarRejoin.notYet.apply" />
             </span>{' '}
@@ -132,7 +137,7 @@ export const RejoinNotYet = ({ filingOpens }: { filingOpens: string }) => {
         </ol>
       }
     >
-      <WaitLead filingOpens={filingOpens} />
+      <WaitLead filingOpens={filingOpens} today={today} />
     </RejoinRefused>
   );
 };

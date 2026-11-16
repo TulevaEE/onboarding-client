@@ -1163,6 +1163,7 @@ describe('When an eligible person rejoins the II pillar', () => {
         timeline: [
           'You applied to withdraw your money December 2094',
           'Contributions ended September 2095',
+          'Today October 2098',
           'Apply to rejoin December 2099 – March 2100',
           'Contributions start again September 2100',
         ],
@@ -1173,6 +1174,7 @@ describe('When an eligible person rejoins the II pillar', () => {
         timeline: [
           'You applied to withdraw your money April 2094',
           'Contributions ended January 2095',
+          'Today October 2098',
           'Apply to rejoin April – July 2099',
           'Contributions start again January 2100',
         ],
@@ -1183,12 +1185,13 @@ describe('When an eligible person rejoins the II pillar', () => {
         timeline: [
           'You applied to withdraw your money August 2094',
           'Contributions ended May 2095',
+          'Today October 2098',
           'Apply to rejoin August – November 2099',
           'Contributions start again May 2100',
         ],
       },
     ])(
-      'shows a person who must wait when they applied, when their contributions ended, when to apply again and when they start again, from $rejoinPossibleFrom',
+      'shows a person who must wait when they applied, when their contributions ended, where they are today, when to apply again and when they start again, from $rejoinPossibleFrom',
       async ({ rejoinPossibleFrom, lead, timeline }) => {
         mustWait(rejoinPossibleFrom);
 
@@ -1197,6 +1200,7 @@ describe('When an eligible person rejoins the II pillar', () => {
         ).getAllByRole('listitem');
         expect(steps).toHaveLength(timeline.length);
         steps.forEach((step, index) => expect(step).toHaveTextContent(timeline[index]));
+        expect(steps[2]).toHaveAttribute('aria-current', 'date');
         expect(screen.getByText(lead)).toBeInTheDocument();
         expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
           'Rejoining the II pillar',

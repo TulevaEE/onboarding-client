@@ -69,18 +69,22 @@
   background: $gray-border-3;
 }
 
-.now {
-  &::before {
-    background: $blue;
-  }
-
-  .caption {
-    color: var(--bs-body-color);
-    font-weight: 500;
-  }
+.today::before {
+  background: $blue;
 }
 
+.past .date,
+.today .date {
+  font-weight: 400;
+}
+
+.next::before,
 .future::before {
   border: 3px solid $blue;
   background: var(--bs-body-bg);
+}
+
+.next .caption {
+  color: var(--bs-body-color);
+  font-weight: 500;
 }
