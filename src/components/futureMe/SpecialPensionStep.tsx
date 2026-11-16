@@ -1,8 +1,8 @@
-import { Age60Answers } from './age60Answers';
 import React, { RefObject, useState } from 'react';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
 import { HelpButton } from './HelpButton';
+import { Age60Answers } from './age60Answers';
 import { Age65Answers, pensionKind } from './age65Answers';
 import { FirstPillarChoice } from './FirstPillarChoice';
 import { Age66Answers } from './age66Answers';

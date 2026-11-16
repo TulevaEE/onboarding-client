@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { amountOf, isRescueAllowanceOnly, YouAnswers } from './youAnswers';
+import { isRescueAllowanceOnly, YouAnswers } from './youAnswers';
 import { Age65Answers, workAccrualMonthly, workUntilOf, workUntilOptions } from './age65Answers';
 import { decimalText, euro } from './amountFormat';
 import { retirementYears } from './engine/pension';

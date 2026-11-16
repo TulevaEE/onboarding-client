@@ -14,7 +14,6 @@ import {
 } from './engine/pension';
 import { StepPlanInput } from './steps';
 import {
-  amountOf,
   earlyRetirementRight,
   earlyRetirementYears,
   isRescueAllowanceOnly,

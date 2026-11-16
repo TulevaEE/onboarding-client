@@ -28,7 +28,7 @@ import { FundPensionFaq } from './FundPensionFaq';
 import { RescueCompareFaq, SpecialCompareFaq } from './KidsCompareFaq';
 import { RescueNotes } from './RescueNotes';
 import { FutureMeStep, StepPlanInput } from './steps';
-import { amountOf, isRescueAllowanceOnly, YouAnswers } from './youAnswers';
+import { isRescueAllowanceOnly, YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
 import { ageTense, hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 import { strong } from './richText';

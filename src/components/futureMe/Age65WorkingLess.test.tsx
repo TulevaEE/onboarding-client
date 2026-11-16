@@ -1,5 +1,5 @@
 import React, { createRef } from 'react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import translations from '../translations';
@@ -11,14 +11,14 @@ import { contextWith } from './resultContextFixture';
 import { statePensionAtRetirementOf } from './reducedPay';
 
 const workingLessFrom60 = { ...initialAge60(), reducedPay: { gross: '1200' } };
+const { you, plan, age66, specialPension } = contextWith();
+const loweredStatePension = euro(statePensionAtRetirementOf(workingLessFrom60, you, plan));
 
-const renderAge65Step = () => {
-  const { you, plan, age66, specialPension } = contextWith();
-  const answers = { ...initialAge65(), work: 'yes' as const };
+const renderAge65Step = () =>
   render(
     <IntlProvider locale="et" messages={translations.et}>
       <Age65Step
-        answers={answers}
+        answers={{ ...initialAge65(), work: 'yes' }}
         you={you}
         plan={plan}
         age60={workingLessFrom60}
@@ -32,8 +32,6 @@ const renderAge65Step = () => {
       />
     </IntlProvider>,
   );
-  return statePensionAtRetirementOf(workingLessFrom60, you, plan);
-};
 
 describe('Age 65 step after working less from the payout age', () => {
   it('says how much each year worked raises the pension with the lower salary', () => {
@@ -47,26 +45,22 @@ describe('Age 65 step after working less from the payout age', () => {
   });
 
   it('shows the state pension lowered by the years worked for less', () => {
-    const statePension = renderAge65Step();
+    renderAge65Step();
 
     expect(
       screen.getByText(
-        `${euro(statePension).replace(/\s/g, ' ')} kuus enne tulumaksu, kohe 65-aastaselt`,
+        `${loweredStatePension.replace(/\s/g, ' ')} kuus enne tulumaksu, kohe 65-aastaselt`,
       ),
     ).toBeInTheDocument();
   });
 
   it('works out what deferring by a year does from the lowered state pension', () => {
-    const statePension = renderAge65Step();
+    renderAge65Step();
 
     userEvent.click(screen.getByText('Mida tähendab pensioni edasilükkamine või pool pensioni?'));
 
     expect(
-      within(
-        screen
-          .getByText('Mida tähendab pensioni edasilükkamine või pool pensioni?')
-          .closest('details') as HTMLElement,
-      ).getByText(new RegExp(euro(statePension).replace(/\s/g, '\\s'))),
+      screen.getByText(new RegExp(`pension ${loweredStatePension.replace(/\s/g, '\\s')} asemel`)),
     ).toBeInTheDocument();
   });
 });
