@@ -340,6 +340,28 @@ describe('today’s or future prices', () => {
     }
   });
 
+  it('keeps a special pension that started in the past at today’s amount in future prices', () => {
+    const context = contextWith();
+    const you = {
+      ...context.you,
+      workAdded: true,
+      hasSpecialPension: true,
+      specialPensionStartAge: '48',
+    };
+    renderResultPage({
+      ...context,
+      you,
+      plan: toStepPlanInput(you),
+      specialPension: { ...initialSpecialPension(), monthly: '1000' },
+    });
+
+    userEvent.click(futurePrices());
+
+    expect(screen.getByRole('list', { name: 'Reeglid ja tulumaksud' })).toHaveTextContent(
+      /Minu valik: 1\s000\s€ kuus enne tulumaksu/,
+    );
+  });
+
   describe('explanation', () => {
     beforeAll(installDialogPolyfill);
 

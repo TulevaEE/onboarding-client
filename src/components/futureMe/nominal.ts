@@ -32,6 +32,8 @@ export const nominalFactorAt = (year: number): number => (1 + INFLATION) ** (yea
 export const nominalFactorAtAge = ({ rows }: Result, age: number): number =>
   nominalFactorAt(rows[0].year - rows[0].age + age);
 
+const TODAYS_PRICES = 1;
+
 export interface Prices {
   isNominal: boolean;
   ageShown: number;
@@ -41,7 +43,8 @@ export interface Prices {
 export const pricesOf = (result: Result, isNominal: boolean): Prices => ({
   isNominal,
   ageShown: (result.rows.find(({ age }) => age === result.pensionStartAge) ?? result.rows[0]).age,
-  at: (age) => (isNominal ? nominalFactorAtAge(result, age) : 1),
+  at: (age) =>
+    isNominal ? Math.max(TODAYS_PRICES, nominalFactorAtAge(result, age)) : TODAYS_PRICES,
 });
 
 const nominalRowOf = (row: SimulationRow): SimulationRow => {
