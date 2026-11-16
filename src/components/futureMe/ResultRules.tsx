@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { Pillar } from './age66Answers';
@@ -82,6 +82,7 @@ const choiceOf = (rule: Rule, intl: IntlShape, prices: Prices): string | null =>
 
 export const ResultRules = ({ context, prices }: { context: ResultContext; prices: Prices }) => {
   const intl = useIntl();
+  const rules = useMemo(() => rulesOf(context), [context]);
   return (
     <>
       <h3 className="h5 section-title mt-4">
@@ -94,7 +95,7 @@ export const ResultRules = ({ context, prices }: { context: ResultContext; price
         className="decision-list"
         aria-label={intl.formatMessage({ id: 'futureMe.result.rules.title' })}
       >
-        {rulesOf(context).map((rule) => {
+        {rules.map((rule) => {
           const choice = choiceOf(rule, intl, prices);
           return (
             <li key={rule.id}>

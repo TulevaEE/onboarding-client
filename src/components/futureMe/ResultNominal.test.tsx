@@ -7,6 +7,7 @@ import { euro } from './amountFormat';
 import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses } from './expensesAnswers';
+import * as pension from './engine/pension';
 import { nominalFactorAt } from './nominal';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { DecisionActionsProvider } from './decisionActions';
@@ -324,6 +325,19 @@ describe('today’s or future prices', () => {
     expect(rules()).toHaveTextContent(
       `${shownAmount(inFutureEurosAt(55, 1000))} kuus enne tulumaksu, alates 55-\u2060aastaselt`,
     );
+  });
+
+  it('works nothing out again when the prices are switched, as only the way the amounts look changes', () => {
+    renderResultPage(withOneFundContract());
+    const simulations = jest.spyOn(pension, 'simulate');
+    try {
+      userEvent.click(futurePrices());
+      userEvent.click(todayPrices());
+
+      expect(simulations).not.toHaveBeenCalled();
+    } finally {
+      simulations.mockRestore();
+    }
   });
 
   describe('explanation', () => {

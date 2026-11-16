@@ -1,4 +1,4 @@
-import React, { RefObject, useState } from 'react';
+import React, { RefObject, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { ProviderDisclaimer } from '../pensionCalculator/ProviderDisclaimer';
@@ -297,10 +297,10 @@ const ReturnAssumption = ({ context }: { context: ResultContext }) => {
 };
 
 export const ResultStep = ({ context, headingRef }: Props) => {
-  const result = resultOf(context);
+  const result = useMemo(() => resultOf(context), [context]);
   const need = needMonthly(context.expenses);
   const [isNominal, setNominal] = useState(false);
-  const shown = isNominal ? nominalResultOf(result) : result;
+  const shown = useMemo(() => (isNominal ? nominalResultOf(result) : result), [isNominal, result]);
   const prices = pricesOf(result, isNominal);
   const [openDecision, setOpenDecision] = useState<DecisionId | null>(null);
   const [focusRequests, setFocusRequests] = useState(0);

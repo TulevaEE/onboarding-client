@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { euro } from './amountFormat';
@@ -164,8 +164,8 @@ const Surplus = ({
 );
 
 export const ResultAdvice = ({ context, result, prices, onOpenDecision }: Props) => {
-  const warning = payoutWarningOf(context, result);
-  const tip = surplusTipOf(context, result);
+  const warning = useMemo(() => payoutWarningOf(context, result), [context, result]);
+  const tip = useMemo(() => surplusTipOf(context, result), [context, result]);
   return (
     <>
       {warning && (

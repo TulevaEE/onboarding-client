@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { deferralLock } from './age65Answers';
@@ -219,7 +219,7 @@ export const ResultLegacy = ({ context, result, prices }: Props) => {
   const [planChanges, setPlanChanges] = useState(0);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const { change: changeDecisions, goTo } = useDecisionActions();
-  const legacy = legacyOf(context, result);
+  const legacy = useMemo(() => legacyOf(context, result), [context, result]);
 
   useEffect(() => {
     if (planChanges > 0) {
