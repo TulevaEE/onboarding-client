@@ -98,7 +98,9 @@ const thirdPillarContributionChangeOf = ({
   plan,
 }: ResultContext): ContributionChange | undefined => {
   const pay = payFromPayoutAgeOf(age60, you, plan);
-  return pay ? { from: pay.age, monthly: pay.thirdPillarMonthly } : undefined;
+  return pay?.thirdPillarMonthly === undefined
+    ? undefined
+    : { from: pay.age, monthly: pay.thirdPillarMonthly };
 };
 
 const contributionsBefore = (context: ResultContext, untilAge: number): number => {

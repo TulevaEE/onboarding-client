@@ -4,7 +4,7 @@ import { initialAge66 } from './age66Answers';
 import { initialExpenses, withLevel } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { age55Of, thirdPillarPayout, thirdPillarPayoutInputOf } from './age55';
-import { CURRENT_YEAR, DEPOSIT_REAL_RETURN } from './engine/pension';
+import { CURRENT_YEAR, DEPOSIT_REAL_RETURN, yearlyContribution } from './engine/pension';
 import {
   coverageKind,
   earlyThirdPillarOf,
@@ -426,13 +426,42 @@ describe('resultAnswers', () => {
       expect(resultInputOf(contextWith()).reducedFrom).toBeUndefined();
     });
 
-    it('keeps following the salary in the Mina step while only the III pillar payment is lowered', () => {
+    it('changes no salary when only the III pillar payment is lowered', () => {
       const context = contextWith(
         { grossMonthly: '2500', thirdPillarJoined: 'after', thirdPillarMonthly: '100' },
         { age60: { ...initialAge60(), reducedPay: { thirdPillarMonthly: '40' } } },
       );
 
-      expect(resultInputOf(context)).toMatchObject({ reducedGross: 2500, reducedP3Monthly: 40 });
+      expect(resultInputOf(context)).toMatchObject({ reducedFrom: 60, reducedP3Monthly: 40 });
+      expect(resultInputOf(context).reducedGross).toBeUndefined();
+    });
+
+    it('keeps the salary a special pension set before the payout age when only the III pillar payment is lowered', () => {
+      const context = contextWith(
+        {
+          thirdPillarMonthly: '100',
+          workAdded: true,
+          hasSpecialPension: true,
+          specialPensionStartAge: '55',
+        },
+        {
+          age60: { ...initialAge60(), reducedPay: { thirdPillarMonthly: '40' } },
+          specialPension: {
+            ...initialSpecialPension(),
+            monthly: '800',
+            pay: 'change',
+            gross: '1500',
+          },
+        },
+      );
+      const input = resultInputOf(context);
+
+      expect(yearlyContribution(input, 60)).toBe(
+        yearlyContribution(
+          { ...input, grossMonthly: 1500, reducedFrom: undefined, p3Monthly: 40 },
+          60,
+        ),
+      );
     });
 
     it('pays nothing from the payout age into a III pillar the saver does not have', () => {
@@ -441,7 +470,8 @@ describe('resultAnswers', () => {
         { age60: { ...initialAge60(), reducedPay: { gross: '1200', thirdPillarMonthly: '100' } } },
       );
 
-      expect(resultInputOf(context)).toMatchObject({ reducedGross: 1200, reducedP3Monthly: 0 });
+      expect(resultInputOf(context).reducedGross).toBe(1200);
+      expect(resultInputOf(context).reducedP3Monthly).toBeUndefined();
     });
 
     describe('for the III pillar', () => {

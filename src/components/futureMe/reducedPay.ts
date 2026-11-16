@@ -2,33 +2,35 @@ import { Age60Answers } from './age60Answers';
 import { PensionInput, statePensionCutForWorkingLess } from './engine/pension';
 import { ageTense, hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 import { StepPlanInput } from './steps';
-import { amountOf, thirdPillarMonthlyOf, YouAnswers } from './youAnswers';
+import { amountOf, YouAnswers } from './youAnswers';
 
 export interface PayFromPayoutAge {
   age: number;
-  gross: number;
-  thirdPillarMonthly: number;
-  isThirdPillarAsked: boolean;
+  gross?: number;
+  thirdPillarMonthly?: number;
 }
+
+export const isWorkloadAskedAt = (plan: StepPlanInput): boolean =>
+  ageTense(plan.birthYear, payoutAge(plan)) !== 'past' && payoutAge(plan) < retirementAge(plan);
+
+const typedAmount = (typed: string | undefined): number | undefined =>
+  typed === undefined ? undefined : amountOf(typed);
 
 export const payFromPayoutAgeOf = (
   { reducedPay }: Pick<Age60Answers, 'reducedPay'>,
   you: YouAnswers,
   plan: StepPlanInput,
 ): PayFromPayoutAge | null => {
-  const age = payoutAge(plan);
-  if (!reducedPay || ageTense(plan.birthYear, age) === 'past') {
+  if (!reducedPay || !isWorkloadAskedAt(plan)) {
     return null;
   }
-  const isThirdPillarAsked = hasThirdPillarAt(you, plan, age);
+  const age = payoutAge(plan);
   return {
     age,
-    gross: amountOf(reducedPay.gross ?? you.grossMonthly),
-    thirdPillarMonthly:
-      isThirdPillarAsked && reducedPay.thirdPillarMonthly !== undefined
-        ? amountOf(reducedPay.thirdPillarMonthly)
-        : thirdPillarMonthlyOf(you),
-    isThirdPillarAsked,
+    gross: typedAmount(reducedPay.gross),
+    thirdPillarMonthly: hasThirdPillarAt(you, plan, age)
+      ? typedAmount(reducedPay.thirdPillarMonthly)
+      : undefined,
   };
 };
 

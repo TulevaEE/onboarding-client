@@ -17,6 +17,7 @@ import { Age55Step } from './Age55Step';
 import { age55Of } from './age55';
 import { Age60Answers, pillarsOpeningAt60 } from './age60Answers';
 import { initialAge60For, payoutChoicesAtPayoutAge } from './age65Answers';
+import { isWorkloadAskedAt } from './reducedPay';
 import { Age60Step } from './Age60Step';
 import { Age65Step } from './Age65Step';
 import {
@@ -321,6 +322,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
             thirdPillarMonthly: answers.thirdPillarMonthly,
           }}
           payoutChoices={payoutChoicesAtPayoutAge(plan)}
+          isWorkloadAsked={isWorkloadAskedAt(plan)}
           onChange={setAge60}
           onContractChange={(pillar, contract) =>
             setAge66((previous) => ({ ...previous, [contractField(pillar)]: contract }))

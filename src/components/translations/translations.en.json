@@ -3139,7 +3139,7 @@
   "futureMe.result.assumptions.title": "Assumptions",
   "futureMe.result.assumptions.intro": "The calculation is based on these details and assumptions. You can change the return and the cost level here, and your details in the “Me” step: the result is calculated again straight away.",
   "futureMe.result.assumptions.you.title": "My details",
-  "futureMe.result.assumptions.you.text": "Born {birthYear}{hasSecondPillar, select, yes {, II pillar {secondPillar}} other {}}{hasThirdPillar, select, yes {, III pillar {thirdPillar}} other {}}{hasSpecialPension, select, yes {, special pension {specialPension} a month} other {}}{hasReducedPay, select, yes {, from age {reducedFrom} a gross salary of {reducedGross}{hasReducedThirdPillar, select, yes { and a III pillar contribution of {reducedThirdPillar}} other {}} a month} other {}}",
+  "futureMe.result.assumptions.you.text": "Born {birthYear}{hasSecondPillar, select, yes {, II pillar {secondPillar}} other {}}{hasThirdPillar, select, yes {, III pillar {thirdPillar}} other {}}{hasSpecialPension, select, yes {, special pension {specialPension} a month} other {}}{hasReducedPay, select, yes {, from age {reducedFrom} {hasReducedGross, select, yes {a gross salary of {reducedGross}{hasReducedThirdPillar, select, yes { and } other {}}} other {}}{hasReducedThirdPillar, select, yes {a III pillar contribution of {reducedThirdPillar}} other {}} a month} other {}}",
   "futureMe.result.assumptions.you.change": "Change in the “Me” step",
   "futureMe.result.assumptions.secondPillarFund.title": "II pillar return",
   "futureMe.result.assumptions.thirdPillarFund.title": "III pillar return",

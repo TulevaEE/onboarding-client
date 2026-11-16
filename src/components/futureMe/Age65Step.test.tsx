@@ -591,6 +591,10 @@ describe('Age 65 step', () => {
       openAge65Step({ withFiveChildren: true, trailName: /^61\sa sambad, vaatamata$/ });
     });
 
+    it('does not ask about working less from the payout age, as the saver has retired by then', () => {
+      expect(screen.queryByRole('group', { name: /töökoormust/ })).not.toBeInTheDocument();
+    });
+
     it('lists the monthly payouts first and preselects them, as at the pension age', () => {
       const [first] = within(
         screen.getByRole('group', { name: /^II\ssamba väljamakse viis$/ }),

@@ -3229,7 +3229,7 @@
   "futureMe.result.assumptions.title": "Eeldused",
   "futureMe.result.assumptions.intro": "Arvutus tugineb neile andmetele ja eeldustele. Tootlust ja kulupaketti saad muuta siin, oma andmeid sammus „Mina“: tulemus arvutatakse kohe uuesti.",
   "futureMe.result.assumptions.you.title": "Minu andmed",
-  "futureMe.result.assumptions.you.text": "Sündinud {birthYear}{hasSecondPillar, select, yes {, II sammas {secondPillar}} other {}}{hasThirdPillar, select, yes {, III sammas {thirdPillar}} other {}}{hasSpecialPension, select, yes {, eripension {specialPension} kuus} other {}}{hasReducedPay, select, yes {, alates {reducedFrom}-⁠aastaselt brutopalk {reducedGross}{hasReducedThirdPillar, select, yes { ja III samba sissemakse {reducedThirdPillar}} other {}} kuus} other {}}",
+  "futureMe.result.assumptions.you.text": "Sündinud {birthYear}{hasSecondPillar, select, yes {, II sammas {secondPillar}} other {}}{hasThirdPillar, select, yes {, III sammas {thirdPillar}} other {}}{hasSpecialPension, select, yes {, eripension {specialPension} kuus} other {}}{hasReducedPay, select, yes {, alates {reducedFrom}-⁠aastaselt {hasReducedGross, select, yes {brutopalk {reducedGross}{hasReducedThirdPillar, select, yes { ja } other {}}} other {}}{hasReducedThirdPillar, select, yes {III samba sissemakse {reducedThirdPillar}} other {}} kuus} other {}}",
   "futureMe.result.assumptions.you.change": "Muuda sammus „Mina“",
   "futureMe.result.assumptions.secondPillarFund.title": "II samba tootlus",
   "futureMe.result.assumptions.thirdPillarFund.title": "III samba tootlus",

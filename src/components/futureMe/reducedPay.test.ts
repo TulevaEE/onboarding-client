@@ -22,6 +22,17 @@ describe('the state pension at retirement after working less from the payout age
     expect(statePensionAtRetirementOf(workingLessFrom60, you, plan)).toBe(700);
   });
 
+  it('is the state pension from the Mina step for a saver who retires by the payout age', () => {
+    const { you, plan } = contextWith({
+      kidsAdded: true,
+      kidsCount: '5',
+      kidsBirthYears: ['1990', '1992', '1994', '1996', '1998'],
+      kidsDisabled: [false, false, false, false, false],
+    });
+
+    expect(statePensionAtRetirementOf(workingLessFrom60, you, plan)).toBe(700);
+  });
+
   it('is the state pension from the Mina step while the workload stays the same', () => {
     const { you, plan } = contextWith();
 

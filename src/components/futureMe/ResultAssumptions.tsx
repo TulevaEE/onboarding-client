@@ -27,13 +27,20 @@ const AssumptionIcon = ({ assumption }: { assumption: Assumption }) => {
   );
 };
 
-const payFromPayoutAgeValues = (pay: PayFromPayoutAge | null) => ({
-  hasReducedPay: pay === null ? 'no' : 'yes',
-  reducedFrom: pay?.age ?? 0,
-  reducedGross: euro(pay?.gross ?? 0),
-  hasReducedThirdPillar: pay?.isThirdPillarAsked ? 'yes' : 'no',
-  reducedThirdPillar: euro(pay?.thirdPillarMonthly ?? 0),
-});
+const yesWhen = (isTrue: boolean) => (isTrue ? 'yes' : 'no');
+
+const payFromPayoutAgeValues = (pay: PayFromPayoutAge | null) => {
+  const hasReducedGross = pay?.gross !== undefined;
+  const hasReducedThirdPillar = pay?.thirdPillarMonthly !== undefined;
+  return {
+    hasReducedPay: yesWhen(hasReducedGross || hasReducedThirdPillar),
+    reducedFrom: pay?.age ?? 0,
+    hasReducedGross: yesWhen(hasReducedGross),
+    reducedGross: euro(pay?.gross ?? 0),
+    hasReducedThirdPillar: yesWhen(hasReducedThirdPillar),
+    reducedThirdPillar: euro(pay?.thirdPillarMonthly ?? 0),
+  };
+};
 
 const AssumptionText = ({ assumption }: { assumption: Assumption }) => {
   const intl = useIntl();

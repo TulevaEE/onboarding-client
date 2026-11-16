@@ -49,6 +49,7 @@ interface Props {
   earlyPayouts: EarlyPayouts;
   currentPay: Required<ReducedPay>;
   payoutChoices: PayoutChoice[];
+  isWorkloadAsked: boolean;
 }
 
 export type EarlyPayouts = Record<Pillar, EarlyPayout | null> & { moneyUseAge: number };
@@ -214,6 +215,7 @@ export const Age60Step = ({
   earlyPayouts,
   currentPay,
   payoutChoices,
+  isWorkloadAsked,
 }: Props) => {
   const year = birthYear + age;
 
@@ -230,7 +232,7 @@ export const Age60Step = ({
       <p>
         <FormattedMessage id="futureMe.age60.intro" values={{ age, year }} />
       </p>
-      {tense !== 'past' && (
+      {isWorkloadAsked && (
         <Age60Workload
           answers={answers}
           age={age}
