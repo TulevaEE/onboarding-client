@@ -104,7 +104,15 @@ describe('Age 60 step', () => {
     ).toBeInTheDocument();
   });
 
+  it('does not ask about the workload once the payout age is past, as the salary in the Mina step is already today’s', () => {
+    openAge60Step();
+
+    expect(screen.queryByRole('group', { name: /töökoormust/ })).not.toBeInTheDocument();
+  });
+
   describe('working less in the last years before the pension age', () => {
+    beforeEach(() => loggedInAs({ dateOfBirth: '1970-06-01' }));
+
     const workloadGroup = () =>
       screen.getByRole('group', { name: /^Kas vähendad 60-.aastaselt töökoormust\?$/ });
     const barSecondPillar = () => {

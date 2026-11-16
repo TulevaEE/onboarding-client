@@ -226,13 +226,15 @@ export const Age60Step = ({
       <p>
         <FormattedMessage id="futureMe.age60.intro" values={{ age, year }} />
       </p>
-      <Age60Workload
-        answers={answers}
-        age={age}
-        currentPay={currentPay}
-        hasThirdPillar={hasThirdPillar}
-        onChange={onChange}
-      />
+      {tense !== 'past' && (
+        <Age60Workload
+          answers={answers}
+          age={age}
+          currentPay={currentPay}
+          hasThirdPillar={hasThirdPillar}
+          onChange={onChange}
+        />
+      )}
       <PillarChoices
         pillar="secondPillar"
         answers={answers}

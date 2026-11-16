@@ -1,6 +1,6 @@
 import { Age60Answers } from './age60Answers';
 import { PensionInput, statePensionCutForWorkingLess } from './engine/pension';
-import { hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
+import { ageTense, hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 import { StepPlanInput } from './steps';
 import { amountOf, thirdPillarMonthlyOf, YouAnswers } from './youAnswers';
 
@@ -16,10 +16,10 @@ export const payFromPayoutAgeOf = (
   you: YouAnswers,
   plan: StepPlanInput,
 ): PayFromPayoutAge | null => {
-  if (!reducedPay) {
+  const age = payoutAge(plan);
+  if (!reducedPay || ageTense(plan.birthYear, age) === 'past') {
     return null;
   }
-  const age = payoutAge(plan);
   const isThirdPillarAsked = hasThirdPillarAt(you, plan, age);
   return {
     age,

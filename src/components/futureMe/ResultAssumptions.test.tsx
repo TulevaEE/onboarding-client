@@ -109,6 +109,7 @@ describe('Result step: assumptions', () => {
   });
 
   it('repeats the lower salary and III pillar payment from the payout age', () => {
+    loggedInAs({ dateOfBirth: '1970-06-01' });
     openResultStep();
     userEvent.click(within(trail()).getByRole('button', { name: /^60\sa, vaatamata$/ }));
     userEvent.click(
