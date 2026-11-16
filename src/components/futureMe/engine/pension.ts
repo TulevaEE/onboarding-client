@@ -530,15 +530,36 @@ export function yearlyThirdPillarContribution(input: PensionInput, age?: number)
   return p3Monthly * 12 * p3Factor(input, a);
 }
 
+interface SalaryChange {
+  from: number;
+  gross: number;
+}
+
+const salaryChangesOf = (input: PensionInput): SalaryChange[] => [
+  ...((input.spMonthly || 0) > 0 && input.spGross !== undefined
+    ? [{ from: specialStart(input), gross: input.spGross }]
+    : []),
+  ...(input.reducedFrom !== undefined && input.reducedGross !== undefined
+    ? [{ from: input.reducedFrom, gross: input.reducedGross }]
+    : []),
+];
+
+const grossAt = (input: PensionInput, age: number): number =>
+  salaryChangesOf(input).reduce<SalaryChange | null>(
+    (latest, change) =>
+      age >= change.from && (latest === null || change.from >= latest.from) ? change : latest,
+    null,
+  )?.gross ??
+  input.grossMonthly ??
+  0;
+
 export function yearlyContribution(input: PensionInput, age?: number): number {
   const rate = input.p2Rate || 0;
   let gross = input.grossMonthly || 0;
   if (stopsWorkForSpecialPension(input, age)) {
     gross = 0;
-  } else if (isDuringSpecialPension(input, age) && input.spGross !== undefined) {
-    gross = input.spGross;
-  } else if (isWorkingLess(input, age) && input.reducedGross !== undefined) {
-    gross = input.reducedGross;
+  } else if (age !== undefined) {
+    gross = grossAt(input, age);
   }
   const a = age !== undefined ? age : CURRENT_YEAR - input.birthYear;
   return (
@@ -770,13 +791,18 @@ export function simulate(
   }
   const workEnd = workOn ? Math.max(ret, defaultWorkUntil) : ret;
   const iiJoined = (input.p2Rate || 0) > 0;
-  const grossWorkingOn =
-    input.reducedFrom !== undefined && input.reducedGross !== undefined
-      ? input.reducedGross
-      : input.grossMonthly || 0;
-  const accrualYear = 12 * workAccrual(grossWorkingOn, iiJoined, iiJoined);
-  const workedBefore = (age: number) =>
-    Math.max(0, Math.min(age, workEnd) - Math.max(ret, currentAge));
+  const workingOnFrom = Math.max(ret, currentAge);
+  const accrualYearAt = (age: number) => {
+    const gross =
+      isWorkingLess(input, age) && input.reducedGross !== undefined
+        ? input.reducedGross
+        : input.grossMonthly || 0;
+    return 12 * workAccrual(gross, iiJoined, iiJoined);
+  };
+  const accruedBefore = (age: number) =>
+    Array.from({ length: Math.max(0, Math.min(age, workEnd) - workingOnFrom) }, (_, offset) =>
+      accrualYearAt(workingOnFrom + offset),
+    ).reduce((sum, accrual) => sum + accrual, 0);
   const choice = input.firstPillarChoice;
   const prefersSpecial = (choiceMade: FirstPillarChoice | undefined, oldAgeYear: number) => {
     if (choiceMade === 'special') {
@@ -787,9 +813,9 @@ export function simulate(
     }
     return spYear >= oldAgeYear;
   };
-  const p1AtSpStart = p1Full + accrualYear * workedBefore(spStart) * p1Factor;
+  const p1AtSpStart = p1Full + accruedBefore(spStart) * p1Factor;
   const spPaid = spYear > 0 && prefersSpecial(choice, p1AtSpStart);
-  const p1AtPa = p1Full + accrualYear * workedBefore(pa) * p1Factor;
+  const p1AtPa = p1Full + accruedBefore(pa) * p1Factor;
   const spPaidPa = spPaid && ret < pa ? prefersSpecial(input.firstPillarChoicePa, p1AtPa) : spPaid;
   const spPaidAt = (age: number) => age >= spStart && (age >= pa ? spPaidPa : spPaid);
   const p1Year = spPaid ? 0 : p1Full;
@@ -1018,7 +1044,7 @@ export function simulate(
         ? firstPillarAt(age) +
           (spPaidAt(age) || isDeferredYear(age)
             ? 0
-            : accrualYear * workedBefore(age) * (age < oldAgeStart + half ? 1 : p1Factor))
+            : accruedBefore(age) * (age < oldAgeStart + half ? 1 : p1Factor))
         : 0;
     const work = age >= ret && age < workEnd;
     const ispg = spAt(age);

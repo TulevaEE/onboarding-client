@@ -79,4 +79,39 @@ describe('working less in the last years before the pension age', () => {
       6,
     );
   });
+
+  it('accrues the full salary for the years worked on before the workload drops', () => {
+    const retiresAt55AndWorksOn = { hazard: 'list1', hazardYears: 10, workOn: true, workUntil: 63 };
+    const statePensionAt = (input: PensionInput, age: number) =>
+      simulate({ ...input, ...retiresAt55AndWorksOn }, lifeTable, scenarioA).rows.find(
+        (row) => row.age === age,
+      )?.i1g ?? 0;
+
+    expect(statePensionAt(reduced, REDUCED_FROM)).toBeCloseTo(
+      statePensionAt(base, REDUCED_FROM),
+      6,
+    );
+    expect(statePensionAt(reduced, 63)).toBeLessThan(statePensionAt(base, 63));
+  });
+
+  it('pays the II pillar from the lower salary when a special pension changed the salary before', () => {
+    const specialPensionFrom55 = { spMonthly: 800, spStartAge: 55, spWork: true, spGross: 1500 };
+    const withSpecialPension = { ...reduced, ...specialPensionFrom55 };
+
+    expect(yearlyContribution(withSpecialPension, REDUCED_FROM - 1)).toBe(
+      yearlyContribution({ ...base, grossMonthly: 1500 }, REDUCED_FROM - 1),
+    );
+    expect(yearlyContribution(withSpecialPension, REDUCED_FROM)).toBe(
+      yearlyContribution({ ...base, grossMonthly: 1200, p3Monthly: 40 }, REDUCED_FROM),
+    );
+  });
+
+  it('pays the II pillar from the special pension salary when it changes after the workload drops', () => {
+    const specialPensionFrom62 = { spMonthly: 800, spStartAge: 62, spWork: true, spGross: 1500 };
+    const withSpecialPension = { ...reduced, ...specialPensionFrom62 };
+
+    expect(yearlyContribution(withSpecialPension, 62)).toBe(
+      yearlyContribution({ ...base, grossMonthly: 1500, p3Monthly: 40 }, 62),
+    );
+  });
 });
