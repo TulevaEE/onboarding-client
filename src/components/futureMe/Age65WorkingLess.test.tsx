@@ -64,3 +64,40 @@ describe('Age 65 step after working less from the payout age', () => {
     ).toBeInTheDocument();
   });
 });
+
+describe('Age 65 step with a special pension that changes the salary', () => {
+  it('says how much each year worked raises the pension with the special pension salary', () => {
+    const context = contextWith({
+      workAdded: true,
+      hasSpecialPension: true,
+      specialPensionStartAge: '55',
+    });
+    render(
+      <IntlProvider locale="et" messages={translations.et}>
+        <Age65Step
+          answers={{ ...initialAge65(), work: 'yes' }}
+          you={context.you}
+          plan={context.plan}
+          age60={initialAge60()}
+          age66={context.age66}
+          specialPension={{
+            ...context.specialPension,
+            monthly: '800',
+            work: 'yes',
+            pay: 'change',
+            gross: '1500',
+          }}
+          headingRef={createRef()}
+          onChange={jest.fn()}
+          onEditYou={jest.fn()}
+          onEditAge60={jest.fn()}
+          onEditAge55={jest.fn()}
+        />
+      </IntlProvider>,
+    );
+
+    expect(
+      screen.getByText(/^Brutopalgaga 1\s500\s€ tõstab iga tööaasta pensioni/),
+    ).toBeInTheDocument();
+  });
+});

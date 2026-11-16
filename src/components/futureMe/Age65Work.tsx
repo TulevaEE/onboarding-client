@@ -6,15 +6,12 @@ import { decimalText, euro } from './amountFormat';
 import { retirementYears } from './engine/pension';
 import { ChoiceCard } from './ChoiceCard';
 import { StepPlanInput } from './steps';
-import { Age60Answers } from './age60Answers';
-import { grossAtAgeOf } from './reducedPay';
-import { retirementAge } from './planAges';
 
 interface Props {
   answers: Age65Answers;
   you: YouAnswers;
   plan: StepPlanInput;
-  age60: Age60Answers;
+  salary: number;
   onChange: (answers: Age65Answers) => void;
 }
 
@@ -23,11 +20,10 @@ const WORK_CHOICES = [
   { value: 'yes', emoji: '💼' },
 ] as const;
 
-export const Age65Work = ({ answers, you, plan, age60, onChange }: Props) => {
+export const Age65Work = ({ answers, you, plan, salary, onChange }: Props) => {
   const intl = useIntl();
   const pensionAge = retirementYears(plan);
   const { birthYear } = plan;
-  const gross = grossAtAgeOf(age60, you, plan, retirementAge(plan));
 
   return (
     <>
@@ -54,9 +50,9 @@ export const Age65Work = ({ answers, you, plan, age60, onChange }: Props) => {
                   <FormattedMessage
                     id="futureMe.age65.work.accrual"
                     values={{
-                      hasSalary: gross > 0,
-                      gross: euro(gross),
-                      amount: decimalText(workAccrualMonthly(you, gross)),
+                      hasSalary: salary > 0,
+                      gross: euro(salary),
+                      amount: decimalText(workAccrualMonthly(you, salary)),
                     }}
                   />
                 )

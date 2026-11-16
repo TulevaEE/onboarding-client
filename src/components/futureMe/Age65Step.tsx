@@ -23,12 +23,12 @@ import {
   specialPensionStartAge,
 } from './specialPensionAnswers';
 import { euro, exactPercent } from './amountFormat';
-import { retirementYears } from './engine/pension';
+import { grossAt, retirementYears } from './engine/pension';
 import { FundPensionFaq } from './FundPensionFaq';
 import { RescueCompareFaq, SpecialCompareFaq } from './KidsCompareFaq';
 import { RescueNotes } from './RescueNotes';
 import { FutureMeStep, StepPlanInput } from './steps';
-import { isRescueAllowanceOnly, YouAnswers } from './youAnswers';
+import { amountOf, isRescueAllowanceOnly, YouAnswers } from './youAnswers';
 import { ChapterHead } from './ChapterHead';
 import { ageTense, hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 import { strong } from './richText';
@@ -92,6 +92,13 @@ export const Age65Step = ({
       !hasThird ||
       age60.thirdPillar === 'grow');
   const compareContext = { you, plan, age60, age65: answers, age66, specialPension };
+  const salaryAtRetirement = grossAt(
+    {
+      ...pensionInputOf(specialPension, you, plan, answers, age66, age60),
+      spMonthly: plan.hasSpecialPension ? amountOf(specialPension.monthly) : 0,
+    },
+    age,
+  );
   const pillarProps = {
     answers,
     age60,
@@ -161,7 +168,13 @@ export const Age65Step = ({
         age={age}
         pensionAge={pensionAge}
       />
-      <Age65Work answers={answers} you={you} plan={plan} age60={age60} onChange={onChange} />
+      <Age65Work
+        answers={answers}
+        you={you}
+        plan={plan}
+        salary={salaryAtRetirement}
+        onChange={onChange}
+      />
       {comparison && !isSpecialPensionAfterPensionAge(plan) && (
         <FirstPillarChoice
           idPrefix="future-me-first-pillar"
@@ -189,6 +202,7 @@ export const Age65Step = ({
         you={you}
         plan={plan}
         age60={age60}
+        salary={salaryAtRetirement}
         onChange={onChange}
         onEditYou={onEditYou}
       />

@@ -574,7 +574,7 @@ const salaryAt = (input: SalaryInput, age: number, changes: SalaryChange[]): num
   );
 };
 
-const grossAt = (input: SalaryInput, age: number): number =>
+export const grossAt = (input: SalaryInput, age: number): number =>
   salaryAt(input, age, [
     ...specialPensionSalaryChangesOf(input),
     ...workingLessSalaryChangesOf(input),

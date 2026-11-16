@@ -3,8 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import { DEFERRAL_INCREASE, retirementYears } from './engine/pension';
 import { StepPlanInput } from './steps';
 import { Age60Answers } from './age60Answers';
-import { grossAtAgeOf, statePensionAtRetirementOf } from './reducedPay';
-import { retirementAge } from './planAges';
+import { statePensionAtRetirementOf } from './reducedPay';
 import {
   amountOf,
   earlyRetirementYears,
@@ -33,6 +32,7 @@ interface Props {
   you: YouAnswers;
   plan: StepPlanInput;
   age60: Age60Answers;
+  salary: number;
   onChange: (answers: Age65Answers) => void;
   onEditYou: () => void;
 }
@@ -40,7 +40,15 @@ interface Props {
 const MODE_EMOJI = { full: '🏛️', half: '🌓', defer: '⏳' } as const;
 const LONGEST_DEFERRAL = Math.max(...DEFERRAL_YEARS);
 
-export const Age65Deferral = ({ answers, you, plan, age60, onChange, onEditYou }: Props) => {
+export const Age65Deferral = ({
+  answers,
+  you,
+  plan,
+  age60,
+  salary,
+  onChange,
+  onEditYou,
+}: Props) => {
   const pensionAge = retirementYears(plan);
   const yearsNotWorkedBeforeAllowance = isRescueAllowanceOnly(you) ? earlyRetirementYears(you) : 0;
   const firstPillar =
@@ -59,7 +67,6 @@ export const Age65Deferral = ({ answers, you, plan, age60, onChange, onEditYou }
   const { mode, years } = answers;
   const whileWorking = deferralYearsWhileWorking(answers, plan);
   const workEnd = workUntilOf(answers, plan);
-  const salary = grossAtAgeOf(age60, you, plan, retirementAge(plan));
   const accrual = workAccrualMonthly(you, salary);
 
   const deferredAmount = (value: (typeof PENSION_MODES)[number]) => {
