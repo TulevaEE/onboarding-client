@@ -12,16 +12,19 @@ import {
   YouAnswers,
 } from './youAnswers';
 
-type CompareContext = Pick<ResultContext, 'you' | 'plan' | 'age65' | 'age66' | 'specialPension'>;
+type CompareContext = Pick<
+  ResultContext,
+  'you' | 'plan' | 'age60' | 'age65' | 'age66' | 'specialPension'
+>;
 
 const isSpecialPensionCounted = ({ plan, specialPension }: CompareContext): boolean =>
   plan.hasSpecialPension && amountOf(specialPension.monthly) > 0;
 
 const compareInputOf = (context: CompareContext): PensionInput => {
-  const { you, plan, age65, age66, specialPension } = context;
+  const { you, plan, age60, age65, age66, specialPension } = context;
   const hasSpecialPension = isSpecialPensionCounted(context);
   return {
-    ...pensionInputOf(specialPension, you, plan, age65, age66),
+    ...pensionInputOf(specialPension, you, plan, age65, age66, age60),
     spHas: hasSpecialPension,
     spMonthly: hasSpecialPension ? amountOf(specialPension.monthly) : 0,
   };

@@ -5,7 +5,10 @@ import { euro } from './amountFormat';
 import { externalLink } from './ExternalLink';
 import { HELP_LINKS } from './helpLinks';
 import { strong } from './richText';
-import { amountOf, YouAnswers } from './youAnswers';
+import { YouAnswers } from './youAnswers';
+import { Age60Answers } from './age60Answers';
+import { statePensionAtRetirementOf } from './reducedPay';
+import { StepPlanInput } from './steps';
 
 const MONTHS_IN_YEAR = 12;
 
@@ -18,8 +21,14 @@ const richText = {
   link: externalLink(HELP_LINKS.skaFlexiblePension),
 };
 
-export const Age65DeferralFaq = ({ you }: { you: YouAnswers }) => {
-  const pension = amountOf(you.firstPillarMonthly);
+interface Props {
+  you: YouAnswers;
+  plan: StepPlanInput;
+  age60: Age60Answers;
+}
+
+export const Age65DeferralFaq = ({ you, plan, age60 }: Props) => {
+  const pension = statePensionAtRetirementOf(age60, you, plan);
   if (deferralLock(you) || pension <= 0) {
     return null;
   }

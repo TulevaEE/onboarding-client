@@ -107,9 +107,9 @@ export const workUntilOf = (answers: Age65Answers, plan: StepPlanInput): number 
   return workUntilOptions(plan).includes(picked) ? picked : defaultWorkUntil(plan);
 };
 
-export const workAccrualMonthly = (you: YouAnswers): number => {
+export const workAccrualMonthly = (you: YouAnswers, gross: number): number => {
   const isContributing = Number(you.secondPillarRate) > 0;
-  return workAccrual(amountOf(you.grossMonthly), isContributing, isContributing);
+  return workAccrual(gross, isContributing, isContributing);
 };
 
 export const deferralYearsWhileWorking = (answers: Age65Answers, plan: StepPlanInput): number => {

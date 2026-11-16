@@ -1,3 +1,4 @@
+import { initialAge60 } from './age60Answers';
 import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import {
@@ -10,6 +11,7 @@ import {
   specialPensionStartAge,
 } from './specialPensionAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
+import { statePensionAtRetirementOf } from './reducedPay';
 
 const noPrefill = { birthYear: 1980, sex: null, secondPillarRate: null };
 const youWith = (changes: Partial<ReturnType<typeof initialAnswers>> = {}) => ({
@@ -92,6 +94,23 @@ describe('specialPensionAnswers', () => {
     expect(
       firstPillarComparison({ ...initialSpecialPension(), monthly: '500' }, you, plan),
     ).toMatchObject({ special: 500, oldAge: 700, larger: 'oldAge' });
+  });
+
+  it('compares with the old-age pension lowered by working less from the payout age', () => {
+    const you = youWith({ grossMonthly: '2000' });
+    const plan = planOf({ grossMonthly: '2000' });
+    const workingLess = { ...initialAge60(), reducedPay: { gross: '1200' } };
+
+    expect(
+      firstPillarComparison(
+        { ...initialSpecialPension(), monthly: '900' },
+        you,
+        plan,
+        initialAge65(),
+        initialAge66(),
+        workingLess,
+      )?.oldAge,
+    ).toBeCloseTo(statePensionAtRetirementOf(workingLess, you, plan), 6);
   });
 
   it('compares with the old-age pension the result pays, its child supplement counting the II pillar money saved', () => {

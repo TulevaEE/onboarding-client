@@ -6,11 +6,14 @@ import { decimalText, euro } from './amountFormat';
 import { retirementYears } from './engine/pension';
 import { ChoiceCard } from './ChoiceCard';
 import { StepPlanInput } from './steps';
+import { Age60Answers } from './age60Answers';
+import { grossFromPayoutAgeOf } from './reducedPay';
 
 interface Props {
   answers: Age65Answers;
   you: YouAnswers;
   plan: StepPlanInput;
+  age60: Age60Answers;
   onChange: (answers: Age65Answers) => void;
 }
 
@@ -19,11 +22,11 @@ const WORK_CHOICES = [
   { value: 'yes', emoji: '💼' },
 ] as const;
 
-export const Age65Work = ({ answers, you, plan, onChange }: Props) => {
+export const Age65Work = ({ answers, you, plan, age60, onChange }: Props) => {
   const intl = useIntl();
   const pensionAge = retirementYears(plan);
   const { birthYear } = plan;
-  const gross = amountOf(you.grossMonthly);
+  const gross = grossFromPayoutAgeOf(age60, you, plan);
 
   return (
     <>
@@ -52,7 +55,7 @@ export const Age65Work = ({ answers, you, plan, onChange }: Props) => {
                     values={{
                       hasSalary: gross > 0,
                       gross: euro(gross),
-                      amount: decimalText(workAccrualMonthly(you)),
+                      amount: decimalText(workAccrualMonthly(you, gross)),
                     }}
                   />
                 )

@@ -1,6 +1,6 @@
 import { Age60Answers } from './age60Answers';
-import { PensionInput } from './engine/pension';
-import { hasThirdPillarAt, payoutAge } from './planAges';
+import { PensionInput, statePensionCutForWorkingLess } from './engine/pension';
+import { hasThirdPillarAt, payoutAge, retirementAge } from './planAges';
 import { StepPlanInput } from './steps';
 import { amountOf, thirdPillarMonthlyOf, YouAnswers } from './youAnswers';
 
@@ -42,3 +42,28 @@ export const reducedPayInputOf = (
     ? { reducedFrom: pay.age, reducedGross: pay.gross, reducedP3Monthly: pay.thirdPillarMonthly }
     : {};
 };
+
+export const grossFromPayoutAgeOf = (
+  age60: Pick<Age60Answers, 'reducedPay'>,
+  you: YouAnswers,
+  plan: StepPlanInput,
+): number => payFromPayoutAgeOf(age60, you, plan)?.gross ?? amountOf(you.grossMonthly);
+
+export const statePensionAtRetirementOf = (
+  age60: Pick<Age60Answers, 'reducedPay'>,
+  you: YouAnswers,
+  plan: StepPlanInput,
+): number =>
+  Math.max(
+    0,
+    amountOf(you.firstPillarMonthly) -
+      statePensionCutForWorkingLess(
+        {
+          birthYear: plan.birthYear,
+          grossMonthly: amountOf(you.grossMonthly),
+          p2Rate: Number(you.secondPillarRate) || 0,
+          ...reducedPayInputOf(age60, you, plan),
+        },
+        retirementAge(plan),
+      ),
+  );

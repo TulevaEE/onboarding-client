@@ -34,6 +34,7 @@ import { ageTense, hasThirdPillarAt, payoutAge, retirementAge } from './planAges
 import { strong } from './richText';
 import { FundPensionChoice } from './prefill';
 import { LinkButton } from './LinkButton';
+import { statePensionAtRetirementOf } from './reducedPay';
 
 interface Props {
   answers: Age65Answers;
@@ -77,7 +78,7 @@ export const Age65Step = ({
   const kind = pensionKind(you);
   const allowance = isRescueAllowanceOnly(you) ? 'yes' : 'no';
   const comparison = plan.hasSpecialPension
-    ? firstPillarComparison(specialPension, you, plan, answers, age66)
+    ? firstPillarComparison(specialPension, you, plan, answers, age66, age60)
     : null;
   const specialAge = specialPensionStartAge(plan);
   const isSpecialPensionLater = specialAge > age;
@@ -90,7 +91,7 @@ export const Age65Step = ({
       age60.secondPillar === 'grow' ||
       !hasThird ||
       age60.thirdPillar === 'grow');
-  const compareContext = { you, plan, age65: answers, age66, specialPension };
+  const compareContext = { you, plan, age60, age65: answers, age66, specialPension };
   const pillarProps = {
     answers,
     age60,
@@ -137,7 +138,7 @@ export const Age65Step = ({
             values={{
               kind,
               allowance,
-              amount: euro(amountOf(you.firstPillarMonthly)),
+              amount: euro(statePensionAtRetirementOf(age60, you, plan)),
               age,
               year,
               years: plan.earlyRetirementYears,
@@ -156,11 +157,11 @@ export const Age65Step = ({
         </p>
       )}
       <RescueNotes
-        input={pensionInputOf(specialPension, you, plan, answers, age66)}
+        input={pensionInputOf(specialPension, you, plan, answers, age66, age60)}
         age={age}
         pensionAge={pensionAge}
       />
-      <Age65Work answers={answers} you={you} plan={plan} onChange={onChange} />
+      <Age65Work answers={answers} you={you} plan={plan} age60={age60} onChange={onChange} />
       {comparison && !isSpecialPensionAfterPensionAge(plan) && (
         <FirstPillarChoice
           idPrefix="future-me-first-pillar"
@@ -187,6 +188,7 @@ export const Age65Step = ({
         answers={answers}
         you={you}
         plan={plan}
+        age60={age60}
         onChange={onChange}
         onEditYou={onEditYou}
       />
@@ -212,7 +214,7 @@ export const Age65Step = ({
       >
         <RescueCompareFaq context={compareContext} />
         <SpecialCompareFaq context={compareContext} />
-        <Age65DeferralFaq you={you} />
+        <Age65DeferralFaq you={you} plan={plan} age60={age60} />
         <details className="faq-item">
           <summary>
             <FormattedMessage id="futureMe.age65.faq.yearScore.q" />

@@ -28,7 +28,6 @@ import {
   WAGE_GROWTH,
 } from './engine/pension';
 import { pensionInputOf, SpecialPensionAnswers } from './specialPensionAnswers';
-import { reducedPayInputOf } from './reducedPay';
 import { StepPlanInput } from './steps';
 import { amountOf, realReturnOf, thirdPillarMonthlyOf, YouAnswers } from './youAnswers';
 import { hasThirdPillarAt, payoutAge, plannedThirdPillarOpenAge, retirementAge } from './planAges';
@@ -217,7 +216,7 @@ export const resultInputOf = (context: ResultContext): PensionInput => {
   const { you, plan, age65, age66, specialPension, expenses } = context;
   const hasSpecialPension = plan.hasSpecialPension && amountOf(specialPension.monthly) > 0;
   return withChoiceAtPensionAgeWhileAsked({
-    ...pensionInputOf(specialPension, you, plan, age65, age66),
+    ...pensionInputOf(specialPension, you, plan, age65, age66, context.age60),
     spHas: hasSpecialPension,
     spMonthly: hasSpecialPension ? amountOf(specialPension.monthly) : 0,
     p2PayoutFrom: secondPillarPayoutFromOf(context),
@@ -226,7 +225,6 @@ export const resultInputOf = (context: ResultContext): PensionInput => {
     extraDeposit: thirdPillarDepositOf(context),
     p3PayoutFrom: thirdPillarPayoutFromOf(context),
     p3Monthly: thirdPillarMonthlyOf(you),
-    ...reducedPayInputOf(context.age60, you, plan),
     p3Before2021: you.thirdPillarJoined === 'before',
     p3Indexed: false,
     needMonthly: needMonthly(expenses),

@@ -721,6 +721,28 @@ export function specialStart(
   return input.spStartAge !== undefined ? input.spStartAge : retirementYears(input);
 }
 
+export const statePensionCutForWorkingLess = (
+  input: Pick<
+    PensionInput,
+    'birthYear' | 'grossMonthly' | 'p2Rate' | 'reducedFrom' | 'reducedGross'
+  >,
+  retirementAge: number,
+): number => {
+  if (input.reducedFrom === undefined || input.reducedGross === undefined) {
+    return 0;
+  }
+  const isContributing = (input.p2Rate || 0) > 0;
+  const yearsWorkingLess = Math.max(
+    0,
+    retirementAge - Math.max(input.reducedFrom, CURRENT_YEAR - input.birthYear),
+  );
+  return (
+    yearsWorkingLess *
+    (workAccrual(input.grossMonthly || 0, isContributing, isContributing) -
+      workAccrual(input.reducedGross, isContributing, isContributing))
+  );
+};
+
 export function simulate(
   input: PensionInput,
   table: LifeTable,
@@ -758,14 +780,7 @@ export function simulate(
   const earlyCut =
     earlyMissing *
     workAccrual(input.grossMonthly || 0, (input.p2Rate || 0) > 0, (input.p2Rate || 0) > 0);
-  const yearsWorkingLess =
-    input.reducedFrom !== undefined && input.reducedGross !== undefined
-      ? Math.max(0, ret - Math.max(input.reducedFrom, currentAge))
-      : 0;
-  const workingLessCut =
-    yearsWorkingLess *
-    (workAccrual(input.grossMonthly || 0, (input.p2Rate || 0) > 0, (input.p2Rate || 0) > 0) -
-      workAccrual(input.reducedGross || 0, (input.p2Rate || 0) > 0, (input.p2Rate || 0) > 0));
+  const workingLessCut = statePensionCutForWorkingLess(input, ret);
   const p1Base =
     (Math.max(0, input.p1Monthly - earlyCut - workingLessCut) + kidsMonthly + hazardMonthly) * 12;
   // RPKS § 11¹ lg 4: the increasing coefficient applies to the whole pension
