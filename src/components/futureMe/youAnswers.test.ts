@@ -23,6 +23,7 @@ import {
   pensionAgeValue,
   prefilledFields,
   removeOptionalSection,
+  sharedKidsRightOf,
   thirdPillarMonthlyOf,
   toStepPlanInput,
   YouAnswers,
@@ -853,5 +854,22 @@ describe('rescue allowance or the pension for the children', () => {
       rescue: 0,
     });
     expect(earlyRetirementYears(threeKidsAndRescue({ rescueBasis: 'toetus' }))).toBe(5);
+  });
+});
+
+describe('the early right shared with the other parent', () => {
+  const youngestTurningEightThreeYearsBeforeThePensionAge = filledIn({
+    birthYear: '1972',
+    pensionAgeYears: '65',
+    kidsAdded: true,
+    kidsCount: '5',
+    kidsBirthYears: ['2005', '2007', '2009', '2011', '2026'],
+    kidsDisabled: [false, false, false, false, false],
+    kidsEarlyUser: 'split',
+  });
+
+  it('is half of the right the five children give by the year the saver retires on the shared years', () => {
+    expect(earlyRetirementYears(youngestTurningEightThreeYearsBeforeThePensionAge)).toBe(2);
+    expect(sharedKidsRightOf(youngestTurningEightThreeYearsBeforeThePensionAge)).toBe(2.5);
   });
 });

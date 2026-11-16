@@ -407,8 +407,13 @@ const kidsRightFor = (answers: YouAnswers, earlyUser: YouAnswers['kidsEarlyUser'
 export const isKidsRightAvailableToSelf = (answers: YouAnswers): boolean =>
   kidsRightFor(answers, 'me') > 0;
 
-export const sharedKidsRightOf = (answers: YouAnswers): number =>
-  answers.kidsEarlyUser === 'split' ? kidsRightFor(answers, 'me') / 2 : 0;
+export const sharedKidsRightOf = (answers: YouAnswers): number => {
+  if (!answers.kidsAdded || answers.kidsEarlyUser !== 'split') {
+    return 0;
+  }
+  const { counted, hasDisabled } = kidsRetirement(answers, 'split');
+  return earlyYears({ kids: kidsEarlyInput('me', hasDisabled, counted) }) / 2;
+};
 
 export const rescueRightOf = (answers: YouAnswers): number =>
   answers.workAdded && answers.hasRescue
