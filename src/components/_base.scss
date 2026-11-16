@@ -48,6 +48,10 @@ a abbr[title] {
   cursor: inherit;
 }
 
+.highlight {
+  box-shadow: inset 0 -0.5em 0 #f8e81c;
+}
+
 .skip-link {
   position: absolute;
   top: 0.5rem;
