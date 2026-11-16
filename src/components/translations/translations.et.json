@@ -2436,6 +2436,7 @@
   "secondPillarRejoin.notYet.reminder.details": "Tähtaeg on homme. Esita avaldus siin: {url}",
   "secondPillarRejoin.notYet.left": "Esitasid raha väljavõtmise avalduse",
   "secondPillarRejoin.notYet.lead": "Sissemaksed saavad uuesti alata viis aastat pärast nende lõppemist, avalduse saad esitada {yearsAhead, select, 0 {sel aastal} 1 {järgmisel aastal} other {{yearsAhead} aasta pärast}}.",
+  "secondPillarRejoin.notYet.today": "Täna",
   "pensionAccountNumber.title": "Sinu pensionikonto number",
   "pensionAccountNumber.whenNeeded": "Millal seda vaja läheb",
   "pensionAccountNumber.whenNeeded.employer": "Tööandja maksab sinu III sambasse otse palgast.",

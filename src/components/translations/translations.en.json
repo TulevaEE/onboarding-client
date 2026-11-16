@@ -2346,6 +2346,7 @@
   "secondPillarRejoin.notYet.reminder.details": "The deadline is tomorrow. Apply here: {url}",
   "secondPillarRejoin.notYet.left": "You applied to withdraw your money",
   "secondPillarRejoin.notYet.lead": "Contributions can restart five years after they ended, and you can apply {yearsAhead, select, 0 {this year} 1 {next year} other {in {yearsAhead} years}}.",
+  "secondPillarRejoin.notYet.today": "Today",
   "pensionAccountNumber.title": "Your pension account number",
   "pensionAccountNumber.whenNeeded": "When you need it",
   "pensionAccountNumber.whenNeeded.employer": "Your employer pays into your III pillar straight from your salary.",
