@@ -1,4 +1,9 @@
-import { PensionInput, retirementYears, specialStart } from './engine/pension';
+import {
+  isKidsEarlyRightUsedBySelf,
+  PensionInput,
+  retirementYears,
+  specialStart,
+} from './engine/pension';
 import { ageTense } from './planAges';
 import { ResultContext } from './resultAnswers';
 import { pensionInputOf } from './specialPensionAnswers';
@@ -62,7 +67,7 @@ export const isSpecialComparisonShown = (context: CompareContext): boolean => {
     (input.spMonthly ?? 0) > 0 &&
     (input.soodus ?? 0) > 0 &&
     !input.flexEarly &&
-    input.kids?.earlyUser === 'me' &&
+    isKidsEarlyRightUsedBySelf(input.kids) &&
     kidsYears > 0 &&
     ageTense(context.plan.birthYear, earlyYearForKids) !== 'past' &&
     specialStart(input) <= earlyYearForKids

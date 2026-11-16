@@ -568,6 +568,11 @@ export function yearlyContribution(input: PensionInput, age?: number): number {
   );
 }
 
+export const isKidsEarlyRightUsedBySelf = (kids: KidsInput | undefined): boolean => {
+  const earlyUser = kids?.earlyUser || kids?.user;
+  return earlyUser === 'me' || earlyUser === 'split';
+};
+
 // RPKS § 10, SVPS § 1, PäästeTS § 19; RPKS § 6: only one basis applies, the years do not add up
 export function earlyYears(input: Partial<PensionInput>): number {
   const kids = input.kids || {};
@@ -579,7 +584,7 @@ export function earlyYears(input: Partial<PensionInput>): number {
     (kids.bUnknown || 0);
   const earlyUser = kids.earlyUser || kids.user;
   let kidsRight = 0;
-  if (earlyUser === 'me' || earlyUser === 'split') {
+  if (isKidsEarlyRightUsedBySelf(kids)) {
     if (kids.yearsEarly !== undefined) {
       kidsRight = kids.yearsEarly;
     } else if (kids.disabled || count >= 5) {

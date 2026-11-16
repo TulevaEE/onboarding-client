@@ -3,6 +3,7 @@ import { FormattedMessage } from 'react-intl';
 import {
   childSupplement,
   earlyYears,
+  isKidsEarlyRightUsedBySelf,
   PensionInput,
   rescueIncrease,
   rescueUntil,
@@ -34,7 +35,7 @@ export const RescueNotes = ({ input, age, pensionAge }: Props) => {
   const increase = rescueIncrease(rescueYears);
   const hasKidsRight = earlyYears({ kids: input.kids }) > 0;
   const isKidsPension =
-    hasKidsRight && input.kids?.earlyUser === 'me' && input.rescueBasis !== 'toetus';
+    hasKidsRight && isKidsEarlyRightUsedBySelf(input.kids) && input.rescueBasis !== 'toetus';
 
   return (
     <div className="payout-note d-flex flex-column gap-2">
