@@ -35,7 +35,8 @@ import { TranslationKey } from '../../translations';
 import { flowPath, reviewPath, successPath } from './secondPillarRejoinPaths';
 import { RejoinSummary } from './SecondPillarRejoinSuccess';
 import { PendingRejoinApplication } from './PendingRejoinApplication';
-import { RejoinRefusalReason } from './RejoinRefusalReason';
+import { RejoinRefusalReason, dateToWaitForRejoining } from './RejoinRefusalReason';
+import { RejoinNotYet, opensFilingWindow } from './RejoinNotYet';
 import { AlreadyContributing } from './AlreadyContributing';
 import { contributionStartMonth, highlightedDeadline } from './deadlineHighlight';
 import { RejoinRefused } from './RejoinRefused';
@@ -243,6 +244,10 @@ const RejoinApplication = ({
   }
 
   if (rejoinPermission?.permitted === false && !isSubmitting) {
+    const waitUntil = dateToWaitForRejoining(rejoinPossibleFrom, rejoinPermission.decision);
+    if (waitUntil && opensFilingWindow(waitUntil)) {
+      return <RejoinNotYet filingOpens={waitUntil} />;
+    }
     return (
       <RejoinRefused>
         <RejoinRefusalReason

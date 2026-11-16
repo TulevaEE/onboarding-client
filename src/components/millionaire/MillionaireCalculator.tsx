@@ -40,13 +40,13 @@ import {
   formatDateFromWithYear,
   formatDateOnWithYear,
   formatDateTime,
-  todayInTallinn,
 } from '../common/dateFormatter';
 import { hasStoppedContributing } from '../common/secondPillarContributions';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { formatAmountForCurrency } from '../common/utils';
-import { Conversion, RejoinPermission } from '../common/apiModels';
+import { Conversion } from '../common/apiModels';
 import { TranslationKey } from '../translations';
+import { dateToWaitForRejoining } from '../flows/secondPillarRejoin/RejoinRefusalReason';
 import {
   buildComparison,
   CalculatorInputs,
@@ -219,16 +219,6 @@ type CtaItem = {
 const fullyConverted = (pillar: Conversion): boolean =>
   pillar.selectionComplete && pillar.transfersComplete;
 
-const dateToWaitForRejoining = (
-  rejoinPossibleFrom: string | null | undefined,
-  permission: RejoinPermission | undefined,
-): string | null =>
-  permission?.decision === 'REFUSED_BY_PENSIONIKESKUS' &&
-  rejoinPossibleFrom &&
-  rejoinPossibleFrom > todayInTallinn()
-    ? rejoinPossibleFrom
-    : null;
-
 // Fire-and-forget, like ComparisonCalculator: tracking must never break a click.
 // Note we do NOT preventDefault the way ComparisonCalculator does — these are
 // react-router <Link>s, so navigation keeps the document alive and the in-flight
@@ -269,7 +259,7 @@ export function MillionaireCalculator() {
   });
   const rejoinDateAhead = dateToWaitForRejoining(
     contributionStatus?.rejoinPossibleFrom,
-    rejoinPermission,
+    rejoinPermission?.decision,
   );
   const secondPillarOutOfReach =
     outOfSecondPillar && rejoinPermission?.permitted === false && !rejoinDateAhead;
