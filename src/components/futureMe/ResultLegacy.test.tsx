@@ -111,6 +111,16 @@ describe('Result legacy card', () => {
       expect(left()).not.toBe(inTodayPrices);
     });
 
+    it('says in the explanation that the sum is in future euros once future prices are picked', () => {
+      userEvent.click(screen.getByRole('button', { name: 'Tuleviku hinnad' }));
+      userEvent.click(
+        screen.getByRole('button', { name: 'Selgitus: Kuidas see summa arvutatakse' }),
+      );
+
+      expect(screen.getByRole('dialog')).toHaveTextContent('Summa on tuleviku eurodes.');
+      expect(screen.getByRole('dialog')).not.toHaveTextContent('tänastes eurodes');
+    });
+
     it('explains how the sum is worked out behind a help button', () => {
       userEvent.click(
         screen.getByRole('button', { name: 'Selgitus: Kuidas see summa arvutatakse' }),

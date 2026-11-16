@@ -4,6 +4,7 @@ import { TranslationKey } from '../translations';
 import { Pillar } from './age66Answers';
 import { euro, exactPercent } from './amountFormat';
 import { CURRENT_YEAR } from './engine/pension';
+import { Prices } from './nominal';
 import { ResultContext } from './resultAnswers';
 import { Rule, rulesOf } from './rules';
 
@@ -42,7 +43,9 @@ const ruleValues = (rule: Rule) => {
   }
 };
 
-const choiceOf = (rule: Rule, intl: IntlShape): string | null => {
+const choiceOf = (rule: Rule, intl: IntlShape, prices: Prices): string | null => {
+  const monthlyAtRuleAge = (monthly: number) =>
+    euro(monthly * prices.at(rule.age ?? prices.ageShown));
   const format = (id: string, values: Record<string, unknown> = {}) =>
     intl.formatMessage({ id: id as TranslationKey }, values as Record<string, string>);
   switch (rule.id) {
@@ -51,7 +54,7 @@ const choiceOf = (rule: Rule, intl: IntlShape): string | null => {
       return format(`futureMe.result.rules.${rule.id}.choice`, ruleValues(rule));
     case 'childSupplement':
       return format('futureMe.result.rules.childSupplement.choice', {
-        monthly: euro(rule.monthly),
+        monthly: monthlyAtRuleAge(rule.monthly),
       });
     case 'civilServiceIncrease':
       return format('futureMe.result.rules.civilServiceIncrease.choice', {
@@ -59,7 +62,7 @@ const choiceOf = (rule: Rule, intl: IntlShape): string | null => {
       });
     case 'specialPension':
       return format('futureMe.result.rules.specialPension.choice', {
-        monthly: euro(rule.monthly),
+        monthly: monthlyAtRuleAge(rule.monthly),
         hasStartAge: rule.startAge === undefined ? 'no' : 'yes',
         startAge: rule.startAge,
       });
@@ -77,7 +80,7 @@ const choiceOf = (rule: Rule, intl: IntlShape): string | null => {
   }
 };
 
-export const ResultRules = ({ context }: { context: ResultContext }) => {
+export const ResultRules = ({ context, prices }: { context: ResultContext; prices: Prices }) => {
   const intl = useIntl();
   return (
     <>
@@ -92,7 +95,7 @@ export const ResultRules = ({ context }: { context: ResultContext }) => {
         aria-label={intl.formatMessage({ id: 'futureMe.result.rules.title' })}
       >
         {rulesOf(context).map((rule) => {
-          const choice = choiceOf(rule, intl);
+          const choice = choiceOf(rule, intl, prices);
           return (
             <li key={rule.id}>
               <div className="decision-row">

@@ -145,7 +145,7 @@ describe('Result step: save the result', () => {
     userEvent.click(markdownButton());
 
     const file = await downloadedFile();
-    expect(file).toContain('Summad on tuleviku eurodes.');
+    expect(file).toContain('Tulemuse summad on tuleviku eurodes, sinu andmed tänastes.');
     expect(file).toContain('(tuleviku eurodes, pärast tulumaksu)');
   });
 

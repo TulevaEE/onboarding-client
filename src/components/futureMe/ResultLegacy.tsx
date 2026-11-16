@@ -106,7 +106,7 @@ const SurplusCard = ({
             strong,
           }}
         />
-        <HelpButton topic="legacyLeft" />
+        <HelpButton topic="legacyLeft" values={{ prices: prices.isNominal ? 'future' : 'today' }} />
       </p>
       <fieldset>
         <legend className="visually-hidden">

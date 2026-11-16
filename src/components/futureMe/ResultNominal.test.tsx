@@ -303,8 +303,43 @@ describe('today’s or future prices', () => {
     ).toBeInTheDocument();
   });
 
+  it('states the special pension in the rules in the euros of the age it starts', () => {
+    const context = contextWith();
+    const you = {
+      ...context.you,
+      workAdded: true,
+      hasSpecialPension: true,
+      specialPensionStartAge: '55',
+    };
+    renderResultPage({
+      ...context,
+      you,
+      plan: toStepPlanInput(you),
+      specialPension: { ...initialSpecialPension(), monthly: '1000' },
+    });
+    const rules = () => screen.getByRole('list', { name: 'Reeglid ja tulumaksud' });
+
+    userEvent.click(futurePrices());
+
+    expect(rules()).toHaveTextContent(
+      `${shownAmount(inFutureEurosAt(55, 1000))} kuus enne tulumaksu, alates 55-\u2060aastaselt`,
+    );
+  });
+
   describe('explanation', () => {
     beforeAll(installDialogPolyfill);
+
+    it('says the assumptions keep the data as it was entered, in today’s euros', () => {
+      renderResultPage();
+
+      userEvent.click(
+        screen.getByRole('button', { name: /^Selgitus: Mida näitab „tuleviku hindades“$/ }),
+      );
+
+      expect(screen.getByRole('dialog')).toHaveTextContent(
+        'Eeldustes näed oma andmeid nii, nagu need sisestasid, tänastes eurodes.',
+      );
+    });
 
     it('opens beside the choice', () => {
       renderResultPage();

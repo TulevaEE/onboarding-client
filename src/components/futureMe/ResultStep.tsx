@@ -348,7 +348,7 @@ export const ResultStep = ({ context, headingRef }: Props) => {
         focusRequests={focusRequests}
       />
       <ResultAssumptions context={context} />
-      <ResultRules context={context} />
+      <ResultRules context={context} prices={prices} />
       <ResultSave context={context} isNominal={isNominal} />
       <ResultFeedback />
       <div className="mt-4">

@@ -8,7 +8,8 @@ import { User } from '../common/apiModels';
 import translations from '../translations';
 import { mockUser } from '../../test/backend-responses';
 import { ResultRules } from './ResultRules';
-import { ResultContext } from './resultAnswers';
+import { pricesOf } from './nominal';
+import { ResultContext, resultOf } from './resultAnswers';
 import { contextWith } from './resultContextFixture';
 import { initialSpecialPension } from './specialPensionAnswers';
 
@@ -125,7 +126,7 @@ describe('Result step: rules that follow from the answers', () => {
   const renderRules = (context: ResultContext) =>
     render(
       <IntlProvider locale="et" messages={translations.et}>
-        <ResultRules context={context} />
+        <ResultRules context={context} prices={pricesOf(resultOf(context), false)} />
       </IntlProvider>,
     );
 

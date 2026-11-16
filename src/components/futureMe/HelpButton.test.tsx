@@ -14,8 +14,8 @@ const renderHelp = (topic: HelpTopic = 'sex') =>
     </IntlProvider>,
   );
 
-const TOPICS_WITH_NUMBERS = ['sustainable', 'nominal'];
-const TOPICS_WITHOUT_NUMBERS = HELP_TOPICS.filter((topic) => !TOPICS_WITH_NUMBERS.includes(topic));
+const TOPICS_WITH_VALUES = ['sustainable', 'nominal', 'legacyLeft'];
+const TOPICS_WITHOUT_VALUES = HELP_TOPICS.filter((topic) => !TOPICS_WITH_VALUES.includes(topic));
 
 const openerOf = (name: RegExp) => screen.getByRole('button', { name });
 
@@ -144,7 +144,7 @@ describe('HelpButton', () => {
     expect(document.body).not.toHaveStyle({ position: 'fixed' });
   });
 
-  it.each(TOPICS_WITHOUT_NUMBERS)(
+  it.each(TOPICS_WITHOUT_VALUES)(
     'opens the explanation of %s with its question and an answer',
     (topic) => {
       renderHelp(topic);
@@ -160,7 +160,7 @@ describe('HelpButton', () => {
     },
   );
 
-  it.each(TOPICS_WITHOUT_NUMBERS)('shows the explanation of %s without research notes', (topic) => {
+  it.each(TOPICS_WITHOUT_VALUES)('shows the explanation of %s without research notes', (topic) => {
     renderHelp(topic);
 
     userEvent.click(screen.getByRole('button', { name: /^Selgitus: / }));
