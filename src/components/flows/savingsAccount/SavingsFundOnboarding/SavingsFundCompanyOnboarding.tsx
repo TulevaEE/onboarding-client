@@ -16,7 +16,6 @@ import { InvestableAssetsStep } from './InvestableAssetsStep';
 import { CompanyIncomeSourceStep } from './CompanyIncomeSourceStep';
 import { TermsStep } from './TermsStep';
 import { OnboardingFlowLayout } from './OnboardingFlowLayout';
-import { TKF_DOCUMENTS } from './tkfDocuments';
 import {
   useSubmitSavingsFundCompanyOnboardingSurvey,
   useSubmitSavingsFundOnboardingSurvey,
@@ -297,7 +296,6 @@ export const SavingsFundCompanyOnboarding = () => {
           key="terms"
           control={control}
           confirmTextId="flows.savingsFundOnboarding.termsStep.confirmTextCompany"
-          documents={TKF_DOCUMENTS}
         />
       ),
       fields: ['termsAccepted'],

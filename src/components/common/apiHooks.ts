@@ -519,6 +519,8 @@ export function usePendingOnboardings({
   });
 }
 
+export const SAME_FOR_EVERY_ROLE = { sameForEveryRole: true };
+
 export function useSwitchRole(): UseMutationResult<
   Token,
   ErrorResponse,
@@ -533,7 +535,7 @@ export function useSwitchRole(): UseMutationResult<
       // role's data. Invalidate keeps the stale cache visible while refetching,
       // so the account page would flash the old role's values. Reset clears it,
       // flipping queries to a loading state until the new role's data arrives.
-      queryClient.resetQueries();
+      queryClient.resetQueries({ predicate: (query) => !query.meta?.sameForEveryRole });
     },
   });
 }

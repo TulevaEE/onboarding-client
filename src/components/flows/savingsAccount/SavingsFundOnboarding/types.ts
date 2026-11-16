@@ -21,6 +21,7 @@ export type InvestmentGoalsMultiValue = InvestmentGoalsValue[];
 
 export interface SharedOnboardingFields {
   termsAccepted: boolean;
+  termsAcceptedForLinks?: string;
 }
 
 // The 4 identity (KYC) steps' fields — collected once per person and shared by
