@@ -15,7 +15,7 @@ import {
   Conversion,
   Fund,
   MandateDeadlines,
-  RejoinDecision,
+  RejoinPermission,
   SecondPillarContributions,
   SourceFund,
 } from '../../../common/apiModels';
@@ -40,6 +40,10 @@ import {
   useSecondPillarTaxWin,
 } from '../../../flows/secondPillarPaymentRate/SecondPillarPaymentRateTaxWin';
 import { RejoinRefusalReason } from '../../../flows/secondPillarRejoin/RejoinRefusalReason';
+import {
+  contributionStartMonth,
+  highlightedDeadline,
+} from '../../../flows/secondPillarRejoin/deadlineHighlight';
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 import { FundPension } from '../../../common/apiModels/withdrawals';
 import { PaymentRateSubRow } from './PaymentRateSubRow';
@@ -127,7 +131,6 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     <StoppedContributions
       restartDate={secondPillarContributions?.restartDate}
       rejoinPossibleFrom={secondPillarContributions?.rejoinPossibleFrom}
-      hasFundChoiceOnRecord={secondPillarActive}
       loading={loading}
     />
   );
@@ -536,35 +539,28 @@ const Rejoined = ({ contributionsStartDate }: { contributionsStartDate: string }
 const StoppedContributions = ({
   restartDate,
   rejoinPossibleFrom,
-  hasFundChoiceOnRecord,
   loading,
 }: {
   restartDate: string | null | undefined;
   rejoinPossibleFrom: string | null | undefined;
-  hasFundChoiceOnRecord: boolean;
   loading: boolean;
 }) =>
   restartDate ? (
     <Rejoined contributionsStartDate={restartDate} />
   ) : (
-    <WayBackIn
-      rejoinPossibleFrom={rejoinPossibleFrom}
-      hasFundChoiceOnRecord={hasFundChoiceOnRecord}
-      loading={loading}
-    />
+    <WayBackIn rejoinPossibleFrom={rejoinPossibleFrom} loading={loading} />
   );
 
 const WayBackIn = ({
   rejoinPossibleFrom,
-  hasFundChoiceOnRecord,
   loading,
 }: {
   rejoinPossibleFrom: string | null | undefined;
-  hasFundChoiceOnRecord: boolean;
   loading: boolean;
 }) => {
   const { data: rejoinPermission, isInitialLoading: askingWhetherPermitted } =
     useRejoinPermission();
+  const { data: mandateDeadlines, isInitialLoading: loadingDeadlines } = useMandateDeadlines();
   const mayRejoin = rejoinPermission?.permitted !== false;
 
   return (
@@ -574,15 +570,14 @@ const WayBackIn = ({
       name={<FormattedMessage id="account.status.choice.pillar.second" />}
       lines={[
         <FormattedMessage id="account.status.choice.pillar.second.notContributing.line1" />,
-        askingWhetherPermitted ? (
+        askingWhetherPermitted || loadingDeadlines ? (
           <Shimmer height={24} />
         ) : (
           <span className="text-body-secondary">
             <WayBackInExplanation
-              mayRejoin={mayRejoin}
-              rejoinDecision={rejoinPermission?.decision}
+              rejoinPermission={rejoinPermission}
               rejoinPossibleFrom={rejoinPossibleFrom}
-              hasFundChoiceOnRecord={hasFundChoiceOnRecord}
+              mandateDeadlines={mandateDeadlines}
             />
           </span>
         ),
@@ -596,25 +591,31 @@ const WayBackIn = ({
 };
 
 const WayBackInExplanation = ({
-  mayRejoin,
-  rejoinDecision,
+  rejoinPermission,
   rejoinPossibleFrom,
-  hasFundChoiceOnRecord,
+  mandateDeadlines,
 }: {
-  mayRejoin: boolean;
-  rejoinDecision: RejoinDecision | undefined;
+  rejoinPermission: RejoinPermission | undefined;
   rejoinPossibleFrom: string | null | undefined;
-  hasFundChoiceOnRecord: boolean;
+  mandateDeadlines: MandateDeadlines | undefined;
 }) => {
-  if (mayRejoin) {
+  const rejoinDecision = rejoinPermission?.decision;
+  if (rejoinPermission?.permitted === true && mandateDeadlines) {
     return (
       <FormattedMessage
-        id={
-          hasFundChoiceOnRecord
-            ? 'account.status.choice.pillar.second.notContributing.line2.fundChoiceOnRecord'
-            : 'account.status.choice.pillar.second.notContributing.line2.noFundChoice'
-        }
+        id="account.status.choice.pillar.second.notContributing.line2.applyByDeadline"
+        values={{
+          deadline: highlightedDeadline,
+          startMonth: contributionStartMonth(
+            mandateDeadlines.secondPillarRejoinContributionStartDate,
+          ),
+        }}
       />
+    );
+  }
+  if (rejoinPermission?.permitted !== false) {
+    return (
+      <FormattedMessage id="account.status.choice.pillar.second.notContributing.line2.restartsOnceFiled" />
     );
   }
   if (rejoinDecision === 'CONTRIBUTIONS_CANNOT_RESTART') {

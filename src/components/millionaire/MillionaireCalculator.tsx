@@ -468,7 +468,7 @@ export function MillionaireCalculator() {
       return [
         {
           ...rejoinStep,
-          bodyKey: 'account.status.choice.pillar.second.notContributing.line2.noFundChoice',
+          bodyKey: 'account.status.choice.pillar.second.notContributing.line2.restartsOnceFiled',
           showButton: true,
         },
       ];
