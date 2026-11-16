@@ -564,9 +564,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       <SecondPillarStatusBox {...saver} secondPillarContributions={notContributing} />,
     );
 
-    expect(
-      screen.getByText('You are not saving in the II pillar and no contributions are made.'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('You are not saving in the II pillar.')).toBeInTheDocument();
     expect(screen.getByText(/^Apply by/)).toHaveTextContent(
       'Apply by 31 July and contributions start again in January.',
     );
@@ -632,9 +630,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       />,
     );
 
-    expect(
-      screen.getByText('You are not saving in the II pillar and no contributions are made.'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('You are not saving in the II pillar.')).toBeInTheDocument();
     expect(screen.queryByText(/You have no II\spillar/)).not.toBeInTheDocument();
     expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([
       '/2nd-pillar-rejoin',
@@ -657,6 +653,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(screen.getByText(/^31\.\sjuuliks$/, { selector: 'b' })).toHaveClass('highlight');
+    expect(screen.getByText('Sa ei kogu II sambas.')).toBeInTheDocument();
     expect(screen.getByText(/^Esita avaldus/)).toHaveTextContent(
       'Esita avaldus 31. juuliks ja sissemaksed algavad uuesti jaanuaris.',
     );
@@ -713,9 +710,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       <SecondPillarStatusBox {...saver} secondPillarContributions={notContributing} />,
     );
 
-    expect(
-      screen.getByText('You are not saving in the II pillar and no contributions are made.'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('You are not saving in the II pillar.')).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
     expect(document.querySelector('.shimmerDefault')).toBeInTheDocument();
     expect(screen.queryByText(/start again/)).not.toBeInTheDocument();
@@ -735,9 +730,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
         />,
       );
 
-      expect(
-        screen.getByText('You are not saving in the II pillar and no contributions are made.'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('You are not saving in the II pillar.')).toBeInTheDocument();
       expect(
         screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment.'),
       ).toBeInTheDocument();
