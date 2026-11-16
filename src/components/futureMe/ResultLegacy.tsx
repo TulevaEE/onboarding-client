@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { deferralLock } from './age65Answers';
@@ -11,6 +11,7 @@ import { withOwnCostsRaisedBy } from './expensesAnswers';
 import { LineIcon } from './FutureMeIcon';
 import { HelpButton } from './HelpButton';
 import { keepSecondPillarGrowing, Legacy, legacyOf } from './legacy';
+import { Prices } from './nominal';
 import { Result, ResultContext } from './resultAnswers';
 import { strong } from './richText';
 import { FutureMeStep, StepId } from './steps';
@@ -18,6 +19,7 @@ import { FutureMeStep, StepId } from './steps';
 interface Props {
   context: ResultContext;
   result: Result;
+  prices: Prices;
 }
 
 type Surplus = Extract<Legacy, { kind: 'surplus' }>;
@@ -45,20 +47,22 @@ const noteOf = (choice: SurplusChoice | null, legacy: Surplus): TranslationKey =
 const SurplusNote = ({
   choice,
   legacy,
+  prices: { at, ageShown },
   onTrySpending,
 }: {
   choice: SurplusChoice | null;
   legacy: Surplus;
+  prices: Prices;
   onTrySpending: () => void;
 }) => (
   <div className="legacy-note" aria-live="polite">
     <FormattedMessage
       id={noteOf(choice, legacy)}
       values={{
-        left: euro(legacy.left),
-        sustainable: euro(legacy.sustainable),
-        costs: euro(legacy.costs),
-        extra: euro(legacy.extra),
+        left: euro(legacy.left * at(legacy.medianAge)),
+        sustainable: euro(legacy.sustainable * at(ageShown)),
+        costs: euro(legacy.costs * at(ageShown)),
+        extra: euro(legacy.extra * at(ageShown)),
       }}
     />
     {choice === 'spend' && legacy.extra > 0 && (
@@ -67,7 +71,7 @@ const SurplusNote = ({
         <button type="button" className="btn btn-link p-0 align-baseline" onClick={onTrySpending}>
           <FormattedMessage
             id="futureMe.result.legacy.trySpend"
-            values={{ amount: euro(legacy.sustainable) }}
+            values={{ amount: euro(legacy.sustainable * at(ageShown)) }}
           />
         </button>
       </>
@@ -78,12 +82,14 @@ const SurplusNote = ({
 const SurplusCard = ({
   context,
   legacy,
+  prices,
   choice,
   onChoose,
   onChange,
 }: {
   context: ResultContext;
   legacy: Surplus;
+  prices: Prices;
   choice: SurplusChoice | null;
   onChoose: (choice: SurplusChoice) => void;
   onChange: ChangeDecisions;
@@ -94,9 +100,13 @@ const SurplusCard = ({
       <p className="text-pretty">
         <FormattedMessage
           id="futureMe.result.legacy.surplus.intro"
-          values={{ age: legacy.medianAge, left: euro(legacy.left), strong }}
+          values={{
+            age: legacy.medianAge,
+            left: euro(legacy.left * prices.at(legacy.medianAge)),
+            strong,
+          }}
         />
-        <HelpButton topic="legacyLeft" />
+        <HelpButton topic="legacyLeft" values={{ prices: prices.isNominal ? 'future' : 'today' }} />
       </p>
       <fieldset>
         <legend className="visually-hidden">
@@ -124,6 +134,7 @@ const SurplusCard = ({
       <SurplusNote
         choice={choice}
         legacy={legacy}
+        prices={prices}
         onTrySpending={() =>
           onChange({ expenses: withOwnCostsRaisedBy(context.expenses, legacy.extra) })
         }
@@ -203,12 +214,12 @@ const ShortfallCard = ({
   );
 };
 
-export const ResultLegacy = ({ context, result }: Props) => {
+export const ResultLegacy = ({ context, result, prices }: Props) => {
   const [choice, setChoice] = useState<SurplusChoice | null>(null);
   const [planChanges, setPlanChanges] = useState(0);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const { change: changeDecisions, goTo } = useDecisionActions();
-  const legacy = legacyOf(context, result);
+  const legacy = useMemo(() => legacyOf(context, result), [context, result]);
 
   useEffect(() => {
     if (planChanges > 0) {
@@ -236,6 +247,7 @@ export const ResultLegacy = ({ context, result }: Props) => {
         <SurplusCard
           context={context}
           legacy={legacy}
+          prices={prices}
           choice={choice}
           onChoose={setChoice}
           onChange={onChange}

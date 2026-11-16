@@ -2,9 +2,13 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { deferralLock, deferredMonthly } from './age65Answers';
 import { euro } from './amountFormat';
+import { externalLink } from './ExternalLink';
 import { HELP_LINKS } from './helpLinks';
 import { strong } from './richText';
-import { amountOf, YouAnswers } from './youAnswers';
+import { YouAnswers } from './youAnswers';
+import { Age60Answers } from './age60Answers';
+import { statePensionAtRetirementOf } from './reducedPay';
+import { StepPlanInput } from './steps';
 
 const MONTHS_IN_YEAR = 12;
 
@@ -14,11 +18,17 @@ const richText = {
   li: (chunks: React.ReactNode) => <li>{chunks}</li>,
   strong,
   small: (chunks: React.ReactNode) => <small className="text-secondary">{chunks}</small>,
-  link: (chunks: React.ReactNode) => <a href={HELP_LINKS.skaFlexiblePension}>{chunks}</a>,
+  link: externalLink(HELP_LINKS.skaFlexiblePension),
 };
 
-export const Age65DeferralFaq = ({ you }: { you: YouAnswers }) => {
-  const pension = amountOf(you.firstPillarMonthly);
+interface Props {
+  you: YouAnswers;
+  plan: StepPlanInput;
+  age60: Age60Answers;
+}
+
+export const Age65DeferralFaq = ({ you, plan, age60 }: Props) => {
+  const pension = statePensionAtRetirementOf(age60, you, plan);
   if (deferralLock(you) || pension <= 0) {
     return null;
   }

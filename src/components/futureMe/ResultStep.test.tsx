@@ -8,9 +8,8 @@ import { User } from '../common/apiModels';
 import translations from '../translations';
 import { mockUser } from '../../test/backend-responses';
 import { installDialogPolyfill } from './dialogPolyfill';
-import { initialAge65 } from './age65Answers';
 import { ResultContext } from './resultAnswers';
-import { contextWith } from './resultContextFixture';
+import { contextWith, age65Growing } from './resultContextFixture';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { DecisionActionsProvider } from './decisionActions';
 import { ResultStep } from './ResultStep';
@@ -79,6 +78,30 @@ const fillInYou = (firstPillar: string) => {
 
 const goTo = (name: RegExp) => userEvent.click(within(trail()).getByRole('button', { name }));
 
+const growAtPensionAge = (...pillars: ('II' | 'III')[]) => {
+  goTo(/^65\sa,/);
+  pillars.forEach((pillar) =>
+    userEvent.click(
+      within(
+        screen.getByRole('group', {
+          name: new RegExp(`^${pillar}\\ssamba väljamakse viis pensionieas$`),
+        }),
+      ).getByRole('radio', { name: /Kasvatan edasi/ }),
+    ),
+  );
+};
+
+const openResultStepGrowingAtPensionAge = () => {
+  render(
+    <IntlProvider locale="et" messages={translations.et}>
+      <FutureMe />
+    </IntlProvider>,
+  );
+  fillInYou('1200');
+  growAtPensionAge('II', 'III');
+  goTo(/^Tulemus,/);
+};
+
 const openResultStep = (firstPillar = '1200') => {
   render(
     <IntlProvider locale="et" messages={translations.et}>
@@ -122,14 +145,22 @@ describe('Result step', () => {
     expect(screen.queryByText('Selle sammu sisu lisandub hiljem.')).not.toBeInTheDocument();
   });
 
+  it('heads the income at the pension age without a pronoun', () => {
+    openResultStep();
+
+    expect(
+      screen.getByRole('heading', { level: 3, name: 'Kuu sissetulek pensionile jäädes' }),
+    ).toBeInTheDocument();
+  });
+
   describe('when the pensions cover the costs', () => {
     it('says the costs are covered to the end of life and the money does not run out', () => {
       openResultStep();
 
       expect(answer()).toHaveTextContent(
-        /Sinu kulud \(791\s€ kuus\) on kaetud kuni 100\. eluaastani\./,
+        /Praeguse plaani järgi on sinu kulud \(791\s€ kuus\) kaetud kuni 100\. eluaastani\./,
       );
-      expect(answer()).toHaveTextContent(/Samba raha ei saa enne 100\. eluaastat otsa\./);
+      expect(answer()).toHaveTextContent(/Sammaste vara ei saa enne 100\. eluaastat otsa\./);
     });
 
     it('tells the most the plan carries every month to the end of life', () => {
@@ -157,14 +188,14 @@ describe('Result step', () => {
       userEvent.click(screen.getByRole('radio', { name: /Mugav/ }));
       goTo(/^Tulemus/);
 
-      expect(answer()).toHaveTextContent(/Sinu kulud \(1\s261\s€ kuus\)/);
+      expect(answer()).toHaveTextContent(/sinu kulud \(1\s261\s€ kuus\)/);
       expect(answer()).not.toHaveTextContent('kuni 100. eluaastani');
       expect(tile(0)).not.toHaveTextContent('100+ kulud kaetud kuni');
     });
 
     it('sets the costs, not what the money stretches to, against the income', () => {
       openResultStep('400');
-      goTo(/^Sina/);
+      goTo(/^Mina/);
       typeInto(screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }), '0');
       typeInto(screen.getByRole('spinbutton', { name: /Kui palju on III\ssambas praegu/ }), '0');
       typeInto(
@@ -211,7 +242,7 @@ describe('Result step', () => {
       lastChartProps().data.datasets.map((set: { label: string }) => set.label);
 
     it('draws only the state pension as a layer when nothing else pays', () => {
-      openResultStep();
+      openResultStepGrowingAtPensionAge();
 
       expect(datasetLabels()).toEqual(['Riiklik pension']);
       expect(lastChartProps().data.datasets[0]).toMatchObject({ type: 'line', fill: 'origin' });
@@ -351,7 +382,7 @@ describe('Result step', () => {
     });
 
     it('names every layer and the costs line in a legend', () => {
-      openResultStep();
+      openResultStepGrowingAtPensionAge();
 
       const legend = within(figure()).getByRole('list', { name: 'Graafiku legend' });
       expect(
@@ -402,7 +433,7 @@ describe('Result step', () => {
     });
 
     it('keeps the table of the same numbers hidden until it is asked for', () => {
-      openResultStep();
+      openResultStepGrowingAtPensionAge();
 
       const toggle = within(figure()).getByRole('button', { name: 'Näita tabelina' });
       expect(toggle).toHaveAttribute('aria-expanded', 'false');
@@ -438,7 +469,7 @@ describe('Result step', () => {
     it('counts the savings and the state pension of someone already past the pension age', () => {
       loggedInAs({ dateOfBirth: '1956-01-01' });
       openResultStep();
-      goTo(/^Sina/);
+      goTo(/^Mina/);
       typeInto(
         screen.getByRole('spinbutton', { name: /Kui palju on II\ssambas praegu/ }),
         '100000',
@@ -485,7 +516,7 @@ describe('Result step', () => {
         const dialog = openHelpFor(
           contextWith(
             { secondPillarAmount: '100000', secondPillarReturnPercent: 4 },
-            { age65: { ...initialAge65(), secondPillar: 'lump' } },
+            { age65: { ...age65Growing(), secondPillar: 'lump' } },
           ),
         );
 
@@ -510,7 +541,7 @@ describe('Result step', () => {
         },
         {
           specialPension: specialPensionOf900,
-          age65: { ...initialAge65(), work: 'yes', workUntil: '70', secondPillar: 'fund' },
+          age65: { ...age65Growing(), work: 'yes', workUntil: '70', secondPillar: 'fund' },
         },
       );
 
@@ -558,7 +589,7 @@ describe('Result step', () => {
         const dialog = openHelpFor(
           contextWith(
             {},
-            { age65: { ...initialAge65(), secondPillar: 'fund', mode: 'half', years: 3 } },
+            { age65: { ...age65Growing(), secondPillar: 'fund', mode: 'half', years: 3 } },
           ),
         );
 

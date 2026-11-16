@@ -710,7 +710,7 @@ describe('FutureMe', () => {
       fillInRequiredAnswers();
 
       expect(trailNames()).toEqual([
-        'Sina, praegune samm',
+        'Mina, praegune samm',
         '61\u00A0a, vaatamata',
         '66\u00A0a, vaatamata',
         '66+\u00A0a, vaatamata',
@@ -757,7 +757,7 @@ describe('FutureMe', () => {
       renderFutureMe();
 
       expect(within(trail()).getByRole('button', { current: 'step' })).toHaveAccessibleName(
-        'Sina, praegune samm',
+        'Mina, praegune samm',
       );
     });
 
@@ -767,7 +767,7 @@ describe('FutureMe', () => {
       renderFutureMe();
 
       expect(trailNames().map((name) => name?.split(',')[0])).toEqual([
-        'Sina',
+        'Mina',
         '60\u00A0a',
         '65\u00A0a',
         '65+\u00A0a',
@@ -785,7 +785,7 @@ describe('FutureMe', () => {
       expect(
         screen.getByRole('heading', { level: 2, name: 'Mis elu sa pensionil elada tahad?' }),
       ).toBeInTheDocument();
-      expect(within(trail()).getByRole('button', { name: 'Sina, vaadatud' })).toBeInTheDocument();
+      expect(within(trail()).getByRole('button', { name: 'Mina, vaadatud' })).toBeInTheDocument();
       expect(
         within(trail()).getByRole('button', { name: 'Kulud, praegune samm' }),
       ).toBeInTheDocument();
@@ -1018,12 +1018,15 @@ describe('FutureMe', () => {
       expect(screen.queryByText(/Kui olid ametnik enne 2013/)).not.toBeInTheDocument();
     });
 
-    it('opens the calculator in the same tab, as most savers are on a phone', () => {
+    it('opens both calculators in a new tab', () => {
       renderFutureMe();
 
       expect(
         screen.getByRole('link', { name: /Sotsiaalkindlustusameti kalkulaatorist/ }),
-      ).not.toHaveAttribute('target');
+      ).toHaveAttribute('target', '_blank');
+      expect(
+        screen.getByRole('link', { name: /Eesti\.ee pensionikalkulaatorist/ }),
+      ).toHaveAttribute('target', '_blank');
     });
 
     it('offers the pension ages 65 to 70', () => {
@@ -1553,7 +1556,7 @@ describe('FutureMe', () => {
 
         userEvent.click(nextButton());
 
-        expect(screen.queryByRole('heading', { level: 2, name: 'Sina' })).not.toBeInTheDocument();
+        expect(screen.queryByRole('heading', { level: 2, name: 'Mina' })).not.toBeInTheDocument();
       });
     });
 
@@ -1733,6 +1736,40 @@ describe('FutureMe', () => {
         expect(
           screen.getByText(
             'Varem pensionile mineku õigust kasutab teine vanem, sinu pensioniiga ei muutu.',
+          ),
+        ).toBeVisible();
+      });
+
+      it('give each parent sharing the right half of the years, counted in whole years', () => {
+        renderFutureMe();
+        addKids(['1990', '1991', '1992', '1993', '1994']);
+
+        userEvent.selectOptions(
+          screen.getByRole('combobox', { name: /Kes kasutab varem pensionile mineku õigust/ }),
+          'jagame võrdselt',
+        );
+
+        expect(earlyYearsField()).toHaveDisplayValue(withNbsp('2 a, vähendamata (kõige varem)'));
+        expect(screen.getByRole('status')).toHaveTextContent(
+          /Jagate õigust teise vanemaga: kumbki läheb 2,5\sa varem pensionile\. Tulevane Mina arvestab ainult täisaastaid\./,
+        );
+      });
+
+      it('leave the pension age alone when sharing the right for three children gives half a year', () => {
+        renderFutureMe();
+        addKids(['1990', '1992', '1994']);
+
+        userEvent.selectOptions(
+          screen.getByRole('combobox', { name: /Kes kasutab varem pensionile mineku õigust/ }),
+          'jagame võrdselt',
+        );
+
+        expect(earlyYearsField()).toHaveDisplayValue(
+          withNbsp('ei lähe varem (tavalises pensionieas)'),
+        );
+        expect(
+          screen.getByText(
+            /^Jagate õigust teise vanemaga: kumbki läheb 6\skuud varem pensionile\. Tulevane Mina arvestab ainult täisaastaid, seega sinu pensioniiga ei muutu\.$/,
           ),
         ).toBeVisible();
       });
@@ -2119,7 +2156,7 @@ describe('FutureMe', () => {
         addKids(['1990', '1992', '1994', '1996', '1998']);
 
         expect(trailNames()).toEqual(
-          expect.arrayContaining(['61\u00A0a sambad, vaatamata', '61\u00A0a pension, vaatamata']),
+          expect.arrayContaining(['61\u00A0a sambad, vaatamata', '61+\u00A0a pension, vaatamata']),
         );
       });
 
@@ -2410,15 +2447,17 @@ describe('FutureMe', () => {
         expect(screen.getByText(/Neid erijuhte Tulevane Mina ei arvuta/)).toBeVisible();
       });
 
-      it('open the Social Insurance Board in the same tab for the other case', () => {
+      it('open the Social Insurance Board in a new tab for the other case', () => {
         renderFutureMe();
         addSpecialCases();
 
         userEvent.click(specialCase(/Muu erijuht/));
 
-        expect(screen.getByRole('link', { name: 'Sotsiaalkindlustusametist' })).not.toHaveAttribute(
-          'target',
-        );
+        const otherCaseNote = screen.getByText(/Neid erijuhte Tulevane Mina ei arvuta/);
+
+        expect(
+          within(otherCaseNote).getByRole('link', { name: /^Sotsiaalkindlustusametist/ }),
+        ).toHaveAttribute('target', '_blank');
       });
 
       it('lock the later steps until the special pension start age is filled in', async () => {
@@ -2963,7 +3002,7 @@ describe('FutureMe', () => {
     it('does not report the same step twice in a row', () => {
       renderFutureMe();
 
-      userEvent.click(within(trail()).getByRole('button', { name: 'Sina, praegune samm' }));
+      userEvent.click(within(trail()).getByRole('button', { name: 'Mina, praegune samm' }));
 
       expect(reportedSteps()).toEqual([{ step: 0 }]);
     });

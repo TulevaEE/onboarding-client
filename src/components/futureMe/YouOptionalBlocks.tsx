@@ -27,6 +27,7 @@ import {
 } from './kidsPrefill';
 import { isIIPaymentUserAsked } from './kidsInput';
 import { AmountField, BlockProps, FieldLabel, PREFILLED_HINT_ID, SelectField } from './YouFields';
+import { externalLink } from './ExternalLink';
 import { HelpButton } from './HelpButton';
 import { HelpTopic } from './helpTopics';
 import { sectionLabels } from './YouBlocks';
@@ -351,12 +352,12 @@ export const KidsSection = ({
                 hint="futureMe.you.kidsEarlyUser.hint"
                 help="kidsEarlyUser"
                 value={answers.kidsEarlyUser}
-                options={(['me', 'other'] as const).map((value) => ({
+                options={SUPPLEMENT_USERS.map((value) => ({
                   value,
                   label: intl.formatMessage({ id: `futureMe.you.kidsEarlyUser.${value}` }),
                 }))}
                 onChange={(value) =>
-                  onChange({ kidsEarlyUser: value as KidsUser, earlyYearsPicked: '' })
+                  onChange({ kidsEarlyUser: value as KidsSupplementUser, earlyYearsPicked: '' })
                 }
               />
             )}
@@ -595,9 +596,7 @@ export const WorkSection = ({
                 <FormattedMessage
                   id="futureMe.you.work.otherNote"
                   values={{
-                    link: (chunks: React.ReactNode) => (
-                      <a href={SOCIAL_INSURANCE_BOARD_URL}>{chunks}</a>
-                    ),
+                    link: externalLink(SOCIAL_INSURANCE_BOARD_URL),
                   }}
                 />
               </p>

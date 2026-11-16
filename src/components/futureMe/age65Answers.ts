@@ -1,4 +1,10 @@
-import { PayoutChoice } from './age60Answers';
+import {
+  Age60Answers,
+  initialAge60,
+  PAYOUT_CHOICES,
+  PayoutChoice,
+  PENSION_AGE_PAYOUT_CHOICES,
+} from './age60Answers';
 import {
   DEFERRAL_INCREASE,
   EARLY_DECREASE,
@@ -8,7 +14,6 @@ import {
 } from './engine/pension';
 import { StepPlanInput } from './steps';
 import {
-  amountOf,
   earlyRetirementRight,
   earlyRetirementYears,
   isRescueAllowanceOnly,
@@ -43,8 +48,8 @@ export const initialAge65 = (): Age65Answers => ({
   workUntil: '',
   mode: 'full',
   years: 1,
-  secondPillar: 'grow',
-  thirdPillar: 'grow',
+  secondPillar: 'fund',
+  thirdPillar: 'fund',
   firstPillarChoice: null,
 });
 
@@ -55,6 +60,14 @@ export const withMode = (answers: Age65Answers, mode: PensionMode): Age65Answers
 
 export const isPayoutChoiceMadeAtAnotherStep = (plan: StepPlanInput): boolean =>
   retirementAge(plan) <= payoutAge(plan);
+
+export const payoutChoicesAtPayoutAge = (plan: StepPlanInput): PayoutChoice[] =>
+  isPayoutChoiceMadeAtAnotherStep(plan) ? PENSION_AGE_PAYOUT_CHOICES : PAYOUT_CHOICES;
+
+export const initialAge60For = (plan: StepPlanInput): Age60Answers =>
+  isPayoutChoiceMadeAtAnotherStep(plan)
+    ? { secondPillar: 'fund', thirdPillar: 'fund' }
+    : initialAge60();
 
 export const pensionKind = (you: YouAnswers): PensionKind => {
   const years = earlyRetirementYears(you);
@@ -107,9 +120,9 @@ export const workUntilOf = (answers: Age65Answers, plan: StepPlanInput): number 
   return workUntilOptions(plan).includes(picked) ? picked : defaultWorkUntil(plan);
 };
 
-export const workAccrualMonthly = (you: YouAnswers): number => {
+export const workAccrualMonthly = (you: YouAnswers, gross: number): number => {
   const isContributing = Number(you.secondPillarRate) > 0;
-  return workAccrual(amountOf(you.grossMonthly), isContributing, isContributing);
+  return workAccrual(gross, isContributing, isContributing);
 };
 
 export const deferralYearsWhileWorking = (answers: Age65Answers, plan: StepPlanInput): number => {

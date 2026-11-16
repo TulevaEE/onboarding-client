@@ -1,7 +1,8 @@
-import { PAYOUT_CHOICES } from './age60Answers';
+import { PENSION_AGE_PAYOUT_CHOICES } from './age60Answers';
 import {
   deferralLock,
   isPayoutChoiceMadeAtAnotherStep,
+  payoutChoicesAtPayoutAge,
   PENSION_MODES,
   withMode,
 } from './age65Answers';
@@ -62,7 +63,9 @@ const payoutDecision = (
   stage: 'age60' | 'age65',
 ): Decision => {
   const age = stage === 'age60' ? payoutAge(context.plan) : retirementAge(context.plan);
-  return decisionAt(context, id, age, context[stage][pillar], PAYOUT_CHOICES);
+  const choices =
+    stage === 'age60' ? payoutChoicesAtPayoutAge(context.plan) : PENSION_AGE_PAYOUT_CHOICES;
+  return decisionAt(context, id, age, context[stage][pillar], choices);
 };
 
 const isLeftGrowingAtPayoutAge = ({ age60, plan }: ResultContext, pillar: Pillar): boolean =>

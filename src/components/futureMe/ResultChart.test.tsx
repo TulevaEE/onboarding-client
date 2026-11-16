@@ -3,7 +3,7 @@ import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { initialAge60 } from './age60Answers';
-import { Age65Answers, initialAge65 } from './age65Answers';
+import { Age65Answers } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses, needMonthly } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
@@ -13,6 +13,7 @@ import { ResultChartTip } from './ResultChartTip';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
 import translations from '../translations';
+import { age65Growing } from './resultContextFixture';
 
 const mockChart = jest.fn();
 const mockSetActiveElements = jest.fn();
@@ -50,7 +51,7 @@ const contextWith = (age65: Partial<Age65Answers> = {}, gross = '2000'): ResultC
     you,
     plan: toStepPlanInput(you),
     age60: initialAge60(),
-    age65: { ...initialAge65(), ...age65 },
+    age65: { ...age65Growing(), ...age65 },
     age66: initialAge66(),
     specialPension: initialSpecialPension(),
     expenses: initialExpenses(),
@@ -60,7 +61,11 @@ const contextWith = (age65: Partial<Age65Answers> = {}, gross = '2000'): ResultC
 const renderChart = (context: ResultContext = contextWith()) =>
   render(
     <IntlProvider locale="et" messages={translations.et}>
-      <ResultChart result={resultOf(context)} need={needMonthly(context.expenses)} />
+      <ResultChart
+        result={resultOf(context)}
+        need={needMonthly(context.expenses)}
+        isNominal={false}
+      />
     </IntlProvider>,
   );
 
@@ -68,7 +73,7 @@ const chart = () => screen.getByRole('img', { name: 'Sissetulek ja kulud vanuse 
 const readout = () => screen.getByRole('status');
 const tip = () => screen.queryByTestId('chart-tip');
 const lastChartProps = () => mockChart.mock.calls[mockChart.mock.calls.length - 1][0];
-const TAB_STOPS_BEFORE_CHART = 5;
+const TAB_STOPS_BEFORE_CHART = 2;
 const tabToChart = () => {
   Array.from({ length: TAB_STOPS_BEFORE_CHART }).forEach(() => userEvent.tab());
 };

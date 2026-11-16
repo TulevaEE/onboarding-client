@@ -14,6 +14,8 @@ import { kidsInputOf } from './kidsInput';
 import { StepPlanInput } from './steps';
 import { amountOf, rescueBasisOf, serviceYearsOf, YouAnswers } from './youAnswers';
 import { hasReachedAge, retirementAge } from './planAges';
+import { Age60Answers, initialAge60 } from './age60Answers';
+import { grossAtAgeOf, reducedPayInputOf } from './reducedPay';
 
 const STATE_SECOND_PILLAR_RATE = 0.04;
 const lifeTable: LifeTable = lifeTableData;
@@ -56,9 +58,11 @@ export const secondPillarMonthly = (
   you: YouAnswers,
   answers: SpecialPensionAnswers,
   plan: StepPlanInput,
+  age60: Age60Answers,
 ): number => {
   const rate = Number(you.secondPillarRate) || 0;
-  const salary = newSalaryOf(answers, plan) ?? amountOf(you.grossMonthly);
+  const salary =
+    newSalaryOf(answers, plan) ?? grossAtAgeOf(age60, you, plan, specialPensionStartAge(plan));
   return rate > 0 ? salary * (rate + STATE_SECOND_PILLAR_RATE) : 0;
 };
 
@@ -68,6 +72,7 @@ export const pensionInputOf = (
   plan: StepPlanInput,
   age65: Age65Answers,
   age66: Age66Answers,
+  age60: Age60Answers,
 ): PensionInput => {
   const isStarted = isSpecialPensionStarted(plan);
   const isHazardous = you.workAdded && you.hazardList !== 'no';
@@ -100,6 +105,7 @@ export const pensionInputOf = (
     workUntil: workUntilOf(age65, plan),
     firstPillarChoice: age65.firstPillarChoice ?? undefined,
     firstPillarChoicePa: age66.firstPillarChoicePa ?? undefined,
+    ...reducedPayInputOf(age60, you, plan),
   };
 };
 
@@ -109,9 +115,10 @@ export const firstPillarComparison = (
   plan: StepPlanInput,
   age65: Age65Answers = initialAge65(),
   age66: Age66Answers = initialAge66(),
+  age60: Age60Answers = initialAge60(),
 ): SimulationResult['firstPillar'] =>
   amountOf(answers.monthly) > 0
-    ? simulate(pensionInputOf(answers, you, plan, age65, age66), lifeTable, SCENARIOS[0])
+    ? simulate(pensionInputOf(answers, you, plan, age65, age66, age60), lifeTable, SCENARIOS[0])
         .firstPillar
     : null;
 

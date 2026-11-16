@@ -26,13 +26,14 @@ export const QuickEditExpenses = ({ context }: Props) => {
 
 const QuickEditSpecialPension = ({ context }: Props) => {
   const { change, goTo } = useDecisionActions();
-  const { you, plan, age65, age66, specialPension } = context;
+  const { you, plan, age60, age65, age66, specialPension } = context;
   return (
     <SpecialPensionStep
       isEmbedded
       answers={specialPension}
       you={you}
       plan={plan}
+      age60={age60}
       age65={age65}
       age66={age66}
       onChange={(changed) => change({ specialPension: changed })}

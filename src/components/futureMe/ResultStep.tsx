@@ -1,4 +1,4 @@
-import React, { RefObject, useState } from 'react';
+import React, { RefObject, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TranslationKey } from '../translations';
 import { ProviderDisclaimer } from '../pensionCalculator/ProviderDisclaimer';
@@ -15,6 +15,8 @@ import { ResultChart } from './ResultChart';
 import { ResultDecisions } from './ResultDecisions';
 import { ResultFeedback } from './ResultFeedback';
 import { ResultLegacy } from './ResultLegacy';
+import { NominalChoice } from './ResultNominalChoice';
+import { nominalResultOf, Prices, pricesOf } from './nominal';
 import { ResultRules } from './ResultRules';
 import { ResultSave } from './ResultSave';
 import {
@@ -44,7 +46,14 @@ const INCOME_LABELS: Record<IncomeSource, TranslationKey> = {
   deposit: 'futureMe.result.income.deposit',
 };
 
-const AnswerText = ({ result, need }: { result: Result; need: number }) => {
+interface AnswerProps {
+  result: Result;
+  need: number;
+  prices: Prices;
+}
+
+const AnswerText = ({ result, need, prices: { isNominal, ageShown, at } }: AnswerProps) => {
+  const prices = isNominal ? 'future' : 'today';
   const kind = coverageKind(result);
   const until = result.coversNeedUntil ?? MAX_AGE_SHOWN;
   const gapEnd = result.gapEnd ?? until;
@@ -54,7 +63,9 @@ const AnswerText = ({ result, need }: { result: Result; need: number }) => {
         id="futureMe.result.answer.costs"
         values={{
           kind,
-          need: euro(need),
+          need: euro(need * at(ageShown)),
+          needAge: ageShown,
+          prices,
           until,
           from: until,
           to: gapEnd,
@@ -69,14 +80,16 @@ const AnswerText = ({ result, need }: { result: Result; need: number }) => {
         id="futureMe.result.answer.money"
         values={{
           endAge: result.moneyEndAge ?? 'never',
-          income: euro(result.incomeAfterMoney ?? 0),
+          income: euro((result.incomeAfterMoney ?? 0) * at(result.moneyEndAge ?? ageShown)),
         }}
       />{' '}
       <FormattedMessage
         id="futureMe.result.answer.sustainable"
         values={{
           age: result.horizonAge,
-          amount: euro(result.sustainable),
+          amount: euro(result.sustainable * at(ageShown)),
+          startAge: ageShown,
+          prices,
           strong,
         }}
       />
@@ -132,22 +145,31 @@ const specialPensionValues = ({ plan }: ResultContext, result: Result) => {
   };
 };
 
-const sustainableHelpValues = (context: ResultContext, result: Result) => {
+const sustainableHelpValues = (context: ResultContext, real: Result, prices: Prices) => {
+  const result = prices.isNominal ? nominalResultOf(real) : real;
   const savings = savingsAtPensionStartOrToday(result);
+  const atSavings = prices.at(savings.age);
   return {
-    sustainable: euro(result.sustainable),
+    sustainable: euro(real.sustainable * prices.at(prices.ageShown)),
     horizonAge: result.horizonAge,
     ...specialPensionValues(context, result),
     ...statePensionValues(context, result),
     isPastPensionAge: isPastPensionAge(result) ? 'yes' : 'no',
-    pot: euro(savings.pot),
+    pot: euro(savings.pot * atSavings),
     hasDeposit: savings.deposit > 0.5 ? 'yes' : 'no',
-    deposit: euro(savings.deposit),
-    need: euro(needMonthly(context.expenses)),
+    deposit: euro(savings.deposit * atSavings),
+    need: euro(needMonthly(context.expenses) * prices.at(prices.ageShown)),
   };
 };
 
-const Tiles = ({ context, result }: { context: ResultContext; result: Result }) => {
+interface TilesProps {
+  context: ResultContext;
+  result: Result;
+  prices: Prices;
+}
+
+const Tiles = ({ context, result, prices }: TilesProps) => {
+  const { isNominal, ageShown, at } = prices;
   const kind = coverageKind(result);
   const until = result.coversNeedUntil ?? MAX_AGE_SHOWN;
   const endAge = result.moneyEndAge ?? 'never';
@@ -176,29 +198,39 @@ const Tiles = ({ context, result }: { context: ResultContext; result: Result }) 
         </span>
       </li>
       <li>
-        <strong>{euro(result.spendAt90)}</strong>{' '}
+        <strong>{euro(result.spendAt90 * at(90))}</strong>{' '}
         <span>
           <FormattedMessage id="futureMe.result.tile.spendAt90.label" />
         </span>
       </li>
       <li>
-        <strong>{euro(result.sustainable)}</strong>{' '}
+        <strong>{euro(result.sustainable * at(ageShown))}</strong>{' '}
         <span>
           <FormattedMessage
-            id="futureMe.result.tile.sustainable.label"
-            values={{ age: result.horizonAge }}
+            id={
+              isNominal
+                ? 'futureMe.result.tile.sustainable.futureLabel'
+                : 'futureMe.result.tile.sustainable.label'
+            }
+            values={{ age: result.horizonAge, startAge: ageShown }}
           />
-          <HelpButton topic="sustainable" values={sustainableHelpValues(context, result)} />
+          <HelpButton topic="sustainable" values={sustainableHelpValues(context, result, prices)} />
         </span>
       </li>
     </ul>
   );
 };
 
-const IncomeAtPensionAge = ({ result, need }: { result: Result; need: number }) => {
+interface IncomeProps {
+  result: Result;
+  need: number;
+  isNominal: boolean;
+}
+
+const IncomeAtPensionAge = ({ result, need, isNominal }: IncomeProps) => {
   const intl = useIntl();
   const age = result.pensionStartAge;
-  const row = result.rows.find((candidate) => candidate.age === age) ?? result.rows[0];
+  const row = savingsAtPensionStartOrToday(result);
   const { lines: sources, total } = incomeAtStart(row);
   return (
     <>
@@ -206,7 +238,10 @@ const IncomeAtPensionAge = ({ result, need }: { result: Result; need: number }) 
         <FormattedMessage id="futureMe.result.income.title" />
       </h3>
       <p className="text-pretty">
-        <FormattedMessage id="futureMe.result.income.intro" values={{ age }} />
+        <FormattedMessage
+          id={isNominal ? 'futureMe.result.income.futureIntro' : 'futureMe.result.income.intro'}
+          values={{ age }}
+        />
       </p>
       <ul
         className="result-income"
@@ -262,7 +297,11 @@ const ReturnAssumption = ({ context }: { context: ResultContext }) => {
 };
 
 export const ResultStep = ({ context, headingRef }: Props) => {
-  const result = resultOf(context);
+  const result = useMemo(() => resultOf(context), [context]);
+  const need = needMonthly(context.expenses);
+  const [isNominal, setNominal] = useState(false);
+  const shown = useMemo(() => (isNominal ? nominalResultOf(result) : result), [isNominal, result]);
+  const prices = pricesOf(result, isNominal);
   const [openDecision, setOpenDecision] = useState<DecisionId | null>(null);
   const [focusRequests, setFocusRequests] = useState(0);
   const openAndFocusDecision = (id: DecisionId) => {
@@ -279,19 +318,29 @@ export const ResultStep = ({ context, headingRef }: Props) => {
           <FormattedMessage id="futureMe.result.title" />
         </h2>
       </ChapterHead>
+      <NominalChoice isOn={isNominal} onChange={setNominal} result={result} prices={prices} />
       <p
         role="status"
         aria-labelledby="future-me-result-heading"
         className="result-answer text-pretty"
       >
-        <AnswerText result={result} need={needMonthly(context.expenses)} />
+        <AnswerText result={result} need={need} prices={prices} />
       </p>
       <ReturnAssumption context={context} />
-      <ResultAdvice context={context} result={result} onOpenDecision={openAndFocusDecision} />
-      <Tiles context={context} result={result} />
-      <IncomeAtPensionAge result={result} need={needMonthly(context.expenses)} />
-      <ResultChart result={result} need={needMonthly(context.expenses)} />
-      <ResultLegacy context={context} result={result} />
+      <ResultAdvice
+        context={context}
+        result={result}
+        prices={prices}
+        onOpenDecision={openAndFocusDecision}
+      />
+      <Tiles context={context} result={result} prices={prices} />
+      <IncomeAtPensionAge
+        result={shown}
+        need={need * prices.at(prices.ageShown)}
+        isNominal={isNominal}
+      />
+      <ResultChart result={result} need={need} isNominal={isNominal} />
+      <ResultLegacy context={context} result={result} prices={prices} />
       <ResultDecisions
         context={context}
         openId={openDecision}
@@ -299,8 +348,8 @@ export const ResultStep = ({ context, headingRef }: Props) => {
         focusRequests={focusRequests}
       />
       <ResultAssumptions context={context} />
-      <ResultRules context={context} />
-      <ResultSave context={context} />
+      <ResultRules context={context} prices={prices} />
+      <ResultSave context={context} isNominal={isNominal} />
       <ResultFeedback />
       <div className="mt-4">
         <ProviderDisclaimer />

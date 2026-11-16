@@ -14,7 +14,8 @@ const renderHelp = (topic: HelpTopic = 'sex') =>
     </IntlProvider>,
   );
 
-const TOPICS_WITHOUT_NUMBERS = HELP_TOPICS.filter((topic) => topic !== 'sustainable');
+const TOPICS_WITH_VALUES = ['sustainable', 'nominal', 'legacyLeft'];
+const TOPICS_WITHOUT_VALUES = HELP_TOPICS.filter((topic) => !TOPICS_WITH_VALUES.includes(topic));
 
 const openerOf = (name: RegExp) => screen.getByRole('button', { name });
 
@@ -54,6 +55,21 @@ describe('HelpButton', () => {
     ).toHaveAttribute(
       'href',
       'https://andmed.stat.ee/et/stat/rahvastik__rahvastikusundmused__surmad/RV045',
+    );
+  });
+
+  it('marks a source link with the new tab icon', () => {
+    renderHelp();
+
+    userEvent.click(openerOf(/Miks küsime sugu/));
+
+    const sourceLink = within(dialog()).getByRole('link', {
+      name: /^Statistikaamet RV045 ja RV046/,
+    });
+
+    expect(within(sourceLink).getByRole('img', { hidden: true })).toHaveAttribute(
+      'aria-hidden',
+      'true',
     );
   });
 
@@ -128,7 +144,7 @@ describe('HelpButton', () => {
     expect(document.body).not.toHaveStyle({ position: 'fixed' });
   });
 
-  it.each(TOPICS_WITHOUT_NUMBERS)(
+  it.each(TOPICS_WITHOUT_VALUES)(
     'opens the explanation of %s with its question and an answer',
     (topic) => {
       renderHelp(topic);
@@ -144,7 +160,7 @@ describe('HelpButton', () => {
     },
   );
 
-  it.each(TOPICS_WITHOUT_NUMBERS)('shows the explanation of %s without research notes', (topic) => {
+  it.each(TOPICS_WITHOUT_VALUES)('shows the explanation of %s without research notes', (topic) => {
     renderHelp(topic);
 
     userEvent.click(screen.getByRole('button', { name: /^Selgitus: / }));
