@@ -585,10 +585,26 @@ describe('Age 65 step', () => {
     });
   });
 
+  describe('payouts when retiring at the payout age', () => {
+    beforeEach(() => {
+      loggedInAs({ dateOfBirth: '1970-01-01', retirementAge: 66 });
+      openAge65Step({ withFiveChildren: true, trailName: /^61\sa sambad, vaatamata$/ });
+    });
+
+    it('lists the monthly payouts first and preselects them, as at the pension age', () => {
+      const [first] = within(
+        screen.getByRole('group', { name: /^II\ssamba väljamakse viis$/ }),
+      ).getAllByRole('radio');
+
+      expect(first).toHaveAccessibleName(/^Võtan igakuiselt/);
+      expect(first).toBeChecked();
+    });
+  });
+
   describe('retiring early on favourable terms', () => {
     beforeEach(() => {
       loggedInAs({ dateOfBirth: '1970-01-01', retirementAge: 66 });
-      openAge65Step({ withFiveChildren: true, trailName: /^61\sa pension, vaatamata$/ });
+      openAge65Step({ withFiveChildren: true, trailName: /^61\+\sa pension, vaatamata$/ });
     });
 
     it('says how many years early the saver retires and that the pension is not reduced', () => {
@@ -645,7 +661,7 @@ describe('Age 65 step', () => {
       expect(
         screen.queryByRole('group', { name: /väljamakse viis pensionieas/ }),
       ).not.toBeInTheDocument();
-      expect(screen.getAllByText(/valik 61-aastaselt: kasvatan edasi\./)).toHaveLength(2);
+      expect(screen.getAllByText(/valik 61-aastaselt: igakuised väljamaksed\./)).toHaveLength(2);
     });
   });
 });

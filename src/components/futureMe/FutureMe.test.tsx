@@ -2156,7 +2156,7 @@ describe('FutureMe', () => {
         addKids(['1990', '1992', '1994', '1996', '1998']);
 
         expect(trailNames()).toEqual(
-          expect.arrayContaining(['61\u00A0a sambad, vaatamata', '61\u00A0a pension, vaatamata']),
+          expect.arrayContaining(['61\u00A0a sambad, vaatamata', '61+\u00A0a pension, vaatamata']),
         );
       });
 

@@ -74,6 +74,20 @@ describe('decisions', () => {
       expect(pension.choices).toEqual(['fund', 'grow', 'lump']);
     });
 
+    it('offers the monthly payouts first at the payout age when the saver retires by then', () => {
+      const retiringFiveYearsEarly = contextWith({
+        kidsAdded: true,
+        kidsCount: '5',
+        kidsBirthYears: ['1990', '1992', '1994', '1996', '1998'],
+        kidsDisabled: [false, false, false, false, false],
+      });
+      const payout = decisionsOf(retiringFiveYearsEarly).find(
+        ({ id }) => id === 'secondPillarAtPayoutAge',
+      );
+
+      expect(payout?.choices).toEqual(['fund', 'grow', 'lump']);
+    });
+
     it('offers the state pension in full, half or deferred', () => {
       const [, statePension] = decisionsOf(contextWith());
 

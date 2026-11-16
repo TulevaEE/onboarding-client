@@ -4,7 +4,7 @@ import { TranslationKey } from '../translations';
 import {
   Age60Answers,
   PAYOUT_CHOICE_EMOJI,
-  PAYOUT_CHOICES,
+  PayoutChoice,
   PillarsOpening,
   ReducedPay,
 } from './age60Answers';
@@ -48,6 +48,7 @@ interface Props {
   onEditYou: () => void;
   earlyPayouts: EarlyPayouts;
   currentPay: Required<ReducedPay>;
+  payoutChoices: PayoutChoice[];
 }
 
 export type EarlyPayouts = Record<Pillar, EarlyPayout | null> & { moneyUseAge: number };
@@ -55,6 +56,7 @@ export type EarlyPayouts = Record<Pillar, EarlyPayout | null> & { moneyUseAge: n
 interface PillarProps {
   pillar: Pillar;
   answers: Age60Answers;
+  payoutChoices: PayoutChoice[];
   birthYear: number;
   sex: Sex;
   hasPillar: boolean;
@@ -100,6 +102,7 @@ const EarlyPayoutNote = ({
 const PillarChoices = ({
   pillar,
   answers,
+  payoutChoices,
   birthYear,
   sex,
   contractStartAge,
@@ -143,7 +146,7 @@ const PillarChoices = ({
         </legend>
         {startedFundPension && <ChoiceMadeNote choice={startedFundPension} />}
         <div className="payout-choices">
-          {PAYOUT_CHOICES.map((choice) => (
+          {payoutChoices.map((choice) => (
             <ChoiceCard
               key={choice}
               idPrefix={`future-me-${pillar}`}
@@ -210,6 +213,7 @@ export const Age60Step = ({
   onEditYou,
   earlyPayouts,
   currentPay,
+  payoutChoices,
 }: Props) => {
   const year = birthYear + age;
 
@@ -238,6 +242,7 @@ export const Age60Step = ({
       <PillarChoices
         pillar="secondPillar"
         answers={answers}
+        payoutChoices={payoutChoices}
         birthYear={birthYear}
         sex={sex}
         contractStartAge={contractStartAges.secondPillar}
@@ -260,6 +265,7 @@ export const Age60Step = ({
       <PillarChoices
         pillar="thirdPillar"
         answers={answers}
+        payoutChoices={payoutChoices}
         birthYear={birthYear}
         sex={sex}
         contractStartAge={contractStartAges.thirdPillar}
