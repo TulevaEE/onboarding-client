@@ -15,7 +15,7 @@ import { usePageTitle } from '../common/usePageTitle';
 import { ACCOUNT_PATH } from '../paths';
 import { Age55Step } from './Age55Step';
 import { age55Of } from './age55';
-import { Age60Answers, pillarsOpeningAt60 } from './age60Answers';
+import { Age60Answers, answersChangedFrom, pillarsOpeningAt60 } from './age60Answers';
 import { initialAge60For, payoutChoicesAtPayoutAge } from './age65Answers';
 import { isWorkloadAskedAt } from './reducedPay';
 import { Age60Step } from './Age60Step';
@@ -79,16 +79,16 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
     startedFundPensionAnswers(prefillAtStart.fundPensions ?? [], initialAnswers(prefillAtStart)),
   );
   const [answers, setAnswers] = useState(started.you);
-  const [age60Chosen, setAge60] = useState<Age60Answers | null>(() =>
-    Object.keys(
-      startedFundPensionsAt(
-        prefillAtStart.fundPensions ?? [],
-        FutureMeStep.AGE_60,
-        toStepPlanInput(started.you),
-      ),
-    ).length > 0
-      ? started.age60
-      : null,
+  const [age60Chosen, setAge60Chosen] = useState<Partial<Age60Answers>>(() =>
+    Object.fromEntries(
+      Object.keys(
+        startedFundPensionsAt(
+          prefillAtStart.fundPensions ?? [],
+          FutureMeStep.AGE_60,
+          toStepPlanInput(started.you),
+        ),
+      ).map((pillar) => [pillar, started.age60[pillar as Pillar]]),
+    ),
   );
   const [age65, setAge65] = useState(started.age65);
   const [age66, setAge66] = useState(initialAge66);
@@ -107,7 +107,9 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   const blocked = blockedFields(answers);
   const invalidChildMonths = firstInvalidChildIIMonths(answers);
   const plan = toStepPlanInput(answers);
-  const age60 = age60Chosen ?? initialAge60For(plan);
+  const age60: Age60Answers = { ...initialAge60For(plan), ...age60Chosen };
+  const setAge60 = (next: Age60Answers) =>
+    setAge60Chosen((chosen) => ({ ...chosen, ...answersChangedFrom(age60, next) }));
   const steps = shownSteps(
     plan,
     isAge66StepNeeded(age66, { age60, age65, you: answers, plan }, specialPension),

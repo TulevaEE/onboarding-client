@@ -585,6 +585,26 @@ describe('Age 65 step', () => {
     });
   });
 
+  it('still preselects the monthly payouts at the payout age after the workload was answered before retiring early was added', () => {
+    loggedInAs({ dateOfBirth: '1970-01-01', retirementAge: 66 });
+    openAge65Step({ trailName: /^61\sa, vaatamata$/ });
+    userEvent.click(
+      within(screen.getByRole('group', { name: /töökoormust/ })).getByRole('radio', {
+        name: /Vähendan koormust/,
+      }),
+    );
+    userEvent.click(within(trail()).getByRole('button', { name: /^Mina/ }));
+    addFiveChildren();
+    userEvent.click(within(trail()).getByRole('button', { name: /^61\sa sambad/ }));
+
+    expect(
+      within(screen.getByRole('group', { name: /^II\ssamba väljamakse viis$/ })).getByRole(
+        'radio',
+        { name: /^Võtan igakuiselt/ },
+      ),
+    ).toBeChecked();
+  });
+
   describe('payouts when retiring at the payout age', () => {
     beforeEach(() => {
       loggedInAs({ dateOfBirth: '1970-01-01', retirementAge: 66 });

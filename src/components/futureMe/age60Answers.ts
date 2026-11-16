@@ -25,5 +25,13 @@ export interface Age60Answers {
 
 export const initialAge60 = (): Age60Answers => ({ secondPillar: 'grow', thirdPillar: 'grow' });
 
+export const answersChangedFrom = (
+  current: Age60Answers,
+  next: Age60Answers,
+): Partial<Age60Answers> =>
+  Object.fromEntries(
+    Object.entries(next).filter(([field, value]) => current[field as keyof Age60Answers] !== value),
+  );
+
 export const pillarsOpeningAt60 = (steps: StepId[], hasThirdPillar: boolean): PillarsOpening =>
   hasThirdPillar && !steps.includes(FutureMeStep.AGE_55) ? 'both' : 'second';
