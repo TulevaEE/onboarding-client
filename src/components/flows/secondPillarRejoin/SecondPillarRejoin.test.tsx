@@ -67,11 +67,19 @@ describe('When an eligible person rejoins the II pillar', () => {
     smartIdMandateBatchSigningBackend(server);
   });
 
-  test('leads with part of your taxes going into the II pillar, and the deadline, in bold', async () => {
+  test('leads with part of your taxes going into the II pillar in bold, and the deadline highlighted', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
-    expect(screen.getByText('part of your taxes', { selector: 'b' })).toBeInTheDocument();
-    expect(screen.getByText(/^30\sNovember$/, { selector: 'b' })).toBeInTheDocument();
+    expect(screen.getByText('part of your taxes', { selector: 'b' })).not.toHaveClass('highlight');
+    expect(screen.getByText(/^30\sNovember$/, { selector: 'b' })).toHaveClass('highlight');
+  });
+
+  test('highlights the deadline in Estonian', async () => {
+    render('/2nd-pillar-rejoin', new QueryClient(), 'et');
+
+    expect(await screen.findByText(/^30\.\snovembriks$/, { selector: 'b' })).toHaveClass(
+      'highlight',
+    );
   });
 
   test('leads with 31 March and saving from September when filing in the spring window', async () => {
@@ -96,7 +104,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(lead()).toHaveTextContent(/saving starts next May\.$/);
   });
 
-  test('keeps the I pillar effect and the restriction with the application for making contributions, without a taxation caveat', async () => {
+  test('keeps the restriction with the application for making contributions, and leaves the I pillar effect to the choices', async () => {
     await renderAt('/2nd-pillar-rejoin');
     userEvent.click(nextButton());
 
@@ -104,12 +112,9 @@ describe('When an eligible person rejoins the II pillar', () => {
       screen.getByRole('region', { name: /contributing to the II\spillar again/ }),
     ).getByRole('note');
     expect(disclaimers).toHaveTextContent(restriction);
-    expect(disclaimers).toHaveTextContent(
-      'Social tax paid into the II pillar slightly reduces your I pillar.',
-    );
+    expect(disclaimers).not.toHaveTextContent(/I\spillar/);
     expect(disclaimers).not.toHaveTextContent(/Taxation|Tax laws/);
     expect(within(disclaimers).queryByRole('link')).not.toBeInTheDocument();
-    expect(disclaimers).toHaveTextContent(/your I\spillar\..*can't stop contributions/);
   });
 
   test('opens the application with every rate and fund option in view, and 6% and the Tuleva stock fund chosen', async () => {
@@ -134,8 +139,112 @@ describe('When an eligible person rejoins the II pillar', () => {
   test('says the contribution size can be changed later, every year', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
+    expect(paymentRateRow()).toHaveTextContent('You can change your contribution every year.');
+  });
+
+  test('says next to the contribution that the social tax part slightly reduces the I pillar, with the comparison folded away', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
     expect(paymentRateRow()).toHaveTextContent(
-      'You can change your contribution size later, every year.',
+      'The social tax part slightly reduces your I pillar.',
+    );
+    expect(firstPillarEffect()).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('region', { name: FIRST_PILLAR_EFFECT })).not.toBeInTheDocument();
+  });
+
+  test('unfolds a year of saving in each pillar at a gross salary of 2000 €, for the contribution chosen', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    userEvent.click(firstPillarEffect());
+
+    expect(firstPillarEffect()).toHaveAttribute('aria-expanded', 'true');
+    expect(firstPillarComparison()).toHaveTextContent(
+      /I\spillar\s*a promise from the state\s*\+2\s€\s*a month to your I\spillar pension/,
+    );
+    expect(firstPillarComparison()).toHaveTextContent(
+      /II\spillar\s*your own assets\s*\+1,277\s€\s*every year to your II\spillar account/,
+    );
+    expect(firstPillarComparison()).toHaveTextContent(
+      /For each year of saving at a gross salary of 2,000\s€ and a 6% contribution\./,
+    );
+
+    userEvent.click(screen.getByRole('radio', { name: /^2% of gross salary/i }));
+
+    expect(firstPillarComparison()).toHaveTextContent(/\+1,066\s€\s*every year/);
+    expect(firstPillarComparison()).toHaveTextContent(/and a 2% contribution\./);
+  });
+
+  test('unfolds the calculation behind the comparison in place, naming its sources without links out of the application', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+    userEvent.click(firstPillarEffect());
+
+    const calculation = within(firstPillarComparison()).getByRole('button', {
+      name: 'See the calculation',
+    });
+    expect(calculation).toHaveAttribute('aria-expanded', 'false');
+    userEvent.click(calculation);
+
+    expect(calculation).toHaveAttribute('aria-expanded', 'true');
+    expect(firstPillarComparison()).toHaveTextContent(
+      /I\spillar, 2\s€\sa month:.*the difference is 0\.194\spoints, or 2\.04\s€\sa month at a point value of 10\.477\s€\..*about 464\s€\./,
+    );
+    expect(firstPillarComparison()).toHaveTextContent(
+      /II\spillar, 1,277\s€\sa year: 960\s€ comes from social tax.*and 317\s€ is the income tax you don't pay on your 6% contribution\. That is about 3\stimes/,
+    );
+    expect(firstPillarComparison()).toHaveTextContent(
+      'Sources: Social Insurance Board, Statistics Estonia.',
+    );
+    expect(within(firstPillarComparison()).queryAllByRole('link')).toHaveLength(0);
+  });
+
+  test('folds the comparison away again', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    userEvent.click(firstPillarEffect());
+    userEvent.click(firstPillarEffect());
+
+    expect(firstPillarEffect()).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('words the I pillar comparison in Estonian', async () => {
+    render('/2nd-pillar-rejoin', new QueryClient(), 'et');
+    const contribution = await screen.findByRole('group', { name: 'Sinu sissemakse' });
+
+    expect(contribution).toHaveTextContent('Sotsiaalmaksu osa vähendab veidi I sammast.');
+    userEvent.click(
+      within(contribution).getByRole('button', { name: /^vähendab veidi I\ssammast$/ }),
+    );
+
+    const comparison = screen.getByRole('region', { name: /^vähendab veidi I\ssammast$/ });
+    expect(comparison).toHaveTextContent(
+      /I\ssammas\s*riigi lubadus\s*\+2\s€\s*kuus I\ssamba pensionit/,
+    );
+    expect(comparison).toHaveTextContent(
+      /II\ssammas\s*sinu vara\s*\+1277\s€\s*iga aasta II\ssamba kontole/,
+    );
+    expect(comparison).toHaveTextContent(
+      /Iga kogumisaasta eest 2000\s€\sbrutopalga ja 6%\ssissemakse puhul\./,
+    );
+    userEvent.click(within(comparison).getByRole('button', { name: 'Vaata arvutust' }));
+    expect(comparison).toHaveTextContent(
+      /I\ssammas, 2\s€\skuus:.*Selle palga juures on vahe 0,194\spunkti ehk 2,04\s€\skuus, kui punkti väärtus on 10,477\s€\..*umbes 464\s€\./,
+    );
+    expect(comparison).toHaveTextContent(
+      /II\ssammas, 1277\s€\saastas: 960\s€ tuleb sotsiaalmaksust.*ja 317\s€ on tulumaks, mida sa oma 6%\ssissemakselt ei maksa/,
+    );
+  });
+
+  test('says the fund choice can be changed at any time', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(fundRow()).toHaveTextContent('You can change your fund choice at any time.');
+  });
+
+  test('says in Estonian that the fund choice can be changed at any time', async () => {
+    render('/2nd-pillar-rejoin', new QueryClient(), 'et');
+
+    expect(await screen.findByRole('group', { name: 'Fond' })).toHaveTextContent(
+      'Oma fondivalikut saad igal ajal muuta.',
     );
   });
 
@@ -166,7 +275,7 @@ describe('When an eligible person rejoins the II pillar', () => {
   test('words the income tax comparison and the yearly change in Estonian without the word rate', async () => {
     userBackend(server, { id: 7 });
     render('/2nd-pillar-rejoin', new QueryClient(), 'et');
-    const contribution = await screen.findByRole('group', { name: 'Sinu panus' });
+    const contribution = await screen.findByRole('group', { name: 'Sinu sissemakse' });
 
     expect(contribution).toHaveTextContent(/3×\ssuurem tulumaksuvõit/);
     expect(contribution).toHaveTextContent(/2×\ssuurem tulumaksuvõit/);
@@ -174,8 +283,10 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(contribution).toHaveTextContent(
       /Riik lisab sotsiaalmaksu arvelt\s4%, kokku\skogud\s10%/,
     );
-    expect(contribution).not.toHaveTextContent('Sina panustad');
-    expect(contribution).toHaveTextContent('Sissemakse suurust saad hiljem igal aastal muuta.');
+    expect(contribution).not.toHaveTextContent(/panus/i);
+    expect(contribution).toHaveTextContent(
+      'Sissemakset saad igal aastal muuta. Sotsiaalmaksu osa vähendab veidi I sammast.',
+    );
     expect(contribution).not.toHaveTextContent(/määr/i);
   });
 
@@ -1016,6 +1127,9 @@ describe('When an eligible person rejoins the II pillar', () => {
   const lead = () => screen.getByText(/^The state directs/);
   const paymentRateRow = () => screen.getByRole('group', { name: 'Your contribution' });
   const fundRow = () => screen.getByRole('group', { name: 'Fund' });
+  const FIRST_PILLAR_EFFECT = /^slightly reduces your I\spillar$/;
+  const firstPillarEffect = () => screen.getByRole('button', { name: FIRST_PILLAR_EFFECT });
+  const firstPillarComparison = () => screen.getByRole('region', { name: FIRST_PILLAR_EFFECT });
   const expectChosenRate = (rate: number) =>
     expect(within(paymentRateRow()).getByRole('radio', { checked: true })).toHaveAccessibleName(
       new RegExp(`^${rate}% of gross salary`, 'i'),

@@ -1,5 +1,4 @@
 import { ReactNode, useState } from 'react';
-import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../common';
@@ -38,6 +37,7 @@ import { RejoinSummary } from './SecondPillarRejoinSuccess';
 import { PendingRejoinApplication } from './PendingRejoinApplication';
 import { RejoinRefusalReason } from './RejoinRefusalReason';
 import { AlreadyContributing } from './AlreadyContributing';
+import { contributionStartMonth, highlightedDeadline } from './deadlineHighlight';
 import { RejoinRefused } from './RejoinRefused';
 import { isRejoinApplication } from '../../account/ApplicationSection/ApplicationFunctions';
 import { usePageTitle } from '../../common/usePageTitle';
@@ -63,8 +63,6 @@ const paymentRateThatApplies = (user: User | undefined) =>
 const taxWinExplanationFor = (user: User | undefined): TaxWinExplanation =>
   user && user.id % 2 === 1 ? 'comparedWithLowestRate' : 'greatestOnRecommendedRate';
 
-const monthOf = (date: string) => moment(date).month() + 1;
-
 const RejoinHeader = ({ contributionStartDate }: { contributionStartDate: string }) => (
   <>
     <h1 className="mb-3 text-balance">
@@ -73,7 +71,11 @@ const RejoinHeader = ({ contributionStartDate }: { contributionStartDate: string
     <p className="lead mb-5 text-balance">
       <FormattedMessage
         id="secondPillarRejoin.lead"
-        values={{ b: bold, startMonth: monthOf(contributionStartDate) }}
+        values={{
+          b: bold,
+          deadline: highlightedDeadline,
+          startMonth: contributionStartMonth(contributionStartDate),
+        }}
       />
     </p>
   </>
