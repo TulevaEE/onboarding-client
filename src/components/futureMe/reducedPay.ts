@@ -45,11 +45,15 @@ export const reducedPayInputOf = (
     : {};
 };
 
-export const grossFromPayoutAgeOf = (
+export const grossAtAgeOf = (
   age60: Pick<Age60Answers, 'reducedPay'>,
   you: YouAnswers,
   plan: StepPlanInput,
-): number => payFromPayoutAgeOf(age60, you, plan)?.gross ?? amountOf(you.grossMonthly);
+  age: number,
+): number => {
+  const pay = payFromPayoutAgeOf(age60, you, plan);
+  return pay?.gross !== undefined && age >= pay.age ? pay.gross : amountOf(you.grossMonthly);
+};
 
 export const statePensionAtRetirementOf = (
   age60: Pick<Age60Answers, 'reducedPay'>,

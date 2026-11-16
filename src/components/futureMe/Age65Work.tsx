@@ -7,7 +7,8 @@ import { retirementYears } from './engine/pension';
 import { ChoiceCard } from './ChoiceCard';
 import { StepPlanInput } from './steps';
 import { Age60Answers } from './age60Answers';
-import { grossFromPayoutAgeOf } from './reducedPay';
+import { grossAtAgeOf } from './reducedPay';
+import { retirementAge } from './planAges';
 
 interface Props {
   answers: Age65Answers;
@@ -26,7 +27,7 @@ export const Age65Work = ({ answers, you, plan, age60, onChange }: Props) => {
   const intl = useIntl();
   const pensionAge = retirementYears(plan);
   const { birthYear } = plan;
-  const gross = grossFromPayoutAgeOf(age60, you, plan);
+  const gross = grossAtAgeOf(age60, you, plan, retirementAge(plan));
 
   return (
     <>

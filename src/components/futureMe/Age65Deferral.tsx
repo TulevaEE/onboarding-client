@@ -3,7 +3,8 @@ import { FormattedMessage } from 'react-intl';
 import { DEFERRAL_INCREASE, retirementYears } from './engine/pension';
 import { StepPlanInput } from './steps';
 import { Age60Answers } from './age60Answers';
-import { grossFromPayoutAgeOf, statePensionAtRetirementOf } from './reducedPay';
+import { grossAtAgeOf, statePensionAtRetirementOf } from './reducedPay';
+import { retirementAge } from './planAges';
 import {
   amountOf,
   earlyRetirementYears,
@@ -58,7 +59,7 @@ export const Age65Deferral = ({ answers, you, plan, age60, onChange, onEditYou }
   const { mode, years } = answers;
   const whileWorking = deferralYearsWhileWorking(answers, plan);
   const workEnd = workUntilOf(answers, plan);
-  const salary = grossFromPayoutAgeOf(age60, you, plan);
+  const salary = grossAtAgeOf(age60, you, plan, retirementAge(plan));
   const accrual = workAccrualMonthly(you, salary);
 
   const deferredAmount = (value: (typeof PENSION_MODES)[number]) => {

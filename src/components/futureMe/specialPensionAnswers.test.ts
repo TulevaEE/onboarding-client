@@ -68,10 +68,20 @@ describe('specialPensionAnswers', () => {
     const plan = planOf();
 
     expect(
-      secondPillarMonthly(youWith({ secondPillarRate: '0.02' }), initialSpecialPension(), plan),
+      secondPillarMonthly(
+        youWith({ secondPillarRate: '0.02' }),
+        initialSpecialPension(),
+        plan,
+        initialAge60(),
+      ),
     ).toBeCloseTo(120);
     expect(
-      secondPillarMonthly(youWith({ secondPillarRate: '0' }), initialSpecialPension(), plan),
+      secondPillarMonthly(
+        youWith({ secondPillarRate: '0' }),
+        initialSpecialPension(),
+        plan,
+        initialAge60(),
+      ),
     ).toBe(0);
   });
 
@@ -79,8 +89,22 @@ describe('specialPensionAnswers', () => {
     const changed = { ...initialSpecialPension(), pay: 'change' as const, gross: '1000' };
 
     expect(
-      secondPillarMonthly(youWith({ secondPillarRate: '0.02' }), changed, planOf()),
+      secondPillarMonthly(youWith({ secondPillarRate: '0.02' }), changed, planOf(), initialAge60()),
     ).toBeCloseTo(60);
+  });
+
+  it('counts the second pillar payment from the lower salary when the workload dropped before the special pension starts', () => {
+    const startingAt62 = { secondPillarRate: '0.02', specialPensionStartAge: '62' };
+    const workingLessFrom60 = { ...initialAge60(), reducedPay: { gross: '1200' } };
+
+    expect(
+      secondPillarMonthly(
+        youWith(startingAt62),
+        initialSpecialPension(),
+        planOf(startingAt62),
+        workingLessFrom60,
+      ),
+    ).toBeCloseTo(72);
   });
 
   it('compares the special pension with the old-age pension once the amount is known', () => {

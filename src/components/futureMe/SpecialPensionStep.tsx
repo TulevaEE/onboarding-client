@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
 import { HelpButton } from './HelpButton';
 import { Age60Answers } from './age60Answers';
+import { grossAtAgeOf } from './reducedPay';
 import { Age65Answers, pensionKind } from './age65Answers';
 import { FirstPillarChoice } from './FirstPillarChoice';
 import { Age66Answers } from './age66Answers';
@@ -85,11 +86,11 @@ export const SpecialPensionStep = ({
   const comparison = firstPillarComparison(answers, you, plan, age65, age66, age60);
   const isMonthlyMissing = (isMonthlyTouched || showErrors) && !(amountOf(answers.monthly) > 0);
   const isGrossMissing = (isGrossTouched || showErrors) && answers.gross.trim() === '';
-  const gross = amountOf(you.grossMonthly);
+  const gross = grossAtAgeOf(age60, you, plan, age);
   const rate = Number(you.secondPillarRate) || 0;
   const secondPillarValues = {
     hasRate: rate > 0,
-    amount: euro(secondPillarMonthly(you, answers, plan)),
+    amount: euro(secondPillarMonthly(you, answers, plan, age60)),
     rate: exactPercent(rate),
   };
 

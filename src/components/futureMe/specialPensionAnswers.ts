@@ -15,7 +15,7 @@ import { StepPlanInput } from './steps';
 import { amountOf, rescueBasisOf, serviceYearsOf, YouAnswers } from './youAnswers';
 import { hasReachedAge, retirementAge } from './planAges';
 import { Age60Answers, initialAge60 } from './age60Answers';
-import { reducedPayInputOf } from './reducedPay';
+import { grossAtAgeOf, reducedPayInputOf } from './reducedPay';
 
 const STATE_SECOND_PILLAR_RATE = 0.04;
 const lifeTable: LifeTable = lifeTableData;
@@ -58,9 +58,11 @@ export const secondPillarMonthly = (
   you: YouAnswers,
   answers: SpecialPensionAnswers,
   plan: StepPlanInput,
+  age60: Age60Answers,
 ): number => {
   const rate = Number(you.secondPillarRate) || 0;
-  const salary = newSalaryOf(answers, plan) ?? amountOf(you.grossMonthly);
+  const salary =
+    newSalaryOf(answers, plan) ?? grossAtAgeOf(age60, you, plan, specialPensionStartAge(plan));
   return rate > 0 ? salary * (rate + STATE_SECOND_PILLAR_RATE) : 0;
 };
 
