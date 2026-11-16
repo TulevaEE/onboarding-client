@@ -28,6 +28,11 @@ const MONTHS_IN_YEAR = 12;
 
 export type Age55Lock = 'noThirdPillar' | 'pensionAge';
 
+export interface ContributionChange {
+  from: number;
+  monthly: number;
+}
+
 export interface ThirdPillarPayoutInput {
   birthYear: number;
   sex: Sex;
@@ -39,6 +44,7 @@ export interface ThirdPillarPayoutInput {
   firstYearShare: number;
   contract?: SeparateThirdPillar['contract'];
   endAge?: number;
+  contributionChange?: ContributionChange;
 }
 
 export interface ThirdPillarPayout {
@@ -91,10 +97,15 @@ export const thirdPillarPayout = (
   if (plan === 'keep') {
     return null;
   }
-  const { birthYear, sex, pensionAge, age, monthlyContribution, returnRate } = input;
+  const { birthYear, sex, pensionAge, age, monthlyContribution, returnRate, contributionChange } =
+    input;
   const currentAge = CURRENT_YEAR - birthYear;
+  const monthlyContributionAt = (at: number): number =>
+    contributionChange && at >= contributionChange.from
+      ? contributionChange.monthly
+      : monthlyContribution;
   const contributionAt = (at: number): number =>
-    monthlyContribution *
+    monthlyContributionAt(at) *
     MONTHS_IN_YEAR *
     (at === currentAge ? input.firstYearShare : 1) *
     p3Factor({ p3Indexed: false, inflation: INFLATION, birthYear }, at);

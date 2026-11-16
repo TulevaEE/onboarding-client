@@ -4,9 +4,10 @@ import { initialAge66 } from './age66Answers';
 import { initialExpenses, withLevel } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { age55Of, thirdPillarPayout, thirdPillarPayoutInputOf } from './age55';
-import { DEPOSIT_REAL_RETURN } from './engine/pension';
+import { CURRENT_YEAR, DEPOSIT_REAL_RETURN } from './engine/pension';
 import {
   coverageKind,
+  earlyThirdPillarOf,
   incomeAtStart,
   potAtPensionOf,
   resultInputOf,
@@ -237,6 +238,32 @@ describe('resultAnswers', () => {
       expect(separateOf(fundPlan, workingUntil70)?.amount).toBeCloseTo(
         separateOf({ ...fundPlan, pensionAgeYears: '70' })?.amount as number,
       );
+    });
+
+    describe('when the III pillar payments stop at the payout age', () => {
+      const fundPlan = { thirdPillarPlan: 'fund' as const };
+      const stoppingAt60 = {
+        age60: { ...initialAge60(), reducedPay: { thirdPillarMonthly: '0' } },
+      };
+      const payoutAt = (payouts: ReturnType<typeof earlyThirdPillarOf>, age: number) =>
+        payouts.find((payout) => payout.age === age)?.amount;
+
+      it('pays the same fund pension until the payout age and less after it', () => {
+        const paying = earlyThirdPillarOf(contextWith({ ...saver, ...fundPlan }));
+        const stopping = earlyThirdPillarOf(contextWith({ ...saver, ...fundPlan }, stoppingAt60));
+
+        expect(payoutAt(stopping, 60)).toBeCloseTo(payoutAt(paying, 60) as number, 6);
+        expect(payoutAt(stopping, 61)).toBeLessThan(payoutAt(paying, 61) as number);
+      });
+
+      it('carries the same III pillar as never paying in for a saver who is at the payout age now', () => {
+        const atPayoutAgeNow = { ...saver, ...fundPlan, birthYear: String(CURRENT_YEAR - 60) };
+        const neverPaying = contextWith({ ...atPayoutAgeNow, thirdPillarMonthly: '0' });
+        const stopping = contextWith(atPayoutAgeNow, stoppingAt60);
+
+        expect(resultInputOf(stopping).p3Sep).toEqual(resultInputOf(neverPaying).p3Sep);
+        expect(earlyThirdPillarOf(stopping)).toEqual(earlyThirdPillarOf(neverPaying));
+      });
     });
 
     it('starts at the current age for someone already past 55', () => {
