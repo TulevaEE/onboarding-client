@@ -114,4 +114,28 @@ describe('working less in the last years before the pension age', () => {
       yearlyContribution({ ...base, grossMonthly: 1500, p3Monthly: 40 }, 62),
     );
   });
+
+  describe('with a special pension starting after the workload drops', () => {
+    const accrualLost = workAccrual(2000, true, true) - workAccrual(1200, true, true);
+    const statePensionAt65 = (input: PensionInput) =>
+      simulate(input, lifeTable, scenarioA).rows.find(({ age }) => age === 65)?.i1g ?? 0;
+
+    it('stops the cut from the age the special pension sets its own salary', () => {
+      const specialPensionFrom62 = { spMonthly: 100, spStartAge: 62, spWork: true, spGross: 1500 };
+
+      expect(statePensionAt65({ ...reduced, ...specialPensionFrom62 })).toBeCloseTo(
+        statePensionAt65({ ...base, ...specialPensionFrom62, p1Monthly: 1000 - 2 * accrualLost }),
+        6,
+      );
+    });
+
+    it('cuts nothing for the years the saver stops working for the special pension', () => {
+      const stoppingAt62 = { spMonthly: 100, spStartAge: 62, spWork: false };
+
+      expect(statePensionAt65({ ...reduced, ...stoppingAt62 })).toBeCloseTo(
+        statePensionAt65({ ...base, ...stoppingAt62, p1Monthly: 1000 - 2 * accrualLost }),
+        6,
+      );
+    });
+  });
 });

@@ -510,10 +510,24 @@ export function p3Factor(
   return 1 / (1 + (input.inflation || 0)) ** (yearsFromNow(input, age) + 0.5);
 }
 
-const isDuringSpecialPension = (input: PensionInput, age?: number): boolean =>
+type SalaryInput = Pick<
+  PensionInput,
+  | 'birthYear'
+  | 'pensionAgeYears'
+  | 'grossMonthly'
+  | 'p2Rate'
+  | 'reducedFrom'
+  | 'reducedGross'
+  | 'spMonthly'
+  | 'spStartAge'
+  | 'spGross'
+  | 'spWork'
+>;
+
+const isDuringSpecialPension = (input: SalaryInput, age?: number): boolean =>
   age !== undefined && (input.spMonthly || 0) > 0 && age >= specialStart(input);
 
-const stopsWorkForSpecialPension = (input: PensionInput, age?: number): boolean =>
+const stopsWorkForSpecialPension = (input: SalaryInput, age?: number): boolean =>
   isDuringSpecialPension(input, age) && input.spWork === false;
 
 const isWorkingLess = (input: PensionInput, age?: number): boolean =>
@@ -535,32 +549,43 @@ interface SalaryChange {
   gross: number;
 }
 
-const salaryChangesOf = (input: PensionInput): SalaryChange[] => [
-  ...((input.spMonthly || 0) > 0 && input.spGross !== undefined
+const specialPensionSalaryChangesOf = (input: SalaryInput): SalaryChange[] =>
+  (input.spMonthly || 0) > 0 && input.spGross !== undefined
     ? [{ from: specialStart(input), gross: input.spGross }]
-    : []),
-  ...(input.reducedFrom !== undefined && input.reducedGross !== undefined
-    ? [{ from: input.reducedFrom, gross: input.reducedGross }]
-    : []),
-];
+    : [];
 
-const grossAt = (input: PensionInput, age: number): number =>
-  salaryChangesOf(input).reduce<SalaryChange | null>(
-    (latest, change) =>
-      age >= change.from && (latest === null || change.from >= latest.from) ? change : latest,
-    null,
-  )?.gross ??
-  input.grossMonthly ??
-  0;
+const workingLessSalaryChangesOf = (input: SalaryInput): SalaryChange[] =>
+  input.reducedFrom !== undefined && input.reducedGross !== undefined
+    ? [{ from: input.reducedFrom, gross: input.reducedGross }]
+    : [];
+
+const salaryAt = (input: SalaryInput, age: number, changes: SalaryChange[]): number => {
+  if (stopsWorkForSpecialPension(input, age)) {
+    return 0;
+  }
+  return (
+    changes.reduce<SalaryChange | null>(
+      (latest, change) =>
+        age >= change.from && (latest === null || change.from >= latest.from) ? change : latest,
+      null,
+    )?.gross ??
+    input.grossMonthly ??
+    0
+  );
+};
+
+const grossAt = (input: SalaryInput, age: number): number =>
+  salaryAt(input, age, [
+    ...specialPensionSalaryChangesOf(input),
+    ...workingLessSalaryChangesOf(input),
+  ]);
+
+const grossWithoutWorkingLessAt = (input: SalaryInput, age: number): number =>
+  salaryAt(input, age, specialPensionSalaryChangesOf(input));
 
 export function yearlyContribution(input: PensionInput, age?: number): number {
   const rate = input.p2Rate || 0;
-  let gross = input.grossMonthly || 0;
-  if (stopsWorkForSpecialPension(input, age)) {
-    gross = 0;
-  } else if (age !== undefined) {
-    gross = grossAt(input, age);
-  }
+  const gross = age === undefined ? input.grossMonthly || 0 : grossAt(input, age);
   const a = age !== undefined ? age : CURRENT_YEAR - input.birthYear;
   return (
     gross * 12 * (rate > 0 ? rate + 0.04 : 0) * wageFactor(input, a) +
@@ -727,25 +752,18 @@ export function specialStart(
 }
 
 export const statePensionCutForWorkingLess = (
-  input: Pick<
-    PensionInput,
-    'birthYear' | 'grossMonthly' | 'p2Rate' | 'reducedFrom' | 'reducedGross'
-  >,
+  input: SalaryInput,
   retirementAge: number,
 ): number => {
   if (input.reducedFrom === undefined || input.reducedGross === undefined) {
     return 0;
   }
   const isContributing = (input.p2Rate || 0) > 0;
-  const yearsWorkingLess = Math.max(
-    0,
-    retirementAge - Math.max(input.reducedFrom, CURRENT_YEAR - input.birthYear),
-  );
-  return (
-    yearsWorkingLess *
-    (workAccrual(input.grossMonthly || 0, isContributing, isContributing) -
-      workAccrual(input.reducedGross, isContributing, isContributing))
-  );
+  const accrualOf = (gross: number) => workAccrual(gross, isContributing, isContributing);
+  const from = Math.max(input.reducedFrom, CURRENT_YEAR - input.birthYear);
+  return Array.from({ length: Math.max(0, retirementAge - from) }, (_, offset) => from + offset)
+    .map((age) => accrualOf(grossWithoutWorkingLessAt(input, age)) - accrualOf(grossAt(input, age)))
+    .reduce((sum, cut) => sum + cut, 0);
 };
 
 export function simulate(
@@ -812,13 +830,7 @@ export function simulate(
   const workEnd = workOn ? Math.max(ret, defaultWorkUntil) : ret;
   const iiJoined = (input.p2Rate || 0) > 0;
   const workingOnFrom = Math.max(ret, currentAge);
-  const accrualYearAt = (age: number) => {
-    const gross =
-      isWorkingLess(input, age) && input.reducedGross !== undefined
-        ? input.reducedGross
-        : input.grossMonthly || 0;
-    return 12 * workAccrual(gross, iiJoined, iiJoined);
-  };
+  const accrualYearAt = (age: number) => 12 * workAccrual(grossAt(input, age), iiJoined, iiJoined);
   const accruedBefore = (age: number) =>
     Array.from({ length: Math.max(0, Math.min(age, workEnd) - workingOnFrom) }, (_, offset) =>
       accrualYearAt(workingOnFrom + offset),
