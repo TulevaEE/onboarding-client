@@ -712,6 +712,16 @@ export function getContributions(): Promise<Contribution[]> {
   );
 }
 
+export function getCompletedApplications(): Promise<Application[]> {
+  return mockRequestInMockMode(
+    () =>
+      getWithAuthentication(getEndpoint('/v1/applications'), {
+        status: 'COMPLETE',
+      }),
+    'completedApplications',
+  );
+}
+
 export function getRejoinPermission(): Promise<RejoinPermission> {
   return mockRequestInMockMode(
     () => getWithAuthentication(getEndpoint('/v1/rejoin-permission'), undefined),

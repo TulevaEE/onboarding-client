@@ -265,6 +265,7 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     ...rejoinRefused,
     user: 'LEFT_SECOND_PILLAR_FUND_ON_RECORD_IN_2023',
     rejoinPermission: 'NOT_PERMITTED',
+    completedApplications: 'SECOND_PILLAR_WITHDRAWAL_FEBRUARY_2023',
   },
   // Someone still contributing who opens the rejoin page, as from the landing page.
   SECOND_PILLAR_REJOIN_ALREADY_CONTRIBUTING: {

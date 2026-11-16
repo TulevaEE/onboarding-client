@@ -22,8 +22,9 @@ import {
 import { mandateDeadlinesResponse, mockFunds } from '../../../test/backend-responses';
 import { CreateMandateBatchDto } from '../../common/apiModels/withdrawals';
 import { FundBalance, MandateDeadlines } from '../../common/apiModels';
+import * as dateFormatter from '../../common/dateFormatter';
 import LoggedInApp from '../../LoggedInApp';
-import { rejoin } from '../../account/ApplicationSection/fixtures';
+import { earlyWithdrawal, rejoin } from '../../account/ApplicationSection/fixtures';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
 
 describe('When an eligible person rejoins the II pillar', () => {
@@ -1080,121 +1081,200 @@ describe('When an eligible person rejoins the II pillar', () => {
     });
   });
 
-  test.each([
-    {
-      rejoinPossibleFrom: '2099-12-01',
-      timeline: [
-        'Contributions ended September 2095',
-        'Apply December 2099 – March 2100',
-        'Contributions start again September 2100',
-      ],
-    },
-    {
-      rejoinPossibleFrom: '2099-04-01',
-      timeline: [
-        'Contributions ended January 2095',
-        'Apply April – July 2099',
-        'Contributions start again January 2100',
-      ],
-    },
-    {
-      rejoinPossibleFrom: '2099-08-01',
-      timeline: [
-        'Contributions ended May 2095',
-        'Apply August – November 2099',
-        'Contributions start again May 2100',
-      ],
-    },
-  ])(
-    'shows a person who must wait when their contributions ended, when to apply and when they start again, from $rejoinPossibleFrom',
-    async ({ rejoinPossibleFrom, timeline }) => {
-      rejoinPermissionBackend(server, { permitted: false });
-      userBackend(server, {
-        secondPillarContributions: { contributing: false, restartDate: null, rejoinPossibleFrom },
-      });
-      render('/2nd-pillar-rejoin');
-
-      const steps = within(
-        await screen.findByRole('list', { name: 'Rejoining timeline' }),
-      ).getAllByRole('listitem');
-      expect(steps).toHaveLength(timeline.length);
-      steps.forEach((step, index) => expect(step).toHaveTextContent(timeline[index]));
-      expect(
-        screen.getByText('Contributions can restart five years after they ended.'),
-      ).toBeInTheDocument();
-      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-        'Rejoining the II pillar',
-      );
-      expect(screen.getByRole('link', { name: 'Back to account page' })).toHaveAttribute(
-        'href',
-        '/account',
-      );
-    },
-  );
-
-  test('falls back to the day alone when it does not open a filing window', async () => {
-    rejoinPermissionBackend(server, { permitted: false });
-    userBackend(server, {
-      secondPillarContributions: {
-        contributing: false,
-        restartDate: null,
-        rejoinPossibleFrom: '2099-09-15',
-      },
+  describe('a person who must wait to rejoin', () => {
+    const TODAY = '2098-10-20';
+    beforeEach(() => {
+      jest.spyOn(dateFormatter, 'todayInTallinn').mockReturnValue(TODAY);
     });
-    render('/2nd-pillar-rejoin');
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
 
-    expect(await screen.findByText('You can rejoin from September 15, 2099.')).toBeInTheDocument();
-    expect(screen.queryByRole('list', { name: 'Rejoining timeline' })).not.toBeInTheDocument();
-  });
-
-  describe('reminder the day before the deadline to apply', () => {
-    const mustWaitUntil = (rejoinPossibleFrom: string) => {
+    const withdrawalFiledOn = (creationTime: string) => ({
+      ...earlyWithdrawal,
+      status: 'COMPLETE',
+      creationTime,
+    });
+    const tenOClockInTheFirstWindowMonthFiveYearsEarlier = (rejoinPossibleFrom: string) =>
+      `${Number(rejoinPossibleFrom.slice(0, 4)) - 5}${rejoinPossibleFrom.slice(4, 8)}15T08:00:00Z`;
+    const completedApplications = (applications: unknown[]) =>
+      server.use(
+        rest.get('http://localhost/v1/applications', (req, res, ctx) =>
+          res(ctx.json(req.url.searchParams.get('status') === 'COMPLETE' ? applications : [])),
+        ),
+      );
+    const mustWait = (
+      rejoinPossibleFrom: string,
+      applications: unknown[] = [
+        withdrawalFiledOn(tenOClockInTheFirstWindowMonthFiveYearsEarlier(rejoinPossibleFrom)),
+      ],
+    ) => {
       rejoinPermissionBackend(server, { permitted: false });
       userBackend(server, {
         secondPillarContributions: { contributing: false, restartDate: null, rejoinPossibleFrom },
       });
+      completedApplications(applications);
       render('/2nd-pillar-rejoin');
     };
+    const timelineSteps = async () =>
+      within(await screen.findByRole('list', { name: 'Rejoining timeline' })).getAllByRole(
+        'listitem',
+      );
 
-    test('adds an hour at 10:00 in Estonia the day before the deadline to Google Calendar', async () => {
-      mustWaitUntil('2099-12-01');
+    test('names the month they applied to withdraw, in Estonian time', async () => {
+      mustWait('2099-12-01', [withdrawalFiledOn('2095-01-31T22:30:00Z')]);
 
-      const link = await screen.findByRole('link', { name: 'Google Calendar' });
-      const href = new URL(link.getAttribute('href') ?? '');
-
-      expect(href.origin + href.pathname).toBe('https://calendar.google.com/calendar/render');
-      expect(href.searchParams.get('action')).toBe('TEMPLATE');
-      expect(href.searchParams.get('dates')).toBe('21000330T070000Z/21000330T080000Z');
-      expect(href.searchParams.get('text')).toBe('II pillar rejoin deadline');
-      expect(href.searchParams.get('details')).toContain('/2nd-pillar-rejoin');
+      expect((await timelineSteps())[0]).toHaveTextContent(
+        'You applied to withdraw your money February 2095',
+      );
     });
 
     test.each([
-      { rejoinPossibleFrom: '2099-04-01', dates: '20990730T070000Z/20990730T080000Z' },
-      { rejoinPossibleFrom: '2029-12-01', dates: '20300330T080000Z/20300330T090000Z' },
+      { reason: 'they have no withdrawal on record, as after a payment stop', applications: [] },
+      {
+        reason: 'their withdrawal falls outside the period it would have to be in',
+        applications: [withdrawalFiledOn('2093-05-01T10:00:00Z')],
+      },
+    ])('keeps the one-line answer when $reason', async ({ applications }) => {
+      mustWait('2099-12-01', applications);
+
+      expect(await screen.findByText('You can rejoin from December 1, 2099.')).toBeInTheDocument();
+      expect(screen.queryByRole('list', { name: 'Rejoining timeline' })).not.toBeInTheDocument();
+    });
+
+    test.each([
+      { rejoinPossibleFrom: '2098-12-01', when: 'this year' },
+      { rejoinPossibleFrom: '2099-12-01', when: 'next year' },
+      { rejoinPossibleFrom: '2101-04-01', when: 'in 3 years' },
+    ])('says the rule and that they can apply $when', async ({ rejoinPossibleFrom, when }) => {
+      mustWait(rejoinPossibleFrom);
+
+      expect(
+        await screen.findByText(
+          `Contributions can restart five years after they ended, and you can apply ${when}.`,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    test.each([
+      {
+        rejoinPossibleFrom: '2099-12-01',
+        lead: 'Contributions can restart five years after they ended, and you can apply next year.',
+        timeline: [
+          'You applied to withdraw your money December 2094',
+          'Contributions ended September 2095',
+          'Apply to rejoin December 2099 – March 2100',
+          'Contributions start again September 2100',
+        ],
+      },
+      {
+        rejoinPossibleFrom: '2099-04-01',
+        lead: 'Contributions can restart five years after they ended, and you can apply next year.',
+        timeline: [
+          'You applied to withdraw your money April 2094',
+          'Contributions ended January 2095',
+          'Apply to rejoin April – July 2099',
+          'Contributions start again January 2100',
+        ],
+      },
+      {
+        rejoinPossibleFrom: '2099-08-01',
+        lead: 'Contributions can restart five years after they ended, and you can apply next year.',
+        timeline: [
+          'You applied to withdraw your money August 2094',
+          'Contributions ended May 2095',
+          'Apply to rejoin August – November 2099',
+          'Contributions start again May 2100',
+        ],
+      },
     ])(
-      'keeps 10:00 in Estonia for the window from $rejoinPossibleFrom, in summer and before the clocks go forward',
-      async ({ rejoinPossibleFrom, dates }) => {
-        mustWaitUntil(rejoinPossibleFrom);
+      'shows a person who must wait when they applied, when their contributions ended, when to apply again and when they start again, from $rejoinPossibleFrom',
+      async ({ rejoinPossibleFrom, lead, timeline }) => {
+        mustWait(rejoinPossibleFrom);
 
-        const link = await screen.findByRole('link', { name: 'Google Calendar' });
-
-        expect(new URL(link.getAttribute('href') ?? '').searchParams.get('dates')).toBe(dates);
+        const steps = within(
+          await screen.findByRole('list', { name: 'Rejoining timeline' }),
+        ).getAllByRole('listitem');
+        expect(steps).toHaveLength(timeline.length);
+        steps.forEach((step, index) => expect(step).toHaveTextContent(timeline[index]));
+        expect(screen.getByText(lead)).toBeInTheDocument();
+        expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+          'Rejoining the II pillar',
+        );
+        expect(screen.getByRole('link', { name: 'Back to account page' })).toHaveAttribute(
+          'href',
+          '/account',
+        );
       },
     );
 
-    test('downloads the same slot for Apple Calendar and Outlook, in winter time, with an alarm when it starts', async () => {
-      mustWaitUntil('2099-08-01');
+    test('falls back to the day alone when it does not open a filing window', async () => {
+      rejoinPermissionBackend(server, { permitted: false });
+      userBackend(server, {
+        secondPillarContributions: {
+          contributing: false,
+          restartDate: null,
+          rejoinPossibleFrom: '2099-09-15',
+        },
+      });
+      render('/2nd-pillar-rejoin');
 
-      const link = await screen.findByRole('link', { name: 'iCal' });
-      const calendar = decodeURIComponent(link.getAttribute('href') ?? '');
+      expect(
+        await screen.findByText('You can rejoin from September 15, 2099.'),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('list', { name: 'Rejoining timeline' })).not.toBeInTheDocument();
+    });
 
-      expect(link).toHaveAttribute('download', 'tuleva-ii-sammas.ics');
-      expect(calendar).toMatch(/^data:text\/calendar;charset=utf-8,BEGIN:VCALENDAR\r\n/);
-      expect(calendar).toContain('DTSTART:20991129T080000Z\r\n');
-      expect(calendar).toContain('DTEND:20991129T090000Z\r\n');
-      expect(calendar).toContain('SUMMARY:II pillar rejoin deadline\r\n');
-      expect(calendar).toContain('BEGIN:VALARM\r\nACTION:DISPLAY\r\nTRIGGER:PT0M\r\n');
+    describe('reminder the day before the deadline to apply', () => {
+      test('adds an hour at 10:00 in Estonia the day before the deadline to Google Calendar', async () => {
+        mustWait('2099-12-01');
+
+        const link = await screen.findByRole('link', { name: 'Google Calendar' });
+        const href = new URL(link.getAttribute('href') ?? '');
+
+        expect(href.origin + href.pathname).toBe('https://calendar.google.com/calendar/render');
+        expect(href.searchParams.get('action')).toBe('TEMPLATE');
+        expect(href.searchParams.get('dates')).toBe('21000330T070000Z/21000330T080000Z');
+        expect(href.searchParams.get('text')).toBe('II pillar rejoin deadline');
+        expect(href.searchParams.get('details')).toContain('/2nd-pillar-rejoin');
+      });
+
+      test.each([
+        {
+          rejoinPossibleFrom: '2099-04-01',
+          dates: '20990730T070000Z/20990730T080000Z',
+          today: '2098-10-20',
+        },
+        {
+          rejoinPossibleFrom: '2029-12-01',
+          dates: '20300330T080000Z/20300330T090000Z',
+          today: '2029-01-15',
+        },
+      ])(
+        'keeps 10:00 in Estonia for the window from $rejoinPossibleFrom, in summer and before the clocks go forward',
+        async ({ rejoinPossibleFrom, dates, today }) => {
+          jest.spyOn(dateFormatter, 'todayInTallinn').mockReturnValue(today);
+          mustWait(rejoinPossibleFrom);
+
+          const link = await screen.findByRole('link', { name: 'Google Calendar' });
+
+          expect(new URL(link.getAttribute('href') ?? '').searchParams.get('dates')).toBe(dates);
+        },
+      );
+
+      test('downloads the same slot for Apple Calendar and Outlook, in winter time, with an alarm when it starts', async () => {
+        mustWait('2099-08-01');
+
+        const link = await screen.findByRole('link', { name: 'iCal' });
+        const calendar = decodeURIComponent(link.getAttribute('href') ?? '');
+
+        expect(link).toHaveAttribute('download', 'tuleva-ii-sammas.ics');
+        expect(calendar).toMatch(/^data:text\/calendar;charset=utf-8,BEGIN:VCALENDAR\r\n/);
+        expect(calendar).toContain('DTSTART:20991129T080000Z\r\n');
+        expect(calendar).toContain('DTEND:20991129T090000Z\r\n');
+        expect(calendar).toContain('SUMMARY:II pillar rejoin deadline\r\n');
+        expect(calendar).toContain('BEGIN:VALARM\r\nACTION:DISPLAY\r\nTRIGGER:PT0M\r\n');
+      });
     });
   });
 

@@ -49,6 +49,7 @@ import {
   getPendingApplications,
   getPendingOnboardings,
   getRejoinPermission,
+  getCompletedApplications,
   getSavingsFundBalance,
   getSavingsFundBalanceOrFail,
   getSavingsFundBankAccounts,
@@ -121,6 +122,14 @@ import {
 
 export function usePendingApplications(): UseQueryResult<Application[]> {
   return useQuery({ queryKey: ['pendingApplications'], queryFn: () => getPendingApplications() });
+}
+
+export function useCompletedApplications() {
+  return useQuery({
+    queryKey: ['completedApplications'],
+    queryFn: () => getCompletedApplications(),
+    retry: 1,
+  });
 }
 
 export function useTransactions(): UseQueryResult<Transaction[]> {

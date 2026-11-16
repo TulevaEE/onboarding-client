@@ -10,6 +10,7 @@ import { contributionsProfiles } from './contributions';
 import { conversionMockProfiles } from './conversion';
 import { memberCapitalProfiles } from './memberCapital';
 import { pendingApplicationsProfiles } from './pendingApplications';
+import { completedApplicationsProfiles } from './completedApplications';
 import { returnsProfiles } from './returns';
 import { savingsFundBalanceProfiles } from './savingsFundBalance';
 import { savingsFundOnboardingStatusProfiles } from './savingsFundOnboardingStatus';
@@ -32,6 +33,7 @@ export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string
   memberCapital: memberCapitalProfiles,
   memberCapitalListings: memberCapitalListingsProfiles,
   pendingApplications: pendingApplicationsProfiles,
+  completedApplications: completedApplicationsProfiles,
   fundPensionStatus: fundPensionStatusProfiles,
   funds: fundsProfiles,
   portfolio: portfolioProfiles,

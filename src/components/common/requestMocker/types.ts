@@ -10,6 +10,7 @@ import { transactionsProfiles } from './profiles/transactions';
 import { rolesProfiles } from './profiles/roles';
 import { sourceFundsProfiles } from './profiles/sourceFunds';
 import { pendingApplicationsProfiles } from './profiles/pendingApplications';
+import { completedApplicationsProfiles } from './profiles/completedApplications';
 import { contributionsProfiles } from './profiles/contributions';
 import { conversionMockProfiles } from './profiles/conversion';
 import { memberCapitalProfiles } from './profiles/memberCapital';
@@ -34,6 +35,7 @@ export type MockModeConfiguration = {
   memberCapital: keyof typeof memberCapitalProfiles | null;
   memberCapitalListings: keyof typeof memberCapitalListingsProfiles | null;
   pendingApplications: keyof typeof pendingApplicationsProfiles | null;
+  completedApplications: keyof typeof completedApplicationsProfiles | null;
   fundPensionStatus: keyof typeof fundPensionStatusProfiles | null;
   funds: keyof typeof fundsProfiles | null;
   portfolio: keyof typeof portfolioProfiles | null;
