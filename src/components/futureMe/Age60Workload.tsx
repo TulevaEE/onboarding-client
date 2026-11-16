@@ -10,7 +10,8 @@ const WORKLOAD_CHOICES = ['same', 'less'] as const;
 interface Props {
   answers: Age60Answers;
   age: number;
-  currentPay: ReducedPay;
+  currentPay: Required<ReducedPay>;
+  hasThirdPillar: boolean;
   onChange: (answers: Age60Answers) => void;
 }
 
@@ -41,10 +42,10 @@ const PayField = ({
   </div>
 );
 
-export const Age60Workload = ({ answers, age, currentPay, onChange }: Props) => {
+export const Age60Workload = ({ answers, age, currentPay, hasThirdPillar, onChange }: Props) => {
   const { reducedPay } = answers;
-  const changePay = (changes: Partial<ReducedPay>) =>
-    onChange({ ...answers, reducedPay: { ...currentPay, ...reducedPay, ...changes } });
+  const changePay = (changes: ReducedPay) =>
+    onChange({ ...answers, reducedPay: { ...reducedPay, ...changes } });
   return (
     <fieldset className="payout-fieldset mt-3 mb-3">
       <legend className="h6 text-navy">
@@ -79,15 +80,17 @@ export const Age60Workload = ({ answers, age, currentPay, onChange }: Props) => 
           <PayField
             id="future-me-age60-gross"
             labelId="futureMe.age60.workload.gross"
-            value={reducedPay.gross}
+            value={reducedPay.gross ?? currentPay.gross}
             onChange={(gross) => changePay({ gross })}
           />
-          <PayField
-            id="future-me-age60-third-pillar"
-            labelId="futureMe.age60.workload.thirdPillar"
-            value={reducedPay.thirdPillarMonthly}
-            onChange={(thirdPillarMonthly) => changePay({ thirdPillarMonthly })}
-          />
+          {hasThirdPillar && (
+            <PayField
+              id="future-me-age60-third-pillar"
+              labelId="futureMe.age60.workload.thirdPillar"
+              value={reducedPay.thirdPillarMonthly ?? currentPay.thirdPillarMonthly}
+              onChange={(thirdPillarMonthly) => changePay({ thirdPillarMonthly })}
+            />
+          )}
           <p className="text-secondary mt-2 mb-0 text-pretty">
             <FormattedMessage id="futureMe.age60.workload.note" values={{ age }} />
           </p>

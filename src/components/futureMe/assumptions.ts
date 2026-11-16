@@ -3,6 +3,7 @@ import { CostLevel } from './engine/expenses';
 import { isLevelEdited, levelNeed } from './expensesAnswers';
 import { ResultContext } from './resultAnswers';
 import { amountOf, hasJoinedThirdPillar } from './youAnswers';
+import { PayFromPayoutAge, payFromPayoutAgeOf } from './reducedPay';
 
 export type FundAssumptionId = 'secondPillarFund' | 'thirdPillarFund';
 
@@ -13,6 +14,7 @@ export type Assumption =
       secondPillar: number | null;
       thirdPillar: number | null;
       specialPension: number | null;
+      payFromPayoutAge: PayFromPayoutAge | null;
     }
   | { id: FundAssumptionId; returnPercent: number }
   | { id: 'expenses'; level: CostLevel; amount: number; isEdited: boolean };
@@ -33,6 +35,7 @@ export const assumptionsOf = (context: ResultContext): Assumption[] => {
       secondPillar: amountIf(hasSecondPillar, you.secondPillarAmount),
       thirdPillar: hasThirdPillar ? thirdPillarSaved : null,
       specialPension: plan.hasSpecialPension && specialMonthly > 0 ? specialMonthly : null,
+      payFromPayoutAge: payFromPayoutAgeOf(context.age60, you, plan),
     },
     hasSecondPillar && { id: 'secondPillarFund', returnPercent: you.secondPillarReturnPercent },
     hasThirdPillar && { id: 'thirdPillarFund', returnPercent: you.thirdPillarReturnPercent },

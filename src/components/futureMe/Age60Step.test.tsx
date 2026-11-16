@@ -133,6 +133,17 @@ describe('Age 60 step', () => {
       ).toBeInTheDocument();
     });
 
+    it('asks only the new salary when the saver has no III pillar', () => {
+      openAge60Step({ thirdPillar: false });
+
+      userEvent.click(choice(workloadGroup(), 'Vähendan koormust'));
+
+      expect(screen.getByRole('spinbutton', { name: /^Uus brutopalk kuus/ })).toBeInTheDocument();
+      expect(
+        screen.queryByRole('spinbutton', { name: /^III\ssamba sissemakse kuus/ }),
+      ).not.toBeInTheDocument();
+    });
+
     it('collects less in the II pillar by the pension age with the lower salary', () => {
       openAge60Step();
       const withSameSalary = barSecondPillar();

@@ -108,6 +108,25 @@ describe('Result step: assumptions', () => {
     );
   });
 
+  it('repeats the lower salary and III pillar payment from the payout age', () => {
+    openResultStep();
+    userEvent.click(within(trail()).getByRole('button', { name: /^60\sa, vaatamata$/ }));
+    userEvent.click(
+      within(
+        screen.getByRole('group', { name: /^Kas vähendad 60-.aastaselt töökoormust\?$/ }),
+      ).getByRole('radio', { name: /Vähendan koormust/ }),
+    );
+    typeInto(screen.getByRole('spinbutton', { name: /^Uus brutopalk kuus/ }), '1200');
+    typeInto(screen.getByRole('spinbutton', { name: /^III\ssamba sissemakse kuus/ }), '20');
+    userEvent.click(within(trail()).getByRole('button', { name: /^Tulemus/ }));
+
+    expect(
+      within(assumptionList()).getByText(
+        /, alates 60-.aastaselt brutopalk 1\s200\s€ ja III\ssamba sissemakse 20\s€ kuus$/,
+      ),
+    ).toBeInTheDocument();
+  });
+
   it('tells the return each pillar grows at before inflation', () => {
     openResultStep();
     const row = itemTitled(assumptionList(), /^II\ssamba tootlus$/);

@@ -385,7 +385,7 @@ describe('resultAnswers', () => {
 
     it('lowers the salary and the III pillar payment five years before the pension age when the workload drops', () => {
       const context = contextWith(
-        {},
+        { thirdPillarMonthly: '100' },
         {
           age60: { ...initialAge60(), reducedPay: { gross: '1200', thirdPillarMonthly: '40' } },
         },
@@ -397,6 +397,24 @@ describe('resultAnswers', () => {
         reducedP3Monthly: 40,
       });
       expect(resultInputOf(contextWith()).reducedFrom).toBeUndefined();
+    });
+
+    it('keeps following the salary in the Mina step while only the III pillar payment is lowered', () => {
+      const context = contextWith(
+        { grossMonthly: '2500', thirdPillarJoined: 'after', thirdPillarMonthly: '100' },
+        { age60: { ...initialAge60(), reducedPay: { thirdPillarMonthly: '40' } } },
+      );
+
+      expect(resultInputOf(context)).toMatchObject({ reducedGross: 2500, reducedP3Monthly: 40 });
+    });
+
+    it('pays nothing from the payout age into a III pillar the saver does not have', () => {
+      const context = contextWith(
+        { thirdPillarJoined: 'never', thirdPillarMonthly: '100' },
+        { age60: { ...initialAge60(), reducedPay: { gross: '1200', thirdPillarMonthly: '100' } } },
+      );
+
+      expect(resultInputOf(context)).toMatchObject({ reducedGross: 1200, reducedP3Monthly: 0 });
     });
 
     describe('for the III pillar', () => {

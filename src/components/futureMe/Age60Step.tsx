@@ -47,7 +47,7 @@ interface Props {
   onEndAgeChange: (pillar: Pillar, endAge: string) => void;
   onEditYou: () => void;
   earlyPayouts: EarlyPayouts;
-  currentPay: ReducedPay;
+  currentPay: Required<ReducedPay>;
 }
 
 export type EarlyPayouts = Record<Pillar, EarlyPayout | null> & { moneyUseAge: number };
@@ -226,7 +226,13 @@ export const Age60Step = ({
       <p>
         <FormattedMessage id="futureMe.age60.intro" values={{ age, year }} />
       </p>
-      <Age60Workload answers={answers} age={age} currentPay={currentPay} onChange={onChange} />
+      <Age60Workload
+        answers={answers}
+        age={age}
+        currentPay={currentPay}
+        hasThirdPillar={hasThirdPillar}
+        onChange={onChange}
+      />
       <PillarChoices
         pillar="secondPillar"
         answers={answers}

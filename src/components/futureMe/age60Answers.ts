@@ -13,8 +13,8 @@ export const PAYOUT_CHOICE_EMOJI: Record<PayoutChoice, string> = {
 };
 
 export interface ReducedPay {
-  gross: string;
-  thirdPillarMonthly: string;
+  gross?: string;
+  thirdPillarMonthly?: string;
 }
 
 export interface Age60Answers {
