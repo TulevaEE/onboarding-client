@@ -1,4 +1,10 @@
-import { age55Of, ContributionChange, thirdPillarPayout, thirdPillarPayoutInputOf } from './age55';
+import {
+  age55Of,
+  ContributionChange,
+  monthlyContributionAt,
+  thirdPillarPayout,
+  thirdPillarPayoutInputOf,
+} from './age55';
 import { Age60Answers } from './age60Answers';
 import { Age65Answers, deferralLock, workUntilOf } from './age65Answers';
 import {
@@ -92,7 +98,7 @@ export const incomeAtStart = (row: IncomeRow): { lines: IncomeLine[]; total: num
 
 const firstYearShareNow = (): number => (MONTHS_IN_YEAR - new Date().getMonth()) / MONTHS_IN_YEAR;
 
-const thirdPillarContributionChangeOf = ({
+export const thirdPillarContributionChangeOf = ({
   age60,
   you,
   plan,
@@ -108,14 +114,16 @@ const contributionsBefore = (context: ResultContext, untilAge: number): number =
   const currentAge = CURRENT_YEAR - plan.birthYear;
   const growth = 1 + realReturnOf(you.thirdPillarReturnPercent);
   const change = thirdPillarContributionChangeOf(context);
-  const monthlyAt = (age: number) =>
-    change && age >= change.from ? change.monthly : thirdPillarMonthlyOf(you);
   const indexing = { p3Indexed: false, inflation: INFLATION, birthYear: plan.birthYear };
   return Array.from({ length: Math.max(0, untilAge - currentAge) }, (_, offset) => {
     const age = currentAge + offset;
     const share = age === currentAge ? firstYearShareNow() : 1;
     return (
-      (monthlyAt(age) * MONTHS_IN_YEAR * share * p3Factor(indexing, age)) / growth ** (offset + 1)
+      (monthlyContributionAt(thirdPillarMonthlyOf(you), change, age) *
+        MONTHS_IN_YEAR *
+        share *
+        p3Factor(indexing, age)) /
+      growth ** (offset + 1)
     );
   }).reduce((sum, value) => sum + value, 0);
 };

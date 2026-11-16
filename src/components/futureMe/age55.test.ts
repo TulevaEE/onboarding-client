@@ -1,5 +1,6 @@
 import {
   age55Of,
+  ContributionChange,
   effectivePlan,
   isFundPensionAvailable,
   isWithdrawalAllowed,
@@ -182,6 +183,15 @@ describe('age 55 from the answers', () => {
     expect(view.lock).toBeNull();
     expect(view.age).toBe(56);
     expect(view.payout).toMatchObject({ gross: 12000, net: 10800 });
+  });
+
+  it('pays the fund pension from the lower III pillar payment once it changes', () => {
+    const paying = filledIn({ thirdPillarPlan: 'fund', thirdPillarMonthly: '100' });
+    const leftAtPension = (change?: ContributionChange) =>
+      age55Of(paying, 1, undefined, undefined, change).payout?.leftAtPension as number;
+
+    expect(leftAtPension({ from: 60, monthly: 0 })).toBeLessThan(leftAtPension());
+    expect(leftAtPension({ from: 66, monthly: 0 })).toBe(leftAtPension());
   });
 
   it('keeps growing by default, with no payout', () => {

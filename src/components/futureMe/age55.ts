@@ -33,6 +33,12 @@ export interface ContributionChange {
   monthly: number;
 }
 
+export const monthlyContributionAt = (
+  monthly: number,
+  change: ContributionChange | undefined,
+  age: number,
+): number => (change && age >= change.from ? change.monthly : monthly);
+
 export interface ThirdPillarPayoutInput {
   birthYear: number;
   sex: Sex;
@@ -100,12 +106,8 @@ export const thirdPillarPayout = (
   const { birthYear, sex, pensionAge, age, monthlyContribution, returnRate, contributionChange } =
     input;
   const currentAge = CURRENT_YEAR - birthYear;
-  const monthlyContributionAt = (at: number): number =>
-    contributionChange && at >= contributionChange.from
-      ? contributionChange.monthly
-      : monthlyContribution;
   const contributionAt = (at: number): number =>
-    monthlyContributionAt(at) *
+    monthlyContributionAt(monthlyContribution, contributionChange, at) *
     MONTHS_IN_YEAR *
     (at === currentAge ? input.firstYearShare : 1) *
     p3Factor({ p3Indexed: false, inflation: INFLATION, birthYear }, at);
@@ -177,6 +179,7 @@ export const age55Of = (
   firstYearShare: number,
   contract?: ThirdPillarPayoutInput['contract'],
   endAge?: number,
+  contributionChange?: ContributionChange,
 ): Age55 => {
   const birthYear = birthYearOrFallback(answers);
   const age = withdrawalAge(CURRENT_YEAR - birthYear);
@@ -205,9 +208,9 @@ export const age55Of = (
     lock,
     isFundAvailable,
     plan,
-    payout: thirdPillarPayout(
-      plan,
-      thirdPillarPayoutInputOf(answers, firstYearShare, contract, endAge),
-    ),
+    payout: thirdPillarPayout(plan, {
+      ...thirdPillarPayoutInputOf(answers, firstYearShare, contract, endAge),
+      contributionChange,
+    }),
   };
 };

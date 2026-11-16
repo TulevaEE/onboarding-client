@@ -38,7 +38,11 @@ import { derivePrefill, YouPrefill } from './prefill';
 import { ResultStep } from './ResultStep';
 import { startedFundPensionAnswers, startedFundPensionsAt } from './startedFundPensions';
 import { PotBar } from './PotBar';
-import { earlyPayoutsOf, thirdPillarDepositAtMoneyUseOf } from './resultAnswers';
+import {
+  earlyPayoutsOf,
+  thirdPillarContributionChangeOf,
+  thirdPillarDepositAtMoneyUseOf,
+} from './resultAnswers';
 import { ErrorSummary, MissingField } from './ErrorSummary';
 import {
   initialSpecialPension,
@@ -280,6 +284,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
             firstYearShare,
             age66.thirdPillarContract,
             contractEndAgeOf('thirdPillar', age66, { age60, age65, you: answers, plan }),
+            thirdPillarContributionChangeOf(resultContext),
           )}
           headingRef={headingRef}
           contract={age66.thirdPillarContract}
