@@ -755,26 +755,6 @@ export function createTrackedEvent(type: string, data: Record<string, unknown>):
   return postWithAuthentication(getEndpoint('/v1/t'), { type, data });
 }
 
-// For events fired right before the page unloads (a click on a link that navigates away):
-// a keepalive request outlives the document, a regular request may be cancelled with it.
-export function createTrackedEventBeforeUnload(
-  type: string,
-  data: Record<string, unknown>,
-): Promise<unknown> {
-  const { accessToken } = getAuthentication();
-  return fetch(getEndpoint('/v1/t'), {
-    method: 'POST',
-    keepalive: true,
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      Authorization: `Bearer ${accessToken}`,
-      'Accept-Language': config.get('language'),
-    },
-    body: JSON.stringify({ type, data }),
-  });
-}
-
 export function getPaymentLink(payment: Payment): Promise<PaymentLink> {
   return getWithAuthentication(getEndpoint('/v1/payments/link'), payment);
 }
