@@ -1,7 +1,7 @@
 import { FC, ReactNode, useEffect, useRef } from 'react';
 import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Notice } from './Notice';
 import { AccountHolder, accountHolderFor } from '../../flows/savingsAccount/accountHolder';
 import { TranslationKey } from '../../translations';
@@ -318,13 +318,13 @@ export const NudgeContent = ({
         </strong>
       </p>
     )}
-    <a
+    <Link
       className={`btn btn-primary mt-4 profile-link ${buttonSize === 'large' ? 'btn-lg' : ''}`}
-      href={to}
+      to={to}
       onClick={onCallToAction}
     >
       <FormattedMessage id={button} />
-    </a>
+    </Link>
   </>
 );
 
