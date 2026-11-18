@@ -601,6 +601,29 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(summaryItems()[0]).toHaveTextContent('Contributions start September 1, 2027');
   });
 
+  test('reassures on the review step, before signing, that the application can still be cancelled', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    userEvent.click(nextButton());
+
+    expect(
+      await screen.findByText(
+        'If you change your mind, you can cancel the application until the end of November.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  test('inflects the cancellation month in Estonian on the review step', async () => {
+    moment.locale('et');
+    render('/2nd-pillar-rejoin', new QueryClient(), 'et');
+
+    userEvent.click(await screen.findByRole('button', { name: 'Edasi' }));
+
+    expect(
+      await screen.findByText('Kui mõtled ümber, saad avalduse novembri lõpuni tühistada.'),
+    ).toBeInTheDocument();
+  });
+
   test('says until which day in Estonia the application can be cancelled', async () => {
     await renderAt('/2nd-pillar-rejoin');
 

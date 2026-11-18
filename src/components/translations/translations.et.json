@@ -2398,6 +2398,7 @@
   "secondPillarRejoin.success.stateAdds": "Riik lisab",
   "secondPillarRejoin.success.cancellation": "Kui mõtled ümber, saad avalduse oma konto lehel tühistada. Viimane päev selleks on {deadline}.",
   "secondPillarRejoin.restriction.summary": "Raha saad kasutada alates 60. eluaastast. Pärast taasliitumist ei saa sa makseid uuesti lõpetada ega raha teist korda välja võtta.",
+  "secondPillarRejoin.restriction.cancellation": "Kui mõtled ümber, saad avalduse {month} lõpuni tühistada.",
   "secondPillarRejoin.notPermitted": "Pensionikeskuse andmetel ei saa sa praegu II sambaga uuesti liituda.",
   "secondPillarRejoin.alreadyContributing": "Sa juba kogud II sambas, seega pole sul taasliitumise avaldust vaja esitada.",
   "secondPillarRejoin.notPermitted.backToAccountPage": "Tagasi kontolehele",
