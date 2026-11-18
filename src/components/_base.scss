@@ -23,10 +23,14 @@ hr {
   opacity: 1;
 }
 
-// Links
+// Links: underlines dimmed to $link-underline-opacity, full on hover.
+// Plain links take it from text-decoration-color below; Bootstrap's .link-*
+// utilities derive theirs from --bs-link-underline-opacity, so set that too or
+// they would render a fully opaque underline.
 
 a,
 .btn-link {
+  --bs-link-underline-opacity: #{$link-underline-opacity};
   text-decoration-color: color-mix(
     in srgb,
     currentColor $link-underline-opacity,
@@ -40,6 +44,7 @@ a:hover,
 a:focus,
 .btn-link:hover,
 .btn-link:focus {
+  --bs-link-underline-opacity: 1;
   text-decoration-color: currentColor !important;
 }
 
