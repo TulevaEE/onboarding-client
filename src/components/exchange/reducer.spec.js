@@ -1,4 +1,5 @@
 import exchangeReducer from './reducer';
+import { forgetSignedMandate } from './actions';
 import {
   LOAD_PENSION_DATA_SUCCESS,
   GET_SOURCE_FUNDS_START,
@@ -603,6 +604,16 @@ describe('Exchange reducer', () => {
     expect(newState.mandateSigningControlCode).toBeFalsy();
     expect(newState.signedMandateId).toBe(signedMandateId);
     expect(newState.loadingMandate).toBe(false);
+  });
+
+  it('forgets the signed mandate when a new one is put together', () => {
+    const signedEarlier = exchangeReducer(undefined, {
+      type: SIGN_MANDATE_SUCCESS,
+      signedMandateId: 1,
+      pillar: 2,
+    });
+
+    expect(exchangeReducer(signedEarlier, forgetSignedMandate()).signedMandateId).toBeNull();
   });
 
   it('sets the error when signing mandate fails', () => {
