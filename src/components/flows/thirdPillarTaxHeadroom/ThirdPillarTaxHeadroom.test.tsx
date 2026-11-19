@@ -303,7 +303,9 @@ describe('III pillar tax win headroom', () => {
     expect(yearlyIncomes()).toEqual([33000]);
     expect(screen.getByText(/Your limit/)).toHaveTextContent(/^Your limit ~4950\s€$/);
     expect(screen.queryByText(/For the remaining months/)).not.toBeInTheDocument();
-    expect(screen.getByText(/^Add bonuses too, and income you will declare in this year's tax return/)).toBeVisible();
+    expect(
+      screen.getByText(/^Add bonuses too, and income you will declare in this year's tax return/),
+    ).toBeVisible();
     expect(screen.queryByText(/^We estimated the remaining months/)).not.toBeInTheDocument();
     openMonths();
     expect(screen.getByLabelText('Expected income November')).toHaveValue('4000');
