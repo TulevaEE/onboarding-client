@@ -55,7 +55,7 @@ const isOnResultStep = (key: string) =>
   helpTopicKeys(['nominal', 'sustainable', 'legacyLeft'])(key);
 
 const steps: [string, (key: string) => boolean][] = [
-  ['Sina', isOnYouStep],
+  ['Mina', isOnYouStep],
   ['Kulud', isOnExpensesStep],
   ['55 ja 60', isOnAge55And60Steps],
   ['65 ja eripension', isOnAge65AndSpecialPensionSteps],
@@ -109,7 +109,12 @@ describe('Step texts', () => {
   });
 
   it('use the agreed English terms', () => {
-    expect(keysWithText('en', /pension age|Elukaar|Life Path|regular payments/i)).toEqual([]);
+    expect(
+      keysWithText(
+        'en',
+        /pension age|Elukaar|Life Path|regular payments|Tulevane Mina|III\spillar\spayment/i,
+      ),
+    ).toEqual([]);
   });
 
   it('use the words of tuleva.ee and the Social Insurance Board in English', () => {
@@ -140,6 +145,29 @@ describe('Step texts', () => {
         placeholders(texts.et[key]).some((placeholder) => !texts.en[key].includes(placeholder)),
     );
     expect(changed).toEqual([]);
+  });
+
+  it('call the first step "Mina" wherever they point to it', () => {
+    expect(keysWithText('et', /„Sina“|\bSina\ssammus/)).toEqual([]);
+    expect(keysWithText('en', /“You”|\bYou\sstep\b/)).toEqual([]);
+  });
+
+  it("name the saver's own data, choices and income in the first person", () => {
+    const namesOfTheSaversOwn = [
+      'futureMe.trail.step.you',
+      'futureMe.you.me.title',
+      'futureMe.expenses.breakdown.head.own',
+      'futureMe.result.decisions.title',
+      'futureMe.result.decisions.current',
+      'futureMe.result.assumptions.you.title',
+    ];
+    expect(namesOfTheSaversOwn.filter((key) => !/^Min(a|u)\b/.test(texts.et[key]))).toEqual([]);
+    expect(namesOfTheSaversOwn.filter((key) => !/^(Me|My)\b/.test(texts.en[key]))).toEqual([]);
+  });
+
+  it("name the saver's past, present and future life in the first person", () => {
+    expect(keysWithText('et', /\bSinu\s(minevik|praegune|tulevik)/)).toEqual([]);
+    expect(keysWithText('en', /\bYour\s(past|life|future)/)).toEqual([]);
   });
 });
 

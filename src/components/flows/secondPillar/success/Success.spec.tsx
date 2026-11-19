@@ -3,10 +3,16 @@ import { setupServer } from 'msw/node';
 import { screen, within } from '@testing-library/react';
 import { Route } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
-import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
+import {
+  createDefaultStore,
+  login,
+  loginThroughPartner,
+  renderWrapped,
+} from '../../../../test/utils';
 import { initializeConfiguration } from '../../../config/config';
 import { nudgeBackend, useTestBackendsExcept } from '../../../../test/backend';
 import LoggedInApp from '../../../LoggedInApp';
+import { EXTERNAL_AUTHENTICATOR_PROVIDER } from '../../../TriggerProcedure/utils';
 
 describe('When is at the partner 2nd pillar flow success screen', () => {
   const server = setupServer();
@@ -19,16 +25,17 @@ describe('When is at the partner 2nd pillar flow success screen', () => {
     },
   });
 
-  function initializeComponent() {
+  function initializeComponent(logIn = login) {
     history = createMemoryHistory();
     const store = createDefaultStore(history as any);
-    login(store);
+    logIn(store);
 
     renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
   }
 
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
   afterEach(() => server.resetHandlers());
+  afterEach(() => sessionStorage.clear());
   afterAll(() => server.close());
 
   beforeEach(async () => {
@@ -55,6 +62,39 @@ describe('When is at the partner 2nd pillar flow success screen', () => {
       'href',
       expect.stringMatching(/^\/account(\?language=en)?$/),
     );
+  });
+
+  test("back to internet bank link leads to Coop's own internet bank", async () => {
+    nudgeBackend(server);
+    sessionStorage.setItem(EXTERNAL_AUTHENTICATOR_PROVIDER, 'COOP_PANK');
+    sessionStorage.setItem('EXTERNAL_AUTHENTICATOR_REDIRECT_URI', 'https://phishing.example/');
+    initializeComponent(loginThroughPartner);
+    history.push('/partner/2nd-pillar-flow-success');
+
+    expect(await main().findByRole('link', { name: /^Back to Coop\sPank$/ })).toHaveAttribute(
+      'href',
+      'https://i.cooppank.ee/i/pension?lang=en',
+    );
+  });
+
+  test('shows no back to internet bank link once the person has logged in another way in the same tab', async () => {
+    nudgeBackend(server);
+    sessionStorage.setItem(EXTERNAL_AUTHENTICATOR_PROVIDER, 'COOP_PANK');
+    initializeComponent(login);
+    history.push('/partner/2nd-pillar-flow-success');
+
+    expect(await screen.findByText('Application finished')).toBeInTheDocument();
+    expect(main().queryByRole('link', { name: /^Back to Coop\sPank$/ })).not.toBeInTheDocument();
+  });
+
+  test('shows no back to internet bank link to someone who did not come from the bank', async () => {
+    nudgeBackend(server);
+    sessionStorage.setItem('EXTERNAL_AUTHENTICATOR_REDIRECT_URI', 'https://phishing.example/');
+    initializeComponent();
+    history.push('/partner/2nd-pillar-flow-success');
+
+    expect(await screen.findByText('Application finished')).toBeInTheDocument();
+    expect(main().queryByRole('link', { name: /^Back to Coop\sPank$/ })).not.toBeInTheDocument();
   });
 
   test('shows the nudge the server decided on', async () => {

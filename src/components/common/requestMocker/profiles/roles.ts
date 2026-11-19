@@ -1,4 +1,5 @@
 import { Role } from '../../apiModels';
+import { mockMinor } from '../../../../test/backend-responses';
 
 export const rolesProfiles: Record<string, Role[]> = {
   PERSON_ONLY: [{ type: 'PERSON', code: '39001011234', name: 'John Doe' }],
@@ -11,4 +12,5 @@ export const rolesProfiles: Record<string, Role[]> = {
     { type: 'PERSON', code: '51506150000', name: 'Karl Doe', id: 'link-karl' },
     { type: 'PERSON', code: '62302200000', name: 'Liisa Doe', id: 'link-liisa' },
   ],
+  MINOR_ONLY: [mockMinor.role],
 };

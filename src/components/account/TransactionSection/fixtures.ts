@@ -66,3 +66,32 @@ export const transferOut: Transaction = {
   units: 40.0,
   nav: null,
 };
+
+export const depositFromParent: Transaction = {
+  id: 'f6a7b8c9-d0e1-2345-f123-456789012345',
+  amount: 50.0,
+  currency: 'EUR',
+  time: '2026-08-21T10:00:00Z',
+  navDate: '2026-08-20',
+  priceCalculationDate: '2026-08-21',
+  applicationTime: '2026-08-20T09:00:00Z',
+  counterpartyIban: 'EE382200221020145685',
+  isin: 'EE0000003283',
+  type: 'CONTRIBUTION_CASH',
+  units: 47.98,
+  nav: 1.0421,
+  remitterName: 'Kati Kask',
+  paidFromOwnAccount: false,
+};
+
+export const depositFromMinorsOwnAccount: Transaction = {
+  ...depositFromParent,
+  id: 'a7b8c9d0-e1f2-3456-0123-567890123456',
+  amount: 25.0,
+  time: '2026-08-04T10:00:00Z',
+  counterpartyIban: 'EE471000001020145685',
+  units: 24.267,
+  nav: 1.0302,
+  remitterName: 'Mari Maasikas',
+  paidFromOwnAccount: true,
+};

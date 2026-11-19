@@ -15,10 +15,10 @@ export const isAge66StepNeeded = (
   context: Age66Context,
   specialPension: SpecialPensionAnswers,
 ): boolean => {
-  const { you, plan, age65 } = context;
+  const { you, plan, age60, age65 } = context;
   const isFirstPillarAsked =
     plan.hasSpecialPension &&
-    Boolean(firstPillarComparison(specialPension, you, plan, age65, answers)?.atPa);
+    Boolean(firstPillarComparison(specialPension, you, plan, age65, answers, age60)?.atPa);
   return (
     isFirstPillarAsked ||
     PILLARS.some(

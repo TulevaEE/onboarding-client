@@ -28,6 +28,7 @@ describe('Config', () => {
         applicationUrl: 'https://pension.tuleva.ee',
         clientCredentialsAccessToken: '705e26c1-9316-47f2-94b8-a5c6b0dfb566',
         language: 'et',
+        coopInternetBankUrl: 'https://i.cooppank.ee/',
         apiUrl: 'https://onboarding-service.tuleva.ee/v1',
       });
     });
@@ -62,6 +63,7 @@ describe('Config', () => {
         applicationUrl: 'http://localhost',
         clientCredentialsAccessToken: undefined,
         language: 'en',
+        coopInternetBankUrl: 'https://i.cooppank.ee/',
         apiUrl: 'http://localhost/v1',
       });
     });

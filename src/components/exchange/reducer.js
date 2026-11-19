@@ -21,6 +21,7 @@ import {
   SIGN_MANDATE_INVALID_ERROR,
   SIGN_MANDATE_IN_PROGRESS,
   SIGN_MANDATE_SUCCESS,
+  FORGET_SIGNED_MANDATE,
   SIGN_MANDATE_ERROR,
   NO_SIGN_MANDATE_ERROR,
   SET_CANCELLATION_MANDATE_ID,
@@ -199,6 +200,9 @@ export default function exchangeReducer(state = initialState, action) {
         signedMandateId: action.pillar === 2 ? action.signedMandateId : null,
         loadingMandate: false,
       };
+
+    case FORGET_SIGNED_MANDATE:
+      return { ...state, signedMandateId: null };
 
     case SIGN_MANDATE_START_ERROR: // fallthrough
     case SIGN_MANDATE_ERROR:

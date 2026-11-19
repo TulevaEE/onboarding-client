@@ -4,9 +4,10 @@ import { initialAge66 } from './age66Answers';
 import { initialExpenses, withLevel } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { age55Of, thirdPillarPayout, thirdPillarPayoutInputOf } from './age55';
-import { DEPOSIT_REAL_RETURN } from './engine/pension';
+import { CURRENT_YEAR, DEPOSIT_REAL_RETURN, yearlyContribution } from './engine/pension';
 import {
   coverageKind,
+  earlyThirdPillarOf,
   incomeAtStart,
   potAtPensionOf,
   resultInputOf,
@@ -16,6 +17,7 @@ import {
   thirdPillarDepositAtMoneyUseOf,
 } from './resultAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
+import { age65Growing } from './resultContextFixture';
 
 const noPrefill = { birthYear: 1980, sex: null, secondPillarRate: null };
 
@@ -35,7 +37,7 @@ const contextWith = (
     you,
     plan: toStepPlanInput(you),
     age60: initialAge60(),
-    age65: initialAge65(),
+    age65: age65Growing(),
     age66: initialAge66(),
     specialPension: initialSpecialPension(),
     expenses: initialExpenses(),
@@ -69,7 +71,7 @@ describe('resultAnswers', () => {
     it('keeps the III pillar apart with its own fund and the payout chosen for it', () => {
       const context = contextWith(
         { thirdPillarJoined: 'before', thirdPillarAmount: '8000', thirdPillarReturnPercent: -3 },
-        { age65: { ...initialAge65(), thirdPillar: 'lump' } },
+        { age65: { ...age65Growing(), thirdPillar: 'lump' } },
       );
 
       const input = resultInputOf(context);
@@ -113,7 +115,7 @@ describe('resultAnswers', () => {
       const choiceAtPensionAge = { ...initialAge66(), firstPillarChoicePa: 'oldAge' as const };
 
       it('sends the choice made at the pension age while that choice is asked', () => {
-        const workingOn = { ...initialAge65(), work: 'yes' as const, workUntil: '70' };
+        const workingOn = { ...age65Growing(), work: 'yes' as const, workUntil: '70' };
 
         expect(
           resultInputOf(
@@ -171,7 +173,7 @@ describe('resultAnswers', () => {
 
     describe('the III pillar on the deposit when the saver starts living off the money', () => {
       const lumpSaver = { ...saver, thirdPillarPlan: 'lump' as const, thirdPillarMonthly: '0' };
-      const workingTo74 = { age65: { ...initialAge65(), work: 'yes' as const, workUntil: '74' } };
+      const workingTo74 = { age65: { ...age65Growing(), work: 'yes' as const, workUntil: '74' } };
 
       it('is what the bar shows on the deposit when nothing else goes there', () => {
         const context = contextWith(lumpSaver);
@@ -222,7 +224,7 @@ describe('resultAnswers', () => {
     });
 
     it('pays out the rest at once when that is chosen at the pension age', () => {
-      const lumpAtPensionAge = { age65: { ...initialAge65(), thirdPillar: 'lump' as const } };
+      const lumpAtPensionAge = { age65: { ...age65Growing(), thirdPillar: 'lump' as const } };
 
       expect(separateOf({ thirdPillarPlan: 'fund' }, lumpAtPensionAge)?.mode).toBe('lump');
     });
@@ -230,12 +232,38 @@ describe('resultAnswers', () => {
     it('keeps paying the fund pension while working past the pension age', () => {
       const fundPlan = { thirdPillarPlan: 'fund' as const, thirdPillarMonthly: '0' };
       const workingUntil70 = {
-        age65: { ...initialAge65(), work: 'yes' as const, workUntil: '70' },
+        age65: { ...age65Growing(), work: 'yes' as const, workUntil: '70' },
       };
 
       expect(separateOf(fundPlan, workingUntil70)?.amount).toBeCloseTo(
         separateOf({ ...fundPlan, pensionAgeYears: '70' })?.amount as number,
       );
+    });
+
+    describe('when the III pillar payments stop at the payout age', () => {
+      const fundPlan = { thirdPillarPlan: 'fund' as const };
+      const stoppingAt60 = {
+        age60: { ...initialAge60(), reducedPay: { thirdPillarMonthly: '0' } },
+      };
+      const payoutAt = (payouts: ReturnType<typeof earlyThirdPillarOf>, age: number) =>
+        payouts.find((payout) => payout.age === age)?.amount;
+
+      it('pays the same fund pension until the payout age and less after it', () => {
+        const paying = earlyThirdPillarOf(contextWith({ ...saver, ...fundPlan }));
+        const stopping = earlyThirdPillarOf(contextWith({ ...saver, ...fundPlan }, stoppingAt60));
+
+        expect(payoutAt(stopping, 60)).toBeCloseTo(payoutAt(paying, 60) as number, 6);
+        expect(payoutAt(stopping, 61)).toBeLessThan(payoutAt(paying, 61) as number);
+      });
+
+      it('carries the same III pillar as never paying in for a saver who is at the payout age now', () => {
+        const atPayoutAgeNow = { ...saver, ...fundPlan, birthYear: String(CURRENT_YEAR - 60) };
+        const neverPaying = contextWith({ ...atPayoutAgeNow, thirdPillarMonthly: '0' });
+        const stopping = contextWith(atPayoutAgeNow, stoppingAt60);
+
+        expect(resultInputOf(stopping).p3Sep).toEqual(resultInputOf(neverPaying).p3Sep);
+        expect(earlyThirdPillarOf(stopping)).toEqual(earlyThirdPillarOf(neverPaying));
+      });
     });
 
     it('starts at the current age for someone already past 55', () => {
@@ -298,7 +326,7 @@ describe('resultAnswers', () => {
       const result = resultOf(
         contextWith(
           { ...saver, thirdPillarPlan: 'fund' },
-          { age65: { ...initialAge65(), work: 'yes' as const, workUntil: '70' } },
+          { age65: { ...age65Growing(), work: 'yes' as const, workUntil: '70' } },
         ),
       );
 
@@ -382,6 +410,70 @@ describe('resultAnswers', () => {
       expect(resultInputOf(contextWith()).p2PayoutFrom).toBeUndefined();
     });
 
+    it('lowers the salary and the III pillar payment five years before the pension age when the workload drops', () => {
+      const context = contextWith(
+        { thirdPillarMonthly: '100' },
+        {
+          age60: { ...initialAge60(), reducedPay: { gross: '1200', thirdPillarMonthly: '40' } },
+        },
+      );
+
+      expect(resultInputOf(context)).toMatchObject({
+        reducedFrom: 60,
+        reducedGross: 1200,
+        reducedP3Monthly: 40,
+      });
+      expect(resultInputOf(contextWith()).reducedFrom).toBeUndefined();
+    });
+
+    it('changes no salary when only the III pillar payment is lowered', () => {
+      const context = contextWith(
+        { grossMonthly: '2500', thirdPillarJoined: 'after', thirdPillarMonthly: '100' },
+        { age60: { ...initialAge60(), reducedPay: { thirdPillarMonthly: '40' } } },
+      );
+
+      expect(resultInputOf(context)).toMatchObject({ reducedFrom: 60, reducedP3Monthly: 40 });
+      expect(resultInputOf(context).reducedGross).toBeUndefined();
+    });
+
+    it('keeps the salary a special pension set before the payout age when only the III pillar payment is lowered', () => {
+      const context = contextWith(
+        {
+          thirdPillarMonthly: '100',
+          workAdded: true,
+          hasSpecialPension: true,
+          specialPensionStartAge: '55',
+        },
+        {
+          age60: { ...initialAge60(), reducedPay: { thirdPillarMonthly: '40' } },
+          specialPension: {
+            ...initialSpecialPension(),
+            monthly: '800',
+            pay: 'change',
+            gross: '1500',
+          },
+        },
+      );
+      const input = resultInputOf(context);
+
+      expect(yearlyContribution(input, 60)).toBe(
+        yearlyContribution(
+          { ...input, grossMonthly: 1500, reducedFrom: undefined, p3Monthly: 40 },
+          60,
+        ),
+      );
+    });
+
+    it('pays nothing from the payout age into a III pillar the saver does not have', () => {
+      const context = contextWith(
+        { thirdPillarJoined: 'never', thirdPillarMonthly: '100' },
+        { age60: { ...initialAge60(), reducedPay: { gross: '1200', thirdPillarMonthly: '100' } } },
+      );
+
+      expect(resultInputOf(context).reducedGross).toBe(1200);
+      expect(resultInputOf(context).reducedP3Monthly).toBeUndefined();
+    });
+
     describe('for the III pillar', () => {
       const saver = {
         thirdPillarJoined: 'after' as const,
@@ -438,18 +530,18 @@ describe('resultAnswers', () => {
   });
 
   describe('payout scenario', () => {
-    it('keeps growing the money by default', () => {
+    it('keeps growing the money when both pillars grow at the pension age', () => {
       expect(resultScenarioOf(contextWith()).id).toBe('E');
     });
 
     it('takes everything at once when the II pillar is paid out as a lump sum', () => {
-      const context = contextWith({}, { age65: { ...initialAge65(), secondPillar: 'lump' } });
+      const context = contextWith({}, { age65: { ...age65Growing(), secondPillar: 'lump' } });
 
       expect(resultScenarioOf(context).id).toBe('A');
     });
 
     it('takes a fund pension from a yearly or a single contract', () => {
-      const age65 = { ...initialAge65(), secondPillar: 'fund' as const };
+      const age65 = { ...age65Growing(), secondPillar: 'fund' as const };
 
       expect(resultScenarioOf(contextWith({}, { age65 })).id).toBe('D');
       expect(
@@ -460,7 +552,7 @@ describe('resultAnswers', () => {
     });
 
     it('lasts until the age chosen for one contract', () => {
-      const age65 = { ...initialAge65(), secondPillar: 'fund' as const };
+      const age65 = { ...age65Growing(), secondPillar: 'fund' as const };
       const scenarioWith = (changes: Partial<ReturnType<typeof initialAge66>>) =>
         resultScenarioOf(contextWith({}, { age65, age66: { ...initialAge66(), ...changes } }));
 
@@ -475,7 +567,7 @@ describe('resultAnswers', () => {
     });
 
     it('lasts until the age chosen for one III pillar contract at the pension age', () => {
-      const age65 = { ...initialAge65(), thirdPillar: 'fund' as const };
+      const age65 = { ...age65Growing(), thirdPillar: 'fund' as const };
       const age66 = {
         ...initialAge66(),
         thirdPillarContract: 'once' as const,
@@ -489,7 +581,7 @@ describe('resultAnswers', () => {
 
     it('bridges with the II pillar while the state pension is deferred', () => {
       const age65 = {
-        ...initialAge65(),
+        ...age65Growing(),
         secondPillar: 'fund' as const,
         mode: 'defer' as const,
         years: 2,
@@ -509,7 +601,7 @@ describe('resultAnswers', () => {
             { workAdded: true, hasSpecialPension: true },
             { specialPension: { ...initialSpecialPension(), monthly: '800' }, age65 },
           );
-        const fund = { ...initialAge65(), secondPillar: 'fund' as const };
+        const fund = { ...age65Growing(), secondPillar: 'fund' as const };
 
         expect(resultScenarioOf(withSpecialPension({ ...fund, mode, years: 2 }))).toEqual(
           resultScenarioOf(withSpecialPension(fund)),
@@ -518,7 +610,7 @@ describe('resultAnswers', () => {
     );
 
     it('takes half of the state pension later when that is chosen', () => {
-      const age65 = { ...initialAge65(), mode: 'half' as const, years: 3 };
+      const age65 = { ...age65Growing(), mode: 'half' as const, years: 3 };
 
       expect(resultScenarioOf(contextWith({}, { age65 }))).toMatchObject({ half: 3 });
     });

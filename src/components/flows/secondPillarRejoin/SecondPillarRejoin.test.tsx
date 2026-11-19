@@ -22,8 +22,9 @@ import {
 import { mandateDeadlinesResponse, mockFunds } from '../../../test/backend-responses';
 import { CreateMandateBatchDto } from '../../common/apiModels/withdrawals';
 import { FundBalance, MandateDeadlines } from '../../common/apiModels';
+import * as dateFormatter from '../../common/dateFormatter';
 import LoggedInApp from '../../LoggedInApp';
-import { rejoin } from '../../account/ApplicationSection/fixtures';
+import { earlyWithdrawal, rejoin } from '../../account/ApplicationSection/fixtures';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
 
 describe('When an eligible person rejoins the II pillar', () => {
@@ -67,11 +68,19 @@ describe('When an eligible person rejoins the II pillar', () => {
     smartIdMandateBatchSigningBackend(server);
   });
 
-  test('leads with part of your taxes going into the II pillar, and the deadline, in bold', async () => {
+  test('leads with part of your taxes going into the II pillar in bold, and the deadline highlighted', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
-    expect(screen.getByText('part of your taxes', { selector: 'b' })).toBeInTheDocument();
-    expect(screen.getByText(/^30\sNovember$/, { selector: 'b' })).toBeInTheDocument();
+    expect(screen.getByText('part of your taxes', { selector: 'b' })).not.toHaveClass('highlight');
+    expect(screen.getByText(/^30\sNovember$/, { selector: 'b' })).toHaveClass('highlight');
+  });
+
+  test('highlights the deadline in Estonian', async () => {
+    render('/2nd-pillar-rejoin', new QueryClient(), 'et');
+
+    expect(await screen.findByText(/^30\.\snovembriks$/, { selector: 'b' })).toHaveClass(
+      'highlight',
+    );
   });
 
   test('leads with 31 March and saving from September when filing in the spring window', async () => {
@@ -96,7 +105,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(lead()).toHaveTextContent(/saving starts next May\.$/);
   });
 
-  test('keeps the I pillar effect and the restriction with the application for making contributions, without a taxation caveat', async () => {
+  test('keeps the restriction with the application for making contributions, and leaves the I pillar effect to the choices', async () => {
     await renderAt('/2nd-pillar-rejoin');
     userEvent.click(nextButton());
 
@@ -104,19 +113,16 @@ describe('When an eligible person rejoins the II pillar', () => {
       screen.getByRole('region', { name: /contributing to the II\spillar again/ }),
     ).getByRole('note');
     expect(disclaimers).toHaveTextContent(restriction);
-    expect(disclaimers).toHaveTextContent(
-      'Social tax paid into the II pillar slightly reduces your I pillar.',
-    );
+    expect(disclaimers).not.toHaveTextContent(/I\spillar/);
     expect(disclaimers).not.toHaveTextContent(/Taxation|Tax laws/);
     expect(within(disclaimers).queryByRole('link')).not.toBeInTheDocument();
-    expect(disclaimers).toHaveTextContent(/your I\spillar\..*can't stop contributions/);
   });
 
   test('opens the application with every rate and fund option in view, and 6% and the Tuleva stock fund chosen', async () => {
     await renderAt('/2nd-pillar-rejoin');
 
     expect(within(paymentRateRow()).getAllByRole('radio')).toEqual(
-      radiosNamed([/^2% of gross salary/i, /^4% of gross salary/i, /^6% of gross salary/i]),
+      radiosNamed([/^6% of gross salary/i, /^4% of gross salary/i, /^2% of gross salary/i]),
     );
     expectChosenRate(6);
     expect(paymentRateRow()).not.toHaveTextContent('salary:');
@@ -129,6 +135,160 @@ describe('When an eligible person rejoins the II pillar', () => {
     );
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Change' })).not.toBeInTheDocument();
+  });
+
+  test('says the contribution size can be changed later, every year', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(paymentRateRow()).toHaveTextContent('You can change your contribution every year.');
+  });
+
+  test('says next to the contribution that the social tax part slightly reduces the I pillar, with the comparison folded away', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(paymentRateRow()).toHaveTextContent(
+      'The social tax part slightly reduces your I pillar.',
+    );
+    expect(firstPillarEffect()).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('region', { name: FIRST_PILLAR_EFFECT })).not.toBeInTheDocument();
+  });
+
+  test('unfolds a year of saving in each pillar at a gross salary of 2000 €, for the contribution chosen', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    userEvent.click(firstPillarEffect());
+
+    expect(firstPillarEffect()).toHaveAttribute('aria-expanded', 'true');
+    expect(firstPillarComparison()).toHaveTextContent(
+      /I\spillar\s*a promise from the state\s*\+2\s€\s*a month to your I\spillar pension/,
+    );
+    expect(firstPillarComparison()).toHaveTextContent(
+      /II\spillar\s*your own assets\s*\+1,277\s€\s*every year to your II\spillar account/,
+    );
+    expect(firstPillarComparison()).toHaveTextContent(
+      /For each year of saving at a gross salary of 2,000\s€ and a 6% contribution\./,
+    );
+
+    userEvent.click(screen.getByRole('radio', { name: /^2% of gross salary/i }));
+
+    expect(firstPillarComparison()).toHaveTextContent(/\+1,066\s€\s*every year/);
+    expect(firstPillarComparison()).toHaveTextContent(/and a 2% contribution\./);
+  });
+
+  test('unfolds the calculation behind the comparison in place, for the example salary, naming its sources without links out of the application', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+    userEvent.click(firstPillarEffect());
+
+    const calculation = within(firstPillarComparison()).getByRole('button', {
+      name: 'See the calculation',
+    });
+    expect(calculation).toHaveAttribute('aria-expanded', 'false');
+    userEvent.click(calculation);
+
+    expect(calculation).toHaveAttribute('aria-expanded', 'true');
+    expect(firstPillarComparison()).toHaveTextContent(
+      /I\spillar, 2\s€\sa month:.*the difference is 0\.194\spoints, or 2\.04\s€\sa month at a point value of 10\.477\s€\..*about 464\s€\./,
+    );
+    expect(firstPillarComparison()).toHaveTextContent(
+      /II\spillar, 1,277\s€\sa year: 960\s€ comes from social tax.*and 317\s€ is the income tax you don't pay on your 6% contribution\. That is about 3\stimes what the state promises you from the I\spillar for the same year of saving at this pay, over 19\syears of retirement\./,
+    );
+    expect(firstPillarComparison()).toHaveTextContent(
+      /The amounts are in today's money\..*their value depends on the fund's returns and can also fall\. Sources: Social Insurance Board, Statistics Estonia\.$/,
+    );
+    expect(within(firstPillarComparison()).queryAllByRole('link')).toHaveLength(0);
+  });
+
+  test('folds the comparison away again', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    userEvent.click(firstPillarEffect());
+    userEvent.click(firstPillarEffect());
+
+    expect(firstPillarEffect()).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  test('words the I pillar comparison in Estonian', async () => {
+    render('/2nd-pillar-rejoin', new QueryClient(), 'et');
+    const contribution = await screen.findByRole('group', { name: 'Sinu sissemakse' });
+
+    expect(contribution).toHaveTextContent('Sotsiaalmaksu osa vähendab veidi I sammast.');
+    userEvent.click(
+      within(contribution).getByRole('button', { name: /^vähendab veidi I\ssammast$/ }),
+    );
+
+    const comparison = screen.getByRole('region', { name: /^vähendab veidi I\ssammast$/ });
+    expect(comparison).toHaveTextContent(
+      /I\ssammas\s*riigi lubadus\s*\+2\s€\s*kuus I\ssamba pensionit/,
+    );
+    expect(comparison).toHaveTextContent(
+      /II\ssammas\s*sinu vara\s*\+1277\s€\s*iga aasta II\ssamba kontole/,
+    );
+    expect(comparison).toHaveTextContent(
+      /Iga kogumisaasta eest 2000\s€\sbrutopalga ja 6%\ssissemakse puhul\./,
+    );
+    userEvent.click(within(comparison).getByRole('button', { name: 'Vaata arvutust' }));
+    expect(comparison).toHaveTextContent(
+      /I\ssammas, 2\s€\skuus:.*Selle palga juures on vahe 0,194\spunkti ehk 2,04\s€\skuus, kui punkti väärtus on 10,477\s€\..*umbes 464\s€\./,
+    );
+    expect(comparison).toHaveTextContent(
+      /II\ssammas, 1277\s€\saastas: 960\s€ tuleb sotsiaalmaksust.*ja 317\s€ on tulumaks, mida sa oma 6%\ssissemakselt ei maksa/,
+    );
+  });
+
+  test('says the fund choice can be changed at any time', async () => {
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(fundRow()).toHaveTextContent('You can change your fund choice at any time.');
+  });
+
+  test('says in Estonian that the fund choice can be changed at any time', async () => {
+    render('/2nd-pillar-rejoin', new QueryClient(), 'et');
+
+    expect(await screen.findByRole('group', { name: 'Fond' })).toHaveTextContent(
+      'Oma fondivalikut saad igal ajal muuta.',
+    );
+  });
+
+  test('compares the income tax win across the options for people with an odd user id', async () => {
+    userBackend(server, { id: 7 });
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(within(paymentRateRow()).getAllByRole('radio')).toEqual(
+      radiosNamed([
+        /^6% of gross salary.*3×\slarger income tax win$/i,
+        /^4% of gross salary.*2×\slarger income tax win$/i,
+        /^2% of gross salary.*Smallest income tax win$/i,
+      ]),
+    );
+    expect(paymentRateRow()).not.toHaveTextContent('greatest tax benefit');
+  });
+
+  test('keeps the greatest tax benefit line on 6% alone for people with an even user id', async () => {
+    userBackend(server, { id: 8 });
+    await renderAt('/2nd-pillar-rejoin');
+
+    expect(within(paymentRateRow()).getByRole('radio', { checked: true })).toHaveAccessibleName(
+      /greatest tax benefit/,
+    );
+    expect(paymentRateRow()).not.toHaveTextContent('income tax win');
+  });
+
+  test('words the income tax comparison and the yearly change in Estonian without the word rate', async () => {
+    userBackend(server, { id: 7 });
+    render('/2nd-pillar-rejoin', new QueryClient(), 'et');
+    const contribution = await screen.findByRole('group', { name: 'Sinu sissemakse' });
+
+    expect(contribution).toHaveTextContent(/3×\ssuurem tulumaksuvõit/);
+    expect(contribution).toHaveTextContent(/2×\ssuurem tulumaksuvõit/);
+    expect(contribution).toHaveTextContent('Väikseim tulumaksuvõit');
+    expect(contribution).toHaveTextContent(
+      /Riik lisab sotsiaalmaksu arvelt\s4%, kokku\skogud\s10%/,
+    );
+    expect(contribution).not.toHaveTextContent(/panus/i);
+    expect(contribution).toHaveTextContent(
+      'Sissemakset saad igal aastal muuta. Sotsiaalmaksu osa vähendab veidi I sammast.',
+    );
+    expect(contribution).not.toHaveTextContent(/määr/i);
   });
 
   test('names the page in the browser tab', async () => {
@@ -230,14 +390,15 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(screen.getByRole('link', { name: 'Cancel' })).toHaveAttribute('href', '/account');
   });
 
-  test('explains what each payment rate means, in the words of the payment rate page', async () => {
+  test('explains what each contribution size adds up to, with the state adding 4% on top', async () => {
+    userBackend(server, { id: 8 });
     await renderAt('/2nd-pillar-rejoin');
 
     expect(screen.getByRole('radio', { name: /^2% of gross salary/i })).toHaveAccessibleName(
-      /^2% of gross salary\s*You contribute 2% and the state\s4%, totaling\s6%$/i,
+      /^2% of gross salary\s*The state adds\s4% from social tax, totaling\s6%$/i,
     );
     expect(screen.getByRole('radio', { name: /^6% of gross salary/i })).toHaveAccessibleName(
-      /^6% of gross salary\s*Recommended\s*You contribute 6% and the state\s4%, totaling\s10%.*greatest tax benefit/i,
+      /^6% of gross salary\s*Recommended\s*The state adds\s4% from social tax, totaling\s10%.*greatest tax benefit/i,
     );
     expect(within(paymentRateRow()).queryByLabelText('Gross salary')).not.toBeInTheDocument();
   });
@@ -920,18 +1081,205 @@ describe('When an eligible person rejoins the II pillar', () => {
     });
   });
 
-  test('tells a person who must wait from which day they can rejoin', async () => {
-    rejoinPermissionBackend(server, { permitted: false });
-    userBackend(server, {
-      secondPillarContributions: {
-        contributing: false,
-        restartDate: null,
-        rejoinPossibleFrom: '2099-12-01',
-      },
+  describe('a person who must wait to rejoin', () => {
+    const TODAY = '2098-10-20';
+    beforeEach(() => {
+      jest.spyOn(dateFormatter, 'todayInTallinn').mockReturnValue(TODAY);
     });
-    render('/2nd-pillar-rejoin');
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
 
-    expect(await screen.findByText('You can rejoin from December 1, 2099.')).toBeInTheDocument();
+    const withdrawalFiledOn = (creationTime: string) => ({
+      ...earlyWithdrawal,
+      status: 'COMPLETE',
+      creationTime,
+    });
+    const tenOClockInTheFirstWindowMonthFiveYearsEarlier = (rejoinPossibleFrom: string) =>
+      `${Number(rejoinPossibleFrom.slice(0, 4)) - 5}${rejoinPossibleFrom.slice(4, 8)}15T08:00:00Z`;
+    const completedApplications = (applications: unknown[]) =>
+      server.use(
+        rest.get('http://localhost/v1/applications', (req, res, ctx) =>
+          res(ctx.json(req.url.searchParams.get('status') === 'COMPLETE' ? applications : [])),
+        ),
+      );
+    const mustWait = (
+      rejoinPossibleFrom: string,
+      applications: unknown[] = [
+        withdrawalFiledOn(tenOClockInTheFirstWindowMonthFiveYearsEarlier(rejoinPossibleFrom)),
+      ],
+    ) => {
+      rejoinPermissionBackend(server, { permitted: false });
+      userBackend(server, {
+        secondPillarContributions: { contributing: false, restartDate: null, rejoinPossibleFrom },
+      });
+      completedApplications(applications);
+      render('/2nd-pillar-rejoin');
+    };
+    const timelineSteps = async () =>
+      within(await screen.findByRole('list', { name: 'Rejoining timeline' })).getAllByRole(
+        'listitem',
+      );
+
+    test('names the month they applied to withdraw, in Estonian time', async () => {
+      mustWait('2099-12-01', [withdrawalFiledOn('2095-01-31T22:30:00Z')]);
+
+      expect((await timelineSteps())[0]).toHaveTextContent(
+        'You applied to withdraw your money February 2095',
+      );
+    });
+
+    test.each([
+      { reason: 'they have no withdrawal on record, as after a payment stop', applications: [] },
+      {
+        reason: 'their withdrawal falls outside the period it would have to be in',
+        applications: [withdrawalFiledOn('2093-05-01T10:00:00Z')],
+      },
+    ])('keeps the one-line answer when $reason', async ({ applications }) => {
+      mustWait('2099-12-01', applications);
+
+      expect(await screen.findByText('You can rejoin from December 1, 2099.')).toBeInTheDocument();
+      expect(screen.queryByRole('list', { name: 'Rejoining timeline' })).not.toBeInTheDocument();
+    });
+
+    test.each([
+      { rejoinPossibleFrom: '2098-12-01', when: 'this year' },
+      { rejoinPossibleFrom: '2099-12-01', when: 'next year' },
+      { rejoinPossibleFrom: '2101-04-01', when: 'in 3 years' },
+    ])('says the rule and that they can apply $when', async ({ rejoinPossibleFrom, when }) => {
+      mustWait(rejoinPossibleFrom);
+
+      expect(
+        await screen.findByText(
+          `Contributions can restart five years after they ended, and you can apply ${when}.`,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    test.each([
+      {
+        rejoinPossibleFrom: '2099-12-01',
+        lead: 'Contributions can restart five years after they ended, and you can apply next year.',
+        timeline: [
+          'You applied to withdraw your money December 2094',
+          'Contributions ended September 2095',
+          'Today October 2098',
+          'Apply to rejoin December 2099 – March 2100',
+          'Contributions start again September 2100',
+        ],
+      },
+      {
+        rejoinPossibleFrom: '2099-04-01',
+        lead: 'Contributions can restart five years after they ended, and you can apply next year.',
+        timeline: [
+          'You applied to withdraw your money April 2094',
+          'Contributions ended January 2095',
+          'Today October 2098',
+          'Apply to rejoin April – July 2099',
+          'Contributions start again January 2100',
+        ],
+      },
+      {
+        rejoinPossibleFrom: '2099-08-01',
+        lead: 'Contributions can restart five years after they ended, and you can apply next year.',
+        timeline: [
+          'You applied to withdraw your money August 2094',
+          'Contributions ended May 2095',
+          'Today October 2098',
+          'Apply to rejoin August – November 2099',
+          'Contributions start again May 2100',
+        ],
+      },
+    ])(
+      'shows a person who must wait when they applied, when their contributions ended, where they are today, when to apply again and when they start again, from $rejoinPossibleFrom',
+      async ({ rejoinPossibleFrom, lead, timeline }) => {
+        mustWait(rejoinPossibleFrom);
+
+        const steps = within(
+          await screen.findByRole('list', { name: 'Rejoining timeline' }),
+        ).getAllByRole('listitem');
+        expect(steps).toHaveLength(timeline.length);
+        steps.forEach((step, index) => expect(step).toHaveTextContent(timeline[index]));
+        expect(steps[2]).toHaveAttribute('aria-current', 'date');
+        expect(screen.getByText(lead)).toBeInTheDocument();
+        expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+          'Rejoining the II pillar',
+        );
+        expect(screen.getByRole('link', { name: 'Back to account page' })).toHaveAttribute(
+          'href',
+          '/account',
+        );
+      },
+    );
+
+    test('falls back to the day alone when it does not open a filing window', async () => {
+      rejoinPermissionBackend(server, { permitted: false });
+      userBackend(server, {
+        secondPillarContributions: {
+          contributing: false,
+          restartDate: null,
+          rejoinPossibleFrom: '2099-09-15',
+        },
+      });
+      render('/2nd-pillar-rejoin');
+
+      expect(
+        await screen.findByText('You can rejoin from September 15, 2099.'),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('list', { name: 'Rejoining timeline' })).not.toBeInTheDocument();
+    });
+
+    describe('reminder the day before the deadline to apply', () => {
+      test('adds an hour at 10:00 in Estonia the day before the deadline to Google Calendar', async () => {
+        mustWait('2099-12-01');
+
+        const link = await screen.findByRole('link', { name: 'Google Calendar' });
+        const href = new URL(link.getAttribute('href') ?? '');
+
+        expect(href.origin + href.pathname).toBe('https://calendar.google.com/calendar/render');
+        expect(href.searchParams.get('action')).toBe('TEMPLATE');
+        expect(href.searchParams.get('dates')).toBe('21000330T070000Z/21000330T080000Z');
+        expect(href.searchParams.get('text')).toBe('II pillar rejoin deadline');
+        expect(href.searchParams.get('details')).toContain('/2nd-pillar-rejoin');
+      });
+
+      test.each([
+        {
+          rejoinPossibleFrom: '2099-04-01',
+          dates: '20990730T070000Z/20990730T080000Z',
+          today: '2098-10-20',
+        },
+        {
+          rejoinPossibleFrom: '2029-12-01',
+          dates: '20300330T080000Z/20300330T090000Z',
+          today: '2029-01-15',
+        },
+      ])(
+        'keeps 10:00 in Estonia for the window from $rejoinPossibleFrom, in summer and before the clocks go forward',
+        async ({ rejoinPossibleFrom, dates, today }) => {
+          jest.spyOn(dateFormatter, 'todayInTallinn').mockReturnValue(today);
+          mustWait(rejoinPossibleFrom);
+
+          const link = await screen.findByRole('link', { name: 'Google Calendar' });
+
+          expect(new URL(link.getAttribute('href') ?? '').searchParams.get('dates')).toBe(dates);
+        },
+      );
+
+      test('downloads the same slot for Apple Calendar and Outlook, in winter time, with an alarm when it starts', async () => {
+        mustWait('2099-08-01');
+
+        const link = await screen.findByRole('link', { name: 'iCal' });
+        const calendar = decodeURIComponent(link.getAttribute('href') ?? '');
+
+        expect(link).toHaveAttribute('download', 'tuleva-ii-sammas.ics');
+        expect(calendar).toMatch(/^data:text\/calendar;charset=utf-8,BEGIN:VCALENDAR\r\n/);
+        expect(calendar).toContain('DTSTART:20991129T080000Z\r\n');
+        expect(calendar).toContain('DTEND:20991129T090000Z\r\n');
+        expect(calendar).toContain('SUMMARY:II pillar rejoin deadline\r\n');
+        expect(calendar).toContain('BEGIN:VALARM\r\nACTION:DISPLAY\r\nTRIGGER:PT0M\r\n');
+      });
+    });
   });
 
   test('stops at Sign when Pensionikeskus refuses after the application was opened', async () => {
@@ -967,6 +1315,9 @@ describe('When an eligible person rejoins the II pillar', () => {
   const lead = () => screen.getByText(/^The state directs/);
   const paymentRateRow = () => screen.getByRole('group', { name: 'Your contribution' });
   const fundRow = () => screen.getByRole('group', { name: 'Fund' });
+  const FIRST_PILLAR_EFFECT = /^slightly reduces your I\spillar$/;
+  const firstPillarEffect = () => screen.getByRole('button', { name: FIRST_PILLAR_EFFECT });
+  const firstPillarComparison = () => screen.getByRole('region', { name: FIRST_PILLAR_EFFECT });
   const expectChosenRate = (rate: number) =>
     expect(within(paymentRateRow()).getByRole('radio', { checked: true })).toHaveAccessibleName(
       new RegExp(`^${rate}% of gross salary`, 'i'),

@@ -8,16 +8,21 @@ import {
   useContributions,
   useConversion,
   useFunds,
+  useMandateDeadlines,
   useMe,
+  usePendingApplications,
+  useRejoinPermission,
   useSavingsFundBalance,
   useSavingsFundOnboardingStatus,
   useSourceFunds,
   useTransactions,
 } from '../common/apiHooks';
 import {
+  Application,
   Contribution,
   Conversion,
   Fund,
+  RejoinPermission,
   SourceFund,
   Transaction,
   User,
@@ -34,6 +39,9 @@ jest.mock('../common/apiHooks', () => ({
   useContributions: jest.fn(),
   useConversion: jest.fn(),
   useFunds: jest.fn(),
+  useMandateDeadlines: jest.fn(),
+  usePendingApplications: jest.fn(),
+  useRejoinPermission: jest.fn(),
   useSavingsFundOnboardingStatus: jest.fn(),
   useSavingsFundBalance: jest.fn(),
   useTransactions: jest.fn(),
@@ -73,6 +81,47 @@ const mockUseSavingsFundBalance = useSavingsFundBalance as jest.MockedFunction<
 >;
 const mockUseTransactions = useTransactions as jest.MockedFunction<typeof useTransactions>;
 const mockCreateTrackedEvent = createTrackedEvent as jest.MockedFunction<typeof createTrackedEvent>;
+const mockUseMandateDeadlines = useMandateDeadlines as jest.MockedFunction<
+  typeof useMandateDeadlines
+>;
+const mockUseRejoinPermission = useRejoinPermission as jest.MockedFunction<
+  typeof useRejoinPermission
+>;
+
+const mockUsePendingApplications = usePendingApplications as jest.MockedFunction<
+  typeof usePendingApplications
+>;
+
+const contributionsEnded = {
+  contributing: false,
+  restartDate: null,
+  rejoinPossibleFrom: null,
+};
+
+const givenPendingApplications = (data: Application[] = [], isLoading = false) =>
+  mockUsePendingApplications.mockReturnValue({ data, isLoading } as ReturnType<
+    typeof usePendingApplications
+  >);
+
+const givenRejoinPermission = (data?: RejoinPermission, isInitialLoading = false) =>
+  mockUseRejoinPermission.mockReturnValue({ data, isInitialLoading } as ReturnType<
+    typeof useRejoinPermission
+  >);
+
+const REJOIN_PERMITTED: RejoinPermission = { permitted: true, decision: 'PERMITTED' };
+const REJOIN_REFUSED: RejoinPermission = {
+  permitted: false,
+  decision: 'REFUSED_BY_PENSIONIKESKUS',
+};
+const REJOIN_IMPOSSIBLE: RejoinPermission = {
+  permitted: false,
+  decision: 'CONTRIBUTIONS_CANNOT_RESTART',
+};
+
+const givenSaverWhoseContributionsEnded = (rejoinPossibleFrom: string | null = null) =>
+  mockUseMe.mockReturnValue({
+    data: user({ secondPillarContributions: { ...contributionsEnded, rejoinPossibleFrom } }),
+  } as ReturnType<typeof useMe>);
 
 // Not converted to Tuleva in either pillar, so all three next steps are actionable.
 const notAtTuleva = {
@@ -198,17 +247,32 @@ const givenSavingsFund = (payments: Transaction[]) => {
 const savingsFundSlider = () =>
   screen.getByRole('slider', { name: /Investment fund monthly/i }) as HTMLInputElement;
 
+const comparisonFor = (
+  saver: User,
+  {
+    annualReturnPercent = 0,
+    recipeSecondPillarRate,
+  }: {
+    annualReturnPercent?: number;
+    recipeSecondPillarRate?: number;
+  } = {},
+) =>
+  buildComparison(
+    {
+      ...derivePrefill(saver, sourceFunds, contributions, now),
+      annualReturnPercent,
+      // Mirrors the component: pre-fill from the weighted-average fee (0.01 -> 1%).
+      currentFundFeePercent: conversion.weightedAverageFee * 100,
+      initialSavingsFundBalance: 0,
+      savingsFundMonthly: 0,
+      tulevaFee: TULEVA_FEE,
+      savingsFundFee: TULEVA_FEE,
+    },
+    recipeSecondPillarRate,
+  );
+
 const expectedAtReturn = (annualReturnPercent: number) =>
-  buildComparison({
-    ...derivePrefill(user(), sourceFunds, contributions, now),
-    annualReturnPercent,
-    // Mirrors the component: pre-fill from the weighted-average fee (0.01 -> 1%).
-    currentFundFeePercent: conversion.weightedAverageFee * 100,
-    initialSavingsFundBalance: 0,
-    savingsFundMonthly: 0,
-    tulevaFee: TULEVA_FEE,
-    savingsFundFee: TULEVA_FEE,
-  });
+  comparisonFor(user(), { annualReturnPercent });
 
 describe('MillionaireCalculator', () => {
   beforeEach(() => {
@@ -221,6 +285,11 @@ describe('MillionaireCalculator', () => {
     // touches; park it on the page under test so the tracked path is realistic.
     window.history.pushState({}, '', '/millionaire');
     mockUseConversion.mockReturnValue({ data: undefined } as ReturnType<typeof useConversion>);
+    mockUseMandateDeadlines.mockReturnValue({
+      data: { periodEnding: '2026-11-30T21:59:59.999Z' },
+    } as ReturnType<typeof useMandateDeadlines>);
+    givenRejoinPermission();
+    givenPendingApplications();
     mockUseFunds.mockReturnValue({ data: [] } as unknown as ReturnType<typeof useFunds>);
     mockUseSavingsFundOnboardingStatus.mockReturnValue({ data: { status: null } } as ReturnType<
       typeof useSavingsFundOnboardingStatus
@@ -710,32 +779,278 @@ describe('MillionaireCalculator', () => {
     expect(within(raiseRow).queryByRole('link')).not.toBeInTheDocument();
   });
 
-  it('drops both II pillar steps for a saver who has left the funded II pillar', () => {
+  it('names the fund switch deadline the register has set', () => {
     givenData();
-    // They cannot rejoin for ten years and have no II money to move, so neither step is
-    // advice they could act on. The III pillar, then the savings fund, is all that's left.
-    // An open date with no active pillar is what marks them as having left.
+
+    renderCalculator();
+
+    expect(screen.getByTestId('cta-item-secondPillarToTuleva')).toHaveTextContent(
+      'The II pillar switch deadline is November 30 at 21:59',
+    );
+  });
+
+  it('keeps the fund switch step without a deadline until the deadlines load', () => {
+    givenData();
+    mockUseMandateDeadlines.mockReturnValue({ data: undefined } as ReturnType<
+      typeof useMandateDeadlines
+    >);
+
+    renderCalculator();
+
+    const step = screen.getByTestId('cta-item-secondPillarToTuleva');
+    expect(step).not.toHaveTextContent(/deadline/);
+    expect(within(step).getByRole('link')).toHaveAttribute('href', '/2nd-pillar-flow');
+  });
+
+  it('offers rejoining instead of both II pillar steps when contributions have ended', () => {
+    givenData();
+    givenSaverWhoseContributionsEnded();
+    givenRejoinPermission(REJOIN_PERMITTED);
+
+    renderCalculator();
+
+    expect(
+      within(screen.getByTestId('cta-item-rejoinSecondPillar')).getByRole('link', {
+        name: 'Rejoin',
+      }),
+    ).toHaveAttribute('href', '/2nd-pillar-rejoin');
+    expect(screen.queryByTestId('cta-item-secondPillarToTuleva')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('cta-item-raiseSecondPillar')).not.toBeInTheDocument();
+  });
+
+  it('offers rejoining when the register cannot say whether it is permitted', () => {
+    givenData();
+    givenSaverWhoseContributionsEnded();
+    givenRejoinPermission(undefined);
+
+    renderCalculator();
+
+    expect(screen.getByTestId('cta-item-rejoinSecondPillar')).toBeInTheDocument();
+  });
+
+  it('holds the calculator back until the rejoin answer arrives', () => {
+    givenData();
+    givenSaverWhoseContributionsEnded();
+    givenRejoinPermission(undefined, true);
+
+    renderCalculator();
+
+    expect(screen.queryByRole('heading', { name: 'Your next steps' })).not.toBeInTheDocument();
+    expect(screen.queryByTestId('mock-chart')).not.toBeInTheDocument();
+  });
+
+  it('holds the calculator back until the pending applications arrive', () => {
+    givenData();
+    givenSaverWhoseContributionsEnded();
+    givenPendingApplications([], true);
+
+    renderCalculator();
+
+    expect(screen.queryByRole('heading', { name: 'Your next steps' })).not.toBeInTheDocument();
+    expect(screen.queryByTestId('mock-chart')).not.toBeInTheDocument();
+  });
+
+  it('does not ask about rejoining for a saver who still contributes', () => {
+    givenData();
+
+    renderCalculator();
+
+    expect(mockUseRejoinPermission).toHaveBeenCalledWith({ enabled: false });
+    expect(screen.queryByTestId('cta-item-rejoinSecondPillar')).not.toBeInTheDocument();
+  });
+
+  it('asks about rejoining for a saver whose contributions have ended', () => {
+    givenData();
+    givenSaverWhoseContributionsEnded();
+
+    renderCalculator();
+
+    expect(mockUseRejoinPermission).toHaveBeenCalledWith({ enabled: true });
+  });
+
+  it('asks about rejoining only once the pending applications have arrived', () => {
+    givenData();
+    givenSaverWhoseContributionsEnded();
+    givenPendingApplications([], true);
+
+    renderCalculator();
+
+    expect(mockUseRejoinPermission).toHaveBeenCalledWith({ enabled: false });
+  });
+
+  it('does not hold a contributing saver back for the pending applications', () => {
+    givenData();
+    givenPendingApplications([], true);
+
+    renderCalculator();
+
+    expect(screen.getByRole('heading', { name: 'Your next steps' })).toBeInTheDocument();
+  });
+
+  const expectRejoinedStep = () => {
+    const step = screen.getByTestId('cta-item-rejoinSecondPillar');
+    expect(step).toHaveAttribute('data-done', 'true');
+    expect(step).toHaveTextContent(/Contributions start on .*2027/);
+    expect(within(step).queryByRole('link')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('cta-item-secondPillarToTuleva')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('cta-item-raiseSecondPillar')).not.toBeInTheDocument();
+  };
+
+  it('shows the restart date with nothing to click once contributions have one', () => {
+    givenData();
     mockUseMe.mockReturnValue({
       data: user({
-        secondPillarActive: false,
-        secondPillarOpenDate: '2010-01-01',
-        secondPillarPaymentRates: { current: 6, pending: null },
+        secondPillarContributions: {
+          contributing: false,
+          restartDate: '2027-05-01',
+          rejoinPossibleFrom: null,
+        },
       }),
     } as ReturnType<typeof useMe>);
 
     renderCalculator();
 
-    expect(screen.queryByTestId('cta-item-secondPillarToTuleva')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('cta-item-raiseSecondPillar')).not.toBeInTheDocument();
-    expect(screen.getByTestId('cta-item-thirdPillarToTuleva')).toBeInTheDocument();
+    expectRejoinedStep();
+  });
+
+  describe('a saver who has already filed to rejoin', () => {
+    const rejoinApplication = {
+      type: 'REJOIN',
+      details: { fulfillmentDate: '2027-05-01' },
+    } as Application;
+
+    const givenFiledToRejoin = () => {
+      givenData();
+      givenSaverWhoseContributionsEnded();
+      givenRejoinPermission(REJOIN_PERMITTED);
+      givenPendingApplications([rejoinApplication]);
+    };
+
+    it('sees when contributions start instead of being sent to rejoin or switch funds', () => {
+      givenFiledToRejoin();
+
+      renderCalculator();
+
+      expectRejoinedStep();
+    });
+
+    it('starts from the II rate they filed', () => {
+      givenFiledToRejoin();
+
+      renderCalculator();
+
+      expect(screen.getByRole('button', { name: '2%' })).toHaveAttribute('aria-pressed', 'true');
+    });
+
+    it('is offered the savings fund once the III pillar is sorted', () => {
+      givenMonthlyThirdPillar(300);
+      givenSaverWhoseContributionsEnded();
+      givenPendingApplications([rejoinApplication]);
+
+      renderCalculator();
+
+      expect(screen.getByTestId('cta-item-savingsFund')).toBeInTheDocument();
+    });
+  });
+
+  describe('a saver who must wait before rejoining', () => {
+    const givenMustWait = () => {
+      givenData();
+      givenSaverWhoseContributionsEnded('2028-09-01');
+      givenRejoinPermission(REJOIN_REFUSED);
+    };
+
+    it('sees the date they can rejoin from, with nothing to click yet', () => {
+      givenMustWait();
+
+      renderCalculator();
+
+      const step = screen.getByTestId('cta-item-rejoinSecondPillar');
+      expect(step).toHaveTextContent(/You can rejoin from .*2028/);
+      expect(within(step).queryByRole('link')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('cta-item-raiseSecondPillar')).not.toBeInTheDocument();
+    });
+
+    it('keeps II pillar money in the recipe', () => {
+      givenMustWait();
+      const waiting = user({
+        secondPillarContributions: { ...contributionsEnded, rejoinPossibleFrom: '2028-09-01' },
+      });
+
+      renderCalculator();
+
+      expect(screen.getByTestId('laura-final')).toHaveTextContent(
+        String(Math.round(comparisonFor(waiting).laura.total)),
+      );
+    });
+
+    it('can still try out II pillar rates', () => {
+      givenMustWait();
+
+      renderCalculator();
+
+      expect(screen.getByRole('button', { name: '6%' })).toBeInTheDocument();
+    });
+
+    it('is offered the savings fund, as waiting leaves nothing to do in the pillars', () => {
+      givenMonthlyThirdPillar(300);
+      givenSaverWhoseContributionsEnded('2028-09-01');
+      givenRejoinPermission(REJOIN_REFUSED);
+
+      renderCalculator();
+
+      expect(screen.getByTestId('cta-item-savingsFund')).toBeInTheDocument();
+    });
+  });
+
+  describe.each([
+    ['contributions cannot restart', REJOIN_IMPOSSIBLE, '2028-09-01'],
+    ['rejoining is refused with no date to wait for', REJOIN_REFUSED, null],
+    ['the date to rejoin from has passed yet rejoining is refused', REJOIN_REFUSED, '2026-06-01'],
+  ])('when %s', (_, permission, rejoinPossibleFrom) => {
+    const givenSecondPillarOutOfReach = () => {
+      givenData();
+      givenSaverWhoseContributionsEnded(rejoinPossibleFrom);
+      givenRejoinPermission(permission);
+    };
+
+    it('drops every II pillar step', () => {
+      givenSecondPillarOutOfReach();
+
+      renderCalculator();
+
+      expect(screen.queryByTestId('cta-item-rejoinSecondPillar')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('cta-item-secondPillarToTuleva')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('cta-item-raiseSecondPillar')).not.toBeInTheDocument();
+      expect(screen.getByTestId('cta-item-thirdPillarToTuleva')).toBeInTheDocument();
+    });
+
+    it('leaves II pillar money out of the recipe', () => {
+      givenSecondPillarOutOfReach();
+      const leaver = user({
+        secondPillarContributions: { ...contributionsEnded, rejoinPossibleFrom },
+      });
+
+      renderCalculator();
+
+      expect(screen.getByTestId('laura-final')).toHaveTextContent(
+        String(Math.round(comparisonFor(leaver, { recipeSecondPillarRate: 0 }).laura.total)),
+      );
+    });
+
+    it('offers no II pillar rates to try', () => {
+      givenSecondPillarOutOfReach();
+
+      renderCalculator();
+
+      expect(screen.queryByRole('group', { name: /II\spillar of salary/ })).not.toBeInTheDocument();
+    });
   });
 
   it('keeps both II pillar steps for a saver who never joined it', () => {
     givenData();
-    // No open date: they have never been in the II pillar, so they can open one right now
-    // with a fund choice, which is exactly where the first step sends them.
     mockUseMe.mockReturnValue({
-      data: user({ secondPillarActive: false, secondPillarOpenDate: null }),
+      data: user({ secondPillarActive: false, secondPillarContributions: null }),
     } as ReturnType<typeof useMe>);
 
     renderCalculator();
@@ -746,11 +1061,10 @@ describe('MillionaireCalculator', () => {
     expect(screen.getByTestId('cta-item-raiseSecondPillar')).toBeInTheDocument();
   });
 
-  it('offers the savings fund to a II pillar leaver once their III pillar is sorted', () => {
+  it('offers the savings fund once the III pillar is sorted and rejoining is impossible', () => {
     givenMonthlyThirdPillar(300);
-    mockUseMe.mockReturnValue({
-      data: user({ secondPillarActive: false, secondPillarOpenDate: '2010-01-01' }),
-    } as ReturnType<typeof useMe>);
+    givenSaverWhoseContributionsEnded();
+    givenRejoinPermission(REJOIN_IMPOSSIBLE);
 
     renderCalculator();
 

@@ -103,6 +103,9 @@ export interface PensionInput {
   p2Early?: SecondPillarEarlyWithdrawal | null;
   p2PayoutFrom?: number;
   p3PayoutFrom?: number;
+  reducedFrom?: number;
+  reducedGross?: number;
+  reducedP3Monthly?: number;
 }
 
 export interface Scenario {
@@ -507,32 +510,93 @@ export function p3Factor(
   return 1 / (1 + (input.inflation || 0)) ** (yearsFromNow(input, age) + 0.5);
 }
 
-const isDuringSpecialPension = (input: PensionInput, age?: number): boolean =>
+type SalaryInput = Pick<
+  PensionInput,
+  | 'birthYear'
+  | 'pensionAgeYears'
+  | 'grossMonthly'
+  | 'p2Rate'
+  | 'reducedFrom'
+  | 'reducedGross'
+  | 'spMonthly'
+  | 'spStartAge'
+  | 'spGross'
+  | 'spWork'
+>;
+
+const isDuringSpecialPension = (input: SalaryInput, age?: number): boolean =>
   age !== undefined && (input.spMonthly || 0) > 0 && age >= specialStart(input);
 
-const stopsWorkForSpecialPension = (input: PensionInput, age?: number): boolean =>
+const stopsWorkForSpecialPension = (input: SalaryInput, age?: number): boolean =>
   isDuringSpecialPension(input, age) && input.spWork === false;
+
+const isWorkingLess = (input: PensionInput, age?: number): boolean =>
+  age !== undefined && input.reducedFrom !== undefined && age >= input.reducedFrom;
 
 export function yearlyThirdPillarContribution(input: PensionInput, age?: number): number {
   const a = age !== undefined ? age : CURRENT_YEAR - input.birthYear;
-  const p3Monthly = stopsWorkForSpecialPension(input, age) ? 0 : input.p3Monthly || 0;
+  let p3Monthly = input.p3Monthly || 0;
+  if (stopsWorkForSpecialPension(input, age)) {
+    p3Monthly = 0;
+  } else if (isWorkingLess(input, age) && input.reducedP3Monthly !== undefined) {
+    p3Monthly = input.reducedP3Monthly;
+  }
   return p3Monthly * 12 * p3Factor(input, a);
 }
 
+interface SalaryChange {
+  from: number;
+  gross: number;
+}
+
+const specialPensionSalaryChangesOf = (input: SalaryInput): SalaryChange[] =>
+  (input.spMonthly || 0) > 0 && input.spGross !== undefined
+    ? [{ from: specialStart(input), gross: input.spGross }]
+    : [];
+
+const workingLessSalaryChangesOf = (input: SalaryInput): SalaryChange[] =>
+  input.reducedFrom !== undefined && input.reducedGross !== undefined
+    ? [{ from: input.reducedFrom, gross: input.reducedGross }]
+    : [];
+
+const salaryAt = (input: SalaryInput, age: number, changes: SalaryChange[]): number => {
+  if (stopsWorkForSpecialPension(input, age)) {
+    return 0;
+  }
+  return (
+    changes.reduce<SalaryChange | null>(
+      (latest, change) =>
+        age >= change.from && (latest === null || change.from >= latest.from) ? change : latest,
+      null,
+    )?.gross ??
+    input.grossMonthly ??
+    0
+  );
+};
+
+export const grossAt = (input: SalaryInput, age: number): number =>
+  salaryAt(input, age, [
+    ...specialPensionSalaryChangesOf(input),
+    ...workingLessSalaryChangesOf(input),
+  ]);
+
+const grossWithoutWorkingLessAt = (input: SalaryInput, age: number): number =>
+  salaryAt(input, age, specialPensionSalaryChangesOf(input));
+
 export function yearlyContribution(input: PensionInput, age?: number): number {
   const rate = input.p2Rate || 0;
-  let gross = input.grossMonthly || 0;
-  if (stopsWorkForSpecialPension(input, age)) {
-    gross = 0;
-  } else if (isDuringSpecialPension(input, age) && input.spGross !== undefined) {
-    gross = input.spGross;
-  }
+  const gross = age === undefined ? input.grossMonthly || 0 : grossAt(input, age);
   const a = age !== undefined ? age : CURRENT_YEAR - input.birthYear;
   return (
     gross * 12 * (rate > 0 ? rate + 0.04 : 0) * wageFactor(input, a) +
     yearlyThirdPillarContribution(input, age)
   );
 }
+
+export const isKidsEarlyRightUsedBySelf = (kids: KidsInput | undefined): boolean => {
+  const earlyUser = kids?.earlyUser || kids?.user;
+  return earlyUser === 'me' || earlyUser === 'split';
+};
 
 // RPKS § 10, SVPS § 1, PäästeTS § 19; RPKS § 6: only one basis applies, the years do not add up
 export function earlyYears(input: Partial<PensionInput>): number {
@@ -544,18 +608,20 @@ export function earlyYears(input: Partial<PensionInput>): number {
     (kids.b2021 || 0) +
     (kids.bUnknown || 0);
   const earlyUser = kids.earlyUser || kids.user;
-  let kidsYears = 0;
-  if (earlyUser === 'me') {
+  let kidsRight = 0;
+  if (isKidsEarlyRightUsedBySelf(kids)) {
     if (kids.yearsEarly !== undefined) {
-      kidsYears = kids.yearsEarly;
+      kidsRight = kids.yearsEarly;
     } else if (kids.disabled || count >= 5) {
-      kidsYears = 5;
+      kidsRight = 5;
     } else if (count === 4) {
-      kidsYears = 3;
+      kidsRight = 3;
     } else if (count === 3) {
-      kidsYears = 1;
+      kidsRight = 1;
     }
   }
+  // RPKS § 10 lg 3: without the parents' agreement the years are split equally
+  const kidsYears = earlyUser === 'split' ? Math.floor(kidsRight / 2) : kidsRight;
   const { hazardYears } = input;
   let hazardEarly = 0;
   if (input.hazard === 'list1') {
@@ -685,6 +751,21 @@ export function specialStart(
   return input.spStartAge !== undefined ? input.spStartAge : retirementYears(input);
 }
 
+export const statePensionCutForWorkingLess = (
+  input: SalaryInput,
+  retirementAge: number,
+): number => {
+  if (input.reducedFrom === undefined || input.reducedGross === undefined) {
+    return 0;
+  }
+  const isContributing = (input.p2Rate || 0) > 0;
+  const accrualOf = (gross: number) => workAccrual(gross, isContributing, isContributing);
+  const from = Math.max(input.reducedFrom, CURRENT_YEAR - input.birthYear);
+  return Array.from({ length: Math.max(0, retirementAge - from) }, (_, offset) => from + offset)
+    .map((age) => accrualOf(grossWithoutWorkingLessAt(input, age)) - accrualOf(grossAt(input, age)))
+    .reduce((sum, cut) => sum + cut, 0);
+};
+
 export function simulate(
   input: PensionInput,
   table: LifeTable,
@@ -722,7 +803,9 @@ export function simulate(
   const earlyCut =
     earlyMissing *
     workAccrual(input.grossMonthly || 0, (input.p2Rate || 0) > 0, (input.p2Rate || 0) > 0);
-  const p1Base = (Math.max(0, input.p1Monthly - earlyCut) + kidsMonthly + hazardMonthly) * 12;
+  const workingLessCut = statePensionCutForWorkingLess(input, ret);
+  const p1Base =
+    (Math.max(0, input.p1Monthly - earlyCut - workingLessCut) + kidsMonthly + hazardMonthly) * 12;
   // RPKS § 11¹ lg 4: the increasing coefficient applies to the whole pension
   const flexEarly =
     soodus > 0 && !isFlexibleBarred ? Math.min(5, Math.max(0, input.flexEarly || 0)) : 0;
@@ -746,9 +829,12 @@ export function simulate(
   }
   const workEnd = workOn ? Math.max(ret, defaultWorkUntil) : ret;
   const iiJoined = (input.p2Rate || 0) > 0;
-  const accrualYear = 12 * workAccrual(input.grossMonthly || 0, iiJoined, iiJoined);
-  const workedBefore = (age: number) =>
-    Math.max(0, Math.min(age, workEnd) - Math.max(ret, currentAge));
+  const workingOnFrom = Math.max(ret, currentAge);
+  const accrualYearAt = (age: number) => 12 * workAccrual(grossAt(input, age), iiJoined, iiJoined);
+  const accruedBefore = (age: number) =>
+    Array.from({ length: Math.max(0, Math.min(age, workEnd) - workingOnFrom) }, (_, offset) =>
+      accrualYearAt(workingOnFrom + offset),
+    ).reduce((sum, accrual) => sum + accrual, 0);
   const choice = input.firstPillarChoice;
   const prefersSpecial = (choiceMade: FirstPillarChoice | undefined, oldAgeYear: number) => {
     if (choiceMade === 'special') {
@@ -759,9 +845,9 @@ export function simulate(
     }
     return spYear >= oldAgeYear;
   };
-  const p1AtSpStart = p1Full + accrualYear * workedBefore(spStart) * p1Factor;
+  const p1AtSpStart = p1Full + accruedBefore(spStart) * p1Factor;
   const spPaid = spYear > 0 && prefersSpecial(choice, p1AtSpStart);
-  const p1AtPa = p1Full + accrualYear * workedBefore(pa) * p1Factor;
+  const p1AtPa = p1Full + accruedBefore(pa) * p1Factor;
   const spPaidPa = spPaid && ret < pa ? prefersSpecial(input.firstPillarChoicePa, p1AtPa) : spPaid;
   const spPaidAt = (age: number) => age >= spStart && (age >= pa ? spPaidPa : spPaid);
   const p1Year = spPaid ? 0 : p1Full;
@@ -990,7 +1076,7 @@ export function simulate(
         ? firstPillarAt(age) +
           (spPaidAt(age) || isDeferredYear(age)
             ? 0
-            : accrualYear * workedBefore(age) * (age < oldAgeStart + half ? 1 : p1Factor))
+            : accruedBefore(age) * (age < oldAgeStart + half ? 1 : p1Factor))
         : 0;
     const work = age >= ret && age < workEnd;
     const ispg = spAt(age);

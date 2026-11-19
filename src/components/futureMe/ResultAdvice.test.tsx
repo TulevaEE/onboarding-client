@@ -103,6 +103,19 @@ const deferStatePensionFiveYears = () => {
   );
 };
 
+const growAtPensionAge = (...pillars: ('II' | 'III')[]) => {
+  goTo(/^65\sa,/);
+  pillars.forEach((pillar) =>
+    userEvent.click(
+      within(
+        screen.getByRole('group', {
+          name: new RegExp(`^${pillar}\\ssamba väljamakse viis pensionieas$`),
+        }),
+      ).getByRole('radio', { name: /Kasvatan edasi/ }),
+    ),
+  );
+};
+
 const openResult = () => goTo(/^Tulemus/);
 
 const warning = () =>
@@ -114,8 +127,9 @@ describe('Result advice', () => {
   beforeAll(installDialogPolyfill);
   beforeEach(() => loggedInAs({ dateOfBirth: '1962-01-01' }));
 
-  it('neither warns nor advises while the pensions cover the costs', () => {
+  it('neither warns nor advises while the pensions cover the costs and the pillar grows on', () => {
     startWith('1200');
+    growAtPensionAge('II');
     openResult();
 
     expect(warning()).not.toBeInTheDocument();
@@ -129,9 +143,21 @@ describe('Result advice', () => {
 
     expect(warning()).toHaveTextContent(/\(kaetud kuni \d+\. eluaastani\)\./);
     expect(warning()).toHaveTextContent(
-      /Parem oleks .+: see kannab elu lõpuni [\d\s]+€ kuus \(sinu valik [\d\s]+€\)\./,
+      /Rohkem kannab .+: elu lõpuni [\d\s]+€ kuus \(sinu valik [\d\s]+€\)\./,
     );
     expect(warning()).toHaveTextContent(/Selleks vali .+\./);
+  });
+
+  it('names the payouts of the warning in future euros once future prices are picked', () => {
+    startWith('400');
+    chooseComfortableCosts();
+    openResult();
+    const amounts = () => warning()?.textContent?.match(/[\d\s]+€/g);
+    const inTodayPrices = amounts();
+
+    userEvent.click(screen.getByRole('button', { name: 'Tuleviku hinnad' }));
+
+    expect(amounts()).not.toEqual(inTodayPrices);
   });
 
   it('says "näiteks" when the pillars were left to grow, as taking them out at 0% is possible too', () => {
@@ -165,6 +191,18 @@ describe('Result advice', () => {
     expect(screen.getByText(/Igakuised väljamaksed on/)).toHaveTextContent(
       /Väljamaksed saad ka peatada ja hiljem uuesti alustada/,
     );
+  });
+
+  it('tells the surplus in future euros once future prices are picked', () => {
+    startWith('900', '150000');
+    chooseSecondPillarFundPension();
+    openResult();
+    const tip = () => screen.getByText(/Igakuised väljamaksed on/).textContent;
+    const inTodayPrices = tip();
+
+    userEvent.click(screen.getByRole('button', { name: 'Tuleviku hinnad' }));
+
+    expect(tip()).not.toBe(inTodayPrices);
   });
 
   it('opens the step where the better payout is chosen', () => {

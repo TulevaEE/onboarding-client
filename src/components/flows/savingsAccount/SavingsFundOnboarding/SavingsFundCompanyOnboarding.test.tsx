@@ -11,6 +11,7 @@ import {
   kycIdentityBackend,
   savingsFundOnboardingSurveyBackend,
   switchRoleBackend,
+  tkfDocumentsBackend,
   userBackend,
 } from '../../../../test/backend';
 import {
@@ -46,6 +47,7 @@ beforeEach(() => {
   userBackend(server);
   kycIdentityBackend(server, mockCompleteKycIdentity);
   savingsFundOnboardingSurveyBackend(server);
+  tkfDocumentsBackend(server);
 });
 afterEach(() => {
   server.resetHandlers();
@@ -1523,6 +1525,7 @@ const advanceToTerms = async () => {
   );
   userEvent.click(screen.getByRole('checkbox', { name: /not involved in cryptocurrency/i }));
   await advanceToStep(7);
+  expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
 };
 
 // Continues from step 2 through step 7, ending with the terms checkbox checked.
@@ -1548,6 +1551,7 @@ const completeStepsThroughTermsWithGoal = async (pickGoal: () => void) => {
   );
   userEvent.click(screen.getByRole('checkbox', { name: /not involved in cryptocurrency/i }));
   await advanceToStep(7);
+  expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
   userEvent.click(screen.getByRole('checkbox'));
 };
 

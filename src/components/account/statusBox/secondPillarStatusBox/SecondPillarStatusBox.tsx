@@ -12,10 +12,11 @@ import {
 } from '../../../common/apiHooks';
 import {
   Application,
+  ApplicationType,
   Conversion,
   Fund,
   MandateDeadlines,
-  RejoinDecision,
+  RejoinPermission,
   SecondPillarContributions,
   SourceFund,
 } from '../../../common/apiModels';
@@ -28,6 +29,7 @@ import { Shimmer } from '../../../common/shimmer/Shimmer';
 import {
   formatDate,
   formatDateFrom,
+  formatDateFromWithYear,
   formatDateOnWithYear,
   formatDateUntil,
 } from '../../../common/dateFormatter';
@@ -39,7 +41,11 @@ import {
   SecondPillarPaymentRateTaxWin,
   useSecondPillarTaxWin,
 } from '../../../flows/secondPillarPaymentRate/SecondPillarPaymentRateTaxWin';
-import { RejoinRefusalReason } from '../../../flows/secondPillarRejoin/RejoinRefusalReason';
+import { dateToWaitForRejoining } from '../../../flows/secondPillarRejoin/RejoinRefusalReason';
+import {
+  contributionStartMonth,
+  highlightedDeadline,
+} from '../../../flows/secondPillarRejoin/deadlineHighlight';
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 import { FundPension } from '../../../common/apiModels/withdrawals';
 import { PaymentRateSubRow } from './PaymentRateSubRow';
@@ -90,7 +96,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   // TODO improve loading state handling here
   const { data: mandateDeadlines } = useMandateDeadlines();
   const { data: applications, isInitialLoading: loadingApplications } = usePendingApplications();
-  const { data: fundPensionStatus } = useFundPensionStatus();
+  const { data: fundPensionStatus, isInitialLoading: loadingFundPensions } = useFundPensionStatus();
 
   const leaveApplication: Application | undefined =
     applications &&
@@ -112,8 +118,12 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
   };
 
   const contributing = secondPillarContributions?.contributing;
-  const mayHaveFiledToRejoin = !secondPillarActive || contributing !== true;
-  if (loadingApplications && mayHaveFiledToRejoin) {
+  const mayNotBeSaving = !secondPillarActive || contributing !== true;
+  const applicationsDecideTheRow = mayNotBeSaving || conversion.pendingWithdrawal;
+  if (
+    (loadingApplications && applicationsDecideTheRow) ||
+    (loadingFundPensions && mayNotBeSaving)
+  ) {
     return <SecondPillarLoading />;
   }
 
@@ -127,16 +137,11 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     <StoppedContributions
       restartDate={secondPillarContributions?.restartDate}
       rejoinPossibleFrom={secondPillarContributions?.rejoinPossibleFrom}
-      hasFundChoiceOnRecord={secondPillarActive}
       loading={loading}
     />
   );
 
-  if (!secondPillarActive) {
-    return hasStoppedContributing ? stoppedContributions : <SecondPillarMissing {...rowProps} />;
-  }
-
-  if (conversion.pendingWithdrawal) {
+  if (applications?.some(isPendingPayoutApplication)) {
     return <PendingPartialWithdrawalOrFundPension {...rowProps} />;
   }
 
@@ -150,6 +155,10 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
 
   if (hasStoppedContributing) {
     return stoppedContributions;
+  }
+
+  if (!secondPillarActive) {
+    return <SecondPillarMissing {...rowProps} />;
   }
 
   const isFullyConvertedToTuleva = conversion.selectionComplete && conversion.transfersComplete;
@@ -485,6 +494,16 @@ const HighFee = ({ loading, conversion, sourceFunds, targetFunds, leaveApplicati
   );
 };
 
+const PAYOUT_APPLICATION_TYPES: ApplicationType[] = [
+  'WITHDRAWAL',
+  'EARLY_WITHDRAWAL',
+  'PARTIAL_WITHDRAWAL',
+  'FUND_PENSION_OPENING',
+];
+
+const isPendingPayoutApplication = (application: Application) =>
+  PAYOUT_APPLICATION_TYPES.includes(application.type);
+
 const usePendingEarlyWithdrawalApplication = (): Application | undefined =>
   usePendingApplications().data?.find(
     (application) => application.type === 'WITHDRAWAL' || application.type === 'EARLY_WITHDRAWAL',
@@ -536,35 +555,28 @@ const Rejoined = ({ contributionsStartDate }: { contributionsStartDate: string }
 const StoppedContributions = ({
   restartDate,
   rejoinPossibleFrom,
-  hasFundChoiceOnRecord,
   loading,
 }: {
   restartDate: string | null | undefined;
   rejoinPossibleFrom: string | null | undefined;
-  hasFundChoiceOnRecord: boolean;
   loading: boolean;
 }) =>
   restartDate ? (
     <Rejoined contributionsStartDate={restartDate} />
   ) : (
-    <WayBackIn
-      rejoinPossibleFrom={rejoinPossibleFrom}
-      hasFundChoiceOnRecord={hasFundChoiceOnRecord}
-      loading={loading}
-    />
+    <WayBackIn rejoinPossibleFrom={rejoinPossibleFrom} loading={loading} />
   );
 
 const WayBackIn = ({
   rejoinPossibleFrom,
-  hasFundChoiceOnRecord,
   loading,
 }: {
   rejoinPossibleFrom: string | null | undefined;
-  hasFundChoiceOnRecord: boolean;
   loading: boolean;
 }) => {
   const { data: rejoinPermission, isInitialLoading: askingWhetherPermitted } =
     useRejoinPermission();
+  const { data: mandateDeadlines, isInitialLoading: loadingDeadlines } = useMandateDeadlines();
   const mayRejoin = rejoinPermission?.permitted !== false;
 
   return (
@@ -574,15 +586,14 @@ const WayBackIn = ({
       name={<FormattedMessage id="account.status.choice.pillar.second" />}
       lines={[
         <FormattedMessage id="account.status.choice.pillar.second.notContributing.line1" />,
-        askingWhetherPermitted ? (
+        askingWhetherPermitted || loadingDeadlines ? (
           <Shimmer height={24} />
         ) : (
           <span className="text-body-secondary">
             <WayBackInExplanation
-              mayRejoin={mayRejoin}
-              rejoinDecision={rejoinPermission?.decision}
+              rejoinPermission={rejoinPermission}
               rejoinPossibleFrom={rejoinPossibleFrom}
-              hasFundChoiceOnRecord={hasFundChoiceOnRecord}
+              mandateDeadlines={mandateDeadlines}
             />
           </span>
         ),
@@ -596,25 +607,31 @@ const WayBackIn = ({
 };
 
 const WayBackInExplanation = ({
-  mayRejoin,
-  rejoinDecision,
+  rejoinPermission,
   rejoinPossibleFrom,
-  hasFundChoiceOnRecord,
+  mandateDeadlines,
 }: {
-  mayRejoin: boolean;
-  rejoinDecision: RejoinDecision | undefined;
+  rejoinPermission: RejoinPermission | undefined;
   rejoinPossibleFrom: string | null | undefined;
-  hasFundChoiceOnRecord: boolean;
+  mandateDeadlines: MandateDeadlines | undefined;
 }) => {
-  if (mayRejoin) {
+  const rejoinDecision = rejoinPermission?.decision;
+  if (rejoinPermission?.permitted === true && mandateDeadlines) {
     return (
       <FormattedMessage
-        id={
-          hasFundChoiceOnRecord
-            ? 'account.status.choice.pillar.second.notContributing.line2.fundChoiceOnRecord'
-            : 'account.status.choice.pillar.second.notContributing.line2.noFundChoice'
-        }
+        id="account.status.choice.pillar.second.notContributing.line2.applyByDeadline"
+        values={{
+          deadline: highlightedDeadline,
+          startMonth: contributionStartMonth(
+            mandateDeadlines.secondPillarRejoinContributionStartDate,
+          ),
+        }}
       />
+    );
+  }
+  if (rejoinPermission?.permitted !== false) {
+    return (
+      <FormattedMessage id="account.status.choice.pillar.second.notContributing.line2.restartsOnceFiled" />
     );
   }
   if (rejoinDecision === 'CONTRIBUTIONS_CANNOT_RESTART') {
@@ -622,7 +639,18 @@ const WayBackInExplanation = ({
       <FormattedMessage id="account.status.choice.pillar.second.notContributing.line2.contributionsCannotRestart" />
     );
   }
-  return <RejoinRefusalReason decision={rejoinDecision} rejoinPossibleFrom={rejoinPossibleFrom} />;
+  const waitUntil = dateToWaitForRejoining(rejoinPossibleFrom, rejoinDecision);
+  if (waitUntil) {
+    return (
+      <FormattedMessage
+        id="account.status.choice.pillar.second.notContributing.line2.rejoinPossibleFrom"
+        values={{ date: formatDateFromWithYear(waitUntil) }}
+      />
+    );
+  }
+  return (
+    <FormattedMessage id="account.status.choice.pillar.second.notContributing.line2.notPermitted" />
+  );
 };
 
 const SecondPillarMissing = ({ loading, nudgeKey }: RowProps) => (

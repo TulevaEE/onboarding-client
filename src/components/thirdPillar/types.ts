@@ -10,6 +10,7 @@ export type ThirdPillar = {
   funds: Fund[] | null;
   selectedFutureContributionsFundIsin: string;
   exchangeExistingUnits: boolean;
+  recurringPaymentCount: number;
   agreedToTerms: boolean;
   signedMandateId: number;
   error: ErrorResponse | null;

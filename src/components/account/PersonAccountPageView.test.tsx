@@ -122,6 +122,12 @@ describe('happy path', () => {
     expect(within(totalRow).getByText('121 577.14 €')).toBeInTheDocument();
   });
 
+  test('links from under the II pillar table to who pays into it', async () => {
+    expect(
+      await screen.findByRole('link', { name: /^Who pays into your II\spillar\?$/ }),
+    ).toHaveAttribute('href', '/2nd-pillar-growth');
+  });
+
   test('shows PIK account with bank name in account statement', async () => {
     expect(await screen.findByText('Hi, John Doe')).toBeInTheDocument();
     expect(await screen.findByText('Swedbank PIK')).toBeInTheDocument();

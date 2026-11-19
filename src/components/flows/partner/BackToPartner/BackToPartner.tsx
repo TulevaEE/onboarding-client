@@ -3,13 +3,17 @@ import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { finish as finishProcedure } from '../../../TriggerProcedure/utils';
 import { State } from '../../../../types';
+import pig from './pig.svg';
 import { SuccessNotice2 } from '../../common/SuccessNotice2/SuccessNotice2';
-import { Nudge } from '../../../common/nudge/Nudge';
+import { Notice } from '../../../common/nudge/Notice';
 import { BackToInternetBankButton } from './BackToInternetBankButton';
 
 export const BackToPartner: React.FC = () => {
   const personalCode = useSelector<State, string | undefined>(
     (state) => state.login.user?.personalCode,
+  );
+  const hasStandingOrder = useSelector<State, boolean>(
+    (state) => state.thirdPillar.recurringPaymentCount > 0,
   );
   const [submitting, setSubmitting] = React.useState(false);
   const [error, setError] = React.useState(false);
@@ -39,6 +43,41 @@ export const BackToPartner: React.FC = () => {
             <FormattedMessage id="thirdPillarBackToPartner.account" />
           </a>
         </div>
+        <BackToInternetBankButton />
+      </SuccessNotice2>
+
+      <Notice>
+        <img src={pig} alt="" />
+
+        {hasStandingOrder ? (
+          <>
+            <h2 className="mt-3 text-balance">
+              <FormattedMessage id="thirdPillarBackToPartner.automated" />
+            </h2>
+            <p className="mt-3 text-pretty">
+              <FormattedMessage id="thirdPillarBackToPartner.automated.subtitle" />
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 className="mt-3 text-balance">
+              <FormattedMessage id="thirdPillarBackToPartner.automateNext" />
+            </h2>
+            <p className="mt-3 text-pretty">
+              <FormattedMessage id="thirdPillarBackToPartner.automateNext.subtitle" />
+            </p>
+            <div className="d-flex justify-content-center mt-4">
+              <button
+                type="button"
+                className="btn btn-primary flex-grow-1 flex-md-grow-0"
+                disabled={!personalCode || submitting}
+                onClick={() => finishWith('newRecurringPayment')}
+              >
+                <FormattedMessage id="thirdPillarBackToPartner.recurringPayment.button" />
+              </button>
+            </div>
+          </>
+        )}
         <div className="d-flex justify-content-center mt-2">
           <button
             type="button"
@@ -54,21 +93,12 @@ export const BackToPartner: React.FC = () => {
             <FormattedMessage id="partnerFlow.error" />
           </p>
         )}
-        <p className="mt-2 mb-0">
+        <p className="mt-2 mb-0 text-pretty">
           <small className="text-body-secondary">
             <FormattedMessage id="thirdPillarBackToPartner.payment.subtitle" />
           </small>
         </p>
-        <BackToInternetBankButton />
-      </SuccessNotice2>
-      <Nudge
-        context="THIRD_PILLAR_MANDATE"
-        onRecurringPayment={() => {
-          if (personalCode && !submitting) {
-            finishWith('newRecurringPayment');
-          }
-        }}
-      />
+      </Notice>
     </>
   );
 };

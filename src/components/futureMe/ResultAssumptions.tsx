@@ -9,6 +9,7 @@ import { QuickEditExpenses } from './QuickEditSteps';
 import { ResultContext } from './resultAnswers';
 import { FutureMeStep } from './steps';
 import { returnOptions } from './YouFields';
+import { PayFromPayoutAge } from './reducedPay';
 
 const RETURN_FIELDS = {
   secondPillarFund: 'secondPillarReturnPercent',
@@ -26,6 +27,21 @@ const AssumptionIcon = ({ assumption }: { assumption: Assumption }) => {
   );
 };
 
+const yesWhen = (isTrue: boolean) => (isTrue ? 'yes' : 'no');
+
+const payFromPayoutAgeValues = (pay: PayFromPayoutAge | null) => {
+  const hasReducedGross = pay?.gross !== undefined;
+  const hasReducedThirdPillar = pay?.thirdPillarMonthly !== undefined;
+  return {
+    hasReducedPay: yesWhen(hasReducedGross || hasReducedThirdPillar),
+    reducedFrom: pay?.age ?? 0,
+    hasReducedGross: yesWhen(hasReducedGross),
+    reducedGross: euro(pay?.gross ?? 0),
+    hasReducedThirdPillar: yesWhen(hasReducedThirdPillar),
+    reducedThirdPillar: euro(pay?.thirdPillarMonthly ?? 0),
+  };
+};
+
 const AssumptionText = ({ assumption }: { assumption: Assumption }) => {
   const intl = useIntl();
   if (assumption.id === 'you') {
@@ -40,6 +56,7 @@ const AssumptionText = ({ assumption }: { assumption: Assumption }) => {
           thirdPillar: euro(assumption.thirdPillar ?? 0),
           hasSpecialPension: assumption.specialPension === null ? 'no' : 'yes',
           specialPension: euro(assumption.specialPension ?? 0),
+          ...payFromPayoutAgeValues(assumption.payFromPayoutAge),
         }}
       />
     );

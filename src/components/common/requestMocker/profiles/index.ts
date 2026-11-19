@@ -10,6 +10,7 @@ import { contributionsProfiles } from './contributions';
 import { conversionMockProfiles } from './conversion';
 import { memberCapitalProfiles } from './memberCapital';
 import { pendingApplicationsProfiles } from './pendingApplications';
+import { completedApplicationsProfiles } from './completedApplications';
 import { returnsProfiles } from './returns';
 import { savingsFundBalanceProfiles } from './savingsFundBalance';
 import { savingsFundOnboardingStatusProfiles } from './savingsFundOnboardingStatus';
@@ -21,6 +22,8 @@ import { nudgeProfiles } from './nudge';
 import { mandateDeadlinesProfiles } from './mandateDeadlines';
 import { paymentRateRedirectProfiles } from './paymentRateRedirect';
 import { rejoinPermissionProfiles } from './rejoinPermission';
+import { myGiftsProfiles } from './myGifts';
+import { secondPillarNavHistoriesProfiles, worldMarketReturnsProfiles } from './secondPillarFunds';
 
 export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string, unknown>> = {
   withdrawalsEligibility: withdrawalsEligibilityProfiles,
@@ -30,6 +33,7 @@ export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string
   memberCapital: memberCapitalProfiles,
   memberCapitalListings: memberCapitalListingsProfiles,
   pendingApplications: pendingApplicationsProfiles,
+  completedApplications: completedApplicationsProfiles,
   fundPensionStatus: fundPensionStatusProfiles,
   funds: fundsProfiles,
   portfolio: portfolioProfiles,
@@ -45,6 +49,9 @@ export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string
   mandateDeadlines: mandateDeadlinesProfiles,
   paymentRateRedirect: paymentRateRedirectProfiles,
   rejoinPermission: rejoinPermissionProfiles,
+  myGifts: myGiftsProfiles,
+  secondPillarNavHistories: secondPillarNavHistoriesProfiles,
+  worldMarketReturns: worldMarketReturnsProfiles,
 } as const;
 
 export const getAllProfileNames = () =>

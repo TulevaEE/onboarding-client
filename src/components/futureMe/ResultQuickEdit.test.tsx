@@ -86,9 +86,22 @@ const assumptionRow = (heading: RegExp) =>
   rowIn(screen.getByRole('list', { name: 'Eeldused' }), heading);
 
 const decisionRow = (heading: RegExp) =>
-  rowIn(screen.getByRole('list', { name: 'Sinu otsused' }), heading);
+  rowIn(screen.getByRole('list', { name: 'Minu otsused' }), heading);
 
 const toggleIn = (row: HTMLElement) => within(row).getByRole('button', { name: /^(Muuda|Sulge)/ });
+
+const growAtPensionAge = (pillar: 'II' | 'III') => {
+  const row = decisionRow(new RegExp(`^${pillar}\\ssammas pensionieas$`));
+  userEvent.click(toggleIn(row));
+  userEvent.click(within(row).getByRole('radio', { name: /^Kasvatan edasi/ }));
+  userEvent.click(toggleIn(row));
+};
+
+const openResultStepGrowingBothPillars = () => {
+  openResultStep();
+  growAtPensionAge('II');
+  growAtPensionAge('III');
+};
 
 describe('Result step: quick edit of the assumptions', () => {
   beforeEach(() => loggedInAs({ dateOfBirth: '1962-01-01' }));
@@ -97,7 +110,7 @@ describe('Result step: quick edit of the assumptions', () => {
     openResultStep();
 
     userEvent.click(
-      within(assumptionRow(/^Sinu andmed$/)).getByRole('button', { name: /^Muuda sammus „Sina“/ }),
+      within(assumptionRow(/^Minu andmed$/)).getByRole('button', { name: /^Muuda sammus „Mina“/ }),
     );
 
     expect(
@@ -212,22 +225,22 @@ describe('Result step: quick edit of the other decisions', () => {
     it('lists the fund pension after the state pension and the pension age choices', () => {
       openResultStep();
 
-      const titles = within(screen.getByRole('list', { name: 'Sinu otsused' }))
+      const titles = within(screen.getByRole('list', { name: 'Minu otsused' }))
         .getAllByRole('heading', { level: 4 })
         .map((heading) => heading.textContent);
       expect(titles[titles.length - 1]).toBe('Igakuised väljamaksed');
     });
 
     it('says the saver keeps growing the money while no fund pension is started', () => {
-      openResultStep();
+      openResultStepGrowingBothPillars();
 
       expect(decisionRow(/^Igakuised väljamaksed$/)).toHaveTextContent(
-        'Sinu valik: Kasvatan edasi',
+        'Minu valik: Kasvatan edasi',
       );
     });
 
     it('opens the start age and contract under the row without the step heading', () => {
-      openResultStep();
+      openResultStepGrowingBothPillars();
       const row = decisionRow(/^Igakuised väljamaksed$/);
       userEvent.click(toggleIn(row));
 
@@ -240,7 +253,7 @@ describe('Result step: quick edit of the other decisions', () => {
     });
 
     it('shows the chosen start age on the row', () => {
-      openResultStep();
+      openResultStepGrowingBothPillars();
       const row = decisionRow(/^Igakuised väljamaksed$/);
       userEvent.click(toggleIn(row));
 
@@ -250,13 +263,13 @@ describe('Result step: quick edit of the other decisions', () => {
       );
 
       expect(row).toHaveTextContent(
-        'Sinu valik: II sambast alates 70-⁠aastaselt, uus leping igal aastal',
+        'Minu valik: II sambast alates 70-⁠aastaselt, uus avaldus igal aastal',
       );
       expect(row).toHaveTextContent(/70\sa/);
     });
 
     it('shows the contract picked under the row', () => {
-      openResultStep();
+      openResultStepGrowingBothPillars();
       const row = decisionRow(/^Igakuised väljamaksed$/);
       userEvent.click(toggleIn(row));
       userEvent.selectOptions(
@@ -264,10 +277,10 @@ describe('Result step: quick edit of the other decisions', () => {
         '70',
       );
 
-      userEvent.click(within(row).getByRole('radio', { name: /^Üks leping/ }));
+      userEvent.click(within(row).getByRole('radio', { name: /^Üks avaldus/ }));
 
       expect(row).toHaveTextContent(
-        /Sinu valik: II sambast alates 70-⁠aastaselt, üks leping kuni \d+-⁠aastaseni/,
+        /Minu valik: II sambast alates 70-⁠aastaselt, üks avaldus kuni \d+-⁠aastaseni/,
       );
 
       userEvent.selectOptions(
@@ -276,15 +289,13 @@ describe('Result step: quick edit of the other decisions', () => {
       );
 
       expect(row).toHaveTextContent(
-        'Sinu valik: II sambast alates 70-⁠aastaselt, üks leping kuni 97-⁠aastaseni',
+        'Minu valik: II sambast alates 70-⁠aastaselt, üks avaldus kuni 97-⁠aastaseni',
       );
     });
 
     it('names the pillar whose fund pension was chosen at the pension age next to the one picked here', () => {
       openResultStep();
-      const atPensionAge = decisionRow(/^II\ssammas pensionieas$/);
-      userEvent.click(toggleIn(atPensionAge));
-      userEvent.click(within(atPensionAge).getByRole('radio', { name: /^Võtan igakuiselt/ }));
+      growAtPensionAge('III');
       const row = decisionRow(/^Igakuised väljamaksed$/);
       userEvent.click(toggleIn(row));
 
@@ -294,7 +305,7 @@ describe('Result step: quick edit of the other decisions', () => {
       );
 
       expect(row).toHaveTextContent(
-        'Sinu valik: II sambast alates 65-⁠aastaselt, uus leping igal aastal; III sambast alates 70-⁠aastaselt, uus leping igal aastal',
+        'Minu valik: II sambast alates 65-⁠aastaselt, uus avaldus igal aastal; III sambast alates 70-⁠aastaselt, uus avaldus igal aastal',
       );
       expect(row).toHaveTextContent(/65\sa/);
     });
@@ -317,7 +328,7 @@ describe('Result step: quick edit of the other decisions', () => {
       openResultStep();
 
       expect(
-        within(screen.getByRole('list', { name: 'Sinu otsused' })).queryByRole('heading', {
+        within(screen.getByRole('list', { name: 'Minu otsused' })).queryByRole('heading', {
           name: /^Eripension$/,
         }),
       ).not.toBeInTheDocument();
@@ -328,7 +339,7 @@ describe('Result step: quick edit of the other decisions', () => {
       const row = decisionRow(/^Eripension$/);
 
       expect(row).toHaveTextContent(/60\sa/);
-      expect(row).toHaveTextContent(/Sinu valik: 800\s€ kuus enne tulumaksu/);
+      expect(row).toHaveTextContent(/Minu valik: 800\s€ kuus enne tulumaksu/);
     });
 
     it('changes the amount under the row', () => {
@@ -338,7 +349,7 @@ describe('Result step: quick edit of the other decisions', () => {
 
       typeInto(within(row).getByRole('spinbutton', { name: /Eripensioni suurus/ }), '900');
 
-      expect(row).toHaveTextContent(/Sinu valik: 900\s€ kuus enne tulumaksu/);
+      expect(row).toHaveTextContent(/Minu valik: 900\s€ kuus enne tulumaksu/);
     });
 
     it('opens without the step heading', () => {

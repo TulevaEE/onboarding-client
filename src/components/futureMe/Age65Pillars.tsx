@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { Age60Answers, PAYOUT_CHOICE_EMOJI, PAYOUT_CHOICES } from './age60Answers';
+import { Age60Answers, PAYOUT_CHOICE_EMOJI, PENSION_AGE_PAYOUT_CHOICES } from './age60Answers';
 import { Age65Answers } from './age65Answers';
 import { ChoiceCard } from './ChoiceCard';
 import { ChoiceMadeNote } from './ChoiceMadeNote';
@@ -106,7 +106,7 @@ export const Age65Pillars = ({
           )}
           {startedFundPension && <ChoiceMadeNote choice={startedFundPension} />}
           <div className="payout-choices">
-            {PAYOUT_CHOICES.map((choice) => (
+            {PENSION_AGE_PAYOUT_CHOICES.map((choice) => (
               <ChoiceCard
                 key={choice}
                 idPrefix={`future-me-65-${pillar}`}

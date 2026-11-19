@@ -26,7 +26,7 @@ export const returnsProfiles: Record<string, ReturnsResponse> = {
       },
       {
         type: 'INDEX',
-        key: Key.UNION_STOCK_INDEX,
+        key: Key.MSCI_ACWI_ADJUSTED,
         rate: 0.07,
         amount: 15000,
         paymentsSum: 20000,

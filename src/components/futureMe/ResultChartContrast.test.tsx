@@ -65,7 +65,11 @@ describe('ResultChart in high contrast', () => {
   it('draws the age axis line in a darker colour once the footer switch is on', async () => {
     render(
       <IntlProvider locale="et" messages={translations.et}>
-        <ResultChart result={resultOf(context())} need={needMonthly(context().expenses)} />
+        <ResultChart
+          result={resultOf(context())}
+          need={needMonthly(context().expenses)}
+          isNominal={false}
+        />
       </IntlProvider>,
     );
     const normal = ageAxisLineColour();

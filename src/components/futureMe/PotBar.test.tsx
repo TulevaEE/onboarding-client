@@ -30,6 +30,12 @@ describe('PotBar', () => {
     expect(p3).toBeGreaterThan(0);
   });
 
+  it("says the amounts are in today's prices", () => {
+    renderBar();
+
+    expect(within(bar()).getByText('Summad on tänastes eurodes')).toBeVisible();
+  });
+
   it('leaves the III pillar out when there is nothing in it', () => {
     renderBar(contextWith({ thirdPillarAmount: '' }));
 

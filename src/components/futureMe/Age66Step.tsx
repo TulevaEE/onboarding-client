@@ -72,7 +72,7 @@ export const Age66Step = ({
 }: Props) => {
   const context: Age66Context = { age60, age65, you, plan };
   const comparison = plan.hasSpecialPension
-    ? firstPillarComparison(specialPension, you, plan, age65, answers)
+    ? firstPillarComparison(specialPension, you, plan, age65, answers, age60)
     : null;
   const atPensionAge = comparison?.atPa;
   const pensionAgeRise = atPensionAge ? atPensionAge.oldAge - (comparison?.oldAge ?? 0) : 0;

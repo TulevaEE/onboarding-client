@@ -115,9 +115,9 @@ describe('Result step: save the result', () => {
     const file = await downloadedFile();
     expect(file).toMatch(/^# Tulevane Mina: minu pensionilugu\n\n_Koostatud /);
     expect(file).toContain('## Kas raha jätkub elu lõpuni?');
-    expect(file).toContain('### Sinu otsused');
+    expect(file).toContain('### Minu otsused');
     expect(file).toContain(
-      '- 60 a · 2022, avanenud · II sammas 60-aastaselt · Sinu valik: Kasvatan edasi',
+      '- 60 a · 2022, avanenud · II sammas 60-aastaselt · Minu valik: Kasvatan edasi',
     );
     expect(file).toContain('### Eeldused');
     expect(file).toContain('### Reeglid ja tulumaksud');
@@ -135,6 +135,18 @@ describe('Result step: save the result', () => {
     expect(file).toContain(
       'Maksustamine oleneb isikuga seotud asjaoludest, sh residentsusest. Maksuseadused muutuvad ajas.',
     );
+  });
+
+  it('writes the file in future euros once future prices are picked', async () => {
+    jest.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    openResultStep();
+
+    userEvent.click(screen.getByRole('button', { name: 'Tuleviku hinnad' }));
+    userEvent.click(markdownButton());
+
+    const file = await downloadedFile();
+    expect(file).toContain('Tulemuse summad on tuleviku eurodes, sinu andmed tänastes.');
+    expect(file).toContain('(tuleviku eurodes, pärast tulumaksu)');
   });
 
   it('puts the income table into the file even when it is closed, and no payout comparison', async () => {
@@ -167,7 +179,9 @@ describe('Result step: save the result', () => {
     userEvent.click(markdownButton());
 
     const file = await downloadedFile();
-    expect(file).toContain('Sinu kulud (791 € kuus) on kaetud kuni 81. eluaastani.');
+    expect(file).toContain(
+      'Praeguse plaani järgi on sinu kulud (791 € kuus) kaetud kuni 81. eluaastani.',
+    );
     expect(file).not.toContain('kulud kaetud kuni');
     expect(file).not.toContain('samba raha lõpeb');
   });

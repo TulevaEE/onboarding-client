@@ -45,7 +45,7 @@ const ComparisonCalculator: React.FC = () => {
   const { formatMessage } = useIntl();
   const [selectedPillar, setSelectedPillar] = useState<Key>(Key.SECOND_PILLAR);
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<string>('');
-  const [selectedComparison, setSelectedComparison] = useState<string>(Key.UNION_STOCK_INDEX);
+  const [selectedComparison, setSelectedComparison] = useState<string>(Key.MSCI_ACWI_ADJUSTED);
   const [loadingInitialData, setLoadingInitialData] = useState<boolean>(true);
   const [loadingReturns, setLoadingReturns] = useState<boolean>(false);
   const [contentTextProperties, setContentTextProperties] = useState<ContentTextProperties>({
@@ -160,7 +160,7 @@ const ComparisonCalculator: React.FC = () => {
     const options = getFromDateOptions();
     setTimePeriodOptions(options);
     setSelectedTimePeriod(options[0]?.value || '');
-    setSelectedComparison(Key.UNION_STOCK_INDEX);
+    setSelectedComparison(Key.MSCI_ACWI_ADJUSTED);
   }, [secondPillarOpenDate, thirdPillarInitDate, selectedPillar]);
 
   const [incomparableResults, setIncomparableResults] = useState<boolean>(false);
@@ -618,10 +618,10 @@ const ComparisonCalculator: React.FC = () => {
     const fromDate = selectedTimePeriod;
     let selectedFundKey = selectedComparison;
     // TODO: make an intelligent selection here
-    if (selectedFundKey === Key.UNION_STOCK_INDEX) {
+    if (selectedFundKey === Key.MSCI_ACWI_ADJUSTED) {
       selectedFundKey = '';
     }
-    const selectedIndexKey = Key.UNION_STOCK_INDEX;
+    const selectedIndexKey = Key.MSCI_ACWI_ADJUSTED;
 
     setLoadingReturns(true);
     try {
@@ -666,7 +666,7 @@ const ComparisonCalculator: React.FC = () => {
     }
 
     let performanceVerdictProps: PerformanceVerdictProperties;
-    if (selectedComparison === Key.UNION_STOCK_INDEX) {
+    if (selectedComparison === Key.MSCI_ACWI_ADJUSTED) {
       const performanceVerdict: PerformanceVerdict =
         (returns.personal &&
           returns.index &&
@@ -833,8 +833,8 @@ const ComparisonCalculator: React.FC = () => {
 
   function populateCompareToOptions() {
     const stockIndexOption = {
-      value: Key.UNION_STOCK_INDEX,
-      label: formatMessage({ id: 'comparisonCalculator.comparisonOptions.UNION_STOCK_INDEX' }),
+      value: Key.MSCI_ACWI_ADJUSTED,
+      label: formatMessage({ id: 'comparisonCalculator.comparisonOptions.MSCI_ACWI_ADJUSTED' }),
     };
 
     const inflationOption = {
@@ -1280,8 +1280,8 @@ const ComparisonCalculator: React.FC = () => {
     if (key === Key.EPI_3) {
       return formatMessage({ id: 'comparisonCalculator.comparisonOptions.EPI_3' });
     }
-    if (key === Key.UNION_STOCK_INDEX) {
-      return formatMessage({ id: 'comparisonCalculator.comparisonOptions.UNION_STOCK_INDEX' });
+    if (key === Key.MSCI_ACWI_ADJUSTED) {
+      return formatMessage({ id: 'comparisonCalculator.comparisonOptions.MSCI_ACWI_ADJUSTED' });
     }
 
     return [...secondPillarFunds, ...thirdPillarFunds].find((it) => it.isin === key)?.name || key;

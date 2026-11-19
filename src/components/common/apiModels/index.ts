@@ -185,6 +185,29 @@ export interface Fund {
   fundManager: FundManager;
   status: FundStatus;
   inceptionDate: string;
+  volume?: number | null;
+}
+
+export interface NavValue {
+  date: string;
+  value: number;
+}
+
+export interface FundNavHistory {
+  isin: string;
+  nav: NavValue[];
+}
+
+export interface WorldMarketReturn {
+  years: number;
+  annualizedReturn: number;
+  fromDate: string;
+  toDate: string;
+  composite: boolean;
+}
+
+export interface WorldMarketReturns {
+  returns: WorldMarketReturn[];
 }
 
 export type Pillar = 2 | 3;
@@ -524,6 +547,17 @@ export interface Transaction {
   units: number;
   nav: number | null;
   acquisitionCost?: number;
+  remitterName?: string | null;
+  paidFromOwnAccount?: boolean | null;
+}
+
+export interface ReceivedGift {
+  receivedAt: string;
+  amount: number;
+  // A bank may take hours to send the payer's name, and some never send it.
+  giverName: string | null;
+  message: string | null;
+  confirmed: boolean;
 }
 
 export type TransactionType =

@@ -14,8 +14,11 @@ import {
   CapitalEvent,
   CapitalRow,
   Conversion,
+  Fund,
   FundBalance,
+  FundNavHistory,
   Portfolio,
+  WorldMarketReturns,
   Transaction,
   MemberCapitalListing,
   User,
@@ -25,6 +28,7 @@ import {
   SecondPillarAssets,
   MandateDeadlines,
   RejoinDecision,
+  ReceivedGift,
 } from '../components/common/apiModels';
 import { anAuthenticationManager } from '../components/common/authenticationManagerFixture';
 import { parseJwt } from '../components/common/jwt';
@@ -768,8 +772,36 @@ export function pensionAccountStatementBackend(
   );
 }
 
-export function fundsBackend(server: SetupServer): void {
-  server.use(rest.get('http://localhost/v1/funds', (req, res, ctx) => res(ctx.json(mockFunds))));
+export function fundsBackend(server: SetupServer, funds: Fund[] = mockFunds): void {
+  server.use(rest.get('http://localhost/v1/funds', (req, res, ctx) => res(ctx.json(funds))));
+}
+
+export function secondPillarNavHistoriesBackend(
+  server: SetupServer,
+  navHistories: FundNavHistory[] = [],
+): { requestedStartDates: string[] } {
+  const requestedStartDates: string[] = [];
+  server.use(
+    rest.get('http://localhost/v1/funds/nav', (req, res, ctx) => {
+      if (req.url.searchParams.get('pillar') !== '2') {
+        return res(ctx.status(400));
+      }
+      requestedStartDates.push(req.url.searchParams.get('startDate') ?? '');
+      return res(ctx.json(navHistories));
+    }),
+  );
+  return { requestedStartDates };
+}
+
+export function worldMarketReturnsBackend(
+  server: SetupServer,
+  worldMarketReturns: WorldMarketReturns = { returns: [] },
+): void {
+  server.use(
+    rest.get('http://localhost/v1/benchmarks/world-market/returns', (req, res, ctx) =>
+      res(ctx.json(worldMarketReturns)),
+    ),
+  );
 }
 
 export function secondPillarAssetsBackend(
@@ -799,7 +831,7 @@ export function returnsBackend(server: SetupServer): void {
         from: '2018-06-06',
         returns: [
           {
-            key: 'UNION_STOCK_INDEX',
+            key: 'MSCI_ACWI_ADJUSTED',
             rate: 0.09,
             amount: 16000.0,
             paymentsSum: 14000.0,
@@ -1497,8 +1529,115 @@ export function recurringPaymentConfirmationBackend(
   return () => confirmations;
 }
 
+export function thirdPillarPaymentReminderBackend(server: SetupServer): () => number {
+  let cancellations = 0;
+  server.use(
+    rest.post(
+      'http://localhost/v1/third-pillar-payment-reminders/cancellations',
+      (req, res, ctx) => {
+        cancellations += 1;
+        return res(ctx.json({ cancelledCount: 1 }));
+      },
+    ),
+  );
+  return () => cancellations;
+}
+
+export function myGiftsBackend(server: SetupServer, gifts: ReceivedGift[] = []): void {
+  server.use(
+    rest.get('http://localhost/v1/savings-fund/gifts', (req, res, ctx) => res(ctx.json(gifts))),
+  );
+}
+
 export function trackedEventsBackend(server: SetupServer): void {
   server.use(rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))));
+}
+
+type TkfDocumentFields = Record<string, string | false>;
+
+export const TKF_DOCUMENT_FIELDS: TkfDocumentFields = {
+  terms_file:
+    'https://tuleva.ee/wp-content/uploads/2026/08/TKF100-Tingimused-kehtivad-alates-18.09.2026.pdf',
+  prospectus_file:
+    'https://tuleva.ee/wp-content/uploads/2026/09/TKF100-Prospekt-alates-29.10.2026.pdf',
+  key_investor_info_file:
+    'https://tuleva.ee/wp-content/uploads/2026/10/TKF100-Pohiteave-kehtib-alates-29.10.2026.pdf',
+};
+
+export function tkfDocumentsBackend(
+  server: SetupServer,
+  fields: TkfDocumentFields | false | readonly [] | string = TKF_DOCUMENT_FIELDS,
+): void {
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res, ctx) => {
+      const asksForTheFundPageAsUrls =
+        req.url.searchParams.get('slug') === 'tuleva-taiendav-kogumisfond-dokumendid' &&
+        req.url.searchParams.get('acf_format') === 'standard';
+      if (!asksForTheFundPageAsUrls || req.headers.has('authorization')) {
+        return res(ctx.status(400));
+      }
+      return res(ctx.json([{ acf: fields }]));
+    }),
+  );
+}
+
+export function failingTkfDocumentsBackend(server: SetupServer): void {
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res, ctx) => res(ctx.status(500))),
+  );
+}
+
+export function unresponsiveTkfDocumentsBackend(server: SetupServer): void {
+  server.use(rest.get('https://tuleva.ee/wp-json/wp/v2/pages', () => new Promise<never>(() => {})));
+}
+
+export function unreachableTkfDocumentsBackend(server: SetupServer): void {
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res) =>
+      res.networkError('Failed to connect'),
+    ),
+  );
+}
+
+export function heldTkfDocumentsBackend(
+  server: SetupServer,
+  fields: TkfDocumentFields,
+): { arrived: Promise<void>; answer: () => void } {
+  let readArrived = () => {};
+  const arrived = new Promise<void>((resolve) => {
+    readArrived = resolve;
+  });
+  let answerTheHeldRead = () => {};
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', async (req, res, ctx) => {
+      await new Promise<void>((resolve) => {
+        answerTheHeldRead = resolve;
+        readArrived();
+      });
+      return res(ctx.json([{ acf: fields }]));
+    }),
+  );
+  return { arrived, answer: () => answerTheHeldRead() };
+}
+
+export function missingTkfDocumentsPageBackend(server: SetupServer): void {
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res, ctx) => res(ctx.json([]))),
+  );
+}
+
+export function nonListTkfDocumentsBackend(server: SetupServer): void {
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res, ctx) => res(ctx.json({}))),
+  );
+}
+
+export function unreadableTkfDocumentsBackend(server: SetupServer): void {
+  server.use(
+    rest.get('https://tuleva.ee/wp-json/wp/v2/pages', (req, res, ctx) =>
+      res(ctx.text('<html></html>')),
+    ),
+  );
 }
 
 const TEST_BACKENDS = {
@@ -1515,7 +1654,9 @@ const TEST_BACKENDS = {
   amlChecks: amlChecksBackend,
   pensionAccountStatement: pensionAccountStatementBackend,
   secondPillarAssets: secondPillarAssetsBackend,
-  funds: fundsBackend,
+  funds: (server: SetupServer) => fundsBackend(server),
+  secondPillarNavHistories: (server: SetupServer) => secondPillarNavHistoriesBackend(server),
+  worldMarketReturns: (server: SetupServer) => worldMarketReturnsBackend(server),
   returns: returnsBackend,
   userCapital: userCapitalBackend,
   applications: applicationsBackend,
@@ -1547,6 +1688,9 @@ const TEST_BACKENDS = {
   nudge: nudgeBackend,
   paymentRateRedirect: paymentRateRedirectBackend,
   recurringPaymentConfirmation: recurringPaymentConfirmationBackend,
+  thirdPillarPaymentReminder: thirdPillarPaymentReminderBackend,
+  myGifts: myGiftsBackend,
+  tkfDocuments: tkfDocumentsBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

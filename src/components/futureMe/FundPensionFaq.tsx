@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
+import { externalLink } from './ExternalLink';
 import { strong } from './richText';
 
 const FAQ_ITEMS = ['when', 'surplus', 'know', 'at60'];
@@ -16,8 +17,6 @@ const PAYOUTS_PAGE = 'https://tuleva.ee/pensioni-valjamaksed/';
 const PENSIONIKESKUS_TERM_PAGE =
   'https://www.pensionikeskus.ee/ii-sammas/valjamaksed/tahtajaline-pension/';
 const PENSIONIKESKUS_PAYOUTS_PAGE = 'https://www.pensionikeskus.ee/ii-sammas/valjamaksed/';
-
-const externalLink = (href: string) => (chunks: React.ReactNode) => <a href={href}>{chunks}</a>;
 
 const richText = {
   p: (chunks: React.ReactNode) => <p>{chunks}</p>,

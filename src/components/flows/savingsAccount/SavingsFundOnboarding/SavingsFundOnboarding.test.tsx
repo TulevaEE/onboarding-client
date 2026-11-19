@@ -13,6 +13,7 @@ import {
   savingsFundOnboardingSurveyBackend,
   savingsFundPersonOnboardingStatusBackend,
   switchRoleBackend,
+  TKF_DOCUMENT_FIELDS,
   userBackend,
   useTestBackends,
 } from '../../../../test/backend';
@@ -92,9 +93,9 @@ describe('SavingsFundOnboarding', () => {
     expect(
       screen.getByRole('heading', { name: 'Review the fund’s key information', level: 2 }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Terms/i })).toHaveAttribute(
+    expect(await screen.findByRole('link', { name: /^Terms/ })).toHaveAttribute(
       'href',
-      'https://tuleva.ee/wp-content/uploads/2026/08/TKF100-Tingimused-kehtivad-alates-18.09.2026.pdf',
+      TKF_DOCUMENT_FIELDS.terms_file,
     );
 
     savingsFundPersonOnboardingStatusBackend(server, 'COMPLETED');

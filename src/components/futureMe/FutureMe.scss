@@ -168,9 +168,7 @@
   }
 
   .chapter-head-text:focus {
-    outline: 3px solid $navy-blue;
-    outline-offset: 0.25rem;
-    border-radius: 0.25rem;
+    outline: none;
   }
 
   .chapter-art {
@@ -899,19 +897,6 @@
     margin: 2rem 0 0;
   }
 
-  .result-figure-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-
-    h3 {
-      margin: 0;
-    }
-  }
-
   .result-chart-table-toggle {
     margin-bottom: 1rem;
   }
@@ -919,6 +904,7 @@
   .result-nominal {
     display: flex;
     align-items: center;
+    margin-bottom: 0.75rem;
 
     .help-btn {
       margin: -12px 0 -12px -14px;
@@ -930,11 +916,6 @@
         font-size: 0.8125rem;
       }
     }
-  }
-
-  .result-nominal-note {
-    margin: 0 0 0.75rem;
-    font-size: 0.875rem;
   }
 
   .result-chart-summary {
@@ -1682,6 +1663,13 @@
       opacity: 0.8;
     }
 
+    .pot-bar-note {
+      margin: 0.75rem 0 0;
+      font-size: 0.75rem;
+      line-height: 1.3;
+      opacity: 0.8;
+    }
+
     @media (max-width: 575.98px) {
       bottom: 0.5rem;
       padding: 0.5rem 0.75rem;
@@ -1702,6 +1690,10 @@
 
       .line-icon {
         display: none;
+      }
+
+      .pot-bar-note {
+        margin-top: 0.5rem;
       }
     }
 
@@ -1897,4 +1889,10 @@ html:has(.future-me .pot-bar) {
   @media (max-width: 575.98px) {
     scroll-padding-bottom: 6rem;
   }
+}
+
+.external-link-icon {
+  width: 0.8em;
+  height: 0.8em;
+  vertical-align: -0.05em;
 }

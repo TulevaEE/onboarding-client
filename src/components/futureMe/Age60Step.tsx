@@ -1,7 +1,14 @@
 import React, { RefObject } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TranslationKey } from '../translations';
-import { Age60Answers, PAYOUT_CHOICE_EMOJI, PAYOUT_CHOICES, PillarsOpening } from './age60Answers';
+import {
+  Age60Answers,
+  PAYOUT_CHOICE_EMOJI,
+  PayoutChoice,
+  PillarsOpening,
+  ReducedPay,
+} from './age60Answers';
+import { Age60Workload } from './Age60Workload';
 import { FundPensionFaq } from './FundPensionFaq';
 import { ChapterHead } from './ChapterHead';
 import { FutureMeStep } from './steps';
@@ -40,6 +47,9 @@ interface Props {
   onEndAgeChange: (pillar: Pillar, endAge: string) => void;
   onEditYou: () => void;
   earlyPayouts: EarlyPayouts;
+  currentPay: Required<ReducedPay>;
+  payoutChoices: PayoutChoice[];
+  isWorkloadAsked: boolean;
 }
 
 export type EarlyPayouts = Record<Pillar, EarlyPayout | null> & { moneyUseAge: number };
@@ -47,6 +57,7 @@ export type EarlyPayouts = Record<Pillar, EarlyPayout | null> & { moneyUseAge: n
 interface PillarProps {
   pillar: Pillar;
   answers: Age60Answers;
+  payoutChoices: PayoutChoice[];
   birthYear: number;
   sex: Sex;
   hasPillar: boolean;
@@ -92,6 +103,7 @@ const EarlyPayoutNote = ({
 const PillarChoices = ({
   pillar,
   answers,
+  payoutChoices,
   birthYear,
   sex,
   contractStartAge,
@@ -135,7 +147,7 @@ const PillarChoices = ({
         </legend>
         {startedFundPension && <ChoiceMadeNote choice={startedFundPension} />}
         <div className="payout-choices">
-          {PAYOUT_CHOICES.map((choice) => (
+          {payoutChoices.map((choice) => (
             <ChoiceCard
               key={choice}
               idPrefix={`future-me-${pillar}`}
@@ -201,6 +213,9 @@ export const Age60Step = ({
   onEndAgeChange,
   onEditYou,
   earlyPayouts,
+  currentPay,
+  payoutChoices,
+  isWorkloadAsked,
 }: Props) => {
   const year = birthYear + age;
 
@@ -217,9 +232,19 @@ export const Age60Step = ({
       <p>
         <FormattedMessage id="futureMe.age60.intro" values={{ age, year }} />
       </p>
+      {isWorkloadAsked && (
+        <Age60Workload
+          answers={answers}
+          age={age}
+          currentPay={currentPay}
+          hasThirdPillar={hasThirdPillar}
+          onChange={onChange}
+        />
+      )}
       <PillarChoices
         pillar="secondPillar"
         answers={answers}
+        payoutChoices={payoutChoices}
         birthYear={birthYear}
         sex={sex}
         contractStartAge={contractStartAges.secondPillar}
@@ -242,6 +267,7 @@ export const Age60Step = ({
       <PillarChoices
         pillar="thirdPillar"
         answers={answers}
+        payoutChoices={payoutChoices}
         birthYear={birthYear}
         sex={sex}
         contractStartAge={contractStartAges.thirdPillar}

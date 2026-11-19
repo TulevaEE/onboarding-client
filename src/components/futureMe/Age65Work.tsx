@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { amountOf, isRescueAllowanceOnly, YouAnswers } from './youAnswers';
+import { isRescueAllowanceOnly, YouAnswers } from './youAnswers';
 import { Age65Answers, workAccrualMonthly, workUntilOf, workUntilOptions } from './age65Answers';
 import { decimalText, euro } from './amountFormat';
 import { retirementYears } from './engine/pension';
@@ -11,6 +11,7 @@ interface Props {
   answers: Age65Answers;
   you: YouAnswers;
   plan: StepPlanInput;
+  salary: number;
   onChange: (answers: Age65Answers) => void;
 }
 
@@ -19,11 +20,10 @@ const WORK_CHOICES = [
   { value: 'yes', emoji: '💼' },
 ] as const;
 
-export const Age65Work = ({ answers, you, plan, onChange }: Props) => {
+export const Age65Work = ({ answers, you, plan, salary, onChange }: Props) => {
   const intl = useIntl();
   const pensionAge = retirementYears(plan);
   const { birthYear } = plan;
-  const gross = amountOf(you.grossMonthly);
 
   return (
     <>
@@ -50,9 +50,9 @@ export const Age65Work = ({ answers, you, plan, onChange }: Props) => {
                   <FormattedMessage
                     id="futureMe.age65.work.accrual"
                     values={{
-                      hasSalary: gross > 0,
-                      gross: euro(gross),
-                      amount: decimalText(workAccrualMonthly(you)),
+                      hasSalary: salary > 0,
+                      gross: euro(salary),
+                      amount: decimalText(workAccrualMonthly(you, salary)),
                     }}
                   />
                 )

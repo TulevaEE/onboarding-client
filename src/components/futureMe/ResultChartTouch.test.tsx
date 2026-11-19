@@ -3,7 +3,7 @@ import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { IntlProvider } from 'react-intl';
 import { initialAge60 } from './age60Answers';
-import { Age65Answers, initialAge65 } from './age65Answers';
+import { Age65Answers } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses, needMonthly } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
@@ -11,6 +11,7 @@ import { ResultChart } from './ResultChart';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
 import translations from '../translations';
+import { age65Growing } from './resultContextFixture';
 
 const mockChart = jest.fn();
 jest.mock('react-chartjs-2', () => {
@@ -47,7 +48,7 @@ const contextWith = (age65: Partial<Age65Answers> = {}, pensionAge = '65'): Resu
     you,
     plan: toStepPlanInput(you),
     age60: initialAge60(),
-    age65: { ...initialAge65(), ...age65 },
+    age65: { ...age65Growing(), ...age65 },
     age66: initialAge66(),
     specialPension: initialSpecialPension(),
     expenses: initialExpenses(),
@@ -57,7 +58,11 @@ const contextWith = (age65: Partial<Age65Answers> = {}, pensionAge = '65'): Resu
 const renderChart = (context: ResultContext = contextWith()) =>
   render(
     <IntlProvider locale="et" messages={translations.et}>
-      <ResultChart result={resultOf(context)} need={needMonthly(context.expenses)} />
+      <ResultChart
+        result={resultOf(context)}
+        need={needMonthly(context.expenses)}
+        isNominal={false}
+      />
     </IntlProvider>,
   );
 

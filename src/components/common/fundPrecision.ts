@@ -1,6 +1,6 @@
 import { formatAmountForCount } from './utils';
 
-const TUK75_ISIN = 'EE3600109435';
+export const TUK75_ISIN = 'EE3600109435';
 const TUK00_ISIN = 'EE3600109443';
 const TUV100_ISIN = 'EE3600001707';
 const TKF100_ISIN = 'EE0000003283';

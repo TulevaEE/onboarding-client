@@ -1,5 +1,5 @@
 import { initialAge60 } from './age60Answers';
-import { Age65Answers, initialAge65 } from './age65Answers';
+import { Age65Answers } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
@@ -14,7 +14,7 @@ import { CURRENT_YEAR } from './engine/pension';
 import { nominalFactorAt, nominalResultOf } from './nominal';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
-import { contextWith as fixtureContextWith } from './resultContextFixture';
+import { contextWith as fixtureContextWith, age65Growing } from './resultContextFixture';
 
 const contextWith = (
   specialMonthly = '',
@@ -35,7 +35,7 @@ const contextWith = (
     you,
     plan: toStepPlanInput(you),
     age60: initialAge60(),
-    age65: { ...initialAge65(), ...age65 },
+    age65: { ...age65Growing(), ...age65 },
     age66: initialAge66(),
     specialPension: { ...initialSpecialPension(), monthly: specialMonthly },
     expenses: initialExpenses(),

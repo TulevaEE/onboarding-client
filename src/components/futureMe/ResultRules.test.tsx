@@ -8,7 +8,8 @@ import { User } from '../common/apiModels';
 import translations from '../translations';
 import { mockUser } from '../../test/backend-responses';
 import { ResultRules } from './ResultRules';
-import { ResultContext } from './resultAnswers';
+import { pricesOf } from './nominal';
+import { ResultContext, resultOf } from './resultAnswers';
 import { contextWith } from './resultContextFixture';
 import { initialSpecialPension } from './specialPensionAnswers';
 
@@ -105,7 +106,7 @@ describe('Result step: rules', () => {
 
   it('adds the fund pension contract rule once a pillar is chosen to be paid as a fund pension', () => {
     openResultStep();
-    const decisions = screen.getByRole('list', { name: 'Sinu otsused' });
+    const decisions = screen.getByRole('list', { name: 'Minu otsused' });
     const payoutAtSixty = within(decisions)
       .getAllByRole('listitem')
       .find((item) => within(item).queryByRole('heading', { name: /^II\ssammas 60-⁠aastaselt$/ }));
@@ -114,9 +115,9 @@ describe('Result step: rules', () => {
       within(payoutAtSixty as HTMLElement).getByRole('radio', { name: 'Võtan igakuiselt' }),
     );
 
-    const contract = itemTitled(ruleList(), /^Igakuiste väljamaksete leping/);
+    const contract = itemTitled(ruleList(), /^Igakuiste väljamaksete avaldus/);
     expect(contract).toHaveTextContent(
-      /II samba igakuiste väljamaksete leping: Uus leping igal aastal/,
+      /II samba igakuiste väljamaksete avaldus: Uus avaldus igal aastal/,
     );
   });
 });
@@ -125,7 +126,7 @@ describe('Result step: rules that follow from the answers', () => {
   const renderRules = (context: ResultContext) =>
     render(
       <IntlProvider locale="et" messages={translations.et}>
-        <ResultRules context={context} />
+        <ResultRules context={context} prices={pricesOf(resultOf(context), false)} />
       </IntlProvider>,
     );
 
@@ -166,7 +167,7 @@ describe('Result step: rules that follow from the answers', () => {
       renderRules(contextWith(grownChildren));
 
       const rule = itemTitled(ruleList(), /^Laste pensionilisa$/);
-      expect(within(rule).getByText(/^Sinu valik: \+\d+\s€\skuus$/)).toBeInTheDocument();
+      expect(within(rule).getByText(/^Minu valik: \+\d+\s€\skuus$/)).toBeInTheDocument();
       expect(rule).toHaveTextContent(/Eripensionile lisa ei lisata/);
     });
 

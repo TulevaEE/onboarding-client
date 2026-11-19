@@ -85,7 +85,7 @@ const queryChoiceGroup = (name: RegExp | string) => screen.queryByRole('group', 
 const choice = (group: HTMLElement, name: RegExp) => within(group).getByRole('radio', { name });
 
 const pensionAgeStep = /^66\sa/;
-const earlyRetirementStep = /^61\sa pension/;
+const earlyRetirementStep = /^61\+?\sa pension/;
 const AGE_65_GROUP = 'Eripension või vanaduspension?';
 const AGE_66_GROUP = /^Pensionieas uuesti/;
 

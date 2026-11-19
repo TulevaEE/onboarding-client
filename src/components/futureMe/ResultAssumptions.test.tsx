@@ -82,7 +82,7 @@ describe('Result step: assumptions', () => {
     openResultStep();
 
     expect(
-      screen.getByText(/Tootlust ja kulupaketti saad muuta siin, oma andmeid sammus „Sina“/),
+      screen.getByText(/Tootlust ja kulupaketti saad muuta siin, oma andmeid sammus „Mina“/),
     ).toBeVisible();
   });
 
@@ -93,7 +93,7 @@ describe('Result step: assumptions', () => {
       .getAllByRole('heading', { level: 4 })
       .map((heading) => heading.textContent?.replace(/\s/g, ' '));
     expect(titles).toEqual([
-      'Sinu andmed',
+      'Minu andmed',
       'II samba tootlus',
       'III samba tootlus',
       'Kulud pensionil',
@@ -103,9 +103,29 @@ describe('Result step: assumptions', () => {
   it('repeats what was typed about the person and the pillars', () => {
     openResultStep();
 
-    expect(itemTitled(assumptionList(), /^Sinu andmed$/)).toHaveTextContent(
+    expect(itemTitled(assumptionList(), /^Minu andmed$/)).toHaveTextContent(
       /Sündinud 1962, II\ssammas 10\s000\s€, III\ssammas 5\s000\s€/,
     );
+  });
+
+  it('repeats the lower salary and III pillar payment from the payout age', () => {
+    loggedInAs({ dateOfBirth: '1970-06-01' });
+    openResultStep();
+    userEvent.click(within(trail()).getByRole('button', { name: /^60\sa, vaatamata$/ }));
+    userEvent.click(
+      within(
+        screen.getByRole('group', { name: /^Kas vähendad 60-.aastaselt töökoormust\?$/ }),
+      ).getByRole('radio', { name: /Vähendan koormust/ }),
+    );
+    typeInto(screen.getByRole('spinbutton', { name: /^Uus brutopalk kuus/ }), '1200');
+    typeInto(screen.getByRole('spinbutton', { name: /^III\ssamba sissemakse kuus/ }), '20');
+    userEvent.click(within(trail()).getByRole('button', { name: /^Tulemus/ }));
+
+    expect(
+      within(assumptionList()).getByText(
+        /, alates 60-.aastaselt brutopalk 1\s200\s€ ja III\ssamba sissemakse 20\s€ kuus$/,
+      ),
+    ).toBeInTheDocument();
   });
 
   it('tells the return each pillar grows at before inflation', () => {

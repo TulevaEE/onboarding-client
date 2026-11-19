@@ -4,7 +4,11 @@ import { connect } from 'react-redux';
 
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
-import { selectExchangeSources, selectFutureContributionsFund } from '../../../exchange/actions';
+import {
+  forgetSignedMandate,
+  selectExchangeSources,
+  selectFutureContributionsFund,
+} from '../../../exchange/actions';
 import { ErrorMessage, Loader, Radio } from '../../../common';
 import TargetFundSelector from './targetFundSelector';
 import ExactFundSelector from './exactFundSelector';
@@ -69,6 +73,7 @@ export const SelectSources = ({
   sourceSelection,
   onSelectExchangeSources,
   onSelectFutureContributionsFund,
+  onForgetSignedMandate,
   error,
   nextPath,
   selectedFutureContributionsFundIsin,
@@ -84,6 +89,7 @@ export const SelectSources = ({
     targetFundIsin?: string,
   ) => void;
   onSelectFutureContributionsFund: (fundIsin: string | null) => void;
+  onForgetSignedMandate: () => void;
   error: ErrorResponse | null;
   nextPath: string;
   selectedFutureContributionsFundIsin: string;
@@ -99,6 +105,10 @@ export const SelectSources = ({
   const [someFutureSwitch, setSomeFutureSwitch] = useState(
     selectedFutureContributionsFundIsin != null,
   );
+
+  React.useEffect(() => {
+    onForgetSignedMandate();
+  }, [onForgetSignedMandate]);
 
   React.useEffect(() => {
     setSomeFutureSwitch(selectedFutureContributionsFundIsin != null);
@@ -211,6 +221,8 @@ export const SelectSources = ({
           ''
         )}
       </Radio>
+      {/* By law, both choices below must offer every mandatory pension fund, other managers' too:
+          KoPS § 15 lg 2 p 1 (future contributions) and § 25 lg 10 (transfers) */}
       <Radio
         name="tv-select-sources-type"
         id="tv-select-sources-type-some"
@@ -325,6 +337,7 @@ const mapDispatchToProps = (dispatch: Dispatch) =>
     {
       onSelectExchangeSources: selectExchangeSources,
       onSelectFutureContributionsFund: selectFutureContributionsFund,
+      onForgetSignedMandate: forgetSignedMandate,
     },
     dispatch,
   );

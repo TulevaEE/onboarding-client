@@ -97,7 +97,7 @@ interface KidsAnswers {
   kidsBirthMonths: string[];
   kidsIIMonths: string[];
   kidsDisabled: boolean[];
-  kidsEarlyUser: KidsUser;
+  kidsEarlyUser: KidsSupplementUser;
   kidsSupUser: KidsSupplementUser;
   kidsIIUser: KidsUser;
 }
@@ -330,13 +330,17 @@ const typedChildBirthYears = (answers: YouAnswers): string[] =>
     (answers.kidsBirthYears[index] ?? '').trim(),
   );
 
-const kidsEarlyInput = (earlyUser: KidsUser, hasDisabled: boolean, counted: number): KidsInput => ({
+const kidsEarlyInput = (
+  earlyUser: KidsSupplementUser,
+  hasDisabled: boolean,
+  counted: number,
+): KidsInput => ({
   b1991: counted,
   earlyUser,
   disabled: hasDisabled,
 });
 
-const kidsRetirement = (answers: YouAnswers, earlyUser: KidsUser) => {
+const kidsRetirement = (answers: YouAnswers, earlyUser: KidsSupplementUser) => {
   const typed = typedChildBirthYears(answers);
   const known = typed
     .map((year) => validChildBirthYear(year, answers))
@@ -400,6 +404,14 @@ const kidsRightFor = (answers: YouAnswers, earlyUser: YouAnswers['kidsEarlyUser'
 
 export const isKidsRightAvailableToSelf = (answers: YouAnswers): boolean =>
   kidsRightFor(answers, 'me') > 0;
+
+export const sharedKidsRightOf = (answers: YouAnswers): number => {
+  if (!answers.kidsAdded || answers.kidsEarlyUser !== 'split') {
+    return 0;
+  }
+  const { counted, hasDisabled } = kidsRetirement(answers, 'split');
+  return earlyYears({ kids: kidsEarlyInput('me', hasDisabled, counted) }) / 2;
+};
 
 export const rescueRightOf = (answers: YouAnswers): number =>
   answers.workAdded && answers.hasRescue

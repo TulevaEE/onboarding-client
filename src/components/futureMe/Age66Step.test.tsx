@@ -75,15 +75,15 @@ const startField = (pillar: 'II' | 'III') =>
   });
 const contractGroup = (pillar: 'II' | 'III') =>
   screen.getByRole('group', {
-    name: new RegExp(`^${pillar}\\ssamba igakuiste väljamaksete leping$`),
+    name: new RegExp(`^${pillar}\\ssamba igakuiste väljamaksete avaldus$`),
   });
 const queryContractGroup = (pillar: 'II' | 'III') =>
   screen.queryByRole('group', {
-    name: new RegExp(`^${pillar}\\ssamba igakuiste väljamaksete leping$`),
+    name: new RegExp(`^${pillar}\\ssamba igakuiste väljamaksete avaldus$`),
   });
 
 const setPayoutAtPensionAge = (pillar: 'II' | 'III', choice: string) => {
-  goTo(/^65\sa, vaatamata$/);
+  goTo(/^65\sa,/);
   userEvent.click(
     within(
       screen.getByRole('group', {
@@ -94,13 +94,19 @@ const setPayoutAtPensionAge = (pillar: 'II' | 'III', choice: string) => {
   goTo(/^\d+\+\sa/);
 };
 
+const openAge66StepGrowingBothPillars = () => {
+  openAge66Step();
+  setPayoutAtPensionAge('II', 'Kasvatan edasi');
+  setPayoutAtPensionAge('III', 'Kasvatan edasi');
+};
+
 describe('Age 66+ step', () => {
   it('explains why the monthly payout of a new contract every year falls in very old age', () => {
     openAge66Step();
     const question = screen
       .getAllByRole('group')
       .find((group) =>
-        /^Miks uue lepinguga kuu väljamakse kõrges eas väheneb\?/.test(group.textContent ?? ''),
+        /^Miks uue avaldusega kuu väljamakse kõrges eas väheneb\?/.test(group.textContent ?? ''),
       );
 
     expect(question).toHaveTextContent(/elada jäänud aeg/);
@@ -116,7 +122,7 @@ describe('Age 66+ step', () => {
   });
 
   it('replaces the placeholder with the fund pension start choices', () => {
-    openAge66Step();
+    openAge66StepGrowingBothPillars();
 
     expect(
       screen.getByRole('heading', { level: 2, name: 'Kas kogutud vara kestab?' }),
@@ -126,7 +132,7 @@ describe('Age 66+ step', () => {
 
   describe('when the pillars keep growing at the pension age', () => {
     it('asks from what age each pillar starts a fund pension, defaulting to not starting', () => {
-      openAge66Step();
+      openAge66StepGrowingBothPillars();
 
       [startField('II'), startField('III')].forEach((field) => {
         expect(field).toHaveDisplayValue('Ei hakka, kasvatan edasi');
@@ -136,11 +142,11 @@ describe('Age 66+ step', () => {
     });
 
     it('locks the contract of the second pillar and leads back to the pension age choice', () => {
-      openAge66Step();
+      openAge66StepGrowingBothPillars();
 
       expect(queryContractGroup('II')).not.toBeInTheDocument();
       expect(
-        screen.getByText(/Kasvatad edasi, nii et igakuiste väljamaksete lepingut pole/),
+        screen.getByText(/Kasvatad edasi, nii et igakuiste väljamaksete avaldust pole/),
       ).toBeVisible();
 
       userEvent.click(screen.getByRole('button', { name: /Muuda pensionieas/ }));
@@ -149,31 +155,31 @@ describe('Age 66+ step', () => {
     });
 
     it('asks for the contract once a start age is picked', () => {
-      openAge66Step();
+      openAge66StepGrowingBothPillars();
 
       userEvent.selectOptions(startField('II'), '70');
 
       expect(
         screen.getByRole('heading', {
           level: 2,
-          name: 'Igakuised väljamaksed algavad: mis lepinguga?',
+          name: 'Igakuised väljamaksed algavad: mis avaldusega?',
         }),
       ).toBeInTheDocument();
       const contracts = within(contractGroup('II')).getAllByRole('radio');
       expect(contracts).toHaveLength(2);
       expect(
-        within(contractGroup('II')).getByRole('radio', { name: /^Uus leping igal aastal/ }),
+        within(contractGroup('II')).getByRole('radio', { name: /^Uus avaldus igal aastal/ }),
       ).toBeChecked();
       expect(queryContractGroup('III')).not.toBeInTheDocument();
     });
 
     it('describes the yearly contract as a payout that lasts longer and shrinks, not one that never runs out', () => {
-      openAge66Step();
+      openAge66StepGrowingBothPillars();
 
       userEvent.selectOptions(startField('II'), '70');
 
       const yearly = within(contractGroup('II')).getByRole('radio', {
-        name: /^Uus leping igal aastal/,
+        name: /^Uus avaldus igal aastal/,
       });
       expect(yearly).toHaveAccessibleDescription(/jagub väljamakseid kauemaks/);
       expect(yearly).toHaveAccessibleDescription(/kuu väljamakse/);
@@ -181,35 +187,39 @@ describe('Age 66+ step', () => {
     });
 
     it('asks for the contract of each pillar separately', () => {
-      openAge66Step();
+      openAge66StepGrowingBothPillars();
 
       userEvent.selectOptions(startField('II'), '70');
       userEvent.selectOptions(startField('III'), '68');
-      userEvent.click(within(contractGroup('III')).getByRole('radio', { name: /^Üks leping/ }));
+      userEvent.click(within(contractGroup('III')).getByRole('radio', { name: /^Üks avaldus/ }));
 
-      expect(within(contractGroup('II')).getByRole('radio', { name: /^Uus leping/ })).toBeChecked();
       expect(
-        within(contractGroup('III')).getByRole('radio', { name: /^Üks leping/ }),
+        within(contractGroup('II')).getByRole('radio', { name: /^Uus avaldus/ }),
+      ).toBeChecked();
+      expect(
+        within(contractGroup('III')).getByRole('radio', { name: /^Üks avaldus/ }),
       ).toBeChecked();
     });
 
     it('keeps the picked start age and contract after leaving the step', () => {
-      openAge66Step();
+      openAge66StepGrowingBothPillars();
       userEvent.selectOptions(startField('II'), '70');
-      userEvent.click(within(contractGroup('II')).getByRole('radio', { name: /^Üks leping/ }));
+      userEvent.click(within(contractGroup('II')).getByRole('radio', { name: /^Üks avaldus/ }));
 
       userEvent.click(screen.getByRole('button', { name: /Edasi/ }));
       userEvent.click(screen.getByRole('button', { name: /Tagasi/ }));
 
       expect(startField('II')).toHaveDisplayValue('70-aastaselt (2032)');
-      expect(within(contractGroup('II')).getByRole('radio', { name: /^Üks leping/ })).toBeChecked();
+      expect(
+        within(contractGroup('II')).getByRole('radio', { name: /^Üks avaldus/ }),
+      ).toBeChecked();
     });
   });
 
   describe('when a fund pension starts at the pension age', () => {
     it('asks for the contract without asking when it starts', () => {
       openAge66Step();
-      setPayoutAtPensionAge('II', 'Võtan igakuiselt');
+      setPayoutAtPensionAge('III', 'Kasvatan edasi');
 
       expect(contractGroup('II')).toBeEnabled();
       expect(
@@ -232,7 +242,7 @@ describe('Age 66+ step', () => {
 
     expect(
       screen.getByText(
-        /II sambas ei ole kogutud midagi, igakuiste väljamaksete lepingut valida ei saa/,
+        /II sambas ei ole kogutud midagi, igakuiste väljamaksete avaldust valida ei saa/,
       ),
     ).toBeInTheDocument();
 
