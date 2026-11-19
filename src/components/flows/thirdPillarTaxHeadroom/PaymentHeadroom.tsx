@@ -97,6 +97,9 @@ export const PaymentHeadroom = ({ headroom, amount, onUseRemaining }: Props) => 
           onUseRemaining={onUseRemaining}
         />
       </p>
+      <p className="small text-body-secondary mt-2 mb-0">
+        <FormattedMessage id="thirdPillarPayment.taxHeadroom.disclaimer" />
+      </p>
     </div>
   );
 };

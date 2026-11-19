@@ -61,7 +61,11 @@ const RemainingHeadroom = ({ headroom, figures }: HeadroomProps) => (
     </p>
     <p className="lead text-body-secondary mb-0 text-pretty">
       <FormattedMessage
-        id="thirdPillarTaxHeadroom.result.refund"
+        id={
+          figures.limitIsEstimate
+            ? 'thirdPillarTaxHeadroom.result.refundEstimate'
+            : 'thirdPillarTaxHeadroom.result.refund'
+        }
         values={{
           refund: <Amount amount={figures.refund} className="text-body fw-medium" />,
         }}
@@ -213,6 +217,10 @@ export const TaxHeadroomResult = () => {
         correctionFailed={failed}
         yearlyIncomeInput={yearlyIncomeInput}
       />
+
+      <p className="small text-body-secondary mt-5 mb-0 text-pretty">
+        <FormattedMessage id="thirdPillarTaxHeadroom.disclaimer" />
+      </p>
     </div>
   );
 };

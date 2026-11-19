@@ -125,7 +125,8 @@ const amountInput = async () =>
 const recurringAmountInput = async () =>
   (await screen.findByLabelText('What is the recurring payment amount?')) as HTMLInputElement;
 
-const ESTIMATE_TITLE = /^This year it is worth putting about this much more into your III\spillar$/;
+const ESTIMATE_TITLE =
+  /^This year you can pay about this much more into your III\spillar with a tax win$/;
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());
@@ -145,10 +146,13 @@ describe('III pillar tax win headroom', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: /^How much is it worth putting into your III\spillar this year\?$/,
+        name: /^How much can you pay into your III\spillar with a tax win this year\?$/,
       }),
     ).toBeInTheDocument();
     expect(screen.getByText(/valid for 12 months/)).toBeInTheDocument();
+    expect(screen.getByText(/^Of these, we use only/)).toHaveTextContent(
+      /^Of these, we use only your salary, other payments, benefits, allowances and pensions\. We keep only the monthly totals and delete them within 30\sdays after the consent ends\.$/,
+    );
 
     userEvent.click(screen.getByRole('button', { name: 'Sign the consent' }));
 
@@ -158,7 +162,10 @@ describe('III pillar tax win headroom', () => {
     expect(history.location.pathname).toBe('/3rd-pillar-tax-headroom/result');
     expect(screen.getByText(/^1240\s€$/)).toBeVisible();
     expect(screen.getByText(/of income tax back on it next year/)).toHaveTextContent(
-      /^You get 272\s€ of income tax back on it next year\.$/,
+      /^You get about 272\s€ of income tax back on it next year\.$/,
+    );
+    expect(screen.getByText(/This is not tax advice\.$/)).toHaveTextContent(
+      /^This is an estimate based on the Tax and Customs Board's data, the income you entered and this year's payments into your III\spillar funds\. It does not include your employer's future payments or payments into an insurance policy\. The amounts may change, and your actual tax refund is settled in your tax return\. This is not tax advice\.$/,
     );
   });
 
@@ -258,11 +265,14 @@ describe('III pillar tax win headroom', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: /^This year it is worth putting this much more into your III\spillar$/,
+        name: /^This year you can pay this much more into your III\spillar with a tax win$/,
       }),
     ).toBeInTheDocument();
     expect(screen.getByText(/Your limit/)).toHaveTextContent(/^Your limit 6000\s€$/);
     expect(screen.getByText(/^4000\s€$/)).toBeVisible();
+    expect(screen.getByText(/of income tax back on it next year/)).toHaveTextContent(
+      /^You get 880\s€ of income tax back on it next year\.$/,
+    );
     expect(screen.queryByText(/For the remaining months/)).not.toBeInTheDocument();
   });
 
@@ -375,7 +385,7 @@ describe('III pillar tax win headroom', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: /^This year it is worth putting about this much more into your III\spillar$/,
+        name: /^This year you can pay about this much more into your III\spillar with a tax win$/,
       }),
     ).toBeInTheDocument();
     expect(screen.queryByText(/We assumed/)).not.toBeInTheDocument();
@@ -448,7 +458,7 @@ describe('III pillar tax win headroom', () => {
 
     expect(
       await screen.findByRole('heading', {
-        name: /^If you earn as much as last year, it is worth putting about this much into your III\spillar this year$/,
+        name: /^If you earn as much as last year, you can pay about this much into your III\spillar with a tax win this year$/,
       }),
     ).toBeInTheDocument();
     expect(screen.getAllByText(/^4500\s€$/)[0]).toBeVisible();
@@ -538,7 +548,7 @@ describe('III pillar payment with a known tax win headroom', () => {
 
     expect(
       await screen.findByRole('link', {
-        name: /^How much is it worth putting into my III\spillar this year\?$/,
+        name: /^How much can I pay into my III\spillar with a tax win this year\?$/,
       }),
     ).toHaveAttribute('href', '/3rd-pillar-tax-headroom');
   });
@@ -551,6 +561,9 @@ describe('III pillar payment with a known tax win headroom', () => {
     expect(await screen.findByText(/in with a tax win\./)).toHaveTextContent(
       /^This year you can still put about 1240\s€ in with a tax win\./,
     );
+    expect(
+      screen.getByText('The amount is an estimate and may change. This is not tax advice.'),
+    ).toBeVisible();
 
     const input = await amountInput();
     userEvent.clear(input);
@@ -601,10 +614,10 @@ describe('account page with a known tax win headroom', () => {
 
     expect(
       await screen.findByRole('link', {
-        name: /^How much is it worth putting into my III\spillar this year\?$/,
+        name: /^How much can I pay into my III\spillar with a tax win this year\?$/,
       }),
     ).toHaveAttribute('href', '/3rd-pillar-tax-headroom');
-    expect(screen.queryByText(/with a tax win/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/in with a tax win/)).not.toBeInTheDocument();
   });
 
   test('keeps the link to the calculation under the III pillar funds once the tax data is known', async () => {
@@ -614,7 +627,7 @@ describe('account page with a known tax win headroom', () => {
 
     expect(
       await screen.findByRole('link', {
-        name: /^How much is it worth putting into my III\spillar this year\?$/,
+        name: /^How much can I pay into my III\spillar with a tax win this year\?$/,
       }),
     ).toHaveAttribute('href', '/3rd-pillar-tax-headroom');
   });
@@ -624,7 +637,7 @@ describe('account page with a known tax win headroom', () => {
 
     expect(
       await screen.findByRole('link', {
-        name: /^How much is it worth putting into my III\spillar this year\?$/,
+        name: /^How much can I pay into my III\spillar with a tax win this year\?$/,
       }),
     ).toHaveAttribute('href', '/3rd-pillar-tax-headroom');
   });

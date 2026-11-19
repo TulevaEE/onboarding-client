@@ -48,6 +48,9 @@ const RequestedTaxData = () => (
     <p className="text-body-secondary mt-3 mb-0">
       <FormattedMessage id="thirdPillarTaxHeadroom.consent.data.period" />
     </p>
+    <p className="text-body-secondary mt-2 mb-0">
+      <FormattedMessage id="thirdPillarTaxHeadroom.consent.data.use" />
+    </p>
   </div>
 );
 
