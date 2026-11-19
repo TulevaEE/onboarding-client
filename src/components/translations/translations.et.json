@@ -3583,7 +3583,7 @@
   "thirdPillarTaxHeadroom.breakdown.yearlyIncome.recentMonthsNote": "Ülejäänud kuud arvestasime viimaste kuude põhjal.",
   "thirdPillarTaxHeadroom.breakdown.yearlyIncome.lastYearNote": "Arvestasime mullu teenitud tulu põhjal.",
   "thirdPillarTaxHeadroom.breakdown.yearlyIncome.noDataNote": "Sisesta, kui palju sa sel aastal kokku teenida loodad.",
-  "thirdPillarTaxHeadroom.breakdown.yearlyIncome.otherIncome": "Liida juurde ka preemiad, dividendid, üüritulu, intressid ja tulu vara müügist.",
+  "thirdPillarTaxHeadroom.breakdown.yearlyIncome.otherIncome": "Liida juurde ka preemiad ja tulu, mille deklareerid selle aasta tuludeklaratsioonis, näiteks dividendid, üüritulu, intressid ja tulu vara müügist.",
   "thirdPillarTaxHeadroom.breakdown.yearlyIncome.thisYear": "Arvesse läheb tulu, mis jõuab sinu kontole sel aastal: kui detsembripalk laekub jaanuaris, läheb see järgmise aasta arvestusse.",
   "thirdPillarTaxHeadroom.breakdown.byMonth": "Kuude kaupa"
 }

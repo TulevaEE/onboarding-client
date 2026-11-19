@@ -3493,7 +3493,7 @@
   "thirdPillarTaxHeadroom.breakdown.yearlyIncome.recentMonthsNote": "We estimated the remaining months from recent months.",
   "thirdPillarTaxHeadroom.breakdown.yearlyIncome.lastYearNote": "We estimated it from last year's income.",
   "thirdPillarTaxHeadroom.breakdown.yearlyIncome.noDataNote": "Enter how much you expect to earn this year in total.",
-  "thirdPillarTaxHeadroom.breakdown.yearlyIncome.otherIncome": "Add bonuses, dividends, rental income, interest and gains from selling property too.",
+  "thirdPillarTaxHeadroom.breakdown.yearlyIncome.otherIncome": "Add bonuses too, and income you will declare in this year's tax return, such as dividends, rental income, interest and gains from selling property.",
   "thirdPillarTaxHeadroom.breakdown.yearlyIncome.thisYear": "Only income that reaches your account this year counts: a December salary paid in January counts towards next year.",
   "thirdPillarTaxHeadroom.breakdown.byMonth": "By month"
 }

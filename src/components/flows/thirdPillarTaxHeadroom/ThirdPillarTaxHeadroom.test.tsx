@@ -214,7 +214,7 @@ describe('III pillar tax win headroom', () => {
     ).toBeInTheDocument();
     expect(within(breakdown).getByLabelText('Income this year')).toHaveValue('30000');
     expect(within(breakdown).getByText(/^We estimated the remaining months/)).toHaveTextContent(
-      /^We estimated the remaining months from recent months\. Add bonuses, dividends, rental income, interest and gains from selling property too\. Only income that reaches your account this year counts: a December salary paid in January counts towards next year\.$/,
+      /^We estimated the remaining months from recent months\. Add bonuses too, and income you will declare in this year's tax return, such as dividends, rental income, interest and gains from selling property\. Only income that reaches your account this year counts: a December salary paid in January counts towards next year\.$/,
     );
     expect(within(breakdown).queryByLabelText('Expected income November')).not.toBeInTheDocument();
     openMonths();
@@ -303,7 +303,7 @@ describe('III pillar tax win headroom', () => {
     expect(yearlyIncomes()).toEqual([33000]);
     expect(screen.getByText(/Your limit/)).toHaveTextContent(/^Your limit ~4950\s€$/);
     expect(screen.queryByText(/For the remaining months/)).not.toBeInTheDocument();
-    expect(screen.getByText(/^Add bonuses, dividends/)).toBeVisible();
+    expect(screen.getByText(/^Add bonuses too, and income you will declare in this year's tax return/)).toBeVisible();
     expect(screen.queryByText(/^We estimated the remaining months/)).not.toBeInTheDocument();
     openMonths();
     expect(screen.getByLabelText('Expected income November')).toHaveValue('4000');
