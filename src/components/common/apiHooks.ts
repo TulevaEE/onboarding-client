@@ -24,6 +24,7 @@ import {
   createSavingsFundPaymentCancellation,
   deleteMemberCapitalListing,
   getCapitalEvents,
+  getThirdPillarTaxHeadroom,
   getCapitalRowsWithToken,
   getCapitalTotal,
   getCapitalTransferContract,
@@ -68,6 +69,7 @@ import {
   previewMessageForMemberCapitalListing,
   updateCapitalTransferContract,
 } from './api';
+import { ThirdPillarTaxHeadroom } from './apiModels/taxHeadroom';
 import {
   Application,
   CancellationMandate,
@@ -599,5 +601,15 @@ export function useSubmitHackathonIdea(): UseMutationResult<
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['hackathonIdeas'] });
     },
+  });
+}
+
+export const THIRD_PILLAR_TAX_HEADROOM_QUERY_KEY = ['thirdPillarTaxHeadroom'];
+
+export function useThirdPillarTaxHeadroom(): UseQueryResult<ThirdPillarTaxHeadroom | null> {
+  return useQuery({
+    queryKey: THIRD_PILLAR_TAX_HEADROOM_QUERY_KEY,
+    queryFn: getThirdPillarTaxHeadroom,
+    retry: false,
   });
 }

@@ -62,6 +62,8 @@ import {
 import { SecondPillarPaymentRateSuccess } from '../flows/secondPillarPaymentRate/SecondPillarPaymentRateSuccess';
 import BackToPartner from '../flows/partner/BackToPartner';
 import ThirdPillarPaymentPage from '../flows/thirdPillar/ThirdPillarPayment/ThirdPillarPaymentPage';
+import { TaxDataConsent } from '../flows/thirdPillarTaxHeadroom/TaxDataConsent';
+import { TaxHeadroomResult } from '../flows/thirdPillarTaxHeadroom/TaxHeadroomResult';
 import { RecurringPaymentConfirmation } from '../flows/thirdPillar/ThirdPillarPayment/RecurringPaymentConfirmation';
 import { RecurringPaymentSuccess } from '../flows/thirdPillar/ThirdPillarPayment/RecurringPaymentSuccess';
 import { ThirdPillarStandingOrderPage } from '../flows/thirdPillar/ThirdPillarStandingOrder/ThirdPillarStandingOrderPage';
@@ -281,6 +283,8 @@ export class LoggedInApp extends PureComponent {
               component={RecurringPaymentConfirmation}
             />
             <Route path="/3rd-pillar-payment" component={ThirdPillarPaymentPage} />
+            <Route exact path="/3rd-pillar-tax-headroom" component={TaxDataConsent} />
+            <Route path="/3rd-pillar-tax-headroom/result" component={TaxHeadroomResult} />
             {/* Coop Pank hardcodes this address as its return after a standing order: never change it */}
             <Route path="/3rd-pillar-recurring-success" component={RecurringPaymentSuccess} />
             <Route path="/3rd-pillar-recurring-payment" component={ThirdPillarStandingOrderPage} />

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import StatusBoxRow from '../statusBoxRow';
 import { Application, Conversion, SourceFund } from '../../../common/apiModels';
 import { State } from '../../../../types';
-import ThirdPillarPaymentsAmount from './ThirdPillarContributionAmount';
+import { ThirdPillarYearLine } from './ThirdPillarYearLine';
 import {
   useFundPensionStatus,
   useMandateDeadlines,
@@ -57,7 +57,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[
           <FormattedMessage id="account.status.choice.pillar.third.paymentsNoSelection.label" />,
-          <ThirdPillarPaymentsAmount />,
+          <ThirdPillarYearLine />,
         ]}
       >
         <Link to="/3rd-pillar-flow" className="btn btn-primary">
@@ -165,7 +165,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
                 <FormattedMessage id="account.status.choice.highFee.description" />
               </InfoTooltip>
             </>,
-            <ThirdPillarPaymentsAmount />,
+            <ThirdPillarYearLine />,
           ]}
         >
           <Link to="/3rd-pillar-flow" className="btn btn-primary">
@@ -186,7 +186,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
               <FormattedMessage id="account.status.choice.lowFee.description" />
             </InfoTooltip>
           </>,
-          <ThirdPillarPaymentsAmount />,
+          <ThirdPillarYearLine />,
         ]}
       >
         <Link to="/3rd-pillar-flow" className="btn btn-outline-primary">
@@ -205,7 +205,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
         name={<FormattedMessage id="account.status.choice.pillar.third" />}
         lines={[
           <FormattedMessage id="account.status.choice.pillar.third.transferIncomplete.label" />,
-          <ThirdPillarPaymentsAmount />,
+          <ThirdPillarYearLine />,
         ]}
       >
         <Link to="/3rd-pillar-payment" className="btn btn-primary">
@@ -228,7 +228,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
               <FormattedMessage id="account.status.choice.pillar.third.paymentInfo" />
             </InfoTooltip>
           </>,
-          <ThirdPillarPaymentsAmount />,
+          <ThirdPillarYearLine />,
         ]}
       >
         <Link to="/3rd-pillar-payment" className="btn btn-primary">
@@ -251,7 +251,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
               <FormattedMessage id="account.status.choice.pillar.third.paymentInfo" />
             </InfoTooltip>
           </>,
-          <ThirdPillarPaymentsAmount />,
+          <ThirdPillarYearLine />,
         ]}
       >
         <Link to="/3rd-pillar-payment" className="btn btn-primary">
@@ -275,7 +275,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
               b: (chunks: string) => <b className="highlight text-nowrap">{chunks}</b>,
             }}
           />,
-          <ThirdPillarPaymentsAmount />,
+          <ThirdPillarYearLine />,
         ]}
       >
         <Link to="/3rd-pillar-payment" className="btn btn-primary">
@@ -292,7 +292,7 @@ export const ThirdPillarStatusBox: React.FunctionComponent<Props> = ({
       name={<FormattedMessage id="account.status.choice.pillar.third" />}
       lines={[
         <FormattedMessage id="account.status.choice.lowFee.index.label" />,
-        <ThirdPillarPaymentsAmount />,
+        <ThirdPillarYearLine />,
       ]}
     >
       <Link

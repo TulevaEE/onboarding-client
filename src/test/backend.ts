@@ -80,6 +80,10 @@ import {
 import { KycIdentity } from '../components/flows/savingsAccount/SavingsFundOnboarding/types.api';
 import { NudgeDecision, PaymentRateRedirect } from '../components/common/apiModels/nudge';
 import { ConnectedApp } from '../components/security/connectedApps/connectedApps.api';
+import {
+  TaxDataConsentStatus,
+  ThirdPillarTaxHeadroom,
+} from '../components/common/apiModels/taxHeadroom';
 
 export function cancellationBackend(server: SetupServerApi): {
   cancellationCreated: boolean;
@@ -1557,6 +1561,73 @@ export function myGiftsBackend(server: SetupServerApi, gifts: ReceivedGift[] = [
   );
 }
 
+export function thirdPillarTaxHeadroomBackend(
+  server: SetupServerApi,
+  headroom: ThirdPillarTaxHeadroom | null = null,
+): void {
+  server.use(
+    rest.get('http://localhost/v1/third-pillar/tax-headroom', (req, res, ctx) =>
+      headroom ? res(ctx.json(headroom)) : res(ctx.status(204)),
+    ),
+  );
+}
+
+export function taxDataConsentBackend(
+  server: SetupServerApi,
+  headroomOnceApproved: ThirdPillarTaxHeadroom,
+  consentStatus: TaxDataConsentStatus = 'AWAITING_SIGNATURE',
+): { consentApproved: () => boolean } {
+  let consentApproved = false;
+  server.use(
+    rest.post('http://localhost/v1/tax-data-consents', (req, res, ctx) => {
+      consentApproved = consentStatus === 'APPROVED';
+      return res(ctx.json({ id: 1, status: consentStatus }));
+    }),
+    rest.get('http://localhost/v1/tax-data-consents/1/document', (req, res, ctx) =>
+      res(ctx.set('Content-Type', 'application/pdf'), ctx.body('%PDF')),
+    ),
+    rest.get('http://localhost/v1/third-pillar/tax-headroom', (req, res, ctx) =>
+      consentApproved ? res(ctx.json(headroomOnceApproved)) : res(ctx.status(204)),
+    ),
+  );
+  if (consentStatus === 'APPROVED') {
+    return { consentApproved: () => consentApproved };
+  }
+  server.use(
+    rest.put('http://localhost/v1/tax-data-consents/1/signature/smart-id', (req, res, ctx) =>
+      res(ctx.json(getMobileSignatureResponse())),
+    ),
+    rest.get(
+      'http://localhost/v1/tax-data-consents/1/signature/smart-id/status',
+      (req, res, ctx) => {
+        consentApproved = true;
+        return res(ctx.json(getMobileSignatureStatusResponse('SIGNATURE')));
+      },
+    ),
+  );
+  return { consentApproved: () => consentApproved };
+}
+
+export function expectedIncomeCorrectionBackend(
+  server: SetupServerApi,
+  correctedHeadroom: ThirdPillarTaxHeadroom,
+): () => { month: string; amount: number }[] {
+  const corrections: { month: string; amount: number }[] = [];
+  server.use(
+    rest.put(
+      'http://localhost/v1/third-pillar/tax-headroom/expected-income/:month',
+      (req, res, ctx) => {
+        corrections.push({
+          month: String(req.params.month),
+          amount: (req.body as { amount: number }).amount,
+        });
+        return res(ctx.json(correctedHeadroom));
+      },
+    ),
+  );
+  return () => corrections;
+}
+
 export function trackedEventsBackend(server: SetupServerApi): void {
   server.use(rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))));
 }
@@ -1699,6 +1770,7 @@ const TEST_BACKENDS = {
   thirdPillarPaymentReminder: thirdPillarPaymentReminderBackend,
   myGifts: myGiftsBackend,
   tkfDocuments: tkfDocumentsBackend,
+  thirdPillarTaxHeadroom: thirdPillarTaxHeadroomBackend,
 } as const;
 
 export type TestBackendName = keyof typeof TEST_BACKENDS;

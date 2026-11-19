@@ -56,6 +56,7 @@ import {
   HackathonRegistrationCommand,
 } from './apiModels/hackathon';
 import { NudgeContext, NudgeDecision, PaymentRateRedirect } from './apiModels/nudge';
+import { TaxDataConsent, ThirdPillarTaxHeadroom } from './apiModels/taxHeadroom';
 import {
   deleteRequest,
   deleteWithAuthentication,
@@ -456,6 +457,10 @@ const getSigningBaseUrl = (entityId: string, type: SignableEntity) => {
 
   if (type === 'INSURANCE_TRANSFER_FORM') {
     return `/v1/insurance-transfer-forms/${entityId}/signature`;
+  }
+
+  if (type === 'TAX_DATA_CONSENT') {
+    return `/v1/tax-data-consents/${entityId}/signature`;
   }
 
   return `/v1/mandates/${entityId}/signature`;
@@ -875,4 +880,29 @@ export function getHackathonIdeas(): Promise<HackathonIdeas> {
 
 export function submitHackathonIdea(command: HackathonIdeaCommand): Promise<HackathonIdea> {
   return postWithAuthentication(getEndpoint('/v1/hackathon-ideas'), command);
+}
+
+export async function getThirdPillarTaxHeadroom(): Promise<ThirdPillarTaxHeadroom | null> {
+  const headroom = await getWithAuthentication<ThirdPillarTaxHeadroom | ''>(
+    getEndpoint('/v1/third-pillar/tax-headroom'),
+  );
+  return headroom || null;
+}
+
+export async function createTaxDataConsent(): Promise<TaxDataConsent> {
+  return postWithAuthentication<TaxDataConsent>(getEndpoint('/v1/tax-data-consents'));
+}
+
+export function downloadTaxDataConsentDocument(id: number): Promise<Blob> {
+  return downloadFileWithAuthentication(getEndpoint(`/v1/tax-data-consents/${id}/document`));
+}
+
+export function correctExpectedIncome(
+  month: string,
+  amount: number,
+): Promise<ThirdPillarTaxHeadroom> {
+  return putWithAuthentication<ThirdPillarTaxHeadroom>(
+    getEndpoint(`/v1/third-pillar/tax-headroom/expected-income/${month}`),
+    { amount },
+  );
 }
