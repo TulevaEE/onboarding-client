@@ -9,6 +9,7 @@ import styles from './HeadroomMeter.module.scss';
 type Props = {
   headroom: ThirdPillarTaxHeadroom;
   planned?: number;
+  size?: 'regular' | 'small';
   className?: string;
 };
 
@@ -27,7 +28,12 @@ const useFillsAfterFirstPaint = () => {
   return filled;
 };
 
-export const HeadroomMeter = ({ headroom, planned = 0, className = '' }: Props) => {
+export const HeadroomMeter = ({
+  headroom,
+  planned = 0,
+  size = 'regular',
+  className = '',
+}: Props) => {
   const { paid } = headroom;
   const { limit, limitIsEstimate } = headroomFiguresOf(headroom);
   const { formatMessage } = useIntl();
@@ -55,7 +61,7 @@ export const HeadroomMeter = ({ headroom, planned = 0, className = '' }: Props) 
   ];
 
   return (
-    <div className={`${styles.meter} ${className}`}>
+    <div className={`${styles.meter} ${size === 'small' ? styles.small : ''} ${className}`}>
       <div className={`progress-stacked ${styles.bar}`}>
         {segments
           .filter(({ amount }) => amount > 0)

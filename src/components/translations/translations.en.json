@@ -3473,7 +3473,7 @@
   "thirdPillarTaxHeadroom.result.noTaxWin.title": "Your income this year gives no III pillar tax win",
   "thirdPillarTaxHeadroom.result.noTaxWin.body": "You only get a tax win if you have paid income tax.",
   "thirdPillarTaxHeadroom.result.noData.title": "We found no income for you this year or last year",
-  "thirdPillarTaxHeadroom.result.noData.body": "Enter below how much you expect to earn each month.",
+  "thirdPillarTaxHeadroom.result.noData.body": "Enter below how much you expect to earn this year in total.",
   "thirdPillarTaxHeadroom.meter.paid": "Paid",
   "thirdPillarTaxHeadroom.meter.planned": "This payment",
   "thirdPillarTaxHeadroom.meter.aboveLimit": "Above the limit",
@@ -3487,9 +3487,13 @@
   "thirdPillarTaxHeadroom.breakdown.limit.note": "15% of the year's gross income, up to 6000 €",
   "thirdPillarTaxHeadroom.breakdown.paid": "Paid into III pillar this year",
   "thirdPillarTaxHeadroom.breakdown.remaining": "You can still put in",
-  "thirdPillarTaxHeadroom.breakdown.expectedIncome.lastYearNote": "Based on last year's income, month by month",
   "thirdPillarTaxHeadroom.breakdown.expectedIncome": "Expected income",
-  "thirdPillarTaxHeadroom.breakdown.expectedIncome.recentMonthsNote": "Based on recent months. Add bonuses and other income.",
-  "thirdPillarTaxHeadroom.breakdown.expectedIncome.noDataNote": "What you expect to earn each month",
-  "thirdPillarTaxHeadroom.breakdown.saveFailed": "We could not save the change. Please try again."
+  "thirdPillarTaxHeadroom.breakdown.saveFailed": "We could not save the change. Please try again.",
+  "thirdPillarTaxHeadroom.breakdown.yearlyIncome": "Income this year",
+  "thirdPillarTaxHeadroom.breakdown.yearlyIncome.recentMonthsNote": "We estimated the remaining months from recent months.",
+  "thirdPillarTaxHeadroom.breakdown.yearlyIncome.lastYearNote": "We estimated it from last year's income.",
+  "thirdPillarTaxHeadroom.breakdown.yearlyIncome.noDataNote": "Enter how much you expect to earn this year in total.",
+  "thirdPillarTaxHeadroom.breakdown.yearlyIncome.otherIncome": "Add bonuses, dividends, rental income, interest and gains from selling property too.",
+  "thirdPillarTaxHeadroom.breakdown.yearlyIncome.thisYear": "Only income that reaches your account this year counts: a December salary paid in January counts towards next year.",
+  "thirdPillarTaxHeadroom.breakdown.byMonth": "By month"
 }

@@ -1628,6 +1628,20 @@ export function expectedIncomeCorrectionBackend(
   return () => corrections;
 }
 
+export function yearlyIncomeBackend(
+  server: SetupServerApi,
+  recalculatedHeadroom: ThirdPillarTaxHeadroom,
+): () => number[] {
+  const yearlyIncomes: number[] = [];
+  server.use(
+    rest.put('http://localhost/v1/third-pillar/tax-headroom/yearly-income', (req, res, ctx) => {
+      yearlyIncomes.push((req.body as { amount: number }).amount);
+      return res(ctx.json(recalculatedHeadroom));
+    }),
+  );
+  return () => yearlyIncomes;
+}
+
 export function trackedEventsBackend(server: SetupServerApi): void {
   server.use(rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))));
 }

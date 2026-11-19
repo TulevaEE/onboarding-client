@@ -43,7 +43,7 @@ const nothingRemainingMessageOf = ({ headroom, figures }: HeadroomProps): Messag
 };
 
 const titleIdOf = ({ headroom, figures }: HeadroomProps): TranslationKey => {
-  if (headroom.expectedIncomeBasis === 'LAST_YEAR') {
+  if (headroom.expectedIncomeBasis === 'LAST_YEAR' && !figures.expectedIncomeIsOwn) {
     return 'thirdPillarTaxHeadroom.result.lastYearTitle';
   }
   return figures.limitIsEstimate
@@ -158,8 +158,8 @@ export const TaxHeadroomResult = () => {
   usePageTitle('pageTitle.thirdPillarTaxHeadroom');
   const { data: headroom, isLoading } = useThirdPillarTaxHeadroom();
   const [breakdownOpen, setBreakdownOpen] = useState<boolean | null>(null);
-  const expectedIncomeInput = useRef<HTMLInputElement>(null);
-  const { correct, saving, failed } = useExpectedIncomeCorrection();
+  const yearlyIncomeInput = useRef<HTMLInputElement>(null);
+  const { correctMonth, correctYear, saving, failed } = useExpectedIncomeCorrection();
 
   if (isLoading) {
     return <Loader className="align-middle" />;
@@ -173,7 +173,7 @@ export const TaxHeadroomResult = () => {
 
   const changeExpectedIncome = () => {
     setBreakdownOpen(true);
-    window.requestAnimationFrame(() => expectedIncomeInput.current?.focus());
+    window.requestAnimationFrame(() => yearlyIncomeInput.current?.focus());
   };
 
   return (
@@ -185,9 +185,15 @@ export const TaxHeadroomResult = () => {
       )}
 
       {!figures.hasNoTaxWin && <HeadroomMeter className="mt-5" headroom={headroom} />}
-      {figures.limitIsEstimate && headroom.expectedIncomeBasis !== 'NO_DATA' && (
-        <GuessedIncomeNote headroom={headroom} figures={figures} onChange={changeExpectedIncome} />
-      )}
+      {figures.limitIsEstimate &&
+        headroom.expectedIncomeBasis !== 'NO_DATA' &&
+        !figures.expectedIncomeIsOwn && (
+          <GuessedIncomeNote
+            headroom={headroom}
+            figures={figures}
+            onChange={changeExpectedIncome}
+          />
+        )}
 
       <div className="mt-5 d-flex flex-column-reverse flex-sm-row justify-content-sm-between align-items-sm-center gap-2">
         <Link to="/account" className="btn btn-light">
@@ -202,9 +208,10 @@ export const TaxHeadroomResult = () => {
         figures={figures}
         open={breakdownOpen ?? headroom.expectedIncomeBasis === 'NO_DATA'}
         onToggle={setBreakdownOpen}
-        onCorrect={correct}
+        onCorrectMonth={correctMonth}
+        onCorrectYear={correctYear}
         correctionFailed={failed}
-        expectedIncomeInput={expectedIncomeInput}
+        yearlyIncomeInput={yearlyIncomeInput}
       />
     </div>
   );

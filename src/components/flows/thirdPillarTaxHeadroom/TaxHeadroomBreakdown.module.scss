@@ -39,6 +39,27 @@
   }
 }
 
-.expectedIncome {
+.amount {
   width: 9.5rem;
+}
+
+.byMonth {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 44px;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.125em;
+  }
+
+  svg {
+    transition: transform 0.2s ease-out;
+  }
+
+  &[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+  }
 }

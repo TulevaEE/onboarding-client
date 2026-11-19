@@ -5,18 +5,25 @@
   --headroom-planned: #{$blue};
   --headroom-track: var(--blue-border-1);
   --headroom-above-limit: #9aa4ae;
+  --headroom-height: 1.75rem;
+  --headroom-radius: 0.5rem;
   position: relative;
 }
 
+.small {
+  --headroom-height: 0.75rem;
+  --headroom-radius: 0.375rem;
+}
+
 .bar {
-  --bs-progress-height: 1.75rem;
+  --bs-progress-height: var(--headroom-height);
   --bs-progress-bg: var(--headroom-track);
-  --bs-progress-border-radius: 0.5rem;
+  --bs-progress-border-radius: var(--headroom-radius);
   background-color: var(--headroom-track);
 }
 
 .segment {
-  --bs-progress-height: 1.75rem;
+  --bs-progress-height: var(--headroom-height);
   transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
   background-color: transparent;
 
@@ -48,7 +55,7 @@
 .limitMark {
   position: absolute;
   top: -0.375rem;
-  height: 2.5rem;
+  height: calc(var(--headroom-height) + 0.75rem);
   width: 2px;
   margin-left: -1px;
   background-color: $text-primary;

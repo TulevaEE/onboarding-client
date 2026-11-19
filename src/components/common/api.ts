@@ -897,6 +897,13 @@ export function downloadTaxDataConsentDocument(id: number): Promise<Blob> {
   return downloadFileWithAuthentication(getEndpoint(`/v1/tax-data-consents/${id}/document`));
 }
 
+export function expectYearlyIncome(amount: number): Promise<ThirdPillarTaxHeadroom> {
+  return putWithAuthentication<ThirdPillarTaxHeadroom>(
+    getEndpoint('/v1/third-pillar/tax-headroom/yearly-income'),
+    { amount },
+  );
+}
+
 export function correctExpectedIncome(
   month: string,
   amount: number,

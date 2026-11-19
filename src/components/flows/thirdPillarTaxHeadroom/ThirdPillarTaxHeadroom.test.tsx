@@ -11,6 +11,7 @@ import {
   taxDataConsentBackend,
   thirdPillarTaxHeadroomBackend,
   useTestBackends,
+  yearlyIncomeBackend,
 } from '../../../test/backend';
 import { mockThirdPillarTaxHeadroom } from '../../../test/backend-responses';
 import LoggedInApp from '../../LoggedInApp';
@@ -85,6 +86,18 @@ const DECEMBER_BONUS_HEADROOM = {
   monthlyPayment: 500,
 };
 
+const YEARLY_INCOME_HEADROOM = {
+  ...mockThirdPillarTaxHeadroom,
+  expectedIncome: [
+    { month: '2026-11', amount: 4000, source: 'CORRECTED' as const },
+    { month: '2026-12', amount: 4000, source: 'CORRECTED' as const },
+  ],
+  limit: 4950,
+  remaining: 1690,
+  refund: 371,
+  monthlyPayment: 412,
+};
+
 function pdfOpensInNewTab() {
   const openedUrls: string[] = [];
   URL.createObjectURL = jest.fn(() => 'blob:tax-data-consent');
@@ -103,6 +116,8 @@ function openApp(path: string) {
   renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
   history.push(path);
 }
+
+const openMonths = () => userEvent.click(screen.getByRole('button', { name: 'By month' }));
 
 const amountInput = async () =>
   (await screen.findByLabelText('What is the payment amount?')) as HTMLInputElement;
@@ -197,6 +212,12 @@ describe('III pillar tax win headroom', () => {
     expect(
       within(breakdown).getByRole('row', { name: /Income January–October .*25\s000\s€/ }),
     ).toBeInTheDocument();
+    expect(within(breakdown).getByLabelText('Income this year')).toHaveValue('30000');
+    expect(within(breakdown).getByText(/^We estimated the remaining months/)).toHaveTextContent(
+      /^We estimated the remaining months from recent months\. Add bonuses, dividends, rental income, interest and gains from selling property too\. Only income that reaches your account this year counts: a December salary paid in January counts towards next year\.$/,
+    );
+    expect(within(breakdown).queryByLabelText('Expected income November')).not.toBeInTheDocument();
+    openMonths();
     expect(within(breakdown).getByLabelText('Expected income November')).toHaveValue('2500');
     expect(within(breakdown).getByLabelText('Expected income December')).toHaveValue('2500');
     expect(
@@ -252,6 +273,7 @@ describe('III pillar tax win headroom', () => {
     openApp('/3rd-pillar-tax-headroom/result');
 
     userEvent.click(await screen.findByRole('button', { name: 'Change' }));
+    openMonths();
     const december = screen.getByLabelText('Expected income December');
     userEvent.clear(december);
     userEvent.type(december, '12500');
@@ -263,6 +285,137 @@ describe('III pillar tax win headroom', () => {
     userEvent.click(screen.getByRole('link', { name: 'Make a payment' }));
 
     expect((await amountInput()).value).toBe('2740');
+  });
+
+  test('saves the income the person expects for the whole year and shows the months it was spread over', async () => {
+    thirdPillarTaxHeadroomBackend(server, mockThirdPillarTaxHeadroom);
+    const yearlyIncomes = yearlyIncomeBackend(server, YEARLY_INCOME_HEADROOM);
+
+    openApp('/3rd-pillar-tax-headroom/result');
+
+    userEvent.click(await screen.findByRole('button', { name: 'Change' }));
+    const yearlyIncome = screen.getByLabelText('Income this year');
+    await waitFor(() => expect(yearlyIncome).toHaveFocus());
+    userEvent.clear(yearlyIncome);
+    userEvent.type(yearlyIncome, '33000');
+
+    expect(await screen.findByText(/^1690\s€$/)).toBeVisible();
+    expect(yearlyIncomes()).toEqual([33000]);
+    expect(screen.getByText(/Your limit/)).toHaveTextContent(/^Your limit ~4950\s€$/);
+    expect(screen.queryByText(/For the remaining months/)).not.toBeInTheDocument();
+    expect(screen.getByText(/^Add bonuses, dividends/)).toBeVisible();
+    expect(screen.queryByText(/^We estimated the remaining months/)).not.toBeInTheDocument();
+    openMonths();
+    expect(screen.getByLabelText('Expected income November')).toHaveValue('4000');
+    expect(screen.getByLabelText('Expected income December')).toHaveValue('4000');
+  });
+
+  test('drops a yearly income the person deletes before it is saved', async () => {
+    thirdPillarTaxHeadroomBackend(server, mockThirdPillarTaxHeadroom);
+    const yearlyIncomes = yearlyIncomeBackend(server, YEARLY_INCOME_HEADROOM);
+
+    openApp('/3rd-pillar-tax-headroom/result');
+
+    userEvent.click(await screen.findByRole('button', { name: 'Change' }));
+    const yearlyIncome = screen.getByLabelText('Income this year');
+    userEvent.clear(yearlyIncome);
+    userEvent.type(yearlyIncome, '35000{backspace}');
+    userEvent.tab();
+
+    expect(yearlyIncome).toHaveValue('30000');
+    await new Promise((resolve) => {
+      setTimeout(resolve, 500);
+    });
+    expect(yearlyIncomes()).toEqual([]);
+    expect(screen.getByRole('link', { name: 'Make a payment' })).toHaveAttribute(
+      'aria-disabled',
+      'false',
+    );
+  });
+
+  test('shows the new yearly total once the field it was typed next to loses focus', async () => {
+    thirdPillarTaxHeadroomBackend(server, mockThirdPillarTaxHeadroom);
+    expectedIncomeCorrectionBackend(server, DECEMBER_BONUS_HEADROOM);
+
+    openApp('/3rd-pillar-tax-headroom/result');
+
+    userEvent.click(await screen.findByRole('button', { name: 'Change' }));
+    openMonths();
+    const december = screen.getByLabelText('Expected income December');
+    userEvent.clear(december);
+    userEvent.type(december, '12500');
+    const yearlyIncome = screen.getByLabelText('Income this year');
+    userEvent.click(yearlyIncome);
+
+    expect(await screen.findByText(/^2740\s€$/)).toBeVisible();
+    userEvent.tab();
+
+    expect(yearlyIncome).toHaveValue('40000');
+  });
+
+  test('stops saying the income is a guess from last year once the person enters their own', async () => {
+    thirdPillarTaxHeadroomBackend(server, JANUARY_HEADROOM);
+    yearlyIncomeBackend(server, {
+      ...JANUARY_HEADROOM,
+      expectedIncome: JANUARY_HEADROOM.expectedIncome.map((month) => ({
+        ...month,
+        amount: 5000,
+        source: 'CORRECTED' as const,
+      })),
+    });
+
+    openApp('/3rd-pillar-tax-headroom/result');
+
+    userEvent.click(await screen.findByRole('button', { name: 'Change' }));
+    const yearlyIncome = screen.getByLabelText('Income this year');
+    userEvent.clear(yearlyIncome);
+    userEvent.type(yearlyIncome, '60000');
+
+    expect(
+      await screen.findByRole('heading', {
+        name: /^This year it is worth putting about this much more into your III\spillar$/,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/We assumed/)).not.toBeInTheDocument();
+  });
+
+  test('ignores leading zeros and a yearly income no month could hold', async () => {
+    thirdPillarTaxHeadroomBackend(server, NO_DATA_HEADROOM);
+    const yearlyIncomes = yearlyIncomeBackend(server, NO_DATA_HEADROOM);
+
+    openApp('/3rd-pillar-tax-headroom/result');
+
+    const yearlyIncome = await screen.findByLabelText('Income this year');
+    userEvent.type(yearlyIncome, '30000');
+    expect(yearlyIncome).toHaveValue('30000');
+    await waitFor(() => expect(yearlyIncomes()).toEqual([30000]));
+
+    userEvent.clear(yearlyIncome);
+    userEvent.type(yearlyIncome, '1200001');
+    userEvent.tab();
+    await new Promise((resolve) => {
+      setTimeout(resolve, 500);
+    });
+    expect(yearlyIncomes()).toEqual([30000]);
+  });
+
+  test('waits with the yearly income until it is at least the income already declared', async () => {
+    thirdPillarTaxHeadroomBackend(server, mockThirdPillarTaxHeadroom);
+    const yearlyIncomes = yearlyIncomeBackend(server, YEARLY_INCOME_HEADROOM);
+
+    openApp('/3rd-pillar-tax-headroom/result');
+
+    userEvent.click(await screen.findByRole('button', { name: 'Change' }));
+    const yearlyIncome = screen.getByLabelText('Income this year');
+    userEvent.clear(yearlyIncome);
+    userEvent.type(yearlyIncome, '20000');
+    userEvent.tab();
+
+    expect(yearlyIncome).toHaveValue('30000');
+    await new Promise((resolve) => {
+      setTimeout(resolve, 500);
+    });
+    expect(yearlyIncomes()).toEqual([]);
   });
 
   test('says when the expected income for a month cannot be saved', async () => {
@@ -277,6 +430,7 @@ describe('III pillar tax win headroom', () => {
     openApp('/3rd-pillar-tax-headroom/result');
 
     userEvent.click(await screen.findByRole('button', { name: 'Change' }));
+    openMonths();
     userEvent.type(screen.getByLabelText('Expected income December'), '0');
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
@@ -299,6 +453,8 @@ describe('III pillar tax win headroom', () => {
     expect(screen.getByText(/We assumed/)).toHaveTextContent(
       /^We assumed last year's income: an average of 2500\s€ a month\./,
     );
+    expect(screen.getByLabelText('Income this year')).toHaveValue('30000');
+    openMonths();
     expect(screen.getByLabelText('Expected income December')).toHaveValue('4700');
 
     userEvent.click(
@@ -333,7 +489,10 @@ describe('III pillar tax win headroom', () => {
         name: /^We found no income for you this year or last year$/,
       }),
     ).toBeInTheDocument();
-    expect(screen.getByLabelText('Expected income December')).toBeVisible();
+    expect(screen.getByLabelText('Income this year')).toBeVisible();
+    expect(
+      screen.getByText(/^Enter how much you expect to earn this year in total\./),
+    ).toBeVisible();
     expect(screen.queryByText(/We assumed/)).not.toBeInTheDocument();
   });
 
@@ -398,6 +557,10 @@ describe('III pillar payment with a known tax win headroom', () => {
     expect(screen.getByText(/of this amount gets no tax win/)).toHaveTextContent(
       /^260\s€ of this amount gets no tax win\./,
     );
+    expect(screen.getByText(/in with a tax win\./)).toHaveTextContent(
+      /^260\s€ of this amount gets no tax win\. This year you can still put about 1240\s€ in with a tax win\.$/,
+    );
+    expect(screen.getByRole('button', { name: /^Use 1240\s€$/ })).toBeVisible();
     expect(screen.queryByText(/6000/)).not.toBeInTheDocument();
   });
 
@@ -406,9 +569,15 @@ describe('III pillar payment with a known tax win headroom', () => {
 
     openApp('/3rd-pillar-payment');
 
-    userEvent.click(await screen.findByRole('button', { name: /^Use 1240\s€$/ }));
+    const remaining = await screen.findByRole('button', { name: /^Use 1240\s€$/ });
+    expect(remaining).toHaveTextContent(/^1240\s€$/);
+    userEvent.click(remaining);
 
     expect((await amountInput()).value).toBe('1240');
+    expect(screen.queryByRole('button', { name: /^Use 1240\s€$/ })).not.toBeInTheDocument();
+    expect(screen.getByText(/in with a tax win\./)).toHaveTextContent(
+      /^This year you can still put about 1240\s€ in with a tax win\.$/,
+    );
   });
 });
 

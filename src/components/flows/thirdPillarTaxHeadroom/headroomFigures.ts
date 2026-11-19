@@ -1,7 +1,8 @@
 import { ThirdPillarTaxHeadroom } from '../../common/apiModels/taxHeadroom';
 
 export type HeadroomFigures = {
-  expectedIncome: number;
+  yearlyIncome: number;
+  expectedIncomeIsOwn: boolean;
   expectedMonthlyIncome: number;
   expectedMonthsDiffer: boolean;
   limit: number;
@@ -19,11 +20,19 @@ export const awaitsExpectedIncome = (headroom: ThirdPillarTaxHeadroom) =>
 export const invitesHeadroomCalculation = (headroom: ThirdPillarTaxHeadroom | null | undefined) =>
   headroom === null || (!!headroom && awaitsExpectedIncome(headroom));
 
+const centsOf = (amount: number) => Math.round(amount * 100);
+
 export const headroomFiguresOf = (headroom: ThirdPillarTaxHeadroom): HeadroomFigures => {
   const amounts = headroom.expectedIncome.map(({ amount }) => amount);
   const expectedIncome = amounts.reduce((sum, amount) => sum + amount, 0);
+  const yearlyIncomeCents = amounts.reduce(
+    (sum, amount) => sum + centsOf(amount),
+    centsOf(headroom.knownIncome),
+  );
   return {
-    expectedIncome,
+    yearlyIncome: yearlyIncomeCents / 100,
+    expectedIncomeIsOwn:
+      amounts.length > 0 && headroom.expectedIncome.every(({ source }) => source === 'CORRECTED'),
     expectedMonthlyIncome: Math.floor(expectedIncome / Math.max(amounts.length, 1)),
     expectedMonthsDiffer: new Set(amounts).size > 1,
     limit: headroom.limit,
