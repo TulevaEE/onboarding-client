@@ -27,7 +27,7 @@ export const RejoinRefusalReason = ({
   if (waitUntil) {
     return (
       <FormattedMessage
-        id="account.status.choice.pillar.second.notContributing.line2.rejoinPossibleFrom"
+        id="secondPillarRejoin.rejoinPossibleFrom"
         values={{ date: formatDateFromWithYear(waitUntil) }}
       />
     );

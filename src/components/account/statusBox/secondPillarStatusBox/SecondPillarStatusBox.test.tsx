@@ -23,7 +23,8 @@ import { FundPension } from '../../../common/apiModels/withdrawals';
 
 let mockContributionsAreLoaded = true;
 let mockFundPensions: FundPension[] = [];
-const mockPendingApplicationsByDefault: Partial<Application>[] = [{ type: 'WITHDRAWAL' }];
+let mockFundPensionsAreLoading = false;
+const mockPendingApplicationsByDefault: Partial<Application>[] = [];
 let mockPendingApplications = mockPendingApplicationsByDefault;
 let mockPendingApplicationsAreLoading = false;
 type RejoinPermissionQuery = {
@@ -63,7 +64,10 @@ jest.mock('../../../common/apiHooks', () => ({
         : undefined,
     isInitialLoading: mockMandateDeadlinesLoad === 'LOADING',
   }),
-  useFundPensionStatus: () => ({ data: { fundPensions: mockFundPensions } }),
+  useFundPensionStatus: () =>
+    mockFundPensionsAreLoading
+      ? { data: undefined, isInitialLoading: true }
+      : { data: { fundPensions: mockFundPensions }, isInitialLoading: false },
   useRejoinPermission: () => {
     mockRejoinPermissionAsked = true;
     return mockRejoinPermission;
@@ -84,6 +88,7 @@ jest.mock('../../../common/apiHooks', () => ({
 afterEach(() => {
   mockContributionsAreLoaded = true;
   mockFundPensions = [];
+  mockFundPensionsAreLoading = false;
   mockPendingApplications = mockPendingApplicationsByDefault;
   mockPendingApplicationsAreLoading = false;
   mockRejoinPermission = mockRejoinPermitted;
@@ -136,6 +141,7 @@ describe('SecondPillarStatusBox', () => {
   });
 
   it('renders the withdrawal flow when withdrawal is in progress', () => {
+    mockPendingApplications = [{ type: 'WITHDRAWAL' }];
     component.setProps({ conversion: { pendingWithdrawal: true } });
     expect(component).toMatchSnapshot();
   });
@@ -347,7 +353,7 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
       renderWithIntl(<SecondPillarStatusBox {...noSecondPillar} nudgeKey="SECOND_PILLAR_START" />);
 
       expect(
-        screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027.'),
+        screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027'),
       ).toBeInTheDocument();
       expect(screen.queryByText(/You have no II\spillar/)).not.toBeInTheDocument();
       expect(screen.getByTestId('status-icon-success')).toBeInTheDocument();
@@ -620,7 +626,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     },
   );
 
-  it('tells a leaver the register reports as inactive that no contributions are made instead of saying there is no II pillar', () => {
+  it('tells a leaver the register reports as inactive that they are not saving instead of saying there is no II pillar', () => {
     renderWithIntl(
       <SecondPillarStatusBox
         {...saver}
@@ -676,7 +682,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(
-      screen.getByText('Contributions start again only once you file an application to rejoin.'),
+      screen.getByText('Contributions start again only once you file an application to rejoin'),
     ).toBeInTheDocument();
     expect(screen.queryByText(/Apply by/)).not.toBeInTheDocument();
   });
@@ -732,7 +738,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
 
       expect(screen.getByText('You are not saving in the II pillar')).toBeInTheDocument();
       expect(
-        screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment.'),
+        screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment'),
       ).toBeInTheDocument();
       expect(screen.queryByText(/start again/)).not.toBeInTheDocument();
       expect(screen.queryByRole('link')).not.toBeInTheDocument();
@@ -753,9 +759,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(
-      screen.getByText(
-        /You can only rejoin if you ended your contributions by applying to withdraw your money or to stop payments\. After a fund pension, a pension contract or a lump sum, contributions cannot be restarted\./,
-      ),
+      screen.getByText('After a retirement-age payout, you cannot rejoin the II pillar'),
     ).toBeInTheDocument();
     expect(screen.queryByText(/You can rejoin from/)).not.toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
@@ -771,8 +775,8 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       />,
     );
 
-    expect(screen.getByText('You can rejoin from September 1, 2028.')).toBeInTheDocument();
-    expect(screen.queryByText(/five years/)).not.toBeInTheDocument();
+    expect(screen.getByText('You can rejoin from September 1, 2028')).toBeInTheDocument();
+    expect(screen.queryByText(/does not let you rejoin/)).not.toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
     expect(screen.getByTestId('status-icon-warning')).toBeInTheDocument();
   });
@@ -789,7 +793,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       'et',
     );
 
-    expect(screen.getByText('Taasliituda saad alates 1. septembrist 2028.')).toBeInTheDocument();
+    expect(screen.getByText('Taasliituda saad alates 1. septembrist 2028')).toBeInTheDocument();
   });
 
   it.each([
@@ -806,7 +810,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       );
 
       expect(
-        screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment.'),
+        screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment'),
       ).toBeInTheDocument();
       expect(screen.queryByText(/You can rejoin from/)).not.toBeInTheDocument();
     },
@@ -824,7 +828,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(
-      screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment.'),
+      screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment'),
     ).toBeInTheDocument();
     expect(screen.queryByText(/You can rejoin from/)).not.toBeInTheDocument();
   });
@@ -856,7 +860,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(
-      screen.getByText('Contributions start again only once you file an application to rejoin.'),
+      screen.getByText('Contributions start again only once you file an application to rejoin'),
     ).toBeInTheDocument();
     expect(screen.queryByText(/Apply by/)).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Rejoin' })).toHaveAttribute(
@@ -918,7 +922,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(
-      screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027.'),
+      screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027'),
     ).toBeInTheDocument();
     expect(screen.getByTestId('status-icon-success')).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
@@ -930,7 +934,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     renderWithIntl(<SecondPillarStatusBox {...saver} />);
 
     expect(
-      screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027.'),
+      screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027'),
     ).toBeInTheDocument();
     expect(screen.getByTestId('status-icon-success')).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
@@ -944,7 +948,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(
-      screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027.'),
+      screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027'),
     ).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
@@ -1003,6 +1007,186 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       ),
     ).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
+  });
+
+  describe.each([
+    ['the register still has their fund choice', true],
+    ['the register has no fund choice', false],
+  ])('for a person on a II pillar payout when %s', (_, secondPillarActive) => {
+    const withPendingWithdrawal = {
+      ...completeSecondPillarConversion.secondPillar,
+      pendingWithdrawal: true,
+    };
+    const renderStoppedSaver = (conversion = saver.conversion) =>
+      renderWithIntl(
+        <SecondPillarStatusBox
+          {...saver}
+          conversion={conversion}
+          secondPillarActive={secondPillarActive}
+          secondPillarContributions={notContributing}
+        />,
+      );
+    const expectNothingAboutRejoining = () => {
+      expect(screen.queryByText('You are not saving in the II pillar')).not.toBeInTheDocument();
+      expect(screen.queryByText(/rejoin/i)).not.toBeInTheDocument();
+      expect(mockRejoinPermissionAsked).toBe(false);
+    };
+
+    it('shows a fund pension application filed in the app, which the conversion does not count as a pending withdrawal', () => {
+      mockPendingApplications = [{ id: 456, type: 'FUND_PENSION_OPENING' }];
+
+      renderStoppedSaver();
+
+      expect(
+        screen.getByText('You have a pending fund pension application for regular payments'),
+      ).toBeInTheDocument();
+      expectNothingAboutRejoining();
+    });
+
+    it('shows a partial withdrawal application filed in the app', () => {
+      mockPendingApplications = [{ id: 456, type: 'PARTIAL_WITHDRAWAL' }];
+
+      renderStoppedSaver(withPendingWithdrawal);
+
+      expect(
+        screen.getByText('You have a pending partial withdrawal application'),
+      ).toBeInTheDocument();
+      expectNothingAboutRejoining();
+    });
+
+    it('shows a pending early withdrawal and its cancellation', () => {
+      mockPendingApplications = [{ id: 456, type: 'EARLY_WITHDRAWAL' }];
+
+      renderStoppedSaver(withPendingWithdrawal);
+
+      expect(screen.getByText('You are leaving II pillar')).toBeInTheDocument();
+      expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([
+        '/applications/456/cancellation',
+      ]);
+      expectNothingAboutRejoining();
+    });
+
+    it('shows a fund pension that is paying out', () => {
+      mockFundPensions = [activeSecondPillarFundPension];
+
+      renderStoppedSaver();
+
+      expect(
+        screen.getByText(
+          'Contributions have ended and you are receiving regular fund pension payments',
+        ),
+      ).toBeInTheDocument();
+      expectNothingAboutRejoining();
+    });
+
+    it('shows a new partial withdrawal ahead of the fund pension that is paying out', () => {
+      mockFundPensions = [activeSecondPillarFundPension];
+      mockPendingApplications = [{ id: 456, type: 'PARTIAL_WITHDRAWAL' }];
+
+      renderStoppedSaver(withPendingWithdrawal);
+
+      expect(
+        screen.getByText('You have a pending partial withdrawal application'),
+      ).toBeInTheDocument();
+      expect(screen.queryByText(/receiving regular fund pension/)).not.toBeInTheDocument();
+    });
+
+    it('offers the way back in instead of an empty row when the pending withdrawal is not among their applications', () => {
+      mockPendingApplications = [];
+
+      renderStoppedSaver(withPendingWithdrawal);
+
+      expect(screen.getByText('You are not saving in the II pillar')).toBeInTheDocument();
+    });
+
+    it('tells them they cannot rejoin once the fund pension has ended', () => {
+      mockFundPensions = [{ ...activeSecondPillarFundPension, active: false }];
+      mockRejoinPermission = {
+        data: { permitted: false, decision: 'CONTRIBUTIONS_CANNOT_RESTART' },
+        isInitialLoading: false,
+      };
+
+      renderStoppedSaver();
+
+      expect(screen.getByText('You are not saving in the II pillar')).toBeInTheDocument();
+      expect(
+        screen.getByText('After a retirement-age payout, you cannot rejoin the II pillar'),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows the fund pension to a pensioner whose last contributions are still coming', () => {
+    mockFundPensions = [activeSecondPillarFundPension];
+
+    renderWithIntl(<SecondPillarStatusBox {...saver} secondPillarContributions={contributing} />);
+
+    expect(
+      screen.getByText(
+        'Contributions have ended and you are receiving regular fund pension payments',
+      ),
+    ).toBeInTheDocument();
+    expect(mockRejoinPermissionAsked).toBe(false);
+  });
+
+  it('shows a contributing saver their pending fund pension application instead of the payment rate nudge', () => {
+    mockPendingApplications = [{ id: 456, type: 'FUND_PENSION_OPENING' }];
+
+    renderWithIntl(<SecondPillarStatusBox {...saver} secondPillarContributions={contributing} />);
+
+    expect(
+      screen.getByText('You have a pending fund pension application for regular payments'),
+    ).toBeInTheDocument();
+  });
+
+  it('does not mistake a III pillar fund pension for a II pillar one', () => {
+    mockFundPensions = [{ ...activeSecondPillarFundPension, pillar: 'THIRD' }];
+
+    renderWithIntl(
+      <SecondPillarStatusBox {...saver} secondPillarContributions={notContributing} />,
+    );
+
+    expect(screen.getByText('You are not saving in the II pillar')).toBeInTheDocument();
+    expect(screen.queryByText(/receiving regular fund pension/)).not.toBeInTheDocument();
+  });
+
+  it('shimmers instead of mentioning rejoining until it is known whether a person who stopped contributing is on a fund pension', () => {
+    mockFundPensionsAreLoading = true;
+
+    renderWithIntl(
+      <SecondPillarStatusBox {...saver} secondPillarContributions={notContributing} />,
+    );
+
+    expect(screen.getByRole('heading', { name: /^II\spillar$/ })).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(document.querySelector('.shimmerDefault')).toBeInTheDocument();
+    expect(screen.queryByText('You are not saving in the II pillar')).not.toBeInTheDocument();
+    expect(mockRejoinPermissionAsked).toBe(false);
+  });
+
+  it('shows a contributing saver their II pillar line at once while it is still loading whether they have a fund pension', () => {
+    mockFundPensionsAreLoading = true;
+
+    renderWithIntl(<SecondPillarStatusBox {...saver} secondPillarContributions={contributing} />);
+
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(document.querySelector('.shimmerDefault')).not.toBeInTheDocument();
+  });
+
+  it('shimmers instead of an empty row until the pending withdrawal of a contributing saver has loaded', () => {
+    mockPendingApplicationsAreLoading = true;
+
+    renderWithIntl(
+      <SecondPillarStatusBox
+        {...saver}
+        conversion={{ ...completeSecondPillarConversion.secondPillar, pendingWithdrawal: true }}
+        secondPillarContributions={contributing}
+      />,
+    );
+
+    expect(screen.getByRole('heading', { name: /^II\spillar$/ })).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(document.querySelector('.shimmerDefault')).toBeInTheDocument();
   });
 
   it.each([
