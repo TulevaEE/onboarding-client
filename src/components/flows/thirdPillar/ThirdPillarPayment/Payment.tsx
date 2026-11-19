@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { captureException } from '@sentry/browser';
 import ThirdPillarPaymentsAmount from '../../../account/statusBox/thirdPillarStatusBox/ThirdPillarContributionAmount';
@@ -8,7 +8,13 @@ import { redirectToPayment } from '../../../common/api';
 import { PaymentChannel } from '../../../common/apiModels';
 import { PaymentAmountInput } from './PaymentAmountInput';
 import { OtherBankPaymentDetails } from './paymentDetails/OtherBankPaymentDetails';
-import { useMe } from '../../../common/apiHooks';
+import { useMe, useThirdPillarTaxHeadroom } from '../../../common/apiHooks';
+import { PaymentHeadroom } from '../../thirdPillarTaxHeadroom/PaymentHeadroom';
+import { PrefilledPayment, TAX_HEADROOM_PATH } from '../../thirdPillarTaxHeadroom/paths';
+import {
+  awaitsExpectedIncome,
+  invitesHeadroomCalculation,
+} from '../../thirdPillarTaxHeadroom/headroomFigures';
 import { AvailablePaymentType, BankKey } from './types';
 import { PaymentTypeSelection } from './PaymentTypeSelection';
 import { PaymentBankButtons } from './PaymentBankButtons';
@@ -25,13 +31,16 @@ const DEFAULT_PAYMENT_AMOUNTS: Record<AvailablePaymentType, string> = {
 export const Payment: React.FunctionComponent = () => {
   useIntl();
 
+  const location = useLocation<PrefilledPayment | undefined>();
+  const searchParams = new URLSearchParams(location.search);
   const initialPaymentType: AvailablePaymentType =
-    new URLSearchParams(useLocation().search).get('type') === 'RECURRING' ? 'RECURRING' : 'SINGLE';
+    searchParams.get('type') === 'RECURRING' ? 'RECURRING' : 'SINGLE';
+  const requestedAmount = location.state?.amount ? String(location.state.amount) : null;
   const [paymentType, setPaymentType] = useState<AvailablePaymentType>(initialPaymentType);
   const [paymentAmount, setPaymentAmount] = useState<string>(
-    DEFAULT_PAYMENT_AMOUNTS[initialPaymentType],
+    requestedAmount ?? DEFAULT_PAYMENT_AMOUNTS[initialPaymentType],
   );
-  const [amountEdited, setAmountEdited] = useState<boolean>(false);
+  const [amountEdited, setAmountEdited] = useState<boolean>(requestedAmount !== null);
   const [inPartnerSession] = useState(isInPartnerSession);
   const [paymentBank, setPaymentBank] = useState<BankKey | 'other' | null>(
     inPartnerSession ? 'coop' : null,
@@ -47,10 +56,14 @@ export const Payment: React.FunctionComponent = () => {
   };
 
   const { data: user } = useMe();
+  const { data: taxHeadroom } = useThirdPillarTaxHeadroom();
 
   if (!user) {
     return null;
   }
+
+  const showsTaxHeadroom =
+    paymentType === 'SINGLE' && !!taxHeadroom && !awaitsExpectedIncome(taxHeadroom);
 
   const isSubmitDisabled = () =>
     !user.personalCode ||
@@ -114,23 +127,41 @@ export const Payment: React.FunctionComponent = () => {
             }
           }}
           onWheel={(event) => event.currentTarget.blur()}
-          max={6000}
+          max={showsTaxHeadroom ? undefined : 6000}
           className="mt-5 form-label fw-bold"
         />
 
-        <div className="payment-amount-input-footer mt-3 text-body-secondary">
-          <ThirdPillarPaymentsAmount />
-          <div>
-            <a href="//tuleva.ee/iii-sammas/" target="_blank" rel="noreferrer">
-              {paymentType === 'SINGLE' && (
-                <FormattedMessage id="thirdPillarPayment.singlePaymentHowMuch" />
-              )}
-              {paymentType === 'RECURRING' && (
-                <FormattedMessage id="thirdPillarPayment.recurringPaymentHowMuch" />
-              )}
-            </a>
+        {showsTaxHeadroom && taxHeadroom ? (
+          <PaymentHeadroom
+            headroom={taxHeadroom}
+            amount={Number(paymentAmount.replace(',', '.')) || 0}
+            onUseRemaining={(remaining) => {
+              setPaymentAmount(remaining.toString());
+              setAmountEdited(true);
+            }}
+          />
+        ) : (
+          <div className="payment-amount-input-footer mt-3 text-body-secondary">
+            <ThirdPillarPaymentsAmount />
+            {paymentType === 'SINGLE' && invitesHeadroomCalculation(taxHeadroom) && (
+              <div>
+                <Link to={TAX_HEADROOM_PATH}>
+                  <FormattedMessage id="thirdPillarPayment.taxHeadroom.ask" />
+                </Link>
+              </div>
+            )}
+            <div>
+              <a href="//tuleva.ee/iii-sammas/" target="_blank" rel="noreferrer">
+                {paymentType === 'SINGLE' && (
+                  <FormattedMessage id="thirdPillarPayment.singlePaymentHowMuch" />
+                )}
+                {paymentType === 'RECURRING' && (
+                  <FormattedMessage id="thirdPillarPayment.recurringPaymentHowMuch" />
+                )}
+              </a>
+            </div>
           </div>
-        </div>
+        )}
 
         {inPartnerSession ? (
           <PartnerPaymentSubmitSection

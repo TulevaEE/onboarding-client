@@ -1,0 +1,65 @@
+@import '../../variables';
+
+.breakdown {
+  summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: $blue;
+    cursor: pointer;
+    list-style: none;
+    min-height: 44px;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &:hover {
+      text-decoration: underline;
+      text-underline-offset: 0.125em;
+    }
+
+    svg {
+      transition: transform 0.2s ease-out;
+    }
+  }
+
+  &[open] summary svg {
+    transform: rotate(180deg);
+  }
+
+  td,
+  th {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  tfoot th {
+    border-bottom: 0;
+  }
+}
+
+.amount {
+  width: 9.5rem;
+}
+
+.byMonth {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 44px;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.125em;
+  }
+
+  svg {
+    transition: transform 0.2s ease-out;
+  }
+
+  &[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+  }
+}

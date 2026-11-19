@@ -17,6 +17,7 @@ import { KycIdentity } from '../components/flows/savingsAccount/SavingsFundOnboa
 import { SecondPillarPaymentRateChangeMandate } from '../components/flows/secondPillarPaymentRate/types';
 import { ConnectRequest } from '../components/connect/connect.api';
 import type { ConnectedApp } from '../components/security/connectedApps/connectedApps.api';
+import { ThirdPillarTaxHeadroom } from '../components/common/apiModels/taxHeadroom';
 
 export const authErrorResponse = {
   error: 'not authenticated correctly',
@@ -393,3 +394,22 @@ export const anAccessTokenLoggedInAt = (loginTime: Date): string =>
     }),
     'a-signature',
   ].join('.');
+
+export const mockThirdPillarTaxHeadroom: ThirdPillarTaxHeadroom = {
+  year: 2026,
+  knownIncome: 25000,
+  incomeKnownThrough: '2026-10',
+  expectedIncome: [
+    { month: '2026-11', amount: 2500, source: 'ESTIMATED' },
+    { month: '2026-12', amount: 2500, source: 'ESTIMATED' },
+  ],
+  expectedIncomeBasis: 'RECENT_MONTHS',
+  paid: 3260,
+  monthsLeft: 2,
+  limit: 4500,
+  limitCertainty: 'ESTIMATED',
+  remaining: 1240,
+  refund: 272,
+  monthlyPayment: 375,
+  paymentSuggestion: 'SINGLE',
+};

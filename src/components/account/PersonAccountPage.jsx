@@ -29,6 +29,7 @@ import {
 import { canAccessWithdrawals } from '../flows/withdrawals/utils';
 import { getBankName } from '../common/iban';
 import { usePaymentRateRedirect } from './usePaymentRateRedirect';
+import { TaxHeadroomCaption } from '../flows/thirdPillarTaxHeadroom/TaxHeadroomCaption';
 
 const noop = () => null;
 
@@ -209,7 +210,10 @@ export function PersonAccountPage(
             )}
           </SectionHeading>
           {thirdPillarSourceFunds && thirdPillarSourceFunds.length > 0 && (
-            <AccountStatement funds={thirdPillarSourceFunds} />
+            <>
+              <AccountStatement funds={thirdPillarSourceFunds} />
+              <TaxHeadroomCaption />
+            </>
           )}
         </>
       )}

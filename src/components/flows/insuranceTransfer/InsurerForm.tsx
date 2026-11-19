@@ -3,7 +3,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
-import download from 'downloadjs';
 import { AuthenticationLoader, ErrorMessage } from '../../common';
 import { isSigningWithIdCard } from '../../common/authenticationManager';
 import {
@@ -19,6 +18,7 @@ import {
 import { isErrorResponse } from '../../common/errorResponse';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { useSigning } from '../../common/signing/useSigning';
+import { showPdf } from '../../common/showPdf';
 import { PII_CLASS } from '../../tracking/piiMarkup';
 import { State } from '../../../types';
 import { KycIdentity, PepSelfDeclaration } from '../savingsAccount/SavingsFundOnboarding/types.api';
@@ -49,16 +49,7 @@ type Props = {
 };
 
 const POLICY_NUMBER_MAX_LENGTH = 40;
-const PDF = 'application/pdf';
 const PREVIEW_FILE_NAME = 'Tuleva_avaldus_eelvaade.pdf';
-
-const showPdf = (pdf: Blob) => {
-  const pdfAddress = URL.createObjectURL(new Blob([pdf], { type: PDF }));
-  if (!window.open(pdfAddress, '_blank')) {
-    URL.revokeObjectURL(pdfAddress);
-    download(pdf, PREVIEW_FILE_NAME, PDF);
-  }
-};
 
 const useFormFilledOnce = () => {
   const [filled, setFilled] = useState<{ command: string; form: InsuranceTransferForm } | null>(
@@ -184,7 +175,8 @@ const FilledInInsurerForm = ({
   const viewAsPdf = (values: InsurerFormValues) =>
     withFilledForm(
       () => commandFrom(values),
-      async (form) => showPdf(await downloadInsuranceTransferFormPreview(form.id)),
+      async (form) =>
+        showPdf(await downloadInsuranceTransferFormPreview(form.id), PREVIEW_FILE_NAME),
     );
 
   const working = busy || loading || !!challengeCode;

@@ -44,7 +44,7 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when funds h
           />
         </InfoTooltip>
       </React.Fragment>,
-      <Memo(Connect(ThirdPillarContributionAmount)) />,
+      <ThirdPillarYearLine />,
     ]
   }
   name={
@@ -82,7 +82,7 @@ exports[`ThirdPillarStatusBox renders the "payment incomplete" flow when no fund
           />
         </InfoTooltip>
       </React.Fragment>,
-      <Memo(Connect(ThirdPillarContributionAmount)) />,
+      <ThirdPillarYearLine />,
     ]
   }
   name={
@@ -111,7 +111,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
       <Memo(MemoizedFormattedMessage)
         id="account.status.choice.pillar.third.transferIncomplete.label"
       />,
-      <Memo(Connect(ThirdPillarContributionAmount)) />,
+      <ThirdPillarYearLine />,
     ]
   }
   name={
@@ -149,7 +149,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
           />
         </InfoTooltip>
       </React.Fragment>,
-      <Memo(Connect(ThirdPillarContributionAmount)) />,
+      <ThirdPillarYearLine />,
     ]
   }
   name={
@@ -178,7 +178,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when partially conv
       <Memo(MemoizedFormattedMessage)
         id="account.status.choice.lowFee.index.label"
       />,
-      <Memo(Connect(ThirdPillarContributionAmount)) />,
+      <ThirdPillarYearLine />,
     ]
   }
   name={
@@ -216,7 +216,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow when user has some 
           />
         </InfoTooltip>
       </React.Fragment>,
-      <Memo(Connect(ThirdPillarContributionAmount)) />,
+      <ThirdPillarYearLine />,
     ]
   }
   name={
@@ -254,7 +254,7 @@ exports[`ThirdPillarStatusBox renders the "pick tuleva" flow with error when in 
           />
         </InfoTooltip>
       </React.Fragment>,
-      <Memo(Connect(ThirdPillarContributionAmount)) />,
+      <ThirdPillarYearLine />,
     ]
   }
   name={
@@ -283,7 +283,7 @@ exports[`ThirdPillarStatusBox renders the "transfer incomplete" flow when user h
       <Memo(MemoizedFormattedMessage)
         id="account.status.choice.pillar.third.transferIncomplete.label"
       />,
-      <Memo(Connect(ThirdPillarContributionAmount)) />,
+      <ThirdPillarYearLine />,
     ]
   }
   name={
@@ -318,7 +318,7 @@ exports[`ThirdPillarStatusBox renders the december flow when date in december 1`
           }
         }
       />,
-      <Memo(Connect(ThirdPillarContributionAmount)) />,
+      <ThirdPillarYearLine />,
     ]
   }
   name={
@@ -347,7 +347,7 @@ exports[`ThirdPillarStatusBox renders the success flow 1`] = `
       <Memo(MemoizedFormattedMessage)
         id="account.status.choice.lowFee.index.label"
       />,
-      <Memo(Connect(ThirdPillarContributionAmount)) />,
+      <ThirdPillarYearLine />,
     ]
   }
   name={
@@ -376,7 +376,7 @@ exports[`ThirdPillarStatusBox renders the success flow when funds have not trans
       <Memo(MemoizedFormattedMessage)
         id="account.status.choice.lowFee.index.label"
       />,
-      <Memo(Connect(ThirdPillarContributionAmount)) />,
+      <ThirdPillarYearLine />,
     ]
   }
   name={
@@ -414,7 +414,7 @@ exports[`ThirdPillarStatusBox shows high fee notice when balance is zero but act
           />
         </InfoTooltip>
       </React.Fragment>,
-      <Memo(Connect(ThirdPillarContributionAmount)) />,
+      <ThirdPillarYearLine />,
     ]
   }
   name={
@@ -443,7 +443,7 @@ exports[`ThirdPillarStatusBox with active fund pension renders active fund pensi
       <Memo(MemoizedFormattedMessage)
         id="account.status.choice.lowFee.index.label"
       />,
-      <Memo(Connect(ThirdPillarContributionAmount)) />,
+      <ThirdPillarYearLine />,
     ]
   }
   name={
