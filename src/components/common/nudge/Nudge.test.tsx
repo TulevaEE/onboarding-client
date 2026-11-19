@@ -4,6 +4,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { QueryClient } from '@tanstack/react-query';
+import { createMemoryHistory } from 'history';
 import { renderWrapped } from '../../../test/utils';
 import { initializeConfiguration } from '../../config/config';
 import { useTestBackendsExcept } from '../../../test/backend';
@@ -12,7 +13,7 @@ import { NudgeDecision } from '../apiModels/nudge';
 
 type TrackedEvent = { type: string; data?: Record<string, unknown> };
 
-describe('NudgeView tracking', () => {
+describe('NudgeView', () => {
   const server = setupServer();
   const membership: NudgeDecision = { key: 'MEMBERSHIP', tag: 'nudge_membership' };
   let trackedEvents: TrackedEvent[];
@@ -95,5 +96,20 @@ describe('NudgeView tracking', () => {
         },
       ]),
     );
+  });
+
+  it('opens the call to action inside the app instead of reloading the page', async () => {
+    const history = createMemoryHistory({ initialEntries: ['/3rd-pillar-success'] });
+    renderWrapped(
+      <NudgeView decision={membership} context="THIRD_PILLAR_PAYMENT" />,
+      history,
+      undefined,
+      new QueryClient({ defaultOptions: { queries: { retry: false } } }),
+    );
+
+    userEvent.click(await screen.findByRole('link', { name: 'Become a member' }));
+
+    expect(history.location.pathname).toBe('/join');
+    await waitFor(() => expect(eventsOfType('NUDGE_CLICK')).toHaveLength(1));
   });
 });

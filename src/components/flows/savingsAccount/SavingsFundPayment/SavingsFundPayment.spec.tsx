@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { SavingsFundPayment } from './SavingsFundPayment';
 import { createDefaultStore, login, renderWrapped } from '../../../../test/utils';
 import LoggedInApp from '../../../LoggedInApp';
-import { isInsidePii } from '../../../tracking/piiMarkup';
+import { holdsPii, isInsidePii } from '../../../tracking/piiMarkup';
 import { initializeConfiguration } from '../../../config/config';
 import {
   savingsFundOnboardingStatusBackend,
@@ -37,6 +37,14 @@ describe(SavingsFundPayment, () => {
     screen.findByRole('heading', { name: 'Deposit to Additional Investment Fund' });
 
   const getAmountInput = () => screen.getByRole('textbox', { name: 'Amount' });
+
+  const getSubmitButton = () => screen.getByRole('button', { name: 'Continue' });
+
+  const getAccountOwnerLines = (accountOwner: string) =>
+    screen.getAllByText(
+      (_, element) =>
+        element?.tagName === 'P' && element.textContent === `Account: ${accountOwner}`,
+    );
 
   const replaceAmount = (value: string) => {
     const amountInput = getAmountInput();
@@ -71,11 +79,23 @@ describe(SavingsFundPayment, () => {
     expect(getAmountInput()).toHaveValue('');
   });
 
+  it('describes the submit button with the account owner', async () => {
+    expect(await findPageHeading()).toBeInTheDocument();
+
+    expect(getSubmitButton()).toHaveAccessibleDescription('Account: John Doe');
+  });
+
+  it('marks the account owner as personal data for analytics on both lines naming it', async () => {
+    expect(await findPageHeading()).toBeInTheDocument();
+
+    expect(getAccountOwnerLines('John Doe').map(holdsPii)).toEqual([true, true]);
+  });
+
   it('validates the deposit amount and bank selection', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
 
     const amountInput = getAmountInput();
-    const submitButton = screen.getByRole('button', { name: 'Continue' });
+    const submitButton = getSubmitButton();
     const amountValidationMessage = 'The deposit amount must be at least one euro.';
     const bankSelectionValidationMessage = 'Select the bank you want to use for the deposit.';
 
@@ -154,7 +174,7 @@ describe(SavingsFundPayment, () => {
   it('lets user select a bank and start the payment', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
 
-    const submitButton = screen.getByRole('button', { name: 'Continue' });
+    const submitButton = getSubmitButton();
     replaceAmount('123.45');
 
     const lhvRadio = screen.getByRole('radio', { name: 'LHV' });
@@ -470,9 +490,9 @@ describe(SavingsFundPayment, () => {
     });
   });
 
-  it('shows the personal account the deposit will go to', async () => {
+  it('names the personal account the deposit will go to on both account lines', async () => {
     expect(await findPageHeading()).toBeInTheDocument();
-    expect(screen.getByText('Account: John Doe')).toBeInTheDocument();
+    expect(getAccountOwnerLines('John Doe')).toHaveLength(2);
   });
 
   describe('when acting as a company', () => {
@@ -486,9 +506,15 @@ describe(SavingsFundPayment, () => {
       history.push('/savings-fund/payment');
     });
 
-    it('shows the company account the deposit will go to', async () => {
+    it('names the company account the deposit will go to on both account lines', async () => {
       expect(await findPageHeading()).toBeInTheDocument();
-      expect(screen.getByText('Account: Test Company OÜ')).toBeInTheDocument();
+      expect(getAccountOwnerLines('Test Company OÜ')).toHaveLength(2);
+    });
+
+    it('describes the submit button with the company, not the board member paying', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+
+      expect(getSubmitButton()).toHaveAccessibleDescription('Account: Test Company OÜ');
     });
 
     it('pre-fills the deposit amount with 250 for a company', async () => {
@@ -585,6 +611,12 @@ describe(SavingsFundPayment, () => {
 
       initApp();
       history.push('/savings-fund/payment');
+    });
+
+    it('describes the submit button with the child, not the parent paying', async () => {
+      expect(await findPageHeading()).toBeInTheDocument();
+
+      expect(getSubmitButton()).toHaveAccessibleDescription('Account: Junior Doe');
     });
 
     it('pre-fills the deposit amount with 80 for a child', async () => {

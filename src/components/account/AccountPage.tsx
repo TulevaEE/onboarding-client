@@ -1,6 +1,7 @@
 import { useMe } from '../common/apiHooks';
-import { isActingAsSelf } from '../common/utils';
+import { isActingAsSelf, isMinorActingAsSelf } from '../common/utils';
 import { RepresentedPartyAccountPage } from './RepresentedPartyAccountPage';
+import { MinorAccountPage } from './MinorAccountPage';
 import ConnectedPersonAccountPage from './PersonAccountPage';
 import { AccountPageLoader } from './AccountPageLoader';
 
@@ -13,6 +14,10 @@ export default function AccountPage() {
   // a shimmer that never resolves.
   if (!user) {
     return isLoading ? <AccountPageLoader /> : null;
+  }
+
+  if (isMinorActingAsSelf(user)) {
+    return <MinorAccountPage />;
   }
 
   return isActingAsSelf(user) ? <ConnectedPersonAccountPage /> : <RepresentedPartyAccountPage />;

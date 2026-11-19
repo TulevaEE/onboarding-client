@@ -4,7 +4,8 @@ import userEvent from '@testing-library/user-event';
 import { Interaction, InteractionMode } from 'chart.js';
 import { IntlProvider } from 'react-intl';
 import { initialAge60 } from './age60Answers';
-import { Age65Answers, initialAge65 } from './age65Answers';
+import { Age65Answers } from './age65Answers';
+import { age65Growing } from './resultContextFixture';
 import { initialAge66 } from './age66Answers';
 import { initialExpenses, needMonthly } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
@@ -45,17 +46,21 @@ const contextWith = (age65: Partial<Age65Answers> = {}): ResultContext => {
     you,
     plan: toStepPlanInput(you),
     age60: initialAge60(),
-    age65: { ...initialAge65(), ...age65 },
+    age65: { ...age65Growing(), ...age65 },
     age66: initialAge66(),
     specialPension: initialSpecialPension(),
     expenses: initialExpenses(),
   };
 };
 
-const renderChart = (context: ResultContext = contextWith()) =>
+const renderChart = (context: ResultContext = contextWith(), isNominal = false) =>
   render(
     <IntlProvider locale="et" messages={translations.et}>
-      <ResultChart result={resultOf(context)} need={needMonthly(context.expenses)} />
+      <ResultChart
+        result={resultOf(context)}
+        need={needMonthly(context.expenses)}
+        isNominal={isNominal}
+      />
     </IntlProvider>,
   );
 
@@ -193,12 +198,10 @@ describe('ResultChart drawing', () => {
   });
 
   describe('in future prices', () => {
-    const turnOnFuturePrices = () =>
-      userEvent.click(screen.getByRole('button', { name: 'Tuleviku hinnad' }));
+    const renderInFuturePrices = () => renderChart(contextWith(), true);
 
     it('draws the costs line rising year by year over the layers', () => {
-      renderChart();
-      turnOnFuturePrices();
+      renderInFuturePrices();
 
       const { points } = lastProps().options.plugins.costs;
 
@@ -206,8 +209,7 @@ describe('ResultChart drawing', () => {
     });
 
     it('leaves out the dots of the top layer where it adds up to that year’s costs', () => {
-      renderChart();
-      turnOnFuturePrices();
+      renderInFuturePrices();
       const second = layer(SECOND_PILLAR_TAXED);
 
       expect(second.pointRadius[rowPointOf(second, 68)]).toBe(0);
@@ -215,8 +217,7 @@ describe('ResultChart drawing', () => {
     });
 
     it('says how much is missing without a hidden layer in the euros of that year', () => {
-      renderChart();
-      turnOnFuturePrices();
+      renderInFuturePrices();
       const [{ amount: costs }] = lastProps().options.plugins.costs.points;
       const missingAmount = costs - layer(STATE_PENSION).data[0].y;
 

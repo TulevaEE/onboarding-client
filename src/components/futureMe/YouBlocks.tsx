@@ -13,6 +13,7 @@ import {
 import { AmountField, BlockProps, ReturnField, SelectField } from './YouFields';
 import { YouSection, YouSectionLabels } from './YouSection';
 import { euro, signedNumber } from './amountFormat';
+import { externalLink } from './ExternalLink';
 
 export const sectionLabels = (
   block: 'state' | 'secondPillar' | 'thirdPillar' | 'kids' | 'work',
@@ -73,14 +74,10 @@ export const StateSection = ({
         <FormattedMessage
           id="futureMe.you.state.socialInsuranceBoardCalculator"
           values={{
-            ska: (chunks: React.ReactNode) => (
-              <a href="https://iseteenindus.sotsiaalkindlustusamet.ee/self-service/pension-calculator">
-                {chunks}
-              </a>
+            ska: externalLink(
+              'https://iseteenindus.sotsiaalkindlustusamet.ee/self-service/pension-calculator',
             ),
-            eesti: (chunks: React.ReactNode) => (
-              <a href="https://www.eesti.ee/et/artikkel/pension/pensionikalkulaator">{chunks}</a>
-            ),
+            eesti: externalLink('https://www.eesti.ee/et/artikkel/pension/pensionikalkulaator'),
           }}
         />
       </p>

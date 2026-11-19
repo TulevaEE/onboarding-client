@@ -16,6 +16,15 @@ const rejoinRefused: Partial<MockModeConfiguration> = {
 };
 
 export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
+  SECOND_PILLAR_FUNDS: {
+    user: 'PAYMENT_RATE_2',
+    conversion: 'INCOMPLETE',
+    sourceFunds: 'BOTH_PILLARS_SECOND_IN_HIGH_FEE_FUND',
+    funds: 'WITH_ALL_SECOND_PILLAR_FUNDS',
+    secondPillarNavHistories: 'YEARLY_TO_JULY_2026',
+    worldMarketReturns: 'JULY_2026',
+    mandateDeadlines: 'NOVEMBER_2026_BEFORE_DEADLINE',
+  },
   // One saver climbing the conversion ladder, one rung at a time: II pillar to Tuleva,
   // II rate to 6%, III pillar to Tuleva, savings fund on top. Only the rung being
   // climbed changes between scenarios, so the money and the chart stay comparable and
@@ -85,10 +94,10 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     savingsFundOnboardingStatus: 'NOT_STARTED',
     savingsFundBalance: 'NO_ACCOUNT',
   },
-  // Left the funded II pillar: both II steps are advice they cannot act on, so they see
-  // the III pillar and then the savings fund instead.
+  // Left the funded II pillar: the way back in replaces both II steps.
   LEFT_SECOND_PILLAR: {
     user: 'LEFT_SECOND_PILLAR',
+    rejoinPermission: 'PERMITTED',
     conversion: 'COMPLETE_ONLY_THIRD_PILLAR',
     contributions: 'THIRD_PILLAR_MONTHLY_MAXED',
     sourceFunds: 'ONLY_THIRD_PILLAR',
@@ -256,6 +265,7 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     ...rejoinRefused,
     user: 'LEFT_SECOND_PILLAR_FUND_ON_RECORD_IN_2023',
     rejoinPermission: 'NOT_PERMITTED',
+    completedApplications: 'SECOND_PILLAR_WITHDRAWAL_FEBRUARY_2023',
   },
   // Someone still contributing who opens the rejoin page, as from the landing page.
   SECOND_PILLAR_REJOIN_ALREADY_CONTRIBUTING: {
@@ -270,6 +280,15 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
     ...leaverAccountPage,
     user: 'LEFT_SECOND_PILLAR_PAYMENT_RATE_2',
     pendingApplications: 'SECOND_PILLAR_REJOIN',
+  },
+  MINOR_SELF_VIEW: {
+    user: 'MINOR',
+    roles: 'MINOR_ONLY',
+    funds: 'WITH_SAVINGS_FUND',
+    savingsFundBalance: 'MINOR',
+    sourceFunds: 'MINOR_THIRD_PILLAR',
+    transactions: 'MINOR_SAVINGS_FUND',
+    myGifts: 'MINOR',
   },
 
   WITHDRAWALS_PENSIONER_60_ALL_PILLARS: {

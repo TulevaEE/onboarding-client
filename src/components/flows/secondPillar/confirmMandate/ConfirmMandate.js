@@ -18,7 +18,6 @@ import {
 
 import MandateNotFilledAlert from './mandateNotFilledAlert';
 import { FundTransferTable } from './fundTransferTable/FundTransferTable';
-import './ConfirmMandate.scss';
 import { hasAddress as isAddressFilled } from '../../../common/user/address';
 
 function joinDuplicateSelections(selections) {

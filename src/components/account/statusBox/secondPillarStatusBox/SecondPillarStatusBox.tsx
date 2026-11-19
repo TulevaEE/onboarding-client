@@ -15,7 +15,7 @@ import {
   Conversion,
   Fund,
   MandateDeadlines,
-  RejoinDecision,
+  RejoinPermission,
   SecondPillarContributions,
   SourceFund,
 } from '../../../common/apiModels';
@@ -40,6 +40,10 @@ import {
   useSecondPillarTaxWin,
 } from '../../../flows/secondPillarPaymentRate/SecondPillarPaymentRateTaxWin';
 import { RejoinRefusalReason } from '../../../flows/secondPillarRejoin/RejoinRefusalReason';
+import {
+  contributionStartMonth,
+  highlightedDeadline,
+} from '../../../flows/secondPillarRejoin/deadlineHighlight';
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 import { FundPension } from '../../../common/apiModels/withdrawals';
 import { PaymentRateSubRow } from './PaymentRateSubRow';
@@ -560,6 +564,7 @@ const WayBackIn = ({
 }) => {
   const { data: rejoinPermission, isInitialLoading: askingWhetherPermitted } =
     useRejoinPermission();
+  const { data: mandateDeadlines, isInitialLoading: loadingDeadlines } = useMandateDeadlines();
   const mayRejoin = rejoinPermission?.permitted !== false;
 
   return (
@@ -569,14 +574,14 @@ const WayBackIn = ({
       name={<FormattedMessage id="account.status.choice.pillar.second" />}
       lines={[
         <FormattedMessage id="account.status.choice.pillar.second.notContributing.line1" />,
-        askingWhetherPermitted ? (
+        askingWhetherPermitted || loadingDeadlines ? (
           <Shimmer height={24} />
         ) : (
           <span className="text-body-secondary">
             <WayBackInExplanation
-              mayRejoin={mayRejoin}
-              rejoinDecision={rejoinPermission?.decision}
+              rejoinPermission={rejoinPermission}
               rejoinPossibleFrom={rejoinPossibleFrom}
+              mandateDeadlines={mandateDeadlines}
             />
           </span>
         ),
@@ -590,17 +595,31 @@ const WayBackIn = ({
 };
 
 const WayBackInExplanation = ({
-  mayRejoin,
-  rejoinDecision,
+  rejoinPermission,
   rejoinPossibleFrom,
+  mandateDeadlines,
 }: {
-  mayRejoin: boolean;
-  rejoinDecision: RejoinDecision | undefined;
+  rejoinPermission: RejoinPermission | undefined;
   rejoinPossibleFrom: string | null | undefined;
+  mandateDeadlines: MandateDeadlines | undefined;
 }) => {
-  if (mayRejoin) {
+  const rejoinDecision = rejoinPermission?.decision;
+  if (rejoinPermission?.permitted === true && mandateDeadlines) {
     return (
-      <FormattedMessage id="account.status.choice.pillar.second.notContributing.line2.canRejoin" />
+      <FormattedMessage
+        id="account.status.choice.pillar.second.notContributing.line2.applyByDeadline"
+        values={{
+          deadline: highlightedDeadline,
+          startMonth: contributionStartMonth(
+            mandateDeadlines.secondPillarRejoinContributionStartDate,
+          ),
+        }}
+      />
+    );
+  }
+  if (rejoinPermission?.permitted !== false) {
+    return (
+      <FormattedMessage id="account.status.choice.pillar.second.notContributing.line2.restartsOnceFiled" />
     );
   }
   if (rejoinDecision === 'CONTRIBUTIONS_CANNOT_RESTART') {

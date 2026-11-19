@@ -11,6 +11,7 @@ import {
   selectSavingsFundPayments,
 } from './prefill';
 import {
+  Application,
   Fund,
   SecondPillarContribution,
   SourceFund,
@@ -346,7 +347,88 @@ describe('derivePrefill', () => {
     expect(prefill.currentSecondPillarRate).toBe(2);
   });
 
-  it('starts with no II rate selected for a saver who has left the II pillar', () => {
+  it('starts with no II rate when contributions ended but the fund choice stays on record', () => {
+    const prefill = derivePrefill(
+      {
+        ...user,
+        secondPillarContributions: {
+          contributing: false,
+          restartDate: null,
+          rejoinPossibleFrom: '2026-11-01',
+        },
+      },
+      [],
+      [],
+      now,
+    );
+    expect(prefill.currentSecondPillarRate).toBe(0);
+  });
+
+  it('keeps the II rate of a saver whose contributions have a restart date', () => {
+    const prefill = derivePrefill(
+      {
+        ...user,
+        secondPillarContributions: {
+          contributing: false,
+          restartDate: '2027-05-01',
+          rejoinPossibleFrom: null,
+        },
+      },
+      [],
+      [],
+      now,
+    );
+    expect(prefill.currentSecondPillarRate).toBe(4);
+  });
+
+  it('starts from the filed II rate of a saver with a pending rejoin application', () => {
+    const prefill = derivePrefill(
+      {
+        ...user,
+        secondPillarPaymentRates: { current: 2, pending: 6 },
+        secondPillarContributions: {
+          contributing: false,
+          restartDate: null,
+          rejoinPossibleFrom: null,
+        },
+      },
+      [],
+      [],
+      now,
+      [{ type: 'REJOIN' } as Application],
+    );
+    expect(prefill.currentSecondPillarRate).toBe(6);
+  });
+
+  it('keeps the II rate of a restarting saver whose fund choice is not on record yet', () => {
+    const prefill = derivePrefill(
+      {
+        ...user,
+        secondPillarActive: false,
+        secondPillarContributions: {
+          contributing: false,
+          restartDate: '2027-05-01',
+          rejoinPossibleFrom: null,
+        },
+      },
+      [],
+      [],
+      now,
+    );
+    expect(prefill.currentSecondPillarRate).toBe(4);
+  });
+
+  it('starts from the II rate already filed rather than the one still in effect', () => {
+    const prefill = derivePrefill(
+      { ...user, secondPillarPaymentRates: { current: 2, pending: 6 } },
+      [],
+      [],
+      now,
+    );
+    expect(prefill.currentSecondPillarRate).toBe(6);
+  });
+
+  it('starts with no II rate selected for a saver who has no II pillar', () => {
     const prefill = derivePrefill(
       {
         age: 45,

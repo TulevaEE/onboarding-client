@@ -1,4 +1,5 @@
 import {
+  Application,
   Contribution,
   Fund,
   SourceFund,
@@ -7,7 +8,9 @@ import {
   TransactionType,
   User,
 } from '../common/apiModels';
+import { isRejoinApplication } from '../account/ApplicationSection/ApplicationFunctions';
 import { deriveGrossSalary } from '../common/grossSalary';
+import { hasStoppedContributing } from '../common/secondPillarContributions';
 import {
   CalculatorInputs,
   MAX_THIRD_PILLAR_MONTHLY,
@@ -194,11 +197,24 @@ export function deriveThirdPillarBalance(sourceFunds: SourceFund[]): number {
   return roundTo(total, BALANCE_ROUNDING);
 }
 
+export const filedSecondPillarRate = (user?: User): number =>
+  user?.secondPillarPaymentRates?.pending ?? user?.secondPillarPaymentRates?.current ?? 2;
+
+const expectedSecondPillarRate = (user: User, pendingApplications: Application[]): number => {
+  const contributesAfterAll =
+    pendingApplications.some(isRejoinApplication) ||
+    Boolean(user.secondPillarContributions?.restartDate);
+  const contributesToday =
+    user.secondPillarActive && !hasStoppedContributing(user.secondPillarContributions);
+  return contributesAfterAll || contributesToday ? filedSecondPillarRate(user) : 0;
+};
+
 export function derivePrefill(
   user: User,
   sourceFunds: SourceFund[],
   contributions: Contribution[],
   now: Date,
+  pendingApplications: Application[] = [],
 ): PrefillValues {
   const grossSalaryMonthly = deriveGrossSalary(contributions, now) ?? DEFAULT_GROSS_SALARY;
   return {
@@ -207,10 +223,7 @@ export function derivePrefill(
     grossSalaryMonthly,
     initialBalance: deriveInitialBalance(sourceFunds),
     initialThirdPillarBalance: deriveThirdPillarBalance(sourceFunds),
-    // 0 = no II contribution (the saver has left the funded II pillar).
-    currentSecondPillarRate: user.secondPillarActive
-      ? user.secondPillarPaymentRates?.current ?? 2
-      : 0,
+    currentSecondPillarRate: expectedSecondPillarRate(user, pendingApplications),
     // Cap at the tax-advantaged ceiling — the slider never exceeds it either.
     currentThirdPillarMonthly: Math.min(
       deriveThirdPillarMonthly(contributions, now),

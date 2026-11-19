@@ -1,11 +1,12 @@
 import { initialAge60 } from './age60Answers';
-import { Age65Answers, initialAge65 } from './age65Answers';
+import { Age65Answers } from './age65Answers';
 import { Age66Answers, initialAge66 } from './age66Answers';
 import { initialExpenses, withLevel } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { chartEventsOf } from './chartEvents';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput, YouAnswers } from './youAnswers';
+import { age65Growing } from './resultContextFixture';
 
 const contextWith = (
   age65: Partial<Age65Answers> = {},
@@ -28,7 +29,7 @@ const contextWith = (
     you,
     plan: toStepPlanInput(you),
     age60: initialAge60(),
-    age65: { ...initialAge65(), ...age65 },
+    age65: { ...age65Growing(), ...age65 },
     age66: { ...initialAge66(), ...age66 },
     specialPension: initialSpecialPension(),
     expenses,

@@ -186,7 +186,7 @@ describe('Age 65 step', () => {
     expect(
       screen.getByRole('heading', { level: 2, name: /^Pensioniiga: riiklik pension ja sambad$/ }),
     ).toBeInTheDocument();
-    expect(screen.getByText('65-aastane · 2027. a · Sinu tulevik')).toBeInTheDocument();
+    expect(screen.getByText('65-aastane · 2027. a · Minu tulevik')).toBeInTheDocument();
     expect(screen.queryByText('Selle sammu sisu lisandub hiljem.')).not.toBeInTheDocument();
   });
 
@@ -251,6 +251,15 @@ describe('Age 65 step', () => {
   describe('the FAQ on deferring and half the pension', () => {
     const openDeferralAnswer = () =>
       userEvent.click(screen.getByText('Mida tähendab pensioni edasilükkamine või pool pensioni?'));
+
+    it('opens the Social Insurance Board page on the flexible pension in a new tab', () => {
+      openAge65Step();
+      openDeferralAnswer();
+
+      expect(
+        screen.getByRole('link', { name: /^Sotsiaalkindlustusamet: paindlik pension/ }),
+      ).toHaveAttribute('target', '_blank');
+    });
 
     it("shows what deferring by a year does to the saver's own pension, for life", () => {
       openAge65Step();
@@ -348,12 +357,23 @@ describe('Age 65 step', () => {
   });
 
   describe('the second and third pillar at the pension age', () => {
-    it('asks for both when growing them was chosen at the earlier step', () => {
+    it('asks for both with the monthly payouts preselected when growing them was chosen at the earlier step', () => {
       openAge65Step();
 
       [secondPillarGroup(), thirdPillarGroup()].forEach((group) => {
         expect(within(group).getAllByRole('radio')).toHaveLength(3);
-        expect(choice(group, 'Kasvatan edasi')).toBeChecked();
+        expect(choice(group, 'Võtan igakuiselt')).toBeChecked();
+      });
+    });
+
+    it('lists the monthly payouts first, growing on second and taking it all at once last', () => {
+      openAge65Step();
+
+      [secondPillarGroup(), thirdPillarGroup()].forEach((group) => {
+        const [first, second, third] = within(group).getAllByRole('radio');
+        expect(first).toHaveAccessibleName('Võtan igakuiselt');
+        expect(second).toHaveAccessibleName('Kasvatan edasi');
+        expect(third).toHaveAccessibleName('Võtan korraga välja');
       });
     });
 
@@ -361,10 +381,10 @@ describe('Age 65 step', () => {
       openAge65Step();
 
       expect(choice(thirdPillarGroup(), 'Kasvatan edasi')).toHaveAccessibleDescription(
-        /^Vara jääb fondi ja kasvab edasi\.$/,
+        /^Vara jääb fondi\.$/,
       );
       expect(choice(thirdPillarGroup(), 'Võtan igakuiselt')).toHaveAccessibleDescription(
-        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara kasvab fondis edasi\.$/,
+        /^Tulumaksuvaba väljamakse igal kuul elada jäänud aastate peale\. Ülejäänud vara jääb fondi\.$/,
       );
       expect(choice(thirdPillarGroup(), 'Võtan korraga välja')).toHaveAccessibleDescription(
         /^Kogu vara korraga välja, 10%\stulumaks\. Raha on hoiusel\.$/,
@@ -565,10 +585,50 @@ describe('Age 65 step', () => {
     });
   });
 
+  it('still preselects the monthly payouts at the payout age after the workload was answered before retiring early was added', () => {
+    loggedInAs({ dateOfBirth: '1970-01-01', retirementAge: 66 });
+    openAge65Step({ trailName: /^61\sa, vaatamata$/ });
+    userEvent.click(
+      within(screen.getByRole('group', { name: /töökoormust/ })).getByRole('radio', {
+        name: /Vähendan koormust/,
+      }),
+    );
+    userEvent.click(within(trail()).getByRole('button', { name: /^Mina/ }));
+    addFiveChildren();
+    userEvent.click(within(trail()).getByRole('button', { name: /^61\sa sambad/ }));
+
+    expect(
+      within(screen.getByRole('group', { name: /^II\ssamba väljamakse viis$/ })).getByRole(
+        'radio',
+        { name: /^Võtan igakuiselt/ },
+      ),
+    ).toBeChecked();
+  });
+
+  describe('payouts when retiring at the payout age', () => {
+    beforeEach(() => {
+      loggedInAs({ dateOfBirth: '1970-01-01', retirementAge: 66 });
+      openAge65Step({ withFiveChildren: true, trailName: /^61\sa sambad, vaatamata$/ });
+    });
+
+    it('does not ask about working less from the payout age, as the saver has retired by then', () => {
+      expect(screen.queryByRole('group', { name: /töökoormust/ })).not.toBeInTheDocument();
+    });
+
+    it('lists the monthly payouts first and preselects them, as at the pension age', () => {
+      const [first] = within(
+        screen.getByRole('group', { name: /^II\ssamba väljamakse viis$/ }),
+      ).getAllByRole('radio');
+
+      expect(first).toHaveAccessibleName(/^Võtan igakuiselt/);
+      expect(first).toBeChecked();
+    });
+  });
+
   describe('retiring early on favourable terms', () => {
     beforeEach(() => {
       loggedInAs({ dateOfBirth: '1970-01-01', retirementAge: 66 });
-      openAge65Step({ withFiveChildren: true, trailName: /^61\sa pension, vaatamata$/ });
+      openAge65Step({ withFiveChildren: true, trailName: /^61\+\sa pension, vaatamata$/ });
     });
 
     it('says how many years early the saver retires and that the pension is not reduced', () => {
@@ -625,7 +685,7 @@ describe('Age 65 step', () => {
       expect(
         screen.queryByRole('group', { name: /väljamakse viis pensionieas/ }),
       ).not.toBeInTheDocument();
-      expect(screen.getAllByText(/valik 61-aastaselt: kasvatan edasi\./)).toHaveLength(2);
+      expect(screen.getAllByText(/valik 61-aastaselt: igakuised väljamaksed\./)).toHaveLength(2);
     });
   });
 });

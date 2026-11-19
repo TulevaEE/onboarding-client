@@ -42,6 +42,8 @@ const mockRejoinNotPermitted: RejoinPermissionQuery = {
 };
 let mockRejoinPermission = mockRejoinPermitted;
 let mockRejoinPermissionAsked = false;
+type MandateDeadlinesLoad = 'LOADED' | 'LOADING' | 'FAILED';
+let mockMandateDeadlinesLoad: MandateDeadlinesLoad = 'LOADED';
 const now = new Date('2024-07-22T10:36:00Z');
 
 // TODO: Figure out a cleaner way to mock the hooks
@@ -52,7 +54,16 @@ jest.mock('../../../common/apiHooks', () => ({
       : { data: mockPendingApplications, isInitialLoading: false },
   useTransactions: () => ({ data: [{ amount: 100 }] }),
   useFunds: () => ({ data: [{ pillar: 2 }] }),
-  useMandateDeadlines: () => ({ data: { periodEnding: '2024-07-31T00:59:59.999999999Z' } }),
+  useMandateDeadlines: () => ({
+    data:
+      mockMandateDeadlinesLoad === 'LOADED'
+        ? {
+            periodEnding: '2024-07-31T00:59:59.999999999Z',
+            secondPillarRejoinContributionStartDate: '2025-01-01',
+          }
+        : undefined,
+    isInitialLoading: mockMandateDeadlinesLoad === 'LOADING',
+  }),
   useFundPensionStatus: () =>
     mockFundPensionsAreLoading
       ? { data: undefined, isInitialLoading: true }
@@ -82,6 +93,7 @@ afterEach(() => {
   mockPendingApplicationsAreLoading = false;
   mockRejoinPermission = mockRejoinPermitted;
   mockRejoinPermissionAsked = false;
+  mockMandateDeadlinesLoad = 'LOADED';
   jest.setSystemTime(now);
   moment.locale('en');
 });
@@ -552,15 +564,15 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     mockPendingApplications = [];
   });
 
-  it('tells a leaver that they are not saving and offers to rejoin', () => {
+  it('tells a leaver that no contributions are made, in which month they start again, and offers to rejoin', () => {
     renderWithIntl(
       <SecondPillarStatusBox {...saver} secondPillarContributions={notContributing} />,
     );
 
-    expect(screen.getByText('You are not saving in the II pillar.')).toBeInTheDocument();
-    expect(
-      screen.getByText('You can start saving again by applying to rejoin.'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('You are not saving in the II pillar')).toBeInTheDocument();
+    expect(screen.getByText(/^Apply by/)).toHaveTextContent(
+      'Apply by 31 July and contributions start again in January',
+    );
     expect(screen.getByRole('link', { name: 'Rejoin' })).toHaveAttribute(
       'href',
       '/2nd-pillar-rejoin',
@@ -623,11 +635,77 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       />,
     );
 
-    expect(screen.getByText('You are not saving in the II pillar.')).toBeInTheDocument();
+    expect(screen.getByText('You are not saving in the II pillar')).toBeInTheDocument();
     expect(screen.queryByText(/You have no II\spillar/)).not.toBeInTheDocument();
     expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([
       '/2nd-pillar-rejoin',
     ]);
+  });
+
+  it('names the deadline to file the rejoin application, highlighted, after how contributions start again', () => {
+    renderWithIntl(
+      <SecondPillarStatusBox {...saver} secondPillarContributions={notContributing} />,
+    );
+
+    expect(screen.getByText(/^31\sJuly$/, { selector: 'b' })).toHaveClass('highlight');
+  });
+
+  it('names the deadline to rejoin in Estonian', () => {
+    moment.locale('et');
+    renderWithIntl(
+      <SecondPillarStatusBox {...saver} secondPillarContributions={notContributing} />,
+      'et',
+    );
+
+    expect(screen.getByText(/^31\.\sjuuliks$/, { selector: 'b' })).toHaveClass('highlight');
+    expect(screen.getByText('Sa ei kogu II sambas')).toBeInTheDocument();
+    expect(screen.getByText(/^Esita avaldus/)).toHaveTextContent(
+      'Esita avaldus 31. juuliks ja sissemaksed algavad uuesti jaanuaris',
+    );
+  });
+
+  it('shimmers the way back in until the filing window is known, instead of swapping one sentence for another', () => {
+    mockMandateDeadlinesLoad = 'LOADING';
+    renderWithIntl(
+      <SecondPillarStatusBox {...saver} secondPillarContributions={notContributing} />,
+    );
+
+    expect(screen.queryByText(/Apply by/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Contributions start again/)).not.toBeInTheDocument();
+  });
+
+  it('says contributions start again once they file to rejoin when the filing window cannot be loaded', () => {
+    mockMandateDeadlinesLoad = 'FAILED';
+    renderWithIntl(
+      <SecondPillarStatusBox {...saver} secondPillarContributions={notContributing} />,
+    );
+
+    expect(
+      screen.getByText('Contributions start again only once you file an application to rejoin.'),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/Apply by/)).not.toBeInTheDocument();
+  });
+
+  it('names no deadline when Pensionikeskus says the leaver cannot rejoin', () => {
+    mockRejoinPermission = mockRejoinNotPermitted;
+    renderWithIntl(
+      <SecondPillarStatusBox {...saver} secondPillarContributions={notContributing} />,
+    );
+
+    expect(screen.queryByText(/Apply by/)).not.toBeInTheDocument();
+  });
+
+  it('tells a leaver with no fund choice on record the same, without mentioning a fund choice', () => {
+    renderWithIntl(
+      <SecondPillarStatusBox
+        {...saver}
+        secondPillarActive={false}
+        secondPillarContributions={notContributing}
+      />,
+    );
+
+    expect(screen.getByText(/^Apply by/)).toBeInTheDocument();
+    expect(screen.queryByText(/fund choice/)).not.toBeInTheDocument();
   });
 
   it('shimmers the way back in until Pensionikeskus says whether the leaver may rejoin', () => {
@@ -637,10 +715,10 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       <SecondPillarStatusBox {...saver} secondPillarContributions={notContributing} />,
     );
 
-    expect(screen.getByText('You are not saving in the II pillar.')).toBeInTheDocument();
+    expect(screen.getByText('You are not saving in the II pillar')).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
     expect(document.querySelector('.shimmerDefault')).toBeInTheDocument();
-    expect(screen.queryByText(/start saving again/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/start again/)).not.toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
 
@@ -657,11 +735,11 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
         />,
       );
 
-      expect(screen.getByText('You are not saving in the II pillar.')).toBeInTheDocument();
+      expect(screen.getByText('You are not saving in the II pillar')).toBeInTheDocument();
       expect(
         screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment.'),
       ).toBeInTheDocument();
-      expect(screen.queryByText(/start saving again/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/start again/)).not.toBeInTheDocument();
       expect(screen.queryByRole('link')).not.toBeInTheDocument();
     },
   );
@@ -680,7 +758,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(
-      screen.getByText('After a retirement-age payout, you cannot rejoin the II pillar.'),
+      screen.getByText('After a retirement-age payout, you cannot rejoin the II pillar'),
     ).toBeInTheDocument();
     expect(screen.queryByText(/You can rejoin from/)).not.toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
@@ -762,9 +840,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       />,
     );
 
-    expect(
-      screen.getByText('You can start saving again by applying to rejoin.'),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/^Apply by/)).toBeInTheDocument();
     expect(screen.queryByText(/You can rejoin from/)).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Rejoin' })).toHaveAttribute(
       'href',
@@ -772,7 +848,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
   });
 
-  it('offers the way back in when Pensionikeskus could not say whether the leaver may rejoin, as the application asks again at signing', () => {
+  it('offers the way back in without promising a deadline when Pensionikeskus could not say whether the leaver may rejoin, as the application asks again at signing', () => {
     mockRejoinPermission = { data: undefined, isInitialLoading: false, isError: true };
 
     renderWithIntl(
@@ -783,8 +859,9 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(
-      screen.getByText('You can start saving again by applying to rejoin.'),
+      screen.getByText('Contributions start again only once you file an application to rejoin.'),
     ).toBeInTheDocument();
+    expect(screen.queryByText(/Apply by/)).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Rejoin' })).toHaveAttribute(
       'href',
       '/2nd-pillar-rejoin',
@@ -949,7 +1026,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
         />,
       );
     const expectNothingAboutRejoining = () => {
-      expect(screen.queryByText('You are not saving in the II pillar.')).not.toBeInTheDocument();
+      expect(screen.queryByText('You are not saving in the II pillar')).not.toBeInTheDocument();
       expect(screen.queryByText(/rejoin/i)).not.toBeInTheDocument();
       expect(mockRejoinPermissionAsked).toBe(false);
     };
@@ -1022,9 +1099,9 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
 
       renderStoppedSaver();
 
-      expect(screen.getByText('You are not saving in the II pillar.')).toBeInTheDocument();
+      expect(screen.getByText('You are not saving in the II pillar')).toBeInTheDocument();
       expect(
-        screen.getByText('After a retirement-age payout, you cannot rejoin the II pillar.'),
+        screen.getByText('After a retirement-age payout, you cannot rejoin the II pillar'),
       ).toBeInTheDocument();
       expect(screen.queryByRole('link')).not.toBeInTheDocument();
     });
@@ -1050,7 +1127,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       <SecondPillarStatusBox {...saver} secondPillarContributions={notContributing} />,
     );
 
-    expect(screen.getByText('You are not saving in the II pillar.')).toBeInTheDocument();
+    expect(screen.getByText('You are not saving in the II pillar')).toBeInTheDocument();
     expect(screen.queryByText(/receiving regular fund pension/)).not.toBeInTheDocument();
   });
 
@@ -1064,7 +1141,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     expect(screen.getByRole('heading', { name: /^II\spillar$/ })).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
     expect(document.querySelector('.shimmerDefault')).toBeInTheDocument();
-    expect(screen.queryByText('You are not saving in the II pillar.')).not.toBeInTheDocument();
+    expect(screen.queryByText('You are not saving in the II pillar')).not.toBeInTheDocument();
     expect(mockRejoinPermissionAsked).toBe(false);
   });
 

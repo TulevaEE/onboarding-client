@@ -102,6 +102,25 @@ describe('Result legacy card', () => {
       expect(shortfallHeading()).not.toBeInTheDocument();
     });
 
+    it('says how much is left in the euros of that age once future prices are picked', () => {
+      const left = () => screen.getByText(/Kui elad keskmiselt kaua/).textContent;
+      const inTodayPrices = left();
+
+      userEvent.click(screen.getByRole('button', { name: 'Tuleviku hinnad' }));
+
+      expect(left()).not.toBe(inTodayPrices);
+    });
+
+    it('says in the explanation that the sum is in future euros once future prices are picked', () => {
+      userEvent.click(screen.getByRole('button', { name: 'Tuleviku hinnad' }));
+      userEvent.click(
+        screen.getByRole('button', { name: 'Selgitus: Kuidas see summa arvutatakse' }),
+      );
+
+      expect(screen.getByRole('dialog')).toHaveTextContent('Summa on tuleviku eurodes.');
+      expect(screen.getByRole('dialog')).not.toHaveTextContent('tänastes eurodes');
+    });
+
     it('explains how the sum is worked out behind a help button', () => {
       userEvent.click(
         screen.getByRole('button', { name: 'Selgitus: Kuidas see summa arvutatakse' }),
@@ -115,12 +134,9 @@ describe('Result legacy card', () => {
     it('offers four things to do with the money and asks to pick one', () => {
       const options = within(screen.getByRole('group', { name: 'Mida ülejäägiga teed?' }));
 
-      [
-        'Pärandan lähedastele',
-        'Annetan',
-        'Kulutan ise rohkem',
-        'Jätan puhvriks hoolduseks',
-      ].forEach((name) => expect(options.getByRole('radio', { name })).not.toBeChecked());
+      ['Pärandan lähedastele', 'Annetan', 'Kulutan ise rohkem', 'Jätan puhvriks'].forEach((name) =>
+        expect(options.getByRole('radio', { name })).not.toBeChecked(),
+      );
       expect(screen.getByText('Vali üks variant.')).toBeInTheDocument();
       expect(screen.getByTestId('icon-heart')).toBeInTheDocument();
       expect(screen.getByTestId('icon-bag')).toBeInTheDocument();
@@ -130,9 +146,17 @@ describe('Result legacy card', () => {
       userEvent.click(screen.getByRole('radio', { name: 'Pärandan lähedastele' }));
 
       expect(
-        screen.getByText(/^Lähedastele jääb umbes [\d\s]+ €\. Pärandamiseks tee testament/),
+        screen.getByText(/^Lähedastele jääb umbes [\d\s]+ €\. See läheb sinu pärijatele/),
       ).toBeInTheDocument();
       expect(screen.queryByText('Vali üks variant.')).not.toBeInTheDocument();
+    });
+
+    it('says how large the buffer is and what it covers', () => {
+      userEvent.click(screen.getByRole('radio', { name: 'Jätan puhvriks' }));
+
+      expect(
+        screen.getByText(/^Puhver, umbes [\d\s]+ €, katab ootamatud kulud ja hoolduse/),
+      ).toBeInTheDocument();
     });
 
     it('offers to try the sustainable spending when spending it is chosen, and takes it as the costs', () => {
@@ -143,7 +167,7 @@ describe('Result legacy card', () => {
       userEvent.click(tryButton);
 
       expect(screen.getByRole('status', { name: /Kas raha jätkub/ })).toHaveTextContent(
-        new RegExp(`Sinu kulud \\(${digits.split('').join('\\s?')}\\s€\\skuus\\)`),
+        new RegExp(`sinu kulud \\(${digits.split('').join('\\s?')}\\s€\\skuus\\)`),
       );
     });
 
@@ -238,7 +262,7 @@ describe('Result legacy card', () => {
         screen.getByText('Või proovi mõnda neist ja vaata, kuidas tulemus muutub.'),
       ).toBeInTheDocument();
 
-      userEvent.click(screen.getByRole('button', { name: /Jätka II\ssamba kasvatamist/ }));
+      userEvent.click(screen.getByRole('button', { name: /Jätka II\ssambas kogumist/ }));
 
       expect(screen.queryByText('Ära võta II sammast korraga välja.')).not.toBeInTheDocument();
     });
@@ -270,7 +294,7 @@ describe('Result legacy card', () => {
       openResult();
 
       expect(secondPillarTip()).toHaveTextContent(
-        /Fondis hoiab see väärtust \(sinu valitud tootlus 2%\saastas on pärast inflatsiooni 0%\)\./,
+        /Arvutuses hoiab see fondis väärtust \(sinu valitud tootlus 2%\saastas on pärast inflatsiooni 0%\)\./,
       );
     });
 
@@ -282,7 +306,7 @@ describe('Result legacy card', () => {
       openResult();
 
       expect(secondPillarTip()).toHaveTextContent(
-        /Fondis kasvab see edasi \(sinu valitud tootlus 4%\saastas on pärast inflatsiooni 1,96%\)\./,
+        /Arvutuses kasvab see fondis edasi \(sinu valitud tootlus 4%\saastas on pärast inflatsiooni 1,96%\)\./,
       );
     });
 
@@ -293,7 +317,7 @@ describe('Result legacy card', () => {
       takeSecondPillarAsLumpSum();
       openResult();
 
-      userEvent.click(screen.getByRole('button', { name: /Jätka II\ssamba kasvatamist/ }));
+      userEvent.click(screen.getByRole('button', { name: /Jätka II\ssambas kogumist/ }));
 
       expect(shortfallHeading()).toHaveFocus();
     });

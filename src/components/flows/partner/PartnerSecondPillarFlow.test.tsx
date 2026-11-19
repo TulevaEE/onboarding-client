@@ -1,12 +1,16 @@
 import { setupServer } from 'msw/node';
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Route, Switch } from 'react-router-dom';
 import { createMemoryHistory, History } from 'history';
 import { initializeConfiguration } from '../../config/config';
 import LoggedInApp from '../../LoggedInApp';
 import { createDefaultStore, renderWrapped } from '../../../test/utils';
-import { mandatesBackend, useTestBackendsExcept } from '../../../test/backend';
+import {
+  mandatesBackend,
+  userConversionBackend,
+  useTestBackendsExcept,
+} from '../../../test/backend';
 import { TriggerProcedure } from '../../TriggerProcedure/TriggerProcedure';
 import PrivateRoute from '../../../PrivateRoute/PrivateRoute';
 import { getAuthentication } from '../../common/authenticationManager';
@@ -37,6 +41,12 @@ beforeEach(() => {
   getAuthentication().remove();
 
   useTestBackendsExcept(server, ['mandates']);
+  userConversionBackend(server, {
+    selectionComplete: false,
+    selectionPartial: false,
+    transfersComplete: false,
+    transfersPartial: false,
+  });
 
   initializeComponent();
 
@@ -51,6 +61,36 @@ beforeEach(() => {
   });
 
   history.push(path);
+});
+
+describe('partner 2nd pillar entry for someone already saving with Tuleva', () => {
+  test('opens the account for someone whose II pillar is already fully at Tuleva', async () => {
+    userConversionBackend(server);
+
+    await waitFor(() => expect(history.location.pathname).toBe('/account'), { timeout: 10_000 });
+    expect(screen.queryByText(/Your pension account overview/i)).not.toBeInTheDocument();
+  });
+
+  test('keeps the confirmation after signing once the II pillar shows as fully at Tuleva', async () => {
+    userConversionBackend(server);
+    await waitFor(() => expect(history.location.pathname).toBe('/account'), { timeout: 10_000 });
+
+    history.push('/partner/2nd-pillar-flow/success');
+
+    expect(await screen.findByText('Application finished')).toBeInTheDocument();
+    expect(history.location.pathname).toBe('/partner/2nd-pillar-flow/success');
+  });
+
+  test('asks someone already contributing to Tuleva to transfer the rest', async () => {
+    userConversionBackend(server, { transfersComplete: false, transfersPartial: true });
+
+    expect(
+      await screen.findByText(/^Transfer the rest of your II\spillar to Tuleva$/, undefined, {
+        timeout: 10_000,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText('Transfer your pension to Tuleva')).not.toBeInTheDocument();
+  });
 });
 
 describe('partner 2nd pillar flow', () => {

@@ -3,7 +3,15 @@ import { RejoinDecision } from '../../common/apiModels';
 import { formatDateFromWithYear, todayInTallinn } from '../../common/dateFormatter';
 import { NoStopApplicationMessage } from '../../common/errorMessage/NoStopApplicationMessage';
 
-const isAfterToday = (day: string) => day > todayInTallinn();
+export const dateToWaitForRejoining = (
+  rejoinPossibleFrom: string | null | undefined,
+  decision: RejoinDecision | undefined,
+): string | null =>
+  decision === 'REFUSED_BY_PENSIONIKESKUS' &&
+  rejoinPossibleFrom &&
+  rejoinPossibleFrom > todayInTallinn()
+    ? rejoinPossibleFrom
+    : null;
 
 export const RejoinRefusalReason = ({
   decision,
@@ -15,11 +23,12 @@ export const RejoinRefusalReason = ({
   if (decision === 'CONTRIBUTIONS_CANNOT_RESTART') {
     return <NoStopApplicationMessage />;
   }
-  if (rejoinPossibleFrom && isAfterToday(rejoinPossibleFrom)) {
+  const waitUntil = dateToWaitForRejoining(rejoinPossibleFrom, decision);
+  if (waitUntil) {
     return (
       <FormattedMessage
         id="account.status.choice.pillar.second.notContributing.line2.rejoinPossibleFrom"
-        values={{ date: formatDateFromWithYear(rejoinPossibleFrom) }}
+        values={{ date: formatDateFromWithYear(waitUntil) }}
       />
     );
   }

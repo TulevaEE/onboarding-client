@@ -943,7 +943,7 @@ const returnsData2YearsAgo: ReturnsResponse = {
   to: moment().format('YYYY-MM-DD'),
   returns: [
     {
-      key: 'UNION_STOCK_INDEX',
+      key: 'MSCI_ACWI_ADJUSTED',
       rate: 0.09,
       amount: 16000.0,
       paymentsSum: 14000.0,
@@ -966,7 +966,7 @@ const returnsData2YearsAnd1DayAgo: ReturnsResponse = {
   to: moment().format('YYYY-MM-DD'),
   returns: [
     {
-      key: 'UNION_STOCK_INDEX',
+      key: 'MSCI_ACWI_ADJUSTED',
       rate: 0.09,
       amount: 16000.0,
       paymentsSum: 14000.0,
@@ -989,7 +989,7 @@ const returnsData4YearsAgo: ReturnsResponse = {
   to: moment().format('YYYY-MM-DD'),
   returns: [
     {
-      key: 'UNION_STOCK_INDEX',
+      key: 'MSCI_ACWI_ADJUSTED',
       rate: 0.09,
       amount: 16000.0,
       paymentsSum: 14000.0,
@@ -1011,7 +1011,7 @@ const returnsData2ndPillarIndexNegative: ReturnsResponse = {
   to: moment().format('YYYY-MM-DD'),
   returns: [
     {
-      key: 'UNION_STOCK_INDEX',
+      key: 'MSCI_ACWI_ADJUSTED',
       rate: 0.09,
       amount: 16000.0,
       paymentsSum: 14000.0,
@@ -1034,7 +1034,7 @@ const returnsData2ndPillarIndexAbsoluteNegative: ReturnsResponse = {
   to: moment().format('YYYY-MM-DD'),
   returns: [
     {
-      key: 'UNION_STOCK_INDEX',
+      key: 'MSCI_ACWI_ADJUSTED',
       rate: 0.09,
       amount: 16000.0,
       paymentsSum: 14000.0,
@@ -1057,7 +1057,7 @@ const returnsData2ndPillarIndexPositive: ReturnsResponse = {
   to: moment().format('YYYY-MM-DD'),
   returns: [
     {
-      key: 'UNION_STOCK_INDEX',
+      key: 'MSCI_ACWI_ADJUSTED',
       rate: 0.09,
       amount: 16000.0,
       paymentsSum: 14000.0,
@@ -1079,7 +1079,7 @@ const returnsData2ndPillarIndexNeutral: ReturnsResponse = {
   to: moment().format('YYYY-MM-DD'),
   returns: [
     {
-      key: 'UNION_STOCK_INDEX',
+      key: 'MSCI_ACWI_ADJUSTED',
       rate: 0.095,
       amount: 16100.0,
       paymentsSum: 14000.0,
@@ -1101,7 +1101,7 @@ const returnsData2ndPillarOnePercentBelowIndex: ReturnsResponse = {
   to: moment().format('YYYY-MM-DD'),
   returns: [
     {
-      key: 'UNION_STOCK_INDEX',
+      key: 'MSCI_ACWI_ADJUSTED',
       rate: 0.07,
       amount: 15000.0,
       paymentsSum: 20000.0,
@@ -1123,7 +1123,7 @@ const returnsData3rdPillarIndexNegative: ReturnsResponse = {
   to: moment().format('YYYY-MM-DD'),
   returns: [
     {
-      key: 'UNION_STOCK_INDEX',
+      key: 'MSCI_ACWI_ADJUSTED',
       rate: 0.09,
       amount: 16000.0,
       paymentsSum: 14000.0,
@@ -1145,7 +1145,7 @@ const returnsData3rdPillarIndexPositive: ReturnsResponse = {
   to: moment().format('YYYY-MM-DD'),
   returns: [
     {
-      key: 'UNION_STOCK_INDEX',
+      key: 'MSCI_ACWI_ADJUSTED',
       rate: 0.09,
       amount: 16000.0,
       paymentsSum: 14000.0,
@@ -1167,7 +1167,7 @@ const returnsData3rdPillarIndexNeutral: ReturnsResponse = {
   to: moment().format('YYYY-MM-DD'),
   returns: [
     {
-      key: 'UNION_STOCK_INDEX',
+      key: 'MSCI_ACWI_ADJUSTED',
       rate: 0.095,
       amount: 16100.0,
       paymentsSum: 14000.0,
@@ -1198,7 +1198,7 @@ const returnsData2ndPillarAverage: ReturnsResponse = {
       type: 'INDEX',
     },
     {
-      key: 'UNION_STOCK_INDEX',
+      key: 'MSCI_ACWI_ADJUSTED',
       rate: 0.09,
       amount: 16000.0,
       paymentsSum: 14000.0,
@@ -1229,7 +1229,7 @@ const returnsData2ndPillarCpi: ReturnsResponse = {
       type: 'INDEX',
     },
     {
-      key: 'UNION_STOCK_INDEX',
+      key: 'MSCI_ACWI_ADJUSTED',
       rate: 0.09,
       amount: 16000.0,
       paymentsSum: 14000.0,
@@ -1260,7 +1260,7 @@ const returnsData2ndPillarAndFund: ReturnsResponse = {
       type: 'FUND',
     },
     {
-      key: 'UNION_STOCK_INDEX',
+      key: 'MSCI_ACWI_ADJUSTED',
       rate: 0.09,
       amount: 16000.0,
       paymentsSum: 14000.0,
@@ -1291,7 +1291,7 @@ const returnsData2ndPillarAndIncomparableFund: ReturnsResponse = {
       type: 'FUND',
     },
     {
-      key: 'UNION_STOCK_INDEX',
+      key: 'MSCI_ACWI_ADJUSTED',
       rate: 0.09,
       amount: 16000.0,
       paymentsSum: 14000.0,
@@ -1314,7 +1314,7 @@ const returnsData2ndPillarSmallPersonalReturn: ReturnsResponse = {
   to: moment().format('YYYY-MM-DD'),
   returns: [
     {
-      key: 'UNION_STOCK_INDEX',
+      key: 'MSCI_ACWI_ADJUSTED',
       rate: 0.09,
       amount: 16000.0,
       paymentsSum: 14000.0,

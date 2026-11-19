@@ -8,6 +8,7 @@ import { initializeConfiguration } from '../../config/config';
 import { useTestBackendsExcept } from '../../../test/backend';
 import { NudgeView } from './Nudge';
 import { NudgeDecision } from '../apiModels/nudge';
+import { mandateDeadlinesProfiles } from '../requestMocker/profiles/mandateDeadlines';
 
 const server = setupServer();
 
@@ -148,9 +149,6 @@ describe('second pillar rejoin nudge', () => {
     expect(
       await screen.findByRole('heading', { name: 'Get the tax win again' }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByText(/The last day to file the application is November\s30,\s2026\./),
-    ).toBeInTheDocument();
     expect(screen.getByText(/^94\s€ a month$/)).toBeInTheDocument();
     expect(screen.getByText('to your bank account')).toBeInTheDocument();
     expect(screen.getByText(/^200\s€ a month$/)).toBeInTheDocument();
@@ -162,6 +160,107 @@ describe('second pillar rejoin nudge', () => {
       '/2nd-pillar-rejoin',
     );
   });
+});
+
+describe('second pillar filing deadline', () => {
+  const nudges: { nudge: string; decision: NudgeDecision }[] = [
+    {
+      nudge: 'rejoin',
+      decision: {
+        key: 'SECOND_PILLAR_REJOIN',
+        tag: 'nudge_second_pillar_rejoin',
+        secondPillarRejoinDeadline: '2026-11-30',
+      },
+    },
+    {
+      nudge: 'transfer',
+      decision: { key: 'SECOND_PILLAR_TRANSFER', tag: 'nudge_second_pillar' },
+    },
+    {
+      nudge: 'fee comparison',
+      decision: {
+        key: 'SECOND_PILLAR_TRANSFER',
+        tag: 'nudge_second_pillar',
+        feeComparison: {
+          currentFeePercent: 0.65,
+          currentFeeAmount: 130,
+          tulevaFeeAmount: 56,
+          savingsAmount: 74,
+        },
+      },
+    },
+    {
+      nudge: 'payment rate',
+      decision: { key: 'SECOND_PILLAR_PAYMENT_RATE', tag: 'nudge_payment_rate' },
+    },
+  ];
+  const deadline = 'The application deadline is November 30.';
+  let mandateDeadlinesServed: boolean;
+
+  beforeEach(() => {
+    initializeConfiguration();
+    mandateDeadlinesServed = false;
+    useTestBackendsExcept(server, ['trackedEvents', 'mandateDeadlines']);
+    server.use(
+      rest.post('http://localhost/v1/t', (req, res, ctx) => res(ctx.json({}))),
+      rest.get('http://localhost/v1/mandate-deadlines', (req, res, ctx) => {
+        mandateDeadlinesServed = true;
+        return res(ctx.json(mandateDeadlinesProfiles.NOVEMBER_2026_BEFORE_DEADLINE));
+      }),
+    );
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  const givenNowIs = (instant: string) =>
+    jest.spyOn(Date, 'now').mockReturnValue(Date.parse(instant));
+
+  const renderNudge = (decision: NudgeDecision) => {
+    const history = createMemoryHistory();
+    const store = createDefaultStore(history as any);
+    login(store);
+    renderWrapped(
+      <NudgeView decision={decision} context="THIRD_PILLAR_PAYMENT" />,
+      history as any,
+      store,
+    );
+  };
+
+  test.each(nudges)(
+    'shows the deadline on the $nudge nudge from the same day a month before it in Tallinn',
+    async ({ decision }) => {
+      givenNowIs('2026-10-29T22:30:00Z');
+
+      renderNudge(decision);
+
+      expect(await screen.findByText(deadline)).toBeInTheDocument();
+    },
+  );
+
+  test('still shows the deadline on its last evening in Tallinn', async () => {
+    givenNowIs('2026-11-30T21:30:00Z');
+
+    renderNudge({ key: 'SECOND_PILLAR_PAYMENT_RATE', tag: 'nudge_payment_rate' });
+
+    expect(await screen.findByText(deadline)).toBeInTheDocument();
+  });
+
+  test.each(nudges)(
+    'leaves the deadline off the $nudge nudge while it is more than a month away',
+    async ({ decision }) => {
+      givenNowIs('2026-10-29T21:30:00Z');
+
+      renderNudge(decision);
+
+      expect(await screen.findByRole('link')).toBeInTheDocument();
+      await waitFor(() => expect(mandateDeadlinesServed).toBe(true));
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      expect(screen.queryByText(/application deadline/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/last day to file/)).not.toBeInTheDocument();
+    },
+  );
 });
 
 describe('fee comparison nudge', () => {

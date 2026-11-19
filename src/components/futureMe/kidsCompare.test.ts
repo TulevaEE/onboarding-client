@@ -72,6 +72,16 @@ describe('special pension or the pension for the children', () => {
     ).toBe(false);
   });
 
+  it('is compared when the saver shares the early right with the other parent', () => {
+    const fiveChildrenShared = {
+      kidsCount: '5',
+      kidsBirthYears: ['1990', '1992', '1994', '1996', '1998'],
+      kidsEarlyUser: 'split',
+    };
+
+    expect(isSpecialComparisonShown(withSpecialPension(fiveChildrenShared))).toBe(true);
+  });
+
   it('is compared while the early retirement for the children starts this year or later, not once it has started', () => {
     expect(isSpecialComparisonShown(withSpecialPension({ birthYear: '1962' }))).toBe(true);
     expect(isSpecialComparisonShown(withSpecialPension({ birthYear: '1961' }))).toBe(false);

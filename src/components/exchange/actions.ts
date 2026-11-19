@@ -44,6 +44,7 @@ import {
   SIGN_MANDATE_SMART_ID_START_SUCCESS,
   SIGN_MANDATE_START_ERROR,
   SIGN_MANDATE_SUCCESS,
+  FORGET_SIGNED_MANDATE,
 } from './constants';
 import { actions as amlActions } from '../aml';
 import { getAuthentication } from '../common/authenticationManager';
@@ -81,6 +82,10 @@ export function selectExchangeSources(
     sourceSelectionExact,
     targetFundIsin,
   };
+}
+
+export function forgetSignedMandate() {
+  return { type: FORGET_SIGNED_MANDATE };
 }
 
 export function changeAgreementToTerms(agreement: boolean) {

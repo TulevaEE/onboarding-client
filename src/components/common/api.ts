@@ -13,6 +13,7 @@ import {
   Contribution,
   CreateMemberCapitalListingDto,
   Fund,
+  FundNavHistory,
   FundBalance,
   IdCardSignatureResponse,
   IdCardSignatureStatusResponse,
@@ -45,6 +46,7 @@ import {
   Transaction,
   User,
   UserConversion,
+  WorldMarketReturns,
 } from './apiModels/index';
 import {
   HackathonIdea,
@@ -67,7 +69,7 @@ import {
   postWithAuthentication,
   putWithAuthentication,
 } from './http';
-import { getAuthentication } from './authenticationManager';
+import { getAuthentication, isLoggedInThroughPartner } from './authenticationManager';
 import {
   CreateMandateBatchDto,
   FundPensionStatus,
@@ -636,6 +638,20 @@ export function getFunds(): Promise<Fund[]> {
   return mockRequestInMockMode(() => getWithAuthentication(getEndpoint('/v1/funds')), 'funds');
 }
 
+export function getSecondPillarNavHistories(startDate: string): Promise<FundNavHistory[]> {
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/funds/nav'), { pillar: 2, startDate }),
+    'secondPillarNavHistories',
+  );
+}
+
+export function getWorldMarketReturns(): Promise<WorldMarketReturns> {
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/benchmarks/world-market/returns')),
+    'worldMarketReturns',
+  );
+}
+
 export function getPendingApplications(): Promise<Application[]> {
   return mockRequestInMockMode(
     () =>
@@ -696,6 +712,16 @@ export function getContributions(): Promise<Contribution[]> {
   );
 }
 
+export function getCompletedApplications(): Promise<Application[]> {
+  return mockRequestInMockMode(
+    () =>
+      getWithAuthentication(getEndpoint('/v1/applications'), {
+        status: 'COMPLETE',
+      }),
+    'completedApplications',
+  );
+}
+
 export function getRejoinPermission(): Promise<RejoinPermission> {
   return mockRequestInMockMode(
     () => getWithAuthentication(getEndpoint('/v1/rejoin-permission'), undefined),
@@ -729,26 +755,6 @@ export function createTrackedEvent(type: string, data: Record<string, unknown>):
   return postWithAuthentication(getEndpoint('/v1/t'), { type, data });
 }
 
-// For events fired right before the page unloads (a click on a link that navigates away):
-// a keepalive request outlives the document, a regular request may be cancelled with it.
-export function createTrackedEventBeforeUnload(
-  type: string,
-  data: Record<string, unknown>,
-): Promise<unknown> {
-  const { accessToken } = getAuthentication();
-  return fetch(getEndpoint('/v1/t'), {
-    method: 'POST',
-    keepalive: true,
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      Authorization: `Bearer ${accessToken}`,
-      'Accept-Language': config.get('language'),
-    },
-    body: JSON.stringify({ type, data }),
-  });
-}
-
 export function getPaymentLink(payment: Payment): Promise<PaymentLink> {
   return getWithAuthentication(getEndpoint('/v1/payments/link'), payment);
 }
@@ -778,7 +784,7 @@ export async function confirmThirdPillarRecurringPayment(): Promise<void> {
 }
 
 function getWindow(paymentType: PaymentType): Window {
-  if (paymentType !== 'RECURRING' || getAuthentication().loginMethod === 'PARTNER') {
+  if (paymentType !== 'RECURRING' || isLoggedInThroughPartner()) {
     return window;
   }
   const newWindow = window.open('', '_blank'); // this might be blocked by popup blockers
@@ -789,22 +795,30 @@ function getWindow(paymentType: PaymentType): Window {
   return newWindow;
 }
 
+const fetchSavingsFundBalance = async (): Promise<SourceFund | null> => {
+  const fund = await getWithAuthentication<FundBalance>(
+    getEndpoint('/v1/savings-account-statement'),
+  );
+
+  if (!fund) {
+    return null;
+  }
+
+  return transformFundBalance(fund);
+};
+
 export async function getSavingsFundBalance(): Promise<SourceFund | null> {
   return mockRequestInMockMode(async () => {
     try {
-      const fund = await getWithAuthentication<FundBalance>(
-        getEndpoint('/v1/savings-account-statement'),
-      );
-
-      if (!fund) {
-        return null;
-      }
-
-      return transformFundBalance(fund);
+      return await fetchSavingsFundBalance();
     } catch (error) {
       return null;
     }
   }, 'savingsFundBalance');
+}
+
+export async function getSavingsFundBalanceOrFail(): Promise<SourceFund | null> {
+  return mockRequestInMockMode(fetchSavingsFundBalance, 'savingsFundBalance');
 }
 
 export async function getSavingsFundBankAccounts(): Promise<string[]> {

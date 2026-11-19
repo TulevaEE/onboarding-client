@@ -6,14 +6,21 @@ import { createMemoryHistory, History } from 'history';
 import { initializeConfiguration } from '../../config/config';
 import LoggedInApp from '../../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../../test/utils';
-import { mandatesBackend, userBackend, useTestBackendsExcept } from '../../../test/backend';
+import {
+  mandatesBackend,
+  nudgeBackend,
+  userBackend,
+  useTestBackendsExcept,
+} from '../../../test/backend';
+import { SIGN_MANDATE_SUCCESS } from '../../exchange/constants';
 
 const server = setupServer();
 let history: History;
+let store: ReturnType<typeof createDefaultStore>;
 
 function initializeComponent() {
   history = createMemoryHistory();
-  const store = createDefaultStore(history as any);
+  store = createDefaultStore(history as any);
   login(store);
 
   renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
@@ -37,6 +44,52 @@ describe('2nd pillar flow', () => {
   beforeEach(() => {
     userBackend(server);
   });
+
+  test('does not ask someone with nothing left to transfer to transfer the rest', async () => {
+    expect(
+      await screen.findByText('Transfer your pension to Tuleva', undefined, { timeout: 10_000 }),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/^Transfer the rest of your II\spillar/)).not.toBeInTheDocument();
+  });
+
+  test('asks for a signature when the fund switch nudge after a payment rate change leads here', async () => {
+    nudgeBackend(server, { key: 'SECOND_PILLAR_TRANSFER', tag: 'nudge_second_pillar_transfer' });
+    history.push('/2nd-pillar-payment-rate-success');
+    store.dispatch({ type: SIGN_MANDATE_SUCCESS, signedMandateId: 99, pillar: 2 });
+
+    userEvent.click(
+      await screen.findByRole(
+        'link',
+        { name: /^Bring your II\spillar to Tuleva$/ },
+        { timeout: 10_000 },
+      ),
+    );
+    expect(
+      await screen.findByText(/Your pension account overview/i, undefined, { timeout: 10_000 }),
+    ).toBeInTheDocument();
+
+    userEvent.click(nextButton());
+
+    expect(await screen.findByText(/I transfer future fund payments to/i)).toBeInTheDocument();
+    expect(applicationFinished()).not.toBeInTheDocument();
+
+    userEvent.click(confirmationCheckbox());
+    mandatesBackend(
+      server,
+      {
+        fundTransferExchanges: [
+          { amount: 1, sourceFundIsin: 'EE3600019758', targetFundIsin: 'EE3600109435' },
+        ],
+        futureContributionFundIsin: 'EE3600109435',
+        address: { countryCode: 'EE' },
+      },
+      2,
+    );
+    userEvent.click(signButton());
+
+    expect(applicationFinished()).not.toBeInTheDocument();
+    await expectSuccessScreen(true, true);
+  }, 20_000);
 
   test('allows moving all external pension to stock Tuleva pension fund', async () => {
     expect(
@@ -270,3 +323,4 @@ const directFutureContributionsSwitch: () => HTMLInputElement = () =>
 const nextButton = () => screen.getByRole('button', { name: 'Next step' });
 const confirmationCheckbox = () => screen.getByRole('checkbox', { name: /I confirm/i });
 const signButton = () => screen.getByRole('button', { name: 'Sign and send mandate' });
+const applicationFinished = () => screen.queryByRole('heading', { name: 'Application finished' });

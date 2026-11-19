@@ -13,7 +13,6 @@ html {
   min-width: 320px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  scroll-behavior: smooth;
 }
 
 hr {
@@ -46,6 +45,10 @@ a:focus,
 
 a abbr[title] {
   cursor: inherit;
+}
+
+.highlight {
+  box-shadow: inset 0 -0.5em 0 #f8e81c;
 }
 
 .skip-link {
@@ -284,6 +287,18 @@ small {
 
 .text-pretty {
   text-wrap: pretty;
+}
+
+@media (min-width: 576px) {
+  .text-sm-nowrap {
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 374.98px) {
+  .hidden-below-375px {
+    display: none !important;
+  }
 }
 
 .scroll-margin-bottom {

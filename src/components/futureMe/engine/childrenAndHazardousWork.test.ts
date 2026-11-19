@@ -74,6 +74,19 @@ describe('children', () => {
       expect(earlyYears(withChildren({ b2013: 1, b2021: 2 }))).toBe(1);
     });
 
+    it.each([
+      { children: 3, full: 1 },
+      { children: 4, full: 3 },
+      { children: 5, full: 5 },
+    ])(
+      'gives half of the $full years to each parent sharing the right, in whole years',
+      ({ children, full }) => {
+        expect(earlyYears(withChildren({ b2012: children, earlyUser: 'split' }))).toBe(
+          Math.floor(full / 2),
+        );
+      },
+    );
+
     it('gives no early retirement when the other parent uses the right', () => {
       expect(earlyYears(withChildren({ b2012: 5, user: 'other' }))).toBe(0);
     });

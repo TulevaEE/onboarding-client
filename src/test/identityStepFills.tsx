@@ -84,6 +84,7 @@ export const fillPersonalProfileSteps = async () => {
   userEvent.click(await screen.findByRole('checkbox', { name: 'Salary' }));
   clickContinue();
 
+  expect(await screen.findByRole('link', { name: /^Terms/ })).toBeInTheDocument();
   userEvent.click(
     await screen.findByLabelText(
       'I confirm that I have reviewed the documents and understand that the investment may increase or decrease in value over time',

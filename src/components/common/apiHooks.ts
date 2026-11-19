@@ -39,6 +39,8 @@ import {
   getKycIdentity,
   getInsuranceTransferForm,
   getFunds,
+  getSecondPillarNavHistories,
+  getWorldMarketReturns,
   getMandateDeadlines,
   getMemberCapitalListingCount,
   getMemberCapitalListings,
@@ -47,7 +49,9 @@ import {
   getPendingApplications,
   getPendingOnboardings,
   getRejoinPermission,
+  getCompletedApplications,
   getSavingsFundBalance,
+  getSavingsFundBalanceOrFail,
   getSavingsFundBankAccounts,
   getSavingsFundOnboardingStatus,
   getSavingsFundPersonOnboardingStatus,
@@ -76,6 +80,7 @@ import {
   CreateMemberCapitalListingDto,
   ErrorResponse,
   Fund,
+  FundNavHistory,
   MandateDeadlines,
   MemberCapitalListing,
   PendingOnboarding,
@@ -90,6 +95,7 @@ import {
   Transaction,
   User,
   UserConversion,
+  WorldMarketReturns,
 } from './apiModels';
 import {
   CreateMandateBatchDto,
@@ -116,6 +122,14 @@ import {
 
 export function usePendingApplications(): UseQueryResult<Application[]> {
   return useQuery({ queryKey: ['pendingApplications'], queryFn: () => getPendingApplications() });
+}
+
+export function useCompletedApplications() {
+  return useQuery({
+    queryKey: ['completedApplications'],
+    queryFn: () => getCompletedApplications(),
+    retry: 1,
+  });
 }
 
 export function useTransactions(): UseQueryResult<Transaction[]> {
@@ -157,6 +171,17 @@ export function useSecondPillarAssets(): UseQueryResult<SecondPillarAssets> {
 
 export function useFunds(): UseQueryResult<Fund[]> {
   return useQuery({ queryKey: ['funds'], queryFn: () => getFunds() });
+}
+
+export function useSecondPillarNavHistories(startDate: string): UseQueryResult<FundNavHistory[]> {
+  return useQuery({
+    queryKey: ['secondPillarNavHistories', startDate],
+    queryFn: () => getSecondPillarNavHistories(startDate),
+  });
+}
+
+export function useWorldMarketReturns(): UseQueryResult<WorldMarketReturns> {
+  return useQuery({ queryKey: ['worldMarketReturns'], queryFn: () => getWorldMarketReturns() });
 }
 
 export function useApplicationCancellation(): UseMutationResult<
@@ -210,11 +235,14 @@ export function useFundPensionStatus(): UseQueryResult<FundPensionStatus> {
   return useQuery({ queryKey: ['fundPensionStatus'], queryFn: () => getFundPensionStatus() });
 }
 
-export function useRejoinPermission(): UseQueryResult<RejoinPermission> {
+export function useRejoinPermission(
+  options: { enabled?: boolean } = {},
+): UseQueryResult<RejoinPermission> {
   return useQuery({
     queryKey: ['rejoinPermission'],
     queryFn: () => getRejoinPermission(),
     retry: false,
+    enabled: options.enabled ?? true,
   });
 }
 
@@ -460,6 +488,13 @@ export function useSavingsFundBalance(): UseQueryResult<SourceFund | null> {
   return useQuery({ queryKey: ['savingsFundBalance'], queryFn: () => getSavingsFundBalance() });
 }
 
+export function useSavingsFundBalanceOrFail(): UseQueryResult<SourceFund | null> {
+  return useQuery({
+    queryKey: ['savingsFundBalance', 'orFail'],
+    queryFn: () => getSavingsFundBalanceOrFail(),
+  });
+}
+
 export function useSavingsFundBankAccounts(): UseQueryResult<string[]> {
   return useQuery({
     queryKey: ['savingsFundBankAccounts'],
@@ -493,6 +528,8 @@ export function usePendingOnboardings({
   });
 }
 
+export const SAME_FOR_EVERY_ROLE = { sameForEveryRole: true };
+
 export function useSwitchRole(): UseMutationResult<
   Token,
   ErrorResponse,
@@ -507,7 +544,7 @@ export function useSwitchRole(): UseMutationResult<
       // role's data. Invalidate keeps the stale cache visible while refetching,
       // so the account page would flash the old role's values. Reset clears it,
       // flipping queries to a loading state until the new role's data arrives.
-      queryClient.resetQueries();
+      queryClient.resetQueries({ predicate: (query) => !query.meta?.sameForEveryRole });
     },
   });
 }

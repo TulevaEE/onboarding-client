@@ -13,8 +13,15 @@ import { getAuthentication } from '../../common/authenticationManager';
 import { anAuthenticationManager } from '../../common/authenticationManagerFixture';
 import { Transaction } from '../../common/apiModels';
 import translations from '../../translations';
-import { inheritance, transferIn, transferOut } from './fixtures';
+import {
+  depositFromMinorsOwnAccount,
+  depositFromParent,
+  inheritance,
+  transferIn,
+  transferOut,
+} from './fixtures';
 import { isInsidePii } from '../../tracking/piiMarkup';
+import { mockMinor } from '../../../test/backend-responses';
 
 jest.mock('react-redux');
 
@@ -543,5 +550,76 @@ describe('TransactionDetailPage', () => {
     expect(await screen.findByText(/1\.43100\s*€/)).toBeInTheDocument();
     expect(screen.queryByText(/Tuleva Fondid AS/)).not.toBeInTheDocument();
     expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
+  });
+
+  describe('for someone under 18 looking at their own deposit', () => {
+    beforeEach(() => {
+      userBackend(server, mockMinor);
+    });
+
+    it('names the parent who paid it', async () => {
+      mockTransactions([depositFromParent]);
+
+      initializeComponent(depositFromParent.id);
+
+      expect(await screen.findByText('Kati Kask')).toBeInTheDocument();
+      expect(valueOf('From')).toBe('Kati Kask');
+    });
+
+    it('marks the parent who paid as personal data for analytics', async () => {
+      mockTransactions([depositFromParent]);
+
+      initializeComponent(depositFromParent.id);
+
+      expect(isInsidePii(await screen.findByText('Kati Kask'))).toBe(true);
+    });
+
+    it('says it came from their own bank account rather than naming them', async () => {
+      mockTransactions([depositFromMinorsOwnAccount]);
+
+      initializeComponent(depositFromMinorsOwnAccount.id);
+
+      expect(await screen.findByText('Your bank account')).toBeInTheDocument();
+      expect(valueOf('From')).toBe('Your bank account');
+    });
+
+    it('says who paid right before how they paid', async () => {
+      mockTransactions([depositFromParent]);
+
+      initializeComponent(depositFromParent.id);
+
+      expect(await screen.findByText('Kati Kask')).toBeInTheDocument();
+      const terms = screen.getAllByRole('term').map((term) => term.textContent);
+      expect(terms.indexOf('Payment method') - terms.indexOf('From')).toBe(1);
+    });
+
+    it('names no payer on a redemption', async () => {
+      mockTransactions([{ ...depositFromParent, type: 'SUBTRACTION', amount: -20 }]);
+
+      initializeComponent(depositFromParent.id);
+
+      expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+      expect(screen.queryByText('Kati Kask')).not.toBeInTheDocument();
+      expect(screen.getAllByRole('term').map((term) => term.textContent)).not.toContain('From');
+    });
+
+    it('leaves who paid out when the bank did not say', async () => {
+      mockTransactions([{ ...depositFromParent, remitterName: null, paidFromOwnAccount: null }]);
+
+      initializeComponent(depositFromParent.id);
+
+      expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+      expect(screen.getAllByRole('term').map((term) => term.textContent)).not.toContain('From');
+    });
+  });
+
+  it('does not name who paid to an adult', async () => {
+    mockTransactions([depositFromParent]);
+
+    initializeComponent(depositFromParent.id);
+
+    expect(await screen.findByText('Tuleva Täiendav Kogumisfond')).toBeInTheDocument();
+    expect(screen.queryByText('Kati Kask')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('term').map((term) => term.textContent)).not.toContain('From');
   });
 });

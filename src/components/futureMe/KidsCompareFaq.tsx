@@ -5,7 +5,10 @@ import { isRescueComparisonShown, isSpecialComparisonShown, kidsRightAgesOf } fr
 import { ResultContext } from './resultAnswers';
 import { strong } from './richText';
 
-type CompareContext = Pick<ResultContext, 'you' | 'plan' | 'age65' | 'age66' | 'specialPension'>;
+type CompareContext = Pick<
+  ResultContext,
+  'you' | 'plan' | 'age60' | 'age65' | 'age66' | 'specialPension'
+>;
 
 const richText = {
   p: (chunks: ReactNode) => <p>{chunks}</p>,

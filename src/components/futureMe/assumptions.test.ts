@@ -36,6 +36,7 @@ describe('assumptions', () => {
       secondPillar: 10000,
       thirdPillar: 5000,
       specialPension: null,
+      payFromPayoutAge: null,
     });
   });
 

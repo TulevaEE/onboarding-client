@@ -1,4 +1,5 @@
 import { Fund } from '../../apiModels';
+import { allSecondPillarFunds } from './secondPillarFunds';
 
 const savingsFund: Fund = {
   isin: 'EE0000003283',
@@ -73,4 +74,8 @@ const pensionFunds: Fund[] = [
 export const fundsProfiles: Record<string, Fund[]> = {
   WITH_SAVINGS_FUND: [...pensionFunds, savingsFund],
   WITHOUT_SAVINGS_FUND: pensionFunds,
+  WITH_ALL_SECOND_PILLAR_FUNDS: [
+    ...allSecondPillarFunds,
+    ...pensionFunds.filter((fund) => fund.pillar === 3),
+  ],
 };

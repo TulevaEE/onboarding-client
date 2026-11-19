@@ -20,6 +20,8 @@ export const HELP_LINKS = {
   pensionikeskusStatsIIIEn:
     'https://www.pensionikeskus.ee/en/statistics/iii-pillar/suppl-funded-pension-daily-statistics/',
   tuleva: 'https://tuleva.ee/',
+  sotsmaks: 'https://tuleva.ee/sotsmaks',
+  sotsmaksEn: 'https://tuleva.ee/en/sotsmaks',
   ska: 'https://sotsiaalkindlustusamet.ee/et',
   skaSelfService: 'https://iseteenindus.sotsiaalkindlustusamet.ee/',
   skaFlexiblePension:

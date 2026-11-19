@@ -57,7 +57,7 @@ describe('Third pillar payment confirmation', () => {
   test('asks for confirmation before showing any nudge', async () => {
     nudgeBackend(server, { key: 'THIRD_PILLAR_RAISE', tag: 'nudge_third_pillar_raise' });
     initializeComponent();
-    history.push('/3rd-pillar-payment/recurring-confirmation?type=RECURRING');
+    history.push('/3rd-pillar-payment/recurring-confirmation');
 
     expect(
       await screen.findByRole('heading', { name: 'Did you set up the recurring payment?' }),
@@ -68,7 +68,7 @@ describe('Third pillar payment confirmation', () => {
   test('shows the recurring confirmation nudge the server decided on', async () => {
     nudgeBackend(server, { key: 'THIRD_PILLAR_RAISE', tag: 'nudge_third_pillar_raise' });
     initializeComponent();
-    history.push('/3rd-pillar-payment/recurring-confirmation?type=RECURRING&confirmed=true');
+    history.push('/3rd-pillar-recurring-success');
 
     expect(
       await screen.findByRole('heading', { name: 'Recurring payment set up' }),
@@ -88,7 +88,7 @@ describe('Third pillar payment confirmation', () => {
           context: 'THIRD_PILLAR_RECURRING_CONFIRMATION',
           key: 'THIRD_PILLAR_RAISE',
           tag: 'nudge_third_pillar_raise',
-          path: '/3rd-pillar-payment/recurring-confirmation',
+          path: '/3rd-pillar-recurring-success',
           channel: 'SCREEN',
         },
       }),
@@ -98,7 +98,7 @@ describe('Third pillar payment confirmation', () => {
   test('says the tax benefit of a raise is capped at 15% of gross income for the calendar year, not of salary', async () => {
     nudgeBackend(server, { key: 'THIRD_PILLAR_RAISE', tag: 'nudge_third_pillar_raise' });
     initializeComponent();
-    history.push('/3rd-pillar-payment/recurring-confirmation?type=RECURRING&confirmed=true');
+    history.push('/3rd-pillar-recurring-success');
 
     expect(
       await main().findByText(
@@ -107,37 +107,14 @@ describe('Third pillar payment confirmation', () => {
     ).toBeInTheDocument();
   });
 
-  test('asks for the single payment nudge in the payment context', async () => {
-    nudgeBackend(server, { key: 'MEMBERSHIP', tag: 'nudge_membership' });
-    initializeComponent();
-    history.push('/3rd-pillar-payment/recurring-confirmation?type=SINGLE&confirmed=true');
-
-    expect(await screen.findByRole('heading', { name: 'Payment done' })).toBeInTheDocument();
-    expect(await main().findByRole('link', { name: 'Become a member' })).toHaveAttribute(
-      'href',
-      '/join',
-    );
-    await waitFor(() =>
-      expect(trackedEvents).toContainEqual({
-        type: 'NUDGE_VIEW',
-        data: {
-          context: 'THIRD_PILLAR_PAYMENT',
-          key: 'MEMBERSHIP',
-          tag: 'nudge_membership',
-          path: '/3rd-pillar-payment/recurring-confirmation',
-          channel: 'SCREEN',
-        },
-      }),
-    );
-  });
-
   test('records that the saver set up a recurring payment when they arrive having confirmed it', async () => {
     nudgeBackend(server, { key: 'THIRD_PILLAR_RAISE', tag: 'nudge_third_pillar_raise' });
     const recurringPaymentConfirmations = recurringPaymentConfirmationBackend(server);
     initializeComponent();
-    history.push('/3rd-pillar-payment/recurring-confirmation?confirmed=true');
+    history.push('/3rd-pillar-recurring-success');
 
     await waitFor(() => expect(recurringPaymentConfirmations()).toBe(1));
+    await waitFor(() => expect(reminderCancellations).toBe(1));
     expect(await main().findByRole('link', { name: 'Calculate your gain' })).toBeInTheDocument();
     expect(recurringPaymentConfirmations()).toBe(1);
   });
@@ -146,33 +123,23 @@ describe('Third pillar payment confirmation', () => {
     nudgeBackend(server, { key: 'THIRD_PILLAR_RAISE', tag: 'nudge_third_pillar_raise' });
     const recurringPaymentConfirmations = recurringPaymentConfirmationBackend(server);
     initializeComponent();
-    history.push('/3rd-pillar-payment/recurring-confirmation?type=RECURRING');
+    history.push('/3rd-pillar-payment/recurring-confirmation');
 
     const yes = await screen.findByRole('button', { name: 'Yes, done' });
     expect(recurringPaymentConfirmations()).toBe(0);
     userEvent.click(yes);
 
     await waitFor(() => expect(recurringPaymentConfirmations()).toBe(1));
+    expect(history.location.pathname).toBe('/3rd-pillar-recurring-success');
     expect(await main().findByRole('link', { name: 'Calculate your gain' })).toBeInTheDocument();
     expect(recurringPaymentConfirmations()).toBe(1);
-  });
-
-  test('does not record a recurring payment when the saver made a single payment', async () => {
-    nudgeBackend(server, { key: 'MEMBERSHIP', tag: 'nudge_membership' });
-    const recurringPaymentConfirmations = recurringPaymentConfirmationBackend(server);
-    initializeComponent();
-    history.push('/3rd-pillar-payment/recurring-confirmation?type=SINGLE&confirmed=true');
-
-    expect(await screen.findByRole('heading', { name: 'Payment done' })).toBeInTheDocument();
-    await waitFor(() => expect(reminderCancellations).toBe(1));
-    expect(recurringPaymentConfirmations()).toBe(0);
   });
 
   test('still shows the recurring payment as set up and reports the error when recording it fails', async () => {
     nudgeBackend(server, { key: 'THIRD_PILLAR_RAISE', tag: 'nudge_third_pillar_raise' });
     const recurringPaymentConfirmations = recurringPaymentConfirmationBackend(server, 500);
     initializeComponent();
-    history.push('/3rd-pillar-payment/recurring-confirmation?type=RECURRING&confirmed=true');
+    history.push('/3rd-pillar-recurring-success');
 
     await waitFor(() => expect(recurringPaymentConfirmations()).toBe(1));
     await waitFor(() => expect(captureException).toHaveBeenCalledTimes(1));

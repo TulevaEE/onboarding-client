@@ -9,6 +9,7 @@ import { initializeConfiguration } from '../../../config/config';
 import {
   applicationsBackend,
   nudgeBackend,
+  thirdPillarPaymentReminderBackend,
   useTestBackends,
   useTestBackendsExcept,
 } from '../../../../test/backend';
@@ -160,6 +161,16 @@ describe('Third pillar success screen', () => {
     expect(main().getAllByText(/390/).length).toBeGreaterThan(0);
   });
 
+  test('ends the payment reminder, since the saver has paid', async () => {
+    useTestBackends(server);
+    const reminderCancellations = thirdPillarPaymentReminderBackend(server);
+    initializeComponent();
+    history.push('/3rd-pillar-success');
+
+    expect(await screen.findByRole('heading', { name: 'Payment done' })).toBeInTheDocument();
+    await waitFor(() => expect(reminderCancellations()).toBe(1));
+  });
+
   test('still confirms the payment when the nudge fails to load', async () => {
     useTestBackendsExcept(server, ['nudge']);
     server.use(rest.get('http://localhost/v1/me/nudge', (req, res, ctx) => res(ctx.status(500))));
@@ -203,15 +214,21 @@ describe('Third pillar success screen', () => {
     ).not.toBeInTheDocument();
   });
 
-  test('confirms the submitted application instead of a payment for a transfer-in saver', async () => {
+  test('confirms the payment and the pending transfer for a saver moving their III pillar to Tuleva', async () => {
     useTestBackendsExcept(server, ['applications', 'nudge']);
     applicationsBackend(server, [pendingThirdPillarTransfer]);
     nudgeBackend(server, { key: 'SECOND_PILLAR_TRANSFER', tag: 'nudge_second_pillar' });
     initializeComponent();
     history.push('/3rd-pillar-success');
 
+    expect(await screen.findByRole('heading', { name: 'Payment done' })).toBeInTheDocument();
     expect(
-      await screen.findByRole('heading', { name: 'Application submitted' }),
+      screen.getByText('New fund units will reach your account within 2 working days.'),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Your fund units will move to Tuleva soon and will then appear in your account.',
+      ),
     ).toBeInTheDocument();
     expect(
       await main().findByRole('link', { name: /Bring your II\spillar to Tuleva/ }),

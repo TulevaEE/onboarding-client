@@ -19,7 +19,7 @@ const allPages: TransactionPage[] = [
 
 export function getOtherTransactionPages(
   pillar: number | null | undefined,
-  funds: Fund[],
+  funds: Pick<Fund, 'pillar'>[],
   actingAsSelf: boolean,
 ): TransactionPage[] {
   if (pillar === undefined) {

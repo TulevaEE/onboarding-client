@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, within } from '@testing-library/react';
 import { IntlProvider } from 'react-intl';
 import { initialAge60 } from './age60Answers';
-import { Age65Answers, initialAge65 } from './age65Answers';
+import { Age65Answers } from './age65Answers';
 import { Age66Answers, initialAge66 } from './age66Answers';
 import { ExpensesAnswers, initialExpenses, needMonthly } from './expensesAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
@@ -10,6 +10,7 @@ import { ResultChart } from './ResultChart';
 import { resultOf, ResultContext } from './resultAnswers';
 import { initialAnswers, toStepPlanInput, YouAnswers } from './youAnswers';
 import translations from '../translations';
+import { age65Growing } from './resultContextFixture';
 
 jest.mock('react-chartjs-2', () => {
   // eslint-disable-next-line global-require, @typescript-eslint/no-var-requires
@@ -46,7 +47,7 @@ const contextWith = ({
     you,
     plan: toStepPlanInput(you),
     age60: initialAge60(),
-    age65: { ...initialAge65(), ...age65 },
+    age65: { ...age65Growing(), ...age65 },
     age66: { ...initialAge66(), ...age66 },
     specialPension: { ...initialSpecialPension(), monthly: specialPensionMonthly },
     expenses: { ...initialExpenses(), ...expenses },
@@ -64,7 +65,7 @@ const renderChart = (changes?: Changes) => {
   const result = resultOf(context);
   render(
     <IntlProvider locale="et" messages={translations.et}>
-      <ResultChart result={result} need={needMonthly(context.expenses)} />
+      <ResultChart result={result} need={needMonthly(context.expenses)} isNominal={false} />
     </IntlProvider>,
   );
   return result;
@@ -144,7 +145,7 @@ describe('ResultChart assumption', () => {
 
     expect(
       screen.getByText(
-        /Teised võimalused: vali väljamaksetele keskmisest elueast pikem periood või uus leping igal aastal\./,
+        /Teised võimalused: vali väljamaksetele keskmisest elueast pikem periood või uus avaldus igal aastal\./,
       ),
     ).toBeInTheDocument();
   });
@@ -218,7 +219,7 @@ describe('ResultChart reading guide', () => {
         ),
       ]);
       expect(guide()).toHaveTextContent(
-        'Kui sa raha välja ei võta, jääb see fondi kasvama ja kulud jäävad selle võrra katmata.',
+        'Kui sa raha välja ei võta, jääb see fondi ja kulud jäävad selle võrra katmata.',
       );
     });
 
@@ -226,7 +227,7 @@ describe('ResultChart reading guide', () => {
       renderChart(fundPensionWithSurplus);
 
       expect(steps()[0]).toBe(
-        'Riiklik pension ja igakuised väljamaksed. Väljamakse tuleb lepingu järgi, mitte kulude järgi, ja selle suurus kõigub koos fondi väärtusega.',
+        'Riiklik pension ja igakuised väljamaksed. Väljamakse tuleb avalduse järgi, mitte kulude järgi, ja selle suurus kõigub koos fondi väärtusega.',
       );
       expect(guide()).toHaveTextContent(
         /Hoius \(kiht „Hoiuselt“\): raha, mis on välja makstud, aga kuludeks veel vaja ei olnud\. Seal kaotab see väärtust 1%\saastas pärast inflatsiooni\./,
@@ -392,7 +393,7 @@ describe('ResultChart reading guide: what happens on the chart', () => {
 
     expect(changes()).toContainEqual(
       expect.stringMatching(
-        /^\d+-⁠aastaselt: II\sja\sIII\ssamba igakuiste väljamaksete lepingud lõpevad\. Nende periood \(\d+\sa\) arvutati väljamaksete alguses keskmise eluea järgi ja selleks ajaks on raha välja makstud, seepärast langeb kiht järsult\.$/,
+        /^\d+-⁠aastaselt: II\sja\sIII\ssamba igakuised väljamaksed lõpevad\. Nende periood \(\d+\sa\) arvutati väljamaksete alguses keskmise eluea järgi ja selleks ajaks on raha välja makstud, seepärast langeb kiht järsult\.$/,
       ),
     );
   });

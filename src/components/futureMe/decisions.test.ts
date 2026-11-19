@@ -1,11 +1,11 @@
 import { initialAge60 } from './age60Answers';
-import { initialAge65 } from './age65Answers';
 import { initialAge66 } from './age66Answers';
 import { decisionsOf, withDecision } from './decisions';
 import { initialExpenses } from './expensesAnswers';
 import { ResultContext, resultOf } from './resultAnswers';
 import { initialSpecialPension } from './specialPensionAnswers';
 import { initialAnswers, toStepPlanInput } from './youAnswers';
+import { age65Growing } from './resultContextFixture';
 
 const noPrefill = { birthYear: 1980, sex: null, secondPillarRate: null };
 
@@ -25,7 +25,7 @@ const contextWith = (
     you,
     plan: toStepPlanInput(you),
     age60: initialAge60(),
-    age65: initialAge65(),
+    age65: age65Growing(),
     age66: initialAge66(),
     specialPension: initialSpecialPension(),
     expenses: initialExpenses(),
@@ -67,11 +67,25 @@ describe('decisions', () => {
       ]);
     });
 
-    it('offers the same three ways to take a pillar out at both ages', () => {
+    it('offers growing on first before the pension age and the monthly payouts first at it', () => {
       const [payout, , pension] = decisionsOf(contextWith());
 
       expect(payout.choices).toEqual(['grow', 'fund', 'lump']);
-      expect(pension.choices).toEqual(['grow', 'fund', 'lump']);
+      expect(pension.choices).toEqual(['fund', 'grow', 'lump']);
+    });
+
+    it('offers the monthly payouts first at the payout age when the saver retires by then', () => {
+      const retiringFiveYearsEarly = contextWith({
+        kidsAdded: true,
+        kidsCount: '5',
+        kidsBirthYears: ['1990', '1992', '1994', '1996', '1998'],
+        kidsDisabled: [false, false, false, false, false],
+      });
+      const payout = decisionsOf(retiringFiveYearsEarly).find(
+        ({ id }) => id === 'secondPillarAtPayoutAge',
+      );
+
+      expect(payout?.choices).toEqual(['fund', 'grow', 'lump']);
     });
 
     it('offers the state pension in full, half or deferred', () => {
@@ -164,7 +178,7 @@ describe('decisions', () => {
         {},
         {
           age60: { ...initialAge60(), secondPillar: 'fund' },
-          age65: { ...initialAge65(), work: 'yes', workUntil: '67' },
+          age65: { ...age65Growing(), work: 'yes', workUntil: '67' },
         },
       );
 
@@ -173,7 +187,7 @@ describe('decisions', () => {
 
     it('counts a fund pension chosen at the pension age while the III pillar is left to grow', () => {
       const fundAtPensionAge = contextWith(withThirdPillar, {
-        age65: { ...initialAge65(), secondPillar: 'fund' },
+        age65: { ...age65Growing(), secondPillar: 'fund' },
       });
 
       expect(fundPensionOf(fundAtPensionAge)).toMatchObject({
@@ -184,7 +198,7 @@ describe('decisions', () => {
 
     it('names the start of each pillar when both pay a fund pension', () => {
       const bothStart = contextWith(withThirdPillar, {
-        age65: { ...initialAge65(), secondPillar: 'fund' },
+        age65: { ...age65Growing(), secondPillar: 'fund' },
         age66: { ...initialAge66(), thirdPillarFrom: '70' },
       });
 
@@ -196,7 +210,7 @@ describe('decisions', () => {
 
     it('names the contract of each pillar that pays a fund pension', () => {
       const bothStart = contextWith(withThirdPillar, {
-        age65: { ...initialAge65(), secondPillar: 'fund' },
+        age65: { ...age65Growing(), secondPillar: 'fund' },
         age66: { ...initialAge66(), thirdPillarFrom: '70', secondPillarContract: 'once' },
       });
 
@@ -209,7 +223,7 @@ describe('decisions', () => {
     it('names the age until which one contract pays, the average life expectancy by default', () => {
       const once = (secondPillarEndAge: string) =>
         contextWith(withThirdPillar, {
-          age65: { ...initialAge65(), secondPillar: 'fund' },
+          age65: { ...age65Growing(), secondPillar: 'fund' },
           age66: { ...initialAge66(), secondPillarContract: 'once', secondPillarEndAge },
         });
       const averageEnd = resultOf(once('')).fundPensionContracts.second?.end;
@@ -221,7 +235,7 @@ describe('decisions', () => {
     it('starts the fund pension once the work kept on after the pension age ends', () => {
       const workingUntil68 = contextWith(
         {},
-        { age65: { ...initialAge65(), secondPillar: 'fund', work: 'yes', workUntil: '68' } },
+        { age65: { ...age65Growing(), secondPillar: 'fund', work: 'yes', workUntil: '68' } },
       );
 
       expect(fundPensionOf(workingUntil68)).toMatchObject({
@@ -252,13 +266,13 @@ describe('decisions', () => {
       [
         'a II pillar fund pension chosen at the pension age',
         withThirdPillar,
-        { age65: { ...initialAge65(), secondPillar: 'fund' as const } },
+        { age65: { ...age65Growing(), secondPillar: 'fund' as const } },
       ],
       [
         'a picked start while working on',
         {},
         {
-          age65: { ...initialAge65(), work: 'yes' as const, workUntil: '68' },
+          age65: { ...age65Growing(), work: 'yes' as const, workUntil: '68' },
           age66: { ...initialAge66(), secondPillarFrom: '66' },
         },
       ],

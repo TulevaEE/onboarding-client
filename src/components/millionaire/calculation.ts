@@ -206,7 +206,10 @@ export interface Comparison {
   lauraTrajectory: TrajectoryPoint[];
 }
 
-export function buildComparison(inputs: CalculatorInputs): Comparison {
+export function buildComparison(
+  inputs: CalculatorInputs,
+  recipeSecondPillarRate = LAURA_SECOND_PILLAR_RATE,
+): Comparison {
   const shared = {
     currentAge: inputs.currentAge,
     retirementAge: inputs.retirementAge,
@@ -230,7 +233,7 @@ export function buildComparison(inputs: CalculatorInputs): Comparison {
   };
   const lauraInput: ProjectionInput = {
     ...shared,
-    secondPillarRate: LAURA_SECOND_PILLAR_RATE,
+    secondPillarRate: recipeSecondPillarRate,
     // Laura maxes the tax-advantaged III pillar. Modelled as a flat monthly amount
     // (like the saver's own standing order) so that a saver who maxes both pillars
     // matches Laura exactly instead of drifting above or below a percent-of-salary line.

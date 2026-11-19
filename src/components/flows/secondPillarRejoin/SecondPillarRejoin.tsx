@@ -1,5 +1,4 @@
 import { ReactNode, useState } from 'react';
-import moment from 'moment';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 import { AuthenticationLoader, ErrorMessage, Loader } from '../../common';
@@ -28,7 +27,7 @@ import {
 import { isSigningWithIdCard } from '../../common/authenticationManager';
 import { TulevaSecondPillarStockFund } from '../../common/utils';
 import { PaymentRate } from '../secondPillarPaymentRate/types';
-import { FundChoice, FundPick, PaymentRateChoice } from './RejoinChoices';
+import { FundChoice, FundPick, PaymentRateChoice, TaxWinExplanation } from './RejoinChoices';
 import Checkbox from '../../common/checkbox/Checkbox';
 import { RejoinDisclaimers } from './RejoinDisclaimers';
 import { useMandateBatchSigning } from '../withdrawals/signing/useMandateBatchSigning';
@@ -36,8 +35,10 @@ import { TranslationKey } from '../../translations';
 import { flowPath, reviewPath, successPath } from './secondPillarRejoinPaths';
 import { RejoinSummary } from './SecondPillarRejoinSuccess';
 import { PendingRejoinApplication } from './PendingRejoinApplication';
-import { RejoinRefusalReason } from './RejoinRefusalReason';
+import { RejoinRefusalReason, dateToWaitForRejoining } from './RejoinRefusalReason';
+import { RejoinNotYet, opensFilingWindow } from './RejoinNotYet';
 import { AlreadyContributing } from './AlreadyContributing';
+import { contributionStartMonth, highlightedDeadline } from './deadlineHighlight';
 import { RejoinRefused } from './RejoinRefused';
 import { isRejoinApplication } from '../../account/ApplicationSection/ApplicationFunctions';
 import { usePageTitle } from '../../common/usePageTitle';
@@ -60,7 +61,8 @@ const activeSecondPillarFundIsin = (sourceFunds: SourceFund[] | undefined) =>
 const paymentRateThatApplies = (user: User | undefined) =>
   user?.secondPillarPaymentRates?.pending ?? user?.secondPillarPaymentRates?.current;
 
-const monthOf = (date: string) => moment(date).month() + 1;
+const taxWinExplanationFor = (user: User | undefined): TaxWinExplanation =>
+  user && user.id % 2 === 1 ? 'comparedWithLowestRate' : 'greatestOnRecommendedRate';
 
 const RejoinHeader = ({ contributionStartDate }: { contributionStartDate: string }) => (
   <>
@@ -70,7 +72,11 @@ const RejoinHeader = ({ contributionStartDate }: { contributionStartDate: string
     <p className="lead mb-5 text-balance">
       <FormattedMessage
         id="secondPillarRejoin.lead"
-        values={{ b: bold, startMonth: monthOf(contributionStartDate) }}
+        values={{
+          b: bold,
+          deadline: highlightedDeadline,
+          startMonth: contributionStartMonth(contributionStartDate),
+        }}
       />
     </p>
   </>
@@ -107,6 +113,7 @@ export const SecondPillarRejoin = () => {
         funds={funds.filter(isOpenForContributions)}
         activeFundIsin={activeSecondPillarFundIsin(sourceFunds)}
         paymentRateOnFile={paymentRateThatApplies(user)}
+        taxWinExplanation={taxWinExplanationFor(user)}
         contributionStartDate={mandateDeadlines.secondPillarRejoinContributionStartDate}
         cancellationDeadline={mandateDeadlines.secondPillarRejoinDeadline}
         pendingApplications={pendingApplications}
@@ -141,6 +148,7 @@ const RejoinApplication = ({
   funds,
   activeFundIsin,
   paymentRateOnFile,
+  taxWinExplanation,
   contributionStartDate,
   cancellationDeadline,
   pendingApplications,
@@ -154,6 +162,7 @@ const RejoinApplication = ({
   funds: Fund[];
   activeFundIsin: string | undefined;
   paymentRateOnFile: number | undefined;
+  taxWinExplanation: TaxWinExplanation;
   contributionStartDate: string;
   cancellationDeadline: string;
   pendingApplications: Application[] | undefined;
@@ -235,6 +244,10 @@ const RejoinApplication = ({
   }
 
   if (rejoinPermission?.permitted === false && !isSubmitting) {
+    const waitUntil = dateToWaitForRejoining(rejoinPossibleFrom, rejoinPermission.decision);
+    if (waitUntil && opensFilingWindow(waitUntil)) {
+      return <RejoinNotYet filingOpens={waitUntil} />;
+    }
     return (
       <RejoinRefused>
         <RejoinRefusalReason
@@ -381,7 +394,11 @@ const RejoinApplication = ({
         <>
           <RejoinHeader contributionStartDate={contributionStartDate} />
           <div className="d-flex flex-column gap-4 mb-5">
-            <PaymentRateChoice paymentRate={paymentRate} onChange={setPaymentRate} />
+            <PaymentRateChoice
+              paymentRate={paymentRate}
+              taxWinExplanation={taxWinExplanation}
+              onChange={setPaymentRate}
+            />
             <FundChoice
               funds={funds}
               recommendedFundIsin={RECOMMENDED_FUND_ISIN}

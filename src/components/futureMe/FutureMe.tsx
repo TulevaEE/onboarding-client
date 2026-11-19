@@ -15,7 +15,9 @@ import { usePageTitle } from '../common/usePageTitle';
 import { ACCOUNT_PATH } from '../paths';
 import { Age55Step } from './Age55Step';
 import { age55Of } from './age55';
-import { pillarsOpeningAt60 } from './age60Answers';
+import { Age60Answers, answersChangedFrom, pillarsOpeningAt60 } from './age60Answers';
+import { initialAge60For, payoutChoicesAtPayoutAge } from './age65Answers';
+import { isWorkloadAskedAt } from './reducedPay';
 import { Age60Step } from './Age60Step';
 import { Age65Step } from './Age65Step';
 import {
@@ -36,7 +38,11 @@ import { derivePrefill, YouPrefill } from './prefill';
 import { ResultStep } from './ResultStep';
 import { startedFundPensionAnswers, startedFundPensionsAt } from './startedFundPensions';
 import { PotBar } from './PotBar';
-import { earlyPayoutsOf, thirdPillarDepositAtMoneyUseOf } from './resultAnswers';
+import {
+  earlyPayoutsOf,
+  thirdPillarContributionChangeOf,
+  thirdPillarDepositAtMoneyUseOf,
+} from './resultAnswers';
 import { ErrorSummary, MissingField } from './ErrorSummary';
 import {
   initialSpecialPension,
@@ -77,7 +83,17 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
     startedFundPensionAnswers(prefillAtStart.fundPensions ?? [], initialAnswers(prefillAtStart)),
   );
   const [answers, setAnswers] = useState(started.you);
-  const [age60, setAge60] = useState(started.age60);
+  const [age60Chosen, setAge60Chosen] = useState<Partial<Age60Answers>>(() =>
+    Object.fromEntries(
+      Object.keys(
+        startedFundPensionsAt(
+          prefillAtStart.fundPensions ?? [],
+          FutureMeStep.AGE_60,
+          toStepPlanInput(started.you),
+        ),
+      ).map((pillar) => [pillar, started.age60[pillar as Pillar]]),
+    ),
+  );
   const [age65, setAge65] = useState(started.age65);
   const [age66, setAge66] = useState(initialAge66);
   const [expenses, setExpenses] = useState(initialExpenses);
@@ -95,6 +111,9 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
   const blocked = blockedFields(answers);
   const invalidChildMonths = firstInvalidChildIIMonths(answers);
   const plan = toStepPlanInput(answers);
+  const age60: Age60Answers = { ...initialAge60For(plan), ...age60Chosen };
+  const setAge60 = (next: Age60Answers) =>
+    setAge60Chosen((chosen) => ({ ...chosen, ...answersChangedFrom(age60, next) }));
   const steps = shownSteps(
     plan,
     isAge66StepNeeded(age66, { age60, age65, you: answers, plan }, specialPension),
@@ -265,6 +284,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
             firstYearShare,
             age66.thirdPillarContract,
             contractEndAgeOf('thirdPillar', age66, { age60, age65, you: answers, plan }),
+            thirdPillarContributionChangeOf(resultContext),
           )}
           headingRef={headingRef}
           contract={age66.thirdPillarContract}
@@ -304,6 +324,12 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           }}
           startedFundPensions={startedAt(FutureMeStep.AGE_60)}
           earlyPayouts={earlyPayoutsOf(resultContext)}
+          currentPay={{
+            gross: answers.grossMonthly,
+            thirdPillarMonthly: answers.thirdPillarMonthly,
+          }}
+          payoutChoices={payoutChoicesAtPayoutAge(plan)}
+          isWorkloadAsked={isWorkloadAskedAt(plan)}
           onChange={setAge60}
           onContractChange={(pillar, contract) =>
             setAge66((previous) => ({ ...previous, [contractField(pillar)]: contract }))
@@ -357,6 +383,7 @@ const FutureMeSteps = ({ prefill }: { prefill: YouPrefill }) => {
           answers={specialPension}
           you={answers}
           plan={plan}
+          age60={age60}
           age65={age65}
           age66={age66}
           headingRef={headingRef}

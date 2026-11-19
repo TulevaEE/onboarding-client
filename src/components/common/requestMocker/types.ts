@@ -10,6 +10,7 @@ import { transactionsProfiles } from './profiles/transactions';
 import { rolesProfiles } from './profiles/roles';
 import { sourceFundsProfiles } from './profiles/sourceFunds';
 import { pendingApplicationsProfiles } from './profiles/pendingApplications';
+import { completedApplicationsProfiles } from './profiles/completedApplications';
 import { contributionsProfiles } from './profiles/contributions';
 import { conversionMockProfiles } from './profiles/conversion';
 import { memberCapitalProfiles } from './profiles/memberCapital';
@@ -20,6 +21,11 @@ import { nudgeProfiles } from './profiles/nudge';
 import { mandateDeadlinesProfiles } from './profiles/mandateDeadlines';
 import { paymentRateRedirectProfiles } from './profiles/paymentRateRedirect';
 import { rejoinPermissionProfiles } from './profiles/rejoinPermission';
+import { myGiftsProfiles } from './profiles/myGifts';
+import {
+  secondPillarNavHistoriesProfiles,
+  worldMarketReturnsProfiles,
+} from './profiles/secondPillarFunds';
 
 export type MockModeConfiguration = {
   withdrawalsEligibility: keyof typeof withdrawalsEligibilityProfiles | null;
@@ -29,6 +35,7 @@ export type MockModeConfiguration = {
   memberCapital: keyof typeof memberCapitalProfiles | null;
   memberCapitalListings: keyof typeof memberCapitalListingsProfiles | null;
   pendingApplications: keyof typeof pendingApplicationsProfiles | null;
+  completedApplications: keyof typeof completedApplicationsProfiles | null;
   fundPensionStatus: keyof typeof fundPensionStatusProfiles | null;
   funds: keyof typeof fundsProfiles | null;
   portfolio: keyof typeof portfolioProfiles | null;
@@ -44,6 +51,9 @@ export type MockModeConfiguration = {
   mandateDeadlines: keyof typeof mandateDeadlinesProfiles | null;
   paymentRateRedirect: keyof typeof paymentRateRedirectProfiles | null;
   rejoinPermission: keyof typeof rejoinPermissionProfiles | null;
+  myGifts: keyof typeof myGiftsProfiles | null;
+  secondPillarNavHistories: keyof typeof secondPillarNavHistoriesProfiles | null;
+  worldMarketReturns: keyof typeof worldMarketReturnsProfiles | null;
 };
 
 export type MockModeEndpoint = keyof MockModeConfiguration;
