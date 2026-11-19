@@ -59,6 +59,11 @@ export function formatDateUntil(date: string): string {
   return moment.locale() === 'et' ? inflectedEstonianDate(date, 'ni') : formatDate(date);
 }
 
+export function formatMonthEnd(date: string): string {
+  const monthIndex = Number(tallinnDayParts(date).month) - 1;
+  return moment.locale() === 'et' ? ESTONIAN_MONTH_STEMS[monthIndex] : moment.months()[monthIndex];
+}
+
 export function formatDateRange(firstDate: string, secondDate: string): string {
   const firstDateMoment = moment(firstDate);
   const secondDateMoment = moment(secondDate);

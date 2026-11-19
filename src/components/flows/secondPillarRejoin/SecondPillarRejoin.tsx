@@ -314,7 +314,9 @@ const RejoinApplication = ({
           <ApplicationCard
             id="rejoin-application"
             titleId="secondPillarRejoin.review.rejoin.title"
-            notes={<RejoinDisclaimers className="mt-3" />}
+            notes={
+              <RejoinDisclaimers cancellationDeadline={cancellationDeadline} className="mt-3" />
+            }
           >
             <FormattedMessage id="secondPillarRejoin.review.rejoin" />
           </ApplicationCard>

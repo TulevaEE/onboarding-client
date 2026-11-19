@@ -15,6 +15,18 @@ const rejoinRefused: Partial<MockModeConfiguration> = {
   pendingApplications: 'NONE',
 };
 
+// A leaver the register lets back in, with everything the rejoin page reads mocked so it
+// renders without a backend: rejoin permitted, no application on file yet, the fund list to
+// choose from and the November filing window. Only user and sourceFunds vary between the two
+// sign scenarios below.
+const rejoinSign: Partial<MockModeConfiguration> = {
+  user: 'LEFT_SECOND_PILLAR_PAYMENT_RATE_2',
+  rejoinPermission: 'PERMITTED',
+  pendingApplications: 'NONE',
+  funds: 'WITH_ALL_SECOND_PILLAR_FUNDS',
+  mandateDeadlines: 'NOVEMBER_2026_BEFORE_DEADLINE',
+};
+
 export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
   SECOND_PILLAR_FUNDS: {
     user: 'PAYMENT_RATE_2',
@@ -227,13 +239,13 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
   // the fund elsewhere, so they are asked both and sign three applications. Sign still
   // goes to the real backend, where Pensionikeskus refuses anyone already contributing.
   SECOND_PILLAR_REJOIN_RATE_AND_FUND: {
-    user: 'LEFT_SECOND_PILLAR_PAYMENT_RATE_2',
+    ...rejoinSign,
     sourceFunds: 'ONLY_THIRD_PILLAR',
   },
   // A leaver whose fund is still the Tuleva stock fund: keeping it files no fund selection,
   // so there are no fund terms to confirm.
   SECOND_PILLAR_REJOIN_RATE_ONLY: {
-    user: 'LEFT_SECOND_PILLAR_PAYMENT_RATE_2',
+    ...rejoinSign,
     sourceFunds: 'BOTH_PILLARS',
   },
   // The account page (/account) of a leaver who has not filed to rejoin, as the register reports

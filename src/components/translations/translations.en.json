@@ -2306,6 +2306,7 @@
   "secondPillarRejoin.success.stateAdds": "The state adds",
   "secondPillarRejoin.success.cancellation": "If you change your mind, you can cancel the application on your account page until {deadline}.",
   "secondPillarRejoin.restriction.summary": "You can use the money from age 60. After rejoining, you can't stop contributions again or withdraw the money a second time.",
+  "secondPillarRejoin.restriction.cancellation": "If you change your mind, you can cancel the application until the end of {month}.",
   "secondPillarRejoin.notPermitted": "Pensionikeskus does not let you rejoin the II pillar at the moment.",
   "secondPillarRejoin.rejoinPossibleFrom": "You can rejoin from {date}.",
   "secondPillarRejoin.alreadyContributing": "You are already saving in the II pillar, so you don't need to apply to rejoin.",
