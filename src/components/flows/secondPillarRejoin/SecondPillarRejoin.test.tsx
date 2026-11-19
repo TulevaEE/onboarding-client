@@ -175,7 +175,7 @@ describe('When an eligible person rejoins the II pillar', () => {
     expect(firstPillarComparison()).toHaveTextContent(/and a 2% contribution\./);
   });
 
-  test('unfolds the calculation behind the comparison in place, for the example salary and without links out of the application', async () => {
+  test('unfolds the calculation behind the comparison in place, for the example salary, naming its sources without links out of the application', async () => {
     await renderAt('/2nd-pillar-rejoin');
     userEvent.click(firstPillarEffect());
 
@@ -193,7 +193,7 @@ describe('When an eligible person rejoins the II pillar', () => {
       /II\spillar, 1,277\s€\sa year: 960\s€ comes from social tax.*and 317\s€ is the income tax you don't pay on your 6% contribution\. That is about 3\stimes what the state promises you from the I\spillar for the same year of saving at this pay, over 19\syears of retirement\./,
     );
     expect(firstPillarComparison()).toHaveTextContent(
-      /The amounts are in today's money\..*their value depends on the fund's returns and can also fall\.$/,
+      /The amounts are in today's money\..*their value depends on the fund's returns and can also fall\. Sources: Social Insurance Board, Statistics Estonia\.$/,
     );
     expect(within(firstPillarComparison()).queryAllByRole('link')).toHaveLength(0);
   });
