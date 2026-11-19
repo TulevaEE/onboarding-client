@@ -28,6 +28,7 @@ import { Shimmer } from '../../../common/shimmer/Shimmer';
 import {
   formatDate,
   formatDateFrom,
+  formatDateFromWithYear,
   formatDateOnWithYear,
   formatDateUntil,
 } from '../../../common/dateFormatter';
@@ -39,7 +40,7 @@ import {
   SecondPillarPaymentRateTaxWin,
   useSecondPillarTaxWin,
 } from '../../../flows/secondPillarPaymentRate/SecondPillarPaymentRateTaxWin';
-import { RejoinRefusalReason } from '../../../flows/secondPillarRejoin/RejoinRefusalReason';
+import { dateToWaitForRejoining } from '../../../flows/secondPillarRejoin/RejoinRefusalReason';
 import {
   contributionStartMonth,
   highlightedDeadline,
@@ -627,7 +628,18 @@ const WayBackInExplanation = ({
       <FormattedMessage id="account.status.choice.pillar.second.notContributing.line2.contributionsCannotRestart" />
     );
   }
-  return <RejoinRefusalReason decision={rejoinDecision} rejoinPossibleFrom={rejoinPossibleFrom} />;
+  const waitUntil = dateToWaitForRejoining(rejoinPossibleFrom, rejoinDecision);
+  if (waitUntil) {
+    return (
+      <FormattedMessage
+        id="account.status.choice.pillar.second.notContributing.line2.rejoinPossibleFrom"
+        values={{ date: formatDateFromWithYear(waitUntil) }}
+      />
+    );
+  }
+  return (
+    <FormattedMessage id="account.status.choice.pillar.second.notContributing.line2.notPermitted" />
+  );
 };
 
 const SecondPillarMissing = ({ loading, nudgeKey }: RowProps) => (

@@ -352,7 +352,7 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
       renderWithIntl(<SecondPillarStatusBox {...noSecondPillar} nudgeKey="SECOND_PILLAR_START" />);
 
       expect(
-        screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027.'),
+        screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027'),
       ).toBeInTheDocument();
       expect(screen.queryByText(/You have no II\spillar/)).not.toBeInTheDocument();
       expect(screen.getByTestId('status-icon-success')).toBeInTheDocument();
@@ -681,7 +681,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(
-      screen.getByText('Contributions start again only once you file an application to rejoin.'),
+      screen.getByText('Contributions start again only once you file an application to rejoin'),
     ).toBeInTheDocument();
     expect(screen.queryByText(/Apply by/)).not.toBeInTheDocument();
   });
@@ -737,7 +737,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
 
       expect(screen.getByText('You are not saving in the II pillar')).toBeInTheDocument();
       expect(
-        screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment.'),
+        screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment'),
       ).toBeInTheDocument();
       expect(screen.queryByText(/start again/)).not.toBeInTheDocument();
       expect(screen.queryByRole('link')).not.toBeInTheDocument();
@@ -774,7 +774,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       />,
     );
 
-    expect(screen.getByText('You can rejoin from September 1, 2028.')).toBeInTheDocument();
+    expect(screen.getByText('You can rejoin from September 1, 2028')).toBeInTheDocument();
     expect(screen.queryByText(/five years/)).not.toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
     expect(screen.getByTestId('status-icon-warning')).toBeInTheDocument();
@@ -792,7 +792,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       'et',
     );
 
-    expect(screen.getByText('Taasliituda saad alates 1. septembrist 2028.')).toBeInTheDocument();
+    expect(screen.getByText('Taasliituda saad alates 1. septembrist 2028')).toBeInTheDocument();
   });
 
   it.each([
@@ -809,7 +809,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       );
 
       expect(
-        screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment.'),
+        screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment'),
       ).toBeInTheDocument();
       expect(screen.queryByText(/You can rejoin from/)).not.toBeInTheDocument();
     },
@@ -827,7 +827,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(
-      screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment.'),
+      screen.getByText('Pensionikeskus does not let you rejoin the II pillar at the moment'),
     ).toBeInTheDocument();
     expect(screen.queryByText(/You can rejoin from/)).not.toBeInTheDocument();
   });
@@ -859,7 +859,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(
-      screen.getByText('Contributions start again only once you file an application to rejoin.'),
+      screen.getByText('Contributions start again only once you file an application to rejoin'),
     ).toBeInTheDocument();
     expect(screen.queryByText(/Apply by/)).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Rejoin' })).toHaveAttribute(
@@ -921,7 +921,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(
-      screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027.'),
+      screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027'),
     ).toBeInTheDocument();
     expect(screen.getByTestId('status-icon-success')).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
@@ -933,7 +933,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     renderWithIntl(<SecondPillarStatusBox {...saver} />);
 
     expect(
-      screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027.'),
+      screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027'),
     ).toBeInTheDocument();
     expect(screen.getByTestId('status-icon-success')).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
@@ -947,7 +947,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(
-      screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027.'),
+      screen.getByText('You rejoined the II pillar. Contributions start on May 1, 2027'),
     ).toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
   });
