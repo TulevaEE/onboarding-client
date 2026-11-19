@@ -30,6 +30,7 @@ describe('Member capital table', () => {
     login(store);
 
     renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
+    history.push('/account');
   }
 
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -40,16 +41,13 @@ describe('Member capital table', () => {
     initializeConfiguration();
 
     useTestBackendsExcept(server, ['userCapital', 'capitalEvents', 'user']);
-
-    initializeComponent();
-
-    history.push('/account');
   });
 
   test('member capital table is not shown by default', async () => {
     userBackend(server, mockUser);
     userCapitalBackend(server, []);
     capitalEventsBackend(server, []);
+    initializeComponent();
 
     expect(screen.queryByText('Member capital')).not.toBeInTheDocument();
   });
@@ -76,6 +74,7 @@ describe('Member capital table', () => {
       },
     ]);
     userBackend(server, { ...mockUser, memberNumber: 123, memberJoinDate: '2020-01-01' });
+    initializeComponent();
     expect(await screen.findByText('Contributions')).toBeInTheDocument();
     expect(await screen.findByText('Membership bonus')).toBeInTheDocument();
     expect(screen.queryByTestId('member-capital-total')).not.toBeInTheDocument();
@@ -101,6 +100,7 @@ describe('Member capital table', () => {
     ]);
     userCapitalBackend(server, capitalRowsResponse);
     userBackend(server, { ...mockUser, memberNumber: 123, memberJoinDate: '2020-01-01' });
+    initializeComponent();
     expect(await screen.findByText('Contributions')).toBeInTheDocument();
     expect(await screen.findByText('Monetary contribution')).toBeInTheDocument();
     expect(await screen.findByText('Membership bonus')).toBeInTheDocument();

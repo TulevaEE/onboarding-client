@@ -21,8 +21,7 @@ export type WithdrawalsEligibility = {
 };
 
 export type WithdrawalMandateDetails =
-  | FundPensionOpeningMandateDetails
-  | PartialWithdrawalMandateDetails;
+  FundPensionOpeningMandateDetails | PartialWithdrawalMandateDetails;
 
 export type FundPensionOpeningMandateDetails = {
   mandateType: 'FUND_PENSION_OPENING';
@@ -66,9 +65,7 @@ export type SelectionMandateDetails = {
 };
 
 export type RejoinBatchMandateDetails =
-  | RejoinMandateDetails
-  | PaymentRateChangeMandateDetails
-  | SelectionMandateDetails;
+  RejoinMandateDetails | PaymentRateChangeMandateDetails | SelectionMandateDetails;
 
 export type CreateMandateDto = {
   details: WithdrawalMandateDetails | RejoinBatchMandateDetails;

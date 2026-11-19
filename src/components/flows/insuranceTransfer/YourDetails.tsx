@@ -15,6 +15,7 @@ import {
 } from './insurerFormValues';
 
 const DETAILS_HEADING_ID = 'insurer-form-details-heading';
+const ADDRESS_COUNTRY_ID = 'insurer-form-address-country';
 const CITIZENSHIP_ERROR_ID = 'insurer-form-citizenship-error';
 const PEP_LABEL_ID = 'insurer-form-pep-label';
 const PEP_ERROR_ID = 'insurer-form-pep-error';
@@ -38,7 +39,7 @@ const AddressFields = () => {
         <FormattedMessage id="insuranceTransfer.form.details.address" />
       </legend>
       <CountryField
-        id="insurer-form-address-country"
+        id={ADDRESS_COUNTRY_ID}
         label={<FormattedMessage id="flows.savingsFundOnboarding.residencyStep.country.label" />}
         control={control}
         name="address.countryCode"
@@ -302,15 +303,14 @@ export const YourDetails = ({
   onFile: DetailsOnFile;
 }) => {
   const [editing, setEditing] = useState(false);
-  const { setFocus } = useFormContext<InsurerFormValues>();
   const { summarized, inputs } = shownDetails(insurer, onFile, editing);
   const asksAnything = inputs.length > 0;
 
   useEffect(() => {
     if (editing) {
-      setFocus('address.countryCode');
+      document.getElementById(ADDRESS_COUNTRY_ID)?.focus();
     }
-  }, [editing, setFocus]);
+  }, [editing]);
 
   return (
     <section className={`mt-4 ${PII_CLASS}`} aria-labelledby={DETAILS_HEADING_ID}>

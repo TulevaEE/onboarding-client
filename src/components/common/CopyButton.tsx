@@ -184,7 +184,7 @@ const QUIET_SUCCESS = {
 } as CSSProperties;
 
 const stackedLabel = (shown: boolean) =>
-  ({ gridArea: '1 / 1', visibility: shown ? 'visible' : 'hidden' } as const);
+  ({ gridArea: '1 / 1', visibility: shown ? 'visible' : 'hidden' }) as const;
 
 const LabelledCopyButton = ({
   textToCopy,
@@ -236,8 +236,7 @@ const LabelledCopyButton = ({
 };
 
 type CopyButtonProps = { textToCopy: string } & (
-  | { children: ReactNode; prominent?: boolean }
-  | { children?: never; prominent?: never }
+  { children: ReactNode; prominent?: boolean } | { children?: never; prominent?: never }
 );
 
 export const CopyButton = ({ textToCopy, prominent = false, children }: CopyButtonProps) =>

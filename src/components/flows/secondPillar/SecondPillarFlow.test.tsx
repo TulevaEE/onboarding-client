@@ -34,15 +34,13 @@ beforeEach(async () => {
   initializeConfiguration();
 
   useTestBackendsExcept(server, ['mandates', 'user']);
-
-  initializeComponent();
-
-  history.push('/2nd-pillar-flow');
 });
 
 describe('2nd pillar flow', () => {
   beforeEach(() => {
     userBackend(server);
+    initializeComponent();
+    history.push('/2nd-pillar-flow');
   });
 
   test('does not ask someone with nothing left to transfer to transfer the rest', async () => {

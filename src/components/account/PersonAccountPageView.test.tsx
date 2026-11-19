@@ -574,6 +574,7 @@ describe('Additional Investment Fund status', () => {
     initializeComponent();
     history.push('/account');
 
+    // eslint-disable-next-line testing-library/prefer-find-by
     await waitFor(async () => {
       const rows = await screen.findAllByTestId('status-box-row');
       expect(rows).toHaveLength(4);
@@ -597,6 +598,7 @@ describe('Additional Investment Fund status', () => {
     history.push('/account');
 
     // We fetch Additional Investment Fund with react-query, so we need to wait for it to appear
+    // eslint-disable-next-line testing-library/prefer-find-by
     await waitFor(async () => {
       const rows = await screen.findAllByTestId('status-box-row');
       expect(rows).toHaveLength(4);
@@ -626,6 +628,7 @@ describe('Additional Investment Fund status', () => {
     history.push('/account');
 
     // We fetch Additional Investment Fund with react-query, so we need to wait for it to appear
+    // eslint-disable-next-line testing-library/prefer-find-by
     await waitFor(async () => {
       const rows = await screen.findAllByTestId('status-box-row');
       expect(rows).toHaveLength(4);
@@ -652,6 +655,7 @@ describe('Additional Investment Fund status', () => {
     initializeComponent();
     history.push('/account');
 
+    // eslint-disable-next-line testing-library/prefer-find-by
     await waitFor(async () => {
       const rows = await screen.findAllByTestId('status-box-row');
       expect(rows).toHaveLength(4);

@@ -3,7 +3,7 @@ import { ChartEvent } from './chartEvents';
 import { AgeSlot, ageButtonsOf, placeAgeButtons } from './chartAges';
 
 const rowsFrom = (from: number, to: number) =>
-  Array.from({ length: to - from + 1 }, (_, index) => ({ age: from + index } as ChartRow));
+  Array.from({ length: to - from + 1 }, (_, index) => ({ age: from + index }) as ChartRow);
 
 const eventAt = (age: number): ChartEvent => ({ kind: 'workEnd', age });
 

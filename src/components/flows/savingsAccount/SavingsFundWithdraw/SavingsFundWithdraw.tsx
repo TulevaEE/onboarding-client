@@ -118,20 +118,16 @@ export const SavingsFundWithdraw: FC = () => {
               />
               {savingsFundBalance && (
                 <div className="d-flex flex-column">
-                  <Controller
-                    control={control}
-                    name="amount"
-                    render={({ field }) => (
-                      <Slider
-                        value={parseAmount(field.value)}
-                        onChange={field.onChange}
-                        min={0}
-                        max={savingsFundBalance.price}
-                        step={0.01}
-                        color="RED"
-                        ariaLabelledBy="amount"
-                      />
-                    )}
+                  <Slider
+                    value={parseAmount(selectedAmount)}
+                    onChange={(amount) =>
+                      setValue('amount', amount, { shouldDirty: true, shouldValidate: true })
+                    }
+                    min={0}
+                    max={savingsFundBalance.price}
+                    step={0.01}
+                    color="RED"
+                    ariaLabelledBy="amount"
                   />
                   <div className="mt-2 d-flex justify-content-between">
                     <div className="text-body-secondary">{formatAmountForCurrency(0, 0)}</div>

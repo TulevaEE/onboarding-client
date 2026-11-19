@@ -34,8 +34,7 @@ const MILLION = 1e6;
 const MAX_PROJECTION_AGE = 101;
 
 export type ThirdPillarContribution =
-  | { mode: 'percentOfSalary'; percent: number }
-  | { mode: 'fixedAnnual'; annual: number };
+  { mode: 'percentOfSalary'; percent: number } | { mode: 'fixedAnnual'; annual: number };
 
 export interface ProjectionInput {
   currentAge: number;

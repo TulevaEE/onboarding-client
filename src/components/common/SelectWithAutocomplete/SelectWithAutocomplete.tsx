@@ -35,7 +35,8 @@ export const SelectWithAutocomplete = <T extends SelectOption>({
     tomSelectRef.current = new TomSelect(selectRef.current, {
       maxItems: 1,
       load: (q: string, cb: (o: T[]) => void) => lookup(q).then(cb),
-      onChange: (value: string) => onChange(tomSelectRef.current.options[value]),
+      onChange: (value: string) =>
+        onChange((tomSelectRef.current as TomSelect).options[value] as T),
       options,
       items: defaultValue ? [defaultValue] : [],
       placeholder,

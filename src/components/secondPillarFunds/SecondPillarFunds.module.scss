@@ -18,7 +18,9 @@ $mobile: 767.98px;
   border: 1px solid $blue;
   border-radius: 2rem;
   padding: 0.4rem 0.95rem;
-  transition: background-color 0.15s ease-out, border-color 0.15s ease-out;
+  transition:
+    background-color 0.15s ease-out,
+    border-color 0.15s ease-out;
 
   &:hover {
     background-color: #eaf4ff;

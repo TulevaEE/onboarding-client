@@ -94,7 +94,7 @@ export const PortfolioView: React.FunctionComponent<{
   // the register's own day when it answered, otherwise the last day with a price.
   const lastPricedDay = series.length > 0 ? series[series.length - 1].date : undefined;
   const askedTheRegister = visible.some(({ id }) => currentValues?.[id] !== undefined);
-  const valuedAt = askedTheRegister ? portfolio.to : lastPricedDay ?? portfolio.to;
+  const valuedAt = askedTheRegister ? portfolio.to : (lastPricedDay ?? portfolio.to);
   const chartStopsEarlier = lastPricedDay !== undefined && lastPricedDay < valuedAt;
 
   const toggle = (id: PortfolioGroup) =>

@@ -89,11 +89,11 @@ describe('SavingsFundWithdrawCancellation', () => {
   const cancelWithdrawal = {
     success: () =>
       rest.delete('http://localhost/v1/savings/redemptions/WITHDRAWAL987654', (req, res, ctx) =>
-        res(ctx.status(204)),
+        res(ctx.delay(50), ctx.status(204)),
       ),
     failure: () =>
       rest.delete('http://localhost/v1/savings/redemptions/WITHDRAWAL987654', (req, res, ctx) =>
-        res(ctx.status(500)),
+        res(ctx.delay(50), ctx.status(500)),
       ),
   };
 });

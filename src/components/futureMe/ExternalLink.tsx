@@ -34,5 +34,6 @@ export const ExternalLink = ({ href, children }: { href: string; children: React
   </a>
 );
 
-export const externalLink = (href: string) => (chunks: ReactNode) =>
-  <ExternalLink href={href}>{chunks}</ExternalLink>;
+export const externalLink = (href: string) => (chunks: ReactNode) => (
+  <ExternalLink href={href}>{chunks}</ExternalLink>
+);
