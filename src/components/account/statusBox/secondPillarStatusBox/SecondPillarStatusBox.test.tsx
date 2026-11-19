@@ -24,7 +24,7 @@ import { FundPension } from '../../../common/apiModels/withdrawals';
 let mockContributionsAreLoaded = true;
 let mockFundPensions: FundPension[] = [];
 let mockFundPensionsAreLoading = false;
-const mockPendingApplicationsByDefault: Partial<Application>[] = [{ type: 'WITHDRAWAL' }];
+const mockPendingApplicationsByDefault: Partial<Application>[] = [];
 let mockPendingApplications = mockPendingApplicationsByDefault;
 let mockPendingApplicationsAreLoading = false;
 type RejoinPermissionQuery = {
@@ -141,6 +141,7 @@ describe('SecondPillarStatusBox', () => {
   });
 
   it('renders the withdrawal flow when withdrawal is in progress', () => {
+    mockPendingApplications = [{ type: 'WITHDRAWAL' }];
     component.setProps({ conversion: { pendingWithdrawal: true } });
     expect(component).toMatchSnapshot();
   });
@@ -775,7 +776,7 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
     );
 
     expect(screen.getByText('You can rejoin from September 1, 2028')).toBeInTheDocument();
-    expect(screen.queryByText(/five years/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/does not let you rejoin/)).not.toBeInTheDocument();
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
     expect(screen.getByTestId('status-icon-warning')).toBeInTheDocument();
   });
@@ -1031,10 +1032,10 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       expect(mockRejoinPermissionAsked).toBe(false);
     };
 
-    it('shows a fund pension application filed in the app', () => {
+    it('shows a fund pension application filed in the app, which the conversion does not count as a pending withdrawal', () => {
       mockPendingApplications = [{ id: 456, type: 'FUND_PENSION_OPENING' }];
 
-      renderStoppedSaver(withPendingWithdrawal);
+      renderStoppedSaver();
 
       expect(
         screen.getByText('You have a pending fund pension application for regular payments'),
@@ -1090,6 +1091,14 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       expect(screen.queryByText(/receiving regular fund pension/)).not.toBeInTheDocument();
     });
 
+    it('offers the way back in instead of an empty row when the pending withdrawal is not among their applications', () => {
+      mockPendingApplications = [];
+
+      renderStoppedSaver(withPendingWithdrawal);
+
+      expect(screen.getByText('You are not saving in the II pillar')).toBeInTheDocument();
+    });
+
     it('tells them they cannot rejoin once the fund pension has ended', () => {
       mockFundPensions = [{ ...activeSecondPillarFundPension, active: false }];
       mockRejoinPermission = {
@@ -1118,6 +1127,16 @@ describe('SecondPillarStatusBox for a saver whose II pillar contributions have s
       ),
     ).toBeInTheDocument();
     expect(mockRejoinPermissionAsked).toBe(false);
+  });
+
+  it('shows a contributing saver their pending fund pension application instead of the payment rate nudge', () => {
+    mockPendingApplications = [{ id: 456, type: 'FUND_PENSION_OPENING' }];
+
+    renderWithIntl(<SecondPillarStatusBox {...saver} secondPillarContributions={contributing} />);
+
+    expect(
+      screen.getByText('You have a pending fund pension application for regular payments'),
+    ).toBeInTheDocument();
   });
 
   it('does not mistake a III pillar fund pension for a II pillar one', () => {

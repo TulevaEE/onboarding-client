@@ -364,10 +364,10 @@
   "account.status.choice.pillar.second.rejoinPending": "Liitusid uuesti II sambaga. Sissemaksed algavad {date}",
   "account.status.choice.pillar.second.notContributing.line1": "Sa ei kogu II sambas",
   "account.status.choice.pillar.second.notContributing.line2.rejoinPossibleFrom": "Taasliituda saad alates {date}",
-  "account.status.choice.pillar.second.notContributing.line2.contributionsCannotRestart": "Pärast pensioniealist väljamakset ei saa II sambaga uuesti liituda",
+  "account.status.choice.pillar.second.notContributing.line2.contributionsCannotRestart": "Pärast pensioniealist väljamakset ei saa II sambaga uuesti liituda",
   "account.status.choice.pillar.second.notContributing.line2.applyByDeadline": "Esita avaldus <deadline>{startMonth, select, 9 {31. märtsiks} 1 {31. juuliks} other {30. novembriks}}</deadline> ja sissemaksed algavad uuesti {startMonth, select, 9 {septembris} 1 {jaanuaris} other {mais}}",
   "account.status.choice.pillar.second.notContributing.line2.restartsOnceFiled": "Sissemaksed algavad uuesti alles siis, kui esitad taasliitumise avalduse",
-  "account.status.choice.pillar.second.notContributing.line2.notPermitted": "Pensionikeskuse andmetel ei saa sa praegu II sambaga uuesti liituda",
+  "account.status.choice.pillar.second.notContributing.line2.notPermitted": "Pensionikeskuse andmetel ei saa sa praegu II sambaga uuesti liituda",
   "account.status.choice.pillar.second.notContributing.action": "Liitun uuesti",
 
   "account.status.choice.pillar.third": "III sammas",

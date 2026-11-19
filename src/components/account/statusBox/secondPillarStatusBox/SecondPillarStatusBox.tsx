@@ -12,6 +12,7 @@ import {
 } from '../../../common/apiHooks';
 import {
   Application,
+  ApplicationType,
   Conversion,
   Fund,
   MandateDeadlines,
@@ -140,7 +141,7 @@ export const SecondPillarStatusBox: React.FC<Props> = ({
     />
   );
 
-  if (conversion.pendingWithdrawal) {
+  if (applications?.some(isPendingPayoutApplication)) {
     return <PendingPartialWithdrawalOrFundPension {...rowProps} />;
   }
 
@@ -492,6 +493,16 @@ const HighFee = ({ loading, conversion, sourceFunds, targetFunds, leaveApplicati
     </StatusBoxRow>
   );
 };
+
+const PAYOUT_APPLICATION_TYPES: ApplicationType[] = [
+  'WITHDRAWAL',
+  'EARLY_WITHDRAWAL',
+  'PARTIAL_WITHDRAWAL',
+  'FUND_PENSION_OPENING',
+];
+
+const isPendingPayoutApplication = (application: Application) =>
+  PAYOUT_APPLICATION_TYPES.includes(application.type);
 
 const usePendingEarlyWithdrawalApplication = (): Application | undefined =>
   usePendingApplications().data?.find(
