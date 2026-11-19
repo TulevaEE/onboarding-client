@@ -90,6 +90,13 @@ const fieldsOfTheFundPage = (pages: unknown): FundPageFields => {
   return fields as FundPageFields;
 };
 
+const untilStopped = (reading: AbortSignal) =>
+  new Promise<never>((_, reject) => {
+    reading.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError')), {
+      once: true,
+    });
+  });
+
 const readFundPageFields = async (
   cancelled: AbortSignal | undefined,
   reportUnlessCancelled: (reason: FallbackReason) => void,
@@ -99,10 +106,10 @@ const readFundPageFields = async (
   const timer = setTimeout(stopReading, FUND_PAGE_TIMEOUT_MS);
   cancelled?.addEventListener('abort', stopReading);
   try {
-    const response = await fetch(FUND_PAGE_FIELDS_URL, {
-      credentials: 'omit',
-      signal: reading.signal,
-    });
+    const response = await Promise.race([
+      fetch(FUND_PAGE_FIELDS_URL, { credentials: 'omit', signal: reading.signal }),
+      untilStopped(reading.signal),
+    ]);
     if (!response.ok) {
       throw new FundPageReadFailure(`http-${response.status}`);
     }
