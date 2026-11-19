@@ -4,8 +4,9 @@ import { externalLink } from './ExternalLink';
 import { HELP_LINKS } from './helpLinks';
 import { strong } from './richText';
 
-const element = (Tag: keyof JSX.IntrinsicElements, className?: string) => (chunks: ReactNode) =>
-  <Tag className={className}>{chunks}</Tag>;
+const element = (Tag: keyof JSX.IntrinsicElements, className?: string) => (chunks: ReactNode) => (
+  <Tag className={className}>{chunks}</Tag>
+);
 
 const HelpTable = ({ children }: { children: ReactNode }) => {
   const intl = useIntl();

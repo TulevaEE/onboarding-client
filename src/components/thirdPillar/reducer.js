@@ -33,8 +33,8 @@ export default function thirdPillarReducer(state = initialState, action) {
           query.exchangeExistingThirdPillarUnits === 'true'
             ? true
             : query.exchangeExistingThirdPillarUnits === 'false'
-            ? false
-            : state.exchangeExistingUnits,
+              ? false
+              : state.exchangeExistingUnits,
         recurringPaymentCount: query.recurringPaymentCount
           ? Number(query.recurringPaymentCount)
           : 0,

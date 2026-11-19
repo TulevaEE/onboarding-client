@@ -24,11 +24,7 @@ export type FundTerm =
 type EquityShare = '100' | '98' | '75' | '50' | '25' | 'bond';
 
 export type LifecycleFund =
-  | 'EE3600109393'
-  | 'EE3600019741'
-  | 'EE3600019758'
-  | 'EE3600103248'
-  | 'EE3600001848';
+  'EE3600109393' | 'EE3600019741' | 'EE3600019758' | 'EE3600103248' | 'EE3600001848';
 
 type StrategyChange = { date: string; note: 'riskProfile2024' | 'lifecycle2022' };
 
