@@ -45,16 +45,19 @@ const qrCodePixelsPerModule = (device: DeviceClass) => {
 };
 
 const WHITE = '#ffffff';
+const WHITE_TILE =
+  'url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnPjxyZWN0IHdpZHRoPScxMDAlJyBoZWlnaHQ9JzEwMCUnIGZpbGw9JyNmZmYnLz48L3N2Zz4=)';
+const SIDE_PADDING_OF_THE_LOGIN_CARD_ON_A_PHONE = 24;
 
-const WhiteTile = () => (
-  <svg
-    aria-hidden="true"
-    className="position-absolute top-0 start-0 w-100 h-100"
-    viewBox="0 0 1 1"
-    preserveAspectRatio="none"
+const ReachIntoTheCardPadding: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div
+    style={{
+      marginLeft: -SIDE_PADDING_OF_THE_LOGIN_CARD_ON_A_PHONE,
+      marginRight: -SIDE_PADDING_OF_THE_LOGIN_CARD_ON_A_PHONE,
+    }}
   >
-    <rect width="1" height="1" fill={WHITE} />
-  </svg>
+    {children}
+  </div>
 );
 
 type SmartIdLoginStart = (language: string, flow: SmartIdLoginFlow, rememberMe: boolean) => void;
@@ -96,6 +99,7 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
       automaticRenewals={automaticRenewals}
       sizePixels={MODULES_ACROSS_THE_QR_CODE_AND_ITS_QUIET_ZONE * qrCodePixelsPerModule(device)}
       scanFrame={device === 'computer'}
+      reachIntoCardPadding={device === 'phone'}
     >
       {device === 'tablet' && (
         <QuietLink href={linkThatOpensTheSmartIdApp(web2AppLink)} onClick={onAppOpen}>
@@ -159,6 +163,7 @@ const SmartIdQrCodeLogin: React.FC<{
   automaticRenewals: AutomaticRenewalAllowance;
   sizePixels: number;
   scanFrame: boolean;
+  reachIntoCardPadding: boolean;
   children: React.ReactNode;
 }> = ({
   session,
@@ -169,6 +174,7 @@ const SmartIdQrCodeLogin: React.FC<{
   automaticRenewals,
   sizePixels,
   scanFrame,
+  reachIntoCardPadding,
   children,
 }) => {
   const { formatMessage } = useIntl();
@@ -208,10 +214,9 @@ const SmartIdQrCodeLogin: React.FC<{
 
   const qrCode = (
     <div
-      className="position-relative d-flex align-items-center justify-content-center mx-auto rounded-3 overflow-hidden"
-      style={{ width: sizePixels, maxWidth: '100%', aspectRatio: '1' }}
+      className="d-flex align-items-center justify-content-center mx-auto rounded-3 overflow-hidden"
+      style={{ width: sizePixels, maxWidth: '100%', aspectRatio: '1', backgroundImage: WHITE_TILE }}
     >
-      <WhiteTile />
       {deviceLink ? (
         <QRCodeSVG
           value={deviceLink}
@@ -219,23 +224,32 @@ const SmartIdQrCodeLogin: React.FC<{
           level="L"
           marginSize={QUIET_ZONE_MODULES}
           bgColor={WHITE}
-          className="position-relative"
           style={{ maxWidth: '100%', height: 'auto', aspectRatio: '1' }}
           role="img"
           aria-label={formatMessage({ id: 'login.smart.id.qr.instructions' })}
         />
       ) : (
-        <Loader className="position-relative" />
+        <Loader />
       )}
     </div>
   );
+
+  const placeQrCode = () => {
+    if (scanFrame) {
+      return <ScanFrame>{qrCode}</ScanFrame>;
+    }
+    if (reachIntoCardPadding) {
+      return <ReachIntoTheCardPadding>{qrCode}</ReachIntoTheCardPadding>;
+    }
+    return qrCode;
+  };
 
   return (
     <BroughtIntoView>
       <FocusedParagraph className="m-0 mb-4 text-pretty">
         <FormattedMessage id="login.smart.id.qr.instructions" />
       </FocusedParagraph>
-      {scanFrame ? <ScanFrame>{qrCode}</ScanFrame> : qrCode}
+      {placeQrCode()}
       {children}
       <CancelButton onCancel={onCancel} className="mt-4" />
     </BroughtIntoView>

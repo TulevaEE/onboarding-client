@@ -205,14 +205,6 @@ describe('Smart-ID device link login', () => {
     expect(scanFrame).toHaveStyle({ padding: '12px' });
   });
 
-  it('rounds the white tile of the QR code like the card and the buttons around it', async () => {
-    renderDeviceLinkLogin();
-    await flushPendingRequests();
-
-    /* eslint-disable-next-line testing-library/no-node-access */
-    expect(screen.getByRole('img').parentElement).toHaveClass('rounded-3', 'overflow-hidden');
-  });
-
   it('leaves the QR code a phone asked for unframed, so the code keeps the width of the screen', async () => {
     setUserAgent(phoneUserAgent);
     renderDeviceLinkLogin({ qrCodeRequested: true });
@@ -220,6 +212,18 @@ describe('Smart-ID device link login', () => {
 
     expect(screen.getByRole('img')).toBeInTheDocument();
     expect(screen.queryByTestId('qr-scan-frame')).not.toBeInTheDocument();
+  });
+
+  it('lets the QR code a phone asked for reach into the side padding of the card, so the white margin drawn into the code does not shrink it', async () => {
+    setUserAgent(phoneUserAgent);
+    renderDeviceLinkLogin({ qrCodeRequested: true });
+    await flushPendingRequests();
+
+    /* eslint-disable-next-line testing-library/no-node-access */
+    expect(screen.getByRole('img').parentElement?.parentElement).toHaveStyle({
+      marginLeft: '-24px',
+      marginRight: '-24px',
+    });
   });
 
   it('leaves the QR code of a tablet unframed, so the code keeps the width of the screen', async () => {
@@ -413,18 +417,18 @@ describe('Smart-ID device link login', () => {
     /* eslint-enable testing-library/no-node-access */
   });
 
-  it('keeps the white tile of the QR code in place while a fresh code loads, so a page the browser forces dark does not flash', async () => {
+  it('keeps a white tile in the place of the QR code while a fresh code loads, drawn as an image so a page the browser forces dark does not flash', async () => {
+    const whiteTile = {
+      backgroundImage:
+        'url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnPjxyZWN0IHdpZHRoPScxMDAlJyBoZWlnaHQ9JzEwMCUnIGZpbGw9JyNmZmYnLz48L3N2Zz4=)',
+    };
     renderDeviceLinkLogin();
     /* eslint-disable testing-library/no-node-access */
-    const placeOfTheQrCode = screen.getByRole('status', { name: 'Loading' }).parentElement;
-    const whiteTile = placeOfTheQrCode?.querySelector('svg[aria-hidden="true"] rect');
-    expect(whiteTile).toHaveAttribute('fill', '#ffffff');
+    expect(screen.getByRole('status', { name: 'Loading' }).parentElement).toHaveStyle(whiteTile);
 
     await flushPendingRequests();
 
-    expect(
-      screen.getByRole('img').parentElement?.querySelector('svg[aria-hidden="true"] rect'),
-    ).toBe(whiteTile);
+    expect(screen.getByRole('img').parentElement).toHaveStyle(whiteTile);
     /* eslint-enable testing-library/no-node-access */
   });
 
