@@ -2,7 +2,7 @@ import React from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import config from 'react-global-configuration';
-import { logo } from '../../common';
+import { TulevaLogo } from '../../common/tulevaLogo/TulevaLogo';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { RoleSwitcher } from './roleSwitcher';
 
@@ -23,11 +23,11 @@ export const Header = ({ user, onLogout, onRoleSwitch, hackathon = false }: Prop
       <div className="app-header__brand flex-shrink-0">
         {config.get('language') === 'et' ? (
           <a href="/account">
-            <img src={logo} alt="Tuleva" className="brand-logo" />
+            <TulevaLogo className="brand-logo" />
           </a>
         ) : (
           <a href="/account?language=en">
-            <img src={logo} alt="Tuleva" className="brand-logo" />
+            <TulevaLogo className="brand-logo" />
           </a>
         )}
         {hackathon && (

@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useParams } from 'react-router-dom';
-import { logo } from '../../../common';
+import { TulevaLogo } from '../../../common/tulevaLogo/TulevaLogo';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { usePublicGiftLink } from './api/giftLink.api';
 import { GiftDisclaimer } from './GiftDisclaimer';
@@ -16,7 +16,7 @@ export const GiftDonePage: FC = () => {
       <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-12 col-md-9 col-lg-7">
-            <img width="146" height="66" src={logo} alt="Tuleva" className="d-block mx-auto mb-5" />
+            <TulevaLogo width="146" height="66" className="d-block mx-auto mb-5" />
             <div className="d-flex flex-column gap-4 text-center">
               <h1 className="m-0">
                 <FormattedMessage id="giftLink.done.title" />
