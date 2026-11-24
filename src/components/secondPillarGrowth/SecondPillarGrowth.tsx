@@ -23,6 +23,7 @@ import { SecondPillarAssets } from '../common/apiModels';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { formatAmountForCurrency } from '../common/utils';
 import { TranslationKey } from '../translations';
+import { chartColors } from '../common/forcedDark/chartColors';
 
 declare module 'chart.js' {
   interface TooltipPositionerMap {
@@ -50,7 +51,6 @@ Tooltip.positioners.segmentCenter = function segmentCenter(elements) {
 };
 
 const STACKED_BAR_SEPARATOR_WIDTH = 1;
-const STACKED_BAR_SEPARATOR_COLOR = '#fff';
 const STACK_KEY = 'balance';
 const SWATCH_SIZE = 14;
 
@@ -428,6 +428,7 @@ const SecondPillarGrowth = () => {
 
   const formatCurrency = (value: number) => formatAmountForCurrency(value, 0);
 
+  const colors = chartColors();
   const chartData = (() => {
     if (!segments) {
       return null;
@@ -499,7 +500,7 @@ const SecondPillarGrowth = () => {
         data: [ds.value],
         backgroundColor: ds.color,
         hoverBackgroundColor: ds.hover,
-        borderColor: STACKED_BAR_SEPARATOR_COLOR,
+        borderColor: colors.barSeparator,
         borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
         borderSkipped: false,
         stack: STACK_KEY,
@@ -554,7 +555,7 @@ const SecondPillarGrowth = () => {
       datalabels: {
         anchor: 'end' as const,
         align: 'top' as const,
-        color: '#212529',
+        color: colors.label,
         clamp: true,
         font: {
           family: '"Roboto", "Segoe UI", "Helvetica Neue", Arial, sans-serif',
@@ -598,7 +599,7 @@ const SecondPillarGrowth = () => {
           display: true,
           drawTicks: false,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          color: (ctx: any) => (ctx.tick?.value === 0 ? 'rgba(0, 0, 0, 0.175)' : 'rgba(0,0,0,0)'),
+          color: (ctx: any) => (ctx.tick?.value === 0 ? colors.zeroLine : 'rgba(0,0,0,0)'),
           lineWidth: 1,
         },
       },

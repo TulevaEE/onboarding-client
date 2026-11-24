@@ -42,3 +42,10 @@
     0 0 2px 1px rgba(0, 0, 0, 0.25),
     0 1px 2px 0 rgba(0, 0, 0, 0.25);
 }
+
+:global(.forced-dark) .customRangePayout::-webkit-slider-thumb {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='%23fff'/%3E%3C/svg%3E");
+}
+:global(.forced-dark) .customRangePayout::-moz-range-thumb {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='%23fff'/%3E%3C/svg%3E");
+}

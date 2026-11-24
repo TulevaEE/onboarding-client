@@ -122,7 +122,7 @@ const StatusBoxIcon: FC<StatusBoxIconProps> = ({ status }) => {
             width="24"
           >
             <path
-              fill="#fff"
+              fill="none"
               fillRule="evenodd"
               stroke="#00A100"
               strokeDasharray="2 3"

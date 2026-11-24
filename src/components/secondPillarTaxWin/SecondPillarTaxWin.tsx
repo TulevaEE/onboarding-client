@@ -18,6 +18,7 @@ import { usePageTitle } from '../common/usePageTitle';
 import { useContributions, useMe } from '../common/apiHooks';
 import { SecondPillarContribution } from '../common/apiModels';
 import { Shimmer } from '../common/shimmer/Shimmer';
+import { chartColors } from '../common/forcedDark/chartColors';
 
 ChartJS.register(
   CategoryScale,
@@ -37,7 +38,6 @@ const CHART_FONT_COLOR = '#6B7074FF';
 const DATALABEL_FONT_SIZE = 16;
 const DATALABEL_FONT_LINE_HEIGHT = 1.25;
 const STACKED_BAR_SEPARATOR_WIDTH = 1;
-const STACKED_BAR_SEPARATOR_COLOR = '#fff';
 
 ChartJS.defaults.font.family = CHART_FONT_FAMILY;
 ChartJS.defaults.font.size = CHART_FONT_SIZE;
@@ -190,6 +190,7 @@ const SecondPillarTaxWin = () => {
     };
   };
 
+  const colors = chartColors();
   const chartDataConfig = getChartData();
 
   const chartData = {
@@ -200,7 +201,7 @@ const SecondPillarTaxWin = () => {
         data: [socialTaxPortionYTD, socialTaxPortionYTD],
         backgroundColor: '#D0D5DC',
         hoverBackgroundColor: '#B5BEC8',
-        borderColor: STACKED_BAR_SEPARATOR_COLOR,
+        borderColor: colors.barSeparator,
         borderWidth: 0,
         borderSkipped: false,
         borderRadius: 0,
@@ -208,9 +209,9 @@ const SecondPillarTaxWin = () => {
       {
         label: intl.formatMessage({ id: 'secondPillarTaxWin.chart.fromNetSalary' }),
         data: [chartDataConfig.leftData.netSalaryLoss, chartDataConfig.rightData.netSalaryLoss],
-        backgroundColor: 'rgba(132,197,230,0.7)',
-        hoverBackgroundColor: 'rgba(83,175,220,0.7)',
-        borderColor: STACKED_BAR_SEPARATOR_COLOR,
+        backgroundColor: colors.lightBlueBar,
+        hoverBackgroundColor: colors.lightBlueBarHover,
+        borderColor: colors.barSeparator,
         borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
         borderSkipped: false,
         borderRadius: 0,
@@ -220,7 +221,7 @@ const SecondPillarTaxWin = () => {
         data: [chartDataConfig.leftData.incomeTaxSaved, chartDataConfig.rightData.incomeTaxSaved],
         backgroundColor: '#4CBB51',
         hoverBackgroundColor: '#409D44',
-        borderColor: STACKED_BAR_SEPARATOR_COLOR,
+        borderColor: colors.barSeparator,
         borderWidth: { bottom: STACKED_BAR_SEPARATOR_WIDTH },
         borderSkipped: false,
         borderRadius: {
@@ -318,7 +319,7 @@ const SecondPillarTaxWin = () => {
       datalabels: {
         anchor: 'end' as const,
         align: 'top' as const,
-        color: '#212529',
+        color: colors.label,
         clamp: true,
         font: {
           family: CHART_FONT_FAMILY,

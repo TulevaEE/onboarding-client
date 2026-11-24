@@ -190,7 +190,7 @@ const todoIcon = (
     aria-hidden
   >
     <path
-      fill="#fff"
+      fill="none"
       fillRule="evenodd"
       clipRule="evenodd"
       stroke="#adb5bd"

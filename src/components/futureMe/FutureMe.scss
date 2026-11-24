@@ -1896,3 +1896,7 @@ html:has(.future-me .pot-bar) {
   height: 0.8em;
   vertical-align: -0.05em;
 }
+
+.forced-dark .future-me .help-btn:not(:hover):not([aria-expanded='true']) .help-ring {
+  fill: none;
+}
