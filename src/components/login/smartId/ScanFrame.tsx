@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const ScanFrame: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const QUIET_ZONE_OF_FOUR_MODULES_PLUS_THE_CORNER_STROKES = 32;
+  const CORNER_STROKES_CLEAR_OF_THE_WHITE_TILE = 12;
   const SCAN_CORNERS =
     'M1 13V5a4 4 0 0 1 4-4h8M87 1h8a4 4 0 0 1 4 4v8M99 87v8a4 4 0 0 1-4 4h-8M13 99H5a4 4 0 0 1-4-4v-8';
   return (
@@ -10,7 +10,7 @@ export const ScanFrame: React.FC<{ children: React.ReactNode }> = ({ children })
       style={{
         width: 'fit-content',
         maxWidth: '100%',
-        padding: QUIET_ZONE_OF_FOUR_MODULES_PLUS_THE_CORNER_STROKES,
+        padding: CORNER_STROKES_CLEAR_OF_THE_WHITE_TILE,
       }}
       data-testid="qr-scan-frame"
     >

@@ -152,13 +152,65 @@ describe('Smart-ID device link login', () => {
     expect(container).toHaveTextContent(/^Scan with the Smart.ID appCancel$/);
   });
 
-  it('frames the QR code on a computer with scan corners that keep clear of its quiet zone', async () => {
+  const lightModulesAroundTheCode = (qrCode: HTMLElement) => {
+    /* eslint-disable-next-line testing-library/no-node-access */
+    const [background, darkModules] = Array.from(qrCode.querySelectorAll('path'));
+    const [, , size] = (qrCode.getAttribute('viewBox') ?? '').split(' ').map(Number);
+    const runs = Array.from(
+      (darkModules.getAttribute('d') ?? '').matchAll(/M(\d+)[ ,](\d+)\s*h(\d+)/g),
+      ([, x, y, length]) => ({ x: Number(x), y: Number(y), length: Number(length) }),
+    );
+    return {
+      background: background.getAttribute('fill'),
+      backgroundPath: background.getAttribute('d'),
+      size,
+      left: Math.min(...runs.map(({ x }) => x)),
+      top: Math.min(...runs.map(({ y }) => y)),
+      right: size - Math.max(...runs.map(({ x, length }) => x + length)),
+      bottom: size - Math.max(...runs.map(({ y }) => y + 1)),
+    };
+  };
+
+  it.each([
+    ['a computer', desktopUserAgent, false],
+    ['a tablet', tabletUserAgent, false],
+    ['a phone that asked for it', phoneUserAgent, true],
+  ])(
+    'draws the white quiet zone of four modules into the QR code on %s, so a browser that forces the page dark cannot darken it away',
+    async (_device, userAgent, qrCodeRequested) => {
+      setUserAgent(userAgent);
+      mockGetSmartIdQrCodeLink.mockResolvedValue({ deviceLink: qrCodeLinkAsTheBackendBuildsIt });
+      renderDeviceLinkLogin({ qrCodeRequested });
+      await flushPendingRequests();
+
+      const quietZone = lightModulesAroundTheCode(screen.getByRole('img'));
+      expect(quietZone).toEqual({
+        background: '#ffffff',
+        backgroundPath: `M0,0 h${quietZone.size}v${quietZone.size}H0z`,
+        size: quietZone.size,
+        left: 4,
+        top: 4,
+        right: 4,
+        bottom: 4,
+      });
+    },
+  );
+
+  it('frames the QR code on a computer with scan corners that keep a gap from its white tile', async () => {
     renderDeviceLinkLogin();
     await flushPendingRequests();
 
     const scanFrame = screen.getByTestId('qr-scan-frame');
     expect(scanFrame).toContainElement(screen.getByRole('img'));
-    expect(scanFrame).toHaveStyle({ padding: '32px' });
+    expect(scanFrame).toHaveStyle({ padding: '12px' });
+  });
+
+  it('rounds the white tile of the QR code like the card and the buttons around it', async () => {
+    renderDeviceLinkLogin();
+    await flushPendingRequests();
+
+    /* eslint-disable-next-line testing-library/no-node-access */
+    expect(screen.getByRole('img').parentElement).toHaveClass('rounded-3', 'overflow-hidden');
   });
 
   it('leaves the QR code a phone asked for unframed, so the code keeps the width of the screen', async () => {
@@ -257,6 +309,7 @@ describe('Smart-ID device link login', () => {
 
   it('draws the QR code of a full device link at 10 px per module on a tablet, but never wider than the screen', async () => {
     setUserAgent(tabletUserAgent);
+    setViewportHeight(800);
     mockGetSmartIdQrCodeLink.mockResolvedValue({ deviceLink: qrCodeLinkAsTheBackendBuildsIt });
     renderDeviceLinkLogin();
     await flushPendingRequests();
@@ -265,12 +318,12 @@ describe('Smart-ID device link login', () => {
     expect(pixelsPerModuleOf(qrCode)).toBe(10);
     expect(qrCode).toHaveStyle({ maxWidth: '100%' });
     /* eslint-disable-next-line testing-library/no-node-access */
-    expect(qrCode.parentElement).toHaveStyle({ width: '530px', maxWidth: '100%' });
+    expect(qrCode.parentElement).toHaveStyle({ width: '610px', maxWidth: '100%' });
   });
 
   it('draws the QR code smaller on a tablet whose screen is too short for 10 px per module, so the instruction, the code, the link and Cancel fit on it', async () => {
     setUserAgent(tabletUserAgent);
-    setViewportHeight(600);
+    setViewportHeight(640);
     mockGetSmartIdQrCodeLink.mockResolvedValue({ deviceLink: qrCodeLinkAsTheBackendBuildsIt });
     renderDeviceLinkLogin();
     await flushPendingRequests();
@@ -318,6 +371,7 @@ describe('Smart-ID device link login', () => {
 
   it('shows a phone the QR code it asked for at 10 px per module, but never wider than the screen', async () => {
     setUserAgent(phoneUserAgent);
+    setViewportHeight(800);
     mockGetSmartIdQrCodeLink.mockResolvedValue({ deviceLink: qrCodeLinkAsTheBackendBuildsIt });
     renderDeviceLinkLogin({ qrCodeRequested: true });
     await flushPendingRequests();
@@ -325,12 +379,12 @@ describe('Smart-ID device link login', () => {
     const qrCode = screen.getByRole('img');
     expect(pixelsPerModuleOf(qrCode)).toBe(10);
     /* eslint-disable-next-line testing-library/no-node-access */
-    expect(qrCode.parentElement).toHaveStyle({ width: '530px', maxWidth: '100%' });
+    expect(qrCode.parentElement).toHaveStyle({ width: '610px', maxWidth: '100%' });
   });
 
   it('draws the QR code a phone asked for smaller when its screen is too short for 10 px per module', async () => {
     setUserAgent(phoneUserAgent);
-    setViewportHeight(560);
+    setViewportHeight(620);
     mockGetSmartIdQrCodeLink.mockResolvedValue({ deviceLink: qrCodeLinkAsTheBackendBuildsIt });
     renderDeviceLinkLogin({ qrCodeRequested: true });
     await flushPendingRequests();
@@ -351,11 +405,26 @@ describe('Smart-ID device link login', () => {
     renderDeviceLinkLogin();
     /* eslint-disable testing-library/no-node-access */
     const placeOfTheQrCode = screen.getByRole('status', { name: 'Loading' }).parentElement;
-    expect(placeOfTheQrCode).toHaveStyle({ width: '318px', maxWidth: '100%' });
+    expect(placeOfTheQrCode).toHaveStyle({ width: '366px', maxWidth: '100%' });
 
     await flushPendingRequests();
 
     expect(screen.getByRole('img').parentElement).toBe(placeOfTheQrCode);
+    /* eslint-enable testing-library/no-node-access */
+  });
+
+  it('keeps the white tile of the QR code in place while a fresh code loads, so a page the browser forces dark does not flash', async () => {
+    renderDeviceLinkLogin();
+    /* eslint-disable testing-library/no-node-access */
+    const placeOfTheQrCode = screen.getByRole('status', { name: 'Loading' }).parentElement;
+    const whiteTile = placeOfTheQrCode?.querySelector('svg[aria-hidden="true"] rect');
+    expect(whiteTile).toHaveAttribute('fill', '#ffffff');
+
+    await flushPendingRequests();
+
+    expect(
+      screen.getByRole('img').parentElement?.querySelector('svg[aria-hidden="true"] rect'),
+    ).toBe(whiteTile);
     /* eslint-enable testing-library/no-node-access */
   });
 

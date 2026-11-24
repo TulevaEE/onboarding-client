@@ -21,6 +21,9 @@ import { useStillOnThisPage } from './useStillOnThisPage';
 import { IconBeforeLabel, SmartIdMarkIcon } from './icons';
 
 const MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE = 53;
+const QUIET_ZONE_MODULES = 4;
+const MODULES_ACROSS_THE_QR_CODE_AND_ITS_QUIET_ZONE =
+  MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE + 2 * QUIET_ZONE_MODULES;
 const SMART_ID_MINIMUM_PIXELS_PER_MODULE = 6;
 const TOUCH_SCREEN_PIXELS_PER_MODULE = 10;
 const SCREEN_HEIGHT_FOR_THE_INSTRUCTION_APP_LINK_AND_CANCEL = 180;
@@ -28,7 +31,7 @@ const SCREEN_HEIGHT_FOR_THE_INSTRUCTION_APP_LINK_AND_CANCEL = 180;
 const pixelsPerModuleToFitTheScreenHeight = () =>
   Math.floor(
     (window.innerHeight - SCREEN_HEIGHT_FOR_THE_INSTRUCTION_APP_LINK_AND_CANCEL) /
-      MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE,
+      MODULES_ACROSS_THE_QR_CODE_AND_ITS_QUIET_ZONE,
   );
 
 const qrCodePixelsPerModule = (device: DeviceClass) => {
@@ -40,6 +43,19 @@ const qrCodePixelsPerModule = (device: DeviceClass) => {
     Math.min(TOUCH_SCREEN_PIXELS_PER_MODULE, pixelsPerModuleToFitTheScreenHeight()),
   );
 };
+
+const WHITE = '#ffffff';
+
+const WhiteTile = () => (
+  <svg
+    aria-hidden="true"
+    className="position-absolute top-0 start-0 w-100 h-100"
+    viewBox="0 0 1 1"
+    preserveAspectRatio="none"
+  >
+    <rect width="1" height="1" fill={WHITE} />
+  </svg>
+);
 
 type SmartIdLoginStart = (language: string, flow: SmartIdLoginFlow, rememberMe: boolean) => void;
 
@@ -78,7 +94,7 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
       onSmartIdLoginStart={onSmartIdLoginStart}
       onExpire={onExpire}
       automaticRenewals={automaticRenewals}
-      sizePixels={MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE * qrCodePixelsPerModule(device)}
+      sizePixels={MODULES_ACROSS_THE_QR_CODE_AND_ITS_QUIET_ZONE * qrCodePixelsPerModule(device)}
       scanFrame={device === 'computer'}
     >
       {device === 'tablet' && (
@@ -192,21 +208,24 @@ const SmartIdQrCodeLogin: React.FC<{
 
   const qrCode = (
     <div
-      className="d-flex align-items-center justify-content-center mx-auto"
+      className="position-relative d-flex align-items-center justify-content-center mx-auto rounded-3 overflow-hidden"
       style={{ width: sizePixels, maxWidth: '100%', aspectRatio: '1' }}
     >
+      <WhiteTile />
       {deviceLink ? (
         <QRCodeSVG
           value={deviceLink}
           size={sizePixels}
           level="L"
-          bgColor="#ffffff"
+          marginSize={QUIET_ZONE_MODULES}
+          bgColor={WHITE}
+          className="position-relative"
           style={{ maxWidth: '100%', height: 'auto', aspectRatio: '1' }}
           role="img"
           aria-label={formatMessage({ id: 'login.smart.id.qr.instructions' })}
         />
       ) : (
-        <Loader />
+        <Loader className="position-relative" />
       )}
     </div>
   );
