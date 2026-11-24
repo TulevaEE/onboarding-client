@@ -2,7 +2,7 @@ import { FC, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import { captureException } from '@sentry/browser';
-import { logo } from '../../../common';
+import { TulevaLogo } from '../../../common/tulevaLogo/TulevaLogo';
 import { usePageTitle } from '../../../common/usePageTitle';
 import { PaymentBankButtons } from '../../thirdPillar/ThirdPillarPayment/PaymentBankButtons';
 import { BankKey } from '../../thirdPillar/ThirdPillarPayment/types';
@@ -209,7 +209,7 @@ const GiftPageFrame: FC = ({ children }) => (
     <div className="container py-5">
       <div className="row justify-content-center">
         <div className="col-12 col-md-9 col-lg-7">
-          <img width="146" height="66" src={logo} alt="Tuleva" className="d-block mx-auto mb-5" />
+          <TulevaLogo width="146" height="66" className="d-block mx-auto mb-5" />
           {children}
         </div>
       </div>

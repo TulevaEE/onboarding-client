@@ -41,6 +41,7 @@ import { createTrackedEvent } from './components/common/api';
 import { shouldWriteTestMode, writeTestMode } from './components/common/test-mode';
 import { applyMockScenarioFromLink } from './components/common/requestMocker';
 import { startAnalytics } from './components/tracking/startAnalytics';
+import { markForcedDark } from './components/common/forcedDark/forcedDark';
 
 const history = createBrowserHistory();
 
@@ -134,4 +135,5 @@ export class App extends Component {
   }
 }
 
+markForcedDark();
 render(<App />, document.getElementById('root'));

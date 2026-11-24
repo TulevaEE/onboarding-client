@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import config from 'react-global-configuration';
 import { FormattedMessage } from 'react-intl';
 
-import { logo } from '../../common';
+import { TulevaLogo } from '../../common/tulevaLogo/TulevaLogo';
 import { Header } from './Header';
 import { Shimmer } from '../../common/shimmer/Shimmer';
 import { RoleSwitcher } from './roleSwitcher';
@@ -23,7 +23,7 @@ describe('Header', () => {
     expect(
       component.contains(
         <a href="/account">
-          <img src={logo} alt="Tuleva" className="brand-logo" />
+          <TulevaLogo className="brand-logo" />
         </a>,
       ),
     ).toBe(true);

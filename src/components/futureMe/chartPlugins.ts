@@ -1,5 +1,6 @@
 import { Chart, ChartType, Interaction, InteractionModeFunction, Plugin } from 'chart.js';
 import { isHighContrast } from './useHighContrast';
+import { isForcedDark } from '../common/forcedDark/forcedDark';
 
 export interface CostsPoint {
   age: number;
@@ -173,7 +174,8 @@ export const marksLine: Plugin<'line', ChartMark[]> = {
       }
       const x = scales.x.getPixelForValue(age);
       ctx.save();
-      ctx.strokeStyle = isHighContrast() ? HIGH_CONTRAST_MARK_LINE_COLOR : MARK_LINE_COLOR;
+      ctx.strokeStyle =
+        isHighContrast() || isForcedDark() ? HIGH_CONTRAST_MARK_LINE_COLOR : MARK_LINE_COLOR;
       ctx.setLineDash([4, 4]);
       ctx.lineWidth = 1;
       ctx.beginPath();
@@ -186,7 +188,13 @@ export const marksLine: Plugin<'line', ChartMark[]> = {
       const limit = chartArea.bottom - MARK_PILL_ROW_HEIGHT;
       const top = freeTop(taken, left, left + width, chartArea.top + 2, limit);
       taken.push({ left, right: left + width, top });
-      drawPill(ctx, left, top, text, isHighContrast() ? HIGH_CONTRAST_MARK_PILL : MARK_PILL);
+      drawPill(
+        ctx,
+        left,
+        top,
+        text,
+        isHighContrast() || isForcedDark() ? HIGH_CONTRAST_MARK_PILL : MARK_PILL,
+      );
     });
   },
 };

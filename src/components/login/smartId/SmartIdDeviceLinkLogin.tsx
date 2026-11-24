@@ -21,6 +21,9 @@ import { useStillOnThisPage } from './useStillOnThisPage';
 import { IconBeforeLabel, SmartIdMarkIcon } from './icons';
 
 const MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE = 53;
+const QUIET_ZONE_MODULES = 4;
+const MODULES_ACROSS_THE_QR_CODE_AND_ITS_QUIET_ZONE =
+  MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE + 2 * QUIET_ZONE_MODULES;
 const SMART_ID_MINIMUM_PIXELS_PER_MODULE = 6;
 const TOUCH_SCREEN_PIXELS_PER_MODULE = 10;
 const SCREEN_HEIGHT_FOR_THE_INSTRUCTION_APP_LINK_AND_CANCEL = 180;
@@ -28,7 +31,7 @@ const SCREEN_HEIGHT_FOR_THE_INSTRUCTION_APP_LINK_AND_CANCEL = 180;
 const pixelsPerModuleToFitTheScreenHeight = () =>
   Math.floor(
     (window.innerHeight - SCREEN_HEIGHT_FOR_THE_INSTRUCTION_APP_LINK_AND_CANCEL) /
-      MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE,
+      MODULES_ACROSS_THE_QR_CODE_AND_ITS_QUIET_ZONE,
   );
 
 const qrCodePixelsPerModule = (device: DeviceClass) => {
@@ -40,6 +43,22 @@ const qrCodePixelsPerModule = (device: DeviceClass) => {
     Math.min(TOUCH_SCREEN_PIXELS_PER_MODULE, pixelsPerModuleToFitTheScreenHeight()),
   );
 };
+
+const WHITE = '#ffffff';
+const WHITE_TILE =
+  'url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnPjxyZWN0IHdpZHRoPScxMDAlJyBoZWlnaHQ9JzEwMCUnIGZpbGw9JyNmZmYnLz48L3N2Zz4=)';
+const SIDE_PADDING_OF_THE_LOGIN_CARD_ON_A_PHONE = 24;
+
+const ReachIntoTheCardPadding: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div
+    style={{
+      marginLeft: -SIDE_PADDING_OF_THE_LOGIN_CARD_ON_A_PHONE,
+      marginRight: -SIDE_PADDING_OF_THE_LOGIN_CARD_ON_A_PHONE,
+    }}
+  >
+    {children}
+  </div>
+);
 
 type SmartIdLoginStart = (language: string, flow: SmartIdLoginFlow, rememberMe: boolean) => void;
 
@@ -78,8 +97,9 @@ export const SmartIdDeviceLinkLogin: React.FC<SmartIdDeviceLinkLoginProps> = ({
       onSmartIdLoginStart={onSmartIdLoginStart}
       onExpire={onExpire}
       automaticRenewals={automaticRenewals}
-      sizePixels={MODULES_IN_A_SMART_ID_DEVICE_LINK_QR_CODE * qrCodePixelsPerModule(device)}
+      sizePixels={MODULES_ACROSS_THE_QR_CODE_AND_ITS_QUIET_ZONE * qrCodePixelsPerModule(device)}
       scanFrame={device === 'computer'}
+      reachIntoCardPadding={device === 'phone'}
     >
       {device === 'tablet' && (
         <QuietLink href={linkThatOpensTheSmartIdApp(web2AppLink)} onClick={onAppOpen}>
@@ -143,6 +163,7 @@ const SmartIdQrCodeLogin: React.FC<{
   automaticRenewals: AutomaticRenewalAllowance;
   sizePixels: number;
   scanFrame: boolean;
+  reachIntoCardPadding: boolean;
   children: React.ReactNode;
 }> = ({
   session,
@@ -153,6 +174,7 @@ const SmartIdQrCodeLogin: React.FC<{
   automaticRenewals,
   sizePixels,
   scanFrame,
+  reachIntoCardPadding,
   children,
 }) => {
   const { formatMessage } = useIntl();
@@ -192,15 +214,16 @@ const SmartIdQrCodeLogin: React.FC<{
 
   const qrCode = (
     <div
-      className="d-flex align-items-center justify-content-center mx-auto"
-      style={{ width: sizePixels, maxWidth: '100%', aspectRatio: '1' }}
+      className="d-flex align-items-center justify-content-center mx-auto rounded-3 overflow-hidden"
+      style={{ width: sizePixels, maxWidth: '100%', aspectRatio: '1', backgroundImage: WHITE_TILE }}
     >
       {deviceLink ? (
         <QRCodeSVG
           value={deviceLink}
           size={sizePixels}
           level="L"
-          bgColor="#ffffff"
+          marginSize={QUIET_ZONE_MODULES}
+          bgColor={WHITE}
           style={{ maxWidth: '100%', height: 'auto', aspectRatio: '1' }}
           role="img"
           aria-label={formatMessage({ id: 'login.smart.id.qr.instructions' })}
@@ -211,12 +234,22 @@ const SmartIdQrCodeLogin: React.FC<{
     </div>
   );
 
+  const placeQrCode = () => {
+    if (scanFrame) {
+      return <ScanFrame>{qrCode}</ScanFrame>;
+    }
+    if (reachIntoCardPadding) {
+      return <ReachIntoTheCardPadding>{qrCode}</ReachIntoTheCardPadding>;
+    }
+    return qrCode;
+  };
+
   return (
     <BroughtIntoView>
       <FocusedParagraph className="m-0 mb-4 text-pretty">
         <FormattedMessage id="login.smart.id.qr.instructions" />
       </FocusedParagraph>
-      {scanFrame ? <ScanFrame>{qrCode}</ScanFrame> : qrCode}
+      {placeQrCode()}
       {children}
       <CancelButton onCancel={onCancel} className="mt-4" />
     </BroughtIntoView>

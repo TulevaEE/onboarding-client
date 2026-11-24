@@ -23,6 +23,10 @@ import { mandateDeadlinesProfiles } from './mandateDeadlines';
 import { paymentRateRedirectProfiles } from './paymentRateRedirect';
 import { rejoinPermissionProfiles } from './rejoinPermission';
 import { myGiftsProfiles } from './myGifts';
+import { capitalEventsProfiles } from './capitalEvents';
+import { pendingOnboardingsProfiles } from './pendingOnboardings';
+import { connectedAppsProfiles } from './connectedApps';
+import { amlChecksProfiles } from './amlChecks';
 import { secondPillarNavHistoriesProfiles, worldMarketReturnsProfiles } from './secondPillarFunds';
 
 export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string, unknown>> = {
@@ -52,6 +56,10 @@ export const mockModeProfiles: Record<keyof MockModeConfiguration, Record<string
   myGifts: myGiftsProfiles,
   secondPillarNavHistories: secondPillarNavHistoriesProfiles,
   worldMarketReturns: worldMarketReturnsProfiles,
+  capitalEvents: capitalEventsProfiles,
+  pendingOnboardings: pendingOnboardingsProfiles,
+  connectedApps: connectedAppsProfiles,
+  amlChecks: amlChecksProfiles,
 } as const;
 
 export const getAllProfileNames = () =>

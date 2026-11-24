@@ -395,6 +395,15 @@ export type CapitalType =
   | 'MEMBERSHIP_BONUS'
   | 'CAPITAL_ACQUIRED';
 
+export interface ConnectedApp {
+  id: string;
+  clientName: string;
+  scopes: string[];
+  connectedAt: string;
+  lastUsedAt: string | null;
+  expiresAt: string;
+}
+
 export interface AmlCheck {
   type: string;
   success: boolean;

@@ -30,6 +30,13 @@ export const readMockModeConfiguration = () => {
 
 export const isMockModeEnabled = () => readMockModeConfiguration() !== null;
 
+export const readMockedProfile = <TResponse>(endpointName: MockModeEndpoint) => {
+  const selectedProfile = readMockModeConfiguration()?.[endpointName];
+  return selectedProfile
+    ? (mockModeProfiles[endpointName][selectedProfile] as TResponse)
+    : undefined;
+};
+
 export const DEV_MODE_PARAM = 'dev';
 
 export const applyMockScenarioFromLink = (history: History) => {
