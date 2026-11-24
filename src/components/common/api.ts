@@ -76,7 +76,7 @@ import {
   MandateBatchDto,
   WithdrawalsEligibility,
 } from './apiModels/withdrawals';
-import { mockRequestInMockMode } from './requestMocker';
+import { isMockModeEnabled, mockRequestInMockMode, readMockedProfile } from './requestMocker';
 import { SignableEntity } from './signing/types';
 import {
   CapitalTransferContract,
@@ -301,6 +301,10 @@ export function getMemberCapitalListings(): Promise<MemberCapitalListing[]> {
 }
 
 export async function getMemberCapitalListingCount(): Promise<number | null> {
+  const mockedListings = readMockedProfile<MemberCapitalListing[]>('memberCapitalListings');
+  if (mockedListings) {
+    return mockedListings.length;
+  }
   const request = await head(getEndpoint('/v1/listings'));
   return Number(request.headers.get('x-total-count') ?? null);
 }
@@ -631,7 +635,10 @@ export function createAmlCheck(
 }
 
 export function getMissingAmlChecks(): Promise<AmlCheck[]> {
-  return getWithAuthentication(getEndpoint('/v1/amlchecks'), undefined);
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/amlchecks'), undefined),
+    'amlChecks',
+  );
 }
 
 export function getFunds(): Promise<Fund[]> {
@@ -670,7 +677,10 @@ export function getTransactions(): Promise<Transaction[]> {
 }
 
 export function getCapitalEvents(): Promise<CapitalEvent[]> {
-  return getWithAuthentication(getEndpoint('/v1/me/capital/events'), undefined);
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/me/capital/events'), undefined),
+    'capitalEvents',
+  );
 }
 
 export function getMemberLookup(personalCode: string): Promise<MemberLookup> {
@@ -752,6 +762,9 @@ export function createSavingsFundPaymentCancellation(paymentId: string): Promise
 }
 
 export function createTrackedEvent(type: string, data: Record<string, unknown>): Promise<unknown> {
+  if (isMockModeEnabled()) {
+    return Promise.resolve(undefined);
+  }
   return postWithAuthentication(getEndpoint('/v1/t'), { type, data });
 }
 
@@ -840,7 +853,10 @@ export function getRoles(): Promise<Role[]> {
 }
 
 export function getPendingOnboardings(): Promise<PendingOnboarding[]> {
-  return getWithAuthentication(getEndpoint('/v1/me/pending-onboardings'));
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint('/v1/me/pending-onboardings')),
+    'pendingOnboardings',
+  );
 }
 
 export async function switchRole(command: SwitchRoleCommand): Promise<Token> {

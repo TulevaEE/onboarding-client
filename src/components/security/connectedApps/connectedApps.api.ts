@@ -7,15 +7,10 @@ import {
 } from '@tanstack/react-query';
 import { getEndpoint } from '../../common/api';
 import { deleteWithAuthentication, getWithAuthentication } from '../../common/http';
+import { mockRequestInMockMode } from '../../common/requestMocker';
+import { ConnectedApp } from '../../common/apiModels';
 
-export interface ConnectedApp {
-  id: string;
-  clientName: string;
-  scopes: string[];
-  connectedAt: string;
-  lastUsedAt: string | null;
-  expiresAt: string;
-}
+export type { ConnectedApp };
 
 const CONNECTED_APPS_ENDPOINT = '/v1/me/connected-apps';
 
@@ -25,7 +20,10 @@ const isUnknownToThisPerson = (error: unknown) =>
   (error as { status?: number } | null)?.status === 404;
 
 export function getConnectedApps(): Promise<ConnectedApp[]> {
-  return getWithAuthentication(getEndpoint(CONNECTED_APPS_ENDPOINT));
+  return mockRequestInMockMode(
+    () => getWithAuthentication(getEndpoint(CONNECTED_APPS_ENDPOINT)),
+    'connectedApps',
+  );
 }
 
 export function useConnectedApps(): UseQueryResult<ConnectedApp[]> {

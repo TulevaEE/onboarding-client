@@ -22,6 +22,10 @@ import { mandateDeadlinesProfiles } from './profiles/mandateDeadlines';
 import { paymentRateRedirectProfiles } from './profiles/paymentRateRedirect';
 import { rejoinPermissionProfiles } from './profiles/rejoinPermission';
 import { myGiftsProfiles } from './profiles/myGifts';
+import { capitalEventsProfiles } from './profiles/capitalEvents';
+import { pendingOnboardingsProfiles } from './profiles/pendingOnboardings';
+import { connectedAppsProfiles } from './profiles/connectedApps';
+import { amlChecksProfiles } from './profiles/amlChecks';
 import {
   secondPillarNavHistoriesProfiles,
   worldMarketReturnsProfiles,
@@ -54,6 +58,10 @@ export type MockModeConfiguration = {
   myGifts: keyof typeof myGiftsProfiles | null;
   secondPillarNavHistories: keyof typeof secondPillarNavHistoriesProfiles | null;
   worldMarketReturns: keyof typeof worldMarketReturnsProfiles | null;
+  capitalEvents: keyof typeof capitalEventsProfiles | null;
+  pendingOnboardings: keyof typeof pendingOnboardingsProfiles | null;
+  connectedApps: keyof typeof connectedAppsProfiles | null;
+  amlChecks: keyof typeof amlChecksProfiles | null;
 };
 
 export type MockModeEndpoint = keyof MockModeConfiguration;
