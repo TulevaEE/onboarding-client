@@ -16,6 +16,7 @@ import {
   toInsurerCode,
 } from './insurers';
 import { InsurerGuide } from './InsurerGuide';
+import { eServiceLink } from './EServiceLink';
 import { InsurerForm } from './InsurerForm';
 import { EndDateField } from './EndDateField';
 import { PersonWithPensionAccount, useTransferRequest } from './useTransferRequest';
@@ -114,9 +115,11 @@ const InsurerQuestion = ({
 const CONTRACT_NUMBER_ID = 'insurance-contract-number';
 
 const ContractNumberField = ({
+  insurer,
   contractNumber,
   onChange,
 }: {
+  insurer: GuidedInsurerCode;
   contractNumber: string;
   onChange: (contractNumber: string) => void;
 }) => (
@@ -135,7 +138,10 @@ const ContractNumberField = ({
       aria-describedby={`${CONTRACT_NUMBER_ID}-hint`}
     />
     <div id={`${CONTRACT_NUMBER_ID}-hint`} className="form-text text-pretty">
-      <FormattedMessage id="insuranceTransfer.contractNumber.hint" />
+      <FormattedMessage
+        id="insuranceTransfer.contractNumber.hint"
+        values={{ link: eServiceLink(insurer) }}
+      />
     </div>
   </div>
 );
@@ -168,7 +174,11 @@ const GuidedRequest = ({
     <>
       {guides[insurer].writesLetter && (
         <>
-          <ContractNumberField contractNumber={contractNumber} onChange={changeContractNumber} />
+          <ContractNumberField
+            insurer={insurer}
+            contractNumber={contractNumber}
+            onChange={changeContractNumber}
+          />
           <EndDateField endDate={endDate} onChange={chooseEndDate} />
         </>
       )}

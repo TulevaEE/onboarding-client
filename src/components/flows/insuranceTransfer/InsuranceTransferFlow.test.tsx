@@ -631,13 +631,21 @@ describe('III pillar insurance contract transfer', () => {
       expect(inDocumentOrder([endDate, contractNumber])).toEqual([contractNumber, endDate]);
     });
 
+    test('links the contract number hint to SEB’s internet bank pension page, in a new tab so the request stays open', async () => {
+      openFlow('/3rd-pillar-insurance/request?insurer=SEB');
+
+      const eService = await screen.findByRole('link', { name: 'the insurer’s e‑service' });
+      expect(eService).toHaveAttribute('href', 'https://e.seb.ee/ib/p/pensionDashboard');
+      expect(eService).toHaveAttribute('target', '_blank');
+    });
+
     test('names the contract to end when its number is given, keeping the number out of the address', async () => {
       openFlow('/3rd-pillar-insurance/request?insurer=SEB');
 
       const contractNumber = await screen.findByLabelText('Contract number');
       expect(contractNumber).toHaveClass(PII_CLASS);
       expect(contractNumber).toHaveAccessibleDescription(
-        'You can find it on your contract or in the insurer’s e\u2011service. If you leave it empty, the request ends all your III\u00A0pillar insurance contracts with this insurer.',
+        /^You can find it on your contract or in the insurer’s e\u2011service ?\. If you leave it empty, the request ends all your III\u00A0pillar insurance contracts with this insurer\.$/,
       );
       userEvent.type(contractNumber, 'UP000123');
 
@@ -946,8 +954,11 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     const contractNumber = screen.getByLabelText('Contract number');
     expect(contractNumber).toHaveClass(PII_CLASS);
     expect(contractNumber).toHaveAccessibleDescription(
-      'You can find it on your contract or in the insurer’s e‑service.',
+      /^You can find it on your contract or in the insurer’s e‑service ?\.$/,
     );
+    const eService = screen.getByRole('link', { name: 'the insurer’s e‑service' });
+    expect(eService).toHaveAttribute('href', 'https://www.compensalife.eu/EE/logon.asp?lngID=et');
+    expect(eService).toHaveAttribute('target', '_blank');
     expect(contractNumber).toHaveAttribute('autocapitalize', 'characters');
     expect(screen.queryByRole('checkbox')).not.toBeInTheDocument();
     userEvent.type(contractNumber, ' UP000123 ');
