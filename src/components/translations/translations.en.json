@@ -600,6 +600,7 @@
   "thirdPillarPayment.confirmation.done.title.recurring": "Recurring payment set up",
   "thirdPillarPayment.confirmation.done.message.recurring": "From now on you save into your third pillar automatically, without having to remember it.",
   "thirdPillarPayment.confirmation.done.message.recurring.firstPayment": "The first payment is on the date you chose, and you can change the amount in your internet bank whenever you need.",
+  "thirdPillarPayment.otherBanks": "Other banks",
   "thirdPillarSuccess.done": "Payment done",
   "thirdPillarSuccess.message": "New fund units will reach your account within 2 working days.",
   "thirdPillarSuccess.message.topSavers": "Only 30% of people in Estonia save in the third pillar. You are one of them, and you are deliberately putting money aside for your future.",
