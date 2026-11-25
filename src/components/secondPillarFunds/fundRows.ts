@@ -1,8 +1,8 @@
 import { Fund, FundNavHistory, WorldMarketReturn, WorldMarketReturns } from '../common/apiModels';
 import { annualizedReturn, daysBetween, newestCommonNavDate } from './fundReturns';
 import { FUND_DETAILS, FundDetails } from './fundDetails';
+import { isBehindMarket } from '../common/nearMarket';
 
-export const NEAR_MARKET_TOLERANCE = 0.015;
 const BENCHMARK_DATE_TOLERANCE_DAYS = 7;
 
 export type FundRow = {
@@ -120,4 +120,4 @@ export const benchmarkDateOf = (
     );
 
 export const isNearMarket = (fundReturn: number, benchmark: number) =>
-  fundReturn >= benchmark - NEAR_MARKET_TOLERANCE;
+  !isBehindMarket(fundReturn, benchmark);

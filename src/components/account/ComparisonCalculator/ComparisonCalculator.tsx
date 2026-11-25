@@ -4,6 +4,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import moment, { Moment } from 'moment/moment';
 import { formatAmountForCurrency } from '../../common/utils';
+import { isAheadOfMarket, isBehindMarket } from '../../common/nearMarket';
 import { Fund } from '../../common/apiModels';
 import Select from './select';
 import { getReturnComparison, Key, ReturnComparison } from './api';
@@ -654,12 +655,10 @@ const ComparisonCalculator: React.FC = () => {
       personalRate: number,
       comparisonRate: number,
     ): PerformanceVerdict {
-      const thresholdBps = 150;
-      const differenceBps = Math.round((personalRate - comparisonRate) * 10000);
-      if (differenceBps > thresholdBps) {
+      if (isAheadOfMarket(personalRate, comparisonRate)) {
         return 'POSITIVE_ALPHA';
       }
-      if (differenceBps < -thresholdBps) {
+      if (isBehindMarket(personalRate, comparisonRate)) {
         return 'NEGATIVE_ALPHA';
       }
       return 'NEUTRAL';
@@ -709,10 +708,6 @@ const ComparisonCalculator: React.FC = () => {
   function calculateGraphProperties(): void {
     const barHeights = calculateGraphBarHeights();
 
-    const negativeColorThresholdBps = 100;
-    const isMoreThanThresholdBelow = (rate: number, indexRate: number) =>
-      Math.round((indexRate - rate) * 10000) > negativeColorThresholdBps;
-
     const indexBarProperties: GraphBarProperties = {
       color: 'INDEX',
       amount: returns.index ? returns.index.amount : 0,
@@ -722,9 +717,7 @@ const ComparisonCalculator: React.FC = () => {
     };
 
     const personalBarColor =
-      returns.personal &&
-      returns.index &&
-      isMoreThanThresholdBelow(returns.personal.rate, returns.index.rate)
+      returns.personal && returns.index && isBehindMarket(returns.personal.rate, returns.index.rate)
         ? 'NEGATIVE'
         : 'POSITIVE';
 
@@ -747,7 +740,7 @@ const ComparisonCalculator: React.FC = () => {
       comparisonBarColor =
         returns.pensionFund &&
         returns.index &&
-        isMoreThanThresholdBelow(returns.pensionFund.rate, returns.index.rate)
+        isBehindMarket(returns.pensionFund.rate, returns.index.rate)
           ? 'NEGATIVE'
           : 'POSITIVE';
     }
