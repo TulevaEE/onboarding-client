@@ -2,7 +2,7 @@ import { Fund, FundNavHistory, WorldMarketReturn, WorldMarketReturns } from '../
 import { annualizedReturn, daysBetween, newestCommonNavDate } from './fundReturns';
 import { FUND_DETAILS, FundDetails } from './fundDetails';
 
-export const NEAR_MARKET_TOLERANCE = 0.01;
+export const NEAR_MARKET_TOLERANCE = 0.015;
 const BENCHMARK_DATE_TOLERANCE_DAYS = 7;
 
 export type FundRow = {

@@ -467,7 +467,7 @@ describe('ComparisonCalculator', () => {
     const graph = await graphSection();
     // Bar heights
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBarGraph = within(graph).getByText('10.0%').closest('.bar-graph');
+    const firstBarGraph = within(graph).getByText('10.5%').closest('.bar-graph');
     // eslint-disable-next-line testing-library/no-node-access
     const secondBarGraph = within(graph).getByText('9.0%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 200px');
@@ -490,7 +490,7 @@ describe('ComparisonCalculator', () => {
     expect(secondBar).toHaveAttribute('data-testid', 'bar-INDEX');
 
     // Bar percentages
-    expect(within(graph).getByText('10.0%')).toBeInTheDocument();
+    expect(within(graph).getByText('10.5%')).toBeInTheDocument();
     expect(within(graph).getByText('9.0%')).toBeInTheDocument();
   });
 
@@ -847,7 +847,7 @@ describe('ComparisonCalculator', () => {
     const graph = await graphSection();
     // Bar heights
     // eslint-disable-next-line testing-library/no-node-access
-    const firstBarGraph = within(graph).getByText('10.0%').closest('.bar-graph');
+    const firstBarGraph = within(graph).getByText('10.5%').closest('.bar-graph');
     // eslint-disable-next-line testing-library/no-node-access
     const secondBarGraph = within(graph).getByText('9.0%').closest('.bar-graph');
     expect(firstBarGraph).toHaveStyle('height: 200px');
@@ -870,7 +870,7 @@ describe('ComparisonCalculator', () => {
     expect(secondBar).toHaveAttribute('data-testid', 'bar-INDEX');
 
     // Bar percentages
-    expect(within(graph).getByText('10.0%')).toBeInTheDocument();
+    expect(within(graph).getByText('10.5%')).toBeInTheDocument();
     expect(within(graph).getByText('9.0%')).toBeInTheDocument();
   });
 
@@ -1066,7 +1066,7 @@ const returnsData2ndPillarIndexPositive: ReturnsResponse = {
     },
     {
       key: 'SECOND_PILLAR',
-      rate: 0.1001,
+      rate: 0.1051,
       amount: 17000.0,
       paymentsSum: 14000.0,
       currency: 'EUR',
@@ -1154,7 +1154,7 @@ const returnsData3rdPillarIndexPositive: ReturnsResponse = {
     },
     {
       key: 'THIRD_PILLAR',
-      rate: 0.1001,
+      rate: 0.1051,
       amount: 17000.0,
       paymentsSum: 14000.0,
       currency: 'EUR',
