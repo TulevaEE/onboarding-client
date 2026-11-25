@@ -941,7 +941,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     ]);
   });
 
-  test('shows the details on file for confirmation, asks only for the contract number, signs the Compensa form from the review with no US person question and says where to forward it', async () => {
+  test('shows the details on file for confirmation, asks only for the contract number, signs the Compensa form from the review with no US person question and says it was sent to the insurer', async () => {
     const forms = insuranceTransferFormBackend();
     openFlow('/3rd-pillar-insurance/request?insurer=COMPENSA');
 
@@ -968,7 +968,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(
       await screen.findByRole(
         'heading',
-        { name: 'Send the request to your insurer' },
+        { name: 'Your request has been sent' },
         { timeout: 5_000 },
       ),
     ).toBeInTheDocument();
@@ -981,10 +981,9 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
         address: ADDRESS_ON_FILE,
       },
     ]);
-    expect(screen.getByText(/^We emailed the request to/)).toHaveTextContent(
-      'We emailed the request to john.doe@example.com. Forward that email with its attachment to your insurer (Compensa):',
+    expect(screen.getByText(/^We sent the request to your insurer/)).toHaveTextContent(
+      'We sent the request to your insurer (Compensa) at info@compensalife.ee, with a copy to you at john.doe@example.com. When your insurer replies, the reply reaches both you and Tuleva.',
     );
-    expect(screen.getByText('info@compensalife.ee')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'My account' })).toHaveAttribute('href', '/account');
     expect(screen.queryByText('Send a request to your insurer')).not.toBeInTheDocument();
   }, 20_000);
@@ -1023,7 +1022,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(boldIn(description)).toEqual(['1. novembril 2027', '12345678']);
     expect(
       within(request).getByText(
-        'Allkirjastatud avalduse saadame sulle e‑postiga ja sina edastad selle kindlustusandjale.',
+        'Allkirjastatud avalduse saadame e‑postiga kindlustusandjale (Ergo) ja koopia sulle.',
       ),
     ).toBeInTheDocument();
     expect(screen.getAllByRole('term').map(normalizedText)).toEqual([
@@ -1068,7 +1067,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
     expect(boldIn(description)).toEqual(['UP000123', 'as soon as possible']);
     expect(
       within(request).getByText(
-        'We email you the signed request, and you forward it to your insurer.',
+        'We email the signed request to your insurer (Compensa), with a copy to you.',
       ),
     ).toBeInTheDocument();
     expect(screen.getAllByRole('term').map(normalizedText)).toEqual([
@@ -1703,23 +1702,22 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
   });
 
   describe('once signed', () => {
-    test('says which address the request was emailed to, gives the insurer’s address to copy instead of a link that opens an empty email, and still offers the file to download', async () => {
+    test('says the request went to the insurer’s address with a copy to the person, that replies reach both them and Tuleva, how long the insurer has, and still offers the file to download', async () => {
       signedFormBackend({ emailStatus: 'SENT' });
 
       openFlow('/3rd-pillar-insurance-signed/1');
 
       expect(
-        await screen.findByRole('heading', { name: 'Send the request to your insurer' }),
+        await screen.findByRole('heading', { name: 'Your request has been sent' }),
       ).toBeInTheDocument();
-      expect(screen.getByText(/^We emailed the request to/)).toHaveTextContent(
-        'We emailed the request to john.doe@example.com. Forward that email with its attachment to your insurer (Compensa):',
+      expect(screen.getByText(/^We sent the request to your insurer/)).toHaveTextContent(
+        'We sent the request to your insurer (Compensa) at info@compensalife.ee, with a copy to you at john.doe@example.com. When your insurer replies, the reply reaches both you and Tuleva.',
       );
       expect(isInsidePii(screen.getByText('john.doe@example.com'))).toBe(true);
-      expect(screen.getByText('info@compensalife.ee')).toBeInTheDocument();
-      expect(screen.queryByRole('link', { name: 'info@compensalife.ee' })).not.toBeInTheDocument();
-
-      userEvent.click(screen.getByRole('button', { name: 'Copy' }));
-      await waitFor(() => expect(writeText).toHaveBeenCalledWith('info@compensalife.ee'));
+      expect(
+        screen.getByText(/^Your insurer transfers the money to Tuleva III Pillar Pension Fund\./),
+      ).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Copy' })).not.toBeInTheDocument();
 
       const downloadButton = screen.getByRole('button', { name: 'Download the signed request' });
       expect(downloadButton).toHaveClass('btn-link');
@@ -1733,13 +1731,18 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       );
     });
 
-    test('says the request could not be emailed and offers it to download as the main action, with the insurer’s address to copy', async () => {
+    test('says the request could not be sent to the insurer and offers it to download as the main action, with the insurer’s address to copy', async () => {
       signedFormBackend({ emailStatus: 'FAILED' });
 
       openFlow('/3rd-pillar-insurance-signed/1');
 
-      expect(await screen.findByText(/^We could not email you the request\./)).toHaveTextContent(
-        'We could not email you the request. Download it and send it to your insurer (Compensa):',
+      expect(
+        await screen.findByRole('heading', { name: 'Send the request to your insurer' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/^We could not send the request to your insurer\./),
+      ).toHaveTextContent(
+        'We could not send the request to your insurer. Download it and send it to your insurer (Compensa):',
       );
       expect(screen.getByText('info@compensalife.ee')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Copy' })).toBeInTheDocument();
@@ -1755,7 +1758,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       );
     });
 
-    test('puts the download before the account link in reading order when the request could not be emailed', async () => {
+    test('puts the download before the account link in reading order when the request could not be sent to the insurer', async () => {
       signedFormBackend({ emailStatus: 'FAILED' });
 
       openFlow('/3rd-pillar-insurance-signed/1');
@@ -1767,18 +1770,15 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       expect(inDocumentOrder([accountLink, downloadButton])).toEqual([downloadButton, accountLink]);
     });
 
-    test.each([{ emailStatus: 'NO_EMAIL' as const }, { emailStatus: null }])(
-      'offers the signed request to download when the email status is $emailStatus',
-      async ({ emailStatus }) => {
-        signedFormBackend({ emailStatus });
+    test('offers the signed request to download when the email has no status yet', async () => {
+      signedFormBackend({ emailStatus: null });
 
-        openFlow('/3rd-pillar-insurance-signed/1');
+      openFlow('/3rd-pillar-insurance-signed/1');
 
-        expect(
-          await screen.findByRole('button', { name: 'Download the signed request' }),
-        ).toBeInTheDocument();
-      },
-    );
+      expect(
+        await screen.findByRole('button', { name: 'Download the signed request' }),
+      ).toBeInTheDocument();
+    });
 
     test('says so when the signed request cannot be downloaded', async () => {
       signedFormBackend({ emailStatus: 'FAILED' });
@@ -1806,7 +1806,7 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
       expect(await screen.findByText(SOMETHING_WENT_WRONG)).toBeInTheDocument();
     });
 
-    test('says in Estonian where to forward the signed request, without inflecting the insurer’s name', async () => {
+    test('says in Estonian where the signed request was sent, without inflecting the insurer’s name', async () => {
       signedFormBackend({
         emailStatus: 'SENT',
         insurer: 'ERGO',
@@ -1815,10 +1815,9 @@ describe('III pillar insurance contract transfer on the insurer’s own form', (
 
       openFlow('/3rd-pillar-insurance-signed/1', 'et');
 
-      expect(await screen.findByText(/^Saatsime avalduse aadressile/)).toHaveTextContent(
-        'Saatsime avalduse aadressile john.doe@example.com. Edasta see kiri koos manusega kindlustusandjale (Ergo):',
+      expect(await screen.findByText(/^Saatsime avalduse kindlustusandjale/)).toHaveTextContent(
+        'Saatsime avalduse kindlustusandjale (Ergo) aadressile elukindlustus@ergo.ee ja koopia sulle aadressile john.doe@example.com. Kui kindlustusandja vastab, jõuab vastus sulle ja Tulevale.',
       );
-      expect(screen.getByText('elukindlustus@ergo.ee')).toBeInTheDocument();
     });
   });
 });
@@ -2108,7 +2107,7 @@ function signedFormBackend({
   insurer = 'COMPENSA',
   insurerEmail = 'info@compensalife.ee',
 }: {
-  emailStatus: 'SENT' | 'FAILED' | 'NO_EMAIL' | null;
+  emailStatus: 'SENT' | 'FAILED' | null;
   insurer?: string;
   insurerEmail?: string;
 }) {

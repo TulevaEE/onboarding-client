@@ -46,28 +46,39 @@ const InsurerAddress = ({ email }: { email: string }) => (
 );
 
 const SignedRequest = ({ form, userEmail }: { form: InsuranceTransferForm; userEmail: string }) => {
-  const emailed = form.emailStatus === 'SENT';
+  const sent = form.emailStatus === 'SENT';
   const { downloadSigned, downloadFailed } = useSignedRequestDownload(form);
   const values = {
     insurer: insurers[form.insurer].name,
+    insurerEmail: <b className="text-break">{form.insurerEmail}</b>,
     userEmail: <span className={PII_CLASS}>{userEmail}</span>,
   };
 
   return (
     <SuccessNotice2 className="text-pretty">
       <h2 className="my-3">
-        <FormattedMessage id="insuranceTransfer.signed.title" />
+        <FormattedMessage
+          id={sent ? 'insuranceTransfer.signed.sentTitle' : 'insuranceTransfer.signed.title'}
+        />
       </h2>
       <p className="mb-2">
         <FormattedMessage
-          id={emailed ? 'insuranceTransfer.signed.emailed' : 'insuranceTransfer.signed.download'}
+          id={sent ? 'insuranceTransfer.signed.sent' : 'insuranceTransfer.signed.download'}
           values={values}
         />
       </p>
-      <InsurerAddress email={form.insurerEmail} />
-      {emailed && <DownloadButton className="btn btn-link" onClick={downloadSigned} />}
+      {sent ? (
+        <>
+          <p className="mb-2">
+            <FormattedMessage id="insuranceTransfer.done.message" />
+          </p>
+          <DownloadButton className="btn btn-link" onClick={downloadSigned} />
+        </>
+      ) : (
+        <InsurerAddress email={form.insurerEmail} />
+      )}
       <div className="d-flex flex-column flex-sm-row-reverse justify-content-center gap-3 mt-3">
-        {!emailed && <DownloadButton className="btn btn-primary" onClick={downloadSigned} />}
+        {!sent && <DownloadButton className="btn btn-primary" onClick={downloadSigned} />}
         <Link className="btn btn-outline-primary" to={ACCOUNT_PATH}>
           <FormattedMessage id="thirdPillarSuccess.button.account" />
         </Link>

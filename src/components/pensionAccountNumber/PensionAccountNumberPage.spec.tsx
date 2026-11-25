@@ -201,13 +201,13 @@ describe('a person who opens the link to their pension account number', () => {
     expect(button).toHaveFocus();
   });
 
-  it('learns when the number is needed, and finds the application to their employer', async () => {
+  it('learns when the number is needed, and finds the insurance contract transfer and the application to their employer', async () => {
     openPage();
 
     const occasions = await screen.findByRole('list', { name: 'When you need it' });
 
     expect(within(occasions).getAllByRole('listitem').map(textOf)).toEqual([
-      'You move a III pillar insurance contract into a pension fund.',
+      'You move a III pillar insurance contract into a pension fund. Move an insurance contract',
       'Your employer pays into your III pillar straight from your salary. Application to your employer',
       'You or someone else pays into your III pillar by bank transfer.',
       'You cancel a III pillar contribution made by mistake.',
@@ -215,6 +215,9 @@ describe('a person who opens the link to their pension account number', () => {
     expect(
       within(occasions).getByRole('link', { name: 'Application to your employer' }),
     ).toHaveAttribute('href', '/3rd-pillar-employer');
+    expect(
+      within(occasions).getByRole('link', { name: 'Move an insurance contract' }),
+    ).toHaveAttribute('href', '/3rd-pillar-insurance');
   });
 
   it('recognises the number when a bank, employer or insurer asks for a reference number', async () => {

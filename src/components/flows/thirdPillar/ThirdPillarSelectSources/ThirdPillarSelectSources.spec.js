@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 import { Radio } from '../../../common';
 import { ThirdPillarSelectSources } from './ThirdPillarSelectSources';
 import AccountStatement from '../../../account/AccountStatement';
@@ -56,6 +57,24 @@ describe('Third pillar select sources step', () => {
       futureContributionsFundIsin: '',
     });
     expect(fullSelectionRadio().prop('selected')).toBe(false);
+  });
+
+  it('links savers with an insurance contract to the insurance contract transfer in the app', () => {
+    component.setProps({
+      exchangeExistingUnits: true,
+      futureContributionsFundIsin: 'EE123',
+    });
+    const insuranceNote = component
+      .find(FormattedMessage)
+      .filterWhere(
+        (message) => message.prop('id') === 'thirdPillarFlowSelectSources.insurance_info',
+      );
+
+    const link = shallow(<div>{insuranceNote.prop('values').a('move that money here')}</div>).find(
+      Link,
+    );
+
+    expect(link.prop('to')).toBe('/3rd-pillar-insurance');
   });
 
   it('selects all funds when clicking on the full selection radio', () => {
