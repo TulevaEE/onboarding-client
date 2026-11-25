@@ -654,7 +654,7 @@ const ComparisonCalculator: React.FC = () => {
       personalRate: number,
       comparisonRate: number,
     ): PerformanceVerdict {
-      const thresholdBps = 100;
+      const thresholdBps = 150;
       const differenceBps = Math.round((personalRate - comparisonRate) * 10000);
       if (differenceBps > thresholdBps) {
         return 'POSITIVE_ALPHA';
