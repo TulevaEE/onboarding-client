@@ -48,6 +48,12 @@ describe('When a user is making a third pillar payment', () => {
     expect(makePayment).toBeDisabled();
   });
 
+  test('can go back to the account page', async () => {
+    userEvent.click(await screen.findByRole('link', { name: 'Back' }));
+
+    await waitFor(() => expect(history.location.pathname).toBe('/account'));
+  });
+
   test('can fill in amount', async () => {
     const input = await amountInput();
     userEvent.clear(input);
@@ -155,6 +161,16 @@ describe('When a user is making a third pillar payment', () => {
     await waitFor(() =>
       expect(windowLocation).toHaveBeenCalledWith('https://WISE.EE/RECURRING.200.EUR'),
     );
+  });
+
+  test('reads the recurring payment confirmation before the back link', async () => {
+    userEvent.click(await recurringPaymentOption());
+    userEvent.click(await screen.findByLabelText('Wise'));
+
+    expect(await screen.findByRole('link', { name: 'Yes, done' })).toBeInTheDocument();
+    const linkNames = screen.getAllByRole('link').map((link) => link.textContent);
+
+    expect(linkNames.indexOf('Yes, done')).toBeLessThan(linkNames.indexOf('Back'));
   });
 
   test('is told the Wise schedule is free but not that it can be changed in an internet bank', async () => {

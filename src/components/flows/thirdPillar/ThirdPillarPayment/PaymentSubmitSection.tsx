@@ -40,61 +40,59 @@ export const PaymentSubmitSection = ({
     );
   }
   return (
-    <>
-      <div className="mt-5 d-flex flex-column">
-        <div className="me-auto text-body-secondary">
-          <button
-            type="button"
-            className="btn btn-lg btn-primary payment-button text-nowrap"
-            disabled={disabled}
-            onClick={handleSubmit}
-          >
-            {paymentType === 'SINGLE' && <FormattedMessage id="thirdPillarPayment.makePayment" />}
-            {paymentType === 'RECURRING' && (
-              <FormattedMessage
-                id={
-                  paymentBank === 'wise'
-                    ? 'thirdPillarPayment.setupRecurringPayment.wise'
-                    : 'thirdPillarPayment.setupRecurringPayment'
-                }
-              />
-            )}
-          </button>
-          {paymentType === 'SINGLE' && (
-            <>
-              <p className="m-0 mt-3">
-                <FormattedMessage
-                  id="thirdPillarPayment.freeSinglePayment"
-                  values={{
-                    b: (chunks: string) => <b>{chunks}</b>,
-                  }}
-                />
-              </p>
-              <p className="m-0">
-                <FormattedMessage id="thirdPillarPayment.singlePaymentDetails" />
-              </p>
-            </>
-          )}
+    <div className="mt-5 d-flex flex-column flex-sm-row-reverse align-items-sm-start gap-3">
+      <div className="flex-sm-grow-1 d-flex flex-column align-items-sm-end text-sm-end text-body-secondary">
+        <button
+          type="button"
+          className="btn btn-lg btn-primary payment-button text-nowrap"
+          disabled={disabled}
+          onClick={handleSubmit}
+        >
+          {paymentType === 'SINGLE' && <FormattedMessage id="thirdPillarPayment.makePayment" />}
           {paymentType === 'RECURRING' && (
-            <>
-              <p className="m-0 mt-3">
-                <FormattedMessage
-                  id="thirdPillarPayment.freeRecurringPayment"
-                  values={{
-                    b: (chunks: string) => <b>{chunks}</b>,
-                  }}
-                />
-              </p>
-              {paymentBank !== 'wise' && (
-                <p className="m-0">
-                  <FormattedMessage id="thirdPillarPayment.recurringPaymentDetails" />
-                </p>
-              )}
-            </>
+            <FormattedMessage
+              id={
+                paymentBank === 'wise'
+                  ? 'thirdPillarPayment.setupRecurringPayment.wise'
+                  : 'thirdPillarPayment.setupRecurringPayment'
+              }
+            />
           )}
-        </div>
+        </button>
+        {paymentType === 'SINGLE' && (
+          <>
+            <p className="m-0 mt-3 text-pretty">
+              <FormattedMessage
+                id="thirdPillarPayment.freeSinglePayment"
+                values={{
+                  b: (chunks: string) => <b>{chunks}</b>,
+                }}
+              />
+            </p>
+            <p className="m-0 text-pretty">
+              <FormattedMessage id="thirdPillarPayment.singlePaymentDetails" />
+            </p>
+          </>
+        )}
+        {paymentType === 'RECURRING' && (
+          <>
+            <p className="m-0 mt-3 text-pretty">
+              <FormattedMessage
+                id="thirdPillarPayment.freeRecurringPayment"
+                values={{
+                  b: (chunks: string) => <b>{chunks}</b>,
+                }}
+              />
+            </p>
+            {paymentBank !== 'wise' && (
+              <p className="m-0 text-pretty">
+                <FormattedMessage id="thirdPillarPayment.recurringPaymentDetails" />
+              </p>
+            )}
+          </>
+        )}
         {paymentType === 'RECURRING' && !disabled && (
-          <div className="mt-5 d-flex gap-2 align-items-center">
+          <div className="mt-4 d-flex gap-2 align-items-center justify-content-sm-end text-body">
             <span>
               <FormattedMessage id="thirdPillarPayment.recurringPaymentQuestion" />
             </span>
@@ -104,6 +102,9 @@ export const PaymentSubmitSection = ({
           </div>
         )}
       </div>
-    </>
+      <Link to="/account" className="btn btn-lg btn-outline-primary">
+        <FormattedMessage id="common.back" />
+      </Link>
+    </div>
   );
 };
