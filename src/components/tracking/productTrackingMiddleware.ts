@@ -1,5 +1,5 @@
 import { AnyAction, Middleware } from 'redux';
-import { createTrackedEvent } from '../common/api';
+import { createAnonymousEvent, createTrackedEvent } from '../common/api';
 import {
   GET_USER_SUCCESS,
   MOBILE_AUTHENTICATION_CANCEL,
@@ -99,6 +99,7 @@ const track = (action: AnyAction, now: number): void => {
     writeAttempts({ ...attempts, starts: attempts.starts + 1 });
     // event_log only takes events from logged-in people; GA4 also sees the ones who give up
     trackCustomEvent('login_start', {});
+    createAnonymousEvent('LOGIN_STARTED', {}).catch(() => {});
   } else if (FAILURE_KIND[action.type]) {
     const attempts = attemptsSoFar(now);
     const failure = { kind: FAILURE_KIND[action.type], reason: failureReason(action) };
@@ -107,6 +108,7 @@ const track = (action: AnyAction, now: number): void => {
       failure_kind: failure.kind,
       failure_reason: failure.reason,
     });
+    createAnonymousEvent('LOGIN_FAILED', failure).catch(() => {});
   } else if (action.type === MOBILE_AUTHENTICATION_SUCCESS) {
     writeAttempts({ ...attemptsSoFar(now), method: action.method });
   } else if (action.type === GET_USER_SUCCESS) {

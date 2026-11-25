@@ -1,5 +1,5 @@
 import { AnyAction, Dispatch } from 'redux';
-import { createTrackedEvent } from '../common/api';
+import { createAnonymousEvent, createTrackedEvent } from '../common/api';
 import {
   GET_USER_SUCCESS,
   MOBILE_AUTHENTICATION_ERROR,
@@ -10,6 +10,7 @@ import { productTrackingMiddleware } from './productTrackingMiddleware';
 
 jest.mock('../common/api', () => ({
   createTrackedEvent: jest.fn(() => Promise.resolve()),
+  createAnonymousEvent: jest.fn(() => Promise.resolve()),
 }));
 
 const next = jest.fn((action) => action) as unknown as Dispatch<AnyAction>;
@@ -22,6 +23,7 @@ describe('productTrackingMiddleware', () => {
     window.sessionStorage.clear();
     window.localStorage.clear();
     (createTrackedEvent as jest.Mock).mockClear();
+    (createAnonymousEvent as jest.Mock).mockClear();
   });
 
   it('sends how the login went once the person is logged in', () => {
@@ -42,6 +44,20 @@ describe('productTrackingMiddleware', () => {
         failures: [{ kind: 'error', reason: 'smart.id.timeout' }],
       }),
     );
+  });
+
+  it('records login starts and failures of people who are not logged in yet', () => {
+    dispatch({ type: MOBILE_AUTHENTICATION_START });
+    dispatch({
+      type: MOBILE_AUTHENTICATION_ERROR,
+      error: { body: { errors: [{ code: 'smart.id.timeout' }] } },
+    });
+
+    expect(createAnonymousEvent).toHaveBeenCalledWith('LOGIN_STARTED', {});
+    expect(createAnonymousEvent).toHaveBeenCalledWith('LOGIN_FAILED', {
+      kind: 'error',
+      reason: 'smart.id.timeout',
+    });
   });
 
   it('sends nothing about logins when the user is loaded from a saved session', () => {

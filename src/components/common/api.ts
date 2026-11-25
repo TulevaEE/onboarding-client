@@ -78,7 +78,7 @@ import {
 } from './apiModels/withdrawals';
 import { isMockModeEnabled, mockRequestInMockMode, readMockedProfile } from './requestMocker';
 import { SignableEntity } from './signing/types';
-import { currentVisit } from '../tracking/visit';
+import { anonymousVisit, currentVisit } from '../tracking/visit';
 import {
   CapitalTransferContract,
   CreateCapitalTransferDto,
@@ -770,6 +770,17 @@ export function createTrackedEvent(type: string, data: Record<string, unknown>):
     type,
     data: { ...currentVisit(), ...data },
   });
+}
+
+// For people who are not logged in: a short allow-list of events, stored apart from event_log
+export function createAnonymousEvent(
+  type: 'LOGIN_STARTED' | 'LOGIN_FAILED' | 'PAGE_VIEW',
+  data: Record<string, string>,
+): Promise<unknown> {
+  if (isMockModeEnabled()) {
+    return Promise.resolve(undefined);
+  }
+  return post(getEndpoint('/v1/t/anonymous'), { type, ...anonymousVisit(), data });
 }
 
 export function getPaymentLink(payment: Payment): Promise<PaymentLink> {

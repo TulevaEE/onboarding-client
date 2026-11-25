@@ -35,3 +35,15 @@ export const currentVisit = (now: number = Date.now()): Visit => {
   }
   return { visitId, device: deviceType(window.innerWidth, hasCoarsePointer()) };
 };
+
+// Without analytics consent nothing may be kept in the browser, so a logged-out person's events
+// get an id for this page load only: enough to count, not to follow them.
+const pageLoadVisitId = newVisitId();
+
+const hasAnalyticsConsent = (): boolean =>
+  /(^|; )cookieyes-consent=[^;]*analytics:yes/.test(document.cookie);
+
+export const anonymousVisit = (now: number = Date.now()): Visit =>
+  hasAnalyticsConsent()
+    ? currentVisit(now)
+    : { visitId: pageLoadVisitId, device: deviceType(window.innerWidth, hasCoarsePointer()) };

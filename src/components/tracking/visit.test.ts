@@ -1,4 +1,4 @@
-import { currentVisit, deviceType } from './visit';
+import { anonymousVisit, currentVisit, deviceType } from './visit';
 
 describe('currentVisit', () => {
   beforeEach(() => window.sessionStorage.clear());
@@ -24,5 +24,15 @@ describe('deviceType', () => {
     expect(deviceType(820, true)).toBe('tablet');
     expect(deviceType(1440, false)).toBe('desktop');
     expect(deviceType(1024, false)).toBe('desktop');
+  });
+});
+
+describe('anonymousVisit', () => {
+  beforeEach(() => window.sessionStorage.clear());
+
+  it('keeps nothing in the browser without analytics consent', () => {
+    anonymousVisit();
+
+    expect(window.sessionStorage.getItem('tuleva.visit')).toBeNull();
   });
 });
