@@ -5,6 +5,7 @@ import { usePageTitle } from '../common/usePageTitle';
 import { Shimmer } from '../common/shimmer/Shimmer';
 import { CopyButton } from '../common/CopyButton';
 import { PII_CLASS } from '../tracking/piiMarkup';
+import { flowPath as insuranceTransferFlowPath } from '../flows/insuranceTransfer/insuranceTransferPaths';
 
 const PensionAccountNumber = ({ pensionAccountNumber }: { pensionAccountNumber: string }) => (
   <>
@@ -23,7 +24,10 @@ const PensionAccountNumber = ({ pensionAccountNumber }: { pensionAccountNumber: 
     </h2>
     <ul aria-labelledby="pension-account-number-occasions">
       <li>
-        <FormattedMessage id="pensionAccountNumber.whenNeeded.insuranceContract" />
+        <FormattedMessage id="pensionAccountNumber.whenNeeded.insuranceContract" />{' '}
+        <Link to={insuranceTransferFlowPath} className="text-nowrap">
+          <FormattedMessage id="pensionAccountNumber.whenNeeded.insuranceContractLink" />
+        </Link>
       </li>
       <li>
         <FormattedMessage id="pensionAccountNumber.whenNeeded.employer" />{' '}

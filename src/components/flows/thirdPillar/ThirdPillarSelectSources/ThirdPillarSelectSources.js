@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import { Link, Redirect } from 'react-router-dom';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { Radio } from '../../../common';
 import { selectThirdPillarSources } from '../../../thirdPillar/actions';
 import AccountStatement from '../../../account/AccountStatement';
@@ -13,6 +13,7 @@ import AccountStatement from '../../../account/AccountStatement';
 import TargetFundSelector from '../../secondPillar/selectSources/targetFundSelector';
 import { Shimmer } from '../../../common/shimmer/Shimmer';
 import { isTestMode } from '../../../common/test-mode';
+import { flowPath as insuranceTransferFlowPath } from '../../insuranceTransfer/insuranceTransferPaths';
 
 export const ThirdPillarSelectSources = ({
   exchangeExistingUnits,
@@ -25,8 +26,6 @@ export const ThirdPillarSelectSources = ({
   nextPath,
   loading,
 }) => {
-  const { formatMessage } = useIntl();
-
   const isTestModeEnabled = isTestMode();
 
   const fullSelectionActive = !!exchangeExistingUnits && !!futureContributionsFundIsin;
@@ -74,17 +73,7 @@ export const ThirdPillarSelectSources = ({
             <FormattedMessage
               id="thirdPillarFlowSelectSources.insurance_info"
               values={{
-                a: (chunks) => (
-                  <a
-                    href={formatMessage({
-                      id: 'thirdPillarFlowSelectSources.insurance_info.link',
-                    })}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {chunks}
-                  </a>
-                ),
+                a: (chunks) => <Link to={insuranceTransferFlowPath}>{chunks}</Link>,
               }}
             />
 

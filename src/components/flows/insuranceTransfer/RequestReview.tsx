@@ -73,7 +73,10 @@ export const RequestReview = ({
             />
           </p>
           <p className="mb-0 text-body-secondary">
-            <FormattedMessage id="insuranceTransfer.review.forwarding" />
+            <FormattedMessage
+              id="insuranceTransfer.review.forwarding"
+              values={{ insurer: insurers[insurer].name }}
+            />
           </p>
         </div>
       </section>

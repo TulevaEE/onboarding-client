@@ -88,5 +88,5 @@ export type InsuranceTransferForm = {
   insurer: InsuranceTransferFormInsurer;
   insurerEmail: string;
   status: 'CREATED' | 'SIGNED';
-  emailStatus: 'SENT' | 'FAILED' | 'NO_EMAIL' | null;
+  emailStatus: 'SENT' | 'FAILED' | null;
 };
