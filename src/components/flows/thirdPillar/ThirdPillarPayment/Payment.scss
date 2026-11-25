@@ -6,144 +6,61 @@
   }
 }
 
-.btn.btn-swedbank,
-.btn.btn-swedbank:hover {
+@mixin bank-button(
+  $name,
+  $color,
+  $selected-background: $color,
+  $selected-color: white,
+  $hover-background: mix($color, white, 8%)
+) {
+  .btn.btn-#{$name},
+  .btn.btn-#{$name}:hover {
+    background-color: white;
+    border-color: $color;
+    color: $color;
+  }
+
+  @media (hover: hover) {
+    .btn.btn-#{$name}:not(.active):hover {
+      background-color: $hover-background;
+    }
+  }
+
+  .btn.btn-#{$name}:not(:disabled):not(.disabled):active,
+  .btn.btn-#{$name}:not(:disabled):not(.disabled).active {
+    background-color: $selected-background;
+    border-color: $selected-background;
+    color: $selected-color;
+  }
+}
+
+@include bank-button(swedbank, #dd3300);
+@include bank-button(seb, #008a00);
+@include bank-button(lhv, #4a4e5a);
+@include bank-button(luminor, #481335);
+@include bank-button(coop, #0078d2);
+@include bank-button(
+  wise,
+  #163300,
+  $selected-background: #9fe870,
+  $selected-color: #163300,
+  $hover-background: mix(#9fe870, white, 25%)
+);
+@include bank-button(citadele, #251435);
+@include bank-button(revolut, #191c1f);
+@include bank-button(bigbank, #005876);
+@include bank-button(n26, #1b1b1b);
+
+.btn.btn-other:hover {
   background-color: white;
-  border-color: #dd3300;
-  color: #dd3300;
+  border-color: var(--bs-secondary);
+  color: var(--bs-secondary);
 }
 
-.btn.btn-swedbank:not(:disabled):not(.disabled):active,
-.btn.btn-swedbank:not(:disabled):not(.disabled).active {
-  background-color: #dd3300;
-  border-color: #dd3300;
-  color: white;
-}
-
-.btn.btn-seb,
-.btn.btn-seb:hover {
-  background-color: white;
-  border-color: #008a00;
-  color: #008a00;
-}
-
-.btn.btn-seb:not(:disabled):not(.disabled):active,
-.btn.btn-seb:not(:disabled):not(.disabled).active {
-  background-color: #008a00;
-  border-color: #008a00;
-  color: white;
-}
-
-.btn.btn-lhv,
-.btn.btn-lhv:hover {
-  background-color: white;
-  border-color: #4a4e5a;
-  color: #4a4e5a;
-}
-
-.btn.btn-lhv:not(:disabled):not(.disabled):active,
-.btn.btn-lhv:not(:disabled):not(.disabled).active {
-  background-color: #4a4e5a;
-  border-color: #4a4e5a;
-  color: white;
-}
-
-.btn.btn-luminor,
-.btn.btn-luminor:hover {
-  background-color: white;
-  border-color: #481335;
-  color: #481335;
-}
-
-.btn.btn-luminor:not(:disabled):not(.disabled):active,
-.btn.btn-luminor:not(:disabled):not(.disabled).active {
-  background-color: #481335;
-  border-color: #481335;
-  color: white;
-}
-
-.btn.btn-coop,
-.btn.btn-coop:hover {
-  background-color: white;
-  border-color: #0078d2;
-  color: #0078d2;
-}
-
-.btn.btn-coop:not(:disabled):not(.disabled):active,
-.btn.btn-coop:not(:disabled):not(.disabled).active {
-  background-color: #0078d2;
-  border-color: #0078d2;
-  color: white;
-}
-
-.btn.btn-wise,
-.btn.btn-wise:hover {
-  background-color: white;
-  border-color: #163300;
-  color: #163300;
-}
-
-.btn.btn-wise:not(:disabled):not(.disabled):active,
-.btn.btn-wise:not(:disabled):not(.disabled).active {
-  background-color: #9fe870;
-  border-color: #9fe870;
-  color: #163300;
-}
-
-.btn.btn-citadele,
-.btn.btn-citadele:hover {
-  background-color: white;
-  border-color: #251435;
-  color: #251435;
-}
-
-.btn.btn-citadele:not(:disabled):not(.disabled):active,
-.btn.btn-citadele:not(:disabled):not(.disabled).active {
-  background-color: #251435;
-  border-color: #251435;
-  color: white;
-}
-
-.btn.btn-revolut,
-.btn.btn-revolut:hover {
-  background-color: white;
-  border-color: #191c1f;
-  color: #191c1f;
-}
-
-.btn.btn-revolut:not(:disabled):not(.disabled):active,
-.btn.btn-revolut:not(:disabled):not(.disabled).active {
-  background-color: #191c1f;
-  border-color: #191c1f;
-  color: white;
-}
-
-.btn.btn-bigbank,
-.btn.btn-bigbank:hover {
-  background-color: white;
-  border-color: #005876;
-  color: #005876;
-}
-
-.btn.btn-bigbank:not(:disabled):not(.disabled):active,
-.btn.btn-bigbank:not(:disabled):not(.disabled).active {
-  background-color: #005876;
-  border-color: #005876;
-  color: white;
-}
-
-.btn.btn-n26,
-.btn.btn-n26:hover {
-  background-color: white;
-  border-color: #1b1b1b;
-  color: #1b1b1b;
-}
-
-.btn.btn-n26:not(:disabled):not(.disabled):active,
-.btn.btn-n26:not(:disabled):not(.disabled).active {
-  background-color: #1b1b1b;
-  border-color: #1b1b1b;
-  color: white;
+@media (hover: hover) {
+  .btn.btn-other:not(.active):hover {
+    background-color: rgba(var(--bs-secondary-rgb), 0.08);
+  }
 }
 
 .btn.btn-other:not(:disabled):not(.disabled):active,
