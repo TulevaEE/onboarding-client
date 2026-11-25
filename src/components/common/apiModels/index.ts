@@ -217,11 +217,7 @@ export type SavingsFundOnboardingStatus = {
 };
 
 export type FundStatus =
-  | 'ACTIVE'
-  | 'LIQUIDATED'
-  | 'SUSPENDED'
-  | 'CONTRIBUTIONS_FORBIDDEN'
-  | 'PAYOUTS_FORBIDDEN';
+  'ACTIVE' | 'LIQUIDATED' | 'SUSPENDED' | 'CONTRIBUTIONS_FORBIDDEN' | 'PAYOUTS_FORBIDDEN';
 
 export interface FundBalance {
   fund: Fund;
@@ -460,13 +456,7 @@ export interface Payment {
 export type Currency = 'EUR';
 
 export type PaymentType =
-  | 'SINGLE'
-  | 'RECURRING'
-  | 'EMPLOYER'
-  | 'GIFT'
-  | 'MEMBER_FEE'
-  | 'SAVINGS'
-  | 'SAVINGS_RECURRING';
+  'SINGLE' | 'RECURRING' | 'EMPLOYER' | 'GIFT' | 'MEMBER_FEE' | 'SAVINGS' | 'SAVINGS_RECURRING';
 
 export type PaymentChannel =
   | 'SWEDBANK'
@@ -620,9 +610,7 @@ export interface ThirdPillarContribution extends BaseContribution {
 export type Contribution = SecondPillarContribution | ThirdPillarContribution;
 
 export type RejoinDecision =
-  | 'PERMITTED'
-  | 'REFUSED_BY_PENSIONIKESKUS'
-  | 'CONTRIBUTIONS_CANNOT_RESTART';
+  'PERMITTED' | 'REFUSED_BY_PENSIONIKESKUS' | 'CONTRIBUTIONS_CANNOT_RESTART';
 
 export interface RejoinPermission {
   permitted: boolean;

@@ -13,15 +13,7 @@ import { PII_CLASS } from '../../../tracking/piiMarkup';
 import { TranslationKey } from '../../../translations';
 
 export type BankKey =
-  | 'LHV'
-  | 'COOP'
-  | 'SWEDBANK'
-  | 'SEB'
-  | 'LUMINOR'
-  | 'WISE'
-  | 'CITADELE'
-  | 'BIGBANK'
-  | 'OTHER';
+  'LHV' | 'COOP' | 'SWEDBANK' | 'SEB' | 'LUMINOR' | 'WISE' | 'CITADELE' | 'BIGBANK' | 'OTHER';
 
 // PREFILLED — bank link opens the standing-order form with all fields pre-filled;
 //             user just reviews.
