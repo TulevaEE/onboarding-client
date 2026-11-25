@@ -57,6 +57,14 @@ const SortableHeader = ({
   );
 };
 
+const GROUP_THOUSANDS_FROM = 10000;
+
+export const formatTableNumber = (value: number) => {
+  const rounded = Math.round(value);
+  const formatted = formatAmountForCount(rounded, 0);
+  return Math.abs(rounded) < GROUP_THOUSANDS_FROM ? formatted.replace(/\u00A0/g, '') : formatted;
+};
+
 const FeeCell = ({ row, feeBase }: { row: FundRow; feeBase: FeeBase }) => {
   const feeBasePhrase = useFeeBasePhrase(feeBase);
   const amount = wholeEuros(row.ongoingChargesFigure * feeBase.amount);
@@ -70,11 +78,11 @@ const FeeCell = ({ row, feeBase }: { row: FundRow; feeBase: FeeBase }) => {
               ? 'secondPillarFunds.table.feeWithPerformanceFee.tip'
               : 'secondPillarFunds.table.fee.tip'
           }
-          values={{ percent, amount, feeBase: feeBasePhrase }}
+          values={{ percent, amount: formatTableNumber(amount), feeBase: feeBasePhrase }}
         />
       }
     >
-      {`−${amount} €`}
+      {`−${formatTableNumber(amount)} €`}
     </WithTip>
   );
 };
@@ -141,7 +149,7 @@ const FundTableRow = ({
         {row.volume === null ? (
           <span className={styles.dash}>—</span>
         ) : (
-          formatAmountForCount(row.volume / EUROS_IN_MILLION, 0)
+          formatTableNumber(row.volume / EUROS_IN_MILLION)
         )}
       </td>
     </tr>
