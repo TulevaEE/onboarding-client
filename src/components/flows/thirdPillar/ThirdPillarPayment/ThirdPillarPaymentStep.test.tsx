@@ -61,6 +61,17 @@ describe('When a user is making a third pillar payment', () => {
     expect(input.value).toBe('23');
   });
 
+  test('sees the banks from outside Estonia grouped under other banks', async () => {
+    const otherBanks = await screen.findByRole('group', { name: 'Other banks' });
+
+    ['Revolut', 'Wise', 'Citadele', 'Bigbank', 'N26', 'Payment info'].forEach((bank) =>
+      expect(within(otherBanks).getByLabelText(bank)).toBeInTheDocument(),
+    );
+    ['Swedbank', 'SEB', 'LHV', 'Luminor', 'Coop Pank'].forEach((bank) =>
+      expect(within(otherBanks).queryByLabelText(bank)).not.toBeInTheDocument(),
+    );
+  });
+
   test('can select bank', async () => {
     const lhvBank = await lhvButton();
     userEvent.click(lhvBank);

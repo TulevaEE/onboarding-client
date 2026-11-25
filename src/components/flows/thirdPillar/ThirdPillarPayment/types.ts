@@ -8,9 +8,9 @@ export const bankKeyToBankNameMap = {
   lhv: 'LHV',
   luminor: 'Luminor',
   coop: 'Coop Pank',
+  revolut: 'Revolut',
   wise: 'Wise',
   citadele: 'Citadele',
-  revolut: 'Revolut',
   bigbank: 'Bigbank',
   n26: 'N26',
 } as const;
@@ -18,6 +18,10 @@ export const bankKeyToBankNameMap = {
 export type BankKey = keyof typeof bankKeyToBankNameMap;
 
 export const BANK_KEYS = Object.keys(bankKeyToBankNameMap) as BankKey[];
+
+export const ESTONIAN_BANK_KEYS: BankKey[] = ['swedbank', 'seb', 'lhv', 'luminor', 'coop'];
+
+export const OTHER_BANK_KEYS = BANK_KEYS.filter((bank) => !ESTONIAN_BANK_KEYS.includes(bank));
 
 const BANKS_WITH_STANDING_ORDER_LINK = [
   'swedbank',

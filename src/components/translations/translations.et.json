@@ -639,6 +639,7 @@
   "thirdPillarPayment.confirmation.done.title.recurring": "Püsimakse on seadistatud",
   "thirdPillarPayment.confirmation.done.message.recurring": "Edaspidi kogud III sambasse automaatselt, ilma et peaksid seda meeles pidama.",
   "thirdPillarPayment.confirmation.done.message.recurring.firstPayment": "Esimene makse toimub sinu valitud kuupäeval ja summat saad vajadusel internetipangas muuta.",
+  "thirdPillarPayment.otherBanks": "Muud pangad",
 
   "thirdPillarSuccess.done": "Sissemakse tehtud",
   "thirdPillarSuccess.message": "Uued osakud jõuavad sinu kontole 2 tööpäeva jooksul.",

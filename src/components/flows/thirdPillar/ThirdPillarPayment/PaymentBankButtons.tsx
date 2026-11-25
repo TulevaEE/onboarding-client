@@ -1,5 +1,6 @@
+import { FormattedMessage } from 'react-intl';
 import { BankButton } from './BankButton';
-import { BANK_KEYS, BankKey } from './types';
+import { BankKey, ESTONIAN_BANK_KEYS, OTHER_BANK_KEYS } from './types';
 import { TranslationKey } from '../../../translations';
 
 type Props = {
@@ -17,7 +18,20 @@ export const PaymentBankButtons = ({
 }: Props) => (
   <>
     <div className="row g-2 payment-banks">
-      {BANK_KEYS.map((bankKey) => (
+      {ESTONIAN_BANK_KEYS.map((bankKey) => (
+        <BankButton
+          bankKey={bankKey}
+          paymentBank={paymentBank}
+          setPaymentBank={setPaymentBank}
+          key={bankKey}
+        />
+      ))}
+    </div>
+    <p id="other-payment-banks" className="mt-4 mb-2 text-body-secondary">
+      <FormattedMessage id="thirdPillarPayment.otherBanks" />
+    </p>
+    <div className="row g-2 payment-banks" role="group" aria-labelledby="other-payment-banks">
+      {OTHER_BANK_KEYS.map((bankKey) => (
         <BankButton
           bankKey={bankKey}
           paymentBank={paymentBank}
