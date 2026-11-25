@@ -28,7 +28,14 @@ describe('NudgeView', () => {
     useTestBackendsExcept(server, ['trackedEvents']);
     server.use(
       rest.post('http://localhost/v1/t', (req, res, ctx) => {
-        trackedEvents.push(req.body as TrackedEvent);
+        const event = req.body as TrackedEvent;
+        // every tracked event also carries the visit id and device; these tests are about the nudge
+        const data = Object.fromEntries(
+          Object.entries(event.data as Record<string, unknown>).filter(
+            ([key]) => key !== 'visitId' && key !== 'device',
+          ),
+        );
+        trackedEvents.push({ ...event, data } as TrackedEvent);
         return res(ctx.json({}));
       }),
     );

@@ -1474,7 +1474,7 @@ describe('API calls', () => {
       expect(trackedEvent).toEqual({ type: eventType, data: eventData });
       expect(mockHttp.postWithAuthentication).toHaveBeenCalledWith('/v1/t', {
         type: eventType,
-        data: eventData,
+        data: { ...eventData, visitId: expect.any(String), device: expect.any(String) },
       });
     });
   });

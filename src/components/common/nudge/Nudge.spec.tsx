@@ -10,6 +10,10 @@ import { NudgeView } from './Nudge';
 import { NudgeDecision } from '../apiModels/nudge';
 import { mandateDeadlinesProfiles } from '../requestMocker/profiles/mandateDeadlines';
 
+// Every tracked event also carries the visit id and device; these tests are about the nudge data.
+const withoutVisit = (data: Record<string, unknown>) =>
+  Object.fromEntries(Object.entries(data).filter(([key]) => key !== 'visitId' && key !== 'device'));
+
 const server = setupServer();
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
@@ -30,7 +34,7 @@ describe('nudge view tracking', () => {
       rest.post('http://localhost/v1/t', (req, res, ctx) => {
         const body = req.body as { type: string; data: Record<string, unknown> };
         if (body.type === 'NUDGE_VIEW') {
-          views.push(body.data);
+          views.push(withoutVisit(body.data));
         }
         return res(ctx.json({}));
       }),
@@ -82,7 +86,7 @@ describe('second pillar start nudge', () => {
       rest.post('http://localhost/v1/t', (req, res, ctx) => {
         const body = req.body as { type: string; data: Record<string, unknown> };
         if (body.type === 'NUDGE_VIEW') {
-          views.push(body.data);
+          views.push(withoutVisit(body.data));
         }
         return res(ctx.json({}));
       }),
