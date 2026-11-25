@@ -171,7 +171,7 @@ test("lists every active II pillar fund with its 5-year return, yearly fee on th
   const tuleva = within(await fundRow(TULEVA));
   expect(tuleva.getByText('14.9%')).toBeInTheDocument();
   expect(tuleva.getByText('−56 €')).toBeInTheDocument();
-  expect(tuleva.getByText('2 500')).toBeInTheDocument();
+  expect(tuleva.getByText('2500')).toBeInTheDocument();
   const swedbank = within(await fundRow(SWEDBANK));
   expect(swedbank.getByText('5.4%')).toBeInTheDocument();
   expect(swedbank.getByText('−130 €')).toBeInTheDocument();
@@ -185,7 +185,7 @@ test('writes numbers with a decimal point in Estonian too, as the rest of the ap
   const table = await screen.findByRole('table', { name: /^Eesti II\ssamba fondide võrdlus/ });
   const tuleva = within(within(table).getByRole('row', { name: new RegExp(TULEVA) }));
   expect(tuleva.getByText('14.9%')).toBeInTheDocument();
-  expect(tuleva.getByText('2 500')).toBeInTheDocument();
+  expect(tuleva.getByText('2500')).toBeInTheDocument();
 });
 
 test("explains under the table that the fees are on the person's II pillar savings", async () => {
