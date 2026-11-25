@@ -544,9 +544,9 @@ describe('ComparisonCalculator', () => {
     expect(within(graph).getByText('9.5%')).toBeInTheDocument();
   });
 
-  test('II pillar at exactly 1% below index renders POSITIVE bar (handles FP precision)', async () => {
+  test('II pillar at exactly 1.5% below index renders POSITIVE bar (handles FP precision)', async () => {
     renderApp();
-    setReturnsData(returnsData2ndPillarOnePercentBelowIndex);
+    setReturnsData(returnsData2ndPillarOneAndHalfPercentBelowIndex);
     await component();
 
     expect(await screen.findByText(/has similar performance./i)).toBeInTheDocument();
@@ -1096,7 +1096,7 @@ const returnsData2ndPillarIndexNeutral: ReturnsResponse = {
     },
   ],
 };
-const returnsData2ndPillarOnePercentBelowIndex: ReturnsResponse = {
+const returnsData2ndPillarOneAndHalfPercentBelowIndex: ReturnsResponse = {
   from: moment().subtract(15, 'years').format('YYYY-MM-DD'),
   to: moment().format('YYYY-MM-DD'),
   returns: [
@@ -1110,7 +1110,7 @@ const returnsData2ndPillarOnePercentBelowIndex: ReturnsResponse = {
     },
     {
       key: 'SECOND_PILLAR',
-      rate: 0.06,
+      rate: 0.055,
       amount: 13000.0,
       paymentsSum: 20000.0,
       currency: 'EUR',
