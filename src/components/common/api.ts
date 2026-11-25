@@ -78,6 +78,7 @@ import {
 } from './apiModels/withdrawals';
 import { isMockModeEnabled, mockRequestInMockMode, readMockedProfile } from './requestMocker';
 import { SignableEntity } from './signing/types';
+import { currentVisit } from '../tracking/visit';
 import {
   CapitalTransferContract,
   CreateCapitalTransferDto,
@@ -765,7 +766,10 @@ export function createTrackedEvent(type: string, data: Record<string, unknown>):
   if (isMockModeEnabled()) {
     return Promise.resolve(undefined);
   }
-  return postWithAuthentication(getEndpoint('/v1/t'), { type, data });
+  return postWithAuthentication(getEndpoint('/v1/t'), {
+    type,
+    data: { ...currentVisit(), ...data },
+  });
 }
 
 export function getPaymentLink(payment: Payment): Promise<PaymentLink> {

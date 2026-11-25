@@ -42,6 +42,8 @@ import { shouldWriteTestMode, writeTestMode } from './components/common/test-mod
 import { applyMockScenarioFromLink } from './components/common/requestMocker';
 import { startAnalytics } from './components/tracking/startAnalytics';
 import { markForcedDark } from './components/common/forcedDark/forcedDark';
+import { productTrackingMiddleware } from './components/tracking/productTrackingMiddleware';
+import { captureAttribution } from './components/tracking/attribution';
 
 const history = createBrowserHistory();
 
@@ -55,7 +57,7 @@ const composeEnhancers =
 
 const store = createStore(
   createRootReducer(history),
-  composeEnhancers(applyMiddleware(routerMiddleware(history), thunk)),
+  composeEnhancers(applyMiddleware(routerMiddleware(history), thunk, productTrackingMiddleware)),
 );
 
 function applyRouting() {
@@ -85,6 +87,7 @@ initializeConfiguration();
 window.config = config; // for debug only
 
 if (process.env.NODE_ENV !== 'test') {
+  captureAttribution();
   startAnalytics(history);
 }
 
