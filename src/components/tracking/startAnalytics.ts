@@ -38,6 +38,10 @@ const startTagManagerAndGa = (): void => {
 
 const isDevelopmentServer = (): boolean => process.env.NODE_ENV === 'development';
 
+// The end-to-end tests open production links tagged utm_source=e2e; their visits are not people.
+const isEndToEndTestRun = (): boolean =>
+  new URLSearchParams(window.location.search).get('utm_source') === 'e2e';
+
 const isSmartIdCallbackPage = (pathname: string): boolean =>
   pathname.startsWith(smartIdCallbackPath);
 
@@ -54,7 +58,7 @@ export const startAnalytics = (history: History): void => {
   const isProtected = installPersonalDataProtection();
 
   // Analytics tools report the URL, and a gift URL carries a token that names a child.
-  if (!isProtected || isGiftPage() || isDevelopmentServer()) {
+  if (!isProtected || isGiftPage() || isDevelopmentServer() || isEndToEndTestRun()) {
     return;
   }
 

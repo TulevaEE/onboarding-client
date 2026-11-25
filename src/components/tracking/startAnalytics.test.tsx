@@ -55,6 +55,15 @@ describe('startAnalytics', () => {
     expect(ReactGA.initialize).not.toHaveBeenCalled();
   });
 
+  it('does not start Tag Manager or GA4 for an end-to-end test run', () => {
+    window.history.pushState({}, '', '/3rd-pillar-payment?utm_source=e2e&fbclid=abc');
+
+    startAnalytics(createBrowserHistory());
+
+    expect(TagManager.initialize).not.toHaveBeenCalled();
+    expect(ReactGA.initialize).not.toHaveBeenCalled();
+  });
+
   it('starts Tag Manager and GA4 on a Smart-ID callback page only once the login has left it', () => {
     const history = createBrowserHistory();
     history.replace('/login/smart-id/callback');
