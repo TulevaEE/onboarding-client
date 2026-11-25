@@ -13,6 +13,7 @@ export type GuidedInsurerCode = Exclude<InsurerCode, InsuranceTransferFormInsure
 type Insurer = {
   name: string;
   formerNamesMessageId?: TranslationKey;
+  eServiceUrl: string;
 };
 
 type GuideStep = {
@@ -27,11 +28,15 @@ type Guide = {
 };
 
 export const insurers: Record<InsurerCode, Insurer> = {
-  SWEDBANK: { name: 'Swedbank' },
-  SEB: { name: 'SEB' },
-  COMPENSA: { name: 'Compensa' },
-  ARTEA: { name: 'Artea', formerNamesMessageId: 'insuranceTransfer.insurer.ARTEA.formerNames' },
-  ERGO: { name: 'Ergo' },
+  SWEDBANK: { name: 'Swedbank', eServiceUrl: 'https://www.swedbank.ee/private' },
+  SEB: { name: 'SEB', eServiceUrl: 'https://e.seb.ee/ib/p/pensionDashboard' },
+  COMPENSA: { name: 'Compensa', eServiceUrl: 'https://www.compensalife.eu/EE/logon.asp?lngID=et' },
+  ARTEA: {
+    name: 'Artea',
+    formerNamesMessageId: 'insuranceTransfer.insurer.ARTEA.formerNames',
+    eServiceUrl: 'https://e-life.artea.ee',
+  },
+  ERGO: { name: 'Ergo', eServiceUrl: 'https://ekontor.ergo.ee/lepingud' },
 };
 
 export const guides: Record<GuidedInsurerCode, Guide> = {

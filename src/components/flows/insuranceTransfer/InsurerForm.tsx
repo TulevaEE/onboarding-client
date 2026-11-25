@@ -35,6 +35,7 @@ import {
   toCommand,
 } from './insurerFormValues';
 import { YourDetails } from './YourDetails';
+import { eServiceLink } from './EServiceLink';
 import { RequestReview } from './RequestReview';
 import { PersonWithPensionAccount } from './useTransferRequest';
 
@@ -117,7 +118,12 @@ const PolicyNumberField = ({ insurer }: { insurer: InsuranceTransferFormInsurer 
           <FormattedMessage id="insuranceTransfer.contractNumber.label" />
         </span>
       }
-      hint={<FormattedMessage id="insuranceTransfer.form.policyNumber.hint" />}
+      hint={
+        <FormattedMessage
+          id="insuranceTransfer.form.policyNumber.hint"
+          values={{ link: eServiceLink(insurer) }}
+        />
+      }
       registration={register('policyNumber', {
         validate: {
           required: (value) =>
