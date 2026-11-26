@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unused-prop-types */
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -39,6 +39,7 @@ import {
 } from '../../ApplicationSection/ApplicationFunctions';
 import {
   SecondPillarPaymentRateTaxWin,
+  TaxWinSentence,
   useSecondPillarTaxWin,
 } from '../../../flows/secondPillarPaymentRate/SecondPillarPaymentRateTaxWin';
 import { dateToWaitForRejoining } from '../../../flows/secondPillarRejoin/RejoinRefusalReason';
@@ -48,7 +49,7 @@ import {
 } from '../../../flows/secondPillarRejoin/deadlineHighlight';
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 import { FundPension } from '../../../common/apiModels/withdrawals';
-import { PaymentRateSubRow } from './PaymentRateSubRow';
+import { CurrentPaymentRate, PaymentRateSubRow, usePaymentRateChange } from './PaymentRateSubRow';
 import { NudgeKey, PaymentRateSeason } from '../../../common/apiModels/nudge';
 import { TranslationKey } from '../../../translations';
 import styles from './SecondPillarStatusBox.module.scss';
@@ -197,7 +198,6 @@ type SeasonRow = {
   status: 'SUCCESS' | 'WARNING';
   line1: TranslationKey;
   line2: TranslationKey;
-  line2WithoutTaxWin: TranslationKey;
   action?: TranslationKey;
   showsPill?: boolean;
 };
@@ -207,7 +207,6 @@ const SEASON_ROWS: Record<SeasonRowState, SeasonRow> = {
     status: 'WARNING',
     line1: 'account.status.choice.pillar.second.season.raise.line1',
     line2: 'account.status.choice.pillar.second.season.raise.line2',
-    line2WithoutTaxWin: 'account.status.choice.pillar.second.season.raise.line2.noTaxWin',
     action: 'account.status.choice.paymentRate.increase',
     showsPill: true,
   },
@@ -215,26 +214,22 @@ const SEASON_ROWS: Record<SeasonRowState, SeasonRow> = {
     status: 'SUCCESS',
     line1: 'account.status.choice.pillar.second.season.maximum.line1',
     line2: 'account.status.choice.pillar.second.season.maximum.line2',
-    line2WithoutTaxWin: 'account.status.choice.pillar.second.season.maximum.line2.noTaxWin',
   },
   pendingRaise: {
     status: 'SUCCESS',
     line1: 'account.status.choice.pillar.second.season.pending.line1',
     line2: 'account.status.choice.pillar.second.season.pendingRaise.line2',
-    line2WithoutTaxWin: 'account.status.choice.pillar.second.season.pendingRaise.line2.noTaxWin',
   },
   pendingPartial: {
     status: 'WARNING',
     line1: 'account.status.choice.pillar.second.season.pending.line1',
     line2: 'account.status.choice.pillar.second.season.pendingPartial.line2',
-    line2WithoutTaxWin: 'account.status.choice.pillar.second.season.pendingPartial.line2.noTaxWin',
     action: 'account.status.choice.paymentRate.increase',
   },
   pendingDecrease: {
     status: 'WARNING',
     line1: 'account.status.choice.pillar.second.season.pendingDecrease.line1',
     line2: 'account.status.choice.pillar.second.season.pendingDecrease.line2',
-    line2WithoutTaxWin: 'account.status.choice.pillar.second.season.pendingDecrease.line2.noTaxWin',
     action: 'account.status.choice.paymentRate.change',
   },
 };
@@ -264,12 +259,10 @@ const SeasonPaymentRateRow = ({
     deadline: formatDate(paymentRateSeason.deadline),
     deadlineUntil: formatDateUntil(paymentRateSeason.deadline),
     fulfillmentDate: formatDateFrom(paymentRateSeason.fulfillmentDate),
-    ...(taxWin === null ? {} : { taxWin: `${taxWin.toFixed(0)}\u00A0€` }),
     b: (chunks: string) => (emphasizeDeadline ? <b>{chunks}</b> : <>{chunks}</>),
     hl: (chunks: string) => <span className="text-primary fw-semibold">{chunks}</span>,
-    link: (chunks: string) => <Link to="/2nd-pillar-tax-win">{chunks}</Link>,
-    amount: (chunks: string) => <b>{chunks}</b>,
   };
+  const seasonLine2 = <FormattedMessage id={row.line2} values={values} />;
 
   return (
     <StatusBoxRow
@@ -294,10 +287,17 @@ const SeasonPaymentRateRow = ({
           <Shimmer height={24} />
         ) : (
           <span className="text-body-secondary">
-            <FormattedMessage
-              id={taxWin === null ? row.line2WithoutTaxWin : row.line2}
-              values={values}
-            />
+            {taxWin === null ? (
+              seasonLine2
+            ) : (
+              <FormattedMessage
+                id="account.status.choice.pillar.second.season.withTaxWin"
+                values={{
+                  taxWin: <TaxWinSentence taxWin={taxWin} placement="OPENS_THE_SENTENCE" />,
+                  line2: seasonLine2,
+                }}
+              />
+            )}
           </span>
         ),
       ]}
@@ -668,6 +668,46 @@ const SecondPillarMissing = ({ loading, nudgeKey }: RowProps) => (
   </StatusBoxRow>
 );
 
+const usePaymentRateAndTaxWinLines = (rates: {
+  currentPaymentRate: number;
+  pendingPaymentRate: number;
+}): ReactNode[] => {
+  const change = usePaymentRateChange(rates);
+  const { taxWin, loading: loadingTaxWin } = useSecondPillarTaxWin();
+
+  if (change.state !== 'NONE') {
+    return [
+      <span className="text-body-secondary">
+        <PaymentRateSubRow {...rates} />
+      </span>,
+      <span className="text-body-secondary">
+        <SecondPillarPaymentRateTaxWin />
+      </span>,
+    ];
+  }
+
+  if (loadingTaxWin) {
+    return [<Shimmer height={24} />];
+  }
+
+  const currentPaymentRate = <CurrentPaymentRate currentPaymentRate={rates.currentPaymentRate} />;
+  return [
+    <span className="text-body-secondary">
+      {taxWin === null ? (
+        currentPaymentRate
+      ) : (
+        <FormattedMessage
+          id="account.status.choice.paymentRate.taxWinCombined"
+          values={{
+            paymentRate: currentPaymentRate,
+            taxWin: <TaxWinSentence taxWin={taxWin} placement="CONTINUES_THE_SENTENCE" />,
+          }}
+        />
+      )}
+    </span>,
+  ];
+};
+
 const IncreasePaymentRate = ({ loading, currentPaymentRate, pendingPaymentRate }: RowProps) => (
   <StatusBoxRow
     status="WARNING"
@@ -729,51 +769,41 @@ const FullyConvertedToTulevaBonds = ({
   </StatusBoxRow>
 );
 
-const FullyConvertedToTuleva = ({ loading, currentPaymentRate, pendingPaymentRate }: RowProps) => (
-  <StatusBoxRow
-    status="SUCCESS"
-    name={<FormattedMessage id="account.status.choice.pillar.second" />}
-    showAction={!loading}
-    lines={[
-      <FormattedMessage id="account.status.choice.lowFee.index.label" />,
-      <span className="text-body-secondary">
-        <PaymentRateSubRow
-          currentPaymentRate={currentPaymentRate}
-          pendingPaymentRate={pendingPaymentRate}
-        />
-      </span>,
-      <span className="text-body-secondary">
-        <SecondPillarPaymentRateTaxWin />
-      </span>,
-    ]}
-  />
-);
+const FullyConvertedToTuleva = ({ loading, currentPaymentRate, pendingPaymentRate }: RowProps) => {
+  const paymentRateLines = usePaymentRateAndTaxWinLines({ currentPaymentRate, pendingPaymentRate });
+  return (
+    <StatusBoxRow
+      status="SUCCESS"
+      name={<FormattedMessage id="account.status.choice.pillar.second" />}
+      showAction={!loading}
+      lines={[
+        <FormattedMessage id="account.status.choice.lowFee.index.label" />,
+        ...paymentRateLines,
+      ]}
+    />
+  );
+};
 
 const InLowFeeFund = ({
   loading,
   currentPaymentRate,
   pendingPaymentRate,
   leaveApplication,
-}: RowProps) => (
-  <StatusBoxRow
-    status="SUCCESS"
-    showAction={!loading}
-    name={<FormattedMessage id="account.status.choice.pillar.second" />}
-    lines={[
-      <FormattedMessage id="account.status.choice.lowFee.label" />,
-      <span className="text-body-secondary">
-        <PaymentRateSubRow
-          currentPaymentRate={currentPaymentRate}
-          pendingPaymentRate={pendingPaymentRate}
-        />
-      </span>,
-      <span className="text-body-secondary">
-        <SecondPillarPaymentRateTaxWin />
-      </span>,
-    ]}
-  >
-    <SecondPillarActionButton leaveApplication={leaveApplication} className="btn-outline-primary" />
-  </StatusBoxRow>
-);
+}: RowProps) => {
+  const paymentRateLines = usePaymentRateAndTaxWinLines({ currentPaymentRate, pendingPaymentRate });
+  return (
+    <StatusBoxRow
+      status="SUCCESS"
+      showAction={!loading}
+      name={<FormattedMessage id="account.status.choice.pillar.second" />}
+      lines={[<FormattedMessage id="account.status.choice.lowFee.label" />, ...paymentRateLines]}
+    >
+      <SecondPillarActionButton
+        leaveApplication={leaveApplication}
+        className="btn-outline-primary"
+      />
+    </StatusBoxRow>
+  );
+};
 
 export default connect(mapStateToProps)(SecondPillarStatusBox);

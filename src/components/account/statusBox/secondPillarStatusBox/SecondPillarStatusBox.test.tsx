@@ -22,6 +22,7 @@ import {
 import { FundPension } from '../../../common/apiModels/withdrawals';
 
 let mockContributionsAreLoaded = true;
+let mockEmployeeWithheldPortionThisYear = 100;
 let mockFundPensions: FundPension[] = [];
 let mockFundPensionsAreLoading = false;
 const mockPendingApplicationsByDefault: Partial<Application>[] = [];
@@ -82,7 +83,7 @@ jest.mock('../../../common/apiHooks', () => ({
           {
             pillar: 2,
             time: new Date().toISOString(),
-            employeeWithheldPortion: 100,
+            employeeWithheldPortion: mockEmployeeWithheldPortionThisYear,
           },
         ]
       : undefined,
@@ -91,6 +92,7 @@ jest.mock('../../../common/apiHooks', () => ({
 
 afterEach(() => {
   mockContributionsAreLoaded = true;
+  mockEmployeeWithheldPortionThisYear = 100;
   mockFundPensions = [];
   mockFundPensionsAreLoading = false;
   mockPendingApplications = mockPendingApplicationsByDefault;
@@ -394,36 +396,6 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
   });
 
   describe('InLowFeeFund component', () => {
-    it('renders tax win component as separate line item in low fee fund', () => {
-      const props: Props = {
-        ...completeSecondPillarConversion,
-        loading: false,
-        conversion: {
-          ...completeSecondPillarConversion.secondPillar,
-          selectionComplete: false,
-          transfersComplete: false,
-          weightedAverageFee: 0.0029,
-        },
-        sourceFunds: [activeSecondPillar],
-        targetFunds: [tulevaSecondPillarFund],
-        secondPillarActive: true,
-        pendingPaymentRate: 6,
-        currentPaymentRate: 6,
-        activeFundIsin: 'EE000123',
-      };
-
-      renderWithIntl(<SecondPillarStatusBox {...props} />);
-
-      expect(screen.getByRole('heading', { level: 3 })).toBeInTheDocument();
-      expect(screen.getByText(/6%/)).toBeInTheDocument();
-
-      const links = screen.getAllByRole('link');
-      expect(links.length).toBeGreaterThan(0);
-
-      const euroElements = screen.getAllByText(/€/);
-      expect(euroElements.length).toBeGreaterThan(0);
-    });
-
     it('does not show action button when loading', () => {
       const props: Props = {
         loading: true,
@@ -447,27 +419,6 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
   });
 
   describe('FullyConvertedToTuleva component', () => {
-    it('renders tax win as separate line item when fully converted', () => {
-      const props: Props = {
-        loading: false,
-        conversion: completeSecondPillarConversion.secondPillar,
-        sourceFunds: [activeSecondPillar],
-        targetFunds: [tulevaSecondPillarFund],
-        secondPillarActive: true,
-        pendingPaymentRate: 6,
-        currentPaymentRate: 6,
-        activeFundIsin: 'EE000123',
-      };
-
-      renderWithIntl(<SecondPillarStatusBox {...props} />);
-
-      expect(screen.getByRole('heading', { level: 3 })).toBeInTheDocument();
-      expect(screen.getByText(/6%/)).toBeInTheDocument();
-
-      const euroElements = screen.getAllByText(/€/);
-      expect(euroElements.length).toBeGreaterThan(0);
-    });
-
     it('does not render action buttons when loading', () => {
       const props: Props = {
         loading: true,
@@ -1252,6 +1203,28 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
       '/2nd-pillar-tax-win',
     );
     expect(byTextContent(/^22\s€$/).tagName).toBe('B');
+    expect(byTextContent(/^22\s€$/)).toHaveClass('text-nowrap');
+  });
+
+  it('says in Estonian what the person has won this year, then the support sentence of the season', () => {
+    moment.locale('et');
+
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(6, 6)} />, 'et');
+
+    expect(
+      byTextContent(
+        /^Oled\ssel\saastal\svõitnud\stulumaksult\s22\s€\.\sSinu\sotsus\stöötab\sigal\skuul\ssinu\skasuks$/,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('gives only the support sentence of the season when there is no tax win this year', () => {
+    mockEmployeeWithheldPortionThisYear = 0;
+
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(6, 6)} />);
+
+    expect(byTextContent(/^Your\sdecision\sworks\sfor\syou\severy\smonth$/)).toBeInTheDocument();
+    expect(screen.queryByText(/You have saved/)).not.toBeInTheDocument();
   });
 
   it.each([
@@ -1266,7 +1239,7 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
     ).toBeInTheDocument();
     expect(
       byTextContent(
-        /This year you saved 22\s€ in income tax, the application deadline is November\s30/,
+        /^You\shave\ssaved\s22\s€\sin\sincome\stax\sthis\syear\.\sThe\sapplication\sdeadline\sis\sNovember\s30$/,
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Increase contribution' })).toBeInTheDocument();
@@ -1280,7 +1253,7 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
     ).toBeInTheDocument();
     expect(
       byTextContent(
-        /This year you saved 22\s€ in income tax, your decision works for you every month/,
+        /^You\shave\ssaved\s22\s€\sin\sincome\stax\sthis\syear\.\sYour\sdecision\sworks\sfor\syou\severy\smonth$/,
       ),
     ).toBeInTheDocument();
     expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([
@@ -1300,7 +1273,7 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
     ).toBeInTheDocument();
     expect(
       byTextContent(
-        /This year you saved 22\s€ in income tax, the application is in and there is nothing more to do/,
+        /^You\shave\ssaved\s22\s€\sin\sincome\stax\sthis\syear\.\sThe\sapplication\sis\sin\sand\sthere\sis\snothing\smore\sto\sdo$/,
       ),
     ).toBeInTheDocument();
     expect(screen.getAllByRole('link').map((link) => link.getAttribute('href'))).toEqual([
@@ -1316,7 +1289,7 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
     ).toBeInTheDocument();
     expect(
       byTextContent(
-        /This year you saved 22\s€ in income tax, until November\s30 you can raise it to 6%/,
+        /^You\shave\ssaved\s22\s€\sin\sincome\stax\sthis\syear\.\sUntil\sNovember\s30\syou\scan\sraise\sit\sto\s6%$/,
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Increase contribution' })).toBeInTheDocument();
@@ -1338,7 +1311,7 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
     ).toBeInTheDocument();
     expect(
       byTextContent(
-        /This year you saved 22\s€ in income tax, you can change your choice until November\s30/,
+        /^You\shave\ssaved\s22\s€\sin\sincome\stax\sthis\syear\.\sYou\scan\schange\syour\schoice\suntil\sNovember\s30$/,
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Change contribution' })).toBeInTheDocument();
@@ -1353,7 +1326,7 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
       />,
     );
 
-    expect(byTextContent(/^the application deadline is November\s30$/).tagName).toBe('B');
+    expect(byTextContent(/^The application deadline is November\s30$/).tagName).toBe('B');
   });
 
   it('shimmers the tax win line instead of guessing while the contributions load', () => {
@@ -1363,7 +1336,7 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
 
     // eslint-disable-next-line testing-library/no-node-access
     expect(document.querySelector('.shimmerDefault')).toBeInTheDocument();
-    expect(screen.queryByText(/This year you saved/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/You have saved/)).not.toBeInTheDocument();
     expect(screen.queryByText(/The application deadline is/)).not.toBeInTheDocument();
   });
 
@@ -1438,7 +1411,7 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
       expect(
         byTextContent(
           new RegExp(
-            `^Your\\scontribution\\sis\\s2%\\sof\\sgross\\ssalary,\\schanging\\sto\\s${pendingPaymentRate}%\\sfrom\\sJanuary\\s1,\\s2027$`,
+            `^You\\sare\\scontributing\\s2%\\sof\\sgross\\ssalary,\\schanging\\sto\\s${pendingPaymentRate}%\\sfrom\\sJanuary\\s1,\\s2027$`,
           ),
         ),
       ).toBeInTheDocument();
@@ -1452,7 +1425,7 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
 
     expect(
       byTextContent(
-        /^Your\scontribution\sis\s2%\sof\sgross\ssalary,\schanging\sto\s6%\sfrom\sJanuary\s1,\s2025$/,
+        /^You\sare\scontributing\s2%\sof\sgross\ssalary,\schanging\sto\s6%\sfrom\sJanuary\s1,\s2025$/,
       ),
     ).toBeInTheDocument();
   });
@@ -1465,7 +1438,7 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
 
     expect(
       byTextContent(
-        /^Sinu\spanus\son\s2%\sbrutopalgast,\salates\s1\.\sjaanuarist\s2027\smuutub\ssee\s6%\speale$/,
+        /^Sa\spanustad\s2%\sbrutopalgast,\salates\s1\.\sjaanuarist\s2027\smuutub\ssee\s6%\speale$/,
       ),
     ).toBeInTheDocument();
   });
@@ -1477,7 +1450,7 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
 
     expect(
       byTextContent(
-        /^Your\scontribution\sis\s2%\sof\sgross\ssalary,\schanging\sto\s4%\sfrom\sJanuary\s1,\s2027$/,
+        /^You\sare\scontributing\s2%\sof\sgross\ssalary,\schanging\sto\s4%\sfrom\sJanuary\s1,\s2027$/,
       ),
     ).toBeInTheDocument();
   });
@@ -1490,7 +1463,7 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
 
     expect(
       byTextContent(
-        /^Your\scontribution\sis\s2%\sof\sgross\ssalary,\schanging\sto\s6%\sfrom\sJanuary\s1,\s2027$/,
+        /^You\sare\scontributing\s2%\sof\sgross\ssalary,\schanging\sto\s6%\sfrom\sJanuary\s1,\s2027$/,
       ),
     ).toBeInTheDocument();
   });
@@ -1506,7 +1479,7 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
 
     expect(
       byTextContent(
-        /^Your\scontribution\sis\s2%\sof\sgross\ssalary,\schanging\sto\s6%\sfrom\sJanuary\s1,\s2027$/,
+        /^You\sare\scontributing\s2%\sof\sgross\ssalary,\schanging\sto\s6%\sfrom\sJanuary\s1,\s2027$/,
       ),
     ).toBeInTheDocument();
   });
@@ -1515,7 +1488,7 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
     renderWithIntl(<SecondPillarStatusBox {...saverAtTuleva(2, 6)} />);
 
     expect(
-      byTextContent(/^Your\scontribution\sis\s2%\sof\sgross\ssalary,\schanging\sto\s6%$/),
+      byTextContent(/^You\sare\scontributing\s2%\sof\sgross\ssalary,\schanging\sto\s6%$/),
     ).toBeInTheDocument();
   });
 
@@ -1525,7 +1498,7 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
     renderWithIntl(<SecondPillarStatusBox {...saverAtTuleva(2, 6)} />, 'et');
 
     expect(
-      byTextContent(/^Sinu\spanus\son\s2%\sbrutopalgast,\ssee\smuutub\s6%\speale$/),
+      byTextContent(/^Sa\spanustad\s2%\sbrutopalgast,\ssee\smuutub\s6%\speale$/),
     ).toBeInTheDocument();
   });
 
@@ -1535,7 +1508,11 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
     renderWithIntl(<SecondPillarStatusBox {...saverAtTuleva(6, 6)} />);
 
     expect(screen.queryByText(/changing to/)).not.toBeInTheDocument();
-    expect(byTextContent(/^You\sare\scontributing\s6%\sof\sgross\ssalary$/)).toBeInTheDocument();
+    expect(
+      byTextContent(
+        /^You\sare\scontributing\s6%\sof\sgross\ssalary\sand\shave\ssaved\s22\s€\sin\sincome\stax\sthis\syear$/,
+      ),
+    ).toBeInTheDocument();
   });
 
   it('shimmers the payment rate line instead of guessing the date until the applications load', () => {
@@ -1546,6 +1523,134 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
     expect(screen.getByRole('heading', { name: /^II\spillar$/ })).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
     expect(document.querySelector('.shimmerDefault')).toBeInTheDocument();
-    expect(screen.queryByText(/gross\ssalary/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/You are contributing/)).not.toBeInTheDocument();
+  });
+});
+
+describe('SecondPillarStatusBox payment rate and tax win lines outside the season', () => {
+  const saver = (currentPaymentRate: number, pendingPaymentRate: number): Props => ({
+    loading: false,
+    conversion: completeSecondPillarConversion.secondPillar,
+    sourceFunds: [activeSecondPillar],
+    targetFunds: [tulevaSecondPillarFund],
+    secondPillarActive: true,
+    secondPillarContributions: { contributing: true, restartDate: null, rejoinPossibleFrom: null },
+    currentPaymentRate,
+    pendingPaymentRate,
+    activeFundIsin: 'EE000123',
+  });
+
+  const inAnotherLowFeeFund = (props: Props): Props => ({
+    ...props,
+    conversion: {
+      ...lowFeesNoTulevaConversion.secondPillar,
+      transfersPartial: true,
+      weightedAverageFee: 0.0029,
+    },
+  });
+
+  beforeEach(() => {
+    moment.locale('et');
+  });
+
+  it.each([
+    ['at Tuleva', saver(6, 6), 'Sa kogud Tuleva madala tasuga indeksfondis'],
+    ['in another low-fee fund', inAnotherLowFeeFund(saver(6, 6)), 'Sa kogud madala tasuga fondis'],
+  ])(
+    'tells a saver %s at 6%% the rate and the tax win in one line under the fund, like the III pillar row',
+    (_, props, fundLine) => {
+      renderWithIntl(<SecondPillarStatusBox {...props} />, 'et');
+
+      expect(byTextContent(fundLine)).toBeInTheDocument();
+      expect(
+        byTextContent(
+          /^Sa\spanustad\s6%\sbrutopalgast\sja\soled\ssel\saastal\svõitnud\stulumaksult\s22\s€$/,
+        ),
+      ).toBeInTheDocument();
+      expect(screen.queryByText(/^Sa\spanustad\s6%\sbrutopalgast$/)).not.toBeInTheDocument();
+    },
+  );
+
+  it('joins the rate and the tax win in English too', () => {
+    moment.locale('en');
+
+    renderWithIntl(<SecondPillarStatusBox {...saver(6, 6)} />);
+
+    expect(
+      byTextContent(
+        /^You\sare\scontributing\s6%\sof\sgross\ssalary\sand\shave\ssaved\s22\s€\sin\sincome\stax\sthis\syear$/,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('keeps the tax win amount bold and on one line, like the III pillar amounts', () => {
+    renderWithIntl(<SecondPillarStatusBox {...saver(6, 6)} />, 'et');
+
+    expect(byTextContent(/^22\s€$/).tagName).toBe('B');
+    expect(byTextContent(/^22\s€$/)).toHaveClass('text-nowrap');
+    expect(screen.getByRole('link', { name: /^võitnud\stulumaksult$/ })).toHaveAttribute(
+      'href',
+      '/2nd-pillar-tax-win',
+    );
+  });
+
+  it.each([
+    ['at Tuleva', saver(2, 6)],
+    ['in another low-fee fund', inAnotherLowFeeFund(saver(2, 6))],
+  ])(
+    'gives a saver %s with a pending raise the change and the tax win on lines of their own',
+    (_, props) => {
+      mockPendingApplications = [
+        {
+          ...paymentRateChange,
+          details: { ...paymentRateChange.details, paymentRate: 6, fulfillmentDate: '2027-01-01' },
+        },
+      ];
+
+      renderWithIntl(<SecondPillarStatusBox {...props} />, 'et');
+
+      expect(
+        byTextContent(
+          /^Sa\spanustad\s2%\sbrutopalgast,\salates\s1\.\sjaanuarist\s2027\smuutub\ssee\s6%\speale$/,
+        ),
+      ).toBeInTheDocument();
+      expect(byTextContent(/^Oled\ssel\saastal\svõitnud\stulumaksult\s22\s€$/)).toBeInTheDocument();
+    },
+  );
+
+  it('gives a saver below 6% the rate and the tax win on lines of their own', () => {
+    renderWithIntl(<SecondPillarStatusBox {...saver(2, 2)} />, 'et');
+
+    expect(byTextContent(/^Sa\spanustad\s2%\sbrutopalgast$/)).toBeInTheDocument();
+    expect(byTextContent(/^Oled\ssel\saastal\svõitnud\stulumaksult\s22\s€$/)).toBeInTheDocument();
+  });
+
+  it('shimmers the line of the rate and the tax win until the contributions load', () => {
+    mockContributionsAreLoaded = false;
+
+    renderWithIntl(<SecondPillarStatusBox {...saver(6, 6)} />, 'et');
+
+    expect(screen.getByText('Sa kogud Tuleva madala tasuga indeksfondis')).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(document.querySelector('.shimmerDefault')).toBeInTheDocument();
+    expect(screen.queryByText(/panustad/)).not.toBeInTheDocument();
+  });
+
+  it('counts a tax win that rounds to 0 € as none', () => {
+    mockEmployeeWithheldPortionThisYear = 1;
+
+    renderWithIntl(<SecondPillarStatusBox {...saver(6, 6)} />, 'et');
+
+    expect(byTextContent(/^Sa\spanustad\s6%\sbrutopalgast$/)).toBeInTheDocument();
+    expect(screen.queryByText(/tulumaksult/)).not.toBeInTheDocument();
+  });
+
+  it('gives only the rate when there is no tax win this year', () => {
+    mockEmployeeWithheldPortionThisYear = 0;
+
+    renderWithIntl(<SecondPillarStatusBox {...saver(6, 6)} />, 'et');
+
+    expect(byTextContent(/^Sa\spanustad\s6%\sbrutopalgast$/)).toBeInTheDocument();
+    expect(screen.queryByText(/tulumaksult/)).not.toBeInTheDocument();
   });
 });
