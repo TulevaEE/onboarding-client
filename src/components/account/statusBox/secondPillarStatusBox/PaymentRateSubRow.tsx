@@ -43,7 +43,7 @@ export const usePaymentRateChange = ({
     : { state: 'UNDATED' };
 };
 
-export const CurrentPaymentRate = ({ currentPaymentRate }: { currentPaymentRate: number }) => (
+const CurrentPaymentRate = ({ currentPaymentRate }: { currentPaymentRate: number }) => (
   <FormattedMessage id="account.status.choice.paymentRate" values={{ currentPaymentRate }} />
 );
 

@@ -49,7 +49,7 @@ import {
 } from '../../../flows/secondPillarRejoin/deadlineHighlight';
 import { ActiveFundPensionDescription } from '../ActiveFundPensionDescription';
 import { FundPension } from '../../../common/apiModels/withdrawals';
-import { CurrentPaymentRate, PaymentRateSubRow, usePaymentRateChange } from './PaymentRateSubRow';
+import { PaymentRateSubRow, usePaymentRateChange } from './PaymentRateSubRow';
 import { NudgeKey, PaymentRateSeason } from '../../../common/apiModels/nudge';
 import { TranslationKey } from '../../../translations';
 import styles from './SecondPillarStatusBox.module.scss';
@@ -669,44 +669,55 @@ const SecondPillarMissing = ({ loading, nudgeKey }: RowProps) => (
   </StatusBoxRow>
 );
 
-const usePaymentRateAndTaxWinLines = (rates: {
+const usePaymentRateAndTaxWinLine = (rates: {
   currentPaymentRate: number;
   pendingPaymentRate: number;
-}): ReactNode[] => {
+}): ReactNode => {
   const change = usePaymentRateChange(rates);
   const { taxWin, loading: loadingTaxWin } = useSecondPillarTaxWin();
 
-  if (change.state !== 'NONE') {
-    return [
-      <span className="text-body-secondary">
-        <PaymentRateSubRow {...rates} />
-      </span>,
-      <span className="text-body-secondary">
-        <SecondPillarPaymentRateTaxWin />
-      </span>,
-    ];
+  if (change.state === 'LOADING' || loadingTaxWin) {
+    return <Shimmer height={24} />;
   }
 
-  if (loadingTaxWin) {
-    return [<Shimmer height={24} />];
-  }
+  const paymentRate =
+    change.state === 'DATED' ? (
+      <FormattedMessage
+        id="account.status.choice.futurePaymentRate.from"
+        values={{
+          futurePaymentRate: rates.pendingPaymentRate,
+          paymentRateFulfillmentDate: formatDateFromWithYear(change.fulfillmentDate),
+        }}
+      />
+    ) : (
+      <PaymentRateSubRow {...rates} />
+    );
+  const rateStaysAsItIs = change.state === 'NONE';
 
-  const currentPaymentRate = <CurrentPaymentRate currentPaymentRate={rates.currentPaymentRate} />;
-  return [
+  return (
     <span className="text-body-secondary">
       {taxWin === null ? (
-        currentPaymentRate
+        paymentRate
       ) : (
         <FormattedMessage
-          id="account.status.choice.paymentRate.taxWinCombined"
+          id={
+            rateStaysAsItIs
+              ? 'account.status.choice.paymentRate.taxWinCombined'
+              : 'account.status.choice.paymentRate.changeThenTaxWin'
+          }
           values={{
-            paymentRate: currentPaymentRate,
-            taxWin: <TaxWinSentence taxWin={taxWin} placement="CONTINUES_THE_SENTENCE" />,
+            paymentRate,
+            taxWin: (
+              <TaxWinSentence
+                taxWin={taxWin}
+                placement={rateStaysAsItIs ? 'CONTINUES_THE_SENTENCE' : 'OPENS_THE_SENTENCE'}
+              />
+            ),
           }}
         />
       )}
-    </span>,
-  ];
+    </span>
+  );
 };
 
 const IncreasePaymentRate = ({ loading, currentPaymentRate, pendingPaymentRate }: RowProps) => (
@@ -771,16 +782,13 @@ const FullyConvertedToTulevaBonds = ({
 );
 
 const FullyConvertedToTuleva = ({ loading, currentPaymentRate, pendingPaymentRate }: RowProps) => {
-  const paymentRateLines = usePaymentRateAndTaxWinLines({ currentPaymentRate, pendingPaymentRate });
+  const paymentRateLine = usePaymentRateAndTaxWinLine({ currentPaymentRate, pendingPaymentRate });
   return (
     <StatusBoxRow
       status="SUCCESS"
       name={<FormattedMessage id="account.status.choice.pillar.second" />}
       showAction={!loading}
-      lines={[
-        <FormattedMessage id="account.status.choice.lowFee.index.label" />,
-        ...paymentRateLines,
-      ]}
+      lines={[<FormattedMessage id="account.status.choice.lowFee.index.label" />, paymentRateLine]}
     />
   );
 };
@@ -791,13 +799,13 @@ const InLowFeeFund = ({
   pendingPaymentRate,
   leaveApplication,
 }: RowProps) => {
-  const paymentRateLines = usePaymentRateAndTaxWinLines({ currentPaymentRate, pendingPaymentRate });
+  const paymentRateLine = usePaymentRateAndTaxWinLine({ currentPaymentRate, pendingPaymentRate });
   return (
     <StatusBoxRow
       status="SUCCESS"
       showAction={!loading}
       name={<FormattedMessage id="account.status.choice.pillar.second" />}
-      lines={[<FormattedMessage id="account.status.choice.lowFee.label" />, ...paymentRateLines]}
+      lines={[<FormattedMessage id="account.status.choice.lowFee.label" />, paymentRateLine]}
     >
       <SecondPillarActionButton
         leaveApplication={leaveApplication}
