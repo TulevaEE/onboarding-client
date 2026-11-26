@@ -57,12 +57,12 @@ describe('Status Box Row emphasis', () => {
     expect(screen.getByRole('link', { name: 'act' })).toHaveClass('btn-primary');
   });
 
-  it('dims the row, drops the second line and outlines the action when emphasized as secondary', () => {
+  it('dims the row and outlines the action when emphasized as secondary, keeping every line', () => {
     renderRow('secondary');
 
     expect(screen.getByTestId('status-box-row')).toHaveClass('secondary');
     expect(screen.getByText('first line')).toBeInTheDocument();
-    expect(screen.queryByText('second line')).not.toBeInTheDocument();
+    expect(screen.getByText('second line')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'act' })).toHaveClass('btn-outline-primary');
     expect(screen.getByRole('link', { name: 'act' })).not.toHaveClass('btn-primary');
   });

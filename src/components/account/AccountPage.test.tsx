@@ -281,6 +281,12 @@ describe('when the payment rate season is on and the payment rate nudge wins', (
     expect(filledActions.length).toBe(1);
     expect(filledActions[0]).toHaveTextContent('Increase contribution');
   });
+
+  test('keeps showing how much the saver has paid into the III pillar this year and last', async () => {
+    expect(await screen.findByText(/Now 2% →/)).toHaveTextContent('Now 2% → up to 6%');
+
+    expect(screen.getByText(/to your III\spillar this year and/)).toBeInTheDocument();
+  });
 });
 
 describe('when the payment rate season is on and another nudge wins', () => {
