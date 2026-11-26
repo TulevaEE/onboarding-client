@@ -1,4 +1,5 @@
-import { screen, waitForElementToBeRemoved } from '@testing-library/react';
+import { screen, waitFor, waitForElementToBeRemoved } from '@testing-library/react';
+import { QueryClient } from '@tanstack/react-query';
 
 import { setupServer } from 'msw/node';
 import { Route } from 'react-router-dom';
@@ -8,19 +9,23 @@ import moment from 'moment';
 import LoggedInApp from '../LoggedInApp';
 import { createDefaultStore, login, renderWrapped } from '../../test/utils';
 import { initializeConfiguration } from '../config/config';
-import { userBackend, useTestBackendsExcept } from '../../test/backend';
+import { userBackend, userConversionBackend, useTestBackendsExcept } from '../../test/backend';
 import { mockUser } from '../../test/backend-responses';
 
 const server = setupServer();
 let history: History;
+let queryClient: QueryClient;
 
 function initializeComponent() {
   history = createMemoryHistory();
+  queryClient = new QueryClient();
   const store = createDefaultStore(history as any);
   login(store);
 
-  renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store);
+  renderWrapped(<Route path="" component={LoggedInApp} />, history as any, store, queryClient);
 }
+
+const everyRequestHasSettled = () => waitFor(() => expect(queryClient.isFetching()).toBe(0));
 
 beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());
@@ -96,6 +101,8 @@ describe('Contact details page', () => {
 });
 
 describe('Contact details gatekeep', () => {
+  const secondPillarStillOnItsWayToTuleva = { selectionComplete: false, transfersComplete: false };
+
   it.each([
     '/2nd-pillar-payment-rate',
     '/withdrawals',
@@ -126,6 +133,7 @@ describe('Contact details gatekeep', () => {
           address: { countryCode: expectedCountry },
         },
       );
+      userConversionBackend(server, secondPillarStillOnItsWayToTuleva);
       initializeComponent();
 
       history.push(path);
@@ -154,6 +162,7 @@ describe('Contact details gatekeep', () => {
 
       await waitForElementToBeRemoved(() => screen.queryByText('My details'));
       expect(screen.queryByText('My details')).not.toBeInTheDocument();
+      await everyRequestHasSettled();
 
       // substring of path
       expect(history.location.pathname).toMatch(new RegExp(path));
