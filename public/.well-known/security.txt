@@ -1,0 +1,4 @@
+Contact: mailto:tuleva@tuleva.ee
+Expires: 2099-12-31T23:59:59Z
+Preferred-Languages: et, en
+Canonical: https://pension.tuleva.ee/.well-known/security.txt
