@@ -1239,7 +1239,7 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
     ).toBeInTheDocument();
     expect(
       byTextContent(
-        /^You\shave\ssaved\s22\s€\sin\sincome\stax\sthis\syear\.\sThe\sapplication\sdeadline\sis\sNovember\s30$/,
+        /^You\shave\ssaved\s22\s€\sin\sincome\stax\sthis\syear\.\sDeadline\sNovember\s30$/,
       ),
     ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Increase contribution' })).toBeInTheDocument();
@@ -1318,15 +1318,31 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
     expect(screen.getByTestId('status-icon-warning')).toBeInTheDocument();
   });
 
+  it('highlights the deadline for a saver below 6%, as the rejoin page does', () => {
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(2, 2)} />);
+
+    expect(screen.getByText(/^November\s30$/, { selector: 'b' })).toHaveClass('highlight');
+  });
+
+  it('names the deadline for a saver below 6% in two words in Estonian', () => {
+    moment.locale('et');
+
+    renderWithIntl(<SecondPillarStatusBox {...seasonProps(2, 2)} />, 'et');
+
+    expect(
+      byTextContent(/^Oled\ssel\saastal\svõitnud\stulumaksult\s22\s€\.\sTähtaeg\s30\.\snovember$/),
+    ).toBeInTheDocument();
+  });
+
   it('emphasizes the deadline fact in the last days', () => {
     renderWithIntl(
       <SecondPillarStatusBox
-        {...seasonProps(2, 2)}
+        {...seasonProps(2, 4)}
         paymentRateSeason={{ ...paymentRateSeason, mode: 'LAST_DAYS' }}
       />,
     );
 
-    expect(byTextContent(/^The application deadline is November\s30$/).tagName).toBe('B');
+    expect(byTextContent(/^Until November\s30 you can raise it to 6%$/).tagName).toBe('B');
   });
 
   it('shimmers the tax win line instead of guessing while the contributions load', () => {
@@ -1337,7 +1353,7 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
     // eslint-disable-next-line testing-library/no-node-access
     expect(document.querySelector('.shimmerDefault')).toBeInTheDocument();
     expect(screen.queryByText(/You have saved/)).not.toBeInTheDocument();
-    expect(screen.queryByText(/The application deadline is/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Deadline/)).not.toBeInTheDocument();
   });
 
   it('keeps the transfer call to action for a saver whose second pillar is elsewhere', () => {

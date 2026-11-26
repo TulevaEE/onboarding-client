@@ -335,7 +335,7 @@
   "account.status.choice.pillar.second.feecard.text": "You accumulate in Tuleva’s II pillar funds with <b>low fees</b>",
   "account.status.choice.pillar.second.season.pill": "Now {currentPaymentRate}% → <hl>up to 6%</hl>",
   "account.status.choice.pillar.second.season.raise.line1": "From {fulfillmentDate} you can contribute up to 6% straight from your gross salary",
-  "account.status.choice.pillar.second.season.raise.line2": "<b>The application deadline is {deadline}</b>",
+  "account.status.choice.pillar.second.season.raise.line2": "Deadline <highlight>{deadline}</highlight>",
   "account.status.choice.pillar.second.season.maximum.line1": "You contribute the maximum to II pillar, 6% of your gross salary",
   "account.status.choice.pillar.second.season.maximum.line2": "Your decision works for you every month",
   "account.status.choice.pillar.second.season.pending.line1": "From {fulfillmentDate} you will contribute {pendingPaymentRate}% of your gross salary to II pillar",
