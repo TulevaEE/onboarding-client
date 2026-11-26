@@ -348,7 +348,7 @@
   "account.status.choice.pillar.second.feecard.text": "Tuleva II samba fondides kogud <b>madalate tasudega</b>",
   "account.status.choice.pillar.second.season.pill": "Praegu {currentPaymentRate}% → <hl>kuni 6%</hl>",
   "account.status.choice.pillar.second.season.raise.line1": "Alates {fulfillmentDate} saad koguda kuni 6% otse brutopalgast",
-  "account.status.choice.pillar.second.season.raise.line2": "<b>Avalduse tähtaeg on {deadline}</b>",
+  "account.status.choice.pillar.second.season.raise.line2": "Tähtaeg <highlight>{deadline}</highlight>",
   "account.status.choice.pillar.second.season.maximum.line1": "Sa kogud II sambasse maksimaalselt, 6% brutopalgast",
   "account.status.choice.pillar.second.season.maximum.line2": "Sinu otsus töötab igal kuul sinu kasuks",
   "account.status.choice.pillar.second.season.pending.line1": "Alates {fulfillmentDate} panustad II sambasse {pendingPaymentRate}% brutopalgast",

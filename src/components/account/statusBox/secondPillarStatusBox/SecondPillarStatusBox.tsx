@@ -261,6 +261,7 @@ const SeasonPaymentRateRow = ({
     fulfillmentDate: formatDateFrom(paymentRateSeason.fulfillmentDate),
     b: (chunks: string) => (emphasizeDeadline ? <b>{chunks}</b> : <>{chunks}</>),
     hl: (chunks: string) => <span className="text-primary fw-semibold">{chunks}</span>,
+    highlight: highlightedDeadline,
   };
   const seasonLine2 = <FormattedMessage id={row.line2} values={values} />;
 
