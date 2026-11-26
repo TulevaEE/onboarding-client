@@ -161,7 +161,6 @@ export const StatusBoxRow: React.FunctionComponent<{
   children?: React.ReactNode;
 }> = ({ name = '', lines = [], showAction = false, status, children = '', last = false }) => {
   const emphasis = useStatusBoxEmphasis();
-  const visibleLines = emphasis === 'secondary' ? lines.slice(0, 1) : lines;
   const action = emphasis === 'secondary' ? outlinedAction(children) : children;
 
   return (
@@ -176,7 +175,7 @@ export const StatusBoxRow: React.FunctionComponent<{
           <StatusBoxIcon status={status || null} />
           <div className="d-flex flex-column justify-content-center">
             <h3 className="mb-1 h4">{name}</h3>
-            {visibleLines.map((line) => (
+            {lines.map((line) => (
               <p className="m-0">{line}</p>
             ))}
           </div>
