@@ -285,10 +285,9 @@ describe('SecondPillarPaymentRateTaxWin', () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it('handles very small decimal amounts correctly', () => {
+  it('shows no tax win when it rounds to 0 €', () => {
     const verySmallEmployeeWithheldPortion = 0.01;
     const january10th2024 = '2024-01-10T10:00:00Z';
-    const expectedRoundedToZero = '0 €';
 
     const verySmallAmountContribution = [
       createSecondPillarContributionWithEmployeePortion(
@@ -301,7 +300,7 @@ describe('SecondPillarPaymentRateTaxWin', () => {
 
     renderComponentWithTranslations(<SecondPillarPaymentRateTaxWin />);
 
-    expect(screen.getByText(expectedRoundedToZero)).toBeInTheDocument();
+    expect(screen.queryByText(/€/)).not.toBeInTheDocument();
   });
 
   it('correctly handles leap year contributions', () => {
