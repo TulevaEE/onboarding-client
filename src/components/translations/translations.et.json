@@ -398,6 +398,7 @@
   "account.status.choice.paymentRate.taxWinCombined": "{paymentRate} ja {taxWin}",
   "account.status.choice.futurePaymentRate": "Sa panustad {currentPaymentRate}% brutopalgast, alates {paymentRateFulfillmentDate} muutub see {futurePaymentRate}% peale",
   "account.status.choice.futurePaymentRate.withoutDate": "Sa panustad {currentPaymentRate}% brutopalgast, see muutub {futurePaymentRate}% peale",
+  "account.status.choice.futurePaymentRate.from": "Alates {paymentRateFulfillmentDate} panustad {futurePaymentRate}% brutopalgast",
 
   "account.status.choice.tulevaBondFund.index.label": "Sa kogud Tuleva konservatiivses võlakirjafondis",
 
@@ -410,6 +411,7 @@
   "account.status.choice.transfer.tuleva.2": "Vahetan fondi",
   "account.status.choice.paymentRate.increase": "Tõstan sissemakset",
   "account.status.choice.paymentRate.change": "Muudan sissemakset",
+  "account.status.choice.paymentRate.changeThenTaxWin": "{paymentRate}. {taxWin}",
 
   "account.status.choice.fundPension.description": "Fondipensioni väljamaksed lõppevad <b>{endDate}</b>",
 

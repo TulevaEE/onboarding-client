@@ -1400,8 +1400,11 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
 
   const inDecemberWhenAChangeFiledTodayTakesEffectInTwoYears = new Date('2026-12-10T10:00:00Z');
 
+  const startingAtSixWithTheTaxWinFromJanuary2027 =
+    /^From\sJanuary\s1,\s2027\syou\swill\scontribute\s6%\sof\sgross\ssalary\.\sYou\shave\ssaved\s22\s€\sin\sincome\stax\sthis\syear$/;
+
   it.each([
-    ['fully at Tuleva', saverAtTuleva(2, 6), 6],
+    ['fully at Tuleva', saverAtTuleva(2, 6), startingAtSixWithTheTaxWinFromJanuary2027],
     [
       'in another low-fee fund',
       {
@@ -1412,25 +1415,27 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
           weightedAverageFee: 0.0029,
         },
       },
-      6,
+      startingAtSixWithTheTaxWinFromJanuary2027,
     ],
-    ['below 6%', saverAtTuleva(2, 4), 4],
-    ['in the bond fund', { ...saverAtTuleva(2, 6), activeFundIsin: 'EE3600109443' }, 6],
+    [
+      'below 6%',
+      saverAtTuleva(2, 4),
+      /^You\sare\scontributing\s2%\sof\sgross\ssalary,\schanging\sto\s4%\sfrom\sJanuary\s1,\s2027$/,
+    ],
+    [
+      'in the bond fund',
+      { ...saverAtTuleva(2, 6), activeFundIsin: 'EE3600109443' },
+      /^You\sare\scontributing\s2%\sof\sgross\ssalary,\schanging\sto\s6%\sfrom\sJanuary\s1,\s2027$/,
+    ],
   ])(
     'dates the pending change of a saver %s by its own application, not by when a change filed today would take effect',
-    (_, props, pendingPaymentRate) => {
+    (_, props, sentence) => {
       jest.setSystemTime(inDecemberWhenAChangeFiledTodayTakesEffectInTwoYears);
-      mockPendingApplications = [pendingChangeTo(pendingPaymentRate, '2027-01-01')];
+      mockPendingApplications = [pendingChangeTo(props.pendingPaymentRate, '2027-01-01')];
 
       renderWithIntl(<SecondPillarStatusBox {...props} />);
 
-      expect(
-        byTextContent(
-          new RegExp(
-            `^You\\sare\\scontributing\\s2%\\sof\\sgross\\ssalary,\\schanging\\sto\\s${pendingPaymentRate}%\\sfrom\\sJanuary\\s1,\\s2027$`,
-          ),
-        ),
-      ).toBeInTheDocument();
+      expect(byTextContent(sentence)).toBeInTheDocument();
     },
   );
 
@@ -1441,7 +1446,7 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
 
     expect(
       byTextContent(
-        /^You\sare\scontributing\s2%\sof\sgross\ssalary,\schanging\sto\s6%\sfrom\sJanuary\s1,\s2025$/,
+        /^From\sJanuary\s1,\s2025\syou\swill\scontribute\s6%\sof\sgross\ssalary\.\sYou\shave\ssaved\s22\s€\sin\sincome\stax\sthis\syear$/,
       ),
     ).toBeInTheDocument();
   });
@@ -1454,7 +1459,7 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
 
     expect(
       byTextContent(
-        /^Sa\spanustad\s2%\sbrutopalgast,\salates\s1\.\sjaanuarist\s2027\smuutub\ssee\s6%\speale$/,
+        /^Alates\s1\.\sjaanuarist\s2027\spanustad\s6%\sbrutopalgast\.\sOled\ssel\saastal\svõitnud\stulumaksult\s22\s€$/,
       ),
     ).toBeInTheDocument();
   });
@@ -1477,11 +1482,7 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
 
     renderWithIntl(<SecondPillarStatusBox {...saverAtTuleva(2, 6)} />);
 
-    expect(
-      byTextContent(
-        /^You\sare\scontributing\s2%\sof\sgross\ssalary,\schanging\sto\s6%\sfrom\sJanuary\s1,\s2027$/,
-      ),
-    ).toBeInTheDocument();
+    expect(byTextContent(startingAtSixWithTheTaxWinFromJanuary2027)).toBeInTheDocument();
   });
 
   it('dates the change by the newest application for the rate on record, not by an older one that asked for the same rate', () => {
@@ -1493,18 +1494,16 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
 
     renderWithIntl(<SecondPillarStatusBox {...saverAtTuleva(2, 6)} />);
 
-    expect(
-      byTextContent(
-        /^You\sare\scontributing\s2%\sof\sgross\ssalary,\schanging\sto\s6%\sfrom\sJanuary\s1,\s2027$/,
-      ),
-    ).toBeInTheDocument();
+    expect(byTextContent(startingAtSixWithTheTaxWinFromJanuary2027)).toBeInTheDocument();
   });
 
   it('names the pending change without a date when no application holds the rate on record', () => {
     renderWithIntl(<SecondPillarStatusBox {...saverAtTuleva(2, 6)} />);
 
     expect(
-      byTextContent(/^You\sare\scontributing\s2%\sof\sgross\ssalary,\schanging\sto\s6%$/),
+      byTextContent(
+        /^You\sare\scontributing\s2%\sof\sgross\ssalary,\schanging\sto\s6%\.\sYou\shave\ssaved\s22\s€\sin\sincome\stax\sthis\syear$/,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -1514,7 +1513,9 @@ describe('SecondPillarStatusBox with a payment rate change pending', () => {
     renderWithIntl(<SecondPillarStatusBox {...saverAtTuleva(2, 6)} />, 'et');
 
     expect(
-      byTextContent(/^Sa\spanustad\s2%\sbrutopalgast,\ssee\smuutub\s6%\speale$/),
+      byTextContent(
+        /^Sa\spanustad\s2%\sbrutopalgast,\ssee\smuutub\s6%\speale\.\sOled\ssel\saastal\svõitnud\stulumaksult\s22\s€$/,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -1614,7 +1615,7 @@ describe('SecondPillarStatusBox payment rate and tax win lines outside the seaso
     ['at Tuleva', saver(2, 6)],
     ['in another low-fee fund', inAnotherLowFeeFund(saver(2, 6))],
   ])(
-    'gives a saver %s with a pending raise the change and the tax win on lines of their own',
+    'tells a saver %s with a pending raise when 6% starts and the tax win, in one line under the fund',
     (_, props) => {
       mockPendingApplications = [
         {
@@ -1627,10 +1628,9 @@ describe('SecondPillarStatusBox payment rate and tax win lines outside the seaso
 
       expect(
         byTextContent(
-          /^Sa\spanustad\s2%\sbrutopalgast,\salates\s1\.\sjaanuarist\s2027\smuutub\ssee\s6%\speale$/,
+          /^Alates\s1\.\sjaanuarist\s2027\spanustad\s6%\sbrutopalgast\.\sOled\ssel\saastal\svõitnud\stulumaksult\s22\s€$/,
         ),
       ).toBeInTheDocument();
-      expect(byTextContent(/^Oled\ssel\saastal\svõitnud\stulumaksult\s22\s€$/)).toBeInTheDocument();
     },
   );
 
