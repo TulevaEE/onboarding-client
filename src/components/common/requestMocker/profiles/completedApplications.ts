@@ -12,7 +12,20 @@ const withdrawalFiledInFebruary2023: Application = {
   },
 };
 
+const paymentRateRaiseToSixRealisedInDecember2026: Application = {
+  id: 9102,
+  status: 'COMPLETE',
+  creationTime: '2026-11-10T10:00:00Z',
+  type: 'PAYMENT_RATE',
+  details: {
+    paymentRate: 6,
+    cancellationDeadline: '2026-11-30T21:59:59.999999999Z',
+    fulfillmentDate: '2027-01-01',
+  },
+};
+
 export const completedApplicationsProfiles = {
   NONE: [] as Application[],
   SECOND_PILLAR_WITHDRAWAL_FEBRUARY_2023: [withdrawalFiledInFebruary2023],
+  SECOND_PILLAR_PAYMENT_RATE_RAISE_TO_6_REALISED: [paymentRateRaiseToSixRealisedInDecember2026],
 };

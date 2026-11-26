@@ -78,6 +78,7 @@ export const mockScenarios: Record<string, Partial<MockModeConfiguration>> = {
   // A raise to 6% already requested: counts as done, the money just hasn't moved yet.
   SECOND_PILLAR_RATE_RAISE_PENDING: {
     user: 'PAYMENT_RATE_2_TO_6',
+    pendingApplications: 'SECOND_PILLAR_PAYMENT_RATE_RAISE_TO_6',
     conversion: 'COMPLETE_ONLY_SECOND_PILLAR',
     contributions: 'SECOND_PILLAR_ONLY',
     sourceFunds: 'BOTH_PILLARS',
