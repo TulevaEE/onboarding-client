@@ -13,6 +13,7 @@ exports[`SecondPillarStatusBox renders high fee flow when fund selection incompl
   loading={false}
   mandateDeadlines={
     Object {
+      "paymentRateFulfillmentDate": "2028-01-01",
       "periodEnding": "2024-07-31T00:59:59.999999999Z",
       "secondPillarRejoinContributionStartDate": "2025-01-01",
     }
@@ -75,6 +76,7 @@ exports[`SecondPillarStatusBox renders high fee message when in high fee fund an
   loading={false}
   mandateDeadlines={
     Object {
+      "paymentRateFulfillmentDate": "2028-01-01",
       "periodEnding": "2024-07-31T00:59:59.999999999Z",
       "secondPillarRejoinContributionStartDate": "2025-01-01",
     }
@@ -135,6 +137,7 @@ exports[`SecondPillarStatusBox renders low fee when fund selection incomplete 1`
   loading={false}
   mandateDeadlines={
     Object {
+      "paymentRateFulfillmentDate": "2028-01-01",
       "periodEnding": "2024-07-31T00:59:59.999999999Z",
       "secondPillarRejoinContributionStartDate": "2025-01-01",
     }
@@ -209,6 +212,7 @@ exports[`SecondPillarStatusBox renders no 2nd pillar flow when no second pillar 
   loading={false}
   mandateDeadlines={
     Object {
+      "paymentRateFulfillmentDate": "2028-01-01",
       "periodEnding": "2024-07-31T00:59:59.999999999Z",
       "secondPillarRejoinContributionStartDate": "2025-01-01",
     }
@@ -283,6 +287,7 @@ exports[`SecondPillarStatusBox renders the bond fund nudge 1`] = `
   loading={false}
   mandateDeadlines={
     Object {
+      "paymentRateFulfillmentDate": "2028-01-01",
       "periodEnding": "2024-07-31T00:59:59.999999999Z",
       "secondPillarRejoinContributionStartDate": "2025-01-01",
     }
@@ -357,6 +362,7 @@ exports[`SecondPillarStatusBox renders the payment rate flow 1`] = `
   loading={false}
   mandateDeadlines={
     Object {
+      "paymentRateFulfillmentDate": "2028-01-01",
       "periodEnding": "2024-07-31T00:59:59.999999999Z",
       "secondPillarRejoinContributionStartDate": "2025-01-01",
     }
@@ -431,6 +437,7 @@ exports[`SecondPillarStatusBox renders the payment rate flow 2`] = `
   loading={false}
   mandateDeadlines={
     Object {
+      "paymentRateFulfillmentDate": "2028-01-01",
       "periodEnding": "2024-07-31T00:59:59.999999999Z",
       "secondPillarRejoinContributionStartDate": "2025-01-01",
     }
@@ -505,6 +512,7 @@ exports[`SecondPillarStatusBox renders the success flow 1`] = `
   loading={false}
   mandateDeadlines={
     Object {
+      "paymentRateFulfillmentDate": "2028-01-01",
       "periodEnding": "2024-07-31T00:59:59.999999999Z",
       "secondPillarRejoinContributionStartDate": "2025-01-01",
     }
@@ -567,6 +575,7 @@ exports[`SecondPillarStatusBox renders the transfer flow when fund transfers inc
   loading={false}
   mandateDeadlines={
     Object {
+      "paymentRateFulfillmentDate": "2028-01-01",
       "periodEnding": "2024-07-31T00:59:59.999999999Z",
       "secondPillarRejoinContributionStartDate": "2025-01-01",
     }
@@ -625,6 +634,7 @@ exports[`SecondPillarStatusBox renders the withdrawal flow when withdrawal is in
   loading={false}
   mandateDeadlines={
     Object {
+      "paymentRateFulfillmentDate": "2028-01-01",
       "periodEnding": "2024-07-31T00:59:59.999999999Z",
       "secondPillarRejoinContributionStartDate": "2025-01-01",
     }

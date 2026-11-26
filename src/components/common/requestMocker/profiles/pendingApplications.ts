@@ -449,6 +449,19 @@ export const pendingApplicationsProfiles: Record<string, Application[]> = {
   ] as Application[],
   // Nothing pending: the plain "just submitted a new application" state.
   NONE: [],
+  SECOND_PILLAR_PAYMENT_RATE_RAISE_TO_6: [
+    {
+      id: 9004,
+      status: 'PENDING',
+      creationTime: '2026-11-10T10:00:00Z',
+      type: 'PAYMENT_RATE',
+      details: {
+        paymentRate: 6,
+        cancellationDeadline: '2026-11-30T21:59:59.999999999Z',
+        fulfillmentDate: '2027-01-01',
+      },
+    },
+  ],
   SECOND_PILLAR_TRANSFER: [pendingTransfer(2)],
   THIRD_PILLAR_TRANSFER: [pendingTransfer(3)],
   SECOND_PILLAR_REJOIN: [pendingRejoin],

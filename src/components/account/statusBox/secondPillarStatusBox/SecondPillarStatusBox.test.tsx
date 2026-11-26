@@ -13,7 +13,7 @@ import {
   lowFeesNoTulevaConversion,
   tulevaSecondPillarFund,
 } from '../fixtures';
-import { rejoin } from '../../ApplicationSection/fixtures';
+import { paymentRateChange, rejoin } from '../../ApplicationSection/fixtures';
 import {
   Application,
   RejoinPermission,
@@ -27,6 +27,8 @@ let mockFundPensionsAreLoading = false;
 const mockPendingApplicationsByDefault: Partial<Application>[] = [];
 let mockPendingApplications = mockPendingApplicationsByDefault;
 let mockPendingApplicationsAreLoading = false;
+const mockCompletedApplicationsByDefault: Partial<Application>[] = [];
+let mockCompletedApplications = mockCompletedApplicationsByDefault;
 type RejoinPermissionQuery = {
   data?: RejoinPermission;
   isInitialLoading: boolean;
@@ -52,6 +54,7 @@ jest.mock('../../../common/apiHooks', () => ({
     mockPendingApplicationsAreLoading
       ? { data: undefined, isInitialLoading: true }
       : { data: mockPendingApplications, isInitialLoading: false },
+  useCompletedApplications: () => ({ data: mockCompletedApplications, isInitialLoading: false }),
   useTransactions: () => ({ data: [{ amount: 100 }] }),
   useFunds: () => ({ data: [{ pillar: 2 }] }),
   useMandateDeadlines: () => ({
@@ -60,6 +63,7 @@ jest.mock('../../../common/apiHooks', () => ({
         ? {
             periodEnding: '2024-07-31T00:59:59.999999999Z',
             secondPillarRejoinContributionStartDate: '2025-01-01',
+            paymentRateFulfillmentDate: '2028-01-01',
           }
         : undefined,
     isInitialLoading: mockMandateDeadlinesLoad === 'LOADING',
@@ -91,6 +95,7 @@ afterEach(() => {
   mockFundPensionsAreLoading = false;
   mockPendingApplications = mockPendingApplicationsByDefault;
   mockPendingApplicationsAreLoading = false;
+  mockCompletedApplications = mockCompletedApplicationsByDefault;
   mockRejoinPermission = mockRejoinPermitted;
   mockRejoinPermissionAsked = false;
   mockMandateDeadlinesLoad = 'LOADED';
@@ -419,31 +424,6 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
       expect(euroElements.length).toBeGreaterThan(0);
     });
 
-    it('renders both current and future payment rates when they differ', () => {
-      const props: Props = {
-        loading: false,
-        conversion: {
-          ...lowFeesNoTulevaConversion.secondPillar,
-          transfersPartial: true,
-          weightedAverageFee: 0.0029,
-        },
-        sourceFunds: [activeSecondPillar],
-        targetFunds: [tulevaSecondPillarFund],
-        secondPillarActive: true,
-        pendingPaymentRate: 6,
-        currentPaymentRate: 2,
-        activeFundIsin: 'EE000123',
-      };
-
-      renderWithIntl(<SecondPillarStatusBox {...props} />);
-
-      expect(screen.getByText(/2%/)).toBeInTheDocument();
-      expect(screen.getByText(/6%/)).toBeInTheDocument();
-
-      const euroElements = screen.getAllByText(/€/);
-      expect(euroElements.length).toBeGreaterThan(0);
-    });
-
     it('does not show action button when loading', () => {
       const props: Props = {
         loading: true,
@@ -483,27 +463,6 @@ describe('SecondPillarStatusBox - Component Integration Tests', () => {
 
       expect(screen.getByRole('heading', { level: 3 })).toBeInTheDocument();
       expect(screen.getByText(/6%/)).toBeInTheDocument();
-
-      const euroElements = screen.getAllByText(/€/);
-      expect(euroElements.length).toBeGreaterThan(0);
-    });
-
-    it('shows payment rate change when current and pending rates differ', () => {
-      const props: Props = {
-        loading: false,
-        conversion: completeSecondPillarConversion.secondPillar,
-        sourceFunds: [activeSecondPillar],
-        targetFunds: [tulevaSecondPillarFund],
-        secondPillarActive: true,
-        pendingPaymentRate: 4,
-        currentPaymentRate: 6,
-        activeFundIsin: 'EE000123',
-      };
-
-      renderWithIntl(<SecondPillarStatusBox {...props} />);
-
-      expect(screen.getByText(/6%/)).toBeInTheDocument();
-      expect(screen.getByText(/4%/)).toBeInTheDocument();
 
       const euroElements = screen.getAllByText(/€/);
       expect(euroElements.length).toBeGreaterThan(0);
@@ -1423,5 +1382,170 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
 
     expect(screen.getByRole('link', { name: 'Choose Tuleva' })).toBeInTheDocument();
     expect(screen.queryByText(/You contribute the maximum to II\spillar/)).not.toBeInTheDocument();
+  });
+});
+
+describe('SecondPillarStatusBox with a payment rate change pending', () => {
+  const pendingChangeTo = (paymentRate: number, fulfillmentDate: string) => ({
+    ...paymentRateChange,
+    details: { ...paymentRateChange.details, paymentRate, fulfillmentDate },
+  });
+
+  const realisedChangeTo = (paymentRate: number, filedAt: string, fulfillmentDate: string) => ({
+    ...pendingChangeTo(paymentRate, fulfillmentDate),
+    status: 'COMPLETE' as const,
+    creationTime: filedAt,
+  });
+
+  const saverAtTuleva = (currentPaymentRate: number, pendingPaymentRate: number): Props => ({
+    loading: false,
+    conversion: completeSecondPillarConversion.secondPillar,
+    sourceFunds: [activeSecondPillar],
+    targetFunds: [tulevaSecondPillarFund],
+    secondPillarActive: true,
+    secondPillarContributions: { contributing: true, restartDate: null, rejoinPossibleFrom: null },
+    currentPaymentRate,
+    pendingPaymentRate,
+    activeFundIsin: 'EE000123',
+  });
+
+  const inDecemberWhenAChangeFiledTodayTakesEffectInTwoYears = new Date('2026-12-10T10:00:00Z');
+
+  it.each([
+    ['fully at Tuleva', saverAtTuleva(2, 6), 6],
+    [
+      'in another low-fee fund',
+      {
+        ...saverAtTuleva(2, 6),
+        conversion: {
+          ...lowFeesNoTulevaConversion.secondPillar,
+          transfersPartial: true,
+          weightedAverageFee: 0.0029,
+        },
+      },
+      6,
+    ],
+    ['below 6%', saverAtTuleva(2, 4), 4],
+    ['in the bond fund', { ...saverAtTuleva(2, 6), activeFundIsin: 'EE3600109443' }, 6],
+  ])(
+    'dates the pending change of a saver %s by its own application, not by when a change filed today would take effect',
+    (_, props, pendingPaymentRate) => {
+      jest.setSystemTime(inDecemberWhenAChangeFiledTodayTakesEffectInTwoYears);
+      mockPendingApplications = [pendingChangeTo(pendingPaymentRate, '2027-01-01')];
+
+      renderWithIntl(<SecondPillarStatusBox {...props} />);
+
+      expect(
+        byTextContent(
+          new RegExp(
+            `^Your\\scontribution\\sis\\s2%\\sof\\sgross\\ssalary,\\schanging\\sto\\s${pendingPaymentRate}%\\sfrom\\sJanuary\\s1,\\s2027$`,
+          ),
+        ),
+      ).toBeInTheDocument();
+    },
+  );
+
+  it('names the date the pending change takes effect before December too', () => {
+    mockPendingApplications = [pendingChangeTo(6, '2025-01-01')];
+
+    renderWithIntl(<SecondPillarStatusBox {...saverAtTuleva(2, 6)} />);
+
+    expect(
+      byTextContent(
+        /^Your\scontribution\sis\s2%\sof\sgross\ssalary,\schanging\sto\s6%\sfrom\sJanuary\s1,\s2025$/,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('names the date in Estonian in the elative after "alates"', () => {
+    moment.locale('et');
+    mockPendingApplications = [pendingChangeTo(6, '2027-01-01')];
+
+    renderWithIntl(<SecondPillarStatusBox {...saverAtTuleva(2, 6)} />, 'et');
+
+    expect(
+      byTextContent(
+        /^Sinu\spanus\son\s2%\sbrutopalgast,\salates\s1\.\sjaanuarist\s2027\smuutub\ssee\s6%\speale$/,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('dates the change by the application for the pending rate on record when an older application asked for another rate', () => {
+    mockPendingApplications = [pendingChangeTo(6, '2027-01-01'), pendingChangeTo(4, '2027-01-01')];
+
+    renderWithIntl(<SecondPillarStatusBox {...saverAtTuleva(2, 4)} />);
+
+    expect(
+      byTextContent(
+        /^Your\scontribution\sis\s2%\sof\sgross\ssalary,\schanging\sto\s4%\sfrom\sJanuary\s1,\s2027$/,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('dates the change by its application once Pensionikeskus has marked it realised, as it does from December', () => {
+    jest.setSystemTime(inDecemberWhenAChangeFiledTodayTakesEffectInTwoYears);
+    mockCompletedApplications = [realisedChangeTo(6, '2026-11-10T10:00:00Z', '2027-01-01')];
+
+    renderWithIntl(<SecondPillarStatusBox {...saverAtTuleva(2, 6)} />);
+
+    expect(
+      byTextContent(
+        /^Your\scontribution\sis\s2%\sof\sgross\ssalary,\schanging\sto\s6%\sfrom\sJanuary\s1,\s2027$/,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('dates the change by the newest application for the rate on record, not by an older one that asked for the same rate', () => {
+    mockCompletedApplications = [
+      realisedChangeTo(6, '2022-11-10T10:00:00Z', '2023-01-01'),
+      realisedChangeTo(6, '2026-11-10T10:00:00Z', '2027-01-01'),
+      realisedChangeTo(6, '2023-11-10T10:00:00Z', '2024-01-01'),
+    ];
+
+    renderWithIntl(<SecondPillarStatusBox {...saverAtTuleva(2, 6)} />);
+
+    expect(
+      byTextContent(
+        /^Your\scontribution\sis\s2%\sof\sgross\ssalary,\schanging\sto\s6%\sfrom\sJanuary\s1,\s2027$/,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('names the pending change without a date when no application holds the rate on record', () => {
+    renderWithIntl(<SecondPillarStatusBox {...saverAtTuleva(2, 6)} />);
+
+    expect(
+      byTextContent(/^Your\scontribution\sis\s2%\sof\sgross\ssalary,\schanging\sto\s6%$/),
+    ).toBeInTheDocument();
+  });
+
+  it('names the pending change without a date in Estonian', () => {
+    moment.locale('et');
+
+    renderWithIntl(<SecondPillarStatusBox {...saverAtTuleva(2, 6)} />, 'et');
+
+    expect(
+      byTextContent(/^Sinu\spanus\son\s2%\sbrutopalgast,\ssee\smuutub\s6%\speale$/),
+    ).toBeInTheDocument();
+  });
+
+  it('announces no change when the pending application keeps the rate the saver already contributes', () => {
+    mockPendingApplications = [pendingChangeTo(6, '2027-01-01')];
+
+    renderWithIntl(<SecondPillarStatusBox {...saverAtTuleva(6, 6)} />);
+
+    expect(screen.queryByText(/changing to/)).not.toBeInTheDocument();
+    expect(byTextContent(/^You\sare\scontributing\s6%\sof\sgross\ssalary$/)).toBeInTheDocument();
+  });
+
+  it('shimmers the payment rate line instead of guessing the date until the applications load', () => {
+    mockPendingApplicationsAreLoading = true;
+
+    renderWithIntl(<SecondPillarStatusBox {...saverAtTuleva(2, 6)} />);
+
+    expect(screen.getByRole('heading', { name: /^II\spillar$/ })).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(document.querySelector('.shimmerDefault')).toBeInTheDocument();
+    expect(screen.queryByText(/gross\ssalary/)).not.toBeInTheDocument();
   });
 });

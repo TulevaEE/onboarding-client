@@ -1,4 +1,5 @@
 import {
+  PaymentRateApplication,
   RejoinApplication,
   SavingsFundPaymentApplication,
   SavingsFundWithdrawalApplication,
@@ -253,7 +254,7 @@ export const thirdPillarWithdrawal = {
   },
 };
 
-export const paymentRateChange = {
+export const paymentRateChange: PaymentRateApplication = {
   id: 654,
   type: 'PAYMENT_RATE',
   status: 'PENDING',

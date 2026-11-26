@@ -668,12 +668,7 @@ const SecondPillarMissing = ({ loading, nudgeKey }: RowProps) => (
   </StatusBoxRow>
 );
 
-const IncreasePaymentRate = ({
-  loading,
-  currentPaymentRate,
-  pendingPaymentRate,
-  mandateDeadlines,
-}: RowProps) => (
+const IncreasePaymentRate = ({ loading, currentPaymentRate, pendingPaymentRate }: RowProps) => (
   <StatusBoxRow
     status="WARNING"
     showAction={!loading}
@@ -681,8 +676,7 @@ const IncreasePaymentRate = ({
     lines={[
       <PaymentRateSubRow
         currentPaymentRate={currentPaymentRate}
-        futurePaymentRate={pendingPaymentRate}
-        paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
+        pendingPaymentRate={pendingPaymentRate}
       />,
       <span className="text-body-secondary">
         <SecondPillarPaymentRateTaxWin />
@@ -699,7 +693,6 @@ const FullyConvertedToTulevaBonds = ({
   loading,
   currentPaymentRate,
   pendingPaymentRate,
-  mandateDeadlines,
 }: RowProps) => (
   <StatusBoxRow
     status="WARNING"
@@ -725,8 +718,7 @@ const FullyConvertedToTulevaBonds = ({
       <span className="text-body-secondary">
         <PaymentRateSubRow
           currentPaymentRate={currentPaymentRate}
-          futurePaymentRate={pendingPaymentRate}
-          paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
+          pendingPaymentRate={pendingPaymentRate}
         />
       </span>,
     ]}
@@ -737,12 +729,7 @@ const FullyConvertedToTulevaBonds = ({
   </StatusBoxRow>
 );
 
-const FullyConvertedToTuleva = ({
-  loading,
-  currentPaymentRate,
-  pendingPaymentRate,
-  mandateDeadlines,
-}: RowProps) => (
+const FullyConvertedToTuleva = ({ loading, currentPaymentRate, pendingPaymentRate }: RowProps) => (
   <StatusBoxRow
     status="SUCCESS"
     name={<FormattedMessage id="account.status.choice.pillar.second" />}
@@ -752,8 +739,7 @@ const FullyConvertedToTuleva = ({
       <span className="text-body-secondary">
         <PaymentRateSubRow
           currentPaymentRate={currentPaymentRate}
-          futurePaymentRate={pendingPaymentRate}
-          paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
+          pendingPaymentRate={pendingPaymentRate}
         />
       </span>,
       <span className="text-body-secondary">
@@ -767,7 +753,6 @@ const InLowFeeFund = ({
   loading,
   currentPaymentRate,
   pendingPaymentRate,
-  mandateDeadlines,
   leaveApplication,
 }: RowProps) => (
   <StatusBoxRow
@@ -779,8 +764,7 @@ const InLowFeeFund = ({
       <span className="text-body-secondary">
         <PaymentRateSubRow
           currentPaymentRate={currentPaymentRate}
-          futurePaymentRate={pendingPaymentRate}
-          paymentRateFulfillmentDate={mandateDeadlines?.paymentRateFulfillmentDate ?? ''}
+          pendingPaymentRate={pendingPaymentRate}
         />
       </span>,
       <span className="text-body-secondary">

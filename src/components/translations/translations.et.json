@@ -400,8 +400,8 @@
 
   "account.status.choice.paymentRate": "Sinu panus on {currentPaymentRate}% brutopalgast",
   "account.status.choice.paymentRate.taxWinCombined": "{paymentRate} ja {taxWin}",
-  "account.status.choice.futurePaymentRate": "Sinu panus on {currentPaymentRate}% brutopalgast, alates uuest aastast muutub see {futurePaymentRate}% peale",
-  "account.status.choice.futurePaymentRate.withDate": "Sinu panus on {currentPaymentRate}% brutopalgast, alates {paymentRateFulfillmentDate} muutub see {futurePaymentRate}% peale",
+  "account.status.choice.futurePaymentRate": "Sinu panus on {currentPaymentRate}% brutopalgast, alates {paymentRateFulfillmentDate} muutub see {futurePaymentRate}% peale",
+  "account.status.choice.futurePaymentRate.withoutDate": "Sinu panus on {currentPaymentRate}% brutopalgast, see muutub {futurePaymentRate}% peale",
 
   "account.status.choice.tulevaBondFund.index.label": "Sa kogud Tuleva konservatiivses võlakirjafondis",
 
