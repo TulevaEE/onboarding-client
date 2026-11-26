@@ -1195,10 +1195,10 @@ describe('SecondPillarStatusBox in the payment rate season', () => {
     expect(byTextContent('up to 6%')).toHaveClass('text-primary');
   });
 
-  it('links the tax win to the tax win page and shows the amount in bold', () => {
+  it('links only the verb to the tax win page and shows the amount in bold after it', () => {
     renderWithIntl(<SecondPillarStatusBox {...seasonProps(2, 2)} />);
 
-    expect(screen.getByRole('link', { name: /saved 22\s€ in income tax/ })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'saved' })).toHaveAttribute(
       'href',
       '/2nd-pillar-tax-win',
     );
